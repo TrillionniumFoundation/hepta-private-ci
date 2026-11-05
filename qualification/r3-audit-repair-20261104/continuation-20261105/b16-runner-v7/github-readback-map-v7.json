@@ -1,0 +1,718 @@
+{
+  "schema": "hepta-b16-v7-actual-github-readback-map-v1",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "refs_changed": false,
+  "native_started": false,
+  "enabled_binding": false,
+  "prior_v6_readback_map": {
+    "bytes": 20915,
+    "sha256": "69ad7bfff24eda4a3bf4c89f4831072485e734db5c64c14125aa393e1cb75299",
+    "blob": "13ffa2f857764f5c3e0ab850ec16b0c48ac0acb9"
+  },
+  "complete_candidate_source_map_blob": "ecb2fbd8fe839a37aa5efb7c7b72869c774500fa",
+  "files": [
+    {
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b16-guarded-native-runner-20261105/original-ignored-catalog-v7/v7-candidate/b16_build_only.py",
+      "mode": "100644",
+      "bytes": 14919,
+      "sha256": "c19d6a25664a46c5736803dc60807a165bccbd57c1d04a6621f7a11eca7b4a0d",
+      "blob": "6a49c3e2f37d7f4cd42f45d7e37cca8c16669f12",
+      "created": true,
+      "read_back_exact": true,
+      "verification": "this V7 publication"
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b16-guarded-native-runner-20261105/original-ignored-catalog-v7/v7-candidate/b16_capacity.py",
+      "mode": "100644",
+      "bytes": 6342,
+      "sha256": "1581bdda147f4a74bd41c421cd267686ee75c42619ce37eddc5e459e41a0174d",
+      "blob": "4966c059c39ba5f7342feb40f88fda906607a32d",
+      "byteequal_to_frozen_prior": true,
+      "newly_created_or_read_back": false,
+      "verification": "Inherited frozen V6/V5 Git identity; current local bytes independently rechecked",
+      "prior_record": {
+        "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b16-guarded-native-runner-20261105/build-only-current-host-v6/v6-candidate/b16_capacity.py",
+        "mode": "100644",
+        "blob": "4966c059c39ba5f7342feb40f88fda906607a32d",
+        "bytes": 6342,
+        "sha256": "1581bdda147f4a74bd41c421cd267686ee75c42619ce37eddc5e459e41a0174d",
+        "created": true,
+        "read_back_exact": true
+      }
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b16-guarded-native-runner-20261105/original-ignored-catalog-v7/v7-candidate/b16_family.py",
+      "mode": "100644",
+      "bytes": 7614,
+      "sha256": "6d18326d3dd6f539e85585c23cf682ae1c6cbfc1ef3e44c25fe750d37e006f8e",
+      "blob": "cd88578b832200f3fc96435f490440742dc76528",
+      "byteequal_to_frozen_prior": true,
+      "newly_created_or_read_back": false,
+      "verification": "Inherited frozen V6/V5 Git identity; current local bytes independently rechecked",
+      "prior_record": {
+        "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b16-guarded-native-runner-20261105/build-only-current-host-v6/v6-candidate/b16_family.py",
+        "mode": "100644",
+        "blob": "cd88578b832200f3fc96435f490440742dc76528",
+        "bytes": 7614,
+        "sha256": "6d18326d3dd6f539e85585c23cf682ae1c6cbfc1ef3e44c25fe750d37e006f8e",
+        "created": true,
+        "read_back_exact": true
+      }
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b16-guarded-native-runner-20261105/original-ignored-catalog-v7/v7-candidate/b16_guard.py",
+      "mode": "100644",
+      "bytes": 10896,
+      "sha256": "d0ba5a5746711a322438200498786044c8d561d9a256f7280a2c4791c6bd0389",
+      "blob": "a9a38d14c220be4c44336a6fefac08a168e52dcf",
+      "byteequal_to_frozen_prior": true,
+      "newly_created_or_read_back": false,
+      "verification": "Inherited frozen V6/V5 Git identity; current local bytes independently rechecked",
+      "prior_record": {
+        "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b16-guarded-native-runner-20261105/build-only-current-host-v6/v6-candidate/b16_guard.py",
+        "mode": "100644",
+        "blob": "a9a38d14c220be4c44336a6fefac08a168e52dcf",
+        "bytes": 10896,
+        "sha256": "d0ba5a5746711a322438200498786044c8d561d9a256f7280a2c4791c6bd0389",
+        "created": true,
+        "read_back_exact": true
+      }
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b16-guarded-native-runner-20261105/original-ignored-catalog-v7/v7-candidate/b16_locks.py",
+      "mode": "100644",
+      "bytes": 13015,
+      "sha256": "5edb44c7e4a6ce63981adc4681fead1987ddc19389e7d0659c9e4d3e13d8514e",
+      "blob": "1a6583b6226af4d20bb336b778476dedb02d59f4",
+      "byteequal_to_frozen_prior": true,
+      "newly_created_or_read_back": false,
+      "verification": "Inherited frozen V6/V5 Git identity; current local bytes independently rechecked",
+      "prior_record": {
+        "path": "b16_locks.py",
+        "bytes": 13015,
+        "sha256": "5edb44c7e4a6ce63981adc4681fead1987ddc19389e7d0659c9e4d3e13d8514e",
+        "blob": "1a6583b6226af4d20bb336b778476dedb02d59f4",
+        "byteequal_to_frozen_v5": true,
+        "current_call_readback_claim": false,
+        "source": "Frozen V5 delivery; preserved identity, not newly changed."
+      }
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b16-guarded-native-runner-20261105/original-ignored-catalog-v7/v7-candidate/b16_native.py",
+      "mode": "100644",
+      "bytes": 17595,
+      "sha256": "10620e1688ba208db22e22b6ecd727657b18967ca0d749be8ff0fd348fd1c92d",
+      "blob": "7596d6a32f4066cc72336767bcc71313d68675f8",
+      "byteequal_to_frozen_prior": true,
+      "newly_created_or_read_back": false,
+      "verification": "Inherited frozen V6/V5 Git identity; current local bytes independently rechecked",
+      "prior_record": {
+        "path": "b16_native.py",
+        "bytes": 17595,
+        "sha256": "10620e1688ba208db22e22b6ecd727657b18967ca0d749be8ff0fd348fd1c92d",
+        "blob": "7596d6a32f4066cc72336767bcc71313d68675f8",
+        "byteequal_to_frozen_v5": true,
+        "current_call_readback_claim": false,
+        "source": "Frozen V5 delivery; preserved identity, not newly changed."
+      }
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b16-guarded-native-runner-20261105/original-ignored-catalog-v7/v7-candidate/b16_oracles.py",
+      "mode": "100644",
+      "bytes": 7483,
+      "sha256": "5928528add9ecb0f6a1681057a26954d9c607fb14c129293fa4bc6eac4e07e85",
+      "blob": "1a6efff50846f5c04bb5ea6def203ada42342050",
+      "byteequal_to_frozen_prior": true,
+      "newly_created_or_read_back": false,
+      "verification": "Inherited frozen V6/V5 Git identity; current local bytes independently rechecked",
+      "prior_record": {
+        "path": "b16_oracles.py",
+        "bytes": 7483,
+        "sha256": "5928528add9ecb0f6a1681057a26954d9c607fb14c129293fa4bc6eac4e07e85",
+        "blob": "1a6efff50846f5c04bb5ea6def203ada42342050",
+        "byteequal_to_frozen_v5": true,
+        "current_call_readback_claim": false,
+        "source": "Frozen V5 delivery; preserved identity, not newly changed."
+      }
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b16-guarded-native-runner-20261105/original-ignored-catalog-v7/v7-candidate/b16_runner.py",
+      "mode": "100644",
+      "bytes": 16005,
+      "sha256": "f419dfa8e4cd98fc729c8b9851d8ea8ae3413a0fb1906358f8556920200b6944",
+      "blob": "4c8c2477189b84c6fe7b19c09fd27255bc7d1b66",
+      "byteequal_to_frozen_prior": true,
+      "newly_created_or_read_back": false,
+      "verification": "Inherited frozen V6/V5 Git identity; current local bytes independently rechecked",
+      "prior_record": {
+        "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b16-guarded-native-runner-20261105/build-only-current-host-v6/v6-candidate/b16_runner.py",
+        "mode": "100644",
+        "blob": "4c8c2477189b84c6fe7b19c09fd27255bc7d1b66",
+        "bytes": 16005,
+        "sha256": "f419dfa8e4cd98fc729c8b9851d8ea8ae3413a0fb1906358f8556920200b6944",
+        "created": true,
+        "read_back_exact": true
+      }
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b16-guarded-native-runner-20261105/original-ignored-catalog-v7/v7-candidate/binding-template-UNBOUND.json",
+      "mode": "100644",
+      "bytes": 3281,
+      "sha256": "86b89a8c59d048f35bfd377041022abcd95083aae505fd79a6e99b32df893116",
+      "blob": "936af20c909732c59d9e277771f16a76d853b929",
+      "created": true,
+      "read_back_exact": true,
+      "verification": "this V7 publication"
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b16-guarded-native-runner-20261105/original-ignored-catalog-v7/v7-candidate/epoch-checkpoint.json",
+      "mode": "100644",
+      "bytes": 3938,
+      "sha256": "0a9d2e32fe5aa16ef6dd490383fd4f7cc6ef10400a5a94a7bd5e97719b8780f8",
+      "blob": "7fb7a81cacd734e395f63d93938f9f4c94ba3468",
+      "byteequal_to_frozen_prior": true,
+      "newly_created_or_read_back": false,
+      "verification": "Inherited frozen V6/V5 Git identity; current local bytes independently rechecked",
+      "prior_record": {
+        "path": "epoch-checkpoint.json",
+        "bytes": 3938,
+        "sha256": "0a9d2e32fe5aa16ef6dd490383fd4f7cc6ef10400a5a94a7bd5e97719b8780f8",
+        "blob": "7fb7a81cacd734e395f63d93938f9f4c94ba3468",
+        "byteequal_to_frozen_v5": true,
+        "current_call_readback_claim": false,
+        "source": "Frozen V5 delivery; preserved identity, not newly changed."
+      }
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b16-guarded-native-runner-20261105/original-ignored-catalog-v7/v7-candidate/epoch-driver.json",
+      "mode": "100644",
+      "bytes": 4348,
+      "sha256": "d28c2e9faa1cc0e3272d6aba88bfc3a49b062a484b6df530cca2ef2cf95a189f",
+      "blob": "5bd1014173766cb3599439e6a202514916286a5e",
+      "byteequal_to_frozen_prior": true,
+      "newly_created_or_read_back": false,
+      "verification": "Inherited frozen V6/V5 Git identity; current local bytes independently rechecked",
+      "prior_record": {
+        "path": "epoch-driver.json",
+        "bytes": 4348,
+        "sha256": "d28c2e9faa1cc0e3272d6aba88bfc3a49b062a484b6df530cca2ef2cf95a189f",
+        "blob": "5bd1014173766cb3599439e6a202514916286a5e",
+        "byteequal_to_frozen_v5": true,
+        "current_call_readback_claim": false,
+        "source": "Frozen V5 delivery; preserved identity, not newly changed."
+      }
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b16-guarded-native-runner-20261105/original-ignored-catalog-v7/v7-candidate/epoch-foundation.json",
+      "mode": "100644",
+      "bytes": 11472,
+      "sha256": "a8ac8886ec02230d5004dc8b608e0a33c0b89d5fdfabc1032569a13ee812fabd",
+      "blob": "6cc71ef831549fbe54f26c9bbe080e53effc59fa",
+      "byteequal_to_frozen_prior": true,
+      "newly_created_or_read_back": false,
+      "verification": "Inherited frozen V6/V5 Git identity; current local bytes independently rechecked",
+      "prior_record": {
+        "path": "epoch-foundation.json",
+        "bytes": 11472,
+        "sha256": "a8ac8886ec02230d5004dc8b608e0a33c0b89d5fdfabc1032569a13ee812fabd",
+        "blob": "6cc71ef831549fbe54f26c9bbe080e53effc59fa",
+        "byteequal_to_frozen_v5": true,
+        "current_call_readback_claim": false,
+        "source": "Frozen V5 delivery; preserved identity, not newly changed."
+      }
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b16-guarded-native-runner-20261105/original-ignored-catalog-v7/v7-candidate/epoch-owning.json",
+      "mode": "100644",
+      "bytes": 265,
+      "sha256": "87c7e1c517d3d601884a7555a7c677cec7490743dd2b5f7c0f1e2c45131efbe5",
+      "blob": "ce08a93c32f41135139b858d3bc22c6b224fec12",
+      "byteequal_to_frozen_prior": true,
+      "newly_created_or_read_back": false,
+      "verification": "Inherited frozen V6/V5 Git identity; current local bytes independently rechecked",
+      "prior_record": {
+        "path": "epoch-owning.json",
+        "bytes": 265,
+        "sha256": "87c7e1c517d3d601884a7555a7c677cec7490743dd2b5f7c0f1e2c45131efbe5",
+        "blob": "ce08a93c32f41135139b858d3bc22c6b224fec12",
+        "byteequal_to_frozen_v5": true,
+        "current_call_readback_claim": false,
+        "source": "Frozen V5 delivery; preserved identity, not newly changed."
+      }
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b16-guarded-native-runner-20261105/original-ignored-catalog-v7/v7-candidate/epoch-pool.json",
+      "mode": "100644",
+      "bytes": 3807,
+      "sha256": "19e1a06c6c97e20d1f1ef097222f6f7c2877850502223f16ed939848e228bf64",
+      "blob": "6d686ead86ef2c83f3b32f8bbd1b73e662d26093",
+      "byteequal_to_frozen_prior": true,
+      "newly_created_or_read_back": false,
+      "verification": "Inherited frozen V6/V5 Git identity; current local bytes independently rechecked",
+      "prior_record": {
+        "path": "epoch-pool.json",
+        "bytes": 3807,
+        "sha256": "19e1a06c6c97e20d1f1ef097222f6f7c2877850502223f16ed939848e228bf64",
+        "blob": "6d686ead86ef2c83f3b32f8bbd1b73e662d26093",
+        "byteequal_to_frozen_v5": true,
+        "current_call_readback_claim": false,
+        "source": "Frozen V5 delivery; preserved identity, not newly changed."
+      }
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b16-guarded-native-runner-20261105/original-ignored-catalog-v7/v7-candidate/foundation-binding-UNBOUND.json",
+      "mode": "100644",
+      "bytes": 3334,
+      "sha256": "d47141faabd521a4c7fbee473baf2561d345cee6d8280a7baacf77ea82fcee14",
+      "blob": "35ba6e68663d02f4c57379b1034711ddfc4b1977",
+      "created": true,
+      "read_back_exact": true,
+      "verification": "this V7 publication"
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b16-guarded-native-runner-20261105/original-ignored-catalog-v7/v7-candidate/foundation-build-only-binding-UNBOUND.json",
+      "mode": "100644",
+      "bytes": 3836,
+      "sha256": "1df2f405e10cf8978ddd925bae65a7dc02bfcc5d2cf5c26163a211c3625b2ea8",
+      "blob": "69b4425169c4593493655175bcab804828ddcfca",
+      "created": true,
+      "read_back_exact": true,
+      "verification": "this V7 publication"
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b16-guarded-native-runner-20261105/original-ignored-catalog-v7/v7-candidate/foundation-output-family.json",
+      "mode": "100644",
+      "bytes": 142656,
+      "sha256": "5f63fcb507e899cc19df88e86efe997a34929edd5f45c83e7f7197987149a204",
+      "blob": "d3bfb3b487ceede8c923d1714fdadf87a06ed441",
+      "byteequal_to_frozen_prior": true,
+      "newly_created_or_read_back": false,
+      "verification": "Inherited frozen V6/V5 Git identity; current local bytes independently rechecked",
+      "prior_record": {
+        "path": "foundation-output-family.json",
+        "bytes": 142656,
+        "sha256": "5f63fcb507e899cc19df88e86efe997a34929edd5f45c83e7f7197987149a204",
+        "blob": "d3bfb3b487ceede8c923d1714fdadf87a06ed441",
+        "byteequal_to_frozen_v5": true,
+        "current_call_readback_claim": false,
+        "source": "Frozen V5 delivery; preserved identity, not newly changed."
+      }
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b16-guarded-native-runner-20261105/original-ignored-catalog-v7/v7-candidate/observed-nextest-timeout-testcase.xml",
+      "mode": "100644",
+      "bytes": 390,
+      "sha256": "fabd54568dd293a814449bc59027d1f5ecd6ee96a806b68b691ae2bb170a57df",
+      "blob": "e3cd2d7df83b2d5abebd96840722edcdd34d32f8",
+      "byteequal_to_frozen_prior": true,
+      "newly_created_or_read_back": false,
+      "verification": "Inherited frozen V6/V5 Git identity; current local bytes independently rechecked",
+      "prior_record": {
+        "path": "observed-nextest-timeout-testcase.xml",
+        "bytes": 390,
+        "sha256": "fabd54568dd293a814449bc59027d1f5ecd6ee96a806b68b691ae2bb170a57df",
+        "blob": "e3cd2d7df83b2d5abebd96840722edcdd34d32f8",
+        "byteequal_to_frozen_v5": true,
+        "current_call_readback_claim": false,
+        "source": "Frozen V5 delivery; preserved identity, not newly changed."
+      }
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b16-guarded-native-runner-20261105/original-ignored-catalog-v7/v7-candidate/observed-original-A-catalog.json",
+      "mode": "100644",
+      "bytes": 369514,
+      "sha256": "6f0a4f7566621b451701a2612d068f194fc6a1b3aa1457722381d3d53c8a0690",
+      "blob": "5f4d2b2b82a3d1c0043ec4735fe4e2d2864ceb15",
+      "created": true,
+      "read_back_exact": true,
+      "verification": "this V7 publication"
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b16-guarded-native-runner-20261105/original-ignored-catalog-v7/v7-candidate/payload-manifest.json",
+      "mode": "100644",
+      "bytes": 62667,
+      "sha256": "a34cd6c5400deff4fedfffcb1f4f170eecabbb6bbfab1916829ab3911e986237",
+      "blob": "64db580beabe2642eb8611184dac4fc686fe34e1",
+      "byteequal_to_frozen_prior": true,
+      "newly_created_or_read_back": false,
+      "verification": "Inherited frozen V6/V5 Git identity; current local bytes independently rechecked",
+      "prior_record": {
+        "path": "payload-manifest.json",
+        "bytes": 62667,
+        "sha256": "a34cd6c5400deff4fedfffcb1f4f170eecabbb6bbfab1916829ab3911e986237",
+        "blob": "64db580beabe2642eb8611184dac4fc686fe34e1",
+        "byteequal_to_frozen_v5": true,
+        "current_call_readback_claim": false,
+        "source": "Frozen V5 delivery; preserved identity, not newly changed."
+      }
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b16-guarded-native-runner-20261105/original-ignored-catalog-v7/v7-candidate/runner-integrity.json",
+      "mode": "100644",
+      "bytes": 5679,
+      "sha256": "96bbff3180620d841b90b65ea1e159d04931c47fd2de1c270ba0f6c059ac5202",
+      "blob": "18f27fbb488777d621b4f37aa0cf70956cdbe7d9",
+      "created": true,
+      "read_back_exact": true,
+      "verification": "this V7 publication"
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b16-guarded-native-runner-20261105/original-ignored-catalog-v7/v7-candidate/source-payload-00.json",
+      "mode": "100644",
+      "bytes": 350291,
+      "sha256": "44299f93d8cfc2cd6a264a1df985052d8c7c4eb16e62c9bd8614b70cb9564f78",
+      "blob": "8e5ed16eca037384b17830f3625489ddf69f7d7a",
+      "byteequal_to_frozen_prior": true,
+      "newly_created_or_read_back": false,
+      "verification": "Inherited frozen V6/V5 Git identity; current local bytes independently rechecked",
+      "prior_record": {
+        "path": "source-payload-00.json",
+        "bytes": 350291,
+        "sha256": "44299f93d8cfc2cd6a264a1df985052d8c7c4eb16e62c9bd8614b70cb9564f78",
+        "blob": "8e5ed16eca037384b17830f3625489ddf69f7d7a",
+        "byteequal_to_frozen_v5": true,
+        "current_call_readback_claim": false,
+        "source": "Frozen V5 delivery; preserved identity, not newly changed."
+      }
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b16-guarded-native-runner-20261105/original-ignored-catalog-v7/v7-candidate/source-payload-01.json",
+      "mode": "100644",
+      "bytes": 333825,
+      "sha256": "85adc1e88702b4fb8c9d417a936d665519fa56386cb434bbc6ef55d5f9cdf07d",
+      "blob": "e621574b496731997af604b8e4b138851c8be3d0",
+      "byteequal_to_frozen_prior": true,
+      "newly_created_or_read_back": false,
+      "verification": "Inherited frozen V6/V5 Git identity; current local bytes independently rechecked",
+      "prior_record": {
+        "path": "source-payload-01.json",
+        "bytes": 333825,
+        "sha256": "85adc1e88702b4fb8c9d417a936d665519fa56386cb434bbc6ef55d5f9cdf07d",
+        "blob": "e621574b496731997af604b8e4b138851c8be3d0",
+        "byteequal_to_frozen_v5": true,
+        "current_call_readback_claim": false,
+        "source": "Frozen V5 delivery; preserved identity, not newly changed."
+      }
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b16-guarded-native-runner-20261105/original-ignored-catalog-v7/v7-candidate/source-payload-02.json",
+      "mode": "100644",
+      "bytes": 342693,
+      "sha256": "563074644cce7c3e63f92e5b5e346e09d24ff4ca03e90cea4ca1b001347186ce",
+      "blob": "3bb4615120935560dd4bff326795b68e03cfb31a",
+      "byteequal_to_frozen_prior": true,
+      "newly_created_or_read_back": false,
+      "verification": "Inherited frozen V6/V5 Git identity; current local bytes independently rechecked",
+      "prior_record": {
+        "path": "source-payload-02.json",
+        "bytes": 342693,
+        "sha256": "563074644cce7c3e63f92e5b5e346e09d24ff4ca03e90cea4ca1b001347186ce",
+        "blob": "3bb4615120935560dd4bff326795b68e03cfb31a",
+        "byteequal_to_frozen_v5": true,
+        "current_call_readback_claim": false,
+        "source": "Frozen V5 delivery; preserved identity, not newly changed."
+      }
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b16-guarded-native-runner-20261105/original-ignored-catalog-v7/v7-candidate/source-payload-03.json",
+      "mode": "100644",
+      "bytes": 345962,
+      "sha256": "8a633ff6916a8b543e8aca196c54a41cc180d8f68c2cd2a26f2fe0e87ca57f55",
+      "blob": "819cfab8bf8a410d944e7d2c8c185d07a1eea886",
+      "byteequal_to_frozen_prior": true,
+      "newly_created_or_read_back": false,
+      "verification": "Inherited frozen V6/V5 Git identity; current local bytes independently rechecked",
+      "prior_record": {
+        "path": "source-payload-03.json",
+        "bytes": 345962,
+        "sha256": "8a633ff6916a8b543e8aca196c54a41cc180d8f68c2cd2a26f2fe0e87ca57f55",
+        "blob": "819cfab8bf8a410d944e7d2c8c185d07a1eea886",
+        "byteequal_to_frozen_v5": true,
+        "current_call_readback_claim": false,
+        "source": "Frozen V5 delivery; preserved identity, not newly changed."
+      }
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b16-guarded-native-runner-20261105/original-ignored-catalog-v7/v7-candidate/source-payload-04.json",
+      "mode": "100644",
+      "bytes": 135857,
+      "sha256": "5d43327e7379cca4e6502973efd7ba6a3f67fb464c3bf41ebbaf1f88c6132bba",
+      "blob": "e5a287d7ae1f8a0c77cec32ce1113a48e94f8daa",
+      "byteequal_to_frozen_prior": true,
+      "newly_created_or_read_back": false,
+      "verification": "Inherited frozen V6/V5 Git identity; current local bytes independently rechecked",
+      "prior_record": {
+        "path": "source-payload-04.json",
+        "bytes": 135857,
+        "sha256": "5d43327e7379cca4e6502973efd7ba6a3f67fb464c3bf41ebbaf1f88c6132bba",
+        "blob": "e5a287d7ae1f8a0c77cec32ce1113a48e94f8daa",
+        "byteequal_to_frozen_v5": true,
+        "current_call_readback_claim": false,
+        "source": "Frozen V5 delivery; preserved identity, not newly changed."
+      }
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b16-guarded-native-runner-20261105/original-ignored-catalog-v7/v7-candidate/test_build_only_guard.py",
+      "mode": "100644",
+      "bytes": 15667,
+      "sha256": "6563bc785ccd11d3c44b45ca2d8cf3df4baa807599a5a692826c359c463409a8",
+      "blob": "00069847aa5a25e760fee57c3c1a9cfa6c092ae5",
+      "created": true,
+      "read_back_exact": true,
+      "verification": "this V7 publication"
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b16-guarded-native-runner-20261105/original-ignored-catalog-v7/v7-candidate/test_family_guard.py",
+      "mode": "100644",
+      "bytes": 8509,
+      "sha256": "3c4ecffcf8c7bc4882c7a4f3455f044cfd226db72fe15559cf7b583d10ba7eb9",
+      "blob": "f0dc2e9e3390fe83dd41a40b964062fc8f95789e",
+      "byteequal_to_frozen_prior": true,
+      "newly_created_or_read_back": false,
+      "verification": "Inherited frozen V6/V5 Git identity; current local bytes independently rechecked",
+      "prior_record": {
+        "path": "test_family_guard.py",
+        "bytes": 8509,
+        "sha256": "3c4ecffcf8c7bc4882c7a4f3455f044cfd226db72fe15559cf7b583d10ba7eb9",
+        "blob": "f0dc2e9e3390fe83dd41a40b964062fc8f95789e",
+        "byteequal_to_frozen_v5": true,
+        "current_call_readback_claim": false,
+        "source": "Frozen V5 delivery; preserved identity, not newly changed."
+      }
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b16-guarded-native-runner-20261105/original-ignored-catalog-v7/v7-candidate/test_runner_guards.py",
+      "mode": "100644",
+      "bytes": 15658,
+      "sha256": "d83e8391dc64aacd2daa1bddb2ec104796f6e30f7054796ef5144b7265b67128",
+      "blob": "378fe4b966d86cced0c89303c34c6ad7bf3b0d57",
+      "byteequal_to_frozen_prior": true,
+      "newly_created_or_read_back": false,
+      "verification": "Inherited frozen V6/V5 Git identity; current local bytes independently rechecked",
+      "prior_record": {
+        "path": "test_runner_guards.py",
+        "bytes": 15658,
+        "sha256": "d83e8391dc64aacd2daa1bddb2ec104796f6e30f7054796ef5144b7265b67128",
+        "blob": "378fe4b966d86cced0c89303c34c6ad7bf3b0d57",
+        "byteequal_to_frozen_v5": true,
+        "current_call_readback_claim": false,
+        "source": "Frozen V5 delivery; preserved identity, not newly changed."
+      }
+    }
+  ],
+  "new_records": [
+    {
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b16-guarded-native-runner-20261105/original-ignored-catalog-v7/v7-candidate/b16_build_only.py",
+      "bytes": 14919,
+      "sha256": "c19d6a25664a46c5736803dc60807a165bccbd57c1d04a6621f7a11eca7b4a0d",
+      "blob": "6a49c3e2f37d7f4cd42f45d7e37cca8c16669f12",
+      "mode": "100644",
+      "created": true,
+      "read_back_exact": true
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b16-guarded-native-runner-20261105/original-ignored-catalog-v7/v7-candidate/binding-template-UNBOUND.json",
+      "bytes": 3281,
+      "sha256": "86b89a8c59d048f35bfd377041022abcd95083aae505fd79a6e99b32df893116",
+      "blob": "936af20c909732c59d9e277771f16a76d853b929",
+      "mode": "100644",
+      "created": true,
+      "read_back_exact": true
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b16-guarded-native-runner-20261105/original-ignored-catalog-v7/v7-candidate/foundation-binding-UNBOUND.json",
+      "bytes": 3334,
+      "sha256": "d47141faabd521a4c7fbee473baf2561d345cee6d8280a7baacf77ea82fcee14",
+      "blob": "35ba6e68663d02f4c57379b1034711ddfc4b1977",
+      "mode": "100644",
+      "created": true,
+      "read_back_exact": true
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b16-guarded-native-runner-20261105/original-ignored-catalog-v7/v7-candidate/foundation-build-only-binding-UNBOUND.json",
+      "bytes": 3836,
+      "sha256": "1df2f405e10cf8978ddd925bae65a7dc02bfcc5d2cf5c26163a211c3625b2ea8",
+      "blob": "69b4425169c4593493655175bcab804828ddcfca",
+      "mode": "100644",
+      "created": true,
+      "read_back_exact": true
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b16-guarded-native-runner-20261105/original-ignored-catalog-v7/v7-candidate/observed-original-A-catalog.json",
+      "bytes": 369514,
+      "sha256": "6f0a4f7566621b451701a2612d068f194fc6a1b3aa1457722381d3d53c8a0690",
+      "blob": "5f4d2b2b82a3d1c0043ec4735fe4e2d2864ceb15",
+      "mode": "100644",
+      "created": true,
+      "read_back_exact": true
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b16-guarded-native-runner-20261105/original-ignored-catalog-v7/v7-candidate/runner-integrity.json",
+      "bytes": 5679,
+      "sha256": "96bbff3180620d841b90b65ea1e159d04931c47fd2de1c270ba0f6c059ac5202",
+      "blob": "18f27fbb488777d621b4f37aa0cf70956cdbe7d9",
+      "mode": "100644",
+      "created": true,
+      "read_back_exact": true
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b16-guarded-native-runner-20261105/original-ignored-catalog-v7/v7-candidate/test_build_only_guard.py",
+      "bytes": 15667,
+      "sha256": "6563bc785ccd11d3c44b45ca2d8cf3df4baa807599a5a692826c359c463409a8",
+      "blob": "00069847aa5a25e760fee57c3c1a9cfa6c092ae5",
+      "mode": "100644",
+      "created": true,
+      "read_back_exact": true
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b16-guarded-native-runner-20261105/original-ignored-catalog-v7/v6-to-v7.delta.patch",
+      "bytes": 383445,
+      "sha256": "836854ee1d13482ffc0acf08f1960b2bc86ab29ca09847b9d487d22257f2f58f",
+      "blob": "32998620ab63c6540e560c1bbf18ba14c2e9683e",
+      "mode": "100644",
+      "created": true,
+      "read_back_exact": true
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b16-guarded-native-runner-20261105/original-ignored-catalog-v7/source-map-v7.json",
+      "bytes": 10608,
+      "sha256": "3e008147f27eaab391bbf515da905460efa9a6db492fc2510015568876180bb2",
+      "blob": "ecb2fbd8fe839a37aa5efb7c7b72869c774500fa",
+      "mode": "100644",
+      "created": true,
+      "read_back_exact": true
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b16-guarded-native-runner-20261105/original-ignored-catalog-v7/preservation-verification.json",
+      "bytes": 12237,
+      "sha256": "b3a2d0903da262da9347abd13f8d9776cf3909a54d8460104e7d0a0c808d8431",
+      "blob": "a5bcaf7db93a8572f08d184af84e971a241dbcdc",
+      "mode": "100644",
+      "created": true,
+      "read_back_exact": true
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b16-guarded-native-runner-20261105/original-ignored-catalog-v7/review-manifest-v7.json",
+      "bytes": 12226,
+      "sha256": "6778a48bce1b277ae048c315eecfe495aec24d2b9a96a42e41198d38b1fdf9b3",
+      "blob": "88cc1adc9d9ca112b3036e3137a49c4996d1de08",
+      "mode": "100644",
+      "created": true,
+      "read_back_exact": true
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b16-guarded-native-runner-20261105/original-ignored-catalog-v7/README.md",
+      "bytes": 3528,
+      "sha256": "e1a00f59c0544a2e7a1279fa12330eadd313a96be5418f27b806f7cf2d80ce5f",
+      "blob": "afc9aa018f4fdf6811ca983a69dfd2cbbb5db08d",
+      "mode": "100644",
+      "created": true,
+      "read_back_exact": true
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b16-guarded-native-runner-20261105/original-ignored-catalog-v7/prepare_v7.py",
+      "bytes": 8988,
+      "sha256": "b8a0e990d9be51a146d5441f976e65f8fbab42727e127f53fe76020b05e1b84b",
+      "blob": "4b56267d8d1876ec8e3494a46a2746110ee0f1ba",
+      "mode": "100644",
+      "created": true,
+      "read_back_exact": true
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b16-guarded-native-runner-20261105/original-ignored-catalog-v7/verify_v7.py",
+      "bytes": 5652,
+      "sha256": "1a3e585c4d03b38ab40c10707011a374915939665c2ce80a1b38e3e311276b98",
+      "blob": "a455c576247e7d41f2bb374ab8640c445de05c28",
+      "mode": "100644",
+      "created": true,
+      "read_back_exact": true
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b16-guarded-native-runner-20261105/original-ignored-catalog-v7/freeze_v7.py",
+      "bytes": 7090,
+      "sha256": "5aa0967d366e00eb49485bf34dfb5e0892153b25ce41e28fb999ab6e61996b7e",
+      "blob": "9ad8ed8783498bbb75943468321aaf486ffcf591",
+      "mode": "100644",
+      "created": true,
+      "read_back_exact": true
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b16-guarded-native-runner-20261105/original-ignored-catalog-v7/build_manifest.py",
+      "bytes": 5739,
+      "sha256": "39eed880e9aaf6ea06a110e40d8aeb8628740e656fb12219c6bb59004cee14aa",
+      "blob": "6bf535ae51c90de19a63e1a93ed896a73f563f90",
+      "mode": "100644",
+      "created": true,
+      "read_back_exact": true
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b16-guarded-native-runner-20261105/original-ignored-catalog-v7/cloud-verification-v1/verification.json",
+      "bytes": 4291,
+      "sha256": "0746ec279bd09cb5e251b1921f89ddca0774ccd5938a391041d4ec6535d8d0c8",
+      "blob": "5883a3406f5d44dd06aeb7f742386c28931b63d1",
+      "mode": "100644",
+      "created": true,
+      "read_back_exact": true
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b16-guarded-native-runner-20261105/original-ignored-catalog-v7/cloud-verification-v1/v6-original-catalog-rejection.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "mode": "100644",
+      "created": true,
+      "read_back_exact": true
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b16-guarded-native-runner-20261105/original-ignored-catalog-v7/cloud-verification-v1/v6-original-catalog-rejection.stderr",
+      "bytes": 1653,
+      "sha256": "ce788128ad92b3520c5f2f514e906166409e0d393665a6aa05a4fcde55263c4a",
+      "blob": "f0dfad645f25cc9016cc59cb5c54231331989a0d",
+      "mode": "100644",
+      "created": true,
+      "read_back_exact": true
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b16-guarded-native-runner-20261105/original-ignored-catalog-v7/cloud-verification-v1/v6-original-catalog-rejection.status.json",
+      "bytes": 1220,
+      "sha256": "0b278b9079ae3a9fe1893ed089cd681d5886ab8b209e0f69e98b6dab5787ebbb",
+      "blob": "2a1b5e1c627d216eabb0cc5f7f6e0298accd3d54",
+      "mode": "100644",
+      "created": true,
+      "read_back_exact": true
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b16-guarded-native-runner-20261105/original-ignored-catalog-v7/cloud-verification-v1/v7-original-and-tamper-controls.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "mode": "100644",
+      "created": true,
+      "read_back_exact": true
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b16-guarded-native-runner-20261105/original-ignored-catalog-v7/cloud-verification-v1/v7-original-and-tamper-controls.stderr",
+      "bytes": 1202,
+      "sha256": "d8f2658525f0285b7b0eff767e5e8b6634a3c20e813a205d0188bfe9b36709be",
+      "blob": "2d8fdaa35bd94cbb65142113aaa455d2fec6bee3",
+      "mode": "100644",
+      "created": true,
+      "read_back_exact": true
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b16-guarded-native-runner-20261105/original-ignored-catalog-v7/cloud-verification-v1/v7-original-and-tamper-controls.status.json",
+      "bytes": 1097,
+      "sha256": "0d7d4e08381f27794fc117d5d1200085b9f19e92930ad42ee370eb2711645bf7",
+      "blob": "0b33c5b4df9c01365361af304275c640e38dd9e4",
+      "mode": "100644",
+      "created": true,
+      "read_back_exact": true
+    }
+  ],
+  "unique_created_and_read_back": 22,
+  "independent_review": {
+    "blob": "4d779f7573817c11881289c3135870c2f511fe69",
+    "path": "research-audit/b16-v7-independent-review-20261105/independent-review.json",
+    "status": "STATIC_ACCEPT_NO_NATIVE_B_QUALIFICATION"
+  }
+}

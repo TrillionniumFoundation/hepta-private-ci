@@ -1,0 +1,160 @@
+--- P4-v2/run_bootstrap_p4_v2.py
++++ P4-v3/run_bootstrap_p4_v3.py
+@@ -15,7 +15,7 @@
+ SOURCE = ROOT / 'source'
+ TARGET = ROOT / 'target-dev-small'
+ TOOLS = ROOT / 'tools'
+-EVIDENCE = ROOT / 'evidence/bootstrap-P4-openssl-continuation-v2'
++EVIDENCE = ROOT / 'evidence/bootstrap-P4-libcap-continuation-v3'
+ COMMIT = '20fd174ded4e5ce01bda34e4f6d1d74803301f49'
+ TREE = '4a3374e22e16ce5c764288ad018cd9affadf94ea'
+ GUARD_BLOB = '967ef896907e698a07e8028e049a47e934570b1d'
+@@ -234,9 +234,58 @@
+     return save_json(label + '.openssl-sdk-guard.json', actual)
+ 
+ 
++def verify_libcap_sdk(label, cap_sdk):
++    sdk_root = TOOLS / 'libcap-2.75-10ubuntu2'
++    assert sdk_root.resolve() == sdk_root
++    actual = {'headers': [], 'libraries': {}, 'packages': [], 'aliases': [], 'pkg_config': {}}
++    assert cap_sdk['version'] == '1:2.75-10ubuntu2'
++    assert cap_sdk['environment'] == {'PKG_CONFIG_PATH': str(sdk_root / 'pkgconfig')}
++    for expected in cap_sdk['headers']:
++        path = Path(expected['path'])
++        assert path.is_relative_to(sdk_root)
++        observed = file_id(path)
++        assert equal_content(observed, expected)
++        actual['headers'].append(observed)
++    for role in ('private', 'system_readonly'):
++        expected = cap_sdk['library'][role]
++        observed = file_id(expected['path'])
++        assert equal_content(observed, expected)
++        actual['libraries'][role] = observed
++    assert equal_content(actual['libraries']['private'], actual['libraries']['system_readonly'])
++    for package in cap_sdk['packages']:
++        expected = package['official_download']['package']
++        path = Path(expected['path'])
++        assert path.is_relative_to(sdk_root)
++        observed = file_id(path)
++        assert equal_content(observed, expected)
++        actual['packages'].append(observed)
++    for row in cap_sdk['aliases']:
++        path = Path(row['path'])
++        assert path.is_relative_to(sdk_root) and path.is_symlink()
++        assert os.readlink(path) == row['link_target'] and path.resolve() == Path(row['resolved_file']['path'])
++        observed = file_id(path.resolve())
++        assert equal_content(observed, row['resolved_file'])
++        actual['aliases'].append({'path': str(path), 'link_target': os.readlink(path), 'resolved_file': observed})
++    for name in ('official_pc', 'relocated_pc'):
++        expected = cap_sdk[name]
++        assert Path(expected['path']).is_relative_to(sdk_root)
++        observed = file_id(expected['path'])
++        assert equal_content(observed, expected)
++        actual['pkg_config'][name] = observed
++    tool = cap_sdk['pkg_config_executable']
++    path = Path(tool['path'])
++    assert str(path) == '/usr/bin/pkg-config' and path.is_symlink() == tool['symlink']
++    if path.is_symlink():
++        assert os.readlink(path) == tool['link_target']
++    observed = file_id(path.resolve())
++    assert equal_content(observed, tool['resolved'])
++    actual['pkg_config']['executable'] = {'path': str(path), 'link_target': tool['link_target'], 'resolved': observed}
++    return save_json(label + '.libcap-sdk-guard.json', actual)
++
++
+ raw = sys.stdin.buffer.read()
+ request = json.loads(raw)
+-terminal = {'schema': 'hepta-ai395-cold-bootstrap-P4-terminal-v2', 'host_alias': 'ai395',
++terminal = {'schema': 'hepta-ai395-cold-bootstrap-P4-terminal-v3', 'host_alias': 'ai395',
+             'source_commit': COMMIT, 'source_tree': TREE, 'root_execution_guard_blob': GUARD_BLOB,
+             'started_at': now(), 'request': bytes_id(raw), 'tests_executed': False,
+             'test_qualification': False, 'B_source_applied': False, 'errors': []}
+@@ -276,12 +325,13 @@
+         assert equal_content(actual, expected) and os.access(expected['path'], os.X_OK)
+         tool_rows.append({'name': expected['name'], 'version_output': expected['version_output'], **actual})
+     assert TARGET.is_dir() and TARGET.resolve() == TARGET and TARGET.is_relative_to(ROOT)
+-    failed_path = ROOT / 'evidence/bootstrap-P4-v1/terminal.json'
++    failed_path = ROOT / 'evidence/bootstrap-P4-openssl-continuation-v2/terminal.json'
+     failed_bytes = failed_path.read_bytes()
+     assert bytes_id(failed_bytes) == request['failed_P4_terminal_identity']
+     failed = json.loads(failed_bytes)
+     assert failed['source_tree'] == TREE and not failed['success'] and not failed['tests_executed']
+-    assert len(failed['commands']) == 1 and failed['commands'][0]['exit_code'] == 101
++    assert [x['exit_code'] for x in failed['commands']] == [0, 0, 101]
++    assert [x['label'] for x in failed['commands']] == ['01-normal-six-helper-build', '02-full-metadata', '03-full-unfiltered-catalog']
+     sdk_terminal_path = ROOT / 'evidence/bootstrap-P4-openssl-sdk-v1/terminal.json'
+     sdk_terminal_bytes = sdk_terminal_path.read_bytes()
+     assert bytes_id(sdk_terminal_bytes) == request['openssl_success_terminal_identity']
+@@ -293,6 +343,17 @@
+     assert bytes_id(sdk_bytes) == request['openssl_sdk_identity']
+     sdk = json.loads(sdk_bytes)
+     assert set(sdk['environment']) == {'OPENSSL_INCLUDE_DIR', 'OPENSSL_LIB_DIR'}
++    cap_terminal_path = ROOT / 'evidence/bootstrap-P4-libcap-sdk-continuation-v2/terminal.json'
++    cap_terminal_bytes = cap_terminal_path.read_bytes()
++    assert bytes_id(cap_terminal_bytes) == request['libcap_success_terminal_identity']
++    cap_terminal = json.loads(cap_terminal_bytes)
++    assert cap_terminal['success'] and not cap_terminal['tests_executed'] and not cap_terminal['build_executed']
++    cap_path = Path(cap_terminal['sdk_receipt']['path'])
++    assert equal_content(file_id(cap_path), cap_terminal['sdk_receipt'])
++    cap_bytes = cap_path.read_bytes()
++    assert bytes_id(cap_bytes) == request['libcap_sdk_identity']
++    cap_sdk = json.loads(cap_bytes)
++    assert set(cap_sdk['environment']) == {'PKG_CONFIG_PATH'}
+     for name in ('OPENSSL_DIR', 'OPENSSL_INCLUDE_DIR', 'OPENSSL_LIB_DIR', 'OPENSSL_STATIC', 'OPENSSL_DYNAMIC',
+                  'PKG_CONFIG_PATH', 'PKG_CONFIG_LIBDIR', 'PKG_CONFIG_SYSROOT_DIR'):
+         assert not os.environ.get(name), 'unexpected inherited prerequisite override: ' + name
+@@ -305,13 +366,17 @@
+     save_json('host.original.json', host)
+     environment = dict(tools_doc['task_environment'])
+     environment.update({'CARGO_TARGET_DIR': str(TARGET), 'CARGO_INCREMENTAL': '0', 'CARGO_BUILD_JOBS': '4',
+-                        'CARGO_NET_GIT_FETCH_WITH_CLI': 'true', 'NEXTEST_PROFILE': 'local', **supply['environment'], **sdk['environment']})
++                        'CARGO_NET_GIT_FETCH_WITH_CLI': 'true', 'NEXTEST_PROFILE': 'local', **supply['environment'], **sdk['environment'], **cap_sdk['environment']})
+     env.update(environment)
+     save_json('effective-task-environment.json', environment)
+     terminal['initial_guard'] = source_guard('initial')
+     terminal['prior_failed_P4'] = file_id(failed_path)
+     terminal['openssl_sdk_receipt'] = file_id(sdk_path)
+     terminal['openssl_initial_guard'] = verify_openssl_sdk('initial', sdk)
++    terminal['libcap_sdk_receipt'] = file_id(cap_path)
++    terminal['libcap_initial_guard'] = verify_libcap_sdk('initial', cap_sdk)
++    terminal['warm_cache_preparation'] = True
++    terminal['all_three_commands_use_same_actual_environment'] = True
+     terminal['tools'] = tool_rows
+     terminal['supply_receipt'] = file_id(supply_path)
+     helper_argv = ['cargo', 'build', '--locked', '--profile', 'dev-small', '--message-format=json-render-diagnostics']
+@@ -373,6 +438,8 @@
+     save_json('normal-six-after-catalog.json', normal_after)
+     openssl_final_guard = verify_openssl_sdk('final', sdk)
+     terminal['openssl_final_guard'] = openssl_final_guard
++    libcap_final_guard = verify_libcap_sdk('final', cap_sdk)
++    terminal['libcap_final_guard'] = libcap_final_guard
+     final_guard = source_guard('final')
+     recipes = []
+     locks = {}
+@@ -407,7 +474,12 @@
+                'prior_failed_P4': file_id(failed_path),
+                'external_build_prerequisites': {'openssl': {'receipt': file_id(sdk_path),
+                    'initial_guard': terminal['openssl_initial_guard'], 'final_guard': openssl_final_guard,
+-                   'environment': sdk['environment'], 'pkg_config_relocation_is_preparation_only': True}}}
++                   'environment': sdk['environment'], 'pkg_config_relocation_is_preparation_only': True},
++                   'libcap': {'receipt': file_id(cap_path), 'initial_guard': terminal['libcap_initial_guard'],
++                              'final_guard': libcap_final_guard, 'environment': cap_sdk['environment'],
++                              'relocation_is_used_by_actual_cargo_environment': True}},
++               'warm_cache_preparation': True, 'all_three_commands_use_same_actual_environment': True,
++               'published_A_reference_is_historical_source_freeze': True}
+     assert len(command_source_guards) == 6
+     terminal['build_only_baseline'] = save_json('new-host-build-only-baseline.json', receipt)
+     terminal['final_guard'] = final_guard
+@@ -416,6 +488,12 @@
+ except Exception as error:
+     terminal['errors'].append({'type': type(error).__name__, 'message': str(error), 'traceback': traceback.format_exc()})
+ finally:
++    if created and 'libcap_initial_guard' in terminal and 'libcap_final_guard' not in terminal:
++        try:
++            terminal['libcap_final_guard'] = verify_libcap_sdk('terminal', cap_sdk)
++        except Exception as error:
++            success = False
++            terminal['errors'].append({'type': type(error).__name__, 'message': 'libcap SDK terminal guard: ' + str(error), 'traceback': traceback.format_exc()})
+     if created and 'openssl_initial_guard' in terminal and 'openssl_final_guard' not in terminal:
+         try:
+             terminal['openssl_final_guard'] = verify_openssl_sdk('terminal', sdk)

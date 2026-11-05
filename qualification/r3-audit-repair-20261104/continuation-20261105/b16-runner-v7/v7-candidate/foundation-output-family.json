@@ -1,0 +1,3383 @@
+{
+  "schema": "hepta-b16-foundation-output-family-v1",
+  "last_tested_A_tree": "fb9e131272f7e7a138d6c0d1af2b048b9a6ab7ff",
+  "last_tested_A_artifact_sha256": "48dcb2b104793c7dac9699803e4746d6d8145bcc66701de167de57cbf6bd3c6c",
+  "complete_metadata_projection_sha256": "9ba4c3235e578144fd13cb7b6513ebd8e56f61aa127053bc016b01bba5d15aff",
+  "complete_rust_build_meta_sha256": "8baaba9569de6d01c4e6ebfb7509ce0a2c260a7d590835f93b01b365999b0809",
+  "complete_catalog_layout": [
+    {
+      "binary_id": "app_test_support",
+      "binary_name": "app_test_support",
+      "package_name": "app_test_support",
+      "package_id_sha256": "9f6e6d08f782e19cee15fd336463d20f63bf5b73c54d0936676d2fab4305f189",
+      "kind": "lib",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/app_test_support-a6b884d347d7e101"
+    },
+    {
+      "binary_id": "codex-agent-extension::agent_service",
+      "binary_name": "agent_service",
+      "package_name": "codex-agent-extension",
+      "package_id_sha256": "f7180fccf9f1c09fb1dc5d8d943a7141ad47126c33196d7eb290ffad98361068",
+      "kind": "test",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/agent_service-bbe8969d22b4fea2"
+    },
+    {
+      "binary_id": "codex-agent-graph-store",
+      "binary_name": "codex_agent_graph_store",
+      "package_name": "codex-agent-graph-store",
+      "package_id_sha256": "e315f240a92ac6ec72543180a824edc33d16c7de70f88dbda53a077cc0998a75",
+      "kind": "lib",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/codex_agent_graph_store-af84d6ea0b082c42"
+    },
+    {
+      "binary_id": "codex-agent-identity",
+      "binary_name": "codex_agent_identity",
+      "package_name": "codex-agent-identity",
+      "package_id_sha256": "2d26f8b2d8d687c45a1438e05b21a6aa603d1c56b6ba5aeb6e3953457ab9d47f",
+      "kind": "lib",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/codex_agent_identity-af71e3cf5d1aa022"
+    },
+    {
+      "binary_id": "codex-analytics",
+      "binary_name": "codex_analytics",
+      "package_name": "codex-analytics",
+      "package_id_sha256": "d34265c01d45a9cffd8c797012818504388b298b8f25abc7c2cdb4d5ab4a5825",
+      "kind": "lib",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/codex_analytics-8bfd48d85bb3fad7"
+    },
+    {
+      "binary_id": "codex-api",
+      "binary_name": "codex_api",
+      "package_name": "codex-api",
+      "package_id_sha256": "114b2e498df9a41d902283e474363855bb837611c98d63a79467a46206ac6e23",
+      "kind": "lib",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/codex_api-974457d6427c9561"
+    },
+    {
+      "binary_id": "codex-api::clients",
+      "binary_name": "clients",
+      "package_name": "codex-api",
+      "package_id_sha256": "114b2e498df9a41d902283e474363855bb837611c98d63a79467a46206ac6e23",
+      "kind": "test",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/clients-8081469e982f80b1"
+    },
+    {
+      "binary_id": "codex-api::models_integration",
+      "binary_name": "models_integration",
+      "package_name": "codex-api",
+      "package_id_sha256": "114b2e498df9a41d902283e474363855bb837611c98d63a79467a46206ac6e23",
+      "kind": "test",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/models_integration-24d8d11b1247b138"
+    },
+    {
+      "binary_id": "codex-api::realtime_websocket_e2e",
+      "binary_name": "realtime_websocket_e2e",
+      "package_name": "codex-api",
+      "package_id_sha256": "114b2e498df9a41d902283e474363855bb837611c98d63a79467a46206ac6e23",
+      "kind": "test",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/realtime_websocket_e2e-fa166e2f0f30722c"
+    },
+    {
+      "binary_id": "codex-api::sse_end_to_end",
+      "binary_name": "sse_end_to_end",
+      "package_name": "codex-api",
+      "package_id_sha256": "114b2e498df9a41d902283e474363855bb837611c98d63a79467a46206ac6e23",
+      "kind": "test",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/sse_end_to_end-2abb15a824fb0b04"
+    },
+    {
+      "binary_id": "codex-app-server",
+      "binary_name": "codex_app_server",
+      "package_name": "codex-app-server",
+      "package_id_sha256": "0cdfd70664e13dddc3f31fc2d3884c03515e6b8e6c2a2f24cfaba88a01d7e23d",
+      "kind": "lib",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/codex_app_server-173607f909ae826e"
+    },
+    {
+      "binary_id": "codex-app-server-client",
+      "binary_name": "codex_app_server_client",
+      "package_name": "codex-app-server-client",
+      "package_id_sha256": "df5aad92443979813ada3c8d3094a63b63cb210aef59e4a46105d90984003ccb",
+      "kind": "lib",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/codex_app_server_client-97a004b62312b33c"
+    },
+    {
+      "binary_id": "codex-app-server-daemon",
+      "binary_name": "codex_app_server_daemon",
+      "package_name": "codex-app-server-daemon",
+      "package_id_sha256": "f2c52d749441b64b1168df072323e83c086459f41af973b4492273a34fc74c13",
+      "kind": "lib",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/codex_app_server_daemon-b5a5e2ed64711d49"
+    },
+    {
+      "binary_id": "codex-app-server-protocol",
+      "binary_name": "codex_app_server_protocol",
+      "package_name": "codex-app-server-protocol",
+      "package_id_sha256": "0ef6a6c55b6ae6e1a1fd93fd32dfc4f649cfd4f6219111f2a0c72e31bec652b8",
+      "kind": "lib",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/codex_app_server_protocol-7f38fcbe6e8ab420"
+    },
+    {
+      "binary_id": "codex-app-server-test-client",
+      "binary_name": "codex_app_server_test_client",
+      "package_name": "codex-app-server-test-client",
+      "package_id_sha256": "67d3241405c9f89ed83e56f52ba3cf174398b4c0ca45fb779cf71cd7bbe505b4",
+      "kind": "lib",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/codex_app_server_test_client-cf17772937985959"
+    },
+    {
+      "binary_id": "codex-app-server-test-client::bin/codex-app-server-test-client",
+      "binary_name": "codex-app-server-test-client",
+      "package_name": "codex-app-server-test-client",
+      "package_id_sha256": "67d3241405c9f89ed83e56f52ba3cf174398b4c0ca45fb779cf71cd7bbe505b4",
+      "kind": "bin",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/codex_app_server_test_client-487265e1a42c623c"
+    },
+    {
+      "binary_id": "codex-app-server-transport",
+      "binary_name": "codex_app_server_transport",
+      "package_name": "codex-app-server-transport",
+      "package_id_sha256": "0854a00b69aa1cc702a8ceae274445299f7e6ce1f4f9b7ce99a30ab38b6617fe",
+      "kind": "lib",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/codex_app_server_transport-d2bbadd58d924778"
+    },
+    {
+      "binary_id": "codex-app-server::all",
+      "binary_name": "all",
+      "package_name": "codex-app-server",
+      "package_id_sha256": "0cdfd70664e13dddc3f31fc2d3884c03515e6b8e6c2a2f24cfaba88a01d7e23d",
+      "kind": "test",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/all-828a7c4f37edd91e"
+    },
+    {
+      "binary_id": "codex-app-server::bin/codex-app-server",
+      "binary_name": "codex-app-server",
+      "package_name": "codex-app-server",
+      "package_id_sha256": "0cdfd70664e13dddc3f31fc2d3884c03515e6b8e6c2a2f24cfaba88a01d7e23d",
+      "kind": "bin",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/codex_app_server-37bdc813d0ff407c"
+    },
+    {
+      "binary_id": "codex-app-server::bin/codex-app-server-test-notify-capture",
+      "binary_name": "codex-app-server-test-notify-capture",
+      "package_name": "codex-app-server",
+      "package_id_sha256": "0cdfd70664e13dddc3f31fc2d3884c03515e6b8e6c2a2f24cfaba88a01d7e23d",
+      "kind": "bin",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/codex_app_server_test_notify_capture-4970a861b04be360"
+    },
+    {
+      "binary_id": "codex-app-server::bin/exec-server",
+      "binary_name": "exec-server",
+      "package_name": "codex-app-server",
+      "package_id_sha256": "0cdfd70664e13dddc3f31fc2d3884c03515e6b8e6c2a2f24cfaba88a01d7e23d",
+      "kind": "bin",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/exec_server-511e7a9ff077a8b5"
+    },
+    {
+      "binary_id": "codex-app-server::bin/test_notify_capture",
+      "binary_name": "test_notify_capture",
+      "package_name": "codex-app-server",
+      "package_id_sha256": "0cdfd70664e13dddc3f31fc2d3884c03515e6b8e6c2a2f24cfaba88a01d7e23d",
+      "kind": "bin",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/test_notify_capture-47b882122cbe5a9a"
+    },
+    {
+      "binary_id": "codex-apply-patch",
+      "binary_name": "codex_apply_patch",
+      "package_name": "codex-apply-patch",
+      "package_id_sha256": "f7c85994fb4c603e09f8b8afb05b4476799f4a02d26433a467b16cfaa8062d58",
+      "kind": "lib",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/codex_apply_patch-42e49e2907079056"
+    },
+    {
+      "binary_id": "codex-apply-patch::all",
+      "binary_name": "all",
+      "package_name": "codex-apply-patch",
+      "package_id_sha256": "f7c85994fb4c603e09f8b8afb05b4476799f4a02d26433a467b16cfaa8062d58",
+      "kind": "test",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/all-526440e00408e784"
+    },
+    {
+      "binary_id": "codex-apply-patch::bin/apply_patch",
+      "binary_name": "apply_patch",
+      "package_name": "codex-apply-patch",
+      "package_id_sha256": "f7c85994fb4c603e09f8b8afb05b4476799f4a02d26433a467b16cfaa8062d58",
+      "kind": "bin",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/apply_patch-0792e0c476009388"
+    },
+    {
+      "binary_id": "codex-arg0",
+      "binary_name": "codex_arg0",
+      "package_name": "codex-arg0",
+      "package_id_sha256": "7274c7bc2cb18de90f70f27c8f6e7cfa52d70334653ae190a89af8a062d64e67",
+      "kind": "lib",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/codex_arg0-a8fcc25a5cf4a1fb"
+    },
+    {
+      "binary_id": "codex-async-utils",
+      "binary_name": "codex_async_utils",
+      "package_name": "codex-async-utils",
+      "package_id_sha256": "97383921a7f5aed04802dfab7fc6fe5f35ce8602a8956af94f44860553d7184e",
+      "kind": "lib",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/codex_async_utils-9be5c4c6104395de"
+    },
+    {
+      "binary_id": "codex-aws-auth",
+      "binary_name": "codex_aws_auth",
+      "package_name": "codex-aws-auth",
+      "package_id_sha256": "648860eb6db735570f90b52adeb3829e0cd7b7d86fab91f82a95069d8f8895cf",
+      "kind": "lib",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/codex_aws_auth-e9069af02c3eed3e"
+    },
+    {
+      "binary_id": "codex-backend-client",
+      "binary_name": "codex_backend_client",
+      "package_name": "codex-backend-client",
+      "package_id_sha256": "35551353c22942c9afbb9aa3e6abe0864baac52c642e787570bf1fa727cd2cd2",
+      "kind": "lib",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/codex_backend_client-63c7688983c77de0"
+    },
+    {
+      "binary_id": "codex-build-info",
+      "binary_name": "codex_build_info",
+      "package_name": "codex-build-info",
+      "package_id_sha256": "e28bb2dba04077ce275faa7e853055a26a9529b3d85e4602d31b4b4ed6f442b4",
+      "kind": "lib",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/codex_build_info-86a225f5b81ba499"
+    },
+    {
+      "binary_id": "codex-bwrap::bin/bwrap",
+      "binary_name": "bwrap",
+      "package_name": "codex-bwrap",
+      "package_id_sha256": "56a3944ba1e0b8f9b243f5469a38d2ff1db723432eebf1412eb60c05bed15cf8",
+      "kind": "bin",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/bwrap-fc04f18809795ef4"
+    },
+    {
+      "binary_id": "codex-chatgpt",
+      "binary_name": "codex_chatgpt",
+      "package_name": "codex-chatgpt",
+      "package_id_sha256": "db30724dbe3dd2e6e3fd37987ecb44f6c520289c5becd2c15f122a5a36485ce0",
+      "kind": "lib",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/codex_chatgpt-5e33a47a0e6f4c02"
+    },
+    {
+      "binary_id": "codex-chatgpt::all",
+      "binary_name": "all",
+      "package_name": "codex-chatgpt",
+      "package_id_sha256": "db30724dbe3dd2e6e3fd37987ecb44f6c520289c5becd2c15f122a5a36485ce0",
+      "kind": "test",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/all-0da054085bcdebb7"
+    },
+    {
+      "binary_id": "codex-cli",
+      "binary_name": "codex_cli",
+      "package_name": "codex-cli",
+      "package_id_sha256": "ca821d61422069e37a08c491dad40ebb0e2038c376629e7fac958910ec764dc4",
+      "kind": "lib",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/codex_cli-2f899a5ba61a2593"
+    },
+    {
+      "binary_id": "codex-cli::app_server",
+      "binary_name": "app_server",
+      "package_name": "codex-cli",
+      "package_id_sha256": "ca821d61422069e37a08c491dad40ebb0e2038c376629e7fac958910ec764dc4",
+      "kind": "test",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/app_server-31faca7a22252028"
+    },
+    {
+      "binary_id": "codex-cli::bin/codex",
+      "binary_name": "codex",
+      "package_name": "codex-cli",
+      "package_id_sha256": "ca821d61422069e37a08c491dad40ebb0e2038c376629e7fac958910ec764dc4",
+      "kind": "bin",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/codex-5e7b99cc50fc0a2a"
+    },
+    {
+      "binary_id": "codex-cli::bin/hepta",
+      "binary_name": "hepta",
+      "package_name": "codex-cli",
+      "package_id_sha256": "ca821d61422069e37a08c491dad40ebb0e2038c376629e7fac958910ec764dc4",
+      "kind": "bin",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/hepta-cfd9ab1450f4d796"
+    },
+    {
+      "binary_id": "codex-cli::bin/logs_client",
+      "binary_name": "logs_client",
+      "package_name": "codex-cli",
+      "package_id_sha256": "ca821d61422069e37a08c491dad40ebb0e2038c376629e7fac958910ec764dc4",
+      "kind": "bin",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/logs_client-9e7e1b52bb450bb9"
+    },
+    {
+      "binary_id": "codex-cli::debug_clear_memories",
+      "binary_name": "debug_clear_memories",
+      "package_name": "codex-cli",
+      "package_id_sha256": "ca821d61422069e37a08c491dad40ebb0e2038c376629e7fac958910ec764dc4",
+      "kind": "test",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/debug_clear_memories-f711025185f73828"
+    },
+    {
+      "binary_id": "codex-cli::debug_models",
+      "binary_name": "debug_models",
+      "package_name": "codex-cli",
+      "package_id_sha256": "ca821d61422069e37a08c491dad40ebb0e2038c376629e7fac958910ec764dc4",
+      "kind": "test",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/debug_models-f28b99dc2f97a578"
+    },
+    {
+      "binary_id": "codex-cli::delete",
+      "binary_name": "delete",
+      "package_name": "codex-cli",
+      "package_id_sha256": "ca821d61422069e37a08c491dad40ebb0e2038c376629e7fac958910ec764dc4",
+      "kind": "test",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/delete-2b8d7914c2cd9de6"
+    },
+    {
+      "binary_id": "codex-cli::doctor_enterprise_network",
+      "binary_name": "doctor_enterprise_network",
+      "package_name": "codex-cli",
+      "package_id_sha256": "ca821d61422069e37a08c491dad40ebb0e2038c376629e7fac958910ec764dc4",
+      "kind": "test",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/doctor_enterprise_network-795f2dd87e2a6bf0"
+    },
+    {
+      "binary_id": "codex-cli::exec_server",
+      "binary_name": "exec_server",
+      "package_name": "codex-cli",
+      "package_id_sha256": "ca821d61422069e37a08c491dad40ebb0e2038c376629e7fac958910ec764dc4",
+      "kind": "test",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/exec_server-74c600222250b521"
+    },
+    {
+      "binary_id": "codex-cli::execpolicy",
+      "binary_name": "execpolicy",
+      "package_name": "codex-cli",
+      "package_id_sha256": "ca821d61422069e37a08c491dad40ebb0e2038c376629e7fac958910ec764dc4",
+      "kind": "test",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/execpolicy-b3040fb30990e217"
+    },
+    {
+      "binary_id": "codex-cli::features",
+      "binary_name": "features",
+      "package_name": "codex-cli",
+      "package_id_sha256": "ca821d61422069e37a08c491dad40ebb0e2038c376629e7fac958910ec764dc4",
+      "kind": "test",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/features-40a65b6cfce9cde2"
+    },
+    {
+      "binary_id": "codex-cli::login",
+      "binary_name": "login",
+      "package_name": "codex-cli",
+      "package_id_sha256": "ca821d61422069e37a08c491dad40ebb0e2038c376629e7fac958910ec764dc4",
+      "kind": "test",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/login-4cbbe22898e6b529"
+    },
+    {
+      "binary_id": "codex-cli::marketplace_add",
+      "binary_name": "marketplace_add",
+      "package_name": "codex-cli",
+      "package_id_sha256": "ca821d61422069e37a08c491dad40ebb0e2038c376629e7fac958910ec764dc4",
+      "kind": "test",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/marketplace_add-560f7f1b717cd6ea"
+    },
+    {
+      "binary_id": "codex-cli::marketplace_remove",
+      "binary_name": "marketplace_remove",
+      "package_name": "codex-cli",
+      "package_id_sha256": "ca821d61422069e37a08c491dad40ebb0e2038c376629e7fac958910ec764dc4",
+      "kind": "test",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/marketplace_remove-bc5bc85dc7378a44"
+    },
+    {
+      "binary_id": "codex-cli::marketplace_upgrade",
+      "binary_name": "marketplace_upgrade",
+      "package_name": "codex-cli",
+      "package_id_sha256": "ca821d61422069e37a08c491dad40ebb0e2038c376629e7fac958910ec764dc4",
+      "kind": "test",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/marketplace_upgrade-87f695c1f15d51df"
+    },
+    {
+      "binary_id": "codex-cli::mcp_add_remove",
+      "binary_name": "mcp_add_remove",
+      "package_name": "codex-cli",
+      "package_id_sha256": "ca821d61422069e37a08c491dad40ebb0e2038c376629e7fac958910ec764dc4",
+      "kind": "test",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/mcp_add_remove-a4b58a14e70218f1"
+    },
+    {
+      "binary_id": "codex-cli::mcp_cloud_config",
+      "binary_name": "mcp_cloud_config",
+      "package_name": "codex-cli",
+      "package_id_sha256": "ca821d61422069e37a08c491dad40ebb0e2038c376629e7fac958910ec764dc4",
+      "kind": "test",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/mcp_cloud_config-d010ec33ce138ccb"
+    },
+    {
+      "binary_id": "codex-cli::mcp_list",
+      "binary_name": "mcp_list",
+      "package_name": "codex-cli",
+      "package_id_sha256": "ca821d61422069e37a08c491dad40ebb0e2038c376629e7fac958910ec764dc4",
+      "kind": "test",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/mcp_list-bb950587d1025c3f"
+    },
+    {
+      "binary_id": "codex-cli::plugin_cli",
+      "binary_name": "plugin_cli",
+      "package_name": "codex-cli",
+      "package_id_sha256": "ca821d61422069e37a08c491dad40ebb0e2038c376629e7fac958910ec764dc4",
+      "kind": "test",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/plugin_cli-83738b9d444baaaa"
+    },
+    {
+      "binary_id": "codex-cli::queue",
+      "binary_name": "queue",
+      "package_name": "codex-cli",
+      "package_id_sha256": "ca821d61422069e37a08c491dad40ebb0e2038c376629e7fac958910ec764dc4",
+      "kind": "test",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/queue-7da3074282124ab7"
+    },
+    {
+      "binary_id": "codex-cli::sandbox_cloud_config",
+      "binary_name": "sandbox_cloud_config",
+      "package_name": "codex-cli",
+      "package_id_sha256": "ca821d61422069e37a08c491dad40ebb0e2038c376629e7fac958910ec764dc4",
+      "kind": "test",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/sandbox_cloud_config-417d145140ec8faf"
+    },
+    {
+      "binary_id": "codex-cli::sandbox_network_proxy",
+      "binary_name": "sandbox_network_proxy",
+      "package_name": "codex-cli",
+      "package_id_sha256": "ca821d61422069e37a08c491dad40ebb0e2038c376629e7fac958910ec764dc4",
+      "kind": "test",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/sandbox_network_proxy-c235f2821eb8fdc8"
+    },
+    {
+      "binary_id": "codex-cli::update",
+      "binary_name": "update",
+      "package_name": "codex-cli",
+      "package_id_sha256": "ca821d61422069e37a08c491dad40ebb0e2038c376629e7fac958910ec764dc4",
+      "kind": "test",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/update-d246442447d03a24"
+    },
+    {
+      "binary_id": "codex-cloud-config",
+      "binary_name": "codex_cloud_config",
+      "package_name": "codex-cloud-config",
+      "package_id_sha256": "a564c365d168e5cac0c530e36d8d25ca5f4f849f9b917c2f37e3b868cae0f692",
+      "kind": "lib",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/codex_cloud_config-458d8417b2ffc05c"
+    },
+    {
+      "binary_id": "codex-cloud-tasks",
+      "binary_name": "codex_cloud_tasks",
+      "package_name": "codex-cloud-tasks",
+      "package_id_sha256": "88974de292001e1be30ee2b9696f87465c09897a36d16e9060a871c1ea35d101",
+      "kind": "lib",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/codex_cloud_tasks-18d1b8550b0b09d4"
+    },
+    {
+      "binary_id": "codex-cloud-tasks::env_filter",
+      "binary_name": "env_filter",
+      "package_name": "codex-cloud-tasks",
+      "package_id_sha256": "88974de292001e1be30ee2b9696f87465c09897a36d16e9060a871c1ea35d101",
+      "kind": "test",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/env_filter-b338b69eaf4ed2a2"
+    },
+    {
+      "binary_id": "codex-code-mode",
+      "binary_name": "codex_code_mode",
+      "package_name": "codex-code-mode",
+      "package_id_sha256": "8ce75e848164de117e1c9a3466593028dfb625e2b36795f073392e1ff7e1150b",
+      "kind": "lib",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/codex_code_mode-a3e75d94f4718aa8"
+    },
+    {
+      "binary_id": "codex-code-mode-host",
+      "binary_name": "codex_code_mode_host",
+      "package_name": "codex-code-mode-host",
+      "package_id_sha256": "951859e9af0632ab7f5459db594221240727d9f22ddf200827609a9a9406e918",
+      "kind": "lib",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/codex_code_mode_host-9e2869b6aa78e222"
+    },
+    {
+      "binary_id": "codex-code-mode-host::bin/codex-code-mode-host",
+      "binary_name": "codex-code-mode-host",
+      "package_name": "codex-code-mode-host",
+      "package_id_sha256": "951859e9af0632ab7f5459db594221240727d9f22ddf200827609a9a9406e918",
+      "kind": "bin",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/codex_code_mode_host-b43eb023aa6ed6cd"
+    },
+    {
+      "binary_id": "codex-code-mode-host::grpc",
+      "binary_name": "grpc",
+      "package_name": "codex-code-mode-host",
+      "package_id_sha256": "951859e9af0632ab7f5459db594221240727d9f22ddf200827609a9a9406e918",
+      "kind": "test",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/grpc-de55d5dbc04e6cd3"
+    },
+    {
+      "binary_id": "codex-code-mode-host::grpc_notifications",
+      "binary_name": "grpc_notifications",
+      "package_name": "codex-code-mode-host",
+      "package_id_sha256": "951859e9af0632ab7f5459db594221240727d9f22ddf200827609a9a9406e918",
+      "kind": "test",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/grpc_notifications-9523ff3dde3f92a4"
+    },
+    {
+      "binary_id": "codex-code-mode-host::grpc_tcp",
+      "binary_name": "grpc_tcp",
+      "package_name": "codex-code-mode-host",
+      "package_id_sha256": "951859e9af0632ab7f5459db594221240727d9f22ddf200827609a9a9406e918",
+      "kind": "test",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/grpc_tcp-e56aa0111cb87ffa"
+    },
+    {
+      "binary_id": "codex-code-mode-host::stdio",
+      "binary_name": "stdio",
+      "package_name": "codex-code-mode-host",
+      "package_id_sha256": "951859e9af0632ab7f5459db594221240727d9f22ddf200827609a9a9406e918",
+      "kind": "test",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/stdio-ace2a1d2aa6690f9"
+    },
+    {
+      "binary_id": "codex-code-mode-host::websocket",
+      "binary_name": "websocket",
+      "package_name": "codex-code-mode-host",
+      "package_id_sha256": "951859e9af0632ab7f5459db594221240727d9f22ddf200827609a9a9406e918",
+      "kind": "test",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/websocket-557fe59f76b5f473"
+    },
+    {
+      "binary_id": "codex-code-mode-protocol",
+      "binary_name": "codex_code_mode_protocol",
+      "package_name": "codex-code-mode-protocol",
+      "package_id_sha256": "855bb768a1f12989ca15d7ee19f70da211b3f6fcf36fbaf55ae1873f04f0e046",
+      "kind": "lib",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/codex_code_mode_protocol-cf1aa8e339c85625"
+    },
+    {
+      "binary_id": "codex-code-mode-runtime",
+      "binary_name": "codex_code_mode_runtime",
+      "package_name": "codex-code-mode-runtime",
+      "package_id_sha256": "ed62f38ff422d797b7856e5e6fc26ea6a7be886abc4ceda84f25797bec99fe46",
+      "kind": "lib",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/codex_code_mode_runtime-1b782b300f84a625"
+    },
+    {
+      "binary_id": "codex-code-mode-runtime::jit",
+      "binary_name": "jit",
+      "package_name": "codex-code-mode-runtime",
+      "package_id_sha256": "ed62f38ff422d797b7856e5e6fc26ea6a7be886abc4ceda84f25797bec99fe46",
+      "kind": "test",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/jit-7a607415fe99f25e"
+    },
+    {
+      "binary_id": "codex-code-mode-runtime::parallel_initialization",
+      "binary_name": "parallel_initialization",
+      "package_name": "codex-code-mode-runtime",
+      "package_id_sha256": "ed62f38ff422d797b7856e5e6fc26ea6a7be886abc4ceda84f25797bec99fe46",
+      "kind": "test",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/parallel_initialization-44525b49dbedf41d"
+    },
+    {
+      "binary_id": "codex-config",
+      "binary_name": "codex_config",
+      "package_name": "codex-config",
+      "package_id_sha256": "47c6712cff2b19f839ff47ff1eccd8660f2b65d0913d6115df19fc42685ad5b7",
+      "kind": "lib",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/codex_config-45bb1db6638f28c4"
+    },
+    {
+      "binary_id": "codex-connectors",
+      "binary_name": "codex_connectors",
+      "package_name": "codex-connectors",
+      "package_id_sha256": "80a5c98a1960e92d2307b82992b51773df982d7ef86f758ca3e4b711b5711243",
+      "kind": "lib",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/codex_connectors-226acfe076c16e46"
+    },
+    {
+      "binary_id": "codex-core",
+      "binary_name": "codex_core",
+      "package_name": "codex-core",
+      "package_id_sha256": "aed457b36e0831dff0a9f7c29d7b77738f0fd3fed1548d2fd20bf3de9c395dc6",
+      "kind": "lib",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/codex_core-0e85c4443c0cd5a4"
+    },
+    {
+      "binary_id": "codex-core-plugins",
+      "binary_name": "codex_core_plugins",
+      "package_name": "codex-core-plugins",
+      "package_id_sha256": "a5b6363697f92eefce7c5e7c9221db55d25afee8d50406a6d75d612fd0150fbd",
+      "kind": "lib",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/codex_core_plugins-2abf579c4cc09b3b"
+    },
+    {
+      "binary_id": "codex-core::all",
+      "binary_name": "all",
+      "package_name": "codex-core",
+      "package_id_sha256": "aed457b36e0831dff0a9f7c29d7b77738f0fd3fed1548d2fd20bf3de9c395dc6",
+      "kind": "test",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/all-916220dd7febbd0c"
+    },
+    {
+      "binary_id": "codex-core::bin/codex-write-config-schema",
+      "binary_name": "codex-write-config-schema",
+      "package_name": "codex-core",
+      "package_id_sha256": "aed457b36e0831dff0a9f7c29d7b77738f0fd3fed1548d2fd20bf3de9c395dc6",
+      "kind": "bin",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/codex_write_config_schema-d733a731d351542a"
+    },
+    {
+      "binary_id": "codex-core::responses_headers",
+      "binary_name": "responses_headers",
+      "package_name": "codex-core",
+      "package_id_sha256": "aed457b36e0831dff0a9f7c29d7b77738f0fd3fed1548d2fd20bf3de9c395dc6",
+      "kind": "test",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/responses_headers-b950cbe1e9480f7f"
+    },
+    {
+      "binary_id": "codex-diagnostics",
+      "binary_name": "codex_diagnostics",
+      "package_name": "codex-diagnostics",
+      "package_id_sha256": "2813c58ef6f40d79e6a3686f0767f25d3a5d02a5837742f4fc3299bcb15d422a",
+      "kind": "lib",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/codex_diagnostics-7b19cd9968a3b0a0"
+    },
+    {
+      "binary_id": "codex-exec",
+      "binary_name": "codex_exec",
+      "package_name": "codex-exec",
+      "package_id_sha256": "8fbe6d7e222154bae42c4c1da4df3c3d54a427d41ebd9fedb14c5e4fb82cfb3f",
+      "kind": "lib",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/codex_exec-6840b89705480936"
+    },
+    {
+      "binary_id": "codex-exec-server",
+      "binary_name": "codex_exec_server",
+      "package_name": "codex-exec-server",
+      "package_id_sha256": "b41dcd766a96bfeab3352fc5808a1494c5ca9ec92481f2d59d1263d965eb698b",
+      "kind": "lib",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/codex_exec_server-5e8aed7259016d31"
+    },
+    {
+      "binary_id": "codex-exec-server-protocol",
+      "binary_name": "codex_exec_server_protocol",
+      "package_name": "codex-exec-server-protocol",
+      "package_id_sha256": "50bbe70d78a61ca93bc5503a665e45eab9477e1eacb4521ef602732f43dba915",
+      "kind": "lib",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/codex_exec_server_protocol-8959d6c4b87d8b06"
+    },
+    {
+      "binary_id": "codex-exec-server::accepted_websocket",
+      "binary_name": "accepted_websocket",
+      "package_name": "codex-exec-server",
+      "package_id_sha256": "b41dcd766a96bfeab3352fc5808a1494c5ca9ec92481f2d59d1263d965eb698b",
+      "kind": "test",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/accepted_websocket-4969f6ae38079aca"
+    },
+    {
+      "binary_id": "codex-exec-server::authorized_read_rpc",
+      "binary_name": "authorized_read_rpc",
+      "package_name": "codex-exec-server",
+      "package_id_sha256": "b41dcd766a96bfeab3352fc5808a1494c5ca9ec92481f2d59d1263d965eb698b",
+      "kind": "test",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/authorized_read_rpc-972c4f0418e28ce9"
+    },
+    {
+      "binary_id": "codex-exec-server::capability_discovery",
+      "binary_name": "capability_discovery",
+      "package_name": "codex-exec-server",
+      "package_id_sha256": "b41dcd766a96bfeab3352fc5808a1494c5ca9ec92481f2d59d1263d965eb698b",
+      "kind": "test",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/capability_discovery-ecd773f39c15c3ea"
+    },
+    {
+      "binary_id": "codex-exec-server::chatgpt_cloudflare_affinity",
+      "binary_name": "chatgpt_cloudflare_affinity",
+      "package_name": "codex-exec-server",
+      "package_id_sha256": "b41dcd766a96bfeab3352fc5808a1494c5ca9ec92481f2d59d1263d965eb698b",
+      "kind": "test",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/chatgpt_cloudflare_affinity-cc77a9dbddad7a3b"
+    },
+    {
+      "binary_id": "codex-exec-server::deferred_environment",
+      "binary_name": "deferred_environment",
+      "package_name": "codex-exec-server",
+      "package_id_sha256": "b41dcd766a96bfeab3352fc5808a1494c5ca9ec92481f2d59d1263d965eb698b",
+      "kind": "test",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/deferred_environment-0fb49caa08705762"
+    },
+    {
+      "binary_id": "codex-exec-server::environment",
+      "binary_name": "environment",
+      "package_name": "codex-exec-server",
+      "package_id_sha256": "b41dcd766a96bfeab3352fc5808a1494c5ca9ec92481f2d59d1263d965eb698b",
+      "kind": "test",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/environment-73dc51addbf16e0b"
+    },
+    {
+      "binary_id": "codex-exec-server::environment_config",
+      "binary_name": "environment_config",
+      "package_name": "codex-exec-server",
+      "package_id_sha256": "b41dcd766a96bfeab3352fc5808a1494c5ca9ec92481f2d59d1263d965eb698b",
+      "kind": "test",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/environment_config-1f255046c2d3a1ba"
+    },
+    {
+      "binary_id": "codex-exec-server::exec_process",
+      "binary_name": "exec_process",
+      "package_name": "codex-exec-server",
+      "package_id_sha256": "b41dcd766a96bfeab3352fc5808a1494c5ca9ec92481f2d59d1263d965eb698b",
+      "kind": "test",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/exec_process-ea1a1615ac7052a2"
+    },
+    {
+      "binary_id": "codex-exec-server::file_stream",
+      "binary_name": "file_stream",
+      "package_name": "codex-exec-server",
+      "package_id_sha256": "b41dcd766a96bfeab3352fc5808a1494c5ca9ec92481f2d59d1263d965eb698b",
+      "kind": "test",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/file_stream-089bf0760ab78ea4"
+    },
+    {
+      "binary_id": "codex-exec-server::file_system_unix",
+      "binary_name": "file_system_unix",
+      "package_name": "codex-exec-server",
+      "package_id_sha256": "b41dcd766a96bfeab3352fc5808a1494c5ca9ec92481f2d59d1263d965eb698b",
+      "kind": "test",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/file_system_unix-efcd0370cad51938"
+    },
+    {
+      "binary_id": "codex-exec-server::file_system_windows",
+      "binary_name": "file_system_windows",
+      "package_name": "codex-exec-server",
+      "package_id_sha256": "b41dcd766a96bfeab3352fc5808a1494c5ca9ec92481f2d59d1263d965eb698b",
+      "kind": "test",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/file_system_windows-ceff5845a423423c"
+    },
+    {
+      "binary_id": "codex-exec-server::forward",
+      "binary_name": "forward",
+      "package_name": "codex-exec-server",
+      "package_id_sha256": "b41dcd766a96bfeab3352fc5808a1494c5ca9ec92481f2d59d1263d965eb698b",
+      "kind": "test",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/forward-97adfa11df2c8ef2"
+    },
+    {
+      "binary_id": "codex-exec-server::health",
+      "binary_name": "health",
+      "package_name": "codex-exec-server",
+      "package_id_sha256": "b41dcd766a96bfeab3352fc5808a1494c5ca9ec92481f2d59d1263d965eb698b",
+      "kind": "test",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/health-fed4822b6bb832b5"
+    },
+    {
+      "binary_id": "codex-exec-server::http_client",
+      "binary_name": "http_client",
+      "package_name": "codex-exec-server",
+      "package_id_sha256": "b41dcd766a96bfeab3352fc5808a1494c5ca9ec92481f2d59d1263d965eb698b",
+      "kind": "test",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/http_client-652f3a028315fc69"
+    },
+    {
+      "binary_id": "codex-exec-server::http_request",
+      "binary_name": "http_request",
+      "package_name": "codex-exec-server",
+      "package_id_sha256": "b41dcd766a96bfeab3352fc5808a1494c5ca9ec92481f2d59d1263d965eb698b",
+      "kind": "test",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/http_request-e30bf4f7aab988a5"
+    },
+    {
+      "binary_id": "codex-exec-server::http_request_logging",
+      "binary_name": "http_request_logging",
+      "package_name": "codex-exec-server",
+      "package_id_sha256": "b41dcd766a96bfeab3352fc5808a1494c5ca9ec92481f2d59d1263d965eb698b",
+      "kind": "test",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/http_request_logging-3fe9a799339d87af"
+    },
+    {
+      "binary_id": "codex-exec-server::initialize",
+      "binary_name": "initialize",
+      "package_name": "codex-exec-server",
+      "package_id_sha256": "b41dcd766a96bfeab3352fc5808a1494c5ca9ec92481f2d59d1263d965eb698b",
+      "kind": "test",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/initialize-762e1dfe42da57e6"
+    },
+    {
+      "binary_id": "codex-exec-server::process",
+      "binary_name": "process",
+      "package_name": "codex-exec-server",
+      "package_id_sha256": "b41dcd766a96bfeab3352fc5808a1494c5ca9ec92481f2d59d1263d965eb698b",
+      "kind": "test",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/process-9f4260c216c561c7"
+    },
+    {
+      "binary_id": "codex-exec-server::relay",
+      "binary_name": "relay",
+      "package_name": "codex-exec-server",
+      "package_id_sha256": "b41dcd766a96bfeab3352fc5808a1494c5ca9ec92481f2d59d1263d965eb698b",
+      "kind": "test",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/relay-41e135c2f977e8c8"
+    },
+    {
+      "binary_id": "codex-exec-server::selected_capability_roots",
+      "binary_name": "selected_capability_roots",
+      "package_name": "codex-exec-server",
+      "package_id_sha256": "b41dcd766a96bfeab3352fc5808a1494c5ca9ec92481f2d59d1263d965eb698b",
+      "kind": "test",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/selected_capability_roots-cfe6560c3a948271"
+    },
+    {
+      "binary_id": "codex-exec-server::websocket",
+      "binary_name": "websocket",
+      "package_name": "codex-exec-server",
+      "package_id_sha256": "b41dcd766a96bfeab3352fc5808a1494c5ca9ec92481f2d59d1263d965eb698b",
+      "kind": "test",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/websocket-22d5b186b22ff116"
+    },
+    {
+      "binary_id": "codex-exec::all",
+      "binary_name": "all",
+      "package_name": "codex-exec",
+      "package_id_sha256": "8fbe6d7e222154bae42c4c1da4df3c3d54a427d41ebd9fedb14c5e4fb82cfb3f",
+      "kind": "test",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/all-f4a351f811bae873"
+    },
+    {
+      "binary_id": "codex-exec::bin/codex-exec",
+      "binary_name": "codex-exec",
+      "package_name": "codex-exec",
+      "package_id_sha256": "8fbe6d7e222154bae42c4c1da4df3c3d54a427d41ebd9fedb14c5e4fb82cfb3f",
+      "kind": "bin",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/codex_exec-d0f7c5a2a430009d"
+    },
+    {
+      "binary_id": "codex-execpolicy",
+      "binary_name": "codex_execpolicy",
+      "package_name": "codex-execpolicy",
+      "package_id_sha256": "4c8fe1c613614317ffc148de6f064564f141cce981055bdde26ca2fc3c4471e6",
+      "kind": "lib",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/codex_execpolicy-fe9d623c5a728056"
+    },
+    {
+      "binary_id": "codex-execpolicy::basic",
+      "binary_name": "basic",
+      "package_name": "codex-execpolicy",
+      "package_id_sha256": "4c8fe1c613614317ffc148de6f064564f141cce981055bdde26ca2fc3c4471e6",
+      "kind": "test",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/basic-1cc9653f67f317ca"
+    },
+    {
+      "binary_id": "codex-execpolicy::bin/codex-execpolicy",
+      "binary_name": "codex-execpolicy",
+      "package_name": "codex-execpolicy",
+      "package_id_sha256": "4c8fe1c613614317ffc148de6f064564f141cce981055bdde26ca2fc3c4471e6",
+      "kind": "bin",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/codex_execpolicy-9896cb14f6b1d50a"
+    },
+    {
+      "binary_id": "codex-extension-api::capabilities",
+      "binary_name": "capabilities",
+      "package_name": "codex-extension-api",
+      "package_id_sha256": "e1480ea7064dca6505502f7bacb129be75af66440f81b7d8ebbf6fa49b57c84f",
+      "kind": "test",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/capabilities-b2717b6599c756a8"
+    },
+    {
+      "binary_id": "codex-extension-api::model_provider_input",
+      "binary_name": "model_provider_input",
+      "package_name": "codex-extension-api",
+      "package_id_sha256": "e1480ea7064dca6505502f7bacb129be75af66440f81b7d8ebbf6fa49b57c84f",
+      "kind": "test",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/model_provider_input-24ab1fa8a22b74cd"
+    },
+    {
+      "binary_id": "codex-extension-api::model_provider_policy",
+      "binary_name": "model_provider_policy",
+      "package_name": "codex-extension-api",
+      "package_id_sha256": "e1480ea7064dca6505502f7bacb129be75af66440f81b7d8ebbf6fa49b57c84f",
+      "kind": "test",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/model_provider_policy-4342d5b9e7ecfe9a"
+    },
+    {
+      "binary_id": "codex-extension-api::registry",
+      "binary_name": "registry",
+      "package_name": "codex-extension-api",
+      "package_id_sha256": "e1480ea7064dca6505502f7bacb129be75af66440f81b7d8ebbf6fa49b57c84f",
+      "kind": "test",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/registry-a51dcd94c6969140"
+    },
+    {
+      "binary_id": "codex-extension-api::state",
+      "binary_name": "state",
+      "package_name": "codex-extension-api",
+      "package_id_sha256": "e1480ea7064dca6505502f7bacb129be75af66440f81b7d8ebbf6fa49b57c84f",
+      "kind": "test",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/state-efed71b088078266"
+    },
+    {
+      "binary_id": "codex-extension-items",
+      "binary_name": "codex_extension_items",
+      "package_name": "codex-extension-items",
+      "package_id_sha256": "ba829281611d5e40125b7de431cf9de328f4f73a52a69a06b02e886df61da869",
+      "kind": "lib",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/codex_extension_items-98e37cbd186c14cb"
+    },
+    {
+      "binary_id": "codex-external-agent-migration",
+      "binary_name": "codex_external_agent_migration",
+      "package_name": "codex-external-agent-migration",
+      "package_id_sha256": "d2580a36662a917db389fd2e513265195ae928a048cc3551858d18ee3a14c714",
+      "kind": "lib",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/codex_external_agent_migration-07c33eefbb3fe629"
+    },
+    {
+      "binary_id": "codex-features",
+      "binary_name": "codex_features",
+      "package_name": "codex-features",
+      "package_id_sha256": "a564dad05ec52634200533d83ebc86619dfad5acf89c7af4215b84a41cd25bf6",
+      "kind": "lib",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/codex_features-e15c26e380754cc9"
+    },
+    {
+      "binary_id": "codex-feedback",
+      "binary_name": "codex_feedback",
+      "package_name": "codex-feedback",
+      "package_id_sha256": "b5277854d5034da25af1ced2bd77300e3a723ef0fa2cdc9208f88152578b9894",
+      "kind": "lib",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/codex_feedback-17b111dbcece52e5"
+    },
+    {
+      "binary_id": "codex-file-search",
+      "binary_name": "codex_file_search",
+      "package_name": "codex-file-search",
+      "package_id_sha256": "364b42bba028116f735e80f389e7a413e7d36d3580e614f899555caba0b90381",
+      "kind": "lib",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/codex_file_search-ff6e193d6599d3de"
+    },
+    {
+      "binary_id": "codex-file-search::bin/codex-file-search",
+      "binary_name": "codex-file-search",
+      "package_name": "codex-file-search",
+      "package_id_sha256": "364b42bba028116f735e80f389e7a413e7d36d3580e614f899555caba0b90381",
+      "kind": "bin",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/codex_file_search-d0bce02fd80909aa"
+    },
+    {
+      "binary_id": "codex-file-watcher",
+      "binary_name": "codex_file_watcher",
+      "package_name": "codex-file-watcher",
+      "package_id_sha256": "021bb429e6df0e6b281a66e236c1c432457234b53e6416db1361840e2e725137",
+      "kind": "lib",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/codex_file_watcher-2c7743393dbfb297"
+    },
+    {
+      "binary_id": "codex-git-attribution",
+      "binary_name": "codex_git_attribution",
+      "package_name": "codex-git-attribution",
+      "package_id_sha256": "b291b2e1c2605203aacccba33dfbc29e231bf49eeeb7468d37f32d791ee2f24f",
+      "kind": "lib",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/codex_git_attribution-f36d8d2f52011dbb"
+    },
+    {
+      "binary_id": "codex-git-utils",
+      "binary_name": "codex_git_utils",
+      "package_name": "codex-git-utils",
+      "package_id_sha256": "7072b0417f0bde2bb5bc5185f69cc2e49cdc51c5fc8d1f4272e78adc60096fe0",
+      "kind": "lib",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/codex_git_utils-491382d93f998440"
+    },
+    {
+      "binary_id": "codex-goal-extension::accounting",
+      "binary_name": "accounting",
+      "package_name": "codex-goal-extension",
+      "package_id_sha256": "c6ecb8a43c27235fc72490e97f5a33d464a8129cee81d4b9b9aa4f122405ad5a",
+      "kind": "test",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/accounting-8f2a5f40b3ac84ba"
+    },
+    {
+      "binary_id": "codex-goal-extension::goal_extension_backend",
+      "binary_name": "goal_extension_backend",
+      "package_name": "codex-goal-extension",
+      "package_id_sha256": "c6ecb8a43c27235fc72490e97f5a33d464a8129cee81d4b9b9aa4f122405ad5a",
+      "kind": "test",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/goal_extension_backend-bb873eaf2f4fe035"
+    },
+    {
+      "binary_id": "codex-guardian-v2",
+      "binary_name": "codex_guardian_v2",
+      "package_name": "codex-guardian-v2",
+      "package_id_sha256": "22f059d15a0d2c8f2105efff32b2f18c8b0fd304734dd8d5c8d6c2c4d63752b8",
+      "kind": "lib",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/codex_guardian_v2-2562edc2f6af2a92"
+    },
+    {
+      "binary_id": "codex-hepta-agent-protocol",
+      "binary_name": "codex_hepta_agent_protocol",
+      "package_name": "codex-hepta-agent-protocol",
+      "package_id_sha256": "e165323cf9305f2f865fa3cfe011df66e2940ad4539bcb8ad61ef4165045d166",
+      "kind": "lib",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/codex_hepta_agent_protocol-75d591ecc92b9104"
+    },
+    {
+      "binary_id": "codex-hepta-agentd",
+      "binary_name": "codex_hepta_agentd",
+      "package_name": "codex-hepta-agentd",
+      "package_id_sha256": "463bea3c9b771448ee1647ea1600563fbdae2db834836a4a4a8666faa9379229",
+      "kind": "lib",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/codex_hepta_agentd-2edf7023cb6a9aad"
+    },
+    {
+      "binary_id": "codex-hepta-agentd::authbus_text_product",
+      "binary_name": "authbus_text_product",
+      "package_name": "codex-hepta-agentd",
+      "package_id_sha256": "463bea3c9b771448ee1647ea1600563fbdae2db834836a4a4a8666faa9379229",
+      "kind": "test",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/authbus_text_product-23bf5c7ee53adca0"
+    },
+    {
+      "binary_id": "codex-hepta-agentd::cognitive_product_e2e",
+      "binary_name": "cognitive_product_e2e",
+      "package_name": "codex-hepta-agentd",
+      "package_id_sha256": "463bea3c9b771448ee1647ea1600563fbdae2db834836a4a4a8666faa9379229",
+      "kind": "test",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/cognitive_product_e2e-556c98bce8b697bd"
+    },
+    {
+      "binary_id": "codex-hepta-agentd::cognitive_store_product_writer",
+      "binary_name": "cognitive_store_product_writer",
+      "package_name": "codex-hepta-agentd",
+      "package_id_sha256": "463bea3c9b771448ee1647ea1600563fbdae2db834836a4a4a8666faa9379229",
+      "kind": "test",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/cognitive_store_product_writer-067f6d2d4f16891a"
+    },
+    {
+      "binary_id": "codex-hepta-agentd::five_agent_rolling_upgrade",
+      "binary_name": "five_agent_rolling_upgrade",
+      "package_name": "codex-hepta-agentd",
+      "package_id_sha256": "463bea3c9b771448ee1647ea1600563fbdae2db834836a4a4a8666faa9379229",
+      "kind": "test",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/five_agent_rolling_upgrade-999c2298fb3f162f"
+    },
+    {
+      "binary_id": "codex-hepta-agentd::fleet_harness_diagnostics",
+      "binary_name": "fleet_harness_diagnostics",
+      "package_name": "codex-hepta-agentd",
+      "package_id_sha256": "463bea3c9b771448ee1647ea1600563fbdae2db834836a4a4a8666faa9379229",
+      "kind": "test",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/fleet_harness_diagnostics-a3574027218c8fa6"
+    },
+    {
+      "binary_id": "codex-hepta-agentd::intuition_policy_product",
+      "binary_name": "intuition_policy_product",
+      "package_name": "codex-hepta-agentd",
+      "package_id_sha256": "463bea3c9b771448ee1647ea1600563fbdae2db834836a4a4a8666faa9379229",
+      "kind": "test",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/intuition_policy_product-d43c883de84ded0e"
+    },
+    {
+      "binary_id": "codex-hepta-agentd::kernel_evidence_product",
+      "binary_name": "kernel_evidence_product",
+      "package_name": "codex-hepta-agentd",
+      "package_id_sha256": "463bea3c9b771448ee1647ea1600563fbdae2db834836a4a4a8666faa9379229",
+      "kind": "test",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/kernel_evidence_product-10ea71406cbbd86d"
+    },
+    {
+      "binary_id": "codex-hepta-agentd::optional_module_restart",
+      "binary_name": "optional_module_restart",
+      "package_name": "codex-hepta-agentd",
+      "package_id_sha256": "463bea3c9b771448ee1647ea1600563fbdae2db834836a4a4a8666faa9379229",
+      "kind": "test",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/optional_module_restart-a4adbd0c2b55c21d"
+    },
+    {
+      "binary_id": "codex-hepta-agentd::plasticity_process_e2e",
+      "binary_name": "plasticity_process_e2e",
+      "package_name": "codex-hepta-agentd",
+      "package_id_sha256": "463bea3c9b771448ee1647ea1600563fbdae2db834836a4a4a8666faa9379229",
+      "kind": "test",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/plasticity_process_e2e-c297ae897ca9f371"
+    },
+    {
+      "binary_id": "codex-hepta-agentd::queue_capacity_product",
+      "binary_name": "queue_capacity_product",
+      "package_name": "codex-hepta-agentd",
+      "package_id_sha256": "463bea3c9b771448ee1647ea1600563fbdae2db834836a4a4a8666faa9379229",
+      "kind": "test",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/queue_capacity_product-90fc68ccad82b49a"
+    },
+    {
+      "binary_id": "codex-hepta-agentd::runtime_codex_product_e2e",
+      "binary_name": "runtime_codex_product_e2e",
+      "package_name": "codex-hepta-agentd",
+      "package_id_sha256": "463bea3c9b771448ee1647ea1600563fbdae2db834836a4a4a8666faa9379229",
+      "kind": "test",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/runtime_codex_product_e2e-d716e4895fd04059"
+    },
+    {
+      "binary_id": "codex-hepta-agentd::runtime_shutdown_outcomes",
+      "binary_name": "runtime_shutdown_outcomes",
+      "package_name": "codex-hepta-agentd",
+      "package_id_sha256": "463bea3c9b771448ee1647ea1600563fbdae2db834836a4a4a8666faa9379229",
+      "kind": "test",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/runtime_shutdown_outcomes-0c8a9853914fe549"
+    },
+    {
+      "binary_id": "codex-hepta-agentd::supervised_two_agents",
+      "binary_name": "supervised_two_agents",
+      "package_name": "codex-hepta-agentd",
+      "package_id_sha256": "463bea3c9b771448ee1647ea1600563fbdae2db834836a4a4a8666faa9379229",
+      "kind": "test",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/supervised_two_agents-e770e4cc004db9d8"
+    },
+    {
+      "binary_id": "codex-hepta-agentd::supervisord_product_e2e",
+      "binary_name": "supervisord_product_e2e",
+      "package_name": "codex-hepta-agentd",
+      "package_id_sha256": "463bea3c9b771448ee1647ea1600563fbdae2db834836a4a4a8666faa9379229",
+      "kind": "test",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/supervisord_product_e2e-1ae9299a8e53400e"
+    },
+    {
+      "binary_id": "codex-hepta-agentd::terminal_cell_owner",
+      "binary_name": "terminal_cell_owner",
+      "package_name": "codex-hepta-agentd",
+      "package_id_sha256": "463bea3c9b771448ee1647ea1600563fbdae2db834836a4a4a8666faa9379229",
+      "kind": "test",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/terminal_cell_owner-50e7029ba8cdf0b7"
+    },
+    {
+      "binary_id": "codex-hepta-agentd::two_agent_turn_recovery",
+      "binary_name": "two_agent_turn_recovery",
+      "package_name": "codex-hepta-agentd",
+      "package_id_sha256": "463bea3c9b771448ee1647ea1600563fbdae2db834836a4a4a8666faa9379229",
+      "kind": "test",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/two_agent_turn_recovery-c9adfc23af10317e"
+    },
+    {
+      "binary_id": "codex-hepta-authbus",
+      "binary_name": "codex_hepta_authbus",
+      "package_name": "codex-hepta-authbus",
+      "package_id_sha256": "bfa13da1c439404fae2dcb33ccd54cf4f6537eabec845d833cbdf84f6aa54852",
+      "kind": "lib",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/codex_hepta_authbus-63872b7cd68dfb7b"
+    },
+    {
+      "binary_id": "codex-hepta-authbus-p1-3-qualification",
+      "binary_name": "codex_hepta_authbus_p1_3_qualification",
+      "package_name": "codex-hepta-authbus-p1-3-qualification",
+      "package_id_sha256": "e54b0fbdb8fc64f49b53220bd0c64e447b8e73c30414444ce653281f67a7db18",
+      "kind": "lib",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/codex_hepta_authbus_p1_3_qualification-27e8940182608d0b"
+    },
+    {
+      "binary_id": "codex-hepta-automation",
+      "binary_name": "codex_hepta_automation",
+      "package_name": "codex-hepta-automation",
+      "package_id_sha256": "bc0df3d9a5efdf8b785b049b41e5b54fed96b70a0536e9cc5930d02135ad4b96",
+      "kind": "lib",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/codex_hepta_automation-56838f42705c005b"
+    },
+    {
+      "binary_id": "codex-hepta-automation::authorized_effect",
+      "binary_name": "authorized_effect",
+      "package_name": "codex-hepta-automation",
+      "package_id_sha256": "bc0df3d9a5efdf8b785b049b41e5b54fed96b70a0536e9cc5930d02135ad4b96",
+      "kind": "test",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/authorized_effect-323e41c3bacd2520"
+    },
+    {
+      "binary_id": "codex-hepta-automation::automation",
+      "binary_name": "automation",
+      "package_name": "codex-hepta-automation",
+      "package_id_sha256": "bc0df3d9a5efdf8b785b049b41e5b54fed96b70a0536e9cc5930d02135ad4b96",
+      "kind": "test",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/automation-b2a08dff0845f5a7"
+    },
+    {
+      "binary_id": "codex-hepta-automation::bin/hepta-taskflow-runtime",
+      "binary_name": "hepta-taskflow-runtime",
+      "package_name": "codex-hepta-automation",
+      "package_id_sha256": "bc0df3d9a5efdf8b785b049b41e5b54fed96b70a0536e9cc5930d02135ad4b96",
+      "kind": "bin",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/hepta_taskflow_runtime-062dd692212659be"
+    },
+    {
+      "binary_id": "codex-hepta-automation::durable_causal_chain",
+      "binary_name": "durable_causal_chain",
+      "package_name": "codex-hepta-automation",
+      "package_id_sha256": "bc0df3d9a5efdf8b785b049b41e5b54fed96b70a0536e9cc5930d02135ad4b96",
+      "kind": "test",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/durable_causal_chain-74659c95faba7999"
+    },
+    {
+      "binary_id": "codex-hepta-automation::kernel_operations_destination",
+      "binary_name": "kernel_operations_destination",
+      "package_name": "codex-hepta-automation",
+      "package_id_sha256": "bc0df3d9a5efdf8b785b049b41e5b54fed96b70a0536e9cc5930d02135ad4b96",
+      "kind": "test",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/kernel_operations_destination-0929eb4a60758abe"
+    },
+    {
+      "binary_id": "codex-hepta-automation::operation_timer_fence",
+      "binary_name": "operation_timer_fence",
+      "package_name": "codex-hepta-automation",
+      "package_id_sha256": "bc0df3d9a5efdf8b785b049b41e5b54fed96b70a0536e9cc5930d02135ad4b96",
+      "kind": "test",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/operation_timer_fence-1bd51c08c5288de3"
+    },
+    {
+      "binary_id": "codex-hepta-automation::retirement_recovery",
+      "binary_name": "retirement_recovery",
+      "package_name": "codex-hepta-automation",
+      "package_id_sha256": "bc0df3d9a5efdf8b785b049b41e5b54fed96b70a0536e9cc5930d02135ad4b96",
+      "kind": "test",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/retirement_recovery-6f17c966557e4d3f"
+    },
+    {
+      "binary_id": "codex-hepta-automation::taskflow",
+      "binary_name": "taskflow",
+      "package_name": "codex-hepta-automation",
+      "package_id_sha256": "bc0df3d9a5efdf8b785b049b41e5b54fed96b70a0536e9cc5930d02135ad4b96",
+      "kind": "test",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/taskflow-71a52871c80002e5"
+    },
+    {
+      "binary_id": "codex-hepta-automation::taskflow_execution_boundary",
+      "binary_name": "taskflow_execution_boundary",
+      "package_name": "codex-hepta-automation",
+      "package_id_sha256": "bc0df3d9a5efdf8b785b049b41e5b54fed96b70a0536e9cc5930d02135ad4b96",
+      "kind": "test",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/taskflow_execution_boundary-f58409a15c64d749"
+    },
+    {
+      "binary_id": "codex-hepta-automation::taskflow_kernel",
+      "binary_name": "taskflow_kernel",
+      "package_name": "codex-hepta-automation",
+      "package_id_sha256": "bc0df3d9a5efdf8b785b049b41e5b54fed96b70a0536e9cc5930d02135ad4b96",
+      "kind": "test",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/taskflow_kernel-ab1f8741c11a8967"
+    },
+    {
+      "binary_id": "codex-hepta-automation::taskflow_step",
+      "binary_name": "taskflow_step",
+      "package_name": "codex-hepta-automation",
+      "package_id_sha256": "bc0df3d9a5efdf8b785b049b41e5b54fed96b70a0536e9cc5930d02135ad4b96",
+      "kind": "test",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/taskflow_step-5d431f6a3144568f"
+    },
+    {
+      "binary_id": "codex-hepta-bao-adapter",
+      "binary_name": "codex_hepta_bao_adapter",
+      "package_name": "codex-hepta-bao-adapter",
+      "package_id_sha256": "fb721d627cfca32163b4d9e266483f813e17ce74a30d3f198a8f203046e3c607",
+      "kind": "lib",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/codex_hepta_bao_adapter-e4577096c111a44a"
+    },
+    {
+      "binary_id": "codex-hepta-bao-adapter::final_use_host",
+      "binary_name": "final_use_host",
+      "package_name": "codex-hepta-bao-adapter",
+      "package_id_sha256": "fb721d627cfca32163b4d9e266483f813e17ce74a30d3f198a8f203046e3c607",
+      "kind": "test",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/final_use_host-9a3c3dc53a46c1eb"
+    },
+    {
+      "binary_id": "codex-hepta-bellman-operator",
+      "binary_name": "codex_hepta_bellman_operator",
+      "package_name": "codex-hepta-bellman-operator",
+      "package_id_sha256": "77c2d063d9acd7c5f2e9217e9d45a875cda4b6b9b8a05c8ef691829efb813c10",
+      "kind": "lib",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/codex_hepta_bellman_operator-7d1e38c5618ca24a"
+    },
+    {
+      "binary_id": "codex-hepta-codex-adapter",
+      "binary_name": "codex_hepta_codex_adapter",
+      "package_name": "codex-hepta-codex-adapter",
+      "package_id_sha256": "3f7657331f8ac45cfca054bb7ba29a720a92df84c815c8c066146b04afc82553",
+      "kind": "lib",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/codex_hepta_codex_adapter-d8979cfcd58acc21"
+    },
+    {
+      "binary_id": "codex-hepta-cognitive-read",
+      "binary_name": "codex_hepta_cognitive_read",
+      "package_name": "codex-hepta-cognitive-read",
+      "package_id_sha256": "c6462c543301e653a9d366e6582e521d3e48745214343a6f194e497c9fde2785",
+      "kind": "lib",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/codex_hepta_cognitive_read-acfc320d6709781c"
+    },
+    {
+      "binary_id": "codex-hepta-cognitive-store",
+      "binary_name": "codex_hepta_cognitive_store",
+      "package_name": "codex-hepta-cognitive-store",
+      "package_id_sha256": "0066db1afee06f4973c553e686fe23deebf3e011061643e2bf4559cb2f4d10ee",
+      "kind": "lib",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/codex_hepta_cognitive_store-f8766cb92dad0442"
+    },
+    {
+      "binary_id": "codex-hepta-cognitive-types",
+      "binary_name": "codex_hepta_cognitive_types",
+      "package_name": "codex-hepta-cognitive-types",
+      "package_id_sha256": "f07393c0faaa21890ffdc84e95753820f478a556cbbab67144e2243ca77eddc2",
+      "kind": "lib",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/codex_hepta_cognitive_types-49abaf9612fa9931"
+    },
+    {
+      "binary_id": "codex-hepta-compact-engine",
+      "binary_name": "codex_hepta_compact_engine",
+      "package_name": "codex-hepta-compact-engine",
+      "package_id_sha256": "dc99e3a27324ca18650f6d32c42368ab36a9fdfea06f3529c8401f3d0a52bf94",
+      "kind": "lib",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/codex_hepta_compact_engine-826e82e3200d4e55"
+    },
+    {
+      "binary_id": "codex-hepta-context-compiler",
+      "binary_name": "codex_hepta_context_compiler",
+      "package_name": "codex-hepta-context-compiler",
+      "package_id_sha256": "2a4de7aeb753419113ddfc9712bc3690ed5e1bc8b953d95551baf7ffc9d02d6e",
+      "kind": "lib",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/codex_hepta_context_compiler-a28b48d0054d4038"
+    },
+    {
+      "binary_id": "codex-hepta-contracts",
+      "binary_name": "codex_hepta_contracts",
+      "package_name": "codex-hepta-contracts",
+      "package_id_sha256": "135883e35e623026950a97768000c16a2ea290db6e44d0cd40977e05182777b0",
+      "kind": "lib",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/codex_hepta_contracts-9b0c95d1c08622b9"
+    },
+    {
+      "binary_id": "codex-hepta-contracts::authbus_b3_adapter_qualification",
+      "binary_name": "authbus_b3_adapter_qualification",
+      "package_name": "codex-hepta-contracts",
+      "package_id_sha256": "135883e35e623026950a97768000c16a2ea290db6e44d0cd40977e05182777b0",
+      "kind": "test",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/authbus_b3_adapter_qualification-3d74121c4ef3e669"
+    },
+    {
+      "binary_id": "codex-hepta-contracts::authbus_local_qualification",
+      "binary_name": "authbus_local_qualification",
+      "package_name": "codex-hepta-contracts",
+      "package_id_sha256": "135883e35e623026950a97768000c16a2ea290db6e44d0cd40977e05182777b0",
+      "kind": "test",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/authbus_local_qualification-7ec0a1bc3c55eff0"
+    },
+    {
+      "binary_id": "codex-hepta-contracts::final_use_linearization",
+      "binary_name": "final_use_linearization",
+      "package_name": "codex-hepta-contracts",
+      "package_id_sha256": "135883e35e623026950a97768000c16a2ea290db6e44d0cd40977e05182777b0",
+      "kind": "test",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/final_use_linearization-879b5030cf5a5798"
+    },
+    {
+      "binary_id": "codex-hepta-control-plane",
+      "binary_name": "codex_hepta_control_plane",
+      "package_name": "codex-hepta-control-plane",
+      "package_id_sha256": "6b2d2783aaaaadf5f0c02ea589236a2900db78f2226542e5ad90f068c13f1338",
+      "kind": "lib",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/codex_hepta_control_plane-f28d204865428182"
+    },
+    {
+      "binary_id": "codex-hepta-control-plane::runtime_retirement_dependencies",
+      "binary_name": "runtime_retirement_dependencies",
+      "package_name": "codex-hepta-control-plane",
+      "package_id_sha256": "6b2d2783aaaaadf5f0c02ea589236a2900db78f2226542e5ad90f068c13f1338",
+      "kind": "test",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/runtime_retirement_dependencies-c80a039942c0c057"
+    },
+    {
+      "binary_id": "codex-hepta-evidence",
+      "binary_name": "codex_hepta_evidence",
+      "package_name": "codex-hepta-evidence",
+      "package_id_sha256": "1101fd1b03c607449823ac144675e31f9afdaf8b0137edf504c95fcecb3e45c0",
+      "kind": "lib",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/codex_hepta_evidence-0fed25716046cec4"
+    },
+    {
+      "binary_id": "codex-hepta-fleet",
+      "binary_name": "codex_hepta_fleet",
+      "package_name": "codex-hepta-fleet",
+      "package_id_sha256": "c97a0e68d304e8a12ef5f318b2bf631e4613a9bbfa9ae76f8bfda865270a6cdc",
+      "kind": "lib",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/codex_hepta_fleet-78c89cd654d425ab"
+    },
+    {
+      "binary_id": "codex-hepta-fleet::bin/hepta-fleet-leased",
+      "binary_name": "hepta-fleet-leased",
+      "package_name": "codex-hepta-fleet",
+      "package_id_sha256": "c97a0e68d304e8a12ef5f318b2bf631e4613a9bbfa9ae76f8bfda865270a6cdc",
+      "kind": "bin",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/hepta_fleet_leased-39fe702b6d38260e"
+    },
+    {
+      "binary_id": "codex-hepta-governance",
+      "binary_name": "codex_hepta_governance",
+      "package_name": "codex-hepta-governance",
+      "package_id_sha256": "202932d661f324a11c69872f02b0dc00acf29dcce88e49f23abe07179d9a1fc4",
+      "kind": "lib",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/codex_hepta_governance-7d7d9e4c29740690"
+    },
+    {
+      "binary_id": "codex-hepta-infer-core",
+      "binary_name": "codex_hepta_infer_core",
+      "package_name": "codex-hepta-infer-core",
+      "package_id_sha256": "a35ad213cc2a47db172719ea417b771764ef7e84cab104197177e6a019250ab5",
+      "kind": "lib",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/codex_hepta_infer_core-8e8d7ca1ab649a25"
+    },
+    {
+      "binary_id": "codex-hepta-infer-core::bin/hepta-infer-control",
+      "binary_name": "hepta-infer-control",
+      "package_name": "codex-hepta-infer-core",
+      "package_id_sha256": "a35ad213cc2a47db172719ea417b771764ef7e84cab104197177e6a019250ab5",
+      "kind": "bin",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/hepta_infer_control-37ba01604f5441af"
+    },
+    {
+      "binary_id": "codex-hepta-infer-worker-host",
+      "binary_name": "codex_hepta_infer_worker_host",
+      "package_name": "codex-hepta-infer-worker-host",
+      "package_id_sha256": "9af51f27d526c0b65971f601ef069a73a9331ad0be621ec958f8bca55cb0cb16",
+      "kind": "lib",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/codex_hepta_infer_worker_host-77d0b33d1da3ed35"
+    },
+    {
+      "binary_id": "codex-hepta-infer-worker-host::bin/hepta-infer-worker",
+      "binary_name": "hepta-infer-worker",
+      "package_name": "codex-hepta-infer-worker-host",
+      "package_id_sha256": "9af51f27d526c0b65971f601ef069a73a9331ad0be621ec958f8bca55cb0cb16",
+      "kind": "bin",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/hepta_infer_worker-d7b89cca7a9d579f"
+    },
+    {
+      "binary_id": "codex-hepta-inferd",
+      "binary_name": "codex_hepta_inferd",
+      "package_name": "codex-hepta-inferd",
+      "package_id_sha256": "66c466af1574baa3692aa267e38f1adba63ac184cf473518cafe17527b5fb4e1",
+      "kind": "lib",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/codex_hepta_inferd-853f12fd13e5e7ce"
+    },
+    {
+      "binary_id": "codex-hepta-intelligence",
+      "binary_name": "codex_hepta_intelligence",
+      "package_name": "codex-hepta-intelligence",
+      "package_id_sha256": "c69c57c891952d59eec1c8378e1dbfeaf8ba36fe8f1be8e357810c5fc765c1ab",
+      "kind": "lib",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/codex_hepta_intelligence-e081f406a7e14555"
+    },
+    {
+      "binary_id": "codex-hepta-intelligence-eval",
+      "binary_name": "codex_hepta_intelligence_eval",
+      "package_name": "codex-hepta-intelligence-eval",
+      "package_id_sha256": "822180fba8364708f8d20b7529805f5b3e8d06188a95f90131862a785ba6f963",
+      "kind": "lib",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/codex_hepta_intelligence_eval-60008166a42984a3"
+    },
+    {
+      "binary_id": "codex-hepta-intelligence::intuition_frozen_qualification",
+      "binary_name": "intuition_frozen_qualification",
+      "package_name": "codex-hepta-intelligence",
+      "package_id_sha256": "c69c57c891952d59eec1c8378e1dbfeaf8ba36fe8f1be8e357810c5fc765c1ab",
+      "kind": "test",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/intuition_frozen_qualification-5c242a9850bbfb82"
+    },
+    {
+      "binary_id": "codex-hepta-intelligence::lane_f_shadow_vertical",
+      "binary_name": "lane_f_shadow_vertical",
+      "package_name": "codex-hepta-intelligence",
+      "package_id_sha256": "c69c57c891952d59eec1c8378e1dbfeaf8ba36fe8f1be8e357810c5fc765c1ab",
+      "kind": "test",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/lane_f_shadow_vertical-a99a3ea11514c0ab"
+    },
+    {
+      "binary_id": "codex-hepta-intuition",
+      "binary_name": "codex_hepta_intuition",
+      "package_name": "codex-hepta-intuition",
+      "package_id_sha256": "db13bc4a3d69b03cc8fb6c03b5654aa2a87cf71302b49a533e8a00c9d8fac92b",
+      "kind": "lib",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/codex_hepta_intuition-7814897d9052c119"
+    },
+    {
+      "binary_id": "codex-hepta-kg",
+      "binary_name": "codex_hepta_kg",
+      "package_name": "codex-hepta-kg",
+      "package_id_sha256": "42407011cd7d477508e4d4c9a74df20ddbb05254f3631ab5f11a98af46f32c42",
+      "kind": "lib",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/codex_hepta_kg-0396e73bc4678be3"
+    },
+    {
+      "binary_id": "codex-hepta-learning-artifacts",
+      "binary_name": "codex_hepta_learning_artifacts",
+      "package_name": "codex-hepta-learning-artifacts",
+      "package_id_sha256": "6d7eccac09f28c0eaed4533b1e68733a0a30988f9467c04271b93789fff5c46f",
+      "kind": "lib",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/codex_hepta_learning_artifacts-d57730ce9409a925"
+    },
+    {
+      "binary_id": "codex-hepta-learning-ledger",
+      "binary_name": "codex_hepta_learning_ledger",
+      "package_name": "codex-hepta-learning-ledger",
+      "package_id_sha256": "eb78bd2cd08a7140ccf6d0134c6258627acaa44f82da2df55e9fd0210854f3c1",
+      "kind": "lib",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/codex_hepta_learning_ledger-b5bb32936c03cffa"
+    },
+    {
+      "binary_id": "codex-hepta-matrix-protocol",
+      "binary_name": "codex_hepta_matrix_protocol",
+      "package_name": "codex-hepta-matrix-protocol",
+      "package_id_sha256": "c0f9d2e59d0e6e56a58d2dbf46975d3bf87e3137128f421dd120d017eb5a2a21",
+      "kind": "lib",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/codex_hepta_matrix_protocol-6a20dac18ffd206f"
+    },
+    {
+      "binary_id": "codex-hepta-matrix-sdk",
+      "binary_name": "codex_hepta_matrix_sdk",
+      "package_name": "codex-hepta-matrix-sdk",
+      "package_id_sha256": "02ae5e27cb7040b93440ad404e99df8d2d08528e87f96eff8f7c458984d671cf",
+      "kind": "lib",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/codex_hepta_matrix_sdk-74e8b4707d3a9b1f"
+    },
+    {
+      "binary_id": "codex-hepta-matrix-sdk::durable_transport",
+      "binary_name": "durable_transport",
+      "package_name": "codex-hepta-matrix-sdk",
+      "package_id_sha256": "02ae5e27cb7040b93440ad404e99df8d2d08528e87f96eff8f7c458984d671cf",
+      "kind": "test",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/durable_transport-6d9471924a20e9d8"
+    },
+    {
+      "binary_id": "codex-hepta-matrix-store::durable_core",
+      "binary_name": "durable_core",
+      "package_name": "codex-hepta-matrix-store",
+      "package_id_sha256": "016f1413592d22cddc39c81fc6e7cdd3a024b14298a076815e56d02ff9f5da64",
+      "kind": "test",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/durable_core-8ab7e4e2a5214d53"
+    },
+    {
+      "binary_id": "codex-hepta-matrix-store::sync_mutation_v2",
+      "binary_name": "sync_mutation_v2",
+      "package_name": "codex-hepta-matrix-store",
+      "package_id_sha256": "016f1413592d22cddc39c81fc6e7cdd3a024b14298a076815e56d02ff9f5da64",
+      "kind": "test",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/sync_mutation_v2-ca17fc0b4434f8d2"
+    },
+    {
+      "binary_id": "codex-hepta-matrix-store::sync_observation_v1",
+      "binary_name": "sync_observation_v1",
+      "package_name": "codex-hepta-matrix-store",
+      "package_id_sha256": "016f1413592d22cddc39c81fc6e7cdd3a024b14298a076815e56d02ff9f5da64",
+      "kind": "test",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/sync_observation_v1-fc325ce61d8d9c9c"
+    },
+    {
+      "binary_id": "codex-hepta-matrixd",
+      "binary_name": "codex_hepta_matrixd",
+      "package_name": "codex-hepta-matrixd",
+      "package_id_sha256": "add8aeaf0f325aec7050cc5c0fb9da3ada577ae787d4b5281b7b573defde7db3",
+      "kind": "lib",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/codex_hepta_matrixd-ac9bcbc4b78d3b81"
+    },
+    {
+      "binary_id": "codex-hepta-matrixd::bin/hepta-matrix-send-observer",
+      "binary_name": "hepta-matrix-send-observer",
+      "package_name": "codex-hepta-matrixd",
+      "package_id_sha256": "add8aeaf0f325aec7050cc5c0fb9da3ada577ae787d4b5281b7b573defde7db3",
+      "kind": "bin",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/hepta_matrix_send_observer-305157e76d692eb3"
+    },
+    {
+      "binary_id": "codex-hepta-memory",
+      "binary_name": "codex_hepta_memory",
+      "package_name": "codex-hepta-memory",
+      "package_id_sha256": "158de07daed03337b9c38b2c1122afa0a8e00b6be6cc18c6d2bec911436e9981",
+      "kind": "lib",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/codex_hepta_memory-839131627cd72abf"
+    },
+    {
+      "binary_id": "codex-hepta-memory-extension",
+      "binary_name": "codex_hepta_memory_extension",
+      "package_name": "codex-hepta-memory-extension",
+      "package_id_sha256": "366d492eb3567b5aa0c4a9eb4e9efc57f7a26dc8e8bc2d3fa8a01c2434524947",
+      "kind": "lib",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/codex_hepta_memory_extension-cc2f6ad9a00e8334"
+    },
+    {
+      "binary_id": "codex-hepta-memory-federation",
+      "binary_name": "codex_hepta_memory_federation",
+      "package_name": "codex-hepta-memory-federation",
+      "package_id_sha256": "1ff3f79cc439e0aa7b060af264cbcf5e4e05595289b2cd4f7282a219a8df6df3",
+      "kind": "lib",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/codex_hepta_memory_federation-d42c48536d022712"
+    },
+    {
+      "binary_id": "codex-hepta-memory-retrieval",
+      "binary_name": "codex_hepta_memory_retrieval",
+      "package_name": "codex-hepta-memory-retrieval",
+      "package_id_sha256": "2ad655ad22ea4f54bfb93b5a5af6d8c5d3665554f3c54835f748de00c664db2a",
+      "kind": "lib",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/codex_hepta_memory_retrieval-a089492303b7cb22"
+    },
+    {
+      "binary_id": "codex-hepta-native-gateway",
+      "binary_name": "codex_hepta_native_gateway",
+      "package_name": "codex-hepta-native-gateway",
+      "package_id_sha256": "58b2576c06f4cb4a13e6a0597dbbe562fcf6b113846f1386fece60f8554c1fad",
+      "kind": "lib",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/codex_hepta_native_gateway-144244fb1f987851"
+    },
+    {
+      "binary_id": "codex-hepta-ndu",
+      "binary_name": "codex_hepta_ndu",
+      "package_name": "codex-hepta-ndu",
+      "package_id_sha256": "825aec61c9c928c4d99ed5ae2bc6c8f15bc5c7a184d2c7f6b594f537516fa805",
+      "kind": "lib",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/codex_hepta_ndu-680e3aed67233f25"
+    },
+    {
+      "binary_id": "codex-hepta-ndu::bin/ndu-named-host-qualification",
+      "binary_name": "ndu-named-host-qualification",
+      "package_name": "codex-hepta-ndu",
+      "package_id_sha256": "825aec61c9c928c4d99ed5ae2bc6c8f15bc5c7a184d2c7f6b594f537516fa805",
+      "kind": "bin",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/ndu_named_host_qualification-6d90b3c603487993"
+    },
+    {
+      "binary_id": "codex-hepta-neuron",
+      "binary_name": "codex_hepta_neuron",
+      "package_name": "codex-hepta-neuron",
+      "package_id_sha256": "c52799cf13de383f08df2a8e1eef2f6f2954497457e0ef5446e6ced1cea47805",
+      "kind": "lib",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/codex_hepta_neuron-ffe05cde2f07ffdd"
+    },
+    {
+      "binary_id": "codex-hepta-objective",
+      "binary_name": "codex_hepta_objective",
+      "package_name": "codex-hepta-objective",
+      "package_id_sha256": "a7363025b6bce25150a8df311f915a9b77b89efbb57a20846c12a787781bd5a7",
+      "kind": "lib",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/codex_hepta_objective-ba2e1f7c3091d511"
+    },
+    {
+      "binary_id": "codex-hepta-operations",
+      "binary_name": "codex_hepta_operations",
+      "package_name": "codex-hepta-operations",
+      "package_id_sha256": "e1d93fc6ab59937474f52a40088166da3e6197fe5b39fd543244ebea6fd94e7c",
+      "kind": "lib",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/codex_hepta_operations-30e13649449c3eaa"
+    },
+    {
+      "binary_id": "codex-hepta-operations::destination_recovery_binding",
+      "binary_name": "destination_recovery_binding",
+      "package_name": "codex-hepta-operations",
+      "package_id_sha256": "e1d93fc6ab59937474f52a40088166da3e6197fe5b39fd543244ebea6fd94e7c",
+      "kind": "test",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/destination_recovery_binding-a9f1677650e93c95"
+    },
+    {
+      "binary_id": "codex-hepta-operator-acceptance",
+      "binary_name": "codex_hepta_operator_acceptance",
+      "package_name": "codex-hepta-operator-acceptance",
+      "package_id_sha256": "1fc60a43c17d121b576c3374ae391579e9c00f4ac942969562a48c278b310801",
+      "kind": "lib",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/codex_hepta_operator_acceptance-4830709c5f38c6fa"
+    },
+    {
+      "binary_id": "codex-hepta-paths",
+      "binary_name": "codex_hepta_paths",
+      "package_name": "codex-hepta-paths",
+      "package_id_sha256": "6d6c9a06b6a20907c1e5d592693ec79a6a0bf9d320191dcfaf2bbaef6ffb22e5",
+      "kind": "lib",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/codex_hepta_paths-9d572b0619f404a8"
+    },
+    {
+      "binary_id": "codex-hepta-plasticity",
+      "binary_name": "codex_hepta_plasticity",
+      "package_name": "codex-hepta-plasticity",
+      "package_id_sha256": "6bf7760850cd4978d52b734edd6849ee037dd824f2ee04ff9fb179abae6c83e2",
+      "kind": "lib",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/codex_hepta_plasticity-a87d9deed6f2fb53"
+    },
+    {
+      "binary_id": "codex-hepta-prompt-extension",
+      "binary_name": "codex_hepta_prompt_extension",
+      "package_name": "codex-hepta-prompt-extension",
+      "package_id_sha256": "dba41c96c9cba1b511eabcf1bc282a9390f95530657622efbe4a0a658c1570a7",
+      "kind": "lib",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/codex_hepta_prompt_extension-686b1c3ab85a5307"
+    },
+    {
+      "binary_id": "codex-hepta-prompt-optimizer",
+      "binary_name": "codex_hepta_prompt_optimizer",
+      "package_name": "codex-hepta-prompt-optimizer",
+      "package_id_sha256": "b09f0ab79a6033828963878a9dc33c89f4287990dd5e814b205cd1ecbf1c1127",
+      "kind": "lib",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/codex_hepta_prompt_optimizer-b7b93c411ab24f5f"
+    },
+    {
+      "binary_id": "codex-hepta-prompt-registry",
+      "binary_name": "codex_hepta_prompt_registry",
+      "package_name": "codex-hepta-prompt-registry",
+      "package_id_sha256": "18a09da355a849225b9930cba2c11e0dae7182a0258aac328e584cd0defe380d",
+      "kind": "lib",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/codex_hepta_prompt_registry-8c7ecb7e7ab5d4c0"
+    },
+    {
+      "binary_id": "codex-hepta-runtime",
+      "binary_name": "codex_hepta_runtime",
+      "package_name": "codex-hepta-runtime",
+      "package_id_sha256": "a6b5ca5d113fe923b47d5f839a2b630e16fd8e8c529f85aa1bf54162dd1f3257",
+      "kind": "lib",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/codex_hepta_runtime-9b6a08cc051aa0a4"
+    },
+    {
+      "binary_id": "codex-hepta-shadow-qualification",
+      "binary_name": "codex_hepta_shadow_qualification",
+      "package_name": "codex-hepta-shadow-qualification",
+      "package_id_sha256": "971fb7d1454e16dc6684255e763a4fd8eb0859bd82bd180145ddaed419d739db",
+      "kind": "lib",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/codex_hepta_shadow_qualification-1af218e4e8ef9590"
+    },
+    {
+      "binary_id": "codex-hepta-shadow-qualification::cross_language_wire_fault",
+      "binary_name": "cross_language_wire_fault",
+      "package_name": "codex-hepta-shadow-qualification",
+      "package_id_sha256": "971fb7d1454e16dc6684255e763a4fd8eb0859bd82bd180145ddaed419d739db",
+      "kind": "test",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/cross_language_wire_fault-9f5c4feb1734ff39"
+    },
+    {
+      "binary_id": "codex-hepta-shadow-qualification::cross_runtime_wire_session",
+      "binary_name": "cross_runtime_wire_session",
+      "package_name": "codex-hepta-shadow-qualification",
+      "package_id_sha256": "971fb7d1454e16dc6684255e763a4fd8eb0859bd82bd180145ddaed419d739db",
+      "kind": "test",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/cross_runtime_wire_session-1d242539515ced9b"
+    },
+    {
+      "binary_id": "codex-hepta-shadow-qualification::durable_learning_roundtrip",
+      "binary_name": "durable_learning_roundtrip",
+      "package_name": "codex-hepta-shadow-qualification",
+      "package_id_sha256": "971fb7d1454e16dc6684255e763a4fd8eb0859bd82bd180145ddaed419d739db",
+      "kind": "test",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/durable_learning_roundtrip-0b84ee3d21d9ed27"
+    },
+    {
+      "binary_id": "codex-hepta-shadow-qualification::lane_e_api_contract",
+      "binary_name": "lane_e_api_contract",
+      "package_name": "codex-hepta-shadow-qualification",
+      "package_id_sha256": "971fb7d1454e16dc6684255e763a4fd8eb0859bd82bd180145ddaed419d739db",
+      "kind": "test",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/lane_e_api_contract-59ac0ef4cad483b3"
+    },
+    {
+      "binary_id": "codex-hepta-supervisor",
+      "binary_name": "codex_hepta_supervisor",
+      "package_name": "codex-hepta-supervisor",
+      "package_id_sha256": "454ebe5bbdab6404f0b66bbf70c513bbce339ea5adb8b75c299b9b859f4f84db",
+      "kind": "lib",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/codex_hepta_supervisor-cfa5728c545adc93"
+    },
+    {
+      "binary_id": "codex-hepta-supervisor::daemon_product",
+      "binary_name": "daemon_product",
+      "package_name": "codex-hepta-supervisor",
+      "package_id_sha256": "454ebe5bbdab6404f0b66bbf70c513bbce339ea5adb8b75c299b9b859f4f84db",
+      "kind": "test",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/daemon_product-1f6fce4b83e89a93"
+    },
+    {
+      "binary_id": "codex-hepta-supervisor::isolated_execution_handoff_unix",
+      "binary_name": "isolated_execution_handoff_unix",
+      "package_name": "codex-hepta-supervisor",
+      "package_id_sha256": "454ebe5bbdab6404f0b66bbf70c513bbce339ea5adb8b75c299b9b859f4f84db",
+      "kind": "test",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/isolated_execution_handoff_unix-a99b49d3e3aaadb6"
+    },
+    {
+      "binary_id": "codex-hepta-supervisor::paired_process_product",
+      "binary_name": "paired_process_product",
+      "package_name": "codex-hepta-supervisor",
+      "package_id_sha256": "454ebe5bbdab6404f0b66bbf70c513bbce339ea5adb8b75c299b9b859f4f84db",
+      "kind": "test",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/paired_process_product-4fa580e4a19bcd0c"
+    },
+    {
+      "binary_id": "codex-hepta-supervisor::process_deadline_unix",
+      "binary_name": "process_deadline_unix",
+      "package_name": "codex-hepta-supervisor",
+      "package_id_sha256": "454ebe5bbdab6404f0b66bbf70c513bbce339ea5adb8b75c299b9b859f4f84db",
+      "kind": "test",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/process_deadline_unix-b7f97aeaa3833cab"
+    },
+    {
+      "binary_id": "codex-hepta-supervisor::restart_budget",
+      "binary_name": "restart_budget",
+      "package_name": "codex-hepta-supervisor",
+      "package_id_sha256": "454ebe5bbdab6404f0b66bbf70c513bbce339ea5adb8b75c299b9b859f4f84db",
+      "kind": "test",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/restart_budget-8cbb9ccfc5fb1d32"
+    },
+    {
+      "binary_id": "codex-hepta-supervisor::restart_budget_recovery",
+      "binary_name": "restart_budget_recovery",
+      "package_name": "codex-hepta-supervisor",
+      "package_id_sha256": "454ebe5bbdab6404f0b66bbf70c513bbce339ea5adb8b75c299b9b859f4f84db",
+      "kind": "test",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/restart_budget_recovery-c73ab089332ef310"
+    },
+    {
+      "binary_id": "codex-hepta-supervisor::robrix_control_projection",
+      "binary_name": "robrix_control_projection",
+      "package_name": "codex-hepta-supervisor",
+      "package_id_sha256": "454ebe5bbdab6404f0b66bbf70c513bbce339ea5adb8b75c299b9b859f4f84db",
+      "kind": "test",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/robrix_control_projection-9616938557a473fd"
+    },
+    {
+      "binary_id": "codex-hepta-supervisor::signed_intent_recovery",
+      "binary_name": "signed_intent_recovery",
+      "package_name": "codex-hepta-supervisor",
+      "package_id_sha256": "454ebe5bbdab6404f0b66bbf70c513bbce339ea5adb8b75c299b9b859f4f84db",
+      "kind": "test",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/signed_intent_recovery-62d44db676d9a715"
+    },
+    {
+      "binary_id": "codex-hepta-supervisor::writer_handoff_production",
+      "binary_name": "writer_handoff_production",
+      "package_name": "codex-hepta-supervisor",
+      "package_id_sha256": "454ebe5bbdab6404f0b66bbf70c513bbce339ea5adb8b75c299b9b859f4f84db",
+      "kind": "test",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/writer_handoff_production-d87a76373b199110"
+    },
+    {
+      "binary_id": "codex-hepta-types",
+      "binary_name": "codex_hepta_types",
+      "package_name": "codex-hepta-types",
+      "package_id_sha256": "d6132bc3d9c731e1af9ccede8551fabf800ad1dce82c1b338ba45da1608bcf31",
+      "kind": "lib",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/codex_hepta_types-eaae7a50a9865665"
+    },
+    {
+      "binary_id": "codex-hepta-wire",
+      "binary_name": "codex_hepta_wire",
+      "package_name": "codex-hepta-wire",
+      "package_id_sha256": "614611481a4731db45810399cf912f71e60314459f8e188aa32b6e3ce38961ec",
+      "kind": "lib",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/codex_hepta_wire-d0fea047a1d545b1"
+    },
+    {
+      "binary_id": "codex-history",
+      "binary_name": "codex_history",
+      "package_name": "codex-history",
+      "package_id_sha256": "e5cd66a10852a3b0194fd30ab99d42c784711c9d0c6f3a9ed6ac6d13ad020789",
+      "kind": "lib",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/codex_history-abf3f24719cd9c00"
+    },
+    {
+      "binary_id": "codex-history-notes-extension",
+      "binary_name": "codex_history_notes_extension",
+      "package_name": "codex-history-notes-extension",
+      "package_id_sha256": "1c74b731120b371a7d22b1582f43b362697dbeb277e40b63a1ef0276af79295c",
+      "kind": "lib",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/codex_history_notes_extension-35ba60bb8f9e3e88"
+    },
+    {
+      "binary_id": "codex-history-notes-extension::history_notes_extension",
+      "binary_name": "history_notes_extension",
+      "package_name": "codex-history-notes-extension",
+      "package_id_sha256": "1c74b731120b371a7d22b1582f43b362697dbeb277e40b63a1ef0276af79295c",
+      "kind": "test",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/history_notes_extension-b7de3cec2c392bce"
+    },
+    {
+      "binary_id": "codex-home",
+      "binary_name": "codex_home",
+      "package_name": "codex-home",
+      "package_id_sha256": "c889fb57802e2e6247bc1e7e51af3bb841057b5a6a58a0c9c96bed000b2cf1a0",
+      "kind": "lib",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/codex_home-40e219e178f7a69c"
+    },
+    {
+      "binary_id": "codex-hooks",
+      "binary_name": "codex_hooks",
+      "package_name": "codex-hooks",
+      "package_id_sha256": "59dca2774bfce9f2a2210fe10bed260dbd108faa5784eb27f2badfb3a42be839",
+      "kind": "lib",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/codex_hooks-ff94e301adbae251"
+    },
+    {
+      "binary_id": "codex-hooks::bin/write_hooks_schema_fixtures",
+      "binary_name": "write_hooks_schema_fixtures",
+      "package_name": "codex-hooks",
+      "package_id_sha256": "59dca2774bfce9f2a2210fe10bed260dbd108faa5784eb27f2badfb3a42be839",
+      "kind": "bin",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/write_hooks_schema_fixtures-ae4170ecc8614c11"
+    },
+    {
+      "binary_id": "codex-http-client",
+      "binary_name": "codex_http_client",
+      "package_name": "codex-http-client",
+      "package_id_sha256": "5a2899ecbb901893a74d65e1d49e1067006d69cecfd70ab236f6c0bbdc0fa8f6",
+      "kind": "lib",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/codex_http_client-1fdaadb34b3d8cb7"
+    },
+    {
+      "binary_id": "codex-http-client::bin/custom_ca_probe",
+      "binary_name": "custom_ca_probe",
+      "package_name": "codex-http-client",
+      "package_id_sha256": "5a2899ecbb901893a74d65e1d49e1067006d69cecfd70ab236f6c0bbdc0fa8f6",
+      "kind": "bin",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/custom_ca_probe-2e60a4cf7bb7a131"
+    },
+    {
+      "binary_id": "codex-http-client::ca_env",
+      "binary_name": "ca_env",
+      "package_name": "codex-http-client",
+      "package_id_sha256": "5a2899ecbb901893a74d65e1d49e1067006d69cecfd70ab236f6c0bbdc0fa8f6",
+      "kind": "test",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/ca_env-c8001ff76af34087"
+    },
+    {
+      "binary_id": "codex-image-generation-extension",
+      "binary_name": "codex_image_generation_extension",
+      "package_name": "codex-image-generation-extension",
+      "package_id_sha256": "960494ecd0ce34d1f7726f4fc04e05da62fff3e40a4e416fc0f6ff5f6a9d614d",
+      "kind": "lib",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/codex_image_generation_extension-f4418307016972ad"
+    },
+    {
+      "binary_id": "codex-install-context",
+      "binary_name": "codex_install_context",
+      "package_name": "codex-install-context",
+      "package_id_sha256": "04915235acb7c6a7e7c981158ffc480e2a241dedd7b587162374c2e944124834",
+      "kind": "lib",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/codex_install_context-ec7bb6cac85959ed"
+    },
+    {
+      "binary_id": "codex-linux-sandbox",
+      "binary_name": "codex_linux_sandbox",
+      "package_name": "codex-linux-sandbox",
+      "package_id_sha256": "a34f150cbef3af2f3088bf5435a4bb5c172a66add1c4006b5cec289c44d59499",
+      "kind": "lib",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/codex_linux_sandbox-223d592a484e6fd2"
+    },
+    {
+      "binary_id": "codex-linux-sandbox::all",
+      "binary_name": "all",
+      "package_name": "codex-linux-sandbox",
+      "package_id_sha256": "a34f150cbef3af2f3088bf5435a4bb5c172a66add1c4006b5cec289c44d59499",
+      "kind": "test",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/all-463686d2f9f712df"
+    },
+    {
+      "binary_id": "codex-linux-sandbox::bin/codex-linux-sandbox",
+      "binary_name": "codex-linux-sandbox",
+      "package_name": "codex-linux-sandbox",
+      "package_id_sha256": "a34f150cbef3af2f3088bf5435a4bb5c172a66add1c4006b5cec289c44d59499",
+      "kind": "bin",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/codex_linux_sandbox-b7ba5b6cb4a3890b"
+    },
+    {
+      "binary_id": "codex-lmstudio",
+      "binary_name": "codex_lmstudio",
+      "package_name": "codex-lmstudio",
+      "package_id_sha256": "3e9a405d7d6f74b8f9754e034066c0398a959c698fb1523db9bf2f42a9830929",
+      "kind": "lib",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/codex_lmstudio-cd41c6e8613ae9cd"
+    },
+    {
+      "binary_id": "codex-login",
+      "binary_name": "codex_login",
+      "package_name": "codex-login",
+      "package_id_sha256": "637db2b909f4410756aec50391b2e776d2f5b73606b20da9ef38dd181bf5b7d0",
+      "kind": "lib",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/codex_login-61e3dc7d28117c4a"
+    },
+    {
+      "binary_id": "codex-login::all",
+      "binary_name": "all",
+      "package_name": "codex-login",
+      "package_id_sha256": "637db2b909f4410756aec50391b2e776d2f5b73606b20da9ef38dd181bf5b7d0",
+      "kind": "test",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/all-e85d2c9b3b25e5ca"
+    },
+    {
+      "binary_id": "codex-mcp",
+      "binary_name": "codex_mcp",
+      "package_name": "codex-mcp",
+      "package_id_sha256": "66f7caa6a88e93c7c2add2ebf48ec55986cdaa10e44558b6faa8fb5e49a5db21",
+      "kind": "lib",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/codex_mcp-9081b604c508e809"
+    },
+    {
+      "binary_id": "codex-mcp-extension",
+      "binary_name": "codex_mcp_extension",
+      "package_name": "codex-mcp-extension",
+      "package_id_sha256": "63c5df8d68a773bf19337a5df27cb77d806830277b470f4a144fa83f09f77621",
+      "kind": "lib",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/codex_mcp_extension-6d39ed1c0ba3e0b1"
+    },
+    {
+      "binary_id": "codex-mcp-extension::executor_plugin_mcp",
+      "binary_name": "executor_plugin_mcp",
+      "package_name": "codex-mcp-extension",
+      "package_id_sha256": "63c5df8d68a773bf19337a5df27cb77d806830277b470f4a144fa83f09f77621",
+      "kind": "test",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/executor_plugin_mcp-5d67fe2addaaeca4"
+    },
+    {
+      "binary_id": "codex-mcp-extension::hosted_apps_mcp",
+      "binary_name": "hosted_apps_mcp",
+      "package_name": "codex-mcp-extension",
+      "package_id_sha256": "63c5df8d68a773bf19337a5df27cb77d806830277b470f4a144fa83f09f77621",
+      "kind": "test",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/hosted_apps_mcp-35d69e0cc3e0f4f9"
+    },
+    {
+      "binary_id": "codex-mcp-server",
+      "binary_name": "codex_mcp_server",
+      "package_name": "codex-mcp-server",
+      "package_id_sha256": "92cca6a212ebda7d2d296bd99ba4f8a1def1fa7c18809f7c647a970a27d64703",
+      "kind": "lib",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/codex_mcp_server-e946983cd0097eb3"
+    },
+    {
+      "binary_id": "codex-mcp-server::all",
+      "binary_name": "all",
+      "package_name": "codex-mcp-server",
+      "package_id_sha256": "92cca6a212ebda7d2d296bd99ba4f8a1def1fa7c18809f7c647a970a27d64703",
+      "kind": "test",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/all-2144d7fad04914b7"
+    },
+    {
+      "binary_id": "codex-mcp-server::bin/codex-mcp-server",
+      "binary_name": "codex-mcp-server",
+      "package_name": "codex-mcp-server",
+      "package_id_sha256": "92cca6a212ebda7d2d296bd99ba4f8a1def1fa7c18809f7c647a970a27d64703",
+      "kind": "bin",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/codex_mcp_server-c82cd8d02cff2180"
+    },
+    {
+      "binary_id": "codex-memories-extension",
+      "binary_name": "codex_memories_extension",
+      "package_name": "codex-memories-extension",
+      "package_id_sha256": "45ce0f1c5b0ce2802112f787fc3b4b695823a2693a8d52a7e75d713aeb8c2b7d",
+      "kind": "lib",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/codex_memories_extension-600249ee051d7520"
+    },
+    {
+      "binary_id": "codex-memories-read",
+      "binary_name": "codex_memories_read",
+      "package_name": "codex-memories-read",
+      "package_id_sha256": "ba509ed8ac70e3781e6ea10b0fa4303ac5b2748f997048b7fa19885645799171",
+      "kind": "lib",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/codex_memories_read-8d1360bac53b6df6"
+    },
+    {
+      "binary_id": "codex-memories-write",
+      "binary_name": "codex_memories_write",
+      "package_name": "codex-memories-write",
+      "package_id_sha256": "7c9454a9226373620cc450592986fb12aafdf46cea70ad1f4f039d6a590a3021",
+      "kind": "lib",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/codex_memories_write-93404282384378b5"
+    },
+    {
+      "binary_id": "codex-message-history",
+      "binary_name": "codex_message_history",
+      "package_name": "codex-message-history",
+      "package_id_sha256": "f291c382a353e2041080ebde3361b04620f9df736c5253693d1355c8d3ae442e",
+      "kind": "lib",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/codex_message_history-e8154fdd54bcc0f8"
+    },
+    {
+      "binary_id": "codex-model-provider",
+      "binary_name": "codex_model_provider",
+      "package_name": "codex-model-provider",
+      "package_id_sha256": "ce034367a86c3a2d020e5f6673d04367a8ad6a6b20518301ac4eb7260f577d34",
+      "kind": "lib",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/codex_model_provider-8c0ad7d3a1af9078"
+    },
+    {
+      "binary_id": "codex-model-provider-info",
+      "binary_name": "codex_model_provider_info",
+      "package_name": "codex-model-provider-info",
+      "package_id_sha256": "00e2dac4f4627c2450d472263a3ccce7bde836ad3e1053e70ea6b56757d7e310",
+      "kind": "lib",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/codex_model_provider_info-53dd01a934fb0100"
+    },
+    {
+      "binary_id": "codex-models-manager",
+      "binary_name": "codex_models_manager",
+      "package_name": "codex-models-manager",
+      "package_id_sha256": "b917f28372e929d08d9be4b335cf4655634c7cc40c9d0066215e4805f1164323",
+      "kind": "lib",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/codex_models_manager-1ca456f40a8976c1"
+    },
+    {
+      "binary_id": "codex-network-proxy",
+      "binary_name": "codex_network_proxy",
+      "package_name": "codex-network-proxy",
+      "package_id_sha256": "20624e2af72489bf67a957117dd285b03b5602fc39e62ad3d42783efd4e3baec",
+      "kind": "lib",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/codex_network_proxy-03a623f4492334b7"
+    },
+    {
+      "binary_id": "codex-network-proxy::windows_stable_ingress",
+      "binary_name": "windows_stable_ingress",
+      "package_name": "codex-network-proxy",
+      "package_id_sha256": "20624e2af72489bf67a957117dd285b03b5602fc39e62ad3d42783efd4e3baec",
+      "kind": "test",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/windows_stable_ingress-83b5e358e6176afe"
+    },
+    {
+      "binary_id": "codex-ollama",
+      "binary_name": "codex_ollama",
+      "package_name": "codex-ollama",
+      "package_id_sha256": "ca9b68dc4121b5f6487ea49479fba03c7366c32043a02bd00b4c93d67247d361",
+      "kind": "lib",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/codex_ollama-a00777f66dd0a162"
+    },
+    {
+      "binary_id": "codex-otel",
+      "binary_name": "codex_otel",
+      "package_name": "codex-otel",
+      "package_id_sha256": "209081f5d838af54a3cb426384e69c3cfb9f70c36a1c0209208dd8845b337941",
+      "kind": "lib",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/codex_otel-847fa61f9d9fd331"
+    },
+    {
+      "binary_id": "codex-otel::tests",
+      "binary_name": "tests",
+      "package_name": "codex-otel",
+      "package_id_sha256": "209081f5d838af54a3cb426384e69c3cfb9f70c36a1c0209208dd8845b337941",
+      "kind": "test",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/tests-5757456d3513a8d1"
+    },
+    {
+      "binary_id": "codex-plugin",
+      "binary_name": "codex_plugin",
+      "package_name": "codex-plugin",
+      "package_id_sha256": "d973a75b701b474cd3fcae49cf3a25d49d57547d141eae73966184fe2df76b89",
+      "kind": "lib",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/codex_plugin-fe6d291350e4d988"
+    },
+    {
+      "binary_id": "codex-process-hardening",
+      "binary_name": "codex_process_hardening",
+      "package_name": "codex-process-hardening",
+      "package_id_sha256": "1dd6f6187f2e9207cd1b93cd99d0d4cc849094b4e9d12b000e5c4e134f4a263a",
+      "kind": "lib",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/codex_process_hardening-59d1eccadb2f9cd9"
+    },
+    {
+      "binary_id": "codex-prompts",
+      "binary_name": "codex_prompts",
+      "package_name": "codex-prompts",
+      "package_id_sha256": "ddc4cdfd9d206a1149134de2479c5bef1b9efd19a649257b4761e269590b868b",
+      "kind": "lib",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/codex_prompts-9237640a7441a6e0"
+    },
+    {
+      "binary_id": "codex-protocol",
+      "binary_name": "codex_protocol",
+      "package_name": "codex-protocol",
+      "package_id_sha256": "444bea5c8329c065c3cbbc59bc93b6cc14de72d26fe22761b30b660581f6fc1b",
+      "kind": "lib",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/codex_protocol-c9d5464666c59078"
+    },
+    {
+      "binary_id": "codex-queue-extension",
+      "binary_name": "codex_queue_extension",
+      "package_name": "codex-queue-extension",
+      "package_id_sha256": "8a5a390b408502491d8272ca4285e079bf3b665d488768c763b32d5d63936afa",
+      "kind": "lib",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/codex_queue_extension-9e4a34da3a90d3c9"
+    },
+    {
+      "binary_id": "codex-queue-extension::queue_service",
+      "binary_name": "queue_service",
+      "package_name": "codex-queue-extension",
+      "package_id_sha256": "8a5a390b408502491d8272ca4285e079bf3b665d488768c763b32d5d63936afa",
+      "kind": "test",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/queue_service-bceeba574060b3dc"
+    },
+    {
+      "binary_id": "codex-response-debug-context",
+      "binary_name": "codex_response_debug_context",
+      "package_name": "codex-response-debug-context",
+      "package_id_sha256": "35f92fcae53a14ee69d4785b2fad3bac32e792621b24f254a7ed172907ad1b6d",
+      "kind": "lib",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/codex_response_debug_context-2c7da049bb035242"
+    },
+    {
+      "binary_id": "codex-responses-api-proxy",
+      "binary_name": "codex_responses_api_proxy",
+      "package_name": "codex-responses-api-proxy",
+      "package_id_sha256": "35db85eb0766147f879aef0ef5ec2da6486ee98de0c05224e9a18f0b26b9dff8",
+      "kind": "lib",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/codex_responses_api_proxy-3842972de3951956"
+    },
+    {
+      "binary_id": "codex-responses-api-proxy::bin/codex-responses-api-proxy",
+      "binary_name": "codex-responses-api-proxy",
+      "package_name": "codex-responses-api-proxy",
+      "package_id_sha256": "35db85eb0766147f879aef0ef5ec2da6486ee98de0c05224e9a18f0b26b9dff8",
+      "kind": "bin",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/codex_responses_api_proxy-bc94de59f42b2a8e"
+    },
+    {
+      "binary_id": "codex-rmcp-client",
+      "binary_name": "codex_rmcp_client",
+      "package_name": "codex-rmcp-client",
+      "package_id_sha256": "4286678ef2a4137e35b1d9f333f51103ea66761f914abfadade7d98d132c297e",
+      "kind": "lib",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/codex_rmcp_client-80adf0e06fd97b7c"
+    },
+    {
+      "binary_id": "codex-rmcp-client::bin/rmcp_test_server",
+      "binary_name": "rmcp_test_server",
+      "package_name": "codex-rmcp-client",
+      "package_id_sha256": "4286678ef2a4137e35b1d9f333f51103ea66761f914abfadade7d98d132c297e",
+      "kind": "bin",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/rmcp_test_server-8bb38a73a0c07b1a"
+    },
+    {
+      "binary_id": "codex-rmcp-client::bin/test_mcp_2026_discovery_stdio_server",
+      "binary_name": "test_mcp_2026_discovery_stdio_server",
+      "package_name": "codex-rmcp-client",
+      "package_id_sha256": "4286678ef2a4137e35b1d9f333f51103ea66761f914abfadade7d98d132c297e",
+      "kind": "bin",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/test_mcp_2026_discovery_stdio_server-7130abd4d49b43bd"
+    },
+    {
+      "binary_id": "codex-rmcp-client::bin/test_mcp_2026_stdio_server",
+      "binary_name": "test_mcp_2026_stdio_server",
+      "package_name": "codex-rmcp-client",
+      "package_id_sha256": "4286678ef2a4137e35b1d9f333f51103ea66761f914abfadade7d98d132c297e",
+      "kind": "bin",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/test_mcp_2026_stdio_server-014b51c96c38895c"
+    },
+    {
+      "binary_id": "codex-rmcp-client::bin/test_stdio_server",
+      "binary_name": "test_stdio_server",
+      "package_name": "codex-rmcp-client",
+      "package_id_sha256": "4286678ef2a4137e35b1d9f333f51103ea66761f914abfadade7d98d132c297e",
+      "kind": "bin",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/test_stdio_server-dbf6ee766833db82"
+    },
+    {
+      "binary_id": "codex-rmcp-client::bin/test_streamable_http_server",
+      "binary_name": "test_streamable_http_server",
+      "package_name": "codex-rmcp-client",
+      "package_id_sha256": "4286678ef2a4137e35b1d9f333f51103ea66761f914abfadade7d98d132c297e",
+      "kind": "bin",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/test_streamable_http_server-f396f48a3b4b788d"
+    },
+    {
+      "binary_id": "codex-rmcp-client::foreign_stdio_cwd",
+      "binary_name": "foreign_stdio_cwd",
+      "package_name": "codex-rmcp-client",
+      "package_id_sha256": "4286678ef2a4137e35b1d9f333f51103ea66761f914abfadade7d98d132c297e",
+      "kind": "test",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/foreign_stdio_cwd-fb67f87ae9e8505b"
+    },
+    {
+      "binary_id": "codex-rmcp-client::mcp_2026_discovery",
+      "binary_name": "mcp_2026_discovery",
+      "package_name": "codex-rmcp-client",
+      "package_id_sha256": "4286678ef2a4137e35b1d9f333f51103ea66761f914abfadade7d98d132c297e",
+      "kind": "test",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/mcp_2026_discovery-7fb4a53c999ac094"
+    },
+    {
+      "binary_id": "codex-rmcp-client::mcp_2026_message_limits",
+      "binary_name": "mcp_2026_message_limits",
+      "package_name": "codex-rmcp-client",
+      "package_id_sha256": "4286678ef2a4137e35b1d9f333f51103ea66761f914abfadade7d98d132c297e",
+      "kind": "test",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/mcp_2026_message_limits-19fae2778230e122"
+    },
+    {
+      "binary_id": "codex-rmcp-client::mcp_2026_mrtr",
+      "binary_name": "mcp_2026_mrtr",
+      "package_name": "codex-rmcp-client",
+      "package_id_sha256": "4286678ef2a4137e35b1d9f333f51103ea66761f914abfadade7d98d132c297e",
+      "kind": "test",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/mcp_2026_mrtr-3ace576c294d2613"
+    },
+    {
+      "binary_id": "codex-rmcp-client::mcp_2026_oauth_discovery",
+      "binary_name": "mcp_2026_oauth_discovery",
+      "package_name": "codex-rmcp-client",
+      "package_id_sha256": "4286678ef2a4137e35b1d9f333f51103ea66761f914abfadade7d98d132c297e",
+      "kind": "test",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/mcp_2026_oauth_discovery-3d71b2e830b50ec3"
+    },
+    {
+      "binary_id": "codex-rmcp-client::mcp_2026_sse_discovery",
+      "binary_name": "mcp_2026_sse_discovery",
+      "package_name": "codex-rmcp-client",
+      "package_id_sha256": "4286678ef2a4137e35b1d9f333f51103ea66761f914abfadade7d98d132c297e",
+      "kind": "test",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/mcp_2026_sse_discovery-e213333f99a0ddba"
+    },
+    {
+      "binary_id": "codex-rmcp-client::mcp_2026_stdio",
+      "binary_name": "mcp_2026_stdio",
+      "package_name": "codex-rmcp-client",
+      "package_id_sha256": "4286678ef2a4137e35b1d9f333f51103ea66761f914abfadade7d98d132c297e",
+      "kind": "test",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/mcp_2026_stdio-d8798b44e905ada7"
+    },
+    {
+      "binary_id": "codex-rmcp-client::mcp_2026_stdio_discovery",
+      "binary_name": "mcp_2026_stdio_discovery",
+      "package_name": "codex-rmcp-client",
+      "package_id_sha256": "4286678ef2a4137e35b1d9f333f51103ea66761f914abfadade7d98d132c297e",
+      "kind": "test",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/mcp_2026_stdio_discovery-54ba8f9df8d7aaeb"
+    },
+    {
+      "binary_id": "codex-rmcp-client::mcp_events",
+      "binary_name": "mcp_events",
+      "package_name": "codex-rmcp-client",
+      "package_id_sha256": "4286678ef2a4137e35b1d9f333f51103ea66761f914abfadade7d98d132c297e",
+      "kind": "test",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/mcp_events-0051712a2e6381af"
+    },
+    {
+      "binary_id": "codex-rmcp-client::process_group_cleanup",
+      "binary_name": "process_group_cleanup",
+      "package_name": "codex-rmcp-client",
+      "package_id_sha256": "4286678ef2a4137e35b1d9f333f51103ea66761f914abfadade7d98d132c297e",
+      "kind": "test",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/process_group_cleanup-a75f132eb55879ad"
+    },
+    {
+      "binary_id": "codex-rmcp-client::resources",
+      "binary_name": "resources",
+      "package_name": "codex-rmcp-client",
+      "package_id_sha256": "4286678ef2a4137e35b1d9f333f51103ea66761f914abfadade7d98d132c297e",
+      "kind": "test",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/resources-e959b6f70a8d7827"
+    },
+    {
+      "binary_id": "codex-rmcp-client::stdio_message_limits",
+      "binary_name": "stdio_message_limits",
+      "package_name": "codex-rmcp-client",
+      "package_id_sha256": "4286678ef2a4137e35b1d9f333f51103ea66761f914abfadade7d98d132c297e",
+      "kind": "test",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/stdio_message_limits-41a29bc55feee63e"
+    },
+    {
+      "binary_id": "codex-rmcp-client::streamable_http_oauth_startup",
+      "binary_name": "streamable_http_oauth_startup",
+      "package_name": "codex-rmcp-client",
+      "package_id_sha256": "4286678ef2a4137e35b1d9f333f51103ea66761f914abfadade7d98d132c297e",
+      "kind": "test",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/streamable_http_oauth_startup-cb6474fc2f202284"
+    },
+    {
+      "binary_id": "codex-rmcp-client::streamable_http_oauth_store_pinning",
+      "binary_name": "streamable_http_oauth_store_pinning",
+      "package_name": "codex-rmcp-client",
+      "package_id_sha256": "4286678ef2a4137e35b1d9f333f51103ea66761f914abfadade7d98d132c297e",
+      "kind": "test",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/streamable_http_oauth_store_pinning-8f81ea0d815b878f"
+    },
+    {
+      "binary_id": "codex-rmcp-client::streamable_http_recovery",
+      "binary_name": "streamable_http_recovery",
+      "package_name": "codex-rmcp-client",
+      "package_id_sha256": "4286678ef2a4137e35b1d9f333f51103ea66761f914abfadade7d98d132c297e",
+      "kind": "test",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/streamable_http_recovery-f28498c24f80c9d9"
+    },
+    {
+      "binary_id": "codex-rmcp-client::streamable_http_remote",
+      "binary_name": "streamable_http_remote",
+      "package_name": "codex-rmcp-client",
+      "package_id_sha256": "4286678ef2a4137e35b1d9f333f51103ea66761f914abfadade7d98d132c297e",
+      "kind": "test",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/streamable_http_remote-8ce4b38ef3f60ca5"
+    },
+    {
+      "binary_id": "codex-rmcp-client::streamable_http_test_support",
+      "binary_name": "streamable_http_test_support",
+      "package_name": "codex-rmcp-client",
+      "package_id_sha256": "4286678ef2a4137e35b1d9f333f51103ea66761f914abfadade7d98d132c297e",
+      "kind": "test",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/streamable_http_test_support-e3c847fd8debffc8"
+    },
+    {
+      "binary_id": "codex-rmcp-client::streamable_http_user_agent",
+      "binary_name": "streamable_http_user_agent",
+      "package_name": "codex-rmcp-client",
+      "package_id_sha256": "4286678ef2a4137e35b1d9f333f51103ea66761f914abfadade7d98d132c297e",
+      "kind": "test",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/streamable_http_user_agent-ddc65fc19a4280e1"
+    },
+    {
+      "binary_id": "codex-rollout",
+      "binary_name": "codex_rollout",
+      "package_name": "codex-rollout",
+      "package_id_sha256": "d58dd85fd412d6d37dae2928e32a8f6a41223999402763f1690ccb1da73a5cc9",
+      "kind": "lib",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/codex_rollout-f67a1c7aa3046127"
+    },
+    {
+      "binary_id": "codex-rollout-trace",
+      "binary_name": "codex_rollout_trace",
+      "package_name": "codex-rollout-trace",
+      "package_id_sha256": "019ec700aa2b6161341e88adc39b70669e94c3a0250c88f5b2b7b2dbf9b15dfa",
+      "kind": "lib",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/codex_rollout_trace-6d7e16855869499a"
+    },
+    {
+      "binary_id": "codex-sandboxing",
+      "binary_name": "codex_sandboxing",
+      "package_name": "codex-sandboxing",
+      "package_id_sha256": "83cd17753fb265627d51c5c3b2ab23aef7a7c256dc511593fd71a4fcacf054cb",
+      "kind": "lib",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/codex_sandboxing-22cccac1ce97b90d"
+    },
+    {
+      "binary_id": "codex-secrets",
+      "binary_name": "codex_secrets",
+      "package_name": "codex-secrets",
+      "package_id_sha256": "fe0d3f650fe8b8225fb5c89a6ba68f7514e01dd1d730ebc97bad7c3a7253d30d",
+      "kind": "lib",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/codex_secrets-c9964d3b1b941f76"
+    },
+    {
+      "binary_id": "codex-shell-command",
+      "binary_name": "codex_shell_command",
+      "package_name": "codex-shell-command",
+      "package_id_sha256": "da6a958cd67e9ff8eb8c4643e239ee6d086684c54a944e5c10ed215067eee0d7",
+      "kind": "lib",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/codex_shell_command-e3fbb170acd9101b"
+    },
+    {
+      "binary_id": "codex-shell-escalation",
+      "binary_name": "codex_shell_escalation",
+      "package_name": "codex-shell-escalation",
+      "package_id_sha256": "d5c624dbe899f40d35a08637e63acda4461f2c00aa0ddce0c21dd49d111a49cb",
+      "kind": "lib",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/codex_shell_escalation-5617aaf3a1fd2df5"
+    },
+    {
+      "binary_id": "codex-shell-escalation::bin/codex-execve-wrapper",
+      "binary_name": "codex-execve-wrapper",
+      "package_name": "codex-shell-escalation",
+      "package_id_sha256": "d5c624dbe899f40d35a08637e63acda4461f2c00aa0ddce0c21dd49d111a49cb",
+      "kind": "bin",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/codex_execve_wrapper-8f30e0d0dadd3984"
+    },
+    {
+      "binary_id": "codex-skills",
+      "binary_name": "codex_skills",
+      "package_name": "codex-skills",
+      "package_id_sha256": "f7d03a17f3cf1ec26bf9c580ad6b89e13270c92e22793dca1042b6b5fcbf91bb",
+      "kind": "lib",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/codex_skills-70cd12046c06a048"
+    },
+    {
+      "binary_id": "codex-skills-extension",
+      "binary_name": "codex_skills_extension",
+      "package_name": "codex-skills-extension",
+      "package_id_sha256": "a92ccd83373b8e3d3002c3541f07a46d9e0b20b4a12cf8564bc6999055bb8581",
+      "kind": "lib",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/codex_skills_extension-ac58db844d67647e"
+    },
+    {
+      "binary_id": "codex-skills-extension::executor_file_system_authority",
+      "binary_name": "executor_file_system_authority",
+      "package_name": "codex-skills-extension",
+      "package_id_sha256": "a92ccd83373b8e3d3002c3541f07a46d9e0b20b4a12cf8564bc6999055bb8581",
+      "kind": "test",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/executor_file_system_authority-1be3a84a0e429521"
+    },
+    {
+      "binary_id": "codex-skills-extension::skills_extension",
+      "binary_name": "skills_extension",
+      "package_name": "codex-skills-extension",
+      "package_id_sha256": "a92ccd83373b8e3d3002c3541f07a46d9e0b20b4a12cf8564bc6999055bb8581",
+      "kind": "test",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/skills_extension-17c126ea9da6a421"
+    },
+    {
+      "binary_id": "codex-state",
+      "binary_name": "codex_state",
+      "package_name": "codex-state",
+      "package_id_sha256": "96d949aa723e62c5b1d224de732aaf2163120983eb6df760471846d7f47d0852",
+      "kind": "lib",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/codex_state-8523099e2d8e7d74"
+    },
+    {
+      "binary_id": "codex-stdio-to-uds::bin/codex-stdio-to-uds",
+      "binary_name": "codex-stdio-to-uds",
+      "package_name": "codex-stdio-to-uds",
+      "package_id_sha256": "988ad5bd1b6ac73c4e15b005e691fe9f9dae678c4c0b3ec412c1f8a33776cdc8",
+      "kind": "bin",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/codex_stdio_to_uds-6d1c45fca9d09b6e"
+    },
+    {
+      "binary_id": "codex-stdio-to-uds::stdio_to_uds",
+      "binary_name": "stdio_to_uds",
+      "package_name": "codex-stdio-to-uds",
+      "package_id_sha256": "988ad5bd1b6ac73c4e15b005e691fe9f9dae678c4c0b3ec412c1f8a33776cdc8",
+      "kind": "test",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/stdio_to_uds-51d5d3a57d80497f"
+    },
+    {
+      "binary_id": "codex-terminal-detection",
+      "binary_name": "codex_terminal_detection",
+      "package_name": "codex-terminal-detection",
+      "package_id_sha256": "e8771d32e543946e02c4241108cd6121c3e9f1660b430770efafd0d9ad6f2656",
+      "kind": "lib",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/codex_terminal_detection-d463c649e7cafe3e"
+    },
+    {
+      "binary_id": "codex-thread-manager-sample::bin/codex-thread-manager-sample",
+      "binary_name": "codex-thread-manager-sample",
+      "package_name": "codex-thread-manager-sample",
+      "package_id_sha256": "fd212c43f9b05c1b73147f366fb9b3dbbae01c6b752f77bcf8398b561a32da1d",
+      "kind": "bin",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/codex_thread_manager_sample-9b97428e14cdfaf2"
+    },
+    {
+      "binary_id": "codex-thread-store",
+      "binary_name": "codex_thread_store",
+      "package_name": "codex-thread-store",
+      "package_id_sha256": "19ded9d4a97798c5018b2e8899130aa24ffb8936ef07f89fa7d7db6397617cd9",
+      "kind": "lib",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/codex_thread_store-dd46fb02878c4080"
+    },
+    {
+      "binary_id": "codex-tools",
+      "binary_name": "codex_tools",
+      "package_name": "codex-tools",
+      "package_id_sha256": "9313fdabd262305b8360b057caa24b1d35faa6bc56f48d22a426c761d8ea244a",
+      "kind": "lib",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/codex_tools-50ddf7caafa34ff6"
+    },
+    {
+      "binary_id": "codex-tools::json_schema_policy_fixtures",
+      "binary_name": "json_schema_policy_fixtures",
+      "package_name": "codex-tools",
+      "package_id_sha256": "9313fdabd262305b8360b057caa24b1d35faa6bc56f48d22a426c761d8ea244a",
+      "kind": "test",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/json_schema_policy_fixtures-70fec683586fd2fd"
+    },
+    {
+      "binary_id": "codex-tui",
+      "binary_name": "codex_tui",
+      "package_name": "codex-tui",
+      "package_id_sha256": "4ccc82fabed149710b4a6944ac43c25a166cdd056118a1d22945408a176250e9",
+      "kind": "lib",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/codex_tui-3fdaa7ef6f7a2468"
+    },
+    {
+      "binary_id": "codex-tui::all",
+      "binary_name": "all",
+      "package_name": "codex-tui",
+      "package_id_sha256": "4ccc82fabed149710b4a6944ac43c25a166cdd056118a1d22945408a176250e9",
+      "kind": "test",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/all-141c1fb3ceffd41e"
+    },
+    {
+      "binary_id": "codex-tui::bin/codex-tui",
+      "binary_name": "codex-tui",
+      "package_name": "codex-tui",
+      "package_id_sha256": "4ccc82fabed149710b4a6944ac43c25a166cdd056118a1d22945408a176250e9",
+      "kind": "bin",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/codex_tui-6b1e4f9d1d9384fd"
+    },
+    {
+      "binary_id": "codex-tui::bin/md-events",
+      "binary_name": "md-events",
+      "package_name": "codex-tui",
+      "package_id_sha256": "4ccc82fabed149710b4a6944ac43c25a166cdd056118a1d22945408a176250e9",
+      "kind": "bin",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/md_events-a3ecbd00b2980016"
+    },
+    {
+      "binary_id": "codex-tui::manager_dependency_regression",
+      "binary_name": "manager_dependency_regression",
+      "package_name": "codex-tui",
+      "package_id_sha256": "4ccc82fabed149710b4a6944ac43c25a166cdd056118a1d22945408a176250e9",
+      "kind": "test",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/manager_dependency_regression-60d69ff765aeaff3"
+    },
+    {
+      "binary_id": "codex-tui::test_backend",
+      "binary_name": "test_backend",
+      "package_name": "codex-tui",
+      "package_id_sha256": "4ccc82fabed149710b4a6944ac43c25a166cdd056118a1d22945408a176250e9",
+      "kind": "test",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/test_backend-c423a7d612b5df62"
+    },
+    {
+      "binary_id": "codex-uds",
+      "binary_name": "codex_uds",
+      "package_name": "codex-uds",
+      "package_id_sha256": "ffebf0df7aaa3d3fca073a7666d0b8175a4739a7412228571c1b3dab72c4b361",
+      "kind": "lib",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/codex_uds-d72db777b9bafac4"
+    },
+    {
+      "binary_id": "codex-utils-absolute-path",
+      "binary_name": "codex_utils_absolute_path",
+      "package_name": "codex-utils-absolute-path",
+      "package_id_sha256": "93c2efeedfccae44e8431d8342b4cc1c23c02bff057361e87863f49cd180acbb",
+      "kind": "lib",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/codex_utils_absolute_path-ae82e118f0f29eb9"
+    },
+    {
+      "binary_id": "codex-utils-audio",
+      "binary_name": "codex_utils_audio",
+      "package_name": "codex-utils-audio",
+      "package_id_sha256": "b645f3a3ae0f75b5d58b46625a4eaa24f079ccbcdd3155695938403d826cb4af",
+      "kind": "lib",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/codex_utils_audio-ac3ef7ec1a287bee"
+    },
+    {
+      "binary_id": "codex-utils-build-identity",
+      "binary_name": "codex_utils_build_identity",
+      "package_name": "codex-utils-build-identity",
+      "package_id_sha256": "c7dc35a8af40b31ef4c50630af626b7803f36bee6b52f00e90d1893fd4b3bc1f",
+      "kind": "lib",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/codex_utils_build_identity-d42157cc2becd1ac"
+    },
+    {
+      "binary_id": "codex-utils-cache",
+      "binary_name": "codex_utils_cache",
+      "package_name": "codex-utils-cache",
+      "package_id_sha256": "a8702ee3b46a5ab2d1f7f869fd7a99ac80e29dffd66dd22e5c8461e4cb8f241d",
+      "kind": "lib",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/codex_utils_cache-d6affc637e7fe835"
+    },
+    {
+      "binary_id": "codex-utils-cargo-bin::cargo_bin",
+      "binary_name": "cargo_bin",
+      "package_name": "codex-utils-cargo-bin",
+      "package_id_sha256": "27173d0f1d91aedca3c24b55d0e82b700884d54ed5edbd1352a8971c24f72c3e",
+      "kind": "test",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/cargo_bin-eb9f538a33995b39"
+    },
+    {
+      "binary_id": "codex-utils-cli",
+      "binary_name": "codex_utils_cli",
+      "package_name": "codex-utils-cli",
+      "package_id_sha256": "3e22accdd398a1fbec6c9551aea3c85771051d8e33a5ca6f9684fd20a23349ea",
+      "kind": "lib",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/codex_utils_cli-54af44c15a5bd2b9"
+    },
+    {
+      "binary_id": "codex-utils-elapsed",
+      "binary_name": "codex_utils_elapsed",
+      "package_name": "codex-utils-elapsed",
+      "package_id_sha256": "b8b933a1fd6ad283c980777941b7c12691e6bd4c980fd2573741529f2bf0bca9",
+      "kind": "lib",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/codex_utils_elapsed-a9e9afd7774fb44f"
+    },
+    {
+      "binary_id": "codex-utils-fuzzy-match",
+      "binary_name": "codex_utils_fuzzy_match",
+      "package_name": "codex-utils-fuzzy-match",
+      "package_id_sha256": "ce56a90253380345267786e41d0c6243db6ca68e6aae528e7ac5d8d5bee3ed3e",
+      "kind": "lib",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/codex_utils_fuzzy_match-dd9c580835bf3e2f"
+    },
+    {
+      "binary_id": "codex-utils-home-dir",
+      "binary_name": "codex_utils_home_dir",
+      "package_name": "codex-utils-home-dir",
+      "package_id_sha256": "4eab45d20f0dabbb07e0d8c17eb55eaf272a1194e7d2ba4b8d85776f3b13d842",
+      "kind": "lib",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/codex_utils_home_dir-481b274286281409"
+    },
+    {
+      "binary_id": "codex-utils-image",
+      "binary_name": "codex_utils_image",
+      "package_name": "codex-utils-image",
+      "package_id_sha256": "fddeef1ac3ff903ee7b02be7f31317062a2e0b7d934cf2c3d90d331024728bf2",
+      "kind": "lib",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/codex_utils_image-cc032a67dcc56e2d"
+    },
+    {
+      "binary_id": "codex-utils-json-to-toml",
+      "binary_name": "codex_utils_json_to_toml",
+      "package_name": "codex-utils-json-to-toml",
+      "package_id_sha256": "ce1ed716a938a886d0a5f44d0316bafb09fd0deac53a33232385519d57148317",
+      "kind": "lib",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/codex_utils_json_to_toml-9ddb5ff3444887c4"
+    },
+    {
+      "binary_id": "codex-utils-oss",
+      "binary_name": "codex_utils_oss",
+      "package_name": "codex-utils-oss",
+      "package_id_sha256": "f0b905909fb2d278f4876ca73e369c00e7f1f16d9a3e6435e7fcb36351fd79d1",
+      "kind": "lib",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/codex_utils_oss-cce2b50d391f74fb"
+    },
+    {
+      "binary_id": "codex-utils-output-truncation",
+      "binary_name": "codex_utils_output_truncation",
+      "package_name": "codex-utils-output-truncation",
+      "package_id_sha256": "be7498859821aecd6a2885c2adf41d2b2cc87d01827945783f13000a7a7a69b4",
+      "kind": "lib",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/codex_utils_output_truncation-06ca42c99c4c23f8"
+    },
+    {
+      "binary_id": "codex-utils-path",
+      "binary_name": "codex_utils_path",
+      "package_name": "codex-utils-path",
+      "package_id_sha256": "b57a4b2c5e3f3bbf54eb32118f73059c6373d49d671a78abc44a6d964d7b1388",
+      "kind": "lib",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/codex_utils_path-fbb545491cea3d3d"
+    },
+    {
+      "binary_id": "codex-utils-path-uri",
+      "binary_name": "codex_utils_path_uri",
+      "package_name": "codex-utils-path-uri",
+      "package_id_sha256": "bb41e225283029b25dd63b67870eb02a4a677aabb803e1d319a0582caeb7cff2",
+      "kind": "lib",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/codex_utils_path_uri-1c1a018b0345c362"
+    },
+    {
+      "binary_id": "codex-utils-plugins",
+      "binary_name": "codex_utils_plugins",
+      "package_name": "codex-utils-plugins",
+      "package_id_sha256": "1cf4f4c828e4a41bbf4e2f15d5d137882ef443ed506199d368d3587818537f4f",
+      "kind": "lib",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/codex_utils_plugins-2e9394f252ef5c3c"
+    },
+    {
+      "binary_id": "codex-utils-pty",
+      "binary_name": "codex_utils_pty",
+      "package_name": "codex-utils-pty",
+      "package_id_sha256": "f3df14272955ded34ec111b25b115c41c1bcf83a041e31955626575ccea724b7",
+      "kind": "lib",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/codex_utils_pty-951dcdbc1dc14e18"
+    },
+    {
+      "binary_id": "codex-utils-pty::conpty_search_path",
+      "binary_name": "conpty_search_path",
+      "package_name": "codex-utils-pty",
+      "package_id_sha256": "f3df14272955ded34ec111b25b115c41c1bcf83a041e31955626575ccea724b7",
+      "kind": "test",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/conpty_search_path-47a321e7f69d2ebe"
+    },
+    {
+      "binary_id": "codex-utils-readiness",
+      "binary_name": "codex_utils_readiness",
+      "package_name": "codex-utils-readiness",
+      "package_id_sha256": "1b1a8ac2df11bcbe7fe7f73f71e2d1b61b8293070cc1aca7f51a3d2d73b8fe7c",
+      "kind": "lib",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/codex_utils_readiness-2c15d3e7ec567a8b"
+    },
+    {
+      "binary_id": "codex-utils-rustls-provider::preinstalled",
+      "binary_name": "preinstalled",
+      "package_name": "codex-utils-rustls-provider",
+      "package_id_sha256": "e0adf61072fbc47c11cd24abd416aac7e928dd9e29837cf5eabf1b93b84467dc",
+      "kind": "test",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/preinstalled-fe125851992d3b55"
+    },
+    {
+      "binary_id": "codex-utils-rustls-provider::provider",
+      "binary_name": "provider",
+      "package_name": "codex-utils-rustls-provider",
+      "package_id_sha256": "e0adf61072fbc47c11cd24abd416aac7e928dd9e29837cf5eabf1b93b84467dc",
+      "kind": "test",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/provider-ee18eb0a6e574d3e"
+    },
+    {
+      "binary_id": "codex-utils-sandbox-summary",
+      "binary_name": "codex_utils_sandbox_summary",
+      "package_name": "codex-utils-sandbox-summary",
+      "package_id_sha256": "916f2ae47e3ba9b9862f082203280383cf55e37d1940d9f49650c50e2d515438",
+      "kind": "lib",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/codex_utils_sandbox_summary-06fcb3099116a87e"
+    },
+    {
+      "binary_id": "codex-utils-sleep-inhibitor",
+      "binary_name": "codex_utils_sleep_inhibitor",
+      "package_name": "codex-utils-sleep-inhibitor",
+      "package_id_sha256": "64b385a174c2efb36ed763775fcd05d347aff227dbf0db1f9996b857104a5e24",
+      "kind": "lib",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/codex_utils_sleep_inhibitor-bc4a5a89b0a139ed"
+    },
+    {
+      "binary_id": "codex-utils-stream-parser",
+      "binary_name": "codex_utils_stream_parser",
+      "package_name": "codex-utils-stream-parser",
+      "package_id_sha256": "80163922fc35625788d62ab4ff88c734e34b383e120728270cd4a7d75fc9bb9b",
+      "kind": "lib",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/codex_utils_stream_parser-44366c3ab090ccae"
+    },
+    {
+      "binary_id": "codex-utils-string",
+      "binary_name": "codex_utils_string",
+      "package_name": "codex-utils-string",
+      "package_id_sha256": "0174871f2427f0c39854a89b617ca7535d6b50458c7fe175b52a145853c913ad",
+      "kind": "lib",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/codex_utils_string-670e23015f6a69cd"
+    },
+    {
+      "binary_id": "codex-utils-template",
+      "binary_name": "codex_utils_template",
+      "package_name": "codex-utils-template",
+      "package_id_sha256": "79c3ade67c7f3983418e5b68ba28aee247d962f2a0fb461d4029d36d1d79c34b",
+      "kind": "lib",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/codex_utils_template-99f35440bc670880"
+    },
+    {
+      "binary_id": "codex-v8-poc",
+      "binary_name": "codex_v8_poc",
+      "package_name": "codex-v8-poc",
+      "package_id_sha256": "46b4963f8d0af760b13c1885317775c6719e6381211e78ac5edcbb4dbbe86139",
+      "kind": "lib",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/codex_v8_poc-d27574dc14ac07a9"
+    },
+    {
+      "binary_id": "codex-web-search-extension",
+      "binary_name": "codex_web_search_extension",
+      "package_name": "codex-web-search-extension",
+      "package_id_sha256": "77978c68935e7916732c82c055014a51f3c4e1c1d576257c7503053b53e98e2b",
+      "kind": "lib",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/codex_web_search_extension-5c8ac8aee205f9a1"
+    },
+    {
+      "binary_id": "codex-websocket-client",
+      "binary_name": "codex_websocket_client",
+      "package_name": "codex-websocket-client",
+      "package_id_sha256": "0c4cb8bf91d1e7f9ec6027db1362eca4cd4d4b654446e9e7573da5cae770d874",
+      "kind": "lib",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/codex_websocket_client-f2b2bb6d61c6eb2d"
+    },
+    {
+      "binary_id": "codex-windows-sandbox",
+      "binary_name": "codex_windows_sandbox",
+      "package_name": "codex-windows-sandbox",
+      "package_id_sha256": "0f82182ab0767076068cbfdba509d92eb4c44d7793dfe0797c7723e601ad5e9d",
+      "kind": "lib",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/codex_windows_sandbox-0cd4816f87fb7773"
+    },
+    {
+      "binary_id": "codex-windows-sandbox::bin/codex-command-runner",
+      "binary_name": "codex-command-runner",
+      "package_name": "codex-windows-sandbox",
+      "package_id_sha256": "0f82182ab0767076068cbfdba509d92eb4c44d7793dfe0797c7723e601ad5e9d",
+      "kind": "bin",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/codex_command_runner-ebcb305e7487688f"
+    },
+    {
+      "binary_id": "codex-windows-sandbox::bin/codex-windows-sandbox-setup",
+      "binary_name": "codex-windows-sandbox-setup",
+      "package_name": "codex-windows-sandbox",
+      "package_id_sha256": "0f82182ab0767076068cbfdba509d92eb4c44d7793dfe0797c7723e601ad5e9d",
+      "kind": "bin",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/codex_windows_sandbox_setup-e1bb44a502de214e"
+    },
+    {
+      "binary_id": "codex-windows-sandbox::helper_manifest",
+      "binary_name": "helper_manifest",
+      "package_name": "codex-windows-sandbox",
+      "package_id_sha256": "0f82182ab0767076068cbfdba509d92eb4c44d7793dfe0797c7723e601ad5e9d",
+      "kind": "test",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/helper_manifest-2d081ceb98243906"
+    },
+    {
+      "binary_id": "codex-workload-identity",
+      "binary_name": "codex_workload_identity",
+      "package_name": "codex-workload-identity",
+      "package_id_sha256": "9c06205efd77ebc6d9baedcb4fa60c491586b917fcd4d999a6bd05eb4ed838e4",
+      "kind": "lib",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/codex_workload_identity-eb6f5f7bb8ca3021"
+    },
+    {
+      "binary_id": "core_test_support",
+      "binary_name": "core_test_support",
+      "package_name": "core_test_support",
+      "package_id_sha256": "e4941866dba5d7d7a80b0f639ed7429bbf1fd42f7bce70260909ba20bf7aeba0",
+      "kind": "lib",
+      "build_platform": "target",
+      "relative_path": "dev-small/deps/core_test_support-188565e3a613156a"
+    }
+  ],
+  "complete_helper_relative_paths": [
+    "dev-small/apply_patch",
+    "dev-small/codex",
+    "dev-small/codex-app-server",
+    "dev-small/codex-app-server-test-notify-capture",
+    "dev-small/codex-code-mode-host",
+    "dev-small/codex-command-runner",
+    "dev-small/codex-exec",
+    "dev-small/codex-execpolicy",
+    "dev-small/codex-execve-wrapper",
+    "dev-small/codex-hepta-agentd",
+    "dev-small/codex-linux-sandbox",
+    "dev-small/codex-mcp-server",
+    "dev-small/codex-stdio-to-uds",
+    "dev-small/codex-tui",
+    "dev-small/codex-windows-sandbox-setup",
+    "dev-small/codex-write-config-schema",
+    "dev-small/custom_ca_probe",
+    "dev-small/exec-server",
+    "dev-small/hepta",
+    "dev-small/hepta-agentd-browser",
+    "dev-small/hepta-shadow-live-trial",
+    "dev-small/hepta-supervisor-intent-recovery",
+    "dev-small/hepta-supervisord",
+    "dev-small/hepta-taskflow-runtime",
+    "dev-small/logs_client",
+    "dev-small/md-events",
+    "dev-small/rmcp_test_server",
+    "dev-small/test_arg0_preflight",
+    "dev-small/test_mcp_2026_discovery_stdio_server",
+    "dev-small/test_mcp_2026_stdio_server",
+    "dev-small/test_notify_capture",
+    "dev-small/test_stdio_server",
+    "dev-small/test_streamable_http_server"
+  ],
+  "normal_six_helper_layout": [
+    {
+      "target": "codex-code-mode-host",
+      "package_id_sha256": "951859e9af0632ab7f5459db594221240727d9f22ddf200827609a9a9406e918",
+      "features": [],
+      "relative_path": "dev-small/codex-code-mode-host"
+    },
+    {
+      "target": "codex-exec",
+      "package_id_sha256": "8fbe6d7e222154bae42c4c1da4df3c3d54a427d41ebd9fedb14c5e4fb82cfb3f",
+      "features": [],
+      "relative_path": "dev-small/codex-exec"
+    },
+    {
+      "target": "codex-execve-wrapper",
+      "package_id_sha256": "d5c624dbe899f40d35a08637e63acda4461f2c00aa0ddce0c21dd49d111a49cb",
+      "features": [],
+      "relative_path": "dev-small/codex-execve-wrapper"
+    },
+    {
+      "target": "test_arg0_preflight",
+      "package_id_sha256": "7274c7bc2cb18de90f70f27c8f6e7cfa52d70334653ae190a89af8a062d64e67",
+      "features": [],
+      "relative_path": "dev-small/test_arg0_preflight"
+    },
+    {
+      "target": "test_stdio_server",
+      "package_id_sha256": "4286678ef2a4137e35b1d9f333f51103ea66761f914abfadade7d98d132c297e",
+      "features": [],
+      "relative_path": "dev-small/test_stdio_server"
+    },
+    {
+      "target": "test_streamable_http_server",
+      "package_id_sha256": "4286678ef2a4137e35b1d9f333f51103ea66761f914abfadade7d98d132c297e",
+      "features": [],
+      "relative_path": "dev-small/test_streamable_http_server"
+    }
+  ],
+  "payload_sha256": "a34cd6c5400deff4fedfffcb1f4f170eecabbb6bbfab1916829ab3911e986237",
+  "foundation_delta_order": [
+    "r2c-v3-full",
+    "r2d-full",
+    "r2d-without-close-on-drop",
+    "r2d-restore-close-on-drop",
+    "r2e1-test-only-baseline",
+    "r2e1-repair-after-baseline",
+    "r2e2a-full",
+    "r2e2b-full",
+    "r2e3-test-only-baseline",
+    "r2e3-repair-after-baseline",
+    "r2e3-without-native-anchor",
+    "r2e3-restore-native-anchor"
+  ],
+  "foundation_source_paths": [
+    "codex-rs/hepta-memory/src/cognitive_checkpoint_codec.rs",
+    "codex-rs/hepta-memory/src/cognitive_checkpoint_codec_tests.rs",
+    "codex-rs/hepta-memory/src/cognitive_checkpoint_wire.rs",
+    "codex-rs/hepta-memory/src/cognitive_store.rs",
+    "codex-rs/hepta-memory/src/cognitive_store_gate.rs",
+    "codex-rs/hepta-memory/src/cognitive_store_recovery.rs",
+    "codex-rs/hepta-memory/src/lib.rs",
+    "codex-rs/hepta-memory/src/objective_sender.rs",
+    "codex-rs/hepta-memory/src/objective_sender_commit_interlock_tests.rs",
+    "codex-rs/hepta-memory/src/objective_sender_connection_custody_tests.rs",
+    "codex-rs/hepta-memory/src/objective_sender_store.rs",
+    "codex-rs/state/src/lib.rs",
+    "codex-rs/state/src/sqlite.rs",
+    "codex-rs/state/src/sqlite_commit_gate_tests.rs",
+    "codex-rs/state/src/sqlite_read_barrier.rs",
+    "codex-rs/state/src/sqlite_read_barrier_tests.rs"
+  ],
+  "claim": "Complete observed output paths and metadata/target/features for one existing cache family; no measured compiler/linker peak and no B execution qualification."
+}

@@ -1,0 +1,334 @@
+{
+  "schema": "hepta-continuation-blocker-progress-v2",
+  "recorded_utc": "2026-11-05T10:48:32.247883+00:00",
+  "original_registry": "../current-blockers.json",
+  "original_23_status_exit_and_closure_class_unchanged": true,
+  "all_blockers_closed": false,
+  "whole_candidate_qualified": false,
+  "counts": {
+    "CLOSED_SCOPED": 8,
+    "OPEN": 14,
+    "SCIENTIFIC_HOLD": 1
+  },
+  "product": {
+    "pr": 4797,
+    "draft": true,
+    "head": "5b6331250ff459033bd44d1a95daec70131277cc",
+    "tree": "b26598d0d97d8d51e723bb5582137315f2174d35",
+    "base": "63652be658ebed8d3052eb789b951793384fd5e4",
+    "merge": "9063c52a063b6f26c48e9418f6d8dbd14e9e06ff"
+  },
+  "build_only_baseline": {
+    "blob": "31053a6179c016a9b5569cc6fb301e19aeb5c633",
+    "bytes": 265463,
+    "sha256": "16022204ade97bd6cdc78176e5dff2b8c19c536180aa9c5e7a5a219ddda7140f",
+    "scope": "BUILD_ONLY_CURRENT_HOST; no native B tests",
+    "git_tool_augmentation": {
+      "status": "COMPLETE_READONLY",
+      "blob": "5401ad25c5da11a6f37dc1d93a755070f927a396",
+      "bytes": 268075,
+      "sha256": "117ce27929135acfcf8445f23a53842271cad721ef22cf4aaec7024dac3a386a",
+      "git_version": "2.53.0",
+      "source_and_parent_fields_unchanged": true,
+      "tests_executed": false
+    }
+  },
+  "ci_job_snapshot_utc": "2026-11-05T10:41:39.566Z",
+  "ci_job_snapshot": {
+    "total": 44,
+    "queued": 38,
+    "skipped": 2,
+    "success": 4,
+    "running": 0,
+    "complete_pagination_through": "2026-11-05T10:45:00.433Z"
+  },
+  "items": [
+    {
+      "id": "B01",
+      "name": "仓库与证据清单",
+      "priority": "P0",
+      "status": "CLOSED_SCOPED_INVENTORY",
+      "current_label_zh": "新固定全量快照完成；1103 PR / 5193 分支",
+      "evidence_scope_zh": "2026-11-05 03:16–03:24 UTC完整分页与终锚：1103 open PR（1079 Draft/24非Draft）、5193 branches、155 main-base/948 nonmain-base、0非PR open issue/0release；非原子快照及旧1088/5163历史分别保留，110原API正文与117归档成员已根审重建。",
+      "original_exit_condition_zh": "固定时间、固定 refs、无分页缺口、完整机器可读清单。",
+      "next_closure_gate_zh": "后续发布与新CI继续绑定各自观察时间；不把增量观察冒充全量当前总数。",
+      "closure_class": "CLOSED_SCOPED",
+      "latest_continuation_zh": "完整库存后的10:14/10:26 updated-desc增量跨原03:24边界，49条更新、45新Draft编号4824–4868，61完整原件归档；不据此改写原完整库存总数或观察时间。"
+    },
+    {
+      "id": "B02",
+      "name": "单一整合候选",
+      "priority": "P0",
+      "status": "OPEN_FINAL_PRODUCT_QUALIFICATION",
+      "current_label_zh": "单一候选确定；最终源码/CI资格开放",
+      "evidence_scope_zh": "PR#4797保持Draft，已发布cabc。保留第四批f825原25控制25PASS、所属七包5408 JUnit PASS/8FAIL与完整workspace19503 selected=19485 JUnit PASS/17FAIL/1TIMEOUT的原结果。随后Skills9、Migration166、V8及runtime76已在各自固定源通过，App原断连在c6限域通过；新fb9原full19506 selected=19490 JUnit PASS/16FAIL，57ignored、25早退、零retry。完整新旧原件均已独立重建核验；最终原fix/fmt及两项差异检查均实际exit0，自动改动独审完成，22个源提交的代码树为4a337；第四批按现有Draft提交，新head/base/merge原平台CI仍开放。",
+      "original_exit_condition_zh": "逐路径决定保留/合入/延期；manifest、vendor、Cargo 与 Bazel 锁同步；固定候选 head、目标 base 与执行 merge tree；原始必需 CI 全通过。",
+      "next_closure_gate_zh": "保r3 Guardian取消/截止及runtime-scoped Git缓存；最终同一次提交完整源码/锁/证据，验原required CI和合成merge树。",
+      "closure_class": "OPEN",
+      "latest_continuation_zh": "已发布单一Draft候选5b6331250ff459033bd44d1a95daec70131277cc，代码tree b26598d0d97d8d51e723bb5582137315f2174d35，base63652be不变，实际merge9063c52/tree同b265；本轮七个提交十个文件，完整最终原平台资格尚未通过。"
+    },
+    {
+      "id": "B03",
+      "name": "cwd 展示语义",
+      "priority": "P0",
+      "status": "CLOSED_ORIGINAL_CWD_SCOPE",
+      "current_label_zh": "cwd原始7例范围闭合",
+      "evidence_scope_zh": "保留原7/7、0重试/0选中跳过的固定源回执；不外推整个Core/main。",
+      "original_exit_condition_zh": "已满足该原始回归范围；不自动代表整个 Core 或 main 资格通过。",
+      "next_closure_gate_zh": "新整合树保留原语义，若改该代码才触发相应重验。",
+      "closure_class": "CLOSED_SCOPED"
+    },
+    {
+      "id": "B04",
+      "name": "认知投影 oracle",
+      "priority": "P0",
+      "status": "CLOSED_ORIGINAL_PROJECTION_TARGET_SCOPE",
+      "current_label_zh": "认知投影oracle原目标范围闭合",
+      "evidence_scope_zh": "原适用平台目标与SQL边界验证已留档；未改生产投影协议。",
+      "original_exit_condition_zh": "已满足修复后的原产品目标；生产投影协议保持不变。",
+      "next_closure_gate_zh": "保不可变revision/当前指针、来源/更正/删除/重启等原断言；最终产品资格另归B15。",
+      "closure_class": "CLOSED_SCOPED"
+    },
+    {
+      "id": "B05",
+      "name": "supervisord 子进程定位",
+      "priority": "P0",
+      "status": "CLOSED_EXECUTABLE_LOCATION_SCOPE",
+      "current_label_zh": "supervisord绝对可执行路径范围闭合",
+      "evidence_scope_zh": "新Intel daemon RPC超时与已关闭的runfile/cwd定位问题区分；当前诊断不倒退或继承旧闭合。",
+      "original_exit_condition_zh": "已满足原目标的子进程执行断言；不以脚本存在代替真实启动。",
+      "next_closure_gate_zh": "新RPC失败由独立诊断记录处理，保原daemon预算和控制fence。",
+      "closure_class": "CLOSED_SCOPED"
+    },
+    {
+      "id": "B06",
+      "name": "正向私有路径夹具",
+      "priority": "P0",
+      "status": "CLOSED_FIRST_BATCH_TARGET_SCOPE_TUI_SEPARATE",
+      "current_label_zh": "首批正向路径原目标闭合；TUI另列",
+      "evidence_scope_zh": "已提交B06_ORIGINAL_PLATFORM_TARGETS：e729/6b280同树、3目标适用平台通过；Unix-only在Windows为N/A，既有ignore不算通过。",
+      "original_exit_condition_zh": "原 macOS / Windows 对应正向用例通过，原负控维持通过。",
+      "next_closure_gate_zh": "不得写逐case7/7或零skip/retry；TUI第二批仅按其真实原平台收据更新，不混B22。",
+      "closure_class": "CLOSED_SCOPED"
+    },
+    {
+      "id": "B07",
+      "name": "Hook 元数据与工具可见性",
+      "priority": "P0",
+      "status": "IMPLEMENTED_SCOPED_NATIVE_PASS_PLATFORM_RECONCILIATION",
+      "current_label_zh": "原元数据控制有证据；新Hook两例通过，最终平台开放",
+      "evidence_scope_zh": "旧cabc Unix22例及WindowsTokenBudget3例有正文；Windows18Hook为cfg不适用，CodeMode原ignore。da60 active/idle两Hook实际PASS，原请求/顺序/预算保留。",
+      "original_exit_condition_zh": "binding、原 Hook executor、MCP、TokenBudget 用例通过；未配置 server、allow/deny list、环境错配和陈旧目录负控均拒绝。",
+      "next_closure_gate_zh": "最终候选原Hook/MCP/Executor/TokenBudget及allow/deny、环境错配、陈旧目录控制同源终态通过。",
+      "closure_class": "OPEN"
+    },
+    {
+      "id": "B08",
+      "name": "私有 attempted tool 元数据",
+      "priority": "P0",
+      "status": "OPEN_ADDITIONAL_REPLAY_ORACLE_QUALIFICATION",
+      "current_label_zh": "原retained/wire与Linux replay已有局部证据",
+      "evidence_scope_zh": "Windows三个原单元在8份unit日志产生24条观察，非24独立用例；Unixreplay有正文，Windowscfg不适用。新head/merge验收仍开放。",
+      "original_exit_condition_zh": "实际 prompt 已附加的内部 retained calls 与真实 output 对应、原 exact calls 断言通过；非官方 wire 无私有字段；不改变生产持久化。",
+      "next_closure_gate_zh": "在新固定head及merge的原平台执行新增namespaced原例与保留的wire/retained边界；不借B09/B10通过计数。",
+      "closure_class": "OPEN"
+    },
+    {
+      "id": "B09",
+      "name": "终态清理与恢复",
+      "priority": "P0",
+      "status": "IMPLEMENTED_WITH_WINDOWS_LIFECYCLE_SCOPED_PASS",
+      "current_label_zh": "原恢复与Windows指定范围有证据；最终CI开放",
+      "evidence_scope_zh": "旧GNU Wine8恢复+注入有正文；Windows7terminalizer+2steer在8份unit日志为72条观察。原平台失败和retry不被覆盖。",
+      "original_exit_condition_zh": "原注入、idle-steer、suspension、8 个 turn_recover 原用例（含特性门负控）和 panic/cancel/watchdog 负控通过。",
+      "next_closure_gate_zh": "保busy/lineage/exact实例/fence与恢复原负控；最终范围依独立原48映射和本候选原CI。",
+      "closure_class": "OPEN"
+    },
+    {
+      "id": "B10",
+      "name": "WebSocket / prewarm / compact",
+      "priority": "P0",
+      "status": "OPEN_TURN_STATE_FIXTURE_AND_PLATFORM_QUALIFICATION",
+      "current_label_zh": "新Core六例通过；最终原平台开放",
+      "evidence_scope_zh": "5d8上选中6例PASS（含新增真实重连控制）/0retry：真实EOF/并发消费、启动前配置、身份重连、真实提示匹配。有意修正prewarm/request oracle：stable实际4请求=1无工具prewarm+3turn；保留turn-state、turn-id、真实工具结果、原预算和生产身份隔离，不宣称全部原请求/连接数或断言字节不变。",
+      "original_exit_condition_zh": "原连接数、请求数、工具/模型/工作区断言通过；身份变化的拒绝和重连边界保留。",
+      "next_closure_gate_zh": "用同源原turn_state与身份负控验收；不修改production身份或通过放宽请求数获取绿色。",
+      "closure_class": "OPEN"
+    },
+    {
+      "id": "B11",
+      "name": "Windows 原生 sandbox 与 helper",
+      "priority": "P0",
+      "status": "OPEN_WINDOWS_BOUNDARY_AND_DIAGNOSTIC_SCOPE",
+      "current_label_zh": "Windows helper原范围通过；三个严格权限失败仍开放",
+      "evidence_scope_zh": "cabc source/merge各254exec通过，13resume和121rollout分列。strict ACL/token/delete原3失败保留。保持原public query和token旗标的窄ACL幂等V2、DELETE与父DELETE_CHILD四格物理矩阵V2及原Windows成功日志保留均已静态审查并精确应用到fb9组合源，尚未在Windows原生编译或执行。历史助手所述审批限制的原decision/action/reason尚未恢复，不作为新审批事实或永久禁令。",
+      "original_exit_condition_zh": "在获准的修复范围内提供原生 helper 与原严格 token 契约，原攻击/权限/文件系统用例全部通过；需要超出已允许边界时明确升级审批。",
+      "next_closure_gate_zh": "已审窄ACL与四格控制已应用到组合源，最终fix/fmt已完成，待新head原WindowsCI验收。保留原严格token/legacy断言和预算；历史审批原receipt未恢复，不虚构新拒绝或永久禁令。",
+      "closure_class": "OPEN",
+      "latest_continuation_zh": "新head严格原例仍待Windows结果。固定donor4844的生产token物理越界删除与当前token生产字节同源，但测试文件/运行树不同；同descriptor上DELETE拒绝/parent DELETE_CHILD允许。full-restricting外部read拒绝仅AccessCheck控制，不能说替代token物理负控通过。blanket Err与单纯改路由均不关闭原功能合同。"
+    },
+    {
+      "id": "B12",
+      "name": "Windows 私有目录冻结对照",
+      "priority": "P0",
+      "status": "CLOSED_ORIGINAL_WINDOWS_ATTACK_COUNTERFACTUAL_SCOPE",
+      "current_label_zh": "原Windows两正向与两冻结负控范围闭合",
+      "evidence_scope_zh": "原两个正向PASS；两个反事实各1FAIL+1PASS，真实文件系统与精确恢复有收据；不外推一般Windows权限。",
+      "original_exit_condition_zh": "不改生产代码和攻击断言；重建当前源的两个负控，正向 2/2、两负控各精确 1 fail + 1 pass、真实文件系统观察和干净恢复全部成立。",
+      "next_closure_gate_zh": "保留该scope闭合；不外推一般Windows权限或原strict delete三例。",
+      "closure_class": "CLOSED_SCOPED",
+      "latest_continuation_zh": "当前head5b633/treeb265的Windows retained实际532PASS中，祖先替换与junction两项原私有目录拒绝控制具名通过（0.024/0.021s）；原负控历史保留。这两项同head运行补证不扩大B11权限隔离资格。"
+    },
+    {
+      "id": "B13",
+      "name": "Lease / Queue 时序夹具",
+      "priority": "P0",
+      "status": "IMPLEMENTED_SCOPED_NATIVE_PASS_PLATFORM_RECONCILIATION",
+      "current_label_zh": "Lease/Queue局部通过；成功正文缺口仍开放",
+      "evidence_scope_zh": "原负控和局部通过保留。旧成功target缺原名正文仍UNKNOWN；新的成功日志保留已有57Python PASS，待新原平台执行。",
+      "original_exit_condition_zh": "原过期、quarantine、guardian、release=0、单发送及重启不重放断言全保留并在原平台通过。",
+      "next_closure_gate_zh": "原平台同源结果以独立48映射为准；不在此重算或将异源native通过升级全矩阵。",
+      "closure_class": "OPEN",
+      "latest_continuation_zh": "macOS Bash3.2下原57 wrapper控制从3FAIL到57PASS，0skip/retry，完整13文件投影、74原件已审并登记。这修复成功日志保留链路；原Lease/Queue逐名跨平台资格仍须相应真实任务结果。"
+    },
+    {
+      "id": "B14",
+      "name": "Windows exec 恢复清理开销",
+      "priority": "P0",
+      "status": "CLOSED_ORIGINAL_WINDOWS_SOURCE_MERGE_RESUME_SCOPE",
+      "current_label_zh": "原Windows source/merge各13恢复例闭合",
+      "evidence_scope_zh": "cabc source与merge各13resume/121rollout/254exec通过；原90秒和业务/清理断言未变。完整Windows required另归B15。",
+      "original_exit_condition_zh": "保持原 90 秒限制和业务/清理断言，解决真实临时 runtime 开销；原 source 与 merge 的 13 例全部通过。",
+      "next_closure_gate_zh": "保留已完成的原Windows helper前置、source/merge各13恢复例及原业务/清理断言；新最终head的整体平台资格归B15，不重复旧scope以凑通过数。",
+      "closure_class": "CLOSED_SCOPED"
+    },
+    {
+      "id": "B15",
+      "name": "最终 CI 与 main 资格",
+      "priority": "P0",
+      "status": "OPEN_REQUIRED_CI_AND_PRODUCT_ACCEPTANCE",
+      "current_label_zh": "原full16FAIL；最终hygiene完成，原平台CI开放",
+      "evidence_scope_zh": "cabc19workflow=14成功3失败2跳过；blocking37jobs=22成功11失败4跳过。f825原full19503=19485 JUnit PASS/17FAIL/1TIMEOUT，24remote和另1capability早退保留。Skills9/Migration166/V8+runtime76原范围已通过，App原断连0.606秒通过但capability门开放。新fb9原Python57/57通过，普通index9,575项语义只读核准；新原full19506=19490 JUnit PASS/16FAIL，57ignored、25早退、零retry；14旧同名失败和2新问题待闭合。完整新42件原件已独立重建复核；最终原fix0/fmt0和两项diffcheck0已完成并独审，最终代码树4a337的原平台CI仍待完成。",
+      "original_exit_condition_zh": "最新候选所有必需工作流终态成功；目标 main 基线重新核实；合成 merge 与发布 commit 树一致；保留原失败和修复回执。",
+      "next_closure_gate_zh": "最终精确head、base和merge tree、所有required门、原失败与有效负控齐全；保全部skip/retry/cache/unknown，原48映射独立维护。",
+      "closure_class": "OPEN",
+      "latest_continuation_zh": "10:41:39–10:45:00逐job及完整末页：19workflow/44job=38queued/4success/2skipped。Intel operator33、Windows operator40、Windows base-merge业务库118、Windows retained532分别有真实原件；retained另7未具名skip。118+532与冻结142原退出用例交集0，原平台门仍开放。run顶层queued不代表内部0执行。"
+    },
+    {
+      "id": "B16",
+      "name": "可信产品入口及外部效果",
+      "priority": "P1",
+      "status": "OPEN_CODE_WIRING_AND_REAL_ACCEPTANCE",
+      "current_label_zh": "入口基础已实测；Current、正常接线和真实接受开放",
+      "evidence_scope_zh": "R1 arg010/Python54、R2a inherited FD15、R2b clock18已有有限域原生结果。R2c/d/e1/e2/e3、SQLx native-lifetime token及两个state pool的实际owner绑定均完成静态独审，尚未编译/执行。两个state新控制包含runtime shutdown与opening cancellation，不能外推runtime-alive取消。独立private recovery checkpoint连接的实际custody补丁（15增/3删）及runtime保持运行的跨进程物理取消控制（324增）已完成静态双审，未应用/执行。完整SQLx原包及明确license/mode覆盖已核验；真实依赖采用与生成锁、四项driver控制、24项基础控制、三个pool caller控制、一个checkpoint父控制、Current/FinalUse及真实Root/UI/provider接受仍开放。 后续5个epoch、24个精确源码迁移的执行草案已准备，尚未绑定最终A源或启动native；不以草案/内部解析器控制替代原生接受。",
+      "original_exit_condition_zh": "先完整迁移并验收Root handoff、Registry/arg0、protected checkpoint/verifier、FinalUse/issuer、listener custody和一个真实正常UI caller；再由同源实际Root/Session、原signed objective、provider/target完成任务/取消/丢ACK/重启，保留物理效果、authority、evidence、Memory一致性回执。",
+      "next_closure_gate_zh": "按独立R1–R6批次实现：arg0基础→trust/Current与inherited合同→Agentd装配→joint consumer→normal producer与paired pin→原真实接受。R0的102决策/474净差不等于编译最小闭包。",
+      "closure_class": "OPEN",
+      "latest_continuation_zh": "ai395原BUILD_ONLY前置完成后，具体V7入口获得实际job1a1ab493f2b-fc05-4bfe。原首源码4a→87e441，两锁/普通index不变；首组原SQLite commit gate四例实际4PASS/0retry，216过滤项及362未选binary单列，首JUnit e5d53c67。该job继续原反事实控制，尚未Foundation终态，更不代替driver/pool/checkpoint/owning或Root/UI/provider接受。第一tool timeout与同key对账reused=false分别保留。"
+    },
+    {
+      "id": "B17",
+      "name": "#4578 缺失确认终稿",
+      "priority": "P1",
+      "status": "CLOSED_RESEARCH_REPORT_COMPLETION",
+      "current_label_zh": "32-fit缺失终稿已补；报告范围闭合",
+      "evidence_scope_zh": "#4798固定77b244终稿保留。23:49–23:51 UTC刷新无源码/实验/rerun增量；研究blocking仍失败，科学采用不因此通过。",
+      "original_exit_condition_zh": "缺失报告与结果失真问题已完成；原研究分支全部工程 CI、科学采用门槛不因此闭合。",
+      "next_closure_gate_zh": "保77b244终稿与冻结903946源、全部失败与成本unknown；不为使结论变绿重训同一确认集。",
+      "closure_class": "CLOSED_SCOPED"
+    },
+    {
+      "id": "B18",
+      "name": "解析核心 / 参数记忆科学采用",
+      "priority": "P1",
+      "status": "SCIENTIFIC_HOLD_NOT_ENGINEERING_DEFECT",
+      "current_label_zh": "科学HOLD",
+      "evidence_scope_zh": "原#4798固定77b244终稿及32fits/4主比较未过门保持。新#4823固定9f2d的452件原件39,426,104B已独立逐字核验和记录复算：5既有fit为单位，J−C IID均值0.105277、OOD0.202161，Bonferroni4区间下界各0.047767/0.120359超过0.005；D_gated两域0源于15验证候选均拒绝并恢复C，不是等效证明。5个条件式TRAIN分离证书和77项同实现重放一致性有精确保存记录证据；OOD分布已用于VAL、完整成本未齐，均不替代原D−B门。",
+      "original_exit_condition_zh": "新的事前冻结 2×2 比较，重点 D−B；独立数据、充分精度、全部失败尝试与完整成本；未通过就保留强普通默认而非追求事后绿色。",
+      "next_closure_gate_zh": "保留原D−B采用门与HOLD。J有限规划作为独立有证据的组件继续评估，权重编辑保强普通默认与验证回退；新实验先冻结独立数据、拟合单位、计算成本和全部失败保留，禁止以J−C、原记录重放或移植一致性换名关闭D−B。",
+      "closure_class": "SCIENTIFIC_HOLD",
+      "latest_continuation_zh": "原科学HOLD未改变。没有新fit或新的事前冻结独立D−B实验；不能把工程构建、J−C局部结果或拒绝后回退当作采用门通过。"
+    },
+    {
+      "id": "B19",
+      "name": "HeptaBao / Chain / HIA 外部接受",
+      "priority": "P1",
+      "status": "OPEN_EXTERNAL_COMPATIBILITY_AND_PRODUCT_CONSUMER",
+      "current_label_zh": "外部兼容及本产品独立接受开放",
+      "evidence_scope_zh": "Hepta内Bao13关键项11partial+2gap；外部固定源60surface/13限域实现是另一分母。真实consumer/签名/epoch/撤销与Chain/HIA接受未完成。",
+      "original_exit_condition_zh": "固定外部版本、接口与契约、兼容/故障/安全回执，以及本产品真实调用者的独立接受。",
+      "next_closure_gate_zh": "按B19-Bao/B19-Chain/B19-HIA分开取得同源实现与真实目标接受；advisory DENY_ALL/safety_certificate=false保持。",
+      "closure_class": "OPEN",
+      "latest_continuation_zh": "新head Intel operator33、Windows operator40与base-merge Bao adapter19全部原fixture范围实际PASS；Windows同merge另外Intelligence78/Codex adapter21通过。均不能替代真实Bao/Chain/HIA外部版本、消费者、签名/epoch/撤销接受。"
+    },
+    {
+      "id": "B20",
+      "name": "远程控制握手夹具",
+      "priority": "P0",
+      "status": "IMPLEMENTED_ORIGINAL_NATIVE_PASS_FINAL_PLATFORM_PENDING",
+      "current_label_zh": "旧原19例正文已核；新最终同源CI开放",
+      "evidence_scope_zh": "GNU Wine19例含2次额外attempt、Windows19含3次额外attempt分别记录。原握手/EOF边界与新最终source原CI仍必需。 新c6源原真实App断连例实际0.606秒PASS，三项父存活因果反例有效；同组原capability控制因宿主前置缺失早退，8 JUnit PASS仅7项行为实际执行，最终平台门仍开放。",
+      "original_exit_condition_zh": "确定性旧源同握手错误、新源对照及原真实AppServer关闭/断连断言全部通过。",
+      "next_closure_gate_zh": "最新候选原19例及原平台CI以精确收据关闭；不得跳过正常HTTP或替代真实握手。",
+      "closure_class": "OPEN"
+    },
+    {
+      "id": "B21",
+      "name": "macOS Intel PTY退出和输出",
+      "priority": "P0",
+      "status": "OPEN_ORIGINAL_INTEL_PTY_QUALIFICATION",
+      "current_label_zh": "ROG PTY29/转发/监督31例通过；Intel原门开放",
+      "evidence_scope_zh": "1c2原31例PASS/0retry不覆盖Intel30.603秒、drain2秒及close-stdin失败。Mac专属两例与真实因果尚需原平台。",
+      "original_exit_condition_zh": "保持原2秒/5秒预算、完整drain与child退出/FD断言；修复源在原macOS Intel的30例与相关原CI通过，并解释实际Intel drain失败原因。",
+      "next_closure_gate_zh": "原Intel30例、完整drain/child/FD原断言和2/5秒预算不变；同源因果与原平台结果齐全。",
+      "closure_class": "OPEN",
+      "latest_continuation_zh": "Linux原29PTY与原fix/fmt、两个diffcheck已过并进入5b。当前Intel原30仍待其CI。新donor4854/4868的真实编译回归发生在当前5b不存在的Windows测试文件，未将它并入或当作本产品修复；operator Intel33不替代PTY。"
+    },
+    {
+      "id": "B22",
+      "name": "TUI 中断与退出顺序",
+      "priority": "P0",
+      "status": "OPEN_ORIGINAL_WINDOWS_TUI_QUALIFICATION",
+      "current_label_zh": "Windows目标级通过；逐case正文仍缺",
+      "evidence_scope_zh": "旧Windows TUI非缓存target PASS，没有独立成功原名正文。原单upload身份仅source+count推断；新原CI需补13原名平台观察。",
+      "original_exit_condition_zh": "定位真实turn/interrupt与关闭顺序，保留原断言和时间预算，以固定修复源的原用例/有效负控及原WindowsCI验收。",
+      "next_closure_gate_zh": "原Windows interrupt/shutdown case与真实stdout就绪、canonical cwd和原5秒预算；结果交独立48映射。",
+      "closure_class": "OPEN"
+    },
+    {
+      "id": "B23",
+      "name": "App Server Unix关闭信号生命周期",
+      "priority": "P0",
+      "status": "IMPLEMENTED_CAUSAL_NEGATIVE_AND_FIVE_NATIVE_PASS",
+      "current_label_zh": "Unix原因果负控及5例通过；最终原平台开放",
+      "evidence_scope_zh": "原3signal/2drain和真实丢订阅负控保留；成功target摘要不补逐casePASS。新source原UnixCI、stdio/disabled与原预算仍必需。",
+      "original_exit_condition_zh": "真实baseline丢信号窗口成立；修后3个单信号父测试与2个原drain用例通过；配置关闭/stdio及平台语义不变，最终原CI验收。",
+      "next_closure_gate_zh": "同最终source原Unix平台验收；原stdio/disabled语义和drain规则保持；首signal注册失败提前报错属已审兼容差异。",
+      "closure_class": "OPEN"
+    }
+  ],
+  "limits": [
+    "原23项退出条件与closure_class未改变；子问题闭合不冒充整个blocker闭合。",
+    "API快照不原子；run顶层queued不证明其所有内部job均未运行，须看完整job列表和实际日志。",
+    "原失败、取消、skip、额外attempt、早退、缓存和缺失证据分别保留。",
+    "原生构建目录只供下一批测试使用；科学门、真实UI和外部接受分别验收。"
+  ],
+  "native_foundation_progress": {
+    "job_id": "1a1ab493f2b-fc05-4bfe",
+    "stage": "foundation_in_progress",
+    "initial_tree": "4a3374e22e16ce5c764288ad018cd9affadf94ea",
+    "first_test_tree": "87e44120dc46e4751b74fb167269a6d85448ff4f",
+    "first_original_controls": {
+      "passed": 4,
+      "retries": 0,
+      "filtered_cases": 216,
+      "binaries_not_selected": 362,
+      "whole_workspace_execution": false,
+      "junit_uuid": "e5d53c67-01d5-4858-861a-93e218c015c2"
+    },
+    "first_tool_timeout_preserved": true,
+    "same_exact_key_reconciliation_reused": false,
+    "foundation_complete": false,
+    "B16_closed": false
+  }
+}

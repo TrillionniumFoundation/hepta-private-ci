@@ -1,0 +1,65 @@
+{
+  "schema": "hepta-root-latest-original-scope-verification-v1",
+  "recorded_utc": "2026-11-05T10:52:29.091376+00:00",
+  "project_commands_executed": false,
+  "native_first_foundation_scope": {
+    "bundle": {
+      "bytes": 14021,
+      "sha256": "aa2ff770f9ef6eb7516574b592189b051ec249150ed8ae93460034f5648cd6a8",
+      "blob": "c06b696277301ac1e9a182b953c534d197579ecf"
+    },
+    "originals": 5,
+    "original_bytes": 47911,
+    "source": "87e44120dc46e4751b74fb167269a6d85448ff4f",
+    "run_id": "e5d53c67-01d5-4858-861a-93e218c015c2",
+    "passed": 4,
+    "retries": 0,
+    "filtered_cases": 216,
+    "unselected_binaries": 362,
+    "programs_and_helpers_stable": true,
+    "source_and_graph_unchanged": true,
+    "foundation_complete": false,
+    "B16_closed": false
+  },
+  "windows_ci_scopes": {
+    "full_projection": {
+      "bytes": 246748,
+      "sha256": "fa41689fd30d7e12f089e7dfb2bbc1b1ab4c7d2ec63bc7a8b2749dbabd773c19",
+      "blob": "bc2ec47cb4f4825646d6524bed788e2eaec85e00"
+    },
+    "business_zip": {
+      "bytes": 3605400,
+      "sha256": "a4bb3e40675bed38b0eb7b1fc70348af7022d068446673245189cf1bcd054c6e",
+      "blob": "bad6255521572764941721e8b05d608623a5e253"
+    },
+    "retained_zip": {
+      "bytes": 62323,
+      "sha256": "83750c5f2a0872fc30b1becf5399400680cc94b291ad2e61e5719f5ad4e39c15",
+      "blob": "286016f4274b89b8fa38196e7a553fb836000f34"
+    },
+    "zip_members_verified": [
+      10,
+      4
+    ],
+    "business_named_log_passes": 118,
+    "business_wrapper_xml_nodes": 3,
+    "retained_executed_xml_and_log_passes": 532,
+    "retained_class_counts": {
+      "codex-hepta-memory": 299,
+      "codex-state": 209,
+      "codex-utils-path": 24
+    },
+    "retained_additional_unnamed_skips": 7,
+    "original_142_new_matches": 0,
+    "same_head_private_directory_controls": [
+      "private_state_windows::directory::tests::rejects_ancestor_substitution_at_retained_open",
+      "private_state_windows::directory::tests::rejects_junction_before_creating_private_leaf"
+    ],
+    "original_23_status_changed": false
+  },
+  "limits": [
+    "Native foundation first scope is a distinct B source from the GitHub A product head.",
+    "No native epoch or original blocker closure is inferred from partial positives.",
+    "Windows working-tree lock byte encodings require their own identity comparison; tree equality is not an unqualified byte-equality claim."
+  ]
+}

@@ -1,0 +1,11 @@
+--- v1/launch_foundation_v7.py
++++ v2/launch_foundation_v7.py
+@@ -177,7 +177,7 @@
+     need(Path(pin['path']) == ROOT / 'evidence/bootstrap-P3-supplier-correction-v1/v8-prerequisites.json', 'V8 receipt path changed')
+     need(equal_content(file_id(pin['path']), pin), 'V8 original supply receipt bytes changed')
+     doc = json.loads(Path(pin['path']).read_bytes())
+-    need(doc['source_tree'] == binding['final_A_tree'] and doc['variant_unchanged'] is True, 'V8 original source/variant differs')
++    need(doc['source_tree'] == binding['final_A_tree'] and doc['variant_unchanged'] == binding['external_build_prerequisites']['v8']['variant'], 'V8 original source/variant differs')
+     need(all(binding['environment'].get(key) == value for key, value in doc['environment'].items()), 'V8 effective inputs changed')
+     assets = []
+     for row in doc['assets']:

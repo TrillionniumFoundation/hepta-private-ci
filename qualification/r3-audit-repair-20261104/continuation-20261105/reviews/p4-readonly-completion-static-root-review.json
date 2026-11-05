@@ -1,0 +1,44 @@
+{
+  "schema": "hepta-root-P4-readonly-completion-static-review-v1",
+  "at": "2026-11-05T10:00:58.555372+00:00",
+  "runner": {
+    "bytes": 29686,
+    "sha256": "cc3332ab36999d3ba56e039ec28f822cdb4a6fcf3011f8f198660c04eb382254",
+    "git_blob": "7f66633334d73aab4e62fda858f7144dc716b09b"
+  },
+  "manifest": {
+    "bytes": 2491,
+    "sha256": "be2e1815838e14bad861e4ecf7001d3ad0c07ebf776605006bddad203b0954d7",
+    "git_blob": "c428720fbead4acd348bbd2842cdea75f7fd46fe"
+  },
+  "verdict": "ACCEPT_READONLY_COMPLETION_SCOPE",
+  "unchanged_functions": [
+    "bytes_id",
+    "canonical_digest",
+    "capacity",
+    "equal_content",
+    "file_id",
+    "git",
+    "now",
+    "portable_graph",
+    "save",
+    "save_json",
+    "source_guard",
+    "verify_libcap_sdk",
+    "verify_openssl_sdk"
+  ],
+  "reviewed_main": [
+    "Read exact prior failed controller; retain its single parser AssertionError and original three exit0 records.",
+    "All original pinned files read fully, host/source/index/locks/tools/SDK identity and source guards checked.",
+    "No run or normal_artifacts function retained; no new compile/list/test invocation.",
+    "Accept only exact existing nonignored/matches and ignored/mismatch-reason-ignored forms; exact original case Counter and 363 roles/33 helpers retained.",
+    "Original six pre-catalog hashes read from original receipt; current363+33 output hashes independently measured now.",
+    "Two new source guards and SDK guards separately labeled with failure-finally.",
+    "Disabled future B binding remains a separate gate; BUILD_ONLY has tests_executed=false."
+  ],
+  "limitations": [
+    "Review does not make the prior controller success or qualify any native test.",
+    "Inherited ambient environment beyond existing injection guards is not represented as wholly captured."
+  ],
+  "tests_executed": false
+}

@@ -1,0 +1,461 @@
+{
+  "schema": "hepta-original-ci-operator-windows-delta-v1",
+  "head": "5b6331250ff459033bd44d1a95daec70131277cc",
+  "tree": "b26598d0d97d8d51e723bb5582137315f2174d35",
+  "observation_window": {
+    "started_at": "2026-11-05T10:20:45.049Z",
+    "finished_at": "2026-11-05T10:20:47.123Z",
+    "terminal_page_last_observed": "2026-11-05T10:25:24.193Z"
+  },
+  "jobs_complete_pagination": {
+    "first_page_total": 44,
+    "unique": 44,
+    "run_count": 19,
+    "terminal_empty_pages": 20,
+    "duplicate_ids": []
+  },
+  "top_level_states": {
+    "queued": 17,
+    "skipped": 2
+  },
+  "actual_job_states": {
+    "queued": 39,
+    "in_progress": 1,
+    "success": 2,
+    "skipped": 2
+  },
+  "assigned_jobs": [
+    {
+      "id": 127149582006,
+      "run_id": 41999114539,
+      "head_sha": "5b6331250ff459033bd44d1a95daec70131277cc",
+      "name": "Original Windows business libraries (base-merge)",
+      "status": "in_progress",
+      "conclusion": null,
+      "started_at": "2026-11-05T10:16:22Z",
+      "completed_at": null,
+      "runner_id": 1000000373,
+      "runner_name": "GitHub Actions 1000000373",
+      "labels": [
+        "windows-2025"
+      ],
+      "check_run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/check-runs/127149582006"
+    },
+    {
+      "id": 127149584053,
+      "run_id": 41999114742,
+      "head_sha": "5b6331250ff459033bd44d1a95daec70131277cc",
+      "name": "Original operator controls and independent OpenSSH oracle (windows-2025)",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-11-05T10:17:55Z",
+      "completed_at": "2026-11-05T10:19:52Z",
+      "runner_id": 1000000380,
+      "runner_name": "GitHub Actions 1000000380",
+      "labels": [
+        "windows-2025"
+      ],
+      "check_run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/check-runs/127149584053"
+    },
+    {
+      "id": 127149584078,
+      "run_id": 41999114742,
+      "head_sha": "5b6331250ff459033bd44d1a95daec70131277cc",
+      "name": "Original Bazel operator oracle with native placement (x86_64-apple-darwin)",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-11-05T09:42:55Z",
+      "completed_at": "2026-11-05T09:45:38Z",
+      "runner_id": 1000000272,
+      "runner_name": "GitHub Actions 1000000272",
+      "labels": [
+        "macos-15-intel"
+      ],
+      "check_run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/check-runs/127149584078"
+    }
+  ],
+  "operator": {
+    "job": {
+      "id": 127149584053,
+      "run_id": 41999114742,
+      "workflow_name": "Hepta operator acceptance native signature verification",
+      "head_branch": "fix/r3-original-product-contracts-20261104",
+      "run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/41999114742",
+      "run_attempt": 1,
+      "node_id": "CR_kwDOTrgxoM8AAAAdmrSutQ",
+      "head_sha": "5b6331250ff459033bd44d1a95daec70131277cc",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/jobs/127149584053",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41999114742/job/127149584053",
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-11-05T09:02:28Z",
+      "started_at": "2026-11-05T10:17:55Z",
+      "completed_at": "2026-11-05T10:19:52Z",
+      "name": "Original operator controls and independent OpenSSH oracle (windows-2025)",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-11-05T10:17:56Z",
+          "completed_at": "2026-11-05T10:17:58Z"
+        },
+        {
+          "name": "Checkout exact candidate",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-11-05T10:17:58Z",
+          "completed_at": "2026-11-05T10:18:14Z"
+        },
+        {
+          "name": "Install original repository runners",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-11-05T10:18:14Z",
+          "completed_at": "2026-11-05T10:18:25Z"
+        },
+        {
+          "name": "Record actual source, compiler and independent OpenSSH executable",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-11-05T10:18:25Z",
+          "completed_at": "2026-11-05T10:18:44Z"
+        },
+        {
+          "name": "Run all original operator controls and actual OpenSSH compatibility checks",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-11-05T10:18:44Z",
+          "completed_at": "2026-11-05T10:19:46Z"
+        },
+        {
+          "name": "Retain fresh JUnit and verify unchanged source",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-11-05T10:19:46Z",
+          "completed_at": "2026-11-05T10:19:47Z"
+        },
+        {
+          "name": "Preserve original native evidence",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7,
+          "started_at": "2026-11-05T10:19:47Z",
+          "completed_at": "2026-11-05T10:19:48Z"
+        },
+        {
+          "name": "Post Checkout exact candidate",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 14,
+          "started_at": "2026-11-05T10:19:48Z",
+          "completed_at": "2026-11-05T10:19:50Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 15,
+          "started_at": "2026-11-05T10:19:50Z",
+          "completed_at": "2026-11-05T10:19:50Z"
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/check-runs/127149584053",
+      "labels": [
+        "windows-2025"
+      ],
+      "runner_id": 1000000380,
+      "runner_name": "GitHub Actions 1000000380",
+      "runner_group_id": 0,
+      "runner_group_name": "GitHub Actions"
+    },
+    "original_command": "just test --locked -p codex-hepta-operator-acceptance --lib --no-tests fail --retries 0",
+    "nextest_run_id": "a299e175-eb2d-44a7-9a89-5a558010cd4d",
+    "tests": 40,
+    "passed": 40,
+    "failed": 0,
+    "skipped": 0,
+    "actual_junit_testcase_nodes": 40,
+    "junit_and_log_names_equal": true,
+    "cases": [
+      {
+        "name": "ceremony::tests::v1_paths_are_exact_and_sidecar_is_a_strict_child",
+        "classname": "codex-hepta-operator-acceptance",
+        "time": "0.010",
+        "terminal_nodes": []
+      },
+      {
+        "name": "durable::windows::tests::frozen_inputs_exclude_live_writers_and_namespace_replacement",
+        "classname": "codex-hepta-operator-acceptance",
+        "time": "0.039",
+        "terminal_nodes": []
+      },
+      {
+        "name": "durable::windows::tests::hardlinked_artifacts_are_rejected_before_reading_or_hashing",
+        "classname": "codex-hepta-operator-acceptance",
+        "time": "0.043",
+        "terminal_nodes": []
+      },
+      {
+        "name": "durable::windows::tests::hardlinks_added_after_open_are_rejected",
+        "classname": "codex-hepta-operator-acceptance",
+        "time": "0.045",
+        "terminal_nodes": []
+      },
+      {
+        "name": "durable::windows::tests::path_replacement_after_open_is_rejected",
+        "classname": "codex-hepta-operator-acceptance",
+        "time": "0.089",
+        "terminal_nodes": []
+      },
+      {
+        "name": "durable::windows::tests::publicly_readable_parent_is_rejected_without_repair_or_creation",
+        "classname": "codex-hepta-operator-acceptance",
+        "time": "0.072",
+        "terminal_nodes": []
+      },
+      {
+        "name": "durable::windows::tests::publicly_readable_file_is_rejected_without_repairing_its_acl",
+        "classname": "codex-hepta-operator-acceptance",
+        "time": "0.090",
+        "terminal_nodes": []
+      },
+      {
+        "name": "durable::windows::tests::private_creation_replacement_and_reopen_preserve_bytes_and_collisions",
+        "classname": "codex-hepta-operator-acceptance",
+        "time": "0.103",
+        "terminal_nodes": []
+      },
+      {
+        "name": "durable::windows::tests::sidecar_lock_excludes_a_second_process_and_releases_for_recovery",
+        "classname": "codex-hepta-operator-acceptance",
+        "time": "0.043",
+        "terminal_nodes": []
+      },
+      {
+        "name": "g5_trust::tests::expiry_is_half_open_and_never_creates_acceptance",
+        "classname": "codex-hepta-operator-acceptance",
+        "time": "0.222",
+        "terminal_nodes": []
+      },
+      {
+        "name": "g5_trust::tests::exact_head_and_predecessor_binding_is_required",
+        "classname": "codex-hepta-operator-acceptance",
+        "time": "0.327",
+        "terminal_nodes": []
+      },
+      {
+        "name": "g5_trust::tests::fresh_head_scoped_challenge_reaches_ready_without_authority",
+        "classname": "codex-hepta-operator-acceptance",
+        "time": "0.365",
+        "terminal_nodes": []
+      },
+      {
+        "name": "g5_trust::tests::independently_signed_challenge_is_verified_but_not_accepted",
+        "classname": "codex-hepta-operator-acceptance",
+        "time": "0.410",
+        "terminal_nodes": []
+      },
+      {
+        "name": "manifest_inventory::tests::manifest_parser_requires_sorted_safe_unique_paths",
+        "classname": "codex-hepta-operator-acceptance",
+        "time": "0.007",
+        "terminal_nodes": []
+      },
+      {
+        "name": "g5_trust::tests::revocation_is_external_and_fail_closed_before_challenge_issuance",
+        "classname": "codex-hepta-operator-acceptance",
+        "time": "0.176",
+        "terminal_nodes": []
+      },
+      {
+        "name": "manifest_inventory::tests::verified_manifest_rejects_extra_files_and_hardlinks",
+        "classname": "codex-hepta-operator-acceptance",
+        "time": "0.126",
+        "terminal_nodes": []
+      },
+      {
+        "name": "g5_trust::tests::policy_and_revocation_files_must_be_canonical",
+        "classname": "codex-hepta-operator-acceptance",
+        "time": "0.332",
+        "terminal_nodes": []
+      },
+      {
+        "name": "g5_trust::tests::revocation_digest_change_invalidates_existing_challenge",
+        "classname": "codex-hepta-operator-acceptance",
+        "time": "0.246",
+        "terminal_nodes": []
+      },
+      {
+        "name": "preflight::tests::every_missing_or_wrong_formal_environment_pin_is_rejected",
+        "classname": "codex-hepta-operator-acceptance",
+        "time": "0.010",
+        "terminal_nodes": []
+      },
+      {
+        "name": "sshsig::tests::armor_is_bounded_and_cannot_hide_trailing_packets_or_bad_base64",
+        "classname": "codex-hepta-operator-acceptance",
+        "time": "0.010",
+        "terminal_nodes": []
+      },
+      {
+        "name": "sshsig::tests::all_truncations_and_untrusted_field_lengths_reject_without_panicking",
+        "classname": "codex-hepta-operator-acceptance",
+        "time": "0.013",
+        "terminal_nodes": []
+      },
+      {
+        "name": "sshsig::tests::malformed_and_malleable_ed25519_signature_records_are_rejected",
+        "classname": "codex-hepta-operator-acceptance",
+        "time": "0.010",
+        "terminal_nodes": []
+      },
+      {
+        "name": "sshsig::tests::pinned_malformed_or_weak_public_keys_are_rejected",
+        "classname": "codex-hepta-operator-acceptance",
+        "time": "0.008",
+        "terminal_nodes": []
+      },
+      {
+        "name": "sshsig::tests::namespace_and_hash_changes_cannot_reinterpret_a_signature",
+        "classname": "codex-hepta-operator-acceptance",
+        "time": "0.020",
+        "terminal_nodes": []
+      },
+      {
+        "name": "sshsig::tests::valid_self_signed_packet_cannot_replace_the_externally_pinned_key",
+        "classname": "codex-hepta-operator-acceptance",
+        "time": "0.020",
+        "terminal_nodes": []
+      },
+      {
+        "name": "sshsig::tests::frozen_openssh_sha256_and_sha512_signatures_verify_without_a_child_process",
+        "classname": "codex-hepta-operator-acceptance",
+        "time": "0.044",
+        "terminal_nodes": []
+      },
+      {
+        "name": "tests::exact_challenge_boundary_accepts_only_operator_acceptance",
+        "classname": "codex-hepta-operator-acceptance",
+        "time": "0.008",
+        "terminal_nodes": []
+      },
+      {
+        "name": "sshsig::tests::version_and_reserved_fields_preserve_openssh_compatibility",
+        "classname": "codex-hepta-operator-acceptance",
+        "time": "0.032",
+        "terminal_nodes": []
+      },
+      {
+        "name": "tests::final_consumption_at_expiry_creates_no_claim_or_receipt",
+        "classname": "codex-hepta-operator-acceptance",
+        "time": "0.013",
+        "terminal_nodes": []
+      },
+      {
+        "name": "tests::read_only_lock_never_creates_missing_state",
+        "classname": "codex-hepta-operator-acceptance",
+        "time": "0.018",
+        "terminal_nodes": []
+      },
+      {
+        "name": "tests::exact_replay_returns_same_receipt_and_conflicting_claim_fails",
+        "classname": "codex-hepta-operator-acceptance",
+        "time": "0.055",
+        "terminal_nodes": []
+      },
+      {
+        "name": "tests::receipt_repeated_authority_must_match_exact_boundary",
+        "classname": "codex-hepta-operator-acceptance",
+        "time": "0.022",
+        "terminal_nodes": []
+      },
+      {
+        "name": "tests::validity_window_is_half_open_and_policy_bounded",
+        "classname": "codex-hepta-operator-acceptance",
+        "time": "0.007",
+        "terminal_nodes": []
+      },
+      {
+        "name": "tests::durable_time_watermark_rejects_clock_rollback",
+        "classname": "codex-hepta-operator-acceptance",
+        "time": "0.164",
+        "terminal_nodes": []
+      },
+      {
+        "name": "tests::unknown_or_noncanonical_stored_json_is_rejected",
+        "classname": "codex-hepta-operator-acceptance",
+        "time": "0.110",
+        "terminal_nodes": []
+      },
+      {
+        "name": "sshsig::tests::native_version_and_reserved_compatibility_matches_real_openssh",
+        "classname": "codex-hepta-operator-acceptance",
+        "time": "0.532",
+        "terminal_nodes": []
+      },
+      {
+        "name": "trust::tests::weak_ed25519_public_key_is_rejected_before_openssh",
+        "classname": "codex-hepta-operator-acceptance",
+        "time": "0.007",
+        "terminal_nodes": []
+      },
+      {
+        "name": "trust::tests::trust_policy_digest_is_external_and_fail_closed",
+        "classname": "codex-hepta-operator-acceptance",
+        "time": "0.455",
+        "terminal_nodes": []
+      },
+      {
+        "name": "trust::tests::sshsig_verifies_only_exact_namespace_against_pinned_policy",
+        "classname": "codex-hepta-operator-acceptance",
+        "time": "0.634",
+        "terminal_nodes": []
+      },
+      {
+        "name": "trust::tests::trust_policy_pins_store_principal_fingerprint_and_allowed_signers",
+        "classname": "codex-hepta-operator-acceptance",
+        "time": "0.675",
+        "terminal_nodes": []
+      }
+    ],
+    "source_file": {
+      "bytes": 84,
+      "sha256": "78c6f720389f960b0bd5f587fcb032d138621227d7d59d84044fd815a3ef864a",
+      "computed_git_blob": "81b9571024c4b1335812a5b9ac2066ea300b9b6a"
+    },
+    "junit": {
+      "bytes": 9052,
+      "sha256": "9b976eb697637c4fa62bb650ae34d627172fbe2dcda92b2fd63251c647059695",
+      "computed_git_blob": "195b12bb596fc891297a0abd6c42b216944f3007"
+    },
+    "complete_job_log": {
+      "bytes": 56961,
+      "sha256": "959ab1f56e0e341a7f678910210713c5096f971f29f6d19d84b0c4e2a1687829",
+      "computed_git_blob": "e9f440f94b899d6a4f0a6d6e7ea43a23f621c89a"
+    },
+    "openssh_record": {
+      "Algorithm": "SHA256",
+      "Hash": "C9DC170CD161DB87E75EB6CF282F1325005B9E35628B9A36CB19883A8BE1A34F",
+      "Path": "C:\\Windows\\System32\\OpenSSH\\ssh-keygen.exe"
+    },
+    "artifact": {
+      "id": 13406746321,
+      "bytes": 5853,
+      "sha256": "949d4a6f130a745b8dfc16913e0608ec339f88d946a6091374d4a70a9d8b151e",
+      "all_six_members_crc_and_hash_verified": true
+    }
+  },
+  "limits": [
+    "Top-level operator workflow was still queued while its Intel and Windows jobs had actually completed. Run status is not proof of no execution.",
+    "Operator/native OpenSSH fixture scope only, not a real independently issued operator acceptance or B19 closure.",
+    "Windows ordinary business base-merge job was still in progress. No new strict sandbox/Core/TUI/platform result inferred.",
+    "No CI mutation, product source modification, native/Cargo invocation or change to the original 23 blocker states."
+  ]
+}

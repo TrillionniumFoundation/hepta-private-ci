@@ -1,0 +1,132 @@
+{
+  "epoch": "driver",
+  "operations": [
+    {
+      "kind": "apply",
+      "delta": "driver-adoption"
+    },
+    {
+      "kind": "locks",
+      "id": "B11_driver_adoption_and_first_locks",
+      "change": "driver"
+    },
+    {
+      "kind": "negative",
+      "id": "B12_driver_no_worker_token",
+      "before": [
+        "driver-no_worker_token-patch"
+      ],
+      "restore": "driver-no_worker_token-restore",
+      "scopes": [
+        {
+          "label": "B12_driver_no_worker_token",
+          "package": "sqlx-sqlite",
+          "exact_names": [
+            "options::connection_lifetime::tests::cancellation_during_native_open_keeps_resource_custody",
+            "options::connection_lifetime::tests::cancellation_during_initial_pragmas_keeps_resource_custody"
+          ],
+          "authored_argv": [
+            "just",
+            "test",
+            "-p",
+            "sqlx-sqlite",
+            "--lib",
+            "--locked",
+            "--retries",
+            "0",
+            "--features",
+            "bundled,chrono,json,migrate,offline,serde,time,uuid",
+            "-E",
+            "test(=options::connection_lifetime::tests::cancellation_during_native_open_keeps_resource_custody) | test(=options::connection_lifetime::tests::cancellation_during_initial_pragmas_keeps_resource_custody)"
+          ],
+          "oracle": "driver-worker",
+          "supports": [
+            "options::connection_lifetime::tests::owned_scenario"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "negative",
+      "id": "B13_driver_unwind_releases",
+      "before": [
+        "driver-unwind_releases-patch"
+      ],
+      "restore": "driver-unwind_releases-restore",
+      "scopes": [
+        {
+          "label": "B13_driver_unwind_releases",
+          "package": "sqlx-sqlite",
+          "exact_names": [
+            "options::connection_lifetime::tests::initialization_error_releases_but_failed_native_close_retains_custody"
+          ],
+          "authored_argv": [
+            "just",
+            "test",
+            "-p",
+            "sqlx-sqlite",
+            "--lib",
+            "--locked",
+            "--retries",
+            "0",
+            "--features",
+            "bundled,chrono,json,migrate,offline,serde,time,uuid",
+            "-E",
+            "test(=options::connection_lifetime::tests::initialization_error_releases_but_failed_native_close_retains_custody)"
+          ],
+          "oracle": "driver-close",
+          "supports": [
+            "options::connection_lifetime::tests::owned_scenario"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "scopes",
+      "id": "B14_driver_twelve",
+      "before": [],
+      "restore": null,
+      "scopes": [
+        {
+          "label": "B14_driver_twelve",
+          "package": "sqlx-sqlite",
+          "exact_names": [
+            "connection::explain::test_explain",
+            "connection::explain::test_root_block_columns_has_types",
+            "options::parse::it_returns_the_parsed_url",
+            "options::parse::test_parse_in_memory",
+            "options::parse::test_parse_read_only",
+            "options::parse::test_parse_shared_in_memory",
+            "testing::test_convert_path",
+            "type_info::test_data_type_from_str",
+            "options::connection_lifetime::tests::cancellation_during_native_open_keeps_resource_custody",
+            "options::connection_lifetime::tests::cancellation_during_initial_pragmas_keeps_resource_custody",
+            "options::connection_lifetime::tests::pool_growth_and_cancelled_close_keep_borrowed_connection_custody",
+            "options::connection_lifetime::tests::initialization_error_releases_but_failed_native_close_retains_custody"
+          ],
+          "authored_argv": [
+            "just",
+            "test",
+            "-p",
+            "sqlx-sqlite",
+            "--lib",
+            "--locked",
+            "--retries",
+            "0",
+            "--features",
+            "bundled,chrono,json,migrate,offline,serde,time,uuid"
+          ],
+          "oracle": null,
+          "supports": [
+            "options::connection_lifetime::tests::owned_scenario"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "bazel-registration",
+      "id": "B15_driver_bazel_registration",
+      "target": "//codex-rs/third_party/sqlx-sqlite-0.9.0:sqlx-sqlite-unit-tests"
+    }
+  ]
+}

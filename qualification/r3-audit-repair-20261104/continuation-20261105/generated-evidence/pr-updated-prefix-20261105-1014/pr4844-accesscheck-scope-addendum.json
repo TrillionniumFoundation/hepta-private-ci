@@ -1,0 +1,33 @@
+{
+  "schema": "hepta-pr4844-accesscheck-scope-addendum-v1",
+  "parent_review_blob": "74cdf9941c01ed56b1a5baf326b82674d39b0a27",
+  "parent_md_blob": "b057360febcb8123f4d17931cc87e63ca81ab50b",
+  "historical_files_unchanged": true,
+  "observed_at": "2026-11-05T10:43:32.464Z",
+  "tested_merge": "9459cf8a4e5e43d6645e2b619b86455132c7df67",
+  "primary_sources": [
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/token_delete_diagnostics_tests.rs",
+      "blob": "e8bf47c8a07ad827b322ffe689240efe42fbba95",
+      "bytes": 9879
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/token_access_check_diagnostics_tests.rs",
+      "blob": "349bb50a38929fadbf038daf0c5c0c6913a3803b",
+      "bytes": 16568,
+      "read_sections": [
+        "module scope explicitly states no impersonation of full control, no ACL mutation or deletion",
+        "full restricting token creation at 185–243",
+        "AccessCheck at 341–351",
+        "same descriptor comparison at 390 onward"
+      ]
+    }
+  ],
+  "clarification": {
+    "production_token": "The strict original tests performed real filesystem operations and actually deleted outside/protected objects; raw failure provenance remains valid.",
+    "full_restricting_control": "The additional full-restricting variant was queried through AccessCheck on retained same-object descriptors. Its outside-read denial is an access-check observation, not a physical read under that token and not a physical successful isolation matrix.",
+    "consequence": "The current evidence rules out treating removal of WRITE_RESTRICTED as already qualified. It does not independently establish the complete behavior of such a replacement.",
+    "candidate": "PR4844's always-Err admission is containment only. No acceptance or B11 closure is asserted."
+  },
+  "actions": "Read-only source/log review only; no native operation, code mutation, ref update or token-policy change."
+}

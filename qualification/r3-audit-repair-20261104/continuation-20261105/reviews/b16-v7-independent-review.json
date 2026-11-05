@@ -1,0 +1,196 @@
+{
+  "schema": "hepta-b16-v7-independent-static-review-v1",
+  "reviewed_at_utc": "2026-11-05T10:05:42.629272+00:00",
+  "reviewer": "research_audit",
+  "verdict": "STATIC_ACCEPT_WITH_READ_ORIGINAL_CLOUD_PARSER_RESULTS_NO_NATIVE_QUALIFICATION",
+  "previous_review_correction": {
+    "v6_review_git_blob": "eb019936e797e11664e23336a367d1744fa4e68a",
+    "preserved_historical": true,
+    "actual_issue": "V6 all-filter-matches guard rejects57 original ignored cases. Prior static PASS did not identify this concrete predicate defect; it must not override the later actual rejection.",
+    "old_cloud_negative": "Original first provenance control reaches load_build_only line135 and raises exactly RuntimeError: build-only catalog was filtered;1 test ERROR, not native Rust failure."
+  },
+  "frozen_candidate": {
+    "patch": {
+      "bytes": 383445,
+      "sha256": "836854ee1d13482ffc0acf08f1960b2bc86ab29ca09847b9d487d22257f2f58f",
+      "blob": "32998620ab63c6540e560c1bbf18ba14c2e9683e"
+    },
+    "integrity": {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b16-guarded-native-runner-20261105/original-ignored-catalog-v7/v7-candidate/runner-integrity.json",
+      "bytes": 5679,
+      "sha256": "96bbff3180620d841b90b65ea1e159d04931c47fd2de1c270ba0f6c059ac5202",
+      "git_blob": "18f27fbb488777d621b4f37aa0cf70956cdbe7d9"
+    },
+    "all29_postimages_bytes_sha256_git_verified": true,
+    "integrity25entries_verified": true,
+    "unchanged_existing22paths": [
+      "b16_capacity.py",
+      "b16_family.py",
+      "b16_guard.py",
+      "b16_locks.py",
+      "b16_native.py",
+      "b16_oracles.py",
+      "b16_runner.py",
+      "epoch-checkpoint.json",
+      "epoch-driver.json",
+      "epoch-foundation.json",
+      "epoch-owning.json",
+      "epoch-pool.json",
+      "foundation-output-family.json",
+      "observed-nextest-timeout-testcase.xml",
+      "payload-manifest.json",
+      "source-payload-00.json",
+      "source-payload-01.json",
+      "source-payload-02.json",
+      "source-payload-03.json",
+      "source-payload-04.json",
+      "test_family_guard.py",
+      "test_runner_guards.py"
+    ]
+  },
+  "raw_catalog_comparison": {
+    "historical": {
+      "local_file": "/workspace/scratch/07dd58cc9630/ci-audit/recovered-20261105/full-fb9-complete-archive/decoded-verified-v1/full-workspace-catalog.stdout",
+      "bytes": 2846923,
+      "sha256": "37aa98bace85dfa81d9c729820de24912d913bd85c3a10b60243f4dba67e4001",
+      "git_blob": "6215be8be0979a4af011c64de4043c934aeee81a"
+    },
+    "historical_source_tree": "fb9e131272f7e7a138d6c0d1af2b048b9a6ab7ff",
+    "current_build_only": {
+      "local_file": "/workspace/scratch/07dd58cc9630/ci-audit/recovered-20261105/b16-ai395-cold-bootstrap-v1/p4-v3-catalog-readonly-export-v1/decoded-verified-v1/03-full-unfiltered-catalog.stdout.original",
+      "bytes": 2828836,
+      "sha256": "d4ca608073c2508e8ad5302b1188c7d2e21c6bf221a17688d77f625087e8d3f6",
+      "git_blob": "bdb4590509011c05005821d6b92c71f81f58098c"
+    },
+    "current_build_only_source_tree": "4a3374e22e16ce5c764288ad018cd9affadf94ea",
+    "original_envelope_decodes_byteequal_historical": true,
+    "suites_each": 363,
+    "nonignored_exact_matches_each": 19506,
+    "ignored_exact_mismatch_reason_ignored_each": 57,
+    "full_named_counter_equal": true,
+    "counter_fields": [
+      "binary_id",
+      "case_name",
+      "ignored_boolean"
+    ],
+    "all_other_filter_forms": 0
+  },
+  "runtime_review": [
+    "Accepts ignored only with actual boolean True and exact dictionary status=mismatch,reason=ignored; nonignored must be boolean False and exact status=matches.",
+    "Binds full immutable original named Counter, so same totals with replacement names or moved ignored membership do not pass.",
+    "Historical source/payload envelope hash is fixed and included in runner-integrity; no catalog byte or case result becomes current-host executed qualification.",
+    "Only BUILD_ONLY catalog truth guard changes; native/oracles/source/index/lock/capacity/negative-finally code and all5 epoch payloads remain byteequal.",
+    "All three template integrity pins update, but execution/host/source binding preconditions remain unbound."
+  ],
+  "original_four_controls_definition_byteequal": [
+    "test_actual_context_is_accepted_but_different_host_or_source_is_rejected",
+    "test_missing_physical_program_is_rejected_after_complete_receipt",
+    "test_build_only_cannot_masquerade_as_tested_or_hide_failed_build",
+    "test_original_family_remains_historical_and_current_family_does_not_relabel_it"
+  ],
+  "new_nine_rejection_subcases": [
+    "nonignored case with mismatch(reason=ignored)",
+    "nonignored matches dictionary with extra reason=ignored",
+    "ignored case marked matches",
+    "ignored mismatch with reason=expression",
+    "ignored mismatch dictionary with extra field",
+    "ignored flag integer0 instead of boolean False",
+    "replace eligible name preserving total count",
+    "replace ignored name preserving total count",
+    "swap eligible/ignored membership with individually valid filter dictionaries preserving counts"
+  ],
+  "read_existing_author_cloud_results": {
+    "test_count": 6,
+    "result": "PASS",
+    "unittest_elapsed_seconds": 7.924,
+    "outer_command_elapsed_seconds": 8.040961012004118,
+    "retry": 0,
+    "scope": "Python parser/provenance controls; synthetic file/provenance fields remain synthetic, test case identities are the complete real historical catalog.",
+    "independent_rerun": false
+  },
+  "patch_validation_scope": {
+    "author_actual_isolated_git_apply_receipt_read": true,
+    "author29postimage_result": true,
+    "independent_rebuild_or_native_run": false
+  },
+  "material_limits": [
+    "No native B Rust case was run by this review; no B16 closure or real operator/Current authority follows.",
+    "Current P4 is BUILD_ONLY and cannot inherit historical tested-A execution or final current-host native qualification.",
+    "Full bound actual baseline export/SourceGuard/load/foundation execution remain separate required gates.",
+    "All original project ignored policy, test budgets and physical negative endpoints remain unchanged."
+  ],
+  "source_objects": [
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b16-guarded-native-runner-20261105/original-ignored-catalog-v7/source-map-v7.json",
+      "bytes": 10608,
+      "sha256": "3e008147f27eaab391bbf515da905460efa9a6db492fc2510015568876180bb2",
+      "git_blob": "ecb2fbd8fe839a37aa5efb7c7b72869c774500fa"
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b16-guarded-native-runner-20261105/original-ignored-catalog-v7/preservation-verification.json",
+      "bytes": 12237,
+      "sha256": "b3a2d0903da262da9347abd13f8d9776cf3909a54d8460104e7d0a0c808d8431",
+      "git_blob": "a5bcaf7db93a8572f08d184af84e971a241dbcdc"
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b16-guarded-native-runner-20261105/original-ignored-catalog-v7/v6-to-v7.delta.patch",
+      "bytes": 383445,
+      "sha256": "836854ee1d13482ffc0acf08f1960b2bc86ab29ca09847b9d487d22257f2f58f",
+      "git_blob": "32998620ab63c6540e560c1bbf18ba14c2e9683e"
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b16-guarded-native-runner-20261105/original-ignored-catalog-v7/v7-candidate/b16_build_only.py",
+      "bytes": 14919,
+      "sha256": "c19d6a25664a46c5736803dc60807a165bccbd57c1d04a6621f7a11eca7b4a0d",
+      "git_blob": "6a49c3e2f37d7f4cd42f45d7e37cca8c16669f12"
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b16-guarded-native-runner-20261105/original-ignored-catalog-v7/v7-candidate/test_build_only_guard.py",
+      "bytes": 15667,
+      "sha256": "6563bc785ccd11d3c44b45ca2d8cf3df4baa807599a5a692826c359c463409a8",
+      "git_blob": "00069847aa5a25e760fee57c3c1a9cfa6c092ae5"
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b16-guarded-native-runner-20261105/original-ignored-catalog-v7/v7-candidate/observed-original-A-catalog.json",
+      "bytes": 369514,
+      "sha256": "6f0a4f7566621b451701a2612d068f194fc6a1b3aa1457722381d3d53c8a0690",
+      "git_blob": "5f4d2b2b82a3d1c0043ec4735fe4e2d2864ceb15"
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b16-guarded-native-runner-20261105/original-ignored-catalog-v7/v7-candidate/runner-integrity.json",
+      "bytes": 5679,
+      "sha256": "96bbff3180620d841b90b65ea1e159d04931c47fd2de1c270ba0f6c059ac5202",
+      "git_blob": "18f27fbb488777d621b4f37aa0cf70956cdbe7d9"
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b16-guarded-native-runner-20261105/original-ignored-catalog-v7/cloud-verification-v1/verification.json",
+      "bytes": 4291,
+      "sha256": "0746ec279bd09cb5e251b1921f89ddca0774ccd5938a391041d4ec6535d8d0c8",
+      "git_blob": "5883a3406f5d44dd06aeb7f742386c28931b63d1"
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b16-guarded-native-runner-20261105/original-ignored-catalog-v7/cloud-verification-v1/v6-original-catalog-rejection.status.json",
+      "bytes": 1220,
+      "sha256": "0b278b9079ae3a9fe1893ed089cd681d5886ab8b209e0f69e98b6dab5787ebbb",
+      "git_blob": "2a1b5e1c627d216eabb0cc5f7f6e0298accd3d54"
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b16-guarded-native-runner-20261105/original-ignored-catalog-v7/cloud-verification-v1/v6-original-catalog-rejection.stderr",
+      "bytes": 1653,
+      "sha256": "ce788128ad92b3520c5f2f514e906166409e0d393665a6aa05a4fcde55263c4a",
+      "git_blob": "f0dfad645f25cc9016cc59cb5c54231331989a0d"
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b16-guarded-native-runner-20261105/original-ignored-catalog-v7/cloud-verification-v1/v7-original-and-tamper-controls.status.json",
+      "bytes": 1097,
+      "sha256": "0d7d4e08381f27794fc117d5d1200085b9f19e92930ad42ee370eb2711645bf7",
+      "git_blob": "0b33c5b4df9c01365361af304275c640e38dd9e4"
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b16-guarded-native-runner-20261105/original-ignored-catalog-v7/cloud-verification-v1/v7-original-and-tamper-controls.stderr",
+      "bytes": 1202,
+      "sha256": "d8f2658525f0285b7b0eff767e5e8b6634a3c20e813a205d0188bfe9b36709be",
+      "git_blob": "2d8fdaa35bd94cbb65142113aaa455d2fec6bee3"
+    }
+  ]
+}

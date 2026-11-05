@@ -1,0 +1,26 @@
+{
+  "schema": "hepta-root-libcap-full-original-review-v2",
+  "at": "2026-11-05T10:12:31.514271+00:00",
+  "prior_scoped_review": "bb71d2effba8760973fd4a379051bb742c1b3da1",
+  "bundle": {
+    "bytes": 120516,
+    "sha256": "77182181b5f5c21e9baf6839513a9a827fdff1330a08d35e367eabf2ae558157",
+    "git_blob": "9195e7fc328cab7c9ce7078814bd91a0fcf0dc4a"
+  },
+  "verdict": "PASS_COMPLETE_43_ORIGINAL_PREREQUISITE_RECORDS",
+  "full_original_count": 43,
+  "full_original_bytes": 226482,
+  "verified": [
+    "All43 assets strict base64/gzip/full bytes/SHA/Git identity and local reopen equal.",
+    "All terminal records, four successful actual commands, full stdout/stderr and eight command source guards checked.",
+    "Source/index/locks remain original4a/20fd with no untracked input.",
+    "Actual pkg-config stdout is2.75 and real relocated -I/-L/-lcap flags remain as first review.",
+    "Exact original libcap2 runtime data-tar92,160 bytes decoded; libcap.so.2.75 content directly read in memory equals both native private and installed runtime recorded hashes."
+  ],
+  "limits": [
+    "No second native physical measurement or cloud package re-download claimed.",
+    "No tests/build/product qualification from SDK preparation."
+  ],
+  "tests_executed": false,
+  "test_qualification": false
+}

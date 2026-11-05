@@ -1,0 +1,65 @@
+{
+  "B_per_scope_source_bound_build_catalog_are_original_authorized_workflow": true,
+  "all8tools_exact": true,
+  "all_P4_environment_fields_exact": true,
+  "capacity_model_not_measured_peak": true,
+  "current_host_BUILD_ONLY_never_A_test_qualification": true,
+  "current_host_baseline": {
+    "bytes": 268075,
+    "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-git-tool-augmentation-v1/new-host-build-only-baseline-with-git.json",
+    "sha256": "117ce27929135acfcf8445f23a53842271cad721ef22cf4aaec7024dac3a386a"
+  },
+  "execute": false,
+  "files": {
+    "foundation-binding-CANDIDATE.json": {
+      "blob": "d5a6b63f3afb5621e36d5bd7ce7d37af1b6ff026",
+      "bytes": 19276,
+      "sha256": "03255650f0b30c939e467d88b354a75acf467bf302a3264f564f7c4216232773"
+    },
+    "launch-request-CANDIDATE.json": {
+      "blob": "0b79452f3fe7acbf618a6f66736543ac05e07704",
+      "bytes": 930798,
+      "sha256": "5e2f59088d32f0e93603c40c72f9ed605b479f8d40824ec5528312d2c7141311"
+    },
+    "launch_foundation_v7.py": {
+      "blob": "2620dcc013355e0abf6e2564e1b9dd89f0e5f3d2",
+      "bytes": 18388,
+      "sha256": "af8fa634cd07604ec3411f04083477095b838eb2451f587601bc973cc45c0d4c"
+    },
+    "launcher-v5-rog-to-v7-ai395.delta.patch": {
+      "blob": "3bad3535af4b2c767112ac99430898a2bff032d6",
+      "bytes": 24026,
+      "sha256": "c6ff4ea07c6baac143ec7a15296b9d72a3080845c327aaab05a5ff31bfddc578"
+    }
+  },
+  "foundation_only": true,
+  "fresh_initial_capacity_bytes": 22000000000,
+  "frozen_V7_complete_readback_map": "4bd55881db33571d09f40bcfeb7a974245b4dfd2",
+  "frozen_V7_manifest": "88cc1adc9d9ca112b3036e3137a49c4996d1de08",
+  "frozen_V7_source_map": "ecb2fbd8fe839a37aa5efb7c7b72869c774500fa",
+  "host": "ai395",
+  "input_staging_transfer": "1a1ab325bc6-fc05-4b55 exact historical bytes; external pin.path relocated, inner paths not changed",
+  "integrity_entry_count": 25,
+  "negative_occurrences": 10,
+  "negative_unique": 9,
+  "no_tools_install_source_reset_cache_cleanup_or_other_epoch": true,
+  "original_three_build_commands_not_repeated_as_bootstrap": true,
+  "per_command_min_free_bytes": 8000000000,
+  "positive_occurrences": 27,
+  "positive_unique": 24,
+  "root_execution_guard_required": true,
+  "runtime_install_count": 29,
+  "schema": "hepta-ai395-b16-foundation-v7-binding-manifest-v1",
+  "scopes": 10,
+  "source_commit": "20fd174ded4e5ce01bda34e4f6d1d74803301f49",
+  "source_tree": "4a3374e22e16ce5c764288ad018cd9affadf94ea",
+  "unchanged_P4_guard_function_names": [
+    "bytes_id",
+    "file_id",
+    "equal_content",
+    "save",
+    "save_json",
+    "verify_openssl_sdk",
+    "verify_libcap_sdk"
+  ]
+}

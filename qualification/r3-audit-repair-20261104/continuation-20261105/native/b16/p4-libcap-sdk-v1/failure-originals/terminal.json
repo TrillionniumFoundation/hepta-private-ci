@@ -1,0 +1,404 @@
+{
+  "build_executed": false,
+  "commands": [
+    {
+      "argv": [
+        "/usr/bin/dpkg-query",
+        "-W",
+        "-f=${Version}",
+        "libcap2"
+      ],
+      "capacity_after": {
+        "at": "2026-11-05T09:22:17.174517+00:00",
+        "available_bytes": 796828454912,
+        "f_bavail": 194538197,
+        "f_frsize": 4096,
+        "minimum_bytes": 64000000000,
+        "path": "/home/qq/work/hepta-audit-b16-20261105"
+      },
+      "capacity_before": {
+        "at": "2026-11-05T09:22:16.893614+00:00",
+        "available_bytes": 796829700096,
+        "f_bavail": 194538501,
+        "f_frsize": 4096,
+        "minimum_bytes": 64000000000,
+        "path": "/home/qq/work/hepta-audit-b16-20261105"
+      },
+      "cargo_profile": "dev-small",
+      "completed_at": "2026-11-05T09:22:16.919669+00:00",
+      "cwd": "/home/qq/work/hepta-audit-b16-20261105/source/codex-rs",
+      "duration_seconds": 0.02603612293023616,
+      "exit_code": 0,
+      "label": "01-installed-runtime-version",
+      "source_after": "4a3374e22e16ce5c764288ad018cd9affadf94ea",
+      "source_before": "4a3374e22e16ce5c764288ad018cd9affadf94ea",
+      "source_guard_after": {
+        "bytes": 3239,
+        "dev": 66306,
+        "git_blob": "4ec1ed83551440086a90ff5efa3f53a9d57c514c",
+        "inode": 67276833,
+        "mode": "0o600",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-libcap-sdk-v1/01-installed-runtime-version-after.guard.json",
+        "sha256": "3d92662f7daad37bd93295fcb45020bf4e71a75832ba0a8e4b6d7ee1a78b09c1"
+      },
+      "source_guard_before": {
+        "bytes": 3239,
+        "dev": 66306,
+        "git_blob": "ea3052dcae287452ed73dd43c8a37b3b098686d7",
+        "inode": 67276827,
+        "mode": "0o600",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-libcap-sdk-v1/01-installed-runtime-version-before.guard.json",
+        "sha256": "2c04a92bb1df930040c88768cc6091cf8a47edf7129a71eb90ccccbf7bddbfb8"
+      },
+      "started_at": "2026-11-05T09:22:16.893610+00:00",
+      "stderr": {
+        "bytes": 0,
+        "dev": 66306,
+        "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+        "inode": 67276830,
+        "mode": "0o600",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-libcap-sdk-v1/01-installed-runtime-version.stderr.original",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 16,
+        "dev": 66306,
+        "git_blob": "9a5f585d23c8e820d4d191864e2ed736a770d12f",
+        "inode": 67276829,
+        "mode": "0o600",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-libcap-sdk-v1/01-installed-runtime-version.stdout.original",
+        "sha256": "7a9cfb85d9db3443c5c3560b5b12c2ae044c0e8c5ce9cc4b06014bba8f4145c1"
+      },
+      "tests_executed": false
+    },
+    {
+      "argv": [
+        "/usr/bin/dpkg-deb",
+        "--extract",
+        "/home/qq/work/hepta-audit-b16-20261105/tools/libcap-2.75-10ubuntu2/downloads/libcap-dev_2.75-10ubuntu2_amd64.deb",
+        "/home/qq/work/hepta-audit-b16-20261105/tools/libcap-2.75-10ubuntu2/sysroot"
+      ],
+      "capacity_after": {
+        "at": "2026-11-05T09:22:20.841314+00:00",
+        "available_bytes": 796819197952,
+        "f_bavail": 194535937,
+        "f_frsize": 4096,
+        "minimum_bytes": 64000000000,
+        "path": "/home/qq/work/hepta-audit-b16-20261105"
+      },
+      "capacity_before": {
+        "at": "2026-11-05T09:22:20.552439+00:00",
+        "available_bytes": 796823519232,
+        "f_bavail": 194536992,
+        "f_frsize": 4096,
+        "minimum_bytes": 64000000000,
+        "path": "/home/qq/work/hepta-audit-b16-20261105"
+      },
+      "cargo_profile": "dev-small",
+      "completed_at": "2026-11-05T09:22:20.561946+00:00",
+      "cwd": "/home/qq/work/hepta-audit-b16-20261105/source/codex-rs",
+      "duration_seconds": 0.009469199925661087,
+      "exit_code": 0,
+      "label": "libcap-dev-data-only-extract",
+      "source_after": "4a3374e22e16ce5c764288ad018cd9affadf94ea",
+      "source_before": "4a3374e22e16ce5c764288ad018cd9affadf94ea",
+      "source_guard_after": {
+        "bytes": 3239,
+        "dev": 66306,
+        "git_blob": "c5cb1926354a8602018870455fd631b70ce01698",
+        "inode": 67276847,
+        "mode": "0o600",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-libcap-sdk-v1/libcap-dev-data-only-extract-after.guard.json",
+        "sha256": "54f8d6a774c21f039229146a34bfbd4aa89c10ac353cb8e48abfbc43ab7e44f5"
+      },
+      "source_guard_before": {
+        "bytes": 3239,
+        "dev": 66306,
+        "git_blob": "3f17e28fd78c09b2f8a9873c4de904310224d054",
+        "inode": 67276841,
+        "mode": "0o600",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-libcap-sdk-v1/libcap-dev-data-only-extract-before.guard.json",
+        "sha256": "332dadb241271562070c81667199e639024d846e52d92a21266401d13389d544"
+      },
+      "started_at": "2026-11-05T09:22:20.552435+00:00",
+      "stderr": {
+        "bytes": 0,
+        "dev": 66306,
+        "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+        "inode": 67276844,
+        "mode": "0o600",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-libcap-sdk-v1/libcap-dev-data-only-extract.stderr.original",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 0,
+        "dev": 66306,
+        "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+        "inode": 67276843,
+        "mode": "0o600",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-libcap-sdk-v1/libcap-dev-data-only-extract.stdout.original",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "tests_executed": false
+    }
+  ],
+  "completed_at": "2026-11-05T09:22:23.059703+00:00",
+  "errors": [
+    {
+      "message": "",
+      "traceback": "Traceback (most recent call last):\n  File \"<string>\", line 262, in <module>\n    assert equal_content(download['package'], expected)\n           ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError\n",
+      "type": "AssertionError"
+    }
+  ],
+  "initial_guard": {
+    "bytes": 3239,
+    "dev": 66306,
+    "git_blob": "2a33d48ea0bdd03af42d2423eecb455954847c81",
+    "inode": 67276825,
+    "mode": "0o600",
+    "nlink": 1,
+    "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-libcap-sdk-v1/initial.guard.json",
+    "sha256": "4334ce95e4927df5419659bc95a926c0f5edcd90303c5bbec0dc0c72a22d1997"
+  },
+  "records": [
+    {
+      "bytes": 1484,
+      "dev": 66306,
+      "git_blob": "2c62ebef04072e3ea7e90db4756562a49d69e11d",
+      "inode": 67276823,
+      "mode": "0o600",
+      "nlink": 1,
+      "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-libcap-sdk-v1/request.original.json",
+      "sha256": "1ff5dd30abdbd68aec0dcbcfb7b72fb77c62406018f88a3696d7d30c82fe11c6"
+    },
+    {
+      "bytes": 3239,
+      "dev": 66306,
+      "git_blob": "2a33d48ea0bdd03af42d2423eecb455954847c81",
+      "inode": 67276825,
+      "mode": "0o600",
+      "nlink": 1,
+      "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-libcap-sdk-v1/initial.guard.json",
+      "sha256": "4334ce95e4927df5419659bc95a926c0f5edcd90303c5bbec0dc0c72a22d1997"
+    },
+    {
+      "bytes": 3239,
+      "dev": 66306,
+      "git_blob": "ea3052dcae287452ed73dd43c8a37b3b098686d7",
+      "inode": 67276827,
+      "mode": "0o600",
+      "nlink": 1,
+      "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-libcap-sdk-v1/01-installed-runtime-version-before.guard.json",
+      "sha256": "2c04a92bb1df930040c88768cc6091cf8a47edf7129a71eb90ccccbf7bddbfb8"
+    },
+    {
+      "bytes": 1030,
+      "dev": 66306,
+      "git_blob": "7a90c53d25ef21fa90aed8d0042531c7bd2dc775",
+      "inode": 67276828,
+      "mode": "0o600",
+      "nlink": 1,
+      "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-libcap-sdk-v1/01-installed-runtime-version.command.json",
+      "sha256": "6eeefd220dec24cc167f905b5751654aa1ce6376639dbdcc7000fb815e8f5b8d"
+    },
+    {
+      "bytes": 16,
+      "dev": 66306,
+      "git_blob": "9a5f585d23c8e820d4d191864e2ed736a770d12f",
+      "inode": 67276829,
+      "mode": "0o600",
+      "nlink": 1,
+      "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-libcap-sdk-v1/01-installed-runtime-version.stdout.original",
+      "sha256": "7a9cfb85d9db3443c5c3560b5b12c2ae044c0e8c5ce9cc4b06014bba8f4145c1"
+    },
+    {
+      "bytes": 0,
+      "dev": 66306,
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "inode": 67276830,
+      "mode": "0o600",
+      "nlink": 1,
+      "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-libcap-sdk-v1/01-installed-runtime-version.stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 1924,
+      "dev": 66306,
+      "git_blob": "2c8e400d687eabc46243688a4ee5f9cfb1ac6c2f",
+      "inode": 67276831,
+      "mode": "0o600",
+      "nlink": 1,
+      "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-libcap-sdk-v1/01-installed-runtime-version.execution.json",
+      "sha256": "0ad2cd432564d0aa8e2e49f5619b9c29aeb2fa5830c77de0f43fc2dacad4cb03"
+    },
+    {
+      "bytes": 3239,
+      "dev": 66306,
+      "git_blob": "4ec1ed83551440086a90ff5efa3f53a9d57c514c",
+      "inode": 67276833,
+      "mode": "0o600",
+      "nlink": 1,
+      "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-libcap-sdk-v1/01-installed-runtime-version-after.guard.json",
+      "sha256": "3d92662f7daad37bd93295fcb45020bf4e71a75832ba0a8e4b6d7ee1a78b09c1"
+    },
+    {
+      "bytes": 2637,
+      "dev": 66306,
+      "git_blob": "544e7e2ac861484c4be86002cdbf8a430797f678",
+      "inode": 67276834,
+      "mode": "0o600",
+      "nlink": 1,
+      "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-libcap-sdk-v1/01-installed-runtime-version.status.json",
+      "sha256": "d532e5a99ffe52ab3d718c4c609ba6f2ff47d1e1b3b62c452a9f9561969a07a7"
+    },
+    {
+      "bytes": 1292,
+      "dev": 66306,
+      "git_blob": "8b0f7194c911d7f19fc18097da097553d5beb403",
+      "inode": 67276835,
+      "mode": "0o600",
+      "nlink": 1,
+      "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-libcap-sdk-v1/libcap-dev-official-package-metadata.original",
+      "sha256": "3d24db66bafdd5ba72e9ed2e4f1b6692137489b472066672a916d561a12da261"
+    },
+    {
+      "bytes": 670,
+      "dev": 66306,
+      "git_blob": "70339d7e21abd73fc665458b5fea5dc9508b5180",
+      "inode": 67276836,
+      "mode": "0o600",
+      "nlink": 1,
+      "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-libcap-sdk-v1/libcap-dev-download.json",
+      "sha256": "d03f5156611139063e89b16421d29e69b685ec88addbedf4a9dd87d266e6e713"
+    },
+    {
+      "bytes": 3031040,
+      "dev": 66306,
+      "git_blob": "7c4642654b6a13b000fc3f0e9589affd117979c1",
+      "inode": 67276837,
+      "mode": "0o600",
+      "nlink": 1,
+      "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-libcap-sdk-v1/libcap-dev.data.tar",
+      "sha256": "a99274f5662a4a80ae4fdf5d76e0274cce0275cf39bdc0a653a7b6cbacd2c8f8"
+    },
+    {
+      "bytes": 0,
+      "dev": 66306,
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "inode": 67276838,
+      "mode": "0o600",
+      "nlink": 1,
+      "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-libcap-sdk-v1/libcap-dev.data-tar.stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 16111,
+      "dev": 66306,
+      "git_blob": "dbad0335fa288ed15323017395c34def66884c9e",
+      "inode": 67276839,
+      "mode": "0o600",
+      "nlink": 1,
+      "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-libcap-sdk-v1/libcap-dev-data-members.json",
+      "sha256": "f65dda21744d4ae0d85b457f1586c7ae23dfc7030b1f115bee171dab9eaea5d2"
+    },
+    {
+      "bytes": 3239,
+      "dev": 66306,
+      "git_blob": "3f17e28fd78c09b2f8a9873c4de904310224d054",
+      "inode": 67276841,
+      "mode": "0o600",
+      "nlink": 1,
+      "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-libcap-sdk-v1/libcap-dev-data-only-extract-before.guard.json",
+      "sha256": "332dadb241271562070c81667199e639024d846e52d92a21266401d13389d544"
+    },
+    {
+      "bytes": 1201,
+      "dev": 66306,
+      "git_blob": "a8fc0a833809e7c95392408a8ee7c5c4a1b508fb",
+      "inode": 67276842,
+      "mode": "0o600",
+      "nlink": 1,
+      "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-libcap-sdk-v1/libcap-dev-data-only-extract.command.json",
+      "sha256": "e1156026fd2cf61184311db8c7085a835cb46cc766b074e56e3ac87220ab7780"
+    },
+    {
+      "bytes": 0,
+      "dev": 66306,
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "inode": 67276843,
+      "mode": "0o600",
+      "nlink": 1,
+      "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-libcap-sdk-v1/libcap-dev-data-only-extract.stdout.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "dev": 66306,
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "inode": 67276844,
+      "mode": "0o600",
+      "nlink": 1,
+      "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-libcap-sdk-v1/libcap-dev-data-only-extract.stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 2095,
+      "dev": 66306,
+      "git_blob": "cb1b0492ef2f434b7f68e3d119c132256d2f8223",
+      "inode": 67276845,
+      "mode": "0o600",
+      "nlink": 1,
+      "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-libcap-sdk-v1/libcap-dev-data-only-extract.execution.json",
+      "sha256": "6373b6450847482f500d8edef894ec018911e976fffc2cee7c798ad0120d75d6"
+    },
+    {
+      "bytes": 3239,
+      "dev": 66306,
+      "git_blob": "c5cb1926354a8602018870455fd631b70ce01698",
+      "inode": 67276847,
+      "mode": "0o600",
+      "nlink": 1,
+      "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-libcap-sdk-v1/libcap-dev-data-only-extract-after.guard.json",
+      "sha256": "54f8d6a774c21f039229146a34bfbd4aa89c10ac353cb8e48abfbc43ab7e44f5"
+    },
+    {
+      "bytes": 2808,
+      "dev": 66306,
+      "git_blob": "b7a020733be3ed650a07b60a9bf4c69776b50ac9",
+      "inode": 67276848,
+      "mode": "0o600",
+      "nlink": 1,
+      "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-libcap-sdk-v1/libcap-dev-data-only-extract.status.json",
+      "sha256": "94ed1c825defa56fe7c0bb37508108f4a56baa8ada83017d72f9c16af7e01ef9"
+    },
+    {
+      "bytes": 1190,
+      "dev": 66306,
+      "git_blob": "d3ac46e989cd006e65f49e4fc85c5ab57d2399b4",
+      "inode": 67276849,
+      "mode": "0o600",
+      "nlink": 1,
+      "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-libcap-sdk-v1/libcap2-official-package-metadata.original",
+      "sha256": "bca51abf8254ead5b315a579dfbb71604c42e0ecbb55d3240a07baa12e5d32f5"
+    }
+  ],
+  "request": {
+    "bytes": 1484,
+    "git_blob": "2c62ebef04072e3ea7e90db4756562a49d69e11d",
+    "sha256": "1ff5dd30abdbd68aec0dcbcfb7b72fb77c62406018f88a3696d7d30c82fe11c6"
+  },
+  "schema": "hepta-ai395-official-libcap-private-sdk-v1",
+  "source_tree": "4a3374e22e16ce5c764288ad018cd9affadf94ea",
+  "started_at": "2026-11-05T09:22:15.888988+00:00",
+  "success": false,
+  "system_install": false,
+  "tests_executed": false
+}

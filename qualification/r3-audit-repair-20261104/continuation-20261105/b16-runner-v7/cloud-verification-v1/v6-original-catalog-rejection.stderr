@@ -1,0 +1,19 @@
+test_actual_context_is_accepted_but_different_host_or_source_is_rejected (test_build_only_guard.BuildOnlyGuardTests.test_actual_context_is_accepted_but_different_host_or_source_is_rejected) ... ERROR
+
+======================================================================
+ERROR: test_actual_context_is_accepted_but_different_host_or_source_is_rejected (test_build_only_guard.BuildOnlyGuardTests.test_actual_context_is_accepted_but_different_host_or_source_is_rejected)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/07dd58cc9630/architecture-audit/b16-guarded-native-runner-20261105/original-ignored-catalog-v7/cloud-verification-v1/v6-runtime-real-catalog/test_build_only_guard.py", line 139, in test_actual_context_is_accepted_but_different_host_or_source_is_rejected
+    context = load_build_only(self.binding)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/07dd58cc9630/architecture-audit/b16-guarded-native-runner-20261105/original-ignored-catalog-v7/cloud-verification-v1/v6-runtime-real-catalog/b16_build_only.py", line 135, in load_build_only
+    need(all(item["filter-match"]["status"] == "matches" for suite in catalog["rust-suites"].values()
+  File "/workspace/scratch/07dd58cc9630/architecture-audit/b16-guarded-native-runner-20261105/original-ignored-catalog-v7/cloud-verification-v1/v6-runtime-real-catalog/b16_guard.py", line 14, in need
+    raise RuntimeError(message)
+RuntimeError: build-only catalog was filtered
+
+----------------------------------------------------------------------
+Ran 1 test in 0.314s
+
+FAILED (errors=1)

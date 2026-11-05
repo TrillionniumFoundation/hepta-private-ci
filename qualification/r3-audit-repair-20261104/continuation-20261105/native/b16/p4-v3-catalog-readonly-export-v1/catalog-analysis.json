@@ -1,0 +1,587 @@
+{
+  "build_or_list_repeated": false,
+  "catalog": {
+    "bytes": 2828836,
+    "dev": 66306,
+    "git_blob": "bdb4590509011c05005821d6b92c71f81f58098c",
+    "inode": 67782559,
+    "mode": "0o600",
+    "nlink": 1,
+    "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-libcap-continuation-v3/03-full-unfiltered-catalog.stdout.original",
+    "sha256": "d4ca608073c2508e8ad5302b1188c7d2e21c6bf221a17688d77f625087e8d3f6"
+  },
+  "counts": {
+    "eligible": 19506,
+    "ignored": 57
+  },
+  "duplicate_case_tuple_counts": [],
+  "exact_catalog_contract_holds": true,
+  "filter_distribution": [
+    {
+      "count": 19506,
+      "filter_match": {
+        "status": "matches"
+      },
+      "ignored": false
+    },
+    {
+      "count": 57,
+      "filter_match": {
+        "reason": "ignored",
+        "status": "mismatch"
+      },
+      "ignored": true
+    }
+  ],
+  "frozen_expected_case_list_sha256": "2e483bc224e88e59f6ca6680c50d68d8123aa149268d4797de4d5c8496880674",
+  "full_case_counter_identity_equal": true,
+  "full_case_tuple_schema": [
+    "binary_id",
+    "name",
+    "ignored"
+  ],
+  "full_sorted_case_list_sha256": "2e483bc224e88e59f6ca6680c50d68d8123aa149268d4797de4d5c8496880674",
+  "host_alias": "ai395",
+  "ignored_cases": [
+    {
+      "binary_id": "codex-app-server",
+      "filter_match": {
+        "reason": "ignored",
+        "status": "mismatch"
+      },
+      "ignored": true,
+      "name": "shutdown_signals::tests::retained_signal_child"
+    },
+    {
+      "binary_id": "codex-app-server-protocol",
+      "filter_match": {
+        "reason": "ignored",
+        "status": "mismatch"
+      },
+      "ignored": true,
+      "name": "schema_fixtures_tests::write_schema_fixtures_from_env"
+    },
+    {
+      "binary_id": "codex-app-server::all",
+      "filter_match": {
+        "reason": "ignored",
+        "status": "mismatch"
+      },
+      "ignored": true,
+      "name": "suite::v2::review::review_start_exec_approval_item_id_matches_command_execution_item"
+    },
+    {
+      "binary_id": "codex-core",
+      "filter_match": {
+        "reason": "ignored",
+        "status": "mismatch"
+      },
+      "ignored": true,
+      "name": "tools::handlers::multi_agents::tests::spawn_agent_reapplies_runtime_sandbox_after_role_config"
+    },
+    {
+      "binary_id": "codex-core::all",
+      "filter_match": {
+        "reason": "ignored",
+        "status": "mismatch"
+      },
+      "ignored": true,
+      "name": "suite::code_mode_elicitation::code_mode_holds_yielded_result_during_permission_request"
+    },
+    {
+      "binary_id": "codex-core::all",
+      "filter_match": {
+        "reason": "ignored",
+        "status": "mismatch"
+      },
+      "ignored": true,
+      "name": "suite::compact::manual_compact_non_context_failure_retries_then_emits_task_error"
+    },
+    {
+      "binary_id": "codex-core::all",
+      "filter_match": {
+        "reason": "ignored",
+        "status": "mismatch"
+      },
+      "ignored": true,
+      "name": "suite::compact_remote::remote_compact_persists_replacement_history_in_rollout"
+    },
+    {
+      "binary_id": "codex-core::all",
+      "filter_match": {
+        "reason": "ignored",
+        "status": "mismatch"
+      },
+      "ignored": true,
+      "name": "suite::live_cli::live_create_file_hello_txt"
+    },
+    {
+      "binary_id": "codex-core::all",
+      "filter_match": {
+        "reason": "ignored",
+        "status": "mismatch"
+      },
+      "ignored": true,
+      "name": "suite::live_cli::live_print_working_directory"
+    },
+    {
+      "binary_id": "codex-core::all",
+      "filter_match": {
+        "reason": "ignored",
+        "status": "mismatch"
+      },
+      "ignored": true,
+      "name": "suite::pending_input::injected_user_input_triggers_follow_up_request_with_deltas"
+    },
+    {
+      "binary_id": "codex-core::all",
+      "filter_match": {
+        "reason": "ignored",
+        "status": "mismatch"
+      },
+      "ignored": true,
+      "name": "suite::shell_snapshot::macos_unified_exec_uses_shell_snapshot"
+    },
+    {
+      "binary_id": "codex-core::all",
+      "filter_match": {
+        "reason": "ignored",
+        "status": "mismatch"
+      },
+      "ignored": true,
+      "name": "suite::shell_snapshot::windows_unified_exec_uses_shell_snapshot"
+    },
+    {
+      "binary_id": "codex-exec-server::exec_process",
+      "filter_match": {
+        "reason": "ignored",
+        "status": "mismatch"
+      },
+      "ignored": true,
+      "name": "exec_process_signal_terminates_on_windows::test_case_1_local"
+    },
+    {
+      "binary_id": "codex-exec-server::exec_process",
+      "filter_match": {
+        "reason": "ignored",
+        "status": "mismatch"
+      },
+      "ignored": true,
+      "name": "exec_process_signal_terminates_on_windows::test_case_2_remote"
+    },
+    {
+      "binary_id": "codex-exec-server::exec_process",
+      "filter_match": {
+        "reason": "ignored",
+        "status": "mismatch"
+      },
+      "ignored": true,
+      "name": "remote_windows_sandbox_process_accepts_process_write"
+    },
+    {
+      "binary_id": "codex-hepta-agentd",
+      "filter_match": {
+        "reason": "ignored",
+        "status": "mismatch"
+      },
+      "ignored": true,
+      "name": "runtime::hos2_recovery_tests::notes_tests::gui_tests::notes_actual_ui_original_owner_roundtrip"
+    },
+    {
+      "binary_id": "codex-hepta-agentd::cognitive_product_e2e",
+      "filter_match": {
+        "reason": "ignored",
+        "status": "mismatch"
+      },
+      "ignored": true,
+      "name": "real_agentd_external_gpt53_spark_read_only_smoke"
+    },
+    {
+      "binary_id": "codex-hepta-agentd::cognitive_product_e2e",
+      "filter_match": {
+        "reason": "ignored",
+        "status": "mismatch"
+      },
+      "ignored": true,
+      "name": "real_agentd_loopback_provider_read_only_smoke"
+    },
+    {
+      "binary_id": "codex-hepta-agentd::cognitive_product_e2e",
+      "filter_match": {
+        "reason": "ignored",
+        "status": "mismatch"
+      },
+      "ignored": true,
+      "name": "real_agentd_remember_recall_correct_and_forget_revalidate_physical_sends"
+    },
+    {
+      "binary_id": "codex-hepta-agentd::cognitive_product_e2e",
+      "filter_match": {
+        "reason": "ignored",
+        "status": "mismatch"
+      },
+      "ignored": true,
+      "name": "two_real_agentd_app_servers_never_cross_recall"
+    },
+    {
+      "binary_id": "codex-hepta-agentd::optional_module_restart",
+      "filter_match": {
+        "reason": "ignored",
+        "status": "mismatch"
+      },
+      "ignored": true,
+      "name": "optional_module_process_entrypoint"
+    },
+    {
+      "binary_id": "codex-hepta-agentd::terminal_cell_owner",
+      "filter_match": {
+        "reason": "ignored",
+        "status": "mismatch"
+      },
+      "ignored": true,
+      "name": "durable_owner_history_and_concurrent_training_profile"
+    },
+    {
+      "binary_id": "codex-hepta-evidence",
+      "filter_match": {
+        "reason": "ignored",
+        "status": "mismatch"
+      },
+      "ignored": true,
+      "name": "authbus_outbox_tests::crash_delivery_child"
+    },
+    {
+      "binary_id": "codex-hepta-infer-core",
+      "filter_match": {
+        "reason": "ignored",
+        "status": "mismatch"
+      },
+      "ignored": true,
+      "name": "durable_control::history_tests::bounded_single_writer_history_emits_append_update_recovery_memory_and_disk_curve"
+    },
+    {
+      "binary_id": "codex-hepta-learning-artifacts",
+      "filter_match": {
+        "reason": "ignored",
+        "status": "mismatch"
+      },
+      "ignored": true,
+      "name": "owner_host::tests::owner_host_process_fault_worker"
+    },
+    {
+      "binary_id": "codex-hepta-learning-ledger",
+      "filter_match": {
+        "reason": "ignored",
+        "status": "mismatch"
+      },
+      "ignored": true,
+      "name": "production::tests::growth::signed_product_history_curve_append_lookup_reopen_and_exact_retry"
+    },
+    {
+      "binary_id": "codex-hepta-memory",
+      "filter_match": {
+        "reason": "ignored",
+        "status": "mismatch"
+      },
+      "ignored": true,
+      "name": "cognitive_kg_benchmark_tests::qualification_knowledge_graph_capacity_receipt"
+    },
+    {
+      "binary_id": "codex-hepta-memory",
+      "filter_match": {
+        "reason": "ignored",
+        "status": "mismatch"
+      },
+      "ignored": true,
+      "name": "cognitive_retrieval::observation::tests::target_host_owner_retrieval_reports_latency_percentiles"
+    },
+    {
+      "binary_id": "codex-hepta-memory",
+      "filter_match": {
+        "reason": "ignored",
+        "status": "mismatch"
+      },
+      "ignored": true,
+      "name": "cognitive_store_tests::kg_projection_crash_child"
+    },
+    {
+      "binary_id": "codex-hepta-memory",
+      "filter_match": {
+        "reason": "ignored",
+        "status": "mismatch"
+      },
+      "ignored": true,
+      "name": "cognitive_store_tests::qualification_kg_projection_crash_windows_restore_exact_predecessor"
+    },
+    {
+      "binary_id": "codex-hepta-memory",
+      "filter_match": {
+        "reason": "ignored",
+        "status": "mismatch"
+      },
+      "ignored": true,
+      "name": "local_compact_executor_tests::host_restart_reopen_replay_process_soak"
+    },
+    {
+      "binary_id": "codex-hepta-memory",
+      "filter_match": {
+        "reason": "ignored",
+        "status": "mismatch"
+      },
+      "ignored": true,
+      "name": "local_compact_executor_tests::sqlite_1000_operation_seeded_reopen_replay_stress"
+    },
+    {
+      "binary_id": "codex-hepta-memory",
+      "filter_match": {
+        "reason": "ignored",
+        "status": "mismatch"
+      },
+      "ignored": true,
+      "name": "local_lease_outbox_tests::qualification_durable_writer_crash_reopen_probe"
+    },
+    {
+      "binary_id": "codex-hepta-memory",
+      "filter_match": {
+        "reason": "ignored",
+        "status": "mismatch"
+      },
+      "ignored": true,
+      "name": "production_writer::objective_sender::crash_tests::objective_sender_subprocess_fixture"
+    },
+    {
+      "binary_id": "codex-hepta-memory-retrieval",
+      "filter_match": {
+        "reason": "ignored",
+        "status": "mismatch"
+      },
+      "ignored": true,
+      "name": "engram::tests::target_host_hnmf_reports_latency_percentiles_at_candidate_ceiling"
+    },
+    {
+      "binary_id": "codex-hepta-memory-retrieval",
+      "filter_match": {
+        "reason": "ignored",
+        "status": "mismatch"
+      },
+      "ignored": true,
+      "name": "engram::tests::target_host_hnmf_validates_full_structural_ceiling"
+    },
+    {
+      "binary_id": "codex-hepta-objective",
+      "filter_match": {
+        "reason": "ignored",
+        "status": "mismatch"
+      },
+      "ignored": true,
+      "name": "feasibility::tests::measurement_conflict_extraction_v1"
+    },
+    {
+      "binary_id": "codex-hepta-objective",
+      "filter_match": {
+        "reason": "ignored",
+        "status": "mismatch"
+      },
+      "ignored": true,
+      "name": "objective_admission::tests::measurement_ordinary_admission_compile_v1"
+    },
+    {
+      "binary_id": "codex-hepta-operations::destination_recovery_binding",
+      "filter_match": {
+        "reason": "ignored",
+        "status": "mismatch"
+      },
+      "ignored": true,
+      "name": "destination_crash_worker"
+    },
+    {
+      "binary_id": "codex-hepta-shadow-qualification::durable_learning_roundtrip",
+      "filter_match": {
+        "reason": "ignored",
+        "status": "mismatch"
+      },
+      "ignored": true,
+      "name": "process::worker"
+    },
+    {
+      "binary_id": "codex-hepta-supervisor::paired_process_product",
+      "filter_match": {
+        "reason": "ignored",
+        "status": "mismatch"
+      },
+      "ignored": true,
+      "name": "paired_child_process"
+    },
+    {
+      "binary_id": "codex-linux-sandbox",
+      "filter_match": {
+        "reason": "ignored",
+        "status": "mismatch"
+      },
+      "ignored": true,
+      "name": "parent_lifecycle::tests::owned_liveness_scenario"
+    },
+    {
+      "binary_id": "codex-otel",
+      "filter_match": {
+        "reason": "ignored",
+        "status": "mismatch"
+      },
+      "ignored": true,
+      "name": "provider::shutdown_tests::bounded_shutdown_survives_worker_guard_page_failure_child"
+    },
+    {
+      "binary_id": "codex-rmcp-client",
+      "filter_match": {
+        "reason": "ignored",
+        "status": "mismatch"
+      },
+      "ignored": true,
+      "name": "oauth::store_lock::tests::store_lock_is_released_when_holder_process_exits_child"
+    },
+    {
+      "binary_id": "codex-rmcp-client::mcp_2026_stdio_discovery",
+      "filter_match": {
+        "reason": "ignored",
+        "status": "mismatch"
+      },
+      "ignored": true,
+      "name": "local_stdio_inherits_ca_certificate_variables_child"
+    },
+    {
+      "binary_id": "codex-rmcp-client::streamable_http_oauth_startup",
+      "filter_match": {
+        "reason": "ignored",
+        "status": "mismatch"
+      },
+      "ignored": true,
+      "name": "expired_unrefreshable_startup_child"
+    },
+    {
+      "binary_id": "codex-rmcp-client::streamable_http_oauth_startup",
+      "filter_match": {
+        "reason": "ignored",
+        "status": "mismatch"
+      },
+      "ignored": true,
+      "name": "issuer_startup_child"
+    },
+    {
+      "binary_id": "codex-rmcp-client::streamable_http_oauth_startup",
+      "filter_match": {
+        "reason": "ignored",
+        "status": "mismatch"
+      },
+      "ignored": true,
+      "name": "oauth_startup_child"
+    },
+    {
+      "binary_id": "codex-rmcp-client::streamable_http_oauth_startup",
+      "filter_match": {
+        "reason": "ignored",
+        "status": "mismatch"
+      },
+      "ignored": true,
+      "name": "persisted_credentials_auth_status_child"
+    },
+    {
+      "binary_id": "codex-rmcp-client::streamable_http_oauth_store_pinning",
+      "filter_match": {
+        "reason": "ignored",
+        "status": "mismatch"
+      },
+      "ignored": true,
+      "name": "auto_store_remains_pinned_across_session_recovery_child"
+    },
+    {
+      "binary_id": "codex-tui",
+      "filter_match": {
+        "reason": "ignored",
+        "status": "mismatch"
+      },
+      "ignored": true,
+      "name": "bottom_pane::textarea::tests::altgr_ctrl_alt_char_inserts_literal"
+    },
+    {
+      "binary_id": "codex-tui",
+      "filter_match": {
+        "reason": "ignored",
+        "status": "mismatch"
+      },
+      "ignored": true,
+      "name": "tui::startup_tests::startup_typeahead_pty_child"
+    },
+    {
+      "binary_id": "codex-tui::all",
+      "filter_match": {
+        "reason": "ignored",
+        "status": "mismatch"
+      },
+      "ignored": true,
+      "name": "suite::resize_reflow::tmux_repeated_resizes_do_not_push_composer_down"
+    },
+    {
+      "binary_id": "codex-tui::all",
+      "filter_match": {
+        "reason": "ignored",
+        "status": "mismatch"
+      },
+      "ignored": true,
+      "name": "suite::resize_reflow::tmux_scrolled_composer_resize_preserves_visible_draft_text"
+    },
+    {
+      "binary_id": "codex-tui::all",
+      "filter_match": {
+        "reason": "ignored",
+        "status": "mismatch"
+      },
+      "ignored": true,
+      "name": "suite::resize_reflow::tmux_split_preserves_fresh_session_composer_row_after_resize_reflow"
+    },
+    {
+      "binary_id": "codex-tui::all",
+      "filter_match": {
+        "reason": "ignored",
+        "status": "mismatch"
+      },
+      "ignored": true,
+      "name": "suite::resize_reflow::tmux_width_resize_restore_keeps_visible_content_anchored"
+    },
+    {
+      "binary_id": "codex-utils-absolute-path",
+      "filter_match": {
+        "reason": "ignored",
+        "status": "mismatch"
+      },
+      "ignored": true,
+      "name": "tests::from_absolute_path_with_removed_current_dir_child"
+    }
+  ],
+  "nonignored_mismatches": [],
+  "original_controller_exit_code": 1,
+  "original_three_command_exits": [
+    0,
+    0,
+    0
+  ],
+  "prior_terminal": {
+    "bytes": 33448,
+    "git_blob": "e270198283e5b893b343e2a1474e543faa49901d",
+    "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-libcap-continuation-v3/terminal.json",
+    "sha256": "6eec39a2f566f2949b790db088bda2fd8aac30e32f7d0fc8fb1ac9875d3d1829"
+  },
+  "program_roles": 363,
+  "program_roles_counter_equal": true,
+  "request": {
+    "bytes": 74627,
+    "git_blob": "f684b5198860575962678fea3e17d8927e4e66b3",
+    "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-libcap-continuation-v3/request.original.json",
+    "sha256": "d86ae86014c4f930e3c02f49529cac198fedc9f8a12158fedc6eb1403d9959ba"
+  },
+  "schema": "hepta-P4-v3-readonly-catalog-analysis-v1",
+  "scope": "Read and export already completed original records only; this analysis does not supply missing current physical artifact guards or qualify tests.",
+  "source_tree": "4a3374e22e16ce5c764288ad018cd9affadf94ea",
+  "test_qualification": false,
+  "tests_executed": false,
+  "unexpected_filter_forms": []
+}

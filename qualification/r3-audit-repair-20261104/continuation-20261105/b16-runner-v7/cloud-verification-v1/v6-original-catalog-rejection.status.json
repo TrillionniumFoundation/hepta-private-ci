@@ -1,0 +1,24 @@
+{
+  "argv": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+    "-m",
+    "unittest",
+    "-v",
+    "test_build_only_guard.BuildOnlyGuardTests.test_actual_context_is_accepted_but_different_host_or_source_is_rejected"
+  ],
+  "cwd": "/workspace/scratch/07dd58cc9630/architecture-audit/b16-guarded-native-runner-20261105/original-ignored-catalog-v7/cloud-verification-v1/v6-runtime-real-catalog",
+  "exit_code": 1,
+  "elapsed_seconds": 0.4526031810019049,
+  "stdout": {
+    "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b16-guarded-native-runner-20261105/original-ignored-catalog-v7/cloud-verification-v1/v6-original-catalog-rejection.stdout",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+  },
+  "stderr": {
+    "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b16-guarded-native-runner-20261105/original-ignored-catalog-v7/cloud-verification-v1/v6-original-catalog-rejection.stderr",
+    "bytes": 1653,
+    "sha256": "ce788128ad92b3520c5f2f514e906166409e0d393665a6aa05a4fcde55263c4a",
+    "git_blob": "f0dfad645f25cc9016cc59cb5c54231331989a0d"
+  }
+}

@@ -1,0 +1,211 @@
+{
+  "schema": "hepta-b16-v7-ai395-concrete-binding-review-v1",
+  "verdict": "STATIC_ACCEPT_V2_WITH_FINAL_REQUEST_LAUNCHER_PIN_UPDATE",
+  "scope": "Independent cloud-byte and source review only. No native read/write/build/test/install, no source or refs modified, no enabled binding created.",
+  "binding": {
+    "path": "/workspace/scratch/07dd58cc9630/ci-audit/recovered-20261105/b16-ai395-foundation-v7-v1/foundation-binding-CANDIDATE.json",
+    "bytes": 19276,
+    "sha256": "03255650f0b30c939e467d88b354a75acf467bf302a3264f564f7c4216232773",
+    "blob": "d5a6b63f3afb5621e36d5bd7ce7d37af1b6ff026"
+  },
+  "request_candidate": {
+    "path": "/workspace/scratch/07dd58cc9630/ci-audit/recovered-20261105/b16-ai395-foundation-v7-v1/launch-request-CANDIDATE.json",
+    "bytes": 930798,
+    "sha256": "5e2f59088d32f0e93603c40c72f9ed605b479f8d40824ec5528312d2c7141311",
+    "blob": "0b79452f3fe7acbf618a6f66736543ac05e07704"
+  },
+  "launcher_v1_preserved": {
+    "path": "/workspace/scratch/07dd58cc9630/ci-audit/recovered-20261105/b16-ai395-foundation-v7-v1/launch_foundation_v7.py",
+    "bytes": 18388,
+    "sha256": "af8fa634cd07604ec3411f04083477095b838eb2451f587601bc973cc45c0d4c",
+    "blob": "2620dcc013355e0abf6e2564e1b9dd89f0e5f3d2"
+  },
+  "launcher_v2": {
+    "path": "/workspace/scratch/07dd58cc9630/ci-audit/recovered-20261105/b16-ai395-foundation-v7-v2/launch_foundation_v7.py",
+    "bytes": 18440,
+    "sha256": "6822afbdc2b9e738fe16801a2eb7ee7865a8cb0880f7578d40813fe42ff24dc5",
+    "blob": "75623f2ed4c5e8f0dd6009df542dae462d5a847b"
+  },
+  "single_line_delta": {
+    "path": "/workspace/scratch/07dd58cc9630/ci-audit/recovered-20261105/b16-ai395-foundation-v7-v2/v1-to-v2-v8-schema.delta.patch",
+    "bytes": 864,
+    "sha256": "583e33411bef46d0b96df1ce8604430c0e83b10c6c220d828e6bbe5e8b6d8d69",
+    "blob": "befda861e76c549cd17c2a204dcca743db993e82"
+  },
+  "runtime": {
+    "complete_postimages_exact": 29,
+    "complete_integrity_entries_exact": 25,
+    "gzip_base64_strict_decode_and_all_byte_identities_verified": true,
+    "integrity": {
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b16-guarded-native-runner-20261105/original-ignored-catalog-v7/v7-candidate/runner-integrity.json",
+      "bytes": 5679,
+      "sha256": "96bbff3180620d841b90b65ea1e159d04931c47fd2de1c270ba0f6c059ac5202",
+      "blob": "18f27fbb488777d621b4f37aa0cf70956cdbe7d9"
+    },
+    "source_payload_oracles_budget_and_all_epoch_files_unchanged": true
+  },
+  "actual_baseline": {
+    "path": "/workspace/scratch/07dd58cc9630/ci-audit/recovered-20261105/b16-ai395-cold-bootstrap-v1/p4-git-tool-augmentation-v1/originals/new-host-build-only-baseline-with-git.json",
+    "bytes": 268075,
+    "sha256": "117ce27929135acfcf8445f23a53842271cad721ef22cf4aaec7024dac3a386a",
+    "blob": "5401ad25c5da11a6f37dc1d93a755070f927a396"
+  },
+  "actual_binding_fields_equal_to_baseline": [
+    "tools",
+    "environment",
+    "ordinary_index",
+    "locks",
+    "recipe_sources"
+  ],
+  "tool_names": [
+    "bazel",
+    "cargo",
+    "cargo-clippy",
+    "cargo-nextest",
+    "git",
+    "just",
+    "rustc",
+    "rustfmt"
+  ],
+  "tools_limit": "Current pinned bytes and executable checks, then each actual PATH resolution remain live guards. This source review does not execute those native probes.",
+  "source": {
+    "final_A_tree": "4a3374e22e16ce5c764288ad018cd9affadf94ea",
+    "initial_tree": "4a3374e22e16ce5c764288ad018cd9affadf94ea",
+    "ordinary_head": "20fd174ded4e5ce01bda34e4f6d1d74803301f49",
+    "ordinary_index_sha256": "6b39b6b27d164001c9b130487d0d7879be5f80e22a4579d06fd472c2bb8d7ac0",
+    "historical_A_tree": "fb9e131272f7e7a138d6c0d1af2b048b9a6ab7ff",
+    "hygiene_relation_review": "40bd8b7030931cae6573ec126f4afc13a1140d33",
+    "bridge_does_not_relabel_published_or_historical_trees": true
+  },
+  "original_build_evidence": {
+    "three_commands_exit_codes": [
+      0,
+      0,
+      0
+    ],
+    "three_complete_stdout_and_stderr_pins_reopened": true,
+    "six_original_guards_reopened_with_exact_source_index_locks": true,
+    "normal_before_envelope": {
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/recovered-20261105/b16-ai395-cold-bootstrap-v1/p4-v3-catalog-readonly-export-v1/decoded-verified-v1/normal-six-before-catalog.json",
+      "bytes": 6286,
+      "sha256": "a3108015b7d97944cd4599e451d36edadad68c9d199a81df8293428024f97514",
+      "blob": "00a60a724d05979b33fc3d58f28ab7d92e618da7"
+    },
+    "normal_before_artifacts_equal_to_baseline": true,
+    "normal_six_actual_compiler_artifact_package_features_fresh_path_association_checked": true,
+    "before_hashes_not_replaced_by_after_catalog_hashes": true,
+    "metadata": {
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/recovered-20261105/b16-ai395-cold-bootstrap-v1/p4-v3-catalog-readonly-export-v1/decoded-verified-v1/02-full-metadata.stdout.original",
+      "bytes": 8296096,
+      "sha256": "b4090db792babde64575b11e7ae04df8245074b96a154048c4de08691e4a23e0",
+      "blob": "e1f0ddb638f8d46e24d94176c3993e7fa2a293fd"
+    },
+    "catalog": {
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/recovered-20261105/b16-ai395-cold-bootstrap-v1/p4-v3-catalog-readonly-export-v1/decoded-verified-v1/03-full-unfiltered-catalog.stdout.original",
+      "bytes": 2828836,
+      "sha256": "d4ca608073c2508e8ad5302b1188c7d2e21c6bf221a17688d77f625087e8d3f6",
+      "blob": "bdb4590509011c05005821d6b92c71f81f58098c"
+    },
+    "metadata_counts": [
+      193,
+      1501
+    ],
+    "programs_helpers": [
+      363,
+      33
+    ],
+    "all_program_paths_binary_ids_and_helper_basenames_match_catalog": true,
+    "P4_original_outer_failure_retained": true
+  },
+  "historical_selection": {
+    "original": {
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/recovered-20261105/full-fb9-complete-archive/decoded-verified-v1/full-workspace-selection.json",
+      "bytes": 5364870,
+      "sha256": "48dcb2b104793c7dac9699803e4746d6d8145bcc66701de167de57cbf6bd3c6c",
+      "blob": "cfe723c534fab7be981a38aa64e5ca99de412bc2"
+    },
+    "transfer_terminal": {
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/recovered-20261105/b16-ai395-foundation-v7-v1/historical-transfer-terminal.original.json",
+      "bytes": 2531,
+      "sha256": "6c8283ce7a028a8a6a72141519c870535d718a4b43de2c2fab2251ba3e9ec0f2",
+      "blob": "7db427b227f763c50d79f9d703ec1212731956ce"
+    },
+    "original_bytes_5364870_and_internal_paths_preserved": true,
+    "new_copy_path_only": "/home/qq/work/hepta-audit-b16-20261105/evidence/b16-historical-fb9-input-v1/full-fb9-workspace-selection.original.json",
+    "not_a_current_host_A_test_result": true
+  },
+  "external_receipts": {
+    "openssl": {
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/recovered-20261105/b16-ai395-cold-bootstrap-v1/p4-openssl-sdk-v1/openssl-sdk.json",
+      "bytes": 114477,
+      "sha256": "48e973cac721615cf30b937ff20bf7f47cc951265aa5030b194dec971e1e2bc3",
+      "blob": "cd94077d9281c979faad884e1f57e07f30c74956"
+    },
+    "libcap": {
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/recovered-20261105/b16-ai395-cold-bootstrap-v1/p4-libcap-sdk-continuation-v2/originals/libcap-sdk.json",
+      "bytes": 21821,
+      "sha256": "91a00c1b04650fe67d60af6573b60f5d4a2e50414262157cc6a636ba52b7c88b",
+      "blob": "86c0f8f58e339106f0606c507848d8ca344480c6"
+    },
+    "v8": {
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/recovered-20261105/b16-ai395-cold-bootstrap-v1/p3-supplier-correction/v8-prerequisites.json",
+      "bytes": 5101,
+      "sha256": "4872133bd7e4d2afdf9a33fc472202c545793dcf2c55f8c918d3f3ee47075f15",
+      "blob": "cd5c45c0cf03593644a80315186f1ebae2b9e07b"
+    }
+  },
+  "external_guards": {
+    "P4_functions_reused_byte_exact": [
+      "bytes_id",
+      "file_id",
+      "equal_content",
+      "save",
+      "save_json",
+      "verify_openssl_sdk",
+      "verify_libcap_sdk"
+    ],
+    "openssl_libcap_consumed_receipt_and_environment_fields_equal_to_actual_baseline": true,
+    "baseline_extra_prior_guard_pins_remain_in_parent_baseline": true,
+    "v8_actual_variant": "ptrcomp_sandbox_release_x86_64-unknown-linux-gnu",
+    "v8_actual_variant_type": "str",
+    "v8_two_asset_observed_files_and_official_checksum_pins_match_schema": true,
+    "all_sdk_and_v8_environment_entries_equal_to_actual_execution_map": true,
+    "before_and_finally_after_checks_preserved": true,
+    "external_guard_error_forces_nonzero_exit": true
+  },
+  "fixed_static_finding": {
+    "v1_was_never_launched": true,
+    "v1_error": "P3 variant_unchanged is an exact string, not a boolean.",
+    "v2_change": "Compare the original variant string with the bound exact variant.",
+    "original_v1_and_v1_request_kept": true
+  },
+  "foundation": {
+    "scopes": 10,
+    "positive_unique": 24,
+    "positive_occurrences": 27,
+    "negative_unique": 9,
+    "negative_occurrences": 10,
+    "four_negative_finally_blocks_unchanged": true,
+    "retry_count": 0,
+    "other_epochs_not_authorized": true,
+    "original_tests_no_changes": true
+  },
+  "capacity": {
+    "fresh_initial_minimum_bytes": 22000000000,
+    "per_command_reserve_bytes": 8000000000,
+    "temporary_cargo_estimate_bytes": 12000000000,
+    "evidence_estimate_bytes": 2000000000,
+    "additional_family_count": 0,
+    "fresh_check_precedes_install_and_subprocess": true,
+    "capacity_not_measured_peak_guarantee": true,
+    "no_cleanup_or_lowered_budget": true
+  },
+  "final_request_required_changes": [
+    "binding.execute false to true",
+    "binding.approval_reference null to root execution guard",
+    "root_execution_guard null to same guard",
+    "expected_launcher v1 identity to exact v2 identity"
+  ],
+  "current_candidate_disabled": true,
+  "actual_B_qualification": false
+}

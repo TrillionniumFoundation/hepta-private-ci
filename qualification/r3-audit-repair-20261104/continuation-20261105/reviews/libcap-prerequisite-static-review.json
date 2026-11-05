@@ -1,0 +1,175 @@
+{
+  "schema": "hepta-b16-libcap-private-prerequisite-static-review-v1",
+  "verdict": "SOURCE_AND_EXISTING_V6_CONTRACT_ACCEPT_PRIVATE_SDK_PLUS_THREE_COMMAND_CONTINUATION",
+  "native_actions_by_reviewer": false,
+  "source_or_ref_mutation": false,
+  "V6_modified": false,
+  "B_enabled": false,
+  "fixed_source_manifest": [
+    {
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b16-libcap-prerequisite-static-20261105/fixed-source/codex-rs/bwrap/build.rs",
+      "bytes": 3851,
+      "sha256": "3ca3f0c90e075d38215e74ff19049df1ff6fdd80a04711ee05f3acd39dfd7b70",
+      "git_blob": "d9d87932b2db8150e4bdcf663e2de32b7d100f9f",
+      "repository_path": "codex-rs/bwrap/build.rs",
+      "ref": "20fd174ded4e5ce01bda34e4f6d1d74803301f49",
+      "retrieval": "GitHub fetch_file at fixed ref, complete returned bytes independently hashed"
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b16-libcap-prerequisite-static-20261105/fixed-source/codex-rs/bwrap/Cargo.toml",
+      "bytes": 305,
+      "sha256": "5b524ac2c30f4029cae77721c026d3487a6628473b042d26f354ab6075ec4a7c",
+      "git_blob": "ed7010c8fdaea270f028ceb9a053e60c278d2b4c",
+      "repository_path": "codex-rs/bwrap/Cargo.toml",
+      "ref": "20fd174ded4e5ce01bda34e4f6d1d74803301f49",
+      "retrieval": "GitHub fetch_file at fixed ref, complete returned bytes independently hashed"
+    }
+  ],
+  "actual_failure": {
+    "stderr": {
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/recovered-20261105/b16-ai395-cold-bootstrap-v1/p4-openssl-continuation-v2/catalog-failure/03-full-unfiltered-catalog.stderr.original",
+      "bytes": 40456,
+      "sha256": "9d2b98b298bd71ebbd92f86be07466146a60ca0136a74cfd3465b0d86d7e0412",
+      "git_blob": "754c20e67f869e0351db3c9cb699072a2d33dce0"
+    },
+    "status": {
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/recovered-20261105/b16-ai395-cold-bootstrap-v1/p4-openssl-continuation-v2/catalog-failure/03-full-unfiltered-catalog.status.json",
+      "bytes": 2722,
+      "sha256": "b96334f999916b146144dfffbfd84da03dffa5350fcacb713bd564e77f608e72",
+      "git_blob": "8b8253a3187849d40352183aee078d1538107f89"
+    },
+    "argv": [
+      "cargo",
+      "nextest",
+      "list",
+      "--locked",
+      "--cargo-profile",
+      "dev-small",
+      "--message-format=json"
+    ],
+    "exit_code": 101,
+    "duration_seconds": 146.0630063159624,
+    "source_before": "4a3374e22e16ce5c764288ad018cd9affadf94ea",
+    "source_after": "4a3374e22e16ce5c764288ad018cd9affadf94ea",
+    "tests_executed": false,
+    "diagnostic": "codex-bwrap build.rs:28 reports libcap unavailable through real pkg-config --libs --cflags libcap; no libcap.pc found. This is a build prerequisite failure, not a test assertion."
+  },
+  "source_findings": [
+    "The Linux build invokes pkg_config::Config::new().cargo_metadata(false).probe(\"libcap\"). All probe errors propagate to the existing panic.",
+    "Probe include_paths become real C compiler -idirafter flags; probe link_paths and libs become real Rust linker search/link directives. A nominal .pc without real matching header/library inputs is insufficient.",
+    "The existing non-Linux branch and CODEX_SKIP_BWRAP_BUILD bypass are not a repair; neither production source nor any skip is changed by this plan."
+  ],
+  "actual_prerequisite_observation": {
+    "terminal": {
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/recovered-20261105/b16-ai395-cold-bootstrap-v1/p4-libcap-readonly-v1/originals/terminal.json",
+      "bytes": 26811,
+      "sha256": "14f5c35cc108e8128c788d2c6778623b0d147b50687ae22e94ac959ce22f26de",
+      "git_blob": "3c983a7ec2e42cc080c15798649076f9f278e8f5"
+    },
+    "available_four_command_stdout_hashes_match_terminal": true,
+    "scope": "The reviewer independently read and hashed the complete returned terminal and four stdout files. Runtime physical hash is the original CI read-only observation; the reviewer did not access the host or download packages.",
+    "version": "1:2.75-10ubuntu2",
+    "development_inputs": [
+      {
+        "exists": false,
+        "path": "/usr/include/sys/capability.h"
+      },
+      {
+        "exists": false,
+        "path": "/usr/lib/x86_64-linux-gnu/libcap.so"
+      },
+      {
+        "exists": false,
+        "path": "/usr/lib/x86_64-linux-gnu/pkgconfig/libcap.pc"
+      }
+    ],
+    "system_runtime": {
+      "file": {
+        "bytes": 51616,
+        "dev": 66306,
+        "git_blob": "2c19be41b831d7739d469d6db5cf88e615e1efc1",
+        "inode": 82187692,
+        "mode": "0o644",
+        "nlink": 1,
+        "path": "/usr/lib/x86_64-linux-gnu/libcap.so.2.75",
+        "sha256": "c5b463a8136dabb152bad8b04e89bf67bd2049ef49777ed0b96bdbc6cb5b9565"
+      },
+      "link": "/usr/lib/x86_64-linux-gnu/libcap.so.2",
+      "target": "libcap.so.2.75"
+    },
+    "official_package_metadata": [
+      {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/recovered-20261105/b16-ai395-cold-bootstrap-v1/p4-libcap-readonly-v1/originals/libcap-dev-official-metadata.stdout.original",
+        "bytes": 1292,
+        "sha256": "3d24db66bafdd5ba72e9ed2e4f1b6692137489b472066672a916d561a12da261",
+        "git_blob": "8b0f7194c911d7f19fc18097da097553d5beb403"
+      },
+      {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/recovered-20261105/b16-ai395-cold-bootstrap-v1/p4-libcap-readonly-v1/originals/libcap2-official-metadata.stdout.original",
+        "bytes": 1190,
+        "sha256": "bca51abf8254ead5b315a579dfbb71604c42e0ecbb55d3240a07baa12e5d32f5",
+        "git_blob": "d3ac46e989cd006e65f49e4fc85c5ab57d2399b4"
+      }
+    ],
+    "packages": [
+      {
+        "name": "libcap-dev",
+        "architecture": "amd64",
+        "version": "1:2.75-10ubuntu2",
+        "archive_bytes": 619148,
+        "archive_sha256": "74fa71aa089d90d720722f6278314b90b72fa2e1631aea5dc32b770d0324ce86"
+      },
+      {
+        "name": "libcap2",
+        "architecture": "amd64",
+        "version": "1:2.75-10ubuntu2",
+        "archive_bytes": 29264,
+        "archive_sha256": "150603a0792b1d22aa0bde0a26c27b413018c799284003e4b43cba587a5b3a18"
+      }
+    ]
+  },
+  "minimal_private_binding": {
+    "official_packages": "Privately extract the exact matching official dev/runtime archives after byte/checksum validation; do not install or alter system capability policy.",
+    "original_inputs": "Preserve the complete original libcap.pc, headers, archive members/modes, library and symlink identities. Confirm private runtime bytes equal the installed runtime before claiming no runtime substitution.",
+    "pc_overlay": "Use an owned pkgconfig directory containing only libcap.pc. Based on its actual contents, mechanically relocate the existing prefix/libdir/includedir assignments to the private SDK. Preserve all non-path fields, Requires/Libs/Cflags semantics and their original bytes outside the recorded path overlay. Do not fabricate an unobserved original .pc.",
+    "environment": "Set PKG_CONFIG_PATH to that one owned directory. Do not set global PKG_CONFIG_LIBDIR or PKG_CONFIG_SYSROOT_DIR, and do not use LIBCAP_NO_PKG_CONFIG or CODEX_SKIP_BWRAP_BUILD. Preserve existing OpenSSL environment.",
+    "real_resolution": "Record the real pkg-config executable/version and actual libcap probe output; resolved include/library paths must identify the private files and original capability link library. Any existing target/HOST override must not silently select another libcap provider.",
+    "physical_evidence": "Pin official packages, original/overlay .pc and exact delta, complete needed headers, linker alias/resolved runtime and real pkg-config identity; carry initial/final physical prerequisite evidence as for the OpenSSL SDK. The source-tree guard alone does not cover external SDK files."
+  },
+  "continuation_decision": {
+    "producer": {
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/recovered-20261105/b16-ai395-cold-bootstrap-v1/p4-openssl-continuation-v2/run_bootstrap_p4_v2.py",
+      "bytes": 24790,
+      "sha256": "77eb447174f9b10054663f7f173e8c64e910cfd8c53e8f7386fcfda6cd964687",
+      "git_blob": "9257c8988db205fef9156ae58dbd4e7a18561579"
+    },
+    "consumer": {
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b16-guarded-native-runner-20261105/build-only-current-host-v6/v6-candidate/b16_build_only.py",
+      "bytes": 13465,
+      "sha256": "f82e03761ea34691193c1ab035debc062ea0a953b80a875afb1e1ab97071b3b9",
+      "git_blob": "4a62c1071298258f1baa0d59fe44ef4de364b8ef"
+    },
+    "v6_contract": "load_build_only requires one receipt.environment equal to binding.environment, exactly three successful literal commands and six distinct corresponding source guards, plus real metadata/catalog and outputs. P4 v2 uses one effective environment for those commands.",
+    "decision": "Keep v2 normal-helper success, metadata success and catalog101 unchanged as historical evidence. New effective libcap environment is a new continuation: execute the original helper build, full locked metadata and full unfiltered nextest list in order under that one actual environment. Reuse the owned existing target without cleaning. Do not graft the two old command receipts into a successful new-environment baseline.",
+    "why_all_three": "This is the minimal continuation under the unchanged single-environment V6 contract. A mixed-environment baseline would require an additional equivalence/consumer contract which is outside this task; no such proof currently exists. Metadata itself is not claimed to consume libcap, but its old receipt must not be relabeled.",
+    "tests_executed_by_three_commands": false,
+    "command_semantics": [
+      "cargo build --locked --profile dev-small --message-format=json-render-diagnostics with the original six-helper package/bin roster",
+      "cargo metadata --locked --format-version=1",
+      "cargo nextest list --locked --cargo-profile dev-small --message-format=json"
+    ],
+    "unchanged_gates": [
+      "source 4a / ordinary HEAD20fd / current-host index / both locks",
+      "original 193 members and 1501 nodes",
+      "363 complete catalog program roles and 33 actual helpers",
+      "original eligible/ignored exact roster, no test selection changes",
+      "normal before/after compiler-artifact identities",
+      "BUILD_ONLY_CURRENT_HOST, tests_executed=false, test_qualification=false; historic ROG tests retain their own source and artifacts"
+    ]
+  },
+  "open_boundaries": [
+    "Official .deb download/extraction, actual .pc contents and successful probe are pending in this review.",
+    "No successful current-host full catalog or baseline exists at this failure stage.",
+    "No B16 foundation, driver or tests have been enabled or executed by this review."
+  ]
+}

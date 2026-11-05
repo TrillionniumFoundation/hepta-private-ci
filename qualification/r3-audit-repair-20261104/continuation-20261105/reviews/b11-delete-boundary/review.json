@@ -1,0 +1,108 @@
+{
+  "schema": "hepta-b11-current-delete-boundary-review-v1",
+  "state": "OPEN_NO_QUALIFIED_MINIMAL_PRODUCT_PATCH_UNDER_CURRENT_TOKEN_ONLY_CONTRACT",
+  "current_ref": "5b6331250ff459033bd44d1a95daec70131277cc",
+  "original_tested_merge": "9459cf8a4e5e43d6645e2b619b86455132c7df67",
+  "original_run_id": 41966043093,
+  "original_job_id": 127043294552,
+  "original_target_result": {
+    "passed": 78,
+    "failed": 2,
+    "ignored": 2,
+    "filtered": 86,
+    "duplicate_wrapper_tail_is_not_another_attempt": true
+  },
+  "original_raw_log": {
+    "path": "research-audit/open-pr-increment-20261105T1013/4844-original-windows-job.log",
+    "bytes": 600398,
+    "sha256": "a30a35effe2fe56d997ef570b27f3c81b358b33fb13401e3977ed6277bec0bb1",
+    "git_blob": "8c4e278f4cafda25687b939a058286d828854c8b"
+  },
+  "confirmed": [
+    "Current production token bytes exactly equal original tested token minus an appended cfg(test) module declaration.",
+    "The original strict case reached successful allowed-root operations and an outside physical read, then outside write/create PermissionDenied and outside file/directory removal success.",
+    "Production token same-descriptor AccessCheck denied outside DELETE but allowed parent FILE_DELETE_CHILD.",
+    "Full-restricting control copies the actual restricting SID multiset, original default DACL and original SeChangeNotify privilege, omitting WRITE_RESTRICTED only; it denies outside read and DELETE_CHILD in AccessCheck.",
+    "Full-restricting control is not impersonated for filesystem I/O; do not label its read result a physical read.",
+    "The current direct legacy constructor accepts no paths/read authorities or independent operation-mediation handle.",
+    "Current elevated runner uses the same token family, while setup grants selected roots; its IPC is spawn/stdio/control, not mediation of each native file operation."
+  ],
+  "limits": [
+    "No new native Windows execution, current-head qualification, permission experiment, CI rerun or ref mutation.",
+    "Observed access-mask behavior is bound to the original actual Windows run; no private Windows implementation or all-version proof.",
+    "No proof that every possible Windows isolation mechanism is impossible.",
+    "MIC is a possible separate mechanism but existing inspected chain has no root-label/token-integrity setup; original evidence does not contain object SACL or token IL observations.",
+    "No safe use of existing elevated routing as proof that the broad-ACE attack is fixed.",
+    "No blanket Err, changed expected result, skipped test, dropped outside read or reintroduced broad capability is accepted as closure."
+  ],
+  "minimum_new_interface_candidate": {
+    "status": "DESIGN_ONLY_NOT_IMPLEMENTED_OR_QUALIFIED",
+    "mode": "ExplicitReadRootsFullRestriction",
+    "required_inputs": [
+      "trusted current read-root and write-root objects",
+      "separate read-only capability with verified read/execute grants",
+      "capability-only writable-root authorities",
+      "actual loader/IPC prerequisites with object and lifetime custody"
+    ],
+    "required_production_slices": [
+      "token mode and explicit contract",
+      "spawn preparation read/write authority inputs",
+      "synchronous setup grant completion",
+      "runner same-mode construction and consumption"
+    ],
+    "compatibility": "Changes the old ambient-read/WRITE_RESTRICTED token-only contract and cannot silently replace it.",
+    "mic_alternative": "Requires explicit root-label custody and independent protection for other same/low-integrity outside objects; no system-wide ACL/SACL edits proposed."
+  },
+  "original_acceptance": {
+    "target": "//codex-rs/windows-sandbox-rs:windows-sandbox-rs-unit-tests",
+    "unchanged_original_failure_cases": [
+      "token::tests::partial_delete_deny_is_repaired_before_native_workspace_writes",
+      "token::tests::workspace_capabilities_deny_writes_and_deletes_under_broad_identity_aces",
+      "unified_exec::tests::legacy_workspace_write_delete_is_limited_to_writable_roots"
+    ],
+    "unchanged_matrix_cases": [
+      "token::tests::workspace_capability_delete_routes_require_the_capability_in_all_four_cells",
+      "unified_exec::tests::delete_permission_tests::legacy_delete_routes_require_workspace_capability_in_all_four_cells"
+    ],
+    "must_retain": [
+      "original target command/selection/budget",
+      "physical outside read and non-mutation",
+      "allowed workspace/TEMP/TMP writes/deletes",
+      "protected .git",
+      "host four-cell controls and exact handle/object identity",
+      "public ACL query and repeat-repair booleans",
+      "loader and IPC positives",
+      "full logs/XML/all attempts with source/cache/retry identities"
+    ],
+    "does_not_grant_closure_to_any_case": true
+  },
+  "review_artifacts": [
+    {
+      "path": "architecture-audit/b11-delete-boundary-20261105/source-manifest.json",
+      "bytes": 6958,
+      "sha256": "33edef4dfb8854ef29d560cb93f55638b01353f521aff2a786e643088bacb293",
+      "git_blob": "baac2640cc41435c79b6102212e2137deb8b3844"
+    },
+    {
+      "path": "architecture-audit/b11-delete-boundary-20261105/original-failure-excerpts.json",
+      "bytes": 10612,
+      "sha256": "7e1fd1abc5d1df4a7bd9bd245b68ce291e9f82d5fd5b1db94369a0185549aed0",
+      "git_blob": "add8de9594824fdd18bd293a2b30fc689cb87563"
+    },
+    {
+      "path": "architecture-audit/b11-delete-boundary-20261105/REVIEW.zh-CN.md",
+      "bytes": 11629,
+      "sha256": "42d3e4e32fc82d118d325341fcb3ee3b92eb273eba05fde586d9f94c8da0d04b",
+      "git_blob": "8425c5daaf85a6a310e278d877b1b35834e99d60"
+    }
+  ],
+  "official_primary_urls": [
+    "https://learn.microsoft.com/en-us/windows/win32/api/securitybaseapi/nf-securitybaseapi-createrestrictedtoken",
+    "https://learn.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-deletefilew",
+    "https://learn.microsoft.com/en-us/windows/win32/fileio/file-security-and-access-rights",
+    "https://learn.microsoft.com/en-us/windows/win32/secauthz/mandatory-integrity-control"
+  ],
+  "source_patch_created": false,
+  "native_execution": false,
+  "refs_changed": false
+}

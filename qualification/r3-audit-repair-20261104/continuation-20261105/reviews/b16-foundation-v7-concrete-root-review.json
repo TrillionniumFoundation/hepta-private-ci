@@ -1,0 +1,67 @@
+{
+  "schema": "hepta-root-concrete-ai395-foundation-v7-launch-review-v1",
+  "at": "2026-11-05T10:26:24.741721+00:00",
+  "verdict": "ACCEPT_V2_LAUNCHER_AND_EXACT_DISABLED_BINDING_FOR_ROOT_ENABLE",
+  "launcher_v1_preserved": {
+    "bytes": 18388,
+    "sha256": "af8fa634cd07604ec3411f04083477095b838eb2451f587601bc973cc45c0d4c",
+    "blob": "2620dcc013355e0abf6e2564e1b9dd89f0e5f3d2"
+  },
+  "launcher_v2": {
+    "bytes": 18440,
+    "sha256": "6822afbdc2b9e738fe16801a2eb7ee7865a8cb0880f7578d40813fe42ff24dc5",
+    "blob": "75623f2ed4c5e8f0dd6009df542dae462d5a847b"
+  },
+  "candidate_binding": {
+    "bytes": 19276,
+    "sha256": "03255650f0b30c939e467d88b354a75acf467bf302a3264f564f7c4216232773",
+    "blob": "d5a6b63f3afb5621e36d5bd7ce7d37af1b6ff026"
+  },
+  "candidate_request": {
+    "bytes": 930798,
+    "sha256": "5e2f59088d32f0e93603c40c72f9ed605b479f8d40824ec5528312d2c7141311",
+    "blob": "0b79452f3fe7acbf618a6f66736543ac05e07704"
+  },
+  "build_only_baseline": {
+    "bytes": 268075,
+    "sha256": "117ce27929135acfcf8445f23a53842271cad721ef22cf4aaec7024dac3a386a",
+    "blob": "5401ad25c5da11a6f37dc1d93a755070f927a396"
+  },
+  "historical_full_A_original": {
+    "bytes": 5364870,
+    "sha256": "48dcb2b104793c7dac9699803e4746d6d8145bcc66701de167de57cbf6bd3c6c",
+    "blob": "cfe723c534fab7be981a38aa64e5ca99de412bc2"
+  },
+  "historical_transfer_terminal": {
+    "bytes": 2531,
+    "sha256": "6c8283ce7a028a8a6a72141519c870535d718a4b43de2c2fab2251ba3e9ec0f2",
+    "blob": "7db427b227f763c50d79f9d703ec1212731956ce"
+  },
+  "verified": {
+    "exact_frozen_runtime_files": 29,
+    "integrity_entries": 25,
+    "exact_actual_tools": 8,
+    "P4_environment_and_all_parent_relations": true,
+    "source_tree_ordinary_index_two_locks_and_eight_recipe_sources": true,
+    "two_SDK_receipts_and_effective_environments": true,
+    "actual_V8_string_variant_not_boolean": true,
+    "historical_A_original_bytes_and_inner_paths_preserved": true,
+    "unique_positive_cases": 24,
+    "positive_execution_occurrences": 27,
+    "unique_negative_cases": 9,
+    "negative_execution_occurrences": 10,
+    "source_payload_oracles_finally_and_budget_unchanged": true
+  },
+  "enable_delta_required": [
+    "binding.execute false→true",
+    "binding.approval_reference null→root guard blob",
+    "root_execution_guard null→same root guard blob",
+    "expected_launcher originalV1→exactV2 identity"
+  ],
+  "scope_limits": [
+    "Only foundation is eligible for the next authorized launch; other epochs wait for actual preceding results.",
+    "No native foundation test result is claimed by this static review.",
+    "Ambient process environment beyond existing frozen guards is not claimed to be fully captured."
+  ],
+  "native_started": false
+}

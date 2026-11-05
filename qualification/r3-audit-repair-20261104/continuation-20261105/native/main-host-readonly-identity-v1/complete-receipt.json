@@ -1,0 +1,87 @@
+{
+  "schema": "hepta-main-readonly-host-identity-complete-v1",
+  "actual_native_job": "1a1ab5178f9-fc05-4c7c",
+  "requested_host": "main",
+  "script": "import json, os, platform, shutil, subprocess\nfrom pathlib import Path\nout={'schema':'hepta-main-readonly-host-identity-v1','host_alias':'main','uname':list(platform.uname()),'machine':platform.machine(),'system':platform.system(),'uid':os.getuid(),'euid':os.geteuid(),'tools':{}}\nfor name in ('git','cargo','rustc','just','cargo-nextest','bazel','python3'):\n p=shutil.which(name)\n out['tools'][name]={'selected_path':p,'resolved_path':str(Path(p).resolve()) if p else None}\nif Path('/usr/bin/sw_vers').is_file():\n r=subprocess.run(['/usr/bin/sw_vers'],stdout=subprocess.PIPE,stderr=subprocess.PIPE,check=False)\n out['sw_vers']={'argv':['/usr/bin/sw_vers'],'exit_code':r.returncode,'stdout':r.stdout.decode(),'stderr':r.stderr.decode()}\nout.update({'read_only':True,'source_modified':False,'build_or_tests_started':False,'tools_installed':False})\nprint(json.dumps(out,sort_keys=True,ensure_ascii=False))\n",
+  "request": {
+    "host": "main",
+    "executable": "/usr/bin/python3",
+    "idempotency_key": "hepta-main-native-identity-readonly-20261105-v1",
+    "timeout_seconds": 30
+  },
+  "launch_response": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\n  \"audit_recorded\": true,\n  \"job\": {\n    \"args\": [\n      \"-c\",\n      \"import json, os, platform, shutil, subprocess\\nfrom pathlib import Path\\nout={'schema':'hepta-main-readonly-host-identity-v1','host_alias':'main','uname':list(platform.uname()),'machine':platform.machine(),'system':platform.system(),'uid':os.getuid(),'euid':os.geteuid(),'tools':{}}\\nfor name in ('git','cargo','rustc','just','cargo-nextest','bazel','python3'):\\n p=shutil.which(name)\\n out['tools'][name]={'selected_path':p,'resolved_path':str(Path(p).resolve()) if p else None}\\nif Path('/usr/bin/sw_vers').is_file():\\n r=subprocess.run(['/usr/bin/sw_vers'],stdout=subprocess.PIPE,stderr=subprocess.PIPE,check=False)\\n out['sw_vers']={'argv':['/usr/bin/sw_vers'],'exit_code':r.returncode,'stdout':r.stdout.decode(),'stderr':r.stderr.decode()}\\nout.update({'read_only':True,'source_modified':False,'build_or_tests_started':False,'tools_installed':False})\\nprint(json.dumps(out,sort_keys=True,ensure_ascii=False))\\n\"\n    ],\n    \"created_unix_ms\": 1793875605753,\n    \"cwd\": null,\n    \"env_keys\": [],\n    \"executable\": \"/usr/bin/python3\",\n    \"execution_mode\": \"operator\",\n    \"host\": \"main\",\n    \"id\": \"1a1ab5178f9-fc05-4c7c\",\n    \"idempotency_key\": \"hepta-main-native-identity-readonly-20261105-v1\",\n    \"launch_error\": null,\n    \"launch_state\": \"launched\",\n    \"remote_job_dir\": \"/Users/qianqi/.local/state/hepta-runtime-mac-worker/jobs/1a1ab5178f9-fc05-4c7c\",\n    \"request_digest\": \"7e6f3278be9fcda5acabdec7129510278fe5b3e6b2a30baf64654b0ce79970fa\",\n    \"request_fingerprint\": 9110556065369410981,\n    \"ssh_target\": \"hepta-mac-local\",\n    \"system_jobctl\": false,\n    \"unit\": \"hepta-runtime-job-1a1ab5178f9-fc05-4c7c\"\n  },\n  \"launch\": {\n    \"backend\": \"detached\",\n    \"launcher_pid\": 18548,\n    \"ok\": true,\n    \"systemd_error\": \"systemd user units unavailable on this platform\",\n    \"unit\": \"hepta-runtime-job-1a1ab5178f9-fc05-4c7c\"\n  },\n  \"local_record_pending\": false,\n  \"reused\": false\n}"
+      }
+    ],
+    "structuredContent": null,
+    "isError": false
+  },
+  "authoritative_terminal": {
+    "at_unix_ms": 1793875606087,
+    "audit_recorded": true,
+    "automatic_retry": false,
+    "cancelled": false,
+    "exit_code": 0,
+    "job_id": "1a1ab5178f9-fc05-4c7c",
+    "launch_nonce": "3c8c6f3ec0197c38895b3ffefe1c6136",
+    "log_bytes": {
+      "stderr": {
+        "seen": 0,
+        "stored": 0
+      },
+      "stdout": {
+        "seen": 1203,
+        "stored": 1203
+      }
+    },
+    "log_errors": {
+      "stderr": null,
+      "stdout": null
+    },
+    "log_synced": {
+      "stderr": true,
+      "stdout": true
+    },
+    "log_truncated": {
+      "stderr": false,
+      "stdout": false
+    },
+    "output_complete": true,
+    "output_durable": true,
+    "state": "succeeded",
+    "terminal_publication_confirmed": true,
+    "terminal_publication_protocol": 1,
+    "timed_out": false
+  },
+  "original_output": {
+    "audit_recorded": true,
+    "job_id": "1a1ab5178f9-fc05-4c7c",
+    "stderr": {
+      "bytes_hex": "",
+      "eof": true,
+      "next_offset": 0,
+      "offset": 0,
+      "size": 0,
+      "text": ""
+    },
+    "stdout": {
+      "bytes_hex": "7b226275696c645f6f725f74657374735f73746172746564223a2066616c73652c202265756964223a203530312c2022686f73745f616c696173223a20226d61696e222c20226d616368696e65223a202261726d3634222c2022726561645f6f6e6c79223a20747275652c2022736368656d61223a202268657074612d6d61696e2d726561646f6e6c792d686f73742d6964656e746974792d7631222c2022736f757263655f6d6f646966696564223a2066616c73652c202273775f76657273223a207b2261726776223a205b222f7573722f62696e2f73775f76657273225d2c2022657869745f636f6465223a20302c2022737464657272223a2022222c20227374646f7574223a202250726f647563744e616d653a5c745c746d61634f535c6e50726f6475637456657273696f6e3a5c745c7432362e362e325c6e4275696c6456657273696f6e3a5c745c7432354738335c6e227d2c202273797374656d223a202244617277696e222c2022746f6f6c73223a207b2262617a656c223a207b227265736f6c7665645f70617468223a206e756c6c2c202273656c65637465645f70617468223a206e756c6c7d2c2022636172676f223a207b227265736f6c7665645f70617468223a20222f6f70742f686f6d65627265772f43656c6c61722f7275737475702f312e32382e322f62696e2f7275737475702d696e6974222c202273656c65637465645f70617468223a20222f6f70742f686f6d65627265772f6f70742f7275737475702f62696e2f636172676f227d2c2022636172676f2d6e657874657374223a207b227265736f6c7665645f70617468223a206e756c6c2c202273656c65637465645f70617468223a206e756c6c7d2c2022676974223a207b227265736f6c7665645f70617468223a20222f7573722f62696e2f676974222c202273656c65637465645f70617468223a20222f7573722f62696e2f676974227d2c20226a757374223a207b227265736f6c7665645f70617468223a206e756c6c2c202273656c65637465645f70617468223a206e756c6c7d2c2022707974686f6e33223a207b227265736f6c7665645f70617468223a20222f7573722f62696e2f707974686f6e33222c202273656c65637465645f70617468223a20222f7573722f62696e2f707974686f6e33227d2c20227275737463223a207b227265736f6c7665645f70617468223a20222f6f70742f686f6d65627265772f43656c6c61722f7275737475702f312e32382e322f62696e2f7275737475702d696e6974222c202273656c65637465645f70617468223a20222f6f70742f686f6d65627265772f6f70742f7275737475702f62696e2f7275737463227d7d2c2022746f6f6c735f696e7374616c6c6564223a2066616c73652c2022756964223a203530312c2022756e616d65223a205b2244617277696e222c20224d6163426f6f6b2d50726f2e6c6f63616c222c202232352e362e30222c202244617277696e204b65726e656c2056657273696f6e2032352e362e303a20467269204a756c2033312031393a31363a32302050445420323032363b20726f6f743a786e752d31323337372e3136312e31347e352f52454c454153455f41524d36345f5438313432222c202261726d3634222c202261726d225d7d0a",
+      "eof": true,
+      "next_offset": 1203,
+      "offset": 0,
+      "size": 1203,
+      "text": "{\"build_or_tests_started\": false, \"euid\": 501, \"host_alias\": \"main\", \"machine\": \"arm64\", \"read_only\": true, \"schema\": \"hepta-main-readonly-host-identity-v1\", \"source_modified\": false, \"sw_vers\": {\"argv\": [\"/usr/bin/sw_vers\"], \"exit_code\": 0, \"stderr\": \"\", \"stdout\": \"ProductName:\\t\\tmacOS\\nProductVersion:\\t\\t26.6.2\\nBuildVersion:\\t\\t25G83\\n\"}, \"system\": \"Darwin\", \"tools\": {\"bazel\": {\"resolved_path\": null, \"selected_path\": null}, \"cargo\": {\"resolved_path\": \"/opt/homebrew/Cellar/rustup/1.28.2/bin/rustup-init\", \"selected_path\": \"/opt/homebrew/opt/rustup/bin/cargo\"}, \"cargo-nextest\": {\"resolved_path\": null, \"selected_path\": null}, \"git\": {\"resolved_path\": \"/usr/bin/git\", \"selected_path\": \"/usr/bin/git\"}, \"just\": {\"resolved_path\": null, \"selected_path\": null}, \"python3\": {\"resolved_path\": \"/usr/bin/python3\", \"selected_path\": \"/usr/bin/python3\"}, \"rustc\": {\"resolved_path\": \"/opt/homebrew/Cellar/rustup/1.28.2/bin/rustup-init\", \"selected_path\": \"/opt/homebrew/opt/rustup/bin/rustc\"}}, \"tools_installed\": false, \"uid\": 501, \"uname\": [\"Darwin\", \"MacBook-Pro.local\", \"25.6.0\", \"Darwin Kernel Version 25.6.0: Fri Jul 31 19:16:20 PDT 2026; root:xnu-12377.161.14~5/RELEASE_ARM64_T8142\", \"arm64\", \"arm\"]}\n"
+    }
+  },
+  "conclusion": {
+    "actual_architecture": "arm64",
+    "actual_os": "macOS 26.6.2",
+    "native_Intel_qualification": false,
+    "additional_build_lane_started": false,
+    "tools_installed": false,
+    "same_physical_machine_as_mac": "NOT_ESTABLISHED_BY_THIS_BOUNDED_PROBE"
+  }
+}

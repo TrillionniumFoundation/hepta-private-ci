@@ -1,0 +1,2264 @@
+{
+  "schema": "hepta-readonly-pr-updated-prefix-and-donor-review-v1",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "historical_inventory": {
+    "cutoff_utc": "2026-11-05T03:24:00Z",
+    "counts": {
+      "open_prs": 1103,
+      "draft": 1079,
+      "non_draft": 24,
+      "branches": 5193,
+      "base_main": 155,
+      "base_non_main": 948,
+      "open_issues": 0,
+      "published_releases": 0,
+      "all_releases_including_drafts": 0,
+      "repo_open_issues_including_pr": 1103
+    },
+    "identity": {
+      "bytes": 1846885,
+      "sha256": "4adb3a73f03226fd73daba8c5ae2a5644fb84cde7702ddc892abb72d75a810f9",
+      "computed_git_blob": "5fac62f2526a56ebc0cdaa8cfe66531c9a33f912"
+    },
+    "preserved_unchanged": true
+  },
+  "window": {
+    "initial_queries": [
+      {
+        "path": "pulls?state=open&sort=updated&direction=desc&per_page=30&page=1",
+        "requested_at_utc": "2026-11-05T10:14:05.935Z",
+        "observed_at_utc": "2026-11-05T10:14:06.677Z"
+      },
+      {
+        "path": "pulls?state=open&sort=updated&direction=desc&per_page=30&page=2",
+        "requested_at_utc": "2026-11-05T10:14:44.714Z",
+        "observed_at_utc": "2026-11-05T10:14:45.304Z"
+      }
+    ],
+    "anchor_queries": [
+      {
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/pulls?state=open&sort=updated&direction=desc&per_page=30&page=1",
+        "requested_at": "2026-11-05T10:26:14.686Z",
+        "observed_at": "2026-11-05T10:26:15.688Z"
+      },
+      {
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/pulls?state=open&sort=updated&direction=desc&per_page=30&page=2",
+        "requested_at": "2026-11-05T10:26:14.686Z",
+        "observed_at": "2026-11-05T10:26:15.282Z"
+      }
+    ]
+  },
+  "prefix_validation": {
+    "two_pages_each": 30,
+    "first_read_count": 60,
+    "anchor_read_count": 60,
+    "unique_each": 60,
+    "descending_updated_each": true,
+    "recent_prefix_count": 49,
+    "recent_prefix_number_set_equal": true,
+    "new_numbers_count": 45,
+    "new_numbers": [
+      4824,
+      4825,
+      4826,
+      4827,
+      4828,
+      4829,
+      4830,
+      4831,
+      4832,
+      4833,
+      4834,
+      4835,
+      4836,
+      4837,
+      4838,
+      4839,
+      4840,
+      4841,
+      4842,
+      4843,
+      4844,
+      4845,
+      4846,
+      4847,
+      4848,
+      4849,
+      4850,
+      4851,
+      4852,
+      4853,
+      4854,
+      4855,
+      4856,
+      4857,
+      4858,
+      4859,
+      4860,
+      4861,
+      4862,
+      4863,
+      4864,
+      4865,
+      4866,
+      4867,
+      4868
+    ],
+    "draft_count": 49,
+    "non_draft_count": 0,
+    "base_main_count": 3,
+    "base_non_main_count": 46,
+    "last_included": {
+      "number": 4823,
+      "updated_at": "2026-11-05T03:35:05Z"
+    },
+    "first_excluded": {
+      "number": 4818,
+      "updated_at": "2026-11-05T02:55:03Z"
+    },
+    "terminal_empty_not_required_for_bounded_prefix": true,
+    "not_a_full_open_pr_or_branch_inventory": true,
+    "drift": [
+      {
+        "number": 4855,
+        "first_head": "e06b76cd379a6e789ca149a6a6886bc066d8e5d2",
+        "last_head": "e65a53ddfc872ef66edc63dff8f28d4414817c60",
+        "first_updated_at": "2026-11-05T10:05:41Z",
+        "last_updated_at": "2026-11-05T10:25:51Z"
+      },
+      {
+        "number": 4843,
+        "first_head": "7504ab322f229321b6e06a16895ebaabe9b3d32a",
+        "last_head": "7504ab322f229321b6e06a16895ebaabe9b3d32a",
+        "first_updated_at": "2026-11-05T10:12:59Z",
+        "last_updated_at": "2026-11-05T10:24:47Z"
+      },
+      {
+        "number": 4846,
+        "first_head": "ff2829b25bfa16c64906e1fb26a38091e632bc52",
+        "last_head": "ff2829b25bfa16c64906e1fb26a38091e632bc52",
+        "first_updated_at": "2026-11-05T10:12:15Z",
+        "last_updated_at": "2026-11-05T10:23:07Z"
+      },
+      {
+        "number": 4812,
+        "first_head": "ff19c86b7190204e9172a1595a58d8eb9f897c6d",
+        "last_head": "9438a6c27a5e2f25169445f39499631db4e00529",
+        "first_updated_at": "2026-11-05T10:12:45Z",
+        "last_updated_at": "2026-11-05T10:19:19Z"
+      }
+    ]
+  },
+  "changed_preexisting_prs": [
+    {
+      "number": 4812,
+      "old_head": "3a8e50ddd79ec3e52ca58157323726c37069202c",
+      "observed_head": "9438a6c27a5e2f25169445f39499631db4e00529",
+      "old_base": "4c93a641945044f904a656cbf1d23e358a074d52",
+      "observed_base": "4c93a641945044f904a656cbf1d23e358a074d52"
+    },
+    {
+      "number": 4797,
+      "old_head": "cabcb40d36e116beaa65750e1f674c52035da785",
+      "observed_head": "5b6331250ff459033bd44d1a95daec70131277cc",
+      "old_base": "63652be658ebed8d3052eb789b951793384fd5e4",
+      "observed_base": "63652be658ebed8d3052eb789b951793384fd5e4"
+    },
+    {
+      "number": 4680,
+      "old_head": "93932f8393f5af30dafbf59c462537615d3e5080",
+      "observed_head": "93932f8393f5af30dafbf59c462537615d3e5080",
+      "old_base": "cc36fe220f3d85dab84adad0695b06e3bae37fcd",
+      "observed_base": "cc36fe220f3d85dab84adad0695b06e3bae37fcd"
+    },
+    {
+      "number": 4823,
+      "old_head": "9f2d00f79bfe7abc334e51f52a0d16f685656e5d",
+      "observed_head": "85f507fb2e1c9e8ad9941451641bb4ec3f1dccb4",
+      "old_base": "2d0120e208ed81515837a7530c9f6943af03e87f",
+      "observed_base": "2d0120e208ed81515837a7530c9f6943af03e87f"
+    }
+  ],
+  "observed_recent_prefix": [
+    {
+      "number": 4855,
+      "title": "W0–W7: unify R3 safety, CI and recovery candidate with explicit qualification gates",
+      "state": "open",
+      "draft": true,
+      "created_at": "2026-11-05T07:42:31Z",
+      "updated_at": "2026-11-05T10:25:51Z",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4855",
+      "head": {
+        "sha": "e65a53ddfc872ef66edc63dff8f28d4414817c60",
+        "ref": "integration/unified-w0-w7-20261105-4d868a11"
+      },
+      "base": {
+        "sha": "732e934ba496d90fbe042b8d41d479ef901643e5",
+        "ref": "main"
+      },
+      "body_identity": {
+        "bytes": 10769,
+        "sha256": "790446fa0ed754854535edee561895920846a49b056f9bba469fd6459dfad24f",
+        "computed_git_blob": "1084761a198ad616018382fd9af712ddd38a0df1"
+      }
+    },
+    {
+      "number": 4843,
+      "title": "Fix original P1 CI failures while preserving qualification gates",
+      "state": "open",
+      "draft": true,
+      "created_at": "2026-11-05T06:21:17Z",
+      "updated_at": "2026-11-05T10:24:47Z",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4843",
+      "head": {
+        "sha": "7504ab322f229321b6e06a16895ebaabe9b3d32a",
+        "ref": "fix/p1-original-ci-closure-20261105"
+      },
+      "base": {
+        "sha": "732e934ba496d90fbe042b8d41d479ef901643e5",
+        "ref": "main"
+      },
+      "body_identity": {
+        "bytes": 16832,
+        "sha256": "c4c76206a6360d4c2fdaef19d59576473b0de929a2f5dc26ac224506f1412372",
+        "computed_git_blob": "f40161fc5a9920a00255cbfc6b452ec6ba19a1e3"
+      }
+    },
+    {
+      "number": 4846,
+      "title": "fix(product): preserve recovery boundaries and reconcile real terminal owners",
+      "state": "open",
+      "draft": true,
+      "created_at": "2026-11-05T06:33:44Z",
+      "updated_at": "2026-11-05T10:23:07Z",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4846",
+      "head": {
+        "sha": "ff2829b25bfa16c64906e1fb26a38091e632bc52",
+        "ref": "codex/product-recovery-p1p2-20261105-05ef"
+      },
+      "base": {
+        "sha": "4e31abc907f09740d402d1ddef7a1d2fe0a366a6",
+        "ref": "codex/organ-intermediate-diagnosis-20261105-r3"
+      },
+      "body_identity": {
+        "bytes": 10224,
+        "sha256": "117cb4b2f92adfdbb0ea18af322a428373df86fac17eb031570f522895510d11",
+        "computed_git_blob": "d27c9bcc6600b0c264e789cdb2083ba24883e9c6"
+      }
+    },
+    {
+      "number": 4812,
+      "title": "fix(hepta): require PQ at ordinary runtime and revalidate FinalUse effects",
+      "state": "open",
+      "draft": true,
+      "created_at": "2026-11-05T00:03:10Z",
+      "updated_at": "2026-11-05T10:19:19Z",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4812",
+      "head": {
+        "sha": "9438a6c27a5e2f25169445f39499631db4e00529",
+        "ref": "fix/hepta-ordinary-pq-effects-20261104"
+      },
+      "base": {
+        "sha": "4c93a641945044f904a656cbf1d23e358a074d52",
+        "ref": "fix/hepta-pn-cell-closure-20261031"
+      },
+      "body_identity": {
+        "bytes": 14947,
+        "sha256": "bd7c2012c6f97534dacfac5750cb18afccaeab4202e1a0f68aba78b545d2d434",
+        "computed_git_blob": "c69de6aa2b80612560c4faecfaf74ddf841ab136"
+      }
+    },
+    {
+      "number": 4856,
+      "title": "fix(evaluation): require sealed qualification across product consumers",
+      "state": "open",
+      "draft": true,
+      "created_at": "2026-11-05T07:42:31Z",
+      "updated_at": "2026-11-05T10:11:02Z",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4856",
+      "head": {
+        "sha": "0766fc4d5feabea9569d48e7eca4e0a3431bd0f5",
+        "ref": "fix/sealed-qualification-ingress-20261105"
+      },
+      "base": {
+        "sha": "432421d0d9ca9d82c5e3401fe3425af29131505a",
+        "ref": "fix/runtime-convergence-abc-20261105"
+      },
+      "body_identity": {
+        "bytes": 8473,
+        "sha256": "810af4d51967d0cd89f94cea20b1a620a1d039f661e589b7066323cc833354b3",
+        "computed_git_blob": "6129be3c1942913aa8444ce5c083502a7b3023ce"
+      }
+    },
+    {
+      "number": 4848,
+      "title": "fix(hepta): converge recovery, evaluation integrity and lifecycle refusal on R3",
+      "state": "open",
+      "draft": true,
+      "created_at": "2026-11-05T06:34:56Z",
+      "updated_at": "2026-11-05T10:03:19Z",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4848",
+      "head": {
+        "sha": "14950087a3c5881b2f7f57ebfafe2825019fb74a",
+        "ref": "fix/runtime-convergence-abc-20261105"
+      },
+      "base": {
+        "sha": "4e31abc907f09740d402d1ddef7a1d2fe0a366a6",
+        "ref": "codex/organ-intermediate-diagnosis-20261105-r3"
+      },
+      "body_identity": {
+        "bytes": 9910,
+        "sha256": "02eaebe5431eb420d744bf6ccbbc550dde624a5911904ccedcc9ebc751dd6fbf",
+        "computed_git_blob": "9cab60d3aa402ff102f489b7c3c13581b66f25c5"
+      }
+    },
+    {
+      "number": 4853,
+      "title": "P0/P1: repair original #4826 CI failures on exact R3",
+      "state": "open",
+      "draft": true,
+      "created_at": "2026-11-05T06:54:05Z",
+      "updated_at": "2026-11-05T10:02:44Z",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4853",
+      "head": {
+        "sha": "4363eb1c7131073500e28d82a7dbec03faa7214a",
+        "ref": "codex/4826-full-ci-repair-20261105"
+      },
+      "base": {
+        "sha": "4e31abc907f09740d402d1ddef7a1d2fe0a366a6",
+        "ref": "codex/organ-intermediate-diagnosis-20261105-r3"
+      },
+      "body_identity": {
+        "bytes": 34213,
+        "sha256": "3ff340e8914163e89be213271b20dfbb4ba738788b7dd71197efbd41afb42fe3",
+        "computed_git_blob": "ebce4f0554c68169070d19345cd534df4f9a2236"
+      }
+    },
+    {
+      "number": 4849,
+      "title": "Prepare source-bound RBE OpenSSH images with original test profiles",
+      "state": "open",
+      "draft": true,
+      "created_at": "2026-11-05T06:43:16Z",
+      "updated_at": "2026-11-05T09:56:21Z",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4849",
+      "head": {
+        "sha": "ea6be2568dabe3f1f4297b13d20d61c8e8e34498",
+        "ref": "codex/rbe-openssh-image-r2-20261105"
+      },
+      "base": {
+        "sha": "4e31abc907f09740d402d1ddef7a1d2fe0a366a6",
+        "ref": "codex/organ-intermediate-diagnosis-20261105-r3"
+      },
+      "body_identity": {
+        "bytes": 5320,
+        "sha256": "c523b30e726948815a652914876dfd0b63eca3c5759fa3be1ba90b4c0e502814",
+        "computed_git_blob": "f8ef72e03cf78525027fa2d59125c2da330048bd"
+      }
+    },
+    {
+      "number": 4797,
+      "title": "fix: restore r3 product contracts and preserve exact-source qualification",
+      "state": "open",
+      "draft": true,
+      "created_at": "2026-11-04T12:16:38Z",
+      "updated_at": "2026-11-05T09:43:14Z",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4797",
+      "head": {
+        "sha": "5b6331250ff459033bd44d1a95daec70131277cc",
+        "ref": "fix/r3-original-product-contracts-20261104"
+      },
+      "base": {
+        "sha": "63652be658ebed8d3052eb789b951793384fd5e4",
+        "ref": "integration/ui-objective-20261103-product"
+      },
+      "body_identity": {
+        "bytes": 31373,
+        "sha256": "b683fe650ed7407c3f0c373e6e9746cfb32cadc1a87e58da6e27c30d4c23c7ad",
+        "computed_git_blob": "61044192e67ddc719f654f47a5608666a1f74a8a"
+      }
+    },
+    {
+      "number": 4868,
+      "title": "[DRAFT][DENY_ALL] Resolve real Windows native PTY test E0034 trait ambiguity",
+      "state": "open",
+      "draft": true,
+      "created_at": "2026-11-05T09:37:29Z",
+      "updated_at": "2026-11-05T09:37:29Z",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4868",
+      "head": {
+        "sha": "fe923968bd739d0c0b981ee24ba6ddfd8f547d13",
+        "ref": "dot/hia-r3-winchild-trait-ambiguity-20261105"
+      },
+      "base": {
+        "sha": "0856b142808f102c75e1182cd4dfb5e798938d84",
+        "ref": "dot/hia-r3-winchild-clone-error-20261105"
+      },
+      "body_identity": {
+        "bytes": 2670,
+        "sha256": "04ebe913b3a611c9afc9528ab7e2bdd3fba5e1df862a6c5a73ede0603997433e",
+        "computed_git_blob": "ed5b1be48a87bd67f8c59b7552091d3abf7fc190"
+      }
+    },
+    {
+      "number": 4867,
+      "title": "research(ndu): publish full validation evidence and negative algorithm findings",
+      "state": "open",
+      "draft": true,
+      "created_at": "2026-11-05T09:36:01Z",
+      "updated_at": "2026-11-05T09:36:32Z",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4867",
+      "head": {
+        "sha": "7f68ad7d1ca0e79a1f628e64ee7bc1bd54686de0",
+        "ref": "research/ndu-rl-validation-evidence-20261105"
+      },
+      "base": {
+        "sha": "062b6dd7c730c4795ae617f4c85278dd2ac821d7",
+        "ref": "research/ndu-rl-validation-freeze-20261105"
+      },
+      "body_identity": {
+        "bytes": 3929,
+        "sha256": "ae414d0149b08e775e22a9daa9490375caf09e43a6b9bce3f01bbd13f6cce9d2",
+        "computed_git_blob": "7a6ff357818c2567547861db5fa8a681017ebc05"
+      }
+    },
+    {
+      "number": 4863,
+      "title": "research(ndu): freeze complete finite RL validation and source-bound execution",
+      "state": "open",
+      "draft": true,
+      "created_at": "2026-11-05T09:15:47Z",
+      "updated_at": "2026-11-05T09:36:30Z",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4863",
+      "head": {
+        "sha": "062b6dd7c730c4795ae617f4c85278dd2ac821d7",
+        "ref": "research/ndu-rl-validation-freeze-20261105"
+      },
+      "base": {
+        "sha": "ac97a68ba66946b1fb157bc3e9fb9aa426e62fcb",
+        "ref": "research/ndu-rl-tool-factorial-20261105"
+      },
+      "body_identity": {
+        "bytes": 2115,
+        "sha256": "259dcd450ab5f4a7e63535efd176a2593f6b213f10bec1490b47b6ce43ad7395",
+        "computed_git_blob": "d434dc8aff0f47997f1b23a5a11e43181cc10264"
+      }
+    },
+    {
+      "number": 4866,
+      "title": "research(ndu): execute all 55 critic panels and replay retained decisions",
+      "state": "open",
+      "draft": true,
+      "created_at": "2026-11-05T09:30:49Z",
+      "updated_at": "2026-11-05T09:30:49Z",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4866",
+      "head": {
+        "sha": "8a611c4a5a617284a665d9a26e5f54389e6bed84",
+        "ref": "research/useful-work-critic-replay-20261105"
+      },
+      "base": {
+        "sha": "9c6ad78bd6643185ab788b1a9a534450716747a5",
+        "ref": "research/ndu-rl-structure-20261105"
+      },
+      "body_identity": {
+        "bytes": 2505,
+        "sha256": "f798c584e70b0eb66092f79b8bdad4436e3ca596840bb1dbd8c131f3f1079256",
+        "computed_git_blob": "84d3f8d697c26d210d58c3bb8f0d0ffc2a579cdd"
+      }
+    },
+    {
+      "number": 4865,
+      "title": "research(ndu): freeze STOP-relative utility and separate research allowance",
+      "state": "open",
+      "draft": true,
+      "created_at": "2026-11-05T09:30:09Z",
+      "updated_at": "2026-11-05T09:30:09Z",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4865",
+      "head": {
+        "sha": "07a6fa70290dd9e3285c47a8cbe3a4f33a4af66e",
+        "ref": "research/useful-work-stop-policy-20261105"
+      },
+      "base": {
+        "sha": "9c6ad78bd6643185ab788b1a9a534450716747a5",
+        "ref": "research/ndu-rl-structure-20261105"
+      },
+      "body_identity": {
+        "bytes": 1892,
+        "sha256": "5e6bc6f29551065fbd828d078445aa31387ade06576f0db24994ee9536dcc224",
+        "computed_git_blob": "fc7bde362db205fd1bb2d62473185dc213fbbed7"
+      }
+    },
+    {
+      "number": 4864,
+      "title": "research(memory): bind future cohorts, information parity and independent units",
+      "state": "open",
+      "draft": true,
+      "created_at": "2026-11-05T09:23:25Z",
+      "updated_at": "2026-11-05T09:23:25Z",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4864",
+      "head": {
+        "sha": "c8a8bdc5ef9ac060f2c6abf3dc7e561953f8b684",
+        "ref": "research/memory-v15-cohort-evidence-20261105"
+      },
+      "base": {
+        "sha": "379c21c2e625c3a3dfbb514e11b9e8fe2213cda8",
+        "ref": "research/memory-cell-v15-20261104"
+      },
+      "body_identity": {
+        "bytes": 1940,
+        "sha256": "8989cf038afe74a541b58b53424e05aab2000e481197e3a0afa12e1502aaf4fa",
+        "computed_git_blob": "fe6d8157b19cfd7d56fdc8130333ab897d4ad842"
+      }
+    },
+    {
+      "number": 4862,
+      "title": "research(ndu): register objective-matched tool training and inference factorial",
+      "state": "open",
+      "draft": true,
+      "created_at": "2026-11-05T09:12:30Z",
+      "updated_at": "2026-11-05T09:12:30Z",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4862",
+      "head": {
+        "sha": "ac97a68ba66946b1fb157bc3e9fb9aa426e62fcb",
+        "ref": "research/ndu-rl-tool-factorial-20261105"
+      },
+      "base": {
+        "sha": "5251386a0d368fd7511d8cd0b42a55c5705b229d",
+        "ref": "research/ndu-rl-real-tools-20261105"
+      },
+      "body_identity": {
+        "bytes": 1687,
+        "sha256": "d73adcb9b1578a1973543b769171be5ad66b4776f9fb083a4ee60a83953ed67f",
+        "computed_git_blob": "8900cf2f1e66159f07f71f88f27a1a86602055f3"
+      }
+    },
+    {
+      "number": 4861,
+      "title": "research(ndu): retain real tool work, stopping and verification failures",
+      "state": "open",
+      "draft": true,
+      "created_at": "2026-11-05T09:12:00Z",
+      "updated_at": "2026-11-05T09:12:00Z",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4861",
+      "head": {
+        "sha": "5251386a0d368fd7511d8cd0b42a55c5705b229d",
+        "ref": "research/ndu-rl-real-tools-20261105"
+      },
+      "base": {
+        "sha": "9c6ad78bd6643185ab788b1a9a534450716747a5",
+        "ref": "research/ndu-rl-structure-20261105"
+      },
+      "body_identity": {
+        "bytes": 1394,
+        "sha256": "69617c983efa9f064d3768da59b0cd80554cf107feba568a5e9def2f62dc1490",
+        "computed_git_blob": "e70468e25da2f6aedae37962744f4f6c4d036d8a"
+      }
+    },
+    {
+      "number": 4860,
+      "title": "research(ndu): compare value, direct and Z critics on shared interventions",
+      "state": "open",
+      "draft": true,
+      "created_at": "2026-11-05T09:05:36Z",
+      "updated_at": "2026-11-05T09:05:36Z",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4860",
+      "head": {
+        "sha": "9c6ad78bd6643185ab788b1a9a534450716747a5",
+        "ref": "research/ndu-rl-structure-20261105"
+      },
+      "base": {
+        "sha": "68fb7bb5f25d4f43cb01c980105678de1b880b76",
+        "ref": "research/ndu-rl-semantics-20261105"
+      },
+      "body_identity": {
+        "bytes": 1928,
+        "sha256": "9ccfe41c7df9f56b5ffa5cf06388f5de924448330e16faea19a12ce6e64391dd",
+        "computed_git_blob": "2ae4043176224a531f8155eeab661a6ce585f70c"
+      }
+    },
+    {
+      "number": 4859,
+      "title": "research(ndu): qualify duration, STOP and exact risk gradients",
+      "state": "open",
+      "draft": true,
+      "created_at": "2026-11-05T09:00:22Z",
+      "updated_at": "2026-11-05T09:00:22Z",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4859",
+      "head": {
+        "sha": "68fb7bb5f25d4f43cb01c980105678de1b880b76",
+        "ref": "research/ndu-rl-semantics-20261105"
+      },
+      "base": {
+        "sha": "29243f8fd1e17ff9c74d606163a862bd7ecae48d",
+        "ref": "research/ndu-decision-factorial-20261104"
+      },
+      "body_identity": {
+        "bytes": 1570,
+        "sha256": "c7596dc4aa6f6a0196f6041d018eca5eb8dabf1719d5c7af42277bbb06c4412f",
+        "computed_git_blob": "2b94d0a3f8abc81de4ca3c61f35d3fb17349d6c5"
+      }
+    },
+    {
+      "number": 4858,
+      "title": "Freeze R5 organ runtime source repairs and exact module evidence",
+      "state": "open",
+      "draft": true,
+      "created_at": "2026-11-05T08:52:45Z",
+      "updated_at": "2026-11-05T08:52:45Z",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4858",
+      "head": {
+        "sha": "14578203ab537c73a1a2604a58b845bdd4579cee",
+        "ref": "codex/organ-intermediate-diagnosis-20261105-r5"
+      },
+      "base": {
+        "sha": "d388e4a69850e141e7419f625ddad1d3dbac851f",
+        "ref": "codex/organ-intermediate-diagnosis-20261105-r4"
+      },
+      "body_identity": {
+        "bytes": 3032,
+        "sha256": "9228bfe56854da31a339706b5b6c543666c7963a2c19ed20e5c21959c998b263",
+        "computed_git_blob": "8e0d563e2a7df21754bd496679032c023ce1766c"
+      }
+    },
+    {
+      "number": 4857,
+      "title": "research: retain R1 conditioning evidence and freeze R2 design gates",
+      "state": "open",
+      "draft": true,
+      "created_at": "2026-11-05T07:49:06Z",
+      "updated_at": "2026-11-05T07:49:06Z",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4857",
+      "head": {
+        "sha": "de2b1212242cfa6f25563b99a385497a86dc7e49",
+        "ref": "research/ndu-r1-evidence-ai395-20261105-4d868a11"
+      },
+      "base": {
+        "sha": "975e1a264c14ed3da02dcee23a64327825387e42",
+        "ref": "research/ndu-input-diagnostics-20261105"
+      },
+      "body_identity": {
+        "bytes": 3205,
+        "sha256": "6514eb27026c99dfc53d9b3f436e4fff95c68cac6df9e47ac5e4a9ef4baec920",
+        "computed_git_blob": "7fd79e6ab1adb3cb16e096c6043b0f5148dd36dc"
+      }
+    },
+    {
+      "number": 4854,
+      "title": "[DRAFT][DENY_ALL] Fix Windows ConPTY clone-error conversion blocking R3 Agentd CI",
+      "state": "open",
+      "draft": true,
+      "created_at": "2026-11-05T07:34:13Z",
+      "updated_at": "2026-11-05T07:37:38Z",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4854",
+      "head": {
+        "sha": "0856b142808f102c75e1182cd4dfb5e798938d84",
+        "ref": "dot/hia-r3-winchild-clone-error-20261105"
+      },
+      "base": {
+        "sha": "a20a8191ec37375876a99b7c18bae053f9bc185d",
+        "ref": "fix/runtime-convergence-abc-20261105"
+      },
+      "body_identity": {
+        "bytes": 2888,
+        "sha256": "861b3719787c7b0bfacb845203eb7da62383eef64854755b49ba91d93e4914f1",
+        "computed_git_blob": "7fd9151c539e4239c22e12ee4ac425366d909339"
+      }
+    },
+    {
+      "number": 4852,
+      "title": "research: retain six-condition NDU input sensitivity and semantic failures",
+      "state": "open",
+      "draft": true,
+      "created_at": "2026-11-05T06:53:55Z",
+      "updated_at": "2026-11-05T06:53:55Z",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4852",
+      "head": {
+        "sha": "9444a66774c3e952dbddb595f7710e22fa341b2f",
+        "ref": "research/ndu-input-diagnostic-evidence-20261105-728b"
+      },
+      "base": {
+        "sha": "975e1a264c14ed3da02dcee23a64327825387e42",
+        "ref": "research/ndu-input-diagnostics-20261105"
+      },
+      "body_identity": {
+        "bytes": 2281,
+        "sha256": "b37087419d3e4a40582edd0830c81367a48d8e5a87f74d78eb96bd60a266230a",
+        "computed_git_blob": "e4e390aa850d9e74248ad51b6e1b4f9759fd27d9"
+      }
+    },
+    {
+      "number": 4826,
+      "title": "[Diagnostic r2] Reconcile reviewed organ blockers and rerun original gates",
+      "state": "open",
+      "draft": true,
+      "created_at": "2026-11-05T04:09:29Z",
+      "updated_at": "2026-11-05T06:52:28Z",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4826",
+      "head": {
+        "sha": "3247636513f4cddaede6e9b45110925e9065d507",
+        "ref": "codex/organ-intermediate-diagnosis-20261105-r2"
+      },
+      "base": {
+        "sha": "732e934ba496d90fbe042b8d41d479ef901643e5",
+        "ref": "main"
+      },
+      "body_identity": {
+        "bytes": 7728,
+        "sha256": "e4f4ba554046720931e471b7e4936fe686498593b641e40e02bea00d6874a372",
+        "computed_git_blob": "e6b17e5d68e0c35229d5af5d218198d4919633ca"
+      }
+    },
+    {
+      "number": 4851,
+      "title": "fix(hepta-infer): bind the test host to its real Agentd executable",
+      "state": "open",
+      "draft": true,
+      "created_at": "2026-11-05T06:50:42Z",
+      "updated_at": "2026-11-05T06:50:42Z",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4851",
+      "head": {
+        "sha": "e8fec8472a2540b8e238789e37d966ea92b6b43b",
+        "ref": "codex/agentd-infer-self-executable-20261105"
+      },
+      "base": {
+        "sha": "3419b6ac8adf5b47b140e553f5fff9e74c98d352",
+        "ref": "codex/agentd-infer-lock-base-r2-20261105"
+      },
+      "body_identity": {
+        "bytes": 2022,
+        "sha256": "8d3228b208b8663246d870d93e4445c96468065171ae05cf4a756e00d68aedda",
+        "computed_git_blob": "4dab4df261aea08c47904a34712e497258158026"
+      }
+    },
+    {
+      "number": 4850,
+      "title": "research: execute WSP shift controls and digital sufficient-state prototype",
+      "state": "open",
+      "draft": true,
+      "created_at": "2026-11-05T06:46:24Z",
+      "updated_at": "2026-11-05T06:46:24Z",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4850",
+      "head": {
+        "sha": "a510c9317222cb6a3ac78818db587b6f432a52c8",
+        "ref": "research/wsp-belief-shift-20261105-728b"
+      },
+      "base": {
+        "sha": "85f507fb2e1c9e8ad9941451641bb4ec3f1dccb4",
+        "ref": "research/wsp-followup-20261105"
+      },
+      "body_identity": {
+        "bytes": 5233,
+        "sha256": "fa6ec8e824f12a6f6639b615c995add60e3df5c32235bbdeb3caf8a5f6e55b3b",
+        "computed_git_blob": "4070042ddb0cebabdd89176710f3ceda5db0852b"
+      }
+    },
+    {
+      "number": 4847,
+      "title": "Memory V15: fix epoch exhaustion and qualify native migration transitions",
+      "state": "open",
+      "draft": true,
+      "created_at": "2026-11-05T06:34:20Z",
+      "updated_at": "2026-11-05T06:34:20Z",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4847",
+      "head": {
+        "sha": "4675d776489f1c1f2c832451e44fcd4bad3f583f",
+        "ref": "research/memory-v15-native-transfer-20261105-728b"
+      },
+      "base": {
+        "sha": "379c21c2e625c3a3dfbb514e11b9e8fe2213cda8",
+        "ref": "research/memory-cell-v15-20261104"
+      },
+      "body_identity": {
+        "bytes": 2803,
+        "sha256": "b17d10e9bd862633c4a0ce85abf9b0dd0f2e0c299409e64059687b9ecb6b442c",
+        "computed_git_blob": "71643c8164debd2b38a1f4e842842e312a914e88"
+      }
+    },
+    {
+      "number": 4845,
+      "title": "fix(organ): revalidate protected writes and original Desktop issuer (R4)",
+      "state": "open",
+      "draft": true,
+      "created_at": "2026-11-05T06:27:45Z",
+      "updated_at": "2026-11-05T06:27:45Z",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4845",
+      "head": {
+        "sha": "d388e4a69850e141e7419f625ddad1d3dbac851f",
+        "ref": "codex/organ-intermediate-diagnosis-20261105-r4"
+      },
+      "base": {
+        "sha": "4e31abc907f09740d402d1ddef7a1d2fe0a366a6",
+        "ref": "codex/organ-intermediate-diagnosis-20261105-r3"
+      },
+      "body_identity": {
+        "bytes": 2134,
+        "sha256": "534c705ceab77cab9c84efdbe8499b54670f22c15c2e32b13edb6225946ed994",
+        "computed_git_blob": "ba74c334d31ff0e5ef8d7e5f1e232f5a7fc44949"
+      }
+    },
+    {
+      "number": 4844,
+      "title": "fix(windows-sandbox): contain direct legacy deletion exposure; keep P0 open",
+      "state": "open",
+      "draft": true,
+      "created_at": "2026-11-05T06:24:38Z",
+      "updated_at": "2026-11-05T06:24:38Z",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4844",
+      "head": {
+        "sha": "a55150f901bf27bea8a112e03a13bc88b71ba81e",
+        "ref": "fix/windows-legacy-delete-admission-20261105"
+      },
+      "base": {
+        "sha": "4e31abc907f09740d402d1ddef7a1d2fe0a366a6",
+        "ref": "codex/organ-intermediate-diagnosis-20261105-r3"
+      },
+      "body_identity": {
+        "bytes": 3828,
+        "sha256": "85ed61018aabffdb01aaba823c5ca47347edd6f91d8c485c027386b2ac8a5497",
+        "computed_git_blob": "5b1326c992174367afe751439c9127fdf8133ea6"
+      }
+    },
+    {
+      "number": 4842,
+      "title": "[WIP] Freeze one Notes and native G2 source candidate for Desktop qualification",
+      "state": "open",
+      "draft": true,
+      "created_at": "2026-11-05T05:59:44Z",
+      "updated_at": "2026-11-05T05:59:44Z",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4842",
+      "head": {
+        "sha": "59b8195015b76a633dcaf04b34ffa79baa3a8ce2",
+        "ref": "codex/desktop-eight-stage-hepta-20261105-r1"
+      },
+      "base": {
+        "sha": "14e2d89b3367232ec5dbe6187f09feed0f2b68d3",
+        "ref": "codex/desktop-organ-joint-20261103"
+      },
+      "body_identity": {
+        "bytes": 1487,
+        "sha256": "25ab2bc8a006800bf9776bc9d2093ba32cef93bec5e89d4cf339c5225e214a63",
+        "computed_git_blob": "9c78f5f81a3e5fdec953ad2ac234f830caf7c451"
+      }
+    },
+    {
+      "number": 4840,
+      "title": "research(wsp): checkpoint semantics, full Laya audit, and negative edit evidence",
+      "state": "open",
+      "draft": true,
+      "created_at": "2026-11-05T05:47:26Z",
+      "updated_at": "2026-11-05T05:57:59Z",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4840",
+      "head": {
+        "sha": "5669aa349fde9eb0b6692dbfaa55a1b9897f6e69",
+        "ref": "research/wsp-native-value-20261105-db06"
+      },
+      "base": {
+        "sha": "85f507fb2e1c9e8ad9941451641bb4ec3f1dccb4",
+        "ref": "research/wsp-followup-20261105"
+      },
+      "body_identity": {
+        "bytes": 6165,
+        "sha256": "0e10fd98a6dcc1c57d3116d5e29571cb653bf970651e5548a9f454b82987a1d6",
+        "computed_git_blob": "c9c04e8263c0b8e8345bbbfb6157a8a0dc7fd381"
+      }
+    },
+    {
+      "number": 4841,
+      "title": "R3: integrate process observation, SQLite ownership and original CI diagnostics",
+      "state": "open",
+      "draft": true,
+      "created_at": "2026-11-05T05:57:49Z",
+      "updated_at": "2026-11-05T05:57:49Z",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4841",
+      "head": {
+        "sha": "4e31abc907f09740d402d1ddef7a1d2fe0a366a6",
+        "ref": "codex/organ-intermediate-diagnosis-20261105-r3"
+      },
+      "base": {
+        "sha": "3419b6ac8adf5b47b140e553f5fff9e74c98d352",
+        "ref": "codex/organ-intermediate-diagnosis-20261105-r2"
+      },
+      "body_identity": {
+        "bytes": 2862,
+        "sha256": "5d6510b3341c889dc5f5aa85cb428effe454c7244cd161f0b983b38c2e5de937",
+        "computed_git_blob": "4da08bcb46f5ceb2cfa1dde571590c8001f32631"
+      }
+    },
+    {
+      "number": 4839,
+      "title": "research: execute both real adapter updates and verify dual model switching",
+      "state": "open",
+      "draft": true,
+      "created_at": "2026-11-05T05:46:32Z",
+      "updated_at": "2026-11-05T05:51:27Z",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4839",
+      "head": {
+        "sha": "e23dfea486025e09d7e11dd17ea0852d6e3e89d0",
+        "ref": "research/ndu-training-wiring-20261105"
+      },
+      "base": {
+        "sha": "49d4266ffc8bac4313390de46cfbb707d7ef5908",
+        "ref": "research/ndu-image-adapter-20261105"
+      },
+      "body_identity": {
+        "bytes": 2382,
+        "sha256": "ab73718cbfd4997b48f00450b13307cbc0ad208b6ea40898e55945c4ea2d579b",
+        "computed_git_blob": "811283aa52aac376384f8e6142e7acd9cb1ab888"
+      }
+    },
+    {
+      "number": 4835,
+      "title": "research: diagnose image and instruction conditioning before training",
+      "state": "open",
+      "draft": true,
+      "created_at": "2026-11-05T05:20:27Z",
+      "updated_at": "2026-11-05T05:51:26Z",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4835",
+      "head": {
+        "sha": "975e1a264c14ed3da02dcee23a64327825387e42",
+        "ref": "research/ndu-input-diagnostics-20261105"
+      },
+      "base": {
+        "sha": "d3ddd42b760df821ccbb3a55c96b567b6f29d751",
+        "ref": "research/ndu-decision-evidence-20261105"
+      },
+      "body_identity": {
+        "bytes": 1828,
+        "sha256": "f83ea3950b757ea200c376613fe189f418a15e3b455ae66d878676d13e50d878",
+        "computed_git_blob": "4e55ae8e11da60a6f48c74ddf90ce51e6f94df60"
+      }
+    },
+    {
+      "number": 4838,
+      "title": "research: train a real diffusion output adapter with complete failure receipts",
+      "state": "open",
+      "draft": true,
+      "created_at": "2026-11-05T05:46:31Z",
+      "updated_at": "2026-11-05T05:46:31Z",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4838",
+      "head": {
+        "sha": "49d4266ffc8bac4313390de46cfbb707d7ef5908",
+        "ref": "research/ndu-image-adapter-20261105"
+      },
+      "base": {
+        "sha": "02b6cdd65ad49d33af6c0ce83089146f4fbfc594",
+        "ref": "research/ndu-text-adapter-20261105"
+      },
+      "body_identity": {
+        "bytes": 1454,
+        "sha256": "79005ab276322dd0f366f1ed22f0d940faac7cd00f05cbea51b21a94e92fc710",
+        "computed_git_blob": "5a4b10171ae811d444992fd64f6a87ac117445d6"
+      }
+    },
+    {
+      "number": 4837,
+      "title": "research: train a real VLM output adapter with verified freezing and reload",
+      "state": "open",
+      "draft": true,
+      "created_at": "2026-11-05T05:46:30Z",
+      "updated_at": "2026-11-05T05:46:30Z",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4837",
+      "head": {
+        "sha": "02b6cdd65ad49d33af6c0ce83089146f4fbfc594",
+        "ref": "research/ndu-text-adapter-20261105"
+      },
+      "base": {
+        "sha": "975e1a264c14ed3da02dcee23a64327825387e42",
+        "ref": "research/ndu-input-diagnostics-20261105"
+      },
+      "body_identity": {
+        "bytes": 1442,
+        "sha256": "d1c8464111742e9d0503bad43faaea46ee91b90fcc228ec03861b4a67f0098a7",
+        "computed_git_blob": "f511cf1c0e3004978e70f460fad81966800720ff"
+      }
+    },
+    {
+      "number": 4680,
+      "title": "fix(test): use signed production ledger in Agentd plasticity process fixture",
+      "state": "open",
+      "draft": true,
+      "created_at": "2026-11-03T06:35:38Z",
+      "updated_at": "2026-11-05T05:43:54Z",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4680",
+      "head": {
+        "sha": "93932f8393f5af30dafbf59c462537615d3e5080",
+        "ref": "dot/hia-plasticity-product-ledger-fixture-20261103"
+      },
+      "base": {
+        "sha": "cc36fe220f3d85dab84adad0695b06e3bae37fcd",
+        "ref": "dot/hia-v1-owner-rustfmt-20261103"
+      },
+      "body_identity": {
+        "bytes": 1705,
+        "sha256": "572921826f059d12ab521900e860b9221632ad40e464f4d6b542659606d52c92",
+        "computed_git_blob": "50033c2196758a0e6af354b55436dac312551367"
+      }
+    },
+    {
+      "number": 4836,
+      "title": "test(memory): run retirement migration with production SQLite shim [HOLD]",
+      "state": "open",
+      "draft": true,
+      "created_at": "2026-11-05T05:41:58Z",
+      "updated_at": "2026-11-05T05:41:58Z",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4836",
+      "head": {
+        "sha": "19c5b771315bfd7297c0964e3875081f195297e5",
+        "ref": "fix/hepta-memory-retirement-migration-sqlite-shim-20261105"
+      },
+      "base": {
+        "sha": "97e08862890cd3e089fe26e26faa67dc494f3399",
+        "ref": "fix/hepta-memory-native-test-visibility-20261105"
+      },
+      "body_identity": {
+        "bytes": 1760,
+        "sha256": "51508020f218594605a9bf5ef64a60d6c1000e8aad6566ebc7e45ac5a6fbd0ee",
+        "computed_git_blob": "0ee420749f30170cdafb618dc6027896cc03d062"
+      }
+    },
+    {
+      "number": 4834,
+      "title": "research: preserve real dual outputs and negative semantic findings",
+      "state": "open",
+      "draft": true,
+      "created_at": "2026-11-05T05:19:04Z",
+      "updated_at": "2026-11-05T05:19:04Z",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4834",
+      "head": {
+        "sha": "d3ddd42b760df821ccbb3a55c96b567b6f29d751",
+        "ref": "research/ndu-decision-evidence-20261105"
+      },
+      "base": {
+        "sha": "4e3b8c3c242d7d6d83086e7375a354a30647e040",
+        "ref": "research/ndu-decision-real-20261104"
+      },
+      "body_identity": {
+        "bytes": 1637,
+        "sha256": "d30d3e8a544c1c23963cb6cdbf3c16efe5d996615cdce330decaf9a68d21cc44",
+        "computed_git_blob": "c1efb8a82fe0396227dcd60aeb5df87b16de9178"
+      }
+    },
+    {
+      "number": 4833,
+      "title": "research: run real dual generation with action and stopping cost receipts",
+      "state": "open",
+      "draft": true,
+      "created_at": "2026-11-05T05:09:10Z",
+      "updated_at": "2026-11-05T05:16:39Z",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4833",
+      "head": {
+        "sha": "4e3b8c3c242d7d6d83086e7375a354a30647e040",
+        "ref": "research/ndu-decision-real-20261104"
+      },
+      "base": {
+        "sha": "696905184e4014b6d733abb92b8d96cfba887bec",
+        "ref": "research/ndu-decision-models-20261104"
+      },
+      "body_identity": {
+        "bytes": 2840,
+        "sha256": "762e5e7dd3ba34f08a50dad8df896ba9c576cb9de483ec841c3e9f9d4a12a43a",
+        "computed_git_blob": "bd37451a74bd0ca6ffefd3f39a3deff23aa2e563"
+      }
+    },
+    {
+      "number": 4832,
+      "title": "research(ndu): pinned pretrained image/text and diffusion adapters",
+      "state": "open",
+      "draft": true,
+      "created_at": "2026-11-05T05:06:00Z",
+      "updated_at": "2026-11-05T05:06:00Z",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4832",
+      "head": {
+        "sha": "696905184e4014b6d733abb92b8d96cfba887bec",
+        "ref": "research/ndu-decision-models-20261104"
+      },
+      "base": {
+        "sha": "29243f8fd1e17ff9c74d606163a862bd7ecae48d",
+        "ref": "research/ndu-decision-factorial-20261104"
+      },
+      "body_identity": {
+        "bytes": 1658,
+        "sha256": "4e4f123d158af1751fdcefa063169713f64af64d3d4694af0d741745ffb53ef4",
+        "computed_git_blob": "f8442df74d4dc3b37f0f50e797611195fa7a994a"
+      }
+    },
+    {
+      "number": 4831,
+      "title": "research(ndu): four-arm attribution and complete captured cost audit",
+      "state": "open",
+      "draft": true,
+      "created_at": "2026-11-05T05:03:56Z",
+      "updated_at": "2026-11-05T05:03:56Z",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4831",
+      "head": {
+        "sha": "29243f8fd1e17ff9c74d606163a862bd7ecae48d",
+        "ref": "research/ndu-decision-factorial-20261104"
+      },
+      "base": {
+        "sha": "bde82cc66099ccdfe198d2c02f4536b70c91731c",
+        "ref": "research/ndu-decision-exact-20261104"
+      },
+      "body_identity": {
+        "bytes": 2023,
+        "sha256": "5cecaf0e8b1265ea90efa1d5c7f1f8199cb802a764e85d2ec24b01b9f056f0d9",
+        "computed_git_blob": "cbd2395603ff33d05f3c103fb590599bcc1e43d7"
+      }
+    },
+    {
+      "number": 4830,
+      "title": "research(ndu): exact online decision references and clairvoyant bounds",
+      "state": "open",
+      "draft": true,
+      "created_at": "2026-11-05T05:03:30Z",
+      "updated_at": "2026-11-05T05:03:30Z",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4830",
+      "head": {
+        "sha": "bde82cc66099ccdfe198d2c02f4536b70c91731c",
+        "ref": "research/ndu-decision-exact-20261104"
+      },
+      "base": {
+        "sha": "c6773fcc3fe0520f58e0d5234713d60ecf246f31",
+        "ref": "fix/joint-hepta-v3-prefix-cost-20261103"
+      },
+      "body_identity": {
+        "bytes": 1814,
+        "sha256": "2ec42e06c66f95f98c581b2dca604fc2610a9916088e758b52db2adb2f132872",
+        "computed_git_blob": "fc97db43e9dce4e6f2dcbf3ebd2e7923ebe928e9"
+      }
+    },
+    {
+      "number": 4829,
+      "title": "test(hepta-memory): resolve native assertion imports and stale Current fixture access [HOLD]",
+      "state": "open",
+      "draft": true,
+      "created_at": "2026-11-05T04:47:00Z",
+      "updated_at": "2026-11-05T04:50:12Z",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4829",
+      "head": {
+        "sha": "97e08862890cd3e089fe26e26faa67dc494f3399",
+        "ref": "fix/hepta-memory-native-test-visibility-20261105"
+      },
+      "base": {
+        "sha": "16638a3852c6b3b4061b530a16899e427f0fc1a5",
+        "ref": "fix/ci-attestation-result-type-20261105"
+      },
+      "body_identity": {
+        "bytes": 1566,
+        "sha256": "dba509e1ec8501917d533e54789ae7b63a950ff67e63553c931c67d0ac9184b9",
+        "computed_git_blob": "e3237bc882c0141cd9e337ebc818aa6d50615056"
+      }
+    },
+    {
+      "number": 4827,
+      "title": "ci(hepta): preserve the two original Linux diagnostic logs",
+      "state": "open",
+      "draft": true,
+      "created_at": "2026-11-05T04:17:39Z",
+      "updated_at": "2026-11-05T04:23:19Z",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4827",
+      "head": {
+        "sha": "530616f4cd4f4ff9bf224b582f7634bef708d951",
+        "ref": "codex/organ-ci-log-evidence-20261105-v1"
+      },
+      "base": {
+        "sha": "34c547eac9a80988a1f35c68d500eba07e369b85",
+        "ref": "codex/organ-intermediate-diagnosis-20261105"
+      },
+      "body_identity": {
+        "bytes": 1167,
+        "sha256": "4844247f3ce27e8abdf888f43674e711db969016e58542656d04413e9a49004a",
+        "computed_git_blob": "3ec696935cafd88558ab76400c8127b6ba0a3ea5"
+      }
+    },
+    {
+      "number": 4828,
+      "title": "fix(windows): retain native process custody across failed sessions",
+      "state": "open",
+      "draft": true,
+      "created_at": "2026-11-05T04:17:58Z",
+      "updated_at": "2026-11-05T04:17:58Z",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4828",
+      "head": {
+        "sha": "9de27bce74330882916efda0b33222a623dff716",
+        "ref": "codex/native-custody-r2-20261105-v1"
+      },
+      "base": {
+        "sha": "3419b6ac8adf5b47b140e553f5fff9e74c98d352",
+        "ref": "codex/organ-intermediate-diagnosis-20261105-r2"
+      },
+      "body_identity": {
+        "bytes": 1749,
+        "sha256": "acbd1ae8df86a292460b9beae6efe8b748b05a87b065db9486b6060f9f316611",
+        "computed_git_blob": "67c39d017930383e8d885de281fac217a3a100b4"
+      }
+    },
+    {
+      "number": 4825,
+      "title": "[Diagnostic] Generate source-bound process observation schemas",
+      "state": "open",
+      "draft": true,
+      "created_at": "2026-11-05T03:56:32Z",
+      "updated_at": "2026-11-05T03:56:32Z",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4825",
+      "head": {
+        "sha": "2d02759d040474b6e6fa63f85d2ae3694fdbf59e",
+        "ref": "codex/process-indeterminate-schema-20261105-v1"
+      },
+      "base": {
+        "sha": "34c547eac9a80988a1f35c68d500eba07e369b85",
+        "ref": "codex/organ-intermediate-diagnosis-20261105"
+      },
+      "body_identity": {
+        "bytes": 1468,
+        "sha256": "01c1ac2ad88f76ff8f3c9bea8febcd1b4304643a97d0d854cd794d267c7a1ddb",
+        "computed_git_blob": "4ab53bb1d0e5fae06e917f12a4c58f1136b7e44d"
+      }
+    },
+    {
+      "number": 4824,
+      "title": "test(app-server): type async attestation completion result for native build [HOLD]",
+      "state": "open",
+      "draft": true,
+      "created_at": "2026-11-05T03:40:35Z",
+      "updated_at": "2026-11-05T03:40:35Z",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4824",
+      "head": {
+        "sha": "16638a3852c6b3b4061b530a16899e427f0fc1a5",
+        "ref": "fix/ci-attestation-result-type-20261105"
+      },
+      "base": {
+        "sha": "933280f6b553f3695d7f9f215bd0e25df2784f9b",
+        "ref": "fix/hepta-appserver-native-workdir-core-reexport-20261105"
+      },
+      "body_identity": {
+        "bytes": 2285,
+        "sha256": "ae3966f1ef144a3b6f0f184a597a01561a5fd3a09564d364454bc69546bd18f7",
+        "computed_git_blob": "0f4b7c616e97678f98ad0ac85bee4e9bd02659bd"
+      }
+    },
+    {
+      "number": 4823,
+      "title": "research(wsp): qualify finite Bellman value and bounded head-copy certificates",
+      "state": "open",
+      "draft": true,
+      "created_at": "2026-11-05T03:08:34Z",
+      "updated_at": "2026-11-05T03:35:05Z",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4823",
+      "head": {
+        "sha": "85f507fb2e1c9e8ad9941451641bb4ec3f1dccb4",
+        "ref": "research/wsp-followup-20261105"
+      },
+      "base": {
+        "sha": "2d0120e208ed81515837a7530c9f6943af03e87f",
+        "ref": "research/wsp-actual-checkpoints-20261104"
+      },
+      "body_identity": {
+        "bytes": 11593,
+        "sha256": "5ddc91a0d8b38bda7c2e204dd085c32bacc12503fbdfe27b075a5b94da953637",
+        "computed_git_blob": "64dc04a20b28b450dca10032722649ccc5514f7a"
+      }
+    }
+  ],
+  "donors": [
+    {
+      "number": 4868,
+      "title": "[DRAFT][DENY_ALL] Resolve real Windows native PTY test E0034 trait ambiguity",
+      "state": "open",
+      "draft": true,
+      "created_at": "2026-11-05T09:37:29Z",
+      "updated_at": "2026-11-05T09:37:29Z",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4868",
+      "head": {
+        "sha": "fe923968bd739d0c0b981ee24ba6ddfd8f547d13",
+        "ref": "dot/hia-r3-winchild-trait-ambiguity-20261105"
+      },
+      "base": {
+        "sha": "0856b142808f102c75e1182cd4dfb5e798938d84",
+        "ref": "dot/hia-r3-winchild-clone-error-20261105"
+      },
+      "body_identity": {
+        "bytes": 2670,
+        "sha256": "04ebe913b3a611c9afc9528ab7e2bdd3fba5e1df862a6c5a73ede0603997433e",
+        "computed_git_blob": "ed5b1be48a87bd67f8c59b7552091d3abf7fc190"
+      },
+      "tree": "79ea32259d56f85f2f0920828cf1d8d1d63b8ec4",
+      "parents": [
+        "89b7cf91297284e900c965ac6f5f677552bfa613"
+      ],
+      "changed_files_reported": 2,
+      "ci_observed_at": "2026-11-05T10:16:10.062Z",
+      "ci_runs": [
+        {
+          "id": 42003916566,
+          "head_sha": "fe923968bd739d0c0b981ee24ba6ddfd8f547d13",
+          "run_attempt": 1,
+          "name": "Hepta architecture convergence",
+          "status": "queued",
+          "conclusion": null,
+          "created_at": "2026-11-05T09:37:33Z",
+          "updated_at": "2026-11-05T09:37:33Z",
+          "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42003916566"
+        },
+        {
+          "id": 42003916219,
+          "head_sha": "fe923968bd739d0c0b981ee24ba6ddfd8f547d13",
+          "run_attempt": 1,
+          "name": "HIA R3 Windows ConPTY native regression (DENY_ALL)",
+          "status": "completed",
+          "conclusion": "failure",
+          "created_at": "2026-11-05T09:37:32Z",
+          "updated_at": "2026-11-05T09:59:39Z",
+          "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42003916219"
+        },
+        {
+          "id": 42003916532,
+          "head_sha": "fe923968bd739d0c0b981ee24ba6ddfd8f547d13",
+          "run_attempt": 1,
+          "name": "v8-canary",
+          "status": "queued",
+          "conclusion": null,
+          "created_at": "2026-11-05T09:37:32Z",
+          "updated_at": "2026-11-05T09:37:32Z",
+          "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42003916532"
+        },
+        {
+          "id": 42003916500,
+          "head_sha": "fe923968bd739d0c0b981ee24ba6ddfd8f547d13",
+          "run_attempt": 1,
+          "name": "blocking-ci",
+          "status": "queued",
+          "conclusion": null,
+          "created_at": "2026-11-05T09:37:32Z",
+          "updated_at": "2026-11-05T09:37:32Z",
+          "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42003916500"
+        }
+      ],
+      "classification": "DONOR_CANDIDATE_NOT_PRODUCT_QUALIFICATION"
+    },
+    {
+      "number": 4854,
+      "title": "[DRAFT][DENY_ALL] Fix Windows ConPTY clone-error conversion blocking R3 Agentd CI",
+      "state": "open",
+      "draft": true,
+      "created_at": "2026-11-05T07:34:13Z",
+      "updated_at": "2026-11-05T07:37:38Z",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4854",
+      "head": {
+        "sha": "0856b142808f102c75e1182cd4dfb5e798938d84",
+        "ref": "dot/hia-r3-winchild-clone-error-20261105"
+      },
+      "base": {
+        "sha": "a20a8191ec37375876a99b7c18bae053f9bc185d",
+        "ref": "fix/runtime-convergence-abc-20261105"
+      },
+      "body_identity": {
+        "bytes": 2888,
+        "sha256": "861b3719787c7b0bfacb845203eb7da62383eef64854755b49ba91d93e4914f1",
+        "computed_git_blob": "7fd9151c539e4239c22e12ee4ac425366d909339"
+      },
+      "tree": "9e52c2766a401f6a989948cddef1dfe76e6e77fd",
+      "parents": [
+        "345dd470a64783b54f45c522ac8675435d204738"
+      ],
+      "changed_files_reported": 2,
+      "ci_observed_at": "2026-11-05T10:16:10.001Z",
+      "ci_runs": [
+        {
+          "id": 41988311595,
+          "head_sha": "0856b142808f102c75e1182cd4dfb5e798938d84",
+          "run_attempt": 1,
+          "name": "Hepta architecture convergence",
+          "status": "queued",
+          "conclusion": null,
+          "created_at": "2026-11-05T07:35:30Z",
+          "updated_at": "2026-11-05T08:41:24Z",
+          "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41988311595"
+        },
+        {
+          "id": 41988311741,
+          "head_sha": "0856b142808f102c75e1182cd4dfb5e798938d84",
+          "run_attempt": 1,
+          "name": "HIA R3 Windows ConPTY native regression (DENY_ALL)",
+          "status": "completed",
+          "conclusion": "failure",
+          "created_at": "2026-11-05T07:35:30Z",
+          "updated_at": "2026-11-05T08:50:15Z",
+          "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41988311741"
+        },
+        {
+          "id": 41988311603,
+          "head_sha": "0856b142808f102c75e1182cd4dfb5e798938d84",
+          "run_attempt": 1,
+          "name": "v8-canary",
+          "status": "completed",
+          "conclusion": "success",
+          "created_at": "2026-11-05T07:35:30Z",
+          "updated_at": "2026-11-05T08:52:38Z",
+          "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41988311603"
+        },
+        {
+          "id": 41988311600,
+          "head_sha": "0856b142808f102c75e1182cd4dfb5e798938d84",
+          "run_attempt": 1,
+          "name": "blocking-ci",
+          "status": "queued",
+          "conclusion": null,
+          "created_at": "2026-11-05T07:35:30Z",
+          "updated_at": "2026-11-05T09:40:24Z",
+          "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41988311600"
+        }
+      ],
+      "classification": "DONOR_CANDIDATE_NOT_PRODUCT_QUALIFICATION"
+    },
+    {
+      "number": 4844,
+      "title": "fix(windows-sandbox): contain direct legacy deletion exposure; keep P0 open",
+      "state": "open",
+      "draft": true,
+      "created_at": "2026-11-05T06:24:38Z",
+      "updated_at": "2026-11-05T06:24:38Z",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4844",
+      "head": {
+        "sha": "a55150f901bf27bea8a112e03a13bc88b71ba81e",
+        "ref": "fix/windows-legacy-delete-admission-20261105"
+      },
+      "base": {
+        "sha": "4e31abc907f09740d402d1ddef7a1d2fe0a366a6",
+        "ref": "codex/organ-intermediate-diagnosis-20261105-r3"
+      },
+      "body_identity": {
+        "bytes": 3828,
+        "sha256": "85ed61018aabffdb01aaba823c5ca47347edd6f91d8c485c027386b2ac8a5497",
+        "computed_git_blob": "5b1326c992174367afe751439c9127fdf8133ea6"
+      },
+      "tree": "bfa28c9bc13976461da2bb1f76334144de324a8b",
+      "parents": [
+        "4e31abc907f09740d402d1ddef7a1d2fe0a366a6"
+      ],
+      "changed_files_reported": 10,
+      "ci_observed_at": "2026-11-05T10:16:09.913Z",
+      "ci_runs": [
+        {
+          "id": 41980225597,
+          "head_sha": "a55150f901bf27bea8a112e03a13bc88b71ba81e",
+          "run_attempt": 1,
+          "name": "v8-canary",
+          "status": "completed",
+          "conclusion": "cancelled",
+          "created_at": "2026-11-05T06:24:42Z",
+          "updated_at": "2026-11-05T07:47:03Z",
+          "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41980225597"
+        },
+        {
+          "id": 41980225689,
+          "head_sha": "a55150f901bf27bea8a112e03a13bc88b71ba81e",
+          "run_attempt": 1,
+          "name": "Windows original CI regressions (declared scope only)",
+          "status": "completed",
+          "conclusion": "cancelled",
+          "created_at": "2026-11-05T06:24:42Z",
+          "updated_at": "2026-11-05T07:22:49Z",
+          "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41980225689"
+        },
+        {
+          "id": 41980225769,
+          "head_sha": "a55150f901bf27bea8a112e03a13bc88b71ba81e",
+          "run_attempt": 1,
+          "name": "blocking-ci",
+          "status": "completed",
+          "conclusion": "failure",
+          "created_at": "2026-11-05T06:24:42Z",
+          "updated_at": "2026-11-05T09:57:38Z",
+          "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41980225769"
+        },
+        {
+          "id": 41980225581,
+          "head_sha": "a55150f901bf27bea8a112e03a13bc88b71ba81e",
+          "run_attempt": 1,
+          "name": "Hepta architecture convergence",
+          "status": "completed",
+          "conclusion": "cancelled",
+          "created_at": "2026-11-05T06:24:42Z",
+          "updated_at": "2026-11-05T09:34:00Z",
+          "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41980225581"
+        }
+      ],
+      "classification": "DONOR_CANDIDATE_NOT_PRODUCT_QUALIFICATION"
+    },
+    {
+      "number": 4847,
+      "title": "Memory V15: fix epoch exhaustion and qualify native migration transitions",
+      "state": "open",
+      "draft": true,
+      "created_at": "2026-11-05T06:34:20Z",
+      "updated_at": "2026-11-05T06:34:20Z",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4847",
+      "head": {
+        "sha": "4675d776489f1c1f2c832451e44fcd4bad3f583f",
+        "ref": "research/memory-v15-native-transfer-20261105-728b"
+      },
+      "base": {
+        "sha": "379c21c2e625c3a3dfbb514e11b9e8fe2213cda8",
+        "ref": "research/memory-cell-v15-20261104"
+      },
+      "body_identity": {
+        "bytes": 2803,
+        "sha256": "b17d10e9bd862633c4a0ce85abf9b0dd0f2e0c299409e64059687b9ecb6b442c",
+        "computed_git_blob": "71643c8164debd2b38a1f4e842842e312a914e88"
+      },
+      "tree": "96e1f355298dc25fdd27a5959ba018e78c85db39",
+      "parents": [
+        "dea964799db8faa51f119bcad38646d5103f0cd4"
+      ],
+      "changed_files_reported": 25,
+      "ci_observed_at": "2026-11-05T10:23:54.488Z",
+      "ci_runs": [
+        {
+          "id": 41981312368,
+          "head_sha": "4675d776489f1c1f2c832451e44fcd4bad3f583f",
+          "run_attempt": 1,
+          "name": "v8-canary",
+          "status": "completed",
+          "conclusion": "cancelled",
+          "created_at": "2026-11-05T06:34:23Z",
+          "updated_at": "2026-11-05T08:13:57Z",
+          "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41981312368"
+        },
+        {
+          "id": 41981312337,
+          "head_sha": "4675d776489f1c1f2c832451e44fcd4bad3f583f",
+          "run_attempt": 1,
+          "name": "Hepta architecture convergence",
+          "status": "completed",
+          "conclusion": "cancelled",
+          "created_at": "2026-11-05T06:34:23Z",
+          "updated_at": "2026-11-05T09:41:19Z",
+          "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41981312337"
+        },
+        {
+          "id": 41981312386,
+          "head_sha": "4675d776489f1c1f2c832451e44fcd4bad3f583f",
+          "run_attempt": 1,
+          "name": "blocking-ci",
+          "status": "in_progress",
+          "conclusion": null,
+          "created_at": "2026-11-05T06:34:23Z",
+          "updated_at": "2026-11-05T10:23:47Z",
+          "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41981312386"
+        },
+        {
+          "id": 41981272551,
+          "head_sha": "4675d776489f1c1f2c832451e44fcd4bad3f583f",
+          "run_attempt": 1,
+          "name": "Memory cell V15 reference contracts",
+          "status": "completed",
+          "conclusion": "failure",
+          "created_at": "2026-11-05T06:34:03Z",
+          "updated_at": "2026-11-05T08:12:39Z",
+          "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41981272551"
+        }
+      ],
+      "classification": "DONOR_CANDIDATE_NOT_PRODUCT_QUALIFICATION"
+    },
+    {
+      "number": 4842,
+      "title": "[WIP] Freeze one Notes and native G2 source candidate for Desktop qualification",
+      "state": "open",
+      "draft": true,
+      "created_at": "2026-11-05T05:59:44Z",
+      "updated_at": "2026-11-05T05:59:44Z",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4842",
+      "head": {
+        "sha": "59b8195015b76a633dcaf04b34ffa79baa3a8ce2",
+        "ref": "codex/desktop-eight-stage-hepta-20261105-r1"
+      },
+      "base": {
+        "sha": "14e2d89b3367232ec5dbe6187f09feed0f2b68d3",
+        "ref": "codex/desktop-organ-joint-20261103"
+      },
+      "body_identity": {
+        "bytes": 1487,
+        "sha256": "25ab2bc8a006800bf9776bc9d2093ba32cef93bec5e89d4cf339c5225e214a63",
+        "computed_git_blob": "9c78f5f81a3e5fdec953ad2ac234f830caf7c451"
+      },
+      "tree": "9e297ac7e3bda109c9f9dfb73b6ca2352197758c",
+      "parents": [
+        "14e2d89b3367232ec5dbe6187f09feed0f2b68d3"
+      ],
+      "changed_files_reported": 14,
+      "ci_observed_at": "2026-11-05T10:23:54.125Z",
+      "ci_runs": [
+        {
+          "id": 41977469116,
+          "head_sha": "59b8195015b76a633dcaf04b34ffa79baa3a8ce2",
+          "run_attempt": 1,
+          "name": "Hepta architecture convergence",
+          "status": "completed",
+          "conclusion": "cancelled",
+          "created_at": "2026-11-05T05:59:47Z",
+          "updated_at": "2026-11-05T09:02:58Z",
+          "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41977469116"
+        },
+        {
+          "id": 41977469246,
+          "head_sha": "59b8195015b76a633dcaf04b34ffa79baa3a8ce2",
+          "run_attempt": 1,
+          "name": "v8-canary",
+          "status": "completed",
+          "conclusion": "success",
+          "created_at": "2026-11-05T05:59:47Z",
+          "updated_at": "2026-11-05T07:10:50Z",
+          "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41977469246"
+        },
+        {
+          "id": 41977469163,
+          "head_sha": "59b8195015b76a633dcaf04b34ffa79baa3a8ce2",
+          "run_attempt": 1,
+          "name": "Hepta Windows private-state native (security qualification only)",
+          "status": "completed",
+          "conclusion": "cancelled",
+          "created_at": "2026-11-05T05:59:47Z",
+          "updated_at": "2026-11-05T07:15:13Z",
+          "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41977469163"
+        },
+        {
+          "id": 41977469135,
+          "head_sha": "59b8195015b76a633dcaf04b34ffa79baa3a8ce2",
+          "run_attempt": 1,
+          "name": "Production HOS2 owner proposal",
+          "status": "completed",
+          "conclusion": "skipped",
+          "created_at": "2026-11-05T05:59:47Z",
+          "updated_at": "2026-11-05T05:59:48Z",
+          "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41977469135"
+        },
+        {
+          "id": 41977469248,
+          "head_sha": "59b8195015b76a633dcaf04b34ffa79baa3a8ce2",
+          "run_attempt": 1,
+          "name": "blocking-ci",
+          "status": "completed",
+          "conclusion": "cancelled",
+          "created_at": "2026-11-05T05:59:47Z",
+          "updated_at": "2026-11-05T09:47:34Z",
+          "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41977469248"
+        }
+      ],
+      "classification": "DONOR_CANDIDATE_NOT_PRODUCT_QUALIFICATION"
+    },
+    {
+      "number": 4867,
+      "title": "research(ndu): publish full validation evidence and negative algorithm findings",
+      "state": "open",
+      "draft": true,
+      "created_at": "2026-11-05T09:36:01Z",
+      "updated_at": "2026-11-05T09:36:32Z",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4867",
+      "head": {
+        "sha": "7f68ad7d1ca0e79a1f628e64ee7bc1bd54686de0",
+        "ref": "research/ndu-rl-validation-evidence-20261105"
+      },
+      "base": {
+        "sha": "062b6dd7c730c4795ae617f4c85278dd2ac821d7",
+        "ref": "research/ndu-rl-validation-freeze-20261105"
+      },
+      "body_identity": {
+        "bytes": 3929,
+        "sha256": "ae414d0149b08e775e22a9daa9490375caf09e43a6b9bce3f01bbd13f6cce9d2",
+        "computed_git_blob": "7a6ff357818c2567547861db5fa8a681017ebc05"
+      },
+      "tree": "2033704b3d2212c4a1835ec6126c7d866cff0ce2",
+      "parents": [
+        "e48ad52bde2c23e9a33634b8c41a3514d3296d8a"
+      ],
+      "changed_files_reported": 27,
+      "ci_observed_at": "2026-11-05T10:23:54.111Z",
+      "ci_runs": [
+        {
+          "id": 42003717214,
+          "head_sha": "7f68ad7d1ca0e79a1f628e64ee7bc1bd54686de0",
+          "run_attempt": 1,
+          "name": "blocking-ci",
+          "status": "queued",
+          "conclusion": null,
+          "created_at": "2026-11-05T09:36:06Z",
+          "updated_at": "2026-11-05T09:36:06Z",
+          "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42003717214"
+        },
+        {
+          "id": 42003717106,
+          "head_sha": "7f68ad7d1ca0e79a1f628e64ee7bc1bd54686de0",
+          "run_attempt": 1,
+          "name": "v8-canary",
+          "status": "queued",
+          "conclusion": null,
+          "created_at": "2026-11-05T09:36:06Z",
+          "updated_at": "2026-11-05T09:36:06Z",
+          "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42003717106"
+        },
+        {
+          "id": 42003717186,
+          "head_sha": "7f68ad7d1ca0e79a1f628e64ee7bc1bd54686de0",
+          "run_attempt": 1,
+          "name": "Hepta architecture convergence",
+          "status": "queued",
+          "conclusion": null,
+          "created_at": "2026-11-05T09:36:06Z",
+          "updated_at": "2026-11-05T09:36:06Z",
+          "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42003717186"
+        }
+      ],
+      "classification": "DONOR_CANDIDATE_NOT_PRODUCT_QUALIFICATION"
+    },
+    {
+      "number": 4812,
+      "title": "fix(hepta): require PQ at ordinary runtime and revalidate FinalUse effects",
+      "state": "open",
+      "draft": true,
+      "created_at": "2026-11-05T00:03:10Z",
+      "updated_at": "2026-11-05T10:19:19Z",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4812",
+      "head": {
+        "sha": "9438a6c27a5e2f25169445f39499631db4e00529",
+        "ref": "fix/hepta-ordinary-pq-effects-20261104"
+      },
+      "base": {
+        "sha": "4c93a641945044f904a656cbf1d23e358a074d52",
+        "ref": "fix/hepta-pn-cell-closure-20261031"
+      },
+      "body_identity": {
+        "bytes": 14947,
+        "sha256": "bd7c2012c6f97534dacfac5750cb18afccaeab4202e1a0f68aba78b545d2d434",
+        "computed_git_blob": "c69de6aa2b80612560c4faecfaf74ddf841ab136"
+      },
+      "tree": "a9cba014de26164f0285c6c886fb071b19a04845",
+      "parents": [
+        "ff19c86b7190204e9172a1595a58d8eb9f897c6d"
+      ],
+      "changed_files_reported": 549,
+      "ci_observed_at": "2026-11-05T10:27:30.245Z",
+      "ci_runs": [
+        {
+          "id": 42009745445,
+          "head_sha": "9438a6c27a5e2f25169445f39499631db4e00529",
+          "run_attempt": 1,
+          "name": "Hepta neural study V1 with closed integrated Chain execution",
+          "status": "queued",
+          "conclusion": null,
+          "created_at": "2026-11-05T10:19:25Z",
+          "updated_at": "2026-11-05T10:19:25Z",
+          "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42009745445"
+        },
+        {
+          "id": 42009745490,
+          "head_sha": "9438a6c27a5e2f25169445f39499631db4e00529",
+          "run_attempt": 1,
+          "name": "Hepta native PoN integrated source pair",
+          "status": "pending",
+          "conclusion": null,
+          "created_at": "2026-11-05T10:19:25Z",
+          "updated_at": "2026-11-05T10:19:26Z",
+          "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42009745490"
+        },
+        {
+          "id": 42009745549,
+          "head_sha": "9438a6c27a5e2f25169445f39499631db4e00529",
+          "run_attempt": 1,
+          "name": "Hepta PQ policy renewal",
+          "status": "pending",
+          "conclusion": null,
+          "created_at": "2026-11-05T10:19:25Z",
+          "updated_at": "2026-11-05T10:19:26Z",
+          "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42009745549"
+        },
+        {
+          "id": 42009745340,
+          "head_sha": "9438a6c27a5e2f25169445f39499631db4e00529",
+          "run_attempt": 1,
+          "name": "Matrix SDK compatibility",
+          "status": "queued",
+          "conclusion": null,
+          "created_at": "2026-11-05T10:19:25Z",
+          "updated_at": "2026-11-05T10:19:25Z",
+          "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42009745340"
+        },
+        {
+          "id": 42009745277,
+          "head_sha": "9438a6c27a5e2f25169445f39499631db4e00529",
+          "run_attempt": 1,
+          "name": "Hepta Windows deletion boundary diagnostics",
+          "status": "pending",
+          "conclusion": null,
+          "created_at": "2026-11-05T10:19:25Z",
+          "updated_at": "2026-11-05T10:19:26Z",
+          "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42009745277"
+        },
+        {
+          "id": 42009745402,
+          "head_sha": "9438a6c27a5e2f25169445f39499631db4e00529",
+          "run_attempt": 1,
+          "name": "Hepta FinalUse PQ component observations",
+          "status": "completed",
+          "conclusion": "skipped",
+          "created_at": "2026-11-05T10:19:25Z",
+          "updated_at": "2026-11-05T10:19:32Z",
+          "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42009745402"
+        },
+        {
+          "id": 42009745300,
+          "head_sha": "9438a6c27a5e2f25169445f39499631db4e00529",
+          "run_attempt": 1,
+          "name": "blocking-ci",
+          "status": "pending",
+          "conclusion": null,
+          "created_at": "2026-11-05T10:19:25Z",
+          "updated_at": "2026-11-05T10:19:26Z",
+          "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42009745300"
+        },
+        {
+          "id": 42009745234,
+          "head_sha": "9438a6c27a5e2f25169445f39499631db4e00529",
+          "run_attempt": 1,
+          "name": "Hepta explicit binary-answer parent study and ordinary child loop V2",
+          "status": "queued",
+          "conclusion": null,
+          "created_at": "2026-11-05T10:19:24Z",
+          "updated_at": "2026-11-05T10:19:24Z",
+          "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42009745234"
+        },
+        {
+          "id": 42009745264,
+          "head_sha": "9438a6c27a5e2f25169445f39499631db4e00529",
+          "run_attempt": 1,
+          "name": "Hepta architecture convergence",
+          "status": "pending",
+          "conclusion": null,
+          "created_at": "2026-11-05T10:19:24Z",
+          "updated_at": "2026-11-05T10:19:26Z",
+          "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42009745264"
+        },
+        {
+          "id": 42009745233,
+          "head_sha": "9438a6c27a5e2f25169445f39499631db4e00529",
+          "run_attempt": 1,
+          "name": "Hepta Safe YAML RustSec Migration (shadow)",
+          "status": "queued",
+          "conclusion": null,
+          "created_at": "2026-11-05T10:19:24Z",
+          "updated_at": "2026-11-05T10:19:24Z",
+          "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42009745233"
+        },
+        {
+          "id": 42009745111,
+          "head_sha": "9438a6c27a5e2f25169445f39499631db4e00529",
+          "run_attempt": 1,
+          "name": "Hepta public initial V2 with closed integrated Chain execution",
+          "status": "queued",
+          "conclusion": null,
+          "created_at": "2026-11-05T10:19:24Z",
+          "updated_at": "2026-11-05T10:19:24Z",
+          "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42009745111"
+        },
+        {
+          "id": 42009745197,
+          "head_sha": "9438a6c27a5e2f25169445f39499631db4e00529",
+          "run_attempt": 1,
+          "name": "v8-canary",
+          "status": "queued",
+          "conclusion": null,
+          "created_at": "2026-11-05T10:19:24Z",
+          "updated_at": "2026-11-05T10:19:26Z",
+          "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42009745197"
+        },
+        {
+          "id": 42009745239,
+          "head_sha": "9438a6c27a5e2f25169445f39499631db4e00529",
+          "run_attempt": 1,
+          "name": "Hepta fixed diverse60 parent study and ordinary child loop V3",
+          "status": "queued",
+          "conclusion": null,
+          "created_at": "2026-11-05T10:19:24Z",
+          "updated_at": "2026-11-05T10:19:24Z",
+          "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42009745239"
+        }
+      ],
+      "classification": "DONOR_CANDIDATE_NOT_PRODUCT_QUALIFICATION"
+    },
+    {
+      "number": 4855,
+      "title": "W0–W7: unify R3 safety, CI and recovery candidate with explicit qualification gates",
+      "state": "open",
+      "draft": true,
+      "created_at": "2026-11-05T07:42:31Z",
+      "updated_at": "2026-11-05T10:25:51Z",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4855",
+      "head": {
+        "sha": "e65a53ddfc872ef66edc63dff8f28d4414817c60",
+        "ref": "integration/unified-w0-w7-20261105-4d868a11"
+      },
+      "base": {
+        "sha": "732e934ba496d90fbe042b8d41d479ef901643e5",
+        "ref": "main"
+      },
+      "body_identity": {
+        "bytes": 10769,
+        "sha256": "790446fa0ed754854535edee561895920846a49b056f9bba469fd6459dfad24f",
+        "computed_git_blob": "1084761a198ad616018382fd9af712ddd38a0df1"
+      },
+      "tree": "93a323f016388426d4eb1dead99ac273963c9935",
+      "parents": [
+        "e06b76cd379a6e789ca149a6a6886bc066d8e5d2"
+      ],
+      "changed_files_reported": 2747,
+      "ci_observed_at": "2026-11-05T10:27:30.019Z",
+      "ci_runs": [
+        {
+          "id": 42010648579,
+          "head_sha": "e65a53ddfc872ef66edc63dff8f28d4414817c60",
+          "run_attempt": 1,
+          "name": "Hepta architecture convergence",
+          "status": "pending",
+          "conclusion": null,
+          "created_at": "2026-11-05T10:25:57Z",
+          "updated_at": "2026-11-05T10:25:58Z",
+          "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42010648579"
+        },
+        {
+          "id": 42010649750,
+          "head_sha": "e65a53ddfc872ef66edc63dff8f28d4414817c60",
+          "run_attempt": 1,
+          "name": "Production HOS2 owner proposal",
+          "status": "completed",
+          "conclusion": "skipped",
+          "created_at": "2026-11-05T10:25:57Z",
+          "updated_at": "2026-11-05T10:25:59Z",
+          "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42010649750"
+        },
+        {
+          "id": 42010648840,
+          "head_sha": "e65a53ddfc872ef66edc63dff8f28d4414817c60",
+          "run_attempt": 1,
+          "name": "Windows original CI regressions (declared scope only)",
+          "status": "queued",
+          "conclusion": null,
+          "created_at": "2026-11-05T10:25:57Z",
+          "updated_at": "2026-11-05T10:25:58Z",
+          "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42010648840"
+        },
+        {
+          "id": 42010649005,
+          "head_sha": "e65a53ddfc872ef66edc63dff8f28d4414817c60",
+          "run_attempt": 1,
+          "name": "v8-canary",
+          "status": "queued",
+          "conclusion": null,
+          "created_at": "2026-11-05T10:25:57Z",
+          "updated_at": "2026-11-05T10:25:59Z",
+          "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42010649005"
+        },
+        {
+          "id": 42010648803,
+          "head_sha": "e65a53ddfc872ef66edc63dff8f28d4414817c60",
+          "run_attempt": 1,
+          "name": "Keyring synchronous backend lock proposal",
+          "status": "queued",
+          "conclusion": null,
+          "created_at": "2026-11-05T10:25:57Z",
+          "updated_at": "2026-11-05T10:25:57Z",
+          "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42010648803"
+        },
+        {
+          "id": 42010648977,
+          "head_sha": "e65a53ddfc872ef66edc63dff8f28d4414817c60",
+          "run_attempt": 1,
+          "name": "App-server schema refresh",
+          "status": "completed",
+          "conclusion": "skipped",
+          "created_at": "2026-11-05T10:25:57Z",
+          "updated_at": "2026-11-05T10:25:58Z",
+          "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42010648977"
+        },
+        {
+          "id": 42010648959,
+          "head_sha": "e65a53ddfc872ef66edc63dff8f28d4414817c60",
+          "run_attempt": 1,
+          "name": "Bazel stable lock proposal",
+          "status": "pending",
+          "conclusion": null,
+          "created_at": "2026-11-05T10:25:57Z",
+          "updated_at": "2026-11-05T10:25:58Z",
+          "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42010648959"
+        },
+        {
+          "id": 42010648676,
+          "head_sha": "e65a53ddfc872ef66edc63dff8f28d4414817c60",
+          "run_attempt": 1,
+          "name": "Rust UI product foundation",
+          "status": "pending",
+          "conclusion": null,
+          "created_at": "2026-11-05T10:25:57Z",
+          "updated_at": "2026-11-05T10:25:58Z",
+          "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42010648676"
+        },
+        {
+          "id": 42010648529,
+          "head_sha": "e65a53ddfc872ef66edc63dff8f28d4414817c60",
+          "run_attempt": 1,
+          "name": "Hepta Windows private-state native (security qualification only)",
+          "status": "queued",
+          "conclusion": null,
+          "created_at": "2026-11-05T10:25:57Z",
+          "updated_at": "2026-11-05T10:25:58Z",
+          "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42010648529"
+        },
+        {
+          "id": 42010648942,
+          "head_sha": "e65a53ddfc872ef66edc63dff8f28d4414817c60",
+          "run_attempt": 1,
+          "name": "blocking-ci",
+          "status": "pending",
+          "conclusion": null,
+          "created_at": "2026-11-05T10:25:57Z",
+          "updated_at": "2026-11-05T10:25:59Z",
+          "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42010648942"
+        },
+        {
+          "id": 42010641611,
+          "head_sha": "e65a53ddfc872ef66edc63dff8f28d4414817c60",
+          "run_attempt": 1,
+          "name": "PR #4855",
+          "status": "queued",
+          "conclusion": null,
+          "created_at": "2026-11-05T10:25:54Z",
+          "updated_at": "2026-11-05T10:25:54Z",
+          "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42010641611"
+        }
+      ],
+      "classification": "DONOR_CANDIDATE_NOT_PRODUCT_QUALIFICATION"
+    }
+  ],
+  "findings": [
+    {
+      "id": "PTY_DONOR_COMPILE_CHAIN",
+      "prs": [
+        4854,
+        4868
+      ],
+      "related_original_blocker": "B21",
+      "product_head": "5b6331250ff459033bd44d1a95daec70131277cc",
+      "product_win_mod_blob": "05063cf66a69f9b0855e54a537ce7d53947e5424",
+      "product_win_directory_files": [
+        {
+          "name": "conpty.rs",
+          "blob": "1ca8356ba1cc27e8003e33bdbdb663194ca0e2ad"
+        },
+        {
+          "name": "job.rs",
+          "blob": "b06035f72d227b4069da677e8104617ae5616283"
+        },
+        {
+          "name": "mod.rs",
+          "blob": "05063cf66a69f9b0855e54a537ce7d53947e5424"
+        },
+        {
+          "name": "procthreadattr.rs",
+          "blob": "d2f3869cd8d996d3c5678f51cf252c1ee8cd3be7"
+        },
+        {
+          "name": "psuedocon.rs",
+          "blob": "d4c3a41c68714259eb7b7318c0f0ed5aa07fb713"
+        }
+      ],
+      "actual_chain": [
+        {
+          "head": "a20a8191ec37375876a99b7c18bae053f9bc185d",
+          "job": 127097094121,
+          "run": 41982971524,
+          "error": "E0277: filedescriptor::Error is not converted by ? to std::io::Error",
+          "location": "utils/pty/src/win/mod.rs:79",
+          "log": "4854-parent-original-log.txt"
+        },
+        {
+          "head": "0856b142808f102c75e1182cd4dfb5e798938d84",
+          "job": 127114229343,
+          "run": 41988311741,
+          "error": "three E0034 ambiguous as_raw_handle calls",
+          "locations": [
+            55,
+            70,
+            93
+          ],
+          "file": "utils/pty/src/win/native_observation_tests.rs",
+          "log": "4854-original-log.txt",
+          "agentd_compile_only": "completed; does not imply PTY tests executed"
+        },
+        {
+          "head": "fe923968bd739d0c0b981ee24ba6ddfd8f547d13",
+          "job": 127165756887,
+          "run": 42003916219,
+          "error": "six E0599 missing Child trait wait/try_wait methods after import removal",
+          "locations": [
+            127,
+            141,
+            144,
+            156,
+            159,
+            162
+          ],
+          "file": "utils/pty/src/win/native_observation_tests.rs",
+          "log": "4868-original-log.txt",
+          "agentd_compile_only": "completed; PTY test compilation failed"
+        }
+      ],
+      "relationship": "Current product lacks the donor native_observation_tests file and uses the pre-existing is_complete/GetExitCodeProcess/unwrap implementation. These exact compile failures do not hit the current B21 Unix diagnostics candidate.",
+      "static_donor_fix_hint": "Keep the portable_pty::Child trait import for WinChild.wait/try_wait and disambiguate the three std Child handle calls with the Windows AsRawHandle trait. This is a source-review suggestion only; no patch or execution performed."
+    },
+    {
+      "id": "WINDOWS_LEGACY_DELETION_CONTAINMENT",
+      "prs": [
+        4844
+      ],
+      "related_original_blocker": "B11",
+      "actual_job": 127043294552,
+      "actual_run": 41966043093,
+      "actual_head": "3419b6ac8adf5b47b140e553f5fff9e74c98d352",
+      "actual_merge": "9459cf8a4e5e43d6645e2b619b86455132c7df67",
+      "actual_tree": "969b13aa7e7dbdf0ad4c33b0a380d8cfdabea535",
+      "actual_merge_parents": [
+        "732e934ba496d90fbe042b8d41d479ef901643e5",
+        "3419b6ac8adf5b47b140e553f5fff9e74c98d352"
+      ],
+      "original_test_names": [
+        "token::tests::workspace_capabilities_deny_writes_and_deletes_under_broad_identity_aces",
+        "unified_exec::tests::legacy_workspace_write_delete_is_limited_to_writable_roots"
+      ],
+      "physical_result": "The original strict operations failed: outside overwrites/create denied, remove_file/remove_dir succeeded; legacy exit/readback tuple had None,false instead of Some(outside),true.",
+      "additional_observation": "Original AccessCheck output on the same descriptor allowed parent FILE_DELETE_CHILD while denying target DELETE. The full-restricting diagnostic control also denied the required outside read; removing WRITE_RESTRICTED is not a proved functional replacement.",
+      "line_anchors": {
+        "accesscheck": [
+          2927,
+          2942
+        ],
+        "token_original_assert": [
+          2945,
+          2964
+        ],
+        "legacy_original_assert": [
+          2986,
+          3001
+        ]
+      },
+      "source_relation": {
+        "tested_and_donor_base_token_blob": "3e732021a5e52fef8dfc60f1fdf338b55868ea7a",
+        "product_token_blob": "8945d75fe172679479b738e6266cac99a6f7ed16",
+        "all_production_bytes_equal": true,
+        "sole_file_difference": "donor-only cfg(test) token_delete_diagnostics module",
+        "test_files_byteequal_to_product": false
+      },
+      "candidate_behavior": "The new legacy admission helper always returns a typed error before direct legacy token/session/preflight side effects. This is containment that removes the affected functionality, not restoration of the original acceptance contract.",
+      "limits": [
+        "No current 5b Windows execution is inferred from this different source/merge.",
+        "Repeated original excerpts in a complete job log are not counted as separate test attempts.",
+        "The current product public backend selector already routes write/restricted profiles to elevated handling; direct legacy APIs and required read-only semantics remain separate.",
+        "No token/ACL/loader production change, candidate import, native test, or blocker closure performed."
+      ]
+    },
+    {
+      "id": "MEMORY_V15_INCREMENT",
+      "prs": [
+        4847
+      ],
+      "related_original_blocker": "B16",
+      "source_scope": "25 changed files; PR reports counter saturation rejection and a dependency-free native transition kernel, explicitly not wired into production Control.",
+      "reported_evidence_not_recomputed": "57 Python tests and two native hosts with 1536 stateful operations/1600 output lines are PR author claims at this review scope.",
+      "actual_scoped_ci": {
+        "run": 41981272551,
+        "job": 127091673038,
+        "conclusion": "failure",
+        "error": "ValueError: authority source identity mismatch",
+        "log": "4847-original-scoped-job.log"
+      },
+      "does_not_close": [
+        "actual Control/Current owner integration",
+        "native torn-WAL/full authority recovery parity",
+        "external or neural memory benefit"
+      ]
+    },
+    {
+      "id": "NOTES_G2_SINGLE_SOURCE_CANDIDATE",
+      "prs": [
+        4842
+      ],
+      "related_original_blocker": "B16",
+      "source_scope": "14-file candidate on the old 14e2 Desktop cohort. PR explicitly limits verification to source/tree identity.",
+      "author_reported_pending": [
+        "owning-package tests",
+        "six actual UID-0 socket fixtures",
+        "installed Notes effect/recovery",
+        "all five native G2 boots"
+      ],
+      "limit": "No inheritance of old or current product qualification; no actual joint ordinary-entry acceptance is established."
+    },
+    {
+      "id": "NDU_NEGATIVE_ALGORITHM_REPORT",
+      "prs": [
+        4867
+      ],
+      "related_original_blocker": "B18",
+      "source_scope": "27 changed publication paths, stacked on 4863; no independent raw experiment replay performed in this narrow delta audit.",
+      "author_reported_result": "660 structural records, all four trained tool cells CE 0.815 with zero factorial contrasts, exact adaptive reference 0.8757424020, 410 subprocesses; no stable structural/learned control benefit or complete-cost amortization.",
+      "limit": "Research evidence candidate only. No D-minus-B adoption gate, complete-cost gain, or product closure inferred. Current original B18 HOLD unchanged."
+    },
+    {
+      "id": "MOVING_CROSS_OWNER_HEADS",
+      "prs": [
+        4812,
+        4855
+      ],
+      "limit": "The read window observed both heads change. Preserve both observations; current run metadata is not an execution receipt. No import or current-product source equivalence inferred."
+    },
+    {
+      "id": "SCIENCE_4823_PREVIOUSLY_REVIEWED_HEAD",
+      "prs": [
+        4823
+      ],
+      "head": "85f507fb2e1c9e8ad9941451641bb4ec3f1dccb4",
+      "limit": "This differs from the 03:24 inventory head but equals the already frozen 452-file independent review head. It is not a new experiment discovered by this delta."
+    }
+  ],
+  "complete_original_log_identities": {
+    "4854-parent-original-log.txt": {
+      "bytes": 153709,
+      "sha256": "d067c57935f90cee93924d5658ca809e5a426c4b6036f48c7f75654390c072c9",
+      "computed_git_blob": "9e3bb40415af784fb3f733855f50f207f88d9d28"
+    },
+    "4854-original-log.txt": {
+      "bytes": 182544,
+      "sha256": "55c9f76d91a18705764a664f4d180984381e2fba0fb450a383c6dbc4a959989f",
+      "computed_git_blob": "6bf550cbbe6f632be57b37da4093a7911bb8ce18"
+    },
+    "4868-original-log.txt": {
+      "bytes": 188941,
+      "sha256": "2fb3d80f6773054aa869b946ce4c0b4bc0bcc59451a83ea94fda3cc767d7bbdc",
+      "computed_git_blob": "521d31185fd9c322c90b5f16151b44800938c5be"
+    },
+    "4844-original-windows-job.log": {
+      "bytes": 600398,
+      "sha256": "a30a35effe2fe56d997ef570b27f3c81b358b33fb13401e3977ed6277bec0bb1",
+      "computed_git_blob": "8c4e278f4cafda25687b939a058286d828854c8b"
+    },
+    "4847-original-scoped-job.log": {
+      "bytes": 32494,
+      "sha256": "6eb1394b30bdf8eacce2cbf205a6e391cca53f8f1da4a3882166b00fcead9c70",
+      "computed_git_blob": "334eb9b62070a3e3a6c8cffaeb8ccaf776e2faf2"
+    }
+  },
+  "scope_limits": [
+    "Open updated-desc listing cannot detect already closed PRs since the cutoff.",
+    "Two non-atomic reads show the same 49-number prefix but moving heads; this is not an instantaneous repository snapshot.",
+    "Historical 1103 open PRs and 5193 branches remain historical, not current totals.",
+    "All original 23 blocker exit conditions, statuses and closure classes remain unchanged.",
+    "No native/Cargo/test invocation, ref mutation, CI retry/dispatch/cancellation or external message was performed.",
+    "Raw historical API/donor paths are kept losslessly in the transport archive; they are not asserted to exist in the current product tree."
+  ]
+}

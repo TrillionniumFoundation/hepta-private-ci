@@ -1,0 +1,327 @@
+{
+  "commands_repeated": false,
+  "exact_original_ignored_cases": [
+    [
+      "codex-app-server",
+      "shutdown_signals::tests::retained_signal_child",
+      true
+    ],
+    [
+      "codex-app-server-protocol",
+      "schema_fixtures_tests::write_schema_fixtures_from_env",
+      true
+    ],
+    [
+      "codex-app-server::all",
+      "suite::v2::review::review_start_exec_approval_item_id_matches_command_execution_item",
+      true
+    ],
+    [
+      "codex-core",
+      "tools::handlers::multi_agents::tests::spawn_agent_reapplies_runtime_sandbox_after_role_config",
+      true
+    ],
+    [
+      "codex-core::all",
+      "suite::code_mode_elicitation::code_mode_holds_yielded_result_during_permission_request",
+      true
+    ],
+    [
+      "codex-core::all",
+      "suite::compact::manual_compact_non_context_failure_retries_then_emits_task_error",
+      true
+    ],
+    [
+      "codex-core::all",
+      "suite::compact_remote::remote_compact_persists_replacement_history_in_rollout",
+      true
+    ],
+    [
+      "codex-core::all",
+      "suite::live_cli::live_create_file_hello_txt",
+      true
+    ],
+    [
+      "codex-core::all",
+      "suite::live_cli::live_print_working_directory",
+      true
+    ],
+    [
+      "codex-core::all",
+      "suite::pending_input::injected_user_input_triggers_follow_up_request_with_deltas",
+      true
+    ],
+    [
+      "codex-core::all",
+      "suite::shell_snapshot::macos_unified_exec_uses_shell_snapshot",
+      true
+    ],
+    [
+      "codex-core::all",
+      "suite::shell_snapshot::windows_unified_exec_uses_shell_snapshot",
+      true
+    ],
+    [
+      "codex-exec-server::exec_process",
+      "exec_process_signal_terminates_on_windows::test_case_1_local",
+      true
+    ],
+    [
+      "codex-exec-server::exec_process",
+      "exec_process_signal_terminates_on_windows::test_case_2_remote",
+      true
+    ],
+    [
+      "codex-exec-server::exec_process",
+      "remote_windows_sandbox_process_accepts_process_write",
+      true
+    ],
+    [
+      "codex-hepta-agentd",
+      "runtime::hos2_recovery_tests::notes_tests::gui_tests::notes_actual_ui_original_owner_roundtrip",
+      true
+    ],
+    [
+      "codex-hepta-agentd::cognitive_product_e2e",
+      "real_agentd_external_gpt53_spark_read_only_smoke",
+      true
+    ],
+    [
+      "codex-hepta-agentd::cognitive_product_e2e",
+      "real_agentd_loopback_provider_read_only_smoke",
+      true
+    ],
+    [
+      "codex-hepta-agentd::cognitive_product_e2e",
+      "real_agentd_remember_recall_correct_and_forget_revalidate_physical_sends",
+      true
+    ],
+    [
+      "codex-hepta-agentd::cognitive_product_e2e",
+      "two_real_agentd_app_servers_never_cross_recall",
+      true
+    ],
+    [
+      "codex-hepta-agentd::optional_module_restart",
+      "optional_module_process_entrypoint",
+      true
+    ],
+    [
+      "codex-hepta-agentd::terminal_cell_owner",
+      "durable_owner_history_and_concurrent_training_profile",
+      true
+    ],
+    [
+      "codex-hepta-evidence",
+      "authbus_outbox_tests::crash_delivery_child",
+      true
+    ],
+    [
+      "codex-hepta-infer-core",
+      "durable_control::history_tests::bounded_single_writer_history_emits_append_update_recovery_memory_and_disk_curve",
+      true
+    ],
+    [
+      "codex-hepta-learning-artifacts",
+      "owner_host::tests::owner_host_process_fault_worker",
+      true
+    ],
+    [
+      "codex-hepta-learning-ledger",
+      "production::tests::growth::signed_product_history_curve_append_lookup_reopen_and_exact_retry",
+      true
+    ],
+    [
+      "codex-hepta-memory",
+      "cognitive_kg_benchmark_tests::qualification_knowledge_graph_capacity_receipt",
+      true
+    ],
+    [
+      "codex-hepta-memory",
+      "cognitive_retrieval::observation::tests::target_host_owner_retrieval_reports_latency_percentiles",
+      true
+    ],
+    [
+      "codex-hepta-memory",
+      "cognitive_store_tests::kg_projection_crash_child",
+      true
+    ],
+    [
+      "codex-hepta-memory",
+      "cognitive_store_tests::qualification_kg_projection_crash_windows_restore_exact_predecessor",
+      true
+    ],
+    [
+      "codex-hepta-memory",
+      "local_compact_executor_tests::host_restart_reopen_replay_process_soak",
+      true
+    ],
+    [
+      "codex-hepta-memory",
+      "local_compact_executor_tests::sqlite_1000_operation_seeded_reopen_replay_stress",
+      true
+    ],
+    [
+      "codex-hepta-memory",
+      "local_lease_outbox_tests::qualification_durable_writer_crash_reopen_probe",
+      true
+    ],
+    [
+      "codex-hepta-memory",
+      "production_writer::objective_sender::crash_tests::objective_sender_subprocess_fixture",
+      true
+    ],
+    [
+      "codex-hepta-memory-retrieval",
+      "engram::tests::target_host_hnmf_reports_latency_percentiles_at_candidate_ceiling",
+      true
+    ],
+    [
+      "codex-hepta-memory-retrieval",
+      "engram::tests::target_host_hnmf_validates_full_structural_ceiling",
+      true
+    ],
+    [
+      "codex-hepta-objective",
+      "feasibility::tests::measurement_conflict_extraction_v1",
+      true
+    ],
+    [
+      "codex-hepta-objective",
+      "objective_admission::tests::measurement_ordinary_admission_compile_v1",
+      true
+    ],
+    [
+      "codex-hepta-operations::destination_recovery_binding",
+      "destination_crash_worker",
+      true
+    ],
+    [
+      "codex-hepta-shadow-qualification::durable_learning_roundtrip",
+      "process::worker",
+      true
+    ],
+    [
+      "codex-hepta-supervisor::paired_process_product",
+      "paired_child_process",
+      true
+    ],
+    [
+      "codex-linux-sandbox",
+      "parent_lifecycle::tests::owned_liveness_scenario",
+      true
+    ],
+    [
+      "codex-otel",
+      "provider::shutdown_tests::bounded_shutdown_survives_worker_guard_page_failure_child",
+      true
+    ],
+    [
+      "codex-rmcp-client",
+      "oauth::store_lock::tests::store_lock_is_released_when_holder_process_exits_child",
+      true
+    ],
+    [
+      "codex-rmcp-client::mcp_2026_stdio_discovery",
+      "local_stdio_inherits_ca_certificate_variables_child",
+      true
+    ],
+    [
+      "codex-rmcp-client::streamable_http_oauth_startup",
+      "expired_unrefreshable_startup_child",
+      true
+    ],
+    [
+      "codex-rmcp-client::streamable_http_oauth_startup",
+      "issuer_startup_child",
+      true
+    ],
+    [
+      "codex-rmcp-client::streamable_http_oauth_startup",
+      "oauth_startup_child",
+      true
+    ],
+    [
+      "codex-rmcp-client::streamable_http_oauth_startup",
+      "persisted_credentials_auth_status_child",
+      true
+    ],
+    [
+      "codex-rmcp-client::streamable_http_oauth_store_pinning",
+      "auto_store_remains_pinned_across_session_recovery_child",
+      true
+    ],
+    [
+      "codex-tui",
+      "bottom_pane::textarea::tests::altgr_ctrl_alt_char_inserts_literal",
+      true
+    ],
+    [
+      "codex-tui",
+      "tui::startup_tests::startup_typeahead_pty_child",
+      true
+    ],
+    [
+      "codex-tui::all",
+      "suite::resize_reflow::tmux_repeated_resizes_do_not_push_composer_down",
+      true
+    ],
+    [
+      "codex-tui::all",
+      "suite::resize_reflow::tmux_scrolled_composer_resize_preserves_visible_draft_text",
+      true
+    ],
+    [
+      "codex-tui::all",
+      "suite::resize_reflow::tmux_split_preserves_fresh_session_composer_row_after_resize_reflow",
+      true
+    ],
+    [
+      "codex-tui::all",
+      "suite::resize_reflow::tmux_width_resize_restore_keeps_visible_content_anchored",
+      true
+    ],
+    [
+      "codex-utils-absolute-path",
+      "tests::from_absolute_path_with_removed_current_dir_child",
+      true
+    ]
+  ],
+  "execute": true,
+  "host_alias": "ai395",
+  "idempotency_key": "hepta-ai395-P4-readonly-completion-20261105-v4",
+  "ignored_reference": {
+    "bytes": 2846923,
+    "current_analysis": {
+      "bytes": 16947,
+      "git_blob": "dbccec3bf33c75f04aa2691f1a4279cc49a830ab",
+      "sha256": "cc870cbfd1423890713f212d31a04659706922d85bd8287e4bdea2611560c33f"
+    },
+    "git_blob": "6215be8be0979a4af011c64de4043c934aeee81a",
+    "local_path": "ci-audit/recovered-20261105/full-fb9-complete-archive/decoded-verified-v1/full-workspace-catalog.stdout",
+    "scope": "Exact original full catalog; all19563 (binary_id,name,ignored) Counter directly equals current ai395 catalog.",
+    "sha256": "37aa98bace85dfa81d9c729820de24912d913bd85c3a10b60243f4dba67e4001",
+    "source_tree": "fb9e131272f7e7a138d6c0d1af2b048b9a6ab7ff"
+  },
+  "new_owned_evidence": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-readonly-completion-v4",
+  "prior_request": {
+    "bytes": 74627,
+    "git_blob": "f684b5198860575962678fea3e17d8927e4e66b3",
+    "sha256": "d86ae86014c4f930e3c02f49529cac198fedc9f8a12158fedc6eb1403d9959ba"
+  },
+  "prior_terminal": {
+    "bytes": 33448,
+    "git_blob": "e270198283e5b893b343e2a1474e543faa49901d",
+    "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-libcap-continuation-v3/terminal.json",
+    "sha256": "6eec39a2f566f2949b790db088bda2fd8aac30e32f7d0fc8fb1ac9875d3d1829"
+  },
+  "root_authorization": "Root explicitly authorized readonly parsing and identity completion after exact frozen delta; no repeat of three successful commands, no B source/tests. Original P0-P4 root guard remains pinned.",
+  "root_execution_guard_blob": "967ef896907e698a07e8028e049a47e934570b1d",
+  "schema": "hepta-P4-readonly-completion-request-v4",
+  "scope": "readonly-P4-v3-completion",
+  "source_commit": "20fd174ded4e5ce01bda34e4f6d1d74803301f49",
+  "source_tree": "4a3374e22e16ce5c764288ad018cd9affadf94ea",
+  "test_qualification": false,
+  "tests_executed": false,
+  "timeout_seconds": 1800
+}

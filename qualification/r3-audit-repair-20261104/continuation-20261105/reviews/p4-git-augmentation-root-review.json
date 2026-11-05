@@ -1,0 +1,35 @@
+{
+  "schema": "hepta-root-P4-Git-tool-augmentation-review-v1",
+  "at": "2026-11-05T10:13:18.982237+00:00",
+  "verdict": "ACCEPT_EXACT_PARENT_PINNED_GIT_TOOL_ADDITION",
+  "parent": {
+    "bytes": 265463,
+    "sha256": "16022204ade97bd6cdc78176e5dff2b8c19c536180aa9c5e7a5a219ddda7140f",
+    "git_blob": "31053a6179c016a9b5569cc6fb301e19aeb5c633"
+  },
+  "augmented": {
+    "bytes": 268075,
+    "sha256": "117ce27929135acfcf8445f23a53842271cad721ef22cf4aaec7024dac3a386a",
+    "git_blob": "5401ad25c5da11a6f37dc1d93a755070f927a396"
+  },
+  "terminal": {
+    "bytes": 4390,
+    "sha256": "171153fd65793af69f066b35528dc977d819a7f18f5689d727c39409a6830b0c",
+    "git_blob": "48e72c91d33fba36b8549f77c1066eb40cfa06bb"
+  },
+  "verified": {
+    "all_parent_fields_other_than_tools_identical": true,
+    "original_seven_tools_byte_equivalent_objects": true,
+    "exactly_one_current_git_identity_added": true,
+    "actual_version_command_exit_zero_and_original_output_equal": true,
+    "two_full_guard_bytes_equal_and_source_index_locks_unchanged": true,
+    "three_build_list_commands_not_repeated": true,
+    "current_observation_not_relabelled_as_original_P4_prebuild_capture": true
+  },
+  "scope_limits": [
+    "No native tests or B source executed.",
+    "Actual current tool physical identity is native evidence; cloud checks complete records and parent identity."
+  ],
+  "tests_executed": false,
+  "test_qualification": false
+}

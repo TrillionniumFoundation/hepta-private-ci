@@ -1,0 +1,1938 @@
+{
+  "schema": "hepta-continuation-evidence-index-v4",
+  "recorded_utc": "2026-11-05T10:55:26.334541+00:00",
+  "base_audit_commit": "5eb42c6a1e574d323e4ec0dfc209744674fa1387",
+  "base_audit_tree": "4f88b62ab745bc8b997fd112af23de9bc58518f7",
+  "product_head": "5b6331250ff459033bd44d1a95daec70131277cc",
+  "product_tree": "b26598d0d97d8d51e723bb5582137315f2174d35",
+  "scope": "Evidence and documentation only. No product source/base/ref or original test gate change.",
+  "progress_snapshot": "Foundation first4 native PASS and launch originals; later native phases retained separately. CI 19 runs/44 jobs as observed 10:41:39 with complete terminal pages through10:45:00.",
+  "original_23_exit_conditions_statuses_classes_unchanged": true,
+  "blockers": {
+    "CLOSED_SCOPED": 8,
+    "OPEN": 14,
+    "SCIENTIFIC_HOLD": 1
+  },
+  "all_blockers_closed": false,
+  "entry_count_excluding_this_index": 212,
+  "total_registered_file_bytes_excluding_this_index": 17050556,
+  "items": [
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/CI_STATE_V4_20261105.zh-CN.md",
+      "mode": "100644",
+      "blob": "a42de2c0ee8f07634692b561fd7e57d6acea7c72",
+      "bytes": 3045,
+      "sha256": "5cdb6d6b596a678be4300a0441a5dcde7d4dce11d08209f9fb9579cea5e6eb96",
+      "role": "new_head_CI_full_original_or_qualified_projection",
+      "object_verified_by": "pinned delegated actual create and GET map; local identity rechecked"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/CONTINUATION_PROGRESS_V3.zh-CN.md",
+      "mode": "100644",
+      "blob": "aa4166034e7e5f0b8a6b56132a6eb8fa68a8eae5",
+      "bytes": 18073,
+      "sha256": "3cb32766d3ba714be91c3f9773480d27d63bbba2287f39765e3d447104202c88",
+      "role": "human progress or original blocker ledger; exact original closure conditions preserved",
+      "object_verified_by": "root actual create and full GET byte equality"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/LATEST.zh-CN.md",
+      "mode": "100644",
+      "blob": "03250275a664d5dc62fea1237e2cd0755247fd68",
+      "bytes": 4145,
+      "sha256": "199bc8969f0e0cff91c89ea918e506ba3fe8761ee4e7ce9c4959bcb00bb777ad",
+      "role": "human progress or original blocker ledger; exact original closure conditions preserved",
+      "object_verified_by": "root actual create and full GET byte equality"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/PR_INCREMENT_20261105_1014.zh-CN.md",
+      "mode": "100644",
+      "blob": "b057360febcb8123f4d17931cc87e63ca81ab50b",
+      "bytes": 3525,
+      "sha256": "fe53a872f5a68d2001720b888b5631f5177a5a89778f3fa9caee0f2bcd1d08bb",
+      "role": "full original PR evidence or fixed-source projection",
+      "object_verified_by": "pinned delegated actual create and GET map; local identity rechecked"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/b16-runner-v7/README.md",
+      "mode": "100644",
+      "blob": "afc9aa018f4fdf6811ca983a69dfd2cbbb5db08d",
+      "bytes": 3528,
+      "sha256": "e1a00f59c0544a2e7a1279fa12330eadd313a96be5418f27b806f7cf2d80ce5f",
+      "role": "frozen_V7_runtime_or_complete_verification",
+      "object_verified_by": "pinned delegated actual create and GET map; local identity rechecked"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/b16-runner-v7/build_manifest.py",
+      "mode": "100644",
+      "blob": "6bf535ae51c90de19a63e1a93ed896a73f563f90",
+      "bytes": 5739,
+      "sha256": "39eed880e9aaf6ea06a110e40d8aeb8628740e656fb12219c6bb59004cee14aa",
+      "role": "frozen_V7_runtime_or_complete_verification",
+      "object_verified_by": "pinned delegated actual create and GET map; local identity rechecked"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/b16-runner-v7/cloud-verification-v1/v6-original-catalog-rejection.status.json",
+      "mode": "100644",
+      "blob": "2a1b5e1c627d216eabb0cc5f7f6e0298accd3d54",
+      "bytes": 1220,
+      "sha256": "0b278b9079ae3a9fe1893ed089cd681d5886ab8b209e0f69e98b6dab5787ebbb",
+      "role": "frozen_V7_runtime_or_complete_verification",
+      "object_verified_by": "pinned delegated actual create and GET map; local identity rechecked"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/b16-runner-v7/cloud-verification-v1/v6-original-catalog-rejection.stderr",
+      "mode": "100644",
+      "blob": "f0dfad645f25cc9016cc59cb5c54231331989a0d",
+      "bytes": 1653,
+      "sha256": "ce788128ad92b3520c5f2f514e906166409e0d393665a6aa05a4fcde55263c4a",
+      "role": "frozen_V7_runtime_or_complete_verification",
+      "object_verified_by": "pinned delegated actual create and GET map; local identity rechecked"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/b16-runner-v7/cloud-verification-v1/v6-original-catalog-rejection.stdout",
+      "mode": "100644",
+      "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "role": "frozen_V7_runtime_or_complete_verification",
+      "object_verified_by": "already present in verified prior audit tree"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/b16-runner-v7/cloud-verification-v1/v7-original-and-tamper-controls.status.json",
+      "mode": "100644",
+      "blob": "0b33c5b4df9c01365361af304275c640e38dd9e4",
+      "bytes": 1097,
+      "sha256": "0d7d4e08381f27794fc117d5d1200085b9f19e92930ad42ee370eb2711645bf7",
+      "role": "frozen_V7_runtime_or_complete_verification",
+      "object_verified_by": "pinned delegated actual create and GET map; local identity rechecked"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/b16-runner-v7/cloud-verification-v1/v7-original-and-tamper-controls.stderr",
+      "mode": "100644",
+      "blob": "2d8fdaa35bd94cbb65142113aaa455d2fec6bee3",
+      "bytes": 1202,
+      "sha256": "d8f2658525f0285b7b0eff767e5e8b6634a3c20e813a205d0188bfe9b36709be",
+      "role": "frozen_V7_runtime_or_complete_verification",
+      "object_verified_by": "pinned delegated actual create and GET map; local identity rechecked"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/b16-runner-v7/cloud-verification-v1/v7-original-and-tamper-controls.stdout",
+      "mode": "100644",
+      "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "role": "frozen_V7_runtime_or_complete_verification",
+      "object_verified_by": "already present in verified prior audit tree"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/b16-runner-v7/cloud-verification-v1/verification.json",
+      "mode": "100644",
+      "blob": "5883a3406f5d44dd06aeb7f742386c28931b63d1",
+      "bytes": 4291,
+      "sha256": "0746ec279bd09cb5e251b1921f89ddca0774ccd5938a391041d4ec6535d8d0c8",
+      "role": "frozen_V7_runtime_or_complete_verification",
+      "object_verified_by": "pinned delegated actual create and GET map; local identity rechecked"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/b16-runner-v7/freeze_v7.py",
+      "mode": "100644",
+      "blob": "9ad8ed8783498bbb75943468321aaf486ffcf591",
+      "bytes": 7090,
+      "sha256": "5aa0967d366e00eb49485bf34dfb5e0892153b25ce41e28fb999ab6e61996b7e",
+      "role": "frozen_V7_runtime_or_complete_verification",
+      "object_verified_by": "pinned delegated actual create and GET map; local identity rechecked"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/b16-runner-v7/github-readback-map-v7.json",
+      "mode": "100644",
+      "blob": "4bd55881db33571d09f40bcfeb7a974245b4dfd2",
+      "bytes": 35102,
+      "sha256": "01554ef65b5880bafb903f33dbea106a4f81bd131584a1ad304cf86e120c0fb8",
+      "role": "actual_Git_object_readback_map",
+      "object_verified_by": "actual create and GET receipt in current session"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/b16-runner-v7/prepare_v7.py",
+      "mode": "100644",
+      "blob": "4b56267d8d1876ec8e3494a46a2746110ee0f1ba",
+      "bytes": 8988,
+      "sha256": "b8a0e990d9be51a146d5441f976e65f8fbab42727e127f53fe76020b05e1b84b",
+      "role": "frozen_V7_runtime_or_complete_verification",
+      "object_verified_by": "pinned delegated actual create and GET map; local identity rechecked"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/b16-runner-v7/preservation-verification.json",
+      "mode": "100644",
+      "blob": "a5bcaf7db93a8572f08d184af84e971a241dbcdc",
+      "bytes": 12237,
+      "sha256": "b3a2d0903da262da9347abd13f8d9776cf3909a54d8460104e7d0a0c808d8431",
+      "role": "frozen_V7_runtime_or_complete_verification",
+      "object_verified_by": "pinned delegated actual create and GET map; local identity rechecked"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/b16-runner-v7/review-manifest-v7.json",
+      "mode": "100644",
+      "blob": "88cc1adc9d9ca112b3036e3137a49c4996d1de08",
+      "bytes": 12226,
+      "sha256": "6778a48bce1b277ae048c315eecfe495aec24d2b9a96a42e41198d38b1fdf9b3",
+      "role": "frozen_V7_runtime_or_complete_verification",
+      "object_verified_by": "pinned delegated actual create and GET map; local identity rechecked"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/b16-runner-v7/source-map-v7.json",
+      "mode": "100644",
+      "blob": "ecb2fbd8fe839a37aa5efb7c7b72869c774500fa",
+      "bytes": 10608,
+      "sha256": "3e008147f27eaab391bbf515da905460efa9a6db492fc2510015568876180bb2",
+      "role": "frozen_V7_runtime_or_complete_verification",
+      "object_verified_by": "pinned delegated actual create and GET map; local identity rechecked"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/b16-runner-v7/v6-to-v7.delta.patch",
+      "mode": "100644",
+      "blob": "32998620ab63c6540e560c1bbf18ba14c2e9683e",
+      "bytes": 383445,
+      "sha256": "836854ee1d13482ffc0acf08f1960b2bc86ab29ca09847b9d487d22257f2f58f",
+      "role": "frozen_V7_runtime_or_complete_verification",
+      "object_verified_by": "pinned delegated actual create and GET map; local identity rechecked"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/b16-runner-v7/v7-candidate/b16_build_only.py",
+      "mode": "100644",
+      "blob": "6a49c3e2f37d7f4cd42f45d7e37cca8c16669f12",
+      "bytes": 14919,
+      "sha256": "c19d6a25664a46c5736803dc60807a165bccbd57c1d04a6621f7a11eca7b4a0d",
+      "role": "frozen_V7_runtime_or_complete_verification",
+      "object_verified_by": "pinned delegated actual create and GET map; local identity rechecked"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/b16-runner-v7/v7-candidate/b16_capacity.py",
+      "mode": "100644",
+      "blob": "4966c059c39ba5f7342feb40f88fda906607a32d",
+      "bytes": 6342,
+      "sha256": "1581bdda147f4a74bd41c421cd267686ee75c42619ce37eddc5e459e41a0174d",
+      "role": "frozen_V7_runtime_or_complete_verification",
+      "object_verified_by": "already present in verified prior audit tree"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/b16-runner-v7/v7-candidate/b16_family.py",
+      "mode": "100644",
+      "blob": "cd88578b832200f3fc96435f490440742dc76528",
+      "bytes": 7614,
+      "sha256": "6d18326d3dd6f539e85585c23cf682ae1c6cbfc1ef3e44c25fe750d37e006f8e",
+      "role": "frozen_V7_runtime_or_complete_verification",
+      "object_verified_by": "already present in verified prior audit tree"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/b16-runner-v7/v7-candidate/b16_guard.py",
+      "mode": "100644",
+      "blob": "a9a38d14c220be4c44336a6fefac08a168e52dcf",
+      "bytes": 10896,
+      "sha256": "d0ba5a5746711a322438200498786044c8d561d9a256f7280a2c4791c6bd0389",
+      "role": "frozen_V7_runtime_or_complete_verification",
+      "object_verified_by": "already present in verified prior audit tree"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/b16-runner-v7/v7-candidate/b16_locks.py",
+      "mode": "100644",
+      "blob": "1a6583b6226af4d20bb336b778476dedb02d59f4",
+      "bytes": 13015,
+      "sha256": "5edb44c7e4a6ce63981adc4681fead1987ddc19389e7d0659c9e4d3e13d8514e",
+      "role": "frozen_V7_runtime_or_complete_verification",
+      "object_verified_by": "already present in verified prior audit tree"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/b16-runner-v7/v7-candidate/b16_native.py",
+      "mode": "100644",
+      "blob": "7596d6a32f4066cc72336767bcc71313d68675f8",
+      "bytes": 17595,
+      "sha256": "10620e1688ba208db22e22b6ecd727657b18967ca0d749be8ff0fd348fd1c92d",
+      "role": "frozen_V7_runtime_or_complete_verification",
+      "object_verified_by": "already present in verified prior audit tree"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/b16-runner-v7/v7-candidate/b16_oracles.py",
+      "mode": "100644",
+      "blob": "1a6efff50846f5c04bb5ea6def203ada42342050",
+      "bytes": 7483,
+      "sha256": "5928528add9ecb0f6a1681057a26954d9c607fb14c129293fa4bc6eac4e07e85",
+      "role": "frozen_V7_runtime_or_complete_verification",
+      "object_verified_by": "already present in verified prior audit tree"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/b16-runner-v7/v7-candidate/b16_runner.py",
+      "mode": "100644",
+      "blob": "4c8c2477189b84c6fe7b19c09fd27255bc7d1b66",
+      "bytes": 16005,
+      "sha256": "f419dfa8e4cd98fc729c8b9851d8ea8ae3413a0fb1906358f8556920200b6944",
+      "role": "frozen_V7_runtime_or_complete_verification",
+      "object_verified_by": "already present in verified prior audit tree"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/b16-runner-v7/v7-candidate/binding-template-UNBOUND.json",
+      "mode": "100644",
+      "blob": "936af20c909732c59d9e277771f16a76d853b929",
+      "bytes": 3281,
+      "sha256": "86b89a8c59d048f35bfd377041022abcd95083aae505fd79a6e99b32df893116",
+      "role": "frozen_V7_runtime_or_complete_verification",
+      "object_verified_by": "pinned delegated actual create and GET map; local identity rechecked"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/b16-runner-v7/v7-candidate/epoch-checkpoint.json",
+      "mode": "100644",
+      "blob": "7fb7a81cacd734e395f63d93938f9f4c94ba3468",
+      "bytes": 3938,
+      "sha256": "0a9d2e32fe5aa16ef6dd490383fd4f7cc6ef10400a5a94a7bd5e97719b8780f8",
+      "role": "frozen_V7_runtime_or_complete_verification",
+      "object_verified_by": "already present in verified prior audit tree"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/b16-runner-v7/v7-candidate/epoch-driver.json",
+      "mode": "100644",
+      "blob": "5bd1014173766cb3599439e6a202514916286a5e",
+      "bytes": 4348,
+      "sha256": "d28c2e9faa1cc0e3272d6aba88bfc3a49b062a484b6df530cca2ef2cf95a189f",
+      "role": "frozen_V7_runtime_or_complete_verification",
+      "object_verified_by": "already present in verified prior audit tree"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/b16-runner-v7/v7-candidate/epoch-foundation.json",
+      "mode": "100644",
+      "blob": "6cc71ef831549fbe54f26c9bbe080e53effc59fa",
+      "bytes": 11472,
+      "sha256": "a8ac8886ec02230d5004dc8b608e0a33c0b89d5fdfabc1032569a13ee812fabd",
+      "role": "frozen_V7_runtime_or_complete_verification",
+      "object_verified_by": "already present in verified prior audit tree"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/b16-runner-v7/v7-candidate/epoch-owning.json",
+      "mode": "100644",
+      "blob": "ce08a93c32f41135139b858d3bc22c6b224fec12",
+      "bytes": 265,
+      "sha256": "87c7e1c517d3d601884a7555a7c677cec7490743dd2b5f7c0f1e2c45131efbe5",
+      "role": "frozen_V7_runtime_or_complete_verification",
+      "object_verified_by": "already present in verified prior audit tree"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/b16-runner-v7/v7-candidate/epoch-pool.json",
+      "mode": "100644",
+      "blob": "6d686ead86ef2c83f3b32f8bbd1b73e662d26093",
+      "bytes": 3807,
+      "sha256": "19e1a06c6c97e20d1f1ef097222f6f7c2877850502223f16ed939848e228bf64",
+      "role": "frozen_V7_runtime_or_complete_verification",
+      "object_verified_by": "already present in verified prior audit tree"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/b16-runner-v7/v7-candidate/foundation-binding-UNBOUND.json",
+      "mode": "100644",
+      "blob": "35ba6e68663d02f4c57379b1034711ddfc4b1977",
+      "bytes": 3334,
+      "sha256": "d47141faabd521a4c7fbee473baf2561d345cee6d8280a7baacf77ea82fcee14",
+      "role": "frozen_V7_runtime_or_complete_verification",
+      "object_verified_by": "pinned delegated actual create and GET map; local identity rechecked"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/b16-runner-v7/v7-candidate/foundation-build-only-binding-UNBOUND.json",
+      "mode": "100644",
+      "blob": "69b4425169c4593493655175bcab804828ddcfca",
+      "bytes": 3836,
+      "sha256": "1df2f405e10cf8978ddd925bae65a7dc02bfcc5d2cf5c26163a211c3625b2ea8",
+      "role": "frozen_V7_runtime_or_complete_verification",
+      "object_verified_by": "pinned delegated actual create and GET map; local identity rechecked"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/b16-runner-v7/v7-candidate/foundation-output-family.json",
+      "mode": "100644",
+      "blob": "d3bfb3b487ceede8c923d1714fdadf87a06ed441",
+      "bytes": 142656,
+      "sha256": "5f63fcb507e899cc19df88e86efe997a34929edd5f45c83e7f7197987149a204",
+      "role": "frozen_V7_runtime_or_complete_verification",
+      "object_verified_by": "already present in verified prior audit tree"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/b16-runner-v7/v7-candidate/observed-nextest-timeout-testcase.xml",
+      "mode": "100644",
+      "blob": "e3cd2d7df83b2d5abebd96840722edcdd34d32f8",
+      "bytes": 390,
+      "sha256": "fabd54568dd293a814449bc59027d1f5ecd6ee96a806b68b691ae2bb170a57df",
+      "role": "frozen_V7_runtime_or_complete_verification",
+      "object_verified_by": "already present in verified prior audit tree"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/b16-runner-v7/v7-candidate/observed-original-A-catalog.json",
+      "mode": "100644",
+      "blob": "5f4d2b2b82a3d1c0043ec4735fe4e2d2864ceb15",
+      "bytes": 369514,
+      "sha256": "6f0a4f7566621b451701a2612d068f194fc6a1b3aa1457722381d3d53c8a0690",
+      "role": "frozen_V7_runtime_or_complete_verification",
+      "object_verified_by": "pinned delegated actual create and GET map; local identity rechecked"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/b16-runner-v7/v7-candidate/payload-manifest.json",
+      "mode": "100644",
+      "blob": "64db580beabe2642eb8611184dac4fc686fe34e1",
+      "bytes": 62667,
+      "sha256": "a34cd6c5400deff4fedfffcb1f4f170eecabbb6bbfab1916829ab3911e986237",
+      "role": "frozen_V7_runtime_or_complete_verification",
+      "object_verified_by": "already present in verified prior audit tree"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/b16-runner-v7/v7-candidate/runner-integrity.json",
+      "mode": "100644",
+      "blob": "18f27fbb488777d621b4f37aa0cf70956cdbe7d9",
+      "bytes": 5679,
+      "sha256": "96bbff3180620d841b90b65ea1e159d04931c47fd2de1c270ba0f6c059ac5202",
+      "role": "frozen_V7_runtime_or_complete_verification",
+      "object_verified_by": "pinned delegated actual create and GET map; local identity rechecked"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/b16-runner-v7/v7-candidate/source-payload-00.json",
+      "mode": "100644",
+      "blob": "8e5ed16eca037384b17830f3625489ddf69f7d7a",
+      "bytes": 350291,
+      "sha256": "44299f93d8cfc2cd6a264a1df985052d8c7c4eb16e62c9bd8614b70cb9564f78",
+      "role": "frozen_V7_runtime_or_complete_verification",
+      "object_verified_by": "already present in verified prior audit tree"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/b16-runner-v7/v7-candidate/source-payload-01.json",
+      "mode": "100644",
+      "blob": "e621574b496731997af604b8e4b138851c8be3d0",
+      "bytes": 333825,
+      "sha256": "85adc1e88702b4fb8c9d417a936d665519fa56386cb434bbc6ef55d5f9cdf07d",
+      "role": "frozen_V7_runtime_or_complete_verification",
+      "object_verified_by": "already present in verified prior audit tree"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/b16-runner-v7/v7-candidate/source-payload-02.json",
+      "mode": "100644",
+      "blob": "3bb4615120935560dd4bff326795b68e03cfb31a",
+      "bytes": 342693,
+      "sha256": "563074644cce7c3e63f92e5b5e346e09d24ff4ca03e90cea4ca1b001347186ce",
+      "role": "frozen_V7_runtime_or_complete_verification",
+      "object_verified_by": "already present in verified prior audit tree"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/b16-runner-v7/v7-candidate/source-payload-03.json",
+      "mode": "100644",
+      "blob": "819cfab8bf8a410d944e7d2c8c185d07a1eea886",
+      "bytes": 345962,
+      "sha256": "8a633ff6916a8b543e8aca196c54a41cc180d8f68c2cd2a26f2fe0e87ca57f55",
+      "role": "frozen_V7_runtime_or_complete_verification",
+      "object_verified_by": "already present in verified prior audit tree"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/b16-runner-v7/v7-candidate/source-payload-04.json",
+      "mode": "100644",
+      "blob": "e5a287d7ae1f8a0c77cec32ce1113a48e94f8daa",
+      "bytes": 135857,
+      "sha256": "5d43327e7379cca4e6502973efd7ba6a3f67fb464c3bf41ebbaf1f88c6132bba",
+      "role": "frozen_V7_runtime_or_complete_verification",
+      "object_verified_by": "already present in verified prior audit tree"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/b16-runner-v7/v7-candidate/test_build_only_guard.py",
+      "mode": "100644",
+      "blob": "00069847aa5a25e760fee57c3c1a9cfa6c092ae5",
+      "bytes": 15667,
+      "sha256": "6563bc785ccd11d3c44b45ca2d8cf3df4baa807599a5a692826c359c463409a8",
+      "role": "frozen_V7_runtime_or_complete_verification",
+      "object_verified_by": "pinned delegated actual create and GET map; local identity rechecked"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/b16-runner-v7/v7-candidate/test_family_guard.py",
+      "mode": "100644",
+      "blob": "f0dc2e9e3390fe83dd41a40b964062fc8f95789e",
+      "bytes": 8509,
+      "sha256": "3c4ecffcf8c7bc4882c7a4f3455f044cfd226db72fe15559cf7b583d10ba7eb9",
+      "role": "frozen_V7_runtime_or_complete_verification",
+      "object_verified_by": "already present in verified prior audit tree"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/b16-runner-v7/v7-candidate/test_runner_guards.py",
+      "mode": "100644",
+      "blob": "378fe4b966d86cced0c89303c34c6ad7bf3b0d57",
+      "bytes": 15658,
+      "sha256": "d83e8391dc64aacd2daa1bddb2ec104796f6e30f7054796ef5144b7265b67128",
+      "role": "frozen_V7_runtime_or_complete_verification",
+      "object_verified_by": "already present in verified prior audit tree"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/b16-runner-v7/verify_v7.py",
+      "mode": "100644",
+      "blob": "a455c576247e7d41f2bb374ab8640c445de05c28",
+      "bytes": 5652,
+      "sha256": "1a3e585c4d03b38ab40c10707011a374915939665c2ce80a1b38e3e311276b98",
+      "role": "frozen_V7_runtime_or_complete_verification",
+      "object_verified_by": "pinned delegated actual create and GET map; local identity rechecked"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/continuation-blocker-progress-v2.json",
+      "mode": "100644",
+      "blob": "a889fad30122d932516167ff5ecd0d3aed47882d",
+      "bytes": 26650,
+      "sha256": "c54b1d045f57c7e0d7dfba5495fd848bd975160822cf6fa7834290c83e237772",
+      "role": "human progress or original blocker ledger; exact original closure conditions preserved",
+      "object_verified_by": "root actual create and full GET byte equality"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/5b633-ci-state-v4/current-ci-observation.json",
+      "mode": "100644",
+      "blob": "caa4b8940e59ac9b7440c431d1b208d61e433b37",
+      "bytes": 72197,
+      "sha256": "e32697934a085ce2982b47c8c3d780e151e85f0242d338b4917cd019baa897d6",
+      "role": "new_head_CI_full_original_or_qualified_projection",
+      "object_verified_by": "pinned delegated actual create and GET map; local identity rechecked"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/5b633-ci-state-v4/git-readback.json",
+      "mode": "100644",
+      "blob": "6ab8696f19c3382e69e8f200fbfb993739fc2b86",
+      "bytes": 7328,
+      "sha256": "6f39c5eb5ac00e4811a5dad81da27dc0518d7cb16a52f37eb993b9f5e798f0f0",
+      "role": "new_head_CI_full_original_or_qualified_projection",
+      "object_verified_by": "pinned delegated actual create and GET map; local identity rechecked"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/5b633-ci-state-v4/original-files-manifest.json",
+      "mode": "100644",
+      "blob": "9e5f2180cda2ef3af0fc7719d9e24227f1d92801",
+      "bytes": 6019,
+      "sha256": "f79f2e0ccad9f8acd3359e68d0d117ef81a8f74efa001e82a935df360c851e3f",
+      "role": "new_head_CI_full_original_or_qualified_projection",
+      "object_verified_by": "pinned delegated actual create and GET map; local identity rechecked"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/5b633-ci-state-v4/part-000.b64",
+      "mode": "100644",
+      "blob": "8d3c7e0c12590a772bb3827fb1090e9edc79d090",
+      "bytes": 262145,
+      "sha256": "e4865369d7759207f9d08315894428ac299f0f896a78edd49e2801243deeaac7",
+      "role": "new_head_CI_full_original_or_qualified_projection",
+      "object_verified_by": "pinned delegated actual create and GET map; local identity rechecked"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/5b633-ci-state-v4/part-001.b64",
+      "mode": "100644",
+      "blob": "21afacc312a97e8a8e7ab404b1a3caf566a80215",
+      "bytes": 262145,
+      "sha256": "3c96a46953e793fb24f3c75fbda6906c4107ff024b868d0de76f48f0ff584440",
+      "role": "new_head_CI_full_original_or_qualified_projection",
+      "object_verified_by": "pinned delegated actual create and GET map; local identity rechecked"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/5b633-ci-state-v4/part-002.b64",
+      "mode": "100644",
+      "blob": "188ceaf62a02dfabe3cb2181f17922094bd44db4",
+      "bytes": 262145,
+      "sha256": "323a4b97c9ae286e6143e740856a7823a29b18eb8ff79569c9c025cc957eaafc",
+      "role": "new_head_CI_full_original_or_qualified_projection",
+      "object_verified_by": "pinned delegated actual create and GET map; local identity rechecked"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/5b633-ci-state-v4/part-003.b64",
+      "mode": "100644",
+      "blob": "85416a0afa948cc8d06bda270c901ef75f2523b0",
+      "bytes": 262145,
+      "sha256": "7197fc24ad54e6438458ee8a99fbeee1969e887f4749a6ae732c6d6bc8bcd8c7",
+      "role": "new_head_CI_full_original_or_qualified_projection",
+      "object_verified_by": "pinned delegated actual create and GET map; local identity rechecked"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/5b633-ci-state-v4/part-004.b64",
+      "mode": "100644",
+      "blob": "e415c41643feef87ee96519d806dd2368d8c95a4",
+      "bytes": 262145,
+      "sha256": "f205ef3649ae80c379840e9bb77713e2fff289b7ab8229745bd36a32f3af5826",
+      "role": "new_head_CI_full_original_or_qualified_projection",
+      "object_verified_by": "pinned delegated actual create and GET map; local identity rechecked"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/5b633-ci-state-v4/part-005.b64",
+      "mode": "100644",
+      "blob": "0bedadc9724962255274c944c731995d2f39aed8",
+      "bytes": 262145,
+      "sha256": "9a917bd01d1efaaf4ba547b0305c8caee5a2aabc62674df5bfb9a94dbb8fed0f",
+      "role": "new_head_CI_full_original_or_qualified_projection",
+      "object_verified_by": "pinned delegated actual create and GET map; local identity rechecked"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/5b633-ci-state-v4/part-006.b64",
+      "mode": "100644",
+      "blob": "73d5ac16bbcb0d867b6e47d51c4d81448a64ce77",
+      "bytes": 262145,
+      "sha256": "531a5f6d25bf3767b1816ded9f1d3fa5fc27eb94f077862677246de233c37444",
+      "role": "new_head_CI_full_original_or_qualified_projection",
+      "object_verified_by": "pinned delegated actual create and GET map; local identity rechecked"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/5b633-ci-state-v4/part-007.b64",
+      "mode": "100644",
+      "blob": "c977276de40f2162cea48c28de673df928b1e03a",
+      "bytes": 19169,
+      "sha256": "1a8a7c383424e2ca9cd14d8a36c66eee03511dbe9c277444d9a1a1f50185f0f0",
+      "role": "new_head_CI_full_original_or_qualified_projection",
+      "object_verified_by": "pinned delegated actual create and GET map; local identity rechecked"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/5b633-ci-state-v4/queue-release/old-ci-required-log.log",
+      "mode": "100644",
+      "blob": "18a2d5d77754e485aeae2bca0f52d526b328fce6",
+      "bytes": 18524,
+      "sha256": "d8e777e4a61c4d9c905e3a791048de578a8079c9403d82c962336967b292d2c1",
+      "role": "new_head_CI_full_original_or_qualified_projection",
+      "object_verified_by": "pinned delegated actual create and GET map; local identity rechecked"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/5b633-ci-state-v4/queue-release/old-rust-summary-log.log",
+      "mode": "100644",
+      "blob": "78739dc9dc9651e43da1c5460ccee40e3fc1df29",
+      "bytes": 5046,
+      "sha256": "760a1fa6521cbb48672ad9926be71b9e4269459c50fe3ca31da413c123c8a173",
+      "role": "new_head_CI_full_original_or_qualified_projection",
+      "object_verified_by": "pinned delegated actual create and GET map; local identity rechecked"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/5b633-ci-state-v4/registry-plan.json",
+      "mode": "100644",
+      "blob": "3291eb2e43db20403888b596d67f09358e8f4524",
+      "bytes": 9827,
+      "sha256": "9b659b6741e86278a425168fe42a3efd9c3185b13baf05fc30c21424cdbd52b5",
+      "role": "actual_CI_archive_registration_map",
+      "object_verified_by": "actual create and GET receipt in current session"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/5b633-ci-state-v4/transport-manifest.json",
+      "mode": "100644",
+      "blob": "3c7941209dae4acfbd3f83f448ed680a9ddb0947",
+      "bytes": 4835,
+      "sha256": "7aeafc2a164bc2e9242e05d5c1c96f7738a0bbbb91041473c71c7d83abda03f8",
+      "role": "new_head_CI_full_original_or_qualified_projection",
+      "object_verified_by": "pinned delegated actual create and GET map; local identity rechecked"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/5b633-ci-state-v4/verify_archive.py",
+      "mode": "100644",
+      "blob": "bfa05fa0d818272a53667b938c7ec72c1120d232",
+      "bytes": 3318,
+      "sha256": "cdefc9604af67bebd4570df4e306de80b422a408ce81138ed2a4c1f7c83d93aa",
+      "role": "new_head_CI_full_original_or_qualified_projection",
+      "object_verified_by": "already present in verified prior audit tree"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/ci-5b633-business-retained-v5/business-retained-original-review.json",
+      "mode": "100644",
+      "blob": "bc2ec47cb4f4825646d6524bed788e2eaec85e00",
+      "bytes": 246748,
+      "sha256": "fa41689fd30d7e12f089e7dfb2bbc1b1ab4c7d2ec63bc7a8b2749dbabd773c19",
+      "role": "full original PR evidence or fixed-source projection",
+      "object_verified_by": "pinned delegated actual create and GET map; local identity rechecked"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/ci-5b633-business-retained-v5/git-delivery-map.json",
+      "mode": "100644",
+      "blob": "c7e1a741f39762e993e8b87248f6e756e316cdf5",
+      "bytes": 12292,
+      "sha256": "232e3b04f2fc58df6eb434b64e8b381e5a1d276cbbc165f1137f4411f7f6c71a",
+      "role": "full original PR evidence or fixed-source projection",
+      "object_verified_by": "pinned delegated actual create and GET map; local identity rechecked"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/ci-5b633-business-retained-v5/original-ci.tar.gz.part000.b64.txt",
+      "mode": "100644",
+      "blob": "b8b2cfa8feb62256cf52a48ab9934a4e44574f44",
+      "bytes": 262145,
+      "sha256": "60e5b12d97d1d9c8ca4731f7f5a5656b66f4680458c3a7da0d85e44acd9f9843",
+      "role": "full original PR evidence or fixed-source projection",
+      "object_verified_by": "pinned delegated actual create and GET map; local identity rechecked"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/ci-5b633-business-retained-v5/original-ci.tar.gz.part001.b64.txt",
+      "mode": "100644",
+      "blob": "2f4558780a5222aa850937cfa584eb2c78bf9bb9",
+      "bytes": 262145,
+      "sha256": "ebd53a0ede48583bed3cbf9ecd5f403fd4d6501c570cf5558b077b6fd3411ab6",
+      "role": "full original PR evidence or fixed-source projection",
+      "object_verified_by": "pinned delegated actual create and GET map; local identity rechecked"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/ci-5b633-business-retained-v5/original-ci.tar.gz.part002.b64.txt",
+      "mode": "100644",
+      "blob": "cfe0dc44b17297e9f97262a1a633b23fca63cdea",
+      "bytes": 262145,
+      "sha256": "2afb802df11efcace87885c0daf00cb91d45ba35c3aab5aadc59d8c0dc54ec22",
+      "role": "full original PR evidence or fixed-source projection",
+      "object_verified_by": "pinned delegated actual create and GET map; local identity rechecked"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/ci-5b633-business-retained-v5/original-ci.tar.gz.part003.b64.txt",
+      "mode": "100644",
+      "blob": "7252c304c0d4876cc8d41f91afc4beca04360f1c",
+      "bytes": 262145,
+      "sha256": "7f6de19e58560ba3bbd6862f81bdc613355be2b5ba4824415bbfd2fdc1521b7f",
+      "role": "full original PR evidence or fixed-source projection",
+      "object_verified_by": "pinned delegated actual create and GET map; local identity rechecked"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/ci-5b633-business-retained-v5/original-ci.tar.gz.part004.b64.txt",
+      "mode": "100644",
+      "blob": "b94c1b80a27e49ebc12a9a484d3b4a52b9e07f7e",
+      "bytes": 262145,
+      "sha256": "86885312a9b164083d978f50ce0c584cee047c3da359b3f64532e0048a5b489d",
+      "role": "full original PR evidence or fixed-source projection",
+      "object_verified_by": "pinned delegated actual create and GET map; local identity rechecked"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/ci-5b633-business-retained-v5/original-ci.tar.gz.part005.b64.txt",
+      "mode": "100644",
+      "blob": "3c0ad4abac3102b86c1fa7b03e25fce19b880b69",
+      "bytes": 262145,
+      "sha256": "1999eabb83a263e57f4af90222fd8df9d136b273afd59cd478f531e229d0824f",
+      "role": "full original PR evidence or fixed-source projection",
+      "object_verified_by": "pinned delegated actual create and GET map; local identity rechecked"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/ci-5b633-business-retained-v5/original-ci.tar.gz.part006.b64.txt",
+      "mode": "100644",
+      "blob": "daf3e7219d5ea0279a303d9c3abd64e823d3440c",
+      "bytes": 262145,
+      "sha256": "9687963f18abf5b41e59b52fdd0a54e4573cdd7c43fd0dd72568d163ae6f9d7e",
+      "role": "full original PR evidence or fixed-source projection",
+      "object_verified_by": "pinned delegated actual create and GET map; local identity rechecked"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/ci-5b633-business-retained-v5/original-ci.tar.gz.part007.b64.txt",
+      "mode": "100644",
+      "blob": "251897a608d9d49bd2d08e03fdf47d8e40123ea3",
+      "bytes": 262145,
+      "sha256": "e9aeadc40f223b44a341fca06269a341ac41d741dc6e81cb655e592a080dfd62",
+      "role": "full original PR evidence or fixed-source projection",
+      "object_verified_by": "pinned delegated actual create and GET map; local identity rechecked"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/ci-5b633-business-retained-v5/original-ci.tar.gz.part008.b64.txt",
+      "mode": "100644",
+      "blob": "de159a7449c8b3cb9ca25191ab96fb00f89c8a07",
+      "bytes": 262145,
+      "sha256": "946ecd1a105e4cde6c791794cdbccb857e9f696dd60c7387945a27e3cf3ca1b0",
+      "role": "full original PR evidence or fixed-source projection",
+      "object_verified_by": "pinned delegated actual create and GET map; local identity rechecked"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/ci-5b633-business-retained-v5/original-ci.tar.gz.part009.b64.txt",
+      "mode": "100644",
+      "blob": "c8d4ce9e0166355f0023129ef1903a5dda6bddf4",
+      "bytes": 262145,
+      "sha256": "cdcc43bd792d9a487fe069c1f007a3190cfa00eaff86b708055a7a4417dad365",
+      "role": "full original PR evidence or fixed-source projection",
+      "object_verified_by": "pinned delegated actual create and GET map; local identity rechecked"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/ci-5b633-business-retained-v5/original-ci.tar.gz.part010.b64.txt",
+      "mode": "100644",
+      "blob": "d2d5f7d4beaf24a77b6e6835dac6971c47a3eec4",
+      "bytes": 262145,
+      "sha256": "edc63d22952c01862290318582b4e3eb44718ce4bdd2c83963986f9cb6fe50ab",
+      "role": "full original PR evidence or fixed-source projection",
+      "object_verified_by": "pinned delegated actual create and GET map; local identity rechecked"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/ci-5b633-business-retained-v5/original-ci.tar.gz.part011.b64.txt",
+      "mode": "100644",
+      "blob": "8d738167d58ece3bb10d7580c009bf7c9a495a04",
+      "bytes": 262145,
+      "sha256": "0c6c18160c501f66edeb8638d031008081acef5b5f8228ec8d49a7c044ffbf12",
+      "role": "full original PR evidence or fixed-source projection",
+      "object_verified_by": "pinned delegated actual create and GET map; local identity rechecked"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/ci-5b633-business-retained-v5/original-ci.tar.gz.part012.b64.txt",
+      "mode": "100644",
+      "blob": "e6268407c9dbe85f6362b0aff1f8622d17e04cf6",
+      "bytes": 262145,
+      "sha256": "6ff69b7956f746284757b9c54da83fa62a92846a8850c985442c7a59bcbe58fd",
+      "role": "full original PR evidence or fixed-source projection",
+      "object_verified_by": "pinned delegated actual create and GET map; local identity rechecked"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/ci-5b633-business-retained-v5/original-ci.tar.gz.part013.b64.txt",
+      "mode": "100644",
+      "blob": "d172f47caf303f3bae4ff7b872ec3843a64b25b0",
+      "bytes": 262145,
+      "sha256": "470c3f9758b0762fd4d741458bacc15e198f39fe8c9dd04af787af968b0d1368",
+      "role": "full original PR evidence or fixed-source projection",
+      "object_verified_by": "pinned delegated actual create and GET map; local identity rechecked"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/ci-5b633-business-retained-v5/original-ci.tar.gz.part014.b64.txt",
+      "mode": "100644",
+      "blob": "75de86a8457d4702a496a805d7c5ebf0fb59f52e",
+      "bytes": 262145,
+      "sha256": "f6ba0df30f95affe6b5191474bbecf41a7ac6d909f5037c27abfcb08054650a4",
+      "role": "full original PR evidence or fixed-source projection",
+      "object_verified_by": "pinned delegated actual create and GET map; local identity rechecked"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/ci-5b633-business-retained-v5/original-ci.tar.gz.part015.b64.txt",
+      "mode": "100644",
+      "blob": "ea1c88a905b79462fdfc8e53feb32fe945cab5c6",
+      "bytes": 262145,
+      "sha256": "4883dcb77defd23780b945c72f9ddb7f0c5ba24ed2846ab4a77897b93df5e209",
+      "role": "full original PR evidence or fixed-source projection",
+      "object_verified_by": "pinned delegated actual create and GET map; local identity rechecked"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/ci-5b633-business-retained-v5/original-ci.tar.gz.part016.b64.txt",
+      "mode": "100644",
+      "blob": "617205d979502efa9769d46c298a9bbae6c5e769",
+      "bytes": 262145,
+      "sha256": "7333583ec7e982ceaf0fe0db9b418d75f11705b28fb0e0789204161ba3e85cea",
+      "role": "full original PR evidence or fixed-source projection",
+      "object_verified_by": "pinned delegated actual create and GET map; local identity rechecked"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/ci-5b633-business-retained-v5/original-ci.tar.gz.part017.b64.txt",
+      "mode": "100644",
+      "blob": "f74aba76c0e010398d129c56b0f9e9cb8ba4d228",
+      "bytes": 262145,
+      "sha256": "f386d418fd115843323b37d4a7a4396ece65e2b97831cebb12bca79ad0a85717",
+      "role": "full original PR evidence or fixed-source projection",
+      "object_verified_by": "pinned delegated actual create and GET map; local identity rechecked"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/ci-5b633-business-retained-v5/original-ci.tar.gz.part018.b64.txt",
+      "mode": "100644",
+      "blob": "2905a26f2f8859f19b13d75747281752ac5acda3",
+      "bytes": 262145,
+      "sha256": "d878b774be31152f1ad375667b87813773060b90d4c3a8303532532da1d1ca9f",
+      "role": "full original PR evidence or fixed-source projection",
+      "object_verified_by": "pinned delegated actual create and GET map; local identity rechecked"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/ci-5b633-business-retained-v5/original-ci.tar.gz.part019.b64.txt",
+      "mode": "100644",
+      "blob": "d93b9d9c514657a7e1270d726fc43da618270522",
+      "bytes": 262145,
+      "sha256": "5aa8e4d7b80f5b316b03c7b6ee9b612f15b61089e160cf88d698aca2fcf2918f",
+      "role": "full original PR evidence or fixed-source projection",
+      "object_verified_by": "pinned delegated actual create and GET map; local identity rechecked"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/ci-5b633-business-retained-v5/original-ci.tar.gz.part020.b64.txt",
+      "mode": "100644",
+      "blob": "06f7fe7b137ab09820aa02872f7758b95bb0af6c",
+      "bytes": 52609,
+      "sha256": "c3a528a54475dab27ed558b2fcd5bdd013177c4c983d1ee4af989ed8fe11dfd5",
+      "role": "full original PR evidence or fixed-source projection",
+      "object_verified_by": "pinned delegated actual create and GET map; local identity rechecked"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/ci-5b633-business-retained-v5/original-files-manifest.json",
+      "mode": "100644",
+      "blob": "13f984996966f00bd556dd2efa4303ed025a5472",
+      "bytes": 7599,
+      "sha256": "6fa48c6b2514b7ae51d7fd2571f213f09f1d0453644791b75b5f7cdcb66aaf29",
+      "role": "full original PR evidence or fixed-source projection",
+      "object_verified_by": "pinned delegated actual create and GET map; local identity rechecked"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/ci-5b633-business-retained-v5/registry-plan.json",
+      "mode": "100644",
+      "blob": "692db8c24e80309e44bf63133eef69711441feb3",
+      "bytes": 15667,
+      "sha256": "c02750125e20c7ca57f5194206c1ee3942729a001f2ecdeda95b2c91c86323c1",
+      "role": "actual delegated object registration plan",
+      "object_verified_by": "pinned delegated actual create and GET map; local identity rechecked"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/ci-5b633-business-retained-v5/transport-manifest.json",
+      "mode": "100644",
+      "blob": "a67fc79f2d532e1aea256e32b0e12d9b0cf32fc0",
+      "bytes": 11963,
+      "sha256": "c0545ef0921c578e8553c8a0747d89caa212f03586b45b16dc58e8dcc8ac0861",
+      "role": "full original PR evidence or fixed-source projection",
+      "object_verified_by": "pinned delegated actual create and GET map; local identity rechecked"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/ci-5b633-business-retained-v5/verify_archive.py",
+      "mode": "100644",
+      "blob": "bfa05fa0d818272a53667b938c7ec72c1120d232",
+      "bytes": 3318,
+      "sha256": "cdefc9604af67bebd4570df4e306de80b422a408ce81138ed2a4c1f7c83d93aa",
+      "role": "full original PR evidence or fixed-source projection",
+      "object_verified_by": "pinned delegated actual create and GET map; local identity rechecked"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/ci-5b633-windows-operator-v4/git-delivery-map.json",
+      "mode": "100644",
+      "blob": "1547b116b18be99f85dd5825bfb5aa75c7ed9ba3",
+      "bytes": 2808,
+      "sha256": "255c24d399589bcee270fbcdb6078991e6e7cc9ee9f5d051bde6d0898cafbf29",
+      "role": "actual create+GET receipt",
+      "object_verified_by": "pinned delegated actual create and GET map; local identity rechecked"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/ci-5b633-windows-operator-v4/original-ci.tar.gz.part000.b64.txt",
+      "mode": "100644",
+      "blob": "26de42c96bae5bbfae929c9a6612b3a22318fdd1",
+      "bytes": 117601,
+      "sha256": "c095ba097b35e042d0f18195bea90ed7482e6d2f75c7126375369b48cf062991",
+      "role": "immutable transport of original API/log/ZIP bytes",
+      "object_verified_by": "pinned delegated actual create and GET map; local identity rechecked"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/ci-5b633-windows-operator-v4/original-files-manifest.json",
+      "mode": "100644",
+      "blob": "542bff8110d3b42b36604c5914e5b2f87c3544e2",
+      "bytes": 3733,
+      "sha256": "faa70bc9b82e1059714a45995943b9a39771a874f03249c3d74682e02c4924ba",
+      "role": "evidence index or reproduction verifier",
+      "object_verified_by": "pinned delegated actual create and GET map; local identity rechecked"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/ci-5b633-windows-operator-v4/registry-plan.json",
+      "mode": "100644",
+      "blob": "6cb98f8a897a52ca5c3b0e8bdef401f920b32322",
+      "bytes": 3887,
+      "sha256": "63e65a4e99d5da47999107371ddd3c4268ca78a1989a1c9c58bed26ebb32c089",
+      "role": "actual delegated object registration plan",
+      "object_verified_by": "pinned delegated actual create and GET map; local identity rechecked"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/ci-5b633-windows-operator-v4/transport-manifest.json",
+      "mode": "100644",
+      "blob": "e5b7f46fb0080eaf83735c113973e58cb3480021",
+      "bytes": 1095,
+      "sha256": "a7392f7fc06fa966787b62ca18e018298376291aa8c32cdb019b9eb97ed08e59",
+      "role": "evidence index or reproduction verifier",
+      "object_verified_by": "pinned delegated actual create and GET map; local identity rechecked"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/ci-5b633-windows-operator-v4/verify_archive.py",
+      "mode": "100644",
+      "blob": "bfa05fa0d818272a53667b938c7ec72c1120d232",
+      "bytes": 3318,
+      "sha256": "cdefc9604af67bebd4570df4e306de80b422a408ce81138ed2a4c1f7c83d93aa",
+      "role": "evidence index or reproduction verifier",
+      "object_verified_by": "pinned delegated actual create and GET map; local identity rechecked"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/ci-5b633-windows-operator-v4/windows-operator-delta.json",
+      "mode": "100644",
+      "blob": "20818c992fcc77f7cbf8f6b654927eecce1f6352",
+      "bytes": 16943,
+      "sha256": "4e34d2942aad8fc3d8874c3464d55ad457e42e7bde4d0c3fb56fe593f36c4d52",
+      "role": "evidence index or reproduction verifier",
+      "object_verified_by": "pinned delegated actual create and GET map; local identity rechecked"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/pr-updated-prefix-20261105-1014/git-delivery-map.json",
+      "mode": "100644",
+      "blob": "63b787dc37bbbeb7947060b0551d55adc6ad23ca",
+      "bytes": 5866,
+      "sha256": "ce8c87bb30929980a544cec5bcc4896148f242f39b2730a9277a4ef183bb9fcb",
+      "role": "full original PR evidence or fixed-source projection",
+      "object_verified_by": "pinned delegated actual create and GET map; local identity rechecked"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/pr-updated-prefix-20261105-1014/original-files-manifest.json",
+      "mode": "100644",
+      "blob": "a06726f613a71ca9b510ac17928b14f4abacf51c",
+      "bytes": 15075,
+      "sha256": "1912e873d88cdd52670733906963316e16ccd256b544240d18b66543552c41b2",
+      "role": "full original PR evidence or fixed-source projection",
+      "object_verified_by": "pinned delegated actual create and GET map; local identity rechecked"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/pr-updated-prefix-20261105-1014/original-pr-evidence.tar.gz.part000.b64.txt",
+      "mode": "100644",
+      "blob": "641903ffc97b374a50fe58f1b942f33a4b0dddf6",
+      "bytes": 262145,
+      "sha256": "d9aab1ca9cbd68cf0763a3059cf216742d3e223d8c750d9297970c6f721a2715",
+      "role": "full original PR evidence or fixed-source projection",
+      "object_verified_by": "pinned delegated actual create and GET map; local identity rechecked"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/pr-updated-prefix-20261105-1014/original-pr-evidence.tar.gz.part001.b64.txt",
+      "mode": "100644",
+      "blob": "bf375d2de69366c4f1ebc94f77dbeff125607dee",
+      "bytes": 262145,
+      "sha256": "4b9efb19ac9e513010bf31a3e6bfb121860323bb07ce59b48b07699350245eb2",
+      "role": "full original PR evidence or fixed-source projection",
+      "object_verified_by": "pinned delegated actual create and GET map; local identity rechecked"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/pr-updated-prefix-20261105-1014/original-pr-evidence.tar.gz.part002.b64.txt",
+      "mode": "100644",
+      "blob": "afe277d53fed58171a5f77cd530d233c8e922712",
+      "bytes": 262145,
+      "sha256": "d216705ae29bab42c3f10c8dfc1874b22958c54a17bb869a530b8e5cc1f1efbc",
+      "role": "full original PR evidence or fixed-source projection",
+      "object_verified_by": "pinned delegated actual create and GET map; local identity rechecked"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/pr-updated-prefix-20261105-1014/original-pr-evidence.tar.gz.part003.b64.txt",
+      "mode": "100644",
+      "blob": "b0fdb74958f6223eec37697ffb5b381bafaaacf8",
+      "bytes": 262145,
+      "sha256": "ef398a8b616f99086779b4e5139f0829081b8a7633e3fc465eb083803cb59ab7",
+      "role": "full original PR evidence or fixed-source projection",
+      "object_verified_by": "pinned delegated actual create and GET map; local identity rechecked"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/pr-updated-prefix-20261105-1014/original-pr-evidence.tar.gz.part004.b64.txt",
+      "mode": "100644",
+      "blob": "c32c9816bcd180b505313a7ace1c334b09dd7987",
+      "bytes": 262145,
+      "sha256": "e9b654600dc22b592752590fe5a5b8146f89f9c68a0e7e1a56655d4f8117ab02",
+      "role": "full original PR evidence or fixed-source projection",
+      "object_verified_by": "pinned delegated actual create and GET map; local identity rechecked"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/pr-updated-prefix-20261105-1014/original-pr-evidence.tar.gz.part005.b64.txt",
+      "mode": "100644",
+      "blob": "74fdd873bfaf2a8a6d8d413bdbdb9d9aadf2dcd2",
+      "bytes": 262145,
+      "sha256": "177aca881b295c63568523581d74b20ef621c5b1bf1a0dd4500f2a9cb5f4d6c1",
+      "role": "full original PR evidence or fixed-source projection",
+      "object_verified_by": "pinned delegated actual create and GET map; local identity rechecked"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/pr-updated-prefix-20261105-1014/original-pr-evidence.tar.gz.part006.b64.txt",
+      "mode": "100644",
+      "blob": "d41178103cb5a212f75e2e0bf3bd714eba21b31e",
+      "bytes": 96117,
+      "sha256": "df52f9614f4e08dca71ab83521e76b6459abee690086b34fd7555096fda8310d",
+      "role": "full original PR evidence or fixed-source projection",
+      "object_verified_by": "pinned delegated actual create and GET map; local identity rechecked"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/pr-updated-prefix-20261105-1014/pr-increment-review.json",
+      "mode": "100644",
+      "blob": "74cdf9941c01ed56b1a5baf326b82674d39b0a27",
+      "bytes": 88626,
+      "sha256": "794aa32ebce27953d64a4a3e32fc22b82d032859a06f3253d4339bd43e154fea",
+      "role": "full original PR evidence or fixed-source projection",
+      "object_verified_by": "pinned delegated actual create and GET map; local identity rechecked"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/pr-updated-prefix-20261105-1014/pr4844-accesscheck-scope-addendum.json",
+      "mode": "100644",
+      "blob": "abbece8c5df20228a46a83c6000af54e0d794995",
+      "bytes": 1914,
+      "sha256": "365801242f9cfdf1821e756b03e5ffde1aec824a726e2f096e68a10d53928c93",
+      "role": "distinguishes full-restricting AccessCheck control from production-token physical deletion",
+      "object_verified_by": "pinned delegated actual create and GET map; local identity rechecked"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/pr-updated-prefix-20261105-1014/registry-plan.json",
+      "mode": "100644",
+      "blob": "bfc17c0d053b899c806b4314b647c90a4a04da20",
+      "bytes": 7538,
+      "sha256": "7191dc65d32131fb32c48a434d22749387be87ef7907622685268823f8971596",
+      "role": "actual delegated object registration plan",
+      "object_verified_by": "pinned delegated actual create and GET map; local identity rechecked"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/pr-updated-prefix-20261105-1014/transport-manifest.json",
+      "mode": "100644",
+      "blob": "c824632fa867a61c8fd0f5ec827fd6f22ac1f7b2",
+      "bytes": 4487,
+      "sha256": "cf7ac9b2b3df65d6b8771e09d5702fe4c4968d92b60dddf229a60ae120a29ddf",
+      "role": "full original PR evidence or fixed-source projection",
+      "object_verified_by": "pinned delegated actual create and GET map; local identity rechecked"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/pr-updated-prefix-20261105-1014/verify_archive.py",
+      "mode": "100644",
+      "blob": "bfa05fa0d818272a53667b938c7ec72c1120d232",
+      "bytes": 3318,
+      "sha256": "cdefc9604af67bebd4570df4e306de80b422a408ce81138ed2a4c1f7c83d93aa",
+      "role": "full original PR evidence or fixed-source projection",
+      "object_verified_by": "pinned delegated actual create and GET map; local identity rechecked"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/native/b16-ai395-foundation-v7-v1/foundation-binding-CANDIDATE.json",
+      "mode": "100644",
+      "blob": "d5a6b63f3afb5621e36d5bd7ce7d37af1b6ff026",
+      "bytes": 19276,
+      "sha256": "03255650f0b30c939e467d88b354a75acf467bf302a3264f564f7c4216232773",
+      "role": "frozen prelaunch input or historical transfer receipt",
+      "object_verified_by": "pinned delegated actual create and GET map; local identity rechecked"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/native/b16-ai395-foundation-v7-v1/historical-transfer-terminal.original.json",
+      "mode": "100644",
+      "blob": "7db427b227f763c50d79f9d703ec1212731956ce",
+      "bytes": 2531,
+      "sha256": "6c8283ce7a028a8a6a72141519c870535d718a4b43de2c2fab2251ba3e9ec0f2",
+      "role": "frozen prelaunch input or historical transfer receipt",
+      "object_verified_by": "pinned delegated actual create and GET map; local identity rechecked"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/native/b16-ai395-foundation-v7-v1/launch_foundation_v7.py",
+      "mode": "100644",
+      "blob": "2620dcc013355e0abf6e2564e1b9dd89f0e5f3d2",
+      "bytes": 18388,
+      "sha256": "af8fa634cd07604ec3411f04083477095b838eb2451f587601bc973cc45c0d4c",
+      "role": "frozen prelaunch input or historical transfer receipt",
+      "object_verified_by": "pinned delegated actual create and GET map; local identity rechecked"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/native/b16-ai395-foundation-v7-v1/launcher-v5-rog-to-v7-ai395.delta.patch",
+      "mode": "100644",
+      "blob": "3bad3535af4b2c767112ac99430898a2bff032d6",
+      "bytes": 24026,
+      "sha256": "c6ff4ea07c6baac143ec7a15296b9d72a3080845c327aaab05a5ff31bfddc578",
+      "role": "frozen prelaunch input or historical transfer receipt",
+      "object_verified_by": "pinned delegated actual create and GET map; local identity rechecked"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/native/b16-ai395-foundation-v7-v1/manifest.json",
+      "mode": "100644",
+      "blob": "aff3f58ab7e706c23c11b2b07e32067f87478252",
+      "bytes": 2641,
+      "sha256": "035ac3d6458ff18e54d0b96e442989740ff31aba8125d055f5d44979def1c9d3",
+      "role": "frozen prelaunch input or historical transfer receipt",
+      "object_verified_by": "pinned delegated actual create and GET map; local identity rechecked"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/native/b16-ai395-foundation-v7-v2/B01-priority-bundle.json",
+      "mode": "100644",
+      "blob": "c06b696277301ac1e9a182b953c534d197579ecf",
+      "bytes": 14021,
+      "sha256": "aa2ff770f9ef6eb7516574b592189b051ec249150ed8ae93460034f5648cd6a8",
+      "role": "five complete originals of first actual Foundation scope; four selected passes, not whole-workspace qualification",
+      "object_verified_by": "pinned delegated actual create and GET map; local identity rechecked"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/native/b16-ai395-foundation-v7-v2/actual-launch-and-first-status.json",
+      "mode": "100644",
+      "blob": "fdc31f22a2effb5def73878dbe4f5bdc44756b57",
+      "bytes": 12222,
+      "sha256": "5ec17e8f6ff6219b8f6d33855487e4aa7f1787fd9bca71dc9138207c47060c17",
+      "role": "actual same-key reconciliation and first authoritative running observation",
+      "object_verified_by": "root actual create and full GET byte equality"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/native/b16-ai395-foundation-v7-v2/enabled-request/manifest.json",
+      "mode": "100644",
+      "blob": "48ff02ae91e3c6754a54d17a39699c7d39e58616",
+      "bytes": 3012,
+      "sha256": "2fd9c2433245ec6846eaf6dbfa57bade2a8084d93f19bef78451c30bd1ddb4f1",
+      "role": "exact enabled request identities and reconstruction instructions",
+      "object_verified_by": "root actual create and full GET byte equality"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/native/b16-ai395-foundation-v7-v2/enabled-request/part-000.b64",
+      "mode": "100644",
+      "blob": "770afc8676a205eeacb9c1c6bb4cefdcc0de5a4d",
+      "bytes": 262145,
+      "sha256": "1fc6e15caddbef7d6d363e4608335d64d46d1870577cd49e941f7c157691ef82",
+      "role": "lossless exact enabled request transport; not test output",
+      "object_verified_by": "root actual create and full GET byte equality"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/native/b16-ai395-foundation-v7-v2/enabled-request/part-001.b64",
+      "mode": "100644",
+      "blob": "d5a9036653f4dc5d028728f3cc62b9eddf629374",
+      "bytes": 262145,
+      "sha256": "bdf29f298239df3bba712cd248f62fa887bf99b085610c7043f44d33b52b9277",
+      "role": "lossless exact enabled request transport; not test output",
+      "object_verified_by": "root actual create and full GET byte equality"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/native/b16-ai395-foundation-v7-v2/enabled-request/part-002.b64",
+      "mode": "100644",
+      "blob": "76adb2f8a963bc970dcfec4f70ef77bdf73d6b6d",
+      "bytes": 262145,
+      "sha256": "21d284a3e9682cd51a3afa4cc268533949ca530a16111b77c01c49f3891c925f",
+      "role": "lossless exact enabled request transport; not test output",
+      "object_verified_by": "root actual create and full GET byte equality"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/native/b16-ai395-foundation-v7-v2/enabled-request/part-003.b64",
+      "mode": "100644",
+      "blob": "5f730ad29f6f172616a8fa244e2d9454f3ecfa96",
+      "bytes": 146425,
+      "sha256": "8c3f2d6ffd7c6fa0b9672a29863f7782fb5daab31048efa30ac1665d3d88aa49",
+      "role": "lossless exact enabled request transport; not test output",
+      "object_verified_by": "root actual create and full GET byte equality"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/native/b16-ai395-foundation-v7-v2/foundation-binding-ENABLED.json",
+      "mode": "100644",
+      "blob": "29bb5e643fddc7fc571f6e4631ac3a9074f247a2",
+      "bytes": 19313,
+      "sha256": "59b1a7791a34fa753c8a12e683ebd48631e920b35f42863cebbd8fd28679b083",
+      "role": "root execution binding or independent review",
+      "object_verified_by": "root actual create and full GET byte equality"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/native/b16-ai395-foundation-v7-v2/installation-receipt.original.json",
+      "mode": "100644",
+      "blob": "9cbdb2cd48861caf8a289ef37ad0319f6bbb80c8",
+      "bytes": 7932,
+      "sha256": "bf36db5fa8f2a2e8169172c8b4ec489cd89251b0486fa8f3b67ed00ae1962daf",
+      "role": "actual installed runtime and exact enabled binding receipt",
+      "object_verified_by": "root actual create and full GET byte equality"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/native/b16-ai395-foundation-v7-v2/launch-first-source-priority-bundle.json",
+      "mode": "100644",
+      "blob": "c7d89bd6a17f3e2ec32d3d4ec085ef0ffe9e83b6",
+      "bytes": 37644,
+      "sha256": "a9e74199c4fa72fa203d398d48c103122e23b41d25b4fd0fe4f93caafa468e4d",
+      "role": "14 complete launch/first-source records; catalog progress sample is explicitly nonterminal",
+      "object_verified_by": "pinned delegated actual create and GET map; local identity rechecked"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/native/b16-ai395-foundation-v7-v2/launch_foundation_v7.py",
+      "mode": "100644",
+      "blob": "75623f2ed4c5e8f0dd6009df542dae462d5a847b",
+      "bytes": 18440,
+      "sha256": "6822afbdc2b9e738fe16801a2eb7ee7865a8cb0880f7578d40813fe42ff24dc5",
+      "role": "frozen prelaunch input or historical transfer receipt",
+      "object_verified_by": "pinned delegated actual create and GET map; local identity rechecked"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/native/b16-ai395-foundation-v7-v2/manifest.json",
+      "mode": "100644",
+      "blob": "aa6b94d4bf2ba9a0b68406b83753726037c2b7b3",
+      "bytes": 2610,
+      "sha256": "f31887538a137f31037f7d7da207d6d1729da3779d985d6d0e38247058a1f541",
+      "role": "frozen prelaunch input or historical transfer receipt",
+      "object_verified_by": "pinned delegated actual create and GET map; local identity rechecked"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/native/b16-ai395-foundation-v7-v2/prelaunch-object-readback-map.json",
+      "mode": "100644",
+      "blob": "bebcd08e625e239fe2bd0eba6d5cfda1b783b43d",
+      "bytes": 2709,
+      "sha256": "cd01cc06ac8c804472f304290bea2221606c0d8592f5f6d17410ab5002db3d68",
+      "role": "historical prelaunch map; native_not_launched describes its earlier snapshot",
+      "object_verified_by": "root actual create and full GET byte equality"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/native/b16-ai395-foundation-v7-v2/root-execution-guard.json",
+      "mode": "100644",
+      "blob": "9ef6f66dca8ec960aad511a6fb9a973b7c3349a8",
+      "bytes": 4997,
+      "sha256": "d64e1c47534ec57bb8652434d2e75d5ff8ff3f7ba9d546f7bd79620b25fca5c6",
+      "role": "root execution binding or independent review",
+      "object_verified_by": "pinned delegated actual create and GET map; local identity rechecked"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/native/b16-ai395-foundation-v7-v2/start-indeterminate-receipt.json",
+      "mode": "100644",
+      "blob": "3c1a3de7545dcea975e805055ca5ce0fb762130f",
+      "bytes": 4961,
+      "sha256": "147d6b5df3b30687ff50cece90626ac5dc1a1e5879d474a3995d125b5c3a5fa9",
+      "role": "preserved first tool timeout and bounded read-only reconciliation; no inferred native result",
+      "object_verified_by": "pinned delegated actual create and GET map; local identity rechecked"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/native/b16-ai395-foundation-v7-v2/v1-to-v2-v8-schema.delta.patch",
+      "mode": "100644",
+      "blob": "befda861e76c549cd17c2a204dcca743db993e82",
+      "bytes": 864,
+      "sha256": "583e33411bef46d0b96df1ce8604430c0e83b10c6c220d828e6bbe5e8b6d8d69",
+      "role": "frozen prelaunch input or historical transfer receipt",
+      "object_verified_by": "pinned delegated actual create and GET map; local identity rechecked"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/native/b16/p4-git-tool-augmentation-v1/complete-originals.transport.json",
+      "mode": "100644",
+      "blob": "3d8b80187f6d4d20e62e8384253492fa5da32a23",
+      "bytes": 76867,
+      "sha256": "0828020809a8bc97dc6ed47beb17a38603d65973ccaf7d01472e6cdbdfb2d2f8",
+      "role": "native_Git_identity_parent_pinned_augmentation",
+      "object_verified_by": "root actual create and full GET byte equality"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/native/b16/p4-git-tool-augmentation-v1/originals/after.guard.json",
+      "mode": "100644",
+      "blob": "4cbbcd7b3e2a000e3be3436faa218cfc27773157",
+      "bytes": 1522,
+      "sha256": "ae9ef5b0491ef4924f334a11d3b456c40fe4bd5a94949c24816d1d2fdb7b6a47",
+      "role": "direct_original_Git_augmentation_record",
+      "object_verified_by": "root actual create and full GET byte equality"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/native/b16/p4-git-tool-augmentation-v1/originals/before.guard.json",
+      "mode": "100644",
+      "blob": "4cbbcd7b3e2a000e3be3436faa218cfc27773157",
+      "bytes": 1522,
+      "sha256": "ae9ef5b0491ef4924f334a11d3b456c40fe4bd5a94949c24816d1d2fdb7b6a47",
+      "role": "direct_original_Git_augmentation_record",
+      "object_verified_by": "same exact object already verified in this publication"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/native/b16/p4-git-tool-augmentation-v1/originals/git-version.stderr.original",
+      "mode": "100644",
+      "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "role": "direct_original_Git_augmentation_record",
+      "object_verified_by": "already present in verified prior audit tree"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/native/b16/p4-git-tool-augmentation-v1/originals/git-version.stdout.original",
+      "mode": "100644",
+      "blob": "dce5793dab257c5fd708eed1937ab76c67fb7d96",
+      "bytes": 19,
+      "sha256": "97452bcde974ef512f9552791fc4f6a3219a724877671fba270baca1a6075b74",
+      "role": "direct_original_Git_augmentation_record",
+      "object_verified_by": "root actual create and full GET byte equality"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/native/b16/p4-git-tool-augmentation-v1/originals/new-host-build-only-baseline-with-git.json",
+      "mode": "100644",
+      "blob": "5401ad25c5da11a6f37dc1d93a755070f927a396",
+      "bytes": 268075,
+      "sha256": "117ce27929135acfcf8445f23a53842271cad721ef22cf4aaec7024dac3a386a",
+      "role": "direct_original_Git_augmentation_record",
+      "object_verified_by": "root actual create and full GET byte equality"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/native/b16/p4-git-tool-augmentation-v1/originals/terminal.json",
+      "mode": "100644",
+      "blob": "48e72c91d33fba36b8549f77c1066eb40cfa06bb",
+      "bytes": 4390,
+      "sha256": "171153fd65793af69f066b35528dc977d819a7f18f5689d727c39409a6830b0c",
+      "role": "direct_original_Git_augmentation_record",
+      "object_verified_by": "root actual create and full GET byte equality"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/native/b16/p4-git-tool-augmentation-v1/run_readonly_augmentation.py",
+      "mode": "100644",
+      "blob": "8788bfab651da91847ccafac6f8964b439a6af50",
+      "bytes": 6582,
+      "sha256": "f8a90ddfcb1bdf4021202f29799e8dd268f3852dc4031f24839666943d7b24a4",
+      "role": "native_Git_identity_parent_pinned_augmentation",
+      "object_verified_by": "root actual create and full GET byte equality"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/native/b16/p4-libcap-continuation-v3/manifest.json",
+      "mode": "100644",
+      "blob": "3ff533f8dd29dccc174737e21ec8b53928c645b2",
+      "bytes": 2609,
+      "sha256": "c7fc8297f91f5e18f57628ce6c36725e54ebea5aaaa3b7e9c88ebf8e590f883d",
+      "role": "native_frozen_plan_or_complete_original_bundle",
+      "object_verified_by": "root actual create and full GET byte equality"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/native/b16/p4-libcap-continuation-v3/originals/terminal.json",
+      "mode": "100644",
+      "blob": "e270198283e5b893b343e2a1474e543faa49901d",
+      "bytes": 33448,
+      "sha256": "6eec39a2f566f2949b790db088bda2fd8aac30e32f7d0fc8fb1ac9875d3d1829",
+      "role": "direct_original_native_record",
+      "object_verified_by": "root actual create and full GET byte equality"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/native/b16/p4-libcap-continuation-v3/request.json",
+      "mode": "100644",
+      "blob": "f684b5198860575962678fea3e17d8927e4e66b3",
+      "bytes": 74627,
+      "sha256": "d86ae86014c4f930e3c02f49529cac198fedc9f8a12158fedc6eb1403d9959ba",
+      "role": "native_frozen_plan_or_complete_original_bundle",
+      "object_verified_by": "root actual create and full GET byte equality"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/native/b16/p4-libcap-continuation-v3/run_bootstrap_p4_v3.py",
+      "mode": "100644",
+      "blob": "50e9b65b02d9663de21b242a9a8e0ebd03bd6e09",
+      "bytes": 29467,
+      "sha256": "f932b41206ba0c5cc95aa18bdcaade440c7e1337e6236b9bf953959e403237a5",
+      "role": "native_frozen_plan_or_complete_original_bundle",
+      "object_verified_by": "root actual create and full GET byte equality"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/native/b16/p4-libcap-continuation-v3/runner-v2-to-v3.delta.patch",
+      "mode": "100644",
+      "blob": "44719c0e359b1c107a05d5fd99556c017b6931e8",
+      "bytes": 9815,
+      "sha256": "571494a5b43acc5f5c7af9b8b48c5eb8db4fd3fdf93c5e8f27e9ab74d3646736",
+      "role": "native_frozen_plan_or_complete_original_bundle",
+      "object_verified_by": "root actual create and full GET byte equality"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/native/b16/p4-libcap-sdk-continuation-v2/complete-native-compressed-bundle.json",
+      "mode": "100644",
+      "blob": "9195e7fc328cab7c9ce7078814bd91a0fcf0dc4a",
+      "bytes": 120516,
+      "sha256": "77182181b5f5c21e9baf6839513a9a827fdff1330a08d35e367eabf2ae558157",
+      "role": "native_frozen_plan_or_complete_original_bundle",
+      "object_verified_by": "actual create and GET receipt in current session"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/native/b16/p4-libcap-sdk-continuation-v2/complete-originals-verification.json",
+      "mode": "100644",
+      "blob": "3437e3954fc32a1799bea890f96c8aadec53e606",
+      "bytes": 17269,
+      "sha256": "9c3e701e1ed36b29d7de649dfe6250c622753729ebed04211b4cb21c617c8ec2",
+      "role": "native_frozen_plan_or_complete_original_bundle",
+      "object_verified_by": "root actual create and full GET byte equality"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/native/b16/p4-libcap-sdk-continuation-v2/manifest.json",
+      "mode": "100644",
+      "blob": "91ae9bc0b3c6cd1879c07414ddceab6720bb4019",
+      "bytes": 2419,
+      "sha256": "400b4a51543d665bc0e3e11896f4b53fbeda6b0e5cf9884e198b2a793d27b3fe",
+      "role": "native_frozen_plan_or_complete_original_bundle",
+      "object_verified_by": "root actual create and full GET byte equality"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/native/b16/p4-libcap-sdk-continuation-v2/originals-transport.json",
+      "mode": "100644",
+      "blob": "861195e9b7205a353f8707387ef99f5d2c03e486",
+      "bytes": 69400,
+      "sha256": "da0f807d6111dcb5fafb15d7871d48e8fc6e8c9f52dab742d18c843c586b6307",
+      "role": "native_frozen_plan_or_complete_original_bundle",
+      "object_verified_by": "root actual create and full GET byte equality"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/native/b16/p4-libcap-sdk-continuation-v2/remaining-native-records.json",
+      "mode": "100644",
+      "blob": "f6181503397a6ddad1550074f84141c8e8fc7b32",
+      "bytes": 14026,
+      "sha256": "cd916a32acd21a1c17a047d856c9e87367c4e957fcd4596892d0f46952815875",
+      "role": "native_frozen_plan_or_complete_original_bundle",
+      "object_verified_by": "root actual create and full GET byte equality"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/native/b16/p4-libcap-sdk-continuation-v2/request.json",
+      "mode": "100644",
+      "blob": "42aca07b201fbab6e45cb2e2d37f1683f2712d64",
+      "bytes": 1623,
+      "sha256": "88225102c437de1e3e58514f52269783625e8c62f7a481728d906b2c3729672e",
+      "role": "native_frozen_plan_or_complete_original_bundle",
+      "object_verified_by": "root actual create and full GET byte equality"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/native/b16/p4-libcap-sdk-continuation-v2/run_prepare_sdk_v2.py",
+      "mode": "100644",
+      "blob": "09cc95a76cb9f18a8073939f639fd1bc0aee43ac",
+      "bytes": 20076,
+      "sha256": "a37d2160bf5941dee1b79c7e7095570c9b0dd20eff4a5ccd697b32d80d6d1415",
+      "role": "native_frozen_plan_or_complete_original_bundle",
+      "object_verified_by": "root actual create and full GET byte equality"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/native/b16/p4-libcap-sdk-continuation-v2/runner-v1-to-v2.delta.patch",
+      "mode": "100644",
+      "blob": "493eb705f8a4650438959cb27069772d2d996320",
+      "bytes": 6529,
+      "sha256": "42f7af1d7d202e8e74cec48e6e492028cebd23b2e23a83a90a022c0d46fb98ef",
+      "role": "native_frozen_plan_or_complete_original_bundle",
+      "object_verified_by": "root actual create and full GET byte equality"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/native/b16/p4-libcap-sdk-v1/failure-originals/terminal.json",
+      "mode": "100644",
+      "blob": "4ebf1f68ef6a138c32ad2d80ca158b77c5876cca",
+      "bytes": 15979,
+      "sha256": "4606272b25751477056460be303cf3534ba25ad06b696269fe269eef98b1ec16",
+      "role": "direct_original_native_record",
+      "object_verified_by": "root actual create and full GET byte equality"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/native/b16/p4-libcap-sdk-v1/failure-transport.json",
+      "mode": "100644",
+      "blob": "9f207ceea40993368a346fc3a895c3d044ed96dc",
+      "bytes": 28516,
+      "sha256": "77fc813a2dc534f012e02dcd5b4943f6214ea3fd77693dabae1a826ccb6d37cf",
+      "role": "native_frozen_plan_or_complete_original_bundle",
+      "object_verified_by": "root actual create and full GET byte equality"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/native/b16/p4-libcap-sdk-v1/manifest.json",
+      "mode": "100644",
+      "blob": "7750f799ca92a1c8905cb1696a1d7a6d783cc3b0",
+      "bytes": 1981,
+      "sha256": "659a301326c9b39204a699d2a8322e4584d165d1a5a11de9dfb81f8a0bab90e9",
+      "role": "native_frozen_plan_or_complete_original_bundle",
+      "object_verified_by": "root actual create and full GET byte equality"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/native/b16/p4-libcap-sdk-v1/request.json",
+      "mode": "100644",
+      "blob": "2c62ebef04072e3ea7e90db4756562a49d69e11d",
+      "bytes": 1484,
+      "sha256": "1ff5dd30abdbd68aec0dcbcfb7b72fb77c62406018f88a3696d7d30c82fe11c6",
+      "role": "native_frozen_plan_or_complete_original_bundle",
+      "object_verified_by": "root actual create and full GET byte equality"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/native/b16/p4-libcap-sdk-v1/run_prepare_sdk.py",
+      "mode": "100644",
+      "blob": "6c086a65ba8f8e1ab436d6521e0ce7aa1ee2c3dd",
+      "bytes": 19104,
+      "sha256": "090f6e3003c29a71335d271d48e8b655c26fdbd72cd053a5fd8014c780614bd1",
+      "role": "native_frozen_plan_or_complete_original_bundle",
+      "object_verified_by": "root actual create and full GET byte equality"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/native/b16/p4-readonly-completion-v4/complete-native-compressed-bundle.json",
+      "mode": "100644",
+      "blob": "eba9da829e0c59ef1d25cbd7fc406d1a56a38d33",
+      "bytes": 196074,
+      "sha256": "17121568261e6926e92b7a092bdff0c83a72b375e4aac17dca57cd29adb35959",
+      "role": "native_frozen_plan_or_complete_original_bundle",
+      "object_verified_by": "actual create and GET receipt in current session"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/native/b16/p4-readonly-completion-v4/manifest.json",
+      "mode": "100644",
+      "blob": "c428720fbead4acd348bbd2842cdea75f7fd46fe",
+      "bytes": 2491,
+      "sha256": "be2e1815838e14bad861e4ecf7001d3ad0c07ebf776605006bddad203b0954d7",
+      "role": "native_frozen_plan_or_complete_original_bundle",
+      "object_verified_by": "root actual create and full GET byte equality"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/native/b16/p4-readonly-completion-v4/original-reconstruction-methods.json",
+      "mode": "100644",
+      "blob": "e14701e777b4aff33de3a3b1400a01ec45566f41",
+      "bytes": 1322,
+      "sha256": "ce6d29b480ead263264914437c1e959e2aefa247fc7f8bb03c23a5324c1644bc",
+      "role": "native_frozen_plan_or_complete_original_bundle",
+      "object_verified_by": "root actual create and full GET byte equality"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/native/b16/p4-readonly-completion-v4/originals/new-host-build-only-baseline.json",
+      "mode": "100644",
+      "blob": "31053a6179c016a9b5569cc6fb301e19aeb5c633",
+      "bytes": 265463,
+      "sha256": "16022204ade97bd6cdc78176e5dff2b8c19c536180aa9c5e7a5a219ddda7140f",
+      "role": "direct_original_native_record",
+      "object_verified_by": "actual create and GET receipt in current session"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/native/b16/p4-readonly-completion-v4/originals/terminal.json",
+      "mode": "100644",
+      "blob": "6dd598ba91412c5a5d52b71dbc2279d5d1318ade",
+      "bytes": 22043,
+      "sha256": "21a7f80cc5bb744ff4a0f20d3696fae953e9facc3b081eaab9b8243f702b4f7e",
+      "role": "direct_original_native_record",
+      "object_verified_by": "root actual create and full GET byte equality"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/native/b16/p4-readonly-completion-v4/request.json",
+      "mode": "100644",
+      "blob": "90b2378b37541a32d0204e76ea093cc9d681385e",
+      "bytes": 9614,
+      "sha256": "84d176ea67b6911daf43224ed004ecfa5c8d4c79a8ebe06196e3dd21e4d69495",
+      "role": "native_frozen_plan_or_complete_original_bundle",
+      "object_verified_by": "root actual create and full GET byte equality"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/native/b16/p4-readonly-completion-v4/run_readonly_completion_v4.py",
+      "mode": "100644",
+      "blob": "7f66633334d73aab4e62fda858f7144dc716b09b",
+      "bytes": 29686,
+      "sha256": "cc3332ab36999d3ba56e039ec28f822cdb4a6fcf3011f8f198660c04eb382254",
+      "role": "native_frozen_plan_or_complete_original_bundle",
+      "object_verified_by": "root actual create and full GET byte equality"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/native/b16/p4-readonly-completion-v4/runner-v3-to-readonly-v4.delta.patch",
+      "mode": "100644",
+      "blob": "137568d2ae5a842a7419cf686e79e303b8599e0c",
+      "bytes": 35174,
+      "sha256": "4e760dcaa043f344f23716643f229254af44598d3324bd33e46abf16fd6a7f74",
+      "role": "native_frozen_plan_or_complete_original_bundle",
+      "object_verified_by": "root actual create and full GET byte equality"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/native/b16/p4-v3-catalog-readonly-export-v1/catalog-analysis.json",
+      "mode": "100644",
+      "blob": "dbccec3bf33c75f04aa2691f1a4279cc49a830ab",
+      "bytes": 16947,
+      "sha256": "cc870cbfd1423890713f212d31a04659706922d85bd8287e4bdea2611560c33f",
+      "role": "complete_P4_original_export_manifest_or_verifier",
+      "object_verified_by": "root actual create and full GET byte equality"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/native/b16/p4-v3-catalog-readonly-export-v1/cloud-decoding-verification.json",
+      "mode": "100644",
+      "blob": "7abd62c38cb47ec880ff4fa7618132b255c64ffb",
+      "bytes": 14260,
+      "sha256": "260f108bc98b4b4c89b9262c78df9dca466facb326ea657de35ed17820744e33",
+      "role": "complete_P4_original_export_manifest_or_verifier",
+      "object_verified_by": "root actual create and full GET byte equality"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/native/b16/p4-v3-catalog-readonly-export-v1/export-manifest.json",
+      "mode": "100644",
+      "blob": "6842b987ef722497866deb79ccc1e428efe8c044",
+      "bytes": 49079,
+      "sha256": "97cb513aff7e8fca45dc82dcdef97e7f1bcd3c0aea31667912b5f265f20b398e",
+      "role": "complete_P4_original_export_manifest_or_verifier",
+      "object_verified_by": "root actual create and full GET byte equality"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/native/b16/p4-v3-catalog-readonly-export-v1/run_readonly_export.py",
+      "mode": "100644",
+      "blob": "3ae76fbb828922974edd8c01036b7dea4db48aed",
+      "bytes": 8281,
+      "sha256": "fc4587588fe00cef7dfbfa97c11a1c517890bcc23d9a1fb5ca7a4f4277e40cbf",
+      "role": "complete_P4_original_export_manifest_or_verifier",
+      "object_verified_by": "root actual create and full GET byte equality"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/native/b16/p4-v3-catalog-readonly-export-v1/transport/batch-00.json",
+      "mode": "100644",
+      "blob": "d7054287d0eb98af09e4d65aead844cdd343da24",
+      "bytes": 161874,
+      "sha256": "5f1b253a47f53b0a6f5f7a58d3e39cc826bd3c2926e8b962a54926fd675b33b3",
+      "role": "lossless_native_original_base64_transport",
+      "object_verified_by": "root actual create and full GET byte equality"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/native/b16/p4-v3-catalog-readonly-export-v1/transport/batch-01.json",
+      "mode": "100644",
+      "blob": "7789702220bbbe23fcd8d4b116cb897f593f952d",
+      "bytes": 185376,
+      "sha256": "33cdc73c8a4684f63f3a767328cffa91b083b8bf10645472c1ea3c859ddae90a",
+      "role": "lossless_native_original_base64_transport",
+      "object_verified_by": "root actual create and full GET byte equality"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/native/b16/p4-v3-catalog-readonly-export-v1/transport/batch-02.json",
+      "mode": "100644",
+      "blob": "d7933dee1a2ce287cd1425c949e1eb55b6be5e33",
+      "bytes": 180697,
+      "sha256": "56ec58ce7e72dbe95bcd95c8786b0213a3e90defd0fffeb6e103a7960878a09d",
+      "role": "lossless_native_original_base64_transport",
+      "object_verified_by": "root actual create and full GET byte equality"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/native/b16/p4-v3-catalog-readonly-export-v1/transport/batch-03.json",
+      "mode": "100644",
+      "blob": "cdfa449096e11e05ca1bfeb65309c5b75c212f81",
+      "bytes": 180697,
+      "sha256": "d77a15e28c47690525658ef55a498d2a3bae56ecbd7aa5abe6f16ecb2aaab4a7",
+      "role": "lossless_native_original_base64_transport",
+      "object_verified_by": "root actual create and full GET byte equality"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/native/b16/p4-v3-catalog-readonly-export-v1/transport/batch-04.json",
+      "mode": "100644",
+      "blob": "4ac651ac7f136ab2ee62f5797aa7f767a8aa06c7",
+      "bytes": 180697,
+      "sha256": "e3ce7261299146b703e7cdd0ec91a079d30913dc01f228e6ae63810a9483df54",
+      "role": "lossless_native_original_base64_transport",
+      "object_verified_by": "root actual create and full GET byte equality"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/native/b16/p4-v3-catalog-readonly-export-v1/transport/batch-05.json",
+      "mode": "100644",
+      "blob": "5a54191034f1344b4e730399648b33cc444ffa87",
+      "bytes": 189173,
+      "sha256": "e343b358712a07c499d10f014102f9b0ab0aa0ae555e5f8627967ec97a543a86",
+      "role": "lossless_native_original_base64_transport",
+      "object_verified_by": "root actual create and full GET byte equality"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/native/b16/p4-v3-catalog-readonly-export-v1/transport/batch-06.json",
+      "mode": "100644",
+      "blob": "24e7c70c0e9eba5fda11781dabe4a71c6e4f7ed1",
+      "bytes": 180697,
+      "sha256": "93cd3e87cdff18a9357693ec6addedb91cc0c9bd334ed500e7b20c44ce2cbc97",
+      "role": "lossless_native_original_base64_transport",
+      "object_verified_by": "root actual create and full GET byte equality"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/native/b16/p4-v3-catalog-readonly-export-v1/transport/batch-07.json",
+      "mode": "100644",
+      "blob": "d40914d41e2db4941970c656438da448f562961c",
+      "bytes": 217106,
+      "sha256": "a9ada6c95c7e225b95279794c1ae62b92a8ecd391952d70cad9f62303931a3ae",
+      "role": "lossless_native_original_base64_transport",
+      "object_verified_by": "root actual create and full GET byte equality"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/native/b16/p4-v3-catalog-readonly-export-v1/transport/batch-08.json",
+      "mode": "100644",
+      "blob": "de98f35731a5f0b09ba4f12fada380a3e51a3e15",
+      "bytes": 193045,
+      "sha256": "05e0c8c2d0162bcf260d554447c47c982775b909a6f7d01459909ca7f409e411",
+      "role": "lossless_native_original_base64_transport",
+      "object_verified_by": "root actual create and full GET byte equality"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/native/b16/p4-v3-catalog-readonly-export-v1/transport/batch-09.json",
+      "mode": "100644",
+      "blob": "019e1473c9266424e0eb12e57363b3e8b3d14590",
+      "bytes": 180697,
+      "sha256": "5dc3479525ef268c6760adfe45e686488ee0f98beaab0f42e7daea276c35f240",
+      "role": "lossless_native_original_base64_transport",
+      "object_verified_by": "root actual create and full GET byte equality"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/native/b16/p4-v3-catalog-readonly-export-v1/transport/batch-10.json",
+      "mode": "100644",
+      "blob": "3a1b78f38c6f7add8db37c5e057be815797bd5ba",
+      "bytes": 96265,
+      "sha256": "1de729e5ff7facb489b2b56b58d9ea77321a42d8a99ed5d6837b39c3d5ee94af",
+      "role": "lossless_native_original_base64_transport",
+      "object_verified_by": "root actual create and full GET byte equality"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/native/main-host-readonly-identity-v1/complete-receipt.json",
+      "mode": "100644",
+      "blob": "5b312e7d357ddb579339127ea05fcca060edd92c",
+      "bytes": 8740,
+      "sha256": "5e6483f08371cebe8829453c5a56654a557a79b8cd03063f297780ede329a1e1",
+      "role": "actual read-only ARM host identity; no Intel inference or build lane",
+      "object_verified_by": "pinned delegated actual create and GET map; local identity rechecked"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/audit-publication-receipt-v3.json",
+      "mode": "100644",
+      "blob": "5081bff29620033362d984d90dd188db33b78542",
+      "bytes": 987,
+      "sha256": "81b0ed26e2f6773dc4b79d56f5cac132555071d448915caa06b6666857832f74",
+      "role": "prior_actual_ref_publication",
+      "object_verified_by": "root actual create and full GET byte equality"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/b11-delete-boundary/REVIEW.zh-CN.md",
+      "mode": "100644",
+      "blob": "8425c5daaf85a6a310e278d877b1b35834e99d60",
+      "bytes": 11629,
+      "sha256": "42d3e4e32fc82d118d325341fcb3ee3b92eb273eba05fde586d9f94c8da0d04b",
+      "role": "current production boundary and original Windows failure review; no qualified source patch",
+      "object_verified_by": "pinned delegated actual create and GET map; local identity rechecked"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/b11-delete-boundary/github-readback-map.json",
+      "mode": "100644",
+      "blob": "01abaa358cba37c52e0f19d9b47193947b0cf96b",
+      "bytes": 1178,
+      "sha256": "519d3da190276ea56231981958d5e83a4a3780168d758a40fb30a7286b528b5e",
+      "role": "actual delegated review object delivery map",
+      "object_verified_by": "root actual create and full GET byte equality"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/b11-delete-boundary/original-failure-excerpts.json",
+      "mode": "100644",
+      "blob": "add8de9594824fdd18bd293a2b30fc689cb87563",
+      "bytes": 10612,
+      "sha256": "7e1fd1abc5d1df4a7bd9bd245b68ce291e9f82d5fd5b1db94369a0185549aed0",
+      "role": "current production boundary and original Windows failure review; no qualified source patch",
+      "object_verified_by": "pinned delegated actual create and GET map; local identity rechecked"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/b11-delete-boundary/review.json",
+      "mode": "100644",
+      "blob": "2f7ad7fb25f5deb09a4ddb52de3937da4020ceb2",
+      "bytes": 6128,
+      "sha256": "23f4440fbebac0eaeaf98db6db459b4aee79e6c4468533f442459715c0ef73fb",
+      "role": "current production boundary and original Windows failure review; no qualified source patch",
+      "object_verified_by": "pinned delegated actual create and GET map; local identity rechecked"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/b11-delete-boundary/source-manifest.json",
+      "mode": "100644",
+      "blob": "baac2640cc41435c79b6102212e2137deb8b3844",
+      "bytes": 6958,
+      "sha256": "33edef4dfb8854ef29d560cb93f55638b01353f521aff2a786e643088bacb293",
+      "role": "current production boundary and original Windows failure review; no qualified source patch",
+      "object_verified_by": "pinned delegated actual create and GET map; local identity rechecked"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/b16-foundation-ai395-independent-binding-review.json",
+      "mode": "100644",
+      "blob": "a4d4bda4c4ffd0e64440dcb8edbe551be583ea6f",
+      "bytes": 9726,
+      "sha256": "407bbf6f20959f1f94a3bd6aa83a09170c606ca208778cc67be1d4181aef3590",
+      "role": "independent concrete native binding review",
+      "object_verified_by": "pinned delegated actual create and GET map; local identity rechecked"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/b16-foundation-v7-concrete-root-review.json",
+      "mode": "100644",
+      "blob": "5931d32457c8e89d6e16d072c5eeccd1a03c8397",
+      "bytes": 2740,
+      "sha256": "eed270b2d2b573dbeb4d1f05ee746edfe98264c4659c3d8647c5feb08a016a1c",
+      "role": "root execution binding or independent review",
+      "object_verified_by": "pinned delegated actual create and GET map; local identity rechecked"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/b16-v7-independent-review.json",
+      "mode": "100644",
+      "blob": "4d779f7573817c11881289c3135870c2f511fe69",
+      "bytes": 10511,
+      "sha256": "9f71f65a10b677822b2b1dc9dcec5103f311c7c218289e055ce67d6666793111",
+      "role": "independent_frozen_V7_static_review",
+      "object_verified_by": "actual create and GET receipt in current session"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/b16-v7-root-review.json",
+      "mode": "100644",
+      "blob": "8e31a2ea7b1a867d9d83031c6ac581d889e91e74",
+      "bytes": 3018,
+      "sha256": "fe85ac08433bb5d0587713acdb189bbe2c1d21ef788497bb92ecc0a9a9178d1d",
+      "role": "root_independent_scoped_review",
+      "object_verified_by": "actual create and GET receipt in current session"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/latest-scopes-root-review.json",
+      "mode": "100644",
+      "blob": "8292aee85c6c148ea3b74853cb36fa7d1ef0d9a1",
+      "bytes": 2403,
+      "sha256": "35a5eadea5863cdf32a8eaa937edf90c79b96d649080f13ac5e837eac9bd75d4",
+      "role": "root independent full XML/log/name/ZIP/transport and program-identity verification",
+      "object_verified_by": "root actual create and full GET byte equality"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/libcap-full-originals-root-review.json",
+      "mode": "100644",
+      "blob": "2da1bd12b4da41936e0354fc5f6e29b291661536",
+      "bytes": 1292,
+      "sha256": "d9751fcd6c7baa721607d2e9f288346d5eb68dea5ec3b5fd9d256121649fbfe0",
+      "role": "root_independent_scoped_review",
+      "object_verified_by": "root actual create and full GET byte equality"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/libcap-prerequisite-static-review.json",
+      "mode": "100644",
+      "blob": "3754351e3ee2feb71afeb1b2e85b480aad4a58ab",
+      "bytes": 10731,
+      "sha256": "b367e49f6b2676423e91604179276c8335f59e68823794b4b3eefeb9b14a7ce4",
+      "role": "independent_native_plan_static_review",
+      "object_verified_by": "root actual create and full GET byte equality"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/libcap-sdk-root-review.json",
+      "mode": "100644",
+      "blob": "bb71d2effba8760973fd4a379051bb742c1b3da1",
+      "bytes": 2585,
+      "sha256": "eafdbac9c251c47204f2ef4f052f62d8301dd5566f94fdb1f8e8f1310eb8c449",
+      "role": "root_independent_scoped_review",
+      "object_verified_by": "actual create and GET receipt in current session"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/new-head-ci-v4-root-review.json",
+      "mode": "100644",
+      "blob": "f3c32f68a867926a8ecb3e37e49444f06b6f748f",
+      "bytes": 4105,
+      "sha256": "b2df1402169d88ce613c5e9b1c30ee71f7a6c6fd667b47eed50be493ebe0cc7a",
+      "role": "root execution binding or independent review",
+      "object_verified_by": "root actual create and full GET byte equality"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/p4-completion-root-review.json",
+      "mode": "100644",
+      "blob": "78eb0266532c8487edcc9bbc6441792c62d05e17",
+      "bytes": 3498,
+      "sha256": "27ffe0956fd370a7e81a838f537ec4a9f9f1540fad8a81326daae709d8cdfb36",
+      "role": "root_independent_scoped_review",
+      "object_verified_by": "actual create and GET receipt in current session"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/p4-git-augmentation-root-review.json",
+      "mode": "100644",
+      "blob": "713daabb95946a3ced6e32699225f4a763710911",
+      "bytes": 1423,
+      "sha256": "55392effd5603d5dba566ac283c63e233c13ae6ada86ed6b00469dcfc70c5bed",
+      "role": "root_independent_scoped_review",
+      "object_verified_by": "root actual create and full GET byte equality"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/p4-libcap-continuation-static-review.json",
+      "mode": "100644",
+      "blob": "9ad2e60f8444977f449104a1ca9da2573cf20968",
+      "bytes": 8577,
+      "sha256": "d92448f070ce1d81181304f5e8a087b0e1bbd2118e0902b0a22aa15543724ef0",
+      "role": "independent_native_plan_static_review",
+      "object_verified_by": "root actual create and full GET byte equality"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/p4-readonly-completion-static-root-review.json",
+      "mode": "100644",
+      "blob": "cf062ecd629e43a1d7b8f53e7aada9b1dfac2463",
+      "bytes": 1843,
+      "sha256": "a67ce054f76c45e01b729fb1aab980a69b916b4d64d02433ceb6ad451014380d",
+      "role": "root_independent_scoped_review",
+      "object_verified_by": "actual create and GET receipt in current session"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/p4-v3-originals-root-review.json",
+      "mode": "100644",
+      "blob": "19568f88f040affdd660adb84a96570bffd07f6b",
+      "bytes": 10988,
+      "sha256": "b9b19e7dd1c4f9c78d7ad519a64c3b8be0c8535134cd81a270ab9eacc8882dd1",
+      "role": "root_independent_scoped_review",
+      "object_verified_by": "actual create and GET receipt in current session"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/reproducible/build_registration_v4.py",
+      "mode": "100644",
+      "blob": "2d0daa5be2a6f3dea7be08522a98ef20d3be55fe",
+      "bytes": 6223,
+      "sha256": "ab256ae1bea6221b318d5ec9d68948fd7ae906c42eca6d03ac341d5d7d7e33e5",
+      "role": "cloud_record_verifier_or_registration_builder",
+      "object_verified_by": "root actual create and full GET byte equality"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/reproducible/extend_registration_v4.py",
+      "mode": "100644",
+      "blob": "9bc58042e2e7644f26391e12a9f0fc68f7e2f117",
+      "bytes": 10893,
+      "sha256": "67f37581d21949b182a6f7fb1fe6f4fff4dc5dfd2f66a01ad5452e3471fa05cf",
+      "role": "evidence registration and lossless transport verification",
+      "object_verified_by": "root actual create and full GET byte equality"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/reproducible/verify_latest_scopes.py",
+      "mode": "100644",
+      "blob": "13948f876ab71bd9b30f927b3f1386e3ccc26dd1",
+      "bytes": 8480,
+      "sha256": "1c90e35bcef78f561fc957db50f488409bd8fe9d18d76274f49ecde97a119f62",
+      "role": "reproduce latest independent evidence checks without project execution",
+      "object_verified_by": "root actual create and full GET byte equality"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/reproducible/verify_libcap_sdk_review.py",
+      "mode": "100644",
+      "blob": "0466df19f750d0e43e8ce1978d160d13d9369bae",
+      "bytes": 6721,
+      "sha256": "a458f2e94d5d0ed094279afb549df1a20c1fdcc2e20685c68da7ececec827e4c",
+      "role": "cloud_record_verifier_or_registration_builder",
+      "object_verified_by": "root actual create and full GET byte equality"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/reproducible/verify_p4_completion.py",
+      "mode": "100644",
+      "blob": "5718e883bfe2cc9e36df1354bf09d6a702e32b29",
+      "bytes": 8798,
+      "sha256": "345e30076bfba32b2cdefda7b35f31e50123ada1d4eb05d81203b810ab837e20",
+      "role": "cloud_record_verifier_or_registration_builder",
+      "object_verified_by": "root actual create and full GET byte equality"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/reproducible/verify_p4_v3_originals.py",
+      "mode": "100644",
+      "blob": "a5e4a375a39426c0aeb9fc78e1d39edcef03e85a",
+      "bytes": 10095,
+      "sha256": "3fab4968b478b137b5690938ecd1fd813a3ac2e60f1cb6078bbe1d2209520ede",
+      "role": "cloud_record_verifier_or_registration_builder",
+      "object_verified_by": "root actual create and full GET byte equality"
+    }
+  ],
+  "evidence_limits": [
+    "Every registered blob has an actual create and full GET byte-equality receipt, directly or via the pinned delegated map; all local identities were rechecked.",
+    "Native first Foundation source87e441 is distinct from product head5b; build-only receipts remain build-only.",
+    "Original timeout, earlier native/CI failures and cancelled jobs remain available.",
+    "Original Windows retained seven unlabelled skips are not erased by zero-skipped executed JUnit nodes.",
+    "Complete original transport parts are registered with reconstruction metadata; large original raw blobs may have computed identities without being individual Git blob objects.",
+    "The PR increment is a bounded updated-prefix observation, not a new full inventory.",
+    "Historical CLOSED_SCOPED entries do not grant whole-candidate or production qualification."
+  ]
+}

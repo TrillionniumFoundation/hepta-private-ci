@@ -1,0 +1,71 @@
+{
+  "schema": "hepta-root-new-head-CI-v4-original-review-v1",
+  "at": "2026-11-05T10:30:59.737643+00:00",
+  "archive_verification": {
+    "script": "research-audit/published-5b633-ci-20261105/immutable-v4-ci-state/verify_archive.py",
+    "exit_code": 0,
+    "transport_parts": 8,
+    "original_files": 22,
+    "original_bytes": 3208419,
+    "compressed_bytes": 1390631,
+    "compressed_sha256": "daa6220fa9e07d19d33e12826ad689c549f1e5be9e3b07564b9e48766dabc267"
+  },
+  "operator_intel": {
+    "job": 127149584078,
+    "run": 41999114742,
+    "head": "5b6331250ff459033bd44d1a95daec70131277cc",
+    "artifact": 13403967805,
+    "zip": {
+      "bytes": 1269035,
+      "sha256": "1460a649fa81df9109d6cba578125137ecfac04562985456a76c411bad280726",
+      "blob": "4fc10f99ca6e6a82852610467078ff8295048a46"
+    },
+    "zip_members": [
+      "operator-bazel/retained.json",
+      "operator-bazel/source.json",
+      "operator-bazel/test.log",
+      "operator-bazel/test.xml",
+      "bazel-execution-logs/execution-log-test-bazel-oracle-2054.zst"
+    ],
+    "CRC_full_read_valid": true,
+    "named_original_cases": [
+      "ceremony::tests::v1_paths_are_exact_and_sidecar_is_a_strict_child",
+      "g5_trust::tests::exact_head_and_predecessor_binding_is_required",
+      "g5_trust::tests::expiry_is_half_open_and_never_creates_acceptance",
+      "g5_trust::tests::fresh_head_scoped_challenge_reaches_ready_without_authority",
+      "g5_trust::tests::independently_signed_challenge_is_verified_but_not_accepted",
+      "manifest_inventory::tests::manifest_parser_requires_sorted_safe_unique_paths",
+      "manifest_inventory::tests::verified_manifest_rejects_extra_files_and_hardlinks",
+      "manifest_inventory::tests::verified_manifest_rejects_symlinks",
+      "preflight::tests::every_missing_or_wrong_formal_environment_pin_is_rejected",
+      "sshsig::tests::all_truncations_and_untrusted_field_lengths_reject_without_panicking",
+      "sshsig::tests::armor_is_bounded_and_cannot_hide_trailing_packets_or_bad_base64",
+      "g5_trust::tests::revocation_is_external_and_fail_closed_before_challenge_issuance",
+      "sshsig::tests::malformed_and_malleable_ed25519_signature_records_are_rejected",
+      "sshsig::tests::frozen_openssh_sha256_and_sha512_signatures_verify_without_a_child_process",
+      "g5_trust::tests::policy_and_revocation_files_must_be_canonical",
+      "sshsig::tests::pinned_malformed_or_weak_public_keys_are_rejected",
+      "sshsig::tests::namespace_and_hash_changes_cannot_reinterpret_a_signature",
+      "g5_trust::tests::revocation_digest_change_invalidates_existing_challenge",
+      "sshsig::tests::valid_self_signed_packet_cannot_replace_the_externally_pinned_key",
+      "tests::exact_challenge_boundary_accepts_only_operator_acceptance",
+      "tests::durable_time_watermark_rejects_clock_rollback",
+      "sshsig::tests::version_and_reserved_fields_preserve_openssh_compatibility",
+      "tests::final_consumption_at_expiry_creates_no_claim_or_receipt",
+      "tests::read_only_lock_never_creates_missing_state",
+      "tests::receipt_repeated_authority_must_match_exact_boundary",
+      "tests::validity_window_is_half_open_and_policy_bounded",
+      "tests::exact_replay_returns_same_receipt_and_conflicting_claim_fails",
+      "tests::unknown_or_noncanonical_stored_json_is_rejected",
+      "trust::tests::trust_policy_digest_is_external_and_fail_closed",
+      "trust::tests::weak_ed25519_public_key_is_rejected_before_openssh",
+      "trust::tests::sshsig_verifies_only_exact_namespace_against_pinned_policy",
+      "trust::tests::trust_policy_pins_store_principal_fingerprint_and_allowed_signers",
+      "sshsig::tests::native_version_and_reserved_compatibility_matches_real_openssh"
+    ],
+    "case_passes": 33,
+    "junit_wrapper_case_count": 1
+  },
+  "run_queue_interpretation_correction": "Top-level queued alone cannot establish that every internal job is unexecuted; root re-read the actual run job list and confirmed this completed native job on5b.",
+  "scope": "Operator fixture with real OpenSSH only; no external B19 acceptance or Intel PTY qualification."
+}

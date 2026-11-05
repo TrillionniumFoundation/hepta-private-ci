@@ -1,0 +1,82 @@
+{
+  "schema": "hepta-root-V7-original-catalog-review-v1",
+  "at": "2026-11-05T10:06:39.884649+00:00",
+  "verdict": "ACCEPT_FROZEN_V7_RUNTIME_FOR_CONCRETE_FOUNDATION_BINDING",
+  "integrity": {
+    "bytes": 5679,
+    "sha256": "96bbff3180620d841b90b65ea1e159d04931c47fd2de1c270ba0f6c059ac5202",
+    "blob": "18f27fbb488777d621b4f37aa0cf70956cdbe7d9"
+  },
+  "build_only": {
+    "bytes": 14919,
+    "sha256": "c19d6a25664a46c5736803dc60807a165bccbd57c1d04a6621f7a11eca7b4a0d",
+    "blob": "6a49c3e2f37d7f4cd42f45d7e37cca8c16669f12"
+  },
+  "full_delta": {
+    "bytes": 383445,
+    "sha256": "836854ee1d13482ffc0acf08f1960b2bc86ab29ca09847b9d487d22257f2f58f",
+    "blob": "32998620ab63c6540e560c1bbf18ba14c2e9683e"
+  },
+  "manifest": {
+    "bytes": 12226,
+    "sha256": "6778a48bce1b277ae048c315eecfe495aec24d2b9a96a42e41198d38b1fdf9b3",
+    "blob": "88cc1adc9d9ca112b3036e3137a49c4996d1de08"
+  },
+  "actual_original_catalog_envelope": {
+    "bytes": 369514,
+    "sha256": "6f0a4f7566621b451701a2612d068f194fc6a1b3aa1457722381d3d53c8a0690",
+    "blob": "5f4d2b2b82a3d1c0043ec4735fe4e2d2864ceb15"
+  },
+  "unchanged_inputs": [
+    "b16_capacity.py",
+    "b16_family.py",
+    "b16_guard.py",
+    "b16_locks.py",
+    "b16_native.py",
+    "b16_oracles.py",
+    "b16_runner.py",
+    "epoch-checkpoint.json",
+    "epoch-driver.json",
+    "epoch-foundation.json",
+    "epoch-owning.json",
+    "epoch-pool.json",
+    "foundation-output-family.json",
+    "observed-nextest-timeout-testcase.xml",
+    "payload-manifest.json",
+    "source-payload-00.json",
+    "source-payload-01.json",
+    "source-payload-02.json",
+    "source-payload-03.json",
+    "source-payload-04.json",
+    "test_family_guard.py",
+    "test_runner_guards.py"
+  ],
+  "changed_existing_inputs": [
+    "b16_build_only.py",
+    "binding-template-UNBOUND.json",
+    "foundation-binding-UNBOUND.json",
+    "foundation-build-only-binding-UNBOUND.json",
+    "runner-integrity.json",
+    "test_build_only_guard.py"
+  ],
+  "verified_integrity_file_count": 25,
+  "original_four_guard_bodies_byte_equal": true,
+  "new_tests": [
+    "test_original_catalog_rejects_different_names_or_ignored_membership",
+    "test_original_catalog_rejects_other_filter_forms"
+  ],
+  "pure_cloud_controls": {
+    "old_real_catalog_failure_exit": 1,
+    "V7_six_tests_exit": 0,
+    "filter_rejections": 6,
+    "named_counter_rejections": 3
+  },
+  "all_templates_disabled": true,
+  "correction": "Prior V6 static review missed its contradiction with real original ignored/mismatch entries. Preserve the old review; V7 fixes only this provenance-consumer defect and exact original named case matching.",
+  "scope_limits": [
+    "No project ignore/test/oracle/time/retry policy changed.",
+    "No native source payload/epoch/SourceGuard/negative_with_finally/legacy mode/budget change.",
+    "Actual native BUILD_ONLY receipt needs exact current-host binding, including required Git tool provenance; source-only acceptance does not start native execution."
+  ],
+  "native_tests_executed": false
+}

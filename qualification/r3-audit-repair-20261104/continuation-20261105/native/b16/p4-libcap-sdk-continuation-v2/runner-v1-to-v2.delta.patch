@@ -1,0 +1,102 @@
+--- libcap-sdk-v1/run_prepare_sdk.py
++++ libcap-sdk-continuation-v2/run_prepare_sdk_v2.py
+@@ -18,7 +18,7 @@
+ SOURCE = ROOT / 'source'
+ TARGET = ROOT / 'target-dev-small'
+ TOOLS = ROOT / 'tools'
+-EVIDENCE = ROOT / 'evidence/bootstrap-P4-libcap-sdk-v1'
++EVIDENCE = ROOT / 'evidence/bootstrap-P4-libcap-sdk-continuation-v2'
+ COMMIT = '20fd174ded4e5ce01bda34e4f6d1d74803301f49'
+ TREE = '4a3374e22e16ce5c764288ad018cd9affadf94ea'
+ GUARD_BLOB = '967ef896907e698a07e8028e049a47e934570b1d'
+@@ -205,12 +205,19 @@
+ success = False
+ raw = sys.stdin.buffer.read()
+ request = json.loads(raw)
+-terminal = {'schema': 'hepta-ai395-official-libcap-private-sdk-v1', 'started_at': now(), 'source_tree': TREE,
++terminal = {'schema': 'hepta-ai395-official-libcap-private-sdk-continuation-v2', 'started_at': now(), 'source_tree': TREE,
+             'request': bytes_id(raw), 'tests_executed': False, 'build_executed': False, 'system_install': False, 'errors': []}
+ try:
+     assert request['execute'] is True and request['root_execution_guard_blob'] == GUARD_BLOB
+     assert os.getuid() == os.geteuid() == 1000 and platform.system() == 'Linux' and platform.machine() == 'x86_64'
+-    assert not os.path.lexists(EVIDENCE) and not os.path.lexists(SDK)
++    assert not os.path.lexists(EVIDENCE) and SDK.is_dir() and SDK.resolve() == SDK
++    prior_sdk_path = ROOT / 'evidence/bootstrap-P4-libcap-sdk-v1/terminal.json'
++    assert equal_content(file_id(prior_sdk_path), request['prior_failed_sdk_terminal'])
++    prior_sdk = json.loads(prior_sdk_path.read_text())
++    assert not prior_sdk['success'] and [x['exit_code'] for x in prior_sdk['commands']] == [0, 0]
++    assert [x['label'] for x in prior_sdk['commands']] == ['01-installed-runtime-version', 'libcap-dev-data-only-extract']
++    assert not prior_sdk.get('sdk_receipt')
++    terminal['prior_failed_sdk_terminal'] = file_id(prior_sdk_path)
+     capacity()
+     raw_baseline = (ROOT / 'evidence/bootstrap-P1-v1/source-baseline.json').read_bytes()
+     assert bytes_id(raw_baseline) == request['P1_source_baseline_identity']
+@@ -230,11 +237,11 @@
+     terminal['initial_guard'] = source_guard('initial')
+     installed = run('01-installed-runtime-version', ['/usr/bin/dpkg-query', '-W', '-f=${Version}', 'libcap2'])
+     assert Path(installed['stdout']['path']).read_text() == VERSION
+-    SDK.mkdir(mode=0o700)
+     downloads = SDK / 'downloads'
+     sysroot = SDK / 'sysroot'
+-    downloads.mkdir(mode=0o700)
+-    sysroot.mkdir(mode=0o700)
++    assert downloads.is_dir() and downloads.resolve() == downloads
++    assert sysroot.is_dir() and sysroot.resolve() == sysroot
++    assert not os.path.lexists(SDK / 'pkgconfig')
+     packages = []
+     for expected in request['packages']:
+         package = expected['name']
+@@ -249,24 +256,24 @@
+         save(package + '-official-package-metadata.original', metadata_path.read_bytes())
+         url = 'https://archive.ubuntu.com/ubuntu/' + meta['Filename']
+         destination = downloads / Path(meta['Filename']).name
+-        start = time.monotonic()
+-        with urllib.request.urlopen(url, timeout=60) as response, destination.open('xb') as stream:
+-            assert response.status == 200
+-            observed = 0
+-            while chunk := response.read(1024 * 1024):
+-                observed += len(chunk)
+-                assert observed <= expected['bytes']
+-                stream.write(chunk)
+-            download = {'url': url, 'final_url': response.url, 'http_status': response.status,
+-                        'duration_seconds': time.monotonic() - start, 'package': file_id(destination)}
+-        assert equal_content(download['package'], expected)
++        # These existing package streams are closed. Reuse only exact official bytes;
++        # v1 sampled its runtime identity before the output stream closed.
++        actual = file_id(destination)
++        assert equal_content(actual, expected)
++        download = {'url': url, 'package': actual, 'reused_closed_original_download': True,
++                    'prior_failed_sdk_terminal': file_id(prior_sdk_path), 'no_new_download': True}
+         save_json(package + '-download.json', download)
+-        archive = EVIDENCE / (package + '.data.tar')
+-        error_path = EVIDENCE / (package + '.data-tar.stderr.original')
+-        with archive.open('xb') as out, error_path.open('xb') as err:
+-            result = subprocess.run(['/usr/bin/dpkg-deb', '--fsys-tarfile', str(destination)], stdout=out, stderr=err, check=False)
+-        records.extend([file_id(archive), file_id(error_path)])
+-        assert result.returncode == 0
++        if package == 'libcap-dev':
++            archive = ROOT / 'evidence/bootstrap-P4-libcap-sdk-v1/libcap-dev.data.tar'
++            expected_archive = next(x for x in prior_sdk['records'] if x['path'] == str(archive))
++            assert equal_content(file_id(archive), expected_archive)
++        else:
++            archive = EVIDENCE / (package + '.data.tar')
++            error_path = EVIDENCE / (package + '.data-tar.stderr.original')
++            with archive.open('xb') as out, error_path.open('xb') as err:
++                result = subprocess.run(['/usr/bin/dpkg-deb', '--fsys-tarfile', str(destination)], stdout=out, stderr=err, check=False)
++            records.extend([file_id(archive), file_id(error_path)])
++            assert result.returncode == 0
+         members = []
+         with tarfile.open(archive, 'r:') as data_tar:
+             for member in data_tar.getmembers():
+@@ -278,7 +285,10 @@
+                     assert not member.linkname.startswith('/') and target != '..' and not target.startswith('../')
+                 members.append({'name': member.name, 'bytes': member.size, 'mode': oct(member.mode), 'type': member.type.decode('ascii'), 'linkname': member.linkname})
+         save_json(package + '-data-members.json', members)
+-        extract = run(package + '-data-only-extract', ['/usr/bin/dpkg-deb', '--extract', str(destination), str(sysroot)])
++        if package == 'libcap-dev':
++            extract = next(x for x in prior_sdk['commands'] if x['label'] == 'libcap-dev-data-only-extract')
++        else:
++            extract = run(package + '-data-only-extract', ['/usr/bin/dpkg-deb', '--extract', str(destination), str(sysroot)])
+         packages.append({'name': package, 'version': VERSION, 'official_metadata': file_id(metadata_path),
+                          'official_download': download, 'data_archive': file_id(archive), 'extract': extract})
+     lib = sysroot / 'usr/lib/x86_64-linux-gnu'

@@ -1,0 +1,273 @@
+{
+  "schema": "hepta-v7-actual-launch-and-first-status-v1",
+  "same_exact_key_reconciliation": true,
+  "prior_indeterminate_receipt": "3c1a3de7545dcea975e805055ca5ce0fb762130f",
+  "job_id": "1a1ab493f2b-fc05-4bfe",
+  "reused": false,
+  "launch": {
+    "backend": "systemd",
+    "launcher_pid": null,
+    "ok": true,
+    "unit": "hepta-runtime-job-1a1ab493f2b-fc05-4bfe"
+  },
+  "job": {
+    "id": "1a1ab493f2b-fc05-4bfe",
+    "created_unix_ms": 1793875066667,
+    "host": "ai395",
+    "idempotency_key": "hepta-ai395-b16-foundation-v7-20261105-v1",
+    "request_digest": "7e68a39babcc4798161bd0e21866818a4b6fe0fdf0bc9c40023b876be90a7cc9",
+    "request_fingerprint": 9108710135354378000,
+    "launch_state": "launched"
+  },
+  "first_status": {
+    "audit_recorded": true,
+    "backend": "systemd",
+    "job_id": "1a1ab493f2b-fc05-4bfe",
+    "state": "running",
+    "systemd": {
+      "ActiveState": "active",
+      "Description": "Hepta Runtime job 1a1ab493f2b-fc05-4bfe 31bc7e77fa78336b4efe47c9f1aacbde",
+      "ExecMainCode": "0",
+      "ExecMainPID": "607540",
+      "ExecMainStatus": "0",
+      "InvocationID": "d40621b3ee024ebda32b1d6f9e55bd30",
+      "LoadState": "loaded",
+      "Result": "success",
+      "SubState": "running"
+    }
+  },
+  "first_read": {
+    "audit_recorded": true,
+    "job_id": "1a1ab493f2b-fc05-4bfe",
+    "stderr": {
+      "bytes_hex": "",
+      "eof": true,
+      "next_offset": 0,
+      "offset": 0,
+      "size": 0,
+      "text": ""
+    },
+    "stdout": {
+      "bytes_hex": "7b226c61756e6368223a2022666f756e646174696f6e222c202261726776223a205b222f7573722f62696e2f707974686f6e33222c20222f686f6d652f71712f776f726b2f68657074612d61756469742d6231362d32303236313130352f65766964656e63652f6231362d666f756e646174696f6e2d76372d61693339352d32303236313130352d76312f72756e74696d652f6231365f72756e6e65722e7079222c20222d2d62696e64696e67222c20222f686f6d652f71712f776f726b2f68657074612d61756469742d6231362d32303236313130352f65766964656e63652f6231362d666f756e646174696f6e2d76372d61693339352d32303236313130352d76312f62696e64696e672e6a736f6e222c20222d2d65706f6368222c2022666f756e646174696f6e225d2c202262696e64696e675f736861323536223a202235396231613737393161333466613735336338613132653638336562643438363331653932306233356634323836336365626264386664323836373962303833222c2022736f75726365223a202234613333373465323265313663653563373634323838616430313863643961666661646639346561222c2022726f6f745f657865637574696f6e5f6775617264223a202239656636663636646361386563393630616164353131613666623961393733623763333334396138222c202263757272656e745f686f73745f70726f76656e616e6365223a20224255494c445f4f4e4c595f43555252454e545f484f5354227d0a",
+      "eof": true,
+      "next_offset": 564,
+      "offset": 0,
+      "size": 564,
+      "text": "{\"launch\": \"foundation\", \"argv\": [\"/usr/bin/python3\", \"/home/qq/work/hepta-audit-b16-20261105/evidence/b16-foundation-v7-ai395-20261105-v1/runtime/b16_runner.py\", \"--binding\", \"/home/qq/work/hepta-audit-b16-20261105/evidence/b16-foundation-v7-ai395-20261105-v1/binding.json\", \"--epoch\", \"foundation\"], \"binding_sha256\": \"59b1a7791a34fa753c8a12e683ebd48631e920b35f42863cebbd8fd28679b083\", \"source\": \"4a3374e22e16ce5c764288ad018cd9affadf94ea\", \"root_execution_guard\": \"9ef6f66dca8ec960aad511a6fb9a973b7c3349a8\", \"current_host_provenance\": \"BUILD_ONLY_CURRENT_HOST\"}\n"
+    }
+  },
+  "installation_receipt": {
+    "actual_free_bytes_before_install": 631759765504,
+    "binding": {
+      "blob": "29bb5e643fddc7fc571f6e4631ac3a9074f247a2",
+      "bytes": 19313,
+      "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/b16-foundation-v7-ai395-20261105-v1/binding.json",
+      "sha256": "59b1a7791a34fa753c8a12e683ebd48631e920b35f42863cebbd8fd28679b083"
+    },
+    "fresh22GB_still_rechecked_by_frozen_V7": true,
+    "historical_original_not_relabelled": true,
+    "other_epochs_authorized": false,
+    "root_execution_guard": "9ef6f66dca8ec960aad511a6fb9a973b7c3349a8",
+    "runtime_files": [
+      {
+        "blob": "6a49c3e2f37d7f4cd42f45d7e37cca8c16669f12",
+        "bytes": 14919,
+        "path": "b16_build_only.py",
+        "sha256": "c19d6a25664a46c5736803dc60807a165bccbd57c1d04a6621f7a11eca7b4a0d"
+      },
+      {
+        "blob": "4966c059c39ba5f7342feb40f88fda906607a32d",
+        "bytes": 6342,
+        "path": "b16_capacity.py",
+        "sha256": "1581bdda147f4a74bd41c421cd267686ee75c42619ce37eddc5e459e41a0174d"
+      },
+      {
+        "blob": "cd88578b832200f3fc96435f490440742dc76528",
+        "bytes": 7614,
+        "path": "b16_family.py",
+        "sha256": "6d18326d3dd6f539e85585c23cf682ae1c6cbfc1ef3e44c25fe750d37e006f8e"
+      },
+      {
+        "blob": "a9a38d14c220be4c44336a6fefac08a168e52dcf",
+        "bytes": 10896,
+        "path": "b16_guard.py",
+        "sha256": "d0ba5a5746711a322438200498786044c8d561d9a256f7280a2c4791c6bd0389"
+      },
+      {
+        "blob": "1a6583b6226af4d20bb336b778476dedb02d59f4",
+        "bytes": 13015,
+        "path": "b16_locks.py",
+        "sha256": "5edb44c7e4a6ce63981adc4681fead1987ddc19389e7d0659c9e4d3e13d8514e"
+      },
+      {
+        "blob": "7596d6a32f4066cc72336767bcc71313d68675f8",
+        "bytes": 17595,
+        "path": "b16_native.py",
+        "sha256": "10620e1688ba208db22e22b6ecd727657b18967ca0d749be8ff0fd348fd1c92d"
+      },
+      {
+        "blob": "1a6efff50846f5c04bb5ea6def203ada42342050",
+        "bytes": 7483,
+        "path": "b16_oracles.py",
+        "sha256": "5928528add9ecb0f6a1681057a26954d9c607fb14c129293fa4bc6eac4e07e85"
+      },
+      {
+        "blob": "4c8c2477189b84c6fe7b19c09fd27255bc7d1b66",
+        "bytes": 16005,
+        "path": "b16_runner.py",
+        "sha256": "f419dfa8e4cd98fc729c8b9851d8ea8ae3413a0fb1906358f8556920200b6944"
+      },
+      {
+        "blob": "936af20c909732c59d9e277771f16a76d853b929",
+        "bytes": 3281,
+        "path": "binding-template-UNBOUND.json",
+        "sha256": "86b89a8c59d048f35bfd377041022abcd95083aae505fd79a6e99b32df893116"
+      },
+      {
+        "blob": "7fb7a81cacd734e395f63d93938f9f4c94ba3468",
+        "bytes": 3938,
+        "path": "epoch-checkpoint.json",
+        "sha256": "0a9d2e32fe5aa16ef6dd490383fd4f7cc6ef10400a5a94a7bd5e97719b8780f8"
+      },
+      {
+        "blob": "5bd1014173766cb3599439e6a202514916286a5e",
+        "bytes": 4348,
+        "path": "epoch-driver.json",
+        "sha256": "d28c2e9faa1cc0e3272d6aba88bfc3a49b062a484b6df530cca2ef2cf95a189f"
+      },
+      {
+        "blob": "6cc71ef831549fbe54f26c9bbe080e53effc59fa",
+        "bytes": 11472,
+        "path": "epoch-foundation.json",
+        "sha256": "a8ac8886ec02230d5004dc8b608e0a33c0b89d5fdfabc1032569a13ee812fabd"
+      },
+      {
+        "blob": "ce08a93c32f41135139b858d3bc22c6b224fec12",
+        "bytes": 265,
+        "path": "epoch-owning.json",
+        "sha256": "87c7e1c517d3d601884a7555a7c677cec7490743dd2b5f7c0f1e2c45131efbe5"
+      },
+      {
+        "blob": "6d686ead86ef2c83f3b32f8bbd1b73e662d26093",
+        "bytes": 3807,
+        "path": "epoch-pool.json",
+        "sha256": "19e1a06c6c97e20d1f1ef097222f6f7c2877850502223f16ed939848e228bf64"
+      },
+      {
+        "blob": "35ba6e68663d02f4c57379b1034711ddfc4b1977",
+        "bytes": 3334,
+        "path": "foundation-binding-UNBOUND.json",
+        "sha256": "d47141faabd521a4c7fbee473baf2561d345cee6d8280a7baacf77ea82fcee14"
+      },
+      {
+        "blob": "69b4425169c4593493655175bcab804828ddcfca",
+        "bytes": 3836,
+        "path": "foundation-build-only-binding-UNBOUND.json",
+        "sha256": "1df2f405e10cf8978ddd925bae65a7dc02bfcc5d2cf5c26163a211c3625b2ea8"
+      },
+      {
+        "blob": "d3bfb3b487ceede8c923d1714fdadf87a06ed441",
+        "bytes": 142656,
+        "path": "foundation-output-family.json",
+        "sha256": "5f63fcb507e899cc19df88e86efe997a34929edd5f45c83e7f7197987149a204"
+      },
+      {
+        "blob": "e3cd2d7df83b2d5abebd96840722edcdd34d32f8",
+        "bytes": 390,
+        "path": "observed-nextest-timeout-testcase.xml",
+        "sha256": "fabd54568dd293a814449bc59027d1f5ecd6ee96a806b68b691ae2bb170a57df"
+      },
+      {
+        "blob": "5f4d2b2b82a3d1c0043ec4735fe4e2d2864ceb15",
+        "bytes": 369514,
+        "path": "observed-original-A-catalog.json",
+        "sha256": "6f0a4f7566621b451701a2612d068f194fc6a1b3aa1457722381d3d53c8a0690"
+      },
+      {
+        "blob": "64db580beabe2642eb8611184dac4fc686fe34e1",
+        "bytes": 62667,
+        "path": "payload-manifest.json",
+        "sha256": "a34cd6c5400deff4fedfffcb1f4f170eecabbb6bbfab1916829ab3911e986237"
+      },
+      {
+        "blob": "18f27fbb488777d621b4f37aa0cf70956cdbe7d9",
+        "bytes": 5679,
+        "path": "runner-integrity.json",
+        "sha256": "96bbff3180620d841b90b65ea1e159d04931c47fd2de1c270ba0f6c059ac5202"
+      },
+      {
+        "blob": "8e5ed16eca037384b17830f3625489ddf69f7d7a",
+        "bytes": 350291,
+        "path": "source-payload-00.json",
+        "sha256": "44299f93d8cfc2cd6a264a1df985052d8c7c4eb16e62c9bd8614b70cb9564f78"
+      },
+      {
+        "blob": "e621574b496731997af604b8e4b138851c8be3d0",
+        "bytes": 333825,
+        "path": "source-payload-01.json",
+        "sha256": "85adc1e88702b4fb8c9d417a936d665519fa56386cb434bbc6ef55d5f9cdf07d"
+      },
+      {
+        "blob": "3bb4615120935560dd4bff326795b68e03cfb31a",
+        "bytes": 342693,
+        "path": "source-payload-02.json",
+        "sha256": "563074644cce7c3e63f92e5b5e346e09d24ff4ca03e90cea4ca1b001347186ce"
+      },
+      {
+        "blob": "819cfab8bf8a410d944e7d2c8c185d07a1eea886",
+        "bytes": 345962,
+        "path": "source-payload-03.json",
+        "sha256": "8a633ff6916a8b543e8aca196c54a41cc180d8f68c2cd2a26f2fe0e87ca57f55"
+      },
+      {
+        "blob": "e5a287d7ae1f8a0c77cec32ce1113a48e94f8daa",
+        "bytes": 135857,
+        "path": "source-payload-04.json",
+        "sha256": "5d43327e7379cca4e6502973efd7ba6a3f67fb464c3bf41ebbaf1f88c6132bba"
+      },
+      {
+        "blob": "00069847aa5a25e760fee57c3c1a9cfa6c092ae5",
+        "bytes": 15667,
+        "path": "test_build_only_guard.py",
+        "sha256": "6563bc785ccd11d3c44b45ca2d8cf3df4baa807599a5a692826c359c463409a8"
+      },
+      {
+        "blob": "f0dc2e9e3390fe83dd41a40b964062fc8f95789e",
+        "bytes": 8509,
+        "path": "test_family_guard.py",
+        "sha256": "3c4ecffcf8c7bc4882c7a4f3455f044cfd226db72fe15559cf7b583d10ba7eb9"
+      },
+      {
+        "blob": "378fe4b966d86cced0c89303c34c6ad7bf3b0d57",
+        "bytes": 15658,
+        "path": "test_runner_guards.py",
+        "sha256": "d83e8391dc64aacd2daa1bddb2ec104796f6e30f7054796ef5144b7265b67128"
+      }
+    ],
+    "schema": "hepta-ai395-b16-foundation-v7-installation-v1",
+    "source_identity_bridge": {
+      "current_host": "ai395",
+      "current_host_test_qualification": false,
+      "historical_full_artifact_inner_paths_unchanged": true,
+      "historical_published_A_complete_tree": "091e659e0da6602299fd14cfa93889191405edd8",
+      "historical_published_A_head": "0e139b599f0fe451f80fb7db4b2913bb9c679dce",
+      "last_tested_A_host": "rog",
+      "last_tested_A_tree": "fb9e131272f7e7a138d6c0d1af2b048b9a6ab7ff",
+      "limit": "The native ordinary commit20fd/tree4a is the authorized B source. Publication091e includes evidence overlay, and current product branch5b633 does not change this fixed native basis. Historical ROG results remain historical; ai395 baseline is BUILD_ONLY.",
+      "native_code_tree": "4a3374e22e16ce5c764288ad018cd9affadf94ea",
+      "native_ordinary_HEAD": "20fd174ded4e5ce01bda34e4f6d1d74803301f49",
+      "native_ordinary_index_sha256": "6b39b6b27d164001c9b130487d0d7879be5f80e22a4579d06fd472c2bb8d7ac0",
+      "same_code_source_commit": "20fd174ded4e5ce01bda34e4f6d1d74803301f49"
+    },
+    "source_or_target_deleted": false
+  },
+  "installation_native_identity": {
+    "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/b16-foundation-v7-ai395-20261105-v1/installation-receipt.json",
+    "bytes": 7932,
+    "sha256": "bf36db5fa8f2a2e8169172c8b4ec489cd89251b0486fa8f3b67ed00ae1962daf"
+  },
+  "limits": [
+    "reused=false is the controller response; the earlier timed-out tool result remains indeterminate and is not overwritten",
+    "running is not a case outcome; stdout EOF in the sampled read is not process completion"
+  ]
+}

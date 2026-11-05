@@ -1,0 +1,53 @@
+{
+  "actual_variant_field": "ptrcomp_sandbox_release_x86_64-unknown-linux-gnu",
+  "correction": "Compare the actual original string to the exact pinned variant; the immutable original is not boolean.",
+  "delta": {
+    "bytes": 864,
+    "git_blob": "befda861e76c549cd17c2a204dcca743db993e82",
+    "local_path": "ci-audit/recovered-20261105/b16-ai395-foundation-v7-v2/v1-to-v2-v8-schema.delta.patch",
+    "sha256": "583e33411bef46d0b96df1ce8604430c0e83b10c6c220d828e6bbe5e8b6d8d69"
+  },
+  "execute": false,
+  "frozen_V7_29_files_unchanged": true,
+  "historical_transfer_terminal": {
+    "bytes": 2531,
+    "git_blob": "7db427b227f763c50d79f9d703ec1212731956ce",
+    "local_path": "ci-audit/recovered-20261105/b16-ai395-foundation-v7-v1/historical-transfer-terminal.original.json",
+    "sha256": "6c8283ce7a028a8a6a72141519c870535d718a4b43de2c2fab2251ba3e9ec0f2"
+  },
+  "launcher": {
+    "bytes": 18440,
+    "git_blob": "75623f2ed4c5e8f0dd6009df542dae462d5a847b",
+    "local_path": "ci-audit/recovered-20261105/b16-ai395-foundation-v7-v2/launch_foundation_v7.py",
+    "sha256": "6822afbdc2b9e738fe16801a2eb7ee7865a8cb0880f7578d40813fe42ff24dc5"
+  },
+  "no_native_action_or_tests": true,
+  "original_v1_preserved": true,
+  "original_v8_receipt": {
+    "bytes": 5101,
+    "git_blob": "cd5c45c0cf03593644a80315186f1ebae2b9e07b",
+    "local_path": "ci-audit/recovered-20261105/b16-ai395-cold-bootstrap-v1/p3-supplier-correction/v8-prerequisites.json",
+    "sha256": "4872133bd7e4d2afdf9a33fc472202c545793dcf2c55f8c918d3f3ee47075f15"
+  },
+  "parent_candidate_manifest": {
+    "bytes": 2641,
+    "git_blob": "aff3f58ab7e706c23c11b2b07e32067f87478252",
+    "local_path": "ci-audit/recovered-20261105/b16-ai395-foundation-v7-v1/manifest.json",
+    "sha256": "035ac3d6458ff18e54d0b96e442989740ff31aba8125d055f5d44979def1c9d3"
+  },
+  "root_execution_guard_required": true,
+  "schema": "hepta-ai395-foundation-v7-launcher-schema-correction-v2",
+  "source_payload_oracles_budget_environment_and_sdk_checks_unchanged": true,
+  "unchanged_binding": {
+    "bytes": 19276,
+    "git_blob": "d5a6b63f3afb5621e36d5bd7ce7d37af1b6ff026",
+    "local_path": "ci-audit/recovered-20261105/b16-ai395-foundation-v7-v1/foundation-binding-CANDIDATE.json",
+    "sha256": "03255650f0b30c939e467d88b354a75acf467bf302a3264f564f7c4216232773"
+  },
+  "unchanged_request": {
+    "bytes": 930798,
+    "git_blob": "0b79452f3fe7acbf618a6f66736543ac05e07704",
+    "local_path": "ci-audit/recovered-20261105/b16-ai395-foundation-v7-v1/launch-request-CANDIDATE.json",
+    "sha256": "5e2f59088d32f0e93603c40c72f9ed605b479f8d40824ec5528312d2c7141311"
+  }
+}

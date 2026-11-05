@@ -1,0 +1,167 @@
+{
+  "schema": "hepta-b16-P4-libcap-continuation-v3-independent-static-review-v1",
+  "verdict": "STATIC_PASS_ORIGINAL_BUILD_ONLY_CONTINUATION",
+  "native_execution_by_reviewer": false,
+  "new_gate_or_test_added": false,
+  "V6_changed_or_enabled": false,
+  "inputs": {
+    "run_bootstrap_p4_v3.py": {
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/recovered-20261105/b16-ai395-cold-bootstrap-v1/p4-libcap-continuation-v3/run_bootstrap_p4_v3.py",
+      "bytes": 29467,
+      "sha256": "f932b41206ba0c5cc95aa18bdcaade440c7e1337e6236b9bf953959e403237a5",
+      "git_blob": "50e9b65b02d9663de21b242a9a8e0ebd03bd6e09"
+    },
+    "request.json": {
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/recovered-20261105/b16-ai395-cold-bootstrap-v1/p4-libcap-continuation-v3/request.json",
+      "bytes": 74627,
+      "sha256": "d86ae86014c4f930e3c02f49529cac198fedc9f8a12158fedc6eb1403d9959ba",
+      "git_blob": "f684b5198860575962678fea3e17d8927e4e66b3"
+    },
+    "manifest.json": {
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/recovered-20261105/b16-ai395-cold-bootstrap-v1/p4-libcap-continuation-v3/manifest.json",
+      "bytes": 2609,
+      "sha256": "c7fc8297f91f5e18f57628ce6c36725e54ebea5aaaa3b7e9c88ebf8e590f883d",
+      "git_blob": "3ff533f8dd29dccc174737e21ec8b53928c645b2"
+    },
+    "runner-v2-to-v3.delta.patch": {
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/recovered-20261105/b16-ai395-cold-bootstrap-v1/p4-libcap-continuation-v3/runner-v2-to-v3.delta.patch",
+      "bytes": 9815,
+      "sha256": "571494a5b43acc5f5c7af9b8b48c5eb8db4fd3fdf93c5e8f27e9ab74d3646736",
+      "git_blob": "44719c0e359b1c107a05d5fd99556c017b6931e8"
+    }
+  },
+  "v2_parent": {
+    "path": "/workspace/scratch/07dd58cc9630/ci-audit/recovered-20261105/b16-ai395-cold-bootstrap-v1/p4-openssl-continuation-v2/run_bootstrap_p4_v2.py",
+    "bytes": 24790,
+    "sha256": "77eb447174f9b10054663f7f173e8c64e910cfd8c53e8f7386fcfda6cd964687",
+    "git_blob": "9257c8988db205fef9156ae58dbd4e7a18561579"
+  },
+  "fourteen_original_functions_byte_identical": [
+    "bytes_id",
+    "canonical_digest",
+    "capacity",
+    "equal_content",
+    "file_id",
+    "git",
+    "normal_artifacts",
+    "now",
+    "portable_graph",
+    "run",
+    "save",
+    "save_json",
+    "source_guard",
+    "verify_openssl_sdk"
+  ],
+  "only_added_function": "verify_libcap_sdk",
+  "full_v2_to_v3_unified_delta_recomputed_exact": true,
+  "original_helper_build_through_full_catalog_and_artifact_hash_segment_byte_identical": true,
+  "fixed_contract": {
+    "source_commit": "20fd174ded4e5ce01bda34e4f6d1d74803301f49",
+    "source_tree": "4a3374e22e16ce5c764288ad018cd9affadf94ea",
+    "same_owned_target": true,
+    "source_guard_function_unchanged": true,
+    "six_distinct_command_source_guards": true,
+    "graph_members": 193,
+    "graph_nodes": 1501,
+    "program_roles": 363,
+    "helpers": 33,
+    "eligible": 19506,
+    "ignored": 57,
+    "minimum_available_bytes": 64000000000,
+    "exact_case_roster_and_feature_graph_request_unchanged": true,
+    "literal_commands_in_original_order": [
+      "original normal-six cargo build --locked --profile dev-small --message-format=json-render-diagnostics",
+      "cargo metadata --locked --format-version=1",
+      "cargo nextest list --locked --cargo-profile dev-small --message-format=json"
+    ],
+    "tests_executed_by_commands": false,
+    "historic_ROG_test_qualification_separate": true
+  },
+  "request_delta": {
+    "changed_shared_fields": [
+      "failed_P4_terminal_identity",
+      "runner"
+    ],
+    "added_fields": [
+      "continuation",
+      "libcap_sdk_identity",
+      "libcap_success_terminal_identity"
+    ],
+    "prior_v2_identity": {
+      "bytes": 31704,
+      "git_blob": "3fcd2379ab75121f207be534164783c815ab2302",
+      "sha256": "fc746b78f97db4ce88a366e118b2ffa911b14704e411fed5fdc227df439eaf44"
+    },
+    "prior_v2_required_original_exit_vector": [
+      0,
+      0,
+      101
+    ],
+    "prior_v2_records_not_relabelled": true,
+    "openssl_receipt_and_terminal_pins_byte_identical_to_v2": true
+  },
+  "libcap_binding": {
+    "sdk_receipt": {
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/recovered-20261105/b16-ai395-cold-bootstrap-v1/p4-libcap-sdk-continuation-v2/originals/libcap-sdk.json",
+      "bytes": 21821,
+      "sha256": "91a00c1b04650fe67d60af6573b60f5d4a2e50414262157cc6a636ba52b7c88b",
+      "git_blob": "86c0f8f58e339106f0606c507848d8ca344480c6"
+    },
+    "successful_sdk_terminal": {
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/recovered-20261105/b16-ai395-cold-bootstrap-v1/p4-libcap-sdk-continuation-v2/originals/terminal.json",
+      "bytes": 31318,
+      "sha256": "5ef810219ca9d7b10417faf09143c509100c529869d684bad5dc589fa25eacac",
+      "git_blob": "ad4e0a253b1a4cae6be6e96d2608c73d4c8e820e"
+    },
+    "both_match_request_pins": true,
+    "official_pc": {
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/recovered-20261105/b16-ai395-cold-bootstrap-v1/p4-libcap-sdk-continuation-v2/originals/libcap.pc.official.original",
+      "bytes": 211,
+      "sha256": "801addc62c7b89b6411d2fc7b11d48db875bb9a56d80e0540a4d321d820dd3a0",
+      "git_blob": "b036f5e3c39410f0bda72f524a02d2e863d5daab"
+    },
+    "relocation_original": {
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/recovered-20261105/b16-ai395-cold-bootstrap-v1/p4-libcap-sdk-continuation-v2/originals/libcap-pc-relocation.json",
+      "bytes": 1379,
+      "sha256": "f9d0f162587f694dfd14119eb81c66c38ea228cf500a3ae6d6223928aac9a84a",
+      "git_blob": "22af1da6ddfacd7ba4ab9349aa657a06964c4d7d"
+    },
+    "real_probe_stdout": {
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/recovered-20261105/b16-ai395-cold-bootstrap-v1/p4-libcap-sdk-continuation-v2/originals/pkg-config-libcap-relocated-flags.stdout.original",
+      "bytes": 197,
+      "sha256": "def27b43f06ce71eb1597673f59cc0e7235bf51bc9fe65a9fb2b2bd7b1294a31",
+      "git_blob": "589241f05736cee2edd9a3ea75ad9af0d5b32ad7"
+    },
+    "environment": {
+      "PKG_CONFIG_PATH": "/home/qq/work/hepta-audit-b16-20261105/tools/libcap-2.75-10ubuntu2/pkgconfig"
+    },
+    "only_three_whole_pc_lines_change": [
+      "prefix",
+      "libdir",
+      "includedir"
+    ],
+    "exact_overlay_reconstructed": {
+      "bytes": 448,
+      "sha256": "21084a2f5661f1aeebd4094d7fbebd500544da9094de5a26c7255c7f20f8ee5c",
+      "git_blob": "12096a49ae17719cef5988422b282c937b6848fb"
+    },
+    "exec_prefix_and_all_nonpath_fields_preserved": true,
+    "real_probe_flags_use_private_include_and_library_paths_and_original_lcap": true,
+    "two_official_packages_two_headers_two_aliases_pinned": true,
+    "private_and_system_runtime_byte_identity_required": true,
+    "pkg_config_real_symlink_and_resolved_binary_pinned": true,
+    "global_pkg_config_sysroot_or_libdir_not_added": true
+  },
+  "lifecycle_findings": [
+    "V3 retains the existing OpenSSL verifier unchanged and adds a libcap verifier for complete pinned headers, package archives, actual private/system runtime bytes, both symlink targets, original/overlay .pc and real /usr/bin/pkg-config resolved file.",
+    "Both SDK initial checks occur before any Cargo command. Normal completion runs both final checks before final source guard and baseline publication. On failure after an initial SDK check, finally runs that SDK terminal check independently and appends any error; it does not turn failures into success.",
+    "One combined effective environment is created before all three original commands. Its only new SDK environment key is PKG_CONFIG_PATH from the pinned libcap receipt; OpenSSL and V8 inputs retain their prior identities.",
+    "New evidence path and prior-failure pins preserve v2. Any successful future baseline will contain only the new three command receipts and six guards, without relabeling the old successful helper/metadata records.",
+    "The produced role remains BUILD_ONLY_CURRENT_HOST with tests_executed=false/test_qualification=false. No B execution or current-host A-test PASS is inferred."
+  ],
+  "limits": [
+    "This is a source-only continuation review. It does not assert that P4 v3 has succeeded or that future helper/catalog binary hashes exist.",
+    "The SDK original receipt, terminal, original .pc, relocation and probe stdout were independently read/hash checked locally; physical package/header/library operations remain the identified CI observations, not new reviewer host reads.",
+    "A later successful P4 requires its actual full outputs and separate V6 binding review. No future hash or execution result is prefilled."
+  ]
+}

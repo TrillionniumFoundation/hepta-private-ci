@@ -1,0 +1,83 @@
+{
+  "schema": "hepta-root-foundation-enabled-request-lossless-v1",
+  "at": "2026-11-05T10:30:59.728977+00:00",
+  "role": "Exact root-enabled launch request, not a native execution result",
+  "original": {
+    "bytes": 934869,
+    "sha256": "16c82990d9fb132cc0f6e0c8e2c446458258ba76b1cb45518d86116b4d7ed90b",
+    "blob": "29151cd26b4ffdbb066bbd2c7fdf7f2b4dcf1ae1"
+  },
+  "compressed": {
+    "bytes": 699640,
+    "sha256": "196e33b11c0f1288fc7a38b1856605e850b3ef24c2edd400742a65179ee3a66f",
+    "blob": "8e9f8ecb339333b9c70d42f6894e681ac775f70d"
+  },
+  "parts": [
+    {
+      "name": "part-000.b64",
+      "compressed_offset": 0,
+      "file": {
+        "bytes": 262145,
+        "sha256": "1fc6e15caddbef7d6d363e4608335d64d46d1870577cd49e941f7c157691ef82",
+        "blob": "770afc8676a205eeacb9c1c6bb4cefdcc0de5a4d"
+      },
+      "decoded_chunk": {
+        "bytes": 196608,
+        "sha256": "0d77192655b1dd189446b017fc7805fe8ad9142faec50b3119ecb9ff2af75ee1",
+        "blob": "7c37db936182a55b5ce2a31dac3bcf16bc5b322a"
+      }
+    },
+    {
+      "name": "part-001.b64",
+      "compressed_offset": 196608,
+      "file": {
+        "bytes": 262145,
+        "sha256": "bdf29f298239df3bba712cd248f62fa887bf99b085610c7043f44d33b52b9277",
+        "blob": "d5a9036653f4dc5d028728f3cc62b9eddf629374"
+      },
+      "decoded_chunk": {
+        "bytes": 196608,
+        "sha256": "834ecd538d9c879e1dbff64852523785d2184417cd64a025dfc1a1ba80556b05",
+        "blob": "9d8da728a7da75ccf15dc7d66c315bc39f8631b4"
+      }
+    },
+    {
+      "name": "part-002.b64",
+      "compressed_offset": 393216,
+      "file": {
+        "bytes": 262145,
+        "sha256": "21d284a3e9682cd51a3afa4cc268533949ca530a16111b77c01c49f3891c925f",
+        "blob": "76adb2f8a963bc970dcfec4f70ef77bdf73d6b6d"
+      },
+      "decoded_chunk": {
+        "bytes": 196608,
+        "sha256": "d852fe233cdbc11079de1a1fc5a5825920ea7eb9712820c7d3db5dd6e8bed9c5",
+        "blob": "8a13ef3704a6d27a00e548be5790d0010e98be73"
+      }
+    },
+    {
+      "name": "part-003.b64",
+      "compressed_offset": 589824,
+      "file": {
+        "bytes": 146425,
+        "sha256": "8c3f2d6ffd7c6fa0b9672a29863f7782fb5daab31048efa30ac1665d3d88aa49",
+        "blob": "5f730ad29f6f172616a8fa244e2d9454f3ecfa96"
+      },
+      "decoded_chunk": {
+        "bytes": 109816,
+        "sha256": "3447f9da4c5202ab8eade627a88fc538231de6636d11419b5e69d1286703a1ba",
+        "blob": "b7c5a5d8a8328474cc40e6772a3e6ce036fa753b"
+      }
+    }
+  ],
+  "part_count": 4,
+  "reconstruction": "Read ordered parts, strip the single terminal LF, strict base64 decode, concatenate compressed chunks, gzip decompress; verify exact original identity before parsing.",
+  "root_guard_blob": "9ef6f66dca8ec960aad511a6fb9a973b7c3349a8",
+  "binding": {
+    "bytes": 19313,
+    "sha256": "59b1a7791a34fa753c8a12e683ebd48631e920b35f42863cebbd8fd28679b083",
+    "blob": "29bb5e643fddc7fc571f6e4631ac3a9074f247a2"
+  },
+  "launcher_blob": "75623f2ed4c5e8f0dd6009df542dae462d5a847b",
+  "test_result_claimed": false
+}

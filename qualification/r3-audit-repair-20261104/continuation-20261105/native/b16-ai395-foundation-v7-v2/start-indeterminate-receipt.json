@@ -1,0 +1,175 @@
+{
+  "schema": "hepta-foundation-v7-start-indeterminate-v1",
+  "root_execution_guard": "9ef6f66dca8ec960aad511a6fb9a973b7c3349a8",
+  "host": "ai395",
+  "idempotency_key": "hepta-ai395-b16-foundation-v7-20261105-v1",
+  "actual_start_calls": 1,
+  "original_start_result": {
+    "content": [
+      {
+        "type": "text",
+        "text": "tool call error: tool call failed for `codex_apps/heptaruntime_mac_controller.process_start`\n\nCaused by:\n    Mcp error: -32603: MCP request timed out"
+      }
+    ],
+    "isError": true
+  },
+  "local_response_parser_error": {
+    "type": "SyntaxError",
+    "message": "Unexpected token 'o', \"tool call e\"... is not valid JSON",
+    "scope": "Local parsing of the non-JSON tool-error text; does not describe native execution."
+  },
+  "durable_job_id": null,
+  "request_identity": {
+    "bytes": 934869,
+    "sha256": "16c82990d9fb132cc0f6e0c8e2c446458258ba76b1cb45518d86116b4d7ed90b"
+  },
+  "launcher_identity": {
+    "bytes": 18440,
+    "sha256": "6822afbdc2b9e738fe16801a2eb7ee7865a8cb0880f7578d40813fe42ff24dc5"
+  },
+  "inventory": {
+    "complete": true,
+    "total": 1732,
+    "scope": "Only retained identities after root guard recorded timestamp, through this snapshot; status authoritative individually, identity inventory is not live status.",
+    "examined_ids": [
+      {
+        "id": "1a1ab4023a9-fc05-4baf",
+        "created_unix_ms": 1793874469801
+      },
+      {
+        "id": "1a1ab40444f-fc05-4bb1",
+        "created_unix_ms": 1793874478159
+      },
+      {
+        "id": "1a1ab406ccd-fc05-4bb2",
+        "created_unix_ms": 1793874488525
+      },
+      {
+        "id": "1a1ab40d140-fc05-4bb5",
+        "created_unix_ms": 1793874514241
+      },
+      {
+        "id": "1a1ab414765-fc05-4bb6",
+        "created_unix_ms": 1793874544485
+      },
+      {
+        "id": "1a1ab415ea0-fc05-4bb9",
+        "created_unix_ms": 1793874550432
+      },
+      {
+        "id": "1a1ab418116-fc05-4bbc",
+        "created_unix_ms": 1793874559254
+      },
+      {
+        "id": "1a1ab419cc7-fc05-4bbd",
+        "created_unix_ms": 1793874566343
+      },
+      {
+        "id": "1a1ab41a9c0-fc05-4bbe",
+        "created_unix_ms": 1793874569664
+      },
+      {
+        "id": "1a1ab422ebc-fc05-4bbf",
+        "created_unix_ms": 1793874603708
+      },
+      {
+        "id": "1a1ab4250ed-fc05-4bc1",
+        "created_unix_ms": 1793874612461
+      },
+      {
+        "id": "1a1ab438445-fc05-4bc6",
+        "created_unix_ms": 1793874691141
+      },
+      {
+        "id": "1a1ab441211-fc05-4bcc",
+        "created_unix_ms": 1793874727441
+      },
+      {
+        "id": "1a1ab443437-fc05-4bcd",
+        "created_unix_ms": 1793874736183
+      },
+      {
+        "id": "1a1ab445346-fc05-4bcf",
+        "created_unix_ms": 1793874744134
+      }
+    ],
+    "owned_foundation_match_count": 0,
+    "match_summary": [
+      {
+        "job_id": "1a1ab4023a9-fc05-4baf",
+        "retrieved": true,
+        "matched_owned_foundation": false
+      },
+      {
+        "job_id": "1a1ab40444f-fc05-4bb1",
+        "retrieved": true,
+        "matched_owned_foundation": false
+      },
+      {
+        "job_id": "1a1ab406ccd-fc05-4bb2",
+        "retrieved": true,
+        "matched_owned_foundation": false
+      },
+      {
+        "job_id": "1a1ab415ea0-fc05-4bb9",
+        "retrieved": true,
+        "matched_owned_foundation": false
+      },
+      {
+        "job_id": "1a1ab418116-fc05-4bbc",
+        "retrieved": true,
+        "matched_owned_foundation": false
+      },
+      {
+        "job_id": "1a1ab419cc7-fc05-4bbd",
+        "retrieved": true,
+        "matched_owned_foundation": false
+      },
+      {
+        "job_id": "1a1ab41a9c0-fc05-4bbe",
+        "retrieved": true,
+        "matched_owned_foundation": false
+      },
+      {
+        "job_id": "1a1ab4250ed-fc05-4bc1",
+        "retrieved": true,
+        "matched_owned_foundation": false
+      },
+      {
+        "job_id": "1a1ab438445-fc05-4bc6",
+        "retrieved": true,
+        "matched_owned_foundation": false
+      },
+      {
+        "job_id": "1a1ab441211-fc05-4bcc",
+        "retrieved": true,
+        "matched_owned_foundation": false
+      },
+      {
+        "job_id": "1a1ab443437-fc05-4bcd",
+        "retrieved": true,
+        "matched_owned_foundation": false
+      },
+      {
+        "job_id": "1a1ab445346-fc05-4bcf",
+        "retrieved": true,
+        "matched_owned_foundation": false
+      }
+    ]
+  },
+  "installation_receipt_file_info": {
+    "content": [
+      {
+        "type": "text",
+        "text": "remote helper on ai395-lan failed with 1\nstdout:\n\nstderr:\nFileNotFoundError: [Errno 2] No such file or directory: 'b16-foundation-v7-ai395-20261105-v1'"
+      }
+    ],
+    "structuredContent": {
+      "error_code": "INVALID_ARGUMENT"
+    },
+    "isError": true
+  },
+  "no_new_key_or_replay": true,
+  "no_source_target_cache_or_configuration_changed_by_reconciliation": true,
+  "qualification": "INDETERMINATE_TOOL_START; no native test outcome assigned"
+}

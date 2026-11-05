@@ -1,0 +1,33 @@
+{
+  "schema": "hepta-immutable-ci-transport-v1",
+  "archive": {
+    "name": "original-ci.tar.gz",
+    "bytes": 88198,
+    "sha256": "44172cc1aa4970122ac753577f04ef320e4cf2d0f3681c508ab56075550f0455",
+    "computed_git_blob": "536ae561fe34c683adce3d057b1c216f6fb935a7"
+  },
+  "original_files_manifest": {
+    "name": "original-files-manifest.json",
+    "bytes": 3733,
+    "sha256": "faa70bc9b82e1059714a45995943b9a39771a874f03249c3d74682e02c4924ba",
+    "computed_git_blob": "542bff8110d3b42b36604c5914e5b2f87c3544e2"
+  },
+  "part_count": 1,
+  "parts": [
+    {
+      "index": 0,
+      "name": "original-ci.tar.gz.part000.b64.txt",
+      "compressed_offset": 0,
+      "file": {
+        "bytes": 117601,
+        "sha256": "c095ba097b35e042d0f18195bea90ed7482e6d2f75c7126375369b48cf062991",
+        "computed_git_blob": "26de42c96bae5bbfae929c9a6612b3a22318fdd1"
+      },
+      "decoded_chunk": {
+        "bytes": 88198,
+        "sha256": "44172cc1aa4970122ac753577f04ef320e4cf2d0f3681c508ab56075550f0455",
+        "computed_git_blob": "536ae561fe34c683adce3d057b1c216f6fb935a7"
+      }
+    }
+  ]
+}

@@ -1,0 +1,276 @@
+{
+  "schema": "hepta-b16-v7-original-ignored-catalog-review-v1",
+  "status": "SOURCE_FROZEN_CLOUD_CONTROLS_PASS_NATIVE_BINDING_DISABLED",
+  "correction": {
+    "prior_v6_manifest": {
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b16-guarded-native-runner-20261105/build-only-current-host-v6/review-manifest-v6.json",
+      "bytes": 21856,
+      "sha256": "2471c13086c3b3f02a5ff704029c9d5ea5b436b9161497b20c8a218c25b22512",
+      "blob": "55282764e60c8e4cbe7f4b5d41d52439aeba8e5f"
+    },
+    "prior_v6_integrity": {
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b16-guarded-native-runner-20261105/build-only-current-host-v6/v6-candidate/runner-integrity.json",
+      "bytes": 5374,
+      "sha256": "19864e37e4c27c79a22b5c4be99730d00bd03382d5f5ac1c6a0239e528592572",
+      "blob": "2a20bea1ed0a4665307b2a65dd4f6cb74b76e79f"
+    },
+    "prior_records_preserved": true,
+    "actual_defect": "P4 and V6 required all full-catalog cases to match, incorrectly rejecting 57 original ignored mismatch/reason=ignored cases.",
+    "prior_review_limitation": "The original V6 static review did not compare its all-matches predicate and synthetic testcase fixture to the complete actual catalog; this V7 explicitly corrects that omission.",
+    "p4_original_three_command_exit_codes": [
+      0,
+      0,
+      0
+    ],
+    "p4_original_controller_exit_code": 1,
+    "p4_tests_executed": false,
+    "this_is_not_a_product_failure_or_test_retry": true
+  },
+  "accepted_case_contract": {
+    "eligible": {
+      "ignored": false,
+      "filter_match": {
+        "status": "matches"
+      },
+      "count": 19506
+    },
+    "ignored": {
+      "ignored": true,
+      "filter_match": {
+        "status": "mismatch",
+        "reason": "ignored"
+      },
+      "count": 57
+    },
+    "all_other_filter_forms_rejected": true,
+    "ignored_requires_actual_boolean": true,
+    "complete_counter_schema": [
+      "binary_id",
+      "name",
+      "ignored"
+    ],
+    "complete_sorted_counter_sha256": "2e483bc224e88e59f6ca6680c50d68d8123aa149268d4797de4d5c8496880674",
+    "complete_counter_not_count_only": true,
+    "case_names_or_ignored_membership_cannot_change": true,
+    "historical_exact_raw_envelope": {
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b16-guarded-native-runner-20261105/original-ignored-catalog-v7/v7-candidate/observed-original-A-catalog.json",
+      "bytes": 369514,
+      "sha256": "6f0a4f7566621b451701a2612d068f194fc6a1b3aa1457722381d3d53c8a0690",
+      "blob": "5f4d2b2b82a3d1c0043ec4735fe4e2d2864ceb15"
+    }
+  },
+  "independently_read_originals": {
+    "old_original": {
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/recovered-20261105/full-fb9-complete-archive/decoded-verified-v1/full-workspace-catalog.stdout",
+      "bytes": 2846923,
+      "sha256": "37aa98bace85dfa81d9c729820de24912d913bd85c3a10b60243f4dba67e4001",
+      "git_blob": "6215be8be0979a4af011c64de4043c934aeee81a"
+    },
+    "old_source": "fb9e131272f7e7a138d6c0d1af2b048b9a6ab7ff",
+    "current_original": {
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/recovered-20261105/b16-ai395-cold-bootstrap-v1/p4-v3-catalog-readonly-export-v1/decoded-verified-v1/03-full-unfiltered-catalog.stdout.original",
+      "bytes": 2828836,
+      "sha256": "d4ca608073c2508e8ad5302b1188c7d2e21c6bf221a17688d77f625087e8d3f6",
+      "git_blob": "bdb4590509011c05005821d6b92c71f81f58098c"
+    },
+    "current_source": "4a3374e22e16ce5c764288ad018cd9affadf94ea",
+    "current_readonly_analysis": {
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/recovered-20261105/b16-ai395-cold-bootstrap-v1/p4-v3-catalog-readonly-export-v1/catalog-analysis.json",
+      "bytes": 16947,
+      "sha256": "cc870cbfd1423890713f212d31a04659706922d85bd8287e4bdea2611560c33f",
+      "blob": "dbccec3bf33c75f04aa2691f1a4279cc49a830ab"
+    },
+    "complete_19563_counter_equal": true,
+    "complete_filter_forms_equal": true,
+    "current_metadata_or_catalog_commands_repeated": false
+  },
+  "change_scope": {
+    "candidate_files": 29,
+    "integrity_files": 25,
+    "unchanged_existing_inputs": 22,
+    "only_changed_runtime": "b16_build_only.py",
+    "changed_files": [
+      {
+        "path": "b16_build_only.py",
+        "mode": "100644",
+        "before": {
+          "bytes": 13465,
+          "sha256": "f82e03761ea34691193c1ab035debc062ea0a953b80a875afb1e1ab97071b3b9",
+          "blob": "4a62c1071298258f1baa0d59fe44ef4de364b8ef"
+        },
+        "after": {
+          "bytes": 14919,
+          "sha256": "c19d6a25664a46c5736803dc60807a165bccbd57c1d04a6621f7a11eca7b4a0d",
+          "blob": "6a49c3e2f37d7f4cd42f45d7e37cca8c16669f12"
+        }
+      },
+      {
+        "path": "binding-template-UNBOUND.json",
+        "mode": "100644",
+        "before": {
+          "bytes": 3281,
+          "sha256": "e422519b8623172665274b0a5ed34954cb1297d126a16703a5a25dbefcc0480d",
+          "blob": "334353962fb8652d4af681e140b07b5a1ee02500"
+        },
+        "after": {
+          "bytes": 3281,
+          "sha256": "86b89a8c59d048f35bfd377041022abcd95083aae505fd79a6e99b32df893116",
+          "blob": "936af20c909732c59d9e277771f16a76d853b929"
+        }
+      },
+      {
+        "path": "foundation-binding-UNBOUND.json",
+        "mode": "100644",
+        "before": {
+          "bytes": 3334,
+          "sha256": "d279101dc300ffdad1c7720f3cb89ecbb507f3b7c6388c24fe93bb14322fe624",
+          "blob": "7e659026e546f17bda34c090b47226b4c81ecfe0"
+        },
+        "after": {
+          "bytes": 3334,
+          "sha256": "d47141faabd521a4c7fbee473baf2561d345cee6d8280a7baacf77ea82fcee14",
+          "blob": "35ba6e68663d02f4c57379b1034711ddfc4b1977"
+        }
+      },
+      {
+        "path": "foundation-build-only-binding-UNBOUND.json",
+        "mode": "100644",
+        "before": {
+          "bytes": 3835,
+          "sha256": "9e3d6ad1d2a048468321841c5d1a19416c1e28e23863cd6e51ad5bfcd8d5559f",
+          "blob": "14d7f62530741d9e77cbb3f9c8fbc5b9d4ff88d6"
+        },
+        "after": {
+          "bytes": 3836,
+          "sha256": "1df2f405e10cf8978ddd925bae65a7dc02bfcc5d2cf5c26163a211c3625b2ea8",
+          "blob": "69b4425169c4593493655175bcab804828ddcfca"
+        }
+      },
+      {
+        "path": "observed-original-A-catalog.json",
+        "mode": "100644",
+        "before": null,
+        "after": {
+          "bytes": 369514,
+          "sha256": "6f0a4f7566621b451701a2612d068f194fc6a1b3aa1457722381d3d53c8a0690",
+          "blob": "5f4d2b2b82a3d1c0043ec4735fe4e2d2864ceb15"
+        }
+      },
+      {
+        "path": "runner-integrity.json",
+        "mode": "100644",
+        "before": {
+          "bytes": 5374,
+          "sha256": "19864e37e4c27c79a22b5c4be99730d00bd03382d5f5ac1c6a0239e528592572",
+          "blob": "2a20bea1ed0a4665307b2a65dd4f6cb74b76e79f"
+        },
+        "after": {
+          "bytes": 5679,
+          "sha256": "96bbff3180620d841b90b65ea1e159d04931c47fd2de1c270ba0f6c059ac5202",
+          "blob": "18f27fbb488777d621b4f37aa0cf70956cdbe7d9"
+        }
+      },
+      {
+        "path": "test_build_only_guard.py",
+        "mode": "100644",
+        "before": {
+          "bytes": 11731,
+          "sha256": "f6bc6532a89b07ebee79226c0f0ada5be981f6a5b31af7349b0e6d8edd318aa8",
+          "blob": "cdc1ed8c08872f2ef950ec285775e9ad30ead116"
+        },
+        "after": {
+          "bytes": 15667,
+          "sha256": "6563bc785ccd11d3c44b45ca2d8cf3df4baa807599a5a692826c359c463409a8",
+          "blob": "00069847aa5a25e760fee57c3c1a9cfa6c092ae5"
+        }
+      }
+    ],
+    "source_payload_project_test_or_ignored_policy_changes": false,
+    "old_four_test_bodies_preserved": [
+      "test_actual_context_is_accepted_but_different_host_or_source_is_rejected",
+      "test_build_only_cannot_masquerade_as_tested_or_hide_failed_build",
+      "test_missing_physical_program_is_rejected_after_complete_receipt",
+      "test_original_family_remains_historical_and_current_family_does_not_relabel_it"
+    ],
+    "test_fixture_correction": "Synthetic provenance/paths remain explicitly synthetic; every testcase name, ignored flag and filter dictionary comes from the complete original fb9 catalog.",
+    "new_guard_tests": 2,
+    "new_filter_subcases": 6,
+    "new_counter_subcases": 3
+  },
+  "pure_cloud_verification": {
+    "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b16-guarded-native-runner-20261105/original-ignored-catalog-v7/cloud-verification-v1/verification.json",
+    "bytes": 4291,
+    "sha256": "0746ec279bd09cb5e251b1921f89ddca0774ccd5938a391041d4ec6535d8d0c8",
+    "blob": "5883a3406f5d44dd06aeb7f742386c28931b63d1"
+  },
+  "preservation": {
+    "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b16-guarded-native-runner-20261105/original-ignored-catalog-v7/preservation-verification.json",
+    "bytes": 12237,
+    "sha256": "b3a2d0903da262da9347abd13f8d9776cf3909a54d8460104e7d0a0c808d8431",
+    "blob": "a5bcaf7db93a8572f08d184af84e971a241dbcdc"
+  },
+  "source_map": {
+    "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b16-guarded-native-runner-20261105/original-ignored-catalog-v7/source-map-v7.json",
+    "bytes": 10608,
+    "sha256": "3e008147f27eaab391bbf515da905460efa9a6db492fc2510015568876180bb2",
+    "blob": "ecb2fbd8fe839a37aa5efb7c7b72869c774500fa"
+  },
+  "patch": {
+    "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b16-guarded-native-runner-20261105/original-ignored-catalog-v7/v6-to-v7.delta.patch",
+    "bytes": 383445,
+    "sha256": "836854ee1d13482ffc0acf08f1960b2bc86ab29ca09847b9d487d22257f2f58f",
+    "blob": "32998620ab63c6540e560c1bbf18ba14c2e9683e"
+  },
+  "integrity": {
+    "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b16-guarded-native-runner-20261105/original-ignored-catalog-v7/v7-candidate/runner-integrity.json",
+    "bytes": 5679,
+    "sha256": "96bbff3180620d841b90b65ea1e159d04931c47fd2de1c270ba0f6c059ac5202",
+    "blob": "18f27fbb488777d621b4f37aa0cf70956cdbe7d9"
+  },
+  "templates": [
+    {
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b16-guarded-native-runner-20261105/original-ignored-catalog-v7/v7-candidate/binding-template-UNBOUND.json",
+      "bytes": 3281,
+      "sha256": "86b89a8c59d048f35bfd377041022abcd95083aae505fd79a6e99b32df893116",
+      "blob": "936af20c909732c59d9e277771f16a76d853b929"
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b16-guarded-native-runner-20261105/original-ignored-catalog-v7/v7-candidate/foundation-binding-UNBOUND.json",
+      "bytes": 3334,
+      "sha256": "d47141faabd521a4c7fbee473baf2561d345cee6d8280a7baacf77ea82fcee14",
+      "blob": "35ba6e68663d02f4c57379b1034711ddfc4b1977"
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b16-guarded-native-runner-20261105/original-ignored-catalog-v7/v7-candidate/foundation-build-only-binding-UNBOUND.json",
+      "bytes": 3836,
+      "sha256": "1df2f405e10cf8978ddd925bae65a7dc02bfcc5d2cf5c26163a211c3625b2ea8",
+      "blob": "69b4425169c4593493655175bcab804828ddcfca"
+    }
+  ],
+  "concrete_foundation_binding_requirements": {
+    "target_reuse_mode": "BUILD_ONLY_CURRENT_HOST",
+    "actual_baseline_must_be_read_and_bound": true,
+    "baseline_role": "BUILD_ONLY_CURRENT_HOST",
+    "baseline_tests_executed": false,
+    "baseline_test_qualification": false,
+    "final_A_tree": "4a3374e22e16ce5c764288ad018cd9affadf94ea",
+    "ordinary_head": "20fd174ded4e5ce01bda34e4f6d1d74803301f49",
+    "historical_A_source": "fb9e131272f7e7a138d6c0d1af2b048b9a6ab7ff",
+    "historical_hygiene_review": "40bd8b7030931cae6573ec126f4afc13a1140d33",
+    "current_host_and_owner_not_historical_ROG_paths": true,
+    "full_metadata_workspace_members": 193,
+    "full_metadata_resolve_nodes": 1501,
+    "complete_programs": 363,
+    "complete_helpers": 33,
+    "original_commands": 3,
+    "original_source_guards": 6,
+    "readonly_completion_guards_are_additional_not_relabelled": true,
+    "same_actual_environment_both_SDKs_tools_recipes_index_and_locks": true,
+    "future_binding_not_created_here": true,
+    "fresh_free_and_capacity_guards_unchanged": true
+  },
+  "internal_stage_ids_are_not_original_blocker_ids": true,
+  "native_started": false,
+  "refs_changed": false,
+  "enabled_binding": false
+}

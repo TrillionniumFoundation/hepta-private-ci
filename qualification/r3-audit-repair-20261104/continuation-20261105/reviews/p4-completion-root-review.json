@@ -1,0 +1,63 @@
+{
+  "schema": "hepta-root-P4-readonly-completion-review-v1",
+  "at": "2026-11-05T10:04:59.457983+00:00",
+  "verdict": "ACCEPT_CURRENT_HOST_BUILD_ONLY_BASELINE_FOR_SEPARATELY_BOUND_FOUNDATION",
+  "bundle": {
+    "bytes": 196074,
+    "sha256": "17121568261e6926e92b7a092bdff0c83a72b375e4aac17dca57cd29adb35959",
+    "git_blob": "eba9da829e0c59ef1d25cbd7fc406d1a56a38d33"
+  },
+  "baseline": {
+    "bytes": 265463,
+    "sha256": "16022204ade97bd6cdc78176e5dff2b8c19c536180aa9c5e7a5a219ddda7140f",
+    "git_blob": "31053a6179c016a9b5569cc6fb301e19aeb5c633"
+  },
+  "terminal": {
+    "bytes": 22043,
+    "sha256": "21a7f80cc5bb744ff4a0f20d3696fae953e9facc3b081eaab9b8243f702b4f7e",
+    "git_blob": "6dd598ba91412c5a5d52b71dbc2279d5d1318ade"
+  },
+  "full_original_files": 14,
+  "full_original_bytes": 730542,
+  "reconstruction_methods_preserved": {
+    "catalog-verification.json": "native original bytes already transferred",
+    "completion-final.guard.json": "native original bytes already transferred",
+    "completion-final.libcap-sdk-guard.json": "identical prior original guard bytes, checked against current native file identity",
+    "completion-final.openssl-sdk-guard.json": "identical prior original guard bytes, checked against current native file identity",
+    "completion-initial.guard.json": "native original bytes already transferred",
+    "completion-initial.libcap-sdk-guard.json": "identical prior original guard bytes, checked against current native file identity",
+    "completion-initial.openssl-sdk-guard.json": "identical prior original guard bytes, checked against current native file identity",
+    "helpers-current-after-catalog.json": "native original bytes already transferred",
+    "new-host-build-only-baseline.json": "native original bytes already transferred",
+    "normal-six-current-after-catalog.json": "native original bytes already transferred",
+    "programs-current-after-catalog.json": "exact serialization of original baseline program records, checked against native file identity",
+    "request.original.json": "exact frozen launch stdin, checked against native file identity",
+    "tools-initial.json": "native original bytes already transferred"
+  },
+  "verified": {
+    "three_successful_original_commands_not_repeated": true,
+    "original_failed_controller_unchanged": true,
+    "current_program_identity_records": 363,
+    "current_helper_identity_records": 33,
+    "all_current_paths_and_roles_match_complete_catalog": true,
+    "original_six_pre_catalog_hash_records_preserved": true,
+    "current_six_post_catalog_hashes_match_helpers": true,
+    "normal_helpers_changed_during_original_full_catalog": [
+      "codex-code-mode-host",
+      "codex-exec",
+      "test_stdio_server",
+      "test_streamable_http_server"
+    ],
+    "two_sdk_initial_final_guards_match_original_native_bytes": true,
+    "source_host_environment_tools_index_locks_and_eight_recipes_bound": true,
+    "free_bytes_at_completion": 727433908224
+  },
+  "scope_limits": [
+    "Current physical file identities were measured by the native read-only completion; cloud independently verifies complete native records and relations.",
+    "Historical pre-catalog helper hashes are retained, including real changes caused by the full catalog build.",
+    "No native B source or tests have run; future foundation requires its exact input and launcher binding.",
+    "BUILD_ONLY is not test qualification or closure of B16."
+  ],
+  "tests_executed": false,
+  "test_qualification": false
+}

@@ -1,0 +1,83 @@
+{
+  "schema": "hepta-b16-v7-original-catalog-cloud-controls-v1",
+  "scope": "Cloud-only harness checks; no native build/list/test, product source, refs or host state changes.",
+  "old_original": {
+    "path": "/workspace/scratch/07dd58cc9630/ci-audit/recovered-20261105/full-fb9-complete-archive/decoded-verified-v1/full-workspace-catalog.stdout",
+    "bytes": 2846923,
+    "sha256": "37aa98bace85dfa81d9c729820de24912d913bd85c3a10b60243f4dba67e4001",
+    "git_blob": "6215be8be0979a4af011c64de4043c934aeee81a"
+  },
+  "new_original": {
+    "path": "/workspace/scratch/07dd58cc9630/ci-audit/recovered-20261105/b16-ai395-cold-bootstrap-v1/p4-v3-catalog-readonly-export-v1/decoded-verified-v1/03-full-unfiltered-catalog.stdout.original",
+    "bytes": 2828836,
+    "sha256": "d4ca608073c2508e8ad5302b1188c7d2e21c6bf221a17688d77f625087e8d3f6",
+    "git_blob": "bdb4590509011c05005821d6b92c71f81f58098c"
+  },
+  "old_source": "fb9e131272f7e7a138d6c0d1af2b048b9a6ab7ff",
+  "new_source": "4a3374e22e16ce5c764288ad018cd9affadf94ea",
+  "complete_named_counter_equal": true,
+  "eligible": 19506,
+  "ignored": 57,
+  "all_other_filter_forms": 0,
+  "original_four_test_bodies_byte_equal": [
+    "test_actual_context_is_accepted_but_different_host_or_source_is_rejected",
+    "test_build_only_cannot_masquerade_as_tested_or_hide_failed_build",
+    "test_missing_physical_program_is_rejected_after_complete_receipt",
+    "test_original_family_remains_historical_and_current_family_does_not_relabel_it"
+  ],
+  "fixture_correction": "Synthetic provenance/paths remain explicitly synthetic; every testcase name, ignored flag and filter dictionary comes from the complete original fb9 catalog.",
+  "negative": {
+    "argv": [
+      "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+      "-m",
+      "unittest",
+      "-v",
+      "test_build_only_guard.BuildOnlyGuardTests.test_actual_context_is_accepted_but_different_host_or_source_is_rejected"
+    ],
+    "cwd": "/workspace/scratch/07dd58cc9630/architecture-audit/b16-guarded-native-runner-20261105/original-ignored-catalog-v7/cloud-verification-v1/v6-runtime-real-catalog",
+    "exit_code": 1,
+    "elapsed_seconds": 0.4526031810019049,
+    "stdout": {
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b16-guarded-native-runner-20261105/original-ignored-catalog-v7/cloud-verification-v1/v6-original-catalog-rejection.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "stderr": {
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b16-guarded-native-runner-20261105/original-ignored-catalog-v7/cloud-verification-v1/v6-original-catalog-rejection.stderr",
+      "bytes": 1653,
+      "sha256": "ce788128ad92b3520c5f2f514e906166409e0d393665a6aa05a4fcde55263c4a",
+      "git_blob": "f0dfad645f25cc9016cc59cb5c54231331989a0d"
+    }
+  },
+  "fixed": {
+    "argv": [
+      "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+      "-m",
+      "unittest",
+      "-v",
+      "test_build_only_guard"
+    ],
+    "cwd": "/workspace/scratch/07dd58cc9630/architecture-audit/b16-guarded-native-runner-20261105/original-ignored-catalog-v7/v7-candidate",
+    "exit_code": 0,
+    "elapsed_seconds": 8.040961012004118,
+    "stdout": {
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b16-guarded-native-runner-20261105/original-ignored-catalog-v7/cloud-verification-v1/v7-original-and-tamper-controls.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "stderr": {
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b16-guarded-native-runner-20261105/original-ignored-catalog-v7/cloud-verification-v1/v7-original-and-tamper-controls.stderr",
+      "bytes": 1202,
+      "sha256": "d8f2658525f0285b7b0eff767e5e8b6634a3c20e813a205d0188bfe9b36709be",
+      "git_blob": "2d8fdaa35bd94cbb65142113aaa455d2fec6bee3"
+    }
+  },
+  "new_negative_subcases": {
+    "filter_forms": 6,
+    "named_counter_with_preserved_totals": 3
+  },
+  "project_ignored_policy_changed": false,
+  "native_tests_executed": false
+}

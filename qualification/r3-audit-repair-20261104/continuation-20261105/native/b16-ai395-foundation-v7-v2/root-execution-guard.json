@@ -1,0 +1,113 @@
+{
+  "schema": "hepta-root-ai395-foundation-V7-execution-guard-v1",
+  "recorded_utc": "2026-11-05T10:27:33.500462+00:00",
+  "execute": true,
+  "authorization": "User explicitly requested the full project audit and continued repair of remaining blockers; this root authorizes the concrete reviewed native foundation scope.",
+  "host_alias": "ai395",
+  "executor_owner": "ci_audit",
+  "authorized_epoch": "foundation",
+  "all_other_epochs_authorized": false,
+  "launcher": {
+    "bytes": 18440,
+    "sha256": "6822afbdc2b9e738fe16801a2eb7ee7865a8cb0880f7578d40813fe42ff24dc5",
+    "blob": "75623f2ed4c5e8f0dd6009df542dae462d5a847b"
+  },
+  "disabled_candidate_binding": {
+    "bytes": 19276,
+    "sha256": "03255650f0b30c939e467d88b354a75acf467bf302a3264f564f7c4216232773",
+    "blob": "d5a6b63f3afb5621e36d5bd7ce7d37af1b6ff026"
+  },
+  "disabled_candidate_request": {
+    "bytes": 930798,
+    "sha256": "5e2f59088d32f0e93603c40c72f9ed605b479f8d40824ec5528312d2c7141311",
+    "blob": "0b79452f3fe7acbf618a6f66736543ac05e07704"
+  },
+  "root_concrete_review": {
+    "bytes": 2740,
+    "sha256": "eed270b2d2b573dbeb4d1f05ee746edfe98264c4659c3d8647c5feb08a016a1c",
+    "blob": "5931d32457c8e89d6e16d072c5eeccd1a03c8397"
+  },
+  "V7_integrity": {
+    "bytes": 5679,
+    "sha256": "96bbff3180620d841b90b65ea1e159d04931c47fd2de1c270ba0f6c059ac5202",
+    "blob": "18f27fbb488777d621b4f37aa0cf70956cdbe7d9"
+  },
+  "source_payload": {
+    "bytes": 62667,
+    "sha256": "a34cd6c5400deff4fedfffcb1f4f170eecabbb6bbfab1916829ab3911e986237",
+    "blob": "64db580beabe2642eb8611184dac4fc686fe34e1"
+  },
+  "current_host_BUILD_ONLY_baseline": {
+    "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-git-tool-augmentation-v1/new-host-build-only-baseline-with-git.json",
+    "bytes": 268075,
+    "sha256": "117ce27929135acfcf8445f23a53842271cad721ef22cf4aaec7024dac3a386a"
+  },
+  "source_directory": "/home/qq/work/hepta-audit-b16-20261105/source",
+  "target_directory": "/home/qq/work/hepta-audit-b16-20261105/target-dev-small",
+  "ordinary_head": "20fd174ded4e5ce01bda34e4f6d1d74803301f49",
+  "initial_tree": "4a3374e22e16ce5c764288ad018cd9affadf94ea",
+  "ordinary_index": {
+    "bytes": 1224180,
+    "dev": 66306,
+    "git_blob": "69adeb086eccf95645c8a580bf82fa85eef8fb7a",
+    "inode": 65176547,
+    "mode": "0o600",
+    "nlink": 1,
+    "path": "/home/qq/work/hepta-audit-b16-20261105/source/.git/index",
+    "sha256": "6b39b6b27d164001c9b130487d0d7879be5f80e22a4579d06fd472c2bb8d7ac0"
+  },
+  "locks": {
+    "MODULE.bazel.lock": {
+      "bytes": 1738619,
+      "dev": 66306,
+      "git_blob": "1904db189003cb0b559f71958518e33a45fb6bb7",
+      "inode": 64654420,
+      "mode": "0o600",
+      "nlink": 1,
+      "path": "/home/qq/work/hepta-audit-b16-20261105/source/MODULE.bazel.lock",
+      "sha256": "11f8a421224b9b05f32c4c14054e8868083d989fc497310c8d51e1156f189ca3"
+    },
+    "codex-rs/Cargo.lock": {
+      "bytes": 413768,
+      "dev": 66306,
+      "git_blob": "71fc8fa78b5afa076835b29790a5e6b0bd772558",
+      "inode": 65177174,
+      "mode": "0o600",
+      "nlink": 1,
+      "path": "/home/qq/work/hepta-audit-b16-20261105/source/codex-rs/Cargo.lock",
+      "sha256": "4a7a5535cf045089458468411e126b5f59bc6bbf34fc0deead9b0c1b8d84000a"
+    }
+  },
+  "evidence_directory": "/home/qq/work/hepta-audit-b16-20261105/evidence/b16-foundation-v7-ai395-20261105-v1/run",
+  "expected_original_controls": {
+    "unique_positive_cases": 24,
+    "positive_execution_occurrences": 27,
+    "unique_negative_cases": 9,
+    "negative_execution_occurrences": 10,
+    "negative_finally_restore_scopes": 4,
+    "retries": 0
+  },
+  "allowed_enable_delta": [
+    "binding.execute false to true",
+    "binding.approval_reference null to this guard Git blob",
+    "root_execution_guard null to this guard Git blob",
+    "expected_launcher from preserved V1 to the exact V2 launcher pinned here"
+  ],
+  "execution_bounds": {
+    "minimum_free_before_foundation_bytes": 22000000000,
+    "minimum_free_before_each_original_command_bytes": 8000000000,
+    "timeout_seconds": 21600,
+    "idempotency_key": "hepta-ai395-b16-foundation-v7-20261105-v1",
+    "original_just_test_oracles_timeouts_and_ignored_policy_unchanged": true,
+    "fresh_host_source_tool_SDK_V8_guards_required": true,
+    "no_cache_cleanup_or_system_security_change": true,
+    "no_other_native_Cargo_lane_on_this_source_or_target": true
+  },
+  "on_failure": "Preserve exact original outputs and terminal records; honor frozen negative finally recovery. Inspect the concrete cause before any separately reviewed continuation.",
+  "limits": [
+    "BUILD_ONLY baseline is not a claim of historical or current test qualification.",
+    "Original historical ROG A failures remain; copied historical bytes and internal paths are not relabelled.",
+    "Original P4 controller failure and successful build/list commands remain unchanged and are not rerun.",
+    "No product branch/base/main merge or release is authorized by this native execution guard."
+  ]
+}

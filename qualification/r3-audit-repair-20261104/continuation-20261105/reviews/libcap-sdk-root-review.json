@@ -1,0 +1,60 @@
+{
+  "schema": "hepta-root-libcap-private-sdk-review-v1",
+  "at": "2026-11-05T09:55:04.116388+00:00",
+  "verdict": "PASS_SCOPED_PREREQUISITE_ONLY",
+  "inputs": {
+    "terminal.json": {
+      "bytes": 31318,
+      "sha256": "5ef810219ca9d7b10417faf09143c509100c529869d684bad5dc589fa25eacac",
+      "git_blob": "ad4e0a253b1a4cae6be6e96d2608c73d4c8e820e"
+    },
+    "libcap-sdk.json": {
+      "bytes": 21821,
+      "sha256": "91a00c1b04650fe67d60af6573b60f5d4a2e50414262157cc6a636ba52b7c88b",
+      "git_blob": "86c0f8f58e339106f0606c507848d8ca344480c6"
+    },
+    "libcap-pc-relocation.json": {
+      "bytes": 1379,
+      "sha256": "f9d0f162587f694dfd14119eb81c66c38ea228cf500a3ae6d6223928aac9a84a",
+      "git_blob": "22af1da6ddfacd7ba4ab9349aa657a06964c4d7d"
+    },
+    "libcap.pc.official.original": {
+      "bytes": 211,
+      "sha256": "801addc62c7b89b6411d2fc7b11d48db875bb9a56d80e0540a4d321d820dd3a0",
+      "git_blob": "b036f5e3c39410f0bda72f524a02d2e863d5daab"
+    },
+    "pkg-config-libcap-relocated-flags.stdout.original": {
+      "bytes": 197,
+      "sha256": "def27b43f06ce71eb1597673f59cc0e7235bf51bc9fe65a9fb2b2bd7b1294a31",
+      "git_blob": "589241f05736cee2edd9a3ea75ad9af0d5b32ad7"
+    },
+    "initial.guard.json": {
+      "bytes": 3239,
+      "sha256": "25b77a1acb1a029ad8d810e46e682b44a0aca68ab9761096a60c5b94b02e9bfc",
+      "git_blob": "688ddc48592e9808e781a47adf733a9684b7e5bc"
+    },
+    "final.guard.json": {
+      "bytes": 3239,
+      "sha256": "b99f53b37ae34c2d93013d98b499fba6647f51d3822e1264ac32954ae0d89070",
+      "git_blob": "65f864175a61b54b09fac3255f80a8e16f0f2955"
+    }
+  },
+  "verified": {
+    "seven_full_originals_transport_and_hashes": true,
+    "four_actual_sdk_continuation_commands_exit_zero": true,
+    "source_ordinary_index_and_two_locks_unchanged": true,
+    "two_official_package_identities_exact": true,
+    "private_runtime_equals_installed_runtime_recorded_identity": true,
+    "three_exact_pc_line_changes_only": true,
+    "real_pkg_config_private_include_library_and_lcap_flags": true,
+    "default_system_pkg_config_search_preserved": true,
+    "initial_final_whole_source_guards": true,
+    "prior_v1_stream_close_order_failure_preserved": true
+  },
+  "scope_limits": [
+    "Package/header/shared-object physical identities are native receipts; no cloud re-download or second physical-host measurement claimed.",
+    "Review covers seven fully retrieved original files; remaining SDK command originals are still being recovered.",
+    "No tests executed, no test qualification, no B16 closure."
+  ],
+  "test_qualification": false
+}
