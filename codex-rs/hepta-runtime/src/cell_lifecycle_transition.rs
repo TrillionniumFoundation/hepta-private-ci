@@ -57,6 +57,7 @@ pub(crate) fn transition(
         (Some(state), LifecycleEventV1::Observed { observation, authentication }) => {
             if state.plan_digest != digest || !state.pending
                 || state.stage != Some(observation.stage)
+                || observation.prepared_revision != state.revision
                 || observation.observed_at_ms < state.last_observed_ms
             {
                 return Err(RuntimeCellLifecycleError::Conflict);
@@ -86,13 +87,14 @@ pub(crate) fn validate_observation(
     plan: &RuntimeCellLifecyclePlanV1,
     observation: &RuntimeCellLifecycleObservationV1,
 ) -> Result<(), RuntimeCellLifecycleError> {
-    let expected = intent(plan, observation.stage)?;
+    let expected = intent(plan, observation.stage, observation.prepared_revision)?;
     if observation.agent_id != plan.agent_id.as_str()
         || observation.operation_id != plan.operation_id.as_str()
         || observation.observer_id != plan.observer_id.as_str()
         || observation.observer_trust != plan.observer_trust.to_string()
         || observation.plan_digest != expected.plan_digest.to_string()
         || observation.semantic_operation != expected.semantic_operation.to_string()
+        || observation.attempt_digest != expected.attempt_digest.to_string()
         || observation.observed_at_ms < plan.created_at_ms
     {
         return Err(RuntimeCellLifecycleError::ScopeMismatch);

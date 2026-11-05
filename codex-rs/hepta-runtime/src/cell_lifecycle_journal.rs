@@ -95,7 +95,7 @@ impl<A: RuntimeCellLifecycleAnchorStoreV1> RuntimeCellLifecycleJournalV1<A> {
         let next = self.append(
             plan, Some(expected_revision), LifecycleEventV1::Prepared { at_ms: now_ms },
         ).await?;
-        intent(plan, next.stage.ok_or(RuntimeCellLifecycleError::Conflict)?)
+        intent(plan, next.stage.ok_or(RuntimeCellLifecycleError::Conflict)?, next.revision)
     }
 
     /// A late readback reconciles the original operation; it cannot create a
@@ -139,7 +139,7 @@ impl<A: RuntimeCellLifecycleAnchorStoreV1> RuntimeCellLifecycleJournalV1<A> {
         if !state.pending {
             return Ok(None);
         }
-        Ok(Some(intent(plan, state.stage.ok_or(RuntimeCellLifecycleError::Corrupt)?)?))
+        Ok(Some(intent(plan, state.stage.ok_or(RuntimeCellLifecycleError::Corrupt)?, state.revision)?))
     }
 
     /// Read the original committed observation after a response was lost.

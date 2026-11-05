@@ -125,6 +125,7 @@ fn observation(
         observer_id: plan.observer_id.to_string(), observer_trust: plan.observer_trust.to_string(),
         plan_digest: intent.plan_digest.to_string(), stage: intent.stage,
         semantic_operation: intent.semantic_operation.to_string(),
+        prepared_revision: intent.prepared_revision, attempt_digest: intent.attempt_digest.to_string(),
         outcome: RuntimeCellLifecycleNativeOutcomeV1::Applied,
         admission_closed: intent.stage != RuntimeCellLifecycleStageV1::Resume,
         inflight: 0, unknown_effects: 0,
@@ -137,6 +138,10 @@ fn observation(
     }
 }
 
+#[expect(
+    clippy::disallowed_methods,
+    reason = "isolated lifecycle tests explicitly create only temporary SQLite owner fixtures"
+)]
 async fn pool(path: &std::path::Path) -> SqlitePool {
     SqlitePoolOptions::new().max_connections(2).connect_with(
         SqliteConnectOptions::new().filename(path).create_if_missing(true),
@@ -212,7 +217,7 @@ async fn lost_anchor_ack_recovers_original_pending_operation_without_dispatch() 
     ).await.unwrap();
     assert_eq!(
         recovered.pending_intent(&plan).await.unwrap(),
-        Some(intent(&plan, RuntimeCellLifecycleStageV1::StopAdmission).unwrap()),
+        Some(intent(&plan, RuntimeCellLifecycleStageV1::StopAdmission, 1).unwrap()),
     );
 }
 
@@ -347,9 +352,66 @@ async fn proved_no_contact_reuses_the_same_operation_but_unknown_cannot() {
     ).await.unwrap();
     assert_eq!(state.stage(), Some(RuntimeCellLifecycleStageV1::StopAdmission));
     let retry = journal.prepare_next(&plan, state.revision(), /*now_ms*/ 104).await.unwrap();
-    assert_eq!(retry, first);
+    assert_eq!(retry.semantic_operation, first.semantic_operation);
+    assert_eq!(retry.prepared_revision, 3);
+    assert_ne!(retry.attempt_digest, first.attempt_digest);
     let done = journal.record_observation(
         &plan, /*expected_revision*/ 3, observation(&plan, &retry, /*at*/ 105), &Observer,
     ).await.unwrap();
     assert_eq!(done.stage(), Some(RuntimeCellLifecycleStageV1::Drain));
+}
+
+#[tokio::test]
+async fn stale_no_contact_proof_cannot_clear_a_new_prepare_at_the_same_timestamp() {
+    let directory = tempfile::tempdir().unwrap();
+    let plan = plan(RuntimeCellStructuralChangeV1::Split);
+    let witness = Witness::new(&plan.agent_id);
+    let mut journal = RuntimeCellLifecycleJournalV1::attach(
+        pool(&directory.path().join("owner.sqlite")).await,
+        plan.agent_id.clone(), /*writer_epoch*/ 1, witness, /*max_events*/ 100,
+    ).await.unwrap();
+    journal.create(&plan, /*now_ms*/ 100).await.unwrap();
+    let first = journal.prepare_next(&plan, /*expected_revision*/ 0, /*now_ms*/ 101).await.unwrap();
+    let mut old_absence = observation(&plan, &first, /*at*/ 102);
+    old_absence.outcome = RuntimeCellLifecycleNativeOutcomeV1::NotApplied;
+    old_absence.admission_closed = false;
+    journal.record_observation(
+        &plan, /*expected_revision*/ 1, old_absence.clone(), &Observer,
+    ).await.unwrap();
+
+    // Millisecond clocks can legitimately repeat. The new durable prepare
+    // creates a new observation obligation without changing the native ID.
+    let retry = journal.prepare_next(&plan, /*expected_revision*/ 2, /*now_ms*/ 102).await.unwrap();
+    assert_eq!(retry.semantic_operation, first.semantic_operation);
+    assert_ne!(retry.attempt_digest, first.attempt_digest);
+    let before = journal.read(&plan).await.unwrap();
+    assert_eq!(
+        journal.record_observation(
+            &plan, /*expected_revision*/ 3, old_absence.clone(), &Observer,
+        ).await.unwrap_err(),
+        RuntimeCellLifecycleError::Conflict,
+    );
+    assert_eq!(journal.read(&plan).await.unwrap(), before);
+    assert_eq!(journal.pending_intent(&plan).await.unwrap(), Some(retry.clone()));
+
+    // Relabeling only the revision fails the canonical attempt binding before
+    // authentication; a real observer also signs both fields together.
+    let mut relabeled = old_absence;
+    relabeled.prepared_revision = retry.prepared_revision;
+    assert_eq!(
+        journal.record_observation(
+            &plan, /*expected_revision*/ 3, relabeled, &Observer,
+        ).await.unwrap_err(),
+        RuntimeCellLifecycleError::ScopeMismatch,
+    );
+    assert_eq!(journal.read(&plan).await.unwrap(), before);
+    let applied = observation(&plan, &retry, /*at*/ 102);
+    let finished = journal.record_observation(
+        &plan, /*expected_revision*/ 3, applied.clone(), &Observer,
+    ).await.unwrap();
+    assert_eq!(finished.stage(), Some(RuntimeCellLifecycleStageV1::Drain));
+    assert_eq!(
+        journal.read_observation(&plan, RuntimeCellLifecycleStageV1::StopAdmission).await.unwrap(),
+        Some(applied),
+    );
 }
