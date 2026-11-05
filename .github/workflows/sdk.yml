@@ -21,6 +21,11 @@ jobs:
         run: |
           set -euo pipefail
 
+          # Supply the zstd CLI required by the original schema evidence tests.
+          # An empty build context keeps repository content out of image layers.
+          sdk_image="hepta-python-sdk:${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          docker build --tag "${sdk_image}" - < .github/workflows/Dockerfile.python-sdk
+
           # Run inside a glibc Linux image so dependency resolution exercises
           # the pinned manylinux runtime wheel that users install.
           docker run --rm \
@@ -29,7 +34,7 @@ jobs:
             -e UV_LINK_MODE=copy \
             -v "${GITHUB_WORKSPACE}:${GITHUB_WORKSPACE}" \
             -w "${GITHUB_WORKSPACE}/sdk/python" \
-            python:3.12-slim \
+            "${sdk_image}" \
             sh -euxc '
               python -m venv /tmp/uv
               /tmp/uv/bin/python -m pip install uv==0.11.3
