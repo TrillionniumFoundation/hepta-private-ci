@@ -305,6 +305,19 @@ def install():
         "a previously installed package was removed or changed",
     )
     after_files = critical_files()
+    if after_files != before_files:
+        print(
+            json.dumps(
+                {
+                    "schema": "hepta.rbe-openssh-image.critical-difference.v1",
+                    "before_critical_files": before_files,
+                    "after_critical_files": after_files,
+                },
+                sort_keys=True,
+            ),
+            file=sys.stderr,
+            flush=True,
+        )
     require(
         after_files == before_files,
         "a baseline tool, dependency, owner or mode changed",
