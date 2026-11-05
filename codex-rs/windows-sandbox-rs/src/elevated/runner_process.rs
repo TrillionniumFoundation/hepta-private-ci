@@ -4,6 +4,7 @@ use anyhow::Result;
 use anyhow::bail;
 use std::os::windows::io::AsRawHandle;
 use std::os::windows::io::OwnedHandle;
+use std::sync::Arc;
 use std::time::Duration;
 use std::time::Instant;
 use windows_sys::Win32::Foundation::HANDLE;
@@ -16,7 +17,7 @@ const CANCEL_POLL: Duration = Duration::from_millis(50);
 
 /// Exact broker identity retained from the successful native launch.
 pub(crate) struct RunnerProcess {
-    handle: OwnedHandle,
+    handle: Arc<OwnedHandle>,
     deadline: Option<Instant>,
     observation_deadline: Option<Instant>,
     native_exit_code: Option<u32>,
@@ -26,7 +27,7 @@ pub(crate) struct RunnerProcess {
 impl RunnerProcess {
     pub(crate) fn new(handle: OwnedHandle) -> Self {
         Self {
-            handle,
+            handle: Arc::new(handle),
             deadline: None,
             observation_deadline: None,
             native_exit_code: None,
@@ -148,6 +149,12 @@ impl RunnerProcess {
 #[path = "runner_process_owner.rs"]
 mod owner;
 pub(crate) use owner::RunnerProcessOwner;
+
+#[path = "runner_custody.rs"]
+mod custody;
+pub use custody::RunnerCleanupReconciliation;
+pub(crate) use custody::admit_runner;
+pub use custody::reconcile_runner_cleanup;
 
 #[path = "runner_pipe_read.rs"]
 mod pipe_read;

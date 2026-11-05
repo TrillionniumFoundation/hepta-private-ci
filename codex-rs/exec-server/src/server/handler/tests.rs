@@ -99,6 +99,7 @@ async fn initialized_handler() -> Arc<ExecServerHandler> {
     ));
     let initialize_response = handler
         .initialize(InitializeParams {
+            process_exit_observation: true,
             client_name: "exec-server-test".to_string(),
             resume_session_id: None,
         })
@@ -107,6 +108,86 @@ async fn initialized_handler() -> Arc<ExecServerHandler> {
     Uuid::parse_str(&initialize_response.session_id).expect("session id should be a UUID");
     handler.initialized().expect("initialized");
     handler
+}
+
+#[tokio::test]
+async fn legacy_client_cannot_start_a_process_without_exit_observation() {
+    let (tx, _rx) = mpsc::channel(16);
+    let registry = SessionRegistry::new(crate::ExecServerTelemetry::default());
+    let handler = ExecServerHandler::new(
+        registry,
+        RpcNotificationSender::new(tx),
+        test_runtime_paths(),
+        test_http_client_factory(),
+    );
+    let response = handler
+        .initialize(InitializeParams {
+            client_name: "legacy-peer".to_string(),
+            resume_session_id: None,
+            process_exit_observation: false,
+        })
+        .await
+        .expect("metadata-only initialization");
+    assert!(response.process_exit_observation);
+    handler
+        .initialized()
+        .expect("initialized metadata-only peer");
+    let error = handler
+        .exec(exec_params("must-not-spawn"))
+        .await
+        .err()
+        .expect("start must refuse");
+    assert_eq!(
+        error.message,
+        "process/start requires negotiated exit observation support"
+    );
+    assert!(handler.environment_info().is_ok());
+    handler.shutdown().await;
+}
+
+#[tokio::test]
+async fn legacy_resume_refuses_before_attaching_to_original_session() {
+    let registry = SessionRegistry::new(crate::ExecServerTelemetry::default());
+    let (first_tx, _first_rx) = mpsc::channel(16);
+    let first = ExecServerHandler::new(
+        Arc::clone(&registry),
+        RpcNotificationSender::new(first_tx),
+        test_runtime_paths(),
+        test_http_client_factory(),
+    );
+    let response = first
+        .initialize(InitializeParams {
+            client_name: "capable-peer".to_string(),
+            resume_session_id: None,
+            process_exit_observation: true,
+        })
+        .await
+        .expect("original initialize");
+    first.initialized().expect("original initialized");
+    let (second_tx, _second_rx) = mpsc::channel(16);
+    let second = ExecServerHandler::new(
+        registry,
+        RpcNotificationSender::new(second_tx),
+        test_runtime_paths(),
+        test_http_client_factory(),
+    );
+    let error = second
+        .initialize(InitializeParams {
+            client_name: "legacy-peer".to_string(),
+            resume_session_id: Some(response.session_id),
+            process_exit_observation: false,
+        })
+        .await
+        .err()
+        .expect("legacy resume refusal");
+    assert_eq!(
+        error.message,
+        "session resumption requires process exit observation support"
+    );
+    assert!(first.is_session_attached());
+    assert!(first.environment_info().is_ok());
+    second.shutdown().await;
+    first.shutdown().await;
 }
 
 #[tokio::test]
@@ -178,6 +259,7 @@ async fn long_poll_read_fails_after_session_resume() {
     ));
     let initialize_response = first_handler
         .initialize(InitializeParams {
+            process_exit_observation: true,
             client_name: "exec-server-test".to_string(),
             resume_session_id: None,
         })
@@ -219,6 +301,7 @@ async fn long_poll_read_fails_after_session_resume() {
     ));
     second_handler
         .initialize(InitializeParams {
+            process_exit_observation: true,
             client_name: "exec-server-test".to_string(),
             resume_session_id: Some(initialize_response.session_id),
         })
@@ -253,6 +336,7 @@ async fn active_session_resume_is_rejected() {
     ));
     let initialize_response = first_handler
         .initialize(InitializeParams {
+            process_exit_observation: true,
             client_name: "exec-server-test".to_string(),
             resume_session_id: None,
         })
@@ -268,6 +352,7 @@ async fn active_session_resume_is_rejected() {
     ));
     let err = second_handler
         .initialize(InitializeParams {
+            process_exit_observation: true,
             client_name: "exec-server-test".to_string(),
             resume_session_id: Some(initialize_response.session_id.clone()),
         })
@@ -297,6 +382,7 @@ async fn output_and_exit_are_retained_after_notification_receiver_closes() {
     ));
     handler
         .initialize(InitializeParams {
+            process_exit_observation: true,
             client_name: "exec-server-test".to_string(),
             resume_session_id: None,
         })

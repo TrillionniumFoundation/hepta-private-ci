@@ -247,7 +247,13 @@ async fn initialized_mcp(codex_home: &Path) -> Result<(MockServer, TestAppServer
         .without_auto_env()
         .build()
         .await?;
-    timeout(DEFAULT_READ_TIMEOUT, mcp.initialize()).await??;
+    let initialize = timeout(DEFAULT_READ_TIMEOUT, mcp.initialize()).await??;
+    let codex_app_server_protocol::JSONRPCMessage::Response(response) = initialize else {
+        anyhow::bail!("initialize failed: {initialize:?}");
+    };
+    let initialize: codex_app_server_protocol::InitializeResponse =
+        serde_json::from_value(response.result)?;
+    assert!(initialize.process_indeterminate);
     Ok((server, mcp))
 }
 
@@ -289,3 +295,6 @@ async fn wait_for_file(path: &Path) -> Result<()> {
     .await
     .context("timed out waiting for process probe file")
 }
+
+#[path = "process_exec_capability_tests.rs"]
+mod capability_tests;

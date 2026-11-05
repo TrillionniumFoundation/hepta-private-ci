@@ -3168,6 +3168,10 @@
             "null"
           ]
         },
+        "processIndeterminate": {
+          "description": "Accept `process/indeterminate` and its retained-owner, no-handle-reuse semantics. Required together with experimentalApi for `process/spawn`.",
+          "type": "boolean"
+        },
         "requestAttestation": {
           "default": false,
           "description": "Opt into `attestation/generate` requests for upstream `x-oai-attestation`.",
@@ -3217,6 +3221,10 @@
         "platformOs": {
           "description": "Operating system for the running app-server target, for example `\"macos\"`, `\"linux\"`, or `\"windows\"`.",
           "type": "string"
+        },
+        "processIndeterminate": {
+          "description": "True only when this connection negotiated processIndeterminate and kept both process/exited and process/indeterminate notifications enabled. Missing on older servers; clients must treat absence as unsupported.",
+          "type": "boolean"
         },
         "userAgent": {
           "type": "string"
@@ -5060,6 +5068,26 @@
             "params"
           ],
           "title": "Process/exitedNotification",
+          "type": "object"
+        },
+        {
+          "properties": {
+            "method": {
+              "enum": [
+                "process/indeterminate"
+              ],
+              "title": "Process/indeterminateNotificationMethod",
+              "type": "string"
+            },
+            "params": {
+              "$ref": "#/definitions/v2/ProcessIndeterminateNotification"
+            }
+          },
+          "required": [
+            "method",
+            "params"
+          ],
+          "title": "Process/indeterminateNotification",
           "type": "object"
         },
         {
@@ -16734,6 +16762,48 @@
         ],
         "title": "ProcessExitedNotification",
         "type": "object"
+      },
+      "ProcessIndeterminateNotification": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "description": "Terminal observation failed for an acknowledged `process/spawn`.\n\nThe original owner remains retained and new `process/spawn` requests are fenced server-wide, including on new connections. The handle is not reusable. Only reconciliation of the original owner can establish exit; reconnecting or restarting the server is not exit evidence.",
+        "properties": {
+          "processHandle": {
+            "type": "string"
+          },
+          "reason": {
+            "$ref": "#/definitions/v2/ProcessIndeterminateReason"
+          },
+          "stderr": {
+            "type": "string"
+          },
+          "stderrCapReached": {
+            "type": "boolean"
+          },
+          "stdout": {
+            "description": "Output observed before the original bounded drain ended; not a complete-exit claim.",
+            "type": "string"
+          },
+          "stdoutCapReached": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "processHandle",
+          "reason",
+          "stderr",
+          "stderrCapReached",
+          "stdout",
+          "stdoutCapReached"
+        ],
+        "title": "ProcessIndeterminateNotification",
+        "type": "object"
+      },
+      "ProcessIndeterminateReason": {
+        "description": "The server cannot confirm the native process's exit. This is not an exit code or evidence that a cleanup request reached the process.",
+        "enum": [
+          "exitObservationLost"
+        ],
+        "type": "string"
       },
       "ProcessOutputDeltaNotification": {
         "$schema": "http://json-schema.org/draft-07/schema#",

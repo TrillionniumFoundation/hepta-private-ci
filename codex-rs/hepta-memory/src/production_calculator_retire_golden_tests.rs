@@ -19,6 +19,7 @@ use codex_hepta_paths::HeptaFleetRoot;
 use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
 use pretty_assertions::assert_eq;
+use pretty_assertions::assert_ne;
 
 use crate::CALCULATOR_EVALUATE_TOPIC_V1;
 use crate::CalculatorPrivateChannel;
@@ -32,6 +33,7 @@ use crate::ProductionAuthorityVerifier;
 use crate::ProductionCalculatorTarget;
 use crate::ProductionDurableWriter;
 use crate::calculator_operation_intent;
+use crate::production_writer::RecordedRetirementAck;
 
 type TestResult<T = ()> = Result<T, Box<dyn Error>>;
 
@@ -190,10 +192,36 @@ async fn original_writer_retries_exact_desktop_ack_after_typed_terminal_without_
     // The first ACK transport failed after source terminality. The original
     // writer derives a fresh permit from that same durable event, and the real
     // target must accept the actual Desktop response bytes on this retry.
-    let anchor = writer.recovery_anchor().await?;
+    let before_ack = writer.recovery_anchor().await?;
+    assert!(retirement_records(&store, operation).await?.is_empty());
     writer.retire_calculator_receipt(&target, operation).await?;
+    let acknowledged = writer.recovery_anchor().await?;
+    assert_ne!(acknowledged, before_ack);
+    let records = retirement_records(&store, operation).await?;
+    assert_eq!(records.len(), 1);
+    let recorded: RecordedRetirementAck = serde_json::from_str(&records[0])?;
+    assert_eq!(
+        recorded,
+        RecordedRetirementAck {
+            schema_version: 1,
+            lease_id: writer.lease_id().to_string(),
+            operation_id: operation.clone(),
+            destination_id: identity.destination_id(),
+            topic: CALCULATOR_EVALUATE_TOPIC_V1.to_string(),
+            payload_sha256: Sha256Digest::for_bytes(REQUEST.as_bytes()),
+            terminal_receipt_sha256: Sha256Digest::for_bytes(APPLIED.as_bytes()),
+        }
+    );
+
+    // The first successful target ACK adds exactly one original source event.
+    // An exact cached re-ACK must neither append nor change that new whole cut.
     writer.retire_calculator_receipt(&target, operation).await?;
-    assert_eq!(writer.recovery_anchor().await?, anchor);
+    assert_eq!(writer.recovery_anchor().await?, acknowledged);
+    assert_eq!(retirement_records(&store, operation).await?, records);
+    assert_eq!(
+        writer.status(operation).await?,
+        LocalOutcomeState::Committed
+    );
     assert_eq!(
         *recovery.requests.lock().expect("request recorder"),
         vec![
@@ -211,4 +239,15 @@ async fn original_writer_retries_exact_desktop_ack_after_typed_terminal_without_
     drop(writer);
     store.close().await;
     Ok(())
+}
+
+async fn retirement_records(store: &CognitiveStore, operation: &str) -> TestResult<Vec<String>> {
+    // This codec fixture is intentionally unmanaged. Inspect its actual journal
+    // without claiming the protected Current qualification of the public reader.
+    Ok(sqlx::query_scalar(
+        "SELECT payload_json FROM cognitive_local_events WHERE occurrence_key = ? AND event_kind = 'retirement_acknowledged'",
+    )
+    .bind(operation)
+    .fetch_all(&store.pool)
+    .await?)
 }

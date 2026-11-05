@@ -113,11 +113,12 @@ async fn accept_initialized_exec_server(listener: TcpListener) -> WebSocketStrea
 
     let initialize = read_exec_server_json(&mut websocket).await;
     assert_eq!(initialize["method"], "initialize");
+    assert_eq!(initialize["params"]["processExitObservation"], true);
     send_exec_server_json(
         &mut websocket,
         json!({
             "id": initialize["id"],
-            "result": { "sessionId": "test-session" }
+            "result": { "sessionId": "test-session", "processExitObservation": true }
         }),
     )
     .await;

@@ -970,11 +970,12 @@ mod tests {
 
         let initialize = read_websocket_json(&mut websocket).await;
         assert_eq!(initialize["method"], "initialize");
+        assert_eq!(initialize["params"]["processExitObservation"], true);
         websocket
             .send(Message::Text(
                 serde_json::json!({
                     "id": initialize["id"],
-                    "result": { "sessionId": "test-session" }
+                    "result": { "sessionId": "test-session", "processExitObservation": true }
                 })
                 .to_string()
                 .into(),

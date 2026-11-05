@@ -5,6 +5,7 @@ use std::os::fd::RawFd;
 use std::process::ExitStatus;
 use std::sync::Arc;
 use std::sync::Mutex as StdMutex;
+use std::sync::OnceLock;
 use std::sync::atomic::AtomicBool;
 
 use anyhow::anyhow;
@@ -17,6 +18,9 @@ use tokio::sync::oneshot;
 use tokio::sync::watch;
 use tokio::task::AbortHandle;
 use tokio::task::JoinHandle;
+
+use crate::ProcessCleanupCustody;
+use crate::ProcessCleanupObservation;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum ProcessSignal {
@@ -117,6 +121,7 @@ pub struct ProcessHandle {
     wait_handle: StdMutex<Option<JoinHandle<()>>>,
     exit_status: Arc<AtomicBool>,
     exit_code: Arc<StdMutex<Option<i32>>>,
+    cleanup_custody: OnceLock<Arc<dyn ProcessCleanupCustody>>,
     // PtyHandles must be preserved because the process will receive Control+C if the
     // slave is closed
     _pty_handles: StdMutex<Option<PtyHandles>>,
@@ -154,9 +159,34 @@ impl ProcessHandle {
             wait_handle: StdMutex::new(Some(wait_handle)),
             exit_status,
             exit_code,
+            cleanup_custody: OnceLock::new(),
             _pty_handles: StdMutex::new(pty_handles),
             resizer: StdMutex::new(resizer),
         }
+    }
+
+    /// Attaches the same native owner's cleanup capability once. Taking the
+    /// terminator or ending an I/O worker does not consume this capability.
+    pub fn retain_cleanup_custody(
+        &self,
+        custody: Arc<dyn ProcessCleanupCustody>,
+    ) -> io::Result<()> {
+        self.cleanup_custody.set(custody).map_err(|_| {
+            io::Error::new(
+                io::ErrorKind::AlreadyExists,
+                "process cleanup custody already attached",
+            )
+        })
+    }
+
+    /// Observes cleanup through the retained owner, if this backend supplied
+    /// one. A terminal cleanup result is not a successful command completion;
+    /// the ordinary exit channel and its original result remain independent.
+    pub fn observe_cleanup(&self) -> io::Result<Option<ProcessCleanupObservation>> {
+        self.cleanup_custody
+            .get()
+            .map(|custody| custody.observe_cleanup())
+            .transpose()
     }
 
     /// Returns a channel sender for writing raw bytes to the child stdin.

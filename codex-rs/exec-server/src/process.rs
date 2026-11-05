@@ -88,7 +88,8 @@ impl ExecProcessEvent {
     /// Sequence number used to order process-owned events.
     ///
     /// `Failed` is intentionally unsequenced because it is synthesized by the
-    /// client when the session or transport fails, not emitted by the process.
+    /// client or server when process observation or its transport fails. It is
+    /// not an assertion that the process terminated.
     pub(crate) fn seq(&self) -> Option<u64> {
         match self {
             ExecProcessEvent::Output(chunk) => Some(chunk.seq),

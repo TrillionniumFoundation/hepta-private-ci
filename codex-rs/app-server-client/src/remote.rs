@@ -103,6 +103,7 @@ pub struct RemoteAppServerConnectArgs {
 impl RemoteAppServerConnectArgs {
     pub(crate) fn initialize_params(&self) -> InitializeParams {
         let capabilities = InitializeCapabilities {
+            process_indeterminate: true,
             experimental_api: self.experimental_api,
             request_attestation: false,
             extensions: None,
@@ -574,13 +575,14 @@ impl RemoteAppServerClient {
         S: AsyncRead + AsyncWrite + Unpin + Send + 'static,
     {
         let mut stream = stream;
-        let (pending_events, server_version, codex_home) = initialize_remote_connection(
-            &mut stream,
-            &endpoint,
-            initialize_params,
-            INITIALIZE_TIMEOUT,
-        )
-        .await?;
+        let (pending_events, server_version, codex_home, process_indeterminate_enabled) =
+            initialize_remote_connection(
+                &mut stream,
+                &endpoint,
+                initialize_params,
+                INITIALIZE_TIMEOUT,
+            )
+            .await?;
 
         if let RemoteEventMode::Bounded { capacity } = event_mode
             && pending_events.len() > capacity
@@ -631,6 +633,13 @@ impl RemoteAppServerClient {
                         };
                         match command {
                             RemoteClientCommand::Request { request, response_tx } => {
+                                if request.method == "process/spawn" && !process_indeterminate_enabled {
+                                    let _ = response_tx.send(Err(IoError::new(
+                                        ErrorKind::Unsupported,
+                                        "process/spawn requires the server's processIndeterminate initialize confirmation",
+                                    )));
+                                    continue;
+                                }
                                 let request_id = request.id.clone();
                                 if pending_requests.contains_key(&request_id) {
                                     let _ = response_tx.send(Err(IoError::new(
@@ -1286,7 +1295,7 @@ async fn initialize_remote_connection<S>(
     endpoint: &str,
     params: InitializeParams,
     initialize_timeout: Duration,
-) -> IoResult<(Vec<AppServerEvent>, Option<String>, Option<String>)>
+) -> IoResult<(Vec<AppServerEvent>, Option<String>, Option<String>, bool)>
 where
     S: AsyncRead + AsyncWrite + Unpin,
 {
@@ -1294,6 +1303,7 @@ where
     let mut pending_events = Vec::new();
     let mut server_version = None;
     let mut codex_home = None;
+    let mut process_indeterminate_enabled = false;
     write_jsonrpc_message(
         stream,
         JSONRPCMessage::Request(jsonrpc_request_from_client_request(
@@ -1317,6 +1327,8 @@ where
                     })?;
                     match message {
                         JSONRPCMessage::Response(response) if response.id == initialize_request_id => {
+                            process_indeterminate_enabled = response.result.get("processIndeterminate")
+                                .and_then(serde_json::Value::as_bool) == Some(true);
                             server_version = response
                                 .result
                                 .get("userAgent")
@@ -1423,7 +1435,12 @@ where
     )
     .await?;
 
-    Ok((pending_events, server_version, codex_home))
+    Ok((
+        pending_events,
+        server_version,
+        codex_home,
+        process_indeterminate_enabled,
+    ))
 }
 
 fn app_server_event_from_notification(notification: JSONRPCNotification) -> Option<AppServerEvent> {
@@ -1541,3 +1558,7 @@ mod tests {
             .expect("shutdown should complete when worker exits first");
     }
 }
+
+#[cfg(test)]
+#[path = "remote_process_indeterminate_tests.rs"]
+mod process_indeterminate_tests;
