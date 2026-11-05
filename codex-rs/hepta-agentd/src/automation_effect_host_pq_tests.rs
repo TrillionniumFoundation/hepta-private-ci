@@ -9,7 +9,6 @@ use codex_model_provider::PROVIDER_EFFECT_IDEMPOTENCY_KEY_HEADER;
 use codex_model_provider::PROVIDER_EFFECT_PAYLOAD_SHA256_HEADER;
 use ed25519_dalek::Signer;
 use ed25519_dalek::SigningKey;
-use pretty_assertions::assert_eq;
 use std::sync::atomic::Ordering;
 use wiremock::Mock;
 use wiremock::MockServer;

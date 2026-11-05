@@ -5,7 +5,6 @@
 use super::super::super::pon_process::chain_tests::Chain;
 use super::*;
 use anyhow::Context;
-use pretty_assertions::assert_eq;
 use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
 
