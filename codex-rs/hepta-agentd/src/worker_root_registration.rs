@@ -20,6 +20,16 @@ pub(crate) mod process;
 #[path = "worker_root_registration_wire.rs"]
 pub(crate) mod wire;
 
+#[path = "worker_root_lanes_wire.rs"]
+pub(crate) mod lanes_wire;
+pub use lanes_wire::WorkerRootLaneBootstrapV1;
+pub use lanes_wire::WorkerRootLanePathsV1;
+pub use lanes_wire::WorkerRootObservationV1;
+
+#[path = "worker_root_lanes_client.rs"]
+mod lanes_client;
+pub use lanes_client::WorkerRootLaneReceipt;
+
 pub const WORKER_ROOT_REGISTRATION_V1: &str = "runtime.infer_worker.root_registration.v1";
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
