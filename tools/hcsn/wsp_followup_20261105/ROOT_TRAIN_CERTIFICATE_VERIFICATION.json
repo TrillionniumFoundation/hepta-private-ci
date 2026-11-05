@@ -1,0 +1,53 @@
+{
+  "command_recipe_sha256": "4ffebf777ebd24f302f0cfcce27eb523228c72b41ba43a4ccac8c457e39bbaea",
+  "exit_code": 0,
+  "full_child_cpu_seconds": 13.134654,
+  "full_child_wall_seconds": 13.14167589399949,
+  "observed_utc": "2026-11-05T02:53:33.554909+00:00",
+  "package_manifest_sha256": "e606c49896e2fa7e19700fae0e6d63e975e26090e15627a5f9df68c9514d5690",
+  "result": {
+    "files": 81,
+    "fits": {
+      "11": {
+        "conditional_F64_infeasible": true,
+        "ideal_real_infeasible": true,
+        "status": "F64_NECESSARY_SYSTEM_INFEASIBLE",
+        "weak_relaxation_feasible": false,
+        "witness_rows": 4437
+      },
+      "23": {
+        "conditional_F64_infeasible": true,
+        "ideal_real_infeasible": true,
+        "status": "F64_NECESSARY_SYSTEM_INFEASIBLE",
+        "weak_relaxation_feasible": false,
+        "witness_rows": 4427
+      },
+      "37": {
+        "conditional_F64_infeasible": true,
+        "ideal_real_infeasible": true,
+        "status": "F64_NECESSARY_SYSTEM_INFEASIBLE",
+        "weak_relaxation_feasible": false,
+        "witness_rows": 4146
+      },
+      "53": {
+        "conditional_F64_infeasible": true,
+        "ideal_real_infeasible": true,
+        "status": "F64_NECESSARY_SYSTEM_INFEASIBLE",
+        "weak_relaxation_feasible": false,
+        "witness_rows": 3776
+      },
+      "71": {
+        "conditional_F64_infeasible": true,
+        "ideal_real_infeasible": true,
+        "status": "F64_NECESSARY_SYSTEM_INFEASIBLE",
+        "weak_relaxation_feasible": false,
+        "witness_rows": 4672
+      }
+    },
+    "records_only_exact_math_pass": true,
+    "source_features_or_own_Q_reexecuted_by_this_command": false
+  },
+  "schema": "hepta.wsp.root-train-certificate-record-verification.v1",
+  "scope": "Package hashes and exact rational algebra reexecuted; no source feature, Bellman, trajectory or new candidate execution. Complete waited command tree; parent startup/publication excluded.",
+  "stderr": ""
+}

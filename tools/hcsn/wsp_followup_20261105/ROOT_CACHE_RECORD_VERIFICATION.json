@@ -1,0 +1,32 @@
+{
+  "capability_qualified": false,
+  "measurement_scope": "Local in-process receipt reconstruction only; excludes interpreter startup, transport and the model execution recorded in the referenced receipt.",
+  "no_model_forward_reexecution": true,
+  "passed": true,
+  "receipt_sha256": "a055831533050e0cbdf0d79b398a1abd6e75da261d6de9d0865ad16455690b7d",
+  "recorded_wall_seconds": 40.662795775017,
+  "recorded_worker_plus_supervisor_cpu_seconds": 35.756121194,
+  "schema": "hepta.wsp.root-cache-record-verification.v1",
+  "source_hashes_and_recorded_checks_reconstructed": true,
+  "total_appended_tokens": 16,
+  "total_comparisons": 18,
+  "total_forwards": 36,
+  "variants": [
+    {
+      "appended_tokens": 8,
+      "comparisons": 9,
+      "max_absolute_logit_difference": 1.239776611328125e-05,
+      "max_ratio_to_fixed_tolerance": 0.008975963108241558,
+      "variant": "base"
+    },
+    {
+      "appended_tokens": 8,
+      "comparisons": 9,
+      "max_absolute_logit_difference": 1.1920928955078125e-05,
+      "max_ratio_to_fixed_tolerance": 0.010199081152677536,
+      "variant": "p50c"
+    }
+  ],
+  "verification_cpu_seconds": 0.0016682749999999968,
+  "verification_wall_seconds": 0.0016679670002304192
+}

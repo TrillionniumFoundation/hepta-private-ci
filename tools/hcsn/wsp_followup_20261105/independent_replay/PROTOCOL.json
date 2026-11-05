@@ -1,0 +1,20 @@
+{
+  "acceptance": {
+    "comparison_exit": 0,
+    "exact_summary_and_gates": true,
+    "independent_verifier_exit": 0,
+    "models": 35,
+    "numeric_tolerance": 0,
+    "scored_worlds": 480,
+    "trajectory_files": 20,
+    "worker_exit": 0,
+    "world_files": 20
+  },
+  "action": "Run the original frozen worker once, then its independent record verifier, then the frozen exact JSON comparator. No changed seeds, candidates, gate, stopping criteria, or budgets.",
+  "comparison_source_sha256": "edfa022d6e9b23c352cae322a3a9282f31552401da03fde686897f24197424a6",
+  "evidence_scope": "Independent process replay of same implementation and previously exposed worlds; not independent statistical replication or a second efficacy study.",
+  "failure_policy": "Keep any failure and complete costs; no tolerance relaxation or seed replacement.",
+  "frozen_at_utc": "2026-11-05T01:20:47.243327+00:00",
+  "original_protocol_sha256": "735df99e3366a5d9343e1642a8c370b8d3359169bc70a98572476c6747a88251",
+  "schema": "hepta.wsp.frozen-full-replay-protocol.v1"
+}

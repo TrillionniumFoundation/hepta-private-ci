@@ -1,0 +1,31 @@
+# Run from train_margin_certificate. This checks storage and exact rational
+# mathematics only; it does not execute hidden features, Bellman or trajectories.
+python -B - <<'PY'
+from pathlib import Path
+import hashlib, json, sys
+p=Path.cwd()
+manifest=json.loads((p/'PACKAGE_SHA256.json').read_text())
+expected={x['path'] for x in manifest['files']}|{'PACKAGE_SHA256.json'}
+actual={str(x.relative_to(p)) for x in p.rglob('*') if x.is_file() and '__pycache__' not in x.parts}
+assert actual==expected
+for entry in manifest['files']:
+    data=(p/entry['path']).read_bytes()
+    assert len(data)==entry['bytes'] and hashlib.sha256(data).hexdigest()==entry['sha256']
+sys.path.insert(0,str(p))
+from io_helpers import read
+from verify_records import independent_math
+protocol=read(p/'PROTOCOL_FROZEN.json')
+result={}
+for fit in protocol['fits']:
+    relative=f'execution_r1/run/models/fit_{fit}_C.json.gz'
+    model_path=p.parent/'ndu_policy'/relative
+    assert hashlib.sha256(model_path.read_bytes()).hexdigest()==protocol['files']['science'][relative]
+    model=read(model_path)
+    center=[list(w)+[b] for w,b in zip(model['network']['w2'][:3],model['network']['b2'][:3])]
+    report=read(p/f'execution_r1/run/producer/fit_{fit}_RESULT.json.gz')
+    witness=read(p/f'execution_r1/run/producer/fit_{fit}_WITNESS.json.gz')
+    result[str(fit)]=independent_math(center,witness,report)
+assert all(x['conditional_F64_infeasible'] for x in result.values())
+print(json.dumps({'records_only_exact_math_pass':True,'files':len(expected),'fits':result,
+                  'source_features_or_own_Q_reexecuted_by_this_command':False},sort_keys=True))
+PY

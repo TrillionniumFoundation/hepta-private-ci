@@ -1,0 +1,30 @@
+{
+  "cargo_lock_verified": true,
+  "commands": [
+    {
+      "command": "python3 -B experiments/weight/native_bellman_20261105/verify_records.py --repo .",
+      "exit_code": 0,
+      "full_child_cpu_seconds": 0.07586699999999999,
+      "full_child_wall_seconds": 0.07621291000032215,
+      "source_sha256": "8a246587d6875d6b5a8e6ce12f18c1512f0702dd52caaa2e2c0ea706541e0282",
+      "stderr": "",
+      "stdout": "{\"manifest_files\": 62, \"new_runtime_execution\": false, \"new_scientific_efficacy_claim\": false, \"qualified_sources\": 14, \"recorded_compared_legal_Q\": 928200, \"recorded_compared_nodes\": 246160, \"recorded_mcp_worlds\": 320, \"repository_source_verified\": true, \"status\": \"PASS_RECORDS_ONLY\"}\n"
+    },
+    {
+      "command": "python3 -B experiments/weight/native_guard_journal_20261105/verify_records.py --repo .",
+      "exit_code": 0,
+      "full_child_cpu_seconds": 0.043074,
+      "full_child_wall_seconds": 0.04361382299975958,
+      "source_sha256": "884ed393822a44b0df84d5f10f6e10ebe6d791ef66e7716b45c6e29478be1378",
+      "stderr": "",
+      "stdout": "{\"manifest_files\": 25, \"new_model_efficacy_claim\": false, \"new_runtime_execution\": false, \"recorded_actual_mcp_calls\": 11, \"recorded_actual_sigkill_cases_across_configurations\": 16, \"repository_source_verified\": true, \"status\": \"PASS_RECORDS_ONLY\"}\n"
+    }
+  ],
+  "cost_scope": "Complete waited children; parent setup and final publication excluded.",
+  "new_runtime_or_scientific_execution": false,
+  "observed_utc": "2026-11-05T02:20:53.171551+00:00",
+  "publish_whitelist_sha256": "32350f9d885eb69b4b5368d51d7e4dd8c72e57e2033c1704d4b8e425cec791cd",
+  "qualified_source_files_verified": 14,
+  "records_only": true,
+  "schema": "hepta.wsp.root-runtime-record-review.v1"
+}

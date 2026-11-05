@@ -1,0 +1,200 @@
+{
+  "all_features": {
+    "passed": 1781,
+    "skipped": 40,
+    "tests_run": 1781
+  },
+  "branch": "feature/wsp-trust-region-20261105",
+  "conclusion": "success",
+  "created_at": "2026-11-05T01:08:53Z",
+  "decoded_log_utf8_bytes": 832640,
+  "decoded_log_utf8_sha256": "35bd0c9b508463c5ab49a0ce2be971235e80ed096116702d208d2ddea0b97a6d",
+  "event": "push",
+  "head_sha": "e7a2688acc5504412d45160a08d2bf864be6b650",
+  "job_completed_at": "2026-11-05T01:44:58Z",
+  "job_id": 126979877218,
+  "job_started_at": "2026-11-05T01:08:56Z",
+  "logs_scope": "Complete decoded job log fetched through the GitHub connector; following digest and summaries are reconstructed locally.",
+  "no_default_features": {
+    "passed": 1761,
+    "skipped": 28,
+    "tests_run": 1761
+  },
+  "prospective_merge": {
+    "conclusion": "skipped",
+    "qualified": false,
+    "reason": "This is the feature-branch push's exact-head job; the workflow's prospective-merge job is not executed for this event."
+  },
+  "pull_request": 92,
+  "repository": "TrillionniumFoundation/hepta-runtime",
+  "run_attempt": 1,
+  "run_id": 41946487834,
+  "run_number": 411,
+  "runner_cpu_seconds_known": false,
+  "schema": "hepta.wsp.runtime-official-ci.v1",
+  "scientific_task_gain_implied": false,
+  "status": "completed",
+  "steps": [
+    {
+      "completed_at": "2026-11-05T01:08:58Z",
+      "conclusion": "success",
+      "name": "Set up job",
+      "started_at": "2026-11-05T01:08:57Z",
+      "status": "completed"
+    },
+    {
+      "completed_at": "2026-11-05T01:09:03Z",
+      "conclusion": "success",
+      "name": "Checkout exact source HEAD",
+      "started_at": "2026-11-05T01:08:58Z",
+      "status": "completed"
+    },
+    {
+      "completed_at": "2026-11-05T01:09:03Z",
+      "conclusion": "success",
+      "name": "Verify checked-out source identity",
+      "started_at": "2026-11-05T01:09:03Z",
+      "status": "completed"
+    },
+    {
+      "completed_at": "2026-11-05T01:09:13Z",
+      "conclusion": "success",
+      "name": "Install pinned Rust toolchain",
+      "started_at": "2026-11-05T01:09:03Z",
+      "status": "completed"
+    },
+    {
+      "completed_at": "2026-11-05T01:09:15Z",
+      "conclusion": "success",
+      "name": "Format",
+      "started_at": "2026-11-05T01:09:13Z",
+      "status": "completed"
+    },
+    {
+      "completed_at": "2026-11-05T01:10:30Z",
+      "conclusion": "success",
+      "name": "Check all targets",
+      "started_at": "2026-11-05T01:09:15Z",
+      "status": "completed"
+    },
+    {
+      "completed_at": "2026-11-05T01:11:19Z",
+      "conclusion": "success",
+      "name": "Check all targets without remote filesystem",
+      "started_at": "2026-11-05T01:10:30Z",
+      "status": "completed"
+    },
+    {
+      "completed_at": "2026-11-05T01:12:02Z",
+      "conclusion": "success",
+      "name": "Clippy",
+      "started_at": "2026-11-05T01:11:19Z",
+      "status": "completed"
+    },
+    {
+      "completed_at": "2026-11-05T01:12:43Z",
+      "conclusion": "success",
+      "name": "Clippy without remote filesystem",
+      "started_at": "2026-11-05T01:12:02Z",
+      "status": "completed"
+    },
+    {
+      "completed_at": "2026-11-05T01:16:40Z",
+      "conclusion": "success",
+      "name": "Install pinned nextest",
+      "started_at": "2026-11-05T01:12:43Z",
+      "status": "completed"
+    },
+    {
+      "completed_at": "2026-11-05T01:16:50Z",
+      "conclusion": "success",
+      "name": "Install integration test tools",
+      "started_at": "2026-11-05T01:16:40Z",
+      "status": "completed"
+    },
+    {
+      "completed_at": "2026-11-05T01:28:19Z",
+      "conclusion": "success",
+      "name": "Test in isolated processes",
+      "started_at": "2026-11-05T01:16:50Z",
+      "status": "completed"
+    },
+    {
+      "completed_at": "2026-11-05T01:28:20Z",
+      "conclusion": "success",
+      "name": "Descriptor-relative file safety",
+      "started_at": "2026-11-05T01:28:19Z",
+      "status": "completed"
+    },
+    {
+      "completed_at": "2026-11-05T01:29:32Z",
+      "conclusion": "success",
+      "name": "Control-plane regression",
+      "started_at": "2026-11-05T01:28:20Z",
+      "status": "completed"
+    },
+    {
+      "completed_at": "2026-11-05T01:29:37Z",
+      "conclusion": "success",
+      "name": "X230 qualification evidence regressions",
+      "started_at": "2026-11-05T01:29:32Z",
+      "status": "completed"
+    },
+    {
+      "completed_at": "2026-11-05T01:39:11Z",
+      "conclusion": "success",
+      "name": "Test without remote filesystem in isolated processes",
+      "started_at": "2026-11-05T01:29:37Z",
+      "status": "completed"
+    },
+    {
+      "completed_at": "2026-11-05T01:44:53Z",
+      "conclusion": "success",
+      "name": "Release build",
+      "started_at": "2026-11-05T01:39:11Z",
+      "status": "completed"
+    },
+    {
+      "completed_at": "2026-11-05T01:44:53Z",
+      "conclusion": "success",
+      "name": "Release binary REA parser and Linux syscall-denial smoke",
+      "started_at": "2026-11-05T01:44:53Z",
+      "status": "completed"
+    },
+    {
+      "completed_at": "2026-11-05T01:44:54Z",
+      "conclusion": "success",
+      "name": "Independent Python ZIP writer to shipped Rust worker static checks",
+      "started_at": "2026-11-05T01:44:53Z",
+      "status": "completed"
+    },
+    {
+      "completed_at": "2026-11-05T01:44:55Z",
+      "conclusion": "success",
+      "name": "Retain independent static ZIP fixtures and result",
+      "started_at": "2026-11-05T01:44:54Z",
+      "status": "completed"
+    },
+    {
+      "completed_at": "2026-11-05T01:44:55Z",
+      "conclusion": "success",
+      "name": "Post Checkout exact source HEAD",
+      "started_at": "2026-11-05T01:44:55Z",
+      "status": "completed"
+    },
+    {
+      "completed_at": "2026-11-05T01:44:55Z",
+      "conclusion": "success",
+      "name": "Complete job",
+      "started_at": "2026-11-05T01:44:55Z",
+      "status": "completed"
+    }
+  ],
+  "summary_lines": [
+    "2026-11-05T01:28:19.2136590Z      Summary [ 172.393s] 1781 tests run: 1781 passed, 40 skipped",
+    "2026-11-05T01:39:11.0507100Z      Summary [ 170.804s] 1761 tests run: 1761 passed, 28 skipped"
+  ],
+  "tree_sha": "db33fe0df3156a0d024488b715f1a645dbe9468f",
+  "updated_at": "2026-11-05T01:44:58Z",
+  "url": "https://github.com/TrillionniumFoundation/hepta-runtime/actions/runs/41946487834"
+}

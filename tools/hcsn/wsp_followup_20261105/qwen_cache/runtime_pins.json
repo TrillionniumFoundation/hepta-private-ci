@@ -1,0 +1,76 @@
+{
+  "schema": "hepta.qwen.cache_runtime_pins.v1",
+  "recorded_utc": "2026-11-05T00:18:06.132012+00:00",
+  "python_version": "3.14.4 (main, Aug 20 2026, 10:41:58) [GCC 15.2.0]",
+  "dependencies": {
+    "huggingface-hub": {
+      "metadata_sha256": "b575d5eabe0b381489db2c163bb382f4ef44588ffbf468a4052719bf161b4211",
+      "record_sha256": "f843bb3e2bd94c0efeba3243137c57245be541ff39eea88bc748e26cec03e072",
+      "version": "2.4.0"
+    },
+    "numpy": {
+      "metadata_sha256": "9a895d801184d2176f926af84eb47f2db1af2756afac99d64a2bf482d5d5e024",
+      "record_sha256": "76b95b1f9674ef1a90f3280ccbe287e8efabafa0f9e4c57eb2f70078edcf8aed",
+      "version": "2.5.2"
+    },
+    "safetensors": {
+      "metadata_sha256": "645be7b8d55e91534f991d144dc9e279581ea8dbea1a8c5b0be14e529d01e345",
+      "record_sha256": "be1c3ec26786429d08df1629d3f11022ebb2bd0945dee17416c0a628828d5cca",
+      "version": "0.8.0"
+    },
+    "tokenizers": {
+      "metadata_sha256": "87032ea29ec14be956ce0f15d164a8f436d6f1adbe19b261d6c179d9184f5cba",
+      "record_sha256": "0a7bc7c72b9dc9b56792e983e99ca78063b25affeb3a73c3d999097cab05e557",
+      "version": "0.23.3"
+    },
+    "torch": {
+      "metadata_sha256": "e13ff5ee93dee358d80758cb085be36bc2fffd313829a3975566c4a226d4c938",
+      "record_sha256": "d25410b3c1518db1d7fccbe4244e515944b0df476d6c03bffb32321f9fb43a13",
+      "version": "2.13.0+rocm10.0.0"
+    },
+    "transformers": {
+      "metadata_sha256": "580eb0d3151a225af46a6828ab0801053b4376f198ce03717935e0b3738b30fb",
+      "record_sha256": "4123dee2feefbb024746e89606bef0a6ea12a6bd72c38cca043b0e36d913f8b9",
+      "version": "5.20.2"
+    }
+  },
+  "transformers_sources": {
+    "cache_utils.py": {
+      "bytes": 106250,
+      "sha256": "17b4aff340ca287cd248d179819db77e775f857678f17088528f1e14227773c2"
+    },
+    "initialization.py": {
+      "bytes": 12803,
+      "sha256": "a2392653161633d4f8aefb473e776113ec5df8844acdba892569407ca56c2d6a"
+    },
+    "masking_utils.py": {
+      "bytes": 78673,
+      "sha256": "03912b9f8910358966351495075895ef0e8f5048f15226271d700ea268fef08c"
+    },
+    "modeling_rope_utils.py": {
+      "bytes": 62715,
+      "sha256": "6a0727073e080e163d0287e15fc1acb90035e9a9df9cb19a13b632a40abfac24"
+    },
+    "modeling_utils.py": {
+      "bytes": 272636,
+      "sha256": "553412f58334f65abba617f3b344828698dbf63615e109159fd03dafd3422d38"
+    },
+    "models/qwen3_5/configuration_qwen3_5.py": {
+      "bytes": 7933,
+      "sha256": "e5316490555c2d3590682f1d84ca656bdf3d2aff7475b95b682c03afbb69e748"
+    },
+    "models/qwen3_5/modeling_qwen3_5.py": {
+      "bytes": 87985,
+      "sha256": "b4b17fe08d8d54da34a0fce78639666279ae7fd0a9e4ec06fce6602774707ca3"
+    }
+  },
+  "original_loader_sha256": "d4ff765d249b6fee60e619ea90af3f2b00e54468c9601006ed962dc1e7c994f0",
+  "original_forward_receipt_sha256": "8cd96da30ae00a4fe8c327db646ece3f7a6e65fe8ba17da502b2fdb27a73d5e1",
+  "export_sha256": {
+    "receipt.json": "87ae658c7bee2d89a16cb7a828347a36d474ff485c870fe629e1753cc2b92768",
+    "tensor_manifest.json": "84bdcf921a6f9ccc5e5d1a6d447baf8efda9314d8dc199f5176ffc13582ecf62",
+    "base/model.safetensors": "e9f6dd9e3636887f8bb04a467241c894af8828fd548c3d8f627a386ccf2a4765",
+    "p50c/model.safetensors": "6a211ed8a9b0b977c13889c3fd4f14dabeaee779ea001dd01f17c899877a0374"
+  },
+  "identity_scope": "Actual named execution-source hashes, distribution METADATA/RECORD hashes and versions, original loader/receipt, every export/config/tokenizer byte. This does not verify every transitive installed dependency binary."
+}

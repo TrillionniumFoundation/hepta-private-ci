@@ -1,0 +1,35 @@
+{
+  "numpy": "2.3.5",
+  "platform": "Linux-6.18.57-x86_64-with-glibc2.39",
+  "protocol_sha256": "735df99e3366a5d9343e1642a8c370b8d3359169bc70a98572476c6747a88251",
+  "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+  "resource_caps": {
+    "cpu_threads": 1,
+    "execution_platforms": "POSIX supervisor on Linux/macOS; this resource-limited runner is explicitly not a Windows supervisor",
+    "overrun_behavior": "Preserve partial records and fail the qualification; no silent reduction of fits/worlds or restart with changed protocol",
+    "policy_state_caps_enforced": true,
+    "rss_target_bytes": 1073741824,
+    "rss_target_scope": "Measured peak RSS target, not an operating-system hard address-space limit; reported separately",
+    "single_process_cpu_seconds": 900,
+    "single_process_wall_seconds": 1200
+  },
+  "sources": {
+    "joint/acquire_inputs.py": "bc552c289036e7f0253e8d2b9dbc9d1cc8a6fea7a0d079142e9f1cafde128f89",
+    "joint/checked_replay.py": "d0922ab0c458d9d382e1f9c851c52731c4a71256870000862dbebf5d38366b24",
+    "joint/joint_compiled_dp.py": "a371d745f6340350d393ea055ac5c9b045c9bf3a052f26655eabd6e7dffbceb6",
+    "joint/joint_data.py": "53292842debef33b6c54992b7b0dba80262ba2ee836bfc6fba14ca5c9b5e6e68",
+    "joint/joint_deploy.py": "c91ef40c484000e2a2b923425467c03fbbfb4e15a1f54856f6c850f9242c8e26",
+    "joint/joint_law.py": "2e7f19a2534567e31370eea24dec096a309e4db4aa42770efbf544bed84bcf65",
+    "joint/joint_model.py": "250ec083ce30e11ea55c0347ed2fbc549be02a514e97c6da472699820afd3284",
+    "joint/joint_protocol.json": "1c6ffc51d8d9df8f57bb350dd9d80a264b889a14882da553c63e60c547a18606",
+    "joint/joint_task.py": "51139ba57004f2a5d69381af2f781b3717404318f122d8b6bec8416004efffa5",
+    "joint/legacy_task.py": "d8e88364932bb344e4df811f40163550e9c198b8e34778b5664c72367f4bde06",
+    "joint/run_head_edit.py": "fe0681ef732b660db0b195bda21cf9ab40b0d6cd8b7fe0c69ade7b9e67198b6f",
+    "joint/truth_transitions.npz": "3a62c48272d90b459622ed8818fddf36de983831fbc0c1306fc39b27345228f0",
+    "new/planning.py": "2fbd9b00861d3ff932c81b975b60e39dc9d4e9138e160a99222e6fdc6eb0a687",
+    "new/quadratic.py": "2cdfabe96b4e9af0cc565352f8ed6fcca02646f667e7e6d34639e39c37a62d6c",
+    "new/run_experiment.py": "6da9401350c84bf82afa9fef46779d5fd54b391759b5c4578d2c6d77df6f8c58",
+    "protocol/PROTOCOL_FROZEN.json": "735df99e3366a5d9343e1642a8c370b8d3359169bc70a98572476c6747a88251"
+  },
+  "started_utc": "2026-11-05T01:21:36.959969+00:00"
+}
