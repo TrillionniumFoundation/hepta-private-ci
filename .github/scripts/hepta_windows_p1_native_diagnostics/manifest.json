@@ -1,0 +1,42 @@
+{
+  "kind": "standalone native diagnostics, not qualification",
+  "base": "6fd18c0e077e2c94ff9968b42de53dcb499aebfa",
+  "base_tree": "3fde256c766150d154df64b5d1942445d60ee5f4",
+  "locks": {
+    "MODULE.bazel.lock": "e80ef06b6f824a19cdcedd6010738b316ccca96b83ad8730fafb52153a2634fb",
+    "apps/hepta-control-ui/rust/.config/nextest.toml": "4a479affb48b1d3eadb431d8bdbaf249c5514754a8652db4693798b41dd7f25f",
+    "apps/hepta-control-ui/rust/Cargo.lock": "99d22c4031512530e66b1e1cbec256d069e6e613e158f37d247d9307de265734",
+    "apps/hepta-control-ui/rust/robrix-ui/patches/cargo-makepad.Cargo.lock": "a7a430f48541ea113a6d8a85153ec3de5c9570953602a212e8a71597e4cca647",
+    "codex-rs/.config/nextest.toml": "a829e7ba9e72c44d3a8c5378a0ae595aee57cdb4265ed1f5ad1f7ef03a602a6a",
+    "codex-rs/Cargo.lock": "4165307bb6c41d08e6c1c362060f2a958c8200ea43fdab2b8b1e6220ad82b55c",
+    "codex-rs/third_party/accesskit-0.17.1/Cargo.lock": "113950acd22987215eee25cdd9a63e7b2fb2fea4dd97bb4c14118e5f14e03f4c",
+    "codex-rs/third_party/aws-config-1.12.0/Cargo.lock": "3a37dfd25d255503591e98e804521872ada8ae33b4fd155604291621b48a9e4f",
+    "codex-rs/third_party/matrix-sdk-crypto-0.18.0/Cargo.lock": "a5d7e872d3cbe3d1fdb5f2fb1aacf0647ad08774e939d19c4dd07103464686e9",
+    "codex-rs/third_party/matrix-sdk-sqlite-0.18.0/Cargo.lock": "3d01214819e5129222113e3f3a07891821fd1e9d13db0a7bec6e4c9fab4e282d",
+    "qualification/hnmf-adversarial-reference/Cargo.lock": "077b9eb1010dbe284566760a75373972c292164f21bc8efc78d8a13b3e4df5c5",
+    "qualification/hnmf-contract-reference/Cargo.lock": "37e381293ce9281e203dad1bbb4ffcc7ace611a0ff789ea7a472814d5839c69d",
+    "qualification/hnmf-reference/Cargo.lock": "8557470dd0e1e6c68b52ce54835b754beca16e00a2f0b20098e48c06530422ac",
+    "scripts/codex_package/smoke_tests/uv.lock": "f91022575695bdbec3bf87a3fbd97f9f6aacd03bbbcea5e33b1056a98dfac6e7",
+    "scripts/uv.lock": "6b8e7a82d1a4f4c5d59ce57cf8be472ea031c6fb0a905506258d434132b3c99c",
+    "sdk/python-runtime/uv.lock": "77751399c5fb958a85607cdec8b2f7704c3b4a2fffd5f5ef66f907146590e791",
+    "sdk/python/uv.lock": "c212c08818ad1a2b4016862d27e22e77b950296b3ed382594233535fdc5ba258",
+    "tools/argument-comment-lint/Cargo.lock": "43deace1b5473447caf871bbf463c6f9b9c83e1382dc5f9db602394ac5d18421"
+  },
+  "probes": [
+    {
+      "name": "programdata",
+      "path": ".github/scripts/hepta_windows_p1_native_diagnostics/probe_windows_programdata.py",
+      "sha256": "0b96ee5281a62bacb24fab6d35987ee903cfea412b304e257659190246a2facb"
+    },
+    {
+      "name": "logon-stdio",
+      "path": ".github/scripts/hepta_windows_p1_native_diagnostics/probe_windows_logon_stdio.py",
+      "sha256": "35b348700e14d7069c0348bf1d52c8400c96919a59a2c680dce364edd677fb1f"
+    },
+    {
+      "name": "token-accesscheck",
+      "path": ".github/scripts/hepta_windows_p1_native_diagnostics/probe_windows_token_accesscheck.py",
+      "sha256": "0f8b01711ae75bd30b7f751fdfc555d98469b29bed8b40d17d57af76d3068676"
+    }
+  ]
+}

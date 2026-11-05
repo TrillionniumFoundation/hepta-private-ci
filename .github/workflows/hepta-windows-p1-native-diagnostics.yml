@@ -1,0 +1,38 @@
+name: P1 Windows native diagnostics (not qualification)
+
+on:
+  push:
+    branches:
+      - diagnostics/p1-windows-native-20261105-ba4b
+
+permissions:
+  contents: read
+
+env:
+  PYTHONDONTWRITEBYTECODE: "1"
+  PYTHONUTF8: "1"
+
+jobs:
+  native-diagnostics:
+    runs-on: windows-latest
+    timeout-minutes: 35
+    steps:
+      - name: Checkout the exact diagnostic event head
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 2
+          persist-credentials: false
+      - name: Observe native initialization, stdio and token behavior
+        shell: pwsh
+        run: |
+          python -B .github/scripts/hepta_windows_p1_native_diagnostics/run_diagnostics.py --output "$env:RUNNER_TEMP/hepta-p1-native-diagnostics"
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Preserve every raw diagnostic and exact source receipt
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: windows-p1-native-diagnostics-${{ github.sha }}-${{ github.run_id }}
+          path: ${{ runner.temp }}/hepta-p1-native-diagnostics/
+          if-no-files-found: error
+          retention-days: 14
