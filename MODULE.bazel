@@ -533,13 +533,11 @@ rama_dns_bindgen_tools = [
     "@llvm//:builtin_resource_dir",
 ]
 
-rama_dns_bindgen_args = " ".join([
-    "--sysroot=/dev/null",
-    "-nostdlibinc",
-    "-isystem $(location @kernel_headers//:kernel_headers_directory)",
-    "-isystem $(location @llvm//runtimes/glibc:glibc_headers_include_search_directory)",
-    "-Xclang -internal-isystem -Xclang $(location @llvm//:builtin_resource_dir)/include",
-])
+# MODULE.bazel has no json module; rules_rs expects JSON-encoded environment values.
+rama_dns_bindgen_env = """{
+    "BINDGEN_EXTRA_CLANG_ARGS": "--target=%s --sysroot=/dev/null -nostdlibinc -isystem $(location @kernel_headers//:kernel_headers_directory) -isystem $(location @llvm//runtimes/glibc:glibc_headers_include_search_directory) -Xclang -internal-isystem -Xclang $(location @llvm//:builtin_resource_dir)/include",
+    "LIBCLANG_PATH": "$(location @llvm-project//clang:libclang_interface_output)"
+}"""
 
 crate.annotation(
     build_script_data_select = {
@@ -547,14 +545,8 @@ crate.annotation(
         "x86_64-unknown-linux-gnu": rama_dns_bindgen_headers,
     },
     build_script_env_select = {
-        "aarch64-unknown-linux-gnu": json.encode({
-            "BINDGEN_EXTRA_CLANG_ARGS": "--target=aarch64-unknown-linux-gnu " + rama_dns_bindgen_args,
-            "LIBCLANG_PATH": "$(location @llvm-project//clang:libclang_interface_output)",
-        }),
-        "x86_64-unknown-linux-gnu": json.encode({
-            "BINDGEN_EXTRA_CLANG_ARGS": "--target=x86_64-unknown-linux-gnu " + rama_dns_bindgen_args,
-            "LIBCLANG_PATH": "$(location @llvm-project//clang:libclang_interface_output)",
-        }),
+        "aarch64-unknown-linux-gnu": rama_dns_bindgen_env % "aarch64-unknown-linux-gnu",
+        "x86_64-unknown-linux-gnu": rama_dns_bindgen_env % "x86_64-unknown-linux-gnu",
     },
     build_script_tools_select = {
         "aarch64-unknown-linux-gnu": rama_dns_bindgen_tools,
