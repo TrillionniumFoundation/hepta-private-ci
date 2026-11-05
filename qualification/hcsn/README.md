@@ -2,16 +2,56 @@
 
 This package connects the He–Xiong stationary rollover model to two separately reported neural architectures: **A, a value-feature recurrent encoder**, and **B, a resetting population-flux encoder**. It provides reproducible checks and synthetic experiments. It does not establish task superiority, a dynamical phase transition, or global network/NDU optimality.
 
-## Evidence and current status
+## Latest cloud qualification (2026-11-05)
+
+The project cloud environment now runs official `torch==2.8.0+cpu` with the
+pinned requirements. The [strict receipt](evidence/cloud-20261105/qualified-source/tests.json)
+records **86 passed, 0 failed, 0 errors, 0 skipped**. It includes dtype-specific
+expansion-switch values, integral finite-difference slopes and equity ODE
+residuals, including the admissible short-maturity FP64 counterexample. FP64
+retains cutoff `.12`; FP32 uses `.5`. Original tolerances and financial-domain
+checks remain. The [switch probes](evidence/cloud-20261105/qualified-source/switch-probes.json)
+retain measured values. Earlier failed receipts are retained separately and do
+not qualify the final source.
+
+Fresh [kernel](evidence/cloud-20261105/qualified-source/kernel.json),
+[mechanism](evidence/cloud-20261105/qualified-source/mechanisms.json),
+[smoke](evidence/cloud-20261105/qualified-source/smoke.json), and
+[full resource accounting](evidence/cloud-20261105/qualified-source/full.json)
+receipts bind their actual source hashes. Read every status and count; optional
+unavailability makes a report partial even when the CLI exits zero. No GPU is
+exposed in this environment: all **170 unique full combinations remain
+unavailable, with zero completed CUDA runs**. The 400-step, 64-example,
+1,638,400-token per-run budget is unchanged and has not executed. CUDA A/B/Mamba2
+forward/backward at `(64,64,2)`, B's full-budget peak memory and trained-grid
+qualification, and GPU physical energy remain open.
+
+The benchmark now writes atomic per-run JSON and validation-selected weights to
+`<output-stem>.runs/`. Repeating the same command reuses completed runs only when
+source, config, seed, dataset, software, hardware and the weight hash match.
+Failed/unavailable runs are retried. An interrupted in-progress run restarts
+from its original seed and budget; completed runs survive. This is run-level
+recovery, not an optimizer-step restart. Source changes during execution abort
+the aggregate instead of certifying mixed-source results.
+
+For trained B, run `python -m qualification.hcsn.audit_population --benchmark
+<smoke.json> --output <audit.json>`. It reloads validation-selected weights,
+checks mass/escape on all held-out inputs and reports joint `(32,.1)`,
+`(64,.05)`, `(128,.025)` sensitivity. The effective refractory duration stays
+`.3` at every resolution, and each original input is held over its substeps.
+Finite mass accounting does not establish resolution independence, and smoke
+weights do not qualify full-budget B.
+
+## Historical evidence and implementation scope
 
 | Evidence | What it supports | Current scope |
 | --- | --- | --- |
 | [Kernel receipt](evidence/kernel_reference.json) | FP64 value matching, smooth pasting, debt/equity residuals, limits, homogeneity and independent derivative checks | Passed for the recorded cases; formal inadmissible roots are explicitly labeled |
 | [Mechanism receipt](evidence/mechanisms.json) | Rest, repeated pulses, recovery, refractory timing, sustained input, tested coupling, mass accounting and joint refinement | Numerical probes passed; stronger tested coupling exhibits synchronized population-rate bursts |
 | [Local test receipt](evidence/local_tests.json) | Exact counts of passed, failed and skipped tests, with source hashes | NumPy checks have run locally; inspect skips instead of counting them as tensor passes |
-| PyTorch checks and training receipts | Tensor values/gradients, A/B forward/backward, smoke training and measured performance | Pending measured CI evidence at the time this README was written |
+| PyTorch checks and training receipts | Tensor values/gradients, A/B forward/backward, smoke training and measured performance | See the fresh cloud receipts above; hosted CI is a separate pending gate |
 
-Receipts bind results to their recorded source hashes and software versions. The local environment used for the bundled NumPy evidence has no PyTorch. The [research workflow](../../.github/workflows/hepta-hcsn-research.yml) requires PyTorch and retains JSON artifacts for its exact commit; a queued or running job provides no pass result. No full CUDA comparison or measured energy result is currently claimed. Mathematical details and feasibility distinctions are in [MATH.md](MATH.md).
+Receipts bind results to their recorded source hashes and software versions. The earlier local environment used for the bundled historical NumPy evidence had no PyTorch. The [research workflow](../../.github/workflows/hepta-hcsn-research.yml) requires PyTorch and retains JSON artifacts for its exact commit; a queued or running job provides no pass result. No full CUDA comparison or measured energy result is currently claimed. Mathematical details and feasibility distinctions are in [MATH.md](MATH.md).
 
 ## Install and reproduce
 
@@ -193,7 +233,7 @@ The call/risk/dual, fixed/conditioned boundary, full/absent rollover, financial/
 | Batch size / optimizer steps | 16 / **8** | 64 / 400 |
 | Device / inference repeats | CPU / 7 | CUDA / 100 |
 
-Smoke's three seeds and eight optimizer steps check the training path and reporting. They do not establish convergence or superiority over Transformer, Mamba-2 or any other baseline. Full is a research configuration awaiting execution, not a completed result. Both tasks are synthetic: delayed recall predicts the first scalar after distractors; adding sums two marked entries, one from each half of the sequence.
+Smoke's three seeds and eight optimizer steps check the training path and reporting. They do not establish convergence or superiority over Transformer, Mamba-2 or any other baseline. Full has explicit unavailable records in the current CPU cloud environment, not completed CUDA results. Both tasks are synthetic: delayed recall predicts the first scalar after distractors; adding sums two marked entries, one from each half of the sequence.
 
 Every model receives the same split arrays and hashes, minibatch draws per seed, step count and token budget. Splits are independent; checkpoint selection uses validation only and the held-out test is evaluated once after selection. Validation/test are evaluated in batches. Hidden width is shared, **parameter count is not matched**; actual total/trainable counts are reported. The setup uses eager FP32 training and the selected implementations, without claiming equal hyperparameter tuning or a large-language-model scaling comparison. Requested deterministic algorithms use `warn_only=True`, so bitwise identity across devices is not guaranteed.
 
