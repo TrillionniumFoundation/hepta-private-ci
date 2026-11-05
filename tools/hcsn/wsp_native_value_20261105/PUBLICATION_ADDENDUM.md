@@ -8,6 +8,16 @@ the 579-file original package. This addendum is new publication context, not a
 new scientific run. A bounded read-only audit matched local SHA256/Git blob
 identities, all upload receipts and the 37 unique reused base-tree blobs.
 
+The final checkout stores the five large native request gzip files as 28 raw
+byte parts, with five part manifests, to satisfy the repository's existing
+512,000-byte blob limit. The original gzip bytes, complete SHA256 values and
+logical research manifest remain unchanged. Follow
+`native_certificate/inputs/README.md` to reconstruct the complete original
+144-file native package in a fresh work directory before using its frozen
+verifier. Reconstruction was checked byte-for-byte; a one-byte corruption was
+rejected before any output directory was created. This storage correction does
+not rerun or modify the scientific experiment and adds no blob-size exemption.
+
 The complete value-edit package contains 397 allowlisted files. Its scientific
 execution and independent replay passed their integrity checks but the primary
 IID and OOD efficacy gates failed. The native package contains 143 manifest-listed

@@ -1,0 +1,90 @@
+{
+  "all_eleven_original_input_files_restored_byte_identical": true,
+  "checked_utc": "2026-11-05T05:52:24.931483+00:00",
+  "complete_package_restoration": {
+    "all_files_byte_identical_to_preserved_originals": true,
+    "exit_code": 0,
+    "files_including_original_manifest": 144,
+    "frozen_verifier_fixed_inputs_path_present": true,
+    "logical_content_files_checked": 143,
+    "original_package_manifest_sha256": "eed1c56391f60c621048e1efaa4c4fc897c413f355f29401e6f425ec8b91c952",
+    "scientific_verifier_rerun": false,
+    "stdout_sha256": "3439709a305c1010ebac6e6bd0275757aabcda0f0ce3ca49a8914b0b26da1ec2"
+  },
+  "cost_scope": "Local publication-byte preparation/check only; body timing is not a whole-child receipt and does not measure model/native execution.",
+  "existing_writer_reference": "tools/hcsn/wsp_followup_20261105/native_bellman_replay/bridge_io.py",
+  "existing_writer_sha256": "5c6befe1443c31500c71cda43d467bf42740e173ca9e1d8269356ff17fd8fc5c",
+  "extended_storage_check_body_cpu_seconds": 0.08558864100000001,
+  "extended_storage_check_body_wall_seconds": 0.6783811599998444,
+  "model_training_or_native_execution": false,
+  "negative_control": {
+    "exit_code": 1,
+    "expected_error": "part digest mismatch",
+    "mutation": "xor first byte with 1 in fit_11_REQUEST.json.gz.part0000",
+    "original_name_output_files_created": false,
+    "output_directory_created": false,
+    "stderr_sha256": "1bdc2651bf2c99f1217d705485c44e30a5e981374aef1c11a0b704c2669a2dd6"
+  },
+  "original_protocols_sources_results_modified": false,
+  "original_scientific_inputs_changed": false,
+  "part_limit_bytes": 479000,
+  "positive_restore_exit_code": 0,
+  "positive_stdout_sha256": "90178c43913bd8bf7ff2cb5b1868616f2487a43bf4d204ca6b53469e952c98de",
+  "previous_inputs_only_receipt_sha256": "af7c59a665048959eab0f37e32d2ac8121e6a6acfa8f86214553c53fcfdab437",
+  "repository_blob_limit_bytes": 512000,
+  "request_files": [
+    {
+      "byte_for_byte_equal": true,
+      "bytes": 2427358,
+      "git_blob_sha1": "7b631646b52b6f659f778609dc99f2b5e84cac81",
+      "independent_streamed_sha256": "9239673104bb28be3b8d23f1d5bfa862dd04093a19a9d1506a6abf673ef86303",
+      "name": "fit_11_REQUEST.json.gz",
+      "parts": 6,
+      "sha256": "9239673104bb28be3b8d23f1d5bfa862dd04093a19a9d1506a6abf673ef86303"
+    },
+    {
+      "byte_for_byte_equal": true,
+      "bytes": 2439463,
+      "git_blob_sha1": "58d909691e37aaed83e6baab3346a8ebd35a4551",
+      "independent_streamed_sha256": "e1fdba4732dd855da5e1f2fb3313f54f25f99ffb8355902fab8a97aa66b06bdc",
+      "name": "fit_23_REQUEST.json.gz",
+      "parts": 6,
+      "sha256": "e1fdba4732dd855da5e1f2fb3313f54f25f99ffb8355902fab8a97aa66b06bdc"
+    },
+    {
+      "byte_for_byte_equal": true,
+      "bytes": 2253602,
+      "git_blob_sha1": "c6e588261d9f3c857b72a33a9c89d6b7df638818",
+      "independent_streamed_sha256": "6dd69a06bb9de8efd3f2d0736ca3d1d78ebe92f8ba4fad1610579f4c55bcd3fd",
+      "name": "fit_37_REQUEST.json.gz",
+      "parts": 5,
+      "sha256": "6dd69a06bb9de8efd3f2d0736ca3d1d78ebe92f8ba4fad1610579f4c55bcd3fd"
+    },
+    {
+      "byte_for_byte_equal": true,
+      "bytes": 2140713,
+      "git_blob_sha1": "9eaf7f3ef227ab8f4dc5198133e4a51d2d2140eb",
+      "independent_streamed_sha256": "b73c0a3dc01d8c3a4c500f7d79f802a8079280984d410bf692342f306cc301cd",
+      "name": "fit_53_REQUEST.json.gz",
+      "parts": 5,
+      "sha256": "b73c0a3dc01d8c3a4c500f7d79f802a8079280984d410bf692342f306cc301cd"
+    },
+    {
+      "byte_for_byte_equal": true,
+      "bytes": 2557563,
+      "git_blob_sha1": "a66d18b7467be33cc8a7edc5b73f503154b3b319",
+      "independent_streamed_sha256": "a2e57506216c7de931805b0e556afdcdb8f2989ac5ae84af6b536125ec79f486",
+      "name": "fit_71_REQUEST.json.gz",
+      "parts": 6,
+      "sha256": "a2e57506216c7de931805b0e556afdcdb8f2989ac5ae84af6b536125ec79f486"
+    }
+  ],
+  "request_parts": 28,
+  "restorer_sha256": "6874208c858d39c88300ee75ff78e9fe57abc4b716de185fff216d8ba6ea2e64",
+  "schema": "hepta-native-input-storage-verification-v1",
+  "self_peak_rss_bytes": 25489408,
+  "source_scientific_input_manifest_sha256": "946cf867a362eb5bc3d25290b48bf94207849171eb2c2f4406a398bbfc26e7da",
+  "verifier_body_cpu_seconds": 0.18082198800000002,
+  "verifier_body_wall_seconds": 0.3689030269997602,
+  "writer_operation": "write_bytes on original gzip bytes; no JSON serialization or gzip recompression"
+}

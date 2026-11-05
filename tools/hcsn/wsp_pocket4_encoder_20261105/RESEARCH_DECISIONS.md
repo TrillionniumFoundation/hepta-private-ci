@@ -16,6 +16,15 @@ primary references, exact update, budgets and newer November 4 follow-ups.
 
 ## 1. What the new diagnosis actually establishes
 
+Newer Hepta drafts #4830 through #4833 add exact online references, four-arm
+attribution, pinned pretrained backends and a real multimodal execution canary.
+Here real dual means text plus image generation, not financial Call/Put heads.
+The exact-head #4833 execution succeeds, but its retained semantic inspection
+is negative and independent semantic acceptance remains open. Those records are
+reviewed in `literature/LATEST_HEPTA_RESEARCH_SCOPE.md`; no new image evaluation
+is claimed here. The five checkpoints below do not represent all current Hepta
+research, and this limited check cannot establish what is absent elsewhere.
+
 The new event study is in `../wsp_event_semantics_20261105/`. It uses five
 existing research checkpoints and 320 existing TRAIN initial public states,
 without new labels, weight edits or efficacy samples. The full independent
