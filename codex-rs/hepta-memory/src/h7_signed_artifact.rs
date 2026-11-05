@@ -35,6 +35,9 @@ pub const H7_SIGNED_ARTIFACT_MAX_LIFETIME_SECONDS: u64 = 86_400;
 
 const SIGNING_DOMAIN: &[u8] = b"hepta-memory:h7-signed-artifact-envelope:v1";
 
+#[path = "h7_signed_artifact_unsigned.rs"]
+mod unsigned;
+
 /// A transition authorized by a signed qualification artifact.
 #[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(rename_all = "snake_case")]
@@ -167,48 +170,17 @@ impl H7ArtifactSigner {
         issued_at_unix_seconds: u64,
         expires_at_unix_seconds: u64,
     ) -> Result<H7SignedArtifactEnvelope, H7SignedArtifactError> {
-        artifact
-            .validate()
-            .map_err(|error| H7SignedArtifactError::Runtime(error.to_string()))?;
-        if let Some(ope) = ope {
-            ope.validate()
-                .map_err(|error| H7SignedArtifactError::Feedback(error.to_string()))?;
-        }
-        validate_window(issued_at_unix_seconds, expires_at_unix_seconds)?;
-        if expected_runtime_generation > u64::MAX - 1 {
-            return Err(H7SignedArtifactError::Invalid(
-                "runtime generation is outside the bounded range".to_string(),
-            ));
-        }
-        if matches!(transition, H7SignedArtifactTransition::Rollback)
-            && predecessor_artifact_sha256.is_none()
-        {
-            return Err(H7SignedArtifactError::PredecessorRequired);
-        }
-        let mut envelope = H7SignedArtifactEnvelope {
-            schema_version: H7_SIGNED_ARTIFACT_SCHEMA_VERSION,
-            namespace: H7_SIGNED_ARTIFACT_NAMESPACE.to_string(),
-            signature_domain: H7_SIGNED_ARTIFACT_SIGNATURE_DOMAIN.to_string(),
-            signature_algorithm: H7_SIGNED_ARTIFACT_SIGNATURE_ALGORITHM.to_string(),
-            artifact_id: artifact.artifact_id.clone(),
-            artifact_sha256: artifact.body_sha256.clone(),
-            trajectory_sha256: artifact.trajectory_sha256.clone(),
-            evaluation_sha256: artifact.evaluation_sha256.clone(),
-            ope_evaluation_sha256: ope.map(|evaluation| evaluation.evaluation_digest.clone()),
-            signer_id: self.signer_id.clone(),
-            signer_epoch: self.signer_epoch,
-            issued_at_unix_seconds,
-            expires_at_unix_seconds,
+        let mut envelope = unsigned::artifact_envelope(
+            &self.signer_id,
+            self.signer_epoch,
+            artifact,
+            ope,
             transition,
             expected_runtime_generation,
             predecessor_artifact_sha256,
-            qualification_only: true,
-            production_authority: false,
-            external_effects: false,
-            promotion_eligible: false,
-            signature_base64: String::new(),
-            envelope_sha256: Sha256Digest::for_bytes(b"pending"),
-        };
+            issued_at_unix_seconds,
+            expires_at_unix_seconds,
+        )?;
         envelope.envelope_sha256 = envelope.payload_digest();
         envelope.signature_base64 =
             STANDARD.encode(self.signing_key.sign(&envelope.signing_bytes()).to_bytes());
