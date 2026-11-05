@@ -209,6 +209,7 @@ async fn shell_zsh_fork_skill_scripts_ignore_declared_permissions() -> Result<()
         approval.is_none(),
         "expected skill script execution to skip the removed skill approval path"
     );
+    eprintln!("skill_approval_phase: turn completed without an approval request");
 
     wait_for_turn_complete(&test).await;
 

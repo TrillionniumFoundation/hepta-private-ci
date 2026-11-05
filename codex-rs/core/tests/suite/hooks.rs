@@ -1785,7 +1785,7 @@ async fn async_hook_finishing_while_idle_waits_for_the_next_turn() -> Result<()>
     );
 
     let next_prompt = "observe the buffered async context";
-    test.codex
+    let next_submission = test.codex
         .start_or_steer_turn(TurnInputRequest::user_input(vec![UserInput::Text {
             text: next_prompt.to_string(),
             text_elements: Vec::new(),
@@ -1793,9 +1793,14 @@ async fn async_hook_finishing_while_idle_waits_for_the_next_turn() -> Result<()>
         .await?;
 
     let mut warning_event = None;
+    let mut observed_events = std::collections::VecDeque::new();
     timeout(Duration::from_secs(5), async {
         loop {
             let event = test.codex.next_event().await?;
+            observed_events.push_back(format!("{event:?}").chars().take(512).collect::<String>());
+            if observed_events.len() > 32 {
+                observed_events.pop_front();
+            }
             if matches!(
                 &event.msg,
                 EventMsg::Warning(warning)
@@ -1810,7 +1815,13 @@ async fn async_hook_finishing_while_idle_waits_for_the_next_turn() -> Result<()>
         }
     })
     .await
-    .context("timed out waiting for the next turn to complete")??;
+    .with_context(|| {
+        format!(
+            "timed out waiting for the next turn to complete: submission={next_submission:?}, requests={}, buffered_warning={}, events={observed_events:?}",
+            responses.requests().len(),
+            warning_event.is_some(),
+        )
+    })??;
 
     let requests = responses.requests();
     assert_eq!(requests.len(), 2);
