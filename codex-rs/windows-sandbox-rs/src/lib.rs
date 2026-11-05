@@ -46,6 +46,10 @@ pub struct WindowsSandboxProvisioningSettings {
     pub allow_local_binding: bool,
 }
 
+/// Existing broker termination grace, shared with its native exit observer.
+#[cfg(target_os = "windows")]
+pub const RUNNER_TERMINATION_WAIT_MS: u32 = 5_000;
+
 #[cfg(target_os = "windows")]
 mod acl;
 #[cfg(target_os = "windows")]

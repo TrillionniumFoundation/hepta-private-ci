@@ -104,6 +104,18 @@
         "unified_exec::tests::legacy_workspace_write_delete_is_limited_to_writable_roots"
       ],
       "filter": "test(=token::tests::workspace_capabilities_deny_writes_and_deletes_under_broad_identity_aces) | test(=unified_exec::tests::acl_setup_tests::legacy_capture_rejects_deny_acl_setup_failure_before_spawn) | test(=unified_exec::tests::acl_setup_tests::legacy_session_rejects_deny_acl_setup_failure_before_spawn) | test(=unified_exec::tests::elevated_non_tty_cmd_forwards_env_output_and_exit) | test(=unified_exec::tests::legacy_non_tty_cmd_emits_output) | test(=unified_exec::tests::legacy_non_tty_cmd_rejects_deny_read_overrides) | test(=unified_exec::tests::legacy_workspace_write_delete_is_limited_to_writable_roots)"
+    },
+    {
+      "id": "runner-native-terminal",
+      "package": "codex-windows-sandbox",
+      "expectedTestCount": 4,
+      "requiredTests": [
+        "elevated::runner_client::process::tests::native_wait_observes_release_and_exact_exit",
+        "elevated::runner_client::process::tests::native_wait_rejects_conflicting_exit_message",
+        "elevated::runner_client::process::tests::native_wait_does_not_reset_expired_command_budget",
+        "elevated::runner_client::process::tests::native_wait_cancellation_does_not_report_live_process_as_terminal"
+      ],
+      "filter": "test(=elevated::runner_client::process::tests::native_wait_observes_release_and_exact_exit) | test(=elevated::runner_client::process::tests::native_wait_rejects_conflicting_exit_message) | test(=elevated::runner_client::process::tests::native_wait_does_not_reset_expired_command_budget) | test(=elevated::runner_client::process::tests::native_wait_cancellation_does_not_report_live_process_as_terminal)"
     }
   ]
 }

@@ -7,6 +7,7 @@ use crate::ipc_framed::ResizePayload;
 use crate::ipc_framed::StdinPayload;
 use crate::ipc_framed::decode_bytes;
 use crate::ipc_framed::encode_bytes;
+use crate::runner_client::RunnerProcess;
 use anyhow::Result;
 use codex_utils_pty::ProcessDriver;
 use codex_utils_pty::SpawnedProcess;
@@ -14,6 +15,9 @@ use codex_utils_pty::TerminalSize;
 use codex_utils_pty::WindowsTtyInputNormalizer;
 use codex_utils_pty::spawn_from_driver;
 use std::fs::File;
+use std::sync::Arc;
+use std::sync::atomic::AtomicBool;
+use std::sync::atomic::Ordering;
 use tokio::sync::broadcast;
 use tokio::sync::mpsc;
 use tokio::sync::oneshot;
@@ -79,6 +83,8 @@ pub(crate) fn start_runner_stdin_writer(
 
 pub(crate) fn start_runner_stdout_reader(
     mut pipe_read: File,
+    runner_process: RunnerProcess,
+    termination_requested: Arc<AtomicBool>,
     stdout_tx: broadcast::Sender<Vec<u8>>,
     stderr_tx: Option<broadcast::Sender<Vec<u8>>>,
     exit_tx: oneshot::Sender<i32>,
@@ -125,7 +131,23 @@ pub(crate) fn start_runner_stdout_reader(
                     }
                 }
                 Message::Exit { payload } => {
-                    let _ = exit_tx.send(payload.exit_code);
+                    // The broker sends this frame immediately before exiting.
+                    // Do not publish completion until that same retained process
+                    // is terminal and its native status agrees with the frame.
+                    let exit_code = match runner_process.wait_for_exit(payload.exit_code, || {
+                        exit_tx.is_closed() || termination_requested.load(Ordering::SeqCst)
+                    }) {
+                        Ok(()) => payload.exit_code,
+                        Err(err) => {
+                            send_runner_error(
+                                &format!("runner terminal observation failed: {err}"),
+                                &stdout_tx,
+                                stderr_tx.as_ref(),
+                            );
+                            -1
+                        }
+                    };
+                    let _ = exit_tx.send(exit_code);
                     break;
                 }
                 Message::Error { payload } => {
