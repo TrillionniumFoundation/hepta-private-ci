@@ -1,0 +1,42 @@
+{
+  "schema": "hepta.windows-original-qualification-observation.v1",
+  "head": "a20a8191ec37375876a99b7c18bae053f9bc185d",
+  "run_id": 41982971524,
+  "job_id": 127097094121,
+  "job_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41982971524/job/127097094121",
+  "result": "FAILURE_BEFORE_AGENTD_TEST_EXECUTION",
+  "completed_selected_test_groups": [
+    {
+      "package": "codex-utils-path",
+      "filter": "private_state_windows::tests::",
+      "passed": 15
+    },
+    {
+      "package": "codex-hepta-prompt-registry",
+      "filter": "durable::windows::tests::",
+      "passed": 2
+    },
+    {
+      "package": "codex-hepta-contracts",
+      "filter": "final_use::store::windows::tests::",
+      "passed": 3
+    },
+    {
+      "package": "codex-hepta-contracts",
+      "filter": "authority_lease::windows::tests::",
+      "passed": 2
+    }
+  ],
+  "failed_step": "Validate Agentd Prompt Runtime integration and reopened state",
+  "failure": "E0277: utils/pty/src/win/mod.rs:79 propagates filedescriptor::Error with ? into io::Error without a conversion.",
+  "dependency": "filedescriptor 0.8.3",
+  "cargo_no_run_exit": 101,
+  "prompt_runtime_tests_executed": false,
+  "original_directory_acquisition_attacks_executed": false,
+  "p0_qualification": "OPEN",
+  "log_utf8_bytes": 153709,
+  "log_sha256": "d067c57935f90cee93924d5658ca809e5a426c4b6036f48c7f75654390c072c9",
+  "adopted_source_only_repair": "345dd470a64783b54f45c522ac8675435d204738",
+  "repair_blob": "d244e22befecda19782f1fc2a696af1a534069b0",
+  "repair_native_windows_validation": "PENDING"
+}

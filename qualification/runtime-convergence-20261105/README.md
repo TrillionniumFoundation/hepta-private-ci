@@ -98,7 +98,44 @@ The imported implementation map and generated status now describe this actual
 public DENY_ALL behavior. They do not treat private mechanism tests as public
 lifecycle activation or physical-host recovery evidence.
 
+## Recorded native execution and inherited Windows compile repair
+
+On the exact initial source, repository-pinned Rust 1.96.0 ran
+`just fmt --base 4e31abc907f09740d402d1ddef7a1d2fe0a366a6`, its `--check`,
+and `git diff --check`, all with exit zero. Only three test files changed
+layout. `native-format.json`, `native-format.patch` and
+`formatted-source-manifest.json` bind the actual nine Rust paths and the
+formatting commit `cbe0208dea6448f632899eecdf2baefaa2645874`.
+
+The original Windows qualification at `a20a819` ran four selected groups:
+15 private-state tests, 2 Prompt Registry owner tests, 3 FinalUse store tests,
+and 2 authority-lease store tests passed. The subsequent Agentd build failed
+with E0277 in the inherited Windows PTY `try_clone()` error conversion, before
+Prompt Runtime test execution. The later directory-acquisition attack step
+was skipped. These partial successes do not close Windows or P0 qualification.
+See `windows-original-qualification.json` and `windows-compile-diagnosis.md`.
+
+The already-published source-only repair from commit
+`345dd470a64783b54f45c522ac8675435d204738` is retained with the formatting
+candidate in merge `df46f9c35de74544d6f9fbd1a2e04d21b74c8cc6` (tree
+`9faf96c5cda4b04edbc1bf604425380e1f4b5cc5`). It only maps the descriptor clone
+error into the existing I/O error return; original native signal, wait,
+exit-status and descendant handling remain. The donor's later supplemental
+workflow is not part of this merge. The repair still requires native validation
+on the final source composition.
+
+Linux negative-control execution has begun through the original `just test`
+entry. The first two attempts stopped during dependency compilation because
+Clang resource headers and OpenSSL development files were absent; no test ran,
+so neither attempt is negative-control evidence. Matching development packages
+were verified and unpacked into task-owned directories. The OpenSSL shared
+libraries were compared byte-for-byte with the installed runtime; the TLS and
+bindgen backends, dependencies, features and test assertions are unchanged.
+Individual source and result identities are recorded in `validation.json`.
+
 ## Qualification and remaining work
+
+The separate sealed-ingress source migration is tracked in [PR #4856](https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4856). Its source changes and native qualification are separate from this first-wave record.
 
 Source review, patch applicability, object hashes and merge-parent verification
 are recorded separately from native execution. Native qualification requires the
@@ -111,8 +148,13 @@ These changes do not close the following product requirements:
 
 - A real goal-to-App-Server-to-authorized-effect-to-terminal task, including
   durable evidence and process restart on the same implementation composition.
-- Persistent recovery of the Intelligence pending Decision/Outcome append and
-  current trust/provider reconciliation in the actual product host.
+- The default canonical Intelligence host still needs a durable seven-owner
+  handoff into the existing App Server and authenticated Decision/Outcome
+  composition through the existing LedgerWriter. Its optional legacy
+  qualification append path is not that production composition.
+- Process-loss recovery of the original signed append requests and exact
+  execution identities, with current trust/provider reconciliation. The
+  legacy PendingIntelligenceLedgerAppendV1 is only an in-memory carrier.
 - Complete sealed-receipt ingress across existing signed evaluation and
   self-evolution callers, followed by independently evidenced selection.
 - Same-information, comparable-budget strong baselines; complete failed-candidate,
