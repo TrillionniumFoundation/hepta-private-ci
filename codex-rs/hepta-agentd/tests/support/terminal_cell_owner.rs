@@ -180,9 +180,18 @@ impl Fixture {
             "hepta-cell-owner-loop-{}-{serial}",
             std::process::id()
         ));
-        fs::create_dir(&root).unwrap();
-        File::create(root.join("ledger")).unwrap();
-        File::create(root.join("witness")).unwrap();
+        #[cfg(windows)]
+        {
+            let directory = codex_utils_path::create_private_state_directory(&root).unwrap();
+            codex_utils_path::create_private_state_child(&directory, "ledger").unwrap();
+            codex_utils_path::create_private_state_child(&directory, "witness").unwrap();
+        }
+        #[cfg(not(windows))]
+        {
+            fs::create_dir(&root).unwrap();
+            File::create(root.join("ledger")).unwrap();
+            File::create(root.join("witness")).unwrap();
+        }
         Self { root }
     }
 
@@ -195,7 +204,16 @@ impl Fixture {
     }
 
     pub(super) fn directory(&self) -> File {
-        File::open(&self.root).unwrap()
+        // The original durable owner calls sync_all on this retained directory.
+        // Windows needs the native private directory open with write access.
+        #[cfg(windows)]
+        {
+            codex_utils_path::open_existing_private_state_directory(&self.root).unwrap()
+        }
+        #[cfg(not(windows))]
+        {
+            File::open(&self.root).unwrap()
+        }
     }
 
     pub(super) fn writer(&self) -> LedgerWriter {
