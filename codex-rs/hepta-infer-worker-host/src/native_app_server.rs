@@ -5,6 +5,7 @@
 
 use std::collections::HashMap;
 use std::future::Future;
+use std::ops::Range;
 use std::path::PathBuf;
 use std::pin::Pin;
 use std::sync::Arc;
@@ -152,6 +153,57 @@ pub struct AppServerModelDriver {
 struct CodexTurnBinding {
     intent: CodexOperationIntent,
     turn_id: StableId,
+}
+
+#[derive(Default)]
+struct AgentMessageOutput {
+    ranges: Vec<(String, Range<usize>)>,
+    identity_bytes: usize,
+}
+
+impl AgentMessageOutput {
+    fn observe(
+        &mut self,
+        output: &mut String,
+        item_id: &str,
+        text: &str,
+        complete: bool,
+    ) -> std::result::Result<(), String> {
+        let existing = self.ranges.iter().position(|(id, _)| id == item_id);
+        let range = existing
+            .map(|index| self.ranges[index].1.clone())
+            .unwrap_or(output.len()..output.len());
+        let replaced_bytes = if complete { range.len() } else { 0 };
+        if text.len() > MAX_OUTPUT_BYTES.saturating_sub(output.len() - replaced_bytes) {
+            return Err("output byte limit exceeded".to_string());
+        }
+        let Some(index) = existing else {
+            // Bound retained keys separately from text, including empty items
+            // registered at item/started before their first delta or completion.
+            let identity_bytes = item_id.len().max(/*other*/ 1);
+            if identity_bytes > MAX_OUTPUT_BYTES.saturating_sub(self.identity_bytes) {
+                return Err("output item identity byte limit exceeded".to_string());
+            }
+            output.push_str(text);
+            self.ranges
+                .push((item_id.to_string(), range.start..output.len()));
+            self.identity_bytes += identity_bytes;
+            return Ok(());
+        };
+
+        let replacement = if complete {
+            range.clone()
+        } else {
+            range.end..range.end
+        };
+        output.replace_range(replacement, text);
+        self.ranges[index].1.end = range.end - replaced_bytes + text.len();
+        for (_, later) in self.ranges.iter_mut().skip(index + 1) {
+            later.start = later.start - replaced_bytes + text.len();
+            later.end = later.end - replaced_bytes + text.len();
+        }
+        Ok(())
+    }
 }
 
 impl AppServerModelDriver {
@@ -900,30 +952,30 @@ impl AppServerModelDriver {
         }
         let deadline =
             Instant::now() + observation_budget_from(unix_time_ms()?, binding.intent.deadline_ms);
-        let result = self
-            .observe(
-                &mut client,
-                &mut output,
-                deadline,
-                cancellation,
-                Some(&owner),
-                &binding,
-            )
-            .await;
+        let mut agent_messages = AgentMessageOutput::default();
+        let result = Self::observe(
+            &mut client,
+            &mut output,
+            deadline,
+            cancellation,
+            Some(&owner),
+            &binding,
+            &mut agent_messages,
+        )
+        .await;
         if let Err(reason) = result {
             output.boundary_status = classify_observation_failure(&reason);
             output.stop_reason = Some(reason.clone());
-            if let (Some(binding), Some(revision)) = (intelligence, intelligence_revision) {
-                if let Ok(cancelled) = owner
+            if let (Some(binding), Some(revision)) = (intelligence, intelligence_revision)
+                && let Ok(cancelled) = owner
                     .run_cancel(
                         binding.run_id.clone(),
                         revision,
                         reason.chars().take(512).collect(),
                     )
                     .await
-                {
-                    intelligence_revision = Some(cancelled.receipt.revision);
-                }
+            {
+                intelligence_revision = Some(cancelled.receipt.revision);
             }
             // Persist cancellation intent, but still interrupt if that write
             // fails. A failed journal write fences later admission/settlement.
@@ -940,16 +992,16 @@ impl AppServerModelDriver {
             let cancel_recorded = control.cancel_native(request_id);
             interrupt(&mut client, &output).await;
             let grace = CancellationToken::new();
-            let _ = self
-                .observe(
-                    &mut client,
-                    &mut output,
-                    Instant::now() + INTERRUPT_GRACE,
-                    &grace,
-                    /*owner*/ None,
-                    &binding,
-                )
-                .await;
+            let _ = Self::observe(
+                &mut client,
+                &mut output,
+                Instant::now() + INTERRUPT_GRACE,
+                &grace,
+                /*owner*/ None,
+                &binding,
+                &mut agent_messages,
+            )
+            .await;
             loss_recorded?;
             cancel_recorded?;
             if !output.terminal_observed
@@ -1005,13 +1057,13 @@ impl AppServerModelDriver {
     }
 
     async fn observe(
-        &self,
         client: &mut RemoteAppServerClient,
         output: &mut NativeRunOutput,
         deadline: Instant,
         cancellation: &CancellationToken,
         owner: Option<&AgentdClient>,
         binding: &CodexTurnBinding,
+        agent_messages: &mut AgentMessageOutput,
     ) -> std::result::Result<(), String> {
         let mut health_tick = tokio::time::interval(Duration::from_millis(500));
         loop {
@@ -1029,7 +1081,7 @@ impl AppServerModelDriver {
             };
             match event.event() {
                 AppServerEvent::ServerNotification(_) => {
-                    if observe_event(output, &event, binding)? {
+                    if observe_event(output, &event, binding, agent_messages)? {
                         return Ok(());
                     }
                 }
@@ -1421,18 +1473,37 @@ fn observe_event(
     output: &mut NativeRunOutput,
     observed: &RemoteAppServerObservedEvent,
     binding: &CodexTurnBinding,
+    agent_messages: &mut AgentMessageOutput,
 ) -> std::result::Result<bool, String> {
     let AppServerEvent::ServerNotification(notification) = observed.event() else {
         return Ok(false);
     };
     match notification.as_ref() {
+        ServerNotification::ItemStarted(started)
+            if started.thread_id == output.thread_id && started.turn_id == output.turn_id =>
+        {
+            if let ThreadItem::AgentMessage { id, .. } = &started.item {
+                agent_messages.observe(&mut output.output, id, "", /*complete*/ false)?;
+            }
+        }
         ServerNotification::AgentMessageDelta(delta)
             if delta.thread_id == output.thread_id && delta.turn_id == output.turn_id =>
         {
-            if delta.delta.len() > MAX_OUTPUT_BYTES.saturating_sub(output.output.len()) {
-                return Err("output byte limit exceeded".to_string());
+            agent_messages.observe(
+                &mut output.output,
+                &delta.item_id,
+                &delta.delta,
+                /*complete*/ false,
+            )?;
+        }
+        ServerNotification::ItemCompleted(completed)
+            if completed.thread_id == output.thread_id && completed.turn_id == output.turn_id =>
+        {
+            if let ThreadItem::AgentMessage { id, text, .. } = &completed.item {
+                // The full completed item is authoritative even when the
+                // server emitted no text deltas for this message.
+                agent_messages.observe(&mut output.output, id, text, /*complete*/ true)?;
             }
-            output.output.push_str(&delta.delta);
         }
         ServerNotification::ThreadTokenUsageUpdated(usage)
             if usage.thread_id == output.thread_id && usage.turn_id == output.turn_id =>

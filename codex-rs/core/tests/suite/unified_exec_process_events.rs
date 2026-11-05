@@ -46,6 +46,7 @@ use std::time::Duration;
 use test_case::test_case;
 use tokio::net::TcpListener;
 use tokio::net::TcpStream;
+use tokio::sync::oneshot;
 use tokio::time::timeout;
 use tokio_tungstenite::WebSocketStream;
 use tokio_tungstenite::accept_async;
@@ -163,6 +164,7 @@ async fn respond_environment_info(
 async fn serve_exec_with_pushed_events(
     listener: TcpListener,
     scenario: PushedExecScenario,
+    mut normal_finish: oneshot::Receiver<()>,
 ) -> PushedExecServerResult {
     let unrestricted_patch = matches!(
         scenario,
@@ -514,6 +516,16 @@ async fn serve_exec_with_pushed_events(
                     .await;
                 }
             }
+            Some("environment/info") => {
+                normal_finish
+                    .try_recv()
+                    .expect("only the completed normal turn may authorize the final info barrier");
+                respond_environment_info(&mut websocket, &request["id"], scenario).await;
+                return PushedExecServerResult {
+                    process_read_requests,
+                    process_start,
+                };
+            }
             Some("process/terminate") => {
                 send_exec_server_json(
                     &mut websocket,
@@ -523,10 +535,6 @@ async fn serve_exec_with_pushed_events(
                     }),
                 )
                 .await;
-                return PushedExecServerResult {
-                    process_read_requests,
-                    process_start,
-                };
             }
             method => panic!("unexpected exec-server request: {method:?}"),
         }
@@ -600,7 +608,12 @@ async fn exec_command_consumes_pushed_remote_process_events(
     )
     .await;
     let exec_server_url = format!("ws://{}", listener.local_addr()?);
-    let exec_server = tokio::spawn(serve_exec_with_pushed_events(listener, scenario));
+    let (normal_finish_tx, normal_finish_rx) = oneshot::channel();
+    let exec_server = tokio::spawn(serve_exec_with_pushed_events(
+        listener,
+        scenario,
+        normal_finish_rx,
+    ));
     let mut builder = test_codex().with_exec_server_url(exec_server_url);
     if managed_network {
         let cloud_config_bundle = if policy_callbacks {
@@ -736,6 +749,7 @@ timeout = 900
         .await?;
     let mut saw_exec_command_begin = false;
     let mut saw_patch_denial_approval = false;
+    let mut completed_turn_id = None;
     if !managed_network {
         loop {
             let event = timeout(Duration::from_secs(5), test.codex.next_event())
@@ -770,7 +784,10 @@ timeout = 900
                         })
                         .await?;
                 }
-                EventMsg::TurnComplete(_) => break,
+                EventMsg::TurnComplete(turn) => {
+                    completed_turn_id = Some(turn.turn_id);
+                    break;
+                }
                 _ => {}
             }
         }
@@ -897,9 +914,37 @@ timeout = 900
     } else {
         Duration::from_secs(5)
     };
-    let exec_server_result = timeout(cleanup_timeout, exec_server)
-        .await
-        .context("fake exec-server should observe process cleanup")??;
+    let exec_server_result = timeout(cleanup_timeout, async {
+        let turn_id = match completed_turn_id {
+            Some(turn_id) => turn_id,
+            None => loop {
+                if let EventMsg::TurnComplete(turn) = test.codex.next_event().await?.msg {
+                    break turn.turn_id;
+                }
+            },
+        };
+        // Confirmed process exits do not need another terminate RPC. Keep the
+        // fake peer alive until this normal turn's actual finish owner drains.
+        if let Some(completion) = test.codex.pending_normal_turn_finish_completion(&turn_id) {
+            completion.await;
+        }
+        let environment = test
+            .thread_manager
+            .environment_manager()
+            .get_environment(codex_exec_server::REMOTE_ENVIRONMENT_ID)
+            .context("the original remote environment should remain available")?;
+        let finish_sent = normal_finish_tx.send(());
+        // This uncached RPC uses the process's own FIFO connection. The peer
+        // must count every earlier queued process/read before seeing this fence.
+        let barrier_result = environment.force_info().await;
+        let result = exec_server.await?;
+        finish_sent
+            .map_err(|_| anyhow::anyhow!("fake exec-server stopped before normal finish"))?;
+        barrier_result.context("the final info barrier should use the original connection")?;
+        Ok::<_, anyhow::Error>(result)
+    })
+    .await
+    .context("fake exec-server should observe normal turn completion")??;
     if foreign_cwd {
         let params = &exec_server_result.process_start["params"];
         assert_eq!(params["cwd"], "file:///C:/workspace");

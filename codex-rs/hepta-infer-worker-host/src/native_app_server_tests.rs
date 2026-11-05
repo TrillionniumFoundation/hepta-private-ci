@@ -1,6 +1,8 @@
 use super::*;
 use codex_app_server_client::RemoteAppServerObservedEvent;
 use codex_app_server_protocol::AgentMessageDeltaNotification;
+use codex_app_server_protocol::ItemCompletedNotification;
+use codex_app_server_protocol::ItemStartedNotification;
 use codex_app_server_protocol::Turn;
 use codex_app_server_protocol::TurnCompletedNotification;
 use codex_app_server_protocol::TurnItemsView;
@@ -46,7 +48,12 @@ fn observe_for_test(
     notification: ServerNotification,
 ) -> std::result::Result<bool, String> {
     let binding = binding();
-    observe_event(output, &observed(notification), &binding)
+    observe_event(
+        output,
+        &observed(notification),
+        &binding,
+        &mut AgentMessageOutput::default(),
+    )
 }
 
 fn output() -> NativeRunOutput {
@@ -465,8 +472,17 @@ async fn real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombston
     let nonce = SystemTime::now().duration_since(UNIX_EPOCH)?.as_nanos();
     let root = std::env::temp_dir().join(format!("hepta-cognitive-worker-e2e-{nonce}"));
     let agent_id = codex_hepta_contracts::AgentId::parse(AGENT_ID)?;
-    let host =
-        CognitiveTestHost::start(root, agent_id, MODEL, &format!("{}/v1", server.uri())).await?;
+    // core_test_support registers the production arg0 helper dispatch before
+    // this test executable enters the harness.
+    let codex_self_exe = std::env::current_exe()?;
+    let host = CognitiveTestHost::start(
+        root,
+        codex_self_exe,
+        agent_id,
+        MODEL,
+        &format!("{}/v1", server.uri()),
+    )
+    .await?;
     let _accepted_memory = host
         .seed_verified_memory("worker-final-use-accept", ACCEPT_MEMORY)
         .await?;
@@ -778,4 +794,230 @@ fn final_use_fence_rejects_owner_ingress_cancel_and_deadline_drift() {
         )
         .is_err()
     );
+}
+
+fn agent_message_item(id: &str, text: &str) -> ThreadItem {
+    ThreadItem::AgentMessage {
+        id: id.to_string(),
+        text: text.to_string(),
+        phase: None,
+        memory_citation: None,
+        delivery: None,
+    }
+}
+
+fn completed_message(thread: &str, turn: &str, id: &str, text: &str) -> ServerNotification {
+    ServerNotification::ItemCompleted(ItemCompletedNotification {
+        item: agent_message_item(id, text),
+        thread_id: thread.to_string(),
+        turn_id: turn.to_string(),
+        completed_at_ms: 0,
+    })
+}
+
+fn message_delta(id: &str, text: &str) -> ServerNotification {
+    ServerNotification::AgentMessageDelta(AgentMessageDeltaNotification {
+        thread_id: "thread-a".to_string(),
+        turn_id: "turn-a".to_string(),
+        item_id: id.to_string(),
+        delta: text.to_string(),
+    })
+}
+
+fn observe_message_events(
+    output: &mut NativeRunOutput,
+    messages: &mut AgentMessageOutput,
+    events: impl IntoIterator<Item = ServerNotification>,
+) -> std::result::Result<(), String> {
+    let binding = binding();
+    for event in events {
+        assert!(!observe_event(
+            output,
+            &observed(event),
+            &binding,
+            messages
+        )?);
+    }
+    Ok(())
+}
+
+#[test]
+fn completed_messages_without_deltas_are_bound_and_collected() {
+    let mut output = output();
+    let mut messages = AgentMessageOutput::default();
+    let non_agent = ServerNotification::ItemCompleted(ItemCompletedNotification {
+        item: ThreadItem::Plan {
+            id: "plan".to_string(),
+            text: "discard".to_string(),
+        },
+        thread_id: "thread-a".to_string(),
+        turn_id: "turn-a".to_string(),
+        completed_at_ms: 0,
+    });
+    observe_message_events(
+        &mut output,
+        &mut messages,
+        [
+            completed_message("thread-b", "turn-a", "wrong-thread", "discard"),
+            completed_message("thread-a", "turn-b", "wrong-turn", "discard"),
+            non_agent,
+            completed_message("thread-a", "turn-a", "message", "fresh context accepted"),
+        ],
+    )
+    .unwrap();
+    assert_eq!(output.output, "fresh context accepted");
+    assert_eq!(messages.ranges.len(), 1);
+    assert_eq!(output.status, NativeRunStatus::Indeterminate);
+    assert!(!output.terminal_observed);
+    assert!(!output.succeeded());
+}
+
+#[test]
+fn completed_messages_replace_deltas_once_in_started_order() {
+    let mut output = output();
+    let mut messages = AgentMessageOutput::default();
+    let started = ["first", "second"].map(|id| {
+        ServerNotification::ItemStarted(ItemStartedNotification {
+            item: agent_message_item(id, "not yet completed"),
+            thread_id: "thread-a".to_string(),
+            turn_id: "turn-a".to_string(),
+            started_at_ms: 0,
+        })
+    });
+    observe_message_events(&mut output, &mut messages, started).unwrap();
+    assert!(output.output.is_empty());
+    observe_message_events(
+        &mut output,
+        &mut messages,
+        [
+            message_delta("second", "β"),
+            message_delta("first", "partial"),
+            completed_message("thread-a", "turn-a", "first", "α"),
+            message_delta("second", "eta"),
+            completed_message("thread-a", "turn-a", "second", "βeta"),
+            completed_message("thread-a", "turn-a", "first", "α"),
+        ],
+    )
+    .unwrap();
+    assert_eq!(output.output, "αβeta");
+    observe_message_events(
+        &mut output,
+        &mut messages,
+        [
+            completed_message("thread-a", "turn-a", "first", ""),
+            message_delta("second", "!"),
+            completed_message("thread-a", "turn-a", "first", "漢"),
+        ],
+    )
+    .unwrap();
+    assert_eq!(output.output, "漢βeta!");
+    assert_eq!(messages.ranges.len(), 2);
+}
+
+#[test]
+fn completed_messages_in_interrupt_grace_do_not_duplicate_or_restore_success() {
+    for boundary in [
+        NativeBoundaryStatus::Cancelled,
+        NativeBoundaryStatus::TimedOut,
+    ] {
+        let mut output = output();
+        let mut messages = AgentMessageOutput::default();
+        observe_message_events(
+            &mut output,
+            &mut messages,
+            [message_delta("message", "partial")],
+        )
+        .unwrap();
+        output.boundary_status = boundary;
+        observe_message_events(
+            &mut output,
+            &mut messages,
+            [completed_message(
+                "thread-a", "turn-a", "message", "complete",
+            )],
+        )
+        .unwrap();
+        assert_eq!(output.output, "complete");
+        assert!(
+            observe_event(
+                &mut output,
+                &observed(terminal("thread-a", "turn-a", TurnStatus::Completed)),
+                &binding(),
+                &mut messages,
+            )
+            .unwrap()
+        );
+        assert_eq!(output.boundary_status, boundary);
+        assert!(output.terminal_observed);
+        assert!(!output.succeeded());
+    }
+}
+
+#[test]
+fn completed_message_output_limits_are_atomic_and_do_not_double_count() {
+    let mut output = output();
+    let mut messages = AgentMessageOutput::default();
+    let full = "é".repeat(MAX_OUTPUT_BYTES / 2);
+    observe_message_events(
+        &mut output,
+        &mut messages,
+        [
+            message_delta("message", "partial"),
+            completed_message("thread-a", "turn-a", "message", &full),
+            completed_message("thread-a", "turn-a", "message", &full),
+        ],
+    )
+    .unwrap();
+    assert_eq!(output.output, full);
+    let ranges = messages.ranges.clone();
+    for event in [
+        message_delta("message", "x"),
+        completed_message(
+            "thread-a",
+            "turn-a",
+            "message",
+            &"x".repeat(MAX_OUTPUT_BYTES + 1),
+        ),
+        completed_message("thread-a", "turn-a", "new-message", "x"),
+    ] {
+        assert!(observe_message_events(&mut output, &mut messages, [event]).is_err());
+        assert_eq!(output.output, full);
+        assert_eq!(messages.ranges, ranges);
+    }
+    assert!(!output.terminal_observed);
+}
+
+#[test]
+fn empty_message_identities_are_bounded_before_state_changes() {
+    let mut output = output();
+    let mut messages = AgentMessageOutput::default();
+    let id = "k".repeat(MAX_OUTPUT_BYTES);
+    observe_message_events(
+        &mut output,
+        &mut messages,
+        [completed_message("thread-a", "turn-a", &id, "")],
+    )
+    .unwrap();
+    assert_eq!(messages.identity_bytes, MAX_OUTPUT_BYTES);
+    assert_eq!(messages.ranges.len(), 1);
+    for extra_id in ["", "another-item"] {
+        assert!(
+            observe_message_events(
+                &mut output,
+                &mut messages,
+                [completed_message("thread-a", "turn-a", extra_id, "")],
+            )
+            .is_err()
+        );
+        assert!(output.output.is_empty());
+        assert_eq!(messages.ranges.len(), 1);
+        assert_eq!(messages.identity_bytes, MAX_OUTPUT_BYTES);
+    }
+    observe_message_events(
+        &mut output,
+        &mut messages,
+        [completed_message("thread-a", "turn-a", &id, "accepted")],
+    )
+    .unwrap();
+    assert_eq!(output.output, "accepted");
 }

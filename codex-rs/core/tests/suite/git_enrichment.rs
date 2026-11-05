@@ -132,7 +132,14 @@ async fn startup_prewarm_skips_git_enrichment_and_user_turn_observes_fresh_state
     assert!(turn_metadata(&prewarm)?.get("workspaces").is_none());
 
     std::fs::write(repo.path().join("untracked.txt"), "dirty\n")?;
-    test.submit_turn("inspect the workspace").await?;
+    // Keep the prewarmed connection's permissions while testing Git enrichment.
+    let settings = test.codex.thread_settings_snapshot().await;
+    test.submit_turn_with_approval_and_permission_profile(
+        "inspect the workspace",
+        settings.approval_policy,
+        settings.permission_profile,
+    )
+    .await?;
     let turn = server
         .single_connection()
         .get(2)

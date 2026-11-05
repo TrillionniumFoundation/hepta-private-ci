@@ -51,6 +51,24 @@ filter = 'package(codex-app-server) & kind(test)'
 test-group = 'app_server_integration'
 
 [[profile.local.overrides]]
+# The login callback fixtures share port 1455 across nextest test processes.
+# Their serial(login_port) attribute only serializes tests within one process.
+# Reserve all four existing App integration slots while a fixed-port case runs.
+# Keep this exact list aligned with the login_port annotations in v2/account.rs.
+filter = '''
+package(codex-app-server) & kind(test) & (
+    test(=suite::v2::account::login_account_chatgpt_start_can_be_cancelled) |
+    test(=suite::v2::account::login_account_chatgpt_uses_debug_oauth_overrides) |
+    test(=suite::v2::account::login_account_chatgpt_redirects_to_hosted_success_page) |
+    test(=suite::v2::account::set_auth_token_cancels_active_chatgpt_login) |
+    test(=suite::v2::account::login_account_chatgpt_includes_forced_workspace_query_param) |
+    test(=suite::v2::account::login_account_chatgpt_includes_forced_workspace_allowlist_query_param)
+)
+'''
+test-group = 'app_server_integration_local'
+threads-required = 4
+
+[[profile.local.overrides]]
 # Use up to four app-server subprocesses locally. The global nextest pool still
 # limits this to the machine's logical CPU count.
 filter = 'package(codex-app-server) & kind(test)'

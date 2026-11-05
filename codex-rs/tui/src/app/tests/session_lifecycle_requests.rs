@@ -304,7 +304,7 @@ async fn start_recording_app_server_with_history(
             app_server,
             crate::app_server_session::ThreadParamsMode::Embedded,
         )
-        .with_startup_config(config),
+        .with_startup_config(&config),
         requests,
         proxy,
     ))

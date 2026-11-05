@@ -13,6 +13,7 @@ use futures::FutureExt;
 use futures::future::BoxFuture;
 use serde_json::Value;
 
+use crate::mcp_tool_call::with_mcp_tool_call_thread_id_meta;
 use crate::session::session::Session;
 use crate::tools::lifecycle::has_active_tool_policy;
 
@@ -46,18 +47,23 @@ impl HookMcpExecutor for CoreHookMcpExecutor {
                     call.tool
                 )
             })?;
-            let prepared_call = binding.prepare_call(&call.server, &call.tool).ok_or_else(|| {
-                anyhow::anyhow!(
-                    "MCP server `{}` or tool `{}` is not connected and available",
-                    call.server,
-                    call.tool
-                )
-            })?;
+            let prepared_call = binding
+                .prepare_hook_call(&call.server, &call.tool, call.environment_id.as_deref())
+                .ok_or_else(|| {
+                    anyhow::anyhow!(
+                        "MCP server `{}` or tool `{}` is not connected and available in the hook environment",
+                        call.server,
+                        call.tool
+                    )
+                })?;
 
             let result = prepared_call
                 .call(
                     Some(Value::Object(call.input)),
-                    Some(serde_json::json!({ "threadId": self.thread_id.to_string() })),
+                    with_mcp_tool_call_thread_id_meta(
+                        call.metadata.map(Value::Object),
+                        &self.thread_id.to_string(),
+                    ),
                     Some(call.timeout),
                 )
                 .await?;

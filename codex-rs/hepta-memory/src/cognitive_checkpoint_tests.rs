@@ -17,8 +17,10 @@ struct ProtocolPeer {
     receipt: Mutex<CognitiveCheckpointReceipt>,
     commands: Mutex<Vec<CognitiveCheckpointCommand>>,
     hold_current_reply: AtomicBool,
+    hold_dirty_reply: AtomicBool,
     wrong_owner_reply: AtomicBool,
     published: Notify,
+    dirty: Notify,
     revoke_after_publication: AtomicBool,
     verifier: Arc<TestVerifier>,
 }
@@ -89,6 +91,12 @@ impl CognitiveCheckpointTransport for ProtocolPeer {
         {
             self.published.notify_one();
             std::future::pending::<()>().await;
+        }
+        if request.command == CognitiveCheckpointCommand::BeginWrites {
+            self.dirty.notify_waiters();
+            if self.hold_dirty_reply.load(Ordering::SeqCst) {
+                std::future::pending::<()>().await;
+            }
         }
         let mut head = current.head;
         if self.wrong_owner_reply.load(Ordering::SeqCst) {
@@ -192,8 +200,10 @@ impl ManagedFixture {
             receipt: Mutex::new(receipt.clone()),
             commands: Mutex::new(Vec::new()),
             hold_current_reply: AtomicBool::new(false),
+            hold_dirty_reply: AtomicBool::default(),
             wrong_owner_reply: AtomicBool::new(false),
             published: Notify::new(),
+            dirty: Notify::new(),
             revoke_after_publication: AtomicBool::new(false),
             verifier: verifier.clone(),
         });
@@ -379,6 +389,9 @@ async fn protected_checkpoint_mismatched_dirty_ack_never_opens_commit_permission
 
 #[path = "cognitive_checkpoint_notes_retirement_tests.rs"]
 mod notes_retirement_tests;
+
+#[path = "cognitive_checkpoint_queued_write_tests.rs"]
+mod queued_write_tests;
 
 #[cfg(unix)]
 #[path = "cognitive_checkpoint_hos2_retirement_tests.rs"]

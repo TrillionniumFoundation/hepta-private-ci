@@ -70,7 +70,7 @@ fn actual_issuer_receipt_matches_exact_retained_canonical_postimage()
         assert!(confirm_committed(&registry, &original, &changed, end).is_err());
         assert_eq!(registry.frontier()?, frontier);
     }
-    let mut changed_original = original.clone();
+    let mut changed_original = original;
     changed_original.binding.destination_id.push('x');
     assert!(confirm_committed(&registry, &changed_original, &receipt, end).is_err());
     assert_eq!(registry.frontier()?, frontier);
@@ -95,7 +95,7 @@ fn late_client_confirmation_preserves_committed_revoke_and_refuses_renewal()
         .read_revocation(&original.lease_id)?
         .ok_or("revocation absent")?;
     assert_eq!(retained.revocation.reason_sha256, [7; 32]);
-    let mut renewed = original.clone();
+    let mut renewed = original;
     renewed.revision = receipt
         .lease_revision
         .checked_add(1)

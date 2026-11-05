@@ -2049,7 +2049,7 @@ async fn code_mode_exec_surfaces_handler_errors_as_exceptions() -> Result<()> {
     skip_if_no_network!(Ok(()));
 
     let server = responses::start_mock_server().await;
-    let (_test, second_mock) = run_code_mode_turn(
+    let (_test, second_mock) = run_code_mode_turn_with_config(
         &server,
         "surface nested tool handler failures as script exceptions",
         r#"
@@ -2060,6 +2060,10 @@ try {
   text(`caught:${error?.message ?? String(error)}`);
 }
 "#,
+        |config| {
+            // Keep this private-metadata negative control on the production endpoint rule.
+            config.model_provider.mock_internal_chat_metadata = None;
+        },
     )
     .await?;
 

@@ -31,7 +31,11 @@ use windows_sys::Win32::Storage::FileSystem::FILE_SHARE_READ;
 use windows_sys::Win32::Storage::FileSystem::FILE_SHARE_WRITE;
 use windows_sys::Win32::Storage::FileSystem::FileDispositionInfo;
 use windows_sys::Win32::Storage::FileSystem::SetFileInformationByHandle;
+use windows_sys::Win32::System::Com::CoTaskMemFree;
 use windows_sys::Win32::System::SystemInformation::GetSystemDirectoryW;
+use windows_sys::Win32::UI::Shell::FOLDERID_ProgramData;
+use windows_sys::Win32::UI::Shell::KF_FLAG_DEFAULT;
+use windows_sys::Win32::UI::Shell::SHGetKnownFolderPath;
 
 use crate::AcceptanceError;
 
@@ -337,6 +341,51 @@ fn reconcile_pending(pending: &mut Option<ActiveVerifier>) -> Result<(), Accepta
     ))
 }
 
+/// OpenSSH initializes its ProgramData path before its standard streams. A
+/// missing value makes even `ssh-keygen` exit 255 without captured stderr.
+/// Resolve the operating system's folder; do not inherit a caller-selected path.
+pub(crate) fn program_data_directory() -> Result<PathBuf, AcceptanceError> {
+    let mut path_ptr = std::ptr::null_mut::<u16>();
+    let flags = u32::try_from(KF_FLAG_DEFAULT)
+        .map_err(|_| invalid("Windows known-folder flags are out of range"))?;
+    // SAFETY: the output is initialized to null and the API returns an allocated,
+    // null-terminated UTF-16 string. It must be freed even on a failing HRESULT.
+    let result = unsafe {
+        SHGetKnownFolderPath(
+            &FOLDERID_ProgramData,
+            flags,
+            /*htoken*/ 0,
+            &mut path_ptr,
+        )
+    };
+    if result < 0 || path_ptr.is_null() {
+        if !path_ptr.is_null() {
+            // SAFETY: the pointer, if supplied, is allocated by the API above.
+            unsafe { CoTaskMemFree(path_ptr.cast()) };
+        }
+        return Err(invalid(format!(
+            "resolve Windows ProgramData failed (HRESULT {result:#010x})"
+        )));
+    }
+    // SAFETY: a successful SHGetKnownFolderPath returned a non-null,
+    // null-terminated allocation. Copy it before releasing its allocation.
+    let path = unsafe {
+        let mut length = 0;
+        while *path_ptr.add(length) != 0 {
+            length += 1;
+        }
+        let path = PathBuf::from(OsString::from_wide(std::slice::from_raw_parts(
+            path_ptr, length,
+        )));
+        CoTaskMemFree(path_ptr.cast());
+        path
+    };
+    if !path.is_absolute() {
+        return Err(invalid("Windows ProgramData path is not absolute"));
+    }
+    Ok(path)
+}
+
 pub(crate) fn verify(
     statement: &[u8],
     signature: &[u8],
@@ -355,6 +404,7 @@ pub(crate) fn verify(
         .system_directory
         .parent()
         .ok_or_else(|| invalid("Windows system directory has no root"))?;
+    let program_data = program_data_directory()?;
     let mut child = Command::new(&verifier.path)
         // Diagnose the same original verifier child in tests; production stays quiet.
         .args(if cfg!(test) { &["-vvv"][..] } else { &[][..] })
@@ -366,6 +416,7 @@ pub(crate) fn verify(
         // Windows side-by-side loading needs SystemRoot. Derive it from the
         // trusted OS API, never the caller's environment.
         .env("SystemRoot", system_root)
+        .env("ProgramData", program_data)
         .env("LANG", "C")
         .env("LC_ALL", "C")
         .current_dir(&verifier.system_directory)

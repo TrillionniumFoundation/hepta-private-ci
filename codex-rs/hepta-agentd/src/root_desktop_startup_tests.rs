@@ -149,12 +149,11 @@ fn joint_root_bounds_every_saved_selector_and_original_helper_path() {
             }
             _ => value["previous_recovery"]["grant"] = true.into(),
         }
-        match serde_json::from_value::<Profile>(value) {
-            Ok(profile) => assert!(
+        if let Ok(profile) = serde_json::from_value::<Profile>(value) {
+            assert!(
                 validate_profile(&profile, "fixture-root", true).is_err(),
                 "accepted {change}"
-            ),
-            Err(_) => {}
+            )
         }
     }
     let mut value = recovered_wire();

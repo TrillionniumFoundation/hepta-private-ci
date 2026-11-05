@@ -589,6 +589,7 @@ async fn authbus_host(
     let database = database_root.path().join("authbus-authority.sqlite");
     let checkpoint = checkpoint_root
         .path()
+        .canonicalize()?
         .join("authbus-authority-checkpoint.json");
 
     let raw = AuthBusAuthorityStore::open(&database).await?;

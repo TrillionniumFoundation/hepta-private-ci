@@ -217,13 +217,7 @@ impl<C: ObjectiveSenderCheckpoint> ProductionObjectiveSender<C> {
         }
         self.verify_process_binding()?;
         self.writer.verify_current_authority().await?;
-        let mut transaction = self
-            .writer
-            .store
-            .pool
-            .begin_with("BEGIN IMMEDIATE")
-            .await
-            .map_err(unavailable)?;
+        let mut transaction = self.writer.store.begin_write_transaction().await?;
         let fence = self.current_fence(&mut transaction).await?;
         store::retain(&mut transaction, &request, &fence).await?;
         self.writer.sender_live_check()?;
@@ -424,13 +418,7 @@ impl<C: ObjectiveSenderCheckpoint> ProductionObjectiveSender<C> {
         if ticket.request.origin.agent_id != *self.writer.owner_agent_id() {
             return Err(ObjectiveSenderError::IdentityMismatch);
         }
-        let mut transaction = self
-            .writer
-            .store
-            .pool
-            .begin_with("BEGIN IMMEDIATE")
-            .await
-            .map_err(unavailable)?;
+        let mut transaction = self.writer.store.begin_write_transaction().await?;
         let fence = self.current_fence(&mut transaction).await?;
         store::require_request(&mut transaction, &ticket.request).await?;
         if let Some(check) = check {

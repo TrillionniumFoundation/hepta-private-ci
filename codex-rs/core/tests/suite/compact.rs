@@ -1106,6 +1106,9 @@ async fn multiple_auto_compact_per_task_runs_after_token_limit_hit() {
         .with_pre_build_hook(allow_echo_commands)
         .with_config(move |config| {
             config.model_provider.name = non_openai_provider_name;
+            // Exercise the ordinary third-party endpoint, without the default
+            // mock fixture's explicit internal-metadata authorization.
+            config.model_provider.mock_internal_chat_metadata = None;
         })
         .build(&server)
         .await
@@ -1888,7 +1891,12 @@ async fn auto_compact_emits_context_compaction_items() {
                 EventMsg::ContextCompacted(_) => {
                     legacy_event = true;
                 }
-                EventMsg::TurnComplete(_) if !event.id.starts_with("auto-compact-") => {
+                EventMsg::TurnComplete(completed) if !event.id.starts_with("auto-compact-") => {
+                    if let Some(completion) =
+                        codex.pending_normal_turn_finish_completion(&completed.turn_id)
+                    {
+                        completion.await;
+                    }
                     break;
                 }
                 _ => {}
@@ -4031,9 +4039,14 @@ async fn auto_compact_allows_multiple_attempts_when_interleaved_with_other_turn_
                 auto_compact_lifecycle_events.push(event);
                 continue;
             }
-            if let EventMsg::TurnComplete(_) = &event.msg
+            if let EventMsg::TurnComplete(completed) = &event.msg
                 && !event.id.starts_with("auto-compact-")
             {
+                if let Some(completion) =
+                    codex.pending_normal_turn_finish_completion(&completed.turn_id)
+                {
+                    completion.await;
+                }
                 break;
             }
         }

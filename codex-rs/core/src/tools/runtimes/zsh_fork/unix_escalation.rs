@@ -10,6 +10,7 @@ use crate::tools::runtimes::exec_env_for_sandbox_permissions;
 use crate::tools::sandboxing::SandboxAttempt;
 use crate::tools::sandboxing::ToolCtx;
 use crate::tools::sandboxing::ToolError;
+use crate::tools::sandboxing::sandbox_permissions_preserving_denied_reads;
 use crate::tools::sandboxing::unsandboxed_execution_allowed;
 use codex_execpolicy::Decision;
 use codex_execpolicy::Evaluation;
@@ -20,6 +21,7 @@ use codex_protocol::config_types::WindowsSandboxLevel;
 use codex_protocol::error::CodexErr;
 use codex_protocol::models::AdditionalPermissionProfile;
 use codex_protocol::models::PermissionProfile;
+use codex_protocol::permissions::FileSystemSandboxPolicy;
 use codex_protocol::protocol::AskForApproval;
 use codex_protocol::protocol::GuardianCommandSource;
 use codex_protocol::protocol::NetworkPolicyRuleAction;
@@ -69,7 +71,15 @@ const REJECT_RULES_APPROVAL_REASON: &str =
 fn approval_sandbox_permissions(
     sandbox_permissions: SandboxPermissions,
     additional_permissions_preapproved: bool,
+    file_system_sandbox_policy: &FileSystemSandboxPolicy,
 ) -> SandboxPermissions {
+    // The enclosing unified-exec approval has already completed. Match its
+    // denied-read-preserving launch permissions for intercepted fallback checks;
+    // explicit exec-policy rules still apply to every intercepted command.
+    let sandbox_permissions = sandbox_permissions_preserving_denied_reads(
+        sandbox_permissions,
+        file_system_sandbox_policy,
+    );
     if additional_permissions_preapproved
         && matches!(
             sandbox_permissions,
@@ -156,6 +166,7 @@ pub(crate) async fn prepare_unified_exec_zsh_fork(
         approval_sandbox_permissions: approval_sandbox_permissions(
             req.sandbox_permissions,
             req.additional_permissions_preapproved,
+            &exec_request.permission_profile.file_system_sandbox_policy(),
         ),
         prompt_permissions: req.additional_permissions.clone(),
         stopwatch: Stopwatch::unlimited(),

@@ -1,6 +1,8 @@
 use super::*;
 use makepad_widgets::makepad_draw::text::selection::Cursor;
 use makepad_widgets::makepad_draw::text::selection::Selection;
+use makepad_widgets::makepad_platform::event::CharOffset;
+use makepad_widgets::makepad_platform::event::FullTextState;
 use makepad_widgets::text_input::TextInputAction;
 use makepad_widgets::text_input::UndoGroup;
 
@@ -109,14 +111,120 @@ fn focused_surface(cx: &mut Cx, input: &TextInputRef) -> (DrawPass, DrawList2d) 
     (pass, draw_list)
 }
 
-fn sdk_text_event(cx: &mut Cx, input: &TextInputRef, event: TextInputEvent) -> String {
+fn sdk_event(cx: &mut Cx, input: &TextInputRef, event: &Event) -> Option<String> {
     let actions = cx.capture_actions(|cx| {
         input
             .borrow_mut()
             .unwrap()
-            .handle_event(cx, &Event::TextInput(event), &mut Scope::empty());
+            .handle_event(cx, event, &mut Scope::empty());
     });
-    input.changed(&actions).expect("actual SDK Changed action")
+    input.changed(&actions)
+}
+
+fn sdk_text_event(cx: &mut Cx, input: &TextInputRef, event: TextInputEvent) -> String {
+    sdk_event(cx, input, &Event::TextInput(event)).expect("actual SDK Changed action")
+}
+
+fn full_state_event(text: &str, composition: Option<std::ops::Range<usize>>) -> Event {
+    let end = CharOffset(text.chars().count());
+    Event::TextInput(TextInputEvent {
+        full_state_sync: Some(FullTextState {
+            text: text.to_owned(),
+            selection: end..end,
+            composition: composition.map(|range| CharOffset(range.start)..CharOffset(range.end)),
+        }),
+        ..Default::default()
+    })
+}
+
+#[test]
+fn actual_full_state_commit_publishes_without_an_sdk_changed_action() {
+    let (mut cx, input, mut workspace, room) = editor("base ");
+    let _surface = focused_surface(&mut cx, &input);
+    let mut transaction = ComposerTransaction::default();
+    transaction.checkpoint(&input, &workspace, Some(room));
+    let committed = workspace.draft().clone();
+    let checkpoint = format!("{:?}", transaction.saved);
+    let text = "base 中文🚀";
+    let preview = full_state_event(text, Some(5..text.chars().count()));
+    assert!(!ComposerTransaction::commits_unchanged_preedit(
+        &input, &preview
+    ));
+    let changed = sdk_event(&mut cx, &input, &preview).expect("SDK preview Changed action");
+    assert!(input.is_composing());
+    assert_eq!(
+        transaction.edit(&mut cx, &input, &mut workspace, room, changed),
+        ActionResult::Ignored
+    );
+    assert_eq!(workspace.draft(), &committed);
+    assert_eq!(format!("{:?}", transaction.saved), checkpoint);
+
+    let commit = full_state_event(text, /*composition*/ None);
+    let unchanged_commit = ComposerTransaction::commits_unchanged_preedit(&input, &commit);
+    assert!(unchanged_commit);
+    assert_eq!(sdk_event(&mut cx, &input, &commit), None);
+    assert!(!input.is_composing());
+    assert_eq!(
+        transaction.edit(&mut cx, &input, &mut workspace, room, input.text()),
+        ActionResult::Applied
+    );
+    assert_eq!(workspace.draft().text, text);
+    assert_eq!(workspace.draft().title, text);
+    assert_eq!(
+        format!("{:?}", transaction.saved.as_ref().unwrap().1),
+        format!("{:?}", input.save_state())
+    );
+    // A later selection-only sync is not another product edit.
+    assert!(!ComposerTransaction::commits_unchanged_preedit(
+        &input, &commit
+    ));
+}
+
+#[test]
+fn rejected_full_state_commit_restores_sdk_selection_and_undo_after_preedit() {
+    let (mut cx, input, mut workspace, room) = editor("retained 中文");
+    input
+        .replace_range(&mut cx, 0..0, "history ", UndoGroup::New)
+        .unwrap();
+    workspace.edit(input.text());
+    let _surface = focused_surface(&mut cx, &input);
+    input.set_selection(
+        &mut cx,
+        Selection {
+            anchor: Cursor {
+                index: 0,
+                prefer_next_row: false,
+            },
+            cursor: Cursor {
+                index: 7,
+                prefer_next_row: false,
+            },
+        },
+    );
+    let expected = format!("{:?}", input.save_state());
+    let mut transaction = ComposerTransaction::default();
+    transaction.checkpoint(&input, &workspace, Some(room));
+    let committed = workspace.draft().text.clone();
+    let text = "x".repeat(hepta_control_core::chat::MAX_DRAFT_BYTES + 1);
+    let preview = full_state_event(&text, Some(0..text.len()));
+    let changed = sdk_event(&mut cx, &input, &preview).expect("SDK preview Changed action");
+    assert_eq!(
+        transaction.edit(&mut cx, &input, &mut workspace, room, changed),
+        ActionResult::Ignored
+    );
+    assert_eq!(workspace.draft().text, committed);
+    let commit = full_state_event(&text, /*composition*/ None);
+    assert!(ComposerTransaction::commits_unchanged_preedit(
+        &input, &commit
+    ));
+    assert_eq!(sdk_event(&mut cx, &input, &commit), None);
+    assert_eq!(
+        transaction.edit(&mut cx, &input, &mut workspace, room, input.text()),
+        ActionResult::Rejected
+    );
+    assert_eq!(input.text(), committed);
+    assert_eq!(workspace.draft().text, committed);
+    assert_eq!(format!("{:?}", input.save_state()), expected);
 }
 
 #[test]

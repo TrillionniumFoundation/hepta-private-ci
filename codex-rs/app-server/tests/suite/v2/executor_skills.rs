@@ -159,12 +159,17 @@ stream_max_retries = 0
         .await?;
     let auto_env = app_server.auto_env()?;
     let environment_id = auto_env.selection().environment_id.clone();
-    let plugin_dir = auto_env.selection().cwd.join("plugin")?;
+    let file_system = auto_env.environment().get_filesystem();
+    // Use the target filesystem's canonical workspace spelling for this positive
+    // fixture. Restricted reads still pass through the original sandbox policy.
+    let workspace = file_system
+        .canonicalize(&auto_env.selection().cwd, /*sandbox*/ None)
+        .await?;
+    let plugin_dir = workspace.join("plugin")?;
     let manifest_dir = plugin_dir.join(".codex-plugin")?;
     let skill_dir = plugin_dir.join("skills/deploy")?;
     let agents_dir = skill_dir.join("agents")?;
     let reference_dir = skill_dir.join("references")?;
-    let file_system = auto_env.environment().get_filesystem();
     for directory in [&manifest_dir, &agents_dir, &reference_dir] {
         file_system
             .create_directory(
@@ -378,9 +383,14 @@ stream_max_retries = 0
 
     timeout(READ_TIMEOUT, app_server.initialize()).await??;
 
+    // Use the canonical target cwd for the thread as well as its skill root.
+    let mut environment_params = app_server.auto_env_params()?;
+    environment_params.cwd = workspace.into();
+
     let request_id = app_server
-        .send_thread_start_request_with_auto_env(ThreadStartParams {
+        .send_thread_start_request(ThreadStartParams {
             model: Some("mock-model".to_string()),
+            environments: Some(vec![environment_params]),
             selected_capability_roots: Some(vec![SelectedCapabilityRoot {
                 id: "demo-plugin@1".to_string(),
                 location: CapabilityRootLocation::Environment {

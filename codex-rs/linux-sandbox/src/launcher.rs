@@ -11,6 +11,7 @@ use crate::bundled_bwrap;
 use crate::bundled_bwrap::BundledBwrapLauncher;
 use crate::exec_util::argv_to_cstrings;
 use crate::exec_util::make_files_inheritable;
+use crate::parent_lifecycle::ParentLiveness;
 use codex_sandboxing::find_system_bwrap_in_path;
 use codex_utils_absolute_path::AbsolutePathBuf;
 
@@ -35,10 +36,42 @@ struct SystemBwrapCapabilities {
     supports_ro_bind_fd: bool,
 }
 
-pub(crate) fn exec_bwrap(mut argv: Vec<String>, preserved_files: Vec<File>) -> ! {
-    argv.insert(1, "--as-pid-1".to_string());
+#[derive(Clone, Copy)]
+pub(crate) enum BwrapCommandRole {
+    SandboxReaper,
+    ProcMountProbe,
+}
 
-    match preferred_bwrap_launcher() {
+pub(crate) fn exec_bwrap(
+    mut argv: Vec<String>,
+    mut preserved_files: Vec<File>,
+    role: BwrapCommandRole,
+) -> ! {
+    argv.insert(1, "--as-pid-1".to_string());
+    let launcher = preferred_bwrap_launcher();
+    if let BwrapCommandRole::SandboxReaper = role {
+        // This process becomes the outside monitor. Capture here, after the
+        // optional cleanup fork; never accept a caller-selected parent FD.
+        let parent = ParentLiveness::capture_current_process()
+            .unwrap_or_else(|error| panic!("failed to capture original sandbox parent: {error}"));
+        let argument = parent
+            .inheritance_argument()
+            .unwrap_or_else(|error| panic!("failed to identify original sandbox parent: {error}"));
+        let separator = argv
+            .iter()
+            .position(|arg| arg == "--")
+            .unwrap_or_else(|| panic!("bubblewrap argv is missing command separator '--'"));
+        if argv.get(separator + 1).is_none() {
+            panic!("bubblewrap argv is missing the inner reaper");
+        }
+        argv.splice(
+            separator + 2..separator + 2,
+            ["--parent-liveness".to_string(), argument],
+        );
+        preserved_files.push(parent.into_file());
+    }
+
+    match launcher {
         BubblewrapLauncher::System(launcher) => {
             if !launcher.supports_ro_bind_fd {
                 translate_legacy_bwrap_fd_mounts(&mut argv)

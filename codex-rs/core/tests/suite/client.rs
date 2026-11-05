@@ -231,7 +231,14 @@ async fn stateless_responses_preserve_durable_item_turn_metadata_across_turns() 
         ],
     )
     .await;
-    let test = test_codex().build(&server).await.unwrap();
+    let test = test_codex()
+        .with_config(|config| {
+            // Exercise the custom-provider boundary without a mock metadata permit.
+            config.model_provider.mock_internal_chat_metadata = None;
+        })
+        .build(&server)
+        .await
+        .unwrap();
 
     test.submit_turn("turn one").await.unwrap();
     let first_history = persisted_response_items(&test).await.unwrap();
@@ -400,6 +407,10 @@ async fn sends_audio_urls_to_responses() {
     )
     .await;
     let test = test_codex()
+        .with_config(|config| {
+            // This endpoint models a third-party provider without a mock metadata permit.
+            config.model_provider.mock_internal_chat_metadata = None;
+        })
         .with_model_info_override("gpt-5.5", |model_info| {
             model_info.input_modalities.push(InputModality::Audio);
         })
@@ -461,6 +472,10 @@ async fn sends_local_audio_to_responses() -> anyhow::Result<()> {
     )
     .await;
     let test = test_codex()
+        .with_config(|config| {
+            // This endpoint models a third-party provider without a mock metadata permit.
+            config.model_provider.mock_internal_chat_metadata = None;
+        })
         .with_model_info_override("gpt-5.5", |model_info| {
             model_info.input_modalities.push(InputModality::Audio);
         })

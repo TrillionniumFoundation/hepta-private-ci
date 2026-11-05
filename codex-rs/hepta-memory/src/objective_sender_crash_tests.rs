@@ -71,10 +71,14 @@ fn objective_sender_subprocess_fixture() {
     runtime.block_on(async {
         std::fs::create_dir_all(root.join("fleet")).unwrap();
         let owner = agent_id(OWNER);
-        let layout = HeptaFleetRoot::parse(root.join("fleet"))
-            .unwrap()
-            .layout()
-            .agent(&owner);
+        let layout = HeptaFleetRoot::parse(
+            root.join("fleet")
+                .canonicalize()
+                .expect("canonical child fleet"),
+        )
+        .unwrap()
+        .layout()
+        .agent(&owner);
         let verifier = Arc::new(TestVerifier::new());
         let store = if phase == "compete" {
             CognitiveStore::open(&layout).await.unwrap()

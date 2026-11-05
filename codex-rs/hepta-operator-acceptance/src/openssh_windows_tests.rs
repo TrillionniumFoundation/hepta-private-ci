@@ -106,3 +106,35 @@ fn retained_unknown_verifier_reconciles_only_its_original_child() -> TestResult 
     reconcile_pending(&mut pending)?;
     Ok(())
 }
+
+#[test]
+fn fixed_openssh_starts_with_a_cleared_environment() -> TestResult {
+    let verifier = TrustedOpenSsh::open()?;
+    let temporary = crate::test_support::private_tempdir("OpenSSH bootstrap");
+    let key = temporary.path().canonicalize()?.join("operator-key");
+    let system_root = verifier
+        .system_directory
+        .parent()
+        .ok_or("Windows system directory has no root")?;
+    let generated = Command::new(&verifier.path)
+        .env_clear()
+        .env("SystemRoot", system_root)
+        .env("ProgramData", super::program_data_directory()?)
+        .env("LANG", "C")
+        .env("LC_ALL", "C")
+        .current_dir(&verifier.system_directory)
+        .args(["-q", "-t", "ed25519", "-N", "", "-f"])
+        .arg(&key)
+        .stdin(Stdio::inherit())
+        .output()?;
+    assert!(
+        generated.status.success(),
+        "fixed OpenSSH must start with its minimal environment: status={:?}, stdout={}, stderr={}",
+        generated.status,
+        String::from_utf8_lossy(&generated.stdout),
+        String::from_utf8_lossy(&generated.stderr),
+    );
+    let public = std::fs::read_to_string(key.with_extension("pub"))?;
+    assert_eq!(public.split_ascii_whitespace().next(), Some("ssh-ed25519"));
+    Ok(())
+}

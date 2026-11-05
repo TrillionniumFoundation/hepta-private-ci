@@ -79,7 +79,7 @@
     {
       "id": "operator-native",
       "package": "codex-hepta-operator-acceptance",
-      "expectedTestCount": 33,
+      "expectedTestCount": 34,
       "requiredTests": [
         "ceremony::tests::v1_paths_are_exact_and_sidecar_is_a_strict_child",
         "durable::windows::private_tests::foreign_acl_is_rejected_without_repair_or_partial_write",
@@ -98,6 +98,7 @@
         "g5_trust::tests::revocation_is_external_and_fail_closed_before_challenge_issuance",
         "manifest_inventory::tests::manifest_parser_requires_sorted_safe_unique_paths",
         "manifest_inventory::tests::verified_manifest_rejects_extra_files_and_hardlinks",
+        "openssh_windows::tests::fixed_openssh_starts_with_a_cleared_environment",
         "openssh_windows::tests::frozen_private_inputs_deny_writes_deletes_and_directory_replacement",
         "openssh_windows::tests::hardlink_added_to_frozen_input_is_refused",
         "openssh_windows::tests::retained_unknown_verifier_reconciles_only_its_original_child",

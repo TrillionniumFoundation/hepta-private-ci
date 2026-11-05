@@ -1257,7 +1257,15 @@ async fn later_follow_up_uses_background_recovered_apps_after_mid_thread_startup
                 .await
                 .expect("event stream should stay open");
             match event.msg {
-                EventMsg::TurnComplete(_) => turn_complete = true,
+                EventMsg::TurnComplete(completed) => {
+                    if let Some(completion) = test
+                        .codex
+                        .pending_normal_turn_finish_completion(&completed.turn_id)
+                    {
+                        completion.await;
+                    }
+                    turn_complete = true;
+                }
                 EventMsg::McpStartupUpdate(update)
                     if update.server == CODEX_APPS_MCP_SERVER_NAME
                         && matches!(

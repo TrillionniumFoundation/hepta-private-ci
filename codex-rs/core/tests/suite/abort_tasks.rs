@@ -199,27 +199,71 @@ async fn root_turn_suspension_preserves_unfinished_turn_history() {
         ]),
     )
     .await;
-    let original_config = test.config.clone();
-    let mut resume_builder = test_codex().with_config(move |config| *config = original_config);
-    if let Some(exec_server_url) = test.executor_environment().exec_server_url() {
-        resume_builder = resume_builder.with_exec_server_url(exec_server_url);
-    }
-    let resumed = resume_builder
-        .resume(&server, Arc::clone(&test.home), rollout_path)
+    // Retain the original executor owner and path convention when rebuilding
+    // the thread manager for cold recovery.
+    let mut original_config = test.config.clone();
+    let auth_manager = test.thread_manager.auth_manager();
+    let state_db = codex_core::init_state_db(&mut original_config).await;
+    let thread_store = codex_core::thread_store_from_config(&original_config, state_db.clone());
+    let resumed_manager = codex_core::ThreadManager::new(
+        &original_config,
+        Arc::clone(&auth_manager),
+        codex_core::build_models_manager(&original_config, Arc::clone(&auth_manager)),
+        codex_core::CodexAppsToolsCache::default(),
+        SessionSource::Exec,
+        test.thread_manager.environment_manager(),
+        codex_extension_api::empty_extension_registry(),
+        Arc::new(codex_home::CodexHomeUserInstructionsProvider::new(
+            original_config.codex_home.clone(),
+        )),
+        /*analytics_events_client*/ None,
+        thread_store,
+        codex_core::local_agent_graph_store_from_state_db(state_db.as_ref()),
+        codex_core::resolve_installation_id(&original_config.codex_home)
+            .await
+            .expect("reuse the persisted installation identity"),
+        /*attestation_provider*/ None,
+        /*external_time_provider*/ None,
+    );
+    let resumed_manager = if original_config.features.enabled(Feature::CodeModeHost)
+        && let Ok(host_program) = codex_utils_cargo_bin::cargo_bin("codex-code-mode-host")
+    {
+        codex_core::test_support::with_code_mode_host_program(
+            resumed_manager,
+            host_program,
+            &original_config,
+        )
+    } else {
+        resumed_manager
+    };
+    // Rebuild the thread registry and history while retaining the actual executor.
+    // The original selections keep remote paths in their executor's convention.
+    let initial_history = codex_core::RolloutRecorder::get_rollout_history(&rollout_path)
+        .await
+        .expect("load the suspended root's durable history");
+    let resumed = resumed_manager
+        .resume_thread_with_history_and_environments(
+            original_config,
+            initial_history,
+            auth_manager,
+            /*parent_trace*/ None,
+            codex_protocol::mcp::ClientMcpExtensions::default(),
+            Some(original_environments.clone()),
+        )
         .await
         .expect("resume the suspended root on a replacement runtime");
     assert_eq!(
-        resumed.codex.environment_selections().await,
+        resumed.thread.environment_selections().await,
         original_environments
     );
     let expected_epoch = resumed
-        .codex
+        .thread
         .recovery_epoch_if_idle(&turn_id)
         .await
         .expect("the replacement runtime must expose the original idle recovery candidate");
     assert_eq!(
         resumed
-            .codex
+            .thread
             .recover_turn_if_idle(codex_core::RecoverTurnRequest {
                 turn_id: turn_id.clone(),
                 expected_epoch,
@@ -232,7 +276,7 @@ async fn root_turn_suspension_preserves_unfinished_turn_history() {
             turn_id: turn_id.clone(),
         },
     );
-    let completed = wait_for_event(&resumed.codex, |event| {
+    let completed = wait_for_event(&resumed.thread, |event| {
         matches!(event, EventMsg::TurnComplete(_))
     })
     .await;
