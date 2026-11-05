@@ -1,0 +1,33 @@
+{
+  "schema": "hepta.wsp-followup.source-refresh.v1",
+  "observed_utc": "2026-11-05 00:55 UTC",
+  "scope": "Latest 100 updated open PRs, title filtering; not all repositories/branches or closed PRs.",
+  "relevant_reports": [
+    {
+      "number": 4798,
+      "title": "research: complete frozen digital feedback confirmation and retain failed gates",
+      "head": "77b24407b9898aa44769502fbb22c24fb7193a58",
+      "updated_at": "2026-11-04T13:58:49Z"
+    },
+    {
+      "number": 4790,
+      "title": "Weight-space research: actual checkpoints, strict ablations and native guarded editing",
+      "head": "2d0120e208ed81515837a7530c9f6943af03e87f",
+      "updated_at": "2026-11-04T09:23:25Z"
+    }
+  ],
+  "runtime_admission_description": {
+    "pr": 4812,
+    "observed_head": "5bf9e9eb7dc49ef56caf5143531f3a705fcd0e52",
+    "description_read": true,
+    "source_or_tests_reexecuted": false,
+    "production_hold_preserved": true
+  },
+  "official_native_ci_workflow": {
+    "path": ".github/workflows/ci.yml",
+    "source_commit": "d85852b3c1708d9b2e8162badc07116999eff15e",
+    "blob": "b626445d966210983b4d74eadd4398f14c13741f",
+    "feature_branch_push_triggers_exact_head": true,
+    "feature_base_pr_merge_qualification_triggered": false
+  }
+}

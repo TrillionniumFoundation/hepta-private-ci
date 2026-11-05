@@ -1,0 +1,57 @@
+{
+  "schema": "hepta.wsp.bounded-final-source-refresh.v1",
+  "observed_utc": "2026-11-05 02:04:45 UTC",
+  "query": "100 most recently updated open PRs; title matching only",
+  "returned": 100,
+  "oldest_returned_updated_at": "2026-11-03T20:30:07Z",
+  "relevant": [
+    {
+      "number": 4819,
+      "title": "research(v6): continuation-only heads, measured-cost admission and rollback — no-update",
+      "head": "943aa1c69dbfd696763f45ef24c5d3d491f56e19",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4819",
+      "updated_at": "2026-11-05T01:30:44Z"
+    },
+    {
+      "number": 4798,
+      "title": "research: complete frozen digital feedback confirmation and retain failed gates",
+      "head": "77b24407b9898aa44769502fbb22c24fb7193a58",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4798",
+      "updated_at": "2026-11-04T13:58:49Z"
+    },
+    {
+      "number": 4790,
+      "title": "Weight-space research: actual checkpoints, strict ablations and native guarded editing",
+      "head": "2d0120e208ed81515837a7530c9f6943af03e87f",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4790",
+      "updated_at": "2026-11-04T09:23:25Z"
+    }
+  ],
+  "inspected_primary_files": [
+    {
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/943aa1c69dbfd696763f45ef24c5d3d491f56e19/experiments/multimodal_output_portfolio/v6/CONTINUATION_DESIGN.md",
+      "git_blob_sha": "43c1d4648d1bd29b0ab8bc83f869e40b9e5872b2",
+      "encoding": "utf-8"
+    },
+    {
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/943aa1c69dbfd696763f45ef24c5d3d491f56e19/experiments/multimodal_output_portfolio/v6/continuation_head.py",
+      "git_blob_sha": "9be6673bc781e634fd881bd68f116f09b346032b",
+      "encoding": "utf-8"
+    },
+    {
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/943aa1c69dbfd696763f45ef24c5d3d491f56e19/experiments/multimodal_output_portfolio/v6/continuation_evidence/20261104/fixture/RESULT.json",
+      "git_blob_sha": "bcfead764d1256de3d5f8b92025813bacadcd6df",
+      "encoding": "utf-8"
+    }
+  ],
+  "scope": "Bounded current-source reading after completion of frozen scientific scoring and independent reexecution. Different multimodal experiment family; no import, execution, efficacy transfer or new holdout.",
+  "new_source": {
+    "pr": 4819,
+    "head": "943aa1c69dbfd696763f45ef24c5d3d491f56e19",
+    "decision": "no-update",
+    "scientific_confirmation_executed": false,
+    "production_activated": false,
+    "our_source_reexecution": false,
+    "our_current_native_objective": "risk-neutral additive finite DAG; no entropic or general NDU/FBSDE qualification"
+  }
+}

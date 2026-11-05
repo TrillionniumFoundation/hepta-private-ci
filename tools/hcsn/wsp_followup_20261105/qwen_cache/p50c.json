@@ -1,0 +1,207 @@
+{
+  "appended_tokens": [
+    198,
+    760,
+    6797,
+    369,
+    15589,
+    13,
+    198,
+    760
+  ],
+  "checks": {
+    "cpu_only": true,
+    "learned_f32_parameters_unchanged": true,
+    "no_benchmark_score": true,
+    "original_bf16_runtime_qualified": false,
+    "source_parameter_values_exactly_lifted": true
+  },
+  "comparisons": [
+    {
+      "allclose": true,
+      "cache_class": "DynamicCache",
+      "cache_sequence_length": 7,
+      "cached_argmax": 198,
+      "cached_f32_logits_sha256": "7302f47f371df7d074dc91dc85c6d66a4fdb40ea4f7703435931f6cffd934e89",
+      "finite": true,
+      "greedy_equal": true,
+      "maximum_absolute_logit_difference": 0.0,
+      "maximum_ratio_to_fixed_tolerance": 0.0,
+      "prefix_tokens": 7,
+      "reference_argmax": 198,
+      "reference_f32_logits_sha256": "7302f47f371df7d074dc91dc85c6d66a4fdb40ea4f7703435931f6cffd934e89",
+      "step": 0
+    },
+    {
+      "allclose": true,
+      "cache_class": "DynamicCache",
+      "cache_sequence_length": 8,
+      "cached_argmax": 760,
+      "cached_f32_logits_sha256": "a6a1e90aaac5032a0b43e2a5d62a58d32af75c5cfa442dd206a030400187c915",
+      "finite": true,
+      "greedy_equal": true,
+      "maximum_absolute_logit_difference": 1.1920928955078125e-05,
+      "maximum_ratio_to_fixed_tolerance": 0.009483132511377335,
+      "prefix_tokens": 8,
+      "reference_argmax": 760,
+      "reference_f32_logits_sha256": "9fae5da07bd6d8bb19ceca196d685e9dd1ac576bf07e6880d2862a98fde272cc",
+      "step": 1
+    },
+    {
+      "allclose": true,
+      "cache_class": "DynamicCache",
+      "cache_sequence_length": 9,
+      "cached_argmax": 6797,
+      "cached_f32_logits_sha256": "6c73003cec96b0cd09566261c2753fd5c607f63a16a39bd0eac2ed09a387616c",
+      "finite": true,
+      "greedy_equal": true,
+      "maximum_absolute_logit_difference": 8.58306884765625e-06,
+      "maximum_ratio_to_fixed_tolerance": 0.005969724617898464,
+      "prefix_tokens": 9,
+      "reference_argmax": 6797,
+      "reference_f32_logits_sha256": "89b924ed99bb7db0623d7b37c8564dec987e469b506ea4661521c534856593c6",
+      "step": 2
+    },
+    {
+      "allclose": true,
+      "cache_class": "DynamicCache",
+      "cache_sequence_length": 10,
+      "cached_argmax": 369,
+      "cached_f32_logits_sha256": "47efdb1606e12b26af157d48a10047ec49f3489242af8b4895ee14b54536bf20",
+      "finite": true,
+      "greedy_equal": true,
+      "maximum_absolute_logit_difference": 1.0371208190917969e-05,
+      "maximum_ratio_to_fixed_tolerance": 0.008040312677621841,
+      "prefix_tokens": 10,
+      "reference_argmax": 369,
+      "reference_f32_logits_sha256": "625f3a60f6bdfa1e3dd61b61e227832d5310179ee7fa81693e60dffad164dcdf",
+      "step": 3
+    },
+    {
+      "allclose": true,
+      "cache_class": "DynamicCache",
+      "cache_sequence_length": 11,
+      "cached_argmax": 15589,
+      "cached_f32_logits_sha256": "256578d9a4cad463430e5b7a5251c182d26c031571448d661bfa608d9c55fa13",
+      "finite": true,
+      "greedy_equal": true,
+      "maximum_absolute_logit_difference": 9.775161743164062e-06,
+      "maximum_ratio_to_fixed_tolerance": 0.006254089530557394,
+      "prefix_tokens": 11,
+      "reference_argmax": 15589,
+      "reference_f32_logits_sha256": "4fb1cae65766a98ac386cdb6edd8da14cdde1100cc6ab58e5da224dd8c384f51",
+      "step": 4
+    },
+    {
+      "allclose": true,
+      "cache_class": "DynamicCache",
+      "cache_sequence_length": 12,
+      "cached_argmax": 13,
+      "cached_f32_logits_sha256": "10cd0a1d80b63e22429a8846f5566e3ea1b24b7091aa154f8826ed97bb4f9aa3",
+      "finite": true,
+      "greedy_equal": true,
+      "maximum_absolute_logit_difference": 1.049041748046875e-05,
+      "maximum_ratio_to_fixed_tolerance": 0.007149688433855772,
+      "prefix_tokens": 12,
+      "reference_argmax": 13,
+      "reference_f32_logits_sha256": "5b5e36a1932b2e0c2ef9b96d39c3e9dc8c293501a6f813e7bf82c95bfbe5d07f",
+      "step": 5
+    },
+    {
+      "allclose": true,
+      "cache_class": "DynamicCache",
+      "cache_sequence_length": 13,
+      "cached_argmax": 198,
+      "cached_f32_logits_sha256": "dabf55fd95839e12a417e2b10e88b234a468af5c6fae903fa51c991f7d8e612f",
+      "finite": true,
+      "greedy_equal": true,
+      "maximum_absolute_logit_difference": 1.0728836059570312e-05,
+      "maximum_ratio_to_fixed_tolerance": 0.010199081152677536,
+      "prefix_tokens": 13,
+      "reference_argmax": 198,
+      "reference_f32_logits_sha256": "e1d9234161beb0ffa31738eee85851c9017b47c7636d26ce8640170fef5d9ba0",
+      "step": 6
+    },
+    {
+      "allclose": true,
+      "cache_class": "DynamicCache",
+      "cache_sequence_length": 14,
+      "cached_argmax": 760,
+      "cached_f32_logits_sha256": "4f9370793a05181be26cadc1199428e0c59cc74996b6f5f023ecba0c6d19a21c",
+      "finite": true,
+      "greedy_equal": true,
+      "maximum_absolute_logit_difference": 1.1801719665527344e-05,
+      "maximum_ratio_to_fixed_tolerance": 0.009737389162182808,
+      "prefix_tokens": 14,
+      "reference_argmax": 760,
+      "reference_f32_logits_sha256": "43351f95a317e1bb8af7333dae695de45b92f0a69c3b8118334d2183cf8958b8",
+      "step": 7
+    },
+    {
+      "allclose": true,
+      "cache_class": "DynamicCache",
+      "cache_sequence_length": 15,
+      "cached_argmax": 12515,
+      "cached_f32_logits_sha256": "1f9028487868f9f45c2fa7df6fd7f906ec3c7bff7ba1f4997b567ef818a1e319",
+      "finite": true,
+      "greedy_equal": true,
+      "maximum_absolute_logit_difference": 9.5367431640625e-06,
+      "maximum_ratio_to_fixed_tolerance": 0.008002880960702896,
+      "prefix_tokens": 15,
+      "reference_argmax": 12515,
+      "reference_f32_logits_sha256": "c1266441db72a4400055bded736663a321c6c0279fa5727b1d8d68f1f0fe1216",
+      "step": 8
+    }
+  ],
+  "execution": {
+    "accelerator_initialized": false,
+    "attention_implementation": "eager",
+    "cpu_threads": 1,
+    "device": "cpu",
+    "interop_threads": 1,
+    "learned_dtype": "torch.float32",
+    "source_lifting": "BF16/F32 values lifted exactly to F32; no optimization or requantization"
+  },
+  "finished_utc": "2026-11-05T00:28:41.696737+00:00",
+  "forwards": {
+    "cached_prefill": 1,
+    "full_prefix_reference": 9,
+    "incremental_cached": 8
+  },
+  "input_ids": [
+    [
+      32,
+      11012,
+      6353,
+      12077,
+      2708,
+      3000,
+      13
+    ]
+  ],
+  "measurement": {
+    "cpu_seconds": 15.358429238,
+    "peak_rss_kib_linux": 5605460,
+    "wall_seconds": 15.569856741989497
+  },
+  "protocol_sha256": "7d6adcac413fef4f4d7dff53daaef237a3496dbdd5678bfbd84ef29fa6613900",
+  "runtime_pins_sha256": "22cbed4ee085927b82ea5c6e458946509d60066dc723e7ebacd742c4891950d9",
+  "schema": "hepta.qwen.f32_cache_variant.v1",
+  "source_sha256": "94d2575bd2b73544c4261f801ceeca49339471943622ebdb0b95eb6471e69a56",
+  "started_utc": "2026-11-05T00:28:26.127122+00:00",
+  "status": "PASS_F32_CACHE_CONSISTENCY",
+  "strict_load": {
+    "excluded_mtp_count": 15,
+    "learned_parameters": 752393024,
+    "lifted_parameter_hashes_verified": 320,
+    "missing_keys": [],
+    "source_dtypes": {
+      "torch.bfloat16": 284,
+      "torch.float32": 36
+    },
+    "source_language_tensors_verified": 320,
+    "tied_embedding_head": true,
+    "unexpected_keys": []
+  },
+  "variant": "p50c"
+}

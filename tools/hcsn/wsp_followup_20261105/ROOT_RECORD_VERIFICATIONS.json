@@ -1,0 +1,69 @@
+{
+  "schema": "hepta.wsp-followup.root-record-verifications.v1",
+  "records": [
+    {
+      "verifier": "ndu_policy",
+      "returncode": 0,
+      "result": {
+        "candidate_and_qualification_bindings_verified": true,
+        "critical_df4_bonferroni4": 4.314656048886728,
+        "fixed_parameter_norms_exact": true,
+        "gated_restoration_utilities_exact": true,
+        "historical_scope": "Original formal-confirmation content is not present in the available public training archive; arbitrary external or unknown earlier content is not covered. Seed definitions alone do not prove content uniqueness.",
+        "known_and_internal_schedule_collisions": 0,
+        "known_history_unique": 1936,
+        "max_gradient_linf": 5.532672844171804e-14,
+        "max_primary_interval_difference": 3.3306690738754696e-16,
+        "max_quadratic_objective_difference_error": 1.0408340855860843e-17,
+        "new_schedules": 480,
+        "no_model_feature_Bellman_or_trajectory_reexecution": true,
+        "passed": true,
+        "schema": "hepta-own-bellman-independent-record-verification-v1"
+      },
+      "stderr": "",
+      "full_child_cpu_seconds": 1.7939399999999999,
+      "controller_cpu_seconds": 0.0006799479999999997,
+      "wall_seconds": 1.7945234989997516,
+      "model_forward_reexecuted": false
+    },
+    {
+      "verifier": "pocket4",
+      "returncode": 0,
+      "result": {
+        "model_efficacy_or_live_root_cause_qualified": false,
+        "new_remote_observation_or_model_load_executed": false,
+        "preserved_first_attempt_failure": true,
+        "private_raw_stdout_or_checkpoint_retrieved": false,
+        "schema": "hepta.wsp.pocket4_public_record_check.v1",
+        "source_and_receipt_identities_verified": true,
+        "status": "PASS_FROZEN_PUBLIC_RECORD_VERIFICATION",
+        "verifier_sha256": "aba732068607f29c093f08d5ce8ffa0ed7420ac724a4779c47ce7ab6eeb8da37"
+      },
+      "stderr": "",
+      "full_child_cpu_seconds": 0.037681,
+      "controller_cpu_seconds": 0.0005527999999999991,
+      "wall_seconds": 0.038003575000402634,
+      "model_forward_reexecuted": false
+    },
+    {
+      "verifier": "qwen_cache",
+      "returncode": 0,
+      "result": {
+        "full_vocab_arrays_independently_recomputed_by_this_verifier": false,
+        "new_forward_or_model_load_executed": false,
+        "recorded_actual_forwards": 36,
+        "recorded_appended_tokens": 16,
+        "recorded_comparisons": 18,
+        "recorded_maximum_logit_difference": 0.00001239776611328125,
+        "source_and_receipt_identities_verified": true,
+        "status": "PASS_FROZEN_RECORD_VERIFICATION"
+      },
+      "stderr": "",
+      "full_child_cpu_seconds": 0.046217999999999995,
+      "controller_cpu_seconds": 0.0009242379999999939,
+      "wall_seconds": 0.04691913100032252,
+      "model_forward_reexecuted": false
+    }
+  ],
+  "scope": "Independent reruns of the published record verifiers; no new fitting, model forward, Bellman planning or scientific trajectory execution. Child timings include verifier import/startup."
+}

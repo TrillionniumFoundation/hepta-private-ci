@@ -1,0 +1,28 @@
+{
+  "all_pass": true,
+  "schema": "hepta.wsp.full-replay-acceptance-processes.v1",
+  "stages": [
+    {
+      "controller_cpu_through_child_exit_seconds": 0.0007337440000000015,
+      "exit_code": 0,
+      "full_child_cpu_seconds": 10.786752,
+      "full_child_wall_seconds": 12.965658395999526,
+      "peak_rss_bytes": 40660992,
+      "scope": "Full child including imports and final writes; controller timing is separate and ends before receipt write.",
+      "source_sha256": "2b6e5e3c1244863d2cd9d432083656062e302f2c3bc58c6e22b6d76d46c783d1",
+      "stage": "independent_records",
+      "started_utc": "2026-11-05T01:30:26.458084+00:00"
+    },
+    {
+      "controller_cpu_through_child_exit_seconds": 0.0026868119999999968,
+      "exit_code": 0,
+      "full_child_cpu_seconds": 5.4927600000000005,
+      "full_child_wall_seconds": 5.9055585050000445,
+      "peak_rss_bytes": 16752640,
+      "scope": "Full child including imports and final writes; controller timing is separate and ends before receipt write.",
+      "source_sha256": "edfa022d6e9b23c352cae322a3a9282f31552401da03fde686897f24197424a6",
+      "stage": "exact_full_comparison",
+      "started_utc": "2026-11-05T01:30:39.423978+00:00"
+    }
+  ]
+}

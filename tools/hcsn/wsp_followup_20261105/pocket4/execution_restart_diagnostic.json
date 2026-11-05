@@ -1,0 +1,127 @@
+{
+  "schema": "hepta.wsp.execution_restart_readonly_diagnostic.v1",
+  "observed_utc": "2026-11-05T00:08:42.357464+00:00",
+  "observed_america_new_york": "2026-11-04T19:08:42.357464-05:00",
+  "read_only": true,
+  "query": {
+    "service": "heptatrader-execution.service",
+    "requested_lookback_minutes": 15,
+    "maximum_records": 200,
+    "returned_records": 200,
+    "exit_code": 0,
+    "bounded_result_not_complete_history": true
+  },
+  "retained_record_span": {
+    "first_unix_microseconds": 1793836574889278,
+    "last_unix_microseconds": 1793837313779381,
+    "first_utc": "2026-11-04T23:56:14.889Z",
+    "last_utc": "2026-11-05T00:08:33.779Z",
+    "seconds": 738.890103
+  },
+  "category_counts": {
+    "error": 25,
+    "failed_result": 25,
+    "main_exit": 25,
+    "scheduled_restart": 25
+  },
+  "observed_error": {
+    "message": "IB PAPER runtime startup rejected: IB_FX_CASH_RESTART_CATCHUP_EXECUTION_INVALID",
+    "exit_status": "6/NOTCONFIGURED",
+    "detailed_guard_branch_unknown": true
+  },
+  "sampled_last_restart_events": [
+    {
+      "utc": "2026-11-05T00:05:28.389Z",
+      "unix_microseconds": 1793837128389108,
+      "restart_counter": 3525
+    },
+    {
+      "utc": "2026-11-05T00:05:59.138Z",
+      "unix_microseconds": 1793837159138659,
+      "restart_counter": 3526
+    },
+    {
+      "utc": "2026-11-05T00:06:29.889Z",
+      "unix_microseconds": 1793837189889099,
+      "restart_counter": 3527
+    },
+    {
+      "utc": "2026-11-05T00:07:00.639Z",
+      "unix_microseconds": 1793837220639482,
+      "restart_counter": 3528
+    },
+    {
+      "utc": "2026-11-05T00:07:31.639Z",
+      "unix_microseconds": 1793837251639073,
+      "restart_counter": 3529
+    },
+    {
+      "utc": "2026-11-05T00:08:02.388Z",
+      "unix_microseconds": 1793837282388652,
+      "restart_counter": 3530
+    },
+    {
+      "utc": "2026-11-05T00:08:33.139Z",
+      "unix_microseconds": 1793837313139063,
+      "restart_counter": 3531
+    }
+  ],
+  "inter_restart_seconds": [
+    30.749551,
+    30.75044,
+    30.750383,
+    30.999591,
+    30.749579,
+    30.750411
+  ],
+  "last_sampled_error_utc": "2026-11-05T00:08:33.774Z",
+  "unit_configuration": {
+    "sha256": "ec505dd42f21d843740e11c1b25e3f80067f97fb4ab8971420aecfd131da2e32",
+    "restart": "on-failure",
+    "restart_seconds": 30
+  },
+  "public_source": {
+    "commit": "ffec655e69c610e0c4af41c00e3565e84edeb940",
+    "deployed_binary_bound_to_this_source_commit": false,
+    "files": [
+      {
+        "path": "HeptaTrade/execution/ib_paper_fx_cash_restart_catchup.cpp",
+        "git_blob": "2c25816274a91aa33021b3b5a4d39cbd92aaa503",
+        "url": "https://github.com/TrillionniumFoundation/heptatrader/blob/ffec655e69c610e0c4af41c00e3565e84edeb940/HeptaTrade/execution/ib_paper_fx_cash_restart_catchup.cpp",
+        "same_error_code_lines": [
+          197,
+          208,
+          215,
+          225,
+          308
+        ]
+      },
+      {
+        "path": "HeptaTrade/execution/ib_paper_execution_runtime_state.cpp",
+        "git_blob": "44ce2580409cb00cd8040b8f4285793c29c83950",
+        "url": "https://github.com/TrillionniumFoundation/heptatrader/blob/ffec655e69c610e0c4af41c00e3565e84edeb940/HeptaTrade/execution/ib_paper_execution_runtime_state.cpp",
+        "same_error_code_lines": [
+          439
+        ]
+      }
+    ]
+  },
+  "code_reason_families": [
+    "nonempty venue correlation mismatches accepted submit",
+    "execution side mismatch or unsupported side",
+    "missing instrument baseline",
+    "nonfinite or over-budget position delta, or nonfinite baseline sum",
+    "accepted submit lacks fully validated execution and qualifying zero-fill cancellation",
+    "advanced baseline validation fails"
+  ],
+  "scope": {
+    "live_ledger_read": false,
+    "broker_query": false,
+    "service_restart": false,
+    "service_configuration_changed": false,
+    "training_or_evaluation_started": false,
+    "root_cause_closed": false,
+    "old_ledger_failure_not_transferred_to_current_process": true
+  },
+  "next_safe_step": "Add or use offline reason-specific diagnostics against a separately frozen authorized ledger and exact deployed binary/source identity; keep fail-closed admission and do not retry trading to diagnose."
+}

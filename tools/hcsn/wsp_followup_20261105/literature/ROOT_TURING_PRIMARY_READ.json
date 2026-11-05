@@ -1,0 +1,21 @@
+{
+  "schema": "hepta.wsp.root-primary-replication-source-read.v1",
+  "observed_utc": "2026-11-05T02:36:14Z",
+  "commit": "9b4a7f1b23a1cc2e1290e4c73ebcb77e87a285ca",
+  "root_read": [
+    {
+      "url": "https://github.com/alan-turing-institute/weights_editing/blob/9b4a7f1b23a1cc2e1290e4c73ebcb77e87a285ca/README.md",
+      "git_blob_sha": "4308f8d749e60e3e8b78879d4b36f5816ef5e911"
+    },
+    {
+      "url": "https://github.com/alan-turing-institute/weights_editing/blob/9b4a7f1b23a1cc2e1290e4c73ebcb77e87a285ca/SPEC.md",
+      "git_blob_sha": "9c948ef21d07bfd4c6773f7f4274836058f44570"
+    },
+    {
+      "url": "https://github.com/alan-turing-institute/weights_editing/blob/9b4a7f1b23a1cc2e1290e4c73ebcb77e87a285ca/runs/exp5/gpt-6-astra/20261103-150433/breakout_r0/run.json",
+      "git_blob_sha": "25114eca89c5cb6cb04af6a7f82e6fc8e7b5a4f1"
+    }
+  ],
+  "team_review": "TURING_REPLICATION_REVIEW.json",
+  "scope": "Primary-source reading and retained-record review, not execution. Root read README/SPEC and one actual Breakout record; team reviewer inspected fifteen Astra Exp5 result entries. Exp8 Qwen editing explicitly not reproduced by that repository."
+}

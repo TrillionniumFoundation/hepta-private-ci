@@ -1,0 +1,53 @@
+{
+  "bytes_excluding_manifest": 71832,
+  "file_count_excluding_manifest": 9,
+  "files": [
+    {
+      "bytes": 8883,
+      "path": "README.md",
+      "sha256": "ae5006c1ae6628a8f5500eddca81a0dd673ba1d50e7946e4ce528f90b60ff316"
+    },
+    {
+      "bytes": 1268,
+      "path": "attempt_1_failed.json",
+      "sha256": "2cbbaf060261ebd8664f8c84aa16367ee168adb7ec2b9f3b7a7adb8643849971"
+    },
+    {
+      "bytes": 13523,
+      "path": "attempt_1_source.py",
+      "sha256": "b089087300db0f163abb9d68994cfc8e6f6d2dd2e969ac95d7242d4097c5d045"
+    },
+    {
+      "bytes": 15195,
+      "path": "audit_live.py",
+      "sha256": "76b5c2e7bd36e25c8fa2d371ed44648ba3e157c94d014a5a1456193dafae90d7"
+    },
+    {
+      "bytes": 13933,
+      "path": "current_candidate_audit.json",
+      "sha256": "9ee7af5299786e03cf69ef82787ea987c5ed53def4dee5ccb4cb62858a8ff15c"
+    },
+    {
+      "bytes": 4210,
+      "path": "execution_restart_diagnostic.json",
+      "sha256": "22351466a4e78521151c01ee244ffc452cb751a1520c72cab64c0dee189f9e7a"
+    },
+    {
+      "bytes": 523,
+      "path": "record_verification.json",
+      "sha256": "4cd18d32c97f641ca6d782180b74a20658fc0ccb184e3435b7f8c96285036e6c"
+    },
+    {
+      "bytes": 9629,
+      "path": "sanitize_export.py",
+      "sha256": "c1a78d7cfc952229508d763ea02ddd9876a9b0d9a6e843a355e8d29556209177"
+    },
+    {
+      "bytes": 4668,
+      "path": "verify_records.py",
+      "sha256": "aba732068607f29c093f08d5ce8ffa0ed7420ac724a4779c47ce7ab6eeb8da37"
+    }
+  ],
+  "schema": "hepta.wsp.public_subpackage_manifest.v1",
+  "scope": "Strict aggregate derivative of bound live audit, preserved failed first attempt, executable source, sanitized restart diagnostic and record verifier; no private raw stdout/weights/rows"
+}

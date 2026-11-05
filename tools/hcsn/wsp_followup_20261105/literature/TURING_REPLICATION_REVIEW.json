@@ -1,0 +1,465 @@
+{
+  "schema": "primary_repository_read_only_review_v1",
+  "observed_utc": "2026-11-05T02:32:49Z",
+  "observed_america_new_york": "2026-11-04T21:32:49-05:00",
+  "repository": "alan-turing-institute/weights_editing",
+  "branch": "main",
+  "commit": "9b4a7f1b23a1cc2e1290e4c73ebcb77e87a285ca",
+  "commit_utc": "2026-11-04T23:35:04Z",
+  "commit_url": "https://github.com/alan-turing-institute/weights_editing/commit/9b4a7f1b23a1cc2e1290e4c73ebcb77e87a285ca",
+  "root_tree_sha": "a95556b8824252afb2a8329ec1b97460d839496f",
+  "recursive_tree": {
+    "entries": 2011,
+    "truncated": false,
+    "qwen_named_paths": 0,
+    "exp8_run_paths": 0,
+    "exp8_prompt_paths": 10
+  },
+  "method": "Read primary GitHub branch/commit/tree metadata and pinned document/result JSON contents only. No model execution, dependency installation, scoring rerun, downloaded weights, or modification of the scientific package.",
+  "documents": [
+    {
+      "path": "README.md",
+      "url": "https://github.com/alan-turing-institute/weights_editing/blob/9b4a7f1b23a1cc2e1290e4c73ebcb77e87a285ca/README.md",
+      "git_blob_sha": "4308f8d749e60e3e8b78879d4b36f5816ef5e911"
+    },
+    {
+      "path": "SPEC.md",
+      "url": "https://github.com/alan-turing-institute/weights_editing/blob/9b4a7f1b23a1cc2e1290e4c73ebcb77e87a285ca/SPEC.md",
+      "git_blob_sha": "9c948ef21d07bfd4c6773f7f4274836058f44570"
+    },
+    {
+      "path": "PLAN.md",
+      "url": "https://github.com/alan-turing-institute/weights_editing/blob/9b4a7f1b23a1cc2e1290e4c73ebcb77e87a285ca/PLAN.md",
+      "git_blob_sha": "9c520b1092102da98a4fb5d627de9a737f94512b"
+    }
+  ],
+  "conclusion": "Recorded independent-team runs support replication of small-network identification (Exp1/2) and from-zero MinAtar weight programming (Exp5); this repository explicitly did not replicate Exp8 Qwen math editing.",
+  "scope_evidence": [
+    {
+      "path": "README.md",
+      "lines": "33-43",
+      "finding": "Exp5 is writing a 600-32-32-6 network from scratch; Exps3/4/6-8 dropped."
+    },
+    {
+      "path": "SPEC.md",
+      "lines": "3-4,681-682",
+      "finding": "Exps1/2/5 implemented; Exps3/4/6/7/8 not replicated. Exp8 retained author-setup documentation."
+    },
+    {
+      "path": "SPEC.md",
+      "lines": "625,632-636",
+      "finding": "Early present-tense Exp8 rebuilding notes belong to pre-code items1-10; not execution proof in view of explicit scope exclusion."
+    },
+    {
+      "path": "SPEC.md",
+      "lines": "509-525",
+      "finding": "Network has 20486 zero-initialized parameters; one response/no tools/no feedback; source code and mapping supplied; score over1000 MinAtar episodes."
+    },
+    {
+      "path": "PLAN.md",
+      "lines": "18,59-87",
+      "finding": "Exp6/7/8 dropped; RQ1/2 done with uneven sample counts, failures/retries and incomplete API pricing. F1 Python-policy screening n1 rather than planned n3."
+    },
+    {
+      "path": "RQ3_open_weights.md",
+      "lines": "8-22",
+      "finding": "Qwen is a proposed open-weight reader/editor evaluated on Exp1/2/5, not an edited Qwen target checkpoint."
+    }
+  ],
+  "recorded_astra_exp5_aggregates": {
+    "breakout": {
+      "generations": 3,
+      "episodes_per_generation": 1000,
+      "scores": [
+        514.224,
+        549.508,
+        307.025
+      ],
+      "mean": 456.91900000000004
+    },
+    "asterix": {
+      "generations": 3,
+      "episodes_per_generation": 1000,
+      "scores": [
+        60.805,
+        80.061,
+        57.737
+      ],
+      "mean": 66.20100000000001
+    },
+    "seaquest": {
+      "generations": 3,
+      "episodes_per_generation": 1000,
+      "scores": [
+        9.812,
+        39.415,
+        27.399
+      ],
+      "mean": 25.542
+    },
+    "breakout_flipped": {
+      "generations": 3,
+      "episodes_per_generation": 1000,
+      "scores": [
+        479.823,
+        511.597,
+        553.47
+      ],
+      "mean": 514.9633333333333
+    },
+    "breakout_swapped": {
+      "generations": 3,
+      "episodes_per_generation": 1000,
+      "scores": [
+        564.305,
+        478.25,
+        503.193
+      ],
+      "mean": 515.2493333333333
+    }
+  },
+  "result_rows": [
+    {
+      "path": "runs/exp5/gpt-6-astra/20261103-150433/breakout_r0/run.json",
+      "url": "https://github.com/alan-turing-institute/weights_editing/blob/9b4a7f1b23a1cc2e1290e4c73ebcb77e87a285ca/runs/exp5/gpt-6-astra/20261103-150433/breakout_r0/run.json",
+      "git_blob_sha": "25114eca89c5cb6cb04af6a7f82e6fc8e7b5a4f1",
+      "game": "breakout",
+      "rep": 0,
+      "model": "gpt-6-astra",
+      "reasoning_effort": "xhigh",
+      "attempts": 1,
+      "error": null,
+      "finish_reason": "stop",
+      "edit_statements": 103,
+      "edits_applied": 103,
+      "edit_errors": [],
+      "reported_eval": {
+        "mean": 514.224,
+        "se": 5.118286889642343,
+        "episodes": 1000,
+        "max": 667,
+        "mean_length": 8698.452
+      }
+    },
+    {
+      "path": "runs/exp5/gpt-6-astra/20261103-175537/breakout_r0/run.json",
+      "url": "https://github.com/alan-turing-institute/weights_editing/blob/9b4a7f1b23a1cc2e1290e4c73ebcb77e87a285ca/runs/exp5/gpt-6-astra/20261103-175537/breakout_r0/run.json",
+      "git_blob_sha": "abd99d377912560115a5b88da8d6a0f37fd0572a",
+      "game": "breakout",
+      "rep": 0,
+      "model": "gpt-6-astra",
+      "reasoning_effort": "xhigh",
+      "attempts": 2,
+      "error": null,
+      "finish_reason": "stop",
+      "edit_statements": 152,
+      "edits_applied": 152,
+      "edit_errors": [],
+      "reported_eval": {
+        "mean": 549.508,
+        "se": 5.862499196830038,
+        "episodes": 1000,
+        "max": 725,
+        "mean_length": 8546.154
+      }
+    },
+    {
+      "path": "runs/exp5/gpt-6-astra/20261103-175537/breakout_r1/run.json",
+      "url": "https://github.com/alan-turing-institute/weights_editing/blob/9b4a7f1b23a1cc2e1290e4c73ebcb77e87a285ca/runs/exp5/gpt-6-astra/20261103-175537/breakout_r1/run.json",
+      "git_blob_sha": "ebddd56c187e2df9da295f43f9a2841428dac4b2",
+      "game": "breakout",
+      "rep": 1,
+      "model": "gpt-6-astra",
+      "reasoning_effort": "xhigh",
+      "attempts": 1,
+      "error": null,
+      "finish_reason": "stop",
+      "edit_statements": 147,
+      "edits_applied": 147,
+      "edit_errors": [],
+      "reported_eval": {
+        "mean": 307.025,
+        "se": 4.2131269638848785,
+        "episodes": 1000,
+        "max": 594,
+        "mean_length": 8427.736
+      }
+    },
+    {
+      "path": "runs/exp5/gpt-6-astra/20261103-150433/asterix_r0/run.json",
+      "url": "https://github.com/alan-turing-institute/weights_editing/blob/9b4a7f1b23a1cc2e1290e4c73ebcb77e87a285ca/runs/exp5/gpt-6-astra/20261103-150433/asterix_r0/run.json",
+      "git_blob_sha": "dd7bc379709f9b8e1c98f0195ce8ad0e3816a7fb",
+      "game": "asterix",
+      "rep": 0,
+      "model": "gpt-6-astra",
+      "reasoning_effort": "xhigh",
+      "attempts": 1,
+      "error": null,
+      "finish_reason": "stop",
+      "edit_statements": 216,
+      "edits_applied": 216,
+      "edit_errors": [],
+      "reported_eval": {
+        "mean": 60.805,
+        "se": 0.9898235831327347,
+        "episodes": 1000,
+        "max": 285,
+        "mean_length": 955.576
+      }
+    },
+    {
+      "path": "runs/exp5/gpt-6-astra/20261103-175537/asterix_r0/run.json",
+      "url": "https://github.com/alan-turing-institute/weights_editing/blob/9b4a7f1b23a1cc2e1290e4c73ebcb77e87a285ca/runs/exp5/gpt-6-astra/20261103-175537/asterix_r0/run.json",
+      "git_blob_sha": "4dd44d9e8fdaf48b836abe161a119dea4759aeab",
+      "game": "asterix",
+      "rep": 0,
+      "model": "gpt-6-astra",
+      "reasoning_effort": "xhigh",
+      "attempts": 2,
+      "error": null,
+      "finish_reason": "stop",
+      "edit_statements": 150,
+      "edits_applied": 150,
+      "edit_errors": [],
+      "reported_eval": {
+        "mean": 80.061,
+        "se": 1.5582963667308498,
+        "episodes": 1000,
+        "max": 451,
+        "mean_length": 1144.747
+      }
+    },
+    {
+      "path": "runs/exp5/gpt-6-astra/20261103-175537/asterix_r1/run.json",
+      "url": "https://github.com/alan-turing-institute/weights_editing/blob/9b4a7f1b23a1cc2e1290e4c73ebcb77e87a285ca/runs/exp5/gpt-6-astra/20261103-175537/asterix_r1/run.json",
+      "git_blob_sha": "0dd117e4c5ca1fa76eccc5475cc4cfa5502497c5",
+      "game": "asterix",
+      "rep": 1,
+      "model": "gpt-6-astra",
+      "reasoning_effort": "xhigh",
+      "attempts": 1,
+      "error": null,
+      "finish_reason": "stop",
+      "edit_statements": 194,
+      "edits_applied": 194,
+      "edit_errors": [],
+      "reported_eval": {
+        "mean": 57.737,
+        "se": 1.0427392464735064,
+        "episodes": 1000,
+        "max": 246,
+        "mean_length": 932.708
+      }
+    },
+    {
+      "path": "runs/exp5/gpt-6-astra/20261103-152839/summary.json",
+      "url": "https://github.com/alan-turing-institute/weights_editing/blob/9b4a7f1b23a1cc2e1290e4c73ebcb77e87a285ca/runs/exp5/gpt-6-astra/20261103-152839/summary.json",
+      "git_blob_sha": "68390e6ce1b3e8c528c74869fec68396905a4f02",
+      "game": "seaquest",
+      "rep": 0,
+      "model": "gpt-6-astra",
+      "reasoning_effort": "xhigh",
+      "attempts": 1,
+      "error": null,
+      "finish_reason": "stop",
+      "edit_statements": 282,
+      "edits_applied": 282,
+      "edit_errors": [],
+      "reported_eval": {
+        "mean": 9.812,
+        "se": 0.3115954873674324,
+        "episodes": 1000,
+        "max": 47,
+        "mean_length": 665.156
+      }
+    },
+    {
+      "path": "runs/exp5/gpt-6-astra/20261103-193007/summary.json",
+      "url": "https://github.com/alan-turing-institute/weights_editing/blob/9b4a7f1b23a1cc2e1290e4c73ebcb77e87a285ca/runs/exp5/gpt-6-astra/20261103-193007/summary.json",
+      "git_blob_sha": "c54d399a4e9fc4df9bef49607e5ee2d36a7d8eeb",
+      "game": "seaquest",
+      "rep": 0,
+      "model": "gpt-6-astra",
+      "reasoning_effort": "xhigh",
+      "attempts": 1,
+      "error": null,
+      "finish_reason": "stop",
+      "edit_statements": 143,
+      "edits_applied": 143,
+      "edit_errors": [],
+      "reported_eval": {
+        "mean": 39.415,
+        "se": 0.9636438057624738,
+        "episodes": 1000,
+        "max": 118,
+        "mean_length": 1516.901
+      }
+    },
+    {
+      "path": "runs/exp5/gpt-6-astra/20261103-193007/summary.json",
+      "url": "https://github.com/alan-turing-institute/weights_editing/blob/9b4a7f1b23a1cc2e1290e4c73ebcb77e87a285ca/runs/exp5/gpt-6-astra/20261103-193007/summary.json",
+      "git_blob_sha": "c54d399a4e9fc4df9bef49607e5ee2d36a7d8eeb",
+      "game": "seaquest",
+      "rep": 1,
+      "model": "gpt-6-astra",
+      "reasoning_effort": "xhigh",
+      "attempts": 3,
+      "error": null,
+      "finish_reason": "stop",
+      "edit_statements": 143,
+      "edits_applied": 143,
+      "edit_errors": [],
+      "reported_eval": {
+        "mean": 27.399,
+        "se": 0.8220569180881435,
+        "episodes": 1000,
+        "max": 118,
+        "mean_length": 1193.39
+      }
+    },
+    {
+      "path": "runs/exp5/gpt-6-astra/20261103-210355/summary.json",
+      "url": "https://github.com/alan-turing-institute/weights_editing/blob/9b4a7f1b23a1cc2e1290e4c73ebcb77e87a285ca/runs/exp5/gpt-6-astra/20261103-210355/summary.json",
+      "git_blob_sha": "08c52f8184290df64d616f48bacc66ac88cf33e9",
+      "game": "breakout_flipped",
+      "rep": 0,
+      "model": "gpt-6-astra",
+      "reasoning_effort": "xhigh",
+      "attempts": 1,
+      "error": null,
+      "finish_reason": "stop",
+      "edit_statements": 97,
+      "edits_applied": 97,
+      "edit_errors": [],
+      "reported_eval": {
+        "mean": 479.823,
+        "se": 9.233940726056906,
+        "episodes": 1000,
+        "max": 840,
+        "mean_length": 5894.832
+      }
+    },
+    {
+      "path": "runs/exp5/gpt-6-astra/20261103-210355/summary.json",
+      "url": "https://github.com/alan-turing-institute/weights_editing/blob/9b4a7f1b23a1cc2e1290e4c73ebcb77e87a285ca/runs/exp5/gpt-6-astra/20261103-210355/summary.json",
+      "git_blob_sha": "08c52f8184290df64d616f48bacc66ac88cf33e9",
+      "game": "breakout_flipped",
+      "rep": 1,
+      "model": "gpt-6-astra",
+      "reasoning_effort": "xhigh",
+      "attempts": 2,
+      "error": null,
+      "finish_reason": "stop",
+      "edit_statements": 135,
+      "edits_applied": 135,
+      "edit_errors": [],
+      "reported_eval": {
+        "mean": 511.597,
+        "se": 5.145719290635471,
+        "episodes": 1000,
+        "max": 689,
+        "mean_length": 8672.45
+      }
+    },
+    {
+      "path": "runs/exp5/gpt-6-astra/20261103-210355/summary.json",
+      "url": "https://github.com/alan-turing-institute/weights_editing/blob/9b4a7f1b23a1cc2e1290e4c73ebcb77e87a285ca/runs/exp5/gpt-6-astra/20261103-210355/summary.json",
+      "git_blob_sha": "08c52f8184290df64d616f48bacc66ac88cf33e9",
+      "game": "breakout_flipped",
+      "rep": 2,
+      "model": "gpt-6-astra",
+      "reasoning_effort": "xhigh",
+      "attempts": 1,
+      "error": null,
+      "finish_reason": "stop",
+      "edit_statements": 124,
+      "edits_applied": 124,
+      "edit_errors": [],
+      "reported_eval": {
+        "mean": 553.47,
+        "se": 6.605799700996822,
+        "episodes": 1000,
+        "max": 778,
+        "mean_length": 8226.212
+      }
+    },
+    {
+      "path": "runs/exp5/gpt-6-astra/20261103-210355/summary.json",
+      "url": "https://github.com/alan-turing-institute/weights_editing/blob/9b4a7f1b23a1cc2e1290e4c73ebcb77e87a285ca/runs/exp5/gpt-6-astra/20261103-210355/summary.json",
+      "git_blob_sha": "08c52f8184290df64d616f48bacc66ac88cf33e9",
+      "game": "breakout_swapped",
+      "rep": 0,
+      "model": "gpt-6-astra",
+      "reasoning_effort": "xhigh",
+      "attempts": 1,
+      "error": null,
+      "finish_reason": "stop",
+      "edit_statements": 72,
+      "edits_applied": 72,
+      "edit_errors": [],
+      "reported_eval": {
+        "mean": 564.305,
+        "se": 6.25197946431546,
+        "episodes": 1000,
+        "max": 794,
+        "mean_length": 8425.382
+      }
+    },
+    {
+      "path": "runs/exp5/gpt-6-astra/20261103-210355/summary.json",
+      "url": "https://github.com/alan-turing-institute/weights_editing/blob/9b4a7f1b23a1cc2e1290e4c73ebcb77e87a285ca/runs/exp5/gpt-6-astra/20261103-210355/summary.json",
+      "git_blob_sha": "08c52f8184290df64d616f48bacc66ac88cf33e9",
+      "game": "breakout_swapped",
+      "rep": 1,
+      "model": "gpt-6-astra",
+      "reasoning_effort": "xhigh",
+      "attempts": 1,
+      "error": null,
+      "finish_reason": "stop",
+      "edit_statements": 103,
+      "edits_applied": 103,
+      "edit_errors": [],
+      "reported_eval": {
+        "mean": 478.25,
+        "se": 9.263353994489643,
+        "episodes": 1000,
+        "max": 840,
+        "mean_length": 5877.322
+      }
+    },
+    {
+      "path": "runs/exp5/gpt-6-astra/20261103-210355/summary.json",
+      "url": "https://github.com/alan-turing-institute/weights_editing/blob/9b4a7f1b23a1cc2e1290e4c73ebcb77e87a285ca/runs/exp5/gpt-6-astra/20261103-210355/summary.json",
+      "git_blob_sha": "08c52f8184290df64d616f48bacc66ac88cf33e9",
+      "game": "breakout_swapped",
+      "rep": 2,
+      "model": "gpt-6-astra",
+      "reasoning_effort": "xhigh",
+      "attempts": 1,
+      "error": null,
+      "finish_reason": "stop",
+      "edit_statements": 86,
+      "edits_applied": 86,
+      "edit_errors": [],
+      "reported_eval": {
+        "mean": 503.193,
+        "se": 7.742307348205319,
+        "episodes": 1000,
+        "max": 821,
+        "mean_length": 7192.726
+      }
+    }
+  ],
+  "limitations": [
+    "These are committed reported results inspected by us, not independently rerun or re-scored in this audit.",
+    "No Qwen weight-edit MATH/GSM8K/IFEval capability replication or its original BF16/vLLM evaluation is present.",
+    "The presence of copied Exp8 prompts/specifications is not evidence of executing Exp8.",
+    "From-zero 20486-parameter game-policy programming does not demonstrate defect localization or improvement of an existing large trained model or HeptaTrader checkpoint.",
+    "Three generated networks per shown task, each evaluated for1000 episodes; episodes are not independent weight-edit proposals.",
+    "Own API harness, parser and scorer differ from original Codex environment. The authors' three original-networks rescoring is reported close but not identical; exact prompt reuse does not make the whole procedure identical.",
+    "API failures excluded and retried; pilots pooled, unequal generation counts, reasoning-effort differences, output truncation handled as failure. Costs are not complete for every model/provider.",
+    "Neither categorically proving reasoning rather than recall nor establishing calibrated chance-level behavior follows from a few shuffled/modified-game controls alone.",
+    "No complete cost-controlled direct-edit versus newly-trained PPO replication is established; PLAN/SPEC say original PPO checkpoints not released and retraining would be needed.",
+    "README F2/F3 extension claims were not audited here; custom-game network/code paths are not part of the public tree inspected."
+  ]
+}

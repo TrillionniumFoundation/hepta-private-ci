@@ -1,0 +1,78 @@
+{
+  "schema": "hepta.qwen.f32_cache_qualification_protocol.v1",
+  "task": "Software compatibility of the published base/p50c text parameters with CPU F32 incremental cache execution",
+  "fixed_before_model_execution": true,
+  "variants": [
+    "base",
+    "p50c"
+  ],
+  "source_commit": "4d09ba6d6a7e891dd8063974dfe81b3d78e3494f",
+  "base_revision": "2fc06364715b967f1860aea9cf38778875588b17",
+  "original_text": "A quiet morning brings clear light.",
+  "input_ids": [
+    [
+      32,
+      11012,
+      6353,
+      12077,
+      2708,
+      3000,
+      13
+    ]
+  ],
+  "execution_dtype": "float32",
+  "parameter_conversion": "Exact lifting of source BF16/F32 learned parameter values to F32; no optimization or requantization, no changed export files",
+  "source_language_tensors": 320,
+  "source_mtp_tensors": 15,
+  "source_to_target_mapping": "model.language_model.<suffix> -> model.<suffix>; lm_head.weight is the tied model.embed_tokens.weight alias",
+  "attention_implementation": "eager",
+  "prefill_calls_per_variant": 1,
+  "incremental_single_token_cache_calls_per_variant": 8,
+  "full_prefix_reference_calls_per_variant": 9,
+  "generated_tokens_appended_per_variant": 8,
+  "comparison_prefix_lengths": [
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15
+  ],
+  "eos_policy": "No early EOS stop in this fixed software probe; only eight tokens are appended, and no completed answer or benchmark score is reported",
+  "comparator": {
+    "atol": 0.001,
+    "rtol": 0.001,
+    "equal_nan": false,
+    "scope": "Every vocabulary logit at each compared last-token position",
+    "require_all_finite": true,
+    "require_greedy_argmax_equal": true,
+    "tie_rule": "torch.argmax first maximum"
+  },
+  "continuation_after_numeric_failure": "Keep the predeclared eight incremental calls and record all mismatches if tensors/cache remain valid; otherwise record blocked status. Never change thresholds or select a replacement input.",
+  "budgets": {
+    "wall_seconds_total": 180,
+    "cpu_threads": 1,
+    "interop_threads": 1,
+    "cpu_affinity_logical_cpus": 1,
+    "worker_cpu_soft_seconds": 165,
+    "worker_cpu_hard_seconds": 175,
+    "rss_monitor_threshold_bytes": 8589934592,
+    "rss_poll_seconds": 0.05,
+    "rss_scope": "Owned worker plus observed descendants; VmHWM and rusage also checked. Polling is not an instantaneous kernel RSS limit.",
+    "gpu": false
+  },
+  "runtime_changes": "Only child-process environment and own affinity/resource settings; no package installation, source/export edits, global environment changes, service changes or production activation",
+  "acceptance": "Both variants complete every required finite/allclose/greedy/cache-length/parameter-immutability check within the fixed combined budget and verified source identity",
+  "claims_excluded": [
+    "original BF16 or vLLM benchmark reproduction",
+    "MATH/GSM8K/IFEval scores",
+    "long-context or sampling compatibility",
+    "general model improvement",
+    "speedup over the original author runtime",
+    "MTP decoding qualification"
+  ],
+  "attempts": 1
+}

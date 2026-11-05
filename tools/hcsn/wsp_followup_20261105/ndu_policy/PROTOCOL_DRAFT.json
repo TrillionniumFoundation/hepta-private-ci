@@ -1,0 +1,146 @@
+{
+  "arms": {
+    "A": "Original full head; diagnostic reference",
+    "C": "Frozen current continuation incumbent",
+    "D": "Both direct-compiled head groups; pure weight edit",
+    "DB": "Only D Belief row applied to C",
+    "DQ": "Only D continuation rows applied to C",
+    "D_gated": "D if frozen new-VAL rule accepts, otherwise exact C",
+    "G": "Both matched-objective PGD head groups; pure weight training",
+    "G_gated": "G if frozen new-VAL rule accepts, otherwise exact C",
+    "J": "Complete own-law Bellman policy table including own terminal posterior; structural planning control",
+    "P": "C continuation, exact own analytic deadline-six terminal posterior; structural-only control",
+    "R": "Single norm-matched random edit on both groups",
+    "R_gated": "R if frozen new-VAL rule accepts, otherwise exact C"
+  },
+  "incumbent": {
+    "definition": "Read exact published coefficients from exploratory_belief/OLD_CONTINUATION_HEADS.json.gz at research_commit; reconstruct the candidate JSON and match its recorded full file SHA256; never re-solve lambda to recover C",
+    "fallback": "If exact C cannot be recovered, stop protocol preparation rather than silently switch to A",
+    "name": "C",
+    "original_A": "retained as diagnostic reference"
+  },
+  "information_boundary": {
+    "checkpoint_own_law_supervised_targets_used": true,
+    "environment_truth_scores_used_in_targets": false,
+    "evaluation": "Frozen independent finite environment transition tables with the original TRAIN-fitted confusion; full expected-trajectory recursion. No FullHX packet I/O, no live Trader or true hidden path input to policy.",
+    "planner_inputs": "Original fitted checkpoint compiled transition tables, coordinates, prior convention, TRAIN-fitted confusion, public schedule and completed observation history only",
+    "scope": "Optimality only for finite supplied checkpoint law and declared decoder; not unknown true law or real trading.",
+    "supervision_scope": "Program-teacher distillation from the fitted checkpoint model; no unsupervised/no-data claim",
+    "table_authority": "Use exact stored tables; do not silently regenerate from raw/nominal law. Unknown dt/drive rejected. Own table-law prior/emission/posterior must match original NumpyPolicy.",
+    "truth_law_allowed_in_policy": false
+  },
+  "optimization": {
+    "budget_per_group": "L2 update <= 0.5 * original C-group norm. Numerical solver uses inward factor (1-1e-8); serialized F64 update checked with exact rational squared norms against both declared and numerical balls.",
+    "common_numeric_gap": 1e-08,
+    "deployment_numeric_scope": "Actual stored F64 JSON head and original NumPy execution. No F32 full-graph or production qualification.",
+    "direct": "One spectral secular-root trust-region solution per group; block Hessians for continuation share a multiplier. Cholesky and KKT/FW checks independent of spectral formula.",
+    "edited_parameters": 196,
+    "gradient": "Same objective, same C origin, same inward radius, projected GD with spectral 1/L step; each group stops on its own FW gap <=1e-8, maximum 100000 steps. No direct optimum used for stopping.",
+    "groups": [
+      {
+        "name": "continuation",
+        "parameters": 147
+      },
+      {
+        "name": "belief",
+        "parameters": 49
+      }
+    ],
+    "lambda_per_group": 0.0001,
+    "no_hyperparameter_search": true,
+    "objective_per_group": "weighted squared target residual + lambda * squared L2 distance from C group",
+    "random": "One deterministic random update per fit with separate group norms matching D, no validation search"
+  },
+  "purpose": "Compile complete supplied-checkpoint-law Bellman continuation values and terminal belief into the original head; distinguish structural planning, representability, numerical solution and task efficacy.",
+  "reporting": {
+    "cost": "Report acquisition/preparation separately; CPU/wall/RSS for state enumeration, own-law compilation, features, each solver, serialization, validation, test evaluation and recovery. Shared costs charged once; no inferred USD/energy or full-training speedup. Every arm/world starts with its own empty feature cache; warm weight/table residency is explicit. J full cold compile, table verification, serialization, load and subsequent lookup are all separate and their cold total is recorded.",
+    "efficacy_gate": {
+      "energy_qualified": false,
+      "full_economic_net_value_qualified": false,
+      "structural": "All source/Bellman gates pass AND both Bonferroni primary J-C domain lower bounds strictly exceed .005",
+      "utility_scope": "Original finite-task utility includes requested-read, repair and simulated elapsed fees; actual DP/solver CPU has no measured economic conversion and is reported separately",
+      "weight": "All numeric/source gates pass AND both Bonferroni primary D_gated-C domain lower bounds strictly exceed .005"
+    },
+    "interval": "5-fit paired Student-t; two-sided Bonferroni4 familywise alpha=0.05. No equivalence/zero-effect claim on failure.",
+    "preservation": "Original source/model/core/input-layer/decoder bytes untouched; only 196 declared head numbers differ; exact group reset reconstructs incumbent semantics and source identity; rejected gates use C exactly",
+    "primary_contrasts": [
+      "D_gated-C iid",
+      "D_gated-C ood",
+      "J-C iid",
+      "J-C ood"
+    ],
+    "secondary": "All raw/ablated/gradient/random per-fit utilities and descriptive 95% intervals; actual policy visits; selected-Q error, ordering/margin regret, posterior probability MSE, original task fees, reads/repair and latency counts",
+    "unknowns": "Five existing fits, finite task and known evaluation law; not new full-model refits, external/open-domain/market confirmation or universal global weight optimality"
+  },
+  "resource_caps": {
+    "cpu_threads": 1,
+    "overrun_behavior": "Preserve partial records and fail the qualification; no silent reduction of fits/worlds or restart with changed protocol",
+    "policy_state_caps_enforced": true,
+    "rss_target_bytes": 1073741824,
+    "single_process_cpu_seconds": 900,
+    "single_process_wall_seconds": 1200
+  },
+  "schema": "hepta-own-law-bellman-weight-compilation-draft-v1",
+  "source": {
+    "additional_research_read": "77b24407b9898aa44769502fbb22c24fb7193a58",
+    "additional_research_scope": "32-fit digital_feedback confirmation report; all benefit and overall quality gates failed. Its task is a separate fixed-physics feedback family. No records are used as labels or validation.",
+    "family": "renewal",
+    "fit_ids": [
+      11,
+      23,
+      37,
+      53,
+      71
+    ],
+    "joint_source_commit": "5b69a046d886cf4c2a73c50e58197360ea15d8f5",
+    "model_input_identity": "Original five model and TRAIN/VAL JSON SHA256 values from joint/INPUT_ACQUISITION.json; validate archive and member hashes before use.",
+    "public_training_archive_sha256": "87173e7699117f9870393832f428b9f3e0046efe7f92035be7b37f5348ad9124",
+    "research_commit": "2d0120e208ed81515837a7530c9f6943af03e87f"
+  },
+  "status": "DRAFT_NOT_FROZEN_NO_SCIENTIFIC_SCORES_EXECUTED",
+  "task_semantics": {
+    "actions": [
+      "STOP",
+      "WAIT",
+      "READ",
+      "REPAIR",
+      "SUBMIT_0",
+      "SUBMIT_1"
+    ],
+    "cost": "all requested-read, repair and elapsed-time fees on the original task transition path",
+    "deadline": 6,
+    "initial_read_budget": 3,
+    "read": "observes current latent sign at request completion tick; failed completion breaks sensor",
+    "repair": "repairs sensor only; no CTMC reset intervention",
+    "schema": "joint-current-at-due-fixed-deadline-v1",
+    "target": "sign at fixed tick 6, not first passage",
+    "terminal_scores": "0, 1-2*p, 2*p-1 for STOP/SUBMIT_0/SUBMIT_1",
+    "tie_break": "first legal action in original action order, numpy argmax"
+  },
+  "training": {
+    "collection": "Enumerate all structurally lawful nonterminal full states in each original TRAIN world, retaining actual sunk charges. Continuation weights: 1/(number of worlds * number of states in that world with any legal continuation * number of legal continuation actions at that state). Belief weights: 1/(number of worlds * all full states in that world).",
+    "features": "Original 85->48 tanh hidden features plus bias, same frozen representation/core/decoder",
+    "max_full_states_per_world": 20000,
+    "max_markov_states_per_world": 20000,
+    "max_training_rows_per_fit": 200000,
+    "public_worlds": "All 64 original TRAIN schedules per fit; no original VAL used for new selection",
+    "targets": "Complete own-law Bellman Q for legal WAIT/READ/REPAIR; logit of own-law deadline-six posterior for Belief, clipped only to [1e-12,1-1e-12] before logit with clip count reported",
+    "weights": "Two separate convex problems: continuation loss normalized per world/state/legal-continuation; Belief logit loss normalized per world/state. No cross-group logit-versus-Q scale tradeoff."
+  },
+  "validation_and_test": {
+    "distribution_scope": "OOD is relative to original TRAIN. New OOD validation exposes that distribution during selection; TEST is fresh instances, not an entirely unseen distribution.",
+    "domains": [
+      "iid",
+      "ood"
+    ],
+    "existing_feedback_confirmation": "Never used as new holdout; already-exposed research permanently listed.",
+    "gate": "Relative to current C: mean of new IID and OOD VAL gains >=0.005 AND each VAL domain gain >=0. No test-driven selection; gate decisions committed before test evaluation.",
+    "generation": "Full SHA256 domain-separated seed from frozen protocol identity, fit, split, domain and purpose; recorded PCG64 seed integer and complete public schedules",
+    "history_exclusion": "Before any scoring, compare schedule-content identity excluding id/packet placeholders against original TRAIN/VAL, all recovered WSP history including final compile test schedules, and reconstructable newer research history; duplicates stop the run without replacement. Record inaccessible history and separate task schemas explicitly.",
+    "policy_target_fitting_uses_validation": false,
+    "test_scoring_after_all_validation_gates_frozen": true,
+    "test_worlds_generated_after_candidate_freeze": true,
+    "test_worlds_per_fit_domain": 32,
+    "validation_worlds_per_fit_domain": 16
+  }
+}

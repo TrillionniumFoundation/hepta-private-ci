@@ -1,0 +1,461 @@
+{
+  "base": {
+    "mit": {
+      "commit": "4d09ba6d6a7e891dd8063974dfe81b3d78e3494f",
+      "observed_latest_same_as_prior": true,
+      "report_date": "2026-11-02",
+      "repository": "RikiyaT/lm_understand-logs"
+    },
+    "newly_located_confirmation": {
+      "acceptance": false,
+      "benefit_gates_passed": 0,
+      "benefit_gates_total": 4,
+      "commit": "77b24407b9898aa44769502fbb22c24fb7193a58",
+      "fit_count": 32,
+      "pr": 4798,
+      "quality_entries_all_criteria_passed": 0,
+      "quality_entries_total": 256,
+      "repository": "TrillionniumFoundation/hepta-private-ci",
+      "root_reran_confirmation": false
+    },
+    "original_joint_source": {
+      "commit": "5b69a046d886cf4c2a73c50e58197360ea15d8f5",
+      "repository": "TrillionniumFoundation/hepta-private-ci"
+    },
+    "prior_research": {
+      "commit": "2d0120e208ed81515837a7530c9f6943af03e87f",
+      "path": "tools/hcsn/wsp_20261104",
+      "pr": 4790,
+      "repository": "TrillionniumFoundation/hepta-private-ci",
+      "tree": "7164e9fdfd236b65b291b8e7f1158814eb73f79f"
+    },
+    "prior_runtime": {
+      "commit": "d85852b3c1708d9b2e8162badc07116999eff15e",
+      "official_ci": 41801488646,
+      "pr": 91,
+      "repository": "TrillionniumFoundation/hepta-runtime",
+      "tree": "84f79718dda7ce1f976e6d21ad041031f4fd5c7f"
+    },
+    "recorded_at_utc": "2026-11-05 00:09:14 UTC",
+    "retained_evidence_policy": "The previous research package and its scientific outcomes are immutable. New measurements and failures are recorded separately. Prior CI qualifies only its exact source head.",
+    "schema": "hepta.wsp-followup.baselines.v1",
+    "source_scope": "Pinned prior deliveries and newly located confirmation record; not current live model identity.",
+    "user_timezone": "America/New_York"
+  },
+  "complete_delivery": false,
+  "independent_acceptance_instructions": "REPRODUCE.md",
+  "independent_full_replay": {
+    "acceptance_stages": [
+      {
+        "controller_cpu_through_child_exit_seconds": 0.0007337440000000015,
+        "exit_code": 0,
+        "full_child_cpu_seconds": 10.786752,
+        "full_child_wall_seconds": 12.965658395999526,
+        "peak_rss_bytes": 40660992,
+        "scope": "Full child including imports and final writes; controller timing is separate and ends before receipt write.",
+        "source_sha256": "2b6e5e3c1244863d2cd9d432083656062e302f2c3bc58c6e22b6d76d46c783d1",
+        "stage": "independent_records",
+        "started_utc": "2026-11-05T01:30:26.458084+00:00"
+      },
+      {
+        "controller_cpu_through_child_exit_seconds": 0.0026868119999999968,
+        "exit_code": 0,
+        "full_child_cpu_seconds": 5.4927600000000005,
+        "full_child_wall_seconds": 5.9055585050000445,
+        "peak_rss_bytes": 16752640,
+        "scope": "Full child including imports and final writes; controller timing is separate and ends before receipt write.",
+        "source_sha256": "edfa022d6e9b23c352cae322a3a9282f31552401da03fde686897f24197424a6",
+        "stage": "exact_full_comparison",
+        "started_utc": "2026-11-05T01:30:39.423978+00:00"
+      }
+    ],
+    "all_model_feature_and_trajectory_computations_reexecuted": true,
+    "attempt_1": "Retained invocation path failure before model evaluation",
+    "attempt_1_child_cpu_seconds": 1.142841,
+    "comparator_sha256": "edfa022d6e9b23c352cae322a3a9282f31552401da03fde686897f24197424a6",
+    "comparison_sha256": "48db6d774da6c86c34653376ecdff940dcb8f2fe923504f7e295c8ee922aafa3",
+    "comparisons": 77,
+    "full_worker_cpu_seconds": 467.78403,
+    "full_worker_peak_rss_bytes": 197976064,
+    "full_worker_wall_seconds": 470.2093376470002,
+    "independent_implementation": false,
+    "not_a_new_holdout": true,
+    "numeric_tolerance": 0,
+    "protocol_sha256": "3302db385fa88f6445b74674f008bcb3ab3cb64b4f58a3bba7c73569319b29ff",
+    "status": "PASS_COMPLETE_FROZEN_REEXECUTION_AND_EXACT_COMPARISON",
+    "worker_exit_code": 0
+  },
+  "last_recorded_utc": "2026-11-05T03:04:26.769457+00:00",
+  "latest_source_read": {
+    "decision_in_read_record": "no-update",
+    "different_experiment_family": true,
+    "head": "943aa1c69dbfd696763f45ef24c5d3d491f56e19",
+    "observed_utc": "2026-11-05T02:04:45Z",
+    "pr": 4819,
+    "record": "SOURCE_REFRESH_FINAL.json",
+    "scientific_confirmation_executed_in_read_record": false,
+    "source_read_after_scientific_execution": true,
+    "source_reexecution": false
+  },
+  "literature_replication_source": {
+    "head": "9b4a7f1b23a1cc2e1290e4c73ebcb77e87a285ca",
+    "our_new_model_execution_from_source": false,
+    "qwen_editing_reproduced_in_that_source": false,
+    "record": "literature/TURING_REPLICATION_REVIEW.json",
+    "repository": "alan-turing-institute/weights_editing",
+    "source_only_review": true,
+    "team_reviewed_astra_exp5_result_rows": 15
+  },
+  "mit_reproduction": {
+    "actual_f32_forwards": 36,
+    "appended_tokens": 16,
+    "cost_measurement_scope_correction": {
+      "complete_supervisor_lifetime_measured": false,
+      "concurrent_tree_rss_sum_measured": false,
+      "excludes_supervisor_imports_argument_parsing_final_receipt_and_exit": true,
+      "measured_supervisor_window_and_complete_waited_children_cpu_seconds": 35.756121194,
+      "original_receipts_and_source_unchanged": true,
+      "window_wall_seconds": 40.662795775,
+      "worker_maximum_observed_hwm_bytes": 5740130304
+    },
+    "full_capability_benchmark_qualified": false,
+    "new_blind_astra_agent_discovery_reproduced": false,
+    "new_qwen_receipt_sha256": "a055831533050e0cbdf0d79b398a1abd6e75da261d6de9d0865ad16455690b7d",
+    "new_qwen_short_cache_status": "PASS_F32_SHORT_CACHE_QUALIFICATION",
+    "original_bf16_vllm_runtime_qualified": false,
+    "prior_minatar_episode_replay": 768,
+    "upstream_commit": "4d09ba6d6a7e891dd8063974dfe81b3d78e3494f",
+    "vocabulary_comparisons": 18
+  },
+  "native_bellman_and_guard_journal": {
+    "actual_crash_scenarios": 8,
+    "actual_journal_mcp_calls": 11,
+    "actual_mcp_whole_driver_and_descendants_cpu_seconds": 37.789511,
+    "all_features_focused_passed": 75,
+    "base_head_sha": "e7a2688acc5504412d45160a08d2bf864be6b650",
+    "build_and_local_qualification_child_cpu_seconds": 2665.505785,
+    "build_and_local_qualification_wall_seconds": 1486.703155745,
+    "correlated_cost_task_generalization_qualified": false,
+    "crash_feature_configurations": 2,
+    "end_to_end_speedup_qualified": false,
+    "entropic_or_general_ndu_fbsde_qualified": false,
+    "full_corpus_acceptance_pending": false,
+    "full_frozen_corpus": {
+      "actual_packet_IO_qualified": false,
+      "all_legal_masks_and_actions_exact": true,
+      "continuous_whole_network_global_optimization_qualified": false,
+      "full_economic_net_value_qualified": false,
+      "known_world_expected_trajectory_replay_qualified": true,
+      "legal_Q_compared": 928200,
+      "maximum_independent_scalar_Q_absolute_error": 0.0,
+      "maximum_per_world_utility_absolute_error": 0.0,
+      "maximum_reference_Q_absolute_error": 0.0,
+      "native_mcp_graph_migration_qualified": true,
+      "new_scientific_efficacy_qualified": false,
+      "nodes": 246160,
+      "original_checkpoint_law_authenticated_by_native_solver": false,
+      "production_qualified": false,
+      "pure_weight_edit_efficacy_qualified": false,
+      "result_sha256": "8114cd5b01f2015f780619c613325c7f645af2eab72759aeda31d8bfe748eb0e",
+      "schema": "hepta-native-bellman-engineering-qualification-v1",
+      "scope": "Only native migration and replay of previously exposed finite programs; prior scientific structural effect remains the sole task-efficacy result.",
+      "worlds": 320
+    },
+    "graph_export_mcp_and_verification_cpu_sum_seconds": 228.943315,
+    "head_sha": "990f85e46bedb8f49c0e6d0029ea6f9afbf6eac7",
+    "ignored_per_configuration": 2,
+    "incomplete_guard_recovery_requires_explicit_same_request_retry": true,
+    "independent_verifier_and_J_replay_whole_child_cpu_seconds": 52.947453,
+    "journal_contract_outer_cpu_seconds": 4.18027,
+    "journal_contract_outer_wall_seconds": 19.5633412601,
+    "journal_contract_passed": true,
+    "native_solver_authenticates_checkpoint_law": false,
+    "new_export_handoff_not_substitutable_for_published_handoff": true,
+    "no_default_focused_passed": 75,
+    "official_exact_head_ci": {
+      "all_features": {
+        "passed": 1804,
+        "skipped": 41,
+        "tests_run": 1804
+      },
+      "conclusion": "success",
+      "head_sha": "990f85e46bedb8f49c0e6d0029ea6f9afbf6eac7",
+      "no_default_features": {
+        "passed": 1784,
+        "skipped": 29,
+        "tests_run": 1784
+      },
+      "prospective_merge_qualified": false,
+      "receipt": "native/PR93_OFFICIAL_CI.json",
+      "receipt_sha256": "672533985fe519f243f18f0c68394e5fa113e717a58b166c5e02cd5452340956",
+      "run_attempt": 1,
+      "run_id": 41955092210,
+      "status": "completed",
+      "url": "https://github.com/TrillionniumFoundation/hepta-runtime/actions/runs/41955092210"
+    },
+    "original_trust_compatibility_passed": true,
+    "original_trust_outer_cpu_seconds": 13.02708,
+    "original_trust_outer_wall_seconds": 29.4006,
+    "production_qualified": false,
+    "pull_request": 93,
+    "qualified_binary_bytes": 380407976,
+    "qualified_binary_sha256": "a576b51e3fcb3d3a657e9d723bf2a9bfa579a3f6912178ee6e71a14c4ccd9854",
+    "qualified_published_blobs_verified": 98,
+    "repository": "TrillionniumFoundation/hepta-runtime",
+    "root_records_verified": "ROOT_NATIVE_RECORD_VERIFICATION.json",
+    "root_repository_sources_and_records_verified": "native/ROOT_BELLMAN_RECORDS.json",
+    "same_test_corpus_not_a_new_holdout": true,
+    "source_export_whole_child_cpu_seconds": 138.206351,
+    "status": "LOCAL_SOFTWARE_REAL_MCP_FROZEN_CORPUS_AND_EXACT_HEAD_CI_PASS",
+    "tree_sha": "8eacde0d86e15c03cb72c519525435e91bd07137"
+  },
+  "native_trust_region": {
+    "actual_mcp_negative_cases": 4,
+    "actual_mcp_norm_cases": 60,
+    "actual_mcp_planner_cases": 7,
+    "cumulative_multi_edit_drift_certified": false,
+    "full_task_efficacy_from_f32_train_fixture": false,
+    "head_sha": "e7a2688acc5504412d45160a08d2bf864be6b650",
+    "local_focused_all_features_passes": 52,
+    "local_focused_no_default_passes": 52,
+    "official_exact_head_ci": {
+      "all_features": {
+        "passed": 1781,
+        "skipped": 40,
+        "tests_run": 1781
+      },
+      "conclusion": "success",
+      "no_default_features": {
+        "passed": 1761,
+        "skipped": 28,
+        "tests_run": 1761
+      },
+      "receipt": "native/PR92_OFFICIAL_CI.json",
+      "receipt_sha256": "81d0a3ac9142dad70967508931d9bc08bece0e8a64d2c2b8af5a0a29b43f41d1",
+      "run_id": 41946487834,
+      "status": "completed",
+      "url": "https://github.com/TrillionniumFoundation/hepta-runtime/actions/runs/41946487834"
+    },
+    "prospective_merge_ci_qualified": false,
+    "pull_request": 92,
+    "qualified_source_blob_readback": true,
+    "repository": "TrillionniumFoundation/hepta-runtime"
+  },
+  "open_claims": {
+    "actual_first_passage_reset_call_put_weight_repair": false,
+    "actual_trader_weight_edit_gain": false,
+    "complete_energy_or_monetary_cost_comparison": false,
+    "continuous_whole_network_global_optimum": false,
+    "distributed_or_power_loss_recovery": false,
+    "general_arbitrary_neural_circuit_understanding": false,
+    "pure_head_edit_task_gain": false
+  },
+  "pocket4": {
+    "actual_adapter_all_finite": true,
+    "actual_adapter_parameters": 2379,
+    "base_rehashed": false,
+    "candidate_id": "8fe51f354c8a75001b0948c3588cab7d62dcb54c90f932f32e7bf9eb1505bf5a",
+    "candidate_identity_unchanged": true,
+    "cross_file_atomic": false,
+    "current_full_memory_PSI_avg10_60_300": [
+      0,
+      0,
+      0
+    ],
+    "execution_restart_increase_from_previous": 125,
+    "execution_restarts": 3863,
+    "final_delta": "pocket4/session_end_snapshot/delta.json",
+    "finished_america_new_york": "2026-11-04T21:59:16.280379-05:00",
+    "finished_utc": "2026-11-05T02:59:16.280371+00:00",
+    "independent_root_records_verification": "ROOT_SESSION_END_POCKET4_VERIFICATION.json",
+    "job_counts": {
+      "ADMITTED": 0,
+      "COMPLETED": 114,
+      "FAILED": 2,
+      "RUNNING": 0
+    },
+    "latest_execution_error_unique_root_cause_known": false,
+    "memory_available_kib": 14394000,
+    "new_journal_read": false,
+    "pending_evaluations": 0,
+    "previous_observation": {
+      "actual_adapter_all_finite": true,
+      "actual_adapter_parameters": 2379,
+      "base_rehashed": false,
+      "candidate_id": "8fe51f354c8a75001b0948c3588cab7d62dcb54c90f932f32e7bf9eb1505bf5a",
+      "candidate_identity_unchanged": true,
+      "cross_file_atomic": false,
+      "final_delta": "pocket4/final_snapshot/delta.json",
+      "finished_america_new_york": "2026-11-04T20:55:09.229826-05:00",
+      "finished_utc": "2026-11-05T01:55:09.229821+00:00",
+      "independent_root_records_verification": "ROOT_FINAL_POCKET4_VERIFICATION.json",
+      "job_counts": {
+        "ADMITTED": 0,
+        "COMPLETED": 114,
+        "FAILED": 2,
+        "RUNNING": 0
+      },
+      "latest_execution_error_unique_root_cause_known": false,
+      "pending_evaluations": 0,
+      "previous_observation": {
+        "actual_adapter_all_finite": true,
+        "actual_adapter_parameters": 2379,
+        "base_rehashed": false,
+        "candidate_id": "8fe51f354c8a75001b0948c3588cab7d62dcb54c90f932f32e7bf9eb1505bf5a",
+        "cross_file_atomic": false,
+        "finished_america_new_york": "2026-11-04T19:42:42.199024-05:00",
+        "latest_execution_error_unique_root_cause_known": false,
+        "prospective_task_gain_qualified": false,
+        "source": "pocket4/current_candidate_audit.json",
+        "source_sha256": "9ee7af5299786e03cf69ef82787ea987c5ed53def4dee5ccb4cb62858a8ff15c"
+      },
+      "prospective_task_gain_qualified": false,
+      "source": "pocket4/final_snapshot/public_snapshot.json",
+      "source_sha256": "489b65031bc2f3a5ef2cc6e510c4a149d400c25be5c789645a02ea7805e225f0"
+    },
+    "prospective_task_gain_qualified": false,
+    "source": "pocket4/session_end_snapshot/public_snapshot.json",
+    "source_sha256": "835f9d935d84b50bfa5c4cb7f1794704e9ff039003c1a1ed206496505ea31245",
+    "source_status_america_new_york": "2026-11-04T21:59:10.883000-05:00",
+    "source_status_utc": "2026-11-05T02:59:10.883000+00:00"
+  },
+  "publication": {
+    "all_attempts_including_failures_retained": true,
+    "complete_cost_known": false,
+    "component_payloads_frozen": true,
+    "original_253_files_intended_unchanged": true,
+    "original_research_subtree_sha": "3c44695c6b004328716e85b192e308d4a9c239c0",
+    "private_trader_rows_or_full_checkpoints_included": false,
+    "publication_identity": "Defined by the containing Git commit and tree; publication readback is reported in PR metadata.",
+    "software_exact_head_CI_passed_for_PR92_and_PR93": true
+  },
+  "schema": "hepta.wsp-followup.qualification.v1",
+  "scientific": {
+    "accepted_direct_candidates": 0,
+    "accepted_matched_gradient_candidates": 0,
+    "accepted_random_candidates": 0,
+    "cost_attribution_scope": "D and G comparable totals each charge the same shared setup plus own solve/save/load; the two totals must not be added. Whole-worker execution is recorded separately.",
+    "economic_cpu_cost_in_task_utility": false,
+    "fit_ids": [
+      11,
+      23,
+      37,
+      53,
+      71
+    ],
+    "full_worker_cpu_seconds": 460.03881,
+    "full_worker_peak_rss_bytes": 197607424,
+    "full_worker_wall_seconds": 460.98599251199994,
+    "ood_distribution_exposed_in_validation": true,
+    "primary_comparisons": {
+      "D_gated_iid": {
+        "benefit_pass": false,
+        "delta": 0.0,
+        "familywise_95_interval": [
+          0.0,
+          0.0
+        ]
+      },
+      "D_gated_ood": {
+        "benefit_pass": false,
+        "delta": 0.0,
+        "familywise_95_interval": [
+          0.0,
+          0.0
+        ]
+      },
+      "J_iid": {
+        "benefit_pass": true,
+        "delta": 0.10527676328115951,
+        "familywise_95_interval": [
+          0.04776707486482734,
+          0.16278645169749167
+        ]
+      },
+      "J_ood": {
+        "benefit_pass": true,
+        "delta": 0.202161468977592,
+        "familywise_95_interval": [
+          0.12035940122243831,
+          0.28396353673274566
+        ]
+      }
+    },
+    "production_qualified": false,
+    "protocol_sha256": "735df99e3366a5d9343e1642a8c370b8d3359169bc70a98572476c6747a88251",
+    "same_task_full_network_gradient_training_benchmark": false,
+    "source": "ndu_policy/execution_r1/run/RESULTS.json",
+    "source_sha256": "f63cc5264b68fa5e05b60a21b9f306f9027d60d2c80cc02d8c8aff9aaac9501e",
+    "statistical_unit": "fitted checkpoint, n=5",
+    "status": "FINITE_TASK_STRUCTURAL_EFFICACY_QUALIFIED_WEIGHT_EDIT_EFFICACY_FAILED",
+    "structural_efficacy_qualified": true,
+    "test_worlds": 320,
+    "unknown_external_history_excluded": false,
+    "validation_worlds": 160,
+    "weight_efficacy_qualified": false
+  },
+  "train_only_necessary_system_diagnostic": {
+    "F64_semantics_conditional": true,
+    "all_five_searches_reached_iteration_limit": 3000,
+    "all_original_H_Y_W_and_J_table_hashes_matched": true,
+    "archived_shared_data_container_read_in_full": true,
+    "candidate_model_created_or_saved": false,
+    "certificate_acceptance": "Exact nonnegative witness, positive d, strict rational squared separation after uniform conservative roundoff relaxation",
+    "conditional_F64_infeasible_fit_ids": [
+      11,
+      23,
+      37,
+      53,
+      71
+    ],
+    "cpu_or_wall_timeout": false,
+    "current_pocket4_adapter_covered": false,
+    "dual_search_uses_objective_gradients": true,
+    "entire_diagnostic_gradient_free": false,
+    "exact_alias_conflict_fit_ids": [],
+    "fixed_Q_radius_squared": "exact sum of squared stored C_Q coefficients divided by four",
+    "full_train_rows_reconstructed": 144397,
+    "held_out_rows_used_or_scored": false,
+    "ideal_real_infeasible_fit_ids": [
+      11,
+      23,
+      37,
+      53,
+      71
+    ],
+    "independent_full_H_Y_W_reconstruction": false,
+    "independent_result_sha256": "6e6b4fb68147a5d326edb987cb979c45554dfa6701ccd237412a5274da2fc08f",
+    "independent_witness_feature_and_own_Q_reexecution": true,
+    "independently_reexecuted_nonzero_dual_witness_states": 21458,
+    "legacy_loader_initializes_then_discards_truth_law": true,
+    "maximum_descendant_rss_bytes": 272777216,
+    "minimum_required_distance_optimum_qualified": false,
+    "native_Rust_certificate_verifier_implemented": false,
+    "neural_weight_training_performed": false,
+    "new_scientific_efficacy_qualified": false,
+    "new_validation_or_test_files_accessed": false,
+    "package_manifest_sha256": "e606c49896e2fa7e19700fae0e6d63e975e26090e15627a5f9df68c9514d5690",
+    "process_exit_code": 0,
+    "producer_result_sha256": "109aaf6c85ae65e92daf47fc118208fca0f2ce3eaec80e1e2cf28028ec9e9d5d",
+    "protocol_frozen_utc": "2026-11-05T02:38:06.871804+00:00",
+    "protocol_sha256": "3d5a657a7f79a5edf1e98365256b898152e384ade4031231e24f03f8f9ecdfd5",
+    "root_records_only_verification": {
+      "child_cpu_seconds": 13.134654,
+      "new_source_feature_or_Bellman_execution": false,
+      "passed": true,
+      "path": "ROOT_TRAIN_CERTIFICATE_VERIFICATION.json",
+      "sha256": "a1c82922479519f78ca33102b56fa04e96236d4e6cb6479e1fa125ac8fa6a564"
+    },
+    "scope": "Only copying specified J continuation choices on original TRAIN rows with fixed representation and original Q budget; no claim that all beneficial edits are impossible.",
+    "search_method": "bounded L-BFGS-B witness search, not model training",
+    "searches_reported_success": 0,
+    "task_value_impossibility_qualified": false,
+    "train_worlds": 320,
+    "unbounded_representation_or_whole_network_impossibility_qualified": false,
+    "whole_pipeline_cpu_seconds": 422.017378,
+    "whole_pipeline_receipt_sha256": "83ed465965a8f99295b46ce59c1114a6f39cf52923f58d848f33daa0e1709d38",
+    "whole_pipeline_wall_seconds": 422.568301790001,
+    "zero_margin_necessary_continuation_constraints": 21634
+  },
+  "user_time_zone": "America/New_York"
+}

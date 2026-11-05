@@ -1,0 +1,79 @@
+{
+  "checks": {
+    "actual_adapter_sha256_unchanged": true,
+    "adapter_all_finite_and_complete_layout": true,
+    "bound_job_id_unchanged": true,
+    "candidate_id_unchanged": true,
+    "candidate_job_binding_stable_during_observation": true,
+    "candidate_manifest_sha256_unchanged": true,
+    "current_blockers_unchanged": true,
+    "current_full_memory_psi_avg10_avg60_zero": true,
+    "effective_service_config_verified": true,
+    "fresh_live_source_still_unproven": true,
+    "guardian_file_sha256_unchanged": true,
+    "job_config_sha256_unchanged": true,
+    "job_counts_unchanged": true,
+    "live_process_identity_stable_during_observation": true,
+    "manifest_adapter_hash_matches_current_bytes": true,
+    "original_config_sha256_unchanged": true,
+    "worker_still_not_launched": true
+  },
+  "completed_candidates_without_forward_trial": 43,
+  "counts": {
+    "ADMITTED": 0,
+    "COMPLETED": 114,
+    "FAILED": 2,
+    "RUNNING": 0
+  },
+  "current_adapter": {
+    "bytes": 9988,
+    "sha256": "94a8a2275e92fa6343b5c2b662c3a440c3cc870f067d73e86bb1c0069b880ee0"
+  },
+  "current_adapter_parameter_count": 2379,
+  "current_blockers": [
+    "CANDIDATE_READY_AWAITING_FORWARD_ADMISSION",
+    "LATEST_SOURCE_QUOTE_NOT_FRESH",
+    "SOURCE_CONTINUITY_NOT_READY",
+    "SOURCE_QUALITY_HOLD_NO_REFRESH_AUTHORITY"
+  ],
+  "current_memory_kib": {
+    "MemAvailable": 15506224,
+    "MemTotal": 25739556,
+    "SwapFree": 2787348,
+    "SwapTotal": 16777208
+  },
+  "current_pressure": {
+    "cpu": "some avg10=1.48 avg60=2.38 avg300=2.08 total=38470579411\nfull avg10=0.00 avg60=0.00 avg300=0.00 total=0\n",
+    "io": "some avg10=0.00 avg60=0.01 avg300=0.00 total=8046462700\nfull avg10=0.00 avg60=0.01 avg300=0.00 total=7291084645\n",
+    "memory": "some avg10=0.00 avg60=0.00 avg300=0.00 total=5111619872\nfull avg10=0.00 avg60=0.00 avg300=0.00 total=4905727480\n"
+  },
+  "execution_restart_delta": {
+    "current": 3738,
+    "current_error_cause_reverified": false,
+    "current_state": "activating",
+    "current_substate": "auto-restart",
+    "increase": 141,
+    "interpretation": "Restart counter increased; this delta alone does not identify the current rejection branch or prove the historical cause persists.",
+    "new_journal_errors_queried": false,
+    "prior": 3597
+  },
+  "final_observed_america_new_york": "2026-11-04T20:55:09.229826-05:00",
+  "final_observed_utc": "2026-11-05T01:55:09.229821+00:00",
+  "final_public_snapshot_relative": "public_snapshot.json",
+  "final_public_snapshot_sha256": "489b65031bc2f3a5ef2cc6e510c4a149d400c25be5c789645a02ea7805e225f0",
+  "final_source_time": {
+    "america_new_york": "2026-11-04T20:55:07.134000-05:00",
+    "utc": "2026-11-05T01:55:07.134000+00:00"
+  },
+  "live_changes_made": false,
+  "new_model_efficacy_claim": false,
+  "pending_evaluations": 0,
+  "prior_experiment_efficacy_transferred": false,
+  "prior_observed_america_new_york": "2026-11-04T19:42:42.199024-05:00",
+  "prior_observed_utc": "2026-11-05T00:42:42.199019+00:00",
+  "prior_public_snapshot_relative": "../current_candidate_audit.json",
+  "prior_public_snapshot_sha256": "9ee7af5299786e03cf69ef82787ea987c5ed53def4dee5ccb4cb62858a8ff15c",
+  "schema": "hepta.wsp.final-pocket4-delta.v1",
+  "scope": "Same strict service/process/config/candidate/job/adapter binding at each observation; current files and command arguments are attested, not in-memory configuration contents.",
+  "snapshots_atomic_across_files": false
+}

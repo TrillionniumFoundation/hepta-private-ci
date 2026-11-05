@@ -1,0 +1,99 @@
+{
+  "actual_efficacy_scores_computed": false,
+  "actual_validation_or_test_accessed": false,
+  "arithmetic": {
+    "count": 33785,
+    "max_abs_difference": 5.551115123125783e-16,
+    "max_input_abs": 1.0,
+    "max_output_abs": 1.0,
+    "nonfinite_count": 0
+  },
+  "cpu_seconds": 3.43496571,
+  "schema": "hepta-own-bellman-preparation-check-v1",
+  "source": [
+    {
+      "fit": 11,
+      "incumbent_sha256": "a561706ebbad90353f8f7558041a5836fed9ec43fadbb2f09c5258a33ef0fe02",
+      "own_mass_vs_deploy_max": 0.0,
+      "own_posterior_vs_bank7_max": 2.220446049250313e-16,
+      "rows": 308
+    },
+    {
+      "fit": 23,
+      "incumbent_sha256": "24896f08138195b513c4ba43f59d3bc3600004d592df0435370399d9fe0dd9fd",
+      "own_mass_vs_deploy_max": 0.0,
+      "own_posterior_vs_bank7_max": 2.220446049250313e-16,
+      "rows": 290
+    },
+    {
+      "fit": 37,
+      "incumbent_sha256": "cc849236225ba68c6e4c882dde665fa598c924386a8029bacdd35bac3cb8b668",
+      "own_mass_vs_deploy_max": 0.0,
+      "own_posterior_vs_bank7_max": 2.220446049250313e-16,
+      "rows": 299
+    },
+    {
+      "fit": 53,
+      "incumbent_sha256": "56f1440b6ac62ed8c35edbeabfff7503e8aab4c5d739f9dc1487f6845890e437",
+      "own_mass_vs_deploy_max": 0.0,
+      "own_posterior_vs_bank7_max": 2.220446049250313e-16,
+      "rows": 341
+    },
+    {
+      "fit": 71,
+      "incumbent_sha256": "3d4ebabbccc995f632d7e23e2c904e5e5ee38b50ce6b8df8eb57be8633b5e15b",
+      "own_mass_vs_deploy_max": 0.0,
+      "own_posterior_vs_bank7_max": 2.220446049250313e-16,
+      "rows": 344
+    }
+  ],
+  "source_identity": {
+    "joint/acquire_inputs.py": "bc552c289036e7f0253e8d2b9dbc9d1cc8a6fea7a0d079142e9f1cafde128f89",
+    "joint/checked_replay.py": "d0922ab0c458d9d382e1f9c851c52731c4a71256870000862dbebf5d38366b24",
+    "joint/joint_compiled_dp.py": "a371d745f6340350d393ea055ac5c9b045c9bf3a052f26655eabd6e7dffbceb6",
+    "joint/joint_data.py": "53292842debef33b6c54992b7b0dba80262ba2ee836bfc6fba14ca5c9b5e6e68",
+    "joint/joint_deploy.py": "c91ef40c484000e2a2b923425467c03fbbfb4e15a1f54856f6c850f9242c8e26",
+    "joint/joint_law.py": "2e7f19a2534567e31370eea24dec096a309e4db4aa42770efbf544bed84bcf65",
+    "joint/joint_model.py": "250ec083ce30e11ea55c0347ed2fbc549be02a514e97c6da472699820afd3284",
+    "joint/joint_protocol.json": "1c6ffc51d8d9df8f57bb350dd9d80a264b889a14882da553c63e60c547a18606",
+    "joint/joint_task.py": "51139ba57004f2a5d69381af2f781b3717404318f122d8b6bec8416004efffa5",
+    "joint/legacy_task.py": "d8e88364932bb344e4df811f40163550e9c198b8e34778b5664c72367f4bde06",
+    "joint/run_head_edit.py": "fe0681ef732b660db0b195bda21cf9ab40b0d6cd8b7fe0c69ade7b9e67198b6f",
+    "joint/truth_transitions.npz": "3a62c48272d90b459622ed8818fddf36de983831fbc0c1306fc39b27345228f0",
+    "new/check_preparation.py": "3565651d7213de48f2937944a223eff96e9d73b373d21fae62be505099438b22",
+    "new/planning.py": "2fbd9b00861d3ff932c81b975b60e39dc9d4e9138e160a99222e6fdc6eb0a687",
+    "new/quadratic.py": "2cdfabe96b4e9af0cc565352f8ed6fcca02646f667e7e6d34639e39c37a62d6c"
+  },
+  "synthetic_D_FW_gap": 7.257378292074845e-17,
+  "synthetic_G_FW_gap": 9.784196070594425e-09,
+  "synthetic_bellman_identity": {
+    "bellman_residual_max": 0.0,
+    "compilation": {
+      "cached_across_worlds": false,
+      "cpu_seconds": 0.5204115790000001,
+      "source": "exact stored checkpoint tables",
+      "states": 782,
+      "value_cache_entries": 781,
+      "wall_seconds": 0.5204400930001611
+    },
+    "full_cold_preparation_cpu_seconds": 0.5717617690000001,
+    "full_cold_preparation_wall_seconds": 0.5717957090000709,
+    "load": {
+      "cpu_seconds": 0.001488872000000363,
+      "wall_seconds": 0.001490613999976631
+    },
+    "probability_sum_error_max": 2.220446049250313e-16,
+    "scope": "finite supplied-checkpoint-law optimality; no unknown-law guarantee",
+    "serialization": {
+      "cpu_seconds": 0.002609073999999989,
+      "wall_seconds": 0.002609701999972458
+    },
+    "table_bytes": 125913,
+    "table_sha256": "3c8af44b2c199ec1d01db610935a8e17a9ed8c879df50c0a267c0608de7d5d1a",
+    "verification_cpu_seconds": 0.04400482800000027
+  },
+  "synthetic_known_utility": 0.6300000000000001,
+  "synthetic_norm_and_D_G_passed": true,
+  "synthetic_sunk_charge_alias_distinguished": true,
+  "wall_seconds": 3.435184106000179
+}
