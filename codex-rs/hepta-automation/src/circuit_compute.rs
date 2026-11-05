@@ -10,6 +10,7 @@ use crate::CircuitNodeKindV2;
 use crate::CircuitRunV2;
 use crate::CircuitStopReasonV2 as Stop;
 use crate::TaskFlowError;
+use crate::circuit_budget::CircuitWorkSettlementV2;
 use crate::circuit_profile::digest;
 use crate::circuit_profile::hash;
 use crate::circuit_profile::invalid;
@@ -123,7 +124,7 @@ impl CircuitRunV2 {
             }
         }
         let instance = self.instances.get_mut(&activation.instance_id).ok_or_else(|| invalid("unknown instance"))?;
-        instance.budget.settle(id, completion.actual_work)?;
+        let settlement = instance.budget.settle(id, completion.actual_work)?;
         instance.no_progress = if instance.last_output.as_ref() == Some(&completion.output_digest) {
             instance.no_progress + 1
         } else {
@@ -136,6 +137,9 @@ impl CircuitRunV2 {
         completed.output_digest = Some(completion.output_digest.clone());
         completed.receipt_digest = Some(completion.receipt_digest.clone());
         completed.selected_edges.clone_from(&completion.selected_edges);
+        if settlement == CircuitWorkSettlementV2::Overrun {
+            return self.stop(definition, Stop::WorkBudget);
+        }
         if activation.cancel_requested || self.instances[&activation.instance_id].exit.is_some() {
             return Ok(());
         }

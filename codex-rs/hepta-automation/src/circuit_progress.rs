@@ -13,6 +13,7 @@ use crate::CircuitNodeKindV2;
 use crate::CircuitRunV2;
 use crate::CircuitStopReasonV2 as Stop;
 use crate::TaskFlowError;
+use crate::circuit_budget::CircuitWorkSettlementV2;
 use crate::circuit_profile::hash;
 use crate::circuit_profile::invalid;
 
@@ -248,11 +249,15 @@ impl CircuitRunV2 {
             let continuation_parents: Vec<_> = self.activations.values()
                 .filter(|a| a.instance_id == id && a.status == Status::Completed)
                 .map(|a| a.activation_id).collect();
-            self.instances.get_mut(&parent.instance_id).ok_or_else(|| invalid("unknown parent"))?
+            let settlement = self.instances.get_mut(&parent.instance_id).ok_or_else(|| invalid("unknown parent"))?
                 .budget.settle(parent_id, spent)?;
             self.complete_internal(parent_id, output.clone())?;
             self.activations.get_mut(&parent_id).ok_or_else(|| invalid("unknown parent activation"))?
                 .continuation_parents = continuation_parents;
+            if settlement == CircuitWorkSettlementV2::Overrun {
+                self.stop(definition, Stop::WorkBudget)?;
+                continue;
+            }
             if parent.cancel_requested || self.instances[&parent.instance_id].exit.is_some() {
                 continue;
             }
