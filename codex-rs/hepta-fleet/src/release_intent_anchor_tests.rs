@@ -114,13 +114,125 @@ fn intent_cas_changes_full_frontier_but_preserves_exact_release_permission_proje
     f.allow(&second)?;
     let allowed = f.registry.resolve_release_binding(&f.agent, &id)?;
     assert_ne!(allowed, before);
+    assert_eq!(
+        allowed.admission_frontier_sha256,
+        f.registry
+            .resolve_release_binding(&f.agent, &second)?
+            .admission_frontier_sha256
+    );
     f.registry.revoke_release(&f.agent, &second)?;
     assert_ne!(f.registry.resolve_release_binding(&f.agent, &id)?, allowed);
+    assert!(matches!(
+        f.registry.resolve_release_binding(&f.agent, &second),
+        Err(FleetRegistryError::ReleaseRevoked { .. })
+    ));
     let old = f.registry.resolve_release_binding(&f.agent, &id)?;
     f.publisher
         .publish_protocol_configuration(&f.registry, b"replacement policy", NOW + 60)?;
     assert_ne!(f.registry.resolve_release_binding(&f.agent, &id)?, old);
     assert!(f.registry.admit_protocol_configuration(policy).is_err());
+    Ok(())
+}
+
+#[test]
+fn distinct_release_members_share_permission_snapshot_through_intent_cas_and_reopen()
+-> QualificationResult<()> {
+    let (mut f, source, policy) = setup()?;
+    std::fs::write(&f.source, b"#!/bin/sh\nexit 1\n")?;
+    let target = f.install("anchor-distinct-target")?;
+    f.allow(&target)?;
+    let source_binding = f.registry.resolve_release_binding(&f.agent, &source)?;
+    let target_binding = f.registry.resolve_release_binding(&f.agent, &target)?;
+    assert_ne!(source_binding.release_id, target_binding.release_id);
+    assert_ne!(
+        source_binding.manifest_sha256,
+        target_binding.manifest_sha256
+    );
+    assert_ne!(
+        source_binding.agentd_program_sha256,
+        target_binding.agentd_program_sha256
+    );
+    assert_eq!(
+        source_binding.admission_frontier_sha256,
+        target_binding.admission_frontier_sha256
+    );
+    let initial = prepared(&f, policy, 21, 1);
+    queue(&f, &source, policy, &initial)?;
+    let guard = f.registry.admit_protocol_configuration(policy)?;
+    assert_eq!(
+        f.registry
+            .release_binding_with_protocol_configuration(&guard, &f.agent, &source)?,
+        source_binding
+    );
+    assert_eq!(
+        f.registry
+            .release_binding_with_protocol_configuration(&guard, &f.agent, &target)?,
+        target_binding
+    );
+    drop(guard);
+    let reopened =
+        FleetRegistry::open_existing_with_release_authority(f.root.clone(), f.publisher.config())?;
+    assert_eq!(
+        reopened.resolve_release_binding(&f.agent, &source)?,
+        source_binding
+    );
+    assert_eq!(
+        reopened.resolve_release_binding(&f.agent, &target)?,
+        target_binding
+    );
+    Ok(())
+}
+
+#[test]
+fn common_permission_snapshot_changes_for_signed_set_and_root_publication_updates()
+-> QualificationResult<()> {
+    let (mut f, source, _policy) = setup()?;
+    let target = f.install("anchor-rolling-target")?;
+    f.allow(&target)?;
+    let before = f.registry.resolve_release_binding(&f.agent, &source)?;
+    let old_target = f.registry.resolve_release_binding(&f.agent, &target)?;
+    assert_eq!(
+        before.admission_frontier_sha256,
+        old_target.admission_frontier_sha256
+    );
+    let members = [source.clone(), target.clone()];
+    f.publisher
+        .publish_member_ids(&f.registry, &members, NOW + 3600)?;
+    let republished = f.registry.resolve_release_binding(&f.agent, &source)?;
+    let new_target = f.registry.resolve_release_binding(&f.agent, &target)?;
+    assert_eq!(republished.manifest_sha256, before.manifest_sha256);
+    assert_eq!(new_target.manifest_sha256, old_target.manifest_sha256);
+    assert_eq!(
+        republished.admission_frontier_sha256,
+        new_target.admission_frontier_sha256
+    );
+    assert_ne!(
+        before.admission_frontier_sha256,
+        new_target.admission_frontier_sha256
+    );
+    f.publisher.rotate_publisher_root(&f.registry)?;
+    assert!(
+        f.registry
+            .resolve_release_binding(&f.agent, &source)
+            .is_err()
+    );
+    assert!(
+        f.registry
+            .resolve_release_binding(&f.agent, &target)
+            .is_err()
+    );
+    f.publisher
+        .publish_member_ids(&f.registry, &members, NOW + 3600)?;
+    let rotated_source = f.registry.resolve_release_binding(&f.agent, &source)?;
+    let rotated_target = f.registry.resolve_release_binding(&f.agent, &target)?;
+    assert_eq!(
+        rotated_source.admission_frontier_sha256,
+        rotated_target.admission_frontier_sha256
+    );
+    assert_ne!(
+        republished.admission_frontier_sha256,
+        rotated_target.admission_frontier_sha256
+    );
     Ok(())
 }
 

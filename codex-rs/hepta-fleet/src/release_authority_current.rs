@@ -83,7 +83,7 @@ impl ReleaseAuthority {
             }
         }
         let metadata = metadata.clone();
-        let permission = self.permission_sha256(state, agent_id, release_id, digest)?;
+        let permission = self.permission_sha256(state, agent_id)?;
         Ok((metadata, permission))
     }
 
@@ -120,13 +120,21 @@ impl ReleaseAuthority {
         &self,
         state: &LoadedState,
         agent_id: &AgentId,
-        release_id: &ReleaseId,
-        manifest_sha256: [u8; 32],
     ) -> Result<[u8; 32], FleetRegistryError> {
         // Intent snapshots advance the complete antirollback frontier but do
         // not mutate M15's publication checkpoint. Every dispatch still checks
         // the full fresh frontier; this projection only stabilizes transaction
         // bindings while the exact publisher/agent permissions are unchanged.
+        // Source and target must share this complete authorization snapshot.
+        // Their individual manifests/programs remain bound by ReleaseBinding;
+        // including the selected member here would forbid every real upgrade.
+        let release_set = state
+            .journal
+            .current_set
+            .as_ref()
+            .ok_or(FleetRegistryError::ReleaseAuthorityRequired)?
+            .bundle
+            .bundle_digest;
         let allowances = state
             .admissions
             .iter()
@@ -137,15 +145,14 @@ impl ReleaseAuthority {
             })
             .collect::<Vec<_>>();
         let mut hash = Sha256::new();
-        hash.update(b"hepta.fleet.release-permission.v1\0");
+        hash.update(b"hepta.fleet.release-permission.v2\0");
         hash.update(
             serde_json::to_vec(&(
                 &self.config.owner_id,
                 self.config.initial_root_sha256,
                 state.frontier.checkpoint_sha256,
+                release_set,
                 agent_id,
-                release_id,
-                manifest_sha256,
                 allowances,
             ))
             .map_err(|_| invalid("cannot encode release permission binding"))?,
