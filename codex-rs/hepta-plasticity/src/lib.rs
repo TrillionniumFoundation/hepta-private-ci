@@ -8,6 +8,8 @@
 
 #![forbid(unsafe_code)]
 
+mod differentiation_plan;
+mod differentiation_types;
 mod durable_registry;
 mod generator_v3;
 mod legacy;
@@ -20,6 +22,21 @@ mod topology_registry;
 mod topology_v2;
 mod types;
 
+pub use differentiation_plan::freeze_differentiation_plan_v1;
+pub use differentiation_types::DifferentiationActorV1;
+pub use differentiation_types::DifferentiationActorsV1;
+pub use differentiation_types::DifferentiationArmV1;
+pub use differentiation_types::DifferentiationConclusionV1;
+pub use differentiation_types::DifferentiationDemandPolicyV1;
+pub use differentiation_types::DifferentiationDiagnosisV1;
+pub use differentiation_types::DifferentiationErrorV1;
+pub use differentiation_types::DifferentiationHoldReasonV1;
+pub use differentiation_types::DifferentiationParentV1;
+pub use differentiation_types::DifferentiationPlanRequestV1;
+pub use differentiation_types::DifferentiationPlanV1;
+pub use differentiation_types::DifferentiationRetentionPanelV1;
+pub use differentiation_types::DifferentiationStudyPolicyV1;
+pub use differentiation_types::DifferentiationTriggerV1;
 pub use durable_registry::DurableProposalAppendReceiptV1;
 pub use durable_registry::DurableProposalRegistry;
 pub use durable_registry::DurableProposalRegistryError;
