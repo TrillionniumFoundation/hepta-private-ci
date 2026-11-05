@@ -38,8 +38,11 @@ use model::parse_response;
 mod read;
 pub use read::CalculatorState;
 pub use read::ProductionCalculatorObserver;
+#[path = "production_calculator_previous.rs"]
+mod previous;
 #[path = "production_calculator_retire.rs"]
 mod retire;
+pub use previous::ProductionCalculatorRecoveryTarget;
 
 /// A narrowed, already inherited observation capability. Implementations may
 /// carry only readback, exact operation observation and terminal receipt ACKs.

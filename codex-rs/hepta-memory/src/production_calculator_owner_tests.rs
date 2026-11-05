@@ -590,3 +590,6 @@ async fn calculator_queued_cancellation_remains_available_before_effect_boundary
     store.close().await;
     Ok(())
 }
+
+#[path = "production_calculator_previous_tests.rs"]
+mod previous_recovery_tests;

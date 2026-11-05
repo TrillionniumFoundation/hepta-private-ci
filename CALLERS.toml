@@ -146,6 +146,7 @@ required_boundary_ids = [
   "agentd_original_registered_writer_custody",
   "agentd_original_recovered_writer_custody_factory",
   "agentd_original_root_handoff_unique_file",
+  "calculator_previous_recovery_owner_target",
 ]
 
 [[boundary]]
@@ -2012,3 +2013,18 @@ required = ["adapter.verify_original_human_text(&ingress, route).await?", "retai
 [[protected_file]]
 path = "codex-rs/hepta-agentd/src/notes_thread_recorded.rs"
 required = ["latest_recorded_thread_operation", "tokio::time::timeout_at(end,", "latest_matching_request(scope, requests, end)?", "self.verify_recorded_thread_operation(route, &request, &operation)?"]
+
+[[boundary]]
+id = "calculator_previous_recovery_owner_target"
+symbol = "ProductionDurableWriter::calculator_recovery_target_for_retained_operation"
+call_pattern = '(?:\.\s*|ProductionDurableWriter\s*::\s*)calculator_recovery_target_for_retained_operation\s*\('
+definition_path = "codex-rs/hepta-memory/src/production_calculator_previous.rs"
+definition_markers = ["pub async fn calculator_recovery_target_for_retained_operation(", "self.verify_current_authority().await?", "let original = calculator_operation_intent(", "retained.topic != CALCULATOR_EVALUATE_TOPIC_V1", "LocalOutcomeState::Indeterminate | LocalOutcomeState::Committed"]
+product_callers = []
+caller_markers = []
+
+
+[[protected_file]]
+path = "codex-rs/hepta-memory/src/production_calculator_previous.rs"
+required = ["struct RecoveryOnlyChannel", "recovery-only Calculator target cannot dispatch", "self.matches(permit.request())", "self.matches(request)", "LocalOutcomeState::Indeterminate | LocalOutcomeState::Committed", "self.verify_current_authority().await?"]
+forbidden = ["prepare_operation(", "mark_indeterminate(", "open_with_live_verifier(", "AllowVerifier", "permit_all"]

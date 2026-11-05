@@ -86,6 +86,7 @@ pub use production_calculator::CalculatorState;
 pub use production_calculator::CalculatorTargetIdentity;
 pub use production_calculator::CalculatorValueState;
 pub use production_calculator::ProductionCalculatorObserver;
+pub use production_calculator::ProductionCalculatorRecoveryTarget;
 pub use production_calculator::ProductionCalculatorTarget;
 pub use production_calculator::calculator_operation_intent;
 
