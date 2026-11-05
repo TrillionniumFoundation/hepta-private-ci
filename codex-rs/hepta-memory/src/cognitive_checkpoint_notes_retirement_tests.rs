@@ -400,6 +400,18 @@ async fn notes_retirement_holds_original_sqlite_lock_through_synchronous_metadat
         fixture.store.recovery_anchor().await.unwrap(),
         acknowledged_cut
     );
+    // Reopening a global commit bit after publication would let the queued
+    // writer succeed while leaving a stale Current claim. After both original
+    // operations complete, Current must include their actual final source cut.
+    let protected = fixture.peer.receipt.lock().unwrap().clone();
+    if protected.head.phase == CognitiveCheckpointPhase::Current {
+        assert_eq!(
+            protected.head.last_current,
+            fixture.store.recovery_anchor().await.unwrap()
+        );
+    } else {
+        assert_eq!(protected.head.phase, CognitiveCheckpointPhase::Dirty);
+    }
 }
 
 #[path = "cognitive_checkpoint_retirement_ack_tests.rs"]

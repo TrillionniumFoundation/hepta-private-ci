@@ -427,11 +427,7 @@ pub async fn append_h7_trajectory_event_bound(
     }
     binding.verify_current(lease, executor).await?;
     let store = executor.store();
-    let mut transaction = store
-        .pool
-        .begin_with("BEGIN IMMEDIATE")
-        .await
-        .map_err(crate::cognitive_store::unavailable)?;
+    let mut transaction = store.begin_write_transaction().await?;
     let current = lease
         .verify_current_in_transaction(&mut transaction)
         .await
@@ -610,11 +606,7 @@ pub async fn read_h7_trajectory_bound(
     let trajectory_id = trajectory_id.into();
     validate_text(&trajectory_id, "trajectory id", MAX_TEXT_BYTES)?;
     let store = executor.store();
-    let mut transaction = store
-        .pool
-        .begin_with("BEGIN IMMEDIATE")
-        .await
-        .map_err(crate::cognitive_store::unavailable)?;
+    let mut transaction = store.begin_write_transaction().await?;
     let current = lease
         .verify_current_in_transaction(&mut transaction)
         .await
@@ -655,11 +647,7 @@ pub async fn read_h7_trajectory_bound_for_recovery(
     let trajectory_id = trajectory_id.into();
     validate_text(&trajectory_id, "trajectory id", MAX_TEXT_BYTES)?;
     let store = executor.store();
-    let mut transaction = store
-        .pool
-        .begin_with("BEGIN IMMEDIATE")
-        .await
-        .map_err(crate::cognitive_store::unavailable)?;
+    let mut transaction = store.begin_write_transaction().await?;
     let current = lease
         .verify_current_for_recovery_in_transaction(&mut transaction)
         .await
@@ -744,11 +732,7 @@ pub async fn inspect_expired_terminal_h7(
         )
     })?;
 
-    let mut transaction = store
-        .pool
-        .begin_with("BEGIN IMMEDIATE")
-        .await
-        .map_err(crate::cognitive_store::unavailable)?;
+    let mut transaction = store.begin_write_transaction().await?;
     let (current, _) = crate::local_lease_outbox::load_lease_chain(
         &mut transaction,
         &expected_head.lease_id,

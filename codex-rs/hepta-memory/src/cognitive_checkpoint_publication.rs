@@ -8,6 +8,13 @@ use std::pin::Pin;
 /// this capability; it contains neither a store handle nor another ledger.
 pub(crate) trait BoundOwnerPublication: Send + Sync {
     fn deadline(&self) -> Duration;
+    /// Called only while the original owner holds its write transaction.
+    /// The same coordinator must invalidate any intervening Current before a
+    /// queued writer receives its transaction; this grants no effect authority.
+    fn prepare_write<'a>(
+        &'a self,
+    ) -> Pin<Box<dyn Future<Output = Result<(), ObjectiveSenderCheckpointError>> + Send + 'a>>;
+
     /// Observe the actual authenticated peer without publishing or dirtying.
     fn observe_current<'a>(
         &'a self,
@@ -37,6 +44,19 @@ impl<T: CognitiveCheckpointTransport> BoundOwnerPublication for ProtectedCogniti
     fn deadline(&self) -> Duration {
         self.deadline
     }
+    fn prepare_write<'a>(
+        &'a self,
+    ) -> Pin<Box<dyn Future<Output = Result<(), ObjectiveSenderCheckpointError>> + Send + 'a>> {
+        Box::pin(async move {
+            self.before_checkout().await;
+            if self.gate.commit_allowed() {
+                Ok(())
+            } else {
+                Err(ObjectiveSenderCheckpointError::Unavailable)
+            }
+        })
+    }
+
     fn observe_current<'a>(
         &'a self,
         cut: &'a CognitiveRecoveryAnchor,

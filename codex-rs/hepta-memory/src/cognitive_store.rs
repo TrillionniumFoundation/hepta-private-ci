@@ -450,11 +450,7 @@ impl CognitiveStore {
         access: &CognitiveAccess,
         draft: &SourceDraft,
     ) -> Result<SourceRevisionId, CognitiveStoreError> {
-        let mut transaction = self
-            .pool
-            .begin_with("BEGIN IMMEDIATE")
-            .await
-            .map_err(unavailable)?;
+        let mut transaction = self.begin_write_transaction().await?;
         let source = self
             .append_source_tx(&mut transaction, access, draft)
             .await?;
