@@ -1,0 +1,620 @@
+{
+  "recorded_at": "2026-11-05T10:15:09.909364+00:00",
+  "scope": "Read-only terminal failure/source classification; no test reruns, source edits, filter/timeouts/retry/policy changes.",
+  "runtime_source_baseline": "7530e4bc7aa61a0c23a5933fef4a65d86a586cf8",
+  "later_upstream_not_covered": "f55752abbf516febfa0db89cb833dcf1fd1a2221",
+  "frozen_receipt": "/workspace/scratch/42d46a663b73/verification/runtime-admission-frozen-files.json",
+  "frozen_file_count": 38,
+  "frozen_file_drift": [],
+  "log": "/workspace/scratch/42d46a663b73/verification/hepta-host-nextest-library-attempt1.log",
+  "log_sha256": "d3bb3a021e4760c46afdd7d81102c5e28860cedbe7419001dfb173fd46578748",
+  "summary": "     Summary [  36.841s] 181 tests run: 161 passed, 20 failed, 16 skipped",
+  "counts": {
+    "run": 181,
+    "passed": 161,
+    "failed": 20,
+    "skipped_existing": 16,
+    "new_runtime_admission_controls_passed": 8,
+    "all_new_library_tests_passed": 12,
+    "explicit_unix_listener_eperm": 6,
+    "unlocalized_eperm_with_unix_fixture_path": 12,
+    "missing_codex_executable": 2
+  },
+  "all_failed_test_definitions_existed_at_baseline": true,
+  "all_failed_test_defining_files_unchanged": true,
+  "failures": [
+    {
+      "selector": "final_use_authorizer::pq::concurrency_tests::concurrent_real_pq_claim_cannot_inherit_an_older_heads_longer_feed",
+      "status": "FAIL",
+      "existed_at_baseline": true,
+      "definition": {
+        "path": "/workspace/scratch/42d46a663b73/runtime/codex-rs/hepta-infer-worker-host/src/final_use_authorizer/pq_concurrency_tests.rs",
+        "line": 24,
+        "sha256": "ac3aad8c91b5f70d3152124e7e9aa29b2f6dcfd48e2891d30a16858c8efbe5fc",
+        "file_byte_identical_to_baseline": true
+      },
+      "log_line": 356,
+      "raw_error_excerpt": [
+        "    Error: Os { code: 1, kind: PermissionDenied, message: \"Operation not permitted\" }"
+      ],
+      "classification": "EPERM returned without source callsite; Unix service setup is implicated by code path",
+      "candidate_api_boundary": {
+        "path": "/workspace/scratch/42d46a663b73/runtime/codex-rs/hepta-infer-worker-host/src/authority_trust_unix_tests.rs",
+        "line": 86,
+        "source": "let listener = UnixListener::bind(&socket_path)?;",
+        "call_chain": "test -> (directly or via authorizer/study fixture) TestService::start[_with_lifetime] -> std UnixListener::bind"
+      },
+      "confidence": "Raw terminal Os { code: 1, kind: PermissionDenied, message: Operation not permitted }; source review identifies required Unix service setup, but bare Result error lacks a backtrace or callsite. This is a qualified environmental inference, not syscall proof.",
+      "syscall_limit": "No tracing or isolated rerun was performed. Earlier filesystem operations also return Result; the exact origin within this call chain is not proven by this log alone."
+    },
+    {
+      "selector": "final_use_authorizer::pq::path_tests::ancestor_aliases_are_rejected_before_external_requests_or_owner_open",
+      "status": "FAIL",
+      "existed_at_baseline": true,
+      "definition": {
+        "path": "/workspace/scratch/42d46a663b73/runtime/codex-rs/hepta-infer-worker-host/src/final_use_authorizer/pq_path_tests.rs",
+        "line": 15,
+        "sha256": "5dea0536135f7eb8c88b5ca44630f561392461302042d2a573015c0c8ab264e6",
+        "file_byte_identical_to_baseline": true
+      },
+      "log_line": 388,
+      "raw_error_excerpt": [
+        "    Error: Os { code: 1, kind: PermissionDenied, message: \"Operation not permitted\" }"
+      ],
+      "classification": "EPERM returned without source callsite; Unix service setup is implicated by code path",
+      "candidate_api_boundary": {
+        "path": "/workspace/scratch/42d46a663b73/runtime/codex-rs/hepta-infer-worker-host/src/authority_trust_unix_tests.rs",
+        "line": 86,
+        "source": "let listener = UnixListener::bind(&socket_path)?;",
+        "call_chain": "test -> (directly or via authorizer/study fixture) TestService::start[_with_lifetime] -> std UnixListener::bind"
+      },
+      "confidence": "Raw terminal Os { code: 1, kind: PermissionDenied, message: Operation not permitted }; source review identifies required Unix service setup, but bare Result error lacks a backtrace or callsite. This is a qualified environmental inference, not syscall proof.",
+      "syscall_limit": "No tracing or isolated rerun was performed. Earlier filesystem operations also return Result; the exact origin within this call chain is not proven by this log alone."
+    },
+    {
+      "selector": "final_use_authorizer::pq::resource_tests::max_rotation_config_loads_only_as_pq_and_oversize_response_stops_at_prefix",
+      "status": "FAIL",
+      "existed_at_baseline": true,
+      "definition": {
+        "path": "/workspace/scratch/42d46a663b73/runtime/codex-rs/hepta-infer-worker-host/src/final_use_authorizer/pq_resource_tests.rs",
+        "line": 39,
+        "sha256": "ebec367dbe082ecc10489798723505443f1d331d5c23b30a0dabac8af5529e21",
+        "file_byte_identical_to_baseline": true
+      },
+      "log_line": 421,
+      "raw_error_excerpt": [
+        "    Error: Os { code: 1, kind: PermissionDenied, message: \"Operation not permitted\" }"
+      ],
+      "classification": "EPERM returned without source callsite; Unix service setup is implicated by code path",
+      "candidate_api_boundary": {
+        "path": "/workspace/scratch/42d46a663b73/runtime/codex-rs/hepta-infer-worker-host/src/authority_trust_unix_tests.rs",
+        "line": 86,
+        "source": "let listener = UnixListener::bind(&socket_path)?;",
+        "call_chain": "test -> (directly or via authorizer/study fixture) TestService::start[_with_lifetime] -> std UnixListener::bind"
+      },
+      "confidence": "Raw terminal Os { code: 1, kind: PermissionDenied, message: Operation not permitted }; source review identifies required Unix service setup, but bare Result error lacks a backtrace or callsite. This is a qualified environmental inference, not syscall proof.",
+      "syscall_limit": "No tracing or isolated rerun was performed. Earlier filesystem operations also return Result; the exact origin within this call chain is not proven by this log alone."
+    },
+    {
+      "selector": "final_use_authorizer::pq::role_tests::configured_pq_roles_require_separate_canonical_keys_before_any_effect",
+      "status": "FAIL",
+      "existed_at_baseline": true,
+      "definition": {
+        "path": "/workspace/scratch/42d46a663b73/runtime/codex-rs/hepta-infer-worker-host/src/final_use_authorizer/pq_role_tests.rs",
+        "line": 20,
+        "sha256": "106459ec2186558c5380009e65e40f61eaaa9d80dba4732bc15bffcdb6312e9b",
+        "file_byte_identical_to_baseline": true
+      },
+      "log_line": 454,
+      "raw_error_excerpt": [
+        "    Error: Os { code: 1, kind: PermissionDenied, message: \"Operation not permitted\" }"
+      ],
+      "classification": "EPERM returned without source callsite; Unix service setup is implicated by code path",
+      "candidate_api_boundary": {
+        "path": "/workspace/scratch/42d46a663b73/runtime/codex-rs/hepta-infer-worker-host/src/authority_trust_unix_tests.rs",
+        "line": 86,
+        "source": "let listener = UnixListener::bind(&socket_path)?;",
+        "call_chain": "test -> (directly or via authorizer/study fixture) TestService::start[_with_lifetime] -> std UnixListener::bind"
+      },
+      "confidence": "Raw terminal Os { code: 1, kind: PermissionDenied, message: Operation not permitted }; source review identifies required Unix service setup, but bare Result error lacks a backtrace or callsite. This is a qualified environmental inference, not syscall proof.",
+      "syscall_limit": "No tracing or isolated rerun was performed. Earlier filesystem operations also return Result; the exact origin within this call chain is not proven by this log alone."
+    },
+    {
+      "selector": "final_use_authorizer::pq::tests::actual_pq_host_resumes_after_rejected_replies_and_reopens_with_spent_nonce_state",
+      "status": "FAIL",
+      "existed_at_baseline": true,
+      "definition": {
+        "path": "/workspace/scratch/42d46a663b73/runtime/codex-rs/hepta-infer-worker-host/src/final_use_authorizer/pq_tests.rs",
+        "line": 16,
+        "sha256": "42a1112b92750a31042e242e92a3f3eed7e22161226ed80a6f90d515259d5298",
+        "file_byte_identical_to_baseline": true
+      },
+      "log_line": 486,
+      "raw_error_excerpt": [
+        "    Error: Os { code: 1, kind: PermissionDenied, message: \"Operation not permitted\" }"
+      ],
+      "classification": "EPERM returned without source callsite; Unix service setup is implicated by code path",
+      "candidate_api_boundary": {
+        "path": "/workspace/scratch/42d46a663b73/runtime/codex-rs/hepta-infer-worker-host/src/authority_trust_unix_tests.rs",
+        "line": 86,
+        "source": "let listener = UnixListener::bind(&socket_path)?;",
+        "call_chain": "test -> (directly or via authorizer/study fixture) TestService::start[_with_lifetime] -> std UnixListener::bind"
+      },
+      "confidence": "Raw terminal Os { code: 1, kind: PermissionDenied, message: Operation not permitted }; source review identifies required Unix service setup, but bare Result error lacks a backtrace or callsite. This is a qualified environmental inference, not syscall proof.",
+      "syscall_limit": "No tracing or isolated rerun was performed. Earlier filesystem operations also return Result; the exact origin within this call chain is not proven by this log alone."
+    },
+    {
+      "selector": "final_use_authorizer::pq_test_support::tests::ordinary_pq_config_reopens_original_spent_nonce_and_frontier",
+      "status": "FAIL",
+      "existed_at_baseline": true,
+      "definition": {
+        "path": "/workspace/scratch/42d46a663b73/runtime/codex-rs/hepta-infer-worker-host/src/final_use_authorizer_pq_test_support_tests.rs",
+        "line": 6,
+        "sha256": "898e650bc10df64694c360c41651b4a9dc99a119b21671f054f59abe2cc14fa3",
+        "file_byte_identical_to_baseline": true
+      },
+      "log_line": 518,
+      "raw_error_excerpt": [
+        "    Error: Os { code: 1, kind: PermissionDenied, message: \"Operation not permitted\" }"
+      ],
+      "classification": "EPERM returned without source callsite; Unix service setup is implicated by code path",
+      "candidate_api_boundary": {
+        "path": "/workspace/scratch/42d46a663b73/runtime/codex-rs/hepta-infer-worker-host/src/authority_trust_unix_tests.rs",
+        "line": 86,
+        "source": "let listener = UnixListener::bind(&socket_path)?;",
+        "call_chain": "test -> (directly or via authorizer/study fixture) TestService::start[_with_lifetime] -> std UnixListener::bind"
+      },
+      "confidence": "Raw terminal Os { code: 1, kind: PermissionDenied, message: Operation not permitted }; source review identifies required Unix service setup, but bare Result error lacks a backtrace or callsite. This is a qualified environmental inference, not syscall proof.",
+      "syscall_limit": "No tracing or isolated rerun was performed. Earlier filesystem operations also return Result; the exact origin within this call chain is not proven by this log alone."
+    },
+    {
+      "selector": "final_use_authorizer::pq_test_support::tests::ordinary_pq_services_close_on_abort_and_drop",
+      "status": "FAIL",
+      "existed_at_baseline": true,
+      "definition": {
+        "path": "/workspace/scratch/42d46a663b73/runtime/codex-rs/hepta-infer-worker-host/src/final_use_authorizer_pq_test_support_tests.rs",
+        "line": 50,
+        "sha256": "898e650bc10df64694c360c41651b4a9dc99a119b21671f054f59abe2cc14fa3",
+        "file_byte_identical_to_baseline": true
+      },
+      "log_line": 550,
+      "raw_error_excerpt": [
+        "    Error: Os { code: 1, kind: PermissionDenied, message: \"Operation not permitted\" }"
+      ],
+      "classification": "EPERM returned without source callsite; Unix service setup is implicated by code path",
+      "candidate_api_boundary": {
+        "path": "/workspace/scratch/42d46a663b73/runtime/codex-rs/hepta-infer-worker-host/src/authority_trust_unix_tests.rs",
+        "line": 86,
+        "source": "let listener = UnixListener::bind(&socket_path)?;",
+        "call_chain": "test -> (directly or via authorizer/study fixture) TestService::start[_with_lifetime] -> std UnixListener::bind"
+      },
+      "confidence": "Raw terminal Os { code: 1, kind: PermissionDenied, message: Operation not permitted }; source review identifies required Unix service setup, but bare Result error lacks a backtrace or callsite. This is a qualified environmental inference, not syscall proof.",
+      "syscall_limit": "No tracing or isolated rerun was performed. Earlier filesystem operations also return Result; the exact origin within this call chain is not proven by this log alone."
+    },
+    {
+      "selector": "final_use_authorizer::tests::endpoint_denial_updates_head_and_old_head_cannot_roll_back",
+      "status": "FAIL",
+      "existed_at_baseline": true,
+      "definition": {
+        "path": "/workspace/scratch/42d46a663b73/runtime/codex-rs/hepta-infer-worker-host/src/final_use_authorizer_tests.rs",
+        "line": 283,
+        "sha256": "3b4a43592db6f40f9eb0a4b8b24a34051c3d7f86c91022307aab5430af4055c1",
+        "file_byte_identical_to_baseline": true
+      },
+      "log_line": 583,
+      "raw_error_excerpt": [
+        "    Error: Os { code: 1, kind: PermissionDenied, message: \"Operation not permitted\" }"
+      ],
+      "classification": "EPERM returned without source callsite; Unix service setup is implicated by code path",
+      "candidate_api_boundary": {
+        "path": "/workspace/scratch/42d46a663b73/runtime/codex-rs/hepta-infer-worker-host/src/final_use_authorizer_tests.rs",
+        "line": 163,
+        "source": "let listener = UnixListener::bind(&socket)?;",
+        "call_chain": "test -> listener(..) -> tokio UnixListener::bind"
+      },
+      "confidence": "Raw terminal Os { code: 1, kind: PermissionDenied, message: Operation not permitted }; source review identifies required Unix service setup, but bare Result error lacks a backtrace or callsite. This is a qualified environmental inference, not syscall proof.",
+      "syscall_limit": "No tracing or isolated rerun was performed. Earlier filesystem operations also return Result; the exact origin within this call chain is not proven by this log alone."
+    },
+    {
+      "selector": "final_use_authorizer::tests::exact_signed_grant_becomes_one_entry_verified_token",
+      "status": "FAIL",
+      "existed_at_baseline": true,
+      "definition": {
+        "path": "/workspace/scratch/42d46a663b73/runtime/codex-rs/hepta-infer-worker-host/src/final_use_authorizer_tests.rs",
+        "line": 226,
+        "sha256": "3b4a43592db6f40f9eb0a4b8b24a34051c3d7f86c91022307aab5430af4055c1",
+        "file_byte_identical_to_baseline": true
+      },
+      "log_line": 615,
+      "raw_error_excerpt": [
+        "    Error: Os { code: 1, kind: PermissionDenied, message: \"Operation not permitted\" }"
+      ],
+      "classification": "EPERM returned without source callsite; Unix service setup is implicated by code path",
+      "candidate_api_boundary": {
+        "path": "/workspace/scratch/42d46a663b73/runtime/codex-rs/hepta-infer-worker-host/src/final_use_authorizer_tests.rs",
+        "line": 163,
+        "source": "let listener = UnixListener::bind(&socket)?;",
+        "call_chain": "test -> listener(..) -> tokio UnixListener::bind"
+      },
+      "confidence": "Raw terminal Os { code: 1, kind: PermissionDenied, message: Operation not permitted }; source review identifies required Unix service setup, but bare Result error lacks a backtrace or callsite. This is a qualified environmental inference, not syscall proof.",
+      "syscall_limit": "No tracing or isolated rerun was performed. Earlier filesystem operations also return Result; the exact origin within this call chain is not proven by this log alone."
+    },
+    {
+      "selector": "final_use_authorizer::tests::forged_grant_never_reaches_effect_entry",
+      "status": "FAIL",
+      "existed_at_baseline": true,
+      "definition": {
+        "path": "/workspace/scratch/42d46a663b73/runtime/codex-rs/hepta-infer-worker-host/src/final_use_authorizer_tests.rs",
+        "line": 261,
+        "sha256": "3b4a43592db6f40f9eb0a4b8b24a34051c3d7f86c91022307aab5430af4055c1",
+        "file_byte_identical_to_baseline": true
+      },
+      "log_line": 647,
+      "raw_error_excerpt": [
+        "    Error: Os { code: 1, kind: PermissionDenied, message: \"Operation not permitted\" }"
+      ],
+      "classification": "EPERM returned without source callsite; Unix service setup is implicated by code path",
+      "candidate_api_boundary": {
+        "path": "/workspace/scratch/42d46a663b73/runtime/codex-rs/hepta-infer-worker-host/src/final_use_authorizer_tests.rs",
+        "line": 163,
+        "source": "let listener = UnixListener::bind(&socket)?;",
+        "call_chain": "test -> listener(..) -> tokio UnixListener::bind"
+      },
+      "confidence": "Raw terminal Os { code: 1, kind: PermissionDenied, message: Operation not permitted }; source review identifies required Unix service setup, but bare Result error lacks a backtrace or callsite. This is a qualified environmental inference, not syscall proof.",
+      "syscall_limit": "No tracing or isolated rerun was performed. Earlier filesystem operations also return Result; the exact origin within this call chain is not proven by this log alone."
+    },
+    {
+      "selector": "native_app_server::tests::pq_final_use::real_agentd_turn_start_consumes_explicit_pq_config_and_external_mldsa_grant",
+      "status": "FAIL",
+      "existed_at_baseline": true,
+      "definition": {
+        "path": "/workspace/scratch/42d46a663b73/runtime/codex-rs/hepta-infer-worker-host/src/native_pq_final_use_tests.rs",
+        "line": 11,
+        "sha256": "9ba99cd74f643fff0090b8b10df71e87ea942647f80f2a8bcbcd4281a35f75d7",
+        "file_byte_identical_to_baseline": true
+      },
+      "log_line": 748,
+      "raw_error_excerpt": [
+        "    thread 'native_app_server::tests::pq_final_use::real_agentd_turn_start_consumes_explicit_pq_config_and_external_mldsa_grant' (245) panicked at hepta-infer-worker-host/src/test_process.rs:29:5:",
+        "    isolated original test native_app_server::tests::pq_final_use::real_agentd_turn_start_consumes_explicit_pq_config_and_external_mldsa_grant did not pass exactly once (exit status: 101):",
+        "    Error: NotFound { name: \"codex\", env_keys: [\"CARGO_BIN_EXE_codex\", \"NEXTEST_BIN_EXE_codex\"], fallback: \"assert_cmd fallback failed: Cause: Cargo command not found: /workspace/scratch/42d46a663b73/runtime-target/debug/codex\\n\\n\" }"
+      ],
+      "classification": "Missing required codex executable",
+      "observed_api_boundary": {
+        "path": "/workspace/scratch/42d46a663b73/runtime/codex-rs/hepta-infer-worker-host/src/native_pq_final_use_tests.rs",
+        "line": 34,
+        "source": "codex_utils_cargo_bin::cargo_bin(\"codex\")?,"
+      },
+      "confidence": "Direct inner Error::NotFound names codex and the searched environment keys/fallback path.",
+      "syscall_limit": "No model process or ordinary app-server executable could be started at this boundary; outer test_process.rs panic preserves the failure, not a separate admission failure."
+    },
+    {
+      "selector": "native_app_server::tests::real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombstone",
+      "status": "FAIL",
+      "existed_at_baseline": true,
+      "definition": {
+        "path": "/workspace/scratch/42d46a663b73/runtime/codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs",
+        "line": 463,
+        "sha256": "5d5a3baead413a2bc4a4c3f52493beb98eb298005b3137e712664ff6195c01ae",
+        "file_byte_identical_to_baseline": true
+      },
+      "log_line": 824,
+      "raw_error_excerpt": [
+        "    thread 'native_app_server::tests::real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombstone' (263) panicked at hepta-infer-worker-host/src/test_process.rs:29:5:",
+        "    isolated original test native_app_server::tests::real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombstone did not pass exactly once (exit status: 101):",
+        "    Error: NotFound { name: \"codex\", env_keys: [\"CARGO_BIN_EXE_codex\", \"NEXTEST_BIN_EXE_codex\"], fallback: \"assert_cmd fallback failed: Cause: Cargo command not found: /workspace/scratch/42d46a663b73/runtime-target/debug/codex\\n\\n\" }"
+      ],
+      "classification": "Missing required codex executable",
+      "observed_api_boundary": {
+        "path": "/workspace/scratch/42d46a663b73/runtime/codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs",
+        "line": 506,
+        "source": "codex_utils_cargo_bin::cargo_bin(\"codex\")?,"
+      },
+      "confidence": "Direct inner Error::NotFound names codex and the searched environment keys/fallback path.",
+      "syscall_limit": "No model process or ordinary app-server executable could be started at this boundary; outer test_process.rs panic preserves the failure, not a separate admission failure."
+    },
+    {
+      "selector": "smollm_cognitive_host::initial::tests::neural_study::roles::pq_tests::ordinary_study_pq_roles_authenticate_and_reopen_the_original_training_ledger",
+      "status": "FAIL",
+      "existed_at_baseline": true,
+      "definition": {
+        "path": "/workspace/scratch/42d46a663b73/runtime/codex-rs/hepta-infer-worker-host/src/smollm_study_pq_roles_tests.rs",
+        "line": 53,
+        "sha256": "748ff7db953fc6492d4bba2991f15ac72068403d462f9f28898e8de5ae987161",
+        "file_byte_identical_to_baseline": true
+      },
+      "log_line": 910,
+      "raw_error_excerpt": [
+        "    Error: Os { code: 1, kind: PermissionDenied, message: \"Operation not permitted\" }"
+      ],
+      "classification": "EPERM returned without source callsite; Unix service setup is implicated by code path",
+      "candidate_api_boundary": {
+        "path": "/workspace/scratch/42d46a663b73/runtime/codex-rs/hepta-infer-worker-host/src/authority_trust_unix_tests.rs",
+        "line": 86,
+        "source": "let listener = UnixListener::bind(&socket_path)?;",
+        "call_chain": "test -> (directly or via authorizer/study fixture) TestService::start[_with_lifetime] -> std UnixListener::bind"
+      },
+      "confidence": "Raw terminal Os { code: 1, kind: PermissionDenied, message: Operation not permitted }; source review identifies required Unix service setup, but bare Result error lacks a backtrace or callsite. This is a qualified environmental inference, not syscall proof.",
+      "syscall_limit": "No tracing or isolated rerun was performed. Earlier filesystem operations also return Result; the exact origin within this call chain is not proven by this log alone."
+    },
+    {
+      "selector": "smollm_cognitive_host::initial::time::tests::initial_consumers_retain_the_real_pq_clock_and_refuse_wall_time_after_failure",
+      "status": "FAIL",
+      "existed_at_baseline": true,
+      "definition": {
+        "path": "/workspace/scratch/42d46a663b73/runtime/codex-rs/hepta-infer-worker-host/src/smollm_initial_time_tests.rs",
+        "line": 6,
+        "sha256": "bc4a92ac76379196d766c670594298542d2d408b1d73e88bf1d20e2ebc26d5dc",
+        "file_byte_identical_to_baseline": true
+      },
+      "log_line": 944,
+      "raw_error_excerpt": [
+        "    Error: Os { code: 1, kind: PermissionDenied, message: \"Operation not permitted\" }"
+      ],
+      "classification": "EPERM returned without source callsite; Unix service setup is implicated by code path",
+      "candidate_api_boundary": {
+        "path": "/workspace/scratch/42d46a663b73/runtime/codex-rs/hepta-infer-worker-host/src/authority_trust_unix_tests.rs",
+        "line": 86,
+        "source": "let listener = UnixListener::bind(&socket_path)?;",
+        "call_chain": "test -> (directly or via authorizer/study fixture) TestService::start[_with_lifetime] -> std UnixListener::bind"
+      },
+      "confidence": "Raw terminal Os { code: 1, kind: PermissionDenied, message: Operation not permitted }; source review identifies required Unix service setup, but bare Result error lacks a backtrace or callsite. This is a qualified environmental inference, not syscall proof.",
+      "syscall_limit": "No tracing or isolated rerun was performed. Earlier filesystem operations also return Result; the exact origin within this call chain is not proven by this log alone."
+    },
+    {
+      "selector": "smollm_neural_read::driver::failure::tests::original_cancellation_sends_no_frame_and_is_recorded_without_io_error",
+      "status": "FAIL",
+      "existed_at_baseline": true,
+      "definition": {
+        "path": "/workspace/scratch/42d46a663b73/runtime/codex-rs/hepta-infer-worker-host/src/smollm_neural_failure_tests.rs",
+        "line": 187,
+        "sha256": "e4edb3e14531c7de3fa9a1bbfe1c26fc844f41547608531a0e1d45209d812757",
+        "file_byte_identical_to_baseline": true
+      },
+      "log_line": 1028,
+      "raw_error_excerpt": [
+        "    thread 'smollm_neural_read::driver::failure::tests::original_cancellation_sends_no_frame_and_is_recorded_without_io_error' (691) panicked at hepta-infer-worker-host/src/test_process.rs:29:5:",
+        "    isolated original test smollm_neural_read::driver::failure::tests::original_cancellation_sends_no_frame_and_is_recorded_without_io_error did not pass exactly once (exit status: 101):",
+        "    thread 'smollm_neural_read::driver::failure::tests::original_cancellation_sends_no_frame_and_is_recorded_without_io_error' (693) panicked at hepta-infer-worker-host/src/smollm_neural_failure_tests.rs:202:91:",
+        "    called `Result::unwrap()` on an `Err` value: Os { code: 1, kind: PermissionDenied, message: \"Operation not permitted\" }"
+      ],
+      "classification": "EPERM at explicit UnixListener::bind callsite",
+      "observed_api_boundary": {
+        "path": "/workspace/scratch/42d46a663b73/runtime/codex-rs/hepta-infer-worker-host/src/smollm_neural_failure_tests.rs",
+        "line": 202,
+        "source": "let listener = UnixListener::bind(directory.path().join(\"session/worker/model.sock\")).unwrap();"
+      },
+      "confidence": "Direct nested panic location and raw OS error in terminal attempt.",
+      "syscall_limit": "UnixListener::bind encompasses socket/create, bind, listen and related operations; this log does not identify which individual syscall returned EPERM."
+    },
+    {
+      "selector": "smollm_neural_read::driver::failure::tests::real_socket_success_eof_multiple_frames_and_json_decode_keep_distinct_causes",
+      "status": "FAIL",
+      "existed_at_baseline": true,
+      "definition": {
+        "path": "/workspace/scratch/42d46a663b73/runtime/codex-rs/hepta-infer-worker-host/src/smollm_neural_failure_tests.rs",
+        "line": 122,
+        "sha256": "e4edb3e14531c7de3fa9a1bbfe1c26fc844f41547608531a0e1d45209d812757",
+        "file_byte_identical_to_baseline": true
+      },
+      "log_line": 1110,
+      "raw_error_excerpt": [
+        "    thread 'smollm_neural_read::driver::failure::tests::real_socket_success_eof_multiple_frames_and_json_decode_keep_distinct_causes' (701) panicked at hepta-infer-worker-host/src/test_process.rs:29:5:",
+        "    isolated original test smollm_neural_read::driver::failure::tests::real_socket_success_eof_multiple_frames_and_json_decode_keep_distinct_causes did not pass exactly once (exit status: 101):",
+        "    thread 'smollm_neural_read::driver::failure::tests::real_socket_success_eof_multiple_frames_and_json_decode_keep_distinct_causes' (703) panicked at hepta-infer-worker-host/src/smollm_neural_failure_tests.rs:145:68:",
+        "    called `Result::unwrap()` on an `Err` value: Os { code: 1, kind: PermissionDenied, message: \"Operation not permitted\" }"
+      ],
+      "classification": "EPERM at explicit UnixListener::bind callsite",
+      "observed_api_boundary": {
+        "path": "/workspace/scratch/42d46a663b73/runtime/codex-rs/hepta-infer-worker-host/src/smollm_neural_failure_tests.rs",
+        "line": 145,
+        "source": "let listener = UnixListener::bind(path.join(\"model.sock\")).unwrap();"
+      },
+      "confidence": "Direct nested panic location and raw OS error in terminal attempt.",
+      "syscall_limit": "UnixListener::bind encompasses socket/create, bind, listen and related operations; this log does not identify which individual syscall returned EPERM."
+    },
+    {
+      "selector": "smollm_neural_read::driver::failure::tests::real_socket_timeout_retains_original_errno_and_both_deadlines_before_shutdown",
+      "status": "FAIL",
+      "existed_at_baseline": true,
+      "definition": {
+        "path": "/workspace/scratch/42d46a663b73/runtime/codex-rs/hepta-infer-worker-host/src/smollm_neural_failure_tests.rs",
+        "line": 34,
+        "sha256": "e4edb3e14531c7de3fa9a1bbfe1c26fc844f41547608531a0e1d45209d812757",
+        "file_byte_identical_to_baseline": true
+      },
+      "log_line": 1192,
+      "raw_error_excerpt": [
+        "    thread 'smollm_neural_read::driver::failure::tests::real_socket_timeout_retains_original_errno_and_both_deadlines_before_shutdown' (713) panicked at hepta-infer-worker-host/src/test_process.rs:29:5:",
+        "    isolated original test smollm_neural_read::driver::failure::tests::real_socket_timeout_retains_original_errno_and_both_deadlines_before_shutdown did not pass exactly once (exit status: 101):",
+        "    thread 'smollm_neural_read::driver::failure::tests::real_socket_timeout_retains_original_errno_and_both_deadlines_before_shutdown' (715) panicked at hepta-infer-worker-host/src/smollm_neural_failure_tests.rs:51:64:",
+        "    called `Result::unwrap()` on an `Err` value: Os { code: 1, kind: PermissionDenied, message: \"Operation not permitted\" }"
+      ],
+      "classification": "EPERM at explicit UnixListener::bind callsite",
+      "observed_api_boundary": {
+        "path": "/workspace/scratch/42d46a663b73/runtime/codex-rs/hepta-infer-worker-host/src/smollm_neural_failure_tests.rs",
+        "line": 51,
+        "source": "let listener = UnixListener::bind(path.join(\"model.sock\")).unwrap();"
+      },
+      "confidence": "Direct nested panic location and raw OS error in terminal attempt.",
+      "syscall_limit": "UnixListener::bind encompasses socket/create, bind, listen and related operations; this log does not identify which individual syscall returned EPERM."
+    },
+    {
+      "selector": "smollm_neural_read::driver::session::tests::cancelled_read_sends_no_frame_and_uncertain_exchange_blocks_successor",
+      "status": "FAIL",
+      "existed_at_baseline": true,
+      "definition": {
+        "path": "/workspace/scratch/42d46a663b73/runtime/codex-rs/hepta-infer-worker-host/src/smollm_neural_session_tests.rs",
+        "line": 221,
+        "sha256": "b55fdbe48fada1d7ba6a8a3946d77057366d35d34fdd540ee4bd9e876bdda6a6",
+        "file_byte_identical_to_baseline": true
+      },
+      "log_line": 1300,
+      "raw_error_excerpt": [
+        "    thread 'smollm_neural_read::driver::session::tests::cancelled_read_sends_no_frame_and_uncertain_exchange_blocks_successor' (825) panicked at hepta-infer-worker-host/src/test_process.rs:29:5:",
+        "    isolated original test smollm_neural_read::driver::session::tests::cancelled_read_sends_no_frame_and_uncertain_exchange_blocks_successor did not pass exactly once (exit status: 101):",
+        "    thread 'smollm_neural_read::driver::session::tests::cancelled_read_sends_no_frame_and_uncertain_exchange_blocks_successor' (827) panicked at hepta-infer-worker-host/src/smollm_neural_session_tests.rs:239:66:",
+        "    called `Result::unwrap()` on an `Err` value: Os { code: 1, kind: PermissionDenied, message: \"Operation not permitted\" }"
+      ],
+      "classification": "EPERM at explicit UnixListener::bind callsite",
+      "observed_api_boundary": {
+        "path": "/workspace/scratch/42d46a663b73/runtime/codex-rs/hepta-infer-worker-host/src/smollm_neural_session_tests.rs",
+        "line": 239,
+        "source": "let listener = UnixListener::bind(worker.join(\"model.sock\")).unwrap();"
+      },
+      "confidence": "Direct nested panic location and raw OS error in terminal attempt.",
+      "syscall_limit": "UnixListener::bind encompasses socket/create, bind, listen and related operations; this log does not identify which individual syscall returned EPERM."
+    },
+    {
+      "selector": "smollm_neural_read::driver::session::tests::dropped_cold_session_retries_stop_when_socket_appears_and_retains_reaper",
+      "status": "FAIL",
+      "existed_at_baseline": true,
+      "definition": {
+        "path": "/workspace/scratch/42d46a663b73/runtime/codex-rs/hepta-infer-worker-host/src/smollm_neural_session_tests.rs",
+        "line": 94,
+        "sha256": "b55fdbe48fada1d7ba6a8a3946d77057366d35d34fdd540ee4bd9e876bdda6a6",
+        "file_byte_identical_to_baseline": true
+      },
+      "log_line": 1382,
+      "raw_error_excerpt": [
+        "    thread 'smollm_neural_read::driver::session::tests::dropped_cold_session_retries_stop_when_socket_appears_and_retains_reaper' (837) panicked at hepta-infer-worker-host/src/test_process.rs:29:5:",
+        "    isolated original test smollm_neural_read::driver::session::tests::dropped_cold_session_retries_stop_when_socket_appears_and_retains_reaper did not pass exactly once (exit status: 101):",
+        "    thread 'smollm_neural_read::driver::session::tests::dropped_cold_session_retries_stop_when_socket_appears_and_retains_reaper' (839) panicked at hepta-infer-worker-host/src/smollm_neural_session_tests.rs:130:66:",
+        "    called `Result::unwrap()` on an `Err` value: Os { code: 1, kind: PermissionDenied, message: \"Operation not permitted\" }"
+      ],
+      "classification": "EPERM at explicit UnixListener::bind callsite",
+      "observed_api_boundary": {
+        "path": "/workspace/scratch/42d46a663b73/runtime/codex-rs/hepta-infer-worker-host/src/smollm_neural_session_tests.rs",
+        "line": 130,
+        "source": "let listener = UnixListener::bind(worker.join(\"model.sock\")).unwrap();"
+      },
+      "confidence": "Direct nested panic location and raw OS error in terminal attempt.",
+      "syscall_limit": "UnixListener::bind encompasses socket/create, bind, listen and related operations; this log does not identify which individual syscall returned EPERM."
+    },
+    {
+      "selector": "smollm_neural_read::driver::session::tests::dropped_session_does_not_extend_its_expired_stop_window",
+      "status": "FAIL",
+      "existed_at_baseline": true,
+      "definition": {
+        "path": "/workspace/scratch/42d46a663b73/runtime/codex-rs/hepta-infer-worker-host/src/smollm_neural_session_tests.rs",
+        "line": 166,
+        "sha256": "b55fdbe48fada1d7ba6a8a3946d77057366d35d34fdd540ee4bd9e876bdda6a6",
+        "file_byte_identical_to_baseline": true
+      },
+      "log_line": 1464,
+      "raw_error_excerpt": [
+        "    thread 'smollm_neural_read::driver::session::tests::dropped_session_does_not_extend_its_expired_stop_window' (849) panicked at hepta-infer-worker-host/src/test_process.rs:29:5:",
+        "    isolated original test smollm_neural_read::driver::session::tests::dropped_session_does_not_extend_its_expired_stop_window did not pass exactly once (exit status: 101):",
+        "    thread 'smollm_neural_read::driver::session::tests::dropped_session_does_not_extend_its_expired_stop_window' (851) panicked at hepta-infer-worker-host/src/smollm_neural_session_tests.rs:200:66:",
+        "    called `Result::unwrap()` on an `Err` value: Os { code: 1, kind: PermissionDenied, message: \"Operation not permitted\" }"
+      ],
+      "classification": "EPERM at explicit UnixListener::bind callsite",
+      "observed_api_boundary": {
+        "path": "/workspace/scratch/42d46a663b73/runtime/codex-rs/hepta-infer-worker-host/src/smollm_neural_session_tests.rs",
+        "line": 200,
+        "source": "let listener = UnixListener::bind(worker.join(\"model.sock\")).unwrap();"
+      },
+      "confidence": "Direct nested panic location and raw OS error in terminal attempt.",
+      "syscall_limit": "UnixListener::bind encompasses socket/create, bind, listen and related operations; this log does not identify which individual syscall returned EPERM."
+    }
+  ],
+  "introduced_tests": [
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/smollm_cognitive_process_tests.rs",
+      "line": 119,
+      "test": "runtime_bound_owner_v2_rejects_legacy_schema_or_missing_snapshot",
+      "observed_status_lines": [
+        "PASS [   0.724s] (106/181) codex-hepta-infer-worker-host smollm_cognitive_process::tests::runtime_bound_owner_v2_rejects_legacy_schema_or_missing_snapshot"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/smollm_neural_environment_tests.rs",
+      "line": 6,
+      "test": "explicit_loader_overrides_are_refused_before_spawn",
+      "observed_status_lines": [
+        "PASS [   0.023s] (124/181) codex-hepta-infer-worker-host smollm_neural_read::driver::environment::tests::explicit_loader_overrides_are_refused_before_spawn"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/smollm_neural_native_tests.rs",
+      "line": 32,
+      "test": "native_runtime_contract_requires_v2_and_rejects_absent_snapshot_fields",
+      "observed_status_lines": [
+        "PASS [   0.042s] (166/181) codex-hepta-infer-worker-host smollm_neural_read::tests::native::native_runtime_contract_requires_v2_and_rejects_absent_snapshot_fields"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/smollm_neural_read_tests.rs",
+      "line": 389,
+      "test": "execution_profile_requires_and_binds_independent_runtime_snapshot_bytes",
+      "observed_status_lines": [
+        "PASS [   0.025s] (162/181) codex-hepta-infer-worker-host smollm_neural_read::tests::execution_profile_requires_and_binds_independent_runtime_snapshot_bytes"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/smollm_python_runtime_tests.rs",
+      "line": 22,
+      "test": "pre_spawn_interpreter_replacement_is_rejected_at_the_same_path",
+      "observed_status_lines": [
+        "PASS [   0.026s] (135/181) codex-hepta-infer-worker-host smollm_neural_read::driver::python_runtime::tests::pre_spawn_interpreter_replacement_is_rejected_at_the_same_path"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/smollm_python_runtime_tests.rs",
+      "line": 45,
+      "test": "pre_spawn_requires_the_declared_interpreter_and_nonempty_contract",
+      "observed_status_lines": [
+        "PASS [   0.028s] (139/181) codex-hepta-infer-worker-host smollm_neural_read::driver::python_runtime::tests::pre_spawn_requires_the_declared_interpreter_and_nonempty_contract"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/smollm_python_runtime_tests.rs",
+      "line": 63,
+      "test": "runtime_check_keeps_original_deadline_and_cancellation",
+      "observed_status_lines": [
+        "PASS [   0.021s] (142/181) codex-hepta-infer-worker-host smollm_neural_read::driver::python_runtime::tests::runtime_check_keeps_original_deadline_and_cancellation"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/smollm_python_runtime_tests.rs",
+      "line": 128,
+      "test": "pre_spawn_snapshot_hashes_stdlib_before_any_python_code",
+      "observed_status_lines": [
+        "PASS [   0.027s] (140/181) codex-hepta-infer-worker-host smollm_neural_read::driver::python_runtime::tests::pre_spawn_snapshot_hashes_stdlib_before_any_python_code"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/smollm_python_runtime_tests.rs",
+      "line": 138,
+      "test": "pre_spawn_snapshot_rejects_unlisted_installed_file",
+      "observed_status_lines": [
+        "PASS [   0.030s] (141/181) codex-hepta-infer-worker-host smollm_neural_read::driver::python_runtime::tests::pre_spawn_snapshot_rejects_unlisted_installed_file"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/smollm_python_runtime_tests.rs",
+      "line": 150,
+      "test": "pre_spawn_rejects_startup_zip_outside_the_canonical_stdlib_inventory",
+      "observed_status_lines": [
+        "PASS [   0.022s] (137/181) codex-hepta-infer-worker-host smollm_neural_read::driver::python_runtime::tests::pre_spawn_rejects_startup_zip_outside_the_canonical_stdlib_inventory"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/smollm_python_runtime_tests.rs",
+      "line": 168,
+      "test": "pre_spawn_rejects_underscore_pth_at_the_real_or_launch_executable",
+      "observed_status_lines": [
+        "PASS [   0.025s] (138/181) codex-hepta-infer-worker-host smollm_neural_read::driver::python_runtime::tests::pre_spawn_rejects_underscore_pth_at_the_real_or_launch_executable"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/smollm_python_runtime_tests.rs",
+      "line": 182,
+      "test": "pre_spawn_rejects_bootstrap_stdlib_alias_replacement",
+      "observed_status_lines": [
+        "PASS [   0.025s] (136/181) codex-hepta-infer-worker-host smollm_neural_read::driver::python_runtime::tests::pre_spawn_rejects_bootstrap_stdlib_alias_replacement"
+      ]
+    }
+  ],
+  "interpretation": "The observed failures do not report a new runtime contract logical rejection; all 12 introduced tests passed. This does not prove unexecuted model/Ready behavior. Full-package build gate remains failed, and this library run itself is failed; no PASS promotion."
+}

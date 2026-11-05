@@ -1,0 +1,98 @@
+[
+  {
+    "path": "codex-rs/hepta-infer-worker-host/src/smollm_cognitive_process_tests.rs",
+    "line": 119,
+    "test": "runtime_bound_owner_v2_rejects_legacy_schema_or_missing_snapshot",
+    "observed_status_lines": [
+      "PASS [   0.724s] (106/181) codex-hepta-infer-worker-host smollm_cognitive_process::tests::runtime_bound_owner_v2_rejects_legacy_schema_or_missing_snapshot"
+    ]
+  },
+  {
+    "path": "codex-rs/hepta-infer-worker-host/src/smollm_neural_environment_tests.rs",
+    "line": 6,
+    "test": "explicit_loader_overrides_are_refused_before_spawn",
+    "observed_status_lines": [
+      "PASS [   0.023s] (124/181) codex-hepta-infer-worker-host smollm_neural_read::driver::environment::tests::explicit_loader_overrides_are_refused_before_spawn"
+    ]
+  },
+  {
+    "path": "codex-rs/hepta-infer-worker-host/src/smollm_neural_native_tests.rs",
+    "line": 32,
+    "test": "native_runtime_contract_requires_v2_and_rejects_absent_snapshot_fields",
+    "observed_status_lines": [
+      "PASS [   0.042s] (166/181) codex-hepta-infer-worker-host smollm_neural_read::tests::native::native_runtime_contract_requires_v2_and_rejects_absent_snapshot_fields"
+    ]
+  },
+  {
+    "path": "codex-rs/hepta-infer-worker-host/src/smollm_neural_read_tests.rs",
+    "line": 389,
+    "test": "execution_profile_requires_and_binds_independent_runtime_snapshot_bytes",
+    "observed_status_lines": [
+      "PASS [   0.025s] (162/181) codex-hepta-infer-worker-host smollm_neural_read::tests::execution_profile_requires_and_binds_independent_runtime_snapshot_bytes"
+    ]
+  },
+  {
+    "path": "codex-rs/hepta-infer-worker-host/src/smollm_python_runtime_tests.rs",
+    "line": 22,
+    "test": "pre_spawn_interpreter_replacement_is_rejected_at_the_same_path",
+    "observed_status_lines": [
+      "PASS [   0.026s] (135/181) codex-hepta-infer-worker-host smollm_neural_read::driver::python_runtime::tests::pre_spawn_interpreter_replacement_is_rejected_at_the_same_path"
+    ]
+  },
+  {
+    "path": "codex-rs/hepta-infer-worker-host/src/smollm_python_runtime_tests.rs",
+    "line": 45,
+    "test": "pre_spawn_requires_the_declared_interpreter_and_nonempty_contract",
+    "observed_status_lines": [
+      "PASS [   0.028s] (139/181) codex-hepta-infer-worker-host smollm_neural_read::driver::python_runtime::tests::pre_spawn_requires_the_declared_interpreter_and_nonempty_contract"
+    ]
+  },
+  {
+    "path": "codex-rs/hepta-infer-worker-host/src/smollm_python_runtime_tests.rs",
+    "line": 63,
+    "test": "runtime_check_keeps_original_deadline_and_cancellation",
+    "observed_status_lines": [
+      "PASS [   0.021s] (142/181) codex-hepta-infer-worker-host smollm_neural_read::driver::python_runtime::tests::runtime_check_keeps_original_deadline_and_cancellation"
+    ]
+  },
+  {
+    "path": "codex-rs/hepta-infer-worker-host/src/smollm_python_runtime_tests.rs",
+    "line": 128,
+    "test": "pre_spawn_snapshot_hashes_stdlib_before_any_python_code",
+    "observed_status_lines": [
+      "PASS [   0.027s] (140/181) codex-hepta-infer-worker-host smollm_neural_read::driver::python_runtime::tests::pre_spawn_snapshot_hashes_stdlib_before_any_python_code"
+    ]
+  },
+  {
+    "path": "codex-rs/hepta-infer-worker-host/src/smollm_python_runtime_tests.rs",
+    "line": 138,
+    "test": "pre_spawn_snapshot_rejects_unlisted_installed_file",
+    "observed_status_lines": [
+      "PASS [   0.030s] (141/181) codex-hepta-infer-worker-host smollm_neural_read::driver::python_runtime::tests::pre_spawn_snapshot_rejects_unlisted_installed_file"
+    ]
+  },
+  {
+    "path": "codex-rs/hepta-infer-worker-host/src/smollm_python_runtime_tests.rs",
+    "line": 150,
+    "test": "pre_spawn_rejects_startup_zip_outside_the_canonical_stdlib_inventory",
+    "observed_status_lines": [
+      "PASS [   0.022s] (137/181) codex-hepta-infer-worker-host smollm_neural_read::driver::python_runtime::tests::pre_spawn_rejects_startup_zip_outside_the_canonical_stdlib_inventory"
+    ]
+  },
+  {
+    "path": "codex-rs/hepta-infer-worker-host/src/smollm_python_runtime_tests.rs",
+    "line": 168,
+    "test": "pre_spawn_rejects_underscore_pth_at_the_real_or_launch_executable",
+    "observed_status_lines": [
+      "PASS [   0.025s] (138/181) codex-hepta-infer-worker-host smollm_neural_read::driver::python_runtime::tests::pre_spawn_rejects_underscore_pth_at_the_real_or_launch_executable"
+    ]
+  },
+  {
+    "path": "codex-rs/hepta-infer-worker-host/src/smollm_python_runtime_tests.rs",
+    "line": 182,
+    "test": "pre_spawn_rejects_bootstrap_stdlib_alias_replacement",
+    "observed_status_lines": [
+      "PASS [   0.025s] (136/181) codex-hepta-infer-worker-host smollm_neural_read::driver::python_runtime::tests::pre_spawn_rejects_bootstrap_stdlib_alias_replacement"
+    ]
+  }
+]

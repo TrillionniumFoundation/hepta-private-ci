@@ -238,7 +238,7 @@ def validate_request(args):
     gates = validate_gates(args.original_gates, source)
     config = read_record(args.original_native_input)
     rounds.require(
-        config["schema"] == "hepta-smollm-neural-native-check-v1"
+        config["schema"] == "hepta-smollm-neural-native-check-v2"
         and all(
             Path(config[k]).is_absolute()
             for k in ("chain", "materials", "parent", "output")

@@ -22,7 +22,7 @@ use serde::Deserialize;
 use super::failure::Attempt;
 use super::failure::ExchangeFailure;
 
-const STOP: &[u8] = b"{\"schema\":\"hepta-smollm-neural-read-worker-v1\",\"stop\":true}\n";
+const STOP: &[u8] = b"{\"schema\":\"hepta-smollm-neural-read-worker-v2\",\"stop\":true}\n";
 const SUPERVISOR_WALL_SECONDS: u64 = 600;
 
 #[path = "smollm_neural_session_owner.rs"]

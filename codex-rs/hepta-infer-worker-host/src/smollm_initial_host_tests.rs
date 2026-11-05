@@ -489,6 +489,8 @@ impl Fixture {
 struct NativeInput {
     schema: String,
     python: PathBuf,
+    runtime_snapshot: PathBuf,
+    runtime_snapshot_sha256: String,
     chain: PathBuf,
     materials: PathBuf,
     parent: PathBuf,
@@ -500,7 +502,7 @@ fn input_and_worker(name: &str) -> TestResult<(NativeInput, SmolLmNeuralReadConf
     let path = std::env::var_os("HEPTA_PN3_NEURAL_NATIVE_CONFIG")
         .ok_or("explicit real-model config required")?;
     let input: NativeInput = serde_json::from_slice(&fs::read(path)?)?;
-    assert_eq!(input.schema, "hepta-smollm-neural-native-check-v1");
+    assert_eq!(input.schema, "hepta-smollm-neural-native-check-v2");
     let raw = fs::read(&input.parent)?;
     assert_eq!(Digest32::of_bytes(&raw).to_string(), input.parent_sha256);
     let parent: serde_json::Value = serde_json::from_slice(&raw)?;
@@ -511,10 +513,17 @@ fn input_and_worker(name: &str) -> TestResult<(NativeInput, SmolLmNeuralReadConf
     let c: serde_json::Value = serde_json::from_slice(&target_contract)?;
     let mut source_pins = BTreeMap::new();
     for relative in [
+        "formal/pon-nakamoto-v1/contract_wire.py",
+        "config/pon/devnet-v1.json",
+        "config/pon/ledger-v1.json",
+        "config/pon/model-family-v1.json",
+        "config/pon/work-profile-v1.json",
         "formal/pon-nakamoto-v1/llm_adapter_contract.py",
+        "scripts/llm_base_material.py",
         "scripts/llm_inherited_runtime.py",
         "scripts/llm_neural_read_worker.py",
         "scripts/llm_parent_material.py",
+        "scripts/llm_python_runtime_contract.py",
         "scripts/llm_runtime_pilot.py",
         "config/pon/model-family-smollm2-135m-v1.json",
     ] {
@@ -524,12 +533,21 @@ fn input_and_worker(name: &str) -> TestResult<(NativeInput, SmolLmNeuralReadConf
     fs::create_dir_all(&input.output)?;
     let run = input.output.join(name);
     fs::create_dir(&run)?;
+    if fs::metadata(&input.runtime_snapshot)?.len() > 16 * 1024 * 1024 {
+        return Err("runtime snapshot byte bound".into());
+    }
+    let runtime_snapshot = fs::read(&input.runtime_snapshot)?;
+    assert_eq!(
+        Digest32::of_bytes(&runtime_snapshot).to_string(),
+        input.runtime_snapshot_sha256
+    );
     let worker = SmolLmNeuralReadConfigV1 {
         python: input.python.clone(),
         script: input.chain.join("scripts/llm_neural_read_worker.py"),
         materials: input.materials.clone(),
         run_directory: run.join("session"),
         source_pins,
+        runtime_snapshot,
         target_contract,
         wrapped_adapter: fs::read(directory.join("wrapped-adapter.json"))?,
         contract_digest: parent["contract"].as_str().unwrap().parse()?,

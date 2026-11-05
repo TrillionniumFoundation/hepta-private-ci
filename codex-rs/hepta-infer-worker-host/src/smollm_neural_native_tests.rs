@@ -19,11 +19,33 @@ mod measured;
 struct NativeInput {
     schema: String,
     python: PathBuf,
+    runtime_snapshot: PathBuf,
+    runtime_snapshot_sha256: String,
     chain: PathBuf,
     materials: PathBuf,
     parent: PathBuf,
     parent_sha256: String,
     output: PathBuf,
+}
+
+#[test]
+fn native_runtime_contract_requires_v2_and_rejects_absent_snapshot_fields() {
+    let mut value = serde_json::json!({
+        "schema":"hepta-smollm-neural-native-check-v1", "python":"/absent-python",
+        "chain":"/absent-chain", "materials":"/absent-model", "parent":"/absent-parent",
+        "parent_sha256":Digest32::from_array([1; 32]).to_string(), "output":"/absent-run",
+        "runtime_snapshot":"/absent-runtime", "runtime_snapshot_sha256":Digest32::from_array([2; 32]).to_string(),
+    });
+    let legacy: NativeInput = serde_json::from_value(value.clone()).unwrap();
+    assert_eq!(
+        run_original_native_case(legacy, NativeRoute::Original)
+            .unwrap_err()
+            .to_string(),
+        "native check requires its explicit absolute project paths"
+    );
+    value["schema"] = serde_json::json!("hepta-smollm-neural-native-check-v2");
+    value.as_object_mut().unwrap().remove("runtime_snapshot");
+    assert!(serde_json::from_value::<NativeInput>(value).is_err());
 }
 
 #[test]
@@ -69,7 +91,7 @@ fn real_cell_release_original_signed_load_query_and_terminal_unload() -> Result<
         return Err("cell native input bound".into());
     }
     let input: CellNativeInput = serde_json::from_slice(&raw)?;
-    if input.schema != "hepta-smollm-controlled-cell-native-check-v1"
+    if input.schema != "hepta-smollm-controlled-cell-native-check-v2"
         || !input.sidecar.is_absolute()
     {
         return Err("explicit controlled cell native profile required".into());
@@ -84,9 +106,10 @@ fn real_cell_release_original_signed_load_query_and_terminal_unload() -> Result<
 }
 
 fn run_original_native_case(input: NativeInput, route: NativeRoute) -> Result<(), Box<dyn Error>> {
-    if input.schema != "hepta-smollm-neural-native-check-v1"
+    if input.schema != "hepta-smollm-neural-native-check-v2"
         || [
             &input.python,
+            &input.runtime_snapshot,
             &input.chain,
             &input.materials,
             &input.parent,
@@ -111,10 +134,17 @@ fn run_original_native_case(input: NativeInput, route: NativeRoute) -> Result<()
     let wrapped_adapter = fs::read(parent_directory.join("wrapped-adapter.json"))?;
     let mut source_pins = BTreeMap::new();
     for relative in [
+        "formal/pon-nakamoto-v1/contract_wire.py",
+        "config/pon/devnet-v1.json",
+        "config/pon/ledger-v1.json",
+        "config/pon/model-family-v1.json",
+        "config/pon/work-profile-v1.json",
         "formal/pon-nakamoto-v1/llm_adapter_contract.py",
+        "scripts/llm_base_material.py",
         "scripts/llm_inherited_runtime.py",
         "scripts/llm_neural_read_worker.py",
         "scripts/llm_parent_material.py",
+        "scripts/llm_python_runtime_contract.py",
         "scripts/llm_runtime_pilot.py",
         "config/pon/model-family-smollm2-135m-v1.json",
     ] {
@@ -129,12 +159,21 @@ fn run_original_native_case(input: NativeInput, route: NativeRoute) -> Result<()
         (StableId::new("native-answer-yes")?, "yes".to_owned()),
     ]);
     fs::DirBuilder::new().mode(0o700).create(&input.output)?;
+    if fs::metadata(&input.runtime_snapshot)?.len() > 16 * 1024 * 1024 {
+        return Err("runtime snapshot byte bound".into());
+    }
+    let runtime_snapshot = fs::read(&input.runtime_snapshot)?;
+    assert_eq!(
+        Digest32::of_bytes(&runtime_snapshot).to_string(),
+        input.runtime_snapshot_sha256
+    );
     let config = SmolLmNeuralReadConfigV1 {
         python: input.python,
         script: input.chain.join("scripts/llm_neural_read_worker.py"),
         materials: input.materials,
         run_directory: input.output.join("owned-model-session"),
         source_pins,
+        runtime_snapshot,
         target_contract: raw_contract,
         wrapped_adapter,
         contract_digest: parent["contract"]

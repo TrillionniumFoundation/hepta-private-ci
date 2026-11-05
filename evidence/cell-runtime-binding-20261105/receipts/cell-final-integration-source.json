@@ -1,0 +1,62 @@
+{
+  "after": {
+    "base": null,
+    "candidate": "4771f7b46276f65cc7ca558b31056194d83a7de2",
+    "kind": "head",
+    "prospective_merge": null,
+    "schema": "trnm-ci-source-v1",
+    "tested_commit": "4771f7b46276f65cc7ca558b31056194d83a7de2",
+    "tested_tree": "a82804baeca600b2cf66c83411545b4563884fe1",
+    "tests_executed_by_identity_check": false,
+    "tracked_bytes": 967395436,
+    "tracked_entries": 10121,
+    "tracked_worktree_verified": true
+  },
+  "argv": [
+    "bash",
+    "-lc",
+    "set -e; export PATH=/root/.cargo/bin:$PATH; export PYTHONDONTWRITEBYTECODE=1; bash scripts/project-preflight.sh; cargo fmt --manifest-path trillionnium/Cargo.toml --all --check; python3 scripts/ci/test_ci_source_integrity.py -v; python3 scripts/ci/test_pq_research_integration.py -v; python3 scripts/ci/test_ci_contract.py -v; python3 scripts/test_llm_python_runtime_contract.py -v; python3 scripts/test_llm_cell_release.py -v; python3 scripts/refresh_distributed_source_inventory.py --check; python3 scripts/ci/check_pq_research_integration.py; python3 scripts/ci/check_ci_contract.py; python3 scripts/ci/check_repository.py; git diff --check"
+  ],
+  "before": {
+    "base": null,
+    "candidate": "4771f7b46276f65cc7ca558b31056194d83a7de2",
+    "kind": "head",
+    "prospective_merge": null,
+    "schema": "trnm-ci-source-v1",
+    "tested_commit": "4771f7b46276f65cc7ca558b31056194d83a7de2",
+    "tested_tree": "a82804baeca600b2cf66c83411545b4563884fe1",
+    "tests_executed_by_identity_check": false,
+    "tracked_bytes": 967395436,
+    "tracked_entries": 10121,
+    "tracked_worktree_verified": true
+  },
+  "cwd": "/workspace/scratch/42d46a663b73/chain",
+  "elapsed_ns": 133721135644,
+  "environment": {
+    "CARGO_BUILD_JOBS": null,
+    "CARGO_ENCODED_RUSTFLAGS": null,
+    "CARGO_INCREMENTAL": null,
+    "CARGO_TARGET_DIR": null,
+    "GITHUB_RUN_ATTEMPT": null,
+    "GITHUB_RUN_ID": null,
+    "OPENSSL_DIR": null,
+    "OPENSSL_STATIC": null,
+    "RUNNER_ARCH": null,
+    "RUSTC": null,
+    "RUSTC_WORKSPACE_WRAPPER": null,
+    "RUSTC_WRAPPER": null,
+    "RUSTFLAGS": null,
+    "RUST_TEST_THREADS": null,
+    "TRNM_PQ_OPENSSL": null,
+    "TRNM_PQ_OPENSSL_SHA256": null,
+    "TRNM_PQ_OPENSSL_VERSION": null
+  },
+  "exit_code": 0,
+  "log_bytes": 32589,
+  "log_file": "cell-final-integration-source.log",
+  "log_sha256": "29f50f66463b2e3b24d60709760567a68ebbcc5799acf2f4fc4861ffdd476c1d",
+  "schema": "trnm-pq-native-command-v1",
+  "started_utc": "2026-11-05T10:01:10.063243+00:00",
+  "status": "command_succeeded",
+  "whole_chain_quantum_security_qualified": false
+}
