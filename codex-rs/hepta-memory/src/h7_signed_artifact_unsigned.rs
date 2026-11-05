@@ -54,6 +54,7 @@ pub(super) fn artifact_envelope(
         ope_evaluation_sha256: ope.map(|evaluation| evaluation.evaluation_digest.clone()),
         signer_id: signer_id.to_string(),
         signer_epoch,
+        signer_public_key_id: None,
         issued_at_unix_seconds,
         expires_at_unix_seconds,
         transition,
