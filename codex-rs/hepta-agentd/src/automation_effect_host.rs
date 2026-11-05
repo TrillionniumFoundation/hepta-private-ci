@@ -60,6 +60,9 @@ use sha2::Sha256;
 use crate::AgentdError;
 use crate::AgentdIdentity;
 
+#[path = "automation_effect_host_pq.rs"]
+mod pq;
+
 #[path = "automation_effect_host_pon_task_acceptance.rs"]
 mod pon_task_acceptance;
 
@@ -80,6 +83,13 @@ const AUTOMATION_EFFECT_HOST_PON_SCHEMA_VERSION: u32 = 3;
 const PON_PROVIDER_KIND: &str = "trillionnium-pon-local-v1";
 const MAX_PON_BINARY_BYTES: u64 = 256 * 1024 * 1024;
 const MAX_PON_PROCESS_OUTPUT_BYTES: usize = 64 * 1024;
+
+#[derive(Clone, Copy, Eq, PartialEq)]
+enum EffectHostEntry {
+    OrdinaryPq,
+    #[cfg(test)]
+    ClassicalQualification,
+}
 
 #[derive(Clone, Debug, Deserialize)]
 #[serde(deny_unknown_fields)]
@@ -821,8 +831,10 @@ pub(crate) struct AgentdAutomationEffectHost {
     authority: FinalUseAuthority,
     revocations_file: PathBuf,
     // Serialize refreshes; the existing durable authority owns the only head.
+    #[cfg(test)]
     revocation_refresh: Arc<Mutex<()>>,
     adapter: AgentdProviderEffectAdapter,
+    pq: Option<Arc<pq::PqEffectRuntime>>,
 }
 
 impl std::fmt::Debug for AgentdAutomationEffectHost {
@@ -862,6 +874,32 @@ struct AutomationEffectHostFileV1 {
 
 impl AgentdAutomationEffectHost {
     pub(crate) fn open(identity: &AgentdIdentity, path: &Path) -> Result<Self, AgentdError> {
+        Self::open_with_entry(identity, path, EffectHostEntry::OrdinaryPq)
+    }
+
+    #[cfg(test)]
+    fn open_classical_qualification(
+        identity: &AgentdIdentity,
+        path: &Path,
+    ) -> Result<Self, AgentdError> {
+        Self::open_with_entry(identity, path, EffectHostEntry::ClassicalQualification)
+    }
+
+    fn open_with_entry(
+        identity: &AgentdIdentity,
+        path: &Path,
+        entry: EffectHostEntry,
+    ) -> Result<Self, AgentdError> {
+        let bytes = read_protected_file(path, 256 * 1024, "automation effect host file")?;
+        let selector: Value = serde_json::from_slice(&bytes)?;
+        if selector.get("schema_version").and_then(Value::as_u64) == Some(4) {
+            return pq::open(identity, &bytes);
+        }
+        if entry == EffectHostEntry::OrdinaryPq {
+            return Err(AgentdError::Invalid(
+                "ordinary automation effects require explicit PQ host schema 4".into(),
+            ));
+        }
         let config = match read_host_file(path)? {
             AutomationEffectHostFile::Http(config) => config,
             AutomationEffectHostFile::Pon(config) => return Self::open_pon(identity, config),
@@ -965,8 +1003,10 @@ impl AgentdAutomationEffectHost {
             final_use_scope_digest,
             authority,
             revocations_file: config.final_use_revocations_file,
+            #[cfg(test)]
             revocation_refresh: Arc::new(Mutex::new(())),
             adapter: AgentdProviderEffectAdapter::Http(adapter),
+            pq: None,
         })
     }
 
@@ -1091,11 +1131,50 @@ impl AgentdAutomationEffectHost {
             final_use_scope_digest,
             authority,
             revocations_file: config.final_use_revocations_file,
+            #[cfg(test)]
             revocation_refresh: Arc::new(Mutex::new(())),
             adapter: AgentdProviderEffectAdapter::Pon(adapter),
+            pq: None,
         })
     }
 
+    /// The ordinary entry reuses the live Agentd generation fence after every
+    /// awaited store operation, immediately before the original provider call.
+    pub(crate) async fn execute_ordinary(
+        &self,
+        state: &crate::AgentdState,
+        store: &AutomationStore,
+        intent: &AuthorizedEffectIntent,
+        wire_payload: &[u8],
+        signed_grant: &SignedFinalUseGrant,
+        command_id: &str,
+    ) -> Result<TaskFlowStepReceipt, AgentdError> {
+        let runtime = self.pq.as_ref().ok_or_else(|| {
+            AgentdError::Invalid("ordinary effect cannot use a classical authority".into())
+        })?;
+        let boundary = || {
+            if !state.automation_admission_ready()? {
+                return Err(AgentdError::GenerationFenced(
+                    "effect generation is no longer current".into(),
+                ));
+            }
+            runtime.validate_grant(&self.authority, &self.revocations_file, signed_grant)
+        };
+        self.execute_at_boundary(
+            EffectHostInput {
+                store,
+                intent,
+                wire_payload,
+                signed_grant,
+                command_id,
+                now_ms: crate::authbus_ingress::now_ms()?,
+            },
+            &boundary,
+        )
+        .await
+    }
+
+    #[cfg(test)]
     pub(crate) async fn execute(
         &self,
         store: &AutomationStore,
@@ -1105,13 +1184,41 @@ impl AgentdAutomationEffectHost {
         command_id: &str,
         now_ms: u64,
     ) -> Result<TaskFlowStepReceipt, AgentdError> {
+        let boundary = || self.refresh_revocations();
+        self.execute_at_boundary(
+            EffectHostInput {
+                store,
+                intent,
+                wire_payload,
+                signed_grant,
+                command_id,
+                now_ms,
+            },
+            &boundary,
+        )
+        .await
+    }
+
+    async fn execute_at_boundary(
+        &self,
+        input: EffectHostInput<'_>,
+        before_dispatch: &(dyn Fn() -> Result<(), AgentdError> + Sync),
+    ) -> Result<TaskFlowStepReceipt, AgentdError> {
+        let EffectHostInput {
+            store,
+            intent,
+            wire_payload,
+            signed_grant,
+            command_id,
+            now_ms,
+        } = input;
         if store.owner_agent_id() != &self.agent_id {
             return Err(AgentdError::GenerationFenced(
                 "automation effect store is owned by a different Agent".to_string(),
             ));
         }
         self.validate_intent(intent, wire_payload)?;
-        self.refresh_revocations()?;
+        before_dispatch()?;
         if let Some(receipt) = store
             .read_authorized_taskflow_effect_receipt(intent, command_id)
             .await
@@ -1136,6 +1243,7 @@ impl AgentdAutomationEffectHost {
             adapter: self.adapter.clone(),
             provider_scope: self.provider_scope.clone(),
             destination_id: self.destination_id.clone(),
+            before_dispatch,
         };
         store
             .execute_authorized_taskflow_effect(
@@ -1157,6 +1265,33 @@ impl AgentdAutomationEffectHost {
             })
     }
 
+    pub(crate) async fn reconcile_ordinary(
+        &self,
+        state: &crate::AgentdState,
+        store: &AutomationStore,
+        run_id: &str,
+        step_id: &str,
+        attempt: u32,
+        now_ms: u64,
+    ) -> Result<AgentdAutomationEffectReconcileOutcome, AgentdError> {
+        let runtime = self.pq.as_ref().ok_or_else(|| {
+            AgentdError::Invalid("ordinary reconciliation cannot use a classical authority".into())
+        })?;
+        let boundary = || {
+            if !state.automation_admission_ready()? {
+                return Err(AgentdError::GenerationFenced(
+                    "reconciliation generation is no longer current".into(),
+                ));
+            }
+            runtime
+                .refresh(&self.authority, &self.revocations_file)
+                .map(|_| ())
+        };
+        self.reconcile_at_boundary(store, run_id, step_id, attempt, now_ms, &boundary)
+            .await
+    }
+
+    #[cfg(test)]
     pub(crate) async fn reconcile(
         &self,
         store: &AutomationStore,
@@ -1164,6 +1299,36 @@ impl AgentdAutomationEffectHost {
         step_id: &str,
         attempt: u32,
         now_ms: u64,
+    ) -> Result<AgentdAutomationEffectReconcileOutcome, AgentdError> {
+        self.reconcile_at_boundary(store, run_id, step_id, attempt, now_ms, &|| Ok(()))
+            .await
+    }
+
+    async fn observe_chain_at_boundary(
+        &self,
+        pending: &AuthorizedEffectPending,
+        before_lookup: &(dyn Fn() -> Result<(), AgentdError> + Sync),
+    ) -> Option<crate::AutomationEffectChainObservation> {
+        // The durable terminal receipt remains readable when optional current
+        // chain observation is unavailable. This never manufactures absence.
+        if !matches!(self.adapter, AgentdProviderEffectAdapter::Pon(_)) {
+            return None;
+        }
+        before_lookup().ok()?;
+        let intent = self.provider_intent(pending).ok()?;
+        self.adapter
+            .current_chain_observation(&intent, pending.wire_payload.as_deref())
+            .await
+    }
+
+    async fn reconcile_at_boundary(
+        &self,
+        store: &AutomationStore,
+        run_id: &str,
+        step_id: &str,
+        attempt: u32,
+        now_ms: u64,
+        before_lookup: &(dyn Fn() -> Result<(), AgentdError> + Sync),
     ) -> Result<AgentdAutomationEffectReconcileOutcome, AgentdError> {
         let pending = store
             .authorized_taskflow_effect_attempt(run_id, step_id, attempt)
@@ -1188,9 +1353,7 @@ impl AgentdAutomationEffectHost {
             })?
         {
             let chain = if pending.provider_effect_key.is_some() && pending.wire_payload.is_some() {
-                let provider_intent = self.provider_intent(&pending)?;
-                self.adapter
-                    .current_chain_observation(&provider_intent, pending.wire_payload.as_deref())
+                self.observe_chain_at_boundary(&pending, before_lookup)
                     .await
             } else {
                 None
@@ -1199,6 +1362,16 @@ impl AgentdAutomationEffectHost {
                 receipt: Box::new(receipt),
                 chain: chain.map(Box::new),
             });
+        }
+        if store
+            .read_settled_authorized_taskflow_effect_absence(run_id, step_id, attempt)
+            .await
+            .map_err(|error| {
+                AgentdError::Protocol(format!("read settled provider absence: {error}"))
+            })?
+            .is_some()
+        {
+            return Ok(AgentdAutomationEffectReconcileOutcome::ProvenAbsent);
         }
         let run = store
             .taskflow_run(run_id)
@@ -1231,12 +1404,7 @@ impl AgentdAutomationEffectHost {
                     let chain = if pending.provider_effect_key.is_some()
                         && pending.wire_payload.is_some()
                     {
-                        let provider_intent = self.provider_intent(&pending)?;
-                        self.adapter
-                            .current_chain_observation(
-                                &provider_intent,
-                                pending.wire_payload.as_deref(),
-                            )
+                        self.observe_chain_at_boundary(&pending, before_lookup)
                             .await
                     } else {
                         None
@@ -1256,6 +1424,7 @@ impl AgentdAutomationEffectHost {
             return Ok(AgentdAutomationEffectReconcileOutcome::Indeterminate);
         }
         let provider_intent = self.provider_intent(&pending)?;
+        before_lookup()?;
         match self
             .adapter
             .lookup_for_reconciliation(&provider_intent, pending.wire_payload.as_deref())
@@ -1286,11 +1455,7 @@ impl AgentdAutomationEffectHost {
                     })? {
                     AuthorizedEffectRecoveryResult::Observed(receipt) => {
                         let chain = self
-                            .adapter
-                            .current_chain_observation(
-                                &provider_intent,
-                                pending.wire_payload.as_deref(),
-                            )
+                            .observe_chain_at_boundary(&pending, before_lookup)
                             .await;
                         Ok(AgentdAutomationEffectReconcileOutcome::Observed {
                             receipt,
@@ -1311,7 +1476,13 @@ impl AgentdAutomationEffectHost {
         }
     }
 
+    #[cfg(test)]
     fn refresh_revocations(&self) -> Result<(), AgentdError> {
+        if let Some(runtime) = &self.pq {
+            return runtime
+                .refresh(&self.authority, &self.revocations_file)
+                .map(|_| ());
+        }
         // A numeric (epoch, revision) cache cannot detect same-head content
         // drift or a head advanced through another clone of the authority.
         // Keep only refresh serialization here, never a second trust frontier.
@@ -1416,6 +1587,9 @@ impl AgentdAutomationEffectHost {
         &self,
         pending: &AuthorizedEffectPending,
     ) -> Result<ProviderEffectIntent, AgentdError> {
+        if self.pq.is_some() {
+            pq::verify_pending_binding(self, pending)?;
+        }
         if pending.owner_agent_id != self.agent_id {
             return Err(AgentdError::GenerationFenced(
                 "pending effect owner differs from this host".to_string(),
@@ -1456,13 +1630,23 @@ impl AgentdAutomationEffectHost {
     }
 }
 
-struct AgentdAuthorizedEffectDriver {
+struct EffectHostInput<'a> {
+    store: &'a AutomationStore,
+    intent: &'a AuthorizedEffectIntent,
+    wire_payload: &'a [u8],
+    signed_grant: &'a SignedFinalUseGrant,
+    command_id: &'a str,
+    now_ms: u64,
+}
+
+struct AgentdAuthorizedEffectDriver<'a> {
     adapter: AgentdProviderEffectAdapter,
     provider_scope: String,
     destination_id: String,
+    before_dispatch: &'a (dyn Fn() -> Result<(), AgentdError> + Sync),
 }
 
-impl AuthorizedEffectDriver for AgentdAuthorizedEffectDriver {
+impl AuthorizedEffectDriver for AgentdAuthorizedEffectDriver<'_> {
     fn recovery_key(
         &self,
         owner_agent_id: &codex_hepta_contracts::AgentId,
@@ -1497,6 +1681,7 @@ impl AuthorizedEffectDriver for AgentdAuthorizedEffectDriver {
         if request.provider_effect_key != &expected && request.provider_effect_key != &legacy {
             return Err(AuthorizedEffectDriverError::BeforeProviderContact);
         }
+        (self.before_dispatch)().map_err(|_| AuthorizedEffectDriverError::BeforeProviderContact)?;
         let provider_intent = ProviderEffectIntent::new(
             request.provider_effect_key.clone(),
             request.intent.payload_digest.clone(),
@@ -2191,8 +2376,9 @@ mod tests {
         fs::set_permissions(&host_file, fs::Permissions::from_mode(0o600))
             .context("host file permissions")?;
 
-        let host = AgentdAutomationEffectHost::open(&fixture.identity, &host_file)
-            .context("effect host")?;
+        let host =
+            AgentdAutomationEffectHost::open_classical_qualification(&fixture.identity, &host_file)
+                .context("effect host")?;
         Ok((host, final_use_signer, revocations_file))
     }
 

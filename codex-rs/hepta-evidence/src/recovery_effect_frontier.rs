@@ -2,19 +2,22 @@
 //! A digest does not supply freshness; admission still needs an independently
 //! retained checkpoint. This never authorizes or dispatches an effect.
 
+use codex_hepta_contracts::ProviderEffectIntent;
 use codex_hepta_contracts::Sha256Digest;
 use sqlx::Row;
 use sqlx::SqliteConnection;
 
 use crate::EvidenceError;
-use crate::provider_effect_store::verify_record_digest;
+use crate::provider_effect_store::decode_effect_ack_row;
+use crate::provider_effect_store::decode_effect_intent_row;
+use crate::provider_effect_store::decode_effect_uncertainty_row;
 use crate::recovery_frontier::empty_frontier;
 use crate::recovery_frontier::extend_frontier;
 use crate::schema_validation::classify_sqlx_error;
 
 const DOMAIN: &[u8] = b"hepta.evidence.provider-effect-frontier.v1";
 const MAX_ROWS: u64 = 1_000_000;
-const PAGE_ROWS: i64 = 256;
+const PAGE_ROWS: u16 = 256;
 
 pub(super) async fn snapshot(
     connection: &mut SqliteConnection,
@@ -25,18 +28,25 @@ pub(super) async fn snapshot(
     let queries = [
         (
             "intent",
-            "SELECT seq, effect_key, payload_json, record_sha256, recorded_at_ms, '' AS source
-         FROM provider_effect_intents WHERE seq >= ? ORDER BY seq LIMIT ?",
+            "SELECT *, '' AS source
+             FROM provider_effect_intents WHERE seq >= ? ORDER BY seq LIMIT ?",
         ),
         (
             "ack",
-            "SELECT seq, effect_key, payload_json, record_sha256, recorded_at_ms, source
-         FROM provider_effect_acknowledgements WHERE seq >= ? ORDER BY seq LIMIT ?",
+            "SELECT acknowledgements.*, intents.payload_json AS authoritative_intent_payload
+             FROM provider_effect_acknowledgements AS acknowledgements
+             LEFT JOIN provider_effect_intents AS intents
+               ON intents.effect_key = acknowledgements.effect_key
+             WHERE acknowledgements.seq >= ? ORDER BY acknowledgements.seq LIMIT ?",
         ),
         (
             "uncertainty",
-            "SELECT seq, effect_key, payload_json, record_sha256, recorded_at_ms, '' AS source
-         FROM provider_effect_uncertainties WHERE seq >= ? ORDER BY seq LIMIT ?",
+            "SELECT uncertainties.*, '' AS source,
+                    intents.payload_json AS authoritative_intent_payload
+             FROM provider_effect_uncertainties AS uncertainties
+             LEFT JOIN provider_effect_intents AS intents
+               ON intents.effect_key = uncertainties.effect_key
+             WHERE uncertainties.seq >= ? ORDER BY uncertainties.seq LIMIT ?",
         ),
     ];
     let mut frontier = empty_frontier(DOMAIN);
@@ -48,31 +58,66 @@ pub(super) async fn snapshot(
         while let Some(lower_bound) = next_seq {
             let rows = sqlx::query(query)
                 .bind(lower_bound)
-                .bind(PAGE_ROWS)
+                .bind(i64::from(PAGE_ROWS) + 1)
                 .fetch_all(&mut *connection)
                 .await
                 .map_err(classify_sqlx_error)?;
             if rows.is_empty() {
                 break;
             }
-            for row in rows {
+            // The extra row makes a repeated sequence at the page boundary
+            // visible before advancing the keyset cursor. This also covers a
+            // repeated i64::MAX, where there is no representable next cursor.
+            for adjacent in rows.windows(2) {
+                let previous: i64 = adjacent[0].try_get("seq").map_err(classify_sqlx_error)?;
+                let following: i64 = adjacent[1].try_get("seq").map_err(classify_sqlx_error)?;
+                if following <= previous {
+                    return Err(EvidenceError::Corrupt(
+                        "provider effect recovery contains a nonpositive or repeated sequence"
+                            .into(),
+                    ));
+                }
+            }
+            for row in rows.into_iter().take(usize::from(PAGE_ROWS)) {
                 if count == MAX_ROWS {
                     return Err(EvidenceError::Unavailable(
                         "provider effect recovery frontier exceeds one million rows".into(),
                     ));
                 }
                 let seq: i64 = row.try_get("seq").map_err(classify_sqlx_error)?;
-                if seq <= 0 {
+                if seq <= 0 || next_seq.is_none_or(|minimum| seq < minimum) {
                     return Err(EvidenceError::Corrupt(
-                        "provider effect recovery contains a nonpositive sequence".into(),
+                        "provider effect recovery contains a nonpositive or repeated sequence"
+                            .into(),
                     ));
                 }
                 let key: String = row.try_get("effect_key").map_err(classify_sqlx_error)?;
-                let payload: String = row.try_get("payload_json").map_err(classify_sqlx_error)?;
-                let digest: String = row.try_get("record_sha256").map_err(classify_sqlx_error)?;
                 // Open-time row verification predates this SQLite snapshot.
-                // Recheck actual bytes here rather than trust a retained label.
-                verify_record_digest(&payload, &digest, kind)?;
+                // Validate every projected column and the exact stored intent,
+                // not only the retained digest of the canonical JSON bytes.
+                if kind == "intent" {
+                    decode_effect_intent_row(&row)?;
+                } else {
+                    // The first pass fully validated each authoritative intent
+                    // inside this same SQLite snapshot. A LEFT JOIN also keeps
+                    // orphan observations visible so they fail closed here.
+                    let authoritative: Option<String> = row
+                        .try_get("authoritative_intent_payload")
+                        .map_err(classify_sqlx_error)?;
+                    let authoritative = authoritative.ok_or_else(|| {
+                        EvidenceError::Corrupt(
+                            "provider effect observation lacks its authoritative intent".into(),
+                        )
+                    })?;
+                    let intent: ProviderEffectIntent = serde_json::from_str(&authoritative)
+                        .map_err(|error| EvidenceError::Corrupt(error.to_string()))?;
+                    if kind == "ack" {
+                        decode_effect_ack_row(&row, &intent)?;
+                    } else {
+                        decode_effect_uncertainty_row(&row, &intent)?;
+                    }
+                }
+                let digest: String = row.try_get("record_sha256").map_err(classify_sqlx_error)?;
                 let recorded: i64 = row.try_get("recorded_at_ms").map_err(classify_sqlx_error)?;
                 let source: Option<String> = row.try_get("source").map_err(classify_sqlx_error)?;
                 let source = source.ok_or_else(|| {

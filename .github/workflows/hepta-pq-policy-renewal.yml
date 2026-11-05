@@ -4,6 +4,8 @@ on:
   pull_request:
     paths:
       - codex-rs/hepta-agentd/**
+      - codex-rs/hepta-automation/**
+      - codex-rs/model-provider/**
       - codex-rs/hepta-authbus/**
       - codex-rs/hepta-contracts/**
       - codex-rs/hepta-evidence/**
@@ -136,20 +138,25 @@ jobs:
 
       # Snapshot and PQ-signature controls do not qualify independent custody
       # or freshness of the monotonic frontier after an entire-host restore.
-      - name: Run the seventeen recovery snapshot and ACK provenance controls
+      - name: Run the twenty-two recovery snapshot and ACK provenance controls
         if: ${{ !cancelled() && steps.dependencies.outcome == 'success' }}
         env:
           CARGO_NET_OFFLINE: "true"
         run: >-
           python3 scripts/hepta_ci_exec.py
           --output "$RUNNER_TEMP/pq-policy-renewal/recovery-owner.json"
-          --minimum-tests 17 --timeout-seconds 600 --
+          --minimum-tests 22 --timeout-seconds 600 --
           just test --locked -p codex-hepta-evidence --lib
           -E 'test(=recovery_effect_frontier_tests::recovery_snapshot_commits_intent_unknown_and_original_operation_receipt)
           | test(=recovery_effect_frontier_tests::recovery_snapshot_distinguishes_a_valid_effect_only_database_rollback)
           | test(=recovery_effect_frontier_tests::recovery_snapshot_commits_ack_provenance_and_cross_table_order)
           | test(=recovery_effect_frontier_tests::recovery_snapshot_commits_effect_history_after_the_first_page)
           | test(=recovery_effect_frontier_tests::recovery_snapshot_refuses_changed_json_with_retained_record_digests)
+          | test(=recovery_effect_frontier_tests::recovery_snapshot_refuses_effect_projection_drift_with_retained_payloads)
+          | test(=recovery_effect_frontier_tests::recovery_snapshot_refuses_canonical_ack_bound_to_a_different_payload)
+          | test(=recovery_effect_frontier_tests::recovery_snapshot_refuses_orphan_effect_observations)
+          | test(=recovery_effect_frontier_tests::recovery_snapshot_refuses_repeated_effect_sequence_after_schema_drift)
+          | test(=recovery_effect_frontier_tests::recovery_snapshot_refuses_repeated_effect_sequence_at_page_boundary)
           | test(=provider_effect_recovery_provenance_tests::recovery_provenance_rejects_late_dispatch_after_status_without_uncertainty)
           | test(=provider_effect_recovery_provenance_tests::recovery_provenance_preserves_dispatch_then_authoritative_status)
           | test(=recovery_invocation_frontier_tests::recovery_snapshot_commits_pending_invocations_and_terminal_states)
@@ -201,6 +208,74 @@ jobs:
           | test(=signed_recovery_frontier_rejects_effect_only_database_rollback)'
           --no-capture --retries 0 --test-threads=1
 
+      - name: Run the original qualification bound and historical corruption refusal
+        if: ${{ !cancelled() && steps.dependencies.outcome == 'success' }}
+        env:
+          CARGO_NET_OFFLINE: "true"
+        run: >-
+          python3 scripts/hepta_ci_exec.py
+          --output "$RUNNER_TEMP/pq-policy-renewal/qualification-growth.json"
+          --minimum-tests 2 --timeout-seconds 600 --
+          just test --locked -p codex-hepta-evidence --lib
+          -E 'test(=qualification_tests::claim_query_rejects_more_than_512_references)
+          | test(=qualification_tests::ordinary_append_rejects_historical_projection_drift_without_consuming_replay)'
+          --no-capture --retries 0 --test-threads=1
+
+      # These bounded controls use local signed fixtures and loopback services.
+      # They do not qualify independent operators, a live Chain node or WAN effects.
+      - name: Run the eleven ordinary PQ effect and recovery controls
+        if: ${{ !cancelled() && steps.dependencies.outcome == 'success' }}
+        env:
+          CARGO_NET_OFFLINE: "true"
+        run: >-
+          python3 scripts/hepta_ci_exec.py
+          --output "$RUNNER_TEMP/pq-policy-renewal/effect-pq-owner.json"
+          --minimum-tests 11 --timeout-seconds 600 --
+          just test --locked -p codex-hepta-agentd --lib
+          -E 'test(automation_effect_host::pq::tests::)'
+          --no-capture --retries 0 --test-threads=1
+
+      - name: Run the PQ provider contract signature control
+        if: ${{ !cancelled() && steps.dependencies.outcome == 'success' }}
+        env:
+          CARGO_NET_OFFLINE: "true"
+        run: >-
+          python3 scripts/hepta_ci_exec.py
+          --output "$RUNNER_TEMP/pq-policy-renewal/effect-pq-contract.json"
+          --minimum-tests 1 --timeout-seconds 600 --
+          just test --locked -p codex-model-provider --lib
+          -E 'test(provider_effect::pq_tests::)'
+          --no-capture --retries 0 --test-threads=1
+
+      # These owner/store controls reuse the existing classical test fixture;
+      # the unchanged PQ owner controls above supply the PQ boundary coverage.
+      - name: Run the two settled absence history and corruption controls
+        if: ${{ !cancelled() && steps.dependencies.outcome == 'success' }}
+        env:
+          CARGO_NET_OFFLINE: "true"
+        run: >-
+          python3 scripts/hepta_ci_exec.py
+          --output "$RUNNER_TEMP/pq-policy-renewal/effect-settled-absence.json"
+          --minimum-tests 2 --timeout-seconds 600 --
+          just test --locked -p codex-hepta-automation --test authorized_effect
+          -E 'test(=owner_recovery_tests::settled_absence_fact_read_survives_reopen_and_new_owner_without_redispatch)
+          | test(=owner_recovery_tests::settled_absence_fact_read_rejects_unknown_unsettled_and_corrupt_evidence)'
+          --no-capture --retries 0 --test-threads=1
+
+      - name: Run the ordinary Agentd process through provider ACK loss and owned kill
+        if: ${{ !cancelled() && steps.dependencies.outcome == 'success' }}
+        env:
+          CARGO_NET_OFFLINE: "true"
+          HEPTA_PQ_EFFECT_PROCESS_EVIDENCE_DIR: ${{ runner.temp }}/pq-policy-renewal/effect-pq-product-process
+          HEPTA_PQ_EFFECT_SOURCE_ROOT: ${{ github.workspace }}
+        run: >-
+          python3 scripts/hepta_ci_exec.py
+          --output "$RUNNER_TEMP/pq-policy-renewal/effect-pq-product.json"
+          --minimum-tests 1 --timeout-seconds 1800 --
+          just test --locked -p codex-hepta-agentd --test automation_effect_pq_product
+          -E 'test(=pq_effect_survives_owned_agentd_kill_after_provider_fsync_without_resend)'
+          --no-capture --retries 0 --test-threads=1
+
       - name: Require every selected test by name with no selected skip
         if: ${{ !cancelled() && steps.dependencies.outcome == 'success' }}
         run: |
@@ -214,6 +289,33 @@ jobs:
           root = Path(sys.argv[1])
           prefix = "authbus_dispatch::tests::"
           expected = {
+              "qualification-growth": {
+                  "qualification_tests::claim_query_rejects_more_than_512_references",
+                  "qualification_tests::ordinary_append_rejects_historical_projection_drift_without_consuming_replay",
+              },
+              "effect-pq-product": {
+                  "pq_effect_survives_owned_agentd_kill_after_provider_fsync_without_resend",
+              },
+              "effect-pq-owner": {
+                  "automation_effect_host::pq::tests::ordinary_loader_denies_classical_schema_and_contract_or_policy_substitution",
+                  "automation_effect_host::pq::tests::initial_feed_is_authenticated_before_any_local_authority_or_frontier_write",
+                  "automation_effect_host::pq::tests::current_clock_frontier_and_pq_grant_are_mandatory_before_contact",
+                  "automation_effect_host::pq::tests::revoked_equal_number_drift_expired_feed_and_new_epoch_do_not_contact_provider",
+                  "automation_effect_host::pq::tests::generation_change_after_store_await_refuses_contact_and_keeps_consumed_nonce",
+                  "automation_effect_host::pq::tests::signed_revocation_after_store_await_obeys_active_effect_fence_and_never_sends",
+                  "automation_effect_host::pq::tests::ordinary_dispatch_and_new_generation_recovery_keep_one_stable_operation",
+                  "automation_effect_host::pq::tests::recovery_requires_current_signed_exact_historical_policy_and_same_provider",
+                  "automation_effect_host::pq::tests::historical_policy_does_not_connect_old_trust_services_or_follow_its_references",
+                  "automation_effect_host::pq::tests::reconcile_rechecks_generation_after_store_await_without_reclassifying_unknown",
+                  "automation_effect_host::pq::tests::pon_schema4_binds_native_binary_and_original_limits_without_running_a_node",
+              },
+              "effect-pq-contract": {
+                  "provider_effect::pq_tests::pq_contract_binds_profile_root_epoch_and_complete_authority_scope",
+              },
+              "effect-settled-absence": {
+                  "owner_recovery_tests::settled_absence_fact_read_survives_reopen_and_new_owner_without_redispatch",
+                  "owner_recovery_tests::settled_absence_fact_read_rejects_unknown_unsettled_and_corrupt_evidence",
+              },
               "dispatcher": {prefix + name for name in (
                   "lost_queue_reply_recovers_from_sqlite_using_lookup_only_and_exact_receipt",
                   "abandoned_first_claim_without_admission_is_quarantined_after_lookup_missing",
@@ -242,6 +344,11 @@ jobs:
                       "recovery_snapshot_commits_ack_provenance_and_cross_table_order",
                       "recovery_snapshot_commits_effect_history_after_the_first_page",
                       "recovery_snapshot_refuses_changed_json_with_retained_record_digests",
+                      "recovery_snapshot_refuses_effect_projection_drift_with_retained_payloads",
+                      "recovery_snapshot_refuses_canonical_ack_bound_to_a_different_payload",
+                      "recovery_snapshot_refuses_orphan_effect_observations",
+                      "recovery_snapshot_refuses_repeated_effect_sequence_after_schema_drift",
+                      "recovery_snapshot_refuses_repeated_effect_sequence_at_page_boundary",
                   )
               } | {
                   "provider_effect_recovery_provenance_tests::" + name for name in (
@@ -317,7 +424,7 @@ jobs:
           python3 scripts/hepta_ci_exec.py
           --output "$RUNNER_TEMP/pq-policy-renewal/fix.json"
           --timeout-seconds 1200 --
-          just fix --locked -p codex-hepta-evidence -p codex-hepta-agentd -p codex-hepta-infer-worker-host
+          just fix --locked -p codex-hepta-evidence -p codex-hepta-agentd -p codex-hepta-infer-worker-host -p codex-hepta-contracts -p codex-model-provider -p codex-hepta-automation
 
       - name: Run the original formatter after tests and lint
         if: ${{ !cancelled() && steps.dependencies.outcome == 'success' }}

@@ -529,16 +529,14 @@ impl QualificationEvidenceStore<'_> {
             });
         }
 
-        let candidate_evidence_set_digest =
-            candidate_evidence_set_digest_in_transaction(&mut transaction, &envelope.candidate)
-                .await?;
-        validate_independent_decision(
+        validate_independent_decision_in_transaction(
+            &mut transaction,
             envelope,
             issuer,
             &signing_identity_sha256,
-            &candidate_evidence_set_digest,
             now,
-        )?;
+        )
+        .await?;
 
         validate_lineage_references(&mut transaction, envelope, issuer).await?;
         advance_replay(&mut transaction, &authenticated)
@@ -873,6 +871,36 @@ async fn validate_lineage_references(
     Ok(())
 }
 
+async fn validate_independent_decision_in_transaction(
+    transaction: &mut Transaction<'_, Sqlite>,
+    envelope: &QualificationEvidenceEnvelopeV1,
+    issuer: &IssuerRegistration,
+    signing_identity_sha256: &Sha256Digest,
+    now: u64,
+) -> Result<(), EvidenceError> {
+    let rows = candidate_evidence_rows_in_transaction(transaction, &envelope.candidate).await?;
+    if envelope.claim_class != EvidenceClaimClassV1::IndependentDecision
+        || envelope.receipt_kind == EvidenceReceiptKindV1::Revocation
+    {
+        // Preserve the existing capacity and historical-row corruption checks
+        // in this admission transaction. These receipts do not bind a set
+        // digest, so avoid copying, sorting and serializing unused references.
+        require_decision_evidence_bound(rows.len())?;
+        for row in &rows {
+            decode_row(row)?;
+        }
+        return Ok(());
+    }
+    let expected_evidence_set_digest = decision_digest_from_rows(&rows)?;
+    validate_independent_decision(
+        envelope,
+        issuer,
+        signing_identity_sha256,
+        &expected_evidence_set_digest,
+        now,
+    )
+}
+
 fn validate_independent_decision(
     envelope: &QualificationEvidenceEnvelopeV1,
     issuer: &IssuerRegistration,
@@ -960,10 +988,10 @@ async fn candidate_evidence_set_digest(
     decision_digest_from_rows(&rows)
 }
 
-async fn candidate_evidence_set_digest_in_transaction(
+async fn candidate_evidence_rows_in_transaction(
     transaction: &mut Transaction<'_, Sqlite>,
     candidate: &EvidenceCandidateV1,
-) -> Result<Sha256Digest, EvidenceError> {
+) -> Result<Vec<SqliteRow>, EvidenceError> {
     let rows = sqlx::query(
         "SELECT seq, evidence_id, schema_version, candidate_id, source_commit, source_tree,
                 claim_class, receipt_kind, issuer_role, issuer_principal_id, issuer_key_epoch,
@@ -987,15 +1015,20 @@ async fn candidate_evidence_set_digest_in_transaction(
     .fetch_all(&mut **transaction)
     .await
     .map_err(classify_sqlx_error)?;
-    decision_digest_from_rows(&rows)
+    Ok(rows)
 }
 
-fn decision_digest_from_rows(rows: &[SqliteRow]) -> Result<Sha256Digest, EvidenceError> {
-    if rows.len() > MAX_DECISION_EVIDENCE_REFERENCES {
+fn require_decision_evidence_bound(row_count: usize) -> Result<(), EvidenceError> {
+    if row_count > MAX_DECISION_EVIDENCE_REFERENCES {
         return Err(EvidenceError::InvalidRecord(
             "independent decision evidence set exceeds bounded verification capacity".to_string(),
         ));
     }
+    Ok(())
+}
+
+fn decision_digest_from_rows(rows: &[SqliteRow]) -> Result<Sha256Digest, EvidenceError> {
+    require_decision_evidence_bound(rows.len())?;
     let references = rows
         .iter()
         .map(decode_row)

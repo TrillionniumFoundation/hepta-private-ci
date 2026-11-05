@@ -141,6 +141,7 @@ max-threads = 1
 filter = '''
 package(codex-hepta-agentd) & kind(test) & (
     binary(=authbus_text_product)
+    | binary(=automation_effect_pq_product)
     | binary(=cognitive_product_e2e)
     | binary(=five_agent_rolling_upgrade)
     | binary(=fleet_harness_diagnostics)
