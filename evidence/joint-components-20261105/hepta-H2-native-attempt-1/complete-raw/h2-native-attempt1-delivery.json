@@ -1,0 +1,1052 @@
+{
+  "schema": "h2-native-attempt1-small-evidence-delivery-v1",
+  "source_commit": "620cb63ae9b58904483005bcb2c4e1507df99539",
+  "source_tree": "f2cebe6d99deca596c170922b8e60d66648d7393",
+  "authoritative_job": "1a1ad62573c-fc05-59a3",
+  "authoritative_terminal": "FAILED",
+  "exit_code": 1,
+  "terminal_unix_ms": 1793911402315,
+  "coordinator_elapsed_seconds": 1133.3816417860799,
+  "passed_selected": 70,
+  "timed_out_selected": 1,
+  "failed_case": "pq_effect_survives_owned_agentd_kill_after_provider_fsync_without_resend",
+  "failed_case_seconds": 60.007,
+  "not_executed": [
+    "selected-tests-guard",
+    "original-six-effect-controls",
+    "provider-effect-existing-and-pq",
+    "final-use-profile-controls",
+    "full-evidence-library",
+    "full-evidence-ignored-list",
+    "fix",
+    "format"
+  ],
+  "gates": [
+    {
+      "gate": "dependencies",
+      "receipt": "joint-h2-native-attempt-1/dependencies.json",
+      "raw": "joint-h2-native-attempt-1/dependencies.json.201b91db38bc49fb880d3c2ecbf5c753.log",
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "raw_bytes": 0,
+      "status": "passed",
+      "passed": 0,
+      "failed_reported_by_wrapper": 0,
+      "command_exit_code": 0,
+      "wrapper_timed_out": false,
+      "elapsed_seconds": 4.6038052769145
+    },
+    {
+      "gate": "execution-source-controls",
+      "receipt": "joint-h2-native-attempt-1/execution-source-controls.json",
+      "raw": "joint-h2-native-attempt-1/execution-source-controls.json.5c68e1cb755147709118805807b37b50.log",
+      "raw_sha256": "4b343fdc6f80fe4f61e3dbbde806655feaa0f1cceb40980fc8f1e7a2d7e292e4",
+      "raw_bytes": 26717,
+      "status": "passed",
+      "passed": 135,
+      "failed_reported_by_wrapper": 0,
+      "command_exit_code": 0,
+      "wrapper_timed_out": false,
+      "elapsed_seconds": 40.920932695036754
+    },
+    {
+      "gate": "diverse-source-controls",
+      "receipt": "joint-h2-native-attempt-1/diverse-source-controls.json",
+      "raw": "joint-h2-native-attempt-1/diverse-source-controls.json.df70d314151e436ba33e7189ff6c62c9.log",
+      "raw_sha256": "79171f2871e65129e0d26e18620deb740c15da1914f5941d6c0df34ab308535b",
+      "raw_bytes": 6233,
+      "status": "passed",
+      "passed": 32,
+      "failed_reported_by_wrapper": 0,
+      "command_exit_code": 0,
+      "wrapper_timed_out": false,
+      "elapsed_seconds": 4.305688451975584
+    },
+    {
+      "gate": "dispatcher",
+      "receipt": "joint-h2-native-attempt-1/dispatcher.json",
+      "raw": "joint-h2-native-attempt-1/dispatcher.json.c6c26096f8bd4c70b6ef3491932985d4.log",
+      "raw_sha256": "0f8878a52c2077f27d8bf9a46d60c5217d653d214d20a32556b8a91f756e5199",
+      "raw_bytes": 55119,
+      "status": "passed",
+      "passed": 14,
+      "failed_reported_by_wrapper": 0,
+      "command_exit_code": 0,
+      "wrapper_timed_out": false,
+      "elapsed_seconds": 512.3275787190069
+    },
+    {
+      "gate": "product",
+      "receipt": "joint-h2-native-attempt-1/product.json",
+      "raw": "joint-h2-native-attempt-1/product.json.e91631568dd24a8896da9cb9e4cedc4c.log",
+      "raw_sha256": "6bf98e77cc735d26146a98d08f57adf111c8cc087ca42b5d0073f1a0ca85db5a",
+      "raw_bytes": 27688,
+      "status": "passed",
+      "passed": 3,
+      "failed_reported_by_wrapper": 0,
+      "command_exit_code": 0,
+      "wrapper_timed_out": false,
+      "elapsed_seconds": 33.70908566599246
+    },
+    {
+      "gate": "recovery-owner",
+      "receipt": "joint-h2-native-attempt-1/recovery-owner.json",
+      "raw": "joint-h2-native-attempt-1/recovery-owner.json.ed60a5acad6a4a8ca942c5283bf3c526.log",
+      "raw_sha256": "58be42b5c2d3a99b37008a72cbb15f794a74ed1889a3d74fa7a7d508631bb340",
+      "raw_bytes": 37881,
+      "status": "passed",
+      "passed": 22,
+      "failed_reported_by_wrapper": 0,
+      "command_exit_code": 0,
+      "wrapper_timed_out": false,
+      "elapsed_seconds": 117.66885995201301
+    },
+    {
+      "gate": "recovery-signed",
+      "receipt": "joint-h2-native-attempt-1/recovery-signed.json",
+      "raw": "joint-h2-native-attempt-1/recovery-signed.json.a72b54975fa34fc988cbff4d715f852f.log",
+      "raw_sha256": "0d8061c7edb044cf15511129d3de7d5a88eeb31c729000348e419aefce6c90dc",
+      "raw_bytes": 31881,
+      "status": "passed",
+      "passed": 11,
+      "failed_reported_by_wrapper": 0,
+      "command_exit_code": 0,
+      "wrapper_timed_out": false,
+      "elapsed_seconds": 43.84773017896805
+    },
+    {
+      "gate": "recovery-product",
+      "receipt": "joint-h2-native-attempt-1/recovery-product.json",
+      "raw": "joint-h2-native-attempt-1/recovery-product.json.e64fedb54f014569b9e9be1d7f56fcd9.log",
+      "raw_sha256": "b1b0af5507da1ee27fe86982f6b5f090f76105516921738239da7d33966cf9f0",
+      "raw_bytes": 28162,
+      "status": "passed",
+      "passed": 4,
+      "failed_reported_by_wrapper": 0,
+      "command_exit_code": 0,
+      "wrapper_timed_out": false,
+      "elapsed_seconds": 21.266701536951587
+    },
+    {
+      "gate": "qualification-growth",
+      "receipt": "joint-h2-native-attempt-1/qualification-growth.json",
+      "raw": "joint-h2-native-attempt-1/qualification-growth.json.64d418d4e77342f0add9a25ee4bd61eb.log",
+      "raw_sha256": "021ea857306e42cf04d8ff1c5f0dedefe7f288b908c32b45e4786138e1dda92b",
+      "raw_bytes": 23853,
+      "status": "passed",
+      "passed": 2,
+      "failed_reported_by_wrapper": 0,
+      "command_exit_code": 0,
+      "wrapper_timed_out": false,
+      "elapsed_seconds": 49.87365204596426
+    },
+    {
+      "gate": "effect-pq-owner",
+      "receipt": "joint-h2-native-attempt-1/effect-pq-owner.json",
+      "raw": "joint-h2-native-attempt-1/effect-pq-owner.json.3f3be42564cd4fe582fe76a26a7754b5.log",
+      "raw_sha256": "3b0434016711fda41f74a2a793419a3f7e502d234b8a22d362cbea501e7a5c67",
+      "raw_bytes": 32613,
+      "status": "passed",
+      "passed": 11,
+      "failed_reported_by_wrapper": 0,
+      "command_exit_code": 0,
+      "wrapper_timed_out": false,
+      "elapsed_seconds": 70.3451976160286
+    },
+    {
+      "gate": "effect-pq-contract",
+      "receipt": "joint-h2-native-attempt-1/effect-pq-contract.json",
+      "raw": "joint-h2-native-attempt-1/effect-pq-contract.json.3960246b5a464f1d8a791ff2eaa0ff02.log",
+      "raw_sha256": "c5b054ffe4b87dd51356e3ae59bac450c98ef8a11d510edbc0632886503249db",
+      "raw_bytes": 16295,
+      "status": "passed",
+      "passed": 1,
+      "failed_reported_by_wrapper": 0,
+      "command_exit_code": 0,
+      "wrapper_timed_out": false,
+      "elapsed_seconds": 113.68952232494485
+    },
+    {
+      "gate": "effect-settled-absence",
+      "receipt": "joint-h2-native-attempt-1/effect-settled-absence.json",
+      "raw": "joint-h2-native-attempt-1/effect-settled-absence.json.65b35d4e1cb5425dad8ddbe6121a11ca.log",
+      "raw_sha256": "5e1da58660471139c6161c040f6e67e21301ad041fecf0bd62b2ffc369a4693a",
+      "raw_bytes": 24584,
+      "status": "passed",
+      "passed": 2,
+      "failed_reported_by_wrapper": 0,
+      "command_exit_code": 0,
+      "wrapper_timed_out": false,
+      "elapsed_seconds": 25.680686286999844
+    },
+    {
+      "gate": "effect-pq-product",
+      "receipt": "joint-h2-native-attempt-1/effect-pq-product.json",
+      "raw": "joint-h2-native-attempt-1/effect-pq-product.json.9084436a2e674123859a385fc6900f12.log",
+      "raw_sha256": "9afd59f1c6d4043ec240fb2a888c8e08630d8e0adf0671883dd0c17be4864a8a",
+      "raw_bytes": 27983,
+      "status": "failed",
+      "passed": 0,
+      "failed_reported_by_wrapper": 1,
+      "command_exit_code": 100,
+      "wrapper_timed_out": false,
+      "elapsed_seconds": 71.72731291805394
+    }
+  ],
+  "exact_passed_selection": [
+    {
+      "gate": "dispatcher",
+      "name": "authbus_dispatch::tests::abandoned_first_claim_without_admission_is_quarantined_after_lookup_missing",
+      "result": "ok"
+    },
+    {
+      "gate": "dispatcher",
+      "name": "authbus_dispatch::tests::checkpoint_sync::cancelled_checkpoint_sync_waiter_and_owner_release_exclusive_admission",
+      "result": "ok"
+    },
+    {
+      "gate": "dispatcher",
+      "name": "authbus_dispatch::tests::checkpoint_sync::concurrent_checkpoint_syncs_share_owner_lock_and_preserve_rollback_rejection",
+      "result": "ok"
+    },
+    {
+      "gate": "dispatcher",
+      "name": "authbus_dispatch::tests::lease_delay::trust_refresh_sqlite_wait_cannot_authorize_transport_with_an_expired_lease",
+      "result": "ok"
+    },
+    {
+      "gate": "dispatcher",
+      "name": "authbus_dispatch::tests::lost_queue_reply_recovers_from_sqlite_using_lookup_only_and_exact_receipt",
+      "result": "ok"
+    },
+    {
+      "gate": "dispatcher",
+      "name": "authbus_dispatch::tests::matching_receipt_metadata_with_different_queue_input_never_acknowledges",
+      "result": "ok"
+    },
+    {
+      "gate": "dispatcher",
+      "name": "authbus_dispatch::tests::policy_rollback::pq_bound_policy_refuses_renewal_without_policy_snapshot",
+      "result": "ok"
+    },
+    {
+      "gate": "dispatcher",
+      "name": "authbus_dispatch::tests::policy_rollback::pq_owner_requires_explicit_nonzero_policy_revision_and_accepts_set_ordering",
+      "result": "ok"
+    },
+    {
+      "gate": "dispatcher",
+      "name": "authbus_dispatch::tests::policy_rollback::pq_policy_change_fences_stale_renewal_and_current_policy_restores_dispatch",
+      "result": "ok"
+    },
+    {
+      "gate": "dispatcher",
+      "name": "authbus_dispatch::tests::policy_rollback::pq_removed_thread_cannot_return_through_owner_file_rollback_after_reopen",
+      "result": "ok"
+    },
+    {
+      "gate": "dispatcher",
+      "name": "authbus_dispatch::tests::pq::pq_text_owner_resumes_after_revocation_rotation_and_rejected_config_rollback",
+      "result": "ok"
+    },
+    {
+      "gate": "dispatcher",
+      "name": "authbus_dispatch::tests::pq::pq_text_producer_recovers_through_existing_dispatch_and_rejects_wire_and_config_downgrade",
+      "result": "ok"
+    },
+    {
+      "gate": "dispatcher",
+      "name": "authbus_dispatch::tests::ready_generation_and_owner_private_trust_are_required_before_admission",
+      "result": "ok"
+    },
+    {
+      "gate": "dispatcher",
+      "name": "authbus_dispatch::tests::revocation_during_queue_request_prevents_success_ack",
+      "result": "ok"
+    },
+    {
+      "gate": "product",
+      "name": "pq_signed_text_crosses_real_queue_after_rejection_without_downgrade",
+      "result": "ok"
+    },
+    {
+      "gate": "product",
+      "name": "real_agentd_without_explicit_trust_rejects_signed_text",
+      "result": "ok"
+    },
+    {
+      "gate": "product",
+      "name": "signed_text_crosses_real_queue_once_and_current_trust_rejects_invalid_ingress",
+      "result": "ok"
+    },
+    {
+      "gate": "recovery-owner",
+      "name": "provider_effect_recovery_provenance_tests::recovery_provenance_preserves_dispatch_then_authoritative_status",
+      "result": "ok"
+    },
+    {
+      "gate": "recovery-owner",
+      "name": "provider_effect_recovery_provenance_tests::recovery_provenance_rejects_late_dispatch_after_status_without_uncertainty",
+      "result": "ok"
+    },
+    {
+      "gate": "recovery-owner",
+      "name": "recovery_effect_frontier_tests::recovery_snapshot_commits_ack_provenance_and_cross_table_order",
+      "result": "ok"
+    },
+    {
+      "gate": "recovery-owner",
+      "name": "recovery_effect_frontier_tests::recovery_snapshot_commits_effect_history_after_the_first_page",
+      "result": "ok"
+    },
+    {
+      "gate": "recovery-owner",
+      "name": "recovery_effect_frontier_tests::recovery_snapshot_commits_intent_unknown_and_original_operation_receipt",
+      "result": "ok"
+    },
+    {
+      "gate": "recovery-owner",
+      "name": "recovery_effect_frontier_tests::recovery_snapshot_distinguishes_a_valid_effect_only_database_rollback",
+      "result": "ok"
+    },
+    {
+      "gate": "recovery-owner",
+      "name": "recovery_effect_frontier_tests::recovery_snapshot_refuses_canonical_ack_bound_to_a_different_payload",
+      "result": "ok"
+    },
+    {
+      "gate": "recovery-owner",
+      "name": "recovery_effect_frontier_tests::recovery_snapshot_refuses_changed_json_with_retained_record_digests",
+      "result": "ok"
+    },
+    {
+      "gate": "recovery-owner",
+      "name": "recovery_effect_frontier_tests::recovery_snapshot_refuses_effect_projection_drift_with_retained_payloads",
+      "result": "ok"
+    },
+    {
+      "gate": "recovery-owner",
+      "name": "recovery_effect_frontier_tests::recovery_snapshot_refuses_orphan_effect_observations",
+      "result": "ok"
+    },
+    {
+      "gate": "recovery-owner",
+      "name": "recovery_effect_frontier_tests::recovery_snapshot_refuses_repeated_effect_sequence_after_schema_drift",
+      "result": "ok"
+    },
+    {
+      "gate": "recovery-owner",
+      "name": "recovery_effect_frontier_tests::recovery_snapshot_refuses_repeated_effect_sequence_at_page_boundary",
+      "result": "ok"
+    },
+    {
+      "gate": "recovery-owner",
+      "name": "recovery_invocation_frontier_tests::recovery_snapshot_binds_invocation_sequence_and_recording_time",
+      "result": "ok"
+    },
+    {
+      "gate": "recovery-owner",
+      "name": "recovery_invocation_frontier_tests::recovery_snapshot_commits_invocations_after_the_first_page",
+      "result": "ok"
+    },
+    {
+      "gate": "recovery-owner",
+      "name": "recovery_invocation_frontier_tests::recovery_snapshot_commits_pending_invocations_and_terminal_states",
+      "result": "ok"
+    },
+    {
+      "gate": "recovery-owner",
+      "name": "recovery_invocation_frontier_tests::recovery_snapshot_refuses_duplicate_terminal_hidden_at_page_boundary",
+      "result": "ok"
+    },
+    {
+      "gate": "recovery-owner",
+      "name": "recovery_invocation_frontier_tests::recovery_snapshot_refuses_invocation_column_type_corruption_without_panicking",
+      "result": "ok"
+    },
+    {
+      "gate": "recovery-owner",
+      "name": "recovery_invocation_frontier_tests::recovery_snapshot_requires_the_terminals_authoritative_intent",
+      "result": "ok"
+    },
+    {
+      "gate": "recovery-owner",
+      "name": "recovery_invocation_frontier_tests::recovery_snapshot_revalidates_invocation_payloads_and_projected_columns",
+      "result": "ok"
+    },
+    {
+      "gate": "recovery-owner",
+      "name": "recovery_invocation_schema_tests::recovery_invocation_schema_accepts_current_migration_keys",
+      "result": "ok"
+    },
+    {
+      "gate": "recovery-owner",
+      "name": "recovery_invocation_schema_tests::recovery_invocation_schema_refuses_non_rowid_or_composite_sequences",
+      "result": "ok"
+    },
+    {
+      "gate": "recovery-owner",
+      "name": "recovery_invocation_schema_tests::recovery_invocation_schema_requires_exact_unconditional_column_uniqueness",
+      "result": "ok"
+    },
+    {
+      "gate": "recovery-signed",
+      "name": "evidence_frontier::tests::recovery_frontier_authenticates_both_effect_fields",
+      "result": "ok"
+    },
+    {
+      "gate": "recovery-signed",
+      "name": "evidence_frontier::tests::recovery_frontier_cannot_be_omitted_at_the_ordinary_agentd_run_entry",
+      "result": "ok"
+    },
+    {
+      "gate": "recovery-signed",
+      "name": "evidence_frontier::tests::recovery_frontier_enforces_root_scope_epoch_revocation_and_generation_floor",
+      "result": "ok"
+    },
+    {
+      "gate": "recovery-signed",
+      "name": "evidence_frontier::tests::recovery_frontier_pq_rejects_invocation_only_database_rollbacks",
+      "result": "ok"
+    },
+    {
+      "gate": "recovery-signed",
+      "name": "evidence_frontier::tests::recovery_frontier_pq_survives_store_close_and_reopen",
+      "result": "ok"
+    },
+    {
+      "gate": "recovery-signed",
+      "name": "evidence_frontier::tests::recovery_frontier_read_only_preflight_never_binds_or_changes_the_image",
+      "result": "ok"
+    },
+    {
+      "gate": "recovery-signed",
+      "name": "evidence_frontier::tests::recovery_frontier_refuses_valid_classical_v1_and_v2_signatures",
+      "result": "ok"
+    },
+    {
+      "gate": "recovery-signed",
+      "name": "evidence_frontier::tests::recovery_frontier_refuses_valid_pq_v3_and_relabelled_v2_snapshots",
+      "result": "ok"
+    },
+    {
+      "gate": "recovery-signed",
+      "name": "evidence_frontier::tests::recovery_frontier_rejects_wrong_domain_and_profile",
+      "result": "ok"
+    },
+    {
+      "gate": "recovery-signed",
+      "name": "evidence_frontier::tests::recovery_frontier_rejects_wrong_key_pin_and_noncanonical_signature",
+      "result": "ok"
+    },
+    {
+      "gate": "recovery-signed",
+      "name": "evidence_frontier::tests::recovery_frontier_root_rotation_retires_the_old_key",
+      "result": "ok"
+    },
+    {
+      "gate": "recovery-product",
+      "name": "real_agentd_composes_authenticated_evidence_writer_query_verifier_and_terminal_observer",
+      "result": "ok"
+    },
+    {
+      "gate": "recovery-product",
+      "name": "signed_recovery_frontier_allows_exact_current_database",
+      "result": "ok"
+    },
+    {
+      "gate": "recovery-product",
+      "name": "signed_recovery_frontier_rejects_effect_only_database_rollback",
+      "result": "ok"
+    },
+    {
+      "gate": "recovery-product",
+      "name": "signed_recovery_frontier_rejects_valid_older_database_image",
+      "result": "ok"
+    },
+    {
+      "gate": "qualification-growth",
+      "name": "qualification_tests::claim_query_rejects_more_than_512_references",
+      "result": "ok"
+    },
+    {
+      "gate": "qualification-growth",
+      "name": "qualification_tests::ordinary_append_rejects_historical_projection_drift_without_consuming_replay",
+      "result": "ok"
+    },
+    {
+      "gate": "effect-pq-owner",
+      "name": "automation_effect_host::pq::tests::current_clock_frontier_and_pq_grant_are_mandatory_before_contact",
+      "result": "ok"
+    },
+    {
+      "gate": "effect-pq-owner",
+      "name": "automation_effect_host::pq::tests::generation_change_after_store_await_refuses_contact_and_keeps_consumed_nonce",
+      "result": "ok"
+    },
+    {
+      "gate": "effect-pq-owner",
+      "name": "automation_effect_host::pq::tests::historical_policy_does_not_connect_old_trust_services_or_follow_its_references",
+      "result": "ok"
+    },
+    {
+      "gate": "effect-pq-owner",
+      "name": "automation_effect_host::pq::tests::initial_feed_is_authenticated_before_any_local_authority_or_frontier_write",
+      "result": "ok"
+    },
+    {
+      "gate": "effect-pq-owner",
+      "name": "automation_effect_host::pq::tests::ordinary_dispatch_and_new_generation_recovery_keep_one_stable_operation",
+      "result": "ok"
+    },
+    {
+      "gate": "effect-pq-owner",
+      "name": "automation_effect_host::pq::tests::ordinary_loader_denies_classical_schema_and_contract_or_policy_substitution",
+      "result": "ok"
+    },
+    {
+      "gate": "effect-pq-owner",
+      "name": "automation_effect_host::pq::tests::pon_schema4_binds_native_binary_and_original_limits_without_running_a_node",
+      "result": "ok"
+    },
+    {
+      "gate": "effect-pq-owner",
+      "name": "automation_effect_host::pq::tests::reconcile_rechecks_generation_after_store_await_without_reclassifying_unknown",
+      "result": "ok"
+    },
+    {
+      "gate": "effect-pq-owner",
+      "name": "automation_effect_host::pq::tests::recovery_requires_current_signed_exact_historical_policy_and_same_provider",
+      "result": "ok"
+    },
+    {
+      "gate": "effect-pq-owner",
+      "name": "automation_effect_host::pq::tests::revoked_equal_number_drift_expired_feed_and_new_epoch_do_not_contact_provider",
+      "result": "ok"
+    },
+    {
+      "gate": "effect-pq-owner",
+      "name": "automation_effect_host::pq::tests::signed_revocation_after_store_await_obeys_active_effect_fence_and_never_sends",
+      "result": "ok"
+    },
+    {
+      "gate": "effect-pq-contract",
+      "name": "provider_effect::pq_tests::pq_contract_binds_profile_root_epoch_and_complete_authority_scope",
+      "result": "ok"
+    },
+    {
+      "gate": "effect-settled-absence",
+      "name": "owner_recovery_tests::settled_absence_fact_read_rejects_unknown_unsettled_and_corrupt_evidence",
+      "result": "ok"
+    },
+    {
+      "gate": "effect-settled-absence",
+      "name": "owner_recovery_tests::settled_absence_fact_read_survives_reopen_and_new_owner_without_redispatch",
+      "result": "ok"
+    }
+  ],
+  "full_source_before_after_equal": true,
+  "configuration_unchanged": true,
+  "unique_complete_images": 8,
+  "complete_image_unique_bytes": 1512251368,
+  "images_are_remote_not_rebuilt": true,
+  "partial_artifacts": [
+    {
+      "sha256": "b9dc995ee3e6e623056a2563ab8aed3629c003a418b28486ac09db914a0b3f8d",
+      "bytes": 314572800,
+      "kind": "partial-second-daemon-copy-not-complete-executable",
+      "retained_aliases": [
+        "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/evidence/joint-h2-native-attempt-1/effect-pq-product-process/884690-1793911338749786208/agentd-885763-98904223.elf"
+      ],
+      "version": "2050:60479572:314572800:1793911397731521500:1793911397731521500",
+      "expected_complete_bytes": 488112384,
+      "evidence_credit": false,
+      "scope": "partial copy after initial second-process identity checks; no completion checkpoint, full hash or lookup/terminal credit"
+    }
+  ],
+  "runtime_input_scope": "postrun scripts bytecode raw copy, corresponding source/interpreter digests and all Git ignored paths are observed; no per-import or complete runtime closure claim",
+  "files": [
+    {
+      "path": "joint-h2-native-attempt-1/active-status-first.raw.json",
+      "bytes": 661,
+      "sha256": "c74577d2e04d8d22f2a0540515fc1820aa78cbf10c091bc3c459def134a98ad8"
+    },
+    {
+      "path": "joint-h2-native-attempt-1/collector-controls.json",
+      "bytes": 264,
+      "sha256": "805c3b08b93b0dc333a5ae57aad7abc0d96113a039610eeb765b8ae67c261bc8"
+    },
+    {
+      "path": "joint-h2-native-attempt-1/collector-controls.log",
+      "bytes": 516,
+      "sha256": "bd17d06bf6e18ffc62e197358da762829adf9024bb10e3e8eea689cecd4686e2"
+    },
+    {
+      "path": "joint-h2-native-attempt-1/configuration-after.json",
+      "bytes": 1463,
+      "sha256": "c8cca84b53e2a1da6dea2b485c9a92b2e1ab7defc5d19ca7e3cc456f0387ea68"
+    },
+    {
+      "path": "joint-h2-native-attempt-1/dependencies.json",
+      "bytes": 1475,
+      "sha256": "a5ecbc04a21067019edd3c1f5889cea7675cff69e5e38228b9518ff9b0ba6cdd"
+    },
+    {
+      "path": "joint-h2-native-attempt-1/dependencies.json.201b91db38bc49fb880d3c2ecbf5c753.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "joint-h2-native-attempt-1/dispatcher-final-read.raw.json",
+      "bytes": 69241,
+      "sha256": "b16f7383b862d18487a3ec5b7929c3696203c42b140b43946854772fb2cd5330"
+    },
+    {
+      "path": "joint-h2-native-attempt-1/dispatcher-log-read.raw.json",
+      "bytes": 57135,
+      "sha256": "970dcf237dda31ea02ddd8da72ba1dde6bd4c645ad142df87e8dca7cd0c3cd83"
+    },
+    {
+      "path": "joint-h2-native-attempt-1/dispatcher-running-listing.raw.json",
+      "bytes": 209,
+      "sha256": "880e2b3a594ecd4ec1653f73dae382d79577a68cddc7e73d83e98f55a329c002"
+    },
+    {
+      "path": "joint-h2-native-attempt-1/dispatcher-running-tail.raw.json",
+      "bytes": 5026,
+      "sha256": "6aa4c0b8a6646e419a71d99d7d05d8958ea5ca178d8358bc117fa946f002869a"
+    },
+    {
+      "path": "joint-h2-native-attempt-1/dispatcher.fd-capture-config.json",
+      "bytes": 2388,
+      "sha256": "fe20c61eed9abfd777537e7f568bf80c6809f69bae218453903e9a1debfac6c0"
+    },
+    {
+      "path": "joint-h2-native-attempt-1/dispatcher.fd-executed-binaries.json",
+      "bytes": 35645,
+      "sha256": "5ce9125df43c689ce34048a910e9f9aa0d977639c1d08915d19b3e1ec85b51df"
+    },
+    {
+      "path": "joint-h2-native-attempt-1/dispatcher.json",
+      "bytes": 1597,
+      "sha256": "2cbf1fdbd74dcb0ba8274415798b8a41709bfa9d225550561abf7e6d849cd30a"
+    },
+    {
+      "path": "joint-h2-native-attempt-1/dispatcher.json.c6c26096f8bd4c70b6ef3491932985d4.log",
+      "bytes": 55119,
+      "sha256": "0f8878a52c2077f27d8bf9a46d60c5217d653d214d20a32556b8a91f756e5199"
+    },
+    {
+      "path": "joint-h2-native-attempt-1/dispatcher.live-polled-binaries.json",
+      "bytes": 20478,
+      "sha256": "c9e289888cc04b8dadabbc237012bae1a07f766a17eee6cb7014c65b981dd2b4"
+    },
+    {
+      "path": "joint-h2-native-attempt-1/diverse-source-controls.json",
+      "bytes": 1543,
+      "sha256": "4b956afe3b62afc4cdf4e4603274aa5fd5633d24f3f7f819936d22777eb87ab1"
+    },
+    {
+      "path": "joint-h2-native-attempt-1/diverse-source-controls.json.df70d314151e436ba33e7189ff6c62c9.log",
+      "bytes": 6233,
+      "sha256": "79171f2871e65129e0d26e18620deb740c15da1914f5941d6c0df34ab308535b"
+    },
+    {
+      "path": "joint-h2-native-attempt-1/effect-pq-contract.fd-executed-binaries.json",
+      "bytes": 3539,
+      "sha256": "121f991efb6702d12a16e9db17e998da7acde610cc02b5b29a4080142a8a7efa"
+    },
+    {
+      "path": "joint-h2-native-attempt-1/effect-pq-contract.json",
+      "bytes": 1608,
+      "sha256": "ae78ac111b2ecec2b3005ba2260bcf27c927f561c047beb4a6863834cdac9f15"
+    },
+    {
+      "path": "joint-h2-native-attempt-1/effect-pq-contract.json.3960246b5a464f1d8a791ff2eaa0ff02.log",
+      "bytes": 16295,
+      "sha256": "c5b054ffe4b87dd51356e3ae59bac450c98ef8a11d510edbc0632886503249db"
+    },
+    {
+      "path": "joint-h2-native-attempt-1/effect-pq-contract.live-polled-binaries.json",
+      "bytes": 1711,
+      "sha256": "5446c3e3fbba26ff4e70e12eb49612c9fe8a4b61b8f7e5a43ca923ca254affb7"
+    },
+    {
+      "path": "joint-h2-native-attempt-1/effect-pq-owner.fd-executed-binaries.json",
+      "bytes": 28535,
+      "sha256": "674a566b04d7ea01d180e9c323e13b42a04850afa6268a9ea53cea0fd6b721b0"
+    },
+    {
+      "path": "joint-h2-native-attempt-1/effect-pq-owner.json",
+      "bytes": 1611,
+      "sha256": "e2442184c2c942e7c43933f69324e4dcb89de688024e8e14a70279875a579efc"
+    },
+    {
+      "path": "joint-h2-native-attempt-1/effect-pq-owner.json.3f3be42564cd4fe582fe76a26a7754b5.log",
+      "bytes": 32613,
+      "sha256": "3b0434016711fda41f74a2a793419a3f7e502d234b8a22d362cbea501e7a5c67"
+    },
+    {
+      "path": "joint-h2-native-attempt-1/effect-pq-owner.live-polled-binaries.json",
+      "bytes": 16295,
+      "sha256": "3847444b6d3a3cb8633534e4c52908791d1362fd89a669f420cdc0eae4bd787d"
+    },
+    {
+      "path": "joint-h2-native-attempt-1/effect-pq-product-process/884690-1793911338749786208/first-process-exit.json",
+      "bytes": 205,
+      "sha256": "2ebaeba6e4e6a06eb8d7b317d5d52ccca2b63a8ce0447bb2e44cb71cfac1ddae"
+    },
+    {
+      "path": "joint-h2-native-attempt-1/effect-pq-product-process/884690-1793911338749786208/first-process.json",
+      "bytes": 1565,
+      "sha256": "3009ec58616c995780858fd7081b208205d14862f9e9ab7a19a8b2fdf42f0e94"
+    },
+    {
+      "path": "joint-h2-native-attempt-1/effect-pq-product-process/884690-1793911338749786208/provider-fsync-before-kill.json",
+      "bytes": 909,
+      "sha256": "30a9e103b09f2469c392d2350823ec729fda897172d9313ae0d09870653b760f"
+    },
+    {
+      "path": "joint-h2-native-attempt-1/effect-pq-product-process/884690-1793911338749786208/source.json",
+      "bytes": 792,
+      "sha256": "43661bb220966a1aca44484511e679d2ea00dd4c487fecc8980af1861b43e4c6"
+    },
+    {
+      "path": "joint-h2-native-attempt-1/effect-pq-product.fd-executed-binaries.json",
+      "bytes": 3357,
+      "sha256": "a2d7b4c066a61526b1215df50408a8e1c1456fd52b4eacab4ce27e2ac245de43"
+    },
+    {
+      "path": "joint-h2-native-attempt-1/effect-pq-product.json",
+      "bytes": 1748,
+      "sha256": "03000fbc9ffb6874caa55a656e1d2f87883f0803eb3ea587765835f06a9e2b5a"
+    },
+    {
+      "path": "joint-h2-native-attempt-1/effect-pq-product.json.9084436a2e674123859a385fc6900f12.log",
+      "bytes": 27983,
+      "sha256": "9afd59f1c6d4043ec240fb2a888c8e08630d8e0adf0671883dd0c17be4864a8a"
+    },
+    {
+      "path": "joint-h2-native-attempt-1/effect-pq-product.live-polled-binaries.json",
+      "bytes": 1678,
+      "sha256": "2778c582b81107b9b6c2fde5b2e6009bd1f89dca6dddf824e95902ccc348d4aa"
+    },
+    {
+      "path": "joint-h2-native-attempt-1/effect-settled-absence.fd-executed-binaries.json",
+      "bytes": 6009,
+      "sha256": "dcc1a19f21fff33a3ed3f15274bbd6947423667332647bc64952f4ddd43f6796"
+    },
+    {
+      "path": "joint-h2-native-attempt-1/effect-settled-absence.json",
+      "bytes": 1814,
+      "sha256": "f762eecec608c8559d2adc4bb9b8dbabc3226b98eca9599fbaa861ea0b03e27e"
+    },
+    {
+      "path": "joint-h2-native-attempt-1/effect-settled-absence.json.65b35d4e1cb5425dad8ddbe6121a11ca.log",
+      "bytes": 24584,
+      "sha256": "5e1da58660471139c6161c040f6e67e21301ad041fecf0bd62b2ffc369a4693a"
+    },
+    {
+      "path": "joint-h2-native-attempt-1/effect-settled-absence.live-polled-binaries.json",
+      "bytes": 3147,
+      "sha256": "0f2db93ae1be25de533a4d9ea372f18c75e542cc853390cb9eaaf9368022f199"
+    },
+    {
+      "path": "joint-h2-native-attempt-1/execution-source-controls.json",
+      "bytes": 1557,
+      "sha256": "1cb3bf136fd625476a4a3afaed288ea905679a9147b4a74e5b390c19045ee0b6"
+    },
+    {
+      "path": "joint-h2-native-attempt-1/execution-source-controls.json.5c68e1cb755147709118805807b37b50.log",
+      "bytes": 26717,
+      "sha256": "4b343fdc6f80fe4f61e3dbbde806655feaa0f1cceb40980fc8f1e7a2d7e292e4"
+    },
+    {
+      "path": "joint-h2-native-attempt-1/failure-log-read.raw.json",
+      "bytes": 29492,
+      "sha256": "669751a68203c04de86648f9ff4f63c55efc8f0e5fc84dc4df30893b2dd5ca9d"
+    },
+    {
+      "path": "joint-h2-native-attempt-1/fd-runner-controls.json",
+      "bytes": 273,
+      "sha256": "5718a430f5928c72b5b62c0e2cbbaa1f57262f128b6c7bab2bcd54df34bb3877"
+    },
+    {
+      "path": "joint-h2-native-attempt-1/fd-runner-controls.log",
+      "bytes": 561,
+      "sha256": "46c1ce13f735866fd1035320f892a98818c5961c32784fe392be676e9d46ab3a"
+    },
+    {
+      "path": "joint-h2-native-attempt-1/first-daemon-file-info.raw.json",
+      "bytes": 724,
+      "sha256": "eb9736c6194c5f0df68d76b733c502e590c30c7f8e46c609ecc72f6b6d3a6d42"
+    },
+    {
+      "path": "joint-h2-native-attempt-1/full-source-after.json",
+      "bytes": 841,
+      "sha256": "438a5fcc398cb50808f4b8e8fb9f95734b0dd6559575fefd4ae86a2a27e26b83"
+    },
+    {
+      "path": "joint-h2-native-attempt-1/full-source-before.json",
+      "bytes": 841,
+      "sha256": "438a5fcc398cb50808f4b8e8fb9f95734b0dd6559575fefd4ae86a2a27e26b83"
+    },
+    {
+      "path": "joint-h2-native-attempt-1/h2-actual-image-inventory.json",
+      "bytes": 75358,
+      "sha256": "720a8a66417113b101f00aeac77cd4268ab6b985b70cb6dbc4796a5f2e8dbadf"
+    },
+    {
+      "path": "joint-h2-native-attempt-1/initial-files-read.raw.json",
+      "bytes": 20028,
+      "sha256": "256aae54ffb2fd5c8b0e6eb94f8293aa4a29d1769594733f1a67b9ec6de3a0bb"
+    },
+    {
+      "path": "joint-h2-native-attempt-1/initial-process-read.raw.json",
+      "bytes": 9573,
+      "sha256": "5ab06914bee43c6a7047301dd529f4a732f697c26fcd0ae9dfc2d3a296bdc312"
+    },
+    {
+      "path": "joint-h2-native-attempt-1/initial-receipts-read.raw.json",
+      "bytes": 15554,
+      "sha256": "65729614e20763638534c5dad0628dc11d1b53ed28cac2d12f72d1bcd898040f"
+    },
+    {
+      "path": "joint-h2-native-attempt-1/launch-request.json",
+      "bytes": 140028,
+      "sha256": "76740ad5d603e5b3057b991d8570df9e7a87bc1840ac271cfd73d45b270ba4e7"
+    },
+    {
+      "path": "joint-h2-native-attempt-1/launch.raw.json",
+      "bytes": 4277,
+      "sha256": "969cec2dca5b8cfb9a243f4aaca11a61da80559076450a55ca33e72c93efb528"
+    },
+    {
+      "path": "joint-h2-native-attempt-1/native-environment.json",
+      "bytes": 7793,
+      "sha256": "42a7e79bf271684caccb12c864449b57bf72755a10a367b67d985f277e91a5c2"
+    },
+    {
+      "path": "joint-h2-native-attempt-1/observed-bytecode-after/binary-read.raw.json",
+      "bytes": 8690,
+      "sha256": "3873db3633cdb2256f37c0083fba5d3b0e1e91c645b122c540e865b60375a124"
+    },
+    {
+      "path": "joint-h2-native-attempt-1/observed-bytecode-after/dc708ad7c6a17d7c18b8797139334236abab13f00c9c9114dc3b6f7bd0d79aa6.pyc",
+      "bytes": 6094,
+      "sha256": "dc708ad7c6a17d7c18b8797139334236abab13f00c9c9114dc3b6f7bd0d79aa6"
+    },
+    {
+      "path": "joint-h2-native-attempt-1/observed-bytecode-after/file-info.raw.json",
+      "bytes": 727,
+      "sha256": "eae405667241a72ad6448f48a4db1d2b789f8bec317d2b2bd2dfe359fd946c09"
+    },
+    {
+      "path": "joint-h2-native-attempt-1/pipeline-chunks.raw.json",
+      "bytes": 317083,
+      "sha256": "01094e88daefafc4c06bd246f28776c3faae01ab64130b9100a3814674d5c7cb"
+    },
+    {
+      "path": "joint-h2-native-attempt-1/pipeline-file-info.raw.json",
+      "bytes": 659,
+      "sha256": "9a6354f4c323e7641272d7c9a06c94ddd37669c85d2ed6d2911cd066a53a2474"
+    },
+    {
+      "path": "joint-h2-native-attempt-1/pipeline-status.final.json",
+      "bytes": 236239,
+      "sha256": "04255e8344310c444e6a96aac882178d118daf180761a248c13baeaf85e13563"
+    },
+    {
+      "path": "joint-h2-native-attempt-1/process-partial-files-read.raw.json",
+      "bytes": 5999,
+      "sha256": "add497187a4f713da6052ead96c03554cc6b6d271d1ba13decdc227a268dc57c"
+    },
+    {
+      "path": "joint-h2-native-attempt-1/process-read-2.raw.json",
+      "bytes": 6161,
+      "sha256": "62f6ffb040d770dc0699e06da1d674801a9919c1db0fdcdeae595e08290c25fe"
+    },
+    {
+      "path": "joint-h2-native-attempt-1/process-read-3.raw.json",
+      "bytes": 510,
+      "sha256": "72e431306bab51b884852d94758ccbb2f83f6e5dd37c24cdbdd8e2a68516a8b0"
+    },
+    {
+      "path": "joint-h2-native-attempt-1/process-read-4.raw.json",
+      "bytes": 510,
+      "sha256": "72e431306bab51b884852d94758ccbb2f83f6e5dd37c24cdbdd8e2a68516a8b0"
+    },
+    {
+      "path": "joint-h2-native-attempt-1/process-read-5.raw.json",
+      "bytes": 3319,
+      "sha256": "1b5254858f870303414ca38261a06d5353d7a4786c95be070e25d47c5577acee"
+    },
+    {
+      "path": "joint-h2-native-attempt-1/process-read-6.raw.json",
+      "bytes": 10615,
+      "sha256": "be6b56343105382af9c3e444b2282f9837e8d724a93815e364f3c13d19dd9bc9"
+    },
+    {
+      "path": "joint-h2-native-attempt-1/product.fd-executed-binaries.json",
+      "bytes": 8007,
+      "sha256": "b95927a3b5851e0a16e1b4fe21dfe51c1ec92b9abf34751fe56b72ffa7c74fa9"
+    },
+    {
+      "path": "joint-h2-native-attempt-1/product.json",
+      "bytes": 1572,
+      "sha256": "3a6e050c2e444afb4e76627de091e50c7abd7f1be1526121a66f46f24fb83db9"
+    },
+    {
+      "path": "joint-h2-native-attempt-1/product.json.e91631568dd24a8896da9cb9e4cedc4c.log",
+      "bytes": 27688,
+      "sha256": "6bf98e77cc735d26146a98d08f57adf111c8cc087ca42b5d0073f1a0ca85db5a"
+    },
+    {
+      "path": "joint-h2-native-attempt-1/product.live-polled-binaries.json",
+      "bytes": 4374,
+      "sha256": "4b726f458daca0b95e79971f40bc86344b3d5c4ae58fd178a50a3741f5dc62fa"
+    },
+    {
+      "path": "joint-h2-native-attempt-1/qualification-growth.fd-executed-binaries.json",
+      "bytes": 5895,
+      "sha256": "ff99a19045728c79d3787937432901e98320c97ca6ee7adc1d0b4b494f45dc78"
+    },
+    {
+      "path": "joint-h2-native-attempt-1/qualification-growth.json",
+      "bytes": 1755,
+      "sha256": "197d2f0453ffebaea9ebed9be36102a5ecceea1256ccd9147fc45eddf15c9039"
+    },
+    {
+      "path": "joint-h2-native-attempt-1/qualification-growth.json.64d418d4e77342f0add9a25ee4bd61eb.log",
+      "bytes": 23853,
+      "sha256": "021ea857306e42cf04d8ff1c5f0dedefe7f288b908c32b45e4786138e1dda92b"
+    },
+    {
+      "path": "joint-h2-native-attempt-1/qualification-growth.live-polled-binaries.json",
+      "bytes": 3095,
+      "sha256": "77067f22923568197bef6af9000c16ac81a2bbbd82d811c63f0582b54d82697a"
+    },
+    {
+      "path": "joint-h2-native-attempt-1/readback-validation-attempt-1.json",
+      "bytes": 295,
+      "sha256": "b9e56ac12497edb7ba4fdc69d89d59745ee5251ab9e27366fa85af1204143184"
+    },
+    {
+      "path": "joint-h2-native-attempt-1/recovery-owner.fd-executed-binaries.json",
+      "bytes": 55228,
+      "sha256": "7d0f05763ce05405eaacc6d9f3a226ee4edbfe03e1acf78561ab19f30e9136ec"
+    },
+    {
+      "path": "joint-h2-native-attempt-1/recovery-owner.json",
+      "bytes": 4005,
+      "sha256": "812c5af21d1cd4ceeeb9518d4ed297fe0231cd82566d94d8f0e2afdce1e2221d"
+    },
+    {
+      "path": "joint-h2-native-attempt-1/recovery-owner.json.ed60a5acad6a4a8ca942c5283bf3c526.log",
+      "bytes": 37881,
+      "sha256": "58be42b5c2d3a99b37008a72cbb15f794a74ed1889a3d74fa7a7d508631bb340"
+    },
+    {
+      "path": "joint-h2-native-attempt-1/recovery-owner.live-polled-binaries.json",
+      "bytes": 31924,
+      "sha256": "b63974c73e568fc7f7aa91ce40c18efbd458a05cd80726c070447df294eecdd7"
+    },
+    {
+      "path": "joint-h2-native-attempt-1/recovery-product.fd-executed-binaries.json",
+      "bytes": 10421,
+      "sha256": "d2c3443fd9c392ed402fbeca9c269d7edc08d89f1ba948c8e45cd932f58a72f7"
+    },
+    {
+      "path": "joint-h2-native-attempt-1/recovery-product.json",
+      "bytes": 1902,
+      "sha256": "36f4eefb01eb510aabf1f3e1953daff1faf6d7a486894da1359e4cbf247f8bef"
+    },
+    {
+      "path": "joint-h2-native-attempt-1/recovery-product.json.e64fedb54f014569b9e9be1d7f56fcd9.log",
+      "bytes": 28162,
+      "sha256": "b1b0af5507da1ee27fe86982f6b5f090f76105516921738239da7d33966cf9f0"
+    },
+    {
+      "path": "joint-h2-native-attempt-1/recovery-product.live-polled-binaries.json",
+      "bytes": 5775,
+      "sha256": "050695e890a4fd1602533cd5cf4731d5bde25e56209666adc9558f1ffef20668"
+    },
+    {
+      "path": "joint-h2-native-attempt-1/recovery-signed.fd-executed-binaries.json",
+      "bytes": 27557,
+      "sha256": "792d80c5b17c40664cc529399281fe513284f4cc7c7a7841eec8a044f9e381f4"
+    },
+    {
+      "path": "joint-h2-native-attempt-1/recovery-signed.json",
+      "bytes": 2636,
+      "sha256": "48eeee5ad95e470939acc867ff349cd683869753f5ac3f0ff39415f727baa7b4"
+    },
+    {
+      "path": "joint-h2-native-attempt-1/recovery-signed.json.a72b54975fa34fc988cbff4d715f852f.log",
+      "bytes": 31881,
+      "sha256": "0d8061c7edb044cf15511129d3de7d5a88eeb31c729000348e419aefce6c90dc"
+    },
+    {
+      "path": "joint-h2-native-attempt-1/recovery-signed.live-polled-binaries.json",
+      "bytes": 15804,
+      "sha256": "ce29b8e5668ed3f8c3a164b940b24fc76e141fe86dd1d3e2938012037bb7a01f"
+    },
+    {
+      "path": "joint-h2-native-attempt-1/remaining-captures-0.raw.json",
+      "bytes": 174267,
+      "sha256": "66b5ce9d722afe1d07799ba0809e5a512b5983ff08ea7ba2be82f8b7b96e130c"
+    },
+    {
+      "path": "joint-h2-native-attempt-1/remaining-captures-1.raw.json",
+      "bytes": 99295,
+      "sha256": "3717f1eaf9bffcdae394114ecd3b24cf26801803040212c999e80d85203dac8b"
+    },
+    {
+      "path": "joint-h2-native-attempt-1/runtime-inputs-after.json",
+      "bytes": 3995,
+      "sha256": "78182d2c71d3cd6f3ffcd336e986699cc8e005563bcf794fea5de2c8d0155c5f"
+    },
+    {
+      "path": "joint-h2-native-attempt-1/runtime-inputs-before.json",
+      "bytes": 3160,
+      "sha256": "2b423c6635a070831a9c951f0fa6c3d1d8e6b76285c1610cedbd989c9b49d4d6"
+    },
+    {
+      "path": "joint-h2-native-attempt-1/runtime-inputs-delta.json",
+      "bytes": 342,
+      "sha256": "6eeb9b9f03b88bb05524f1d0ac85ea449f33102224a6d0050218baafba9d3481"
+    },
+    {
+      "path": "joint-h2-native-attempt-1/second-daemon-partial-file-info.raw.json",
+      "bytes": 724,
+      "sha256": "42cdbb5abf8a540142946d0e1ab2c1543ea94217d94fd1c8ab789f1cff1f698c"
+    },
+    {
+      "path": "joint-h2-native-attempt-1/source-logs-read.raw.json",
+      "bytes": 37672,
+      "sha256": "294f25c6c29a084eb52db7374b10bad3a16cdd2656b7885a9305125ace84ec2f"
+    },
+    {
+      "path": "joint-h2-native-attempt-1/successful-rust-logs-read.raw.json",
+      "bytes": 233035,
+      "sha256": "9523e7f01403ea37d1a827e8ba670a41f32ad03393c70aaa98886bb96f24611e"
+    },
+    {
+      "path": "joint-h2-native-attempt-1/terminal-read.raw.json",
+      "bytes": 30277,
+      "sha256": "5abedfa28409c2ad8d311a66d3ae4138e68f2990349afba7b604837e3740fc54"
+    },
+    {
+      "path": "joint-h2-native-attempt-1/terminal-receipts-read.raw.json",
+      "bytes": 41856,
+      "sha256": "dee26afa152a1b276556851480161ba5e7c0489bd20f458fc2d8c0d66032a73b"
+    },
+    {
+      "path": "joint-h2-native-attempt-1/terminal.raw.json",
+      "bytes": 957,
+      "sha256": "60ed01b154f4fc8977100767cd1078d804b535aefeabd5ec4fc4a77c1c52b104"
+    }
+  ],
+  "file_count": 96,
+  "total_bytes": 2320504,
+  "scope": "actual H2 one-shot native evidence. 70 selected PASS and one original 60s timeout; all unexecuted later gates remain unexecuted. No model/hosted-matrix/independent-custody qualification."
+}

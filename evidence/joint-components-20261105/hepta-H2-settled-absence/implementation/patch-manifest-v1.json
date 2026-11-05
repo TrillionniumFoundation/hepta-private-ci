@@ -1,0 +1,60 @@
+{
+  "base_commit": "9f785cb201ba12ab0ae0f0d341c0f7912cc65efc",
+  "base_tree": "24804b21d0306b617e12fa3f5b9454a12ed4ad41",
+  "patch": "settled-absence-v1.patch",
+  "patch_sha256": "9f6ddd923a928fad60ab1fc559851c63ee0a98a6088845476dc1af0c0197cae8",
+  "scope": "selected exact H1 files; not complete checkout; cloud source only; unformatted and no native validation yet",
+  "changed_files": [
+    {
+      "path": "codex-rs/hepta-automation/src/authorized_effect.rs",
+      "mode": "100644",
+      "base_git_blob": "66734ef509f5f3f2347700be3bcb70a11085692e",
+      "base_sha256": "45c81a918f4a52f9935e7b7fcfed4e8bd761657eba786c36f7498693bebe99dd",
+      "new_git_blob": "b596b9061737a7bc8387807af27fdf5d2e230956",
+      "new_sha256": "c9d2247573cc205b66366d40cfc4d15872d65db0122c66e324e9371b9dcd20d4",
+      "bytes": 72399
+    },
+    {
+      "path": "codex-rs/hepta-automation/src/taskflow_step.rs",
+      "mode": "100644",
+      "base_git_blob": "2bfc0b2116c33d1b5a6efc90611db1ab12c105b0",
+      "base_sha256": "d8ffb92a87eff096cb70c14fc2c1a131e7c8b569512a2ffb13ea42dd0c3f2319",
+      "new_git_blob": "43c7df417047b4295b7120c8dbcba7357504d151",
+      "new_sha256": "4839aa3abbdafffdf2b542efa990972050964a7d837cd04620f99b9a366014be",
+      "bytes": 67918
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/automation_effect_host.rs",
+      "mode": "100644",
+      "base_git_blob": "a82f1c6e16a825abb1b2c3b8af77943db3d7f7cd",
+      "base_sha256": "ccc465e0ac890e1428cc6a0b5b831d2d3d7c39152f320a1b8751419359af6396",
+      "new_git_blob": "c11b1c06bdd5690fc48e49f3106a5f9916c90dd3",
+      "new_sha256": "f11950fe8a5f8a4e33425a7aec68ac0e4a872b60f341e11de306815ef280b2df",
+      "bytes": 105648
+    },
+    {
+      "path": "codex-rs/hepta-automation/tests/support/authorized_owner_recovery_tests.rs",
+      "mode": "100644",
+      "base_git_blob": "e88149cf1409eb04c6097f6ae55293ebb7e7722f",
+      "base_sha256": "a973e2f5df677bfeab21360d565cb6c2598fc210ab8324b5f70aea7b0775eba3",
+      "new_git_blob": "c36d78747a24a31c8d5ee42f1b0ee3e402c9f647",
+      "new_sha256": "929b5aba49b7847b1bc52e21f31985d98d2ba19a1bc184333e377d091f0002f6",
+      "bytes": 16828
+    }
+  ],
+  "checks": {
+    "apply_check_exit": 0,
+    "apply_check_stdout": "",
+    "apply_check_stderr": "",
+    "original_fenced_and_completed_read_decisions_byte_identical": true,
+    "original_pq_owner_test_file_sha256": "7645fc19a734b2ffbbc5ecdb7001069e29f41e9aef3249fc0a5f383ed0e99a78",
+    "original_two_pq_regressions_untouched": true
+  },
+  "new_control_names": [
+    "owner_recovery_tests::settled_absence_fact_read_survives_reopen_and_new_owner_without_redispatch",
+    "owner_recovery_tests::settled_absence_fact_read_rejects_unknown_unsettled_and_corrupt_evidence"
+  ],
+  "test_binary": "authorized_effect",
+  "package": "codex-hepta-automation",
+  "native_tests_executed": 0
+}

@@ -1,0 +1,75 @@
+{
+  "status": "complete-source-ready-not-native-qualified",
+  "source": "620cb63ae9b58904483005bcb2c4e1507df99539",
+  "tree": "f2cebe6d99deca596c170922b8e60d66648d7393",
+  "source_path": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/source-h2",
+  "before": {
+    "identity": {
+      "commit": "e452defdbcc7b48c4949eb3d5cbf73ed667ca879",
+      "tree": "3fdf50c0b24a11b92794c9ab027ad073aae87515",
+      "parents": [
+        "9f785cb201ba12ab0ae0f0d341c0f7912cc65efc"
+      ],
+      "dirty": true
+    },
+    "raw_git_blob_bytes_match": false,
+    "tracked_count": 11839,
+    "tracked_bytes": 183390834,
+    "index_count": 11839,
+    "missing": [],
+    "hidden": [],
+    "tree_inventory_sha256": "6f6626ce1273f19d371cbbc1cadd330b6767e5dca76262e46ab9a5f5dca66841",
+    "guard_sha256": "e55f5ca1200b2c9fc5af4158c42f460e71f3815166a962a5b892acfe9477b1d1",
+    "cargo_lock_sha256": "0f458d7746a0ca0b95bedc5404fd3347c1b0a7508f1c387f3b1f3f71ced08663",
+    "toolchain_file_sha256": "e8b379eaa492bf59d35187de269afd1c4f55d85e0322f6fea32803a3fec1a380",
+    "nextest_config_sha256": "65f8b298b60f5f4d480cdd45d4de62a37c5b52d13a2cc7b77eecba3062eaa803"
+  },
+  "after": {
+    "identity": {
+      "commit": "620cb63ae9b58904483005bcb2c4e1507df99539",
+      "tree": "f2cebe6d99deca596c170922b8e60d66648d7393",
+      "parents": [
+        "e452defdbcc7b48c4949eb3d5cbf73ed667ca879"
+      ],
+      "dirty": false
+    },
+    "raw_git_blob_bytes_match": true,
+    "tracked_count": 11839,
+    "tracked_bytes": 183391637,
+    "index_count": 11839,
+    "missing": [],
+    "hidden": [],
+    "tree_inventory_sha256": "2330dcdcfad9e569e1b73cd9eade31740efb60ce64cac279b177b44fc967b920",
+    "guard_sha256": "e55f5ca1200b2c9fc5af4158c42f460e71f3815166a962a5b892acfe9477b1d1",
+    "cargo_lock_sha256": "0f458d7746a0ca0b95bedc5404fd3347c1b0a7508f1c387f3b1f3f71ced08663",
+    "toolchain_file_sha256": "e8b379eaa492bf59d35187de269afd1c4f55d85e0322f6fea32803a3fec1a380",
+    "nextest_config_sha256": "65f8b298b60f5f4d480cdd45d4de62a37c5b52d13a2cc7b77eecba3062eaa803"
+  },
+  "all_working_bytes_matched_before_alignment": {
+    "target_commit": "620cb63ae9b58904483005bcb2c4e1507df99539",
+    "target_tree": "f2cebe6d99deca596c170922b8e60d66648d7393",
+    "tracked_count": 11839,
+    "actual_tracked_bytes": 183391637,
+    "different_blob_paths": [],
+    "index_before_tree": "3fdf50c0b24a11b92794c9ab027ad073aae87515",
+    "index_equals_preparation_tree": true,
+    "target_inventory_sha256": "2330dcdcfad9e569e1b73cd9eade31740efb60ce64cac279b177b44fc967b920"
+  },
+  "configurations": {
+    "/home/qian-qi/work/hepta-audit-ledger-fixture-fix-20261103/.git/config": "24452f7031356ffbc08ab7fb9657efa5b67fb0b16b2a2ce704ec99d1514267b8",
+    "/home/qian-qi/work/hepta-audit-ledger-fixture-fix-20261103/.git/worktrees/hepta-audit-provider-recovery-fix-20261103/config.worktree": "bfefdfeb2bf56f4a5282c172fe3a69b4075e13fe3bf3cd54f6611bafa461c276",
+    "/home/qian-qi/work/hepta-audit-ledger-fixture-fix-20261103/.git/worktrees/source1/config.worktree": "443a5f645c23c3d0c0aa09f634b2ad111d46ef61946b598a2fb311678ab47454",
+    "/home/qian-qi/work/hepta-audit-ledger-fixture-fix-20261103/.git/worktrees/source-h2/config.worktree": "443a5f645c23c3d0c0aa09f634b2ad111d46ef61946b598a2fb311678ab47454"
+  },
+  "configuration_after": {
+    "/home/qian-qi/work/hepta-audit-ledger-fixture-fix-20261103/.git/config": "24452f7031356ffbc08ab7fb9657efa5b67fb0b16b2a2ce704ec99d1514267b8",
+    "/home/qian-qi/work/hepta-audit-ledger-fixture-fix-20261103/.git/worktrees/hepta-audit-provider-recovery-fix-20261103/config.worktree": "bfefdfeb2bf56f4a5282c172fe3a69b4075e13fe3bf3cd54f6611bafa461c276",
+    "/home/qian-qi/work/hepta-audit-ledger-fixture-fix-20261103/.git/worktrees/source1/config.worktree": "443a5f645c23c3d0c0aa09f634b2ad111d46ef61946b598a2fb311678ab47454",
+    "/home/qian-qi/work/hepta-audit-ledger-fixture-fix-20261103/.git/worktrees/source-h2/config.worktree": "443a5f645c23c3d0c0aa09f634b2ad111d46ef61946b598a2fb311678ab47454"
+  },
+  "configuration_unchanged": true,
+  "original_h1_source_unchanged": true,
+  "previous_checkout_failure_preserved": "h2-final-source-preparation",
+  "native_credit": false,
+  "finished_unix": 1793909726.4040847
+}

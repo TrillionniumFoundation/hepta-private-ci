@@ -1,0 +1,24 @@
+{
+  "schema": "root-C4-strategy-part-and-response-byte-review-v1",
+  "parts": 8,
+  "bytes": 32389648,
+  "sha256": "4d0bf158860d62813e64d8ccdbf22db0c537dbf3cd94d471d2293f9c584ab08d",
+  "all_part_offsets_and_hashes_match": true,
+  "source_original_delivery_sha256": "0b06ae3ea28bf7b65492776696ba72343459f4c918f7d2595a3c2ad296e56280",
+  "transfer_index_sha256": "edbe117d411265e9033d97c3f1caa6b1074428c48dbf56dcb7caf70ae7c9f153",
+  "actual_original_chunk_responses_checked": 495,
+  "all_actual_chunk_payloads_equal_archive_slices": true,
+  "all_actual_original_response_bytes_equal_reconstruction_recipe": true,
+  "trailing_LF_count_distribution": {
+    "1": 1,
+    "2": 494
+  },
+  "fixed_remote_version": "2050:54974872:32389648:1793908087915308443:1793908090843237028",
+  "retention": "Complete payload archive plus exact non-payload metadata, original response byte lengths/SHA256 and byte-identical JSON reconstruction recipe. Original response files are historical workspace paths, not extra Git payload copies.",
+  "original_read_refusals": 1,
+  "initial_parallel_limit": 8,
+  "resume_parallel_limit": 4,
+  "no_successful_chunk_retried": "Only offsets absent from the successfully persisted chunk set; the rejected offset had no child submitted. Existing successful chunk files were not reread.",
+  "native_or_reader_reexecuted": false,
+  "verification_note": "Initial review assumed one trailing LF and refused the second response; corrected reconstruction preserves the actual one-or-two LF count derived from each original byte length and verified against every original SHA256. No input bytes or gate result changed."
+}

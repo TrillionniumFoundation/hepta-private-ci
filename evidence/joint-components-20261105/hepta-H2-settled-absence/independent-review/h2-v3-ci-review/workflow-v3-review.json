@@ -1,0 +1,121 @@
+{
+  "schema_version": 1,
+  "kind": "independent-static-workflow-delta-review",
+  "base_commit": "9f785cb201ba12ab0ae0f0d341c0f7912cc65efc",
+  "base_tree": "24804b21d0306b617e12fa3f5b9454a12ed4ad41",
+  "patch_sha256": "9507e363818b094f4453d5d91496b14a28438a15603b65625d5736c93635cb30",
+  "patch_bytes": 26569,
+  "implementation_manifest_sha256": "c0f9c5a85ca777952febb792bf822725a6095c1d9c0401487689bef92db61570",
+  "reviewed_v2_patch_sha256": "906788c15547a5a21f0f90bcfc95f45d4aa25d163a83a51d29981c3919adba7e",
+  "v2_four_file_patch_chunks_and_candidate_bytes_identical": true,
+  "workflow": {
+    "path": ".github/workflows/hepta-pq-policy-renewal.yml",
+    "mode": "100644",
+    "base_git_blob": "4295f31ac8e901f427695f320d2c1da07890d0ce",
+    "base_sha256": "4f331d94dc8927d537873f976ce8c459a5e09673ef8431d3b310419ecf21f2ad",
+    "new_git_blob": "487bf796005439547ff1ac0366648a0f2daf236c",
+    "new_sha256": "f1e3b05fbdf39ff22d9837ca92595cf84e48a038e8a1c60e1bbee6bb4f39d584",
+    "bytes": 26989
+  },
+  "original_test_cases": 69,
+  "added_test_cases": 2,
+  "total_test_cases": 71,
+  "original_case_sets_preserved": true,
+  "guard_algorithm_ast_except_expected_map_identical": true,
+  "original_relative_step_order_preserved": true,
+  "original_steps_identical_except_expected_map_and_scoped_lint": true,
+  "top_level_policy_matrix_environment_timeout_unchanged": true,
+  "job_timeout_minutes": 90,
+  "original_step_names": [
+    "Check out the exact source or prospective merge",
+    "Bind commit, tree and merge parents",
+    "Prepare the original native process prerequisites",
+    "taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532",
+    "Install the existing pinned Python formatter launcher",
+    "facebook/install-dotslash@1e4e7b3e07eaca387acb98f1d4720e0bee8dbb6a",
+    "sudo install -m 0755 \"$(command -v dotslash)\" /usr/local/bin/dotslash",
+    "Resolve the existing verified V8 artifacts",
+    "Fetch the locked current dependency graph",
+    "Run all fourteen original and added dispatcher controls",
+    "Run the three real Agentd and App Server process controls",
+    "Run the twenty-two recovery snapshot and ACK provenance controls",
+    "Run the eleven PQ recovery frontier controls",
+    "Run the four real Agentd evidence recovery process controls",
+    "Run the original qualification bound and historical corruption refusal",
+    "Run the eleven ordinary PQ effect and recovery controls",
+    "Run the PQ provider contract signature control",
+    "Run the ordinary Agentd process through provider ACK loss and owned kill",
+    "Require every selected test by name with no selected skip",
+    "Run the original scoped linter and retain any source mutation as failure",
+    "Run the original formatter after tests and lint",
+    "Verify the exact source after all execution",
+    "Retain original command logs and identity records"
+  ],
+  "added_step": {
+    "name": "Run the two settled absence history and corruption controls",
+    "if": "${{ !cancelled() && steps.dependencies.outcome == 'success' }}",
+    "env": {
+      "CARGO_NET_OFFLINE": "true"
+    },
+    "run": "python3 scripts/hepta_ci_exec.py --output \"$RUNNER_TEMP/pq-policy-renewal/effect-settled-absence.json\" --minimum-tests 2 --timeout-seconds 600 -- just test --locked -p codex-hepta-automation --test authorized_effect -E 'test(=owner_recovery_tests::settled_absence_fact_read_survives_reopen_and_new_owner_without_redispatch) | test(=owner_recovery_tests::settled_absence_fact_read_rejects_unknown_unsettled_and_corrupt_evidence)' --no-capture --retries 0 --test-threads=1"
+  },
+  "added_command_argv": [
+    "just",
+    "test",
+    "--locked",
+    "-p",
+    "codex-hepta-automation",
+    "--test",
+    "authorized_effect",
+    "-E",
+    "test(=owner_recovery_tests::settled_absence_fact_read_survives_reopen_and_new_owner_without_redispatch) | test(=owner_recovery_tests::settled_absence_fact_read_rejects_unknown_unsettled_and_corrupt_evidence)",
+    "--no-capture",
+    "--retries",
+    "0",
+    "--test-threads=1"
+  ],
+  "added_exact_names": [
+    "owner_recovery_tests::settled_absence_fact_read_rejects_unknown_unsettled_and_corrupt_evidence",
+    "owner_recovery_tests::settled_absence_fact_read_survives_reopen_and_new_owner_without_redispatch"
+  ],
+  "minimum_tests": 2,
+  "new_wrapper_timeout_seconds": 600,
+  "lint_timeout_seconds": 1200,
+  "lint_only_appended_package": "codex-hepta-automation",
+  "guard_name": "Require every selected test by name with no selected skip",
+  "implementation_proof_sha256": "8ae62f2200c59f286993442eb396e62d94852c50710e58ad71a6019e2a204eac",
+  "implementation_controls_read_not_reexecuted": [
+    {
+      "name": "complete_inventory",
+      "exit_code": 0,
+      "expected_behavior_observed": true,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "name": "missing_new_receipt",
+      "exit_code": 1,
+      "expected_behavior_observed": true,
+      "stdout": "",
+      "stderr": "Every selected native test must execute and pass exactly once\n"
+    },
+    {
+      "name": "selected_new_skip",
+      "exit_code": 1,
+      "expected_behavior_observed": true,
+      "stdout": "",
+      "stderr": "Every selected native test must execute and pass exactly once\n"
+    },
+    {
+      "name": "duplicate_new_case",
+      "exit_code": 1,
+      "expected_behavior_observed": true,
+      "stdout": "",
+      "stderr": "Every selected native test must execute and pass exactly once\n"
+    }
+  ],
+  "synthetic_or_native_tests_reexecuted_by_reviewer": 0,
+  "rust_native_pass_claim": false,
+  "nextest_configuration_not_in_patch": true,
+  "conclusion": "No concrete CI wiring blocker found; two exact-name controls are permanently required in addition to the preserved original 69. Formatting and native qualification remain pending."
+}

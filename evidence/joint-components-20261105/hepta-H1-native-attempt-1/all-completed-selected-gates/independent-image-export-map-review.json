@@ -1,0 +1,123 @@
+{
+  "scope": "read-only local mapping audit; actual remote retained ELF bytes have not yet been exported or rehashed by this review",
+  "source_commit": "9f785cb201ba12ab0ae0f0d341c0f7912cc65efc",
+  "source_tree": "24804b21d0306b617e12fa3f5b9454a12ed4ad41",
+  "map_sha256": "8c1fe933839ac8bc7d3989c497995d52332f73a9cf8ecc18e15150b66b18d9c2",
+  "unique_images": [
+    {
+      "sha256": "86a2c65e12fbef81586067783aa478677975e03290bcd62561938645ac1efc7e",
+      "bytes": 504265656,
+      "gates": [
+        "dispatcher",
+        "recovery-signed",
+        "effect-pq-owner"
+      ],
+      "retained_paths": [
+        "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/evidence/joint-h1-native-attempt-1/executed-binaries-dispatcher/86a2c65e12fbef81586067783aa478677975e03290bcd62561938645ac1efc7e.elf",
+        "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/evidence/joint-h1-native-attempt-1/executed-binaries-recovery-signed/86a2c65e12fbef81586067783aa478677975e03290bcd62561938645ac1efc7e.elf",
+        "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/evidence/joint-h1-native-attempt-1/executed-binaries-effect-pq-owner/86a2c65e12fbef81586067783aa478677975e03290bcd62561938645ac1efc7e.elf"
+      ],
+      "actual_paths": [
+        "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/codex_hepta_agentd-13943d509610e217"
+      ],
+      "captured_records": 34
+    },
+    {
+      "sha256": "060b03442eaad0f40a1c532199d59183ce6b784beb9023ee06fec73105c34d31",
+      "bytes": 120073792,
+      "gates": [
+        "product"
+      ],
+      "retained_paths": [
+        "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/evidence/joint-h1-native-attempt-1/executed-binaries-product/060b03442eaad0f40a1c532199d59183ce6b784beb9023ee06fec73105c34d31.elf"
+      ],
+      "actual_paths": [
+        "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/authbus_text_product-c365e5b605b48783"
+      ],
+      "captured_records": 3
+    },
+    {
+      "sha256": "a948cdfa5aeafc03fcfc63459e581ca254129f4d878949236e0bf42df3fe725f",
+      "bytes": 53291680,
+      "gates": [
+        "recovery-owner",
+        "qualification-growth"
+      ],
+      "retained_paths": [
+        "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/evidence/joint-h1-native-attempt-1/executed-binaries-recovery-owner/a948cdfa5aeafc03fcfc63459e581ca254129f4d878949236e0bf42df3fe725f.elf",
+        "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/evidence/joint-h1-native-attempt-1/executed-binaries-qualification-growth/a948cdfa5aeafc03fcfc63459e581ca254129f4d878949236e0bf42df3fe725f.elf"
+      ],
+      "actual_paths": [
+        "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/codex_hepta_evidence-0f5076227f347d3a"
+      ],
+      "captured_records": 23
+    },
+    {
+      "sha256": "6c4c81a3b2d99aba2bb95aa83433680140a82d936285942ea702c352eb464126",
+      "bytes": 96989456,
+      "gates": [
+        "recovery-product"
+      ],
+      "retained_paths": [
+        "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/evidence/joint-h1-native-attempt-1/executed-binaries-recovery-product/6c4c81a3b2d99aba2bb95aa83433680140a82d936285942ea702c352eb464126.elf"
+      ],
+      "actual_paths": [
+        "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/kernel_evidence_product-c434ef3dca0b18f7"
+      ],
+      "captured_records": 4
+    }
+  ],
+  "unique_image_bytes": 774620584,
+  "retained_path_count": 7,
+  "all_retained_paths_bytes_if_no_dedup": 1836443576,
+  "captured_process_records": 64,
+  "actual_cases": 67,
+  "passed": 65,
+  "failed": 2,
+  "unbound_cases": [
+    {
+      "gate": "recovery-owner",
+      "case": "recovery_invocation_schema_tests::recovery_invocation_schema_refuses_non_rowid_or_composite_sequences"
+    },
+    {
+      "gate": "recovery-signed",
+      "case": "evidence_frontier::tests::recovery_frontier_cannot_be_omitted_at_the_ordinary_agentd_run_entry"
+    },
+    {
+      "gate": "recovery-signed",
+      "case": "evidence_frontier::tests::recovery_frontier_enforces_root_scope_epoch_revocation_and_generation_floor"
+    }
+  ],
+  "missing_cases_retroactively_assigned": false,
+  "inputs": [
+    {
+      "path": "model_storage/pq_effect_migration/native/joint-h1-native-attempt-1/dispatcher.executed-binaries.json",
+      "sha256": "45eb025aaef8c4ccfe17fbf09927faf65de8d6e110558d3ed42dfb2c65194056"
+    },
+    {
+      "path": "model_storage/pq_effect_migration/native/joint-h1-native-attempt-1/product.executed-binaries.json",
+      "sha256": "223bbcbe58885b515b41f2958e6c7798e0b95cac5573c5ba443cf1ac30c36e8d"
+    },
+    {
+      "path": "model_storage/pq_effect_migration/native/joint-h1-native-attempt-1/recovery-owner.executed-binaries.json",
+      "sha256": "f0d86ac3f733c62a3efa4618a1d6514dc1e35a0b8823a54ddf2f32bc57f4c08e"
+    },
+    {
+      "path": "model_storage/pq_effect_migration/native/joint-h1-native-attempt-1/recovery-signed.executed-binaries.json",
+      "sha256": "1b841f7775d040ac513404a5f8bc56542709f05b84bcf73b32191e1c636f97a7"
+    },
+    {
+      "path": "model_storage/pq_effect_migration/native/joint-h1-native-attempt-1/recovery-product.executed-binaries.json",
+      "sha256": "7e3fb154114da3891a00e1bf067d99cf2dd21962092bbab2c557751c2dcabec5"
+    },
+    {
+      "path": "model_storage/pq_effect_migration/native/joint-h1-native-attempt-1/qualification-growth.executed-binaries.json",
+      "sha256": "4834d4228687e96538dd0fba67680d10a0d458191c05356edfde164a943c6dde"
+    },
+    {
+      "path": "model_storage/pq_effect_migration/native/joint-h1-native-attempt-1/effect-pq-owner.executed-binaries.json",
+      "sha256": "1c731057f4e782fea2776c68cfa574ac70fcbc9faf4b3699daf092affd4d188f"
+    }
+  ],
+  "export_contract": "Export 4 actual selected retained-copy paths with all 7 original capture-path aliases mapped; if only 4 read, do not claim all 7 paths were independently opened/rehashed. Never read current target path to recreate old H1 bytes."
+}

@@ -1,0 +1,619 @@
+--- a/.github/workflows/hepta-pq-policy-renewal.yml
++++ b/.github/workflows/hepta-pq-policy-renewal.yml
+@@ -271,9 +271,24 @@
+         run: >-
+           python3 scripts/hepta_ci_exec.py
+           --output "$RUNNER_TEMP/pq-policy-renewal/effect-pq-product.json"
+-          --minimum-tests 1 --timeout-seconds 1800 --
++          --minimum-tests 2 --timeout-seconds 1800 --
+           just test --locked -p codex-hepta-agentd --test automation_effect_pq_product
+-          -E 'test(=pq_effect_survives_owned_agentd_kill_after_provider_fsync_without_resend)'
++          -E 'test(=pq_effect_survives_owned_agentd_kill_after_provider_fsync_without_resend)
++          | test(=binary::held_daemon_image_reuse_refuses_wrong_changed_or_missing_files)'
++          --no-capture --retries 0 --test-threads=1
++
++      - name: Run explicit runtime input and qualification-before-runtime controls
++        if: ${{ !cancelled() && steps.dependencies.outcome == 'success' }}
++        env:
++          CARGO_NET_OFFLINE: "true"
++        run: >-
++          python3 scripts/hepta_ci_exec.py
++          --output "$RUNNER_TEMP/pq-policy-renewal/neural-runtime-input.json"
++          --minimum-tests 2 --timeout-seconds 600 --
++          just test --locked -p codex-hepta-agentd
++          --test neural_comparison_native --test neural_cognitive_bootstrap
++          -E 'test(=native_comparison_input_requires_v2_and_independently_pinned_snapshot)
++          | test(=ordinary_native_composition_rejects_untrusted_qualification_before_inference_owners)'
+           --no-capture --retries 0 --test-threads=1
+ 
+       - name: Require every selected test by name with no selected skip
+@@ -289,12 +304,17 @@
+           root = Path(sys.argv[1])
+           prefix = "authbus_dispatch::tests::"
+           expected = {
++              "neural-runtime-input": {
++                  "native_comparison_input_requires_v2_and_independently_pinned_snapshot",
++                  "ordinary_native_composition_rejects_untrusted_qualification_before_inference_owners",
++              },
+               "qualification-growth": {
+                   "qualification_tests::claim_query_rejects_more_than_512_references",
+                   "qualification_tests::ordinary_append_rejects_historical_projection_drift_without_consuming_replay",
+               },
+               "effect-pq-product": {
+                   "pq_effect_survives_owned_agentd_kill_after_provider_fsync_without_resend",
++                  "binary::held_daemon_image_reuse_refuses_wrong_changed_or_missing_files",
+               },
+               "effect-pq-owner": {
+                   "automation_effect_host::pq::tests::ordinary_loader_denies_classical_schema_and_contract_or_policy_substitution",
+--- /dev/null
++++ b/codex-rs/hepta-agentd/NEURAL_NATIVE_COMPARISON_INPUT.md
+@@ -0,0 +1,79 @@
++# Explicit runtime input for the controlled native comparison
++
++The opt-in `neural_comparison_native` integration test accepts
++`hepta-smollm-neural-comparison-native-v2` through
++`HEPTA_PN3_NEURAL_COMPARISON_CONFIG`. The v1 input is rejected. Adding an empty
++snapshot, capturing the current environment at load time, or deriving a new
++expected digest from the file being admitted does not migrate an existing input.
++
++An operator must provide an already retained v2 cold-runtime snapshot and its
++independently fixed SHA256, together with the existing parent and model inputs.
++The comparison reads this snapshot once before it creates its comparison ledger
++or starts either worker. Both models receive these same bytes. The snapshot file
++must be a canonical absolute regular file, nonempty and at most 16 MiB; its bytes
++must match the supplied nonzero digest. The snapshot schema is
++`hepta-controlled-cold-runtime-snapshot-v2`. Original worker admission still
++checks its interpreter, installed inventory and runtime files before execution.
++
++## External input contract
++
++Every path below is absolute. The snapshot path is also canonical and must not
++be a symbolic link. The three SHA256 fields are the previously retained digests
++for their respective exact files. The output directory must be new, as required
++by the original comparison.
++
++```json
++{
++  "schema": "hepta-smollm-neural-comparison-native-v2",
++  "python": "/operator/runtime/bin/python",
++  "runtime_snapshot": "/operator/retained/runtime-snapshot-v2.json",
++  "runtime_snapshot_sha256": "REPLACE_WITH_INDEPENDENTLY_RETAINED_SHA256",
++  "chain": "/operator/fixed-chain-checkout",
++  "materials": "/operator/complete-model-materials",
++  "baseline_parent": "/operator/retained/baseline-parent.json",
++  "baseline_parent_sha256": "REPLACE_WITH_RETAINED_BASELINE_SHA256",
++  "candidate_parent": "/operator/retained/candidate-parent.json",
++  "candidate_parent_sha256": "REPLACE_WITH_RETAINED_CANDIDATE_SHA256",
++  "output": "/operator/new-comparison-output"
++}
++```
++
++This template deliberately cannot run until the operator supplies the real
++paths and fixed digests. The input consumer neither creates a runtime snapshot
++nor supplies an operator root, grant, qualification or replacement model.
++
++The existing separate producer is `scripts/hepta_smollm_runtime_snapshot.py`.
++Its `record --lock --installation --output` command requires the original locked
++CPU requirements, their complete installation report, and a private CPython
++3.12 environment launched with `-I`. It records the selected interpreter,
++installed files and preflight imports and emits the snapshot's SHA256. An
++operator may retain that result as an independently fixed input before a
++separately authorized comparison. The producer explicitly records
++`immutable_held_runtime_closure=false`, `actual_model_execution=false`, and
++`production_qualification=false`; recording or verifying a snapshot does not
++establish any of those qualifications. The comparison does not invoke this
++producer or replace an already pinned digest when an input disagrees.
++
++The comparison's execution profile binds the complete current set of 13 Chain
++source and configuration files: `contract_wire.py`, `devnet-v1.json`,
++`ledger-v1.json`, `model-family-v1.json`, `work-profile-v1.json`,
++`llm_adapter_contract.py`, `llm_base_material.py`, `llm_inherited_runtime.py`,
++`llm_neural_read_worker.py`, `llm_parent_material.py`,
++`llm_python_runtime_contract.py`, `llm_runtime_pilot.py`, and
++`model-family-smollm2-135m-v1.json`. It no longer constructs the obsolete six-file
++profile. The original profile verifier checks this complete set and the worker
++checks the pinned source bytes.
++
++## Scope and retained failures
++
++The real gen2/gen3 comparison remains ignored by default and requires explicit
++operator inputs. The new input-contract control uses inert local fixtures;
++it does not execute Python or a model. The existing untrusted-qualification
++control deliberately supplies an unavailable empty snapshot and must still
++reject at the original qualification boundary before creating runtime owners.
++
++This migration does not authorize a new learning trial, reset a spent ledger,
++change tasks or baselines, or turn the controlled comparison issuer into product
++authority. A prior failed or spent comparison is retained. Model adoption and
++independent qualification require their own current authorized inputs and
++ordinary execution evidence.
+--- a/codex-rs/hepta-agentd/tests/automation_effect_pq_product.rs
++++ b/codex-rs/hepta-agentd/tests/automation_effect_pq_product.rs
+@@ -239,13 +239,15 @@
+     fleet.start_with_automation_effect_host_file(&agent, &owner.path)?;
+     let (first, health) = fleet.wait_new_spawn(&agent, 0).await?;
+     live_identity(&fleet, &agent, first_generation, health.process_id)?;
+-    let first_binary = binary::retain_live_daemon(
++    let first_capture = binary::retain_live_daemon(
+         health.process_id,
+         first_generation,
+         &agent,
+         &evidence,
+         &source,
++        None,
+     )?;
++    let first_binary = first_capture.record().clone();
+     checkpoint(&evidence, "first-process.json", &first_binary)?;
+     let first = Arc::new(first);
+     let dispatch_client = Arc::clone(&first);
+@@ -314,13 +316,15 @@
+     fleet.start_with_automation_effect_host_file(&agent, &owner.path)?;
+     let (second, health2) = fleet.wait_new_spawn(&agent, first_generation).await?;
+     live_identity(&fleet, &agent, second_generation, health2.process_id)?;
+-    let second_binary = binary::retain_live_daemon(
++    let second_capture = binary::retain_live_daemon(
+         health2.process_id,
+         second_generation,
+         &agent,
+         &evidence,
+         &source,
++        Some(&first_capture),
+     )?;
++    let second_binary = second_capture.record().clone();
+     ensure!(
+         (
+             second_binary["pid"].clone(),
+--- a/codex-rs/hepta-agentd/tests/neural_cognitive_bootstrap.rs
++++ b/codex-rs/hepta-agentd/tests/neural_cognitive_bootstrap.rs
+@@ -388,6 +388,9 @@
+             materials: unavailable.clone(),
+             run_directory: worker_directory.clone(),
+             source_pins: BTreeMap::new(),
++            // Deliberately unavailable: qualification must reject this input
++            // before the original runtime snapshot validator or worker opens.
++            runtime_snapshot: Vec::new(),
+             target_contract: Vec::new(),
+             wrapped_adapter: Vec::new(),
+             contract_digest: digest,
+--- a/codex-rs/hepta-agentd/tests/neural_comparison_native.rs
++++ b/codex-rs/hepta-agentd/tests/neural_comparison_native.rs
+@@ -44,6 +44,77 @@
+ }
+ 
+ #[test]
++fn native_comparison_input_requires_v2_and_independently_pinned_snapshot() -> native::Result<()> {
++    let directory = tempfile::tempdir()?;
++    let root = directory.path().canonicalize()?;
++    // A structurally complete, controlled v2 input. These regular bytes are
++    // never executed and do not certify a Python runtime or model installation.
++    let base = root.join("base");
++    let prefix = root.join("venv");
++    let stdlib = root.join("canonical/lib/python3.12");
++    fs::create_dir_all(base.join("bin"))?;
++    fs::create_dir_all(base.join("lib"))?;
++    fs::create_dir_all(prefix.join("lib/python3.12/site-packages"))?;
++    fs::create_dir_all(&stdlib)?;
++    let python = base.join("bin/python3.12");
++    fs::write(&python, b"not an executed interpreter")?;
++    std::os::unix::fs::symlink(&stdlib, base.join("lib/python3.12"))?;
++    let cfg = prefix.join("pyvenv.cfg");
++    fs::write(&cfg, format!("home = {}\n", base.join("bin").display()))?;
++    let dependency = prefix.join("lib/python3.12/site-packages/fixture.py");
++    fs::write(&dependency, b"# never imported\n")?;
++    let bootstrap = stdlib.join("hashlib.py");
++    fs::write(&bootstrap, b"# never imported stdlib fixture\n")?;
++    let inventory = std::collections::BTreeSet::from([cfg, dependency, bootstrap]);
++    let mut files = serde_json::Map::new();
++    for path in inventory.iter().chain(std::iter::once(&python)) {
++        files.insert(
++            path.to_str().ok_or("snapshot fixture path")?.to_owned(),
++            serde_json::json!(Digest32::of_bytes(&fs::read(path)?).to_string()),
++        );
++    }
++    let snapshot = serde_json::to_vec(&serde_json::json!({
++        "schema":"hepta-controlled-cold-runtime-snapshot-v2",
++        "python":{"executable":python}, "prefix":prefix, "stdlib_root":stdlib,
++        "files":files, "managed_inventory":inventory,
++    }))?;
++    let path = root.join("operator-pinned-runtime.json");
++    fs::write(&path, &snapshot)?;
++    let value = serde_json::json!({
++        "schema":"hepta-smollm-neural-comparison-native-v2", "python":python,
++        "runtime_snapshot":path, "runtime_snapshot_sha256":Digest32::of_bytes(&snapshot).to_string(),
++        "chain":root.join("unopened-chain"), "materials":root.join("unopened-model"),
++        "baseline_parent":root.join("unopened-baseline"), "baseline_parent_sha256":Digest32::from_array([1;32]).to_string(),
++        "candidate_parent":root.join("unopened-candidate"), "candidate_parent_sha256":Digest32::from_array([2;32]).to_string(),
++        "output":root.join("must-not-create-comparison"),
++    });
++    let read = |value: serde_json::Value| -> native::Result<Vec<u8>> {
++        let input: native::Input = serde_json::from_value(value)?;
++        input.read_runtime_snapshot()
++    };
++    assert_eq!(read(value.clone())?, snapshot);
++    let mut legacy = value.clone();
++    legacy["schema"] = serde_json::json!("hepta-smollm-neural-comparison-native-v1");
++    assert!(read(legacy).unwrap_err().to_string().contains("requires v2"));
++    for field in ["runtime_snapshot", "runtime_snapshot_sha256"] {
++        let mut missing = value.clone();
++        missing.as_object_mut().unwrap().remove(field);
++        assert!(serde_json::from_value::<native::Input>(missing).is_err());
++    }
++    let mut relative = value.clone();
++    relative["runtime_snapshot"] = serde_json::json!("relative-runtime.json");
++    assert!(read(relative).unwrap_err().to_string().contains("absolute"));
++    let mut changed = value.clone();
++    changed["runtime_snapshot_sha256"] = serde_json::json!(Digest32::from_array([3;32]).to_string());
++    assert!(read(changed).unwrap_err().to_string().contains("snapshot mismatch"));
++    OpenOptions::new().write(true).open(&path)?.set_len(16 * 1024 * 1024 + 1)?;
++    assert!(read(value).unwrap_err().to_string().contains("byte bound"));
++    assert!(!root.join("must-not-create-comparison").exists());
++    assert!(!root.join("unopened-model").exists());
++    Ok(())
++}
++
++#[test]
+ #[ignore = "requires HEPTA_PN3_NEURAL_COMPARISON_CONFIG with actual pinned gen2/gen3 CPU material"]
+ fn real_gen2_gen3_forwards_score_only_after_original_holdout_consumption() -> native::Result<()> {
+     let path = std::env::var_os("HEPTA_PN3_NEURAL_COMPARISON_CONFIG")
+@@ -53,25 +124,13 @@
+         return Err("native configuration bound".into());
+     }
+     let input: native::Input = serde_json::from_slice(&raw)?;
+-    if input.schema != "hepta-smollm-neural-comparison-native-v1"
+-        || [
+-            &input.python,
+-            &input.chain,
+-            &input.materials,
+-            &input.baseline_parent,
+-            &input.candidate_parent,
+-            &input.output,
+-        ]
+-        .iter()
+-        .any(|path| !path.is_absolute())
+-    {
+-        return Err("native comparison requires explicit absolute project paths".into());
+-    }
++    let runtime_snapshot = input.read_runtime_snapshot()?;
+     fs::DirBuilder::new().mode(0o700).create(&input.output)?;
+     let mut roles = ControlledRoles::new();
+     let (dataset, ledger) = roles.dataset(&input.output.join("original-estimator-ledger"));
+     let candidate_model = native::model(
+         &input,
++        &runtime_snapshot,
+         &input.candidate_parent,
+         &input.candidate_parent_sha256,
+         "candidate",
+@@ -79,6 +138,7 @@
+     )?;
+     let baseline_model = native::model(
+         &input,
++        &runtime_snapshot,
+         &input.baseline_parent,
+         &input.baseline_parent_sha256,
+         "baseline",
+--- a/codex-rs/hepta-agentd/tests/support/automation_effect_binary.rs
++++ b/codex-rs/hepta-agentd/tests/support/automation_effect_binary.rs
+@@ -97,13 +97,62 @@
+     )
+ }
+ 
++/// Keep both the original executable and completed retained copy open across
++/// the owned restart. A later generation may reuse this exact file object,
++/// never a path or an unverified earlier digest alone.
++pub(super) struct LiveDaemonImage {
++    image: fs::File,
++    image_identity: (u64, u64, u64, i64, i64, i64, i64),
++    retained: fs::File,
++    retained_identity: (u64, u64, u64, i64, i64, i64, i64),
++    retained_path: PathBuf,
++    record: Value,
++}
++
++impl LiveDaemonImage {
++    pub(super) fn record(&self) -> &Value {
++        &self.record
++    }
++}
++
++fn verify_same_held_file_object(
++    original: &LiveDaemonImage,
++    current: &fs::File,
++    expected: &Path,
++    source: &Value,
++) -> Result<()> {
++    ensure!(
++        original.record["source"] == *source,
++        "retained daemon image belongs to another source"
++    );
++    let path = fs::symlink_metadata(expected)?;
++    ensure!(
++        path.is_file()
++            && file_identity(&path) == original.image_identity
++            && file_identity(&current.metadata()?) == original.image_identity
++            && file_identity(&original.image.metadata()?) == original.image_identity,
++        "live daemon image is not the unchanged held file object"
++    );
++    let copy = fs::symlink_metadata(&original.retained_path)
++        .context("completed retained daemon copy is unavailable")?;
++    ensure!(
++        copy.is_file()
++            && file_identity(&copy) == original.retained_identity
++            && file_identity(&original.retained.metadata()?) == original.retained_identity
++            && copy.len() == original.image_identity.2,
++        "completed retained daemon copy changed"
++    );
++    Ok(())
++}
++
+ pub(super) fn retain_live_daemon(
+     pid: u32,
+     generation: u64,
+     agent: &AgentFixture,
+     directory: &Path,
+     source: &Value,
+-) -> Result<Value> {
++    original: Option<&LiveDaemonImage>,
++) -> Result<LiveDaemonImage> {
+     let expected = support::fleet::agentd_binary()?.canonicalize()?;
+     let process = PathBuf::from(format!("/proc/{pid}"));
+     let start = start_ticks(&process)?;
+@@ -143,22 +192,47 @@
+         file_identity(&fs::metadata(process.join("exe"))?) == file_identity(&before),
+         "PID executed a different image"
+     );
+-    let temporary = directory.join(format!("agentd-{pid}-{start}.elf"));
+-    let mut retained = fs::OpenOptions::new()
+-        .write(true)
+-        .create_new(true)
+-        .open(&temporary)?;
+-    let mut hash = Sha256::new();
+-    let mut buffer = [0; 1024 * 1024];
+-    loop {
+-        let read = image.read(&mut buffer)?;
+-        if read == 0 {
+-            break;
+-        }
+-        hash.update(&buffer[..read]);
+-        retained.write_all(&buffer[..read])?;
+-    }
+-    retained.sync_all()?;
++    let (retained_path, retained, digest, method, original_pid, original_start) =
++        if let Some(original) = original {
++            verify_same_held_file_object(original, &image, &expected, source)?;
++            // The held descriptor prevents inode reuse. This verifies the same
++            // unchanged file object and completed copy; it is deliberately not
++            // a second full hash/copy or proof against a privileged writer.
++            (
++                original.retained_path.clone(),
++                original.retained.try_clone()?,
++                original.record["sha256"].as_str().context("original image digest")?.to_owned(),
++                "same-held-file-object-reuse",
++                original.record["pid"].clone(),
++                original.record["start_ticks"].clone(),
++            )
++        } else {
++            let path = directory.join(format!("agentd-{pid}-{start}.elf"));
++            let mut retained = fs::OpenOptions::new()
++                .write(true)
++                .create_new(true)
++                .open(&path)?;
++            let mut hash = Sha256::new();
++            let mut buffer = [0; 1024 * 1024];
++            loop {
++                let read = image.read(&mut buffer)?;
++                if read == 0 {
++                    break;
++                }
++                hash.update(&buffer[..read]);
++                retained.write_all(&buffer[..read])?;
++            }
++            retained.sync_all()?;
++            fs::File::open(directory)?.sync_all()?;
++            (
++                path,
++                retained,
++                format!("{:x}", hash.finalize()),
++                "first-live-fd-hash-copy",
++                serde_json::json!(pid),
++                serde_json::json!(start),
++            )
++        };
+     ensure!(
+         file_identity(&image.metadata()?) == file_identity(&before),
+         "live executable changed while copied"
+@@ -171,11 +245,77 @@
+         file_identity(&fs::metadata(process.join("exe"))?) == file_identity(&before),
+         "process replaced its image during capture"
+     );
+-    let digest = format!("{:x}", hash.finalize());
+-    Ok(
+-        serde_json::json!({"source":source,"pid":pid,"spawn_generation":generation,"start_ticks":start,
+-        "cargo_resolved_binary":expected,"actual_executable":actual,"retained_copy":temporary,
++    ensure!(
++        file_identity(&fs::symlink_metadata(&expected)?) == file_identity(&before),
++        "Cargo executable path changed during capture"
++    );
++    if let Some(original) = original {
++        verify_same_held_file_object(original, &image, &expected, source)?;
++    }
++    let retained_identity = file_identity(&retained.metadata()?);
++    ensure!(
++        retained_identity.2 == before.len()
++            && file_identity(&fs::symlink_metadata(&retained_path)?) == retained_identity,
++        "retained executable copy is incomplete or replaced"
++    );
++    let record = serde_json::json!({"source":source,"pid":pid,"spawn_generation":generation,"start_ticks":start,
++        "cargo_resolved_binary":expected,"actual_executable":actual,"retained_copy":retained_path,
+         "sha256":digest,"bytes":before.len(),"device":before.dev(),"inode":before.ino(),
+-        "owner_and_generation_verified":true,"opened_fd_and_process_identity_verified":true}),
+-    )
+-}
++        "owner_and_generation_verified":true,"opened_fd_and_process_identity_verified":true,
++        "capture_method":method,"full_hash_and_copy_this_capture":original.is_none(),
++        "origin_capture_pid":original_pid,"origin_capture_start_ticks":original_start,
++        "same_held_file_object_verified":original.is_some(),
++        "scope":"owned live image with no concurrent build; file-object metadata stability is not a hostile privileged-writer guarantee"});
++    Ok(LiveDaemonImage {
++        image,
++        image_identity: file_identity(&before),
++        retained,
++        retained_identity,
++        retained_path,
++        record,
++    })
++}
++
++#[test]
++fn held_daemon_image_reuse_refuses_wrong_changed_or_missing_files() -> Result<()> {
++    for mutation in ["different_file_object", "changed_held_image", "missing_copy"] {
++        let directory = tempfile::tempdir()?;
++        let path = directory.path().join("image");
++        let copy = directory.path().join("retained");
++        let bytes = b"controlled file-identity fixture, not an executable";
++        fs::write(&path, bytes)?;
++        fs::write(&copy, bytes)?;
++        let image = fs::File::open(&path)?;
++        let retained = fs::File::open(&copy)?;
++        let source = serde_json::json!({"scope":"synthetic file-identity control only"});
++        let original = LiveDaemonImage {
++            image_identity: file_identity(&image.metadata()?),
++            retained_identity: file_identity(&retained.metadata()?),
++            image,
++            retained,
++            retained_path: copy.clone(),
++            record: serde_json::json!({"source":source}),
++        };
++        let mut current = fs::File::open(&path)?;
++        verify_same_held_file_object(&original, &current, &path, &source)?;
++        match mutation {
++            "different_file_object" => {
++                let different = directory.path().join("same-bytes-other-inode");
++                fs::write(&different, bytes)?;
++                current = fs::File::open(&different)?;
++            }
++            "changed_held_image" => {
++                let mut writer = fs::OpenOptions::new().append(true).open(&path)?;
++                writer.write_all(b" changed")?;
++                writer.sync_all()?;
++            }
++            "missing_copy" => fs::remove_file(&copy)?,
++            _ => unreachable!(),
++        }
++        ensure!(
++            verify_same_held_file_object(&original, &current, &path, &source).is_err(),
++            "same-file-object reuse admitted {mutation}"
++        );
++    }
++    Ok(())
++}
+--- a/codex-rs/hepta-agentd/tests/support/neural_native_owner.rs
++++ b/codex-rs/hepta-agentd/tests/support/neural_native_owner.rs
+@@ -4,6 +4,7 @@
+ use std::collections::BTreeMap;
+ use std::collections::BTreeSet;
+ use std::fs;
++use std::io::Read;
+ use std::path::Path;
+ use std::path::PathBuf;
+ use std::sync::Arc;
+@@ -42,6 +43,8 @@
+ pub struct Input {
+     pub schema: String,
+     pub python: PathBuf,
++    pub runtime_snapshot: PathBuf,
++    pub runtime_snapshot_sha256: String,
+     pub chain: PathBuf,
+     pub materials: PathBuf,
+     pub baseline_parent: PathBuf,
+@@ -51,6 +54,57 @@
+     pub output: PathBuf,
+ }
+ 
++impl Input {
++    /// Read the independently pinned input once, before creating any comparison
++    /// ledger or worker. The original worker admission still validates the
++    /// complete v2 runtime inventory before invoking the interpreter.
++    pub fn read_runtime_snapshot(&self) -> Result<Vec<u8>> {
++        if self.schema != "hepta-smollm-neural-comparison-native-v2"
++            || [
++                &self.python,
++                &self.runtime_snapshot,
++                &self.chain,
++                &self.materials,
++                &self.baseline_parent,
++                &self.candidate_parent,
++                &self.output,
++            ]
++            .iter()
++            .any(|path| !path.is_absolute())
++        {
++            return Err("native comparison requires v2 and explicit absolute project paths".into());
++        }
++        let expected: Digest32 = self.runtime_snapshot_sha256.parse()?;
++        let metadata = fs::symlink_metadata(&self.runtime_snapshot)?;
++        let limit = 16 * 1024 * 1024;
++        if expected.is_zero()
++            || !metadata.is_file()
++            || metadata.len() == 0
++            || metadata.len() > limit
++            || self.runtime_snapshot.canonicalize()? != self.runtime_snapshot
++        {
++            return Err("runtime snapshot requires a canonical regular file within its byte bound".into());
++        }
++        let file = fs::File::open(&self.runtime_snapshot)?;
++        if !file.metadata()?.is_file() || file.metadata()?.len() != metadata.len() {
++            return Err("runtime snapshot changed before bounded read".into());
++        }
++        let mut raw = Vec::new();
++        file.take(limit + 1).read_to_end(&mut raw)?;
++        if raw.is_empty()
++            || raw.len() as u64 > limit
++            || Digest32::of_bytes(&raw) != expected
++        {
++            return Err("independently pinned runtime snapshot mismatch or byte bound".into());
++        }
++        let value: serde_json::Value = serde_json::from_slice(&raw)?;
++        if value["schema"] != "hepta-controlled-cold-runtime-snapshot-v2" {
++            return Err("native comparison requires an explicit v2 runtime snapshot".into());
++        }
++        Ok(raw)
++    }
++}
++
+ pub struct Model {
+     pub config: SmolLmNeuralReadConfigV1,
+     pub pin: NeuralCognitivePinV1,
+@@ -60,6 +114,7 @@
+ 
+ pub fn model(
+     input: &Input,
++    runtime_snapshot: &[u8],
+     parent_path: &Path,
+     expected: &str,
+     name: &str,
+@@ -81,10 +136,17 @@
+     let wrapped_adapter = fs::read(directory.join("wrapped-adapter.json"))?;
+     let mut source_pins = BTreeMap::new();
+     for relative in [
++        "formal/pon-nakamoto-v1/contract_wire.py",
++        "config/pon/devnet-v1.json",
++        "config/pon/ledger-v1.json",
++        "config/pon/model-family-v1.json",
++        "config/pon/work-profile-v1.json",
+         "formal/pon-nakamoto-v1/llm_adapter_contract.py",
++        "scripts/llm_base_material.py",
+         "scripts/llm_inherited_runtime.py",
+         "scripts/llm_neural_read_worker.py",
+         "scripts/llm_parent_material.py",
++        "scripts/llm_python_runtime_contract.py",
+         "scripts/llm_runtime_pilot.py",
+         "config/pon/model-family-smollm2-135m-v1.json",
+     ] {
+@@ -100,6 +162,7 @@
+         materials: input.materials.clone(),
+         run_directory: input.output.join(format!("original-{name}-model-session")),
+         source_pins,
++        runtime_snapshot: runtime_snapshot.to_vec(),
+         target_contract,
+         wrapped_adapter,
+         contract_digest: parent["contract"]

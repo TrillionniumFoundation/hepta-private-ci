@@ -1,0 +1,56 @@
+{
+  "after": {
+    "commit": "9f785cb201ba12ab0ae0f0d341c0f7912cc65efc",
+    "dirty": false,
+    "parents": [
+      "e458e534017dd479e382e84331fa1a6078c3abb4"
+    ],
+    "tree": "24804b21d0306b617e12fa3f5b9454a12ed4ad41"
+  },
+  "base_sha": "1556a4df6e279055fd8196f81a4ca2fe0f19384a",
+  "before": {
+    "commit": "9f785cb201ba12ab0ae0f0d341c0f7912cc65efc",
+    "dirty": false,
+    "parents": [
+      "e458e534017dd479e382e84331fa1a6078c3abb4"
+    ],
+    "tree": "24804b21d0306b617e12fa3f5b9454a12ed4ad41"
+  },
+  "command": [
+    "just",
+    "test",
+    "--locked",
+    "-p",
+    "codex-hepta-evidence",
+    "--lib",
+    "-E",
+    "test(=qualification_tests::claim_query_rejects_more_than_512_references) | test(=qualification_tests::ordinary_append_rejects_historical_projection_drift_without_consuming_replay)",
+    "--no-capture",
+    "--retries",
+    "0",
+    "--test-threads=1"
+  ],
+  "command_exit_code": 0,
+  "elapsed_seconds": 53.48417658894323,
+  "exit_code": 0,
+  "finished_at": "2026-11-05T19:08:51.093444+00:00",
+  "job": null,
+  "lane": "source-head",
+  "log_bytes": 23619,
+  "log_file": "qualification-growth.json.519b5e0f54dc45a18f02d33c4d1e93fd.log",
+  "log_sha256": "819735ed3a1e6a21b30c6da1e769d1f05c699ad16f7fbc41a6c6af09bde4a5c4",
+  "minimum_tests": 2,
+  "observed_failed_tests": 0,
+  "observed_passed_tests": 2,
+  "output_limit_exceeded": false,
+  "returncode": 0,
+  "run_attempt": null,
+  "run_id": null,
+  "schema_version": 1,
+  "source_sha": "9f785cb201ba12ab0ae0f0d341c0f7912cc65efc",
+  "started_at": "2026-11-05T19:07:57.592687+00:00",
+  "status": "passed",
+  "tested_sha": "9f785cb201ba12ab0ae0f0d341c0f7912cc65efc",
+  "timed_out": false,
+  "working_directory": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/source"
+}

@@ -1,0 +1,63 @@
+{
+  "records": [
+    {
+      "source": {
+        "commit": "620cb63ae9b58904483005bcb2c4e1507df99539",
+        "tree": "f2cebe6d99deca596c170922b8e60d66648d7393",
+        "lock_sha256": "0f458d7746a0ca0b95bedc5404fd3347c1b0a7508f1c387f3b1f3f71ced08663",
+        "environment_file": "native-environment.json",
+        "environment_sha256": "42a7e79bf271684caccb12c864449b57bf72755a10a367b67d985f277e91a5c2"
+      },
+      "actual_executable": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/codex_hepta_evidence-0f5076227f347d3a",
+      "retained_copy": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/evidence/joint-h2-native-attempt-1/executed-binaries-qualification-growth/a948cdfa5aeafc03fcfc63459e581ca254129f4d878949236e0bf42df3fe725f.elf",
+      "sha256": "a948cdfa5aeafc03fcfc63459e581ca254129f4d878949236e0bf42df3fe725f",
+      "bytes": 53291680,
+      "device": 2050,
+      "inode": 58259802,
+      "pid": 875184,
+      "start_ticks": "98873377",
+      "wrapper_pid": 874841,
+      "wrapper_start_ticks": "98873063",
+      "wrapper_descendant_verified": true,
+      "post_open_task_and_exe_verified": true,
+      "observed_selected_tests": [
+        "qualification_tests::claim_query_rejects_more_than_512_references"
+      ],
+      "captured_unix": 1793911068.4985778
+    },
+    {
+      "source": {
+        "commit": "620cb63ae9b58904483005bcb2c4e1507df99539",
+        "tree": "f2cebe6d99deca596c170922b8e60d66648d7393",
+        "lock_sha256": "0f458d7746a0ca0b95bedc5404fd3347c1b0a7508f1c387f3b1f3f71ced08663",
+        "environment_file": "native-environment.json",
+        "environment_sha256": "42a7e79bf271684caccb12c864449b57bf72755a10a367b67d985f277e91a5c2"
+      },
+      "actual_executable": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/codex_hepta_evidence-0f5076227f347d3a",
+      "retained_copy": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/evidence/joint-h2-native-attempt-1/executed-binaries-qualification-growth/a948cdfa5aeafc03fcfc63459e581ca254129f4d878949236e0bf42df3fe725f.elf",
+      "sha256": "a948cdfa5aeafc03fcfc63459e581ca254129f4d878949236e0bf42df3fe725f",
+      "bytes": 53291680,
+      "device": 2050,
+      "inode": 58259802,
+      "pid": 876453,
+      "start_ticks": "98877837",
+      "wrapper_pid": 874841,
+      "wrapper_start_ticks": "98873063",
+      "wrapper_descendant_verified": true,
+      "post_open_task_and_exe_verified": true,
+      "observed_selected_tests": [
+        "qualification_tests::ordinary_append_rejects_historical_projection_drift_without_consuming_replay"
+      ],
+      "captured_unix": 1793911112.791871
+    }
+  ],
+  "errors": [],
+  "unique_actual_elf_sha256": [
+    "a948cdfa5aeafc03fcfc63459e581ca254129f4d878949236e0bf42df3fe725f"
+  ],
+  "observed_selected_tests": [
+    "qualification_tests::claim_query_rejects_more_than_512_references",
+    "qualification_tests::ordinary_append_rejects_historical_projection_drift_without_consuming_replay"
+  ],
+  "capture_scope": "actual executing test-image binding; polling may miss individual short-lived cases"
+}

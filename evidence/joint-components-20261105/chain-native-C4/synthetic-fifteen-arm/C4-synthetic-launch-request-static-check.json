@@ -1,0 +1,21 @@
+{
+  "schema": "C4-prospective-launch-byte-binding-local-check-v1",
+  "launch_request_sha256": "fff1626ee135760b6c9f45bcfdb02c75cb6b6d62a9db8e4e4a91058459fdc065",
+  "embedded_files_sha256_match": true,
+  "exact_execv": [
+    "/usr/bin/python3",
+    "-B",
+    "/home/qian-qi/work/chain-joint-20261105-93bfc-w1-native-C4/tools/run_c4_synthetic_census.py",
+    "--root",
+    "/home/qian-qi/work/chain-joint-20261105-93bfc-current",
+    "--target",
+    "/home/qian-qi/work/chain-joint-20261105-93bfc-w1-target-C4",
+    "--out",
+    "/home/qian-qi/work/chain-joint-20261105-93bfc-w1-native-C4/synthetic-census-two-child",
+    "--capture-helper",
+    "/home/qian-qi/work/chain-joint-20261105-93bfc-w1-native-C4/tools/test_elf_capture.py"
+  ],
+  "outer_seconds": 3600,
+  "submitted": false,
+  "native_executed": false
+}

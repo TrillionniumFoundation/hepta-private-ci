@@ -1,0 +1,100 @@
+{
+  "base_commit": "595475a615a03ca9f63c2c1f6e532bd362c20a74",
+  "base_tree": "c6b1cf459a24c3c3185335e043c83b727d757ee9",
+  "job_id": "1a1ad99acb5-fc05-5a47",
+  "created_unix_ms": 1793913892021,
+  "terminal_unix_ms": 1793913922248,
+  "authoritative_status": "succeeded",
+  "exit_code": 0,
+  "formatter_command": [
+    "just",
+    "fmt",
+    "--base",
+    "1556a4df6e279055fd8196f81a4ca2fe0f19384a"
+  ],
+  "formatter_timeout_seconds": 300,
+  "native_credit": false,
+  "before_tracked_count": 11840,
+  "before_tracked_bytes": 183409808,
+  "expected_formatted_tracked_count": 11840,
+  "expected_formatted_tracked_bytes": 183410043,
+  "format_patch_sha256": "f596e0fbbe7bf1c373bbd5bc7f881ba9c403ee111a7373cb51436e4705865c6d",
+  "result_sha256": "a5a5ce11ce016436ce3d2e63b3f85d165efa138a727c7a97027f88bebf5d2afc",
+  "full_guard_before": {
+    "identity": {
+      "commit": "595475a615a03ca9f63c2c1f6e532bd362c20a74",
+      "tree": "c6b1cf459a24c3c3185335e043c83b727d757ee9",
+      "parents": [
+        "620cb63ae9b58904483005bcb2c4e1507df99539"
+      ],
+      "dirty": false
+    },
+    "raw_git_blob_bytes_match": true,
+    "tracked_count": 11840,
+    "tracked_bytes": 183409808,
+    "index_count": 11840,
+    "missing": [],
+    "hidden": [],
+    "tree_inventory_sha256": "740f754b3018b164e1a257487a4c13d4460ddf6b4b0370006a7eea9aaa5bc6e5",
+    "guard_sha256": "e55f5ca1200b2c9fc5af4158c42f460e71f3815166a962a5b892acfe9477b1d1",
+    "cargo_lock_sha256": "0f458d7746a0ca0b95bedc5404fd3347c1b0a7508f1c387f3b1f3f71ced08663",
+    "toolchain_file_sha256": "e8b379eaa492bf59d35187de269afd1c4f55d85e0322f6fea32803a3fec1a380",
+    "nextest_config_sha256": "65f8b298b60f5f4d480cdd45d4de62a37c5b52d13a2cc7b77eecba3062eaa803"
+  },
+  "full_guard_after": {
+    "identity": {
+      "commit": "595475a615a03ca9f63c2c1f6e532bd362c20a74",
+      "tree": "c6b1cf459a24c3c3185335e043c83b727d757ee9",
+      "parents": [
+        "620cb63ae9b58904483005bcb2c4e1507df99539"
+      ],
+      "dirty": true
+    },
+    "raw_git_blob_bytes_match": false,
+    "tracked_count": 11840,
+    "tracked_bytes": 183409808,
+    "index_count": 11840,
+    "missing": [],
+    "hidden": [],
+    "tree_inventory_sha256": "740f754b3018b164e1a257487a4c13d4460ddf6b4b0370006a7eea9aaa5bc6e5",
+    "guard_sha256": "e55f5ca1200b2c9fc5af4158c42f460e71f3815166a962a5b892acfe9477b1d1",
+    "cargo_lock_sha256": "0f458d7746a0ca0b95bedc5404fd3347c1b0a7508f1c387f3b1f3f71ced08663",
+    "toolchain_file_sha256": "e8b379eaa492bf59d35187de269afd1c4f55d85e0322f6fea32803a3fec1a380",
+    "nextest_config_sha256": "65f8b298b60f5f4d480cdd45d4de62a37c5b52d13a2cc7b77eecba3062eaa803"
+  },
+  "protected_h1_source_unchanged": true,
+  "protected_h2_source_unchanged": true,
+  "configuration_unchanged": true,
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/tests/neural_comparison_native.rs",
+      "mode": "100644",
+      "base_git_blob": "482640c676e632ff26e638bf4f5df3e3beda773f",
+      "base_sha256": "9ca92e7dcbb2518d2c20ed97572266f91517556540b5ac210031b3638ff2d40d",
+      "new_git_blob": "da72a9e331f7e2df4cd0ef3d6bad4fe8cb3fc855",
+      "new_sha256": "6db3214e2740c445a22be9c92f60b2f8f1b2f1363c0758ee92f84ab8ba9ab617",
+      "new_bytes": 16998,
+      "delta_bytes": 142
+    },
+    {
+      "path": "codex-rs/hepta-agentd/tests/support/automation_effect_binary.rs",
+      "mode": "100644",
+      "base_git_blob": "6dea7930b6a628608a1c5f38affedef084162e0b",
+      "base_sha256": "fcb4f4c54be91dadf5d6ca429632e0c783495559cb4e8b4b5f2f69c1e3d1f9f2",
+      "new_git_blob": "96bd664ba81f64b0e1b287933483dba420ed4213",
+      "new_sha256": "dc9525efc447080f79e93ae3a7aa79e2c75feefbed80ea0aca2d09b747bda9ab",
+      "new_bytes": 12544,
+      "delta_bytes": 94
+    },
+    {
+      "path": "codex-rs/hepta-agentd/tests/support/neural_native_owner.rs",
+      "mode": "100644",
+      "base_git_blob": "eaf77bef4a2de3b38baad2a58f0e0e553b460100",
+      "base_sha256": "2fd90b817461e7e0d464b43002622d98c9dfb907c6ec94a4bc8dbfa2875706ee",
+      "new_git_blob": "bc3b6b96b7ad7566c6c495a403978de6f11b1553",
+      "new_sha256": "11a4e32c996ba43c129b7eaa42c49959649b7563a56e256418aa42ac96d73b0a",
+      "new_bytes": 11317,
+      "delta_bytes": -1
+    }
+  ]
+}

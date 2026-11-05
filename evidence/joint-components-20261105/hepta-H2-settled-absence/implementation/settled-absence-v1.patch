@@ -1,0 +1,592 @@
+--- a/codex-rs/hepta-automation/src/authorized_effect.rs
++++ b/codex-rs/hepta-automation/src/authorized_effect.rs
+@@ -688,6 +688,65 @@
+             return Ok(None);
+         };
+         self.read_terminal_effect_dispatch_receipt(&durable).await
++    }
++
++    /// Read a previously settled absence under the automation owner's local
++    /// fact boundary, including after the run has acquired a newer owner.
++    /// The provider evidence, immutable cancelled step and original requeue
++    /// command must agree. This does not settle an in-flight observation,
++    /// renew a lease, consume a grant, or authorize another provider attempt.
++    pub async fn read_settled_authorized_taskflow_effect_absence(
++        &self,
++        run_id: &str,
++        step_id: &str,
++        attempt: u32,
++    ) -> Result<Option<TaskFlowStepReceipt>, AuthorizedEffectError> {
++        let Some(durable) = self
++            .effect_dispatch_attempt(run_id, step_id, attempt)
++            .await?
++        else {
++            return Ok(None);
++        };
++        let Some(observation) = &durable.observation else {
++            return Ok(None);
++        };
++        if observation.kind != EffectDispatchObservationKind::ProvenAbsent {
++            return Ok(None);
++        }
++        let Some(step) = self
++            .read_settled_absent_taskflow_step(
++                run_id,
++                step_id,
++                attempt,
++                &observation.evidence_digest,
++                &effect_command_id("requeue-absent", &durable),
++            )
++            .await?
++        else {
++            return Ok(None);
++        };
++        let expected_command = match step.observation {
++            None => provider_absence_step_command_id(&durable),
++            Some(TaskFlowStepObservation::Indeterminate) => {
++                effect_command_id("step-absent-reconcile", &durable)
++            }
++            Some(TaskFlowStepObservation::Succeeded | TaskFlowStepObservation::Failed) => {
++                return Err(TaskFlowError::Conflict(
++                    "settled absence has a terminal provider observation".to_string(),
++                )
++                .into());
++            }
++        };
++        if step.intent_digest != durable.intent_digest
++            || step.payload_digest != durable.payload_digest
++            || step.last_command_id != expected_command
++        {
++            return Err(TaskFlowError::Conflict(
++                "settled absence differs from durable provider evidence".to_string(),
++            )
++            .into());
++        }
++        Ok(Some(step))
+     }
+ 
+     async fn read_terminal_effect_dispatch_receipt(
+--- a/codex-rs/hepta-automation/src/taskflow_step.rs
++++ b/codex-rs/hepta-automation/src/taskflow_step.rs
+@@ -26,10 +26,12 @@
+ use sqlx::Row;
+ 
+ use crate::AutomationStore;
++use crate::TaskFlowCommand;
+ use crate::TaskFlowError;
+ use crate::TaskFlowFence;
+ use crate::TaskFlowReconcileOutcome;
+ use crate::TaskFlowRun;
++use crate::TaskFlowTransition;
+ use crate::taskflow::load_taskflow_definition_tx;
+ use crate::taskflow::load_taskflow_run_tx;
+ 
+@@ -596,6 +598,106 @@
+             .await
+     }
+ 
++    /// Observe a cancelled step only when the same verified run history
++    /// contains its exact provider-absence requeue command. A newer run owner
++    /// does not erase this fact and gains no authority from reading it.
++    pub(crate) async fn read_settled_absent_taskflow_step(
++        &self,
++        run_id: &str,
++        step_id: &str,
++        attempt: u32,
++        proof_digest: &Sha256Digest,
++        requeue_command_id: &str,
++    ) -> Result<Option<TaskFlowStepReceipt>, TaskFlowError> {
++        validate_common_without_digests(run_id, step_id, attempt, requeue_command_id)?;
++        validate_digest(proof_digest, "settled provider absence proof")?;
++        ensure_step_schema(self).await?;
++        let mut tx = self
++            .taskflow_pool()
++            .begin()
++            .await
++            .map_err(|_| TaskFlowError::Unavailable)?;
++        let Some((_, receipt)) = self
++            .read_verified_step_chain_tx(&mut tx, run_id, step_id, attempt)
++            .await?
++        else {
++            return Ok(None);
++        };
++        if receipt.state != TaskFlowStepState::Reconciled
++            || receipt.final_outcome != Some(TaskFlowReconcileOutcome::Cancelled)
++        {
++            return Ok(None);
++        }
++        if receipt.receipt_digest.as_ref() != Some(proof_digest) {
++            return Err(TaskFlowError::Conflict(
++                "cancelled step differs from provider absence proof".to_string(),
++            ));
++        }
++        // load_run above has verified every event in this same snapshot. The
++        // original command may precede a later claim or attempt; do not use
++        // the current lease or assume that a Queued projection proves absence.
++        let events = sqlx::query(
++            "SELECT command_digest, transition, payload_json, revision, recorded_at_ms
++             FROM taskflow_events
++             WHERE owner_agent_id = ? AND run_id = ? AND command_id = ? LIMIT 2",
++        )
++        .bind(self.taskflow_owner_agent_id().as_str())
++        .bind(run_id)
++        .bind(requeue_command_id)
++        .fetch_all(&mut *tx)
++        .await
++        .map_err(|_| TaskFlowError::Unavailable)?;
++        let event = match events.as_slice() {
++            [] => return Ok(None),
++            [event] => event,
++            _ => return Err(corrupt("provider absence requeue command is duplicated")),
++        };
++        let transition: String = event
++            .try_get("transition")
++            .map_err(|_| corrupt("provider absence transition column"))?;
++        let payload: String = event
++            .try_get("payload_json")
++            .map_err(|_| corrupt("provider absence payload column"))?;
++        let expected_transition = TaskFlowTransition::RequeueProvenAbsent {
++            proof_digest: proof_digest.clone(),
++        };
++        let decoded: TaskFlowTransition = serde_json::from_str(&payload)
++            .map_err(|_| corrupt("provider absence transition payload"))?;
++        if transition != "requeued_proven_absent" || decoded != expected_transition {
++            return Err(corrupt("provider absence requeue differs from cancelled step"));
++        }
++        let revision = to_u64(
++            event
++                .try_get("revision")
++                .map_err(|_| corrupt("provider absence revision column"))?,
++        )?;
++        let now_ms = to_u64(
++            event
++                .try_get("recorded_at_ms")
++                .map_err(|_| corrupt("provider absence timestamp column"))?,
++        )?;
++        let command = TaskFlowCommand::new(
++            run_id,
++            requeue_command_id,
++            receipt.fence.clone(),
++            revision
++                .checked_sub(1)
++                .ok_or_else(|| corrupt("provider absence requeue has zero revision"))?,
++            expected_transition,
++            now_ms,
++        )?;
++        let bytes = serde_json::to_vec(&command)
++            .map_err(|_| corrupt("provider absence command serialization"))?;
++        let stored_digest: String = event
++            .try_get("command_digest")
++            .map_err(|_| corrupt("provider absence command digest column"))?;
++        if stored_digest != Sha256Digest::for_bytes(&bytes).as_str() {
++            return Err(corrupt("provider absence requeue differs from immutable step fence"));
++        }
++        tx.commit().await.map_err(|_| TaskFlowError::Unavailable)?;
++        Ok(Some(receipt))
++    }
++
+     async fn read_verified_step(
+         &self,
+         run_id: &str,
+@@ -634,20 +736,12 @@
+         if let Some(fence) = fence {
+             validate_fence(self, fence)?;
+         }
+-        let run = load_run(tx, self, run_id).await?;
+-        let definition = load_definition(tx, self, &run).await?;
+-        validate_step_node(&definition, step_id)?;
+-        let events = load_step_events(tx, self, run_id, step_id, attempt).await?;
+-        if events.is_empty() {
++        let Some((run, receipt)) = self
++            .read_verified_step_chain_tx(tx, run_id, step_id, attempt)
++            .await?
++        else {
+             return Ok(None);
+-        }
+-        let receipt = reconstruct_step(
+-            self.taskflow_owner_agent_id(),
+-            run_id,
+-            step_id,
+-            attempt,
+-            &events,
+-        )?;
++        };
+         if let Some(fence) = fence {
+             if receipt.state == TaskFlowStepState::Reconciled {
+                 // Recovery may legitimately re-fence a still-Running run projection
+@@ -692,6 +786,32 @@
+             }
+         }
+         Ok(Some(receipt))
++    }
++
++    // Shared immutable verification only. Callers must enforce their explicit
++    // fenced mutation, completed-run read, or settled-absence read boundary.
++    async fn read_verified_step_chain_tx(
++        &self,
++        tx: &mut sqlx::Transaction<'_, sqlx::Sqlite>,
++        run_id: &str,
++        step_id: &str,
++        attempt: u32,
++    ) -> Result<Option<(TaskFlowRun, TaskFlowStepReceipt)>, TaskFlowError> {
++        let run = load_run(tx, self, run_id).await?;
++        let definition = load_definition(tx, self, &run).await?;
++        validate_step_node(&definition, step_id)?;
++        let events = load_step_events(tx, self, run_id, step_id, attempt).await?;
++        if events.is_empty() {
++            return Ok(None);
++        }
++        let receipt = reconstruct_step(
++            self.taskflow_owner_agent_id(),
++            run_id,
++            step_id,
++            attempt,
++            &events,
++        )?;
++        Ok(Some((run, receipt)))
+     }
+ 
+     async fn append_step_operation(
+--- a/codex-rs/hepta-agentd/src/automation_effect_host.rs
++++ b/codex-rs/hepta-agentd/src/automation_effect_host.rs
+@@ -1362,6 +1362,16 @@
+                 receipt: Box::new(receipt),
+                 chain: chain.map(Box::new),
+             });
++        }
++        if store
++            .read_settled_authorized_taskflow_effect_absence(run_id, step_id, attempt)
++            .await
++            .map_err(|error| {
++                AgentdError::Protocol(format!("read settled provider absence: {error}"))
++            })?
++            .is_some()
++        {
++            return Ok(AgentdAutomationEffectReconcileOutcome::ProvenAbsent);
+         }
+         let run = store
+             .taskflow_run(run_id)
+--- a/codex-rs/hepta-automation/tests/support/authorized_owner_recovery_tests.rs
++++ b/codex-rs/hepta-automation/tests/support/authorized_owner_recovery_tests.rs
+@@ -1,5 +1,7 @@
+ use super::*;
+ use codex_hepta_automation::TaskFlowError;
++use codex_state::SqliteConfig;
++use codex_utils_absolute_path::AbsolutePathBuf;
+ use pretty_assertions::assert_eq;
+ 
+ #[tokio::test]
+@@ -105,3 +107,313 @@
+         reopened.close().await;
+     }
+ }
++
++#[tokio::test]
++async fn settled_absence_fact_read_survives_reopen_and_new_owner_without_redispatch() {
++    for initial_unknown in [false, true] {
++        let fixture = Fixture::new();
++        let (store, owner, effect, expected) = prepared_effect_store(&fixture).await;
++        assert_eq!(
++            store
++                .read_settled_authorized_taskflow_effect_absence(
++                    &effect.run_id,
++                    &effect.step_id,
++                    effect.attempt,
++                )
++                .await
++                .expect("no attempt is not absence"),
++            None
++        );
++        let (authority, signed, _directory) = final_use(expected.clone(), "settled-absence");
++        let mut driver = if initial_unknown {
++            RecordingDriver::receipt(AuthorizedEffectOutcome::Indeterminate, b"initial-unknown")
++        } else {
++            RecordingDriver::before_provider_contact()
++        };
++        let result = store
++            .execute_authorized_taskflow_effect(
++                &authority,
++                &mut driver,
++                AuthorizedEffectExecutionInput {
++                    intent: &effect,
++                    wire_payload: EFFECT_PAYLOAD,
++                    fence: &owner,
++                    signed_grant: &signed,
++                    expected_binding: &expected,
++                    command_id: "authorized-effect-dispatch",
++                    now_ms: 30,
++                },
++            )
++            .await;
++        if initial_unknown {
++            assert_eq!(
++                result.expect("unknown observation").observation,
++                Some(TaskFlowStepObservation::Indeterminate)
++            );
++            assert!(matches!(
++                store
++                    .recover_authorized_taskflow_effect(
++                        &effect.run_id,
++                        &effect.step_id,
++                        effect.attempt,
++                        &owner,
++                        AuthorizedEffectRecovery::ProvenAbsent {
++                            proof_digest: Sha256Digest::for_bytes(b"owner-proved-absence"),
++                        },
++                        31,
++                    )
++                    .await
++                    .expect("settle owner-proved absence"),
++                AuthorizedEffectRecoveryResult::ProvenAbsent
++            ));
++        } else {
++            assert!(matches!(
++                result,
++                Err(AuthorizedEffectError::Driver(
++                    AuthorizedEffectDriverError::BeforeProviderContact
++                ))
++            ));
++        }
++        let queued = store
++            .taskflow_run(&effect.run_id)
++            .await
++            .expect("read settled run")
++            .expect("run");
++        assert_eq!(queued.state, TaskFlowRunState::Queued);
++        assert_eq!(queued.owner_id, None);
++        assert_eq!(queued.owner_epoch, None);
++        assert_eq!(queued.generation, None);
++        assert_eq!(queued.fencing_token, None);
++        assert_eq!(queued.lease_expires_at_ms, None);
++        let settled = store
++            .read_taskflow_step(&effect.run_id, &effect.step_id, effect.attempt, &owner)
++            .await
++            .expect("original immutable step")
++            .expect("step");
++        assert_eq!(settled.state, TaskFlowStepState::Reconciled);
++        assert_eq!(settled.final_outcome, Some(TaskFlowReconcileOutcome::Cancelled));
++        assert_eq!(settled.fence, owner);
++        store.close().await;
++        let reopened = AutomationStore::open(&fixture.layout)
++            .await
++            .expect("reopen settled absence");
++        assert_eq!(
++            reopened
++                .read_settled_authorized_taskflow_effect_absence(
++                    &effect.run_id,
++                    &effect.step_id,
++                    effect.attempt,
++                )
++                .await
++                .expect("owner-local settled absence"),
++            Some(settled.clone())
++        );
++        let mut new_owner = owner.clone();
++        new_owner.generation += 1;
++        new_owner.fencing_token = "next-owner-fence".to_string();
++        let claimed = reopened
++            .claim_taskflow_run(&effect.run_id, &new_owner, 40, 1_000)
++            .await
++            .expect("claim requeued run under newer generation");
++        reopened
++            .apply_taskflow_command(
++                &TaskFlowCommand::new(
++                    &effect.run_id,
++                    "new-owner-start",
++                    new_owner,
++                    claimed.revision,
++                    TaskFlowTransition::Start,
++                    41,
++                )
++                .expect("new owner start command"),
++            )
++            .await
++            .expect("start after historical absence");
++        let before = reopened.taskflow_run(&effect.run_id).await.expect("new run");
++        assert_eq!(
++            reopened
++                .read_settled_authorized_taskflow_effect_absence(
++                    &effect.run_id,
++                    &effect.step_id,
++                    effect.attempt,
++                )
++                .await
++                .expect("history survives a newer run owner"),
++            Some(settled)
++        );
++        assert_eq!(
++            reopened.taskflow_run(&effect.run_id).await.expect("unchanged run"),
++            before
++        );
++        assert!(
++            reopened
++                .execute_authorized_taskflow_effect(
++                    &authority,
++                    &mut driver,
++                    AuthorizedEffectExecutionInput {
++                        intent: &effect,
++                        wire_payload: EFFECT_PAYLOAD,
++                        fence: &owner,
++                        signed_grant: &signed,
++                        expected_binding: &expected,
++                        command_id: "authorized-effect-dispatch",
++                        now_ms: 42,
++                    },
++                )
++                .await
++                .is_err(),
++            "a historical fact cannot authorize another dispatch"
++        );
++        assert_eq!(driver.calls, 1);
++        assert_eq!(authority.capacity().expect("authority capacity").used_nonces, 1);
++        reopened.close().await;
++    }
++}
++
++#[tokio::test]
++async fn settled_absence_fact_read_rejects_unknown_unsettled_and_corrupt_evidence() {
++    for fault in ["unknown", "unsettled", "proof", "intent", "payload", "fence", "settlement_time"] {
++        let fixture = Fixture::new();
++        let (store, owner, effect, expected) = prepared_effect_store(&fixture).await;
++        let sqlite_home = AbsolutePathBuf::from_absolute_path(
++            store.path().parent().expect("automation database parent"),
++        )
++        .expect("absolute sqlite home");
++        let pool = SqliteConfig::from_sqlite_home(sqlite_home)
++            .open_durable_evidence_pool(store.path())
++            .await
++            .expect("fault injection database");
++        if fault == "unsettled" {
++            sqlx::query(
++                "CREATE TRIGGER test_refuse_absence_settlement BEFORE INSERT ON taskflow_events
++                 WHEN NEW.transition = 'requeued_proven_absent'
++                 BEGIN SELECT RAISE(ABORT, 'injected interruption before run settlement'); END",
++            )
++            .execute(&pool)
++            .await
++            .expect("install settlement interruption");
++        }
++        let (authority, signed, _directory) = final_use(expected.clone(), "absence-negative");
++        let mut driver = if fault == "unknown" {
++            RecordingDriver::receipt(AuthorizedEffectOutcome::Indeterminate, b"still-unknown")
++        } else {
++            RecordingDriver::before_provider_contact()
++        };
++        let result = store
++            .execute_authorized_taskflow_effect(
++                &authority,
++                &mut driver,
++                AuthorizedEffectExecutionInput {
++                    intent: &effect,
++                    wire_payload: EFFECT_PAYLOAD,
++                    fence: &owner,
++                    signed_grant: &signed,
++                    expected_binding: &expected,
++                    command_id: "authorized-effect-dispatch",
++                    now_ms: 30,
++                },
++            )
++            .await;
++        if fault == "unknown" {
++            assert_eq!(
++                result.expect("persist unknown").observation,
++                Some(TaskFlowStepObservation::Indeterminate)
++            );
++        } else if fault == "unsettled" {
++            assert!(matches!(result, Err(AuthorizedEffectError::TaskFlow(_))));
++            let recorded: String = sqlx::query_scalar(
++                "SELECT observation FROM taskflow_effect_dispatch_observations",
++            )
++            .fetch_one(&pool)
++            .await
++            .expect("absence recorded before the interrupted projection");
++            assert_eq!(recorded, "proven_absent");
++        } else {
++            assert!(matches!(
++                result,
++                Err(AuthorizedEffectError::Driver(
++                    AuthorizedEffectDriverError::BeforeProviderContact
++                ))
++            ));
++        }
++        if matches!(fault, "unknown" | "unsettled") {
++            let before = store.taskflow_run(&effect.run_id).await.expect("run before read");
++            assert_eq!(
++                store
++                    .read_settled_authorized_taskflow_effect_absence(
++                        &effect.run_id,
++                        &effect.step_id,
++                        effect.attempt,
++                    )
++                    .await
++                    .expect("unsettled evidence remains unknown"),
++                None,
++                "{fault}"
++            );
++            assert_eq!(
++                store.taskflow_run(&effect.run_id).await.expect("run after read"),
++                before
++            );
++        } else {
++            assert!(
++                store
++                    .read_settled_authorized_taskflow_effect_absence(
++                        &effect.run_id,
++                        &effect.step_id,
++                        effect.attempt,
++                    )
++                    .await
++                    .expect("untainted settled evidence")
++                    .is_some()
++            );
++            let mutation = match fault {
++                "proof" => "UPDATE taskflow_step_outbox SET receipt_digest = ? WHERE event_kind = 'reconciled'",
++                "intent" => "UPDATE taskflow_step_outbox SET intent_digest = ?",
++                "payload" => "UPDATE taskflow_step_outbox SET payload_digest = ?",
++                "fence" => "UPDATE taskflow_step_outbox SET fencing_token = ?",
++                "settlement_time" => "UPDATE taskflow_events SET recorded_at_ms = recorded_at_ms + 1 WHERE transition = ?",
++                _ => unreachable!("enumerated fault"),
++            };
++            let value = Sha256Digest::for_bytes(b"injected-absence-corruption");
++            let replacement = if fault == "settlement_time" {
++                "requeued_proven_absent"
++            } else {
++                value.as_str()
++            };
++            assert!(sqlx::query(mutation).bind(replacement).execute(&pool).await.is_err());
++            let trigger = if fault == "settlement_time" {
++                "DROP TRIGGER taskflow_events_no_update"
++            } else {
++                "DROP TRIGGER taskflow_step_outbox_no_update"
++            };
++            sqlx::query(trigger).execute(&pool).await.expect("explicit corrupt-import injection");
++            let changed = sqlx::query(mutation)
++                .bind(replacement)
++                .execute(&pool)
++                .await
++                .expect("publish corrupt evidence");
++            assert!(changed.rows_affected() > 0);
++            let read = store
++                .read_settled_authorized_taskflow_effect_absence(
++                    &effect.run_id,
++                    &effect.step_id,
++                    effect.attempt,
++                )
++                .await;
++            if fault == "settlement_time" {
++                assert!(matches!(read,
++                    Err(AuthorizedEffectError::TaskFlow(TaskFlowError::Corrupt(message)))
++                    if message == "provider absence requeue differs from immutable step fence"
++                ));
++            } else {
++                assert!(matches!(read,
++                    Err(AuthorizedEffectError::TaskFlow(TaskFlowError::Corrupt(_) | TaskFlowError::Conflict(_)))
++                ), "{fault}");
++            }
++        }
++        assert_eq!(driver.calls, 1);
++        assert_eq!(authority.capacity().expect("authority capacity").used_nonces, 1);
++        pool.close().await;
++        store.close().await;
++    }
++}

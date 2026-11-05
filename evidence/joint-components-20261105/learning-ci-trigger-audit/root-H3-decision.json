@@ -1,0 +1,21 @@
+{
+  "schema": "root-H3-two-auto-model-workflow-decision-v1",
+  "final_source": "6db78eca53a5acdda0d96873d3f4cd65863426f0",
+  "tree": "e91f5994017fc5d2cfe58d405a20ee6ad9376772",
+  "final_h3_vs_h2_exact_7_path_compare_checked": true,
+  "audited_workflow_study_input_holdout_and_training_core_unchanged": true,
+  "study_v1_review_sha256": "2f62764a7fd8d0c0bd7b80c8c462d35e70a9b2dc2984f002767860c16a510b99",
+  "study_v1_independent_review_sha256": "a981f79d9e3c9ed973d39acd420f16ba4237241b4641f95b609b1dfeeadd3a4c",
+  "public_initial_supplement_sha256": "54ed737fa78656059d970522cb199843f1a0b4cc7273954dab20cb44475b0d45",
+  "different_findings": {
+    "neural-study-v1": "Current v1 producer omits required snapshot fields; ordinary/study input rejects before creating study ledgers, holdout or training. If the producer is later migrated, fresh RUNNER_TEMP initializes new stores without loading old spent evidence.",
+    "public-initial-v2": "Current producer already supplies v2 snapshot fields. Conditional original CI can perform actual three matched training rounds, descendant diagnostics and answer-EOS research; no old cross-run spent store is loaded. H2 historical skips do not establish H3 refusal."
+  },
+  "decision": "Do not open H3 PR or trigger these workflows under the existing no-new-learning-trial constraint. Keep the frozen source branch and exact review comparison available, and continue the already authorized original-budget local native sequence.",
+  "original_CI_modified_disabled_skipped_or_cancelled": false,
+  "new_learning_authorization_or_trial_reset": false,
+  "native_sequence_independent": true,
+  "all_joint_gates": "HOLD",
+  "public_initial_independent_review_sha256": "d6be1f4c134dc73957e41eb0b7d56f157fd4559046d1d376c1b3d675f03f2a97",
+  "public_initial_exact_profile": "Original V11 with three Chain checkouts pinned to cfa57cd04751427451302b5c10539b3984d7f8db, not the C4 joint candidate."
+}

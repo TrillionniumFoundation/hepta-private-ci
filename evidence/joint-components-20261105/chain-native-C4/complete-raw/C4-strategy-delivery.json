@@ -1,0 +1,66 @@
+{
+  "schema": "C4-lossless-raw-delivery-v1",
+  "archive": "C4-strategy-receipts.tar.xz",
+  "bytes": 32389648,
+  "sha256": "4d0bf158860d62813e64d8ccdbf22db0c537dbf3cd94d471d2293f9c584ab08d",
+  "parts": [
+    {
+      "path": "parts/C4-strategy-receipts.tar.xz.part-0000",
+      "index": 0,
+      "offset": 0,
+      "bytes": 4194304,
+      "sha256": "53082f715a215a5de2231330c0f2cdd5d3d47178d129414915d06355da8291d3"
+    },
+    {
+      "path": "parts/C4-strategy-receipts.tar.xz.part-0001",
+      "index": 1,
+      "offset": 4194304,
+      "bytes": 4194304,
+      "sha256": "5651af4d718fb84a86a0e3e97cb0be2e14b37afdb0ea6bbef1331956b3fb7b04"
+    },
+    {
+      "path": "parts/C4-strategy-receipts.tar.xz.part-0002",
+      "index": 2,
+      "offset": 8388608,
+      "bytes": 4194304,
+      "sha256": "fb9826ea844f52d7f7ca52921e12e32ff624deb97d73cf43dfcf9f56acb3990f"
+    },
+    {
+      "path": "parts/C4-strategy-receipts.tar.xz.part-0003",
+      "index": 3,
+      "offset": 12582912,
+      "bytes": 4194304,
+      "sha256": "1dcd2c4b86cd9cc027219ba1e0716c1c165d73107445480b0436874726f104b2"
+    },
+    {
+      "path": "parts/C4-strategy-receipts.tar.xz.part-0004",
+      "index": 4,
+      "offset": 16777216,
+      "bytes": 4194304,
+      "sha256": "07c403883f100b56c07c98404d15177714dfbf46481e686c5a65fcd67bccec7a"
+    },
+    {
+      "path": "parts/C4-strategy-receipts.tar.xz.part-0005",
+      "index": 5,
+      "offset": 20971520,
+      "bytes": 4194304,
+      "sha256": "890c8c35b619d9127356694cd8180699da7394651dfe3f76ec9b9030516d6d5e"
+    },
+    {
+      "path": "parts/C4-strategy-receipts.tar.xz.part-0006",
+      "index": 6,
+      "offset": 25165824,
+      "bytes": 4194304,
+      "sha256": "e12b2f8e6e7a0b131341024c6815aba2ce3730924fb29749c72db18171acffe7"
+    },
+    {
+      "path": "parts/C4-strategy-receipts.tar.xz.part-0007",
+      "index": 7,
+      "offset": 29360128,
+      "bytes": 3029520,
+      "sha256": "492e4a36f7942998a98141547ea2c70588ba1f1fa54c85a8db3e92f45100ebbc"
+    }
+  ],
+  "reassembly": "Concatenate in ascending index; verify every part and whole size/hash before opening the archive.",
+  "native_or_reader_reexecuted": false
+}

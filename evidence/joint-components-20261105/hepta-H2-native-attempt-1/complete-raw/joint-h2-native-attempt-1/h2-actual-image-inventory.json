@@ -1,0 +1,2081 @@
+{
+  "source_commit": "620cb63ae9b58904483005bcb2c4e1507df99539",
+  "source_tree": "f2cebe6d99deca596c170922b8e60d66648d7393",
+  "status": "FAILED",
+  "terminal_unix_ms": 1793911402315,
+  "coordinator_elapsed_seconds": 1133.3816417860799,
+  "passed_selected": 70,
+  "timed_out_selected": 1,
+  "failed_case": "pq_effect_survives_owned_agentd_kill_after_provider_fsync_without_resend",
+  "failed_case_seconds": 60.007,
+  "failure_raw_sha256": "9afd59f1c6d4043ec240fb2a888c8e08630d8e0adf0671883dd0c17be4864a8a",
+  "unexecuted": [
+    "selected-tests-guard",
+    "original-six-effect-controls",
+    "provider-effect-existing-and-pq",
+    "final-use-profile-controls",
+    "full-evidence-library",
+    "full-evidence-ignored-list",
+    "fix",
+    "format"
+  ],
+  "source_before_after_equal": true,
+  "configuration_unchanged": true,
+  "passed_selection": [
+    {
+      "gate": "dispatcher",
+      "name": "authbus_dispatch::tests::abandoned_first_claim_without_admission_is_quarantined_after_lookup_missing",
+      "result": "ok"
+    },
+    {
+      "gate": "dispatcher",
+      "name": "authbus_dispatch::tests::checkpoint_sync::cancelled_checkpoint_sync_waiter_and_owner_release_exclusive_admission",
+      "result": "ok"
+    },
+    {
+      "gate": "dispatcher",
+      "name": "authbus_dispatch::tests::checkpoint_sync::concurrent_checkpoint_syncs_share_owner_lock_and_preserve_rollback_rejection",
+      "result": "ok"
+    },
+    {
+      "gate": "dispatcher",
+      "name": "authbus_dispatch::tests::lease_delay::trust_refresh_sqlite_wait_cannot_authorize_transport_with_an_expired_lease",
+      "result": "ok"
+    },
+    {
+      "gate": "dispatcher",
+      "name": "authbus_dispatch::tests::lost_queue_reply_recovers_from_sqlite_using_lookup_only_and_exact_receipt",
+      "result": "ok"
+    },
+    {
+      "gate": "dispatcher",
+      "name": "authbus_dispatch::tests::matching_receipt_metadata_with_different_queue_input_never_acknowledges",
+      "result": "ok"
+    },
+    {
+      "gate": "dispatcher",
+      "name": "authbus_dispatch::tests::policy_rollback::pq_bound_policy_refuses_renewal_without_policy_snapshot",
+      "result": "ok"
+    },
+    {
+      "gate": "dispatcher",
+      "name": "authbus_dispatch::tests::policy_rollback::pq_owner_requires_explicit_nonzero_policy_revision_and_accepts_set_ordering",
+      "result": "ok"
+    },
+    {
+      "gate": "dispatcher",
+      "name": "authbus_dispatch::tests::policy_rollback::pq_policy_change_fences_stale_renewal_and_current_policy_restores_dispatch",
+      "result": "ok"
+    },
+    {
+      "gate": "dispatcher",
+      "name": "authbus_dispatch::tests::policy_rollback::pq_removed_thread_cannot_return_through_owner_file_rollback_after_reopen",
+      "result": "ok"
+    },
+    {
+      "gate": "dispatcher",
+      "name": "authbus_dispatch::tests::pq::pq_text_owner_resumes_after_revocation_rotation_and_rejected_config_rollback",
+      "result": "ok"
+    },
+    {
+      "gate": "dispatcher",
+      "name": "authbus_dispatch::tests::pq::pq_text_producer_recovers_through_existing_dispatch_and_rejects_wire_and_config_downgrade",
+      "result": "ok"
+    },
+    {
+      "gate": "dispatcher",
+      "name": "authbus_dispatch::tests::ready_generation_and_owner_private_trust_are_required_before_admission",
+      "result": "ok"
+    },
+    {
+      "gate": "dispatcher",
+      "name": "authbus_dispatch::tests::revocation_during_queue_request_prevents_success_ack",
+      "result": "ok"
+    },
+    {
+      "gate": "product",
+      "name": "pq_signed_text_crosses_real_queue_after_rejection_without_downgrade",
+      "result": "ok"
+    },
+    {
+      "gate": "product",
+      "name": "real_agentd_without_explicit_trust_rejects_signed_text",
+      "result": "ok"
+    },
+    {
+      "gate": "product",
+      "name": "signed_text_crosses_real_queue_once_and_current_trust_rejects_invalid_ingress",
+      "result": "ok"
+    },
+    {
+      "gate": "recovery-owner",
+      "name": "provider_effect_recovery_provenance_tests::recovery_provenance_preserves_dispatch_then_authoritative_status",
+      "result": "ok"
+    },
+    {
+      "gate": "recovery-owner",
+      "name": "provider_effect_recovery_provenance_tests::recovery_provenance_rejects_late_dispatch_after_status_without_uncertainty",
+      "result": "ok"
+    },
+    {
+      "gate": "recovery-owner",
+      "name": "recovery_effect_frontier_tests::recovery_snapshot_commits_ack_provenance_and_cross_table_order",
+      "result": "ok"
+    },
+    {
+      "gate": "recovery-owner",
+      "name": "recovery_effect_frontier_tests::recovery_snapshot_commits_effect_history_after_the_first_page",
+      "result": "ok"
+    },
+    {
+      "gate": "recovery-owner",
+      "name": "recovery_effect_frontier_tests::recovery_snapshot_commits_intent_unknown_and_original_operation_receipt",
+      "result": "ok"
+    },
+    {
+      "gate": "recovery-owner",
+      "name": "recovery_effect_frontier_tests::recovery_snapshot_distinguishes_a_valid_effect_only_database_rollback",
+      "result": "ok"
+    },
+    {
+      "gate": "recovery-owner",
+      "name": "recovery_effect_frontier_tests::recovery_snapshot_refuses_canonical_ack_bound_to_a_different_payload",
+      "result": "ok"
+    },
+    {
+      "gate": "recovery-owner",
+      "name": "recovery_effect_frontier_tests::recovery_snapshot_refuses_changed_json_with_retained_record_digests",
+      "result": "ok"
+    },
+    {
+      "gate": "recovery-owner",
+      "name": "recovery_effect_frontier_tests::recovery_snapshot_refuses_effect_projection_drift_with_retained_payloads",
+      "result": "ok"
+    },
+    {
+      "gate": "recovery-owner",
+      "name": "recovery_effect_frontier_tests::recovery_snapshot_refuses_orphan_effect_observations",
+      "result": "ok"
+    },
+    {
+      "gate": "recovery-owner",
+      "name": "recovery_effect_frontier_tests::recovery_snapshot_refuses_repeated_effect_sequence_after_schema_drift",
+      "result": "ok"
+    },
+    {
+      "gate": "recovery-owner",
+      "name": "recovery_effect_frontier_tests::recovery_snapshot_refuses_repeated_effect_sequence_at_page_boundary",
+      "result": "ok"
+    },
+    {
+      "gate": "recovery-owner",
+      "name": "recovery_invocation_frontier_tests::recovery_snapshot_binds_invocation_sequence_and_recording_time",
+      "result": "ok"
+    },
+    {
+      "gate": "recovery-owner",
+      "name": "recovery_invocation_frontier_tests::recovery_snapshot_commits_invocations_after_the_first_page",
+      "result": "ok"
+    },
+    {
+      "gate": "recovery-owner",
+      "name": "recovery_invocation_frontier_tests::recovery_snapshot_commits_pending_invocations_and_terminal_states",
+      "result": "ok"
+    },
+    {
+      "gate": "recovery-owner",
+      "name": "recovery_invocation_frontier_tests::recovery_snapshot_refuses_duplicate_terminal_hidden_at_page_boundary",
+      "result": "ok"
+    },
+    {
+      "gate": "recovery-owner",
+      "name": "recovery_invocation_frontier_tests::recovery_snapshot_refuses_invocation_column_type_corruption_without_panicking",
+      "result": "ok"
+    },
+    {
+      "gate": "recovery-owner",
+      "name": "recovery_invocation_frontier_tests::recovery_snapshot_requires_the_terminals_authoritative_intent",
+      "result": "ok"
+    },
+    {
+      "gate": "recovery-owner",
+      "name": "recovery_invocation_frontier_tests::recovery_snapshot_revalidates_invocation_payloads_and_projected_columns",
+      "result": "ok"
+    },
+    {
+      "gate": "recovery-owner",
+      "name": "recovery_invocation_schema_tests::recovery_invocation_schema_accepts_current_migration_keys",
+      "result": "ok"
+    },
+    {
+      "gate": "recovery-owner",
+      "name": "recovery_invocation_schema_tests::recovery_invocation_schema_refuses_non_rowid_or_composite_sequences",
+      "result": "ok"
+    },
+    {
+      "gate": "recovery-owner",
+      "name": "recovery_invocation_schema_tests::recovery_invocation_schema_requires_exact_unconditional_column_uniqueness",
+      "result": "ok"
+    },
+    {
+      "gate": "recovery-signed",
+      "name": "evidence_frontier::tests::recovery_frontier_authenticates_both_effect_fields",
+      "result": "ok"
+    },
+    {
+      "gate": "recovery-signed",
+      "name": "evidence_frontier::tests::recovery_frontier_cannot_be_omitted_at_the_ordinary_agentd_run_entry",
+      "result": "ok"
+    },
+    {
+      "gate": "recovery-signed",
+      "name": "evidence_frontier::tests::recovery_frontier_enforces_root_scope_epoch_revocation_and_generation_floor",
+      "result": "ok"
+    },
+    {
+      "gate": "recovery-signed",
+      "name": "evidence_frontier::tests::recovery_frontier_pq_rejects_invocation_only_database_rollbacks",
+      "result": "ok"
+    },
+    {
+      "gate": "recovery-signed",
+      "name": "evidence_frontier::tests::recovery_frontier_pq_survives_store_close_and_reopen",
+      "result": "ok"
+    },
+    {
+      "gate": "recovery-signed",
+      "name": "evidence_frontier::tests::recovery_frontier_read_only_preflight_never_binds_or_changes_the_image",
+      "result": "ok"
+    },
+    {
+      "gate": "recovery-signed",
+      "name": "evidence_frontier::tests::recovery_frontier_refuses_valid_classical_v1_and_v2_signatures",
+      "result": "ok"
+    },
+    {
+      "gate": "recovery-signed",
+      "name": "evidence_frontier::tests::recovery_frontier_refuses_valid_pq_v3_and_relabelled_v2_snapshots",
+      "result": "ok"
+    },
+    {
+      "gate": "recovery-signed",
+      "name": "evidence_frontier::tests::recovery_frontier_rejects_wrong_domain_and_profile",
+      "result": "ok"
+    },
+    {
+      "gate": "recovery-signed",
+      "name": "evidence_frontier::tests::recovery_frontier_rejects_wrong_key_pin_and_noncanonical_signature",
+      "result": "ok"
+    },
+    {
+      "gate": "recovery-signed",
+      "name": "evidence_frontier::tests::recovery_frontier_root_rotation_retires_the_old_key",
+      "result": "ok"
+    },
+    {
+      "gate": "recovery-product",
+      "name": "real_agentd_composes_authenticated_evidence_writer_query_verifier_and_terminal_observer",
+      "result": "ok"
+    },
+    {
+      "gate": "recovery-product",
+      "name": "signed_recovery_frontier_allows_exact_current_database",
+      "result": "ok"
+    },
+    {
+      "gate": "recovery-product",
+      "name": "signed_recovery_frontier_rejects_effect_only_database_rollback",
+      "result": "ok"
+    },
+    {
+      "gate": "recovery-product",
+      "name": "signed_recovery_frontier_rejects_valid_older_database_image",
+      "result": "ok"
+    },
+    {
+      "gate": "qualification-growth",
+      "name": "qualification_tests::claim_query_rejects_more_than_512_references",
+      "result": "ok"
+    },
+    {
+      "gate": "qualification-growth",
+      "name": "qualification_tests::ordinary_append_rejects_historical_projection_drift_without_consuming_replay",
+      "result": "ok"
+    },
+    {
+      "gate": "effect-pq-owner",
+      "name": "automation_effect_host::pq::tests::current_clock_frontier_and_pq_grant_are_mandatory_before_contact",
+      "result": "ok"
+    },
+    {
+      "gate": "effect-pq-owner",
+      "name": "automation_effect_host::pq::tests::generation_change_after_store_await_refuses_contact_and_keeps_consumed_nonce",
+      "result": "ok"
+    },
+    {
+      "gate": "effect-pq-owner",
+      "name": "automation_effect_host::pq::tests::historical_policy_does_not_connect_old_trust_services_or_follow_its_references",
+      "result": "ok"
+    },
+    {
+      "gate": "effect-pq-owner",
+      "name": "automation_effect_host::pq::tests::initial_feed_is_authenticated_before_any_local_authority_or_frontier_write",
+      "result": "ok"
+    },
+    {
+      "gate": "effect-pq-owner",
+      "name": "automation_effect_host::pq::tests::ordinary_dispatch_and_new_generation_recovery_keep_one_stable_operation",
+      "result": "ok"
+    },
+    {
+      "gate": "effect-pq-owner",
+      "name": "automation_effect_host::pq::tests::ordinary_loader_denies_classical_schema_and_contract_or_policy_substitution",
+      "result": "ok"
+    },
+    {
+      "gate": "effect-pq-owner",
+      "name": "automation_effect_host::pq::tests::pon_schema4_binds_native_binary_and_original_limits_without_running_a_node",
+      "result": "ok"
+    },
+    {
+      "gate": "effect-pq-owner",
+      "name": "automation_effect_host::pq::tests::reconcile_rechecks_generation_after_store_await_without_reclassifying_unknown",
+      "result": "ok"
+    },
+    {
+      "gate": "effect-pq-owner",
+      "name": "automation_effect_host::pq::tests::recovery_requires_current_signed_exact_historical_policy_and_same_provider",
+      "result": "ok"
+    },
+    {
+      "gate": "effect-pq-owner",
+      "name": "automation_effect_host::pq::tests::revoked_equal_number_drift_expired_feed_and_new_epoch_do_not_contact_provider",
+      "result": "ok"
+    },
+    {
+      "gate": "effect-pq-owner",
+      "name": "automation_effect_host::pq::tests::signed_revocation_after_store_await_obeys_active_effect_fence_and_never_sends",
+      "result": "ok"
+    },
+    {
+      "gate": "effect-pq-contract",
+      "name": "provider_effect::pq_tests::pq_contract_binds_profile_root_epoch_and_complete_authority_scope",
+      "result": "ok"
+    },
+    {
+      "gate": "effect-settled-absence",
+      "name": "owner_recovery_tests::settled_absence_fact_read_rejects_unknown_unsettled_and_corrupt_evidence",
+      "result": "ok"
+    },
+    {
+      "gate": "effect-settled-absence",
+      "name": "owner_recovery_tests::settled_absence_fact_read_survives_reopen_and_new_owner_without_redispatch",
+      "result": "ok"
+    }
+  ],
+  "images": [
+    {
+      "sha256": "a8bb307bec662845bf2a22cfb756ceb4b3ad0595f5b0e290c8983326a4fb344b",
+      "bytes": 504302232,
+      "kind": "test-image",
+      "retained_aliases": [
+        "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/evidence/joint-h2-native-attempt-1/fd-executed-binaries-dispatcher/a8bb307bec662845bf2a22cfb756ceb4b3ad0595f5b0e290c8983326a4fb344b.elf",
+        "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/evidence/joint-h2-native-attempt-1/executed-binaries-dispatcher/a8bb307bec662845bf2a22cfb756ceb4b3ad0595f5b0e290c8983326a4fb344b.elf",
+        "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/evidence/joint-h2-native-attempt-1/fd-executed-binaries-recovery-signed/a8bb307bec662845bf2a22cfb756ceb4b3ad0595f5b0e290c8983326a4fb344b.elf",
+        "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/evidence/joint-h2-native-attempt-1/executed-binaries-recovery-signed/a8bb307bec662845bf2a22cfb756ceb4b3ad0595f5b0e290c8983326a4fb344b.elf",
+        "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/evidence/joint-h2-native-attempt-1/fd-executed-binaries-effect-pq-owner/a8bb307bec662845bf2a22cfb756ceb4b3ad0595f5b0e290c8983326a4fb344b.elf",
+        "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/evidence/joint-h2-native-attempt-1/executed-binaries-effect-pq-owner/a8bb307bec662845bf2a22cfb756ceb4b3ad0595f5b0e290c8983326a4fb344b.elf"
+      ],
+      "actual_paths": [
+        "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/codex_hepta_agentd-13943d509610e217"
+      ],
+      "observations": [
+        {
+          "gate": "dispatcher",
+          "method": "pre-exec-fd",
+          "pid": 855668,
+          "start_ticks": "98843052",
+          "selected": [
+            "authbus_dispatch::tests::abandoned_first_claim_without_admission_is_quarantined_after_lookup_missing"
+          ],
+          "gate_status": "passed",
+          "completed_bijection": true
+        },
+        {
+          "gate": "dispatcher",
+          "method": "pre-exec-fd",
+          "pid": 855775,
+          "start_ticks": "98843473",
+          "selected": [
+            "authbus_dispatch::tests::checkpoint_sync::cancelled_checkpoint_sync_waiter_and_owner_release_exclusive_admission"
+          ],
+          "gate_status": "passed",
+          "completed_bijection": true
+        },
+        {
+          "gate": "dispatcher",
+          "method": "pre-exec-fd",
+          "pid": 856150,
+          "start_ticks": "98843966",
+          "selected": [
+            "authbus_dispatch::tests::checkpoint_sync::concurrent_checkpoint_syncs_share_owner_lock_and_preserve_rollback_rejection"
+          ],
+          "gate_status": "passed",
+          "completed_bijection": true
+        },
+        {
+          "gate": "dispatcher",
+          "method": "pre-exec-fd",
+          "pid": 856320,
+          "start_ticks": "98844525",
+          "selected": [
+            "authbus_dispatch::tests::lease_delay::trust_refresh_sqlite_wait_cannot_authorize_transport_with_an_expired_lease"
+          ],
+          "gate_status": "passed",
+          "completed_bijection": true
+        },
+        {
+          "gate": "dispatcher",
+          "method": "pre-exec-fd",
+          "pid": 856624,
+          "start_ticks": "98845133",
+          "selected": [
+            "authbus_dispatch::tests::lost_queue_reply_recovers_from_sqlite_using_lookup_only_and_exact_receipt"
+          ],
+          "gate_status": "passed",
+          "completed_bijection": true
+        },
+        {
+          "gate": "dispatcher",
+          "method": "pre-exec-fd",
+          "pid": 857089,
+          "start_ticks": "98845675",
+          "selected": [
+            "authbus_dispatch::tests::matching_receipt_metadata_with_different_queue_input_never_acknowledges"
+          ],
+          "gate_status": "passed",
+          "completed_bijection": true
+        },
+        {
+          "gate": "dispatcher",
+          "method": "pre-exec-fd",
+          "pid": 857185,
+          "start_ticks": "98846102",
+          "selected": [
+            "authbus_dispatch::tests::policy_rollback::pq_bound_policy_refuses_renewal_without_policy_snapshot"
+          ],
+          "gate_status": "passed",
+          "completed_bijection": true
+        },
+        {
+          "gate": "dispatcher",
+          "method": "pre-exec-fd",
+          "pid": 857511,
+          "start_ticks": "98846644",
+          "selected": [
+            "authbus_dispatch::tests::policy_rollback::pq_owner_requires_explicit_nonzero_policy_revision_and_accepts_set_ordering"
+          ],
+          "gate_status": "passed",
+          "completed_bijection": true
+        },
+        {
+          "gate": "dispatcher",
+          "method": "pre-exec-fd",
+          "pid": 857778,
+          "start_ticks": "98847146",
+          "selected": [
+            "authbus_dispatch::tests::policy_rollback::pq_policy_change_fences_stale_renewal_and_current_policy_restores_dispatch"
+          ],
+          "gate_status": "passed",
+          "completed_bijection": true
+        },
+        {
+          "gate": "dispatcher",
+          "method": "pre-exec-fd",
+          "pid": 858066,
+          "start_ticks": "98847741",
+          "selected": [
+            "authbus_dispatch::tests::policy_rollback::pq_removed_thread_cannot_return_through_owner_file_rollback_after_reopen"
+          ],
+          "gate_status": "passed",
+          "completed_bijection": true
+        },
+        {
+          "gate": "dispatcher",
+          "method": "pre-exec-fd",
+          "pid": 858458,
+          "start_ticks": "98848487",
+          "selected": [
+            "authbus_dispatch::tests::pq::pq_text_owner_resumes_after_revocation_rotation_and_rejected_config_rollback"
+          ],
+          "gate_status": "passed",
+          "completed_bijection": true
+        },
+        {
+          "gate": "dispatcher",
+          "method": "pre-exec-fd",
+          "pid": 858836,
+          "start_ticks": "98849234",
+          "selected": [
+            "authbus_dispatch::tests::pq::pq_text_producer_recovers_through_existing_dispatch_and_rejects_wire_and_config_downgrade"
+          ],
+          "gate_status": "passed",
+          "completed_bijection": true
+        },
+        {
+          "gate": "dispatcher",
+          "method": "pre-exec-fd",
+          "pid": 859293,
+          "start_ticks": "98849909",
+          "selected": [
+            "authbus_dispatch::tests::ready_generation_and_owner_private_trust_are_required_before_admission"
+          ],
+          "gate_status": "passed",
+          "completed_bijection": true
+        },
+        {
+          "gate": "dispatcher",
+          "method": "pre-exec-fd",
+          "pid": 859519,
+          "start_ticks": "98850391",
+          "selected": [
+            "authbus_dispatch::tests::revocation_during_queue_request_prevents_success_ack"
+          ],
+          "gate_status": "passed",
+          "completed_bijection": true
+        },
+        {
+          "gate": "dispatcher",
+          "method": "live-proc-exe",
+          "pid": 855668,
+          "start_ticks": "98843052",
+          "selected": [
+            "authbus_dispatch::tests::abandoned_first_claim_without_admission_is_quarantined_after_lookup_missing"
+          ],
+          "gate_status": "passed",
+          "completed_bijection": true
+        },
+        {
+          "gate": "dispatcher",
+          "method": "live-proc-exe",
+          "pid": 855775,
+          "start_ticks": "98843473",
+          "selected": [
+            "authbus_dispatch::tests::checkpoint_sync::cancelled_checkpoint_sync_waiter_and_owner_release_exclusive_admission"
+          ],
+          "gate_status": "passed",
+          "completed_bijection": true
+        },
+        {
+          "gate": "dispatcher",
+          "method": "live-proc-exe",
+          "pid": 856150,
+          "start_ticks": "98843966",
+          "selected": [
+            "authbus_dispatch::tests::checkpoint_sync::concurrent_checkpoint_syncs_share_owner_lock_and_preserve_rollback_rejection"
+          ],
+          "gate_status": "passed",
+          "completed_bijection": true
+        },
+        {
+          "gate": "dispatcher",
+          "method": "live-proc-exe",
+          "pid": 856320,
+          "start_ticks": "98844525",
+          "selected": [
+            "authbus_dispatch::tests::lease_delay::trust_refresh_sqlite_wait_cannot_authorize_transport_with_an_expired_lease"
+          ],
+          "gate_status": "passed",
+          "completed_bijection": true
+        },
+        {
+          "gate": "dispatcher",
+          "method": "live-proc-exe",
+          "pid": 856624,
+          "start_ticks": "98845133",
+          "selected": [
+            "authbus_dispatch::tests::lost_queue_reply_recovers_from_sqlite_using_lookup_only_and_exact_receipt"
+          ],
+          "gate_status": "passed",
+          "completed_bijection": true
+        },
+        {
+          "gate": "dispatcher",
+          "method": "live-proc-exe",
+          "pid": 857089,
+          "start_ticks": "98845675",
+          "selected": [
+            "authbus_dispatch::tests::matching_receipt_metadata_with_different_queue_input_never_acknowledges"
+          ],
+          "gate_status": "passed",
+          "completed_bijection": true
+        },
+        {
+          "gate": "dispatcher",
+          "method": "live-proc-exe",
+          "pid": 857185,
+          "start_ticks": "98846102",
+          "selected": [
+            "authbus_dispatch::tests::policy_rollback::pq_bound_policy_refuses_renewal_without_policy_snapshot"
+          ],
+          "gate_status": "passed",
+          "completed_bijection": true
+        },
+        {
+          "gate": "dispatcher",
+          "method": "live-proc-exe",
+          "pid": 857511,
+          "start_ticks": "98846644",
+          "selected": [
+            "authbus_dispatch::tests::policy_rollback::pq_owner_requires_explicit_nonzero_policy_revision_and_accepts_set_ordering"
+          ],
+          "gate_status": "passed",
+          "completed_bijection": true
+        },
+        {
+          "gate": "dispatcher",
+          "method": "live-proc-exe",
+          "pid": 857778,
+          "start_ticks": "98847146",
+          "selected": [
+            "authbus_dispatch::tests::policy_rollback::pq_policy_change_fences_stale_renewal_and_current_policy_restores_dispatch"
+          ],
+          "gate_status": "passed",
+          "completed_bijection": true
+        },
+        {
+          "gate": "dispatcher",
+          "method": "live-proc-exe",
+          "pid": 858066,
+          "start_ticks": "98847741",
+          "selected": [
+            "authbus_dispatch::tests::policy_rollback::pq_removed_thread_cannot_return_through_owner_file_rollback_after_reopen"
+          ],
+          "gate_status": "passed",
+          "completed_bijection": true
+        },
+        {
+          "gate": "dispatcher",
+          "method": "live-proc-exe",
+          "pid": 858458,
+          "start_ticks": "98848487",
+          "selected": [
+            "authbus_dispatch::tests::pq::pq_text_owner_resumes_after_revocation_rotation_and_rejected_config_rollback"
+          ],
+          "gate_status": "passed",
+          "completed_bijection": true
+        },
+        {
+          "gate": "dispatcher",
+          "method": "live-proc-exe",
+          "pid": 858836,
+          "start_ticks": "98849234",
+          "selected": [
+            "authbus_dispatch::tests::pq::pq_text_producer_recovers_through_existing_dispatch_and_rejects_wire_and_config_downgrade"
+          ],
+          "gate_status": "passed",
+          "completed_bijection": true
+        },
+        {
+          "gate": "dispatcher",
+          "method": "live-proc-exe",
+          "pid": 859293,
+          "start_ticks": "98849909",
+          "selected": [
+            "authbus_dispatch::tests::ready_generation_and_owner_private_trust_are_required_before_admission"
+          ],
+          "gate_status": "passed",
+          "completed_bijection": true
+        },
+        {
+          "gate": "dispatcher",
+          "method": "live-proc-exe",
+          "pid": 859519,
+          "start_ticks": "98850391",
+          "selected": [
+            "authbus_dispatch::tests::revocation_during_queue_request_prevents_success_ack"
+          ],
+          "gate_status": "passed",
+          "completed_bijection": true
+        },
+        {
+          "gate": "recovery-signed",
+          "method": "pre-exec-fd",
+          "pid": 871650,
+          "start_ticks": "98866680",
+          "selected": [
+            "evidence_frontier::tests::recovery_frontier_authenticates_both_effect_fields"
+          ],
+          "gate_status": "passed",
+          "completed_bijection": true
+        },
+        {
+          "gate": "recovery-signed",
+          "method": "pre-exec-fd",
+          "pid": 872302,
+          "start_ticks": "98867020",
+          "selected": [
+            "evidence_frontier::tests::recovery_frontier_cannot_be_omitted_at_the_ordinary_agentd_run_entry"
+          ],
+          "gate_status": "passed",
+          "completed_bijection": true
+        },
+        {
+          "gate": "recovery-signed",
+          "method": "pre-exec-fd",
+          "pid": 872721,
+          "start_ticks": "98867280",
+          "selected": [
+            "evidence_frontier::tests::recovery_frontier_enforces_root_scope_epoch_revocation_and_generation_floor"
+          ],
+          "gate_status": "passed",
+          "completed_bijection": true
+        },
+        {
+          "gate": "recovery-signed",
+          "method": "pre-exec-fd",
+          "pid": 872811,
+          "start_ticks": "98867637",
+          "selected": [
+            "evidence_frontier::tests::recovery_frontier_pq_rejects_invocation_only_database_rollbacks"
+          ],
+          "gate_status": "passed",
+          "completed_bijection": true
+        },
+        {
+          "gate": "recovery-signed",
+          "method": "pre-exec-fd",
+          "pid": 872959,
+          "start_ticks": "98868058",
+          "selected": [
+            "evidence_frontier::tests::recovery_frontier_pq_survives_store_close_and_reopen"
+          ],
+          "gate_status": "passed",
+          "completed_bijection": true
+        },
+        {
+          "gate": "recovery-signed",
+          "method": "pre-exec-fd",
+          "pid": 873024,
+          "start_ticks": "98868416",
+          "selected": [
+            "evidence_frontier::tests::recovery_frontier_read_only_preflight_never_binds_or_changes_the_image"
+          ],
+          "gate_status": "passed",
+          "completed_bijection": true
+        },
+        {
+          "gate": "recovery-signed",
+          "method": "pre-exec-fd",
+          "pid": 873111,
+          "start_ticks": "98868793",
+          "selected": [
+            "evidence_frontier::tests::recovery_frontier_refuses_valid_classical_v1_and_v2_signatures"
+          ],
+          "gate_status": "passed",
+          "completed_bijection": true
+        },
+        {
+          "gate": "recovery-signed",
+          "method": "pre-exec-fd",
+          "pid": 873203,
+          "start_ticks": "98869153",
+          "selected": [
+            "evidence_frontier::tests::recovery_frontier_refuses_valid_pq_v3_and_relabelled_v2_snapshots"
+          ],
+          "gate_status": "passed",
+          "completed_bijection": true
+        },
+        {
+          "gate": "recovery-signed",
+          "method": "pre-exec-fd",
+          "pid": 873259,
+          "start_ticks": "98869518",
+          "selected": [
+            "evidence_frontier::tests::recovery_frontier_rejects_wrong_domain_and_profile"
+          ],
+          "gate_status": "passed",
+          "completed_bijection": true
+        },
+        {
+          "gate": "recovery-signed",
+          "method": "pre-exec-fd",
+          "pid": 873328,
+          "start_ticks": "98869864",
+          "selected": [
+            "evidence_frontier::tests::recovery_frontier_rejects_wrong_key_pin_and_noncanonical_signature"
+          ],
+          "gate_status": "passed",
+          "completed_bijection": true
+        },
+        {
+          "gate": "recovery-signed",
+          "method": "pre-exec-fd",
+          "pid": 873437,
+          "start_ticks": "98870207",
+          "selected": [
+            "evidence_frontier::tests::recovery_frontier_root_rotation_retires_the_old_key"
+          ],
+          "gate_status": "passed",
+          "completed_bijection": true
+        },
+        {
+          "gate": "recovery-signed",
+          "method": "live-proc-exe",
+          "pid": 871650,
+          "start_ticks": "98866680",
+          "selected": [
+            "evidence_frontier::tests::recovery_frontier_authenticates_both_effect_fields"
+          ],
+          "gate_status": "passed",
+          "completed_bijection": true
+        },
+        {
+          "gate": "recovery-signed",
+          "method": "live-proc-exe",
+          "pid": 872302,
+          "start_ticks": "98867020",
+          "selected": [
+            "evidence_frontier::tests::recovery_frontier_cannot_be_omitted_at_the_ordinary_agentd_run_entry"
+          ],
+          "gate_status": "passed",
+          "completed_bijection": true
+        },
+        {
+          "gate": "recovery-signed",
+          "method": "live-proc-exe",
+          "pid": 872721,
+          "start_ticks": "98867280",
+          "selected": [
+            "evidence_frontier::tests::recovery_frontier_enforces_root_scope_epoch_revocation_and_generation_floor"
+          ],
+          "gate_status": "passed",
+          "completed_bijection": true
+        },
+        {
+          "gate": "recovery-signed",
+          "method": "live-proc-exe",
+          "pid": 872811,
+          "start_ticks": "98867637",
+          "selected": [
+            "evidence_frontier::tests::recovery_frontier_pq_rejects_invocation_only_database_rollbacks"
+          ],
+          "gate_status": "passed",
+          "completed_bijection": true
+        },
+        {
+          "gate": "recovery-signed",
+          "method": "live-proc-exe",
+          "pid": 872959,
+          "start_ticks": "98868058",
+          "selected": [
+            "evidence_frontier::tests::recovery_frontier_pq_survives_store_close_and_reopen"
+          ],
+          "gate_status": "passed",
+          "completed_bijection": true
+        },
+        {
+          "gate": "recovery-signed",
+          "method": "live-proc-exe",
+          "pid": 873024,
+          "start_ticks": "98868416",
+          "selected": [
+            "evidence_frontier::tests::recovery_frontier_read_only_preflight_never_binds_or_changes_the_image"
+          ],
+          "gate_status": "passed",
+          "completed_bijection": true
+        },
+        {
+          "gate": "recovery-signed",
+          "method": "live-proc-exe",
+          "pid": 873111,
+          "start_ticks": "98868793",
+          "selected": [
+            "evidence_frontier::tests::recovery_frontier_refuses_valid_classical_v1_and_v2_signatures"
+          ],
+          "gate_status": "passed",
+          "completed_bijection": true
+        },
+        {
+          "gate": "recovery-signed",
+          "method": "live-proc-exe",
+          "pid": 873203,
+          "start_ticks": "98869153",
+          "selected": [
+            "evidence_frontier::tests::recovery_frontier_refuses_valid_pq_v3_and_relabelled_v2_snapshots"
+          ],
+          "gate_status": "passed",
+          "completed_bijection": true
+        },
+        {
+          "gate": "recovery-signed",
+          "method": "live-proc-exe",
+          "pid": 873259,
+          "start_ticks": "98869518",
+          "selected": [
+            "evidence_frontier::tests::recovery_frontier_rejects_wrong_domain_and_profile"
+          ],
+          "gate_status": "passed",
+          "completed_bijection": true
+        },
+        {
+          "gate": "recovery-signed",
+          "method": "live-proc-exe",
+          "pid": 873328,
+          "start_ticks": "98869864",
+          "selected": [
+            "evidence_frontier::tests::recovery_frontier_rejects_wrong_key_pin_and_noncanonical_signature"
+          ],
+          "gate_status": "passed",
+          "completed_bijection": true
+        },
+        {
+          "gate": "recovery-signed",
+          "method": "live-proc-exe",
+          "pid": 873437,
+          "start_ticks": "98870207",
+          "selected": [
+            "evidence_frontier::tests::recovery_frontier_root_rotation_retires_the_old_key"
+          ],
+          "gate_status": "passed",
+          "completed_bijection": true
+        },
+        {
+          "gate": "effect-pq-owner",
+          "method": "pre-exec-fd",
+          "pid": 876732,
+          "start_ticks": "98878429",
+          "selected": [
+            "automation_effect_host::pq::tests::current_clock_frontier_and_pq_grant_are_mandatory_before_contact"
+          ],
+          "gate_status": "passed",
+          "completed_bijection": true
+        },
+        {
+          "gate": "effect-pq-owner",
+          "method": "pre-exec-fd",
+          "pid": 876866,
+          "start_ticks": "98879073",
+          "selected": [
+            "automation_effect_host::pq::tests::generation_change_after_store_await_refuses_contact_and_keeps_consumed_nonce"
+          ],
+          "gate_status": "passed",
+          "completed_bijection": true
+        },
+        {
+          "gate": "effect-pq-owner",
+          "method": "pre-exec-fd",
+          "pid": 877038,
+          "start_ticks": "98879669",
+          "selected": [
+            "automation_effect_host::pq::tests::historical_policy_does_not_connect_old_trust_services_or_follow_its_references"
+          ],
+          "gate_status": "passed",
+          "completed_bijection": true
+        },
+        {
+          "gate": "effect-pq-owner",
+          "method": "pre-exec-fd",
+          "pid": 877193,
+          "start_ticks": "98880164",
+          "selected": [
+            "automation_effect_host::pq::tests::initial_feed_is_authenticated_before_any_local_authority_or_frontier_write"
+          ],
+          "gate_status": "passed",
+          "completed_bijection": true
+        },
+        {
+          "gate": "effect-pq-owner",
+          "method": "pre-exec-fd",
+          "pid": 877347,
+          "start_ticks": "98880684",
+          "selected": [
+            "automation_effect_host::pq::tests::ordinary_dispatch_and_new_generation_recovery_keep_one_stable_operation"
+          ],
+          "gate_status": "passed",
+          "completed_bijection": true
+        },
+        {
+          "gate": "effect-pq-owner",
+          "method": "pre-exec-fd",
+          "pid": 877551,
+          "start_ticks": "98881526",
+          "selected": [
+            "automation_effect_host::pq::tests::ordinary_loader_denies_classical_schema_and_contract_or_policy_substitution"
+          ],
+          "gate_status": "passed",
+          "completed_bijection": true
+        },
+        {
+          "gate": "effect-pq-owner",
+          "method": "pre-exec-fd",
+          "pid": 877636,
+          "start_ticks": "98881979",
+          "selected": [
+            "automation_effect_host::pq::tests::pon_schema4_binds_native_binary_and_original_limits_without_running_a_node"
+          ],
+          "gate_status": "passed",
+          "completed_bijection": true
+        },
+        {
+          "gate": "effect-pq-owner",
+          "method": "pre-exec-fd",
+          "pid": 877856,
+          "start_ticks": "98882611",
+          "selected": [
+            "automation_effect_host::pq::tests::reconcile_rechecks_generation_after_store_await_without_reclassifying_unknown"
+          ],
+          "gate_status": "passed",
+          "completed_bijection": true
+        },
+        {
+          "gate": "effect-pq-owner",
+          "method": "pre-exec-fd",
+          "pid": 878042,
+          "start_ticks": "98883221",
+          "selected": [
+            "automation_effect_host::pq::tests::recovery_requires_current_signed_exact_historical_policy_and_same_provider"
+          ],
+          "gate_status": "passed",
+          "completed_bijection": true
+        },
+        {
+          "gate": "effect-pq-owner",
+          "method": "pre-exec-fd",
+          "pid": 878201,
+          "start_ticks": "98883812",
+          "selected": [
+            "automation_effect_host::pq::tests::revoked_equal_number_drift_expired_feed_and_new_epoch_do_not_contact_provider"
+          ],
+          "gate_status": "passed",
+          "completed_bijection": true
+        },
+        {
+          "gate": "effect-pq-owner",
+          "method": "pre-exec-fd",
+          "pid": 878326,
+          "start_ticks": "98884397",
+          "selected": [
+            "automation_effect_host::pq::tests::signed_revocation_after_store_await_obeys_active_effect_fence_and_never_sends"
+          ],
+          "gate_status": "passed",
+          "completed_bijection": true
+        },
+        {
+          "gate": "effect-pq-owner",
+          "method": "live-proc-exe",
+          "pid": 876732,
+          "start_ticks": "98878429",
+          "selected": [
+            "automation_effect_host::pq::tests::current_clock_frontier_and_pq_grant_are_mandatory_before_contact"
+          ],
+          "gate_status": "passed",
+          "completed_bijection": true
+        },
+        {
+          "gate": "effect-pq-owner",
+          "method": "live-proc-exe",
+          "pid": 876866,
+          "start_ticks": "98879073",
+          "selected": [
+            "automation_effect_host::pq::tests::generation_change_after_store_await_refuses_contact_and_keeps_consumed_nonce"
+          ],
+          "gate_status": "passed",
+          "completed_bijection": true
+        },
+        {
+          "gate": "effect-pq-owner",
+          "method": "live-proc-exe",
+          "pid": 877038,
+          "start_ticks": "98879669",
+          "selected": [
+            "automation_effect_host::pq::tests::historical_policy_does_not_connect_old_trust_services_or_follow_its_references"
+          ],
+          "gate_status": "passed",
+          "completed_bijection": true
+        },
+        {
+          "gate": "effect-pq-owner",
+          "method": "live-proc-exe",
+          "pid": 877193,
+          "start_ticks": "98880164",
+          "selected": [
+            "automation_effect_host::pq::tests::initial_feed_is_authenticated_before_any_local_authority_or_frontier_write"
+          ],
+          "gate_status": "passed",
+          "completed_bijection": true
+        },
+        {
+          "gate": "effect-pq-owner",
+          "method": "live-proc-exe",
+          "pid": 877347,
+          "start_ticks": "98880684",
+          "selected": [
+            "automation_effect_host::pq::tests::ordinary_dispatch_and_new_generation_recovery_keep_one_stable_operation"
+          ],
+          "gate_status": "passed",
+          "completed_bijection": true
+        },
+        {
+          "gate": "effect-pq-owner",
+          "method": "live-proc-exe",
+          "pid": 877551,
+          "start_ticks": "98881526",
+          "selected": [
+            "automation_effect_host::pq::tests::ordinary_loader_denies_classical_schema_and_contract_or_policy_substitution"
+          ],
+          "gate_status": "passed",
+          "completed_bijection": true
+        },
+        {
+          "gate": "effect-pq-owner",
+          "method": "live-proc-exe",
+          "pid": 877636,
+          "start_ticks": "98881979",
+          "selected": [
+            "automation_effect_host::pq::tests::pon_schema4_binds_native_binary_and_original_limits_without_running_a_node"
+          ],
+          "gate_status": "passed",
+          "completed_bijection": true
+        },
+        {
+          "gate": "effect-pq-owner",
+          "method": "live-proc-exe",
+          "pid": 877856,
+          "start_ticks": "98882611",
+          "selected": [
+            "automation_effect_host::pq::tests::reconcile_rechecks_generation_after_store_await_without_reclassifying_unknown"
+          ],
+          "gate_status": "passed",
+          "completed_bijection": true
+        },
+        {
+          "gate": "effect-pq-owner",
+          "method": "live-proc-exe",
+          "pid": 878042,
+          "start_ticks": "98883221",
+          "selected": [
+            "automation_effect_host::pq::tests::recovery_requires_current_signed_exact_historical_policy_and_same_provider"
+          ],
+          "gate_status": "passed",
+          "completed_bijection": true
+        },
+        {
+          "gate": "effect-pq-owner",
+          "method": "live-proc-exe",
+          "pid": 878201,
+          "start_ticks": "98883812",
+          "selected": [
+            "automation_effect_host::pq::tests::revoked_equal_number_drift_expired_feed_and_new_epoch_do_not_contact_provider"
+          ],
+          "gate_status": "passed",
+          "completed_bijection": true
+        },
+        {
+          "gate": "effect-pq-owner",
+          "method": "live-proc-exe",
+          "pid": 878326,
+          "start_ticks": "98884397",
+          "selected": [
+            "automation_effect_host::pq::tests::signed_revocation_after_store_await_obeys_active_effect_fence_and_never_sends"
+          ],
+          "gate_status": "passed",
+          "completed_bijection": true
+        }
+      ]
+    },
+    {
+      "sha256": "f16fe89c11c71de377b62783fa5f06f23c8461b7d1b697aaf742dc2830d14295",
+      "bytes": 120074176,
+      "kind": "test-image",
+      "retained_aliases": [
+        "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/evidence/joint-h2-native-attempt-1/fd-executed-binaries-product/f16fe89c11c71de377b62783fa5f06f23c8461b7d1b697aaf742dc2830d14295.elf",
+        "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/evidence/joint-h2-native-attempt-1/executed-binaries-product/f16fe89c11c71de377b62783fa5f06f23c8461b7d1b697aaf742dc2830d14295.elf"
+      ],
+      "actual_paths": [
+        "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/authbus_text_product-c365e5b605b48783"
+      ],
+      "observations": [
+        {
+          "gate": "product",
+          "method": "pre-exec-fd",
+          "pid": 860841,
+          "start_ticks": "98852584",
+          "selected": [
+            "pq_signed_text_crosses_real_queue_after_rejection_without_downgrade"
+          ],
+          "gate_status": "passed",
+          "completed_bijection": true
+        },
+        {
+          "gate": "product",
+          "method": "pre-exec-fd",
+          "pid": 861888,
+          "start_ticks": "98853405",
+          "selected": [
+            "real_agentd_without_explicit_trust_rejects_signed_text"
+          ],
+          "gate_status": "passed",
+          "completed_bijection": true
+        },
+        {
+          "gate": "product",
+          "method": "pre-exec-fd",
+          "pid": 862168,
+          "start_ticks": "98853749",
+          "selected": [
+            "signed_text_crosses_real_queue_once_and_current_trust_rejects_invalid_ingress"
+          ],
+          "gate_status": "passed",
+          "completed_bijection": true
+        },
+        {
+          "gate": "product",
+          "method": "live-proc-exe",
+          "pid": 860841,
+          "start_ticks": "98852584",
+          "selected": [
+            "pq_signed_text_crosses_real_queue_after_rejection_without_downgrade"
+          ],
+          "gate_status": "passed",
+          "completed_bijection": true
+        },
+        {
+          "gate": "product",
+          "method": "live-proc-exe",
+          "pid": 861888,
+          "start_ticks": "98853405",
+          "selected": [
+            "real_agentd_without_explicit_trust_rejects_signed_text"
+          ],
+          "gate_status": "passed",
+          "completed_bijection": true
+        },
+        {
+          "gate": "product",
+          "method": "live-proc-exe",
+          "pid": 862168,
+          "start_ticks": "98853749",
+          "selected": [
+            "signed_text_crosses_real_queue_once_and_current_trust_rejects_invalid_ingress"
+          ],
+          "gate_status": "passed",
+          "completed_bijection": true
+        }
+      ]
+    },
+    {
+      "sha256": "a948cdfa5aeafc03fcfc63459e581ca254129f4d878949236e0bf42df3fe725f",
+      "bytes": 53291680,
+      "kind": "test-image",
+      "retained_aliases": [
+        "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/evidence/joint-h2-native-attempt-1/fd-executed-binaries-recovery-owner/a948cdfa5aeafc03fcfc63459e581ca254129f4d878949236e0bf42df3fe725f.elf",
+        "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/evidence/joint-h2-native-attempt-1/executed-binaries-recovery-owner/a948cdfa5aeafc03fcfc63459e581ca254129f4d878949236e0bf42df3fe725f.elf",
+        "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/evidence/joint-h2-native-attempt-1/fd-executed-binaries-qualification-growth/a948cdfa5aeafc03fcfc63459e581ca254129f4d878949236e0bf42df3fe725f.elf",
+        "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/evidence/joint-h2-native-attempt-1/executed-binaries-qualification-growth/a948cdfa5aeafc03fcfc63459e581ca254129f4d878949236e0bf42df3fe725f.elf"
+      ],
+      "actual_paths": [
+        "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/codex_hepta_evidence-0f5076227f347d3a"
+      ],
+      "observations": [
+        {
+          "gate": "recovery-owner",
+          "method": "pre-exec-fd",
+          "pid": 869907,
+          "start_ticks": "98863214",
+          "selected": [
+            "provider_effect_recovery_provenance_tests::recovery_provenance_preserves_dispatch_then_authoritative_status"
+          ],
+          "gate_status": "passed",
+          "completed_bijection": true
+        },
+        {
+          "gate": "recovery-owner",
+          "method": "pre-exec-fd",
+          "pid": 869924,
+          "start_ticks": "98863291",
+          "selected": [
+            "provider_effect_recovery_provenance_tests::recovery_provenance_rejects_late_dispatch_after_status_without_uncertainty"
+          ],
+          "gate_status": "passed",
+          "completed_bijection": true
+        },
+        {
+          "gate": "recovery-owner",
+          "method": "pre-exec-fd",
+          "pid": 869935,
+          "start_ticks": "98863358",
+          "selected": [
+            "recovery_effect_frontier_tests::recovery_snapshot_commits_ack_provenance_and_cross_table_order"
+          ],
+          "gate_status": "passed",
+          "completed_bijection": true
+        },
+        {
+          "gate": "recovery-owner",
+          "method": "pre-exec-fd",
+          "pid": 869952,
+          "start_ticks": "98863421",
+          "selected": [
+            "recovery_effect_frontier_tests::recovery_snapshot_commits_effect_history_after_the_first_page"
+          ],
+          "gate_status": "passed",
+          "completed_bijection": true
+        },
+        {
+          "gate": "recovery-owner",
+          "method": "pre-exec-fd",
+          "pid": 870009,
+          "start_ticks": "98863567",
+          "selected": [
+            "recovery_effect_frontier_tests::recovery_snapshot_commits_intent_unknown_and_original_operation_receipt"
+          ],
+          "gate_status": "passed",
+          "completed_bijection": true
+        },
+        {
+          "gate": "recovery-owner",
+          "method": "pre-exec-fd",
+          "pid": 870026,
+          "start_ticks": "98863630",
+          "selected": [
+            "recovery_effect_frontier_tests::recovery_snapshot_distinguishes_a_valid_effect_only_database_rollback"
+          ],
+          "gate_status": "passed",
+          "completed_bijection": true
+        },
+        {
+          "gate": "recovery-owner",
+          "method": "pre-exec-fd",
+          "pid": 870049,
+          "start_ticks": "98863700",
+          "selected": [
+            "recovery_effect_frontier_tests::recovery_snapshot_refuses_canonical_ack_bound_to_a_different_payload"
+          ],
+          "gate_status": "passed",
+          "completed_bijection": true
+        },
+        {
+          "gate": "recovery-owner",
+          "method": "pre-exec-fd",
+          "pid": 870108,
+          "start_ticks": "98863763",
+          "selected": [
+            "recovery_effect_frontier_tests::recovery_snapshot_refuses_changed_json_with_retained_record_digests"
+          ],
+          "gate_status": "passed",
+          "completed_bijection": true
+        },
+        {
+          "gate": "recovery-owner",
+          "method": "pre-exec-fd",
+          "pid": 870126,
+          "start_ticks": "98863853",
+          "selected": [
+            "recovery_effect_frontier_tests::recovery_snapshot_refuses_effect_projection_drift_with_retained_payloads"
+          ],
+          "gate_status": "passed",
+          "completed_bijection": true
+        },
+        {
+          "gate": "recovery-owner",
+          "method": "pre-exec-fd",
+          "pid": 870265,
+          "start_ticks": "98863947",
+          "selected": [
+            "recovery_effect_frontier_tests::recovery_snapshot_refuses_orphan_effect_observations"
+          ],
+          "gate_status": "passed",
+          "completed_bijection": true
+        },
+        {
+          "gate": "recovery-owner",
+          "method": "pre-exec-fd",
+          "pid": 870498,
+          "start_ticks": "98864069",
+          "selected": [
+            "recovery_effect_frontier_tests::recovery_snapshot_refuses_repeated_effect_sequence_after_schema_drift"
+          ],
+          "gate_status": "passed",
+          "completed_bijection": true
+        },
+        {
+          "gate": "recovery-owner",
+          "method": "pre-exec-fd",
+          "pid": 870563,
+          "start_ticks": "98864152",
+          "selected": [
+            "recovery_effect_frontier_tests::recovery_snapshot_refuses_repeated_effect_sequence_at_page_boundary"
+          ],
+          "gate_status": "passed",
+          "completed_bijection": true
+        },
+        {
+          "gate": "recovery-owner",
+          "method": "pre-exec-fd",
+          "pid": 870729,
+          "start_ticks": "98864611",
+          "selected": [
+            "recovery_invocation_frontier_tests::recovery_snapshot_binds_invocation_sequence_and_recording_time"
+          ],
+          "gate_status": "passed",
+          "completed_bijection": true
+        },
+        {
+          "gate": "recovery-owner",
+          "method": "pre-exec-fd",
+          "pid": 870778,
+          "start_ticks": "98864692",
+          "selected": [
+            "recovery_invocation_frontier_tests::recovery_snapshot_commits_invocations_after_the_first_page"
+          ],
+          "gate_status": "passed",
+          "completed_bijection": true
+        },
+        {
+          "gate": "recovery-owner",
+          "method": "pre-exec-fd",
+          "pid": 870974,
+          "start_ticks": "98865010",
+          "selected": [
+            "recovery_invocation_frontier_tests::recovery_snapshot_commits_pending_invocations_and_terminal_states"
+          ],
+          "gate_status": "passed",
+          "completed_bijection": true
+        },
+        {
+          "gate": "recovery-owner",
+          "method": "pre-exec-fd",
+          "pid": 870989,
+          "start_ticks": "98865120",
+          "selected": [
+            "recovery_invocation_frontier_tests::recovery_snapshot_refuses_duplicate_terminal_hidden_at_page_boundary"
+          ],
+          "gate_status": "passed",
+          "completed_bijection": true
+        },
+        {
+          "gate": "recovery-owner",
+          "method": "pre-exec-fd",
+          "pid": 871120,
+          "start_ticks": "98865692",
+          "selected": [
+            "recovery_invocation_frontier_tests::recovery_snapshot_refuses_invocation_column_type_corruption_without_panicking"
+          ],
+          "gate_status": "passed",
+          "completed_bijection": true
+        },
+        {
+          "gate": "recovery-owner",
+          "method": "pre-exec-fd",
+          "pid": 871170,
+          "start_ticks": "98865815",
+          "selected": [
+            "recovery_invocation_frontier_tests::recovery_snapshot_requires_the_terminals_authoritative_intent"
+          ],
+          "gate_status": "passed",
+          "completed_bijection": true
+        },
+        {
+          "gate": "recovery-owner",
+          "method": "pre-exec-fd",
+          "pid": 871183,
+          "start_ticks": "98865897",
+          "selected": [
+            "recovery_invocation_frontier_tests::recovery_snapshot_revalidates_invocation_payloads_and_projected_columns"
+          ],
+          "gate_status": "passed",
+          "completed_bijection": true
+        },
+        {
+          "gate": "recovery-owner",
+          "method": "pre-exec-fd",
+          "pid": 871201,
+          "start_ticks": "98865989",
+          "selected": [
+            "recovery_invocation_schema_tests::recovery_invocation_schema_accepts_current_migration_keys"
+          ],
+          "gate_status": "passed",
+          "completed_bijection": true
+        },
+        {
+          "gate": "recovery-owner",
+          "method": "pre-exec-fd",
+          "pid": 871211,
+          "start_ticks": "98866066",
+          "selected": [
+            "recovery_invocation_schema_tests::recovery_invocation_schema_refuses_non_rowid_or_composite_sequences"
+          ],
+          "gate_status": "passed",
+          "completed_bijection": true
+        },
+        {
+          "gate": "recovery-owner",
+          "method": "pre-exec-fd",
+          "pid": 871280,
+          "start_ticks": "98866107",
+          "selected": [
+            "recovery_invocation_schema_tests::recovery_invocation_schema_requires_exact_unconditional_column_uniqueness"
+          ],
+          "gate_status": "passed",
+          "completed_bijection": true
+        },
+        {
+          "gate": "recovery-owner",
+          "method": "live-proc-exe",
+          "pid": 869907,
+          "start_ticks": "98863214",
+          "selected": [
+            "provider_effect_recovery_provenance_tests::recovery_provenance_preserves_dispatch_then_authoritative_status"
+          ],
+          "gate_status": "passed",
+          "completed_bijection": true
+        },
+        {
+          "gate": "recovery-owner",
+          "method": "live-proc-exe",
+          "pid": 869924,
+          "start_ticks": "98863291",
+          "selected": [
+            "provider_effect_recovery_provenance_tests::recovery_provenance_rejects_late_dispatch_after_status_without_uncertainty"
+          ],
+          "gate_status": "passed",
+          "completed_bijection": true
+        },
+        {
+          "gate": "recovery-owner",
+          "method": "live-proc-exe",
+          "pid": 869935,
+          "start_ticks": "98863358",
+          "selected": [
+            "recovery_effect_frontier_tests::recovery_snapshot_commits_ack_provenance_and_cross_table_order"
+          ],
+          "gate_status": "passed",
+          "completed_bijection": true
+        },
+        {
+          "gate": "recovery-owner",
+          "method": "live-proc-exe",
+          "pid": 869952,
+          "start_ticks": "98863421",
+          "selected": [
+            "recovery_effect_frontier_tests::recovery_snapshot_commits_effect_history_after_the_first_page"
+          ],
+          "gate_status": "passed",
+          "completed_bijection": true
+        },
+        {
+          "gate": "recovery-owner",
+          "method": "live-proc-exe",
+          "pid": 870009,
+          "start_ticks": "98863567",
+          "selected": [
+            "recovery_effect_frontier_tests::recovery_snapshot_commits_intent_unknown_and_original_operation_receipt"
+          ],
+          "gate_status": "passed",
+          "completed_bijection": true
+        },
+        {
+          "gate": "recovery-owner",
+          "method": "live-proc-exe",
+          "pid": 870026,
+          "start_ticks": "98863630",
+          "selected": [
+            "recovery_effect_frontier_tests::recovery_snapshot_distinguishes_a_valid_effect_only_database_rollback"
+          ],
+          "gate_status": "passed",
+          "completed_bijection": true
+        },
+        {
+          "gate": "recovery-owner",
+          "method": "live-proc-exe",
+          "pid": 870049,
+          "start_ticks": "98863700",
+          "selected": [
+            "recovery_effect_frontier_tests::recovery_snapshot_refuses_canonical_ack_bound_to_a_different_payload"
+          ],
+          "gate_status": "passed",
+          "completed_bijection": true
+        },
+        {
+          "gate": "recovery-owner",
+          "method": "live-proc-exe",
+          "pid": 870108,
+          "start_ticks": "98863763",
+          "selected": [
+            "recovery_effect_frontier_tests::recovery_snapshot_refuses_changed_json_with_retained_record_digests"
+          ],
+          "gate_status": "passed",
+          "completed_bijection": true
+        },
+        {
+          "gate": "recovery-owner",
+          "method": "live-proc-exe",
+          "pid": 870126,
+          "start_ticks": "98863853",
+          "selected": [
+            "recovery_effect_frontier_tests::recovery_snapshot_refuses_effect_projection_drift_with_retained_payloads"
+          ],
+          "gate_status": "passed",
+          "completed_bijection": true
+        },
+        {
+          "gate": "recovery-owner",
+          "method": "live-proc-exe",
+          "pid": 870265,
+          "start_ticks": "98863947",
+          "selected": [
+            "recovery_effect_frontier_tests::recovery_snapshot_refuses_orphan_effect_observations"
+          ],
+          "gate_status": "passed",
+          "completed_bijection": true
+        },
+        {
+          "gate": "recovery-owner",
+          "method": "live-proc-exe",
+          "pid": 870498,
+          "start_ticks": "98864069",
+          "selected": [
+            "recovery_effect_frontier_tests::recovery_snapshot_refuses_repeated_effect_sequence_after_schema_drift"
+          ],
+          "gate_status": "passed",
+          "completed_bijection": true
+        },
+        {
+          "gate": "recovery-owner",
+          "method": "live-proc-exe",
+          "pid": 870563,
+          "start_ticks": "98864152",
+          "selected": [
+            "recovery_effect_frontier_tests::recovery_snapshot_refuses_repeated_effect_sequence_at_page_boundary"
+          ],
+          "gate_status": "passed",
+          "completed_bijection": true
+        },
+        {
+          "gate": "recovery-owner",
+          "method": "live-proc-exe",
+          "pid": 870729,
+          "start_ticks": "98864611",
+          "selected": [
+            "recovery_invocation_frontier_tests::recovery_snapshot_binds_invocation_sequence_and_recording_time"
+          ],
+          "gate_status": "passed",
+          "completed_bijection": true
+        },
+        {
+          "gate": "recovery-owner",
+          "method": "live-proc-exe",
+          "pid": 870778,
+          "start_ticks": "98864692",
+          "selected": [
+            "recovery_invocation_frontier_tests::recovery_snapshot_commits_invocations_after_the_first_page"
+          ],
+          "gate_status": "passed",
+          "completed_bijection": true
+        },
+        {
+          "gate": "recovery-owner",
+          "method": "live-proc-exe",
+          "pid": 870974,
+          "start_ticks": "98865010",
+          "selected": [
+            "recovery_invocation_frontier_tests::recovery_snapshot_commits_pending_invocations_and_terminal_states"
+          ],
+          "gate_status": "passed",
+          "completed_bijection": true
+        },
+        {
+          "gate": "recovery-owner",
+          "method": "live-proc-exe",
+          "pid": 870989,
+          "start_ticks": "98865120",
+          "selected": [
+            "recovery_invocation_frontier_tests::recovery_snapshot_refuses_duplicate_terminal_hidden_at_page_boundary"
+          ],
+          "gate_status": "passed",
+          "completed_bijection": true
+        },
+        {
+          "gate": "recovery-owner",
+          "method": "live-proc-exe",
+          "pid": 871120,
+          "start_ticks": "98865692",
+          "selected": [
+            "recovery_invocation_frontier_tests::recovery_snapshot_refuses_invocation_column_type_corruption_without_panicking"
+          ],
+          "gate_status": "passed",
+          "completed_bijection": true
+        },
+        {
+          "gate": "recovery-owner",
+          "method": "live-proc-exe",
+          "pid": 871170,
+          "start_ticks": "98865815",
+          "selected": [
+            "recovery_invocation_frontier_tests::recovery_snapshot_requires_the_terminals_authoritative_intent"
+          ],
+          "gate_status": "passed",
+          "completed_bijection": true
+        },
+        {
+          "gate": "recovery-owner",
+          "method": "live-proc-exe",
+          "pid": 871183,
+          "start_ticks": "98865897",
+          "selected": [
+            "recovery_invocation_frontier_tests::recovery_snapshot_revalidates_invocation_payloads_and_projected_columns"
+          ],
+          "gate_status": "passed",
+          "completed_bijection": true
+        },
+        {
+          "gate": "recovery-owner",
+          "method": "live-proc-exe",
+          "pid": 871201,
+          "start_ticks": "98865989",
+          "selected": [
+            "recovery_invocation_schema_tests::recovery_invocation_schema_accepts_current_migration_keys"
+          ],
+          "gate_status": "passed",
+          "completed_bijection": true
+        },
+        {
+          "gate": "recovery-owner",
+          "method": "live-proc-exe",
+          "pid": 871211,
+          "start_ticks": "98866066",
+          "selected": [
+            "recovery_invocation_schema_tests::recovery_invocation_schema_refuses_non_rowid_or_composite_sequences"
+          ],
+          "gate_status": "passed",
+          "completed_bijection": true
+        },
+        {
+          "gate": "recovery-owner",
+          "method": "live-proc-exe",
+          "pid": 871280,
+          "start_ticks": "98866107",
+          "selected": [
+            "recovery_invocation_schema_tests::recovery_invocation_schema_requires_exact_unconditional_column_uniqueness"
+          ],
+          "gate_status": "passed",
+          "completed_bijection": true
+        },
+        {
+          "gate": "qualification-growth",
+          "method": "pre-exec-fd",
+          "pid": 875184,
+          "start_ticks": "98873377",
+          "selected": [
+            "qualification_tests::claim_query_rejects_more_than_512_references"
+          ],
+          "gate_status": "passed",
+          "completed_bijection": true
+        },
+        {
+          "gate": "qualification-growth",
+          "method": "pre-exec-fd",
+          "pid": 876453,
+          "start_ticks": "98877837",
+          "selected": [
+            "qualification_tests::ordinary_append_rejects_historical_projection_drift_without_consuming_replay"
+          ],
+          "gate_status": "passed",
+          "completed_bijection": true
+        },
+        {
+          "gate": "qualification-growth",
+          "method": "live-proc-exe",
+          "pid": 875184,
+          "start_ticks": "98873377",
+          "selected": [
+            "qualification_tests::claim_query_rejects_more_than_512_references"
+          ],
+          "gate_status": "passed",
+          "completed_bijection": true
+        },
+        {
+          "gate": "qualification-growth",
+          "method": "live-proc-exe",
+          "pid": 876453,
+          "start_ticks": "98877837",
+          "selected": [
+            "qualification_tests::ordinary_append_rejects_historical_projection_drift_without_consuming_replay"
+          ],
+          "gate_status": "passed",
+          "completed_bijection": true
+        }
+      ]
+    },
+    {
+      "sha256": "a84dded10d4a054cfc6cbc0ae1d02a4a677249fa2ac34fcfaa6b01a50234d981",
+      "bytes": 96991536,
+      "kind": "test-image",
+      "retained_aliases": [
+        "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/evidence/joint-h2-native-attempt-1/fd-executed-binaries-recovery-product/a84dded10d4a054cfc6cbc0ae1d02a4a677249fa2ac34fcfaa6b01a50234d981.elf",
+        "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/evidence/joint-h2-native-attempt-1/executed-binaries-recovery-product/a84dded10d4a054cfc6cbc0ae1d02a4a677249fa2ac34fcfaa6b01a50234d981.elf"
+      ],
+      "actual_paths": [
+        "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/kernel_evidence_product-c434ef3dca0b18f7"
+      ],
+      "observations": [
+        {
+          "gate": "recovery-product",
+          "method": "pre-exec-fd",
+          "pid": 873975,
+          "start_ticks": "98871786",
+          "selected": [
+            "real_agentd_composes_authenticated_evidence_writer_query_verifier_and_terminal_observer"
+          ],
+          "gate_status": "passed",
+          "completed_bijection": true
+        },
+        {
+          "gate": "recovery-product",
+          "method": "pre-exec-fd",
+          "pid": 874205,
+          "start_ticks": "98872162",
+          "selected": [
+            "signed_recovery_frontier_allows_exact_current_database"
+          ],
+          "gate_status": "passed",
+          "completed_bijection": true
+        },
+        {
+          "gate": "recovery-product",
+          "method": "pre-exec-fd",
+          "pid": 874410,
+          "start_ticks": "98872486",
+          "selected": [
+            "signed_recovery_frontier_rejects_effect_only_database_rollback"
+          ],
+          "gate_status": "passed",
+          "completed_bijection": true
+        },
+        {
+          "gate": "recovery-product",
+          "method": "pre-exec-fd",
+          "pid": 874514,
+          "start_ticks": "98872687",
+          "selected": [
+            "signed_recovery_frontier_rejects_valid_older_database_image"
+          ],
+          "gate_status": "passed",
+          "completed_bijection": true
+        },
+        {
+          "gate": "recovery-product",
+          "method": "live-proc-exe",
+          "pid": 873975,
+          "start_ticks": "98871786",
+          "selected": [
+            "real_agentd_composes_authenticated_evidence_writer_query_verifier_and_terminal_observer"
+          ],
+          "gate_status": "passed",
+          "completed_bijection": true
+        },
+        {
+          "gate": "recovery-product",
+          "method": "live-proc-exe",
+          "pid": 874205,
+          "start_ticks": "98872162",
+          "selected": [
+            "signed_recovery_frontier_allows_exact_current_database"
+          ],
+          "gate_status": "passed",
+          "completed_bijection": true
+        },
+        {
+          "gate": "recovery-product",
+          "method": "live-proc-exe",
+          "pid": 874410,
+          "start_ticks": "98872486",
+          "selected": [
+            "signed_recovery_frontier_rejects_effect_only_database_rollback"
+          ],
+          "gate_status": "passed",
+          "completed_bijection": true
+        },
+        {
+          "gate": "recovery-product",
+          "method": "live-proc-exe",
+          "pid": 874514,
+          "start_ticks": "98872687",
+          "selected": [
+            "signed_recovery_frontier_rejects_valid_older_database_image"
+          ],
+          "gate_status": "passed",
+          "completed_bijection": true
+        }
+      ]
+    },
+    {
+      "sha256": "86b21c3bb3abf55d8f1e70493cfb2b3b77982bcc4133ba71fb550ba1dbb047db",
+      "bytes": 97468280,
+      "kind": "test-image",
+      "retained_aliases": [
+        "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/evidence/joint-h2-native-attempt-1/fd-executed-binaries-effect-pq-contract/86b21c3bb3abf55d8f1e70493cfb2b3b77982bcc4133ba71fb550ba1dbb047db.elf",
+        "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/evidence/joint-h2-native-attempt-1/executed-binaries-effect-pq-contract/86b21c3bb3abf55d8f1e70493cfb2b3b77982bcc4133ba71fb550ba1dbb047db.elf"
+      ],
+      "actual_paths": [
+        "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/codex_model_provider-3ff8bb6b264d636e"
+      ],
+      "observations": [
+        {
+          "gate": "effect-pq-contract",
+          "method": "pre-exec-fd",
+          "pid": 882697,
+          "start_ticks": "98896413",
+          "selected": [
+            "provider_effect::pq_tests::pq_contract_binds_profile_root_epoch_and_complete_authority_scope"
+          ],
+          "gate_status": "passed",
+          "completed_bijection": true
+        },
+        {
+          "gate": "effect-pq-contract",
+          "method": "live-proc-exe",
+          "pid": 882697,
+          "start_ticks": "98896413",
+          "selected": [
+            "provider_effect::pq_tests::pq_contract_binds_profile_root_epoch_and_complete_authority_scope"
+          ],
+          "gate_status": "passed",
+          "completed_bijection": true
+        }
+      ]
+    },
+    {
+      "sha256": "ac768b17ffd1b2f8217c46d6adddf13a085a2f0f32ed25a471e1c8bfd59def58",
+      "bytes": 52749328,
+      "kind": "test-image",
+      "retained_aliases": [
+        "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/evidence/joint-h2-native-attempt-1/fd-executed-binaries-effect-settled-absence/ac768b17ffd1b2f8217c46d6adddf13a085a2f0f32ed25a471e1c8bfd59def58.elf",
+        "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/evidence/joint-h2-native-attempt-1/executed-binaries-effect-settled-absence/ac768b17ffd1b2f8217c46d6adddf13a085a2f0f32ed25a471e1c8bfd59def58.elf"
+      ],
+      "actual_paths": [
+        "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/authorized_effect-a5d36a2670ed2fe3"
+      ],
+      "observations": [
+        {
+          "gate": "effect-settled-absence",
+          "method": "pre-exec-fd",
+          "pid": 883919,
+          "start_ticks": "98898297",
+          "selected": [
+            "owner_recovery_tests::settled_absence_fact_read_rejects_unknown_unsettled_and_corrupt_evidence"
+          ],
+          "gate_status": "passed",
+          "completed_bijection": true
+        },
+        {
+          "gate": "effect-settled-absence",
+          "method": "pre-exec-fd",
+          "pid": 884113,
+          "start_ticks": "98898940",
+          "selected": [
+            "owner_recovery_tests::settled_absence_fact_read_survives_reopen_and_new_owner_without_redispatch"
+          ],
+          "gate_status": "passed",
+          "completed_bijection": true
+        },
+        {
+          "gate": "effect-settled-absence",
+          "method": "live-proc-exe",
+          "pid": 883919,
+          "start_ticks": "98898297",
+          "selected": [
+            "owner_recovery_tests::settled_absence_fact_read_rejects_unknown_unsettled_and_corrupt_evidence"
+          ],
+          "gate_status": "passed",
+          "completed_bijection": true
+        },
+        {
+          "gate": "effect-settled-absence",
+          "method": "live-proc-exe",
+          "pid": 884113,
+          "start_ticks": "98898940",
+          "selected": [
+            "owner_recovery_tests::settled_absence_fact_read_survives_reopen_and_new_owner_without_redispatch"
+          ],
+          "gate_status": "passed",
+          "completed_bijection": true
+        }
+      ]
+    },
+    {
+      "sha256": "2321aed715fa85f0368bc2e9d6aabd86c3299872f5c01199e04970fb62655f42",
+      "bytes": 99261752,
+      "kind": "test-image",
+      "retained_aliases": [
+        "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/evidence/joint-h2-native-attempt-1/fd-executed-binaries-effect-pq-product/2321aed715fa85f0368bc2e9d6aabd86c3299872f5c01199e04970fb62655f42.elf",
+        "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/evidence/joint-h2-native-attempt-1/executed-binaries-effect-pq-product/2321aed715fa85f0368bc2e9d6aabd86c3299872f5c01199e04970fb62655f42.elf"
+      ],
+      "actual_paths": [
+        "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/automation_effect_pq_product-7d30b95d8c11439c"
+      ],
+      "observations": [
+        {
+          "gate": "effect-pq-product",
+          "method": "pre-exec-fd",
+          "pid": 884690,
+          "start_ticks": "98900377",
+          "selected": [
+            "pq_effect_survives_owned_agentd_kill_after_provider_fsync_without_resend"
+          ],
+          "gate_status": "failed",
+          "completed_bijection": false
+        },
+        {
+          "gate": "effect-pq-product",
+          "method": "live-proc-exe",
+          "pid": 884690,
+          "start_ticks": "98900377",
+          "selected": [
+            "pq_effect_survives_owned_agentd_kill_after_provider_fsync_without_resend"
+          ],
+          "gate_status": "failed",
+          "completed_bijection": false
+        }
+      ]
+    },
+    {
+      "sha256": "00a637f55c720b06a655b569930bddaef19fd791467bc4784fe0bfb9e0002a26",
+      "bytes": 488112384,
+      "kind": "complete-live-daemon-image",
+      "retained_aliases": [
+        "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/evidence/joint-h2-native-attempt-1/effect-pq-product-process/884690-1793911338749786208/agentd-884822-98900696.elf"
+      ],
+      "actual_paths": [
+        "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/codex-hepta-agentd"
+      ],
+      "observations": [
+        {
+          "pid": 884822,
+          "start_ticks": "98900696",
+          "spawn_generation": 1,
+          "owner_and_generation_verified": true,
+          "opened_fd_and_process_identity_verified": true,
+          "scope": "first daemon only; original process case later timed out"
+        }
+      ]
+    }
+  ],
+  "partial_artifacts": [
+    {
+      "sha256": "b9dc995ee3e6e623056a2563ab8aed3629c003a418b28486ac09db914a0b3f8d",
+      "bytes": 314572800,
+      "kind": "partial-second-daemon-copy-not-complete-executable",
+      "retained_aliases": [
+        "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/evidence/joint-h2-native-attempt-1/effect-pq-product-process/884690-1793911338749786208/agentd-885763-98904223.elf"
+      ],
+      "version": "2050:60479572:314572800:1793911397731521500:1793911397731521500",
+      "expected_complete_bytes": 488112384,
+      "evidence_credit": false,
+      "scope": "partial copy after initial second-process identity checks; no completion checkpoint, full hash or lookup/terminal credit"
+    }
+  ],
+  "complete_image_unique_bytes": 1512251368,
+  "scope": "actual retained H2 images, with all observed aliases; no reconstructed binaries, no second-daemon complete binding or post-timeout inference"
+}

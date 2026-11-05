@@ -1,0 +1,33 @@
+{
+  "embedded_code_and_plan_exact_byte_match": true,
+  "files": [
+    {
+      "bytes": 261408,
+      "path": "w1/h2-elf-export/H2-export-bootstrap.py",
+      "sha256": "fb5425bc93bcb77271c306e9508bdedad5f3313885c77063146888805b456e2b"
+    },
+    {
+      "bytes": 261806,
+      "path": "w1/h2-elf-export/H2-export-frozen-launch-request.json",
+      "sha256": "fb6149eaea0603083f360cf4c8d50b869bdeb018f8d0bd959075bae9eef4228f"
+    }
+  ],
+  "idempotency_key": "93bfc-hepta-h2-actual-retained-images-export-01",
+  "inputs": [
+    {
+      "bytes": 25293,
+      "name": "export_h2_retained_images.py",
+      "sha256": "37538f62fd81398262ccde1b9cfa0d1cb0163b115e108b80220ab7af8f929365"
+    },
+    {
+      "bytes": 169237,
+      "name": "H2-export-plan.json",
+      "sha256": "2a18729275fe2051b3f691fce56542e2d1291193e983330fe82601caf22349b3"
+    }
+  ],
+  "prepared_only": true,
+  "remote_dispatch_performed": false,
+  "schema": "H2-export-exact-launch-preparation-v1",
+  "stage_directory": "/home/qian-qi/work/hepta-h2-actual-elf-export-inputs-20261105-93bfc-01",
+  "timeout_seconds": 900
+}

@@ -1,0 +1,72 @@
+{
+  "schema": "C4-original-public-gate-current-local-applicability-v1",
+  "commit": "8df4b21d893906570d48f5beafabb3b31e0aefbc",
+  "tree": "6f5aaa2af0432e27e24b6bd2ad18013ab4423d14",
+  "actual_snapshot_sha256": "a7787d99be25decd7aa4ece7f2cf5dca94fdec333e19a3b116b284bbb4699f61",
+  "observed_utc": "2026-11-05T19:47:18Z",
+  "can_run_original_gate_with_observed_existing_context": false,
+  "gate_was_invoked": false,
+  "first_source_refusal": "HOSTED_CI_ONLY_NO_LOCAL_PROVISION",
+  "first_refusal_basis": "run_from_zero_host.py::outer and outer_owned require both actual GITHUB_ACTIONS=true and CI=true; both observed absent",
+  "additional_requirements": [
+    "BOUNDED_JOB_IDENTITY requires actual numeric GITHUB_RUN_ID/ATTEMPT and bounded GITHUB_JOB; all observed absent",
+    "original from-zero/fresh/history require previously absent fixed parent, followed by original reviewed root-owned unit provisioning",
+    "fixed parent /sys/fs/cgroup/trnmponpublic.slice and /run/systemd/system/trnmponpublic.slice are absent in actual snapshot",
+    "actual test service must be a nonroot child of fixed parent, with 25000/100000 CPU, 2 GiB, zero swap/burst, PIDs256 and root seal/job/source bindings",
+    "existing user.slice runtime cgroup is not the fixed public parent; no local override is accepted"
+  ],
+  "sudo_capability": "Not probed. Current uid cannot directly write /run/systemd/system. Existing sudo authority, even if available, would not supply truthful missing hosted job identity.",
+  "sudo_or_systemd_or_cgroup_changed": false,
+  "hosted_identity_forged": false,
+  "public_gate_pass_claim": false,
+  "source_gate_pins": [
+    {
+      "bytes": 24743,
+      "expected_previously_reviewed_git_blob": "b7d6c49f3f21a946ed5dd20147205dcee9b0f17b",
+      "git_blob": "b7d6c49f3f21a946ed5dd20147205dcee9b0f17b",
+      "path": "scripts/ci/run_from_zero_host.py",
+      "same_as_reviewed_source": true,
+      "sha256": "b159afa51b96d5cd01c9f6cc2e29dafe83e5d42d3e4dba298063d13abf2f8791"
+    },
+    {
+      "bytes": 102985,
+      "expected_previously_reviewed_git_blob": "4960474ac61bdee7d1af738e9f06910e19f8bd35",
+      "git_blob": "4960474ac61bdee7d1af738e9f06910e19f8bd35",
+      "path": "scripts/ci/run_from_zero_native.py",
+      "same_as_reviewed_source": true,
+      "sha256": "18c5f255df1bb69eb0a8629d3376b40b4f4d24c081cc81e15c4dc5d562f2d97a"
+    },
+    {
+      "bytes": 5452,
+      "expected_previously_reviewed_git_blob": "245b5b905e32446ed20f39398619553c4dccead0",
+      "git_blob": "245b5b905e32446ed20f39398619553c4dccead0",
+      "path": "scripts/ci/public_host_ci_observation.py",
+      "same_as_reviewed_source": true,
+      "sha256": "27f0c506592f26f3a218a6d1723c4694e4d7a59f0786e16dbf853e2d5cdb60de"
+    },
+    {
+      "bytes": 11040,
+      "expected_previously_reviewed_git_blob": "69ecbe1183ef9e6123d3014376f9c50a3f43a063",
+      "git_blob": "69ecbe1183ef9e6123d3014376f9c50a3f43a063",
+      "path": "scripts/ci/public_fixture_host_lease.py",
+      "same_as_reviewed_source": true,
+      "sha256": "792c1c599082b0ce67e128e6dbbf0c99f583dd41f4af0091838cc10adcc98d70"
+    },
+    {
+      "bytes": 325,
+      "expected_previously_reviewed_git_blob": "8981b6aeed4c08c21679664940366b36a991444a",
+      "git_blob": "8981b6aeed4c08c21679664940366b36a991444a",
+      "path": "config/systemd/trnmponpublic.slice",
+      "same_as_reviewed_source": true,
+      "sha256": "74eb36a63559bf8603c15ddd3753a1db143684a2cefd84cce5aff10a76bbd622"
+    },
+    {
+      "bytes": 53670,
+      "expected_previously_reviewed_git_blob": "7089e961965af9209f2d588061c8526c5acba161",
+      "git_blob": "7089e961965af9209f2d588061c8526c5acba161",
+      "path": "trillionnium/crates/trnm-pon-node/src/host_kernel_parent.rs",
+      "same_as_reviewed_source": true,
+      "sha256": "6f4cf524831e8af8e23c954764e388d6d167f125c3de0dd19ce235630ce7df7d"
+    }
+  ]
+}

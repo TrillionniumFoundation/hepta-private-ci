@@ -1,0 +1,23 @@
+{
+  "schema": "hepta-nextest-fd-runner-v1",
+  "target": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target",
+  "crate": "authorized_effect",
+  "gate": "effect-settled-absence",
+  "directory": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/evidence/joint-h2-native-attempt-1/fd-executed-binaries-effect-settled-absence",
+  "selected_names": [
+    "owner_recovery_tests::settled_absence_fact_read_rejects_unknown_unsettled_and_corrupt_evidence",
+    "owner_recovery_tests::settled_absence_fact_read_survives_reopen_and_new_owner_without_redispatch"
+  ],
+  "predicate": null,
+  "source": {
+    "commit": "620cb63ae9b58904483005bcb2c4e1507df99539",
+    "tree": "f2cebe6d99deca596c170922b8e60d66648d7393",
+    "lock_sha256": "0f458d7746a0ca0b95bedc5404fd3347c1b0a7508f1c387f3b1f3f71ced08663",
+    "environment_file": "native-environment.json",
+    "environment_sha256": "42a7e79bf271684caccb12c864449b57bf72755a10a367b67d985f277e91a5c2"
+  },
+  "coordinator": {
+    "pid": 823760,
+    "start_ticks": "98793384"
+  }
+}

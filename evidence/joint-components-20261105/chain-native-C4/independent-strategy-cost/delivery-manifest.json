@@ -1,0 +1,83 @@
+{
+  "files": [
+    {
+      "bytes": 39897,
+      "name": "recompute_strategy_raw.py",
+      "path": "/workspace/scratch/93bfcfe29fc8/pq_recovery/strategy-C4-independent/recompute_strategy_raw.py",
+      "sha256": "b4e6f1e76c67a9dc14e99eaebdf480387fd59454a0d6ebcb56cc3592f2c88607"
+    },
+    {
+      "bytes": 18103,
+      "name": "summarize_strategy_costs.py",
+      "path": "/workspace/scratch/93bfcfe29fc8/pq_recovery/strategy-C4-independent/summarize_strategy_costs.py",
+      "sha256": "cfe9e117a1ac03f3bdff0e88bac3cbf0d8f34277c708623b8718df950ddba4fa"
+    },
+    {
+      "bytes": 2812928,
+      "name": "independent-strategy-recomputation.json",
+      "path": "/workspace/scratch/93bfcfe29fc8/pq_recovery/strategy-C4-independent/independent-strategy-recomputation.json",
+      "sha256": "2296e1bf0d047ab36e979f6a299c588a0feefd3bc5cfd6f35de2ff326f71584c"
+    },
+    {
+      "bytes": 180949,
+      "name": "cost-findings.json",
+      "path": "/workspace/scratch/93bfcfe29fc8/pq_recovery/strategy-C4-independent/cost-findings.json",
+      "sha256": "484496eac9d873092fa53b37f66a5ec2e485a4cb922d57f3194f6c0369b7e8b0"
+    },
+    {
+      "bytes": 8774,
+      "name": "cost-tables.md",
+      "path": "/workspace/scratch/93bfcfe29fc8/pq_recovery/strategy-C4-independent/cost-tables.md",
+      "sha256": "ebc0b387ecf74106f7fc78e070bf8834ddf2923a1191ddc166174571eb4ef605"
+    },
+    {
+      "bytes": 17451,
+      "name": "independent-review.md",
+      "path": "/workspace/scratch/93bfcfe29fc8/pq_recovery/strategy-C4-independent/independent-review.md",
+      "sha256": "4839924cf74236d67a21a54850ade292b4b32abdc1307fa85b9cda0c2511d680"
+    },
+    {
+      "bytes": 7355,
+      "name": "source-inventory.json",
+      "path": "/workspace/scratch/93bfcfe29fc8/pq_recovery/strategy-C4-independent/source-inventory.json",
+      "sha256": "92db0ccc9eeb4f116c986c568a29370a6139df527a6529bf8668da76256cbfd7"
+    },
+    {
+      "bytes": 10258,
+      "name": "input-bindings.json",
+      "path": "/workspace/scratch/93bfcfe29fc8/pq_recovery/strategy-C4-independent/input-bindings.json",
+      "sha256": "11267d918236975f9720c2d4166309e3ebc25154e1f99c602cb9936b36305b94"
+    },
+    {
+      "bytes": 6450,
+      "name": "recompute-attempt-1.log",
+      "path": "/workspace/scratch/93bfcfe29fc8/pq_recovery/strategy-C4-independent/recompute-attempt-1.log",
+      "sha256": "041b2fe452e574dc0c4655859dadb0f2a52e0ec4875c333f1c1fc019b663c3e7"
+    },
+    {
+      "bytes": 421,
+      "name": "summarize-attempt-1.log",
+      "path": "/workspace/scratch/93bfcfe29fc8/pq_recovery/strategy-C4-independent/summarize-attempt-1.log",
+      "sha256": "f39d66b68b0f0ec1c2befad28e1f50247333dd686684ebdd134e25b80d089526"
+    },
+    {
+      "bytes": 5619,
+      "name": "summarize-attempt-2.log",
+      "path": "/workspace/scratch/93bfcfe29fc8/pq_recovery/strategy-C4-independent/summarize-attempt-2.log",
+      "sha256": "9994bb3eb7d5666629ebe5248214e0fa0c80c29b66a442461d824c597b258492"
+    },
+    {
+      "bytes": 6947,
+      "name": "summarize-attempt-3.log",
+      "path": "/workspace/scratch/93bfcfe29fc8/pq_recovery/strategy-C4-independent/summarize-attempt-3.log",
+      "sha256": "3fc72b98fd8199c92fe0c3d46ed277f4f83ed8d3a085072bff6f96417f772dde"
+    }
+  ],
+  "local_postprocessing_history": "raw recomputation succeeded first invocation; first summary-helper invocation failed with a missing closing dict brace (SyntaxError), retained verbatim; brace fixed and postprocessing passed, then added one-shared-material sensitivity without rereading/reexecuting native.",
+  "qualification_status": "HOLD",
+  "raw_arithmetic_and_saved_reader_comparison": "PASS; 32 complete originals; no semantic alerts",
+  "schema": "independent-C4-strategy-review-delivery-v1",
+  "scope": "second-person local-only raw recalculation of legal-v3 30 shards, reused-v3 13 arms, full-limb from-zero. Prior Sparse delivery remains separately frozen. No desktop/Cargo/native or original reader execution.",
+  "source_commit": "8df4b21d893906570d48f5beafabb3b31e0aefbc",
+  "source_tree": "6f5aaa2af0432e27e24b6bd2ad18013ab4423d14"
+}

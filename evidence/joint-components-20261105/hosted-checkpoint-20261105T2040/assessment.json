@@ -1,0 +1,71 @@
+{
+  "scope": "Read-only hosted workflow/job/log observation around 20:40\u201320:43 UTC, not a rerun",
+  "C4_required_baseline_run": 42076756033,
+  "C4_jobs": 18,
+  "C4_all_queued": true,
+  "H2_PQ_run": 42099254196,
+  "H2_PQ_jobs": 4,
+  "H2_PQ_all_queued": true,
+  "no_steps_for_queued_jobs": true,
+  "queue_cause_established": false,
+  "other_H2_triggered_failures": [
+    {
+      "run_id": 42099253901,
+      "job_id": 127497400352,
+      "conclusion": "failure",
+      "hepta_source": "620cb63ae9b58904483005bcb2c4e1507df99539",
+      "chain_source": "cfa57cd04751427451302b5c10539b3984d7f8db",
+      "joint_C4_source": false,
+      "log_file": "127497400352.log",
+      "log_sha256": "ef9033d036ac6c1e71fcd77aefb33561971187200dfc8e13c5aaa89dcbe2f270",
+      "log_bytes": 360379,
+      "compiler_error": "E0063 missing runtime_snapshot in SmolLmNeuralReadConfigV1 constructor",
+      "skipped_steps": [
+        "Install the exact CPU wheel closure in a new environment",
+        "Rebuild public V2 from the seven exact upstream files",
+        "Require real ordinary inference, independent revocation and same-owner reopen",
+        "Run three real matched proposal rounds and reread original CURRENT",
+        "Execute six-arm candidate descendants and retain typed install blockers",
+        "Run one frozen answer-EOS research comparison after all original gates"
+      ],
+      "failed_steps": [
+        "Finish the scoped lint and formatting gate after tests",
+        "Enforce every original qualification and observation outcome"
+      ],
+      "scope": "Raw command exit 101 takes precedence over a continued step summary marked success; no model/training/qualification pass is inferred."
+    },
+    {
+      "run_id": 42099253617,
+      "job_id": 127497399072,
+      "conclusion": "failure",
+      "hepta_source": "620cb63ae9b58904483005bcb2c4e1507df99539",
+      "chain_source": "c16507147b65285ea94dead22d3b93c5db7295af",
+      "joint_C4_source": false,
+      "log_file": "127497399072.log",
+      "log_sha256": "4a12c3e6108b4ac345897b929807679b37237f6f95b357abf18f9b8d0bdcda56",
+      "log_bytes": 348284,
+      "compiler_error": "E0063 missing runtime_snapshot in SmolLmNeuralReadConfigV1 constructor",
+      "skipped_steps": [
+        "Install the exact CPU wheel closure in a new environment",
+        "Rebuild public V2 from the seven exact upstream files",
+        "Require real ordinary inference, independent revocation and same-owner reopen",
+        "Run Cell training-source and evidence-reader refusal controls before the study",
+        "Build the actual pinned two-node Cell executable",
+        "Freeze complete actual source before the single study",
+        "Train actual parent and require qualification Cell ordinary install and next read"
+      ],
+      "failed_steps": [
+        "Preserve the original scoped lint and formatting gate",
+        "Enforce real source and every declared required outcome"
+      ],
+      "scope": "Raw command exit 101 takes precedence over a continued step summary marked success; no model/training/qualification pass is inferred."
+    }
+  ],
+  "windows_diagnostic_run": 42099253973,
+  "windows_scope": "Four jobs report failure in step summaries. Full native logs and underlying assertions were not independently reviewed here; no Windows qualification or root-cause claim.",
+  "no_workflow_rerun_requested": true,
+  "no_learning_trial_reset_or_execution_requested": true,
+  "unrelated_v8_canary_success_does_not_qualify_required_gates": true,
+  "parallel_canonical_plan_branch_observed_head": "b093f82ea833dd804320851b06a8b4429d74424e",
+  "parallel_head_adopted_as_C4_source": false
+}

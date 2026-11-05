@@ -1,0 +1,224 @@
+{
+  "numerical_summary": {
+    "legal_best_fixed_arm_cpu_per_nonce_range_ns": [
+      1233760.1255063252,
+      1641781.0
+    ],
+    "legal_eager_transposed_over_observed_best_cpu_range": [
+      1.1390184307053244,
+      1.2162051225437684
+    ],
+    "from_zero_production_reject_over_full_attacker_cpu_range": [
+      19.726812047961932,
+      23.36773918616973
+    ],
+    "mutation_only_production_reject_over_mutator_cpu_range": [
+      73.53101580086226,
+      353.3904412334893
+    ],
+    "factorial_ratio_ranges": {
+      "eager_transposed_over_lazy_transposed": [
+        0.9565532070868519,
+        1.0359583409221034
+      ],
+      "eager_full_limb_over_lazy_full_limb": [
+        0.9727906357897322,
+        1.063563154445343
+      ],
+      "transposed_over_full_limb_eager": [
+        1.0959425507744824,
+        1.2073471228453558
+      ],
+      "transposed_over_full_limb_lazy": [
+        1.1308195783802584,
+        1.211523719626694
+      ]
+    }
+  },
+  "totals": {
+    "legal": {
+      "actual_setup_calls": 960,
+      "actual_searches": 23360,
+      "nonce_attempts": 389788,
+      "target_hits_in_repeated_arm_observations": 23360,
+      "failed_nonce_attempts": 366428,
+      "exhausted_searches": 0,
+      "material_generation_separate": {
+        "cpu_ns": 56171504,
+        "wall_ns": 56497096
+      },
+      "setup": {
+        "cpu_ns": 415246696,
+        "wall_ns": 415073689
+      },
+      "search": {
+        "cpu_ns": 531395306714,
+        "wall_ns": 531470842303
+      },
+      "inclusive_total": {
+        "cpu_ns": 531839972120,
+        "wall_ns": 531930546526
+      },
+      "inclusive_residual": {
+        "cpu_ns": 29418710,
+        "wall_ns": 44630534
+      },
+      "verification_all_labels_and_cases": {
+        "cpu_ns": 403187179598,
+        "wall_ns": 403212746507
+      },
+      "unsupported_cohorts": 0,
+      "unsupported_setup": {
+        "cpu_ns": 0,
+        "wall_ns": 0
+      },
+      "supported_cohorts": 960,
+      "semantic_alerts": 0,
+      "timing_aggregate_scope": "sum of recorded repeated benchmark intervals, not independently credited work or live traffic",
+      "separate_evidence": {
+        "cpu_ns": 7245323491,
+        "wall_ns": 7247716709
+      },
+      "separate_product_mutation": {
+        "cpu_ns": 169790217,
+        "wall_ns": 173520914
+      },
+      "proof_materializations": 206574,
+      "materialized_proof_bytes": 10160961912,
+      "outer_native_process_elapsed": {
+        "sum_ns": 1026874150743,
+        "minimum_ns": 816257090,
+        "maximum_ns": 135851573633,
+        "original_per_child_timeout_seconds": 300
+      },
+      "original_build_elapsed_ns": 253268574633
+    },
+    "reused": {
+      "actual_setup_calls": 936,
+      "actual_searches": 1888,
+      "nonce_attempts": 3848,
+      "target_hits_in_repeated_arm_observations": 1888,
+      "failed_nonce_attempts": 1960,
+      "exhausted_searches": 0,
+      "material_generation_separate": {
+        "cpu_ns": 1539209,
+        "wall_ns": 1538400
+      },
+      "setup": {
+        "cpu_ns": 153404541,
+        "wall_ns": 153291339
+      },
+      "search": {
+        "cpu_ns": 8099320038,
+        "wall_ns": 8099094343
+      },
+      "inclusive_total": {
+        "cpu_ns": 8256738667,
+        "wall_ns": 8257605316
+      },
+      "inclusive_residual": {
+        "cpu_ns": 4014088,
+        "wall_ns": 5219634
+      },
+      "verification_all_labels_and_cases": {
+        "cpu_ns": 10176627645,
+        "wall_ns": 10176709991
+      },
+      "unsupported_cohorts": 464,
+      "unsupported_setup": {
+        "cpu_ns": 2720998,
+        "wall_ns": 2673834
+      },
+      "supported_cohorts": 472,
+      "semantic_alerts": 0,
+      "timing_aggregate_scope": "sum of recorded repeated benchmark intervals, not independently credited work or live traffic",
+      "outer_native_process_elapsed": {
+        "sum_ns": 20470751766,
+        "minimum_ns": 20470751766,
+        "maximum_ns": 20470751766,
+        "original_per_child_timeout_seconds": 300
+      },
+      "original_build_elapsed_ns": 2321108089
+    },
+    "false": {
+      "actual_setup_calls": 72,
+      "actual_searches": 288,
+      "nonce_attempts": 573,
+      "target_hits_in_repeated_arm_observations": 288,
+      "failed_nonce_attempts": 285,
+      "exhausted_searches": 0,
+      "material_generation_separate": {
+        "cpu_ns": 1680241,
+        "wall_ns": 1685711
+      },
+      "setup": {
+        "cpu_ns": 14477627,
+        "wall_ns": 14592639
+      },
+      "search": {
+        "cpu_ns": 5335944,
+        "wall_ns": 5297832
+      },
+      "inclusive_total": {
+        "cpu_ns": 20182415,
+        "wall_ns": 20354010
+      },
+      "inclusive_residual": {
+        "cpu_ns": 368844,
+        "wall_ns": 463539
+      },
+      "verification_all_labels_and_cases": {
+        "cpu_ns": 2629583292,
+        "wall_ns": 2638628878
+      },
+      "unsupported_cohorts": 0,
+      "unsupported_setup": {
+        "cpu_ns": 0,
+        "wall_ns": 0
+      },
+      "supported_cohorts": 72,
+      "semantic_alerts": 0,
+      "timing_aggregate_scope": "sum of recorded repeated benchmark intervals, not independently credited work or live traffic",
+      "outer_native_process_elapsed": {
+        "sum_ns": 3573923850,
+        "minimum_ns": 3573923850,
+        "maximum_ns": 3573923850,
+        "original_per_child_timeout_seconds": 300
+      },
+      "original_build_elapsed_ns": 2170510048,
+      "production_rejection_cpu_over_full_attacker_cpu_equal_class_sum": {
+        "numerator": 427969566,
+        "denominator": 20182415,
+        "value": 21.20507213829465
+      },
+      "production_rejection_cpu_ns": 427969566,
+      "production_rejection_wall_ns": 429270824,
+      "one_shared_material_generation_sensitivity": {
+        "allocation": "charge the one observed whole-campaign material-generation interval once to all 72 setups / 288 searches; no per-class or per-candidate replication",
+        "material_generation": {
+          "cpu_ns": 1680241,
+          "wall_ns": 1685711
+        },
+        "complete_denominator": {
+          "cpu_ns": 21862656,
+          "wall_ns": 22039721
+        },
+        "production_rejection_over_complete_denominator": {
+          "cpu_ns": {
+            "numerator": 427969566,
+            "denominator": 21862656,
+            "value": 19.575369342132998
+          },
+          "wall_ns": {
+            "numerator": 429270824,
+            "denominator": 22039721,
+            "value": 19.477144197968748
+          }
+        },
+        "still_excludes": "JSONL evidence serialization, enclosing wire/transport envelope and send, live admission, scheduling, queueing, storage, receiver network work, later retained-buffer destruction",
+        "included_wire_bytes": "canonical A/B public proof-prefix serialization during setup and the complete winning-buffer clone inside search are already charged",
+        "material_generation_is_not_proven_necessary_for_an_attacker_with_a_public_task": true
+      }
+    }
+  }
+}

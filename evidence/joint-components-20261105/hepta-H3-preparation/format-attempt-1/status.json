@@ -1,0 +1,169 @@
+{
+  "status": "formatted-not-tested",
+  "source": "595475a615a03ca9f63c2c1f6e532bd362c20a74",
+  "requested_commit": "595475a615a03ca9f63c2c1f6e532bd362c20a74",
+  "requested_tree": "c6b1cf459a24c3c3185335e043c83b727d757ee9",
+  "started_unix": 1793913894.1272426,
+  "scope": "isolated worktree materialization and original 300-second formatter; no Cargo tests/builds",
+  "phase": "complete",
+  "protected_configuration_before": {
+    "/home/qian-qi/work/hepta-audit-ledger-fixture-fix-20261103/.git/config": "24452f7031356ffbc08ab7fb9657efa5b67fb0b16b2a2ce704ec99d1514267b8",
+    "/home/qian-qi/work/hepta-audit-ledger-fixture-fix-20261103/.git/worktrees/hepta-audit-provider-recovery-fix-20261103/config.worktree": "bfefdfeb2bf56f4a5282c172fe3a69b4075e13fe3bf3cd54f6611bafa461c276",
+    "/home/qian-qi/work/hepta-audit-ledger-fixture-fix-20261103/.git/worktrees/source1/config.worktree": "443a5f645c23c3d0c0aa09f634b2ad111d46ef61946b598a2fb311678ab47454",
+    "/home/qian-qi/work/hepta-audit-ledger-fixture-fix-20261103/.git/worktrees/source-h2/config.worktree": "443a5f645c23c3d0c0aa09f634b2ad111d46ef61946b598a2fb311678ab47454"
+  },
+  "materialized_known_blobs": [
+    {
+      "path": ".github/workflows/hepta-pq-policy-renewal.yml",
+      "blob": "7643a774d08899b83a1d3edcee688337dbc60665",
+      "bytes": 28196,
+      "sha256": "ce40c904ca4ba9e103ec99287038079f00c6819f4ea2fde735a5c885e3a60adf"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/NEURAL_NATIVE_COMPARISON_INPUT.md",
+      "blob": "6c5a5245fa727c86aa2f089087864033fa93d649",
+      "bytes": 4419,
+      "sha256": "8e64d622fe2eb94e1d34f1b50c219828c74a5c822195c2232f3784d040a32f7d"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/tests/automation_effect_pq_product.rs",
+      "blob": "61a358a4d964c8c707e2532ef3ba7e898caba5e6",
+      "bytes": 17366,
+      "sha256": "9954baf1db179c35f070514ea897614ff2e54b7a8c8b1a05e24144a5cfb7994c"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/tests/neural_cognitive_bootstrap.rs",
+      "blob": "d2d7ce3273c72c5a454ebcee41fe7cc79cac430a",
+      "bytes": 17396,
+      "sha256": "a3cb45502865ab2aadc3ec9506ddcedd553a2a330896bf668c3f4f6bb26ac7e0"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/tests/neural_comparison_native.rs",
+      "blob": "482640c676e632ff26e638bf4f5df3e3beda773f",
+      "bytes": 16856,
+      "sha256": "9ca92e7dcbb2518d2c20ed97572266f91517556540b5ac210031b3638ff2d40d"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/tests/support/automation_effect_binary.rs",
+      "blob": "6dea7930b6a628608a1c5f38affedef084162e0b",
+      "bytes": 12450,
+      "sha256": "fcb4f4c54be91dadf5d6ca429632e0c783495559cb4e8b4b5f2f69c1e3d1f9f2"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/tests/support/neural_native_owner.rs",
+      "blob": "eaf77bef4a2de3b38baad2a58f0e0e553b460100",
+      "bytes": 11318,
+      "sha256": "2fd90b817461e7e0d464b43002622d98c9dfb907c6ec94a4bc8dbfa2875706ee"
+    }
+  ],
+  "joint_before": {
+    "identity": {
+      "commit": "595475a615a03ca9f63c2c1f6e532bd362c20a74",
+      "tree": "c6b1cf459a24c3c3185335e043c83b727d757ee9",
+      "parents": [
+        "620cb63ae9b58904483005bcb2c4e1507df99539"
+      ],
+      "dirty": false
+    },
+    "raw_git_blob_bytes_match": true,
+    "tracked_count": 11840,
+    "tracked_bytes": 183409808,
+    "index_count": 11840,
+    "missing": [],
+    "hidden": [],
+    "tree_inventory_sha256": "740f754b3018b164e1a257487a4c13d4460ddf6b4b0370006a7eea9aaa5bc6e5",
+    "guard_sha256": "e55f5ca1200b2c9fc5af4158c42f460e71f3815166a962a5b892acfe9477b1d1",
+    "cargo_lock_sha256": "0f458d7746a0ca0b95bedc5404fd3347c1b0a7508f1c387f3b1f3f71ced08663",
+    "toolchain_file_sha256": "e8b379eaa492bf59d35187de269afd1c4f55d85e0322f6fea32803a3fec1a380",
+    "nextest_config_sha256": "65f8b298b60f5f4d480cdd45d4de62a37c5b52d13a2cc7b77eecba3062eaa803"
+  },
+  "configuration_before": {
+    "/home/qian-qi/work/hepta-audit-ledger-fixture-fix-20261103/.git/config": "24452f7031356ffbc08ab7fb9657efa5b67fb0b16b2a2ce704ec99d1514267b8",
+    "/home/qian-qi/work/hepta-audit-ledger-fixture-fix-20261103/.git/worktrees/hepta-audit-provider-recovery-fix-20261103/config.worktree": "bfefdfeb2bf56f4a5282c172fe3a69b4075e13fe3bf3cd54f6611bafa461c276",
+    "/home/qian-qi/work/hepta-audit-ledger-fixture-fix-20261103/.git/worktrees/source1/config.worktree": "443a5f645c23c3d0c0aa09f634b2ad111d46ef61946b598a2fb311678ab47454",
+    "/home/qian-qi/work/hepta-audit-ledger-fixture-fix-20261103/.git/worktrees/source-h2/config.worktree": "443a5f645c23c3d0c0aa09f634b2ad111d46ef61946b598a2fb311678ab47454",
+    "/home/qian-qi/work/hepta-audit-ledger-fixture-fix-20261103/.git/worktrees/source-h3/config.worktree": "443a5f645c23c3d0c0aa09f634b2ad111d46ef61946b598a2fb311678ab47454"
+  },
+  "format_command": [
+    "just",
+    "fmt",
+    "--base",
+    "1556a4df6e279055fd8196f81a4ca2fe0f19384a"
+  ],
+  "format_timeout_seconds": 300,
+  "format_exit_code": 0,
+  "tree": "c6b1cf459a24c3c3185335e043c83b727d757ee9",
+  "source_path": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/source-h3",
+  "before": {
+    "identity": {
+      "commit": "595475a615a03ca9f63c2c1f6e532bd362c20a74",
+      "tree": "c6b1cf459a24c3c3185335e043c83b727d757ee9",
+      "parents": [
+        "620cb63ae9b58904483005bcb2c4e1507df99539"
+      ],
+      "dirty": false
+    },
+    "raw_git_blob_bytes_match": true,
+    "tracked_count": 11840,
+    "tracked_bytes": 183409808,
+    "index_count": 11840,
+    "missing": [],
+    "hidden": [],
+    "tree_inventory_sha256": "740f754b3018b164e1a257487a4c13d4460ddf6b4b0370006a7eea9aaa5bc6e5",
+    "guard_sha256": "e55f5ca1200b2c9fc5af4158c42f460e71f3815166a962a5b892acfe9477b1d1",
+    "cargo_lock_sha256": "0f458d7746a0ca0b95bedc5404fd3347c1b0a7508f1c387f3b1f3f71ced08663",
+    "toolchain_file_sha256": "e8b379eaa492bf59d35187de269afd1c4f55d85e0322f6fea32803a3fec1a380",
+    "nextest_config_sha256": "65f8b298b60f5f4d480cdd45d4de62a37c5b52d13a2cc7b77eecba3062eaa803"
+  },
+  "after": {
+    "identity": {
+      "commit": "595475a615a03ca9f63c2c1f6e532bd362c20a74",
+      "tree": "c6b1cf459a24c3c3185335e043c83b727d757ee9",
+      "parents": [
+        "620cb63ae9b58904483005bcb2c4e1507df99539"
+      ],
+      "dirty": true
+    },
+    "raw_git_blob_bytes_match": false,
+    "tracked_count": 11840,
+    "tracked_bytes": 183409808,
+    "index_count": 11840,
+    "missing": [],
+    "hidden": [],
+    "tree_inventory_sha256": "740f754b3018b164e1a257487a4c13d4460ddf6b4b0370006a7eea9aaa5bc6e5",
+    "guard_sha256": "e55f5ca1200b2c9fc5af4158c42f460e71f3815166a962a5b892acfe9477b1d1",
+    "cargo_lock_sha256": "0f458d7746a0ca0b95bedc5404fd3347c1b0a7508f1c387f3b1f3f71ced08663",
+    "toolchain_file_sha256": "e8b379eaa492bf59d35187de269afd1c4f55d85e0322f6fea32803a3fec1a380",
+    "nextest_config_sha256": "65f8b298b60f5f4d480cdd45d4de62a37c5b52d13a2cc7b77eecba3062eaa803"
+  },
+  "protected_h2_source_unchanged": true,
+  "protected_h1_source_unchanged": true,
+  "configurations": {
+    "/home/qian-qi/work/hepta-audit-ledger-fixture-fix-20261103/.git/config": "24452f7031356ffbc08ab7fb9657efa5b67fb0b16b2a2ce704ec99d1514267b8",
+    "/home/qian-qi/work/hepta-audit-ledger-fixture-fix-20261103/.git/worktrees/hepta-audit-provider-recovery-fix-20261103/config.worktree": "bfefdfeb2bf56f4a5282c172fe3a69b4075e13fe3bf3cd54f6611bafa461c276",
+    "/home/qian-qi/work/hepta-audit-ledger-fixture-fix-20261103/.git/worktrees/source1/config.worktree": "443a5f645c23c3d0c0aa09f634b2ad111d46ef61946b598a2fb311678ab47454",
+    "/home/qian-qi/work/hepta-audit-ledger-fixture-fix-20261103/.git/worktrees/source-h2/config.worktree": "443a5f645c23c3d0c0aa09f634b2ad111d46ef61946b598a2fb311678ab47454",
+    "/home/qian-qi/work/hepta-audit-ledger-fixture-fix-20261103/.git/worktrees/source-h3/config.worktree": "443a5f645c23c3d0c0aa09f634b2ad111d46ef61946b598a2fb311678ab47454"
+  },
+  "configuration_after": {
+    "/home/qian-qi/work/hepta-audit-ledger-fixture-fix-20261103/.git/config": "24452f7031356ffbc08ab7fb9657efa5b67fb0b16b2a2ce704ec99d1514267b8",
+    "/home/qian-qi/work/hepta-audit-ledger-fixture-fix-20261103/.git/worktrees/hepta-audit-provider-recovery-fix-20261103/config.worktree": "bfefdfeb2bf56f4a5282c172fe3a69b4075e13fe3bf3cd54f6611bafa461c276",
+    "/home/qian-qi/work/hepta-audit-ledger-fixture-fix-20261103/.git/worktrees/source1/config.worktree": "443a5f645c23c3d0c0aa09f634b2ad111d46ef61946b598a2fb311678ab47454",
+    "/home/qian-qi/work/hepta-audit-ledger-fixture-fix-20261103/.git/worktrees/source-h2/config.worktree": "443a5f645c23c3d0c0aa09f634b2ad111d46ef61946b598a2fb311678ab47454",
+    "/home/qian-qi/work/hepta-audit-ledger-fixture-fix-20261103/.git/worktrees/source-h3/config.worktree": "443a5f645c23c3d0c0aa09f634b2ad111d46ef61946b598a2fb311678ab47454"
+  },
+  "configuration_unchanged": true,
+  "delta_paths": [
+    "codex-rs/hepta-agentd/tests/neural_comparison_native.rs",
+    "codex-rs/hepta-agentd/tests/support/automation_effect_binary.rs",
+    "codex-rs/hepta-agentd/tests/support/neural_native_owner.rs"
+  ],
+  "delta_sha256": "f596e0fbbe7bf1c373bbd5bc7f881ba9c403ee111a7373cb51436e4705865c6d",
+  "formatted_file_sha256": {
+    "codex-rs/hepta-agentd/tests/neural_comparison_native.rs": "6db3214e2740c445a22be9c92f60b2f8f1b2f1363c0758ee92f84ab8ba9ab617",
+    "codex-rs/hepta-agentd/tests/support/automation_effect_binary.rs": "dc9525efc447080f79e93ae3a7aa79e2c75feefbed80ea0aca2d09b747bda9ab",
+    "codex-rs/hepta-agentd/tests/support/neural_native_owner.rs": "11a4e32c996ba43c129b7eaa42c49959649b7563a56e256418aa42ac96d73b0a"
+  },
+  "native_credit": false,
+  "finished_unix": 1793913922.0404036
+}

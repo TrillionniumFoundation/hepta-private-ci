@@ -1,0 +1,19 @@
+{
+  "scope": "Independent source/map/plan review of bounded post-terminal H1 archive operation",
+  "exporter_sha256": "8ba375f315433a4eea9a05b9f1a0fbcffced353eb668cca6cd799b433fa4402b",
+  "plan_sha256": "3a8421bb03834cdf1c2e262bb2e72348f398240c41e1752e5b1e82113e915248",
+  "map_exact_original_bytes": true,
+  "selected_source_paths": 4,
+  "original_alias_paths": 7,
+  "unique_ELF_bytes": 774620584,
+  "all_three_original_capture_gaps_preserved": true,
+  "source_reads": "Four exact retained source paths; no fallback to current target or another alias",
+  "archive_bound_bytes": 841729448,
+  "part_bound_bytes": 4194304,
+  "outer_budget_seconds": 900,
+  "native_or_benchmark_execution": false,
+  "source_or_configuration_writes": false,
+  "required_release_proof_sha256": "df0fc5340514bfe339a9e6178922930db59087f0128dd62c9971afb741890c60",
+  "durability": "archive/parts/completion files fsynced; directory order preserves completion-last publication",
+  "review_decision": "May execute the exact H1-only plan after fixed launch registration; not an archive-result or native-pass claim"
+}

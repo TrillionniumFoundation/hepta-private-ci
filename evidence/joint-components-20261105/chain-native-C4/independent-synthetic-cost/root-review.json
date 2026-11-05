@@ -1,0 +1,160 @@
+{
+  "schema": "root-independent-Sparse-raw-total-crosscheck-v1",
+  "delivery_manifest_sha256": "15d1f260ea14bcadd9002ef87e11964616b2ca441662d6a14ea97956aa40e534",
+  "full_agent_analysis_code_read": true,
+  "root_method": "Independently stream raw records and sum setup plus attempt plus proof cleanup plus teardown by class and arm; compare all CPU/wall totals, actual attempt counts, and retrospective minima only after aggregation. No original reader or native execution.",
+  "raw_root_crosschecks": [
+    {
+      "target": 0,
+      "raw_sha256": "f3b0e27d6c7380af5a2675da4101f9d18dc2f05108ddace84361a6265cab4dce",
+      "record_counts": {
+        "run": 1,
+        "material": 9,
+        "setup": 2928,
+        "attempt": 39424,
+        "teardown": 2464,
+        "cell_summary": 1080,
+        "run_summary": 1
+      },
+      "all_135_class_arm_CPU_and_wall_totals_match": true,
+      "dense_sparse_ratio_range": [
+        0.9922352796007714,
+        1.0264870589143336
+      ],
+      "observed_retrospective_minima": [
+        {
+          "class": "periodic-dense-fixture",
+          "arm": "lazy-full-limb-sparse",
+          "cpu_ns": 714606714,
+          "attempts": 512
+        },
+        {
+          "class": "full-rank-field",
+          "arm": "lazy-full-limb",
+          "cpu_ns": 667599252,
+          "attempts": 512
+        },
+        {
+          "class": "zero",
+          "arm": "lazy-full-limb-sparse",
+          "cpu_ns": 649620008,
+          "attempts": 512
+        },
+        {
+          "class": "identity",
+          "arm": "lazy-full-limb-sparse",
+          "cpu_ns": 651983667,
+          "attempts": 512
+        },
+        {
+          "class": "rank-one",
+          "arm": "lazy-full-limb",
+          "cpu_ns": 673051100,
+          "attempts": 512
+        },
+        {
+          "class": "sparse-diagonal",
+          "arm": "lazy-full-limb-sparse",
+          "cpu_ns": 671871026,
+          "attempts": 512
+        },
+        {
+          "class": "continuity-maintenance-v1",
+          "arm": "maintenance-limb",
+          "cpu_ns": 633378336,
+          "attempts": 512
+        },
+        {
+          "class": "left-zero-right-rank-one",
+          "arm": "lazy-full-limb-sparse",
+          "cpu_ns": 658300835,
+          "attempts": 512
+        },
+        {
+          "class": "right-zero-left-rank-one",
+          "arm": "lazy-full-limb-sparse",
+          "cpu_ns": 645952280,
+          "attempts": 512
+        }
+      ]
+    },
+    {
+      "target": 1,
+      "raw_sha256": "31e40b14ee805f42320d316bc7548b12d1f196aaefae6fd7c609c08d3dc30256",
+      "record_counts": {
+        "run": 1,
+        "material": 9,
+        "setup": 2928,
+        "attempt": 39424,
+        "teardown": 2464,
+        "cell_summary": 1080,
+        "run_summary": 1
+      },
+      "all_135_class_arm_CPU_and_wall_totals_match": true,
+      "dense_sparse_ratio_range": [
+        0.9918311959118148,
+        1.0342137679861791
+      ],
+      "observed_retrospective_minima": [
+        {
+          "class": "periodic-dense-fixture",
+          "arm": "lazy-full-limb-sparse",
+          "cpu_ns": 642030792,
+          "attempts": 512
+        },
+        {
+          "class": "full-rank-field",
+          "arm": "lazy-full-limb",
+          "cpu_ns": 636074464,
+          "attempts": 512
+        },
+        {
+          "class": "zero",
+          "arm": "blocked-zero",
+          "cpu_ns": 634780825,
+          "attempts": 512
+        },
+        {
+          "class": "identity",
+          "arm": "lazy-full-limb-sparse",
+          "cpu_ns": 627287062,
+          "attempts": 512
+        },
+        {
+          "class": "rank-one",
+          "arm": "lazy-full-limb",
+          "cpu_ns": 641233093,
+          "attempts": 512
+        },
+        {
+          "class": "sparse-diagonal",
+          "arm": "lazy-full-limb-sparse",
+          "cpu_ns": 627372807,
+          "attempts": 512
+        },
+        {
+          "class": "continuity-maintenance-v1",
+          "arm": "maintenance-limb",
+          "cpu_ns": 640050788,
+          "attempts": 512
+        },
+        {
+          "class": "left-zero-right-rank-one",
+          "arm": "lazy-full-limb-sparse",
+          "cpu_ns": 653697404,
+          "attempts": 512
+        },
+        {
+          "class": "right-zero-left-rank-one",
+          "arm": "lazy-full-limb-sparse",
+          "cpu_ns": 636266722,
+          "attempts": 512
+        }
+      ]
+    }
+  ],
+  "public_gate_closed": false,
+  "model_learning_qualified": false,
+  "global_cheapest_qualified": false,
+  "archival_byte_integrity": "../complete-raw/root-synthetic-archive-review.json"
+}

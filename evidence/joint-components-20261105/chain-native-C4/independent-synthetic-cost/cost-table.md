@@ -1,0 +1,20 @@
+| Target | Input class | Cheapest measured arm (all 8 samples) | Producer CPU ms / 512 attempts | CPU ms / attempt | CPU ms / observed hit | Dense / Sparse CPU |
+| --- | --- | --- | ---: | ---: | ---: | ---: |
+| 0 | periodic-dense-fixture | lazy-full-limb-sparse | 714.606714 | 1.395716 | 3.120553 | 1.021168 |
+| 0 | full-rank-field | lazy-full-limb | 667.599252 | 1.303905 | 2.702831 | 0.993228 |
+| 0 | zero | lazy-full-limb-sparse | 649.620008 | 1.268789 | 2.470038 | 1.012414 |
+| 0 | identity | lazy-full-limb-sparse | 651.983667 | 1.273406 | 2.750986 | 1.025543 |
+| 0 | rank-one | lazy-full-limb | 673.051100 | 1.314553 | 2.598653 | 0.992235 |
+| 0 | sparse-diagonal | lazy-full-limb-sparse | 671.871026 | 1.312248 | 2.859026 | 1.011376 |
+| 0 | continuity-maintenance-v1 | maintenance-limb | 633.378336 | 1.237067 | 2.278339 | 1.012294 |
+| 0 | left-zero-right-rank-one | lazy-full-limb-sparse | 658.300835 | 1.285744 | 2.420224 | 1.026487 |
+| 0 | right-zero-left-rank-one | lazy-full-limb-sparse | 645.952280 | 1.261626 | 2.465467 | 1.020087 |
+| 1 | periodic-dense-fixture | lazy-full-limb-sparse | 642.030792 | 1.253966 | 42.802053 | 1.012600 |
+| 1 | full-rank-field | lazy-full-limb | 636.074464 | 1.242333 | 39.754654 | 0.991891 |
+| 1 | zero | blocked-zero | 634.780825 | 1.239806 | 70.531203 | 1.021655 |
+| 1 | identity | lazy-full-limb-sparse | 627.287062 | 1.225170 | 31.364353 | 1.034214 |
+| 1 | rank-one | lazy-full-limb | 641.233093 | 1.252408 | 71.248121 | 0.991831 |
+| 1 | sparse-diagonal | lazy-full-limb-sparse | 627.372807 | 1.225338 | 48.259447 | 1.021400 |
+| 1 | continuity-maintenance-v1 | maintenance-limb | 640.050788 | 1.250099 | 33.686884 | 0.995295 |
+| 1 | left-zero-right-rank-one | lazy-full-limb-sparse | 653.697404 | 1.276753 | 40.856088 | 1.003664 |
+| 1 | right-zero-left-rank-one | lazy-full-limb-sparse | 636.266722 | 1.242708 | 24.471797 | 1.029628 |

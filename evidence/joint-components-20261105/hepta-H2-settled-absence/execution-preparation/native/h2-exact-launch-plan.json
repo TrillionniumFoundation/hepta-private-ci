@@ -1,0 +1,46 @@
+{
+  "schema": "hepta-joint-h2-exact-native-launch-plan-v1",
+  "status": "FROZEN_AWAITING_ROOT_FINAL_STATIC_REVIEW_NOT_NATIVE_EXECUTED",
+  "host": "desktop",
+  "commit": "620cb63ae9b58904483005bcb2c4e1507df99539",
+  "tree": "f2cebe6d99deca596c170922b8e60d66648d7393",
+  "frozen_ref": "fix/hepta-joint-h2-20261105-93bfc-frozen",
+  "pull_request": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4898",
+  "chain_commit": "8df4b21d893906570d48f5beafabb3b31e0aefbc",
+  "chain_tree": "6f5aaa2af0432e27e24b6bd2ad18013ab4423d14",
+  "idempotency_key": "ms-joint-h2-native-620cb-attempt1-93bfcf",
+  "timeout_seconds": 5400,
+  "evidence_name": "joint-h2-native-attempt-1",
+  "source": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/source-h2",
+  "cwd": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf",
+  "entry_executable": "/usr/bin/python3",
+  "bootstrap_sha256": "483c707c412411063944fbc6a72591a2c006affad5e4a598e3f83bff3b0b3e78",
+  "bundle_sha256": "d73dc5d0095dcec709494a662964a2997a1b7b9f0a290a18e294c5f278bfb390",
+  "bundle_files": {
+    "run_h2_native_pipeline.py": "700c8a3df4997f0d3348bbab6df4ad8b23865cb935e231a51f5171cd34e6a350",
+    "test_elf_capture.py": "64489779d88a399040e20f939fe878f8d20fa86a60b435a2d7896186dc64d87a",
+    "test_executed_binary_capture.py": "6045805d6ea6c988a071839ee24806f7b3bb9593fc8e755df9d7d0d097041969",
+    "nextest_fd_runner.py": "903c622365c9cf863f1ae4b5eca2d4a0501c9f86862538c48f94f126a82ba62b",
+    "test_nextest_fd_runner.py": "29a77665a8e255dbd29286709ccab06a4e9f81bf76f6f89ed489613a68ede61a",
+    "fd_gate_evidence.py": "b582bbc5759f5dbadff6416f7aa804f67e6136d18553c7b6486bd8a7786435c6",
+    "h2-native-plan.json": "5f79297d78b0b1b2aa13022c4eed26bee8cff788a2eafd4086e9f3261c7e0288",
+    "h2-selected-tests-guard.py": "db0d00120c1c1efda2bf2f2830ae4011e419cc03438b605e3f5b21ca51df8d7f",
+    "h2-extra-controls.json": "08d884ff93090767084059d1b40802fd3269c2b939b0f5534472c3ea663d908c"
+  },
+  "budget_mapping_sha256": "b10506e1d11810303a23e092fd58c04fa7b9ab5da3f3d2c289898f62df122a14",
+  "execution_configuration": {
+    "new_from_h1": true,
+    "env_variable": "CARGO_TARGET_X86_64_UNKNOWN_LINUX_GNU_RUNNER",
+    "value": "/usr/bin/python3 /home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/tools/joint-h2-native-attempt-1/nextest_fd_runner.py",
+    "config_variable": "HEPTA_NEXTEST_FD_CAPTURE_CONFIG",
+    "one_config_per_gate": true,
+    "capture_overhead_inside_original_deadlines": true,
+    "no_h1_retroactive_capture": true
+  },
+  "guard_scope": "full raw tracked bytes + explicit ignored-path and scripts bytecode before/after observations; not complete dynamic runtime closure",
+  "native_credit": false,
+  "post_terminal_evidence_tasks": [
+    "Retain exact terminal and prove owned descendants clear before releasing CPU window.",
+    "List actual unique images and gate mapping before any post-budget compression; no rebuild or retrospective attribution."
+  ]
+}

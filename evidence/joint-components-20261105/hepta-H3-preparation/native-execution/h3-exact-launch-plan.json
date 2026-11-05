@@ -1,0 +1,99 @@
+{
+  "schema": "hepta-joint-h3-exact-native-launch-plan-v1",
+  "source_commit": "6db78eca53a5acdda0d96873d3f4cd65863426f0",
+  "source_tree": "e91f5994017fc5d2cfe58d405a20ee6ad9376772",
+  "chain_commit": "8df4b21d893906570d48f5beafabb3b31e0aefbc",
+  "chain_tree": "6f5aaa2af0432e27e24b6bd2ad18013ab4423d14",
+  "source_path": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/source-h3",
+  "expected_tracked_count": 11840,
+  "expected_tracked_bytes": 183410043,
+  "host": "desktop",
+  "executable": "/usr/bin/python3",
+  "cwd": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf",
+  "evidence_name": "joint-h3-native-attempt-1",
+  "idempotency_key": "ms-joint-h3-native-6db78-attempt1-93bfcf",
+  "outer_timeout_seconds": 5400,
+  "bootstrap": {
+    "path": "bootstrap_h3_native.py",
+    "bytes": 2764,
+    "sha256": "bbdca990ef112d2f94d942cc28545a2386a1ac046ab4d600fc7a42fea1af91d9"
+  },
+  "bundle": {
+    "path": "h3-native-bundle.json",
+    "bytes": 155563,
+    "sha256": "1c9506ca71c3f239a6066518fe0e8c4c3ab32a8b0e7113423c92b4310615eb11"
+  },
+  "budget_map": {
+    "path": "h3-budget-map.json",
+    "bytes": 24348,
+    "sha256": "7e547bfc5c15e1e5fd12ede66e0a84baa4b79ee84dd1830256db1f23b346e741"
+  },
+  "files": [
+    {
+      "path": "run_h3_native_pipeline.py",
+      "bytes": 33167,
+      "sha256": "9bd701390b835540c37fe4d6b41000fe7eff8204af114f2f8139023b1c7a9277"
+    },
+    {
+      "path": "test_elf_capture.py",
+      "bytes": 6917,
+      "sha256": "64489779d88a399040e20f939fe878f8d20fa86a60b435a2d7896186dc64d87a"
+    },
+    {
+      "path": "test_executed_binary_capture.py",
+      "bytes": 3039,
+      "sha256": "6045805d6ea6c988a071839ee24806f7b3bb9593fc8e755df9d7d0d097041969"
+    },
+    {
+      "path": "nextest_fd_runner.py",
+      "bytes": 9554,
+      "sha256": "9679cc6e11762c29b4c0ee92dd7715d3fce0555a6f8e0e10ed9d0b007951381a"
+    },
+    {
+      "path": "test_nextest_fd_runner.py",
+      "bytes": 5684,
+      "sha256": "29a77665a8e255dbd29286709ccab06a4e9f81bf76f6f89ed489613a68ede61a"
+    },
+    {
+      "path": "test_fd_gate_targets.py",
+      "bytes": 5708,
+      "sha256": "642ec3f16702f1f9c9bedd205e8a268841a07c19884d711041504b59c76cbb06"
+    },
+    {
+      "path": "fd_gate_evidence.py",
+      "bytes": 5420,
+      "sha256": "0fb050f795f982ad718938eba25c06d5e6831ce5c213a57dd166405039ba056d"
+    },
+    {
+      "path": "h3-native-plan.json",
+      "bytes": 21478,
+      "sha256": "6b8118b08789c720fb854c7bd01b0d659b80634945775f3a7d74bb2643c357d9"
+    },
+    {
+      "path": "h3-selected-tests-guard.py",
+      "bytes": 8891,
+      "sha256": "e273e7f5c17704bfb699e90a5d15c8389d349c6c17e271ee26c031e6b3a65d48"
+    },
+    {
+      "path": "h3-extra-controls.json",
+      "bytes": 16587,
+      "sha256": "08d884ff93090767084059d1b40802fd3269c2b939b0f5534472c3ea663d908c"
+    }
+  ],
+  "selected_exact_cases": 74,
+  "original_selected_71_retained": true,
+  "full_evidence_expected_passed": 161,
+  "full_evidence_expected_ignored": 1,
+  "single_multi_binary_gate": "neural-runtime-input",
+  "per_case_targets": {
+    "native_comparison_input_requires_v2_and_independently_pinned_snapshot": "neural_comparison_native",
+    "ordinary_native_composition_rejects_untrusted_qualification_before_inference_owners": "neural_cognitive_bootstrap"
+  },
+  "source_preparation_required": "evidence/h3-final-source/result.json",
+  "configuration_scope": "explicit H3 target runner config: original gates retain v1 one binary, only named new gate has v2 exact case-to-target map. Actual FD records and raw outcomes must be bijective. H1/H2 results and incomplete captures are never reassigned.",
+  "daemon_scope": "first live fd full hash/copy then independently checked second generation same-held-file-object reuse; same-image bytes retained once, not a second full hash or hostile privileged writer guarantee",
+  "no_global_kernel_changes": true,
+  "hosted_matrix_credit": false,
+  "raw_runtime_observation_scope": "tracked full guard plus separately retained ignored-path/bytecode before-after observations; not a per-import or dynamic closure proof",
+  "launch_after_exact_source_and_root_review_only": true
+}

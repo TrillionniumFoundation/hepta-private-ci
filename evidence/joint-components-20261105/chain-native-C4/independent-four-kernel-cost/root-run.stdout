@@ -1,0 +1,152 @@
+{
+  "result": "PASS_RAW_RECALCULATION",
+  "cells": 96,
+  "timings": 1152,
+  "native_raw_sha256": "08ffd43f968bea2414746eeb4720cec3a2c40d66c2942548ab30efd058ce7a2a",
+  "kernel_overview": [
+    {
+      "kernel": "retained-transposed",
+      "legal": {
+        "median_ns_range": [
+          1822388.0,
+          2068696.5
+        ],
+        "largest_observed_p95_ns": 3606113.0,
+        "ratio_of_totals_to_legal_range": [
+          1.0,
+          1.0
+        ]
+      },
+      "transcript": {
+        "median_ns_range": [
+          1667214.5,
+          1804133.0
+        ],
+        "largest_observed_p95_ns": 2105412.0,
+        "ratio_of_totals_to_legal_range": [
+          0.8566077167591615,
+          0.9183329326060957
+        ]
+      },
+      "product-last-cell": {
+        "median_ns_range": [
+          1844842.5,
+          2070354.5
+        ],
+        "largest_observed_p95_ns": 2137247.0,
+        "ratio_of_totals_to_legal_range": [
+          0.9229670790042203,
+          1.0192151912585103
+        ]
+      }
+    },
+    {
+      "kernel": "scalar-reference",
+      "legal": {
+        "median_ns_range": [
+          3558568.5,
+          3908093.0
+        ],
+        "largest_observed_p95_ns": 4593464.0,
+        "ratio_of_totals_to_legal_range": [
+          1.0,
+          1.0
+        ]
+      },
+      "transcript": {
+        "median_ns_range": [
+          3066696.5,
+          3269421.0
+        ],
+        "largest_observed_p95_ns": 3472484.0,
+        "ratio_of_totals_to_legal_range": [
+          0.8264048378858168,
+          0.8694638752673024
+        ]
+      },
+      "product-last-cell": {
+        "median_ns_range": [
+          3582402.0,
+          4060485.0
+        ],
+        "largest_observed_p95_ns": 4091868.0,
+        "ratio_of_totals_to_legal_range": [
+          0.9830877188632018,
+          1.0098923026908204
+        ]
+      }
+    },
+    {
+      "kernel": "limb-transcript",
+      "legal": {
+        "median_ns_range": [
+          1675106.0,
+          1800187.0
+        ],
+        "largest_observed_p95_ns": 1977521.0,
+        "ratio_of_totals_to_legal_range": [
+          1.0,
+          1.0
+        ]
+      },
+      "transcript": {
+        "median_ns_range": [
+          1496059.5,
+          1679489.0
+        ],
+        "largest_observed_p95_ns": 1727300.0,
+        "ratio_of_totals_to_legal_range": [
+          0.8791608058414334,
+          0.9112263841201091
+        ]
+      },
+      "product-last-cell": {
+        "median_ns_range": [
+          1686729.5,
+          1888394.5
+        ],
+        "largest_observed_p95_ns": 1919756.0,
+        "ratio_of_totals_to_legal_range": [
+          0.9957577895401313,
+          1.0243169258929157
+        ]
+      }
+    },
+    {
+      "kernel": "production-full-limb",
+      "legal": {
+        "median_ns_range": [
+          1672201.5,
+          1793693.0
+        ],
+        "largest_observed_p95_ns": 1910259.0,
+        "ratio_of_totals_to_legal_range": [
+          1.0,
+          1.0
+        ]
+      },
+      "transcript": {
+        "median_ns_range": [
+          1492427.5,
+          1687047.0
+        ],
+        "largest_observed_p95_ns": 1719484.0,
+        "ratio_of_totals_to_legal_range": [
+          0.8782408763569886,
+          0.9182599154501774
+        ]
+      },
+      "product-last-cell": {
+        "median_ns_range": [
+          1666477.5,
+          1870537.5
+        ],
+        "largest_observed_p95_ns": 2013133.0,
+        "ratio_of_totals_to_legal_range": [
+          0.9932728970307261,
+          1.0299583861248205
+        ]
+      }
+    }
+  ]
+}

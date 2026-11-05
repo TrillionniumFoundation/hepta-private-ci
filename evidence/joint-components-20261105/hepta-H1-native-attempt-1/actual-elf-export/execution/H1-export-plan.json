@@ -1,0 +1,146 @@
+{
+  "alias_paths_total": 7,
+  "archive_name": "H1-actual-retained-elfs.tar.xz",
+  "capture_limits": "Only observed nextest test processes are bound to actual opened ELF descriptors. Three selected cases were not individually observed; the readback does not assign a specific cause to the observation gaps. A single declared test binary and matching other captures do not retroactively assign those missing processes. These four images are not the entire ordinary service/interpreter/runtime closure.",
+  "files": [
+    {
+      "aliases": [
+        "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/evidence/joint-h1-native-attempt-1/executed-binaries-dispatcher/86a2c65e12fbef81586067783aa478677975e03290bcd62561938645ac1efc7e.elf",
+        "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/evidence/joint-h1-native-attempt-1/executed-binaries-recovery-signed/86a2c65e12fbef81586067783aa478677975e03290bcd62561938645ac1efc7e.elf",
+        "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/evidence/joint-h1-native-attempt-1/executed-binaries-effect-pq-owner/86a2c65e12fbef81586067783aa478677975e03290bcd62561938645ac1efc7e.elf"
+      ],
+      "bytes": 504265656,
+      "captured_records": 34,
+      "gates": [
+        "dispatcher",
+        "recovery-signed",
+        "effect-pq-owner"
+      ],
+      "name": "H1/elf/86a2c65e12fbef81586067783aa478677975e03290bcd62561938645ac1efc7e.elf",
+      "original_actual_paths": [
+        "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/codex_hepta_agentd-13943d509610e217"
+      ],
+      "role": "previously_captured_test_elf",
+      "selection_rule": "First exact retained path in the frozen original map; no fallback to target or to another alias.",
+      "sha256": "86a2c65e12fbef81586067783aa478677975e03290bcd62561938645ac1efc7e",
+      "source_path": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/evidence/joint-h1-native-attempt-1/executed-binaries-dispatcher/86a2c65e12fbef81586067783aa478677975e03290bcd62561938645ac1efc7e.elf"
+    },
+    {
+      "aliases": [
+        "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/evidence/joint-h1-native-attempt-1/executed-binaries-product/060b03442eaad0f40a1c532199d59183ce6b784beb9023ee06fec73105c34d31.elf"
+      ],
+      "bytes": 120073792,
+      "captured_records": 3,
+      "gates": [
+        "product"
+      ],
+      "name": "H1/elf/060b03442eaad0f40a1c532199d59183ce6b784beb9023ee06fec73105c34d31.elf",
+      "original_actual_paths": [
+        "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/authbus_text_product-c365e5b605b48783"
+      ],
+      "role": "previously_captured_test_elf",
+      "selection_rule": "First exact retained path in the frozen original map; no fallback to target or to another alias.",
+      "sha256": "060b03442eaad0f40a1c532199d59183ce6b784beb9023ee06fec73105c34d31",
+      "source_path": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/evidence/joint-h1-native-attempt-1/executed-binaries-product/060b03442eaad0f40a1c532199d59183ce6b784beb9023ee06fec73105c34d31.elf"
+    },
+    {
+      "aliases": [
+        "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/evidence/joint-h1-native-attempt-1/executed-binaries-recovery-owner/a948cdfa5aeafc03fcfc63459e581ca254129f4d878949236e0bf42df3fe725f.elf",
+        "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/evidence/joint-h1-native-attempt-1/executed-binaries-qualification-growth/a948cdfa5aeafc03fcfc63459e581ca254129f4d878949236e0bf42df3fe725f.elf"
+      ],
+      "bytes": 53291680,
+      "captured_records": 23,
+      "gates": [
+        "recovery-owner",
+        "qualification-growth"
+      ],
+      "name": "H1/elf/a948cdfa5aeafc03fcfc63459e581ca254129f4d878949236e0bf42df3fe725f.elf",
+      "original_actual_paths": [
+        "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/codex_hepta_evidence-0f5076227f347d3a"
+      ],
+      "role": "previously_captured_test_elf",
+      "selection_rule": "First exact retained path in the frozen original map; no fallback to target or to another alias.",
+      "sha256": "a948cdfa5aeafc03fcfc63459e581ca254129f4d878949236e0bf42df3fe725f",
+      "source_path": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/evidence/joint-h1-native-attempt-1/executed-binaries-recovery-owner/a948cdfa5aeafc03fcfc63459e581ca254129f4d878949236e0bf42df3fe725f.elf"
+    },
+    {
+      "aliases": [
+        "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/evidence/joint-h1-native-attempt-1/executed-binaries-recovery-product/6c4c81a3b2d99aba2bb95aa83433680140a82d936285942ea702c352eb464126.elf"
+      ],
+      "bytes": 96989456,
+      "captured_records": 4,
+      "gates": [
+        "recovery-product"
+      ],
+      "name": "H1/elf/6c4c81a3b2d99aba2bb95aa83433680140a82d936285942ea702c352eb464126.elf",
+      "original_actual_paths": [
+        "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/kernel_evidence_product-c434ef3dca0b18f7"
+      ],
+      "role": "previously_captured_test_elf",
+      "selection_rule": "First exact retained path in the frozen original map; no fallback to target or to another alias.",
+      "sha256": "6c4c81a3b2d99aba2bb95aa83433680140a82d936285942ea702c352eb464126",
+      "source_path": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/evidence/joint-h1-native-attempt-1/executed-binaries-recovery-product/6c4c81a3b2d99aba2bb95aa83433680140a82d936285942ea702c352eb464126.elf"
+    }
+  ],
+  "max_archive_bytes": 841729448,
+  "native_reexecution": false,
+  "original_run_outcome": {
+    "actual_failed": 2,
+    "actual_passed": 65,
+    "actual_process_capture_records": 64,
+    "actual_selected_native_cases_run": 67,
+    "not_run_followup_gates": [
+      "original-six-effect-controls",
+      "provider-effect-existing-and-pq",
+      "final-use-profile-controls",
+      "full-evidence-library",
+      "fix",
+      "format"
+    ],
+    "not_run_original_selected_gates": [
+      "effect-pq-contract",
+      "effect-pq-product"
+    ],
+    "result": "FAILED",
+    "three_individually_unobserved_cases": [
+      {
+        "gate": "recovery-owner",
+        "selected_case": "recovery_invocation_schema_tests::recovery_invocation_schema_refuses_non_rowid_or_composite_sequences"
+      },
+      {
+        "gate": "recovery-signed",
+        "selected_case": "evidence_frontier::tests::recovery_frontier_cannot_be_omitted_at_the_ordinary_agentd_run_entry"
+      },
+      {
+        "gate": "recovery-signed",
+        "selected_case": "evidence_frontier::tests::recovery_frontier_enforces_root_scope_epoch_revocation_and_generation_floor"
+      }
+    ]
+  },
+  "output_directory": "/home/qian-qi/work/hepta-h1-actual-elf-export-20261105-93bfc-01",
+  "part_bytes": 4194304,
+  "phase": "H1",
+  "proposed_transport_budget_seconds": 900,
+  "publication_contract": "Only completion.json with status COMPLETE authorizes consumption; archive/part filename existence alone is insufficient.",
+  "release_prerequisite": {
+    "job_id": "1a1ad62573c-fc05-59a3",
+    "path": "/home/qian-qi/work/hepta-joint-h2-owned-release-20261105-93bfc-01.json",
+    "scope": "Exact H2 owned unit release only; root must reserve the subsequent archive window.",
+    "sha256": "df0fc5340514bfe339a9e6178922930db59087f0128dd62c9971afb741890c60"
+  },
+  "schema": "hepta-actual-retained-elf-export-plan-v1",
+  "selected_source_paths": 4,
+  "source_commit": "9f785cb201ba12ab0ae0f0d341c0f7912cc65efc",
+  "source_map": {
+    "bytes": 9817,
+    "data_base64": "ewogICJzb3VyY2VfY29tbWl0IjogIjlmNzg1Y2IyMDFiYTEyYWIwYWUwZjBkMzQxYzBmNzkxMmNjNjVlZmMiLAogICJzb3VyY2VfdHJlZSI6ICIyNDgwNGIyMWQwMzA2YjYxN2UxMmZhM2Y1Yjk0NTRhMTJlZDRhZDQxIiwKICAib3ZlcmFsbF9yZXN1bHQiOiAiRkFJTEVEIiwKICAiYWN0dWFsX3NlbGVjdGVkX25hdGl2ZV9jYXNlc19ydW4iOiA2NywKICAiYWN0dWFsX3Bhc3NlZCI6IDY1LAogICJhY3R1YWxfZmFpbGVkIjogMiwKICAibm90X3J1bl9vcmlnaW5hbF9zZWxlY3RlZF9nYXRlcyI6IFsKICAgICJlZmZlY3QtcHEtY29udHJhY3QiLAogICAgImVmZmVjdC1wcS1wcm9kdWN0IgogIF0sCiAgIm5vdF9ydW5fZm9sbG93dXBfZ2F0ZXMiOiBbCiAgICAib3JpZ2luYWwtc2l4LWVmZmVjdC1jb250cm9scyIsCiAgICAicHJvdmlkZXItZWZmZWN0LWV4aXN0aW5nLWFuZC1wcSIsCiAgICAiZmluYWwtdXNlLXByb2ZpbGUtY29udHJvbHMiLAogICAgImZ1bGwtZXZpZGVuY2UtbGlicmFyeSIsCiAgICAiZml4IiwKICAgICJmb3JtYXQiCiAgXSwKICAidW5pcXVlX2FjdHVhbF9pbWFnZV9jb3VudCI6IDQsCiAgInVuaXF1ZV9hY3R1YWxfaW1hZ2VfdG90YWxfYnl0ZXMiOiA3NzQ2MjA1ODQsCiAgInVuaXF1ZV9hY3R1YWxfaW1hZ2VzIjogWwogICAgewogICAgICAic2hhMjU2IjogIjg2YTJjNjVlMTJmYmVmODE1ODYwNjc3ODNhYTQ3ODY3Nzk3NWUwMzI5MGJjZDYyNTYxOTM4NjQ1YWMxZWZjN2UiLAogICAgICAiYnl0ZXMiOiA1MDQyNjU2NTYsCiAgICAgICJnYXRlcyI6IFsKICAgICAgICAiZGlzcGF0Y2hlciIsCiAgICAgICAgInJlY292ZXJ5LXNpZ25lZCIsCiAgICAgICAgImVmZmVjdC1wcS1vd25lciIKICAgICAgXSwKICAgICAgInJldGFpbmVkX3BhdGhzIjogWwogICAgICAgICIvaG9tZS9xaWFuLXFpL3dvcmsvaGVwdGEtcHEtZWZmZWN0LXY0LTIwMjYxMTA1LTkzYmZjZi9ldmlkZW5jZS9qb2ludC1oMS1uYXRpdmUtYXR0ZW1wdC0xL2V4ZWN1dGVkLWJpbmFyaWVzLWRpc3BhdGNoZXIvODZhMmM2NWUxMmZiZWY4MTU4NjA2Nzc4M2FhNDc4Njc3OTc1ZTAzMjkwYmNkNjI1NjE5Mzg2NDVhYzFlZmM3ZS5lbGYiLAogICAgICAgICIvaG9tZS9xaWFuLXFpL3dvcmsvaGVwdGEtcHEtZWZmZWN0LXY0LTIwMjYxMTA1LTkzYmZjZi9ldmlkZW5jZS9qb2ludC1oMS1uYXRpdmUtYXR0ZW1wdC0xL2V4ZWN1dGVkLWJpbmFyaWVzLXJlY292ZXJ5LXNpZ25lZC84NmEyYzY1ZTEyZmJlZjgxNTg2MDY3NzgzYWE0Nzg2Nzc5NzVlMDMyOTBiY2Q2MjU2MTkzODY0NWFjMWVmYzdlLmVsZiIsCiAgICAgICAgIi9ob21lL3FpYW4tcWkvd29yay9oZXB0YS1wcS1lZmZlY3QtdjQtMjAyNjExMDUtOTNiZmNmL2V2aWRlbmNlL2pvaW50LWgxLW5hdGl2ZS1hdHRlbXB0LTEvZXhlY3V0ZWQtYmluYXJpZXMtZWZmZWN0LXBxLW93bmVyLzg2YTJjNjVlMTJmYmVmODE1ODYwNjc3ODNhYTQ3ODY3Nzk3NWUwMzI5MGJjZDYyNTYxOTM4NjQ1YWMxZWZjN2UuZWxmIgogICAgICBdLAogICAgICAiYWN0dWFsX3BhdGhzIjogWwogICAgICAgICIvaG9tZS9xaWFuLXFpL3dvcmsvaGVwdGEtcHEtZWZmZWN0LXY0LTIwMjYxMTA1LTkzYmZjZi90YXJnZXQvZGVidWcvZGVwcy9jb2RleF9oZXB0YV9hZ2VudGQtMTM5NDNkNTA5NjEwZTIxNyIKICAgICAgXSwKICAgICAgImNhcHR1cmVkX3JlY29yZHMiOiAzNAogICAgfSwKICAgIHsKICAgICAgInNoYTI1NiI6ICIwNjBiMDM0NDJlYWFkMGY0MGExYzUzMjE5OWQ1OTE4M2NlNmI3ODRiZWI5MDIzZWUwNmZlYzczMTA1YzM0ZDMxIiwKICAgICAgImJ5dGVzIjogMTIwMDczNzkyLAogICAgICAiZ2F0ZXMiOiBbCiAgICAgICAgInByb2R1Y3QiCiAgICAgIF0sCiAgICAgICJyZXRhaW5lZF9wYXRocyI6IFsKICAgICAgICAiL2hvbWUvcWlhbi1xaS93b3JrL2hlcHRhLXBxLWVmZmVjdC12NC0yMDI2MTEwNS05M2JmY2YvZXZpZGVuY2Uvam9pbnQtaDEtbmF0aXZlLWF0dGVtcHQtMS9leGVjdXRlZC1iaW5hcmllcy1wcm9kdWN0LzA2MGIwMzQ0MmVhYWQwZjQwYTFjNTMyMTk5ZDU5MTgzY2U2Yjc4NGJlYjkwMjNlZTA2ZmVjNzMxMDVjMzRkMzEuZWxmIgogICAgICBdLAogICAgICAiYWN0dWFsX3BhdGhzIjogWwogICAgICAgICIvaG9tZS9xaWFuLXFpL3dvcmsvaGVwdGEtcHEtZWZmZWN0LXY0LTIwMjYxMTA1LTkzYmZjZi90YXJnZXQvZGVidWcvZGVwcy9hdXRoYnVzX3RleHRfcHJvZHVjdC1jMzY1ZTViNjA1YjQ4NzgzIgogICAgICBdLAogICAgICAiY2FwdHVyZWRfcmVjb3JkcyI6IDMKICAgIH0sCiAgICB7CiAgICAgICJzaGEyNTYiOiAiYTk0OGNkZmE1YWVhZmMwM2ZjZmM2MzQ1OWU1ODFjYTI1NDEyOWY0ZDg3ODk0OTIzNmUwYmY0MmRmM2ZlNzI1ZiIsCiAgICAgICJieXRlcyI6IDUzMjkxNjgwLAogICAgICAiZ2F0ZXMiOiBbCiAgICAgICAgInJlY292ZXJ5LW93bmVyIiwKICAgICAgICAicXVhbGlmaWNhdGlvbi1ncm93dGgiCiAgICAgIF0sCiAgICAgICJyZXRhaW5lZF9wYXRocyI6IFsKICAgICAgICAiL2hvbWUvcWlhbi1xaS93b3JrL2hlcHRhLXBxLWVmZmVjdC12NC0yMDI2MTEwNS05M2JmY2YvZXZpZGVuY2Uvam9pbnQtaDEtbmF0aXZlLWF0dGVtcHQtMS9leGVjdXRlZC1iaW5hcmllcy1yZWNvdmVyeS1vd25lci9hOTQ4Y2RmYTVhZWFmYzAzZmNmYzYzNDU5ZTU4MWNhMjU0MTI5ZjRkODc4OTQ5MjM2ZTBiZjQyZGYzZmU3MjVmLmVsZiIsCiAgICAgICAgIi9ob21lL3FpYW4tcWkvd29yay9oZXB0YS1wcS1lZmZlY3QtdjQtMjAyNjExMDUtOTNiZmNmL2V2aWRlbmNlL2pvaW50LWgxLW5hdGl2ZS1hdHRlbXB0LTEvZXhlY3V0ZWQtYmluYXJpZXMtcXVhbGlmaWNhdGlvbi1ncm93dGgvYTk0OGNkZmE1YWVhZmMwM2ZjZmM2MzQ1OWU1ODFjYTI1NDEyOWY0ZDg3ODk0OTIzNmUwYmY0MmRmM2ZlNzI1Zi5lbGYiCiAgICAgIF0sCiAgICAgICJhY3R1YWxfcGF0aHMiOiBbCiAgICAgICAgIi9ob21lL3FpYW4tcWkvd29yay9oZXB0YS1wcS1lZmZlY3QtdjQtMjAyNjExMDUtOTNiZmNmL3RhcmdldC9kZWJ1Zy9kZXBzL2NvZGV4X2hlcHRhX2V2aWRlbmNlLTBmNTA3NjIyN2YzNDdkM2EiCiAgICAgIF0sCiAgICAgICJjYXB0dXJlZF9yZWNvcmRzIjogMjMKICAgIH0sCiAgICB7CiAgICAgICJzaGEyNTYiOiAiNmM0YzgxYTNiMmQ5OWFiYTJiYjk1YWE4MzQzMzY4MDE0MGE4MmQ5MzYyODU5NDJlYTcwMmMzNTJlYjQ2NDEyNiIsCiAgICAgICJieXRlcyI6IDk2OTg5NDU2LAogICAgICAiZ2F0ZXMiOiBbCiAgICAgICAgInJlY292ZXJ5LXByb2R1Y3QiCiAgICAgIF0sCiAgICAgICJyZXRhaW5lZF9wYXRocyI6IFsKICAgICAgICAiL2hvbWUvcWlhbi1xaS93b3JrL2hlcHRhLXBxLWVmZmVjdC12NC0yMDI2MTEwNS05M2JmY2YvZXZpZGVuY2Uvam9pbnQtaDEtbmF0aXZlLWF0dGVtcHQtMS9leGVjdXRlZC1iaW5hcmllcy1yZWNvdmVyeS1wcm9kdWN0LzZjNGM4MWEzYjJkOTlhYmEyYmI5NWFhODM0MzM2ODAxNDBhODJkOTM2Mjg1OTQyZWE3MDJjMzUyZWI0NjQxMjYuZWxmIgogICAgICBdLAogICAgICAiYWN0dWFsX3BhdGhzIjogWwogICAgICAgICIvaG9tZS9xaWFuLXFpL3dvcmsvaGVwdGEtcHEtZWZmZWN0LXY0LTIwMjYxMTA1LTkzYmZjZi90YXJnZXQvZGVidWcvZGVwcy9rZXJuZWxfZXZpZGVuY2VfcHJvZHVjdC1jNDM0ZWYzZGNhMGIxOGY3IgogICAgICBdLAogICAgICAiY2FwdHVyZWRfcmVjb3JkcyI6IDQKICAgIH0KICBdLAogICJnYXRlcyI6IFsKICAgIHsKICAgICAgImdhdGUiOiAiZGlzcGF0Y2hlciIsCiAgICAgICJyZWNlaXB0X3N0YXR1cyI6ICJwYXNzZWQiLAogICAgICAicGFzc2VkIjogMTQsCiAgICAgICJmYWlsZWQiOiAwLAogICAgICAiZWxhcHNlZF9zZWNvbmRzIjogMjk3LjI5MDQ0NDMwNzAyOTI1LAogICAgICAicmVjZWlwdF9zaGEyNTYiOiAiYTUyNGVkODgwYmI5MjM0MTU3ZGM2NjQ2OTc0MzI0NmNmYjQ5YzUzNzkwOGE4ZmM2ZGI4MWExN2YyOWNlYTg0ZiIsCiAgICAgICJsb2dfZmlsZSI6ICJkaXNwYXRjaGVyLmpzb24uYTM3YzdmN2VkNTdlNDZiNjg2OThhYmVjZTE1YTdhZDgubG9nIiwKICAgICAgImxvZ19zaGEyNTYiOiAiMTk2MDBjMWZkYTVlNzZlNzFlZjU3NzYwNWI0MmU5N2Y2ZWEzMjk5NzQ5M2I5NmM2NmY3YmI3NGFiM2NmZWIyNCIsCiAgICAgICJjYXB0dXJlZF9wcm9jZXNzX3JlY29yZHMiOiAxNCwKICAgICAgIm9ic2VydmVkX3NlbGVjdGVkX25hbWVzIjogMTQsCiAgICAgICJzZWxlY3RlZF9uYW1lc19ub3Rfb2JzZXJ2ZWRfYnlfcHJvY19jYXB0dXJlIjogW10sCiAgICAgICJjYXB0dXJlX2Vycm9ycyI6IFtdLAogICAgICAicnVubmVyX2RlY2xhcmVkX2JpbmFyeV9jb3VudHMiOiBbCiAgICAgICAgMQogICAgICBdLAogICAgICAiY2FwdHVyZV9nYXBfY2FzZV9lbGFwc2VkX3NlY29uZHMiOiB7fQogICAgfSwKICAgIHsKICAgICAgImdhdGUiOiAicHJvZHVjdCIsCiAgICAgICJyZWNlaXB0X3N0YXR1cyI6ICJwYXNzZWQiLAogICAgICAicGFzc2VkIjogMywKICAgICAgImZhaWxlZCI6IDAsCiAgICAgICJlbGFwc2VkX3NlY29uZHMiOiAzMC45MjIwMDcyNDg5Njk3NSwKICAgICAgInJlY2VpcHRfc2hhMjU2IjogIjIwNWQ4ZGI2NGI1YjQ4NzJlNWQ4NWJkNmZjMmVjNmIzODAwNTI4ZWM2ZmNiMGZlNjkyNGY4MTUyNTA2NDgzZDUiLAogICAgICAibG9nX2ZpbGUiOiAicHJvZHVjdC5qc29uLmM3YjlmNjZkYWVlYTQzNmU4MDg5NGY5ODFiMGI2MmEzLmxvZyIsCiAgICAgICJsb2dfc2hhMjU2IjogImFlMjdlNzNkOTVhZmNmZjBkNzMxN2ViMzQxYzRkOTM5YjZjMjI0ZjZkNzFmY2QxZGQ4NjQwMWI2YTk5YzE3MWUiLAogICAgICAiY2FwdHVyZWRfcHJvY2Vzc19yZWNvcmRzIjogMywKICAgICAgIm9ic2VydmVkX3NlbGVjdGVkX25hbWVzIjogMywKICAgICAgInNlbGVjdGVkX25hbWVzX25vdF9vYnNlcnZlZF9ieV9wcm9jX2NhcHR1cmUiOiBbXSwKICAgICAgImNhcHR1cmVfZXJyb3JzIjogW10sCiAgICAgICJydW5uZXJfZGVjbGFyZWRfYmluYXJ5X2NvdW50cyI6IFsKICAgICAgICAxCiAgICAgIF0sCiAgICAgICJjYXB0dXJlX2dhcF9jYXNlX2VsYXBzZWRfc2Vjb25kcyI6IHt9CiAgICB9LAogICAgewogICAgICAiZ2F0ZSI6ICJyZWNvdmVyeS1vd25lciIsCiAgICAgICJyZWNlaXB0X3N0YXR1cyI6ICJwYXNzZWQiLAogICAgICAicGFzc2VkIjogMjIsCiAgICAgICJmYWlsZWQiOiAwLAogICAgICAiZWxhcHNlZF9zZWNvbmRzIjogMjAyLjk5NTIwNTg3NzkzMDg2LAogICAgICAicmVjZWlwdF9zaGEyNTYiOiAiNWEwYzA5NmM4YWU5ZDkwNDhlZDUyZmQzYzNmM2UwZWJlNGUzN2I1Y2FiNWQwNGE4OTEwZThjMTcyMTQ2NWYxOSIsCiAgICAgICJsb2dfZmlsZSI6ICJyZWNvdmVyeS1vd25lci5qc29uLjUzMDcxZjEwMTVhNzRlYTM4MDMwYTAyMjA2YmY1MjNiLmxvZyIsCiAgICAgICJsb2dfc2hhMjU2IjogImYxODdhMGVmMmZjZTkxNzlkOWNiMjI2YWRkNWRiNTNiZDNjM2Q0MzdkMWE0YmRmM2IyNTllZDQ2NjNjNGEwMTIiLAogICAgICAiY2FwdHVyZWRfcHJvY2Vzc19yZWNvcmRzIjogMjEsCiAgICAgICJvYnNlcnZlZF9zZWxlY3RlZF9uYW1lcyI6IDIxLAogICAgICAic2VsZWN0ZWRfbmFtZXNfbm90X29ic2VydmVkX2J5X3Byb2NfY2FwdHVyZSI6IFsKICAgICAgICAicmVjb3ZlcnlfaW52b2NhdGlvbl9zY2hlbWFfdGVzdHM6OnJlY292ZXJ5X2ludm9jYXRpb25fc2NoZW1hX3JlZnVzZXNfbm9uX3Jvd2lkX29yX2NvbXBvc2l0ZV9zZXF1ZW5jZXMiCiAgICAgIF0sCiAgICAgICJjYXB0dXJlX2Vycm9ycyI6IFtdLAogICAgICAicnVubmVyX2RlY2xhcmVkX2JpbmFyeV9jb3VudHMiOiBbCiAgICAgICAgMQogICAgICBdLAogICAgICAiY2FwdHVyZV9nYXBfY2FzZV9lbGFwc2VkX3NlY29uZHMiOiB7CiAgICAgICAgInJlY292ZXJ5X2ludm9jYXRpb25fc2NoZW1hX3Rlc3RzOjpyZWNvdmVyeV9pbnZvY2F0aW9uX3NjaGVtYV9yZWZ1c2VzX25vbl9yb3dpZF9vcl9jb21wb3NpdGVfc2VxdWVuY2VzIjogMC4wMzEKICAgICAgfQogICAgfSwKICAgIHsKICAgICAgImdhdGUiOiAicmVjb3Zlcnktc2lnbmVkIiwKICAgICAgInJlY2VpcHRfc3RhdHVzIjogInBhc3NlZCIsCiAgICAgICJwYXNzZWQiOiAxMSwKICAgICAgImZhaWxlZCI6IDAsCiAgICAgICJlbGFwc2VkX3NlY29uZHMiOiAxMy4wMDc1MTkzNjE5MTIyNzMsCiAgICAgICJyZWNlaXB0X3NoYTI1NiI6ICJiMzc5ZTc2ODFiMWQ4ZTEyYTk2ZTY3MjU2NDVhZWM2MjMwNmQ4NjM2YzBlYTIxODJhN2JhZmY4ZWIzM2E0ZjU1IiwKICAgICAgImxvZ19maWxlIjogInJlY292ZXJ5LXNpZ25lZC5qc29uLjdlNTMxNTk2ZTEwMzRkN2NhMWZmMDNkZGNlYmJjZmZkLmxvZyIsCiAgICAgICJsb2dfc2hhMjU2IjogIjk4ZjUxMTU4YzUzYTdmMDcwMDNhNDE4M2Q0OGUzNWE1NDE5NjYwNzAzNDNlNzM3OTgzMjdlZTNkMTYzNjA0NzciLAogICAgICAiY2FwdHVyZWRfcHJvY2Vzc19yZWNvcmRzIjogOSwKICAgICAgIm9ic2VydmVkX3NlbGVjdGVkX25hbWVzIjogOSwKICAgICAgInNlbGVjdGVkX25hbWVzX25vdF9vYnNlcnZlZF9ieV9wcm9jX2NhcHR1cmUiOiBbCiAgICAgICAgImV2aWRlbmNlX2Zyb250aWVyOjp0ZXN0czo6cmVjb3ZlcnlfZnJvbnRpZXJfY2Fubm90X2JlX29taXR0ZWRfYXRfdGhlX29yZGluYXJ5X2FnZW50ZF9ydW5fZW50cnkiLAogICAgICAgICJldmlkZW5jZV9mcm9udGllcjo6dGVzdHM6OnJlY292ZXJ5X2Zyb250aWVyX2VuZm9yY2VzX3Jvb3Rfc2NvcGVfZXBvY2hfcmV2b2NhdGlvbl9hbmRfZ2VuZXJhdGlvbl9mbG9vciIKICAgICAgXSwKICAgICAgImNhcHR1cmVfZXJyb3JzIjogW10sCiAgICAgICJydW5uZXJfZGVjbGFyZWRfYmluYXJ5X2NvdW50cyI6IFsKICAgICAgICAxCiAgICAgIF0sCiAgICAgICJjYXB0dXJlX2dhcF9jYXNlX2VsYXBzZWRfc2Vjb25kcyI6IHsKICAgICAgICAiZXZpZGVuY2VfZnJvbnRpZXI6OnRlc3RzOjpyZWNvdmVyeV9mcm9udGllcl9jYW5ub3RfYmVfb21pdHRlZF9hdF90aGVfb3JkaW5hcnlfYWdlbnRkX3J1bl9lbnRyeSI6IDAuMDg4LAogICAgICAgICJldmlkZW5jZV9mcm9udGllcjo6dGVzdHM6OnJlY292ZXJ5X2Zyb250aWVyX2VuZm9yY2VzX3Jvb3Rfc2NvcGVfZXBvY2hfcmV2b2NhdGlvbl9hbmRfZ2VuZXJhdGlvbl9mbG9vciI6IDAuNjIyCiAgICAgIH0KICAgIH0sCiAgICB7CiAgICAgICJnYXRlIjogInJlY292ZXJ5LXByb2R1Y3QiLAogICAgICAicmVjZWlwdF9zdGF0dXMiOiAicGFzc2VkIiwKICAgICAgInBhc3NlZCI6IDQsCiAgICAgICJmYWlsZWQiOiAwLAogICAgICAiZWxhcHNlZF9zZWNvbmRzIjogMjAuMzYyNjgwNTUwMDgyNTg3LAogICAgICAicmVjZWlwdF9zaGEyNTYiOiAiY2E1YzI5ZjNiNThjMzdiMGQ0ZGM1N2U5MzE4YWRkZTA2MWQ4YTEyNThhMTIyMTY4YjM1ODljMmMzNDBjZGU1MCIsCiAgICAgICJsb2dfZmlsZSI6ICJyZWNvdmVyeS1wcm9kdWN0Lmpzb24uMjljMjZlZWFlOTM3NGYzNjhiYTMyZDBmZmNlYTIyMWUubG9nIiwKICAgICAgImxvZ19zaGEyNTYiOiAiMTRiY2UyZDBhZTNjZWJiY2FjNzRhOWE3ODc0Y2UxOTRhYmVhMmMyOGRiNDY2Njc5NGQ4Y2E3NTBjYmFkOGU4NiIsCiAgICAgICJjYXB0dXJlZF9wcm9jZXNzX3JlY29yZHMiOiA0LAogICAgICAib2JzZXJ2ZWRfc2VsZWN0ZWRfbmFtZXMiOiA0LAogICAgICAic2VsZWN0ZWRfbmFtZXNfbm90X29ic2VydmVkX2J5X3Byb2NfY2FwdHVyZSI6IFtdLAogICAgICAiY2FwdHVyZV9lcnJvcnMiOiBbXSwKICAgICAgInJ1bm5lcl9kZWNsYXJlZF9iaW5hcnlfY291bnRzIjogWwogICAgICAgIDEKICAgICAgXSwKICAgICAgImNhcHR1cmVfZ2FwX2Nhc2VfZWxhcHNlZF9zZWNvbmRzIjoge30KICAgIH0sCiAgICB7CiAgICAgICJnYXRlIjogInF1YWxpZmljYXRpb24tZ3Jvd3RoIiwKICAgICAgInJlY2VpcHRfc3RhdHVzIjogInBhc3NlZCIsCiAgICAgICJwYXNzZWQiOiAyLAogICAgICAiZmFpbGVkIjogMCwKICAgICAgImVsYXBzZWRfc2Vjb25kcyI6IDUzLjQ4NDE3NjU4ODk0MzIzLAogICAgICAicmVjZWlwdF9zaGEyNTYiOiAiOGQ4MjJiODYzOTI3MGIxMWZmODBhYjhiNWFkNmI1ZmU0YTJkYmE2NjNmOTAyMjFkMmExZGY3NDI1MGI1ODcxNyIsCiAgICAgICJsb2dfZmlsZSI6ICJxdWFsaWZpY2F0aW9uLWdyb3d0aC5qc29uLjUxOWI1ZTBmNTRkYzQ1YTE4ZjAyZDMzYzRkMWU5M2ZkLmxvZyIsCiAgICAgICJsb2dfc2hhMjU2IjogIjgxOTczNWVkM2ExZTZhMjFiMzBjNmRhMWU3NjlkMWYwNWM2OTlhZDE2ZjdmYmM0MWE2YzZhZjA5YmRlNGE1YzQiLAogICAgICAiY2FwdHVyZWRfcHJvY2Vzc19yZWNvcmRzIjogMiwKICAgICAgIm9ic2VydmVkX3NlbGVjdGVkX25hbWVzIjogMiwKICAgICAgInNlbGVjdGVkX25hbWVzX25vdF9vYnNlcnZlZF9ieV9wcm9jX2NhcHR1cmUiOiBbXSwKICAgICAgImNhcHR1cmVfZXJyb3JzIjogW10sCiAgICAgICJydW5uZXJfZGVjbGFyZWRfYmluYXJ5X2NvdW50cyI6IFsKICAgICAgICAxCiAgICAgIF0sCiAgICAgICJjYXB0dXJlX2dhcF9jYXNlX2VsYXBzZWRfc2Vjb25kcyI6IHt9CiAgICB9LAogICAgewogICAgICAiZ2F0ZSI6ICJlZmZlY3QtcHEtb3duZXIiLAogICAgICAicmVjZWlwdF9zdGF0dXMiOiAiZmFpbGVkIiwKICAgICAgInBhc3NlZCI6IDksCiAgICAgICJmYWlsZWQiOiAyLAogICAgICAiZWxhcHNlZF9zZWNvbmRzIjogNDcuMjM4MDAyMjY2MDM2MzUsCiAgICAgICJyZWNlaXB0X3NoYTI1NiI6ICJhN2NiYWQ2N2U2NDZkZTkzNmI2Njc1MGMyNTdlMmZhNDE0ZTIyMGZkNjY5Yjc3ODJkYmUyZmM1ZWZiMjQ4ZjE0IiwKICAgICAgImxvZ19maWxlIjogImVmZmVjdC1wcS1vd25lci5qc29uLmRmNDUxZDdlOTE1NTRjOWRiMjk0NDNhZDllMjQyYjhjLmxvZyIsCiAgICAgICJsb2dfc2hhMjU2IjogImVhNzQ3OWE0ZDFkMDAwZGY2ZDNiM2QyNzVhMjgzN2ZhYzRlNGZhODA5ZTAyNGYxMGFmNzI4ZGZiZTgxYjIxNzgiLAogICAgICAiY2FwdHVyZWRfcHJvY2Vzc19yZWNvcmRzIjogMTEsCiAgICAgICJvYnNlcnZlZF9zZWxlY3RlZF9uYW1lcyI6IDExLAogICAgICAic2VsZWN0ZWRfbmFtZXNfbm90X29ic2VydmVkX2J5X3Byb2NfY2FwdHVyZSI6IFtdLAogICAgICAiY2FwdHVyZV9lcnJvcnMiOiBbXSwKICAgICAgInJ1bm5lcl9kZWNsYXJlZF9iaW5hcnlfY291bnRzIjogWwogICAgICAgIDEKICAgICAgXSwKICAgICAgImNhcHR1cmVfZ2FwX2Nhc2VfZWxhcHNlZF9zZWNvbmRzIjoge30KICAgIH0KICBdLAogICJjYXB0dXJlX2xpbWl0cyI6ICJPbmx5IG9ic2VydmVkIG5leHRlc3QgdGVzdCBwcm9jZXNzZXMgYXJlIGJvdW5kIHRvIGFjdHVhbCBvcGVuZWQgRUxGIGRlc2NyaXB0b3JzLiBUaHJlZSBzZWxlY3RlZCBjYXNlcyB3ZXJlIG5vdCBpbmRpdmlkdWFsbHkgb2JzZXJ2ZWQ7IHRoZSByZWFkYmFjayBkb2VzIG5vdCBhc3NpZ24gYSBzcGVjaWZpYyBjYXVzZSB0byB0aGUgb2JzZXJ2YXRpb24gZ2Fwcy4gQSBzaW5nbGUgZGVjbGFyZWQgdGVzdCBiaW5hcnkgYW5kIG1hdGNoaW5nIG90aGVyIGNhcHR1cmVzIGRvIG5vdCByZXRyb2FjdGl2ZWx5IGFzc2lnbiB0aG9zZSBtaXNzaW5nIHByb2Nlc3Nlcy4gVGhlc2UgZm91ciBpbWFnZXMgYXJlIG5vdCB0aGUgZW50aXJlIG9yZGluYXJ5IHNlcnZpY2UvaW50ZXJwcmV0ZXIvcnVudGltZSBjbG9zdXJlLiIsCiAgInJhd19pbWFnZXNfZXhwb3J0ZWQiOiBmYWxzZSwKICAicmVidWlsZF9mb3JfZXZpZGVuY2VfcGVyZm9ybWVkIjogZmFsc2UsCiAgInBvc3RfdGVybWluYWxfZXhwb3J0X3Njb3BlIjogIlNtYWxsIGV4aXN0aW5nIHJlY2VpcHRzL2xvZ3MvY2FwdHVyZXMgb25seTsgbm8gcmVjb21wdXRhdGlvbiBvZiBuYXRpdmUgZ2F0ZXMuIgp9Cg==",
+    "historical_fields_preserved": "Original map raw_images_exported=false is its pre-archive state; it is not rewritten by this package.",
+    "local_original_path": "/workspace/scratch/93bfcfe29fc8/model_storage/pq_effect_migration/native/joint-h1-native-attempt-1/post-terminal-gates-and-image-map.json",
+    "sha256": "8c1fe933839ac8bc7d3989c497995d52332f73a9cf8ecc18e15150b66b18d9c2"
+  },
+  "source_root": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/evidence/joint-h1-native-attempt-1",
+  "source_tree": "24804b21d0306b617e12fa3f5b9454a12ed4ad41",
+  "total_elf_bytes": 774620584,
+  "transport_budget_scope": "New bounded post-terminal archive component only, unrelated to native test/benchmark gates. No automatic retry.",
+  "unselected_alias_paths": 3
+}

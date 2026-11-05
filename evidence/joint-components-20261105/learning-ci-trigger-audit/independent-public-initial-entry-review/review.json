@@ -1,0 +1,159 @@
+{
+  "schema": "hepta-public-initial-h3-independent-static-review-v1",
+  "reviewer": "pq_recovery",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "source_commit": "6db78eca53a5acdda0d96873d3f4cd65863426f0",
+  "source_tree": "e91f5994017fc5d2cfe58d405a20ee6ad9376772",
+  "conclusion": "Reachable new real training and evaluation after current prerequisites pass; the first neural-study-v1 missing-input rejection does not protect this workflow.",
+  "source_identity": {
+    "exact_h3_independently_fetched_files": 6,
+    "git_blob_and_raw_sha256_verified": true,
+    "all_six_equal_preexisting_exact_h2_copies": true,
+    "inventory": "exact-h3-six-source-binding.json"
+  },
+  "trigger": {
+    "events": {
+      "pull_request": {
+        "paths": [
+          ".github/workflows/hepta-public-initial-v2.yml",
+          "codex-rs/.config/nextest.toml",
+          "codex-rs/hepta-agentd/**",
+          "codex-rs/hepta-agent-protocol/**",
+          "codex-rs/app-server/**",
+          "codex-rs/hepta-infer-worker-host/**",
+          "codex-rs/hepta-learning-artifacts/**",
+          "scripts/hepta_smollm_*.py",
+          "scripts/test_hepta_smollm_*.py",
+          "scripts/hepta_ci_exec.py",
+          "scripts/test_hepta_ci_exec*.py"
+        ]
+      },
+      "workflow_dispatch": ""
+    },
+    "runner": "ubuntu-26.04",
+    "job_timeout_minutes": 360,
+    "job_if": null,
+    "job_environment": null,
+    "draft_exclusion_in_workflow": false,
+    "platform_approval_rules_audited": false,
+    "changed_h3_agentd_paths_match": true,
+    "concurrency": {
+      "group": "hepta-public-initial-v2-${{ github.event.pull_request.head.sha || github.sha }}",
+      "cancel-in-progress": "false"
+    }
+  },
+  "paired_source": {
+    "HEPTA_PAIRED_EXECUTION_PROFILE": "hepta-integrated-chain-execution-v11",
+    "CHAIN_SHA": "cfa57cd04751427451302b5c10539b3984d7f8db",
+    "RESEARCH_CHAIN_SHA": "cfa57cd04751427451302b5c10539b3984d7f8db",
+    "OBSERVATION_CHAIN_SHA": "cfa57cd04751427451302b5c10539b3984d7f8db",
+    "HEPTA_PUBLIC_INITIAL_ROUND_RUNNER": "${{ github.workspace }}/hepta/scripts/hepta_smollm_observed_execution_v1.py",
+    "HEPTA_PUBLIC_INITIAL_EXECUTION_PROFILE": "hepta-original-model-observed-execution-v1"
+  },
+  "input": {
+    "schema": "hepta-smollm-neural-native-check-v2",
+    "runtime_snapshot_and_raw_sha256_written": true,
+    "first_workflow_missing_field_guard_does_not_apply": true,
+    "actual_runtime_parent_source_ordinary_guards_still_required": true
+  },
+  "gates": [
+    {
+      "id": "ordinary",
+      "if": "${{ !cancelled() && steps.materials.outcome == 'success' }}",
+      "timeout_seconds": 900,
+      "minimum_tests": 2,
+      "run": "set -euo pipefail\nunset PYTHONPATH PYTHONHOME PYTHONUSERBASE\n\"$RUNNER_TEMP/hepta-public-env/bin/python\" -I -B scripts/hepta_smollm_runtime_snapshot.py verify --snapshot \"$HEPTA_PUBLIC_INITIAL_RUNTIME_SNAPSHOT\"\npython3 scripts/hepta_ci_exec.py --output \"$RUNNER_TEMP/hepta-public-initial-v2/ordinary-native.json\" --timeout-seconds 900 --minimum-tests 2 -- just test --locked -p codex-hepta-infer-worker-host --lib --profile hepta-public-initial-v2 -E 'test(real_selected_initial_serves_ordinary_context_then_refuses_revocation) | test(real_public_initial_reopens_same_ordinary_owners)' --run-ignored only --no-capture\n\"$RUNNER_TEMP/hepta-public-env/bin/python\" -I -B scripts/hepta_smollm_runtime_snapshot.py verify --snapshot \"$HEPTA_PUBLIC_INITIAL_RUNTIME_SNAPSHOT\"\n"
+    },
+    {
+      "id": "proposal_rounds",
+      "if": "${{ !cancelled() && steps.ordinary.outcome == 'success' }}",
+      "timeout_seconds": 11100,
+      "minimum_tests": 1,
+      "run": "set -euo pipefail\nunset PYTHONPATH PYTHONHOME PYTHONUSERBASE\npython3 scripts/hepta_ci_exec.py --output \"$RUNNER_TEMP/hepta-public-initial-v2/three-rounds-native.json\" --timeout-seconds 11100 --minimum-tests 1 -- just test --locked -p codex-hepta-infer-worker-host --lib --profile hepta-public-initial-v2 -E 'test(real_public_initial_three_rounds_hold_and_read_original_current)' --run-ignored only --no-capture\n\"$RUNNER_TEMP/hepta-public-env/bin/python\" -I -B scripts/hepta_smollm_runtime_snapshot.py verify --snapshot \"$HEPTA_PUBLIC_INITIAL_RUNTIME_SNAPSHOT\"\n"
+    },
+    {
+      "id": "descendants",
+      "if": "${{ !cancelled() && steps.ordinary.outcome == 'success' }}",
+      "timeout_seconds": 9000,
+      "minimum_tests": 0,
+      "run": "set -euo pipefail\nunset PYTHONPATH PYTHONHOME PYTHONUSERBASE\npython3 scripts/hepta_ci_exec.py --output \"$RUNNER_TEMP/hepta-public-initial-v2/descendant-execution.json\" --timeout-seconds 9000 --minimum-tests 0 -- \"$RUNNER_TEMP/hepta-public-env/bin/python\" -I -B scripts/hepta_smollm_descendant_v2.py --native-input \"$HEPTA_PN3_NEURAL_NATIVE_CONFIG\" --ordinary-readback \"$RUNNER_TEMP/hepta-public-initial-v2/n/p/ordinary-0/ordinary-session-result.json\" --output \"$RUNNER_TEMP/hepta-public-initial-v2/descendant-diagnostics\"\n\"$RUNNER_TEMP/hepta-public-env/bin/python\" -I -B scripts/hepta_smollm_runtime_snapshot.py verify --snapshot \"$HEPTA_PUBLIC_INITIAL_RUNTIME_SNAPSHOT\"\n"
+    },
+    {
+      "id": "answer_eos_research",
+      "if": "${{ success() && steps.ordinary.outcome == 'success' && steps.proposal_rounds.outcome == 'success' }}",
+      "timeout_seconds": 1800,
+      "minimum_tests": 0,
+      "run": "set -euo pipefail\nunset PYTHONPATH PYTHONHOME PYTHONUSERBASE\npython3 scripts/hepta_ci_exec.py --output \"$RUNNER_TEMP/hepta-public-initial-v2/answer-eos-research-execution.json\" --timeout-seconds 1800 --minimum-tests 0 -- \"$RUNNER_TEMP/hepta-public-env/bin/python\" -I -B scripts/hepta_smollm_answer_eos_research_v3.py --native-input \"$HEPTA_PN3_NEURAL_NATIVE_CONFIG\" --ordinary-readback \"$RUNNER_TEMP/hepta-public-initial-v2/n/p/ordinary-0/ordinary-session-result.json\" --original-gates \"$RUNNER_TEMP/hepta-public-initial-v2\" --chain \"$GITHUB_WORKSPACE/chain-answer-eos\" --output \"$RUNNER_TEMP/hepta-public-initial-v2/answer-eos-research-v3\"\n\"$RUNNER_TEMP/hepta-public-env/bin/python\" -I -B scripts/hepta_smollm_runtime_snapshot.py verify --snapshot \"$HEPTA_PUBLIC_INITIAL_RUNTIME_SNAPSHOT\"\n"
+    }
+  ],
+  "call_chain": [
+    {
+      "entry": "proposal_rounds",
+      "path": [
+        "real_public_initial_three_rounds_hold_and_read_original_current",
+        "for round in 1..=3 -> train_round",
+        "hepta_smollm_observed_execution_v1.main -> rounds.run",
+        "trainer.run(operation=train) -> original per-role train/evaluate phases"
+      ],
+      "roles": "Five actual artifacts; candidate, fresh-budget-matched-lora and budget-matched-full-tune require the plan training_steps and matched token schedules. current-backbone and randomized-rank-matched-lora require zero gradient steps.",
+      "round_guard_seconds": 2700,
+      "all_phase_worst_cases_covered": false
+    },
+    {
+      "entry": "descendants",
+      "path": [
+        "validate v2 configuration and current ordinary readback",
+        "fresh campaign with empty candidate_training_lineage",
+        "for number in range(1,4) -> rounds.run with actual same-campaign parent lineage"
+      ],
+      "caveat": "The workflow condition requires ordinary success, not proposal_rounds success. It separately needs the ordinary-0 readback produced by the loop, so absent readback can fail; that is not a cross-run authorization gate."
+    },
+    {
+      "entry": "answer_eos_research",
+      "path": [
+        "validate original gate receipts, source, current parent and completed loop",
+        "rounds.run with research_profile, round=1, proposal_training_lineage=[]"
+      ],
+      "caveat": "Requires successful original outcomes; if reached this is still an additional training/evaluation recipe."
+    }
+  ],
+  "new_trial_boundary": {
+    "fresh_root": "$RUNNER_TEMP/hepta-public-initial-v2",
+    "per_round_create_new": "output.mkdir(mode=0o700, parents=False, exist_ok=False)",
+    "same_output_directory_reuse_refused": true,
+    "prior_spent_ledger_import_or_reconciliation_in_reviewed_entry_paths": false,
+    "scope": "This is a statement about the exact reviewed workflow and entry paths, not an audit of every external trainer implementation. Their current source/material/snapshot checks and within-campaign ancestry do not establish prior-run budget or holdout continuity.",
+    "lineage": "Measured ancestry produced within this campaign; a new campaign starts empty.",
+    "current_hold_and_no_install": "Preserved qualification and installation barriers; they do not prevent or undo consumed training/evaluation.",
+    "quality_limits": [
+      "public smoke tasks",
+      "controlled issuer",
+      "per-round-only budget matching",
+      "cumulative_budget_matched=false",
+      "independent_future_quality=false",
+      "product_qualification=false"
+    ]
+  },
+  "not_claimed": [
+    "these H3 workflows actually ran",
+    "new training or inference executed by this reviewer",
+    "historical H2 skip guarantees H3 skip",
+    "public model qualification",
+    "new trial authorization",
+    "joint acceptance"
+  ],
+  "parent_decision": "Keep H3 immutable branch/compare reviewable; do not open PR, edit or skip original CI, or start a new trial. The already authorized H3 local native continues independently.",
+  "actions": {
+    "desktop_calls": 0,
+    "cargo_runs": 0,
+    "training_trials": 0,
+    "source_mutations": 0,
+    "workflow_mutations": 0,
+    "remote_bulk_reads": 0,
+    "github_read_only_file_requests": 6
+  },
+  "prior_first_workflow_report_preserved": {
+    "path": "../review.json",
+    "sha256": "a981f79d9e3c9ed973d39acd420f16ba4237241b4641f95b609b1dfeeadd3a4c"
+  }
+}

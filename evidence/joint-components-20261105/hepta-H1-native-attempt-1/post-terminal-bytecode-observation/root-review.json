@@ -1,0 +1,47 @@
+{
+  "scope": "Independent byte/receipt review of scoped post-H1 observation only; no native execution or per-import trace",
+  "job_id": "1a1ad61cb58-fc05-599f",
+  "terminal_at_unix_ms": 1793910232312,
+  "terminal_before_h2_launch": true,
+  "source_commit": "9f785cb201ba12ab0ae0f0d341c0f7912cc65efc",
+  "records": 1,
+  "bytes": 6091,
+  "sha256": "b0f560cd015c8cbb560ad5ab45972408f0b42cd779423b5b6c18b0c2c99f6e0b",
+  "mtime_ns": 1793905103300599797,
+  "ctime_ns": 1793905103300599797,
+  "observation_sha256": "44bfee4ea98c35b19f6f8753288f2709c9662183773b986b999c6162d9b41c85",
+  "observer_interpreter_sha256_matches_h1_environment": true,
+  "original_source_and_bytecode_unmodified_reported": true,
+  "limitations": [
+    "Observation of one bounded ignored path after H1; no proof this bytecode was imported",
+    "No full ignored runtime/interpreter closure",
+    "Not the older C3 6071-byte observation; no retroactive execution-image attribution"
+  ],
+  "files": [
+    {
+      "path": "b0f560cd015c8cbb560ad5ab45972408f0b42cd779423b5b6c18b0c2c99f6e0b.pyc",
+      "bytes": 6091,
+      "sha256": "b0f560cd015c8cbb560ad5ab45972408f0b42cd779423b5b6c18b0c2c99f6e0b"
+    },
+    {
+      "path": "launch-request.json",
+      "bytes": 2877,
+      "sha256": "fa36b5723e348f969b418029a5886aca27cca9852692d7adbb92e0fa091c8b6e"
+    },
+    {
+      "path": "launch.raw.json",
+      "bytes": 3926,
+      "sha256": "7b57113492e01538224bdc39ef94ef7d6d9f9d0a65bd9aa92b1445b92024c761"
+    },
+    {
+      "path": "observation.json",
+      "bytes": 9544,
+      "sha256": "44bfee4ea98c35b19f6f8753288f2709c9662183773b986b999c6162d9b41c85"
+    },
+    {
+      "path": "terminal.raw.json",
+      "bytes": 952,
+      "sha256": "b789ca9f59fe034e5267aa343c8cb8681b2f8b1a3b7402059a99cf43d7a316e0"
+    }
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "host": "desktop",
+  "executable": "/usr/bin/python3",
+  "args": [
+    "-c",
+    "\"\"\"Retain a scoped post-run observation; never load or delete the bytecode.\"\"\"\nfrom pathlib import Path\nimport base64\nimport hashlib\nimport importlib.util\nimport json\nimport os\nimport subprocess\nimport sys\nimport time\n\nroot = Path('/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf')\nsource = root / 'source'\ndestination = root / 'evidence/joint-h1-native-attempt-1/post-terminal-bytecode-observation'\ndestination.mkdir(mode=0o700)\nenv = dict(os.environ, GIT_NO_LAZY_FETCH='1', PYTHONDONTWRITEBYTECODE='1')\nhead = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=source, env=env, timeout=20).decode().strip()\nassert head == '9f785cb201ba12ab0ae0f0d341c0f7912cc65efc'\nrecords = []\nfor path in sorted((source / 'scripts/__pycache__').glob('hepta_ci_candidate*.pyc')):\n    before = path.stat(follow_symlinks=False)\n    assert path.is_file() and not path.is_symlink()\n    raw = path.read_bytes()\n    after = path.stat(follow_symlinks=False)\n    assert (before.st_dev, before.st_ino, before.st_size, before.st_mtime_ns, before.st_ctime_ns) == (after.st_dev, after.st_ino, after.st_size, after.st_mtime_ns, after.st_ctime_ns)\n    sha = hashlib.sha256(raw).hexdigest()\n    retained = destination / (sha + '.pyc')\n    retained.write_bytes(raw)\n    corresponding_source = Path(importlib.util.source_from_cache(str(path)))\n    records.append({'path':str(path), 'sha256':sha, 'bytes':len(raw),\n                    'mtime_ns':before.st_mtime_ns, 'ctime_ns':before.st_ctime_ns,\n                    'retained_copy':str(retained), 'bytes_base64':base64.b64encode(raw).decode(),\n                    'corresponding_source':str(corresponding_source),\n                    'corresponding_source_sha256':hashlib.sha256(corresponding_source.read_bytes()).hexdigest()})\nresult = {'scope':'post-H1 observation only of scripts/__pycache__/hepta_ci_candidate*.pyc; not a per-import trace, not the complete ignored runtime closure',\n          'source_commit':head, 'observed_unix':time.time(), 'records':records,\n          'observer_interpreter':sys.executable, 'observer_interpreter_version':sys.version,\n          'observer_interpreter_sha256':hashlib.sha256(Path(sys.executable).read_bytes()).hexdigest(),\n          'h1_environment_record':'../native-environment.json', 'original_source_and_bytecode_unmodified':True}\n(destination / 'observation.json').write_text(json.dumps(result, indent=2) + '\\n')\nprint(json.dumps({'records':len(records), 'path':str(destination / 'observation.json')}), flush=True)\n"
+  ],
+  "cwd": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf",
+  "env": {
+    "GIT_NO_LAZY_FETCH": "1",
+    "PYTHONDONTWRITEBYTECODE": "1"
+  },
+  "idempotency_key": "ms-h1-postrun-bytecode-observe-attempt1-93bfcf",
+  "timeout_seconds": 60
+}

@@ -1,0 +1,354 @@
+{
+  "scope": "Second independent arithmetic check of the C4 from-zero raw cost records.\n\nNo native execution or transcript replay. The measured phases exclude public\nadmission, wire/JSON handling, network and other unmeasured end-to-end costs.",
+  "source_commit": "8df4b21d893906570d48f5beafabb3b31e0aefbc",
+  "source_tree": "6f5aaa2af0432e27e24b6bd2ad18013ab4423d14",
+  "raw_sha256": "8398d8f8473b168e7303b007796ebb8434066b1b4cd85e1ee92e0d89a3cb8390",
+  "findings_sha256": "484496eac9d873092fa53b37f66a5ec2e485a4cb922d57f3194f6c0369b7e8b0",
+  "counts": {
+    "campaign": 1,
+    "material": 9,
+    "cohort": 72,
+    "search": 288,
+    "candidate": 288,
+    "verifier": 1440,
+    "end": 1
+  },
+  "nonce_attempts": 573,
+  "misses": 285,
+  "classes": [
+    {
+      "class": "periodic-dense-fixture",
+      "totals": {
+        "setups": 8,
+        "setup_cpu_ns": 1735088,
+        "total_cpu_ns": 2432179,
+        "setup_wall_ns": 1767833,
+        "total_wall_ns": 2468713,
+        "searches": 32,
+        "attempts": 70,
+        "misses": 38,
+        "search_cpu_ns": 654419,
+        "search_wall_ns": 651626,
+        "candidates": 32,
+        "production_verifications": 32,
+        "production_cpu_ns": 47979138,
+        "production_wall_ns": 48107347
+      },
+      "production_over_measured_attacker": {
+        "cpu_ns": {
+          "numerator": 47979138,
+          "denominator": 2432179,
+          "exact_fraction": "47979138/2432179",
+          "value": 19.726812047961932
+        },
+        "wall_ns": {
+          "numerator": 48107347,
+          "denominator": 2468713,
+          "exact_fraction": "48107347/2468713",
+          "value": 19.486812359314346
+        }
+      }
+    },
+    {
+      "class": "full-rank-field",
+      "totals": {
+        "setups": 8,
+        "setup_cpu_ns": 1564435,
+        "total_cpu_ns": 2015752,
+        "setup_wall_ns": 1563425,
+        "total_wall_ns": 2017632,
+        "searches": 32,
+        "attempts": 65,
+        "misses": 33,
+        "search_cpu_ns": 412612,
+        "search_wall_ns": 399724,
+        "candidates": 32,
+        "production_verifications": 32,
+        "production_cpu_ns": 47103567,
+        "production_wall_ns": 47162195
+      },
+      "production_over_measured_attacker": {
+        "cpu_ns": {
+          "numerator": 47103567,
+          "denominator": 2015752,
+          "exact_fraction": "47103567/2015752",
+          "value": 23.36773918616973
+        },
+        "wall_ns": {
+          "numerator": 47162195,
+          "denominator": 2017632,
+          "exact_fraction": "47162195/2017632",
+          "value": 23.375023294634502
+        }
+      }
+    },
+    {
+      "class": "zero",
+      "totals": {
+        "setups": 8,
+        "setup_cpu_ns": 1464332,
+        "total_cpu_ns": 2105344,
+        "setup_wall_ns": 1463538,
+        "total_wall_ns": 2107588,
+        "searches": 32,
+        "attempts": 69,
+        "misses": 37,
+        "search_cpu_ns": 603070,
+        "search_wall_ns": 600055,
+        "candidates": 32,
+        "production_verifications": 32,
+        "production_cpu_ns": 47120829,
+        "production_wall_ns": 47269966
+      },
+      "production_over_measured_attacker": {
+        "cpu_ns": {
+          "numerator": 47120829,
+          "denominator": 2105344,
+          "exact_fraction": "47120829/2105344",
+          "value": 22.381534324081954
+        },
+        "wall_ns": {
+          "numerator": 47269966,
+          "denominator": 2107588,
+          "exact_fraction": "23634983/1053794",
+          "value": 22.428466094891412
+        }
+      }
+    },
+    {
+      "class": "identity",
+      "totals": {
+        "setups": 8,
+        "setup_cpu_ns": 1709293,
+        "total_cpu_ns": 2373275,
+        "setup_wall_ns": 1695613,
+        "total_wall_ns": 2378224,
+        "searches": 32,
+        "attempts": 59,
+        "misses": 27,
+        "search_cpu_ns": 616610,
+        "search_wall_ns": 613338,
+        "candidates": 32,
+        "production_verifications": 32,
+        "production_cpu_ns": 48358761,
+        "production_wall_ns": 48511729
+      },
+      "production_over_measured_attacker": {
+        "cpu_ns": {
+          "numerator": 48358761,
+          "denominator": 2373275,
+          "exact_fraction": "48358761/2373275",
+          "value": 20.376383267847174
+        },
+        "wall_ns": {
+          "numerator": 48511729,
+          "denominator": 2378224,
+          "exact_fraction": "48511729/2378224",
+          "value": 20.398301001083162
+        }
+      }
+    },
+    {
+      "class": "rank-one",
+      "totals": {
+        "setups": 8,
+        "setup_cpu_ns": 1608800,
+        "total_cpu_ns": 2278184,
+        "setup_wall_ns": 1642784,
+        "total_wall_ns": 2315864,
+        "searches": 32,
+        "attempts": 71,
+        "misses": 39,
+        "search_cpu_ns": 628891,
+        "search_wall_ns": 625861,
+        "candidates": 32,
+        "production_verifications": 32,
+        "production_cpu_ns": 47499814,
+        "production_wall_ns": 47689678
+      },
+      "production_over_measured_attacker": {
+        "cpu_ns": {
+          "numerator": 47499814,
+          "denominator": 2278184,
+          "exact_fraction": "23749907/1139092",
+          "value": 20.849858483774796
+        },
+        "wall_ns": {
+          "numerator": 47689678,
+          "denominator": 2315864,
+          "exact_fraction": "23844839/1157932",
+          "value": 20.592607337909307
+        }
+      }
+    },
+    {
+      "class": "sparse-diagonal",
+      "totals": {
+        "setups": 8,
+        "setup_cpu_ns": 1544225,
+        "total_cpu_ns": 2116411,
+        "setup_wall_ns": 1532914,
+        "total_wall_ns": 2118698,
+        "searches": 32,
+        "attempts": 47,
+        "misses": 15,
+        "search_cpu_ns": 533373,
+        "search_wall_ns": 530224,
+        "candidates": 32,
+        "production_verifications": 32,
+        "production_cpu_ns": 47519560,
+        "production_wall_ns": 47660005
+      },
+      "production_over_measured_attacker": {
+        "cpu_ns": {
+          "numerator": 47519560,
+          "denominator": 2116411,
+          "exact_fraction": "4319960/192401",
+          "value": 22.452897853961257
+        },
+        "wall_ns": {
+          "numerator": 47660005,
+          "denominator": 2118698,
+          "exact_fraction": "47660005/2118698",
+          "value": 22.49494972855971
+        }
+      }
+    },
+    {
+      "class": "continuity-maintenance-v1",
+      "totals": {
+        "setups": 8,
+        "setup_cpu_ns": 1600037,
+        "total_cpu_ns": 2236465,
+        "setup_wall_ns": 1606075,
+        "total_wall_ns": 2246061,
+        "searches": 32,
+        "attempts": 68,
+        "misses": 36,
+        "search_cpu_ns": 596082,
+        "search_wall_ns": 593206,
+        "candidates": 32,
+        "production_verifications": 32,
+        "production_cpu_ns": 47395245,
+        "production_wall_ns": 47496435
+      },
+      "production_over_measured_attacker": {
+        "cpu_ns": {
+          "numerator": 47395245,
+          "denominator": 2236465,
+          "exact_fraction": "9479049/447293",
+          "value": 21.192035198404625
+        },
+        "wall_ns": {
+          "numerator": 47496435,
+          "denominator": 2246061,
+          "exact_fraction": "15832145/748687",
+          "value": 21.14654722200332
+        }
+      }
+    },
+    {
+      "class": "one-zero-left-rank-one",
+      "totals": {
+        "setups": 8,
+        "setup_cpu_ns": 1677079,
+        "total_cpu_ns": 2386244,
+        "setup_wall_ns": 1712736,
+        "total_wall_ns": 2425679,
+        "searches": 32,
+        "attempts": 72,
+        "misses": 40,
+        "search_cpu_ns": 667952,
+        "search_wall_ns": 664096,
+        "candidates": 32,
+        "production_verifications": 32,
+        "production_cpu_ns": 47374001,
+        "production_wall_ns": 47492438
+      },
+      "production_over_measured_attacker": {
+        "cpu_ns": {
+          "numerator": 47374001,
+          "denominator": 2386244,
+          "exact_fraction": "47374001/2386244",
+          "value": 19.85295761875148
+        },
+        "wall_ns": {
+          "numerator": 47492438,
+          "denominator": 2425679,
+          "exact_fraction": "47492438/2425679",
+          "value": 19.579028387515415
+        }
+      }
+    },
+    {
+      "class": "one-zero-right-rank-one",
+      "totals": {
+        "setups": 8,
+        "setup_cpu_ns": 1574338,
+        "total_cpu_ns": 2238561,
+        "setup_wall_ns": 1607721,
+        "total_wall_ns": 2275551,
+        "searches": 32,
+        "attempts": 52,
+        "misses": 20,
+        "search_cpu_ns": 622935,
+        "search_wall_ns": 619702,
+        "candidates": 32,
+        "production_verifications": 32,
+        "production_cpu_ns": 47618651,
+        "production_wall_ns": 47881031
+      },
+      "production_over_measured_attacker": {
+        "cpu_ns": {
+          "numerator": 47618651,
+          "denominator": 2238561,
+          "exact_fraction": "47618651/2238561",
+          "value": 21.271991694664564
+        },
+        "wall_ns": {
+          "numerator": 47881031,
+          "denominator": 2275551,
+          "exact_fraction": "47881031/2275551",
+          "value": 21.041510825290228
+        }
+      }
+    }
+  ],
+  "material_generation_once": {
+    "cpu_ns": 1680241,
+    "wall_ns": 1685711
+  },
+  "aggregate_measured_phase_ratio": {
+    "cpu_ns": {
+      "numerator": 427969566,
+      "denominator": 20182415,
+      "exact_fraction": "427969566/20182415",
+      "value": 21.20507213829465
+    },
+    "wall_ns": {
+      "numerator": 429270824,
+      "denominator": 20354010,
+      "exact_fraction": "214635412/10177005",
+      "value": 21.090233521551774
+    }
+  },
+  "aggregate_with_entire_once_generated_material_charged_to_attacker": {
+    "cpu_ns": {
+      "numerator": 427969566,
+      "denominator": 21862656,
+      "exact_fraction": "23776087/1214592",
+      "value": 19.575369342132998
+    },
+    "wall_ns": {
+      "numerator": 429270824,
+      "denominator": 22039721,
+      "exact_fraction": "429270824/22039721",
+      "value": 19.477144197968748
+    }
+  },
+  "sensitivity_allocation": "Charge the complete single campaign material-generation measurement once across all 288 candidate observations; do not duplicate this shared cost per candidate or assert a measured per-class material cost.",
+  "native_runs": 0,
+  "transcript_replays": 0,
+  "public_service_pass": false,
+  "global_attacker_lower_bound": false
+}

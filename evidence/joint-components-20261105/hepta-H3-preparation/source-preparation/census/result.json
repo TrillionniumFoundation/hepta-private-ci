@@ -1,0 +1,34 @@
+{
+  "source": "620cb63ae9b58904483005bcb2c4e1507df99539",
+  "scope": "read-only exact-source constructor/producer census; no build, format or runtime qualification",
+  "observed_unix": 1793912053.7316651,
+  "results": {
+    "constructors": {
+      "command": [
+        "rg",
+        "-n",
+        "SmolLmNeuralReadConfigV1\\s*\\{",
+        "codex-rs"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "a007d24ede57a8e7026fd20bc3303320ca5691cdad84f416673dbc9402c9b0d5",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout": "codex-rs/hepta-agentd/tests/neural_cognitive_bootstrap.rs:385:        worker: SmolLmNeuralReadConfigV1 {\ncodex-rs/hepta-agentd/tests/support/neural_native_owner.rs:97:    let config = SmolLmNeuralReadConfigV1 {\ncodex-rs/hepta-infer-worker-host/src/smollm_cognitive_process.rs:202:        worker: SmolLmNeuralReadConfigV1 {\ncodex-rs/hepta-infer-worker-host/src/smollm_cell_material_tests.rs:153:    let config = SmolLmNeuralReadConfigV1 {\ncodex-rs/hepta-infer-worker-host/src/smollm_neural_profile.rs:15:pub struct SmolLmNeuralReadConfigV1 {\ncodex-rs/hepta-infer-worker-host/src/smollm_neural_profile.rs:32:impl SmolLmNeuralReadConfigV1 {\ncodex-rs/hepta-infer-worker-host/src/smollm_initial_host_tests.rs:544:    let worker = SmolLmNeuralReadConfigV1 {\ncodex-rs/hepta-infer-worker-host/src/smollm_neural_read_tests.rs:360:    let config = SmolLmNeuralReadConfigV1 {\ncodex-rs/hepta-infer-worker-host/src/smollm_neural_read_tests.rs:686:    let config = SmolLmNeuralReadConfigV1 {\ncodex-rs/hepta-infer-worker-host/src/smollm_neural_native_tests.rs:170:    let config = SmolLmNeuralReadConfigV1 {\n",
+      "stderr": ""
+    },
+    "producers": {
+      "command": [
+        "rg",
+        "-n",
+        "hepta-smollm-neural-comparison-native-v1|HEPTA_PN3_NEURAL_COMPARISON_CONFIG",
+        "scripts",
+        ".github"
+      ],
+      "exit_code": 1,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout": "",
+      "stderr": ""
+    }
+  }
+}
