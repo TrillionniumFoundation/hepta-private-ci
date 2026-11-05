@@ -1,0 +1,63 @@
+name: Windows setup handle inheritance (2 controls and original 7)
+
+on:
+  push:
+    branches: [diagnostics/4853-setup-handles-a318-20261105]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-4853-setup-handles-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  RUSTUP_TOOLCHAIN: 1.96.0
+  CARGO_BUILD_JOBS: "1"
+  CARGO_INCREMENTAL: "0"
+  CARGO_PROFILE_DEV_DEBUG: "0"
+  CARGO_PROFILE_TEST_DEBUG: "0"
+  CARGO_TERM_COLOR: never
+  PYTHONDONTWRITEBYTECODE: "1"
+  PYTHONUTF8: "1"
+
+jobs:
+  native-setup-handles:
+    if: github.ref == 'refs/heads/diagnostics/4853-setup-handles-a318-20261105' && github.repository == 'TrillionniumFoundation/hepta-private-ci'
+    runs-on: windows-latest
+    timeout-minutes: 65
+    steps:
+      - name: Checkout exact diagnostic source head
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 3
+          persist-credentials: false
+      - name: Materialize exact LF source in this fresh checkout
+        shell: pwsh
+        run: |
+          git config --local core.autocrlf false
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          git config --local core.eol lf
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          git checkout-index --all --force
+          exit $LASTEXITCODE
+      - name: Install the original native compiler
+        uses: dtolnay/rust-toolchain@d86e0fa8f147d6539442c26a61ebba8becc19489
+      - name: Install original test runners and owning formatter frontend
+        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103,uv@0.13.7
+      - name: Run exact isolated mechanism controls and original regressions
+        shell: pwsh
+        run: |
+          python .github/scripts/windows_setup_handle_diagnostic.py --expected-head "${{ github.sha }}" --output "$env:RUNNER_TEMP/hepta-4853-setup-handles-evidence"
+          exit $LASTEXITCODE
+      - name: Retain all success, failure and preparation evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: setup-handles-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/hepta-4853-setup-handles-evidence/
+          if-no-files-found: error
+          retention-days: 14
