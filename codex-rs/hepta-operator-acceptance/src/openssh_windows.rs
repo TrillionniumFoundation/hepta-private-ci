@@ -302,6 +302,60 @@ impl TrustedOpenSsh {
     }
 }
 
+// This receipt observes the existing inherited-handle path. It does not change
+// the child's arguments, environment, working directory, stdio, or custody.
+#[cfg(test)]
+fn report_inherited_verifier_context(verifier: &TrustedOpenSsh) {
+    use sha2::Digest as _;
+    use std::os::windows::fs::FileExt;
+    use windows_sys::Win32::Foundation::GetHandleInformation;
+    use windows_sys::Win32::Storage::FileSystem::GetFileType;
+
+    let executable_sha256 = (|| -> std::io::Result<String> {
+        let length = verifier.file.metadata()?.len();
+        if length > 64 * 1024 * 1024 {
+            return Err(std::io::Error::other(
+                "diagnostic executable exceeds 64 MiB read bound",
+            ));
+        }
+        let mut digest = sha2::Sha256::new();
+        let mut offset = 0;
+        let mut bytes = [0_u8; 64 * 1024];
+        while offset < length {
+            let wanted = usize::try_from((length - offset).min(bytes.len() as u64)).unwrap();
+            let count = verifier.file.seek_read(&mut bytes[..wanted], offset)?;
+            if count == 0 {
+                return Err(std::io::Error::other(
+                    "diagnostic executable ended before its bound",
+                ));
+            }
+            digest.update(&bytes[..count]);
+            offset += count as u64;
+        }
+        Ok(format!("{:x}", digest.finalize()))
+    })();
+    eprintln!(
+        "HEPTA_OPENSSH_DIAGNOSTIC inherited_stdio_unchanged=true executable={:?} file_id={:?} sha256={:?} cwd={:?}",
+        verifier.path, verifier.id, executable_sha256, verifier.system_directory
+    );
+    for (name, handle) in [
+        ("stdin", std::io::stdin().as_raw_handle()),
+        ("stdout", std::io::stdout().as_raw_handle()),
+        ("stderr", std::io::stderr().as_raw_handle()),
+    ] {
+        let mut flags = 0;
+        // SAFETY: these borrowed process handles are observed without mutation
+        // or closure. Invalid handles produce diagnostic errors only.
+        let ok = unsafe { GetHandleInformation(handle as HANDLE, &mut flags) };
+        let error = (ok == 0).then(std::io::Error::last_os_error);
+        // SAFETY: GetFileType only observes the same borrowed process handle.
+        let kind = unsafe { GetFileType(handle as HANDLE) };
+        eprintln!(
+            "HEPTA_OPENSSH_DIAGNOSTIC parent_handle={name} file_type={kind} handle_information_ok={ok} flags={flags} error={error:?}"
+        );
+    }
+}
+
 // Verification is serialized for this process. At most one child whose
 // termination is unknown can retain its input/executable pins.
 static PENDING_VERIFIER: Mutex<Option<ActiveVerifier>> = Mutex::new(None);
@@ -355,6 +409,8 @@ pub(crate) fn verify(
         .system_directory
         .parent()
         .ok_or_else(|| invalid("Windows system directory has no root"))?;
+    #[cfg(test)]
+    report_inherited_verifier_context(&verifier);
     let mut child = Command::new(&verifier.path)
         // Diagnose the same original verifier child in tests; production stays quiet.
         .args(if cfg!(test) { &["-vvv"][..] } else { &[][..] })
@@ -396,6 +452,8 @@ pub(crate) fn verify(
                 "failed to start trusted Windows ssh-keygen: {error}"
             ))
         })?;
+    #[cfg(test)]
+    eprintln!("HEPTA_OPENSSH_DIAGNOSTIC spawned_child_pid={}", child.id());
     let write_result = match child.stdin.take() {
         Some(mut stdin) => stdin.write_all(statement),
         None => Err(std::io::Error::other(
@@ -405,6 +463,10 @@ pub(crate) fn verify(
     let status = match child.wait() {
         Ok(status) => status,
         Err(error) => {
+            #[cfg(test)]
+            eprintln!(
+                "HEPTA_OPENSSH_DIAGNOSTIC wait_unknown={error:?}; original_child_and_pins_retained=true"
+            );
             // Keep the original Child and its pins in the single process slot.
             // Later calls can only reconcile it until termination is observed.
             *pending = Some(ActiveVerifier {
@@ -415,6 +477,10 @@ pub(crate) fn verify(
             return Err(error.into());
         }
     };
+    #[cfg(test)]
+    eprintln!(
+        "HEPTA_OPENSSH_DIAGNOSTIC child_terminal={status:?} stdin_write_result={write_result:?}"
+    );
     write_result?;
     inputs.verify()?;
     if identity(&verifier.file, Kind::File)? != verifier.id {
