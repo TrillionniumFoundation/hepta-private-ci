@@ -95,6 +95,9 @@ impl HostAuthorityService {
             .ok_or_else(|| io::Error::other("registered writer required"))?;
         let original = &writer.registration.authority_lease;
         match action {
+            RootAdminAction::RevokeIssuer { .. } => Err(io::Error::other(
+                "issuer self-revocation requires the original typed terminal route",
+            )),
             RootAdminAction::ObserveOriginalNotesGrant { signed_grant } => {
                 self.observe_original_notes_grant(context, signed_grant)
             }

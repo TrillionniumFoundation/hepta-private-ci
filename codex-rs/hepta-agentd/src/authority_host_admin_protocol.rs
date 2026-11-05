@@ -43,6 +43,11 @@ pub enum RootAdminAction {
         expected_revision: u64,
         reason_sha256: [u8; 32],
     },
+    RevokeIssuer {
+        expected_lease_id: String,
+        expected_revision: u64,
+        reason_sha256: [u8; 32],
+    },
 }
 
 /// Original Current/lease/frontier evidence; this response cannot grant a use.
@@ -98,6 +103,11 @@ pub enum RootAdminResponse {
         synchronization: RootAdminConsumerSynchronization,
     },
     WriterRevoked {
+        instance: RootAdminInstance,
+        receipt: codex_hepta_contracts::authority_lease::RevocationReceipt,
+        lease_frontier: codex_hepta_contracts::authority_lease::AuthorityLeaseFrontier,
+    },
+    IssuerRevoked {
         instance: RootAdminInstance,
         receipt: codex_hepta_contracts::authority_lease::RevocationReceipt,
         lease_frontier: codex_hepta_contracts::authority_lease::AuthorityLeaseFrontier,

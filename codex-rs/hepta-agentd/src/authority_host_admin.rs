@@ -198,12 +198,36 @@ impl RootAdminRuntime {
             owner,
             end: pending.end,
         };
-        let response = checked_step(
-            pending.end,
-            || context.check_for(service),
-            || service.admin_request(&context, &pending.request.action),
-        )?;
-        context.check_for(service)?;
+        let response = match &pending.request.action {
+            RootAdminAction::RevokeIssuer {
+                expected_lease_id,
+                expected_revision,
+                reason_sha256,
+            } => {
+                let committed = checked_step(
+                    pending.end,
+                    || context.check_for(service),
+                    || {
+                        service.revoke_original_issuer(
+                            &context,
+                            expected_lease_id,
+                            *expected_revision,
+                            *reason_sha256,
+                        )
+                    },
+                )?;
+                context.finish_committed_issuer_revocation(service, committed)?
+            }
+            _ => {
+                let response = checked_step(
+                    pending.end,
+                    || context.check_for(service),
+                    || service.admin_request(&context, &pending.request.action),
+                )?;
+                context.check_for(service)?;
+                response
+            }
+        };
         let raw = serde_json::to_vec(&response).map_err(io::Error::other)?;
         if raw.len() > ROOT_ADMIN_FRAME_BOUND {
             return Err(io::Error::other("original Root admin response bound"));
@@ -240,6 +264,54 @@ pub(crate) struct LiveRootAdminRequest<'a> {
 }
 
 impl LiveRootAdminRequest<'_> {
+    pub(crate) fn require_original_issuer_selector(
+        &self,
+        service: &HostAuthorityService,
+        lease_id: &str,
+        revision: u64,
+    ) -> io::Result<()> {
+        self.check_for(service)?;
+        if lease_id != self.config.lease_id || revision != self.config.lease_revision {
+            return Err(io::Error::other(
+                "original configured issuer selector differs",
+            ));
+        }
+        Ok(())
+    }
+
+    /// Only an unforgeable committed result can enter this fact-only reply.
+    /// Self-revocation removes issuer liveness; it never removes actual Root
+    /// custody, the original peer/host checks or the cumulative deadline.
+    pub(crate) fn finish_committed_issuer_revocation(
+        &self,
+        service: &HostAuthorityService,
+        committed: crate::authority_host_service::CommittedIssuerRevocation<'_>,
+    ) -> io::Result<RootAdminResponse> {
+        actual_root()?;
+        deadline::require_before(self.end)?;
+        if !std::ptr::eq(service, self.service)
+            || self.life.phase.load(Ordering::Acquire) != SERVING
+            || self.expected != &self.life.instance
+        {
+            return Err(ended());
+        }
+        self.life.instance.verify_current()?;
+        verify_pinned_process(
+            self.registration,
+            self.config.peer_uid,
+            self.config.peer_gid,
+            self.owner,
+            self.end,
+        )?;
+        service.check_issuer_revocation_reply_hosts(self.end)?;
+        let response = committed.confirm_original_issuer_revocation_response(
+            service,
+            self.instance(),
+            self.end,
+        )?;
+        deadline::require_before(self.end)?;
+        Ok(response)
+    }
     pub(crate) fn before(&self) -> Instant {
         self.end
     }

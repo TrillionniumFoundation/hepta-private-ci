@@ -39,6 +39,9 @@ pub use text_ui::HostAuthorityTextUiRegistration;
 mod admin;
 #[path = "authority_host_admin_effect.rs"]
 mod admin_effect;
+#[path = "authority_host_admin_issuer.rs"]
+mod admin_issuer;
+pub(crate) use admin_issuer::CommittedIssuerRevocation;
 #[path = "authority_host_desktop_successor.rs"]
 mod desktop_successor;
 #[path = "authority_host_human_text.rs"]

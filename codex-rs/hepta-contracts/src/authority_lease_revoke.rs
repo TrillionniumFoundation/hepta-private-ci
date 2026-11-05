@@ -32,6 +32,28 @@ impl AuthorityLeaseRegistry {
             expected_revision,
             reason_sha256,
             Deadline::Before(before),
+            None,
+        )
+    }
+
+    /// Revoke only this complete original lease under the same owner lock.
+    /// A different epoch, binding or canonical postimage can never be selected
+    /// by reusing an old ID/revision. Exact retry returns only the retained
+    /// same-reason receipt and cannot authorize a use or renew the lease.
+    pub fn revoke_exact_before(
+        &self,
+        original: &AuthorityLease,
+        reason_sha256: [u8; 32],
+        before: Instant,
+    ) -> Result<RevocationReceipt, AuthorityLeaseError> {
+        original.validate()?;
+        selected(
+            self,
+            &original.lease_id,
+            original.revision,
+            reason_sha256,
+            Deadline::Before(before),
+            Some(original),
         )
     }
 }
@@ -42,6 +64,7 @@ pub(super) fn selected(
     expected_revision: u64,
     reason_sha256: [u8; 32],
     deadline: Deadline,
+    expected_original: Option<&AuthorityLease>,
 ) -> Result<RevocationReceipt, AuthorityLeaseError> {
     if !identifier(lease_id) || reason_sha256 == [0; 32] {
         return Err(AuthorityLeaseError::InvalidRevocation);
@@ -67,6 +90,26 @@ pub(super) fn selected(
         }
     };
     deadline.check()?;
+    // This comparison and the existing CAS/persistence below share one lock.
+    if let Some(original) = expected_original {
+        if original.authority_epoch != state.authority_epoch {
+            return Err(AuthorityLeaseError::EpochMismatch);
+        }
+        if original.lease_id != lease_id || original.revision != expected_revision {
+            return Err(AuthorityLeaseError::InvalidRevocation);
+        }
+        let current = state
+            .leases
+            .get(lease_id)
+            .ok_or(AuthorityLeaseError::LeaseNotFound)?;
+        let mut revoked_postimage = original.clone();
+        revoked_postimage.revision = next_revision(original.revision)?;
+        if current != original
+            && (current != &revoked_postimage || !state.revocations.contains_key(lease_id))
+        {
+            return Err(AuthorityLeaseError::RevisionMismatch);
+        }
+    }
     if let Some(existing) = state.revocations.get(lease_id) {
         if existing.lease_revision == expected_revision.saturating_add(1)
             && existing.reason_sha256 == reason_sha256

@@ -474,6 +474,7 @@ impl AuthorityLeaseRegistry {
             expected_revision,
             reason_sha256,
             revoke::Deadline::Unbounded,
+            None,
         )
     }
 

@@ -124,3 +124,38 @@ fn observed_current_root_identity_refuses_zero_nonce_and_changed_birth() -> io::
     assert!(actual.verify_current().is_err());
     Ok(())
 }
+
+#[test]
+fn issuer_revocation_is_an_exact_strict_original_selector() -> Result<(), Box<dyn std::error::Error>>
+{
+    let (_, capability) = capability()?;
+    let request = RootAdminRequest {
+        schema_version: 1,
+        expected_instance: capability.instance,
+        action: RootAdminAction::RevokeIssuer {
+            expected_lease_id: "original-issuer".into(),
+            expected_revision: 3,
+            reason_sha256: [9; 32],
+        },
+    };
+    let good = serde_json::to_string(&request)?;
+    assert!(decode(good.as_bytes()).is_ok());
+    for invalid in [
+        good.replace(
+            "\"expected_lease_id\":",
+            "\"issuer_epoch\":1,\"expected_lease_id\":",
+        ),
+        good.replace(
+            "\"expected_revision\":3",
+            "\"expected_revision\":3,\"expected_revision\":4",
+        ),
+        good.replace("\"expected_lease_id\":\"original-issuer\",", ""),
+        good.replace(
+            "\"kind\":\"revoke_issuer\"",
+            "\"kind\":\"revoke_any_issuer\"",
+        ),
+    ] {
+        assert!(decode(invalid.as_bytes()).is_err());
+    }
+    Ok(())
+}
