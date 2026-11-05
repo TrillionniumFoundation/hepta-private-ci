@@ -180,7 +180,8 @@
             "pub struct VerifiedUseToken",
             "pub fn claim_final_use(",
             "pub fn deliver_final_use",
-            "verify_strict",
+            "candidate.key.verify(&input, &signed.signature)",
+            "self.0.profile.grant_schema()",
             "const MAX_LIFETIME_MS: u64 = 300_000;"
           ]
         },
@@ -200,7 +201,8 @@
           "mustContain": [
             "pub struct FinalUseApprovalVerifier",
             "pub struct FinalUseRevocationFeedVerifier",
-            "verify_strict",
+            "candidate.key.verify(input, signature)",
+            "fn verify_key_ring",
             "update_revocations"
           ]
         },
@@ -227,7 +229,16 @@
             "pub struct FleetAuthorityPort",
             "pub fn issue(",
             ".verify_use(",
-            ".with_verified_use("
+            "dispatch_authority_lease_with_witness(&self.verifier, token, &binding"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-contracts/src/authority_authentication.rs",
+          "mustContain": [
+            "pub(crate) enum PinnedAuthorityKey",
+            "Self::Classical(key) => Signature::from_slice(signature)",
+            "key.verify_strict(message, &signature).is_ok()",
+            "Self::MlDsa65(key) => key.verify_exact_message(message, signature).is_ok()"
           ]
         }
       ]
@@ -336,7 +347,8 @@
           "mustContain": [
             "run_production_operation_reconciler",
             "attach_production_operations",
-            "CompletedRuntimeTask::Operations"
+            "RuntimeTasks::new(cancellation.clone(), TASK_SHUTDOWN_GRACE)?",
+            "\"production-operation-reconciler\""
           ]
         }
       ]
@@ -352,7 +364,7 @@
       "states": {
         "source": "implemented",
         "implementation": "sqlite_qualification_evidence_store",
-        "durability": "sqlite_migrations_0001_0012",
+        "durability": "sqlite_migrations_0001_0016",
         "qualification": "native_tests_and_agentd_product_test_present",
         "activation": "agentd_product_composed_config_gated",
         "acceptance": "not_granted"
@@ -362,10 +374,11 @@
         "provider intent terminal and effect evidence storage",
         "schema migration and integrity validation",
         "authenticated exact-candidate qualification evidence append query and verification",
-        "signed recovery frontier snapshot and Agentd startup verification"
+        "ML-DSA-65 recovery frontier over provider effects and governance invocations with mandatory Agentd startup verification"
       ],
       "targetOnlyCapabilities": [
         "external durable monotonic CAS/latest-frontier backend and backup publication acknowledgement",
+        "atomic external consume/checkpoint publication before new provider dispatch",
         "independent external acceptance ceremony",
         "promotion or release authority"
       ],
@@ -435,85 +448,86 @@
         {
           "path": "codex-rs/hepta-evidence/src/recovery_frontier.rs",
           "mustContain": [
-            "EvidenceRecoverySnapshotV2",
+            "EvidenceRecoverySnapshotV3",
             "pub async fn recovery_snapshot",
-            "pub async fn bind_recovery_store_id"
+            "pub async fn bind_recovery_store_id",
+            "provider_invocation_rows",
+            "provider_invocation_frontier_sha256"
           ]
         },
         {
           "path": "codex-rs/hepta-agentd/src/evidence_frontier.rs",
           "mustContain": [
-            "EvidenceRecoveryFrontierV2",
-            "verify_evidence_recovery_frontier",
+            "EvidenceRecoveryFrontierV4",
+            "EvidenceRecoveryFrontierTrustV2",
+            "pub async fn preflight_evidence_recovery",
+            "pub(crate) fn load_evidence_recovery_for_config",
+            "pub(crate) fn load_evidence_recovery_frontier",
+            "async fn check_existing_read_only",
+            "async fn check_snapshot",
+            "PqNativeVerifier::from_pinned_spki",
             "recovery_required"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-evidence/src/recovery_invocation_frontier.rs",
+          "mustContain": [
+            "pub(super) async fn snapshot",
+            "provider_invocation_intents",
+            "provider_invocation_terminals",
+            "decode_provider_intent_row",
+            "decode_provider_receipt_row",
+            "authoritative_intent_payload",
+            "crate::recovery_invocation_schema::verify(connection).await?"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/runtime.rs",
+          "mustContain": [
+            "crate::evidence_frontier::load_evidence_recovery_for_config(&config)?",
+            "evidence_recovery.open(config.identity()).await?"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-evidence/migrations/0016_provider_effect_observation_history.sql",
+          "mustContain": [
+            "CREATE TABLE provider_effect_acknowledgements_observations",
+            "CREATE TABLE provider_effect_uncertainties_observations",
+            "CREATE INDEX provider_effect_acknowledgements_key_seq",
+            "CREATE INDEX provider_effect_uncertainties_key_seq"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-evidence/src/schema_validation.rs",
+          "mustContain": [
+            "provider_effect_acknowledgements_key_seq",
+            "provider_effect_uncertainties_key_seq",
+            "pub(crate) async fn verify_schema_manifest"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-evidence/src/recovery_invocation_schema.rs",
+          "mustContain": [
+            "pub(super) async fn verify",
+            "pragma_table_info(?)",
+            "pragma_index_list(?)",
+            "pragma_index_xinfo(?)",
+            "seq must be the sole INTEGER rowid primary key",
+            "identity key columns must retain NOT NULL TEXT",
+            "required exact unconditional column uniqueness is missing"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-evidence/src/provider_record.rs",
+          "mustContain": [
+            "fn read_provider_column",
+            "row.try_get(column)",
+            "EvidenceError::Corrupt"
           ]
         }
       ],
       "namedProductCallers": [
         "runtime.agentd"
-      ]
-    },
-    {
-      "module": "secrets.heptabao",
-      "profile": "bounded_external_secret_reader",
-      "formalGuide": "docs/modules/secrets.heptabao/TECHNICAL.md",
-      "formalGuideRole": "target_architecture",
-      "currentSpecification": "docs/lane-a-foundation/secrets.heptabao/CURRENT_IMPLEMENTATION.md",
-      "currentSpecificationRole": "current_executable_contract",
-      "implementationDetail": "docs/lane-a-foundation/secrets.heptabao/KV_V2_READ_V1.md",
-      "states": {
-        "source": "implemented",
-        "implementation": "bounded_kv_v2_reader_with_registered_final_use_host",
-        "durability": "external_authority_plus_local_final_use_state",
-        "qualification": "source_tests_and_exact_candidate_workflow_required",
-        "activation": "registered_host_composed_not_product_activated",
-        "acceptance": "not_granted"
-      },
-      "currentCapabilities": [
-        "pinned-CA HTTPS read of one exact KV-v2 string field",
-        "canonical final-use claim and delivery boundaries",
-        "registered signed consumer-id to trusted callback mapping",
-        "independent approval before dispatch and authenticated revocation ingestion",
-        "metadata-only receipt without raw secret value"
-      ],
-      "targetOnlyCapabilities": [
-        "secret mutation",
-        "generic secret lease renewal API",
-        "durable operation and evidence composition",
-        "fleet revocation distribution and freshness enforcement",
-        "automatic production enrollment and selected process caller"
-      ],
-      "sourceAnchors": [
-        {
-          "path": "codex-rs/hepta-bao-adapter/src/https_consumer.rs",
-          "mustContain": [
-            "pub struct BaoClient",
-            "consume_kv_v2",
-            "MAX_RESPONSE_BYTES",
-            "claim_final_use(authority, grant, &binding)",
-            "deliver_final_use(authority, verified, &binding"
-          ],
-          "mustNotContain": [
-            ".claim(grant, &binding)",
-            ".with_verified_use(verified"
-          ]
-        },
-        {
-          "path": "codex-rs/hepta-bao-adapter/src/final_use_host.rs",
-          "mustContain": [
-            "pub struct BaoFinalUseHost",
-            "UnregisteredConsumer",
-            "approval_verifier",
-            "revocation_verifier"
-          ]
-        },
-        {
-          "path": "codex-rs/hepta-bao-adapter/README.md",
-          "mustContain": [
-            "Authorized HeptaBao HTTPS consumer",
-            "Only read operations exist here"
-          ]
-        }
       ]
     },
     {
@@ -556,7 +570,8 @@
             "pub struct SignedMessageClaims",
             "pub struct AuthenticatedMessage",
             "pub fn authenticate(",
-            ".verify_strict("
+            ".signing_bytes_for(issuer.verifying_key.algorithm())",
+            ".map_err(|_| Error::InvalidSignature)?"
           ]
         },
         {
@@ -634,10 +649,84 @@
             "FinalUseAuthority",
             "settle_observed"
           ]
+        },
+        {
+          "path": "codex-rs/hepta-authbus/src/crypto.rs",
+          "mustContain": [
+            "pub enum AuthBusVerifyingKey",
+            "match (self, signature)",
+            "verify_strict(message, &ed25519_dalek::Signature::from_bytes(bytes))",
+            "verify_exact_message(message, bytes.as_slice())",
+            "_ => Err(Error::InvalidSignature)"
+          ]
         }
       ],
       "namedProductCallers": [
         "codex-hepta-agentd signed-text ingress"
+      ]
+    },
+    {
+      "module": "secrets.heptabao",
+      "profile": "bounded_external_secret_reader",
+      "formalGuide": "docs/modules/secrets.heptabao/TECHNICAL.md",
+      "formalGuideRole": "target_architecture",
+      "currentSpecification": "docs/lane-a-foundation/secrets.heptabao/CURRENT_IMPLEMENTATION.md",
+      "currentSpecificationRole": "current_executable_contract",
+      "implementationDetail": "docs/lane-a-foundation/secrets.heptabao/KV_V2_READ_V1.md",
+      "states": {
+        "source": "implemented",
+        "implementation": "bounded_kv_v2_reader_with_registered_final_use_host",
+        "durability": "external_authority_plus_local_final_use_state",
+        "qualification": "source_tests_and_exact_candidate_workflow_required",
+        "activation": "registered_host_composed_not_product_activated",
+        "acceptance": "not_granted"
+      },
+      "currentCapabilities": [
+        "pinned-CA HTTPS read of one exact KV-v2 string field",
+        "canonical final-use claim and delivery boundaries",
+        "registered signed consumer-id to trusted callback mapping",
+        "independent approval before dispatch and authenticated revocation ingestion",
+        "metadata-only receipt without raw secret value"
+      ],
+      "targetOnlyCapabilities": [
+        "secret mutation",
+        "generic secret lease renewal API",
+        "durable operation and evidence composition",
+        "fleet revocation distribution and freshness enforcement",
+        "automatic production enrollment and selected process caller"
+      ],
+      "sourceAnchors": [
+        {
+          "path": "codex-rs/hepta-bao-adapter/src/https_consumer.rs",
+          "mustContain": [
+            "pub struct BaoClient",
+            "consume_kv_v2",
+            "MAX_RESPONSE_BYTES",
+            "claim_final_use(authority, grant, &binding)",
+            "deliver_final_use(authority, verified, &binding"
+          ],
+          "mustNotContain": [
+            ".claim(grant, &binding)",
+            ".with_verified_use(verified"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-bao-adapter/src/final_use_host.rs",
+          "mustContain": [
+            "pub struct BaoFinalUseHost",
+            "UnregisteredConsumer",
+            "approval_verifier",
+            "revocation_verifier"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-bao-adapter/README.md",
+          "mustContain": [
+            "Authorized HeptaBao HTTPS consumer",
+            "does not dispatch provider mutation APIs",
+            "provider-native mutation remains fail-closed"
+          ]
+        }
       ]
     }
   ]

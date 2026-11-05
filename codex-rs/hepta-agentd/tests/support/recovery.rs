@@ -9,7 +9,7 @@ use std::time::UNIX_EPOCH;
 
 use anyhow::Result;
 use anyhow::ensure;
-use codex_hepta_agentd::EvidenceRecoveryFrontierV3;
+use codex_hepta_agentd::EvidenceRecoveryFrontierV4;
 use codex_hepta_agentd::evidence_recovery_frontier_signing_bytes;
 use codex_hepta_contracts::AgentId;
 use codex_hepta_contracts::pq_auth::ML_DSA_65_SIGNATURE_BYTES;
@@ -50,8 +50,8 @@ pub(super) fn stage_initial(
     let seed = [62; 32].into();
     let spki = PqNativeSigningKey::public_spki_from_seed(&seed);
     let key = PqNativeSigningKey::from_owned_seed(seed, ml_dsa_65_key_id_from_spki(&spki)?)?;
-    let mut frontier = EvidenceRecoveryFrontierV3 {
-        schema_version: 3,
+    let mut frontier = EvidenceRecoveryFrontierV4 {
+        schema_version: 4,
         authentication_profile: "ml_dsa65_v2".into(),
         store_id: format!("store:fixture:{agent_id}"),
         frontier_generation: 1,

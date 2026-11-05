@@ -17,7 +17,7 @@ use codex_hepta_contracts::pq_auth::ML_DSA_65_SIGNATURE_BYTES;
 use codex_hepta_contracts::pq_auth::ML_DSA_65_SPKI_BYTES;
 use codex_hepta_contracts::pq_auth::PqNativeVerifier;
 use codex_hepta_evidence::EVIDENCE_DATABASE_LINEAGE;
-use codex_hepta_evidence::EvidenceRecoverySnapshotV2;
+use codex_hepta_evidence::EvidenceRecoverySnapshotV3;
 use codex_hepta_evidence::HeptaEvidenceStore;
 use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
@@ -38,12 +38,12 @@ const AUTHENTICATION_PROFILE: &str = "ml_dsa65_v2";
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
-pub struct EvidenceRecoveryFrontierV3 {
+pub struct EvidenceRecoveryFrontierV4 {
     pub schema_version: u32,
     pub authentication_profile: String,
     pub store_id: String,
     pub frontier_generation: u64,
-    pub snapshot: EvidenceRecoverySnapshotV2,
+    pub snapshot: EvidenceRecoverySnapshotV3,
     pub source_commit: String,
     pub source_tree: String,
     pub created_at_unix_ms: u64,
@@ -67,12 +67,12 @@ struct EvidenceRecoveryFrontierTrustV2 {
     revoked: bool,
 }
 
-impl EvidenceRecoveryFrontierV3 {
+impl EvidenceRecoveryFrontierV4 {
     fn validate(&self) -> Result<(), AgentdError> {
-        if self.schema_version != 3
+        if self.schema_version != 4
             || self.authentication_profile != AUTHENTICATION_PROFILE
             || self.frontier_generation == 0
-            || self.snapshot.schema_version != 2
+            || self.snapshot.schema_version != 3
             || self.snapshot.database_lineage != EVIDENCE_DATABASE_LINEAGE
         {
             return Err(invalid(
@@ -98,10 +98,10 @@ impl EvidenceRecoveryFrontierV3 {
 }
 
 pub fn evidence_recovery_frontier_signing_bytes(
-    frontier: &EvidenceRecoveryFrontierV3,
+    frontier: &EvidenceRecoveryFrontierV4,
 ) -> Result<Vec<u8>, AgentdError> {
     frontier.validate()?;
-    let mut bytes = b"hepta.kernel.evidence.recovery-frontier.pq.v3\0".to_vec();
+    let mut bytes = b"hepta.kernel.evidence.recovery-frontier.pq.v4\0".to_vec();
     push_part(&mut bytes, frontier.authentication_profile.as_bytes());
     push_part(&mut bytes, frontier.store_id.as_bytes());
     bytes.extend_from_slice(&frontier.frontier_generation.to_be_bytes());
@@ -136,6 +136,15 @@ pub fn evidence_recovery_frontier_signing_bytes(
             .as_str()
             .as_bytes(),
     );
+    bytes.extend_from_slice(&frontier.snapshot.provider_invocation_rows.to_be_bytes());
+    push_part(
+        &mut bytes,
+        frontier
+            .snapshot
+            .provider_invocation_frontier_sha256
+            .as_str()
+            .as_bytes(),
+    );
     push_part(&mut bytes, frontier.source_commit.as_bytes());
     push_part(&mut bytes, frontier.source_tree.as_bytes());
     bytes.extend_from_slice(&frontier.created_at_unix_ms.to_be_bytes());
@@ -147,7 +156,7 @@ pub fn evidence_recovery_frontier_signing_bytes(
     Ok(bytes)
 }
 
-pub(crate) struct VerifiedEvidenceRecoveryFrontier(EvidenceRecoveryFrontierV3);
+pub(crate) struct VerifiedEvidenceRecoveryFrontier(EvidenceRecoveryFrontierV4);
 
 /// Check shared evidence recovery before entry-point bootstrap owners can run.
 /// This does not migrate the database, bind its store ID, or authorize effects.
@@ -176,9 +185,11 @@ pub(crate) fn load_evidence_recovery_frontier(
     signer_trust_file: &Path,
 ) -> Result<VerifiedEvidenceRecoveryFrontier, AgentdError> {
     let frontier_bytes = read_external_file(frontier_file, identity, MAX_FRONTIER_FILE_BYTES)?;
-    let frontier: EvidenceRecoveryFrontierV3 =
+    let frontier: EvidenceRecoveryFrontierV4 =
         serde_json::from_slice(&frontier_bytes).map_err(|_| {
-            recovery_required("an ML-DSA-65 V3 checkpoint covering provider effects is required")
+            recovery_required(
+                "an ML-DSA-65 V4 checkpoint covering provider effects and invocations is required",
+            )
         })?;
     frontier.validate()?;
 
@@ -275,7 +286,7 @@ impl VerifiedEvidenceRecoveryFrontier {
         let actual = store.recovery_snapshot().await.map_err(evidence_error)?;
         if actual != frontier.snapshot {
             return Err(recovery_required(
-                "local evidence/replay/effect frontier does not match the signed checkpoint",
+                "local evidence/replay/effect/invocation frontier does not match the signed checkpoint",
             ));
         }
         Ok(())

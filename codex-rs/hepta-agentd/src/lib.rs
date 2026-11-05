@@ -182,7 +182,7 @@ pub use config::HEPTA_AGENT_ID_ENV;
 pub use config::HEPTA_AGENT_RUN_ROOT_ENV;
 pub use config::HEPTA_COGNITIVE_RETRIEVAL_MODE_ENV;
 pub use error::AgentdError;
-pub use evidence_frontier::EvidenceRecoveryFrontierV3;
+pub use evidence_frontier::EvidenceRecoveryFrontierV4;
 pub use evidence_frontier::evidence_recovery_frontier_signing_bytes;
 pub use evidence_frontier::preflight_evidence_recovery;
 pub use evidence_host::kernel_evidence_claims;

@@ -10,7 +10,7 @@ use anyhow::Result;
 use anyhow::ensure;
 use app_test_support::MockResponsesConfig;
 use codex_hepta_agentd::AgentdError;
-use codex_hepta_agentd::EvidenceRecoveryFrontierV3;
+use codex_hepta_agentd::EvidenceRecoveryFrontierV4;
 use codex_hepta_agentd::KernelEvidenceAppendIngress;
 use codex_hepta_agentd::KernelEvidenceCandidateV1;
 use codex_hepta_agentd::KernelEvidenceQueryV1;
@@ -856,14 +856,14 @@ async fn append_direct_evidence(
 fn write_recovery_frontier(
     directory: &Path,
     store_id: &str,
-    snapshot: codex_hepta_evidence::EvidenceRecoverySnapshotV2,
+    snapshot: codex_hepta_evidence::EvidenceRecoverySnapshotV3,
 ) -> Result<(std::path::PathBuf, std::path::PathBuf)> {
     let directory = directory.canonicalize()?;
     let seed = [63; 32].into();
     let spki = PqNativeSigningKey::public_spki_from_seed(&seed);
     let signer_key = PqNativeSigningKey::from_owned_seed(seed, ml_dsa_65_key_id_from_spki(&spki)?)?;
-    let mut frontier = EvidenceRecoveryFrontierV3 {
-        schema_version: 3,
+    let mut frontier = EvidenceRecoveryFrontierV4 {
+        schema_version: 4,
         authentication_profile: "ml_dsa65_v2".into(),
         store_id: store_id.to_string(),
         frontier_generation: 1,

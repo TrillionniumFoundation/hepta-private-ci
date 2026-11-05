@@ -5,6 +5,13 @@ use std::path::PathBuf;
 use anyhow::Result;
 use anyhow::ensure;
 use codex_hepta_contracts::AgentId;
+use codex_hepta_contracts::PROVIDER_EVIDENCE_SCHEMA_VERSION;
+use codex_hepta_contracts::ProviderInvocationIntent;
+use codex_hepta_contracts::ProviderInvocationReceipt;
+use codex_hepta_contracts::ProviderRequestBinding;
+use codex_hepta_contracts::ProviderRequestKind;
+use codex_hepta_contracts::ProviderTerminal;
+use codex_hepta_contracts::ProviderTransport;
 use codex_hepta_contracts::Sha256Digest;
 use codex_hepta_contracts::pq_auth::PqNativeSigningKey;
 use codex_hepta_contracts::pq_auth::ml_dsa_65_key_id_from_spki;
@@ -22,7 +29,7 @@ struct Fixture {
     _temp: tempfile::TempDir,
     identity: AgentdIdentity,
     store: HeptaEvidenceStore,
-    frontier: EvidenceRecoveryFrontierV3,
+    frontier: EvidenceRecoveryFrontierV4,
     frontier_file: PathBuf,
     trust_file: PathBuf,
     key: PqNativeSigningKey,
@@ -55,8 +62,8 @@ impl Fixture {
         let seed = [73; 32].into();
         let spki = PqNativeSigningKey::public_spki_from_seed(&seed);
         let key = PqNativeSigningKey::from_owned_seed(seed, ml_dsa_65_key_id_from_spki(&spki)?)?;
-        let mut frontier = EvidenceRecoveryFrontierV3 {
-            schema_version: 3,
+        let mut frontier = EvidenceRecoveryFrontierV4 {
+            schema_version: 4,
             authentication_profile: AUTHENTICATION_PROFILE.into(),
             store_id: "store:recovery-version-tests".into(),
             frontier_generation: 1,
@@ -121,9 +128,11 @@ async fn recovery_frontier_refuses_valid_classical_v1_and_v2_signatures() -> Res
         let object = legacy.as_object_mut().expect("frontier object");
         object.remove("authenticationProfile");
         object.remove("signerPublicKeyIdHex");
+        legacy["snapshot"]["schemaVersion"] = json!(version);
+        let snapshot = legacy["snapshot"].as_object_mut().expect("snapshot object");
+        snapshot.remove("providerInvocationRows");
+        snapshot.remove("providerInvocationFrontierSha256");
         if version == 1 {
-            legacy["snapshot"]["schemaVersion"] = json!(1);
-            let snapshot = legacy["snapshot"].as_object_mut().expect("snapshot object");
             snapshot.remove("providerEffectRows");
             snapshot.remove("providerEffectFrontierSha256");
         }
@@ -134,7 +143,7 @@ async fn recovery_frontier_refuses_valid_classical_v1_and_v2_signatures() -> Res
             .await
             .expect_err("classical recovery was admitted");
         ensure!(
-            error.to_string().contains("ML-DSA-65 V3 checkpoint"),
+            error.to_string().contains("ML-DSA-65 V4 checkpoint"),
             "wrong rejection: {error}"
         );
     }
@@ -154,12 +163,23 @@ async fn recovery_frontier_authenticates_both_effect_fields() -> Result<()> {
     let mut digest_changed = fixture.frontier.clone();
     digest_changed.snapshot.provider_effect_frontier_sha256 =
         Sha256Digest::for_bytes(b"other effect history");
-    for changed in [count_changed, digest_changed] {
+    let mut invocation_count_changed = fixture.frontier.clone();
+    invocation_count_changed.snapshot.provider_invocation_rows += 1;
+    let mut invocation_digest_changed = fixture.frontier.clone();
+    invocation_digest_changed
+        .snapshot
+        .provider_invocation_frontier_sha256 = Sha256Digest::for_bytes(b"other invocation history");
+    for changed in [
+        count_changed,
+        digest_changed,
+        invocation_count_changed,
+        invocation_digest_changed,
+    ] {
         write_json(&fixture.frontier_file, &serde_json::to_value(&changed)?)?;
         let error = fixture
             .verify()
             .await
-            .expect_err("tampered effect field was admitted");
+            .expect_err("tampered history field was admitted");
         ensure!(
             error
                 .to_string()
@@ -170,8 +190,15 @@ async fn recovery_frontier_authenticates_both_effect_fields() -> Result<()> {
     Ok(())
 }
 
-fn legacy_signing_bytes(frontier: &EvidenceRecoveryFrontierV3, version: u32) -> Vec<u8> {
-    let mut bytes = format!("hepta.kernel.evidence.recovery-frontier.v{version}\0").into_bytes();
+fn legacy_signing_bytes(frontier: &EvidenceRecoveryFrontierV4, version: u32) -> Vec<u8> {
+    let mut bytes = if version == 3 {
+        b"hepta.kernel.evidence.recovery-frontier.pq.v3\0".to_vec()
+    } else {
+        format!("hepta.kernel.evidence.recovery-frontier.v{version}\0").into_bytes()
+    };
+    if version == 3 {
+        push_part(&mut bytes, frontier.authentication_profile.as_bytes());
+    }
     push_part(&mut bytes, frontier.store_id.as_bytes());
     bytes.extend_from_slice(&frontier.frontier_generation.to_be_bytes());
     for part in [
@@ -187,7 +214,7 @@ fn legacy_signing_bytes(frontier: &EvidenceRecoveryFrontierV3, version: u32) -> 
     ] {
         push_part(&mut bytes, part.as_bytes());
     }
-    if version == 2 {
+    if version >= 2 {
         bytes.extend_from_slice(&frontier.snapshot.provider_effect_rows.to_be_bytes());
         push_part(
             &mut bytes,
@@ -203,7 +230,144 @@ fn legacy_signing_bytes(frontier: &EvidenceRecoveryFrontierV3, version: u32) -> 
     bytes.extend_from_slice(&frontier.created_at_unix_ms.to_be_bytes());
     push_part(&mut bytes, frontier.signer_principal_id.as_bytes());
     bytes.extend_from_slice(&frontier.signer_key_epoch.to_be_bytes());
+    if version == 3 {
+        bytes.extend_from_slice(
+            &canonical_hex_bytes::<32>(&frontier.signer_public_key_id_hex).expect("key id"),
+        );
+    }
     bytes
+}
+
+#[tokio::test]
+async fn recovery_frontier_refuses_valid_pq_v3_and_relabelled_v2_snapshots() -> Result<()> {
+    let fixture = Fixture::new().await?;
+    let message = legacy_signing_bytes(&fixture.frontier, /*version*/ 3);
+    let signature = fixture.key.sign_exact_message(&message)?;
+    PqNativeVerifier::from_pinned_spki(fixture.key.public_spki(), fixture.key.public_key_id())?
+        .verify_exact_message(&message, &signature)?;
+    let mut legacy = serde_json::to_value(&fixture.frontier)?;
+    legacy["schemaVersion"] = json!(3);
+    legacy["snapshot"]["schemaVersion"] = json!(2);
+    let snapshot = legacy["snapshot"].as_object_mut().expect("snapshot object");
+    snapshot.remove("providerInvocationRows");
+    snapshot.remove("providerInvocationFrontierSha256");
+    legacy["signatureHex"] = json!(hex(&signature));
+    write_json(&fixture.frontier_file, &legacy)?;
+    let error = fixture
+        .verify()
+        .await
+        .expect_err("incomplete PQ V3 history admitted");
+    ensure!(error.to_string().contains("ML-DSA-65 V4 checkpoint"));
+
+    let mut relabelled = fixture.frontier.clone();
+    relabelled.signature_hex = hex(&signature);
+    write_json(&fixture.frontier_file, &serde_json::to_value(&relabelled)?)?;
+    let error = fixture
+        .verify()
+        .await
+        .expect_err("old signature relabelled as V4");
+    ensure!(
+        error
+            .to_string()
+            .contains("frontier signature verification failed")
+    );
+    relabelled = fixture.frontier.clone();
+    relabelled.snapshot.schema_version = 2;
+    write_json(&fixture.frontier_file, &serde_json::to_value(&relabelled)?)?;
+    ensure!(
+        fixture.verify().await.is_err(),
+        "V2 snapshot silently upgraded"
+    );
+    ensure!(fixture.store.recovery_store_id().await?.is_none());
+    Ok(())
+}
+
+#[tokio::test]
+async fn recovery_frontier_pq_rejects_invocation_only_database_rollbacks() -> Result<()> {
+    let fixture = Fixture::new().await?;
+    fixture.verify().await?;
+    let sqlite = SqliteConfig::from_sqlite_home(AbsolutePathBuf::from_absolute_path(
+        &fixture.identity.home_root,
+    )?);
+    let database = fixture.store.path().to_path_buf();
+    fixture.store.close().await;
+    let before_invocation = std::fs::read(&database)?;
+    let store = HeptaEvidenceStore::open(&sqlite).await?;
+    let intent = ProviderInvocationIntent::new(
+        [81; 16],
+        ProviderRequestBinding {
+            schema_version: PROVIDER_EVIDENCE_SCHEMA_VERSION,
+            thread_id: "thread:recovery".into(),
+            turn_id: "turn:recovery".into(),
+            host_request_binding_id_sha256: Sha256Digest::for_bytes(b"host-request"),
+            request_kind: ProviderRequestKind::Turn,
+            provider_id: "provider:recovery".into(),
+            provider_config_sha256: Sha256Digest::for_bytes(b"config"),
+            model: "model:recovery".into(),
+            transport: ProviderTransport::Http,
+            endpoint_sha256: Sha256Digest::for_bytes(b"endpoint"),
+            logical_request_sha256: Sha256Digest::for_bytes(b"logical"),
+            wire_semantic_sha256: Sha256Digest::for_bytes(b"wire"),
+            ephemeral_input_sha256: None,
+            ephemeral_input_witness_sha256: None,
+            previous_response_id_sha256: None,
+            generate: true,
+        },
+    );
+    store.claim_provider_intent(&intent).await?;
+    store.close().await;
+    let pending_invocation = std::fs::read(&database)?;
+    let store = HeptaEvidenceStore::open(&sqlite).await?;
+    store
+        .append_provider_receipt(&ProviderInvocationReceipt::new(
+            intent,
+            ProviderTerminal::CompletedUnary {
+                response_items_sha256: Sha256Digest::for_bytes(b"original provider response"),
+            },
+        ))
+        .await?;
+    let mut frontier = fixture.frontier.clone();
+    frontier.frontier_generation += 1;
+    frontier.snapshot = store.recovery_snapshot().await?;
+    frontier.signature_hex = hex(&fixture
+        .key
+        .sign_exact_message(&evidence_recovery_frontier_signing_bytes(&frontier)?)?);
+    write_json(&fixture.frontier_file, &serde_json::to_value(&frontier)?)?;
+    store.close().await;
+    let admitted = load_evidence_recovery_frontier(
+        &fixture.identity,
+        &fixture.frontier_file,
+        &fixture.trust_file,
+    )?
+    .open(&fixture.identity)
+    .await?;
+    admitted.close().await;
+    // Both older images remain structurally valid and carry the same store ID.
+    // Only invocation history differs from the independently retained checkpoint.
+    for restored_image in [pending_invocation, before_invocation] {
+        std::fs::write(&database, &restored_image)?;
+        let error = match load_evidence_recovery_frontier(
+            &fixture.identity,
+            &fixture.frontier_file,
+            &fixture.trust_file,
+        )?
+        .open(&fixture.identity)
+        .await
+        {
+            Ok(store) => {
+                store.close().await;
+                anyhow::bail!("invocation-only rollback admitted");
+            }
+            Err(error) => error,
+        };
+        ensure!(
+            error
+                .to_string()
+                .contains("does not match the signed checkpoint")
+        );
+        ensure!(std::fs::read(&database)? == restored_image);
+    }
+    Ok(())
 }
 
 #[tokio::test]

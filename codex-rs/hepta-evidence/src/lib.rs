@@ -21,6 +21,8 @@ mod provider_store;
 mod qualification;
 mod recovery_effect_frontier;
 mod recovery_frontier;
+mod recovery_invocation_frontier;
+mod recovery_invocation_schema;
 mod schema_validation;
 mod store;
 mod summary;
@@ -82,7 +84,7 @@ pub use qualification::qualification_append_scope_digest;
 pub use qualification::qualification_envelope_bytes;
 pub use qualification::qualification_subject;
 pub use recovery_frontier::EVIDENCE_DATABASE_LINEAGE;
-pub use recovery_frontier::EvidenceRecoverySnapshotV2;
+pub use recovery_frontier::EvidenceRecoverySnapshotV3;
 pub use store::AppendDisposition;
 pub use store::HeptaEvidenceStore;
 pub use store::StoredActionEvidence;
@@ -148,3 +150,11 @@ mod qualification_tests;
 #[cfg(test)]
 #[path = "recovery_effect_frontier_tests.rs"]
 mod recovery_effect_frontier_tests;
+
+#[cfg(test)]
+#[path = "recovery_invocation_frontier_tests.rs"]
+mod recovery_invocation_frontier_tests;
+
+#[cfg(test)]
+#[path = "recovery_invocation_schema_tests.rs"]
+mod recovery_invocation_schema_tests;

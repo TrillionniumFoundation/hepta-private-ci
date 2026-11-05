@@ -13,14 +13,20 @@ or AuthBus options. Agentd always enables the governance extension, which opens
 the same evidence database when a thread starts. Disabling the evidence append
 API must not bypass recovery of that shared state.
 
-The checkpoint is `EvidenceRecoveryFrontierV3`, with `schemaVersion: 3` and
-`authenticationProfile: "ml_dsa65_v2"`. It signs the existing V2 snapshot (including
-the provider-effect row count and root), store ID, generation, source commit/tree,
-creation time, signer principal/epoch and canonical signer key ID. The message
-domain is `hepta.kernel.evidence.recovery-frontier.pq.v3` followed by a NUL byte.
+The checkpoint is `EvidenceRecoveryFrontierV4`, with `schemaVersion: 4` and
+`authenticationProfile: "ml_dsa65_v2"`. It signs the V3 snapshot (including
+separate provider-effect and provider-invocation row counts and roots), store ID,
+generation, source commit/tree, creation time, signer principal/epoch and canonical
+signer key ID. The message
+domain is `hepta.kernel.evidence.recovery-frontier.pq.v4` followed by a NUL byte.
 Keys use the existing contracts ML-DSA-65 SPKI and key-ID definitions; signatures
 are pure ML-DSA-65 with empty context. All hex fields use lowercase. There is no
-classical checkpoint fallback or automatic conversion of V1/V2 historical data.
+classical checkpoint fallback or automatic conversion of V1/V2/V3 checkpoints.
+The V3 snapshot rechecks canonical invocation intents and terminals, their
+projected columns and the terminal's actual authoritative intent in the same
+SQLite transaction. Table identity, sequence and recording time are committed
+alongside each verified payload digest. A valid older PQ signature over a V2
+snapshot cannot authorize this expanded recovery projection.
 
 The separately supplied trust file uses `schemaVersion: 2`, the same
 `authenticationProfile`, `storeId`, `minimumFrontierGeneration`,
@@ -62,8 +68,8 @@ and store-ID binding rely on the runtime's exclusive writer and are not an atomi
 transaction with remote effects. Consuming an effect does not atomically publish
 a new external checkpoint. An earlier matching image can still pass this gate
 until an independent owner advances the retained checkpoint/floor, unless the
-provider separately prevents reuse. The snapshot's provider-effect tables do not
-cover the separate `provider_invocation_*` governance history or TaskFlow's
+provider separately prevents reuse. Including `provider_invocation_*` history
+does not change governance's default shadow behavior or cover TaskFlow's
 automation database. Source commit/tree fields are signed identities, not a check
 of the running binary. Direct non-Agentd App Server/governance constructors,
 complete effect admission, installation root deployment and original capacity

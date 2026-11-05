@@ -62,6 +62,10 @@ MIGRATIONS = [
     "0010_authbus_outbox.sql",
     "0011_qualification_evidence.sql",
     "0012_authbus_recovery.sql",
+    "0013_authbus_pq_profile.sql",
+    "0014_authbus_issuer_floor.sql",
+    "0015_authbus_owner_policy.sql",
+    "0016_provider_effect_observation_history.sql",
 ]
 PACKAGES = [
     "codex-hepta-types",
@@ -309,8 +313,10 @@ def validate_source_specific(root: Path = ROOT) -> None:
         "codex-rs/hepta-types/src/lib.rs": ["pub use identity::IdentityError;"],
         "codex-rs/hepta-wire/src/envelope.rs": ["const WIRE_VERSION: u16 = 1;"],
         "codex-rs/hepta-operations/src/lib.rs": [
-            "In-memory reference model",
-            "does not provide durable storage",
+            "remain deterministic in-memory reference",
+            "pub use ledger::OperationLedger;",
+            "pub use outbox::Outbox;",
+            "pub use durable_store::DurableOperationStore;",
         ],
         "codex-rs/hepta-operations/src/model.rs": [
             "pub struct ReferenceAuthorityWitness",
@@ -335,8 +341,16 @@ def validate_source_specific(root: Path = ROOT) -> None:
         ],
         "codex-rs/hepta-authbus/src/signed.rs": [
             "pub fn authenticate(",
-            ".verify_strict(",
+            ".signing_bytes_for(issuer.verifying_key.algorithm())",
+            ".map_err(|_| Error::InvalidSignature)?",
             "pub struct AuthenticatedMessage",
+        ],
+        "codex-rs/hepta-authbus/src/crypto.rs": [
+            "pub enum AuthBusVerifyingKey",
+            "match (self, signature)",
+            "verify_strict(message, &ed25519_dalek::Signature::from_bytes(bytes))",
+            "verify_exact_message(message, bytes.as_slice())",
+            "_ => Err(Error::InvalidSignature)",
         ],
         "codex-rs/hepta-evidence/src/authbus_store.rs": [
             "pub async fn admit_authbus_message(",

@@ -14,7 +14,7 @@ const MAX_AUTHBUS_REPLAY_FRONTIER_ROWS: usize = 16_384;
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
-pub struct EvidenceRecoverySnapshotV2 {
+pub struct EvidenceRecoverySnapshotV3 {
     pub schema_version: u32,
     pub database_lineage: String,
     pub migration_set_sha256: Sha256Digest,
@@ -23,6 +23,8 @@ pub struct EvidenceRecoverySnapshotV2 {
     pub authbus_replay_frontier_sha256: Sha256Digest,
     pub provider_effect_rows: u64,
     pub provider_effect_frontier_sha256: Sha256Digest,
+    pub provider_invocation_rows: u64,
+    pub provider_invocation_frontier_sha256: Sha256Digest,
 }
 
 impl HeptaEvidenceStore {
@@ -69,7 +71,7 @@ impl HeptaEvidenceStore {
             .map_err(classify_sqlx_error)
     }
 
-    pub async fn recovery_snapshot(&self) -> Result<EvidenceRecoverySnapshotV2, EvidenceError> {
+    pub async fn recovery_snapshot(&self) -> Result<EvidenceRecoverySnapshotV3, EvidenceError> {
         // One SQLite snapshot must cover every component. An effect append
         // between independent pool reads must not create a mixed checkpoint.
         let mut transaction = self.pool.begin().await.map_err(classify_sqlx_error)?;
@@ -194,9 +196,11 @@ impl HeptaEvidenceStore {
 
         let (provider_effect_rows, provider_effect_frontier_sha256) =
             crate::recovery_effect_frontier::snapshot(&mut transaction).await?;
+        let (provider_invocation_rows, provider_invocation_frontier_sha256) =
+            crate::recovery_invocation_frontier::snapshot(&mut transaction).await?;
         transaction.commit().await.map_err(classify_sqlx_error)?;
-        Ok(EvidenceRecoverySnapshotV2 {
-            schema_version: 2,
+        Ok(EvidenceRecoverySnapshotV3 {
+            schema_version: 3,
             database_lineage: EVIDENCE_DATABASE_LINEAGE.to_string(),
             migration_set_sha256: migration_frontier,
             qualification_max_seq,
@@ -204,6 +208,8 @@ impl HeptaEvidenceStore {
             authbus_replay_frontier_sha256: replay_frontier,
             provider_effect_rows,
             provider_effect_frontier_sha256,
+            provider_invocation_rows,
+            provider_invocation_frontier_sha256,
         })
     }
 }

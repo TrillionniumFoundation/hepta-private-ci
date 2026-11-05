@@ -5,7 +5,7 @@ use super::TestResult;
 use super::issuer_error;
 use codex_hepta_agentd::AgentdConfig;
 use codex_hepta_agentd::AgentdIdentity;
-use codex_hepta_agentd::EvidenceRecoveryFrontierV3;
+use codex_hepta_agentd::EvidenceRecoveryFrontierV4;
 use codex_hepta_agentd::evidence_recovery_frontier_signing_bytes;
 use codex_hepta_contracts::pq_auth::ML_DSA_65_SIGNATURE_BYTES;
 use codex_hepta_evidence::HeptaEvidenceStore;
@@ -51,8 +51,8 @@ pub(super) fn stage_initial(config: AgentdConfig) -> TestResult<AgentdConfig> {
     .map_err(|_| "fixture evidence staging panicked")?
     .map_err(issuer_error)?;
     let (key, _) = crate::authority_trust_unix::tests::key(/*seed*/ 62).map_err(issuer_error)?;
-    let mut frontier = EvidenceRecoveryFrontierV3 {
-        schema_version: 3,
+    let mut frontier = EvidenceRecoveryFrontierV4 {
+        schema_version: 4,
         authentication_profile: "ml_dsa65_v2".into(),
         store_id: format!("store:neural-fixture:{}", config.identity().agent_id),
         frontier_generation: 1,

@@ -136,14 +136,14 @@ jobs:
 
       # Snapshot and PQ-signature controls do not qualify independent custody
       # or freshness of the monotonic frontier after an entire-host restore.
-      - name: Run the seven recovery snapshot and ACK provenance controls
+      - name: Run the seventeen recovery snapshot and ACK provenance controls
         if: ${{ !cancelled() && steps.dependencies.outcome == 'success' }}
         env:
           CARGO_NET_OFFLINE: "true"
         run: >-
           python3 scripts/hepta_ci_exec.py
           --output "$RUNNER_TEMP/pq-policy-renewal/recovery-owner.json"
-          --minimum-tests 7 --timeout-seconds 600 --
+          --minimum-tests 17 --timeout-seconds 600 --
           just test --locked -p codex-hepta-evidence --lib
           -E 'test(=recovery_effect_frontier_tests::recovery_snapshot_commits_intent_unknown_and_original_operation_receipt)
           | test(=recovery_effect_frontier_tests::recovery_snapshot_distinguishes_a_valid_effect_only_database_rollback)
@@ -151,17 +151,27 @@ jobs:
           | test(=recovery_effect_frontier_tests::recovery_snapshot_commits_effect_history_after_the_first_page)
           | test(=recovery_effect_frontier_tests::recovery_snapshot_refuses_changed_json_with_retained_record_digests)
           | test(=provider_effect_recovery_provenance_tests::recovery_provenance_rejects_late_dispatch_after_status_without_uncertainty)
-          | test(=provider_effect_recovery_provenance_tests::recovery_provenance_preserves_dispatch_then_authoritative_status)'
+          | test(=provider_effect_recovery_provenance_tests::recovery_provenance_preserves_dispatch_then_authoritative_status)
+          | test(=recovery_invocation_frontier_tests::recovery_snapshot_commits_pending_invocations_and_terminal_states)
+          | test(=recovery_invocation_frontier_tests::recovery_snapshot_commits_invocations_after_the_first_page)
+          | test(=recovery_invocation_frontier_tests::recovery_snapshot_revalidates_invocation_payloads_and_projected_columns)
+          | test(=recovery_invocation_frontier_tests::recovery_snapshot_requires_the_terminals_authoritative_intent)
+          | test(=recovery_invocation_frontier_tests::recovery_snapshot_refuses_duplicate_terminal_hidden_at_page_boundary)
+          | test(=recovery_invocation_frontier_tests::recovery_snapshot_refuses_invocation_column_type_corruption_without_panicking)
+          | test(=recovery_invocation_frontier_tests::recovery_snapshot_binds_invocation_sequence_and_recording_time)
+          | test(=recovery_invocation_schema_tests::recovery_invocation_schema_accepts_current_migration_keys)
+          | test(=recovery_invocation_schema_tests::recovery_invocation_schema_refuses_non_rowid_or_composite_sequences)
+          | test(=recovery_invocation_schema_tests::recovery_invocation_schema_requires_exact_unconditional_column_uniqueness)'
           --no-capture --retries 0 --test-threads=1
 
-      - name: Run the nine PQ recovery frontier controls
+      - name: Run the eleven PQ recovery frontier controls
         if: ${{ !cancelled() && steps.dependencies.outcome == 'success' }}
         env:
           CARGO_NET_OFFLINE: "true"
         run: >-
           python3 scripts/hepta_ci_exec.py
           --output "$RUNNER_TEMP/pq-policy-renewal/recovery-signed.json"
-          --minimum-tests 9 --timeout-seconds 600 --
+          --minimum-tests 11 --timeout-seconds 600 --
           just test --locked -p codex-hepta-agentd --lib
           -E 'test(=evidence_frontier::tests::recovery_frontier_refuses_valid_classical_v1_and_v2_signatures)
           | test(=evidence_frontier::tests::recovery_frontier_authenticates_both_effect_fields)
@@ -171,7 +181,9 @@ jobs:
           | test(=evidence_frontier::tests::recovery_frontier_rejects_wrong_domain_and_profile)
           | test(=evidence_frontier::tests::recovery_frontier_enforces_root_scope_epoch_revocation_and_generation_floor)
           | test(=evidence_frontier::tests::recovery_frontier_rejects_wrong_key_pin_and_noncanonical_signature)
-          | test(=evidence_frontier::tests::recovery_frontier_root_rotation_retires_the_old_key)'
+          | test(=evidence_frontier::tests::recovery_frontier_root_rotation_retires_the_old_key)
+          | test(=evidence_frontier::tests::recovery_frontier_refuses_valid_pq_v3_and_relabelled_v2_snapshots)
+          | test(=evidence_frontier::tests::recovery_frontier_pq_rejects_invocation_only_database_rollbacks)'
           --no-capture --retries 0 --test-threads=1
 
       - name: Run the four real Agentd evidence recovery process controls
@@ -236,6 +248,22 @@ jobs:
                       "recovery_provenance_rejects_late_dispatch_after_status_without_uncertainty",
                       "recovery_provenance_preserves_dispatch_then_authoritative_status",
                   )
+              } | {
+                  "recovery_invocation_frontier_tests::" + name for name in (
+                      "recovery_snapshot_commits_pending_invocations_and_terminal_states",
+                      "recovery_snapshot_commits_invocations_after_the_first_page",
+                      "recovery_snapshot_revalidates_invocation_payloads_and_projected_columns",
+                      "recovery_snapshot_requires_the_terminals_authoritative_intent",
+                      "recovery_snapshot_refuses_duplicate_terminal_hidden_at_page_boundary",
+                      "recovery_snapshot_refuses_invocation_column_type_corruption_without_panicking",
+                      "recovery_snapshot_binds_invocation_sequence_and_recording_time",
+                  )
+              } | {
+                  "recovery_invocation_schema_tests::" + name for name in (
+                      "recovery_invocation_schema_accepts_current_migration_keys",
+                      "recovery_invocation_schema_refuses_non_rowid_or_composite_sequences",
+                      "recovery_invocation_schema_requires_exact_unconditional_column_uniqueness",
+                  )
               },
               "recovery-signed": {
                   "evidence_frontier::tests::" + name for name in (
@@ -248,6 +276,8 @@ jobs:
                       "recovery_frontier_enforces_root_scope_epoch_revocation_and_generation_floor",
                       "recovery_frontier_rejects_wrong_key_pin_and_noncanonical_signature",
                       "recovery_frontier_root_rotation_retires_the_old_key",
+                      "recovery_frontier_refuses_valid_pq_v3_and_relabelled_v2_snapshots",
+                      "recovery_frontier_pq_rejects_invocation_only_database_rollbacks",
                   )
               },
               "recovery-product": {
