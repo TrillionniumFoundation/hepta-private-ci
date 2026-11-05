@@ -270,3 +270,7 @@ fn optional(message: &mut Vec<u8>, value: Option<&[u8]>) {
         None => frame(message, &[0]),
     }
 }
+
+#[cfg(test)]
+#[path = "h7_signed_artifact_pq_tests.rs"]
+mod tests;
