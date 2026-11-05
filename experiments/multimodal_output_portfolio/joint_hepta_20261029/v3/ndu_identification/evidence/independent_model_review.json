@@ -1,0 +1,177 @@
+{
+  "review_scope": "independent second implementation for the frozen bounded model; not external institutional review",
+  "source_sha256": {
+    "model.py": "0d6a10ba560b27443182a6aa36bac2af4ce6a4976bc05b27c37c25960cd17d63",
+    "study.py": "3356c4537b1398e2d1251abe823c9d5e61c161d44f076a88ab2ca91f41577d1d",
+    "README.md": "7bbc2a74a93003bc1447ab61b4941d065d14e27865b1950b9d0f1d3406b25736",
+    "protocol.json": "dc6df26b62e3543a96327567950fe4a8e0a1ac1b4ad778058ee040198e861f3e"
+  },
+  "case_count": 18,
+  "max_abs_value_error": 1.1102230246251565e-16,
+  "manual_joint_kl": 1.4556090791758851,
+  "analytic_joint_kl": 1.455609079175885,
+  "rows": [
+    {
+      "deadline": 0,
+      "fee": 0.025,
+      "independent_absolute_time_value": 0.5,
+      "package_dp_value": 0.5,
+      "package_enumeration_value": 0.5,
+      "abs_error": 0.0,
+      "independent_states": 1
+    },
+    {
+      "deadline": 0,
+      "fee": 0.1,
+      "independent_absolute_time_value": 0.5,
+      "package_dp_value": 0.5,
+      "package_enumeration_value": 0.5,
+      "abs_error": 0.0,
+      "independent_states": 1
+    },
+    {
+      "deadline": 0,
+      "fee": 0.6,
+      "independent_absolute_time_value": 0.5,
+      "package_dp_value": 0.5,
+      "package_enumeration_value": 0.5,
+      "abs_error": 0.0,
+      "independent_states": 1
+    },
+    {
+      "deadline": 1,
+      "fee": 0.025,
+      "independent_absolute_time_value": 0.5781058969676671,
+      "package_dp_value": 0.5781058969676671,
+      "package_enumeration_value": 0.5781058969676671,
+      "abs_error": 0.0,
+      "independent_states": 8
+    },
+    {
+      "deadline": 1,
+      "fee": 0.1,
+      "independent_absolute_time_value": 0.5031058969676672,
+      "package_dp_value": 0.5031058969676672,
+      "package_enumeration_value": 0.5031058969676672,
+      "abs_error": 0.0,
+      "independent_states": 8
+    },
+    {
+      "deadline": 1,
+      "fee": 0.6,
+      "independent_absolute_time_value": 0.5,
+      "package_dp_value": 0.5,
+      "package_enumeration_value": 0.5,
+      "abs_error": 0.0,
+      "independent_states": 8
+    },
+    {
+      "deadline": 2,
+      "fee": 0.025,
+      "independent_absolute_time_value": 0.611771838720893,
+      "package_dp_value": 0.611771838720893,
+      "package_enumeration_value": 0.6117718387208931,
+      "abs_error": 1.1102230246251565e-16,
+      "independent_states": 39
+    },
+    {
+      "deadline": 2,
+      "fee": 0.1,
+      "independent_absolute_time_value": 0.5033813653171634,
+      "package_dp_value": 0.5033813653171634,
+      "package_enumeration_value": 0.5033813653171633,
+      "abs_error": 1.1102230246251565e-16,
+      "independent_states": 39
+    },
+    {
+      "deadline": 2,
+      "fee": 0.6,
+      "independent_absolute_time_value": 0.5,
+      "package_dp_value": 0.5,
+      "package_enumeration_value": 0.5,
+      "abs_error": 0.0,
+      "independent_states": 39
+    },
+    {
+      "deadline": 3,
+      "fee": 0.025,
+      "independent_absolute_time_value": 0.6543141256354391,
+      "package_dp_value": 0.6543141256354391,
+      "package_enumeration_value": 0.6543141256354391,
+      "abs_error": 0.0,
+      "independent_states": 148
+    },
+    {
+      "deadline": 3,
+      "fee": 0.1,
+      "independent_absolute_time_value": 0.57341441667744,
+      "package_dp_value": 0.57341441667744,
+      "package_enumeration_value": 0.57341441667744,
+      "abs_error": 0.0,
+      "independent_states": 148
+    },
+    {
+      "deadline": 3,
+      "fee": 0.6,
+      "independent_absolute_time_value": 0.5,
+      "package_dp_value": 0.5,
+      "package_enumeration_value": 0.5,
+      "abs_error": 0.0,
+      "independent_states": 148
+    },
+    {
+      "deadline": 4,
+      "fee": 0.025,
+      "independent_absolute_time_value": 0.6569623824106522,
+      "package_dp_value": 0.6569623824106522,
+      "package_enumeration_value": 0.6569623824106522,
+      "abs_error": 0.0,
+      "independent_states": 262
+    },
+    {
+      "deadline": 4,
+      "fee": 0.1,
+      "independent_absolute_time_value": 0.5734360857852956,
+      "package_dp_value": 0.5734360857852956,
+      "package_enumeration_value": 0.5734360857852956,
+      "abs_error": 0.0,
+      "independent_states": 262
+    },
+    {
+      "deadline": 4,
+      "fee": 0.6,
+      "independent_absolute_time_value": 0.5,
+      "package_dp_value": 0.5,
+      "package_enumeration_value": 0.5,
+      "abs_error": 0.0,
+      "independent_states": 262
+    },
+    {
+      "deadline": 6,
+      "fee": 0.025,
+      "independent_absolute_time_value": 0.6603088772266992,
+      "package_dp_value": 0.6603088772266992,
+      "package_enumeration_value": 0.6603088772266992,
+      "abs_error": 0.0,
+      "independent_states": 543
+    },
+    {
+      "deadline": 6,
+      "fee": 0.1,
+      "independent_absolute_time_value": 0.5789450807248454,
+      "package_dp_value": 0.5789450807248454,
+      "package_enumeration_value": 0.5789450807248454,
+      "abs_error": 0.0,
+      "independent_states": 543
+    },
+    {
+      "deadline": 6,
+      "fee": 0.6,
+      "independent_absolute_time_value": 0.5,
+      "package_dp_value": 0.5,
+      "package_enumeration_value": 0.5,
+      "abs_error": 0.0,
+      "independent_states": 543
+    }
+  ]
+}
