@@ -12,6 +12,19 @@ learning and effect owners retain their responsibilities. Automation wake-up and
 circuit control semantics are separate. Legacy APIs, V1 DAG histories and current
 implementation states are preserved until explicitly versioned migration.
 
+## Module status facts
+
+[STATUS_MODEL.json](../readiness/STATUS_MODEL.json) defines the status vocabulary.
+`source_root_present` in `MODULES.json`, `SOURCE_BINDINGS.json` and `MODULE_DOCS.json`
+is the same source-location fact as `sourceRootPresent` in each implementation
+map and its `claimBoundary`. Likewise, `production_implementation` and
+`productionImplementation` describe the same product-implementation fact: a
+named caller invokes the registered boundary and executable product tests cover
+that path. These projections must agree. A source root or a mapped symbol alone
+cannot establish product implementation, and a metadata correction cannot
+renew an execution receipt for a changed candidate. Activation, independent
+acceptance and release require their separate evidence.
+
 ## Cargo registry closure
 
 `MODULES.json` is the canonical module identity registry. Compiled Rust package

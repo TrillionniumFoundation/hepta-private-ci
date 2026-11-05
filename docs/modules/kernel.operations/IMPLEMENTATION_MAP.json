@@ -167,12 +167,33 @@
     },
     {
       "operation": "automation_operation_consumer",
-      "nativeSymbol": "AutomationStore::dispatch_authorized_effect",
+      "nativeSymbol": "AutomationStore::execute_authorized_taskflow_effect",
       "sourcePath": "codex-rs/hepta-automation/src/authorized_effect.rs",
       "state": "second_operation_intent_consumer_source_implemented",
       "authority": "kernel.authority_final_use_consumed",
       "tests": [
         "codex-rs/hepta-automation/tests/authorized_effect.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "destination_apply",
+      "mappingClass": "delegated_owner_native",
+      "delegatedCallees": [
+        {
+          "path": "codex-rs/hepta-automation",
+          "module": "automation.taskflow",
+          "role": "declared_module_dependency_not_callsite_proof"
+        }
+      ]
+    },
+    {
+      "operation": "automation_operation_consumer_async",
+      "nativeSymbol": "AutomationStore::execute_authorized_taskflow_effect_async",
+      "sourcePath": "codex-rs/hepta-automation/src/authorized_effect.rs",
+      "state": "second_operation_intent_consumer_source_implemented",
+      "authority": "kernel.authority_final_use_consumed",
+      "tests": [
+        "codex-rs/hepta-automation/tests/authorized_effect.rs::async_provider_effect_binds_exact_wire_bytes_before_burning_grant",
+        "codex-rs/hepta-automation/tests/authorized_effect.rs::async_provider_unknown_is_quarantined_and_lookup_not_found_is_proven_absent"
       ],
       "sourcePathExists": true,
       "designOperation": "destination_apply",
