@@ -8,7 +8,6 @@ use codex_hepta_intelligence_eval::MetricRoleV2;
 use codex_hepta_intelligence_eval::ProductQualificationContextV1;
 use codex_hepta_intelligence_eval::ProductTimingEvidenceV1;
 use codex_hepta_intelligence_eval::SignedEvaluationEvidenceV1;
-use pretty_assertions::assert_eq;
 
 #[path = "intelligence_qualification_test_support.rs"]
 mod qualification_support;
