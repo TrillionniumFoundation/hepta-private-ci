@@ -3,13 +3,12 @@ use anyhow::Result;
 use anyhow::ensure;
 use codex_core::StartThreadOptions;
 use codex_core::TurnInputRequest;
-#[cfg(not(target_os = "windows"))]
 use codex_core::config::Constrained;
 #[cfg(not(target_os = "windows"))]
 use codex_core::sandboxing::SandboxPermissions;
 #[cfg(not(target_os = "windows"))]
 use codex_protocol::config_types::ApprovalsReviewer;
-#[cfg(not(target_os = "windows"))]
+use codex_protocol::models::PermissionProfile;
 use codex_protocol::protocol::AskForApproval;
 use codex_protocol::protocol::EventMsg;
 use codex_protocol::protocol::ThreadSource;
@@ -120,6 +119,13 @@ async fn startup_prewarm_skips_git_enrichment_and_user_turn_observes_fresh_state
         .with_model("test-gpt-5.1-codex")
         .with_config(move |config| {
             config.cwd = cwd.abs();
+            // Keep startup policy aligned with submit_turn so this fixture
+            // reuses its single prewarmed connection while Git state changes.
+            config.permissions.approval_policy = Constrained::allow_any(AskForApproval::Never);
+            config
+                .permissions
+                .set_permission_profile(PermissionProfile::Disabled)
+                .expect("set fixture permission profile");
         });
     let test = builder.build_with_websocket_server(&server).await?;
 
