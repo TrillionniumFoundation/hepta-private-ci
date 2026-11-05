@@ -1,0 +1,118 @@
+{
+  "schema": "hcsn-population-mechanisms-v1",
+  "status": "passed",
+  "scope": "deterministic population-law finite-horizon probes; no trained-model quality claim",
+  "source_files_sha256": {
+    "mechanisms.py": "722ab533135ec0c3347ddfc31d302a9b5dc8e33e48d90c5e855969948c7d4645",
+    "population.py": "3de163561abeb475573a8f680357000f68bffdb485405d61bf1fe40b493f6178"
+  },
+  "runtime": {
+    "python": "3.12.14",
+    "numpy": "2.3.5",
+    "scipy": "1.17.0",
+    "platform": "Linux-6.18.57-x86_64-with-glibc2.39"
+  },
+  "config": {
+    "bins": 64,
+    "x_max": 2.5,
+    "dt": 0.02,
+    "sigma": 0.15,
+    "rest_margin": 0.8,
+    "reset_margin": 0.8,
+    "leak": 3.0,
+    "base_drift": 0.0,
+    "refractory": 0.24,
+    "recovery_tau": 0.6,
+    "recovery_strength": 0.2
+  },
+  "effective_refractory": 0.24,
+  "resting": {
+    "duration": 1.0,
+    "maximum_rate": 6.270541037352019e-29,
+    "noise_is_nonzero": true
+  },
+  "repeated_pulses": {
+    "peak_rates": [
+      11.6797766354611,
+      11.684483044108834
+    ],
+    "relative_peak_difference": 0.0004029536518229023,
+    "late_rate_maximum": 6.419135524818913e-29,
+    "final_recovery": 0.0010643779251735554
+  },
+  "refractory": {
+    "steps": 12,
+    "maximum_rate_before_release": 0.0,
+    "timing": "event at interval n end; release at n+m end; next possible flux in interval n+m+1"
+  },
+  "sustained": {
+    "duration": 12.0,
+    "last_window_mean_rate": 1.6461315139199555,
+    "last_window_peak_to_peak": 0.4984381003547178,
+    "without_recovery_mean_rate": 1.756036431559156,
+    "without_refractory_mean_rate": 2.6064838201055225
+  },
+  "coupling": {
+    "strength": 0.08,
+    "maximum_rate": 9.099693662395495,
+    "tail_mean_rate": [
+      1.7748515838117092,
+      1.7707379568535457
+    ],
+    "uncoupled_tail_mean_rate": [
+      1.646131513919955,
+      1.6566903535489832
+    ],
+    "transient_rate_correlation": 0.04336867609113706,
+    "interpretation": "bounded tested response; synchrony and bifurcation require parameter sweeps"
+  },
+  "mass": {
+    "maximum_absolute_conservation_error": 8.43769498715119e-15,
+    "maximum_escaped_mass": 5.66617425332995e-138
+  },
+  "joint_grid_time_refinement": [
+    {
+      "bins": 48,
+      "dt": 0.04,
+      "dx_squared_over_dt": 0.062499999999999986,
+      "absorbed_mass": 0.5119737836728758,
+      "exact_absorbed_mass": 0.5061172417311559,
+      "absolute_error": 0.005856541941719917
+    },
+    {
+      "bins": 96,
+      "dt": 0.02,
+      "dx_squared_over_dt": 0.031249999999999993,
+      "absorbed_mass": 0.509095404867857,
+      "exact_absorbed_mass": 0.5061172417311559,
+      "absolute_error": 0.002978163136701073
+    },
+    {
+      "bins": 192,
+      "dt": 0.01,
+      "dx_squared_over_dt": 0.015624999999999997,
+      "absorbed_mass": 0.507620769732199,
+      "exact_absorbed_mass": 0.5061172417311559,
+      "absolute_error": 0.0015035280010431418
+    }
+  ],
+  "refinement_scope": "constant Brownian drift, refractory longer than observation; independent first-event CDF target",
+  "limits": [
+    "Fixed boundary only; time-varying drift is frozen during each step.",
+    "Refractory length is rounded up to a multiple of dt; reset occurs at step end.",
+    "Escaped upper-grid mass stays in a cemetery account; excessive escape invalidates a run.",
+    "A finite-horizon pass is not proof of global stability, phase transition, bifurcation or task superiority."
+  ],
+  "checks": {
+    "quiet_rate_below_1e-8": true,
+    "pulse_peak_above_1": true,
+    "repeat_peak_relative_error_below_1_percent": true,
+    "late_quiet_rate_below_1e-8": true,
+    "no_event_before_refractory_release": true,
+    "sustained_finite_nonzero_rate": true,
+    "mass_error_below_1e-10": true,
+    "tested_coupling_finite_and_mass_conserving": true,
+    "joint_refinement_error_decreases": true
+  },
+  "elapsed_seconds": 8.665204142999755
+}
