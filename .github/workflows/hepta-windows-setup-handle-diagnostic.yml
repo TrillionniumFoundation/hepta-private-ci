@@ -1,0 +1,104 @@
+name: Windows setup handle inheritance (2 controls and original 7)
+
+on:
+  push:
+    branches: [diagnostics/4853-setup-handles-a318-20261105-v2]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-4853-setup-handles-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  RUSTUP_TOOLCHAIN: 1.96.0
+  CARGO_BUILD_JOBS: "1"
+  CARGO_INCREMENTAL: "0"
+  CARGO_PROFILE_DEV_DEBUG: "0"
+  CARGO_PROFILE_TEST_DEBUG: "0"
+  CARGO_TERM_COLOR: never
+  PYTHONDONTWRITEBYTECODE: "1"
+  PYTHONUTF8: "1"
+
+jobs:
+  native-setup-handles:
+    if: github.ref == 'refs/heads/diagnostics/4853-setup-handles-a318-20261105-v2' && github.repository == 'TrillionniumFoundation/hepta-private-ci'
+    runs-on: windows-latest
+    timeout-minutes: 65
+    steps:
+      - name: Checkout exact diagnostic source head
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 3
+          persist-credentials: false
+      - name: Materialize exact LF source in this fresh checkout
+        shell: pwsh
+        run: |
+          git config --local core.autocrlf false
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          git config --local core.eol lf
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          git checkout-index --all --force
+          exit $LASTEXITCODE
+      - name: Install the original native compiler
+        uses: dtolnay/rust-toolchain@d86e0fa8f147d6539442c26a61ebba8becc19489
+      - name: Install original test runners
+        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+      - name: Install fixed official Windows owning formatter frontend
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $root = Join-Path $env:RUNNER_TEMP 'hepta-4853-setup-handles-v2-uv-0.13.7'
+          if (Test-Path -LiteralPath $root) { throw 'UV supply directory already exists' }
+          $null = New-Item -ItemType Directory -Path $root
+          if ((Get-Item -LiteralPath $root).Attributes -band [IO.FileAttributes]::ReparsePoint) {
+            throw 'UV supply directory is a reparse point'
+          }
+          $archive = Join-Path $root 'uv-x86_64-pc-windows-msvc.zip'
+          Invoke-WebRequest -Uri 'https://github.com/astral-sh/uv/releases/download/0.13.7/uv-x86_64-pc-windows-msvc.zip' -OutFile $archive -MaximumRedirection 5 -TimeoutSec 180
+          if ((Get-Item -LiteralPath $archive).Length -ne 15236317) { throw 'UV archive size differs' }
+          if ((Get-FileHash -LiteralPath $archive -Algorithm SHA256).Hash.ToLowerInvariant() -ne '0cdc5b38fe5a8168ed6a25814f5ba43c21d313dd3187314fccb37b7cec46e021') {
+            throw 'UV archive SHA256 differs'
+          }
+          $bin = Join-Path $root 'bin'
+          $null = New-Item -ItemType Directory -Path $bin
+          $zip = [IO.Compression.ZipFile]::OpenRead($archive)
+          try {
+            $expected = @('uv.exe', 'uvx.exe', 'uvw.exe')
+            if ($zip.Entries.Count -ne $expected.Count) { throw 'Unexpected UV archive member count' }
+            $seen = [Collections.Generic.HashSet[string]]::new([StringComparer]::Ordinal)
+            foreach ($entry in $zip.Entries) {
+              if ($entry.FullName -cnotin $expected -or -not $seen.Add($entry.FullName)) {
+                throw 'Unexpected or duplicate UV archive member'
+              }
+              if ($entry.Length -le 0 -or $entry.Length -gt 100MB) { throw 'Invalid UV archive member size' }
+              $destination = Join-Path $bin $entry.FullName
+              $inputStream = $entry.Open()
+              try {
+                $outputStream = [IO.File]::Open($destination, [IO.FileMode]::CreateNew, [IO.FileAccess]::Write, [IO.FileShare]::None)
+                try { $inputStream.CopyTo($outputStream) } finally { $outputStream.Dispose() }
+              } finally { $inputStream.Dispose() }
+              if ((Get-Item -LiteralPath $destination).Length -ne $entry.Length) { throw 'Incomplete UV extraction' }
+            }
+          } finally { $zip.Dispose() }
+          $version = & (Join-Path $bin 'uv.exe') --version
+          if ($LASTEXITCODE -ne 0 -or $version -cnotmatch '^uv 0\.13\.7 ') { throw 'Wrong UV binary version' }
+          Write-Output $version
+          $bin | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+      - name: Run exact isolated mechanism controls and original regressions
+        shell: pwsh
+        run: |
+          python .github/scripts/windows_setup_handle_diagnostic.py --expected-head "${{ github.sha }}" --output "$env:RUNNER_TEMP/hepta-4853-setup-handles-evidence"
+          exit $LASTEXITCODE
+      - name: Retain all success, failure and preparation evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: setup-handles-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/hepta-4853-setup-handles-evidence/
+          if-no-files-found: error
+          retention-days: 14
