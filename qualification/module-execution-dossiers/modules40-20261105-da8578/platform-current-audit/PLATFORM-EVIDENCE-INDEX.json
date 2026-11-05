@@ -1,0 +1,1680 @@
+{
+  "schemaVersion": 1,
+  "readOnlyObservation": true,
+  "remoteMutationsPerformed": false,
+  "crossApiReadsAreAtomic": false,
+  "snapshots": {
+    "bb55": {
+      "sourceHead": "bb55b0d7d263c396ec504c45393d938c3428dae5",
+      "sourceTree": "19116ccdf440a1cddc2a29f3d709ebe1a3cd06c1",
+      "poll": "poll-0006",
+      "observation": {
+        "observedAtUtc": "2026-11-05 16:48:29 UTC",
+        "completedAtUtc": "2026-11-05T16:50:05.812Z",
+        "source": "bb55b0d7d263c396ec504c45393d938c3428dae5",
+        "sourceTree": "19116ccdf440a1cddc2a29f3d709ebe1a3cd06c1",
+        "sourceTreeEvidence": "../candidate-source-commit.raw.json",
+        "readOnly": true,
+        "atomicSnapshot": false,
+        "requests": [
+          {
+            "name": "runs",
+            "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs?head_sha=bb55b0d7d263c396ec504c45393d938c3428dae5&per_page=100"
+          },
+          {
+            "name": "jobs-42058694002",
+            "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/42058694002/jobs?filter=all&per_page=100"
+          },
+          {
+            "name": "jobs-42058691813",
+            "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/42058691813/jobs?filter=all&per_page=100"
+          },
+          {
+            "name": "jobs-42058691802",
+            "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/42058691802/jobs?filter=all&per_page=100"
+          },
+          {
+            "name": "jobs-42058691726",
+            "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/42058691726/jobs?filter=all&per_page=100"
+          },
+          {
+            "name": "jobs-42058691681",
+            "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/42058691681/jobs?filter=all&per_page=100"
+          },
+          {
+            "name": "jobs-42058691827",
+            "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/42058691827/jobs?filter=all&per_page=100"
+          },
+          {
+            "name": "jobs-42058691782",
+            "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/42058691782/jobs?filter=all&per_page=100"
+          },
+          {
+            "name": "jobs-42058691662",
+            "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/42058691662/jobs?filter=all&per_page=100"
+          }
+        ]
+      },
+      "runs": [
+        {
+          "runId": 42058694002,
+          "name": "rust-ci-full",
+          "event": "push",
+          "status": "queued",
+          "conclusion": null,
+          "attempt": 1,
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42058694002",
+          "jobCounts": {
+            "queued": 18,
+            "in_progress": 1,
+            "failure": 4,
+            "cancelled": 2,
+            "skipped": 1
+          },
+          "jobs": [
+            {
+              "id": 127354041622,
+              "name": "Format / etc",
+              "status": "queued",
+              "conclusion": null,
+              "runnerId": 0,
+              "startedAt": "2026-11-05T15:48:23Z",
+              "completedAt": null,
+              "failedSteps": []
+            },
+            {
+              "id": 127354041714,
+              "name": "Tests — ubuntu-24.04-arm - aarch64-unknown-linux-gnu / Build nextest archive",
+              "status": "queued",
+              "conclusion": null,
+              "runnerId": 0,
+              "startedAt": "2026-11-05T15:48:23Z",
+              "completedAt": null,
+              "failedSteps": []
+            },
+            {
+              "id": 127354041837,
+              "name": "Argument comment lint - macOS",
+              "status": "queued",
+              "conclusion": null,
+              "runnerId": 0,
+              "startedAt": "2026-11-05T15:48:23Z",
+              "completedAt": null,
+              "failedSteps": []
+            },
+            {
+              "id": 127354041868,
+              "name": "Argument comment lint package",
+              "status": "queued",
+              "conclusion": null,
+              "runnerId": 0,
+              "startedAt": "2026-11-05T15:48:23Z",
+              "completedAt": null,
+              "failedSteps": []
+            },
+            {
+              "id": 127354041882,
+              "name": "Tests — macos-15 - aarch64-apple-darwin / Build nextest archive",
+              "status": "queued",
+              "conclusion": null,
+              "runnerId": 0,
+              "startedAt": "2026-11-05T15:48:23Z",
+              "completedAt": null,
+              "failedSteps": []
+            },
+            {
+              "id": 127354042033,
+              "name": "Lint/Build — macos-15 - aarch64-apple-darwin",
+              "status": "queued",
+              "conclusion": null,
+              "runnerId": 0,
+              "startedAt": "2026-11-05T15:48:23Z",
+              "completedAt": null,
+              "failedSteps": []
+            },
+            {
+              "id": 127354042042,
+              "name": "Lint/Build — ubuntu-24.04-arm - aarch64-unknown-linux-gnu",
+              "status": "queued",
+              "conclusion": null,
+              "runnerId": 0,
+              "startedAt": "2026-11-05T15:48:23Z",
+              "completedAt": null,
+              "failedSteps": []
+            },
+            {
+              "id": 127354042066,
+              "name": "Lint/Build — ubuntu-24.04 - x86_64-unknown-linux-musl",
+              "status": "queued",
+              "conclusion": null,
+              "runnerId": 0,
+              "startedAt": "2026-11-05T15:48:23Z",
+              "completedAt": null,
+              "failedSteps": []
+            },
+            {
+              "id": 127354042081,
+              "name": "Argument comment lint - Linux",
+              "status": "queued",
+              "conclusion": null,
+              "runnerId": 0,
+              "startedAt": "2026-11-05T15:48:23Z",
+              "completedAt": null,
+              "failedSteps": []
+            },
+            {
+              "id": 127354042118,
+              "name": "Tests — windows-11-arm - aarch64-pc-windows-msvc / Build nextest archive",
+              "status": "in_progress",
+              "conclusion": null,
+              "runnerId": 1000001916,
+              "startedAt": "2026-11-05T16:02:47Z",
+              "completedAt": null,
+              "failedSteps": []
+            },
+            {
+              "id": 127354042136,
+              "name": "Lint/Build — ubuntu-24.04 - x86_64-unknown-linux-gnu",
+              "status": "queued",
+              "conclusion": null,
+              "runnerId": 0,
+              "startedAt": "2026-11-05T15:48:23Z",
+              "completedAt": null,
+              "failedSteps": []
+            },
+            {
+              "id": 127354042201,
+              "name": "cargo shear",
+              "status": "queued",
+              "conclusion": null,
+              "runnerId": 0,
+              "startedAt": "2026-11-05T15:48:23Z",
+              "completedAt": null,
+              "failedSteps": []
+            },
+            {
+              "id": 127354042203,
+              "name": "Lint/Build — windows-11-arm - aarch64-pc-windows-msvc",
+              "status": "completed",
+              "conclusion": "failure",
+              "runnerId": 1000001844,
+              "startedAt": "2026-11-05T15:50:59Z",
+              "completedAt": "2026-11-05T16:07:15Z",
+              "failedSteps": [
+                {
+                  "name": "cargo clippy",
+                  "status": "completed",
+                  "conclusion": "failure",
+                  "number": 21,
+                  "started_at": "2026-11-05T15:53:24Z",
+                  "completed_at": "2026-11-05T16:05:24Z"
+                }
+              ]
+            },
+            {
+              "id": 127354042219,
+              "name": "Lint/Build — ubuntu-24.04-arm - aarch64-unknown-linux-musl",
+              "status": "queued",
+              "conclusion": null,
+              "runnerId": 0,
+              "startedAt": "2026-11-05T15:48:23Z",
+              "completedAt": null,
+              "failedSteps": []
+            },
+            {
+              "id": 127354042247,
+              "name": "Argument comment lint - Windows",
+              "status": "completed",
+              "conclusion": "failure",
+              "runnerId": 1000001923,
+              "startedAt": "2026-11-05T16:05:01Z",
+              "completedAt": "2026-11-05T16:14:10Z",
+              "failedSteps": [
+                {
+                  "name": "Run argument comment lint on codex-rs via Bazel",
+                  "status": "completed",
+                  "conclusion": "failure",
+                  "number": 6,
+                  "started_at": "2026-11-05T16:05:47Z",
+                  "completed_at": "2026-11-05T16:14:05Z"
+                }
+              ]
+            },
+            {
+              "id": 127354042291,
+              "name": "Tests — ubuntu-24.04 - x86_64-unknown-linux-gnu (remote) / Build nextest archive",
+              "status": "queued",
+              "conclusion": null,
+              "runnerId": 0,
+              "startedAt": "2026-11-05T15:48:23Z",
+              "completedAt": null,
+              "failedSteps": []
+            },
+            {
+              "id": 127354042307,
+              "name": "Tests — windows-latest - x86_64-pc-windows-msvc / Build nextest archive",
+              "status": "completed",
+              "conclusion": "failure",
+              "runnerId": 1000001928,
+              "startedAt": "2026-11-05T16:06:13Z",
+              "completedAt": "2026-11-05T16:19:33Z",
+              "failedSteps": [
+                {
+                  "name": "Build nextest archive",
+                  "status": "completed",
+                  "conclusion": "failure",
+                  "number": 15,
+                  "started_at": "2026-11-05T16:07:22Z",
+                  "completed_at": "2026-11-05T16:17:53Z"
+                }
+              ]
+            },
+            {
+              "id": 127354042311,
+              "name": "Lint/Build — windows-latest - x86_64-pc-windows-msvc (release)",
+              "status": "completed",
+              "conclusion": "cancelled",
+              "runnerId": 1000001846,
+              "startedAt": "2026-11-05T15:51:06Z",
+              "completedAt": "2026-11-05T16:21:18Z",
+              "failedSteps": []
+            },
+            {
+              "id": 127354042313,
+              "name": "Lint/Build — macos-15 - aarch64-apple-darwin (release)",
+              "status": "queued",
+              "conclusion": null,
+              "runnerId": 0,
+              "startedAt": "2026-11-05T15:48:23Z",
+              "completedAt": null,
+              "failedSteps": []
+            },
+            {
+              "id": 127354042320,
+              "name": "Lint/Build — macos-15 - x86_64-apple-darwin",
+              "status": "queued",
+              "conclusion": null,
+              "runnerId": 0,
+              "startedAt": "2026-11-05T15:48:23Z",
+              "completedAt": null,
+              "failedSteps": []
+            },
+            {
+              "id": 127354042345,
+              "name": "Lint/Build — ubuntu-24.04-arm - aarch64-unknown-linux-musl (release)",
+              "status": "queued",
+              "conclusion": null,
+              "runnerId": 0,
+              "startedAt": "2026-11-05T15:48:23Z",
+              "completedAt": null,
+              "failedSteps": []
+            },
+            {
+              "id": 127354042546,
+              "name": "Lint/Build — windows-11-arm - aarch64-pc-windows-msvc (release)",
+              "status": "completed",
+              "conclusion": "cancelled",
+              "runnerId": 1000001849,
+              "startedAt": "2026-11-05T15:51:27Z",
+              "completedAt": "2026-11-05T16:21:28Z",
+              "failedSteps": [
+                {
+                  "name": "cargo clippy",
+                  "status": "completed",
+                  "conclusion": "failure",
+                  "number": 21,
+                  "started_at": "2026-11-05T16:10:33Z",
+                  "completed_at": "2026-11-05T16:19:47Z"
+                }
+              ]
+            },
+            {
+              "id": 127354042573,
+              "name": "Lint/Build — windows-latest - x86_64-pc-windows-msvc",
+              "status": "completed",
+              "conclusion": "failure",
+              "runnerId": 1000001862,
+              "startedAt": "2026-11-05T15:53:01Z",
+              "completedAt": "2026-11-05T16:04:55Z",
+              "failedSteps": [
+                {
+                  "name": "cargo clippy",
+                  "status": "completed",
+                  "conclusion": "failure",
+                  "number": 21,
+                  "started_at": "2026-11-05T15:53:48Z",
+                  "completed_at": "2026-11-05T16:04:14Z"
+                }
+              ]
+            },
+            {
+              "id": 127354042637,
+              "name": "Lint/Build — ubuntu-24.04 - x86_64-unknown-linux-musl (release)",
+              "status": "queued",
+              "conclusion": null,
+              "runnerId": 0,
+              "startedAt": "2026-11-05T15:48:23Z",
+              "completedAt": null,
+              "failedSteps": []
+            },
+            {
+              "id": 127370266418,
+              "name": "Tests — windows-latest - x86_64-pc-windows-msvc / Platform result",
+              "status": "queued",
+              "conclusion": null,
+              "runnerId": 0,
+              "startedAt": "2026-11-05T16:19:34Z",
+              "completedAt": null,
+              "failedSteps": []
+            },
+            {
+              "id": 127370267713,
+              "name": "Tests — windows-latest - x86_64-pc-windows-msvc / Tests shard ${{ matrix.shard }}/4",
+              "status": "completed",
+              "conclusion": "skipped",
+              "runnerId": null,
+              "startedAt": "2026-11-05T16:19:34Z",
+              "completedAt": "2026-11-05T16:19:34Z",
+              "failedSteps": []
+            }
+          ],
+          "rawJobs": {
+            "path": "candidate-review/platform-bb55/poll-0006/jobs-42058694002.raw.json",
+            "bytes": 56366,
+            "sha256": "c24795dfe987bb7c005150df96d96c6453612cd2bd4f41174cfbd0182cce4428"
+          }
+        },
+        {
+          "runId": 42058691813,
+          "name": "Hepta Windows private-state native (security qualification only)",
+          "event": "pull_request",
+          "status": "completed",
+          "conclusion": "success",
+          "attempt": 1,
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42058691813",
+          "jobCounts": {
+            "success": 1
+          },
+          "jobs": [
+            {
+              "id": 127354029766,
+              "name": "ACL, anti-reparse, signed-owner durability and recovery on Windows",
+              "status": "completed",
+              "conclusion": "success",
+              "runnerId": 1000001824,
+              "startedAt": "2026-11-05T15:48:54Z",
+              "completedAt": "2026-11-05T16:04:52Z",
+              "failedSteps": []
+            }
+          ],
+          "rawJobs": {
+            "path": "candidate-review/platform-bb55/poll-0006/jobs-42058691813.raw.json",
+            "bytes": 3805,
+            "sha256": "6036732f38d483c2332becef26b3e99659f27cc5b5c3f62d2586bf57d323a7a5"
+          }
+        },
+        {
+          "runId": 42058691802,
+          "name": "blocking-ci",
+          "event": "pull_request",
+          "status": "queued",
+          "conclusion": null,
+          "attempt": 1,
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42058691802",
+          "jobCounts": {
+            "queued": 2,
+            "failure": 1
+          },
+          "jobs": [
+            {
+              "id": 127354031142,
+              "name": "Select blocking CI scope",
+              "status": "queued",
+              "conclusion": null,
+              "runnerId": 0,
+              "startedAt": "2026-11-05T15:48:22Z",
+              "completedAt": null,
+              "failedSteps": []
+            },
+            {
+              "id": 127354031747,
+              "name": "Blob size policy / Blob size policy",
+              "status": "queued",
+              "conclusion": null,
+              "runnerId": 0,
+              "startedAt": "2026-11-05T15:48:22Z",
+              "completedAt": null,
+              "failedSteps": []
+            },
+            {
+              "id": 127354031805,
+              "name": "Codespell / Check for spelling errors",
+              "status": "completed",
+              "conclusion": "failure",
+              "runnerId": 1000001905,
+              "startedAt": "2026-11-05T16:01:17Z",
+              "completedAt": "2026-11-05T16:01:50Z",
+              "failedSteps": [
+                {
+                  "name": "Codespell",
+                  "status": "completed",
+                  "conclusion": "failure",
+                  "number": 5,
+                  "started_at": "2026-11-05T16:01:31Z",
+                  "completed_at": "2026-11-05T16:01:47Z"
+                }
+              ]
+            }
+          ],
+          "rawJobs": {
+            "path": "candidate-review/platform-bb55/poll-0006/jobs-42058691802.raw.json",
+            "bytes": 4281,
+            "sha256": "ccc9a52a84e90b47cf61fdbd0b299981899240c3d731aa86ca6f22b145544b20"
+          }
+        },
+        {
+          "runId": 42058691726,
+          "name": "Rust UI product foundation",
+          "event": "pull_request",
+          "status": "queued",
+          "conclusion": null,
+          "attempt": 1,
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42058691726",
+          "jobCounts": {
+            "queued": 5
+          },
+          "jobs": [
+            {
+              "id": 127354030431,
+              "name": "Original native presentation / base-merge",
+              "status": "queued",
+              "conclusion": null,
+              "runnerId": 0,
+              "startedAt": "2026-11-05T15:48:22Z",
+              "completedAt": null,
+              "failedSteps": []
+            },
+            {
+              "id": 127354030750,
+              "name": "Generate UI dependency lock for review",
+              "status": "queued",
+              "conclusion": null,
+              "runnerId": 0,
+              "startedAt": "2026-11-05T15:48:22Z",
+              "completedAt": null,
+              "failedSteps": []
+            },
+            {
+              "id": 127354030818,
+              "name": "Original native presentation / source-head",
+              "status": "queued",
+              "conclusion": null,
+              "runnerId": 0,
+              "startedAt": "2026-11-05T15:48:22Z",
+              "completedAt": null,
+              "failedSteps": []
+            },
+            {
+              "id": 127354030927,
+              "name": "Rust UI foundation / base-merge",
+              "status": "queued",
+              "conclusion": null,
+              "runnerId": 0,
+              "startedAt": "2026-11-05T15:48:22Z",
+              "completedAt": null,
+              "failedSteps": []
+            },
+            {
+              "id": 127354030929,
+              "name": "Rust UI foundation / source-head",
+              "status": "queued",
+              "conclusion": null,
+              "runnerId": 0,
+              "startedAt": "2026-11-05T15:48:22Z",
+              "completedAt": null,
+              "failedSteps": []
+            }
+          ],
+          "rawJobs": {
+            "path": "candidate-review/platform-bb55/poll-0006/jobs-42058691726.raw.json",
+            "bytes": 4895,
+            "sha256": "3b2c773f5aec8b23ad8818197dea16b8af3c2e9fe47f8cf60d6cd9e92d24c387"
+          }
+        },
+        {
+          "runId": 42058691681,
+          "name": "Hepta architecture convergence",
+          "event": "pull_request",
+          "status": "queued",
+          "conclusion": null,
+          "attempt": 1,
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42058691681",
+          "jobCounts": {
+            "queued": 2
+          },
+          "jobs": [
+            {
+              "id": 127354030487,
+              "name": "Architecture convergence (source-head)",
+              "status": "queued",
+              "conclusion": null,
+              "runnerId": 0,
+              "startedAt": "2026-11-05T15:48:22Z",
+              "completedAt": null,
+              "failedSteps": []
+            },
+            {
+              "id": 127354031045,
+              "name": "Architecture convergence (base-merge)",
+              "status": "queued",
+              "conclusion": null,
+              "runnerId": 0,
+              "startedAt": "2026-11-05T15:48:22Z",
+              "completedAt": null,
+              "failedSteps": []
+            }
+          ],
+          "rawJobs": {
+            "path": "candidate-review/platform-bb55/poll-0006/jobs-42058691681.raw.json",
+            "bytes": 1991,
+            "sha256": "c10152ef3c3e181d9fcae5a62fe1b5564bda995a31b06f17c1b949ba47f6854b"
+          }
+        },
+        {
+          "runId": 42058691827,
+          "name": "Production HOS2 owner proposal",
+          "event": "pull_request",
+          "status": "completed",
+          "conclusion": "skipped",
+          "attempt": 1,
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42058691827",
+          "jobCounts": {
+            "skipped": 1
+          },
+          "jobs": [
+            {
+              "id": 127354090994,
+              "name": "owner-candidate",
+              "status": "completed",
+              "conclusion": "skipped",
+              "runnerId": null,
+              "startedAt": "2026-11-05T15:48:28Z",
+              "completedAt": "2026-11-05T15:48:22Z",
+              "failedSteps": []
+            }
+          ],
+          "rawJobs": {
+            "path": "candidate-review/platform-bb55/poll-0006/jobs-42058691827.raw.json",
+            "bytes": 1018,
+            "sha256": "55b66b5a4dc6b053138cd07a7646dbce7717f1fee5fc090290b9f79ce7ebd4d3"
+          }
+        },
+        {
+          "runId": 42058691782,
+          "name": "Windows original CI regressions (declared scope only)",
+          "event": "pull_request",
+          "status": "in_progress",
+          "conclusion": null,
+          "attempt": 1,
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42058691782",
+          "jobCounts": {
+            "in_progress": 1
+          },
+          "jobs": [
+            {
+              "id": 127354039308,
+              "name": "original-regressions",
+              "status": "in_progress",
+              "conclusion": null,
+              "runnerId": 1000001839,
+              "startedAt": "2026-11-05T15:50:33Z",
+              "completedAt": null,
+              "failedSteps": []
+            }
+          ],
+          "rawJobs": {
+            "path": "candidate-review/platform-bb55/poll-0006/jobs-42058691782.raw.json",
+            "bytes": 2371,
+            "sha256": "d69f005fe81a17f0f02e5dc2d4310363d8b8f8d554d8af8349738419d882fe69"
+          }
+        },
+        {
+          "runId": 42058691662,
+          "name": "v8-canary",
+          "event": "pull_request",
+          "status": "completed",
+          "conclusion": "success",
+          "attempt": 1,
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42058691662",
+          "jobCounts": {
+            "success": 1,
+            "skipped": 2
+          },
+          "jobs": [
+            {
+              "id": 127354029946,
+              "name": "metadata",
+              "status": "completed",
+              "conclusion": "success",
+              "runnerId": 1000001906,
+              "startedAt": "2026-11-05T16:01:17Z",
+              "completedAt": "2026-11-05T16:07:54Z",
+              "failedSteps": []
+            },
+            {
+              "id": 127364214523,
+              "name": "Build ptrcomp-sandbox ${{ matrix.target }} from source",
+              "status": "completed",
+              "conclusion": "skipped",
+              "runnerId": 0,
+              "startedAt": "2026-11-05T16:08:05Z",
+              "completedAt": "2026-11-05T16:07:54Z",
+              "failedSteps": []
+            },
+            {
+              "id": 127364436483,
+              "name": "Build ${{ matrix.variant }} ${{ matrix.target }}",
+              "status": "completed",
+              "conclusion": "skipped",
+              "runnerId": 0,
+              "startedAt": "2026-11-05T16:08:23Z",
+              "completedAt": "2026-11-05T16:07:54Z",
+              "failedSteps": []
+            }
+          ],
+          "rawJobs": {
+            "path": "candidate-review/platform-bb55/poll-0006/jobs-42058691662.raw.json",
+            "bytes": 4526,
+            "sha256": "28615a0a7710d1afb07912939c45beae500f9256066e8a1d0baa329ceada63b4"
+          }
+        }
+      ]
+    },
+    "797": {
+      "sourceHead": "797116d61cf422c26274ffef31297dce84a53a80",
+      "sourceTree": "67ce024db1679aa6cd301856ba3a694ea18bc4b6",
+      "poll": "poll-0002",
+      "observation": {
+        "observedAtUtc": "2026-11-05 16:48:29 UTC",
+        "completedAtUtc": "2026-11-05T16:50:05.813Z",
+        "source": "797116d61cf422c26274ffef31297dce84a53a80",
+        "sourceTree": "67ce024db1679aa6cd301856ba3a694ea18bc4b6",
+        "sourceTreeEvidence": "../candidate-source-commit.raw.json",
+        "readOnly": true,
+        "atomicSnapshot": false,
+        "requests": [
+          {
+            "name": "runs",
+            "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs?head_sha=797116d61cf422c26274ffef31297dce84a53a80&per_page=100"
+          },
+          {
+            "name": "jobs-42063954206",
+            "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/42063954206/jobs?filter=all&per_page=100"
+          },
+          {
+            "name": "jobs-42063953998",
+            "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/42063953998/jobs?filter=all&per_page=100"
+          },
+          {
+            "name": "jobs-42063954058",
+            "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/42063954058/jobs?filter=all&per_page=100"
+          },
+          {
+            "name": "jobs-42063954082",
+            "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/42063954082/jobs?filter=all&per_page=100"
+          },
+          {
+            "name": "jobs-42063953927",
+            "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/42063953927/jobs?filter=all&per_page=100"
+          },
+          {
+            "name": "jobs-42063953939",
+            "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/42063953939/jobs?filter=all&per_page=100"
+          },
+          {
+            "name": "jobs-42063953259",
+            "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/42063953259/jobs?filter=all&per_page=100"
+          },
+          {
+            "name": "jobs-42063953932",
+            "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/42063953932/jobs?filter=all&per_page=100"
+          }
+        ]
+      },
+      "runs": [
+        {
+          "runId": 42063954206,
+          "name": "Hepta Windows private-state native (security qualification only)",
+          "event": "pull_request",
+          "status": "in_progress",
+          "conclusion": null,
+          "attempt": 1,
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42063954206",
+          "jobCounts": {
+            "in_progress": 1
+          },
+          "jobs": [
+            {
+              "id": 127372830328,
+              "name": "ACL, anti-reparse, signed-owner durability and recovery on Windows",
+              "status": "in_progress",
+              "conclusion": null,
+              "runnerId": 1000002136,
+              "startedAt": "2026-11-05T16:37:19Z",
+              "completedAt": null,
+              "failedSteps": []
+            }
+          ],
+          "rawJobs": {
+            "path": "candidate-review/platform-797/poll-0002/jobs-42063954206.raw.json",
+            "bytes": 3397,
+            "sha256": "adbe55fb6ebec70ab60a43c43904f361364575feeaf85c7991c53d309e24b34a"
+          }
+        },
+        {
+          "runId": 42063953998,
+          "name": "Windows original CI regressions (declared scope only)",
+          "event": "pull_request",
+          "status": "in_progress",
+          "conclusion": null,
+          "attempt": 1,
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42063953998",
+          "jobCounts": {
+            "in_progress": 1
+          },
+          "jobs": [
+            {
+              "id": 127372825050,
+              "name": "original-regressions",
+              "status": "in_progress",
+              "conclusion": null,
+              "runnerId": 1000002133,
+              "startedAt": "2026-11-05T16:36:40Z",
+              "completedAt": null,
+              "failedSteps": []
+            }
+          ],
+          "rawJobs": {
+            "path": "candidate-review/platform-797/poll-0002/jobs-42063953998.raw.json",
+            "bytes": 2374,
+            "sha256": "5b6d39346cbc98476c331106afe74d76a69b98ac28d51b0f1202634712f0529e"
+          }
+        },
+        {
+          "runId": 42063954058,
+          "name": "Rust UI product foundation",
+          "event": "pull_request",
+          "status": "queued",
+          "conclusion": null,
+          "attempt": 1,
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42063954058",
+          "jobCounts": {
+            "queued": 5
+          },
+          "jobs": [
+            {
+              "id": 127372826163,
+              "name": "Original native presentation / base-merge",
+              "status": "queued",
+              "conclusion": null,
+              "runnerId": 0,
+              "startedAt": "2026-11-05T16:23:36Z",
+              "completedAt": null,
+              "failedSteps": []
+            },
+            {
+              "id": 127372826168,
+              "name": "Rust UI foundation / source-head",
+              "status": "queued",
+              "conclusion": null,
+              "runnerId": 0,
+              "startedAt": "2026-11-05T16:23:36Z",
+              "completedAt": null,
+              "failedSteps": []
+            },
+            {
+              "id": 127372826516,
+              "name": "Generate UI dependency lock for review",
+              "status": "queued",
+              "conclusion": null,
+              "runnerId": 0,
+              "startedAt": "2026-11-05T16:23:36Z",
+              "completedAt": null,
+              "failedSteps": []
+            },
+            {
+              "id": 127372826672,
+              "name": "Rust UI foundation / base-merge",
+              "status": "queued",
+              "conclusion": null,
+              "runnerId": 0,
+              "startedAt": "2026-11-05T16:23:36Z",
+              "completedAt": null,
+              "failedSteps": []
+            },
+            {
+              "id": 127372827072,
+              "name": "Original native presentation / source-head",
+              "status": "queued",
+              "conclusion": null,
+              "runnerId": 0,
+              "startedAt": "2026-11-05T16:23:36Z",
+              "completedAt": null,
+              "failedSteps": []
+            }
+          ],
+          "rawJobs": {
+            "path": "candidate-review/platform-797/poll-0002/jobs-42063954058.raw.json",
+            "bytes": 4910,
+            "sha256": "b564d96c94c2b38c778fa56a049efe31035db4058cb0d474f6c26227db892d7d"
+          }
+        },
+        {
+          "runId": 42063954082,
+          "name": "blocking-ci",
+          "event": "pull_request",
+          "status": "queued",
+          "conclusion": null,
+          "attempt": 1,
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42063954082",
+          "jobCounts": {
+            "queued": 2,
+            "success": 1
+          },
+          "jobs": [
+            {
+              "id": 127372826740,
+              "name": "Select blocking CI scope",
+              "status": "queued",
+              "conclusion": null,
+              "runnerId": 0,
+              "startedAt": "2026-11-05T16:23:36Z",
+              "completedAt": null,
+              "failedSteps": []
+            },
+            {
+              "id": 127372827355,
+              "name": "Codespell / Check for spelling errors",
+              "status": "completed",
+              "conclusion": "success",
+              "runnerId": 1000002103,
+              "startedAt": "2026-11-05T16:32:31Z",
+              "completedAt": "2026-11-05T16:33:05Z",
+              "failedSteps": []
+            },
+            {
+              "id": 127372827758,
+              "name": "Blob size policy / Blob size policy",
+              "status": "queued",
+              "conclusion": null,
+              "runnerId": 0,
+              "startedAt": "2026-11-05T16:23:36Z",
+              "completedAt": null,
+              "failedSteps": []
+            }
+          ],
+          "rawJobs": {
+            "path": "candidate-review/platform-797/poll-0002/jobs-42063954082.raw.json",
+            "bytes": 4290,
+            "sha256": "d2f43be373b3aca10f7251c32eb5067c850d85e1aa766e7ba2fb4c8cb8f2542f"
+          }
+        },
+        {
+          "runId": 42063953927,
+          "name": "v8-canary",
+          "event": "pull_request",
+          "status": "completed",
+          "conclusion": "success",
+          "attempt": 1,
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42063953927",
+          "jobCounts": {
+            "success": 1,
+            "skipped": 2
+          },
+          "jobs": [
+            {
+              "id": 127372833435,
+              "name": "metadata",
+              "status": "completed",
+              "conclusion": "success",
+              "runnerId": 1000002141,
+              "startedAt": "2026-11-05T16:38:31Z",
+              "completedAt": "2026-11-05T16:41:57Z",
+              "failedSteps": []
+            },
+            {
+              "id": 127384152920,
+              "name": "Build ${{ matrix.variant }} ${{ matrix.target }}",
+              "status": "completed",
+              "conclusion": "skipped",
+              "runnerId": null,
+              "startedAt": "2026-11-05T16:41:57Z",
+              "completedAt": "2026-11-05T16:41:57Z",
+              "failedSteps": []
+            },
+            {
+              "id": 127384153435,
+              "name": "Build ptrcomp-sandbox ${{ matrix.target }} from source",
+              "status": "completed",
+              "conclusion": "skipped",
+              "runnerId": null,
+              "startedAt": "2026-11-05T16:41:57Z",
+              "completedAt": "2026-11-05T16:41:57Z",
+              "failedSteps": []
+            }
+          ],
+          "rawJobs": {
+            "path": "candidate-review/platform-797/poll-0002/jobs-42063953927.raw.json",
+            "bytes": 4555,
+            "sha256": "76133eb7e94121997c016749bdde59e758dee07e4f8b66263493e3c220089452"
+          }
+        },
+        {
+          "runId": 42063953939,
+          "name": "Production HOS2 owner proposal",
+          "event": "pull_request",
+          "status": "completed",
+          "conclusion": "skipped",
+          "attempt": 1,
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42063953939",
+          "jobCounts": {
+            "skipped": 1
+          },
+          "jobs": [
+            {
+              "id": 127372827643,
+              "name": "owner-candidate",
+              "status": "completed",
+              "conclusion": "skipped",
+              "runnerId": null,
+              "startedAt": "2026-11-05T16:23:36Z",
+              "completedAt": "2026-11-05T16:23:36Z",
+              "failedSteps": []
+            }
+          ],
+          "rawJobs": {
+            "path": "candidate-review/platform-797/poll-0002/jobs-42063953939.raw.json",
+            "bytes": 1021,
+            "sha256": "94819749e6b6ee512f6e4821fa3f4e3cf2a11cca483e7592f7d79fae215eb22f"
+          }
+        },
+        {
+          "runId": 42063953259,
+          "name": "rust-ci-full",
+          "event": "push",
+          "status": "queued",
+          "conclusion": null,
+          "attempt": 1,
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42063953259",
+          "jobCounts": {
+            "in_progress": 5,
+            "failure": 2,
+            "queued": 17
+          },
+          "jobs": [
+            {
+              "id": 127372825543,
+              "name": "Tests — windows-latest - x86_64-pc-windows-msvc / Build nextest archive",
+              "status": "in_progress",
+              "conclusion": null,
+              "runnerId": 1000002097,
+              "startedAt": "2026-11-05T16:31:05Z",
+              "completedAt": null,
+              "failedSteps": []
+            },
+            {
+              "id": 127372825550,
+              "name": "Argument comment lint - Windows",
+              "status": "completed",
+              "conclusion": "failure",
+              "runnerId": 1000002118,
+              "startedAt": "2026-11-05T16:34:17Z",
+              "completedAt": "2026-11-05T16:44:00Z",
+              "failedSteps": [
+                {
+                  "name": "Run argument comment lint on codex-rs via Bazel",
+                  "status": "completed",
+                  "conclusion": "failure",
+                  "number": 6,
+                  "started_at": "2026-11-05T16:35:05Z",
+                  "completed_at": "2026-11-05T16:43:55Z"
+                }
+              ]
+            },
+            {
+              "id": 127372825573,
+              "name": "Format / etc",
+              "status": "queued",
+              "conclusion": null,
+              "runnerId": 0,
+              "startedAt": "2026-11-05T16:23:36Z",
+              "completedAt": null,
+              "failedSteps": []
+            },
+            {
+              "id": 127372825575,
+              "name": "Lint/Build — windows-11-arm - aarch64-pc-windows-msvc",
+              "status": "completed",
+              "conclusion": "failure",
+              "runnerId": 1000002099,
+              "startedAt": "2026-11-05T16:31:12Z",
+              "completedAt": "2026-11-05T16:45:33Z",
+              "failedSteps": [
+                {
+                  "name": "cargo clippy",
+                  "status": "completed",
+                  "conclusion": "failure",
+                  "number": 21,
+                  "started_at": "2026-11-05T16:34:23Z",
+                  "completed_at": "2026-11-05T16:44:31Z"
+                }
+              ]
+            },
+            {
+              "id": 127372825582,
+              "name": "Argument comment lint package",
+              "status": "queued",
+              "conclusion": null,
+              "runnerId": 0,
+              "startedAt": "2026-11-05T16:23:36Z",
+              "completedAt": null,
+              "failedSteps": []
+            },
+            {
+              "id": 127372825620,
+              "name": "cargo shear",
+              "status": "queued",
+              "conclusion": null,
+              "runnerId": 0,
+              "startedAt": "2026-11-05T16:23:36Z",
+              "completedAt": null,
+              "failedSteps": []
+            },
+            {
+              "id": 127372825673,
+              "name": "Argument comment lint - Linux",
+              "status": "queued",
+              "conclusion": null,
+              "runnerId": 0,
+              "startedAt": "2026-11-05T16:23:36Z",
+              "completedAt": null,
+              "failedSteps": []
+            },
+            {
+              "id": 127372825683,
+              "name": "Argument comment lint - macOS",
+              "status": "queued",
+              "conclusion": null,
+              "runnerId": 0,
+              "startedAt": "2026-11-05T16:23:36Z",
+              "completedAt": null,
+              "failedSteps": []
+            },
+            {
+              "id": 127372825694,
+              "name": "Tests — windows-11-arm - aarch64-pc-windows-msvc / Build nextest archive",
+              "status": "in_progress",
+              "conclusion": null,
+              "runnerId": 1000002123,
+              "startedAt": "2026-11-05T16:34:45Z",
+              "completedAt": null,
+              "failedSteps": []
+            },
+            {
+              "id": 127372825825,
+              "name": "Lint/Build — ubuntu-24.04-arm - aarch64-unknown-linux-musl (release)",
+              "status": "queued",
+              "conclusion": null,
+              "runnerId": 0,
+              "startedAt": "2026-11-05T16:23:36Z",
+              "completedAt": null,
+              "failedSteps": []
+            },
+            {
+              "id": 127372825882,
+              "name": "Lint/Build — ubuntu-24.04 - x86_64-unknown-linux-gnu",
+              "status": "queued",
+              "conclusion": null,
+              "runnerId": 0,
+              "startedAt": "2026-11-05T16:23:36Z",
+              "completedAt": null,
+              "failedSteps": []
+            },
+            {
+              "id": 127372825905,
+              "name": "Lint/Build — macos-15 - aarch64-apple-darwin",
+              "status": "queued",
+              "conclusion": null,
+              "runnerId": 0,
+              "startedAt": "2026-11-05T16:23:36Z",
+              "completedAt": null,
+              "failedSteps": []
+            },
+            {
+              "id": 127372825909,
+              "name": "Tests — macos-15 - aarch64-apple-darwin / Build nextest archive",
+              "status": "queued",
+              "conclusion": null,
+              "runnerId": 0,
+              "startedAt": "2026-11-05T16:23:36Z",
+              "completedAt": null,
+              "failedSteps": []
+            },
+            {
+              "id": 127372825988,
+              "name": "Lint/Build — ubuntu-24.04-arm - aarch64-unknown-linux-musl",
+              "status": "queued",
+              "conclusion": null,
+              "runnerId": 0,
+              "startedAt": "2026-11-05T16:23:36Z",
+              "completedAt": null,
+              "failedSteps": []
+            },
+            {
+              "id": 127372826052,
+              "name": "Lint/Build — macos-15 - x86_64-apple-darwin",
+              "status": "queued",
+              "conclusion": null,
+              "runnerId": 0,
+              "startedAt": "2026-11-05T16:23:36Z",
+              "completedAt": null,
+              "failedSteps": []
+            },
+            {
+              "id": 127372826077,
+              "name": "Lint/Build — windows-11-arm - aarch64-pc-windows-msvc (release)",
+              "status": "in_progress",
+              "conclusion": null,
+              "runnerId": 1000002100,
+              "startedAt": "2026-11-05T16:31:13Z",
+              "completedAt": null,
+              "failedSteps": []
+            },
+            {
+              "id": 127372826147,
+              "name": "Lint/Build — windows-latest - x86_64-pc-windows-msvc (release)",
+              "status": "in_progress",
+              "conclusion": null,
+              "runnerId": 1000002101,
+              "startedAt": "2026-11-05T16:31:20Z",
+              "completedAt": null,
+              "failedSteps": []
+            },
+            {
+              "id": 127372826257,
+              "name": "Lint/Build — ubuntu-24.04-arm - aarch64-unknown-linux-gnu",
+              "status": "queued",
+              "conclusion": null,
+              "runnerId": 0,
+              "startedAt": "2026-11-05T16:23:36Z",
+              "completedAt": null,
+              "failedSteps": []
+            },
+            {
+              "id": 127372826293,
+              "name": "Lint/Build — ubuntu-24.04 - x86_64-unknown-linux-musl",
+              "status": "queued",
+              "conclusion": null,
+              "runnerId": 0,
+              "startedAt": "2026-11-05T16:23:36Z",
+              "completedAt": null,
+              "failedSteps": []
+            },
+            {
+              "id": 127372826304,
+              "name": "Tests — ubuntu-24.04-arm - aarch64-unknown-linux-gnu / Build nextest archive",
+              "status": "queued",
+              "conclusion": null,
+              "runnerId": 0,
+              "startedAt": "2026-11-05T16:23:36Z",
+              "completedAt": null,
+              "failedSteps": []
+            },
+            {
+              "id": 127372826328,
+              "name": "Lint/Build — ubuntu-24.04 - x86_64-unknown-linux-musl (release)",
+              "status": "queued",
+              "conclusion": null,
+              "runnerId": 0,
+              "startedAt": "2026-11-05T16:23:36Z",
+              "completedAt": null,
+              "failedSteps": []
+            },
+            {
+              "id": 127372826344,
+              "name": "Lint/Build — macos-15 - aarch64-apple-darwin (release)",
+              "status": "queued",
+              "conclusion": null,
+              "runnerId": 0,
+              "startedAt": "2026-11-05T16:23:36Z",
+              "completedAt": null,
+              "failedSteps": []
+            },
+            {
+              "id": 127372826413,
+              "name": "Lint/Build — windows-latest - x86_64-pc-windows-msvc",
+              "status": "in_progress",
+              "conclusion": null,
+              "runnerId": 1000002117,
+              "startedAt": "2026-11-05T16:34:16Z",
+              "completedAt": null,
+              "failedSteps": [
+                {
+                  "name": "cargo clippy",
+                  "status": "completed",
+                  "conclusion": "failure",
+                  "number": 21,
+                  "started_at": "2026-11-05T16:35:01Z",
+                  "completed_at": "2026-11-05T16:48:17Z"
+                }
+              ]
+            },
+            {
+              "id": 127372826495,
+              "name": "Tests — ubuntu-24.04 - x86_64-unknown-linux-gnu (remote) / Build nextest archive",
+              "status": "queued",
+              "conclusion": null,
+              "runnerId": 0,
+              "startedAt": "2026-11-05T16:23:36Z",
+              "completedAt": null,
+              "failedSteps": []
+            }
+          ],
+          "rawJobs": {
+            "path": "candidate-review/platform-797/poll-0002/jobs-42063953259.raw.json",
+            "bytes": 52514,
+            "sha256": "b79cfc8cbf28b9690a04d9bc1ecb16b120d9506b6f3a628768a895499fd5f718"
+          }
+        },
+        {
+          "runId": 42063953932,
+          "name": "Hepta architecture convergence",
+          "event": "pull_request",
+          "status": "queued",
+          "conclusion": null,
+          "attempt": 1,
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42063953932",
+          "jobCounts": {
+            "queued": 2
+          },
+          "jobs": [
+            {
+              "id": 127372826950,
+              "name": "Architecture convergence (source-head)",
+              "status": "queued",
+              "conclusion": null,
+              "runnerId": 0,
+              "startedAt": "2026-11-05T16:23:36Z",
+              "completedAt": null,
+              "failedSteps": []
+            },
+            {
+              "id": 127372827438,
+              "name": "Architecture convergence (base-merge)",
+              "status": "queued",
+              "conclusion": null,
+              "runnerId": 0,
+              "startedAt": "2026-11-05T16:23:36Z",
+              "completedAt": null,
+              "failedSteps": []
+            }
+          ],
+          "rawJobs": {
+            "path": "candidate-review/platform-797/poll-0002/jobs-42063953932.raw.json",
+            "bytes": 1997,
+            "sha256": "7070df5195a4f681a966a01fb9b17268306f74e2039b40dd3dda9803ad8f01be"
+          }
+        }
+      ]
+    }
+  },
+  "codespell797": {
+    "jobId": 127372827355,
+    "runId": 42063954082,
+    "sourceHead": "797116d61cf422c26274ffef31297dce84a53a80",
+    "executedCommit": "2135d80407e147714c2eae5cc1ffa0a7d9f224c2",
+    "executedTree": "67ce024db1679aa6cd301856ba3a694ea18bc4b6",
+    "orderedParents": [
+      "07378034e060f23259bc99c7367f12b1284140f3",
+      "797116d61cf422c26274ffef31297dce84a53a80"
+    ],
+    "checkoutEvidence": {
+      "sha": "2135d80407e147714c2eae5cc1ffa0a7d9f224c2",
+      "commandLine": 194,
+      "resultLine": 195
+    },
+    "conclusion": "success",
+    "codespellVersion": "2.4.3",
+    "cliOptions": "--ignore-words .codespellignore --skip ./.git",
+    "scope": "Original Codespell on the actual PR merge; same tree as 797, distinct commit identity.",
+    "log": {
+      "path": "candidate-review/platform-current-audit/logs/job-127372827355.log",
+      "bytes": 27089,
+      "sha256": "1665cb7b718d6e2def25f8ac80a4486a19e6eb7741105965f2f2c16688c4a024"
+    }
+  },
+  "failures797": [
+    {
+      "jobId": 127372825575,
+      "runId": 42063953259,
+      "kind": "Windows ARM64 Clippy method resolution",
+      "errorCode": "E0034",
+      "errorCount": 3,
+      "jobStatusAtSnapshot": "completed",
+      "jobConclusionAtSnapshot": "failure",
+      "failedSteps": [
+        {
+          "name": "cargo clippy",
+          "status": "completed",
+          "conclusion": "failure",
+          "number": 21,
+          "started_at": "2026-11-05T16:34:23Z",
+          "completed_at": "2026-11-05T16:44:31Z"
+        }
+      ],
+      "sourceHead": "797116d61cf422c26274ffef31297dce84a53a80",
+      "sourceTree": "67ce024db1679aa6cd301856ba3a694ea18bc4b6",
+      "treeBinding": "native log and immutable commit API",
+      "checkoutEvidence": {
+        "sha": "797116d61cf422c26274ffef31297dce84a53a80",
+        "commandLine": 212,
+        "resultLine": 213
+      },
+      "log": {
+        "path": "candidate-review/platform-current-audit/logs/job-127372825575.log",
+        "bytes": 294579,
+        "sha256": "371e092e5055773f63f2c6f53a901efc20df291379c400f278d15dbecc6eb381"
+      }
+    },
+    {
+      "jobId": 127372826413,
+      "runId": 42063953259,
+      "kind": "Windows x64 Clippy macro resolution",
+      "errorCode": "E0659",
+      "errorCount": 8,
+      "jobStatusAtSnapshot": "in_progress",
+      "jobConclusionAtSnapshot": null,
+      "failedSteps": [
+        {
+          "name": "cargo clippy",
+          "status": "completed",
+          "conclusion": "failure",
+          "number": 21,
+          "started_at": "2026-11-05T16:35:01Z",
+          "completed_at": "2026-11-05T16:48:17Z"
+        }
+      ],
+      "sourceHead": "797116d61cf422c26274ffef31297dce84a53a80",
+      "sourceTree": "67ce024db1679aa6cd301856ba3a694ea18bc4b6",
+      "treeBinding": "native log and immutable commit API",
+      "checkoutEvidence": {
+        "sha": "797116d61cf422c26274ffef31297dce84a53a80",
+        "commandLine": 179,
+        "resultLine": 180
+      },
+      "log": {
+        "path": "candidate-review/platform-current-audit/logs/job-127372826413.log",
+        "bytes": 413229,
+        "sha256": "cec7280e8212952be0cd9d91b86cffc6db93650d756934204994290f32c75dc2"
+      }
+    },
+    {
+      "jobId": 127372825550,
+      "runId": 42063953259,
+      "kind": "Windows Bazel bootstrap execution",
+      "errorCode": null,
+      "errorCount": null,
+      "jobStatusAtSnapshot": "completed",
+      "jobConclusionAtSnapshot": "failure",
+      "failedSteps": [
+        {
+          "name": "Run argument comment lint on codex-rs via Bazel",
+          "status": "completed",
+          "conclusion": "failure",
+          "number": 6,
+          "started_at": "2026-11-05T16:35:05Z",
+          "completed_at": "2026-11-05T16:43:55Z"
+        }
+      ],
+      "sourceHead": "797116d61cf422c26274ffef31297dce84a53a80",
+      "sourceTree": "67ce024db1679aa6cd301856ba3a694ea18bc4b6",
+      "treeBinding": "immutable checkout commit API; no separate native tree print asserted",
+      "checkoutEvidence": {
+        "sha": "797116d61cf422c26274ffef31297dce84a53a80",
+        "commandLine": 175,
+        "resultLine": 176
+      },
+      "log": {
+        "path": "candidate-review/platform-current-audit/logs/job-127372825550.log",
+        "bytes": 1129717,
+        "sha256": "7b75ac57c1f81e95a607d278b93a290c87044a396e550d208c15254233549c5a"
+      }
+    }
+  ],
+  "windowsPrivateStateBb55": {
+    "jobId": 127354029766,
+    "runId": 42058691813,
+    "sourceHead": "bb55b0d7d263c396ec504c45393d938c3428dae5",
+    "sourceTree": "19116ccdf440a1cddc2a29f3d709ebe1a3cd06c1",
+    "conclusion": "success",
+    "checkoutEvidence": {
+      "sha": "bb55b0d7d263c396ec504c45393d938c3428dae5",
+      "commandLine": 191,
+      "resultLine": 192
+    },
+    "host": "x86_64-pc-windows-msvc",
+    "rustc": "rustc 1.96.0 (ac68faa20 2026-05-25)\nbinary: rustc\ncommit-hash: ac68faa20c58cbccd01ee7208bf3b6e93a7d7f96\ncommit-date: 2026-05-25\nhost: x86_64-pc-windows-msvc\nrelease: 1.96.0\nLLVM version: 22.1.2\n",
+    "scopeSummaries": [
+      "15 tests run: 15 passed, 5 skipped",
+      "2 tests run: 2 passed, 26 skipped",
+      "3 tests run: 3 passed, 147 skipped",
+      "2 tests run: 2 passed, 148 skipped",
+      "11 tests run: 11 passed, 187 skipped"
+    ],
+    "uniquePassingTests": [
+      {
+        "package": "codex-utils-path",
+        "name": "private_state_windows::directory::api_tests::exclusive_child_creation_preserves_an_existing_private_file"
+      },
+      {
+        "package": "codex-utils-path",
+        "name": "private_state_windows::directory::api_tests::exclusive_creation_refuses_existing_and_racing_directories"
+      },
+      {
+        "package": "codex-utils-path",
+        "name": "private_state_windows::directory::api_tests::existing_directory_open_never_initializes_missing_state"
+      },
+      {
+        "package": "codex-utils-path",
+        "name": "private_state_windows::directory::tests::rejects_ancestor_substitution_at_retained_open"
+      },
+      {
+        "package": "codex-utils-path",
+        "name": "private_state_windows::directory::tests::rejects_junction_before_creating_private_leaf"
+      },
+      {
+        "package": "codex-utils-path",
+        "name": "private_state_windows::security_tests::native_creation_rejects_nul_without_creating_a_prefix_path"
+      },
+      {
+        "package": "codex-utils-path",
+        "name": "private_state_windows::security_tests::new_directory_and_child_have_explicit_token_user_ownership"
+      },
+      {
+        "package": "codex-utils-path",
+        "name": "private_state_windows::security_tests::opening_existing_objects_never_rewrites_their_security"
+      },
+      {
+        "package": "codex-utils-path",
+        "name": "private_state_windows::security_tests::relative_root_uses_one_absolute_spelling_for_create_and_open"
+      },
+      {
+        "package": "codex-utils-path",
+        "name": "private_state_windows::tests::hard_link_is_rejected"
+      },
+      {
+        "package": "codex-utils-path",
+        "name": "private_state_windows::tests::malformed_ace_sid_bounds_fail_closed"
+      },
+      {
+        "package": "codex-utils-path",
+        "name": "private_state_windows::tests::malformed_getace_spans_fail_closed"
+      },
+      {
+        "package": "codex-utils-path",
+        "name": "private_state_windows::tests::public_read_access_is_not_private"
+      },
+      {
+        "package": "codex-utils-path",
+        "name": "private_state_windows::tests::retained_directory_opens_private_single_link_children"
+      },
+      {
+        "package": "codex-utils-path",
+        "name": "private_state_windows::tests::retained_directory_pins_root_and_ancestor_until_drop"
+      },
+      {
+        "package": "codex-hepta-prompt-registry",
+        "name": "durable::windows::tests::full_private_registry_roundtrip_reopens_without_resetting_owner_history"
+      },
+      {
+        "package": "codex-hepta-prompt-registry",
+        "name": "durable::windows::tests::hard_link_is_rejected_before_registry_bytes_are_read"
+      },
+      {
+        "package": "codex-hepta-contracts",
+        "name": "final_use::store::windows::tests::windows_final_use_denies_issuer_or_epoch_substitution"
+      },
+      {
+        "package": "codex-hepta-contracts",
+        "name": "final_use::store::windows::tests::windows_final_use_rejects_hardlinked_claims_before_nonce_replay"
+      },
+      {
+        "package": "codex-hepta-contracts",
+        "name": "final_use::store::windows::tests::windows_nonce_burn_persists_across_real_private_store_reopen"
+      },
+      {
+        "package": "codex-hepta-contracts",
+        "name": "authority_lease::windows::tests::hardlink_alias_of_authority_state_is_rejected_before_reopen"
+      },
+      {
+        "package": "codex-hepta-contracts",
+        "name": "authority_lease::windows::tests::private_authority_lease_roundtrip_reopens_with_exact_frontier"
+      },
+      {
+        "package": "codex-hepta-agentd",
+        "name": "prompt_runtime::tests::dispatch_without_terminal_reopens_as_unknown_and_blocks_blind_retry"
+      },
+      {
+        "package": "codex-hepta-agentd",
+        "name": "prompt_runtime::tests::final_delivered_terminal_releases_staged_turn"
+      },
+      {
+        "package": "codex-hepta-agentd",
+        "name": "prompt_runtime::tests::indeterminate_terminal_reopens_blocked_and_reconciles_monotonically"
+      },
+      {
+        "package": "codex-hepta-agentd",
+        "name": "prompt_runtime::tests::named_agentd_pipeline_stages_exact_registry_bytes_for_app_server_host"
+      },
+      {
+        "package": "codex-hepta-agentd",
+        "name": "prompt_runtime::tests::non_dispatch_terminal_is_idempotent_and_retains_stage_for_retry"
+      },
+      {
+        "package": "codex-hepta-agentd",
+        "name": "prompt_runtime::tests::not_dispatched_retry_then_final_delivery_reopens_without_stale_stage_requirement"
+      },
+      {
+        "package": "codex-hepta-agentd",
+        "name": "prompt_runtime::tests::owner_remains_send_sync_with_fault_injection"
+      },
+      {
+        "package": "codex-hepta-agentd",
+        "name": "prompt_runtime::tests::post_rename_ack_loss_poison_reopens_to_dispatch_claim_not_absent"
+      },
+      {
+        "package": "codex-hepta-agentd",
+        "name": "prompt_runtime::tests::staged_attachment_is_bound_to_exact_thread_and_turn"
+      },
+      {
+        "package": "codex-hepta-agentd",
+        "name": "prompt_runtime::tests::windows_prompt_runtime_existing_insecure_directory_is_never_repaired"
+      },
+      {
+        "package": "codex-hepta-agentd",
+        "name": "prompt_runtime::tests::windows_prompt_runtime_private_owner_reopens_without_reset_or_acl_waiver"
+      }
+    ],
+    "laneDetails": [
+      {
+        "lane": "positive",
+        "production_sha256": "21600c6d3b738afbd53db9fffd088944fb7fe1fbc947efde9520fc49e439e1ac",
+        "exit_code": 0,
+        "log_sha256": "36cc804acd76882adba5dc35fe051b0af5307eef4bb29bdc6b0830684eb154ba",
+        "statuses": {
+          "private_state_windows::directory::tests::rejects_ancestor_substitution_at_retained_open": "PASS",
+          "private_state_windows::directory::tests::rejects_junction_before_creating_private_leaf": "PASS"
+        },
+        "observations": {
+          "substitution": "swapped=true denied=true redirected=false",
+          "creation": "denied=true created=false"
+        }
+      },
+      {
+        "lane": "unchecked-create",
+        "patch_sha256": "f55d66d0a5b10e98b6ba1ebb60a56081e6027eff85068e01107c3a1e7ea4f74c",
+        "production_sha256": "a1aa002dc62686156f92071c1ff572987559c73230bf1c4acc3ea072739d400e",
+        "exit_code": 1,
+        "log_sha256": "0bcebbcbeface9a3758f6673e7c1fcab67f7b7630fef85ad66e02c39a7f7f831",
+        "statuses": {
+          "private_state_windows::directory::tests::rejects_ancestor_substitution_at_retained_open": "PASS",
+          "private_state_windows::directory::tests::rejects_junction_before_creating_private_leaf": "FAIL"
+        },
+        "observations": {
+          "substitution": "swapped=true denied=true redirected=false",
+          "creation": "denied=true created=true"
+        }
+      },
+      {
+        "lane": "path-check-open",
+        "patch_sha256": "102a2659d4e6d6b3bc0316ce2d2966f5045b4c8578ed3cbb257c502afebbc4d3",
+        "production_sha256": "01787b0a9cf467436ad0cc35aa47b7c05e24ec5dae9b562c2382d1e7c56acdd4",
+        "exit_code": 1,
+        "log_sha256": "bcdc315683cffe8a639d3b9016fe4cfee3e2c0e7e3988dc3a4ed22bf78268135",
+        "statuses": {
+          "private_state_windows::directory::tests::rejects_ancestor_substitution_at_retained_open": "FAIL",
+          "private_state_windows::directory::tests::rejects_junction_before_creating_private_leaf": "PASS"
+        },
+        "observations": {
+          "substitution": "swapped=true denied=false redirected=true",
+          "creation": "denied=true created=false"
+        }
+      }
+    ],
+    "artifact": {
+      "path": "candidate-review/platform-current-audit/bb55-windows-private-state-acquisition.zip",
+      "bytes": 13522,
+      "sha256": "26c0fffcf8315b9e9e8252430fe0831d431e07e8612ee82975c388834dee13e4"
+    },
+    "artifactId": 13432476348,
+    "artifactDigestMatchesGithubApi": true,
+    "allEmbeddedFileHashesMatch": true,
+    "positiveSourceBytesMatchImmutableGithubBlob": true,
+    "qualificationSourceRestored": true,
+    "log": {
+      "path": "candidate-review/platform-current-audit/logs/job-127354029766.log",
+      "bytes": 240979,
+      "sha256": "5a61df98912c8c45fc1bdf3f5f66ce2769405c696d4399c76372218cc38ee562"
+    },
+    "claimBoundary": "Only this fixed bb55 Windows private-state security scope. Five filtered scopes; directory positive controls overlap two tests already in the first scope. No full Windows, platform, production, deployment, or successor qualification is claimed."
+  },
+  "priorFilesVerifiedUnchanged": 94,
+  "claimBoundary": [
+    "Queued runner 0 is unexecuted.",
+    "Failed step inside running or cancelled job is not rewritten as a terminal job failure.",
+    "Cancelled jobs are API observations; no cause or actor is inferred and this agent cancelled nothing.",
+    "Historical results are not transferred to later candidates.",
+    "All 40 production flags remain false; public topology remains DENY_ALL.",
+    "Windows Bazel bootstrap execution remains an open platform gate."
+  ]
+}

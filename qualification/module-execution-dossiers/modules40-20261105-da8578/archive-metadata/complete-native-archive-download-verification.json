@@ -1,0 +1,79 @@
+{
+  "schema": "hepta.version-pinned-native-archive-download.v1",
+  "file_info": {
+    "metadata": {
+      "acl_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "gid": 1000,
+      "link_count": 1,
+      "metadata_platform": "linux",
+      "mode": 384,
+      "uid": 1000,
+      "xattr_names": [],
+      "xattr_sha256": {}
+    },
+    "mode": 384,
+    "path": "/home/qq/work/hepta-modules40-20261105-da8578/native-865-checkpoint.tar.gz",
+    "sha256": "ba0299e0531d3a3fe4b0c5c5320233e696d5e5436303bc8d082d4fb0d627b430",
+    "size": 325679,
+    "version": "66306:72522942:325679:1793898491828837751:1793898491828837751"
+  },
+  "chunks": [
+    {
+      "chunk_sha256": "dc859cb14cbf213c7222f31cc444546c10f7d2873df5ce0123124a2acc3badff",
+      "eof": false,
+      "next_offset": 65536,
+      "offset": 0,
+      "path": "/home/qq/work/hepta-modules40-20261105-da8578/native-865-checkpoint.tar.gz",
+      "size": 325679,
+      "version": "66306:72522942:325679:1793898491828837751:1793898491828837751"
+    },
+    {
+      "chunk_sha256": "cabc283e0298077d3cc03e37898391ef4f4d6684dd8044b44b33b5a6c759055a",
+      "eof": false,
+      "next_offset": 131072,
+      "offset": 65536,
+      "path": "/home/qq/work/hepta-modules40-20261105-da8578/native-865-checkpoint.tar.gz",
+      "size": 325679,
+      "version": "66306:72522942:325679:1793898491828837751:1793898491828837751"
+    },
+    {
+      "chunk_sha256": "3c747782dc99a6753cc50e6e630a38c5a8f9ec71ce58330099e1c43fd261242f",
+      "eof": false,
+      "next_offset": 196608,
+      "offset": 131072,
+      "path": "/home/qq/work/hepta-modules40-20261105-da8578/native-865-checkpoint.tar.gz",
+      "size": 325679,
+      "version": "66306:72522942:325679:1793898491828837751:1793898491828837751"
+    },
+    {
+      "chunk_sha256": "e48af429d246968bb90c2210fe1ef4763fc3203797c7ebf6b2cfcc593f28fb1a",
+      "eof": false,
+      "next_offset": 262144,
+      "offset": 196608,
+      "path": "/home/qq/work/hepta-modules40-20261105-da8578/native-865-checkpoint.tar.gz",
+      "size": 325679,
+      "version": "66306:72522942:325679:1793898491828837751:1793898491828837751"
+    },
+    {
+      "chunk_sha256": "be7d37ccc059fa1cc24389836eaab27d85955947322628839b2ab89e651bf943",
+      "eof": true,
+      "next_offset": 325679,
+      "offset": 262144,
+      "path": "/home/qq/work/hepta-modules40-20261105-da8578/native-865-checkpoint.tar.gz",
+      "size": 325679,
+      "version": "66306:72522942:325679:1793898491828837751:1793898491828837751"
+    }
+  ],
+  "archive_path": "integration/native-865-checkpoint.tar.gz",
+  "source": {
+    "commit": "8658210499706130788c216ff14fd342809b45a4",
+    "tree": "6bc86196d10cf83b010f9917e5e9cb471b5f6b68",
+    "status": ""
+  },
+  "files": 81,
+  "manifest_entries": 80,
+  "manifest_sha256": "eb90f2d3417d9e87b3c5ef13e9c5c0f9c00840c08c1993ce948edcb70a4b9ba9",
+  "all_chunk_whole_archive_manifest_and_extracted_bytes_verified": true,
+  "remote_mutations": false,
+  "archive_job_terminal_state_not_inferred_from_file_read": true
+}

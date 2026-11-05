@@ -1,0 +1,67 @@
+{
+  "schema": "hepta.modules40.evidence-artifact-index.v1",
+  "executedSourceCommit": "8658210499706130788c216ff14fd342809b45a4",
+  "executedSourceTree": "6bc86196d10cf83b010f9917e5e9cb471b5f6b68",
+  "evidenceParentCommit": "f038947fd20992e15213d41f7f6d8ac1d2ca10fc",
+  "evidenceCommitIsArtifactCarrierOnly": true,
+  "productionImplementationFalseModules": 40,
+  "publicTopology": "DENY_ALL",
+  "archives": [
+    {
+      "path": "native/native-final-bb55-checkpoint.tar.gz",
+      "scope": "bb55 历史原生执行与此前失败",
+      "sourceCommit": "bb55b0d7d263c396ec504c45393d938c3428dae5",
+      "bytes": 1026914,
+      "sha256": "28424496bd400d6c5ff6370158f7b093355e463f19ebb550b1df6e7330504886",
+      "gitBlob": "c970e03be8f75b757d7bab6357260e0a6b9fa84f"
+    },
+    {
+      "path": "native/native-797-file-read-checkpoint.tar.gz",
+      "scope": "797 原始执行；逐文件版本固定的非原子采集",
+      "sourceCommit": "797116d61cf422c26274ffef31297dce84a53a80",
+      "bytes": 313492,
+      "sha256": "6e95dfc4723db20a4bfa158bedae04e8fc537622bbd0a20abf59783552c7571a",
+      "gitBlob": "137c4f64f7d1eeeee750c6afa7d6e4f88d766e1e"
+    },
+    {
+      "path": "native/native-775-checkpoint.tar.gz",
+      "scope": "775 Windows 引用修复后的独立 Linux 执行",
+      "sourceCommit": "775bf555b0a7faf6eed17627acb0d0433294b737",
+      "bytes": 217229,
+      "sha256": "1c59a87b3802c3a6d451907fcd2815ee49129234acfba8aae4868a7a8bb20a59",
+      "gitBlob": "fea6c81d8e14fbad882ba28c3e12ca2ed12e761a"
+    },
+    {
+      "path": "native/native-865-checkpoint.tar.gz",
+      "scope": "最终固定合并候选的独立原生执行",
+      "sourceCommit": "8658210499706130788c216ff14fd342809b45a4",
+      "bytes": 325679,
+      "sha256": "ba0299e0531d3a3fe4b0c5c5320233e696d5e5436303bc8d082d4fb0d627b430",
+      "gitBlob": "9f14d75b9b2403b20df4fcc87e1c37e4bb195a10"
+    },
+    {
+      "path": "audit/native-audits-through-865.tar.gz",
+      "scope": "历史及最终独立审计、读取与归档 custody、审计工具",
+      "sourceCommit": null,
+      "bytes": 488338,
+      "sha256": "b384992ba6230e2a9b6d564131eb8f5a1e05a8bbdddd1febeaa773b4c48f9919",
+      "gitBlob": "422710ebe5cb63778798b38955859cd3e39f35dd"
+    },
+    {
+      "path": "platform-and-merge-checkpoint.tar.gz",
+      "scope": "全部保留的平台日志、快照及 3a39 源码合并审计",
+      "sourceCommit": null,
+      "bytes": 3124274,
+      "sha256": "2d461eb2ac9522d47e3eb4413aa13ce9c40547fdea12434b50ef0d9311e3d426",
+      "gitBlob": "d064d14167775b6307d1d9cbecc89794f976a4b9"
+    },
+    {
+      "path": "source-report-rebuild.tar.gz",
+      "scope": "完整历史及最终 40 模块报告、原始输入与重建工具",
+      "sourceCommit": null,
+      "bytes": 1931138,
+      "sha256": "a7a9102bc6e8ce8ea3048db60a63e198a15714fa20f38f173254867399bef8bf",
+      "gitBlob": "d4f0eb94592b34c3b29e41159bfa7973432a8d8f"
+    }
+  ]
+}

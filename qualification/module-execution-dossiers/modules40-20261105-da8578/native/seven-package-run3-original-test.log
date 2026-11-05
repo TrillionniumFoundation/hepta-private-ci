@@ -1,0 +1,1575 @@
+RUST_MIN_STACK=8388608 NEXTEST_PROFILE=local python3 ../scripts/run-nextest.py "$@"
+warning: use of deprecated associated function `tokio::io::unix::AsyncFd::<T>::new`: unsound due to lack of I/O safety; use `AsyncFd::register` instead (see https://github.com/tokio-rs/tokio/pull/8587)
+  --> utils/pty/src/unix_io.rs:38:60
+   |
+38 |         let fd = std::panic::catch_unwind(move || AsyncFd::new(File::from(fd)))
+   |                                                            ^^^
+   |
+   = note: `#[warn(deprecated)]` on by default
+
+warning: `codex-utils-pty` (lib) generated 1 warning
+warning: hiding a lifetime that's elided elsewhere is confusing
+   --> third_party/i18n-config-0.4.8/src/lib.rs:144:9
+    |
+144 |         &self,
+    |         ^^^^^ the lifetime is elided here
+145 |     ) -> Result<Option<(&'_ Crate, &'_ I18nConfig)>, I18nConfigError> {
+    |                          ^^ ^^^^^   ^^ the same lifetime is elided here
+    |                          |  |
+    |                          |  the same lifetime is hidden here
+    |                          the same lifetime is elided here
+    |
+    = help: the same lifetime is referred to in inconsistent ways, making the signature confusing
+    = note: `#[warn(mismatched_lifetime_syntaxes)]` on by default
+help: use `'_` for type paths
+    |
+145 |     ) -> Result<Option<(&'_ Crate<'_>, &'_ I18nConfig)>, I18nConfigError> {
+    |                                  ++++
+
+warning: hiding a lifetime that's elided elsewhere is confusing
+   --> third_party/i18n-config-0.4.8/src/lib.rs:155:26
+    |
+155 |     pub fn active_config(&self) -> Result<Option<(&'_ Crate, &'_ I18nConfig)>, I18nConfigError> {
+    |                          ^^^^^                     ^^ ^^^^^   ^^ the same lifetime is elided here
+    |                          |                         |  |
+    |                          |                         |  the same lifetime is hidden here
+    |                          |                         the same lifetime is elided here
+    |                          the lifetime is elided here
+    |
+    = help: the same lifetime is referred to in inconsistent ways, making the signature confusing
+help: use `'_` for type paths
+    |
+155 |     pub fn active_config(&self) -> Result<Option<(&'_ Crate<'_>, &'_ I18nConfig)>, I18nConfigError> {
+    |                                                            ++++
+
+warning: `i18n-config` (lib) generated 2 warnings (run `cargo fix --lib -p i18n-config` to apply 2 suggestions)
+warning: use of deprecated associated function `tokio::io::unix::AsyncFd::<T>::new`: unsound due to lack of I/O safety; use `AsyncFd::register` instead (see https://github.com/tokio-rs/tokio/pull/8587)
+   --> shell-escalation/src/unix/socket.rs:258:37
+    |
+258 |         let async_socket = AsyncFd::new(socket)?;
+    |                                     ^^^
+    |
+    = note: `#[warn(deprecated)]` on by default
+
+warning: use of deprecated associated function `tokio::io::unix::AsyncFd::<T>::new`: unsound due to lack of I/O safety; use `AsyncFd::register` instead (see https://github.com/tokio-rs/tokio/pull/8587)
+   --> shell-escalation/src/unix/socket.rs:374:29
+    |
+374 |             inner: AsyncFd::new(socket)?,
+    |                             ^^^
+
+warning: `codex-shell-escalation` (lib) generated 2 warnings
+warning: function `read_restart_journal` is never used
+   --> hepta-supervisor/src/restart_journal.rs:390:15
+    |
+390 | pub(crate) fn read_restart_journal(
+    |               ^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: function `restore_window` is never used
+   --> hepta-supervisor/src/restart_journal.rs:433:15
+    |
+433 | pub(crate) fn restore_window(
+    |               ^^^^^^^^^^^^^^
+
+warning: methods `reset_restart_budget_for_release`, `reset_restart_budget`, and `restore_restart_budget` are never used
+  --> hepta-supervisor/src/restart_state.rs:37:19
+   |
+19 | impl<D: ProcessDriver> Supervisor<D> {
+   | ------------------------------------ methods in this implementation
+...
+37 |     pub(crate) fn reset_restart_budget_for_release(
+   |                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+...
+47 |     pub(crate) fn reset_restart_budget(
+   |                   ^^^^^^^^^^^^^^^^^^^^
+...
+64 |     pub(crate) fn restore_restart_budget(
+   |                   ^^^^^^^^^^^^^^^^^^^^^^
+
+warning: function `reset_slot_restart_budget` is never used
+   --> hepta-supervisor/src/restart_state.rs:147:4
+    |
+147 | fn reset_slot_restart_budget<P>(slot: &mut AgentSlot<P>) {
+    |    ^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: fields `restart_window_started_at`, `restart_window_started_unix_millis`, `restart_retry_at`, `restart_automatic`, `restart_after_exit`, and `restart_exhausted` are never read
+   --> hepta-supervisor/src/runtime.rs:153:9
+    |
+145 | pub(crate) struct AgentSlot<P> {
+    |                   --------- fields in this struct
+...
+153 |     pub restart_window_started_at: Option<Instant>,
+    |         ^^^^^^^^^^^^^^^^^^^^^^^^^
+154 |     pub restart_window_started_unix_millis: Option<u64>,
+    |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+155 |     pub restart_retry_at: Option<Instant>,
+    |         ^^^^^^^^^^^^^^^^
+156 |     pub restart_automatic: bool,
+    |         ^^^^^^^^^^^^^^^^^
+157 |     pub restart_after_exit: bool,
+    |         ^^^^^^^^^^^^^^^^^^
+158 |     pub restart_exhausted: bool,
+    |         ^^^^^^^^^^^^^^^^^
+
+warning: `codex-hepta-supervisor` (lib) generated 5 warnings
+warning: use of deprecated method `landlock::RulesetCreatedAttr::set_no_new_privs`: Use no_new_privs() instead.
+   --> linux-sandbox/src/landlock.rs:150:10
+    |
+150 |         .set_no_new_privs(true);
+    |          ^^^^^^^^^^^^^^^^
+    |
+    = note: `#[warn(deprecated)]` on by default
+
+warning: `codex-linux-sandbox` (lib) generated 1 warning
+warning: associated function `new` is never used
+   --> ext/hepta-memory/src/cognitive/mod.rs:274:19
+    |
+273 | impl CognitiveExtension {
+    | ----------------------- associated function in this implementation
+274 |     pub(crate) fn new(runtime: CognitiveRuntime) -> Self {
+    |                   ^^^
+    |
+    = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: function `api_digest` is never used
+   --> ext/hepta-memory/src/cognitive/federation.rs:864:4
+    |
+864 | fn api_digest(
+    |    ^^^^^^^^^^
+
+warning: `codex-hepta-memory-extension` (lib) generated 2 warnings
+warning: field `sequence` is never read
+   --> hepta-agentd/src/browser_servo.rs:317:5
+    |
+316 | struct DecodedFrame {
+    |        ------------ field in this struct
+317 |     sequence: u64,
+    |     ^^^^^^^^
+    |
+    = note: `DecodedFrame` has a derived impl for the trait `Debug`, but this is intentionally ignored during dead code analysis
+    = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: methods `append` and `append_with_delivery` are never used
+  --> hepta-agentd/src/cognitive_retrieval_learning.rs:32:19
+   |
+24 | impl CognitiveRetrievalLearningSink {
+   | ----------------------------------- methods in this implementation
+...
+32 |     pub(crate) fn append(
+   |                   ^^^^^^
+...
+52 |     pub(crate) fn append_with_delivery(
+   |                   ^^^^^^^^^^^^^^^^^^^^
+
+warning: associated function `from_fields` is never used
+  --> hepta-agentd/src/calculator_recovery_selection.rs:60:19
+   |
+59 | impl AgentdCalculatorRecoverySelector {
+   | ------------------------------------- associated function in this implementation
+60 |     pub(crate) fn from_fields(
+   |                   ^^^^^^^^^^^
+
+warning: field `idempotent` is never read
+   --> hepta-agentd/src/notes_literal_receipts.rs:107:9
+    |
+100 |     Admitted {
+    |     -------- field in this variant
+...
+107 |         idempotent: bool,
+    |         ^^^^^^^^^^
+
+warning: field `handle` is never read
+  --> hepta-agentd/src/plasticity_learning_producer.rs:24:5
+   |
+23 | pub(crate) struct AgentdLearningPlasticityProducerV1 {
+   |                   ---------------------------------- field in this struct
+24 |     handle: PlasticityRuntimeHandleV1,
+   |     ^^^^^^
+   |
+   = note: `AgentdLearningPlasticityProducerV1` has a derived impl for the trait `Clone`, but this is intentionally ignored during dead code analysis
+
+warning: methods `submit_parameter` and `submit_topology` are never used
+  --> hepta-agentd/src/plasticity_learning_producer.rs:32:25
+   |
+27 | impl AgentdLearningPlasticityProducerV1 {
+   | --------------------------------------- methods in this implementation
+...
+32 |     pub(crate) async fn submit_parameter(
+   |                         ^^^^^^^^^^^^^^^^
+...
+40 |     pub(crate) async fn submit_topology(
+   |                         ^^^^^^^^^^^^^^^
+
+warning: methods `submit_parameter_plasticity_v1` and `submit_topology_plasticity_v1` are never used
+   --> hepta-agentd/src/state.rs:203:25
+    |
+ 94 | impl AgentdState {
+    | ---------------- methods in this implementation
+...
+203 |     pub(crate) async fn submit_parameter_plasticity_v1(
+    |                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+...
+220 |     pub(crate) async fn submit_topology_plasticity_v1(
+    |                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: `codex-hepta-agentd` (lib) generated 7 warnings
+warning: methods `reset_restart_budget_for_release`, `reset_restart_budget`, and `restore_restart_budget` are never used
+  --> hepta-supervisor/src/restart_state.rs:37:19
+   |
+19 | impl<D: ProcessDriver> Supervisor<D> {
+   | ------------------------------------ methods in this implementation
+...
+37 |     pub(crate) fn reset_restart_budget_for_release(
+   |                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+...
+47 |     pub(crate) fn reset_restart_budget(
+   |                   ^^^^^^^^^^^^^^^^^^^^
+...
+64 |     pub(crate) fn restore_restart_budget(
+   |                   ^^^^^^^^^^^^^^^^^^^^^^
+   |
+   = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: function `release` is never used
+   --> hepta-supervisor/src/supervisor_tests.rs:139:4
+    |
+139 | fn release(identity: &str, program: &str) -> Result<AgentRelease, SupervisorError> {
+    |    ^^^^^^^
+
+warning: `codex-hepta-supervisor` (lib test) generated 4 warnings (2 duplicates)
+warning: method `append_with_delivery` is never used
+  --> hepta-agentd/src/cognitive_retrieval_learning.rs:52:19
+   |
+24 | impl CognitiveRetrievalLearningSink {
+   | ----------------------------------- method in this implementation
+...
+52 |     pub(crate) fn append_with_delivery(
+   |                   ^^^^^^^^^^^^^^^^^^^^
+
+warning: `codex-hepta-agentd` (lib test) generated 3 warnings (2 duplicates)
+   Compiling codex-hepta-infer-worker-host v0.0.0 (/home/qq/work/hepta-modules40-20261105-da8578/source/codex-rs/hepta-infer-worker-host)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 28.28s
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#proc-macro2@1.0.107` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#quote@1.0.47` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#libc@0.2.191` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde@1.0.229` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde_core@1.0.229` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#parking_lot_core@0.9.12` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#portable-atomic@1.15.0` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#libc@0.2.191` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#zmij@1.0.23` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#thiserror@2.0.21` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#getrandom@0.4.3` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#generic-array@0.14.7` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde_json@1.0.154` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#num-traits@0.2.19` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde_core@1.0.229` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#prettyplease@0.2.37` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#getrandom@0.3.4` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#clang-sys@1.9.1` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#bindgen@0.73.2` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#icu_properties_data@2.3.0` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#icu_normalizer_data@2.3.0` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#zerocopy@0.8.63` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#aws-lc-sys@0.46.0` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#aws-lc-rs@1.18.2` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#rustix@1.1.5` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#crossbeam-utils@0.8.23` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#httparse@1.10.1` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#ring@0.17.14` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#rustls@0.23.46` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#rustversion@1.0.23` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#crc32fast@1.5.2` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#anyhow@1.0.104` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde_json@1.0.154` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#ahash@0.8.12` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#crossbeam-epoch@0.9.21` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#openssl-sys@0.9.117` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#mime_guess@2.0.5` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#openssl@0.10.81` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#native-tls@0.2.18` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#ref-cast@1.0.27` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#oid-registry@0.8.1` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#crossbeam-deque@0.8.8` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#cookie@0.18.2` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#encoding_rs@0.8.42` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#rayon-core@1.13.0` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#syn@1.0.109` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#schemars@0.8.22` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#zstd-sys@2.1.2+zstd.1.5.7` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#zstd-safe@8.2.0` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#typeid@1.0.3` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#heapless@0.7.17` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#allocative@0.3.6` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#erased-serde@0.4.10` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#blake3@1.8.2` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#logos-codegen@0.15.1` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#nix@0.28.0` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#bindgen@0.72.1` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#rama-http-headers@0.3.0` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#starlark_map@0.14.2` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#icu_locale_fallback_data@2.3.0` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#paste@1.0.15` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#memoffset@0.9.1` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#icu_decimal_data@2.3.0` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#starlark@0.14.2` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#rama-dns@0.3.0` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#curve25519-dalek@4.1.3` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#heapless@0.8.0` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#faster-hex@0.10.1` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#thiserror@1.0.69` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#generic-array@0.14.7` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#ring@0.17.14` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#num-traits@0.2.19` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#crossbeam-utils@0.8.23` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#thiserror@2.0.21` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#rustls@0.23.46` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#libsqlite3-sys@0.37.0` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#nix@0.31.3` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#tree-sitter-language@0.1.9` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#windows_x86_64_gnu@0.52.6` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#tree-sitter-powershell@0.26.4` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#tree-sitter-bash@0.25.1` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#tree-sitter@0.25.10` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#aws-types@1.6.0` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#object@0.37.3` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#getrandom@0.3.4` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#rustix@1.1.5` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#findshlibs@0.10.2` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#rmcp@3.1.3` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#sentry-contexts@0.46.2` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#sentry@0.46.2` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#libm@0.2.16` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#noyalib@0.0.58` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#constant_time_eq@0.6.1` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#pulldown-cmark@0.10.3` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#stop-words@0.9.0` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#inotify-sys@0.1.8` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#assert_cmd@2.2.2` which wasn't produced by cargo metadata
+────────────
+ Nextest run ID 36fd42f9-0269-4770-88f9-5ec5435bc80d with nextest profile: local
+    Starting 1219 tests across 36 binaries (78 tests skipped)
+        PASS [   0.012s] codex-hepta-agent-protocol capabilities::tests::duplicate_and_invalid_ids_are_rejected
+        PASS [   0.012s] codex-hepta-agent-protocol capabilities::tests::negotiation_is_intersection_with_minor_downgrade
+        PASS [   0.013s] codex-hepta-agent-protocol tests::capabilities_endpoint_is_additive_and_bounded
+        PASS [   0.013s] codex-hepta-agent-protocol objective_tests::objective_start_outcomes_are_strict_wire_types
+        PASS [   0.014s] codex-hepta-agent-protocol objective_tests::history::history_query_preserves_historical_body_and_current_outer_generation
+        PASS [   0.014s] codex-hepta-agent-protocol tests::cognitive_context_response_stays_v2_compatible_and_revalidation_is_additive
+        PASS [   0.014s] codex-hepta-agent-protocol objective_tests::history::history_unknown_is_nested_and_cannot_decode_as_non_admission
+        PASS [   0.014s] codex-hepta-agent-protocol tests::run_lifecycle_wire_round_trip_is_strict_and_bounded
+        PASS [   0.014s] codex-hepta-agent-protocol objective_tests::signed_objective_control_request_round_trips_inside_frame_bound
+        PASS [   0.014s] codex-hepta-agent-protocol tests::health_wire_round_trip_is_strict_and_bounded
+        PASS [   0.014s] codex-hepta-agent-protocol tests::host_turn_authority_binding_is_strict_and_fail_closed
+        PASS [   0.016s] codex-hepta-agent-protocol tests::memory_federation_control_is_typed_strict_and_bounded
+        PASS [   0.016s] codex-hepta-agent-protocol tests::automation_effect_wire_round_trip_is_strict_and_bounded
+        PASS [   0.019s] codex-hepta-agent-protocol tests::automation_wire_round_trip_is_strict_and_bounded
+        PASS [   0.023s] codex-hepta-agentd app_runtime::tests::agentd_forces_hepta_turn_recovery_on
+        PASS [   0.024s] codex-hepta-agentd app_runtime::tests::agentd_forces_explicit_cognitive_write_profile_state
+        PASS [   0.016s] codex-hepta-agentd authority_host_bootstrap_seal::tests::non_root_cannot_create_the_bootstrap_descriptor
+        PASS [   0.017s] codex-hepta-agentd authority_host_bootstrap_seal::tests::bounded_encoder_does_not_append_an_oversized_fragment
+        PASS [   0.017s] codex-hepta-agentd authority_host_admin::tests::observed_current_root_identity_refuses_zero_nonce_and_changed_birth
+        PASS [   0.019s] codex-hepta-agentd authority_host_native_launch::tests::native_resources_and_private_draft_paths_are_required_without_loader_overrides
+        PASS [   0.033s] codex-hepta-agentd authority_host_admin::tests::capability_does_not_retain_dropped_or_inactive_original_runtime
+        PASS [   0.021s] codex-hepta-agentd authority_host_admin::tests::live_route_rejects_each_changed_root_lifetime_and_nonce
+        PASS [   0.021s] codex-hepta-agentd authority_host_admin::tests::paused_or_ended_route_cannot_be_reactivated_by_capability
+        PASS [   0.036s] codex-hepta-agentd app_runtime::tests::manifest_queue_capacity_reaches_app_server_runtime_options_exactly
+        PASS [   0.018s] codex-hepta-agentd authority_host_runtime::issuer_renewal::tests::pruned_original_cannot_be_recreated_from_the_plan
+        PASS [   0.024s] codex-hepta-agentd authority_host_runtime::issuer_renewal::tests::ordinary_process_is_rejected_before_opening_config
+        PASS [   0.029s] codex-hepta-agentd authority_host_admin::tests::strict_admin_schema_rejects_duplicate_unknown_and_oversized_inputs
+        PASS [   0.027s] codex-hepta-agentd authority_host_runtime::issuer_renewal::tests::expired_original_preparation_is_read_only_and_preserves_identity
+        PASS [   0.019s] codex-hepta-agentd authority_host_runtime::issuer_renewal::tests::preparation_rejects_invalid_lifetime_revision_and_time
+        PASS [   0.030s] codex-hepta-agentd authority_host_runtime::issuer_renewal::tests::changed_plan_fields_never_mutate_the_original_registry
+        PASS [   0.030s] codex-hepta-agentd authority_host_runtime::issuer_renewal::tests::concurrent_canonical_revision_or_epoch_change_is_not_overwritten
+        PASS [   0.016s] codex-hepta-agentd authority_host_runtime::issuer_renewal::tests::revoked_predecessor_or_committed_postimage_cannot_be_renewed
+        PASS [   0.015s] codex-hepta-agentd authority_host_runtime::listeners::tests::readiness_is_not_called_for_an_invalid_original_lane_parent
+        PASS [   0.030s] codex-hepta-agentd authority_host_runtime::issuer_renewal::tests::exact_postimage_retry_does_not_advance_frontier_or_extend_deadline
+        PASS [   0.034s] codex-hepta-agentd authority_host_admin::tests::issuer_revocation_is_an_exact_strict_original_selector
+        PASS [   0.017s] codex-hepta-agentd authority_host_runtime::issuer_renewal::tests::unknown_plan_fields_are_rejected
+        PASS [   0.018s] codex-hepta-agentd authority_host_runtime::session::notes_startup::reservation::tests::expired_original_consume_neither_reads_nor_rearms_the_queued_reservation
+        PASS [   0.012s] codex-hepta-agentd authority_host_runtime::session::notes_startup::tests::ordinary_file_cannot_be_a_pending_root_deployment
+        PASS [   0.024s] codex-hepta-agentd authority_host_runtime::session::desktop_startup::tests::joint_root_fresh_and_recovery_profiles_cannot_relabel_each_other
+        PASS [   0.012s] codex-hepta-agentd authority_host_service::admin_issuer::tests::terminal_confirmation_refuses_new_epoch_without_reconstructing_original_lease
+        PASS [   0.011s] codex-hepta-agentd authority_host_service::tests::observation_discards_a_lease_expiring_during_io_or_a_different_epoch
+        PASS [   0.015s] codex-hepta-agentd authority_host_runtime::session::notes_startup::tests::successor_policy_contract_cannot_drop_the_old_recovery_or_invent_a_policy_lifetime
+        PASS [   0.015s] codex-hepta-agentd authority_host_runtime::session::notes_startup::tests::successor_policy_contract_requires_the_exact_old_identity_and_distinct_reserved_target
+        PASS [   0.025s] codex-hepta-agentd authority_host_runtime::session::desktop_startup::tests::joint_root_requires_both_exact_previous_policies_and_a_distinct_actual_pair
+        PASS [   0.015s] codex-hepta-agentd authority_host_service::admin_issuer::tests::actual_issuer_receipt_matches_exact_retained_canonical_postimage
+        PASS [   0.013s] codex-hepta-agentd authority_host_service::admin_issuer::tests::late_client_confirmation_preserves_committed_revoke_and_refuses_renewal
+        PASS [   0.016s] codex-hepta-agentd authority_host_runtime::session::notes_startup::reservation::tests::reservation_rejects_extra_authority_fields_zero_nonce_and_wrong_destination
+        PASS [   0.026s] codex-hepta-agentd authority_host_runtime::session::desktop_startup::tests::joint_root_bounds_every_saved_selector_and_original_helper_path
+        PASS [   0.017s] codex-hepta-agentd authority_host_runtime::session::notes_startup::reservation::tests::reservation_closes_unexpected_rights_and_disables_credentials_for_original_offer
+        PASS [   0.018s] codex-hepta-agentd authority_host_service::tests::lane_decoders_reject_unknown_duplicate_and_self_selected_authority
+        PASS [   0.018s] codex-hepta-agentd authority_host_service::tests::observation_never_truncates_a_complete_revocation_head_to_fit
+        PASS [   0.024s] codex-hepta-agentd authority_host_runtime::session::notes_startup::reservation::tests::reservation_checks_real_sender_and_rejects_missing_credential_option
+        PASS [   0.016s] codex-hepta-agentd authority_host_service::text_ui::deadline_tests::timely_text_frame_still_uses_the_original_peer_channel
+        PASS [   0.010s] codex-hepta-agentd automation::tests::queue_failures_after_admission_seam_are_never_dispatch_retries
+        PASS [   0.013s] codex-hepta-agentd automation::tests::dispatch_retry_budget_is_bounded_and_progress_resets_it
+        PASS [   0.022s] codex-hepta-agentd authority_host_wire::tests::shared_proof_digest_covers_signature_and_closed_nested_original_lease
+        PASS [   0.023s] codex-hepta-agentd automation::tests::automation_reconcile_payload_uses_stable_client_identity
+        PASS [   0.012s] codex-hepta-agentd browser_servo::tests::non_effect_calls_never_enter_final_use_authority
+        PASS [   0.091s] codex-hepta-agentd android_runtime::tests::android_runtime_invalidation_after_start_keeps_job_without_accepting_late_ack
+        PASS [   0.013s] codex-hepta-agentd calculator_channel::tests::calculator_lost_effect_reply_disables_only_effect_and_keeps_correlated_readback
+        PASS [   0.093s] codex-hepta-agentd android_runtime::tests::android_runtime_fixed_helper_uses_original_bytes_then_independent_read_job
+        PASS [   0.010s] codex-hepta-agentd calculator_channel::tests::calculator_recovery_rejects_effect_before_sending_any_datagram
+        PASS [   0.094s] codex-hepta-agentd android_runtime::tests::android_runtime_invalidation_allows_only_original_readback_and_payload_drift_sends_nothing
+        PASS [   0.009s] codex-hepta-agentd calculator_deadline::tests::total_budget_rejects_clock_regression_and_late_final_io
+        PASS [   0.011s] codex-hepta-agentd cognitive_checkpoint_unix::tests::bootstrap_rejects_wrong_lifetime_peer_and_non_pidfd_capabilities
+        PASS [   0.013s] codex-hepta-agentd calculator_recovery_selection::tests::startup_selector_and_legacy_exact_are_exclusive_and_strict
+        PASS [   0.014s] codex-hepta-agentd calculator_recovery_process::tests::calculator_recovery_process_seals_bytes_and_refuses_effect_or_foreign_operation_without_spawn
+        PASS [   0.020s] codex-hepta-agentd calculator_recovery_process::tests::calculator_recovery_process_rejects_unsafe_or_mismatched_executable_before_start
+        PASS [   0.043s] codex-hepta-agentd browser_servo::tests::challenge_request_digest_must_match_signed_final_use_binding
+        PASS [   0.015s] codex-hepta-agentd cognitive_checkpoint_unix::tests::exact_framing_keeps_a_complete_refusal_lane_usable_without_retrying
+        PASS [   0.021s] codex-hepta-agentd cognitive_checkpoint_unix::tests::concurrent_checkpoint_read_cannot_consume_the_original_inflight_reply
+        PASS [   0.016s] codex-hepta-agentd cognitive_checkpoint_unix::tests::initial::initial_current_keeps_original_token_and_the_same_live_lane
+        PASS [   0.012s] codex-hepta-agentd cognitive_checkpoint_unix::tests::initial::non_current_handoff_is_rejected_before_output_and_closes_owned_lane
+        PASS [   0.019s] codex-hepta-agentd cognitive_checkpoint_unix::tests::initial::changed_current_or_incomplete_ack_drops_the_consumed_lane_without_resend
+        PASS [   0.013s] codex-hepta-agentd cognitive_checkpoint_unix::tests::invalid_request_is_refused_before_io_without_consuming_the_channel
+        PASS [   0.015s] codex-hepta-agentd cognitive_checkpoint_unix::tests::malformed_or_mismatched_reply_never_leaves_a_reusable_stream
+        PASS [   0.076s] codex-hepta-agentd automation::service_tests::process_shutdown_does_not_turn_into_durable_timer_retirement
+        PASS [   0.075s] codex-hepta-agentd automation::service_tests::production_constructor_rejects_mismatched_identity_before_spawn
+        PASS [   0.077s] codex-hepta-agentd automation::service_tests::production_constructor_never_resumes_a_draining_owner
+        PASS [   0.138s] codex-hepta-agentd android_runtime::tests::android_runtime_requires_terminal_success_complete_lossless_same_job_output
+        PASS [   0.012s] codex-hepta-agentd cognitive_context::tests::encoded_read_budget_unavailability_is_local_not_store_failure
+        PASS [   0.073s] codex-hepta-agentd browser_servo::tests::final_use_fence_covers_exactly_the_browser_local_dispatch_boundary
+        PASS [   0.044s] codex-hepta-agentd cognitive_checkpoint_unix::tests::original_peer_exit_refuses_even_while_a_child_retains_the_connected_descriptor
+        PASS [   0.113s] codex-hepta-agentd authority_host_service::text_ui::deadline_tests::idle_text_connection_respects_exchange_and_remaining_root_budgets
+        PASS [   0.119s] codex-hepta-agentd authority_host_wire::tests::shared_typed_proof_signature_binds_original_identity_epochs_lease_and_sequence
+        PASS [   0.193s] codex-hepta-agentd app_runtime::tests::notes_embedding_keeps_the_store_but_removes_general_cognitive_tool_state
+        PASS [   0.197s] codex-hepta-agentd authority_host_admin::deadline::tests::late_actual_lifetime_read_cannot_enter_registry_or_issuer_cas
+        PASS [   0.197s] codex-hepta-agentd authority_host_admin::deadline::tests::late_actual_owner_check_cannot_enter_registry_or_issuer_cas
+        PASS [   0.210s] codex-hepta-agentd app_runtime::tests::desktop_embedding_keeps_the_store_but_removes_general_cognitive_tool_state
+        PASS [   0.216s] codex-hepta-agentd android_runtime::tests::android_runtime_unknown_start_and_lost_reply_never_repeat_effect_or_reconnect
+        PASS [   0.135s] codex-hepta-agentd cognitive_checkpoint_unix::tests::cancelling_an_exchange_discards_its_late_reply_and_cannot_rearm_the_lane
+        PASS [   0.118s] codex-hepta-agentd cognitive_checkpoint_unix::tests::partial_frame_deadline_permanently_closes_the_original_stream
+        PASS [   0.063s] codex-hepta-agentd cognitive_ranker::tests::current_loaded_model_changes_read_order_and_abstains_on_unseen_or_corrected_records
+        PASS [   0.030s] codex-hepta-agentd cognitive_retrieval_learning::tests::different_rpc_ids_create_distinct_assignment_records
+        PASS [   0.058s] codex-hepta-agentd cognitive_ranker::tests::missing_or_revoked_current_witness_closes_ranker_without_baseline_fallback
+        PASS [   0.195s] codex-hepta-agentd automation_effect_host::tests::host_dispatches_exact_wire_payload_once
+        PASS [   0.015s] codex-hepta-agentd config::root_handoff::credentials::tests::another_live_thread_is_rejected_without_changing_credentials
+        PASS [   0.072s] codex-hepta-agentd cognitive_ranker::tests::new_generation_candidate_changes_behavior_and_explicit_predecessor_reload_restores_it
+        PASS [   0.028s] codex-hepta-agentd cognitive_retrieval_learning::tests::same_rpc_and_observation_replays_idempotently
+        PASS [   0.023s] codex-hepta-agentd cognitive_retrieval_learning::tests::same_rpc_with_different_assignment_is_identity_conflict
+        PASS [   0.047s] codex-hepta-agentd cognitive_retrieval_learning::tests::historical_assignment_retry_keeps_original_predecessor_after_later_appends
+        PASS [   0.039s] codex-hepta-agentd cognitive_retrieval_learning::tests::indexed_historical_identity_does_not_accept_changed_assignment
+        PASS [   0.011s] codex-hepta-agentd config::tests::cognitive_retrieval_process_profile_is_explicit_and_fail_closed
+        PASS [   0.016s] codex-hepta-agentd config::root_handoff::tests::root_handoff_rejects_zero_uid_or_gid_without_releasing_a_runtime
+        PASS [   0.016s] codex-hepta-agentd config::tests::config_binds_exact_registered_agent_roots_and_workspace
+        PASS [   0.018s] codex-hepta-agentd control::tests::dangling_control_symlink_is_not_treated_as_a_missing_entry
+        PASS [   0.014s] codex-hepta-agentd control::tests::missing_control_socket_path_is_preparable_without_a_listener
+        PASS [   0.018s] codex-hepta-agentd control::tests::live_control_socket_entry_is_preserved
+        PASS [   0.011s] codex-hepta-agentd cpu_policy::tests::another_valid_revision_starts_a_new_pressure_streak
+        PASS [   0.016s] codex-hepta-agentd control::tests::non_socket_control_path_is_preserved
+        PASS [   0.016s] codex-hepta-agentd control::tests::stale_control_socket_entry_is_removed_before_rebinding
+        PASS [   0.012s] codex-hepta-agentd cpu_policy::tests::both_bounds_saturate_without_generating_equal_cap_writes
+        PASS [   0.037s] codex-hepta-agentd config::root_handoff::late_writer::custody_tests::postload_birth_refusal_consumes_config_but_retains_active_original_session_file
+        PASS [   0.265s] codex-hepta-agentd authority_host_runtime::session::notes_startup::reservation::tests::original_reservation_consume_keeps_the_elapsed_episode_budget
+        PASS [   0.011s] codex-hepta-agentd cpu_policy::tests::event_loss_is_not_cleared_by_a_later_zero_count
+        PASS [   0.011s] codex-hepta-agentd cpu_policy::tests::feedback_requires_two_separated_same_direction_samples
+        PASS [   0.012s] codex-hepta-agentd cpu_policy::tests::fast_polling_cannot_create_pressure_or_repeated_proposals
+        PASS [   0.010s] codex-hepta-agentd cpu_policy::tests::fresh_native_usage_cannot_refresh_old_or_foreign_demand_evidence
+        PASS [   0.015s] codex-hepta-agentd cpu_policy::tests::changed_lifetime_and_counter_regression_are_refused
+        PASS [   0.011s] codex-hepta-agentd cpu_policy::tests::old_future_and_replayed_measurements_are_refused
+        PASS [   0.012s] codex-hepta-agentd cpu_policy::tests::fixed_target_obeys_slew_bound_and_does_not_refill_same_budget
+        PASS [   0.012s] codex-hepta-agentd cpu_policy::tests::proposal_revalidates_original_sample_age_even_with_a_fresh_read
+        PASS [   0.012s] codex-hepta-agentd cpu_policy::tests::retained_charge_above_a_lowered_cap_is_a_valid_observation
+        PASS [   0.012s] codex-hepta-agentd cpu_policy::tests::two_native_reads_cannot_reuse_one_demand_sample
+        PASS [   0.012s] codex-hepta-agentd cpu_policy::tests::unknown_wait_reason_and_explicit_pause_do_not_raise_cap
+        PASS [   0.013s] codex-hepta-agentd cpu_policy::tests::reversed_pressure_does_not_reuse_the_old_streak
+        PASS [   0.013s] codex-hepta-agentd cpu_policy::tests::zero_budget_is_not_inferred_to_be_user_pause
+        PASS [   0.012s] codex-hepta-agentd deployment_frontier::tests::missing_corrupt_wrong_owner_and_symlink_never_reinitialize
+        PASS [   0.188s] codex-hepta-agentd cognitive_context::tests::hnmf::changed_hnmf_context_before_publication_fails_closed
+        PASS [   0.012s] codex-hepta-agentd deployment_frontier::tests::restart_retains_cas_and_rejects_an_old_local_snapshot
+        PASS [   0.018s] codex-hepta-agentd deployment_frontier::tests::independent_handles_have_exactly_one_cas_winner
+        PASS [   0.011s] codex-hepta-agentd deployment_frontier::tests::unsafe_permissions_and_hardlinks_are_refused
+        PASS [   0.203s] codex-hepta-agentd cognitive_context::tests::final_use_binds_complete_owner_cut_not_only_memory_snapshot
+        PASS [   0.018s] codex-hepta-agentd deployment_issuer::authbus::tests::deployment_authbus_fails_closed_on_counter_or_time_overflow
+        PASS [   0.017s] codex-hepta-agentd deployment_issuer::authbus::tests::deployment_authbus_shares_durable_sequence_with_final_use_and_reopen
+        PASS [   0.019s] codex-hepta-agentd deployment_issuer::authbus::tests::deployment_authbus_discards_expired_response_and_never_reuses_reserved_sequence
+        PASS [   0.020s] codex-hepta-agentd deployment_issuer::authbus::tests::deployment_authbus_rejects_body_scope_subject_route_and_epoch_without_consuming_sequence
+        PASS [   0.027s] codex-hepta-agentd deployment_issuer::authbus::tests::deployment_authbus_concurrent_requests_get_unique_durable_sequences
+        PASS [   0.219s] codex-hepta-agentd cognitive_context::tests::context_reads_real_owner_content_and_removes_committed_tombstones
+        PASS [   0.206s] codex-hepta-agentd cognitive_context::tests::hnmf::current_hnmf_context_filters_owner_candidates_before_delivery
+        PASS [   0.039s] codex-hepta-agentd deployment_issuer::authbus::tests::deployment_authbus_uses_original_signature_and_registered_host_identity
+        PASS [   0.041s] codex-hepta-agentd deployment_issuer::authbus::tests::writer_tests::deployment_writer_objective_refuses_revoked_or_changed_exact_lease_before_sequence
+        PASS [   0.049s] codex-hepta-agentd deployment_issuer::authbus::tests::writer_tests::deployment_writer_objective_discards_post_io_expiry_without_reusing_sequence
+        PASS [   0.040s] codex-hepta-agentd deployment_issuer::authbus::tests::writer_tests::issuer_final_tests::protected_objective_compatibility_entry_cannot_bypass_original_writer_registration
+        PASS [   0.381s] codex-hepta-agentd authbus_dispatch::tests::matching_receipt_metadata_with_different_queue_input_never_acknowledges
+        PASS [   0.057s] codex-hepta-agentd deployment_issuer::authbus::tests::writer_tests::deployment_writer_objective_refuses_wrong_proof_or_spawn_before_sequence
+        PASS [   0.268s] codex-hepta-agentd cognitive_context::tests::budget::learned_ranker_can_select_a_candidate_outside_legacy_top_four
+        PASS [   0.243s] codex-hepta-agentd cognitive_context::tests::hnmf::final_use_revalidation_rejects_changed_hnmf_context
+        PASS [   0.058s] codex-hepta-agentd deployment_issuer::authbus::tests::writer_tests::deployment_writer_objective_uses_original_claims_and_caps_expiry_to_the_live_lease
+        PASS [   0.057s] codex-hepta-agentd deployment_issuer::authbus::tests::writer_tests::issuer_followup::objective_independent_issuer_revocation_refuses_new_canonical_signature
+        PASS [   0.408s] codex-hepta-agentd authbus_dispatch::tests::revocation_during_queue_request_prevents_success_ack
+        PASS [   0.286s] codex-hepta-agentd cognitive_context::tests::budget::byte_cut_cannot_hide_an_unsupported_candidate_from_whole_batch_abstention
+        PASS [   0.409s] codex-hepta-agentd authbus_dispatch::tests::abandoned_first_claim_without_admission_is_quarantined_after_lookup_missing
+        PASS [   0.249s] codex-hepta-agentd cognitive_context::tests::hnmf::final_use_revalidation_rejects_source_drift_during_provider_callback
+        PASS [   0.356s] codex-hepta-agentd automation::service_tests::cancellation_preserves_in_flight_queue_ack_before_scheduler_exit
+        PASS [   0.281s] codex-hepta-agentd cognitive_context::tests::budget::oversized_learned_winner_does_not_consume_the_only_result_slot
+        PASS [   0.078s] codex-hepta-agentd deployment_issuer::authbus::tests::writer_tests::issuer_followup::human_text_independent_issuer_revocation_refuses_new_canonical_signature
+        PASS [   0.014s] codex-hepta-agentd deployment_issuer::notes::observation::tests::dropped_capture_cannot_return_an_older_artifact_as_latest_issue
+        PASS [   0.014s] codex-hepta-agentd deployment_issuer::notes::observation::tests::issued_observation_selector_rejects_unknown_and_duplicate_fields
+        PASS [   0.015s] codex-hepta-agentd deployment_issuer::notes::observation::tests::oversized_metadata_and_counter_overflow_cannot_fall_back_to_old_latest
+        PASS [   0.026s] codex-hepta-agentd deployment_issuer::notes::observation::tests::actual_issuer_result_preserves_original_bytes_id_nonce_epoch_binding_and_signature
+        PASS [   0.023s] codex-hepta-agentd deployment_issuer::notes::observation::tests::eviction_and_restart_are_unknown_and_never_reissue_or_extend_storage
+        PASS [   0.266s] codex-hepta-agentd cognitive_context::tests::hnmf::final_use_revalidation_rejects_tombstone_during_provider_callback
+        PASS [   0.082s] codex-hepta-agentd deployment_issuer::authbus::tests::writer_tests::issuer_followup::text_independent_issuer_revocation_refuses_new_canonical_signature
+        PASS [   0.071s] codex-hepta-agentd deployment_issuer::desktop::tests::desktop_policy_competing_successors_publish_only_one_complete_pair
+        PASS [   0.068s] codex-hepta-agentd deployment_issuer::desktop::tests::desktop_policy_cross_session_pair_or_reused_incarnation_cannot_change_owner_state
+        PASS [   0.317s] codex-hepta-agentd cognitive_context::tests::budget::learned_winner_survives_legacy_byte_cut_and_response_stays_bounded
+        PASS [   0.033s] codex-hepta-agentd deployment_issuer::notes::tests::deployment_notes_ambiguous_notes_slot_cannot_install_or_replace_policy
+        PASS [   0.036s] codex-hepta-agentd deployment_issuer::notes::tests::deployment_notes_changed_canonical_proof_cannot_sign_after_original_delegation
+        PASS [   0.059s] codex-hepta-agentd deployment_issuer::desktop::tests::desktop_policy_public_entry_requires_actual_root_before_any_state_change
+        PASS [   0.031s] codex-hepta-agentd deployment_issuer::notes::tests::deployment_notes_lookalike_registry_cannot_install_delegation
+        PASS [   0.100s] codex-hepta-agentd deployment_issuer::calculator::issuer_final_tests::calculator_original_signature_is_capped_by_its_shorter_independent_parent
+        PASS [   0.059s] codex-hepta-agentd deployment_issuer::desktop::tests::desktop_policy_wrong_calculator_predecessor_does_not_replace_notes
+        PASS [   0.101s] codex-hepta-agentd deployment_issuer::calculator::issuer_followup::calculator_independent_issuer_revocation_refuses_new_signed_effect
+        PASS [   0.032s] codex-hepta-agentd deployment_issuer::notes::tests::deployment_notes_wrong_scope_subject_or_incarnation_creates_no_lease_or_grant
+        PASS [   0.023s] codex-hepta-agentd deployment_issuer::notes::tests::issuer_parent::notes_policy_revoked_independent_issuer_parent_cannot_replace_target
+        PASS [   0.016s] codex-hepta-agentd deployment_issuer::original_grant::tests::exact_original_head_cas_refuses_stale_revision_without_advancing_real_state
+        PASS [   0.042s] codex-hepta-agentd deployment_issuer::notes::tests::deployment_notes_policy_wrong_predecessor_or_expired_writer_cannot_change_state
+        PASS [   0.037s] codex-hepta-agentd deployment_issuer::notes::tests::issuer_parent::notes_grant_revoked_independent_issuer_parent_cannot_sign_or_create_effect_lease
+        PASS [   0.014s] codex-hepta-agentd deployment_issuer::root::tests::deployment_live_observation_cannot_use_an_older_clone_for_a_requested_new_revision
+        PASS [   0.012s] codex-hepta-agentd deployment_issuer::root::tests::deployment_live_observation_uses_the_original_revision_revocation_and_expiry_checks
+        PASS [   0.144s] codex-hepta-agentd deployment_issuer::authbus::tests::writer_tests::issuer_final_tests::original_five_clock_samples_keep_post_io_expiry_consumed_and_text_history_exact
+        PASS [   0.037s] codex-hepta-agentd deployment_issuer::notes::tests::issuer_routing::deployment_notes_route_denied_notes_writer_never_falls_back_to_generic_grant
+        PASS [   0.014s] codex-hepta-agentd deployment_issuer::root::tests::deployment_final_use_discards_post_io_expiry_without_reusing_its_sequence
+        PASS [   0.033s] codex-hepta-agentd deployment_issuer::notes::tests::issuer_routing::deployment_notes_route_wrong_notes_scope_or_owner_creates_no_authority
+        PASS [   0.035s] codex-hepta-agentd deployment_issuer::original_grant::tests::expired_original_artifact_can_only_be_observed_without_advancing_any_state
+        PASS [   0.151s] codex-hepta-agentd deployment_issuer::authbus::tests::writer_tests::issuer_final_tests::registered_objective_text_and_human_signatures_cap_parent_and_refuse_new_use_after_expiry
+        PASS [   0.040s] codex-hepta-agentd deployment_issuer::notes::tests::issuer_routing::deployment_notes_route_requires_original_non_notes_policy_and_exact_live_lease
+        PASS [   0.013s] codex-hepta-agentd deployment_issuer::root::tests::deployment_protected_concurrent_revision_cannot_sign_with_an_older_expiry
+        PASS [   0.011s] codex-hepta-agentd deployment_issuer::root::tests::deployment_protected_factory_rejects_unprotected_parent_without_creating_key
+        PASS [   0.013s] codex-hepta-agentd deployment_issuer::root::tests::deployment_protected_final_use_uses_exact_lease_revision_binding_and_expiry
+        PASS [   0.014s] codex-hepta-agentd deployment_issuer::tests::original_agentd_client_reads_real_server_grant_and_denial_on_same_channel
+        PASS [   0.116s] codex-hepta-agentd deployment_issuer::desktop::tests::desktop_policy_pair_cas_preserves_original_owner_and_reconciles_exact_lost_ack
+        PASS [   0.289s] codex-hepta-agentd cognitive_ranker::tests::sqlite_read_consumer_uses_fitted_order_before_limit_and_rechecks_deletion
+        PASS [   0.120s] codex-hepta-agentd deployment_issuer::desktop::tests::desktop_policy_expired_or_revoked_writer_keeps_both_original_slots
+        PASS [   0.114s] codex-hepta-agentd deployment_issuer::desktop::tests::desktop_policy_partial_pair_and_ambiguous_slot_are_never_promoted
+        PASS [   0.014s] codex-hepta-agentd deployment_issuer::tests::out_of_scope_and_invalid_grants_do_not_issue_and_revocation_is_durable
+        PASS [   0.061s] codex-hepta-agentd deployment_issuer::notes::tests::issuer_deadline::independent_issuer_deadline_caps_grant_and_expiry_creates_no_new_effect_lease
+        PASS [   0.014s] codex-hepta-agentd deployment_issuer::text::human::tests::generic_signature_cannot_upgrade_into_human_provenance_or_consume_another_sequence
+        PASS [   0.015s] codex-hepta-agentd deployment_issuer::text::human::tests::exact_human_binding_survives_reopen_and_readback_never_changes_the_original_cas
+        PASS [   0.072s] codex-hepta-agentd deployment_issuer::notes::tests::deployment_notes_revoked_effect_and_writer_cannot_sign_or_reset
+        PASS [   0.015s] codex-hepta-agentd deployment_issuer::text::recovery::tests::restart_recovers_only_exact_namespace_and_old_generation_without_signing
+        PASS [   0.026s] codex-hepta-agentd deployment_issuer::tests::actual_random_key_signs_original_grant_and_ids_survive_reopen
+        PASS [   0.042s] codex-hepta-agentd deployment_issuer::original_grant::tests::valid_own_signature_cannot_bypass_old_epoch_canonical_id_or_elapsed_budget
+        PASS [   0.015s] codex-hepta-agentd deployment_issuer::text::retirement::tests::retiring_later_input_keeps_unknown_earlier_identity_and_rejects_wrong_proof
+        PASS [   0.013s] codex-hepta-agentd deployment_issuer::text::tests::missing_lookup_and_scope_conflict_do_not_sign_or_consume_sequence
+        PASS [   0.120s] codex-hepta-agentd deployment_issuer::desktop::tests::desktop_policy_two_successors_keep_one_original_issuer_then_revocation_fences_the_pair
+        PASS [   0.013s] codex-hepta-agentd deployment_issuer::text::unsigned::tests::lost_unsigned_close_ack_and_late_sign_stay_closed_after_original_owner_reopen
+        PASS [   0.096s] codex-hepta-agentd deployment_issuer::notes::tests::deployment_notes_distinct_payloads_share_canonical_signer_and_original_counter
+        PASS [   0.014s] codex-hepta-agentd deployment_issuer::writer::tests::issuer_parent::writer_proof_revoked_issuer_parent_cannot_create_authority
+        PASS [   0.018s] codex-hepta-agentd deployment_issuer::text::unsigned::tests::lost_sign_ack_returns_exact_retained_original_and_cannot_be_closed_or_replaced
+        PASS [   0.026s] codex-hepta-agentd deployment_issuer::text::tests::retained_text_signature_uses_original_key_store_and_sequence_after_reopen
+        PASS [   0.528s] codex-hepta-agentd authbus_dispatch::tests::ready_generation_and_owner_private_trust_are_required_before_admission
+        PASS [   0.096s] codex-hepta-agentd deployment_issuer::notes::tests::deployment_notes_repeated_binding_never_renews_expired_or_pruned_lease
+        PASS [   0.027s] codex-hepta-agentd deployment_issuer::writer::tests::issuer_deadline::final_issuer_observation_does_not_publish_a_writer_that_just_expired
+        PASS [   0.024s] codex-hepta-agentd deployment_issuer::writer::tests::issuer_parent::writer_rotation_revoked_issuer_parent_cannot_replace_retained_proof
+        PASS [   0.012s] codex-hepta-agentd deployment_issuer::writer::tests::writer_proof_rejects_effect_lease_stale_full_lease_and_revocation
+        PASS [   0.050s] codex-hepta-agentd deployment_issuer::tests::original_final_use_owner_rejects_replay_revocation_and_local_state_rollback
+        PASS [   0.011s] codex-hepta-agentd desktop_thread_catalog::tests::desktop_catalog_has_only_six_finite_tools_and_preserves_legacy_catalog
+        PASS [   0.087s] codex-hepta-agentd deployment_issuer::notes::tests::issuer_routing::deployment_notes_route_preserves_authorized_non_notes_and_canonical_issuer
+        PASS [   0.030s] codex-hepta-agentd deployment_issuer::writer::tests::rotation::full_successor_and_generation_must_match_before_any_sequence_is_spent
+        PASS [   0.024s] codex-hepta-agentd deployment_issuer::writer::tests::writer_proof_expiring_after_durable_sequence_is_discarded_without_refund
+        PASS [   0.012s] codex-hepta-agentd desktop_thread_tool::proof::tests::actual_callback_decoder_enforces_canonical_operands_and_app_specific_status_selection
+        PASS [   0.010s] codex-hepta-agentd desktop_thread_tool::proof::tests::neither_app_can_choose_authority_or_replace_the_original_callback_route
+        PASS [   0.011s] codex-hepta-agentd desktop_thread_tool::proof::tests::each_app_requires_current_exact_callback_but_can_observe_its_completed_original_item
+        PASS [   0.011s] codex-hepta-agentd desktop_thread_tool::runtime::tests::a_later_application_cannot_inherit_the_first_applications_success
+        PASS [   0.009s] codex-hepta-agentd desktop_thread_tool::runtime::tests::missing_history_and_current_state_do_not_manufacture_an_effect_success
+        PASS [   0.057s] codex-hepta-agentd deployment_issuer::text::recovery::tests::encoded_capacity_preserves_original_refs_and_does_not_consume_next_intent
+        PASS [   0.010s] codex-hepta-agentd final_use_issuer::root_client::tests::root_issuer_legacy_constructor_cannot_request_signing_or_bypass_uid_zero
+        PASS [   0.011s] codex-hepta-agentd event_buffer::tests::bounded_buffer_reports_cursor_gap_and_resumes
+        PASS [   0.036s] codex-hepta-agentd deployment_issuer::writer::tests::writer_proof_concurrent_registration_returns_one_exact_retained_signature
+        PASS [   0.039s] codex-hepta-agentd deployment_issuer::writer::tests::rotation::same_canonical_lease_id_is_refused_before_any_predecessor_replacement
+        PASS [   0.010s] codex-hepta-agentd final_use_issuer::root_client::tests::root_issuer_preserves_typed_objective_then_original_final_use_on_one_lane
+        PASS [   0.011s] codex-hepta-agentd final_use_issuer::root_client::tests::root_issuer_wrong_body_or_extra_field_permanently_closes_both_operations
+        PASS [   0.011s] codex-hepta-agentd final_use_issuer::root_client::tests::root_text_sign_then_lookup_keeps_original_generation_and_signature_identity
+        PASS [   0.037s] codex-hepta-agentd deployment_issuer::writer::tests::writer_proof_unrelated_lease_mutation_advances_metadata_without_changing_proof
+        PASS [   0.135s] codex-hepta-agentd deployment_issuer::notes::tests::deployment_notes_policy_incarnation_cas_retains_key_head_counter_and_old_grant
+        PASS [   0.030s] codex-hepta-agentd desktop_thread_seed::tests::new_desktop_seed_binds_six_tools_and_cannot_enter_legacy_notes_recovery
+        PASS [   0.012s] codex-hepta-agentd final_use_issuer::tests::oversized_and_empty_frames_are_rejected_without_reading_a_body
+        PASS [   0.009s] codex-hepta-agentd final_use_issuer::tests::wrong_peer_and_unbounded_timeouts_fail_before_any_request
+        PASS [   0.047s] codex-hepta-agentd deployment_issuer::writer::tests::writer_proof_is_retained_across_reads_reopen_and_shared_original_sequence
+        PASS [   0.012s] codex-hepta-agentd final_use_issuer::tests::truncated_response_closes_the_channel_and_oversized_binding_writes_nothing
+        PASS [   0.015s] codex-hepta-agentd final_use_issuer::tests::concurrent_requests_do_not_interleave_and_complete_denial_can_be_observed
+        PASS [   0.015s] codex-hepta-agentd final_use_issuer::tests::malformed_or_wrong_binding_responses_fence_the_channel_without_retry
+        PASS [   0.036s] codex-hepta-agentd desktop_thread_seed::tests::desktop_seed_rechecks_actual_configuration_and_session_metadata
+        PASS [   0.011s] codex-hepta-agentd grant_provider_worker::tests::cancelled_waiter_does_not_release_capacity_held_by_the_original_worker
+        PASS [   0.516s] codex-hepta-agentd authority_host_service::text_ui::deadline_tests::first_text_byte_does_not_refresh_the_connection_budget
+        PASS [   0.012s] codex-hepta-agentd hos2_device::bootstrap_tests::g2_initial_and_successor_attach_only_the_original_matching_role
+        PASS [   0.011s] codex-hepta-agentd hos2_device::bootstrap_tests::g2_successor_local_identity_and_queryabi_cannot_alias_old_history
+        PASS [   0.010s] codex-hepta-agentd hos2_device::bootstrap_tests::g2_truncated_oversized_or_other_version_records_never_reach_ioctl
+        PASS [   0.010s] codex-hepta-agentd hos2_device::bootstrap_tests::g2_wrong_process_root_role_slot_or_page_is_rejected_before_transport
+        PASS [   0.010s] codex-hepta-agentd hos2_device::tests::changed_boot_and_inaccessible_history_remain_unavailable
+        PASS [   0.375s] codex-hepta-agentd cognitive_ranker::tests::running_socket_uses_launch_bound_model_and_isolates_ranker_revocation
+        PASS [   0.010s] codex-hepta-agentd hos2_device::bootstrap_tests::legacy_v2_constructor_does_not_silently_admit_g2
+        PASS [   0.060s] codex-hepta-agentd deployment_issuer::writer::tests::rotation::post_io_expiry_keeps_old_proof_and_never_refunds_reserved_sequence
+        PASS [   0.010s] codex-hepta-agentd hos2_device::tests::cpu_policy::cpu_policy_native_recheck_refuses_revision_drift_and_post_io_expiry
+        PASS [   0.066s] codex-hepta-agentd deployment_issuer::writer::tests::rotation::concurrent_exact_rotations_reconcile_one_original_counter_reservation
+        PASS [   0.012s] codex-hepta-agentd hos2_device::tests::cpu_policy::cpu_policy_preparation_reads_original_device_and_never_installs_or_allocates_d
+        PASS [   0.013s] codex-hepta-agentd hos2_device::tests::conflict_does_not_query_or_commit_the_previous_request_using_the_same_d
+        PASS [   0.010s] codex-hepta-agentd hos2_device::tests::malformed_success_is_a_contradiction_and_lost_transport_reply_remains_unknown
+        PASS [   0.012s] codex-hepta-agentd hos2_device::tests::known_request_refusals_cannot_query_an_older_applied_delivery
+        PASS [   0.009s] codex-hepta-agentd hos2_device::tests::read_usage_accepts_boot_origin_and_full_unsigned_observation_range
+        PASS [   0.010s] codex-hepta-agentd hos2_device::tests::native_usage_requires_an_existing_manager_or_recovery_observe_handle
+        PASS [   0.010s] codex-hepta-agentd hos2_device::tests::read_usage_correlates_observer_handle_without_consuming_delivery_sequence
+        PASS [   0.012s] codex-hepta-agentd hos2_device::tests::production_owner_request_and_a02_wire_vectors_match
+        PASS [   0.010s] codex-hepta-agentd hos2_device::tests::read_usage_refusal_or_lost_reply_never_becomes_a_snapshot_or_retry
+        PASS [   0.009s] codex-hepta-agentd hos2_device::tests::read_usage_rejects_impossible_single_cpu_snapshots
+        PASS [   0.011s] codex-hepta-agentd hos2_device::tests::read_usage_rejects_foreign_or_malformed_response_headers
+        PASS [   0.011s] codex-hepta-agentd hos2_device::tests::recovery_observes_original_manager_namespace_without_reinstalling_it
+        PASS [   0.090s] codex-hepta-agentd deployment_issuer::text::tests::full_retention_refuses_new_identity_without_eviction_or_new_signature
+        PASS [   0.011s] codex-hepta-agentd hos2_device::tests::successful_acknowledgement_matches_all_four_shared_history_values
+        PASS [   0.008s] codex-hepta-agentd intelligence_product::runner::run_start::tests::preparation_budget_is_capped_by_the_original_deadline
+        PASS [   0.099s] codex-hepta-agentd deployment_issuer::text::retirement::tests::retirement_frees_capacity_without_reissuing_past_intents_after_reopen
+        PASS [   0.046s] codex-hepta-agentd final_use_issuer::tests::original_authority_verifies_grants_without_trusting_the_provider_head
+        PASS [   0.019s] codex-hepta-agentd intelligence_product::tests::aborted_owner_work_retains_its_budget_until_computation_finishes
+        PASS [   0.146s] codex-hepta-agentd deployment_issuer::original_grant::tests::original_signature_nonce_and_each_signed_field_are_independently_required
+        PASS [   0.102s] codex-hepta-agentd deployment_issuer::writer::tests::rotation::original_revocation_allows_one_rotation_and_exact_lost_ack_reconcile
+        PASS [   0.074s] codex-hepta-agentd final_use_issuer::tests::total_deadline_is_not_extended_by_partial_response_progress
+        PASS [   0.012s] codex-hepta-agentd intuition_policy::tests::host_identity_and_owner_pins_fail_closed_before_policy_admission
+        PASS [   0.028s] codex-hepta-agentd intelligence_product::tests::total_budget_timeout_never_creates_a_dispatch_or_ledger_capability
+        PASS [   0.123s] codex-hepta-agentd deployment_issuer::writer::tests::rotation::expired_or_original_pruned_predecessor_keeps_strict_signed_identity
+        PASS [   0.203s] codex-hepta-agentd deployment_issuer::notes::tests::deployment_notes_preserves_original_objective_route_across_exact_policy_replacement
+        PASS [   0.011s] codex-hepta-agentd lane_b_runtime::bound::tests::exact_bound_transitions_compare_revision_before_any_idempotent_return
+        PASS [   0.016s] codex-hepta-agentd lane_b_runtime::bound::tests::reused_run_ids_cannot_redirect_bound_mutations_or_idempotent_acknowledgements
+        PASS [   0.056s] codex-hepta-agentd intelligence_product::tests::missing_current_owner_fails_before_product_use
+        PASS [   0.009s] codex-hepta-agentd lane_b_runtime::fault_tests::exhausted_recovered_revision_keeps_unresolved_reservation
+        PASS [   0.011s] codex-hepta-agentd lane_b_runtime::fault_tests::acknowledgement_deadline_overflow_preserves_dispatched_record
+        PASS [   0.031s] codex-hepta-agentd intelligence_product::tests::unsigned_currentness_substitution_fails_before_owner_use
+        PASS [   0.010s] codex-hepta-agentd lane_b_runtime::tests::active_run_capacity_is_bound_by_runtime_composition
+        PASS [   0.011s] codex-hepta-agentd lane_b_runtime::fault_tests::last_representable_terminal_transition_still_reconciles
+        PASS [   0.011s] codex-hepta-agentd lane_b_runtime::tests::bulk_deadline_error_retains_completed_prefix_and_failed_record
+        PASS [   0.011s] codex-hepta-agentd lane_b_runtime::tests::cancellation_deadline_overflow_preserves_dispatched_run
+        PASS [   0.009s] codex-hepta-agentd lane_b_runtime::tests::drain_closes_admission_and_preserves_dispatch_uncertainty
+        PASS [   0.012s] codex-hepta-agentd lane_b_runtime::tests::bulk_unknown_error_retains_completed_prefix_and_failed_record
+        PASS [   0.011s] codex-hepta-agentd lane_b_runtime::tests::cancellation_preserves_the_dispatch_boundary_and_reason
+        PASS [   0.012s] codex-hepta-agentd lane_b_runtime::tests::freezes_the_complete_run_tuple_before_context_attachment
+        PASS [   0.012s] codex-hepta-agentd lane_b_runtime::tests::last_available_revision_accepts_terminal_observation_once
+        PASS [   0.012s] codex-hepta-agentd lane_b_runtime::tests::last_representable_cancel_deadline_remains_reconcilable
+        PASS [   0.011s] codex-hepta-agentd lane_b_runtime::tests::recovery_rehydrates_only_an_indeterminate_non_redispatchable_run
+        PASS [   0.012s] codex-hepta-agentd lane_b_runtime::tests::operation_identity_is_idempotent_only_for_equal_semantics
+        PASS [   0.012s] codex-hepta-agentd lane_b_runtime::tests::lifecycle_deadline_is_enforced_after_admission
+        PASS [   0.012s] codex-hepta-agentd lane_b_runtime::tests::rejected_terminal_observation_preserves_recovered_uncertainty
+        PASS [   0.012s] codex-hepta-agentd lane_b_runtime::tests::revalidated_durable_explicit_abstain_never_enters_runtime_admission
+        PASS [   0.013s] codex-hepta-agentd lane_b_runtime::tests::terminal_observation_is_idempotent_and_only_closed_runs_can_be_removed
+        PASS [   0.014s] codex-hepta-agentd lane_b_runtime::tests::revalidated_durable_run_start_uses_admitted_source_identity_and_exact_fence
+        PASS [   0.013s] codex-hepta-agentd lane_b_runtime::tests::revision_overflow_preserves_pre_dispatch_state
+        PASS [   0.014s] codex-hepta-agentd lane_b_runtime::tests::revision_overflow_preserves_dispatched_and_cancelling_state
+        PASS [   0.038s] codex-hepta-agentd lane_b_runtime::tests::indeterminate_outcomes_reconcile_without_redispatch_or_leaked_capacity
+        PASS [   0.011s] codex-hepta-agentd neuron_runtime::tests::agentd_neuron_owner_is_a_compiled_product_surface
+        PASS [   0.012s] codex-hepta-agentd notes_bootstrap::startup::tests::notes_startup_refuses_uncleared_root_credential_mode_before_send
+        PASS [   0.013s] codex-hepta-agentd notes_bootstrap::startup::tests::notes_startup_refuses_invalid_reservations_before_send
+        PASS [   0.011s] codex-hepta-agentd notes_bootstrap::startup::tests::notes_startup_sends_exact_reserved_identity_without_descriptors
+        PASS [   0.160s] codex-hepta-agentd final_use_issuer::root_client::tests::root_issuer_lifetime_is_absolute_and_lost_ack_never_reopens
+        PASS [   0.012s] codex-hepta-agentd notes_bootstrap::tests::absent_multiple_and_truncated_descriptor_sets_are_rejected_and_closed
+        PASS [   0.012s] codex-hepta-agentd notes_bootstrap::tests::bootstrap_golden_transfers_two_ordered_cloexec_endpoints_and_correlates_only_registration
+        PASS [   0.012s] codex-hepta-agentd notes_bootstrap::tests::canonical_notes_model_uses_original_two_descriptor_bootstrap_and_startup
+        PASS [   0.012s] codex-hepta-agentd notes_bootstrap::tests::datagram_or_named_effect_descriptor_cannot_be_attached
+        PASS [   0.012s] codex-hepta-agentd notes_bootstrap::tests::expired_deadline_cannot_receive_an_offer_or_emit_an_ack
+        PASS [   0.011s] codex-hepta-agentd notes_channel::tests::independent_recovery_survives_effect_loss_and_filters_late_datagrams
+        PASS [   0.014s] codex-hepta-agentd notes_bootstrap::tests::duplicate_unknown_wrong_identity_and_oversized_offers_close_received_descriptor
+        PASS [   0.013s] codex-hepta-agentd notes_bootstrap::tests::notes_startup_mismatched_offer_is_rejected_before_target_composition_or_attached_ack
+        PASS [   0.011s] codex-hepta-agentd notes_channel::tests::inherited_socketpair_preserves_exact_frame_bytes
+        PASS [   0.180s] codex-hepta-agentd final_use_issuer::root_client::tests::root_issuer_dead_original_process_cannot_authorize_inherited_stream_reply
+        PASS [   0.011s] codex-hepta-agentd notes_channel::tests::malformed_reply_prefix_closes_stream_without_accepting_a_later_reply
+        PASS [   0.052s] codex-hepta-agentd native_g2_command_runtime::tests::pending_cancellation_keeps_the_original_drop_context
+        PASS [   0.014s] codex-hepta-agentd notes_channel::tests::invalid_bound_does_not_write_and_explicit_invalidation_is_permanent
+        PASS [   0.014s] codex-hepta-agentd notes_channel::tests::lost_reply_permanently_disables_further_effect_entry
+        PASS [   0.010s] codex-hepta-agentd notes_channel::tests::named_socket_is_not_a_bootstrap_channel
+        PASS [   0.014s] codex-hepta-agentd notes_document_observer::tests::notes_objective_private_document_observer_correlates_fresh_nonce_and_never_writes_effect
+        PASS [   0.012s] codex-hepta-agentd notes_literal_adapter::desktop_recorded::recovery::tests::another_pending_target_blocks_latest_and_exact
+        PASS [   0.013s] codex-hepta-agentd notes_literal_adapter::desktop_recorded::recovery::tests::duplicate_order_and_duplicate_operation_are_never_none
+        PASS [   0.016s] codex-hepta-agentd notes_document_observer::tests::notes_objective_recovery_handle_retains_no_effect_descriptor_and_correlates_discovery
+        PASS [   0.014s] codex-hepta-agentd notes_literal_adapter::desktop_recorded::recovery::tests::already_acknowledged_selected_operation_remains_exact_and_idempotent
+        PASS [   0.014s] codex-hepta-agentd notes_literal_adapter::desktop_recorded::recovery::tests::acknowledged_prior_operation_allows_next_original_operation
+        PASS [   0.014s] codex-hepta-agentd notes_literal_adapter::desktop_recorded::recovery::tests::empty_validated_cut_has_no_previous_operation
+        PASS [   0.187s] codex-hepta-agentd hos2_device::tests::cpu_policy_consumer::cpu_policy_consumer_preserves_one_proposal_and_fences_observed_event_loss
+        PASS [   0.011s] codex-hepta-agentd notes_literal_adapter::desktop_recorded::recovery::tests::exact_selector_cannot_cross_previous_target_or_invent_operation
+        PASS [   0.010s] codex-hepta-agentd notes_literal_adapter::desktop_recorded::recovery::tests::latest_uses_exact_previous_target_instead_of_global_latest
+        PASS [   0.010s] codex-hepta-agentd notes_literal_adapter::desktop_recorded::recovery::tests::only_durable_acknowledged_other_targets_allow_no_selection
+        PASS [   0.256s] codex-hepta-agentd deployment_issuer::text::retirement::tests::thirty_two_refused_signs_close_without_eviction_and_next_input_works_after_original_retirement
+        PASS [   0.012s] codex-hepta-agentd notes_literal_adapter::desktop_recorded::recovery::tests::original_order_is_generation_then_sequence_not_lexical_id
+        PASS [   0.014s] codex-hepta-agentd notes_literal_adapter::desktop_recorded::recovery::tests::two_pending_operations_on_same_target_cannot_fit_one_helper
+        PASS [   0.010s] codex-hepta-agentd notes_literal_adapter::ui_worker::tests::notes_ui_invalid_navigation_cannot_publish_partial_readiness
+        PASS [   0.012s] codex-hepta-agentd notes_literal_adapter::thread_sender_tests::a_retained_original_turn_source_cannot_be_attributed_to_a_new_call
+        PASS [   0.013s] codex-hepta-agentd notes_literal_adapter::ui_worker::tests::notes_ui_failed_or_cancelled_refresh_cannot_renew_cached_ready
+        PASS [   0.013s] codex-hepta-agentd notes_literal_adapter::ui_worker::tests::notes_ui_readback_failure_and_cancellation_cannot_renew_an_old_snapshot
+        PASS [   0.013s] codex-hepta-agentd notes_recovery_process::tests::notes_recovery_process_rejects_unsafe_or_mismatched_executable_before_start
+        PASS [   0.010s] codex-hepta-agentd notes_recovery_selection::tests::startup_selector_and_legacy_exact_are_exclusive_and_strict
+        PASS [   0.014s] codex-hepta-agentd notes_recovery_process::tests::notes_recovery_process_seals_bytes_and_refuses_effect_or_foreign_operation_without_spawn
+        PASS [   0.026s] codex-hepta-agentd notes_literal_adapter::recorded::tests::recorded_source_requires_exact_raw_tuple_signed_commitments_and_operation
+        PASS [   0.010s] codex-hepta-agentd notes_thread_tool::human::tests::queue_reconciliation_must_observe_the_same_persisted_turn_without_new_admission
+        PASS [   0.015s] codex-hepta-agentd notes_thread_execution::tests::persistent_profile_requires_no_environment_and_records_actual_file_bytes
+        PASS [   0.216s] codex-hepta-agentd hos2_device::tests::cpu_policy_consumer::cpu_policy_final_use_installs_only_after_the_consumer_observation
+        PASS [   0.012s] codex-hepta-agentd notes_thread_tool::status::tests::absent_original_items_cannot_be_replaced_by_model_result_text
+        PASS [   0.012s] codex-hepta-agentd notes_thread_tool::status::tests::discovery_recovers_first_original_identity_without_tool_reply_or_model_context
+        PASS [   0.015s] codex-hepta-agentd notes_thread_tool::human::tests::original_human_ingress_requires_exact_admitted_input_and_cannot_use_direct_turn_start
+        PASS [   0.019s] codex-hepta-agentd notes_thread_execution::tests::finite_profile_rejects_enabled_builtins_agents_and_external_mcp
+        PASS [   0.012s] codex-hepta-agentd notes_thread_tool::status::tests::incomplete_core_with_committed_older_receipt_remains_unknown
+        PASS [   0.024s] codex-hepta-agentd notes_thread_seed::tests::persisted_seed_metadata_requires_exact_original_identity_and_catalog
+        PASS [   0.012s] codex-hepta-agentd notes_thread_tool::status::tests::incomplete_newer_turn_never_falls_back_to_an_older_write
+        PASS [   0.013s] codex-hepta-agentd notes_thread_tool::status::tests::selector_and_exact_references_are_exclusive_and_cannot_supply_authority
+        PASS [   0.012s] codex-hepta-agentd notes_thread_tool::tests::a_new_call_cannot_escape_the_original_turn_operation_fence
+        PASS [   0.012s] codex-hepta-agentd notes_thread_tool::tests::model_arguments_cannot_supply_identity_authority_or_a_new_tool_route
+        PASS [   0.012s] codex-hepta-agentd notes_thread_tool::tests::retained_unknown_item_can_only_be_referenced_for_read_only_status
+        PASS [   0.013s] codex-hepta-agentd notes_thread_tool::tests::original_callback_requires_exact_in_progress_item_and_fixed_thread
+        PASS [   0.227s] codex-hepta-agentd hos2_device::tests::cpu_policy_consumer::cpu_policy_final_use_never_turns_entered_transport_failure_into_non_entry
+        PASS [   0.214s] codex-hepta-agentd intelligence_product::evaluation_tests::signed_candidate_passes_only_with_bound_owner_run_context_and_root_trust
+        PASS [   0.017s] codex-hepta-agentd notes_thread_tool::status::tests::slow_core_cannot_restart_the_recorded_lookup_budget
+        PASS [   0.012s] codex-hepta-agentd notes_ui_endpoint::tests::notes_ui_actual_session_gets_a_bounded_cached_view_and_only_queues_one_command
+        PASS [   0.013s] codex-hepta-agentd notes_ui_endpoint::tests::notes_ui_rejects_wrong_pidfd_and_non_listener_before_accepting_bytes
+        PASS [   0.012s] codex-hepta-agentd notes_ui_endpoint::tests::shared_session_lifetime_rejects_wrong_birth_and_observes_actual_child_exit
+        PASS [   0.009s] codex-hepta-agentd notes_ui_queue::tests::expired_actions_never_reach_worker_and_do_not_erase_earlier_retention
+        PASS [   0.012s] codex-hepta-agentd notes_ui_queue::tests::bounded_actions_and_views_refuse_new_work_without_replacing_existing_state
+        PASS [   0.011s] codex-hepta-agentd notes_ui_wire::tests::notes_document_readback_matches_original_desktop_wire_without_terminal_claim
+        PASS [   0.009s] codex-hepta-agentd notes_ui_wire::tests::original_session_wire_keeps_text_literal_and_rejects_authority_fields
+        PASS [   0.010s] codex-hepta-agentd notes_ui_wire::tests::original_session_can_decode_private_fields_absent_observation
+        PASS [   0.013s] codex-hepta-agentd notes_ui_queue::tests::original_actions_remain_fifo_while_refresh_is_coalesced_and_cannot_fill_them
+        PASS [   0.011s] codex-hepta-agentd objective_runtime::tests::durable_authentication_frontier_allows_only_exact_replay
+        PASS [   0.012s] codex-hepta-agentd objective_runtime::tests::history::expired_historical_request_matches_after_reopen_without_changing_journal
+        PASS [   0.013s] codex-hepta-agentd objective_runtime::tests::history::abstention_and_conflict_remain_distinct_historical_publications
+        PASS [   0.009s] codex-hepta-agentd objective_runtime::tests::legacy_record_without_protocol_identity_is_rejected_at_final_use
+        PASS [   0.010s] codex-hepta-agentd plasticity_anchor_journal::tests::journal_never_discards_a_complete_invalid_frame
+        PASS [   0.012s] codex-hepta-agentd objective_runtime::tests::history::trusted_anchor_must_exist_match_and_cover_publication
+        PASS [   0.011s] codex-hepta-agentd objective_runtime::tests::runtime_consumes_compiled_record_but_not_explicit_abstain
+        PASS [   0.011s] codex-hepta-agentd plasticity_anchor_journal::tests::journal_preserves_committed_anchor_across_reopen_and_generation_rollover
+        PASS [   0.015s] codex-hepta-agentd objective_runtime::tests::history::history_requires_every_retained_authentication_and_body_field
+        PASS [   0.011s] codex-hepta-agentd plasticity_anchor_journal::tests::journal_repairs_only_an_incomplete_crash_tail
+        PASS [   0.010s] codex-hepta-agentd plasticity_host::tests::anchor_store_fence_is_monotonic_and_reopen_preserves_acknowledged_state
+        PASS [   0.237s] codex-hepta-agentd intelligence_product::evaluation_tests::independently_resigned_metrics_cannot_replace_the_qualified_estimator_evidence
+        PASS [   0.012s] codex-hepta-agentd plasticity_host::tests::owner_evidence_policy_rejects_authenticated_wrong_owner
+        PASS [   0.011s] codex-hepta-agentd plasticity_host::tests::owner_evidence_rejects_context_substitution
+        PASS [   0.013s] codex-hepta-agentd plasticity_host::tests::owner_evidence_receipt_is_context_bound
+        PASS [   0.010s] codex-hepta-agentd plasticity_host::tests::owner_evidence_rejects_parameter_signal_value_substitution
+        PASS [   0.010s] codex-hepta-agentd plasticity_owner_evidence::tests::concrete_adapters_reject_rollback_frontiers_and_missing_dynamic_owner
+        PASS [   0.010s] codex-hepta-agentd plasticity_owner_evidence::tests::concrete_dataset_and_policy_adapters_bind_live_frontiers
+        PASS [   0.012s] codex-hepta-agentd plasticity_host::tests::owner_evidence_set_includes_mutation_policy_and_canonical_kinds
+        PASS [   0.013s] codex-hepta-agentd plasticity_host::tests::retained_external_anchor_blocks_rolled_back_registry_reopen
+        PASS [   0.011s] codex-hepta-agentd plasticity_owner_evidence::tests::dynamic_owner_adapters_bind_ndu_neuron_broadcast_and_exact_signal_values
+        PASS [   0.015s] codex-hepta-agentd plasticity_host::tests::real_append_ack_crash_then_registry_rollback_is_rejected_on_restart
+        PASS [   0.011s] codex-hepta-agentd plasticity_owner_evidence::tests::dynamic_owner_adapters_reject_ndu_rollback_and_unavailable_neuron_owner
+        PASS [   0.011s] codex-hepta-agentd plasticity_process_bootstrap::tests::descriptor_digest_rejects_byte_substitution
+        PASS [   0.012s] codex-hepta-agentd plasticity_process_bootstrap::tests::mutable_owner_hardlink_alias_is_rejected
+        PASS [   0.013s] codex-hepta-agentd plasticity_owner_evidence::tests::dynamic_owner_adapters_reject_stale_wrong_owner_and_value_substitution
+        PASS [   0.010s] codex-hepta-agentd plasticity_runtime::tests::runtime_queue_capacity_is_bounded
+        PASS [   0.012s] codex-hepta-agentd production_authority::tests::external_frontier_mismatch_is_not_repaired_from_the_local_directory
+        PASS [   0.036s] codex-hepta-agentd objective_runtime::tests::recovered_authentication_rejects_revoked_and_stale_owner_trust
+        PASS [   0.011s] codex-hepta-agentd production_authority::tests::missing_clock_keyring_or_external_frontier_has_no_compatibility_fallback
+        PASS [   0.030s] codex-hepta-agentd production_authority::tests::rejected_keyring_drift_preserves_original_durable_claims
+        PASS [   0.032s] codex-hepta-agentd production_authority::tests::original_authority_uses_the_injected_clock_keyring_and_external_cas
+        PASS [   0.047s] codex-hepta-agentd production_authority::tests::expired_revoked_and_wrong_epoch_grants_never_reach_nonce_admission
+        PASS [   0.941s] codex-hepta-agentd authority_host_checkpoint::session_custody_tests::escaped_original_root_session_and_live_verifier_retain_same_registered_file
+        PASS [   0.145s] codex-hepta-agentd plasticity_runtime::lifetime_tests::agentd_lifetime_owner_submits_restarts_and_reconciles_idempotently
+        PASS [   0.463s] codex-hepta-agentd hos2_device::tests::cpu_policy_consumer::cpu_policy_consumer_preparation_event_loss_also_fences_later_admission
+        PASS [   0.454s] codex-hepta-agentd intelligence_product::tests::signed::canonical_runtime::canonical_recovery_rejects_old_generation_fence_and_signature_before_provider
+        PASS [   0.485s] codex-hepta-agentd intelligence_product::tests::signed::signed_input_cannot_install_host_trust_or_change_actual_context
+        PASS [   0.502s] codex-hepta-agentd intelligence_product::tests::signed::canonical_runtime::canonical_body_does_not_alias_the_run_lifecycle_generation
+        PASS [   0.229s] codex-hepta-agentd production_composition::objective_sender_tests::retained_signed_body_hash_matches_original_agentd_wire_projection
+        PASS [   0.517s] codex-hepta-agentd intelligence_product::tests::signed::signed_evaluation_completes_existing_owner_preparation_and_run_admission
+        PASS [   0.599s] codex-hepta-agentd intelligence_product::evaluation_tests::current_use_attestation_binds_the_exact_sealed_publication
+        PASS [   0.369s] codex-hepta-agentd production_composition::objective_sender_tests::uninstalled_original_objective_sender_refuses_without_a_new_owner
+        PASS [   0.015s] codex-hepta-agentd production_launcher::desktop_deployment::tests::joint_header_requires_matching_owner_generation_and_actual_target_pair
+        PASS [   0.015s] codex-hepta-agentd production_launcher::desktop_deployment::tests::joint_wire_never_defaults_a_release_interaction_or_old_recovery
+        PASS [   0.011s] codex-hepta-agentd production_launcher::desktop_deployment::tests::recovery_schema_requires_exact_typed_previous_pair_and_fresh_never_consumes_it
+        PASS [   0.011s] codex-hepta-agentd production_launcher::inputs::tests::absolute_original_deadline_cannot_be_renewed
+        PASS [   0.014s] codex-hepta-agentd production_launcher::inputs::tests::explicit_desktop_transfers_distinct_readonly_capabilities_without_notes_inputs
+        PASS [   0.011s] codex-hepta-agentd production_launcher::inputs::tests::inherited_deployment_cannot_retain_the_root_producers_writable_description
+        PASS [   0.012s] codex-hepta-agentd production_launcher::inputs::tests::ordinary_daemon_arguments_remain_byte_exact
+        PASS [   0.012s] codex-hepta-agentd production_launcher::inputs::tests::ordinary_payload_file_is_not_a_sealed_original_input
+        PASS [   0.268s] codex-hepta-agentd production_composition::tests::issuer_peer_refusal_leaves_neither_host_registered
+        PASS [   0.511s] codex-hepta-agentd production_composition::notes_tests::unavailable_original_notes_ack_does_not_publish_or_return_identity
+        PASS [   0.517s] codex-hepta-agentd production_composition::notes_tests::original_notes_offer_ack_returns_identity_only_after_both_handles_install
+        PASS [   0.011s] codex-hepta-agentd production_launcher::inputs::tests::partial_and_duplicate_launch_flags_preserve_inherited_rights
+        PASS [   0.015s] codex-hepta-agentd prompt_runtime::tests::dispatch_without_terminal_reopens_as_unknown_and_blocks_blind_retry
+        PASS [   0.016s] codex-hepta-agentd production_launcher::inputs::tests::partial_mixed_and_alias_desktop_inputs_refuse_before_taking_rights
+        PASS [   0.012s] codex-hepta-agentd prompt_runtime::tests::final_delivered_terminal_releases_staged_turn
+        PASS [   0.016s] codex-hepta-agentd prompt_runtime::tests::indeterminate_terminal_reopens_blocked_and_reconciles_monotonically
+        PASS [   0.784s] codex-hepta-agentd intelligence_product::tests::signed::canonical_runtime::running_canonical_admission_preserves_the_recovered_run_start
+        PASS [   0.015s] codex-hepta-agentd prompt_runtime::tests::non_dispatch_terminal_is_idempotent_and_retains_stage_for_retry
+        PASS [   0.014s] codex-hepta-agentd prompt_runtime::tests::not_dispatched_retry_then_final_delivery_reopens_without_stale_stage_requirement
+        PASS [   0.010s] codex-hepta-agentd prompt_runtime::tests::owner_remains_send_sync_with_fault_injection
+        PASS [   0.014s] codex-hepta-agentd prompt_runtime::tests::post_rename_ack_loss_poison_reopens_to_dispatch_claim_not_absent
+        PASS [   0.011s] codex-hepta-agentd prompt_runtime::tests::staged_attachment_is_bound_to_exact_thread_and_turn
+        PASS [   0.042s] codex-hepta-agentd prompt_runtime::tests::named_agentd_pipeline_stages_exact_registry_bytes_for_app_server_host
+        PASS [   0.824s] codex-hepta-agentd intelligence_product::tests::signed::canonical_runtime::owner_transition_during_canonical_preparation_never_refreshes_the_old_run
+        PASS [   0.028s] codex-hepta-agentd root_authority_session::tests::resources::retired_original_session_releases_both_journals_and_live_root_after_worker_exit
+        PASS [   0.012s] codex-hepta-agentd root_bound_socket::tests::refuses_shared_or_aliased_parent_without_creating_a_rendezvous
+        PASS [   0.050s] codex-hepta-agentd root_authority_session::tests::exact_original_consumers_activate_writer_and_drop_fences_retained_clones
+        PASS [   0.014s] codex-hepta-agentd root_observation_cache::tests::fresh_unrelated_registry_updates_do_not_fence_fixed_lease
+        PASS [   0.013s] codex-hepta-agentd root_observation_cache::tests::request_start_bounds_age_and_ceiling_projection_rounds_conservatively
+        PASS [   0.013s] codex-hepta-agentd root_observation_cache::tests::revocations_only_accumulate_and_update_barrier_does_not_publish_early
+        PASS [   0.608s] codex-hepta-agentd production_composition::notes_tests::notes_independent_frontier_refusal_does_not_publish_or_read_handoff
+        PASS [   0.010s] codex-hepta-agentd root_observation_stream::tests::concurrent_read_is_refused_without_discarding_the_original_inflight_exchange
+        PASS [   0.029s] codex-hepta-agentd root_observation_cache::tests::rollback_same_revision_equivocation_wrong_boot_and_late_clock_permanently_fence
+        PASS [   0.883s] codex-hepta-agentd intelligence_product::evaluation_tests::evaluator_key_epoch_expiry_and_signed_metrics_are_not_self_asserted
+        PASS [   0.012s] codex-hepta-agentd root_observation_stream::tests::original_fixed_stream_accepts_bounded_reads_without_reconnect
+        PASS [   0.012s] codex-hepta-agentd root_observation_stream::tests::production_uid_and_boot_start_identity_are_pinned_before_any_frame
+        PASS [   0.011s] codex-hepta-agentd root_production_handoff::tests::malformed_marker_or_extra_right_closes_all_received_streams
+        PASS [   0.010s] codex-hepta-agentd root_production_handoff::tests::named_socket_or_invalid_deadline_is_not_an_inherited_root_handoff
+        PASS [   0.013s] codex-hepta-agentd root_production_handoff::tests::ordered_descriptor_frame_preserves_open_objects_and_sets_cloexec
+        PASS [   0.011s] codex-hepta-agentd root_production_inputs::tests::empty_or_oversized_handoff_is_refused_before_custody_or_parsing
+        PASS [   0.040s] codex-hepta-agentd root_observation_stream::tests::original_peer_death_refuses_before_inherited_socket_reaches_eof
+        PASS [   0.012s] codex-hepta-agentd root_production_inputs::tests::invalid_timing_refuses_before_any_descriptor_or_connection_use
+        PASS [   0.011s] codex-hepta-agentd root_production_inputs::tests::ordinary_json_file_is_not_a_root_production_handoff
+        PASS [   0.010s] codex-hepta-agentd root_production_inputs::tests::unsealed_memfd_is_refused_before_parsing_or_connecting
+        PASS [   0.013s] codex-hepta-agentd root_writer_proof::tests::correctly_signed_single_effect_lease_cannot_become_the_long_lived_writer
+        PASS [   0.140s] codex-hepta-agentd root_authority_session::tests::file_custody::original_blocking_cas_keeps_file_after_session_and_worker_retire
+        PASS [   0.024s] codex-hepta-agentd root_writer_proof::tests::observation_requires_full_fixed_identity_but_allows_unrelated_store_advancement
+        PASS [   0.159s] codex-hepta-agentd root_authority_session::tests::both_original_frontiers_finish_before_new_head_is_published
+        PASS [   0.024s] codex-hepta-agentd root_writer_proof::tests::verified_complete_proof_and_ascii_signature_create_exact_original_lease
+        PASS [   0.112s] codex-hepta-agentd root_observation_stream::tests::cancelled_original_exchange_discards_late_reply_and_stays_closed
+        PASS [   0.111s] codex-hepta-agentd root_observation_stream::tests::malformed_oversized_and_partial_frames_permanently_close_the_lane
+        PASS [   1.561s] codex-hepta-agentd authbus_dispatch::tests::lost_queue_reply_recovers_from_sqlite_using_lookup_only_and_exact_receipt
+        PASS [   0.978s] codex-hepta-agentd intelligence_product::evaluation_tests::signed_use_rejects_context_snapshot_candidate_set_and_run_substitution
+        PASS [   0.052s] codex-hepta-agentd root_writer_proof::tests::original_signature_domain_key_spelling_and_static_registration_are_all_required
+        PASS [   0.012s] codex-hepta-agentd runtime::hos2_recovery_tests::notes_tests::literal_prepare_tests::notes_literal_protected_time_preserves_milliseconds_and_rejects_overflow
+        PASS [   0.176s] codex-hepta-agentd root_authority_session::tests::uncertain_original_consumer_update_fences_even_with_fresh_root_responses
+        PASS [   0.487s] codex-hepta-agentd production_composition::tests::revoked_cut_and_initial_expiry_do_not_open_the_protected_owner
+        PASS [   0.766s] codex-hepta-agentd production_composition::objective_sender_tests::notes_literal_control_tests::notes_literal_control_wrong_peer_sends_zero_bytes_and_never_rearms_original_ticket
+        PASS [   0.793s] codex-hepta-agentd production_composition::objective_sender_tests::installed_original_objective_sender_reuses_same_writer_and_live_verifier
+        PASS [   0.014s] codex-hepta-agentd runtime::tests::automation_generation_change_during_open_remains_fail_closed
+        PASS [   0.018s] codex-hepta-agentd runtime::tests::automation_owner_fence_still_terminates_the_runtime_monitor
+        PASS [   0.577s] codex-hepta-agentd production_composition::tests::owner_custody::escaped_original_host_and_writer_retain_the_same_registered_owner_file
+        PASS [   0.835s] codex-hepta-agentd production_composition::objective_sender_tests::notes_literal_control_tests::notes_literal_control_lost_reply_retains_one_exact_unknown_observation_without_resubmit
+        PASS [   0.013s] codex-hepta-agentd runtime::tests::compatibility_retrieval_mode_does_not_require_hnmf_context
+        PASS [   0.018s] codex-hepta-agentd runtime::tests::automation_owner_mismatch_remains_fail_closed
+        PASS [   0.010s] codex-hepta-agentd runtime::tests::compatibility_retrieval_mode_rejects_hnmf_context_without_explicit_profile
+        PASS [   0.077s] codex-hepta-agentd runtime::tests::dispatch_uncertain_tick_stays_live_for_durable_reconciliation
+        PASS [   0.900s] codex-hepta-agentd production_composition::objective_sender_tests::notes_literal_control_tests::receipt_tests::notes_literal_recovery_checks_identity_and_never_erases_first_publication
+        PASS [   0.018s] codex-hepta-agentd runtime::tests::generation_change_during_open_is_fenced_before_serving
+        PASS [   0.019s] codex-hepta-agentd runtime::tests::generation_monitor_honors_host_cancellation_during_readiness_probe
+        PASS [   0.741s] codex-hepta-agentd production_composition::tests::installed_original_writer_keeps_the_protected_clock_and_original_verifier_live
+        PASS [   0.011s] codex-hepta-agentd runtime::tests::hnmf_required_retrieval_mode_fails_closed_without_current_context
+        PASS [   0.010s] codex-hepta-agentd runtime::tests::product_write_profile_fails_closed_when_cognitive_store_is_unavailable
+        PASS [   0.621s] codex-hepta-agentd production_composition::tests::success_keeps_one_original_writer_and_repeat_assembly_touches_no_inputs
+        PASS [   0.014s] codex-hepta-agentd runtime::tests::unavailable_automation_store_degrades_without_startup_failure
+        PASS [   0.016s] codex-hepta-agentd runtime::tests::stale_generation_is_fenced_before_cognitive_store_open
+        PASS [   0.015s] codex-hepta-agentd runtime::tests::unavailable_cognitive_store_degrades_without_leaking_open_error
+        PASS [   0.012s] codex-hepta-agentd runtime_tasks::failure_latch_tests::observed_required_failure_latches_stop_even_when_caller_handles_error
+        PASS [   0.012s] codex-hepta-agentd runtime_tasks::failure_latch_tests::rejected_or_panicking_retirement_callback_latches_host_failure
+        PASS [   0.727s] codex-hepta-agentd production_composition::tests::original_live_verifier_and_protected_clock_failures_during_recovery_do_not_install
+        PASS [   0.014s] codex-hepta-agentd runtime_tasks::failure_latch_tests::retirement_writer_fence_cancels_siblings_and_blocks_fresh_names
+        PASS [   0.034s] codex-hepta-agentd runtime_tasks::failure_latch_tests::successful_optional_quarantine_does_not_latch_host_failure
+        PASS [   0.057s] codex-hepta-agentd runtime_tasks::failure_latch_tests::retirement_timeout_does_not_masquerade_as_a_shared_fence
+        PASS [   0.064s] codex-hepta-agentd runtime_tasks::outcome_tests::dropped_retirement_wait_does_not_erase_an_unacknowledged_abort
+        PASS [   0.011s] codex-hepta-agentd runtime_tasks::outcome_tests::observed_required_failure_cannot_become_cancelled_success
+        PASS [   0.067s] codex-hepta-agentd runtime_tasks::outcome_tests::isolated_optional_failure_does_not_poison_healthy_host
+        PASS [   0.013s] codex-hepta-agentd runtime_tasks::outcome_tests::rejected_quarantine_cannot_be_reclassified_as_normal_shutdown
+        PASS [   0.013s] codex-hepta-agentd runtime_tasks::outcome_tests::rejected_retirement_remains_failed_after_cleanup
+        PASS [   0.228s] codex-hepta-agentd runtime::tests::duplicate_automation_attachment_does_not_replace_the_live_store
+        PASS [   0.064s] codex-hepta-agentd runtime_tasks::outcome_tests::late_owner_acknowledgement_after_timeout_preserves_clean_shutdown
+        PASS [   1.080s] codex-hepta-agentd production_composition::notes_tests::malformed_notes_descriptors_or_identity_publish_neither_host
+        PASS [   0.012s] codex-hepta-agentd runtime_tasks::retirement_tests::failed_drain_is_quarantine_not_retirement
+        PASS [   0.012s] codex-hepta-agentd runtime_tasks::retirement_tests::a_writer_fence_during_retirement_still_propagates
+        PASS [   0.012s] codex-hepta-agentd runtime_tasks::retirement_tests::owner_retirement_rejection_or_panic_never_publishes_success
+        PASS [   0.014s] codex-hepta-agentd runtime_tasks::retirement_tests::forty_first_running_service_retires_without_stopping_other_services
+        PASS [   0.062s] codex-hepta-agentd runtime_tasks::outcome_tests::ordinary_host_abort_does_not_invent_a_retirement_request
+        PASS [   1.393s] codex-hepta-agentd hos2_device::tests::cpu_policy_consumer::cpu_policy_final_use_refuses_changed_identity_revision_age_and_missing_proposal
+        PASS [   0.064s] codex-hepta-agentd runtime_tasks::outcome_tests::shutdown_listener_failure_is_latched_across_reentry
+        PASS [   0.063s] codex-hepta-agentd runtime_tasks::outcome_tests::successful_optional_retirement_preserves_clean_host_outcome
+        PASS [   0.034s] codex-hepta-agentd runtime_tasks::retirement_tests::rejected_service_factory_is_never_invoked
+        PASS [   0.033s] codex-hepta-agentd runtime_tasks::retirement_tests::retirement_cannot_stop_required_or_legacy_uncontracted_tasks
+        PASS [   0.013s] codex-hepta-agentd runtime_tasks::service_generations::abi_tests::incompatible_abi_never_starts_factory_or_consumes_a_slot
+        PASS [   0.012s] codex-hepta-agentd runtime_tasks::service_generations::tests::failed_retirement_callback_fences_host_without_releasing_identity
+        PASS [   0.029s] codex-hepta-agentd runtime_tasks::service_generations::abi_tests::abi_bound_replacements_reuse_one_slot_and_reject_stale_retirement
+        PASS [   0.037s] codex-hepta-agentd runtime_tasks::retirement_tests::retirement_timeout_never_acknowledges_unfinished_drain
+        PASS [   0.025s] codex-hepta-agentd runtime_tasks::service_generations::tests::a_drain_timeout_does_not_free_the_slot_or_acknowledge_retirement
+        PASS [   0.014s] codex-hepta-agentd runtime_tasks::service_generations::tests::quarantined_failure_is_not_an_acknowledged_retirement
+        PASS [   0.014s] codex-hepta-agentd runtime_tasks::service_generations::tests::rejected_registration_never_invokes_factory_or_advances_fence
+        PASS [   0.012s] codex-hepta-agentd runtime_tasks::service_generations::tests::stale_and_unversioned_requests_cannot_stop_or_resurrect_a_successor
+        PASS [   0.013s] codex-hepta-agentd runtime_tasks::service_generations::tests::retired_legacy_name_cannot_bypass_its_single_use_contract
+        PASS [   0.329s] codex-hepta-agentd runtime::tests::drain_runtime_keeps_control_reconciliation_live_until_terminal_observation
+        PASS [   0.013s] codex-hepta-agentd runtime_tasks::tests::cooperative_shutdown_precedes_forced_abort
+        PASS [   0.015s] codex-hepta-agentd runtime_tasks::tests::cancelled_observation_keeps_completion_identity
+        PASS [   0.017s] codex-hepta-agentd runtime_tasks::tests::forty_first_service_executes_and_failure_preserves_required_services
+        PASS [   0.115s] codex-hepta-agentd runtime_tasks::outcome_tests::timed_out_retirement_aborted_by_shutdown_remains_failed
+        PASS [   0.042s] codex-hepta-agentd runtime_tasks::service_generations::tests::replacements_reuse_one_slot_even_at_full_identity_capacity
+        PASS [   0.032s] codex-hepta-agentd runtime_tasks::tests::admission_is_bounded_and_rejects_duplicate_or_invalid_names
+        PASS [   1.006s] codex-hepta-agentd production_composition::tests::frontier_and_current_cut_refusals_leave_neither_host_registered
+        PASS [   1.071s] codex-hepta-agentd production_composition::tests::final_metadata_callback_cannot_expire_authority_before_atomic_install
+        PASS [   0.010s] codex-hepta-agentd runtime_tasks::tests::required_clean_exit_is_not_misreported_as_success
+        PASS [   0.011s] codex-hepta-agentd runtime_tasks::tests::shutdown_grace_cannot_be_zero_or_unbounded
+        PASS [   0.034s] codex-hepta-agentd runtime_tasks::tests::generation_fence_cannot_be_downgraded_to_optional_availability
+        PASS [   0.017s] codex-hepta-agentd state::isolation_tests::configured_intelligence_runner_is_not_advertised_without_daemon_ingress
+        PASS [   0.017s] codex-hepta-agentd state::isolation_tests::daemon_control_owns_the_run_lifecycle_and_advertises_it
+        PASS [   0.034s] codex-hepta-agentd runtime_tasks::tests::quarantine_rejection_is_fatal_and_reaps_other_tasks
+        PASS [   0.037s] codex-hepta-agentd runtime_tasks::tests::optional_panic_preserves_registered_identity_and_quarantines_once
+        PASS [   0.035s] codex-hepta-agentd runtime_tasks::tests::quarantine_panic_is_fatal_and_still_drains
+        PASS [   0.034s] codex-hepta-agentd runtime_tasks::tests::shutdown_listener_error_does_not_detach_live_tasks
+        PASS [   0.016s] codex-hepta-agentd state::isolation_tests::final_use_revalidation_rejects_stale_spawn_generation_before_store_access
+        PASS [   0.018s] codex-hepta-agentd state::isolation_tests::missing_local_record_immediately_fences_the_serving_agent
+        PASS [   0.017s] codex-hepta-agentd state::isolation_tests::serving_agent_survives_unrelated_registry_corruption
+        PASS [   1.125s] codex-hepta-agentd production_composition::tests::android_runtime_bootstrap_preserves_original_writer_and_refuses_revoked_owner
+        PASS [   0.020s] codex-hepta-agentd state::isolation_tests::targeted_read_preserves_lifecycle_and_resource_fences
+        PASS [   0.017s] codex-hepta-agentd state::notes_organ::tests::finite_notes_readiness_keeps_app_server_and_text_ingress_closed
+        PASS [   0.014s] codex-hepta-agentd state::notes_organ::tests::missing_original_root_cannot_open_notes_organ_admission
+        PASS [   0.010s] codex-hepta-agentd text_session::signer::tests::old_owner_receipt_does_not_gain_approval_permission_on_decode_or_reconnect
+        PASS [   0.013s] codex-hepta-agentd state::notes_organ::tests::original_fleet_draining_and_permanent_fence_close_finite_notes_readiness
+        PASS [   0.020s] codex-hepta-agentd text_session::provider::tests::provider_route_fifo_is_rejected_before_read
+        PASS [   0.017s] codex-hepta-agentd text_session::signer::tests::recovery_pages_original_namespace_without_requesting_a_new_signature
+        PASS [   0.017s] codex-hepta-agentd text_session::signer::tests::recovery_rejects_another_namespace_or_a_number_above_hello_watermark
+        PASS [   0.014s] codex-hepta-agentd text_session::signer::tests::unsigned_protocol::lost_close_reply_stays_unknown_until_matching_original_closure_proof
+        PASS [   0.012s] codex-hepta-agentd text_session::signer::tests::unsigned_protocol::only_prewrite_failures_prove_non_transmission
+        PASS [   0.012s] codex-hepta-agentd text_session::signer::tests::unsigned_protocol::unsigned_closure_rejects_wrong_payload_watermark_and_preserves_a_retained_old_generation
+        PASS [   0.010s] codex-hepta-agentd topology_plasticity_host::tests::topology_anchor_store_preserves_fence_and_anchor
+        PASS [   0.012s] codex-hepta-agentd topology_plasticity_host::tests::topology_real_append_ack_crash_then_registry_rollback_is_rejected_on_restart
+        PASS [   0.033s] codex-hepta-agentd text_session::worker::tests::missing_root_keeps_reconnect_alive_and_cannot_admit_input
+        PASS [   2.083s] codex-hepta-agentd automation::service_tests::production_service_retirement_drains_owner_then_unpublishes_only_automation
+        PASS [   2.095s] codex-hepta-agentd automation::service_tests::production_constructor_keeps_retired_timer_absent_after_reopen
+        PASS [   2.121s] codex-hepta-agentd automation::service_tests::unknown_owner_dispatch_prevents_retirement_and_replacement_after_reopen
+        PASS [   0.626s] codex-hepta-agentd runtime::hos2_recovery_tests::notes_tests::previous_tests::notes_objective_previous_receipt_host_reconciles_without_registering_dispatch_or_issuer
+        PASS [   0.740s] codex-hepta-agentd runtime::hos2_recovery_tests::notes_tests::desktop_prepare_deadline_tests::elapsed_desktop_budget_cannot_refresh_before_either_original_reservation
+        PASS [   0.271s] codex-hepta-agentd state::isolation_tests::current_durable_run_start_requires_live_owner_trust
+        PASS [   1.587s] codex-hepta-agentd production_composition::notes_tests::attached_ack_followed_by_live_refusal_returns_no_identity_and_closes_target
+        PASS [   0.872s] codex-hepta-agentd runtime::hos2_recovery_tests::notes_tests::literal_prepare_tests::notes_literal_preparation_retains_exact_owner_payload_without_grant_or_effect
+        PASS [   0.284s] codex-hepta-agentd::cognitive_product_e2e cognitive_store_unavailable_fails_closed_before_provider
+        PASS [   0.725s] codex-hepta-agentd runtime::tests::runtime_automation_store_failure_stops_only_the_scheduler_plane
+        PASS [   0.653s] codex-hepta-agentd state::notes_objective::lock_tests::notes_objective_drain_does_not_reenter_run_mutex
+        PASS [   2.015s] codex-hepta-agentd notes_channel::tests::lost_retirement_ack_can_retry_the_exact_datagram_and_cannot_send_effects
+        PASS [   0.683s] codex-hepta-agentd state::notes_objective::lock_tests::notes_objective_unknown_reads_original_owner_without_renewing_expired_admission
+        PASS [   1.344s] codex-hepta-agentd runtime::hos2_recovery_tests::notes_tests::composition_tests::notes_objective_protected_factory_checks_complete_binding_before_recovery_and_reuses_owner
+        PASS [   1.653s] codex-hepta-agentd runtime::hos2_recovery_tests::notes_tests::composition_tests::notes_objective_session_registration_returns_observer_for_the_same_private_target
+        PASS [   1.640s] codex-hepta-agentd runtime::hos2_recovery_tests::notes_tests::objective_tests::finite_notes_static_execution_uses_original_publication_owner_and_recovers_lost_ack_fixture
+        PASS [   0.050s] codex-hepta-agentd::intuition_policy_product agentd_calls_authenticated_current_intuition_policy_with_owner_pins
+        PASS [   1.765s] codex-hepta-agentd runtime::hos2_recovery_tests::notes_tests::composition_tests::local_handoff_tests::notes_local_handoff_before_expiry_refuses_and_consumes_current_into_dirty
+        PASS [   1.705s] codex-hepta-agentd runtime::hos2_recovery_tests::notes_tests::objective_tests::signed_notes_objective_uses_original_run_and_operation_then_recovers_lost_ack_without_reentry
+        PASS [   0.109s] codex-hepta-agentd::fleet_harness_diagnostics readiness_reports_exited_child_with_bounded_decoded_output
+        PASS [   1.312s] codex-hepta-agentd::cognitive_product_e2e real_agentd_final_use_revalidation_rejects_concurrent_tombstone
+        PASS [   2.965s] codex-hepta-agentd native_g2_command_runtime::tests::runtime_entry_rejection_keeps_the_original_drop_context
+        PASS [   2.997s] codex-hepta-agentd native_g2_command_runtime::tests::completion_and_unwind_keep_the_original_drop_context
+        PASS [   0.410s] codex-hepta-agentd::kernel_evidence_product signed_recovery_frontier_rejects_valid_older_database_image
+        PASS [   1.628s] codex-hepta-agentd::authbus_text_product real_agentd_without_explicit_trust_rejects_signed_text
+        PASS [   0.018s] codex-hepta-agentd::runtime_shutdown_outcomes already_ready_shutdown_cannot_hide_unobserved_required_failure
+        PASS [   0.121s] codex-hepta-agentd::runtime_shutdown_outcomes forced_abort_never_publishes_retirement_acknowledgement
+        PASS [   0.007s] codex-hepta-agentd::runtime_shutdown_outcomes normal_host_stop_is_not_permanent_module_retirement
+        PASS [   0.008s] codex-hepta-agentd::runtime_shutdown_outcomes optional_failure_during_shutdown_is_quarantined_exactly_once
+        PASS [   0.007s] codex-hepta-agentd::runtime_shutdown_outcomes optional_shared_fence_during_shutdown_still_stops_the_host
+        PASS [   0.007s] codex-hepta-agentd::runtime_shutdown_outcomes owner_failure_after_cancellation_is_not_a_successful_shutdown
+        PASS [   0.011s] codex-hepta-agentd::runtime_shutdown_outcomes quarantine_rejection_during_shutdown_is_latched
+        PASS [   0.011s] codex-hepta-agentd::runtime_shutdown_outcomes required_panic_during_cleanup_is_not_discarded
+        PASS [   2.021s] codex-hepta-agentd runtime_tasks::retirement_tests::retirement_keeps_observing_unrelated_failures
+        PASS [   0.119s] codex-hepta-agentd::runtime_shutdown_outcomes unfinished_retirement_callback_is_checked_during_final_cleanup
+        PASS [   1.574s] codex-hepta-agentd::cognitive_product_e2e runtime_automation_store_failure_does_not_end_real_agentd_or_normal_turns
+        PASS [   1.373s] codex-hepta-agentd::cognitive_product_e2e unavailable_automation_store_keeps_real_agentd_and_app_server_ready
+        PASS [   0.021s] codex-hepta-agentd::supervisord_product_e2e supervisord_child_entry
+        PASS [   1.389s] codex-hepta-agentd::cognitive_store_product_writer agentd_product_host_recovers_exact_cut_into_fenced_writer_generation
+        PASS [   0.944s] codex-hepta-agentd::kernel_evidence_product signed_recovery_frontier_allows_exact_current_database
+        PASS [   0.021s] codex-hepta-agentd::two_agent_turn_recovery poisoned_request_capture_is_reported_without_counting_a_send
+        PASS [   0.029s] codex-hepta-contracts agent_id::tests::canonical_id_is_stable_across_display_parse_and_serde
+        PASS [   0.007s] codex-hepta-contracts agent_id::tests::deserialize_revalidates_untrusted_wire_value
+        PASS [   0.006s] codex-hepta-contracts agent_id::tests::noncanonical_or_directory_unsafe_ids_are_rejected
+        PASS [   0.019s] codex-hepta-contracts authbus::b1::tests::b1_identity_rejects_same_uid_and_forwarded_unknown_claims
+        PASS [   0.012s] codex-hepta-contracts authbus::b1::tests::b1_identity_requires_full_peer_binding_and_derived_subject_digest
+        PASS [   2.786s] codex-hepta-agentd runtime::hos2_recovery_tests::notes_tests::notes_recovered_writer_persists_lost_reply_and_retires_without_replay
+        PASS [   0.015s] codex-hepta-contracts authbus::b1::tests::b1_identity_wire_is_strict_and_authority_is_default_false
+        PASS [   0.010s] codex-hepta-contracts authbus::b1::tests::b1_profile_rejects_route_or_descriptor_tampering
+        PASS [   0.012s] codex-hepta-contracts authbus::b1::tests::b1_profile_is_exact_default_deny_and_key_generation_forbidden
+        PASS [   0.011s] codex-hepta-contracts authbus::b1::tests::b1_registration_requires_unambiguous_algorithm_and_backend_binding
+        PASS [   0.013s] codex-hepta-contracts authbus::b2::tests::b2_attenuation_clock_and_advertisement_bounds_fail_closed
+        PASS [   0.012s] codex-hepta-contracts authbus::b2::tests::b2_contracts_validate_and_have_golden_digests
+        PASS [   0.010s] codex-hepta-contracts authbus::b2::tests::b2_peer_and_resource_wire_round_trip_is_secret_free
+        PASS [   0.007s] codex-hepta-contracts authbus::b2::tests::b2_provider_status_cas_is_fail_closed
+        PASS [   0.011s] codex-hepta-contracts authbus::b2::tests::b2_quota_reservation_cas_is_terminal_and_idempotent
+        PASS [   0.009s] codex-hepta-contracts authbus::b2::tests::b2_quota_reservation_state_set_matches_registry_v13
+        PASS [   0.740s] codex-hepta-agentd::queue_capacity_product real_agentd_rejects_redirected_sqlite_and_in_memory_thread_stores
+        PASS [   0.011s] codex-hepta-contracts authbus::b2::tests::b2_subject_epochs_and_fences_reject_stale_values
+        PASS [   0.010s] codex-hepta-contracts authbus::b3::tests::callback_events_require_current_fence_and_reject_stale_without_mutation
+        PASS [   0.007s] codex-hepta-contracts authbus::b3::tests::indeterminate_and_quarantine_forbid_new_refs
+        PASS [   0.033s] codex-hepta-contracts authbus::b2::tests::b2_quota_reservation_transition_matrix_is_closed
+        PASS [   0.022s] codex-hepta-contracts authbus::b2::tests::b2_wire_shapes_are_strict_and_authority_defaults_false
+        PASS [   1.172s] codex-hepta-agentd::kernel_evidence_product real_agentd_composes_authenticated_evidence_writer_query_verifier_and_terminal_observer
+        PASS [   0.009s] codex-hepta-contracts authbus::b3::tests::raw_secret_fields_and_unknown_fields_are_rejected
+        PASS [   0.006s] codex-hepta-contracts authbus::b3::tests::refresh_success_requires_opaque_refs_and_advancing_revision
+        PASS [   0.017s] codex-hepta-contracts authbus::b3::tests::operation_key_and_id_are_deterministically_bound
+        PASS [   0.010s] codex-hepta-contracts authbus::b3::tests::retry_budget_error_does_not_partially_mutate_record
+        PASS [   0.022s] codex-hepta-contracts authbus::b3::tests::mutation_binding_rejects_epoch_generation_fence_and_payload_tamper
+        PASS [   0.008s] codex-hepta-contracts authbus::b3::tests::rotation_wire_shape_is_strict_and_terminal_rules_hold
+        PASS [   0.006s] codex-hepta-contracts authbus::b3::tests::status_lookup_is_binding_checked_and_lookup_only
+        PASS [   0.010s] codex-hepta-contracts authbus::b3::tests::state_machine_is_fail_closed_after_response_loss
+        PASS [   0.005s] codex-hepta-contracts authbus_b4::tests::b4_authority_flags_and_resource_states_are_explicitly_non_production
+        PASS [   0.008s] codex-hepta-contracts authbus_b4::tests::b4_cooldown_deadline_and_unavailable_states_fail_closed
+        PASS [   0.016s] codex-hepta-contracts authbus_b4::tests::b4_atomic_hold_and_release_prevent_oversell
+        PASS [   0.013s] codex-hepta-contracts authbus_b4::tests::b4_completion_and_release_overflow_are_transactional
+        PASS [   0.011s] codex-hepta-contracts authbus_b4::tests::b4_default_denies_unknown_quota_without_mutating_head
+        PASS [   0.008s] codex-hepta-contracts authbus_b4::tests::b4_edf_within_subject_and_jain_fairness_are_deterministic
+        PASS [   0.007s] codex-hepta-contracts authbus_b4::tests::b4_enqueue_counter_overflow_is_transactional
+        PASS [   0.011s] codex-hepta-contracts authbus_b4::tests::b4_duplicate_and_stale_callbacks_are_side_effect_free
+        PASS [   0.010s] codex-hepta-contracts authbus_b4::tests::b4_grant_counter_overflow_is_transactional
+        PASS [   0.007s] codex-hepta-contracts authbus_b4::tests::b4_safety_margin_is_counted_once_and_payload_conflict_is_non_mutating
+        PASS [   0.009s] codex-hepta-contracts authbus_b5::tests::b5_dispatch_responses_and_lookup_uncertainty_are_explicit
+        PASS [   0.007s] codex-hepta-contracts authbus_b5::tests::b5_fsync_before_call_and_crash_recovery_are_lookup_only
+        PASS [   0.005s] codex-hepta-contracts authbus_b5::tests::b5_outbox_dedupe_and_payload_conflict_are_side_effect_free
+        PASS [   0.007s] codex-hepta-contracts authbus_b5::tests::b5_lookup_terminal_ack_is_bound_and_terminal_replay_is_immutable
+        PASS [   0.012s] codex-hepta-contracts authbus_b5::tests::b5_recovery_snapshot_maps_unknown_intent_to_safe_stop
+        PASS [   0.010s] codex-hepta-contracts authbus_b5::tests::b5_reopen_rejects_corrupt_hash_or_missing_fsync_witness
+        PASS [   0.016s] codex-hepta-contracts authbus_b5::tests::b5_unknown_intent_and_stale_fence_stop_without_dispatch
+        PASS [   0.007s] codex-hepta-contracts authbus_tests::auth_request_fences_subject_generation
+        PASS [   0.010s] codex-hepta-contracts authbus_b5::tests::b5_unknown_lookup_remains_indeterminate_and_blocks_new_attempt
+        PASS [   0.007s] codex-hepta-contracts authbus_tests::lease_cas_epoch_and_permit_binding_are_strict
+        PASS [   0.014s] codex-hepta-contracts authbus_tests::revoke_binds_owner_revision_and_epoch
+        PASS [   0.011s] codex-hepta-contracts authbus_tests::source_manifest_accepts_matching_observed_candidate_binding
+        PASS [   0.020s] codex-hepta-contracts authbus_tests::auth_request_has_stable_versioned_golden_bytes
+        PASS [   0.430s] codex-hepta-agentd::terminal_cell_owner real_owner_decision_outcome_freeze_fit_registry_reload_and_withdrawal
+        PASS [   0.013s] codex-hepta-contracts authbus_tests::source_manifest_fixture_is_pinned_and_fail_closed
+        PASS [   0.012s] codex-hepta-contracts authbus_tests::source_manifest_rejects_authority_and_unknown_fields
+        PASS [   0.012s] codex-hepta-contracts authbus_tests::source_manifest_rejects_malformed_expected_candidate_binding
+        PASS [   0.006s] codex-hepta-contracts authbus_tests::usage_receipt_binds_permit_and_preserves_indeterminate
+        PASS [   0.004s] codex-hepta-contracts authbus_tests::wire_round_trip_is_strict_and_secret_free
+        PASS [   0.008s] codex-hepta-contracts authbus_tests::usage_permit_rejects_subject_generation_mismatch
+        PASS [   0.005s] codex-hepta-contracts authority_host_clock::tests::a_reboot_requires_wall_clock_at_or_above_retained_highwater
+        PASS [   0.005s] codex-hepta-contracts authority_host_clock::tests::actual_os_sample_is_bounded_and_ordered
+        PASS [   0.015s] codex-hepta-contracts authbus_tests::source_manifest_requires_exact_observed_candidate_binding
+        PASS [   0.011s] codex-hepta-contracts authority_consumer_wire::tests::shared_frontier_wire_has_no_owner_or_initializer_and_rejects_duplicates
+        PASS [   0.014s] codex-hepta-contracts authority_host_clock::tests::post_io_observation_uses_actual_sample_and_never_publishes_a_ceiling_as_now
+        PASS [   0.014s] codex-hepta-contracts authority_host_clock::tests::post_io_forward_step_is_not_published_with_an_old_mapping
+        PASS [   0.016s] codex-hepta-contracts authority_host_clock::tests::elapsed_projection_counts_suspend_and_is_persisted_conservatively
+        PASS [   0.012s] codex-hepta-contracts authority_host_clock::tests::replacement_projection_keeps_submillisecond_phase_and_never_moves_backwards
+        PASS [   0.006s] codex-hepta-contracts authority_host_clock::tests::rollback_and_uncertain_samples_are_refused
+        PASS [   0.007s] codex-hepta-contracts authority_host_issuer_transport::peer::descriptor::tests::sender_failure_consumes_the_original_descriptor_without_sigpipe_or_retry
+        PASS [   0.010s] codex-hepta-contracts authority_host_issuer_transport::peer::descriptor::tests::terminal_descriptor_preserves_actual_object_and_closes_control_stream
+        PASS [   0.009s] codex-hepta-contracts authority_host_issuer_transport::peer::tests::ordinary_complete_denial_can_be_followed_by_a_bounded_response
+        PASS [   0.005s] codex-hepta-contracts authority_host_issuer_transport::peer::tests::pinned_client_invalid_input_emits_nothing_and_closes
+        PASS [   0.009s] codex-hepta-contracts authority_host_issuer_transport::peer::tests::oversized_complete_response_emits_no_success_prefix
+        PASS [   0.964s] codex-hepta-agentd::plasticity_process_e2e supervisor_exec_reconstructs_named_plasticity_owner_from_durable_descriptor
+        PASS [   0.005s] codex-hepta-contracts authority_host_issuer_transport::peer::tests::pinned_client_preserves_complete_request_response_boundaries
+        PASS [   0.004s] codex-hepta-contracts authority_host_issuer_transport::peer::tests::purpose_bound_rejects_request_before_handler_and_is_permanently_closed
+        PASS [   0.013s] codex-hepta-contracts authority_host_store::tests::actual_host_clock_reopens_and_refuses_a_retained_future_highwater
+        PASS [   0.011s] codex-hepta-contracts authority_host_store::tests::cache_tests::a_failed_read_forgets_a_previous_durability_witness
+        PASS [   0.012s] codex-hepta-contracts authority_host_store::tests::cache_tests::retained_exact_inode_and_bytes_avoid_only_redundant_sync
+        PASS [   0.013s] codex-hepta-contracts authority_host_store::tests::cache_tests::a_real_second_handle_replacement_invalidates_the_retained_inode
+        PASS [   0.007s] codex-hepta-contracts authority_host_store::tests::cache_tests::same_inode_same_length_changed_bytes_require_real_sync
+        PASS [   0.012s] codex-hepta-contracts authority_host_store::tests::committed_frontier_survives_controlled_sigkill
+        PASS [   0.010s] codex-hepta-contracts authority_host_store::tests::durable_tests::a_visible_rename_cannot_be_read_as_current_before_publication_finishes
+        PASS [   0.012s] codex-hepta-contracts authority_host_store::tests::durable_tests::uncertain_directory_sync_is_never_an_ack_but_can_be_independently_reconciled
+        PASS [   0.013s] codex-hepta-contracts authority_host_store::tests::explicit_large_record_bound_reopens_without_relaxing_default_or_cas_bound
+        PASS [   0.015s] codex-hepta-contracts authority_host_store::tests::issuer_tests::no_lease_or_changed_binding_cannot_mint_a_grant
+        PASS [   0.011s] codex-hepta-contracts authority_host_store::tests::issuer_tests::race_tests::concurrent_shorter_revision_cannot_reuse_an_older_cloned_expiry
+        PASS [   0.111s] codex-hepta-contracts authority_host_issuer_transport::peer::descriptor::tests::malformed_truncated_extra_or_unfinished_transfer_closes_every_received_right
+        PASS [   0.013s] codex-hepta-contracts authority_host_store::tests::issuer_tests::real_issuer_key_is_retained_and_unsafe_or_missing_state_is_not_repaired
+        PASS [   2.583s] codex-hepta-agentd::authbus_text_product text_approval_product::original_pending_approval_survives_text_reattach_and_resolves_without_disconnect
+        PASS [   0.043s] codex-hepta-contracts authority_host_store::tests::issuer_tests::original_final_use_verifies_real_grant_and_rejects_replay_and_revocation
+        PASS [   0.107s] codex-hepta-contracts authority_host_issuer_transport::peer::tests::pinned_client_rejects_truncated_oversized_and_late_replies_without_retry
+        PASS [   0.007s] codex-hepta-contracts authority_host_store::tests::issuer_tests::transport_tests::channel_tests::arbitrary_descriptor_is_not_an_owner_lifecycle_handle
+        PASS [   0.617s] codex-hepta-agentd::terminal_cell_owner clean_agent_recall_replay_training_load_and_source_withdrawal
+        PASS [   0.036s] codex-hepta-contracts authority_host_store::tests::issuer_tests::transport_tests::actual_process_peer_and_original_wire_produce_a_verifiable_grant_after_denial
+        PASS [   0.005s] codex-hepta-contracts authority_host_store::tests::malformed_or_aliased_frontier_is_not_repaired
+        PASS [   0.010s] codex-hepta-contracts authority_host_store::tests::issuer_tests::transport_tests::mismatched_process_is_rejected_before_reading_or_issuing
+        PASS [   0.005s] codex-hepta-contracts authority_host_store::tests::public_directory_rejects_unprotected_test_path
+        PASS [   0.005s] codex-hepta-contracts authority_host_store::tests::register_cas_reopen_and_identity_checks
+        PASS [   0.018s] codex-hepta-contracts authority_host_store::tests::separate_processes_have_one_cas_winner
+        PASS [   0.006s] codex-hepta-contracts authority_host_store::tests::stale_temporary_write_is_replaced_but_symlink_is_not_followed
+        PASS [   2.644s] codex-hepta-agentd::authbus_text_product text_close_product::original_cancelled_binding_survives_owner_restart_and_late_original_rpc
+        PASS [   0.058s] codex-hepta-contracts authority_host_store::tests::original_final_use_rejects_replay_revocation_and_rolled_back_local_state
+        PASS [   0.206s] codex-hepta-contracts authority_host_issuer_transport::peer::tests::handler_finishing_after_total_deadline_cannot_emit_success
+        PASS [   0.017s] codex-hepta-contracts authority_lease::pair_boundary::tests::joint_boundary_rejects_foreign_owner_binding_and_stale_full_records
+        PASS [   0.114s] codex-hepta-contracts authority_host_store::tests::issuer_tests::transport_tests::bounded_frame_error_and_normal_idle_deadline_close_the_channel
+        PASS [   0.011s] codex-hepta-contracts authority_lease::pair_boundary::tests::joint_boundary_revalidates_revocation_and_actual_entry_expiry
+        PASS [   0.012s] codex-hepta-contracts authority_lease::pair_boundary::tests::pinned_issuer::administrative_recovery_rejects_future_issuer_with_live_successor
+        PASS [   0.009s] codex-hepta-contracts authority_lease::pair_boundary::tests::pinned_issuer::pinned_issuer_accepts_exact_alias_but_rejects_foreign_and_stale_full_tokens
+        PASS [   0.006s] codex-hepta-contracts authority_lease::pair_boundary::tests::pinned_issuer::pinned_issuer_administration_accepts_only_original_expired_or_pruned_floor
+        PASS [   0.006s] codex-hepta-contracts authority_lease::pair_boundary::tests::pinned_issuer::pinned_issuer_deadline_revision_and_unknown_identity_refuse_at_entry
+        PASS [   0.006s] codex-hepta-contracts authority_lease::pair_boundary::tests::pinned_issuer::pinned_issuer_joint_boundary_keeps_writer_and_effect_distinct
+        PASS [   0.069s] codex-hepta-contracts authority_lease::pair_boundary::tests::joint_boundary_holds_one_original_fence_until_both_entries_return
+        PASS [   0.008s] codex-hepta-contracts authority_lease::pair_boundary::tests::pinned_issuer::readback::readback_preserves_each_invalid_parent_as_error_with_the_original_live_writer
+        PASS [   0.377s] codex-hepta-contracts authbus_b5::tests::b5_fault_matrix_keeps_rpo_zero_for_one_thousand_crash_points
+        PASS [   0.108s] codex-hepta-contracts authority_lease::entry_clock_tests::consumer_entry_rechecks_time_after_waiting_for_owner_fence
+        PASS [   0.109s] codex-hepta-contracts authority_lease::entry_clock_tests::dispatch_entry_rechecks_time_after_waiting_for_owner_fence
+        PASS [   0.013s] codex-hepta-contracts authority_lease::pair_boundary::tests::pinned_issuer::readback::readback_requires_exact_writer_and_never_uses_a_revoked_alias_as_history_authority
+        PASS [   0.013s] codex-hepta-contracts authority_lease::pair_boundary::tests::pinned_issuer::revoked_issuer_remains_vetoed_after_expiry_prune_and_original_disk_reopen
+        PASS [   0.009s] codex-hepta-contracts authority_lease::pair_boundary::tests::retired_predecessor_refuses_missing_replaced_foreign_epoch_and_same_id
+        PASS [   0.006s] codex-hepta-contracts authority_lease::pair_boundary::tests::retired_predecessor_requires_exact_expiry_revocation_or_pruned_revision
+        PASS [   0.006s] codex-hepta-contracts authority_lease::pair_boundary::tests::retired_predecessor_still_requires_live_successor_from_same_owner
+        PASS [   0.005s] codex-hepta-contracts authority_lease::revoke::tests::bounded_revoke_retains_original_cas_receipt_and_idempotence
+        PASS [   0.006s] codex-hepta-contracts authority_lease::revoke::tests::exact_revoke_refuses_concurrent_successor_revision_and_elapsed_deadline
+        PASS [   0.006s] codex-hepta-contracts authority_lease::revoke::tests::exact_revoke_refuses_reused_id_after_epoch_change_while_original_clock_is_paused
+        PASS [   0.008s] codex-hepta-contracts authority_lease::revoke::tests::exact_original_revoke_checks_every_retained_lease_field_and_same_reason_retry
+        PASS [   0.060s] codex-hepta-contracts authority_lease::pair_boundary::tests::pinned_issuer::pinned_issuer_joint_fence_blocks_parent_revocation_until_local_signature_returns
+        PASS [   0.062s] codex-hepta-contracts authority_lease::pair_boundary::tests::pinned_issuer::readback::readback_boundary_holds_original_mutex_through_the_local_parent_decision
+        PASS [   0.008s] codex-hepta-contracts authority_lease::tests::epoch_rollover_is_durable_and_clears_bounded_history
+        PASS [   0.009s] codex-hepta-contracts authority_lease::tests::bounded_prune_reclaims_only_expired_unrevoked_leases
+        PASS [   0.007s] codex-hepta-contracts authority_lease::tests::epoch_rollover_is_the_only_revision_lineage_reset
+        PASS [   0.005s] codex-hepta-contracts authority_lease::tests::external_frontier_detects_old_snapshot_and_missing_store_reset
+        PASS [   0.006s] codex-hepta-contracts authority_lease::tests::external_frontier_ahead_after_local_commit_failure_fences_reopen
+        PASS [   0.006s] codex-hepta-contracts authority_lease::tests::lease_is_durable_verified_and_cas_revoked
+        PASS [   0.009s] codex-hepta-contracts authority_lease::tests::pruned_lease_id_preserves_monotonic_revision_lineage
+        PASS [   0.011s] codex-hepta-contracts authority_lease::tests::production_frontier_cas_detects_restored_local_snapshot
+        PASS [   2.750s] codex-hepta-agentd::authbus_text_product text_snapshot_boundary_product::queued_original_events_do_not_overwrite_history_or_survive_owner_fence
+        PASS [   0.012s] codex-hepta-contracts authority_lease::tests::revoke_retry_reuses_server_owned_timestamp
+        PASS [   0.006s] codex-hepta-contracts authority_lease::tests::stale_cas_and_binding_drift_fail_closed
+        PASS [   0.009s] codex-hepta-contracts authority_lease::tests::token_is_invalidated_by_lease_replacement
+        PASS [   0.008s] codex-hepta-contracts authority_lease::tests::verified_use_releases_owner_lock_before_consumer_code
+        PASS [   0.009s] codex-hepta-contracts authority_lease::tests::verified_use_witness_binds_current_lease_and_store_revision
+        PASS [   0.010s] codex-hepta-contracts authority_root_frontier::tests::exact_original_load_cas_and_conflict_keep_order_without_automatic_retry
+        PASS [   0.006s] codex-hepta-contracts authority_root_frontier::tests::exhausted_request_counter_closes_before_writing
+        PASS [   0.006s] codex-hepta-contracts authority_root_frontier::tests::lost_ack_after_remote_commit_is_permanently_unavailable
+        PASS [   0.009s] codex-hepta-contracts authority_root_frontier::tests::invalid_or_unknown_ack_never_reopens_the_lane
+        PASS [   0.006s] codex-hepta-contracts authority_root_frontier::tests::public_constructor_requires_root_and_exact_preheld_process_identity
+        PASS [   0.010s] codex-hepta-contracts authority_root_frontier::tests::partial_or_oversize_response_closes_without_another_request
+        PASS [   0.015s] codex-hepta-contracts authority_root_frontier::tests::owner_mismatch_emits_nothing_and_concurrent_calls_never_interleave
+        PASS [   0.016s] codex-hepta-contracts callers_manifest_tests::callers_manifest_entries_are_unique_and_well_formed
+        PASS [   0.016s] codex-hepta-contracts callers_manifest_tests::callers_manifest_records_the_live_product_chain
+        PASS [   0.013s] codex-hepta-contracts callers_manifest_tests::callers_manifest_schema_and_cutoff_are_frozen
+        PASS [   0.014s] codex-hepta-contracts callers_manifest_tests::g3_intelligence_kg_truth_bounds_qualification_without_hiding_later_candidates
+        PASS [   0.017s] codex-hepta-contracts callers_manifest_tests::g5_bounded_expansion_binds_exact_combined_head_and_stays_evidence_only
+        PASS [   0.018s] codex-hepta-contracts callers_manifest_tests::g4_matrix_robrix_truth_matches_paired_exact_candidate_qualification
+        PASS [   0.014s] codex-hepta-contracts callers_manifest_tests::g5_crash_recovery_ratchet_binds_exact_head_and_stays_fail_closed
+        PASS [   0.017s] codex-hepta-contracts callers_manifest_tests::g5_fleet_automation_truth_matches_bounded_candidate_and_stays_fail_closed
+        PASS [   0.018s] codex-hepta-contracts callers_manifest_tests::legacy_caller_zero_surfaces_are_explicitly_retired
+        PASS [   0.013s] codex-hepta-contracts callers_manifest_tests::qualification_crates_are_excluded_from_product_callers
+        PASS [   0.109s] codex-hepta-contracts authority_lease::tests::dispatch_boundary_serializes_revocation_until_local_entry_returns
+        PASS [   0.007s] codex-hepta-contracts final_use::store::tests::identical_replacement_claim_journal_cannot_take_over_the_live_descriptor
+        PASS [   0.009s] codex-hepta-contracts final_use::store::tests::compacted_claim_journal_keeps_the_new_descriptor_through_append_and_reopen
+        PASS [   1.677s] codex-hepta-agentd::optional_module_restart forty_first_service_survives_faults_replacement_retirement_and_real_process_restart
+        PASS [   0.014s] codex-hepta-contracts canonical::tests::length_delimited_sha256_counts_utf8_bytes
+        PASS [   0.009s] codex-hepta-contracts final_use::store::tests::legacy_single_key_and_key_ring_snapshots_preserve_nonce_claims
+        PASS [   0.007s] codex-hepta-contracts final_use::store::tests::legacy_zero_nonce_rejects_before_original_stage_or_committed_bytes_change
+        PASS [   0.014s] codex-hepta-contracts final_use::store::tests::legacy_journal_keeps_trust_binding_and_exact_head_checks
+        PASS [   0.010s] codex-hepta-contracts final_use::store::tests::live_claim_journal_length_drift_rejects_append_and_compaction_without_writes
+        PASS [   0.005s] codex-hepta-contracts final_use::tests::authority_rejects_shared_state_directory_and_symlinked_files
+        PASS [   0.022s] codex-hepta-contracts final_use::tests::async_effect_entry_is_denied_if_revoked_after_claim_before_entry
+        PASS [   0.016s] codex-hepta-contracts final_use::tests::capacity_snapshot_tracks_claims_revocations_and_epoch_rollover
+        PASS [   0.019s] codex-hepta-contracts final_use::tests::async_final_use_fence_survives_pending_and_releases_on_cancellation
+        PASS [   0.020s] codex-hepta-contracts final_use::tests::async_effect_entry_rechecks_revocation_and_consumes_the_token
+        PASS [   0.024s] codex-hepta-contracts final_use::tests::changing_signed_data_or_substituting_a_key_does_not_authorize
+        PASS [   0.108s] codex-hepta-contracts authority_root_frontier::tests::total_timeout_closes_without_replaying_a_waiting_operation
+        PASS [   0.015s] codex-hepta-contracts final_use::tests::expired_grant_is_denied_using_verifier_clock
+        PASS [   0.021s] codex-hepta-contracts final_use::tests::external_final_use_frontier_ahead_after_local_failure_fences_reopen
+        PASS [   0.023s] codex-hepta-contracts final_use::tests::external_final_use_frontier_detects_restored_claim_snapshot
+        PASS [   0.015s] codex-hepta-contracts final_use::tests::injected_clock_is_the_only_final_use_time_source
+        PASS [   0.033s] codex-hepta-contracts final_use::tests::epoch_change_fences_outstanding_claims_and_old_grants
+        PASS [   0.029s] codex-hepta-contracts final_use::tests::grant_expiring_between_time_samples_is_denied_at_final_entry
+        PASS [   0.022s] codex-hepta-contracts final_use::tests::journal_loss_during_clock_callback_is_rechecked_before_dispatch
+        PASS [   0.041s] codex-hepta-contracts final_use::tests::external_frontier_change_fences_existing_claim_and_shared_owner
+        PASS [   0.033s] codex-hepta-contracts final_use::tests::missing_or_truncated_claim_journal_fails_closed_on_restart
+        PASS [   0.045s] codex-hepta-contracts final_use::tests::killed_owner_releases_lock_but_keeps_claim
+        PASS [   0.032s] codex-hepta-contracts final_use::tests::replay_state_survives_owner_restart_and_prevents_concurrent_owners
+        PASS [   0.048s] codex-hepta-contracts final_use::tests::replay_claims_use_fixed_width_journal_and_state_snapshot_stays_small
+        PASS [   0.075s] codex-hepta-contracts final_use::tests::issuer_key_ring_supports_overlap_and_epoch_retirement
+        PASS [   0.026s] codex-hepta-contracts final_use::tests::revocation_after_claim_prevents_delivery_and_cannot_be_rolled_back
+        PASS [   0.025s] codex-hepta-contracts final_use::tests::revocation_survives_restart_and_missing_state_is_not_reset
+        PASS [   0.022s] codex-hepta-contracts final_use::tests::unrelated_frontier_advance_after_claim_requires_a_fresh_claim
+        PASS [   0.039s] codex-hepta-contracts final_use::tests::signed_claim_is_single_use_and_delivers_under_same_owner
+        PASS [   0.025s] codex-hepta-contracts final_use::tests::synchronous_final_use_rejects_a_concurrent_revocation_commit
+        PASS [   0.041s] codex-hepta-contracts final_use::tests::startup_trusted_head_can_advance_but_cannot_rollback_persisted_revocations
+        PASS [   0.020s] codex-hepta-contracts final_use::tests::verified_use_witness_binds_the_actual_consumer_entry
+        PASS [   0.064s] codex-hepta-contracts final_use::tests::unrelated_revocation_head_advance_denies_every_final_entry
+        PASS [   0.047s] codex-hepta-contracts final_use_control::tests::approval_key_ring_enforces_epoch_windows_and_reports_selected_key
+        PASS [   0.033s] codex-hepta-contracts final_use_control::tests::forged_revocation_feed_never_updates_authority
+        PASS [   0.052s] codex-hepta-contracts final_use_control::tests::convergence_rejects_unknown_duplicate_stale_future_and_forged_inputs
+        PASS [   0.513s] codex-hepta-contracts authority_host_store::tests::issuer_tests::transport_tests::channel_tests::a_complete_exchange_does_not_reset_the_hard_lifetime
+        PASS [   1.487s] codex-hepta-agentd::runtime_codex_product_e2e runtime_codex_product_caller_commits_one_authorized_terminal_turn
+        PASS [   0.020s] codex-hepta-contracts final_use_control::tests::independent_approval_binds_exact_grant_semantics
+        PASS [   0.012s] codex-hepta-contracts final_use_control::tests::revocation_feed_freshness_fails_closed
+        PASS [   0.514s] codex-hepta-contracts authority_host_store::tests::issuer_tests::transport_tests::channel_tests::idle_may_exceed_frame_timeout_but_partial_frame_cannot
+        PASS [   0.009s] codex-hepta-contracts identity::tests::tool_identity_is_versioned_and_length_delimited
+        PASS [   0.022s] codex-hepta-contracts final_use_control::tests::revocation_ack_requires_receipt_for_the_exact_applied_update
+        PASS [   0.011s] codex-hepta-contracts memory::tests::attachment_is_always_typed_as_quoted_untrusted_reference
+        PASS [   0.006s] codex-hepta-contracts memory::tests::inactive_and_expired_revisions_are_not_recalled
+        PASS [   0.006s] codex-hepta-contracts memory::tests::limits_reject_zero_unbounded_and_incoherent_values
+        PASS [   0.008s] codex-hepta-contracts memory::tests::deserialization_rejects_invalid_limits_scores_and_request_binding
+        PASS [   0.011s] codex-hepta-contracts memory::tests::cross_thread_recall_stays_disabled_without_an_execution_witness
+        PASS [   0.006s] codex-hepta-contracts memory::tests::memory_ids_and_legacy_nested_bindings_have_fixed_canonical_oracles
+        PASS [   0.008s] codex-hepta-contracts memory::tests::ranking_is_integer_and_has_stable_tie_breaks
+        PASS [   0.005s] codex-hepta-contracts provider::tests::orphaned_ephemeral_digest_cannot_alias_an_absent_binding
+        PASS [   0.009s] codex-hepta-contracts provider::tests::active_provider_wire_rejects_unknown_fields_but_keeps_legacy_optional_decode
+        PASS [   0.008s] codex-hepta-contracts provider::tests::ephemeral_input_preserves_lineage_two_identity_and_binds_both_digests
+        PASS [   0.009s] codex-hepta-contracts memory::tests::request_identity_is_stable_and_query_is_only_fingerprinted
+        PASS [   1.579s] codex-hepta-agentd::queue_capacity_product real_agentd_manifest_capacity_bounds_its_private_app_server_queue
+        PASS [   0.012s] codex-hepta-contracts provider::tests::host_ids_are_hashed_and_bound_without_persisting_plaintext
+        PASS [   0.075s] codex-hepta-contracts final_use_control::tests::convergence_report_requires_every_enrolled_node_ack
+        PASS [   0.008s] codex-hepta-contracts provider::tests::provider_ids_are_versioned_stable_and_length_delimited
+        PASS [   0.006s] codex-hepta-contracts provider_effect::tests::conflict_lookup_is_not_a_success
+        PASS [   0.014s] codex-hepta-contracts provider::tests::provider_wire_validation_fences_identity_and_terminal_bindings
+        PASS [   0.013s] codex-hepta-contracts provider_effect::tests::coordinator_quarantines_malformed_dispatch_ack_before_returning_error
+        PASS [   0.014s] codex-hepta-contracts provider_effect::tests::accepted_ack_does_not_prove_effect_completion
+        PASS [   0.011s] codex-hepta-contracts provider_effect::tests::coordinator_rejects_malformed_ack_provenance_before_adapter_call
+        PASS [   0.011s] codex-hepta-contracts provider_effect::tests::coordinator_restored_pending_is_quarantined_before_dispatch
+        PASS [   0.020s] codex-hepta-contracts provider::tests::request_binding_changes_for_websocket_incremental_semantics
+        PASS [   0.017s] codex-hepta-contracts provider_effect::tests::coordinator_quarantines_unknown_and_never_blind_retries
+        PASS [   0.015s] codex-hepta-contracts provider_effect::tests::coordinator_restored_pending_payload_path_is_quarantined_before_dispatch
+        PASS [   0.008s] codex-hepta-contracts provider_effect::tests::coordinator_unsupported_capability_stays_quarantined
+        PASS [   0.053s] codex-hepta-contracts final_use_control::tests::signed_revocation_feed_is_authenticated_and_monotonic
+        PASS [   0.010s] codex-hepta-contracts provider_effect::tests::journal_deserialization_rejects_malformed_ack_contents
+        PASS [   0.012s] codex-hepta-contracts provider_effect::tests::coordinator_unsupported_capability_never_calls_lookup
+        PASS [   0.011s] codex-hepta-contracts provider_effect::tests::journal_late_dispatch_ack_after_pending_quarantine_is_side_effect_free
+        PASS [   0.012s] codex-hepta-contracts provider_effect::tests::default_capability_is_unsupported
+        PASS [   0.010s] codex-hepta-contracts provider_effect::tests::journal_rejects_late_dispatch_ack_after_quarantine
+        PASS [   0.010s] codex-hepta-contracts provider_effect::tests::journal_rejects_terminal_ack_replacement_and_unknown_lookup
+        PASS [   0.007s] codex-hepta-contracts provider_effect::tests::journal_unknown_lookup_cannot_turn_accepted_into_rejected
+        PASS [   0.010s] codex-hepta-contracts provider_effect::tests::journal_round_trip_is_serializable_without_plain_payloads
+        PASS [   0.011s] codex-hepta-contracts provider_effect::tests::journal_unknown_lookup_persists_quarantine_until_reconciled
+        PASS [   0.014s] codex-hepta-contracts provider_effect::tests::journal_status_acceptance_can_close_prior_quarantine
+        PASS [   0.016s] codex-hepta-contracts provider_effect::tests::journal_persists_intent_and_monotonic_ack_observations
+        PASS [   0.008s] codex-hepta-contracts provider_effect::tests::logical_effect_key_is_stable_across_local_attempts_and_payload_changes
+        PASS [   0.014s] codex-hepta-contracts provider_effect::tests::journal_without_ack_sources_remains_compatible_when_empty
+        PASS [   0.016s] codex-hepta-contracts provider_effect::tests::journal_with_ack_requires_exact_ack_source_provenance
+        PASS [   0.005s] codex-hepta-contracts provider_effect::tests::operation_effect_key_is_stable_across_payload_changes
+        PASS [   0.010s] codex-hepta-contracts provider_effect::tests::matching_ack_binds_key_payload_and_operation
+        PASS [   0.011s] codex-hepta-contracts provider_effect::tests::malformed_in_memory_journal_contents_fail_closed_before_state_or_append
+        PASS [   0.013s] codex-hepta-contracts provider_effect::tests::malformed_in_memory_ack_provenance_fails_closed_before_state_or_record
+        PASS [   0.008s] codex-hepta-contracts provider_effect::tests::payload_coordinator_marks_explicit_not_dispatched_without_physical_attempt
+        PASS [   0.009s] codex-hepta-contracts provider_effect::tests::occurrence_key_is_stable_across_physical_retries_and_excludes_payload
+        PASS [   0.006s] codex-hepta-contracts provider_effect::tests::status_accepted_fences_late_dispatch_transition
+        PASS [   0.010s] codex-hepta-contracts provider_effect::tests::payload_coordinator_quarantines_malformed_dispatch_ack_before_retry
+        PASS [   0.008s] codex-hepta-contracts provider_effect::tests::status_observation_binds_exact_payload_and_requires_lookup_source
+        PASS [   0.011s] codex-hepta-contracts provider_effect::tests::payload_coordinator_rejects_mismatch_before_adapter_call
+        PASS [   0.008s] codex-hepta-contracts provider_effect::tests::status_observation_is_monotonic_and_rejects_late_dispatch_or_unknown
+        PASS [   0.009s] codex-hepta-contracts provider_effect::tests::unsupported_capability_fails_closed_even_with_matching_ack
+        PASS [   0.010s] codex-hepta-contracts provider_effect::tests::unknown_and_not_found_lookup_remain_quarantined
+        PASS [   0.005s] codex-hepta-contracts verified_use_witness::tests::malformed_witness_fails_validation
+        PASS [   0.005s] codex-hepta-contracts verified_use_witness::tests::witness_round_trip_is_evidence_only_and_strict
+        PASS [   0.008s] codex-hepta-contracts qualification_receipt::tests::rejected_receipt_can_witness_a_non_mutating_callback
+        PASS [   0.011s] codex-hepta-contracts qualification_receipt::tests::qualification_receipt_is_digest_bound_and_fail_closed
+        PASS [   0.016s] codex-hepta-contracts provider_effect::tests::same_key_different_payload_is_rejected
+        PASS [   0.030s] codex-hepta-contracts::final_use_linearization unix::callback_reentrant_revocation_is_ordered_after_final_entry_without_deadlock
+        PASS [   0.024s] codex-hepta-infer-worker-host model_worker::tests::lost_driver_terminality_is_indeterminate
+        PASS [   0.031s] codex-hepta-infer-worker-host final_use_authorizer::tests::connected_issuer_peer_uid_must_match_configured_owner
+        PASS [   0.028s] codex-hepta-infer-worker-host model_worker::tests::loads_runs_and_unloads_exact_model_tuple
+        PASS [   0.029s] codex-hepta-infer-worker-host model_worker::tests::executes_authenticated_neuron_feature_tuple_from_loaded_manifest
+        PASS [   0.032s] codex-hepta-infer-worker-host final_use_authorizer::tests::endpoint_denial_updates_head_and_old_head_cannot_roll_back
+        PASS [   0.032s] codex-hepta-infer-worker-host model_worker::tests::neuron_feature_path_rejects_payload_drift_and_driver_identity_drift
+        PASS [   3.208s] codex-hepta-agentd::authbus_text_product text_large_history_product::large_original_item_keeps_history_navigable_and_exact_terminal_reconcilable
+        PASS [   0.050s] codex-hepta-infer-worker-host final_use_authorizer::tests::forged_grant_never_reaches_effect_entry
+        PASS [   0.053s] codex-hepta-infer-worker-host final_use_authorizer::tests::exact_signed_grant_becomes_one_entry_verified_token
+        PASS [   0.028s] codex-hepta-infer-worker-host native_app_server::control::intelligence_recovery::tests::current_revision_does_not_relax_original_snapshot_binding
+        PASS [   0.024s] codex-hepta-infer-worker-host native_app_server::control::intelligence_recovery::tests::terminal_publication_preserves_local_boundary_and_authority_loss
+        PASS [   0.030s] codex-hepta-infer-worker-host model_worker::tests::rejects_changed_tokenizer_model_or_payload_tuple
+        PASS [   0.036s] codex-hepta-infer-worker-host model_worker::tests::neuron_feature_worker_projects_exact_inference_control_receipt
+        PASS [   0.304s] codex-hepta-contracts final_use::tests::live_claim_journal_loss_denies_existing_tokens_at_every_final_entry
+        PASS [   0.030s] codex-hepta-infer-worker-host native_app_server::control::tests::reopened_dispatch_and_completed_duplicate_never_connect_to_provider
+        PASS [   0.028s] codex-hepta-infer-worker-host native_app_server::control::tests::reopened_explicit_dispatch_rejection_never_connects_or_becomes_unknown
+        PASS [   0.048s] codex-hepta-infer-worker-host native_app_server::control::tests::intelligence_handoff_is_committed_to_native_admission_identity
+        PASS [   0.041s] codex-hepta-infer-worker-host native_app_server::control::tests::pre_dispatch_cancellation_and_connection_failure_release_without_usage_claims
+        PASS [   0.032s] codex-hepta-infer-worker-host native_app_server::native_output::tests::completed_items_replace_partial_text_once_in_item_order
+        PASS [   0.033s] codex-hepta-infer-worker-host native_app_server::native_output::tests::completed_text_and_deltas_share_an_atomic_byte_limit
+        PASS [   0.022s] codex-hepta-infer-worker-host native_app_server::native_output::tests::full_message_without_deltas_preserves_terminal_usage_and_local_boundary
+        PASS [   0.028s] codex-hepta-infer-worker-host native_app_server::recovery::reconciliation_tests::reopened_cancellation_intent_never_upgrades_a_completed_turn_to_success
+        PASS [   0.027s] codex-hepta-infer-worker-host native_app_server::recovery::reconciliation_tests::terminal_reconciliation_rejects_cross_request_and_cross_turn_usage
+        PASS [   0.058s] codex-hepta-infer-worker-host native_app_server::native_output::tests::empty_messages_and_item_ids_cannot_grow_unbounded_metadata
+        PASS [   0.027s] codex-hepta-infer-worker-host native_app_server::tests::actual_usage_is_bound_monotonic_and_survives_terminal_failure
+        PASS [   0.019s] codex-hepta-infer-worker-host native_app_server::tests::disconnect_event_lag_cancel_and_deadline_have_explicit_boundary_statuses
+        PASS [   0.049s] codex-hepta-infer-worker-host native_app_server::recovery::reconciliation_tests::reopened_terminal_reconciliation_preserves_usage_and_irreversible_boundaries
+        PASS [   0.021s] codex-hepta-infer-worker-host native_app_server::tests::cognitive_final_use_revalidation_follows_durable_dispatch_and_precedes_turn_start
+        PASS [   0.024s] codex-hepta-infer-worker-host native_app_server::tests::final_use_fence_rejects_owner_ingress_cancel_and_deadline_drift
+        PASS [   0.025s] codex-hepta-infer-worker-host native_app_server::tests::in_progress_is_not_a_terminal_observation
+        PASS [   0.029s] codex-hepta-infer-worker-host native_app_server::tests::late_completed_cannot_upgrade_cancelled_or_timed_out_boundary
+        PASS [   0.025s] codex-hepta-infer-worker-host native_app_server::tests::message_output::completed_snapshot_replaces_partial_text_without_double_counting
+        PASS [   0.042s] codex-hepta-infer-worker-host native_app_server::tests::message_output::complete_only_message_is_observed_only_for_the_bound_turn
+        PASS [   0.044s] codex-hepta-infer-worker-host native_app_server::tests::lost_turn_start_ack_reconciles_only_the_exact_in_progress_thread
+        PASS [   0.029s] codex-hepta-infer-worker-host native_app_server::tests::message_output::conflicting_completion_or_late_delta_cannot_change_a_completed_item
+        PASS [   0.029s] codex-hepta-infer-worker-host native_app_server::tests::message_output::distinct_item_ids_preserve_identical_message_text
+        PASS [   0.022s] codex-hepta-infer-worker-host native_app_server::tests::message_output::item_start_order_survives_later_item_text_arriving_first
+        PASS [   0.024s] codex-hepta-infer-worker-host native_app_server::tests::message_output::interrupt_grace_keeps_item_identity_and_cannot_restore_cancelled_authority
+        PASS [   0.617s] codex-hepta-contracts authority_lease::revoke::tests::same_registry_busy_or_late_clock_cannot_revoke_after_original_deadline
+        PASS [   0.021s] codex-hepta-infer-worker-host native_app_server::tests::message_output::terminal_summary_merges_last_message_without_dropping_earlier_messages
+        PASS [   0.053s] codex-hepta-infer-worker-host native_app_server::tests::message_output::empty_items_cannot_retain_unbounded_metadata
+        PASS [   0.049s] codex-hepta-infer-worker-host native_app_server::tests::message_output::oversized_complete_item_preserves_previous_output_and_pending_state
+        PASS [   0.031s] codex-hepta-infer-worker-host native_app_server::tests::only_the_bound_turn_can_complete_the_native_request
+        PASS [   0.029s] codex-hepta-infer-worker-host native_app_server::tests::output_is_observed_bounded_and_never_predeclares_success
+        PASS [   0.035s] codex-hepta-infer-worker-host native_app_server::tests::owner_loss_stays_denied_after_interrupt_grace_observes_completed
+        PASS [   0.025s] codex-hepta-infer-worker-host tests::payload_drift_is_rejected
+        PASS [   0.027s] codex-hepta-infer-worker-host tests::revoked_lease_is_rejected
+        PASS [   0.061s] codex-hepta-infer-worker-host native_app_server::tests::success_requires_both_matching_completion_and_final_ready_owner
+        PASS [   0.068s] codex-hepta-infer-worker-host native_app_server::tests::owner_timeout_and_terminal_first_selection_cannot_authorize_success
+        PASS [   0.027s] codex-hepta-infer-worker-host tests::timeout_never_becomes_success
+        PASS [   0.126s] codex-hepta-infer-worker-host native_app_server::tests::message_output::oversized_terminal_snapshot_cannot_authorize_completion
+        PASS [   0.022s] codex-hepta-infer-worker-host tests::unobserved_terminal_state_is_indeterminate
+        PASS [   0.053s] codex-hepta-infer-worker-host tests::terminal_success_requires_exact_authority_binding
+        PASS [   0.031s] codex-hepta-infer-worker-host tests::token_limit_is_enforced
+        PASS [   0.007s] codex-hepta-learning-ledger causal_v2::tests::ledger_candidate_receipt_binds_generator_relative_completeness
+        PASS [   0.010s] codex-hepta-learning-ledger causal_v2::tests::ledger_04_validates_terminal_watermark_and_correction_lineage
+        PASS [   0.011s] codex-hepta-learning-ledger causal_v2::tests::ledger_03_rejects_shared_credential_chain
+        PASS [   0.008s] codex-hepta-learning-ledger causal_v2::tests::ledger_credit_batch_enforces_conservation
+        PASS [   0.007s] codex-hepta-learning-ledger causal_v2::tests::ledger_dataset_freeze_is_order_independent_and_rejects_duplicates
+        PASS [   0.023s] codex-hepta-infer-worker-host::bin/hepta-infer-worker tests::snapshot_input_roundtrips_and_never_fills_missing_identity
+        PASS [   0.010s] codex-hepta-learning-ledger checkpoint::tests::checkpoint_revocation_frontier_changes_without_rewriting_history
+        PASS [   0.005s] codex-hepta-learning-ledger dataset_receipt_v3::tests::fixed_q32_dependency_remains_linked_for_dataset_receipts
+        PASS [   0.004s] codex-hepta-learning-ledger dataset_receipt_v3::tests::ledger_05_dataset_receipt_is_self_verifying
+        PASS [   0.008s] codex-hepta-learning-ledger dataset_receipt_v3::tests::ledger_05_dataset_receipt_rejects_semantic_field_drift
+        PASS [   0.013s] codex-hepta-learning-ledger durable::inspection_tests::corrupted_complete_frame_and_invalid_domains_are_rejected
+        PASS [   0.013s] codex-hepta-learning-ledger durable::inspection_tests::complete_suffix_needs_current_witness_and_never_returns_old_prefix
+        PASS [   0.008s] codex-hepta-learning-ledger durable::inspection_tests::current_revocations_survive_readonly_projection
+        PASS [   0.004s] codex-hepta-learning-ledger durable::inspection_tests::os_readonly_inspection_matches_writer_and_preserves_bytes
+        PASS [   0.004s] codex-hepta-learning-ledger durable::inspection_tests::missing_and_mismatched_acknowledged_history_never_mutate_file
+        PASS [   0.004s] codex-hepta-learning-ledger durable::inspection_tests::reader_coexists_with_shared_lock_but_does_not_unlock_another_reader
+        PASS [   0.006s] codex-hepta-learning-ledger durable::inspection_tests::partial_tail_is_never_repaired_by_reader
+        PASS [   0.010s] codex-hepta-learning-ledger durable::inspection_tests::rejection_releases_own_lock_even_with_transient_duplicate
+        PASS [   0.010s] codex-hepta-learning-ledger durable::tests::canonical_candidate_permutation_retry_after_later_events_never_appends
+        PASS [   0.013s] codex-hepta-learning-ledger durable::tests::canonical_event_and_file_match_independent_integer_byte_oracle
+        PASS [   0.011s] codex-hepta-learning-ledger durable::tests::changed_identity_and_stale_predecessor_reject_without_mutating_either_store
+        PASS [   0.012s] codex-hepta-learning-ledger durable::tests::codec_rejects_every_truncation_unknown_variant_and_trailing_bytes
+        PASS [   0.017s] codex-hepta-learning-ledger durable::tests::complete_corruption_invalid_length_prefix_and_rehashed_bad_lineage_reject
+        PASS [   0.012s] codex-hepta-learning-ledger durable::tests::empty_recovery_is_not_creation_and_existing_history_is_never_overwritten
+        PASS [   0.015s] codex-hepta-learning-ledger durable::tests::exclusive_writer_fencing_releases_on_drop
+        PASS [   0.012s] codex-hepta-learning-ledger durable::tests::failed_constructor_releases_acquired_lock_with_transient_duplicate
+        PASS [   0.005s] codex-hepta-learning-ledger durable::tests::failed_recovery_releases_acquired_lock_before_store_exists
+        PASS [   0.007s] codex-hepta-learning-ledger durable::tests::failed_write_poisons_memory_and_requires_recovery
+        PASS [   0.011s] codex-hepta-learning-ledger durable::tests::full_unacknowledged_frame_is_synced_and_deduplicated_on_recover
+        PASS [   0.015s] codex-hepta-learning-ledger durable::tests::invalid_causal_facts_and_oversized_candidate_sets_fail_before_io
+        PASS [   0.085s] codex-hepta-learning-ledger durable::tests::acknowledged_revocation_cannot_disappear_as_a_valid_prefix_or_partial_tail
+        PASS [   0.017s] codex-hepta-learning-ledger durable::tests::malformed_domain_anchor_and_excess_file_reject_without_changes
+        PASS [   0.012s] codex-hepta-learning-ledger durable::tests::owner_drop_releases_lock_with_a_transient_duplicate_alive
+        PASS [   0.007s] codex-hepta-learning-ledger durable::tests::record_quota_allows_exact_retry_but_not_a_new_event
+        PASS [   0.012s] codex-hepta-learning-ledger durable::tests::persisted_causal_events_replay_exact_core_and_revocation_excludes_descendants
+        PASS [   0.008s] codex-hepta-learning-ledger durable::tests::wrong_anchor_never_repairs_tail_and_matching_early_anchor_preserves_later_frames
+        PASS [   0.008s] codex-hepta-learning-ledger ledger::tests::append_is_deterministic_and_idempotent
+        PASS [   0.025s] codex-hepta-learning-ledger durable::tests::retrieval_assignment_tag_four_replays_exactly_after_reopen
+        PASS [   0.006s] codex-hepta-learning-ledger ledger::tests::atomic_credit_batch_enforces_terminal_value_and_conservation
+        PASS [   0.008s] codex-hepta-learning-ledger ledger::tests::atomic_credit_rejects_legacy_outcome_and_credential_or_key_reuse
+        PASS [   0.007s] codex-hepta-learning-ledger ledger::tests::authenticated_corrections_form_one_linear_head_without_forks
+        PASS [   0.005s] codex-hepta-learning-ledger ledger::tests::authenticated_outcome_rejects_legacy_decision_ancestry
+        PASS [   0.008s] codex-hepta-learning-ledger ledger::tests::canonical_runtime_delivery_is_ingested_with_runtime_owned_observer
+        PASS [   0.007s] codex-hepta-learning-ledger ledger::tests::credit_cannot_be_double_counted
+        PASS [   0.042s] codex-hepta-learning-ledger durable::tests::unacknowledged_partial_tail_recovers_exact_predecessor_at_every_cut
+        PASS [   0.005s] codex-hepta-learning-ledger ledger::tests::evaluated_policy_cannot_label_its_own_outcome
+        PASS [   0.007s] codex-hepta-learning-ledger ledger::tests::explicit_unlearning_lineage_revokes_source_and_derived_credit
+        PASS [   0.010s] codex-hepta-learning-ledger ledger::tests::incomplete_or_duplicate_candidate_sets_fail_closed
+        PASS [   0.005s] codex-hepta-learning-ledger ledger::tests::invalid_runtime_delivery_contract_cannot_enter_ledger
+        PASS [   0.013s] codex-hepta-learning-ledger ledger::tests::outcome_and_credit_cannot_attach_to_revoked_ancestors
+        PASS [   0.007s] codex-hepta-learning-ledger ledger::tests::prompt_delivery_requires_live_episode_and_independent_runtime_observer
+        PASS [   0.014s] codex-hepta-learning-ledger ledger::tests::rejected_runtime_delivery_preserves_rejection_lineage
+        PASS [   0.010s] codex-hepta-learning-ledger ledger::tests::revocation_removes_descendants_and_snapshot_restore_does_not_resurrect
+        PASS [   0.011s] codex-hepta-learning-ledger ledger::tests::revoked_decision_logically_removes_prompt_delivery_lineage
+        PASS [   0.010s] codex-hepta-learning-ledger ledger::tests::tampered_snapshot_chain_is_rejected
+        PASS [   0.006s] codex-hepta-learning-ledger ledger::tests::zero_propensity_and_missing_abstain_fail_closed
+        PASS [   5.314s] codex-hepta-agentd hos2_device::tests::cpu_policy_consumer::cpu_policy_final_use_retries_same_k_d_and_installs_once_with_a_fresh_proposal
+        PASS [   0.063s] codex-hepta-learning-ledger production::reconciliation::tests::committed_decision_recovers_after_lost_ack_expiry_and_reopen
+        PASS [   0.174s] codex-hepta-learning-ledger ledger::tests::indexed_active_reads_match_scan_after_growth_revocation_and_replay
+        PASS [   0.037s] codex-hepta-learning-ledger production::reconciliation::tests::mismatched_or_missing_committed_reference_never_writes
+        PASS [   0.102s] codex-hepta-learning-ledger production::reconciliation::tests::committed_outcome_recovers_after_lost_ack_expiry_and_reopen
+        PASS [   0.042s] codex-hepta-learning-ledger production::reconciliation::tests::reconciliation_neither_revives_revoked_decision_nor_admits_other_event_kinds
+        PASS [   0.035s] codex-hepta-learning-ledger production::tests::corrupt_or_missing_witness_history_never_falls_back_to_reinitialization
+        PASS [   0.016s] codex-hepta-learning-ledger production::tests::crash_after_ledger_sync_before_witness_child
+        PASS [   0.005s] codex-hepta-learning-ledger production::tests::directory_durability_requires_an_actual_directory_handle
+        PASS [   0.049s] codex-hepta-learning-ledger production::tests::lost_ack_after_ledger_sync_reconciles_exact_decision_into_witness
+        PASS [   0.070s] codex-hepta-learning-ledger production::tests::dataset_freeze_counts_decisions_without_any_outcome_as_pending
+        PASS [   0.066s] codex-hepta-learning-ledger production::tests::process_death_between_ledger_and_witness_reconciles_without_redispatch
+        PASS [   0.055s] codex-hepta-learning-ledger production::tests::production_writer_recovers_against_independent_witness
+        PASS [   0.370s] codex-hepta-learning-ledger ledger::tests::indexed_historical_retry_survives_growth_and_snapshot_recovery
+        PASS [   1.275s] codex-hepta-contracts authority_lease::tests::maximum_declared_state_shape_fits_restart_read_envelope
+        PASS [   0.020s] codex-hepta-learning-ledger protocol::tests::credit_and_episode_views_bind_exact_snapshot_history
+        PASS [   0.108s] codex-hepta-learning-ledger production::tests::production_writer_closes_authenticated_causal_chain_and_witnesses_each_commit
+        PASS [   0.011s] codex-hepta-learning-ledger protocol::tests::dataset_v3_has_deterministic_registered_v1_compatibility_view
+        PASS [   0.005s] codex-hepta-learning-ledger retrieval_assignment::tests::bridge_preserves_complete_and_incomplete_assignment_facts
+        PASS [   0.053s] codex-hepta-learning-ledger production::tests::production_writer_rotates_root_signed_trust_and_rejects_revocation_and_rollback
+        PASS [   0.006s] codex-hepta-learning-ledger protocol::tests::registered_protocols_reject_unknown_fields
+        PASS [   0.011s] codex-hepta-learning-ledger protocol::tests::registered_decision_and_outcome_adapters_round_trip_canonical_json
+        PASS [   0.009s] codex-hepta-learning-ledger retrieval_assignment::tests::normalization_preserves_selected_and_delivered_candidate_identity
+        PASS [   0.011s] codex-hepta-learning-ledger retrieval_assignment::tests::downstream_policy_and_delivery_propensity_are_bound_separately
+        PASS [   0.015s] codex-hepta-learning-ledger retrieval_assignment::tests::delivery_aware_bridge_binds_only_the_final_exposed_subset
+        PASS [   0.014s] codex-hepta-learning-ledger retrieval_assignment::tests::owner_bridge_uses_canonical_digest_indices_not_input_positions
+        PASS [   0.012s] codex-hepta-learning-ledger retrieval_assignment::tests::selected_set_exceeding_decoder_capacity_is_rejected_atomically
+        PASS [   0.032s] codex-hepta-learning-ledger retrieval_assignment::tests::maximum_retrieval_assignment_fits_existing_bounded_event_frame
+        PASS [   0.010s] codex-hepta-learning-ledger run_start::tests::committed_record_reopens_and_ack_loss_retry_is_idempotent
+        PASS [   0.028s] codex-hepta-learning-ledger retrieval_assignment::tests::retrieval_encoding_has_a_distinct_tag_and_bounded_roundtrip
+        PASS [   0.015s] codex-hepta-learning-ledger run_start::tests::durable_conflict_roundtrip_replays_exact_receipt_without_runtime_snapshot
+        PASS [   0.012s] codex-hepta-learning-ledger run_start::tests::durable_run_start_roundtrip_replays_exact_objective_bytes
+        PASS [   0.008s] codex-hepta-learning-ledger run_start::tests::exact_retry_is_idempotent_but_run_id_drift_conflicts
+        PASS [   0.026s] codex-hepta-learning-ledger run_start::tests::acknowledged_missing_history_never_repairs_as_success
+        PASS [   0.008s] codex-hepta-learning-ledger run_start::tests::objective_payload_digest_mismatch_rejects_before_io
+        PASS [   0.006s] codex-hepta-learning-ledger run_start::tests::predecessor_and_binding_are_fenced
+        PASS [   0.013s] codex-hepta-learning-ledger run_start::tests::incomplete_unacknowledged_tail_recovers_to_last_synced_frame
+        PASS [   0.014s] codex-hepta-learning-ledger run_start::tests::objective_protocol_digest_mismatch_rejects_before_io
+        PASS [   0.006s] codex-hepta-learning-ledger run_start::tests::publication::publication_and_anchor_read_retained_prefix_without_writing
+        PASS [   0.008s] codex-hepta-learning-ledger run_start::tests::publication::publication_anchor_detects_recovered_rollback_and_changed_chain
+        PASS [   0.005s] codex-hepta-learning-ledger segments::tests::capacity_rejection_and_wrong_successor_never_mutate_the_owner
+        PASS [   0.014s] codex-hepta-learning-ledger run_start::tests::semantic_or_protocol_drift_after_reopen_conflicts
+        PASS [   0.013s] codex-hepta-learning-ledger segments::tests::checkpoint_prevents_missing_empty_successor_and_seal_resurrection
+        PASS [   0.016s] codex-hepta-learning-ledger segments::tests::crash_child
+        PASS [   0.013s] codex-hepta-learning-ledger segments::tests::cross_segment_causality_revocation_and_historical_retry_keep_one_identity
+        PASS [   0.009s] codex-hepta-learning-ledger segments::tests::incomplete_final_frame_is_repaired_only_after_minimum_anchor_validation
+        PASS [   0.014s] codex-hepta-learning-ledger segments::tests::original_v1_and_segmented_v2_share_the_real_durable_port_not_a_fixture
+        PASS [   2.311s] codex-hepta-agentd::supervised_two_agents two_supervised_real_agentd_processes_are_fault_isolated
+        PASS [   0.009s] codex-hepta-learning-ledger segments::tests::reordered_history_wrong_limits_and_corruption_fail_without_repair
+        PASS [   0.005s] codex-hepta-learning-ledger shadow_tests::bridge_recomputes_intuition_and_appends_complete_candidate_set
+        PASS [   0.006s] codex-hepta-learning-ledger segments::tests::sealed_prefix_is_readable_while_the_new_segment_writer_remains_active
+        PASS [   0.020s] codex-hepta-learning-ledger segments::tests::process_exit_after_seal_or_successor_preserves_unknown_outcome_without_redispatch
+        PASS [   0.011s] codex-hepta-learning-ledger segments::tests::witnessed_sealed_last_segment_can_rotate_but_never_append_after_restart
+        PASS [   0.010s] codex-hepta-learning-ledger shadow_tests::exact_shadow_replay_is_idempotent
+        PASS [   0.015s] codex-hepta-learning-ledger shadow_tests::caller_supplied_candidate_set_digest_drift_fails_closed
+        PASS [   0.018s] codex-hepta-learning-ledger shadow_tests::low_confidence_is_logged_as_explicit_abstain_with_nonzero_propensity
+        PASS [   0.012s] codex-hepta-learning-ledger shadow_tests::reserved_abstain_cannot_be_smuggled_into_policy_candidates
+        PASS [   0.012s] codex-hepta-learning-ledger shadow_tests::shadow_bridge_does_not_weaken_independent_terminal_outcome_rules
+        PASS [   0.050s] codex-hepta-learning-ledger signed_evidence::tests::observer_and_evaluator_require_pairwise_independence
+        PASS [   0.047s] codex-hepta-learning-ledger signed_evidence::tests::trust_epoch_revocation_scope_and_expiry_fail_closed
+        PASS [   0.010s] codex-hepta-learning-ledger trust_distribution::tests::trust_distribution_rejects_retroactive_effective_time
+        PASS [   0.069s] codex-hepta-learning-ledger signed_evidence::tests::signed_evidence_binds_actual_bytes_and_credential_not_digest_claims
+        PASS [   0.013s] codex-hepta-learning-ledger trust_distribution::tests::trust_distribution_rejects_root_substitution_and_revocation
+        PASS [   0.011s] codex-hepta-learning-ledger witness::tests::complete_unconfirmed_witness_frame_requires_successful_recovery_sync
+        PASS [   0.008s] codex-hepta-learning-ledger witness::tests::witness_advances_monotonically_and_recovers_exact_frontier
+        PASS [   0.100s] codex-hepta-learning-ledger signed_evidence::tests::distinct_keys_do_not_make_one_controller_independent
+        PASS [   0.035s] codex-hepta-learning-ledger trust_distribution::tests::trust_distribution_rotation_is_monotonic_and_content_addressed
+        PASS [   0.012s] codex-hepta-learning-ledger witness::tests::witness_rejects_skips_and_binding_mismatch
+        PASS [   0.020s] codex-hepta-runtime organs::tests::busy_or_stopped_hosts_never_bypass_dispatch
+        PASS [   0.012s] codex-hepta-runtime organs::tests::live_status_request_traverses_the_initialized_graph
+        PASS [   0.053s] codex-hepta-runtime organs::tests::governed_topology_requires_final_use_and_replaces_the_live_cns_generation
+        PASS [   0.110s] codex-hepta-learning-ledger trust_distribution::tests::trust_distribution_rejects_bad_signature_generation_skips_and_epoch_rollback
+        PASS [   0.071s] codex-hepta-runtime organs::tests::authenticated_canary_forces_live_fault_then_rolls_forward_to_reconciled_predecessor_semantics
+        PASS [   0.020s] codex-hepta-runtime organs::tests::revoked_final_use_never_mutates_the_live_topology
+        PASS [   0.028s] codex-hepta-runtime organs::tests::status_consumer_checks_the_complete_hierarchy_without_direct_adapter_fallback
+        PASS [   0.019s] codex-hepta-runtime organs::tests::topology_migration_owner_must_bind_exact_handoff_plan
+        PASS [   0.116s] codex-hepta-runtime organs::tests::public_governed_topology_denies_before_grant_consumption_or_callbacks
+        PASS [   0.060s] codex-hepta-runtime tests::rejects_database_row_with_a_wrong_mac
+        PASS [   0.123s] codex-hepta-runtime organs::tests::public_topology_recovery_denies_before_grant_consumption_or_callbacks
+        PASS [   0.086s] codex-hepta-runtime tests::opens_exact_schema_v5_without_mutation_authority
+        PASS [   0.037s] codex-hepta-runtime tests::rejects_exposed_state_file
+        PASS [   0.010s] codex-hepta-runtime tests::runtime_status_wire_codec_rejects_effect_authority
+        PASS [   0.007s] codex-hepta-runtime tests::runtime_status_wire_codec_rejects_unknown_critical_fields
+        PASS [   0.047s] codex-hepta-runtime tests::rejects_runtime_payload_with_a_valid_shape_but_wrong_mac
+        PASS [   0.031s] codex-hepta-runtime tests::rejects_wrong_schema_without_creating_or_migrating
+        PASS [   0.019s] codex-hepta-supervisor authority_signer::tests::fd_loader_does_not_consume_or_close_caller_descriptor
+        PASS [   0.023s] codex-hepta-supervisor authority_signer::tests::raw_and_hex_external_key_inputs_are_supported_without_generation
+        PASS [   0.017s] codex-hepta-supervisor authority_signer::tests::request_json_is_tagged_and_rejects_unknown_fields
+        PASS [   0.027s] codex-hepta-supervisor authority_signer::tests::request_boundary_signs_and_verifies_h7_envelope
+        PASS [   0.015s] codex-hepta-supervisor daemon::tests::every_external_fence_field_participates_in_constant_time_cas_identity
+        PASS [   0.030s] codex-hepta-supervisor authority_signer::tests::request_boundary_signs_and_verifies_production_grant
+        PASS [   0.010s] codex-hepta-supervisor daemon::tests::wire_errors_are_closed_and_never_expose_driver_or_filesystem_detail
+        PASS [   0.007s] codex-hepta-supervisor daemon_protocol::tests::exact_stale_error_has_actual_and_no_internal_details
+        PASS [   0.021s] codex-hepta-supervisor daemon::tests::every_matrix_control_field_participates_in_state_digest
+        PASS [   0.012s] codex-hepta-supervisor daemon_protocol::tests::epoch_and_digest_parsers_are_exact
+        PASS [   1.056s] codex-hepta-learning-ledger checkpoint::tests::checkpoint_is_content_addressed_and_supports_binary_lookup
+        PASS [   0.010s] codex-hepta-supervisor daemon_protocol::tests::exact_v2_upgrade_and_success_payload_json_are_frozen
+        PASS [   0.012s] codex-hepta-supervisor daemon_protocol::tests::exact_v2_mutation_request_json_is_frozen
+        PASS [   0.035s] codex-hepta-supervisor daemon::tests::unresolved_signed_intent_keeps_daemon_reachable_but_not_ready
+        PASS [   0.013s] codex-hepta-supervisor daemon_protocol::tests::signed_mutation_response_round_trips_its_bound_production_receipt
+        PASS [   0.020s] codex-hepta-supervisor daemon_protocol::tests::request_validation_rejects_schema_identity_and_incoherent_fences
+        PASS [   0.013s] codex-hepta-supervisor daemon_protocol::tests::strict_wire_rejects_unknown_fields_and_bad_typed_identities
+        PASS [   0.010s] codex-hepta-supervisor module_runtime::safety_tests::blocked_retirement_does_not_leave_a_ready_marker
+        PASS [   0.015s] codex-hepta-supervisor module_runtime::safety_tests::all_domains_must_be_handed_off_before_replacement_becomes_active
+        PASS [   0.007s] codex-hepta-supervisor module_runtime::safety_tests::finalization_rechecks_the_exact_selected_baseline_without_consuming_evidence
+        PASS [   0.010s] codex-hepta-supervisor module_runtime::safety_tests::projected_topology_rejects_new_dependency_cycles
+        PASS [   0.007s] codex-hepta-supervisor module_runtime::safety_tests::projected_topology_rejects_unmaterialized_dependency
+        PASS [   0.017s] codex-hepta-supervisor module_runtime::safety_tests::foreign_source_writer_or_unknown_effect_leaves_topology_unchanged
+        PASS [   0.015s] codex-hepta-supervisor module_runtime::safety_tests::projected_topology_rejects_retiring_a_still_required_dependency
+        PASS [   0.006s] codex-hepta-supervisor module_runtime::safety_tests::shadow_only_candidate_cannot_preload_canary_promotion_evidence
+        PASS [   0.022s] codex-hepta-supervisor module_runtime::safety_tests::discarded_candidate_releases_work_but_cannot_be_promoted_or_replayed
+        PASS [   0.011s] codex-hepta-supervisor module_runtime::safety_tests::retire_only_proposals_have_a_reusable_pending_budget
+        PASS [   0.014s] codex-hepta-supervisor module_runtime::safety_tests::single_module_publication_cannot_bypass_dependency_validation
+        PASS [   0.010s] codex-hepta-supervisor module_runtime::safety_tests::topology_can_rewire_a_consumer_and_retire_its_old_provider_atomically
+        PASS [   0.012s] codex-hepta-supervisor module_runtime::safety_tests::single_module_replacement_cannot_publish_a_dependency_cycle
+        PASS [   0.010s] codex-hepta-supervisor module_runtime::safety_tests::topology_candidate_is_not_serving_until_atomic_finalize
+        PASS [   0.010s] codex-hepta-supervisor process_deadline::tests::invalid_deadline_policy_is_rejected
+        PASS [   0.012s] codex-hepta-supervisor module_runtime::tests::stateful_promotion_consumes_terminal_writer_handoff
+        PASS [   0.014s] codex-hepta-supervisor module_runtime::safety_tests::topology_retires_dependents_before_providers_regardless_of_delta_order
+        PASS [   0.011s] codex-hepta-supervisor process_deadline::tests::non_terminating_child_is_killed_at_deadline
+        PASS [   0.011s] codex-hepta-supervisor process_deadline::tests::strict_deadline_confirms_termination_before_reuse
+        PASS [   0.008s] codex-hepta-supervisor release_transaction::tests::transaction_round_trips_across_phases
+        PASS [   0.012s] codex-hepta-supervisor process_deadline::tests::strict_deadline_never_waits_forever_for_a_stuck_boundary
+        PASS [   0.009s] codex-hepta-supervisor restart_journal::persistence_tests::corrupt_existing_record_is_not_repaired_by_an_unchanged_write
+        PASS [   0.016s] codex-hepta-supervisor restart_budget::tests::budget_is_durable_bounded_and_pending_is_idempotent
+        PASS [   0.009s] codex-hepta-supervisor restart_journal::persistence_tests::descriptor_binding_rejects_a_file_replaced_after_path_validation
+        PASS [   0.013s] codex-hepta-supervisor restart_journal::persistence_tests::descriptor_binding_rejects_symlink_to_identical_canonical_bytes
+        PASS [   0.009s] codex-hepta-supervisor restart_journal::persistence_tests::legacy_equivalent_projection_is_still_migrated_to_canonical_bytes
+        PASS [   0.013s] codex-hepta-supervisor restart_journal::persistence_tests::visible_rename_after_directory_sync_failure_is_not_a_durable_acknowledgement
+        PASS [   1.443s] codex-hepta-infer-worker-host native_app_server::control::intelligence_recovery::tests::process::settled_terminal_survives_worker_loss_before_agentd_publication
+        PASS [   0.014s] codex-hepta-supervisor restart_policy::tests::restart_schedule_is_exponential_and_stops_after_three_attempts
+        PASS [   0.011s] codex-hepta-supervisor result_fence::tests::authority_epoch_and_generation_must_match_exactly
+        PASS [   0.019s] codex-hepta-supervisor restart_journal::tests::restart_journal_round_trips_and_rejects_clock_rollback_with_full_budget
+        PASS [   0.011s] codex-hepta-supervisor restart_policy::tests::restart_schedule_resets_after_recovery_window
+        PASS [   1.399s] codex-hepta-infer-worker-host native_app_server::recovery::tests::real_agentd_reconciles_interrupted_terminal_without_replaying_provider
+        PASS [   0.034s] codex-hepta-supervisor restart_journal::persistence_tests::identical_canonical_records_preserve_inode_and_mtime_without_losing_main_state
+        PASS [   0.010s] codex-hepta-supervisor result_fence::tests::old_generation_result_is_rejected_once_drain_is_durable
+        PASS [   0.011s] codex-hepta-supervisor result_fence::tests::successor_result_cannot_commit_before_route_publication
+        PASS [   0.009s] codex-hepta-supervisor signed_intent::publish::tests::cross_directory_publish_rejects_without_changing_either_file
+        PASS [   0.014s] codex-hepta-supervisor signed_intent::tests::abort_directive_is_bound_to_exact_intent_digest
+        PASS [   0.015s] codex-hepta-supervisor signed_intent::tests::intent_round_trips_and_rejects_unresolved_overwrite
+        PASS [   0.026s] codex-hepta-supervisor signed_authority::tests::tampering_or_stale_fence_is_rejected_before_signature_use
+        PASS [   0.094s] codex-hepta-supervisor module_runtime::safety_tests::thousand_upgrades_keep_supervisor_selection_and_retirement_metadata_bounded
+        PASS [   0.033s] codex-hepta-supervisor signed_authority::tests::external_grant_binds_h7_and_all_cas_fences
+        PASS [   0.028s] codex-hepta-supervisor supervisor::tests::failed_restart_spawn_does_not_retry_forever_on_one_budget_claim
+        PASS [   1.500s] codex-hepta-infer-worker-host native_app_server::control::intelligence_recovery::tests::process::retained_app_server_terminal_reconciles_current_agentd_revision
+        PASS [   0.023s] codex-hepta-supervisor supervisor::tests::hung_agent_is_stopped_and_killed_without_blocking_peer
+        PASS [   4.714s] codex-hepta-agentd::authbus_text_product signed_text_crosses_real_queue_once_and_current_trust_rejects_invalid_ingress
+        PASS [   0.032s] codex-hepta-supervisor supervisor::tests::kill_supersedes_inflight_paired_restart_without_replacement
+        PASS [   0.039s] codex-hepta-supervisor supervisor::tests::flapping_running_agent_stops_after_restart_budget_is_exhausted
+        PASS [   0.024s] codex-hepta-supervisor supervisor::tests::process_recovery_fault_does_not_hide_signed_recovery_required
+        PASS [   0.016s] codex-hepta-supervisor supervisor::tests::recovery_adopts_one_orphan_and_rejects_another
+        PASS [   0.042s] codex-hepta-supervisor supervisor::tests::live_but_unhealthy_matrix_is_bounded_and_restarted_without_peer_churn
+        PASS [   0.038s] codex-hepta-supervisor supervisor::tests::paired_companions_stop_before_agent_restart_and_fail_independently
+        PASS [   0.026s] codex-hepta-supervisor supervisor::tests::recovered_running_restart_settles_pending_budget_before_next_claim
+        PASS [   0.027s] codex-hepta-supervisor supervisor::tests::recovery_closes_running_release_state_crash_window
+        PASS [   0.025s] codex-hepta-supervisor supervisor::tests::recovery_reconciles_signed_upgrade_automatic_rollback_to_source
+        PASS [   0.021s] codex-hepta-supervisor supervisor::tests::recovery_reconciles_terminal_release_transaction_into_signed_intent
+        PASS [   0.033s] codex-hepta-supervisor supervisor::tests::recovery_does_not_infer_signed_commit_from_matching_target_only
+        PASS [   0.021s] codex-hepta-supervisor supervisor::tests::recovery_reconciles_terminal_signed_rollback_to_target
+        PASS [   0.021s] codex-hepta-supervisor supervisor::tests::recovery_required_unsigned_source_is_terminalized_as_aborted
+        PASS [   0.033s] codex-hepta-supervisor supervisor::tests::recovery_fences_current_release_revoked_while_supervisor_is_down
+        PASS [   0.021s] codex-hepta-supervisor supervisor::tests::recovery_reuses_restart_claim_persisted_before_exit_finalize
+        PASS [   0.101s] codex-hepta-supervisor supervisor::tests::failed_spawn_and_failed_health_each_auto_rollback_once
+        PASS [   0.026s] codex-hepta-supervisor supervisor::tests::recovery_terminalizes_unsigned_target_from_exact_release_state_cas
+        PASS [   0.028s] codex-hepta-supervisor supervisor::tests::restart_drains_one_agent_and_spawns_a_new_generation
+        PASS [   0.057s] codex-hepta-supervisor supervisor::tests::recovery_ignores_revoked_previous_release_and_adopts_current
+        PASS [   1.523s] codex-hepta-infer-worker-host native_app_server::recovery::tests::real_agentd_reconciles_failed_terminal_without_replaying_provider
+        PASS [   0.031s] codex-hepta-supervisor supervisor::tests::stale_deferred_drain_is_generation_fenced_from_replacement_starting
+        PASS [   0.034s] codex-hepta-supervisor supervisor::tests::stale_runtime_is_fenced_without_touching_peer
+        PASS [   0.016s] codex-hepta-supervisor supervisor_qualification::tests::ambiguous_power_loss_requires_operator_and_does_not_promote
+        PASS [   0.015s] codex-hepta-supervisor supervisor_qualification::tests::owner_transfer_is_revision_and_owner_cas_bound
+        PASS [   0.038s] codex-hepta-supervisor supervisor::tests::stop_supersedes_inflight_paired_restart_after_matrix_exits
+        PASS [   0.017s] codex-hepta-supervisor supervisor_qualification::tests::rollback_cas_stale_owner_duplicate_and_power_loss_are_fail_closed
+        PASS [   0.015s] codex-hepta-supervisor unix::drain_tests::missing_or_closed_socket_never_becomes_a_drain_acknowledgement
+        PASS [   0.023s] codex-hepta-supervisor unix::drain_tests::malformed_or_wrong_generation_drain_frames_still_reject
+        PASS [   0.018s] codex-hepta-supervisor unix::drain_tests::only_exact_closed_admission_with_no_running_turns_is_drained
+        PASS [   0.013s] codex-hepta-supervisor unix::precreated::tests::precreated_child
+        PASS [   0.040s] codex-hepta-supervisor supervisor::tests::unexpected_running_exit_uses_durable_restart_budget_and_backoff
+        PASS [   0.024s] codex-hepta-supervisor unix::tests::matrix_health_transport_rejects_response_larger_than_one_mib
+        PASS [   0.040s] codex-hepta-supervisor unix::precreated::tests::original_supervisor_hands_off_its_real_starting_generation_and_reaps_by_pidfd
+        PASS [   0.037s] codex-hepta-supervisor unix::precreated::tests::precreated_binding_rejects_a_foreign_pidfd_and_a_changed_executable_command
+        PASS [   0.078s] codex-hepta-supervisor supervisor::tests::signed_recovery_requires_pinned_key_and_persists_verified_decision
+        PASS [   0.028s] codex-hepta-supervisor unix::tests::health_probe_requires_exact_agent_generation_pid_and_roots
+        PASS [   0.019s] codex-hepta-supervisor unix::tests::unix_wrapper_captures_bounded_stdout_and_stderr
+        PASS [   0.041s] codex-hepta-supervisor unix::precreated::tests::original_supervisor_transfers_actual_pair_after_its_real_starting_ack
+        PASS [   0.007s] codex-hepta-supervisor writer_handoff::recovery_tests::writer_handoff_owner_drop_releases_lock_with_passive_duplicate
+        PASS [   0.011s] codex-hepta-supervisor writer_handoff::recovery_tests::writer_handoff_excludes_competing_recovery_until_owner_exits
+        PASS [   0.031s] codex-hepta-supervisor unix::tests::unix_spawn_overrides_polluted_sqlite_home_for_two_agents
+        PASS [   0.011s] codex-hepta-supervisor writer_handoff::recovery_tests::writer_handoff_minimum_is_bound_to_operation_and_exact_chain
+        PASS [   0.008s] codex-hepta-supervisor writer_handoff::recovery_tests::writer_handoff_rejects_oversized_sparse_history_and_releases_failed_lock
+        PASS [   0.012s] codex-hepta-supervisor writer_handoff::recovery_tests::writer_handoff_failed_recovery_releases_acquired_lock_with_passive_duplicate
+        PASS [   0.013s] codex-hepta-supervisor writer_handoff::journal_file::tests::fork_copy_drop_does_not_unlock_original_handoff_owner
+        PASS [   0.090s] codex-hepta-supervisor supervisor::tests::successful_upgrade_and_explicit_rollback_change_only_target_agent
+        PASS [   0.008s] codex-hepta-supervisor writer_handoff::tests::torn_tail_is_removed_before_resume
+        PASS [   0.010s] codex-hepta-supervisor writer_handoff::tests::handoff_allows_monotone_generation_gap_without_resurrection
+        PASS [   0.020s] codex-hepta-supervisor writer_handoff::recovery_tests::writer_handoff_rejects_acknowledged_prefix_rollback_before_tail_repair
+        PASS [   0.009s] codex-hepta-supervisor writer_handoff::tests::full_handoff_has_no_dual_writer_window
+        PASS [   0.013s] codex-hepta-supervisor writer_handoff::tests::handoff_refuses_to_fence_before_drain_and_unknown_effects
+        PASS [   0.017s] codex-hepta-supervisor writer_handoff::recovery_tests::writer_handoff_restarts_at_every_phase_and_retries_without_appending
+        PASS [   0.017s] codex-hepta-supervisor writer_handoff::tests::durable_handoff_reopens_at_exact_committed_phase
+        PASS [   4.571s] codex-hepta-agentd::cognitive_product_e2e real_agentd_local_memory_review_is_read_only_and_replayable
+        PASS [   0.053s] codex-hepta-supervisor::process_deadline_unix real_hanging_child_is_killed_and_observed_exited
+        PASS [   0.071s] codex-hepta-supervisor::restart_budget unexpected_agent_crashes_back_off_and_stop_after_three_restarts
+        PASS [   0.084s] codex-hepta-supervisor::restart_budget_recovery restart_budget_survives_repeated_supervisord_recovery
+        PASS [   0.046s] codex-hepta-supervisor::signed_intent_recovery unsigned_digest_abort_directive_cannot_clear_signed_production_recovery_fence
+        PASS [   0.119s] codex-hepta-supervisor::isolated_execution_handoff_unix repeated_hanging_isolated_generations_are_killed_and_old_results_stay_fenced
+        PASS [   0.221s] codex-hepta-supervisor unix::tests::failed_exact_adoption_never_signals_an_unrelated_live_pid
+        PASS [   0.230s] codex-hepta-supervisor::daemon_product product_binary_is_single_instance_owner_only_and_bad_frames_are_isolated
+        PASS [   0.266s] codex-hepta-supervisor::writer_handoff_production recovered_handoff_physically_fences_old_writer_before_successor_admission
+        PASS [   0.347s] codex-hepta-supervisor::robrix_control_projection writer_reproduces_the_tracked_artifact_set_byte_for_byte
+        PASS [   4.926s] codex-hepta-agentd::cognitive_product_e2e running_consumer_observes_owner_control_grant_and_revoke_without_restart
+        PASS [   2.036s] codex-hepta-infer-worker-host native_app_server::recovery::tests::real_agentd_reconciles_reopened_worker_without_replaying_provider
+        PASS [   1.168s] codex-hepta-learning-ledger segments::tests::history_exceeds_v1_record_capacity_without_resetting_chain_or_limits
+        PASS [   1.925s] codex-hepta-infer-worker-host native_app_server::tests::real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombstone
+        PASS [   5.161s] codex-hepta-agentd::cognitive_product_e2e five_running_agents_share_only_with_the_explicit_consumer
+        PASS [   5.285s] codex-hepta-agentd::cognitive_product_e2e five_real_agents_survive_one_automation_store_failure_without_peer_stall
+        PASS [   6.028s] codex-hepta-agentd runtime::hos2_recovery_tests::notes_tests::objective_tests::reconciliation_scope_tests::finite_notes_reconciler_excludes_device_grants_dispatch_and_observation
+        PASS [   2.031s] codex-hepta-learning-ledger checkpoint::tests::recovery_work_receipt_covers_full_single_segment_record_profile
+        PASS [   5.283s] codex-hepta-agentd::cognitive_product_e2e real_agentd_local_memory_review_hides_host_tombstone_after_reopen
+        PASS [   3.015s] codex-hepta-contracts authority_host_store::tests::issuer_tests::transport_tests::channel_tests::owner_exit_ends_idle_session_even_while_descendant_keeps_the_stream_open
+        PASS [   1.095s] codex-hepta-supervisor::robrix_control_projection robrix_control_v2_generated_projection_and_cross_parser_corpus
+        PASS [   5.841s] codex-hepta-agentd::five_agent_rolling_upgrade six_agent_fleet_lifecycle_keeps_peers_fair_and_isolated
+        PASS [   2.726s] codex-hepta-learning-ledger production::tests::product_writer_history_growth_keeps_exact_retry_and_witness_after_reopen
+        PASS [   6.045s] codex-hepta-agentd::five_agent_rolling_upgrade five_real_agentd_processes_roll_one_agent_without_stopping_peers
+        PASS [   7.198s] codex-hepta-agentd::authbus_text_product text_slow_approval_product::slow_original_file_approval_preview_survives_repeated_select_cancellation
+        PASS [   7.904s] codex-hepta-agentd runtime_tasks::service_generations::writer_tests::sqlite_writer_rotates_256_times_without_consuming_new_service_identities
+        PASS [   8.231s] codex-hepta-agentd::authbus_text_product text_slow_approval_product::original_file_preview_total_deadline_keeps_callback_declineable
+        PASS [   7.516s] codex-hepta-agentd::supervisord_product_e2e five_real_agents_survive_daemon_restart_and_isolate_one_agent_release_changes
+        PASS [  10.228s] codex-hepta-agentd runtime::hos2_recovery_tests::notes_tests::composition_tests::local_handoff_tests::notes_local_handoff_real_clock_preserves_unknown_with_distinct_spawn_and_lease_generations
+        PASS [  15.150s] codex-hepta-supervisor::paired_process_product two_real_pairs_restart_one_without_peer_pid_churn
+        PASS [  18.845s] codex-hepta-agentd::two_agent_turn_recovery killed_agent_recovers_same_turn_then_dispatches_queue_once_while_peer_stays_live
+        PASS [  17.878s] codex-hepta-infer-worker-host native_app_server::failure_tests::worker_loss_before_cleanup_preserves_timeout_usage_and_owner_loss
+  TRY 1 SLOW [> 30.000s] codex-hepta-agentd runtime::hos2_recovery_tests::actual_reconciler_asks_original_issuer_for_same_k_d_and_does_not_resend_unknown
+  TRY 1 SLOW [> 30.000s] codex-hepta-supervisor::paired_process_product five_real_pairs_adopt_all_ten_children_and_isolate_one_matrix_crash
+        PASS [  35.912s] codex-hepta-agentd runtime::hos2_recovery_tests::actual_reconciler_asks_original_issuer_for_same_k_d_and_does_not_resend_unknown
+        PASS [  59.042s] codex-hepta-supervisor::paired_process_product five_real_pairs_adopt_all_ten_children_and_isolate_one_matrix_crash
+────────────
+     Summary [  66.007s] 1219 tests run: 1219 passed (2 slow), 78 skipped

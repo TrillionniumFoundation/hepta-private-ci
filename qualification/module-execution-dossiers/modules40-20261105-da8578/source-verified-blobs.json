@@ -1,0 +1,734 @@
+{
+  "schema": "hepta.modules40.verified-source-blobs.v1",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "sourceCommit": "8658210499706130788c216ff14fd342809b45a4",
+  "sourceTree": "6bc86196d10cf83b010f9917e5e9cb471b5f6b68",
+  "registryPath": "docs/modules/MODULES.json",
+  "registryBlob": "2571766d45a0a6b0db0ec83e675c70609d3bc39d",
+  "registrySha256": "468ce01963e5665ad0b39df7c69a0c630bb93e2168f4d669dd4f8dea55e17716",
+  "registryBytes": 60119,
+  "files": [
+    {
+      "path": "docs/modules/auth.authbus/IMPLEMENTATION_MAP.json",
+      "blob": "6a19185443e1bf2ecc943b425fecc1b898280c0b",
+      "sha256": "46b8416e7981e4638379e27626d73335e21bc2cef65ac041c7720d982770a4cf",
+      "bytes": 2831,
+      "origin": "unchanged-prior-canonical-map-verified-by-final-merge-preview",
+      "changedByFinalNavigation": false
+    },
+    {
+      "path": "docs/modules/automation.taskflow/IMPLEMENTATION_MAP.json",
+      "blob": "c30f3b653a41b13ca5e20b035b3667250ebe7301",
+      "sha256": "399f7779dbe5e351b75756a6981cccd64c8d49d3a673b7dee58b91e1be3a4208",
+      "bytes": 16585,
+      "origin": "unchanged-prior-canonical-map-verified-by-final-merge-preview",
+      "changedByFinalNavigation": false
+    },
+    {
+      "path": "docs/modules/browser.servo/IMPLEMENTATION_MAP.json",
+      "blob": "95232cb60bc15e0787122e49b12f0a451c58f8e1",
+      "sha256": "dce4c5c0820a30656b8f8d8853c93cf05547ccd485a1c9a67437378a6db264bb",
+      "bytes": 4578,
+      "origin": "unchanged-prior-canonical-map-verified-by-final-merge-preview",
+      "changedByFinalNavigation": false
+    },
+    {
+      "path": "docs/modules/channel.matrix/IMPLEMENTATION_MAP.json",
+      "blob": "004297c8a80305edabc4b0994b031b042b943436",
+      "sha256": "dfd6292bf4cd6b226009964639a028da42a73d3d840c6a6ae05d5424468947c2",
+      "bytes": 4841,
+      "origin": "unchanged-prior-canonical-map-verified-by-final-merge-preview",
+      "changedByFinalNavigation": false
+    },
+    {
+      "path": "docs/modules/cognitive.read/IMPLEMENTATION_MAP.json",
+      "blob": "6afdd69cbb3a14337ef68d6dded995229351e966",
+      "sha256": "6df0c1f719ba8fed41d6349efd0ccc2727922569809053ad24ecbb07666a46d7",
+      "bytes": 16569,
+      "origin": "unchanged-prior-canonical-map-verified-by-final-merge-preview",
+      "changedByFinalNavigation": false
+    },
+    {
+      "path": "docs/modules/cognitive.store/IMPLEMENTATION_MAP.json",
+      "blob": "4a4aecb8115a709c31a6483ff8c08a61585ec3f5",
+      "sha256": "57c0b643d2a54ed95d6bdd2f6582f0ebfae63450b307475178e87ae762a4833c",
+      "bytes": 15846,
+      "origin": "unchanged-prior-canonical-map-verified-by-final-merge-preview",
+      "changedByFinalNavigation": false
+    },
+    {
+      "path": "docs/modules/cognitive.types/IMPLEMENTATION_MAP.json",
+      "blob": "a58d2d826998d3fc4a445774529a8f1a9770cc18",
+      "sha256": "46eed2cc572ac26096a82e79424190d0ce8aadd34bff6f270673819d5239b8ee",
+      "bytes": 11120,
+      "origin": "unchanged-prior-canonical-map-verified-by-final-merge-preview",
+      "changedByFinalNavigation": false
+    },
+    {
+      "path": "docs/modules/compact.engine/IMPLEMENTATION_MAP.json",
+      "blob": "9f9c5e34ad955f899eb9256cb6b0640e03806ef0",
+      "sha256": "0124a1cedc1d1bc682a576e0728fce73c63a6083c1bca3bb08f65c81e73085f6",
+      "bytes": 2690,
+      "origin": "unchanged-prior-canonical-map-verified-by-final-merge-preview",
+      "changedByFinalNavigation": false
+    },
+    {
+      "path": "docs/modules/context.compiler/IMPLEMENTATION_MAP.json",
+      "blob": "4d06be9230e0b9b966739bce6769a55d4b992133",
+      "sha256": "1a42efd63c96339fa5f66f56fe9a5d76ff13a8342e1524a30ae8d24ed754b430",
+      "bytes": 11278,
+      "origin": "unchanged-prior-canonical-map-verified-by-final-merge-preview",
+      "changedByFinalNavigation": false
+    },
+    {
+      "path": "docs/modules/control.engineering/IMPLEMENTATION_MAP.json",
+      "blob": "f81f0f0dc211a6e35d606ba9bda66c0b3da6e2a2",
+      "sha256": "d68d019d87a4f75639d35a1d8503c5db9e93a16c85a3473d4dd1dc84165e0035",
+      "bytes": 41559,
+      "origin": "unchanged-prior-canonical-map-verified-by-final-merge-preview",
+      "changedByFinalNavigation": false
+    },
+    {
+      "path": "docs/modules/control.runtime/IMPLEMENTATION_MAP.json",
+      "blob": "b0183a3a3898c354d2fe18d43054b8cf3f341187",
+      "sha256": "888c377f93840fdc3cd340571010b781316f3a9582f03e8d72d37fdc92a80561",
+      "bytes": 9024,
+      "origin": "unchanged-prior-canonical-map-verified-by-final-merge-preview",
+      "changedByFinalNavigation": false
+    },
+    {
+      "path": "docs/modules/inference.control/IMPLEMENTATION_MAP.json",
+      "blob": "2116d9359255f99a749dcdb92fa186310ceeb779",
+      "sha256": "8aab0d6018eb257844d32c62e37c82b24f5b8b4a75ebc1f56b890b0eeab03816",
+      "bytes": 6922,
+      "origin": "unchanged-prior-canonical-map-verified-by-final-merge-preview",
+      "changedByFinalNavigation": false
+    },
+    {
+      "path": "docs/modules/inference.worker/IMPLEMENTATION_MAP.json",
+      "blob": "8ad25b2f06c9d48dab97eb89cb0ccc244e0f75d3",
+      "sha256": "eb7af971ed46e79f800a327f7c5d73234587687512cf46a3e50bc91ee8032c40",
+      "bytes": 6838,
+      "origin": "unchanged-prior-canonical-map-verified-by-final-merge-preview",
+      "changedByFinalNavigation": false
+    },
+    {
+      "path": "docs/modules/intelligence.control/IMPLEMENTATION_MAP.json",
+      "blob": "721fc5d5e037981f388ae98c47e551769a32d88e",
+      "sha256": "3eeaa32490051cef1a089f6103d39db3fa3cc9daec071bd0484904a4afc19806",
+      "bytes": 29974,
+      "origin": "unchanged-prior-canonical-map-verified-by-final-merge-preview",
+      "changedByFinalNavigation": false
+    },
+    {
+      "path": "docs/modules/intuition.policy/IMPLEMENTATION_MAP.json",
+      "blob": "12a89204b51165f6db3e3f6f34f42c20b048ae46",
+      "sha256": "ee626e5604c144fbebca5d37b391fd8e2f913c8abbeb9ab65e05cea5b61cf4c0",
+      "bytes": 2300,
+      "origin": "unchanged-prior-canonical-map-verified-by-final-merge-preview",
+      "changedByFinalNavigation": false
+    },
+    {
+      "path": "docs/modules/kernel.authority/IMPLEMENTATION_MAP.json",
+      "blob": "ae0dd8cdc9ed61b2e2ce58957b6a6122e8bdb1b1",
+      "sha256": "8a3a83b5c0e6f3f6113b44d62608d0f75254c8a57378795d798aed364af2dff2",
+      "bytes": 12235,
+      "origin": "unchanged-prior-canonical-map-verified-by-final-merge-preview",
+      "changedByFinalNavigation": false
+    },
+    {
+      "path": "docs/modules/kernel.evidence/IMPLEMENTATION_MAP.json",
+      "blob": "b114bd30a0a8f2906604b089dcd802028dcdf55a",
+      "sha256": "e0301e04e1af0e8a37ac2220e2e7a6d9c57eb37de0f984fd99691723e038201a",
+      "bytes": 7476,
+      "origin": "unchanged-prior-canonical-map-verified-by-final-merge-preview",
+      "changedByFinalNavigation": false
+    },
+    {
+      "path": "docs/modules/kernel.operations/IMPLEMENTATION_MAP.json",
+      "blob": "10b956cadc270ec9acfe4a98ffa6aa0de2fda2e6",
+      "sha256": "8d89903cad2d5d4bc2b2f25c6c643088142d0ee882dc0c2f450d3a928210024d",
+      "bytes": 17501,
+      "origin": "unchanged-prior-canonical-map-verified-by-final-merge-preview",
+      "changedByFinalNavigation": false
+    },
+    {
+      "path": "docs/modules/knowledge.graph/IMPLEMENTATION_MAP.json",
+      "blob": "21ce05004fffd7af67ee849d9180010c8870697c",
+      "sha256": "da1cd608ee0a3fae6130f77182145e97c0b22e5579381bddc28a2bd5fdcb4600",
+      "bytes": 13595,
+      "origin": "unchanged-prior-canonical-map-verified-by-final-merge-preview",
+      "changedByFinalNavigation": false
+    },
+    {
+      "path": "docs/modules/learning.artifacts/IMPLEMENTATION_MAP.json",
+      "blob": "faf4889729bd172bcdda255730c92f4abf439ab3",
+      "sha256": "77cc8a3c24a846ce5901eef12c82c6ad8a2d81f5bdadf104462034ce564c19d2",
+      "bytes": 20941,
+      "origin": "unchanged-prior-canonical-map-verified-by-final-merge-preview",
+      "changedByFinalNavigation": false
+    },
+    {
+      "path": "docs/modules/learning.eval/IMPLEMENTATION_MAP.json",
+      "blob": "b5f289e197c8ec541a922d24d54d6156437b29c6",
+      "sha256": "a477898568c8729b12c8449afebad5cf0f0c8feb27a669d11021d805d4fdbb3b",
+      "bytes": 16312,
+      "origin": "unchanged-prior-canonical-map-verified-by-final-merge-preview",
+      "changedByFinalNavigation": false
+    },
+    {
+      "path": "docs/modules/learning.ledger/IMPLEMENTATION_MAP.json",
+      "blob": "89cfe11b1403b003ab351baf49d587c4e940933b",
+      "sha256": "30c8d2ff42b076e25a51334302315edb4d7d085bfefa894d350c541f9b7fb0ed",
+      "bytes": 25319,
+      "origin": "unchanged-prior-canonical-map-verified-by-final-merge-preview",
+      "changedByFinalNavigation": false
+    },
+    {
+      "path": "docs/modules/learning.operator/IMPLEMENTATION_MAP.json",
+      "blob": "aecd120c3b8f23e6d0ef5bbfd343c6410b4c3de0",
+      "sha256": "5779da673fe643a43100cc257b0a041deacf069557d137c546120f4e82e381f0",
+      "bytes": 15501,
+      "origin": "unchanged-prior-canonical-map-verified-by-final-merge-preview",
+      "changedByFinalNavigation": false
+    },
+    {
+      "path": "docs/modules/learning.plasticity/IMPLEMENTATION_MAP.json",
+      "blob": "0237680471d75f9a3eb3f85606580a17f86e770c",
+      "sha256": "b917cad4e78cd4492f33df782f6bae105da2d6015de80db78888aec61e93c6a6",
+      "bytes": 39325,
+      "origin": "unchanged-prior-canonical-map-verified-by-final-merge-preview",
+      "changedByFinalNavigation": false
+    },
+    {
+      "path": "docs/modules/memory.federation/IMPLEMENTATION_MAP.json",
+      "blob": "2d7922dd6920cdfc70c5d7c6c62134be53d27c8f",
+      "sha256": "e8f32d5ee14272146ee011d4bfb02bfce2fb1e41c161bdbe0c6e7c551f9c1a38",
+      "bytes": 10276,
+      "origin": "unchanged-prior-canonical-map-verified-by-final-merge-preview",
+      "changedByFinalNavigation": false
+    },
+    {
+      "path": "docs/modules/memory.retrieval/IMPLEMENTATION_MAP.json",
+      "blob": "2fc791a06de07e559f2cf110d51ec1e32da67308",
+      "sha256": "eeb9d799680b7ff895c8e6a3b6cb36fd2385f9ff86f4a73b0ca391f74b6dd661",
+      "bytes": 13324,
+      "origin": "unchanged-prior-canonical-map-verified-by-final-merge-preview",
+      "changedByFinalNavigation": false
+    },
+    {
+      "path": "docs/modules/neuron.runtime/IMPLEMENTATION_MAP.json",
+      "blob": "cdbd8fbf04c20713b1a856ad03c0f295c491a21d",
+      "sha256": "17f3eae413b39ca8921725968dce32a22e73f6585dfb15194ab33978ec7ff08a",
+      "bytes": 11292,
+      "origin": "unchanged-prior-canonical-map-verified-by-final-merge-preview",
+      "changedByFinalNavigation": false
+    },
+    {
+      "path": "docs/modules/objective.compiler/IMPLEMENTATION_MAP.json",
+      "blob": "c6f3f8bd89c0d6f6d5754da0656782cc892c35d8",
+      "sha256": "f6e35e6784e3c02f9907d4b8f521dc6bbe82412c06fbff6f7e89710e81e22f66",
+      "bytes": 18825,
+      "origin": "unchanged-prior-canonical-map-verified-by-final-merge-preview",
+      "changedByFinalNavigation": false
+    },
+    {
+      "path": "docs/modules/platform.types/IMPLEMENTATION_MAP.json",
+      "blob": "d6f93d6c37caf0fbd8e25841d6ce7c4dd7828eef",
+      "sha256": "0a1118a8e6dc0d25f84cf0039fb0c030bb731a6aeafd70925c903f52ba26603f",
+      "bytes": 10688,
+      "origin": "unchanged-prior-canonical-map-verified-by-final-merge-preview",
+      "changedByFinalNavigation": false
+    },
+    {
+      "path": "docs/modules/platform.wire/IMPLEMENTATION_MAP.json",
+      "blob": "344bfc407d6d23065b51f00fa557280d9d604f74",
+      "sha256": "c8782458da47d4afe82e03050350e65f3a8217c6f40a7ffc41d2f1f6fbfaf935",
+      "bytes": 8589,
+      "origin": "unchanged-prior-canonical-map-verified-by-final-merge-preview",
+      "changedByFinalNavigation": false
+    },
+    {
+      "path": "docs/modules/prompt.optimizer/IMPLEMENTATION_MAP.json",
+      "blob": "9c6221752bb7dbfd727db16bf2dd4dc9e21f5e1a",
+      "sha256": "243fda33cf9be9a02c7714ad34807e3e569a5d61aacc78f8665f0247ad6ab277",
+      "bytes": 2295,
+      "origin": "unchanged-prior-canonical-map-verified-by-final-merge-preview",
+      "changedByFinalNavigation": false
+    },
+    {
+      "path": "docs/modules/prompt.registry/IMPLEMENTATION_MAP.json",
+      "blob": "00c9926a7532e19a82c867ff821b5077da256d2c",
+      "sha256": "dbd4e49bff28ddcbf8ccea66d2912f13f0a8706228ee34ed71eac29790d2a0d6",
+      "bytes": 2709,
+      "origin": "unchanged-prior-canonical-map-verified-by-final-merge-preview",
+      "changedByFinalNavigation": false
+    },
+    {
+      "path": "docs/modules/runtime.agentd/IMPLEMENTATION_MAP.json",
+      "blob": "4016d898070000b1b6dd579c825251380ed3bbb6",
+      "sha256": "67509ebb98a29111bb432a442f72e474da1b1406522137d57409342f9f1e891f",
+      "bytes": 18283,
+      "origin": "unchanged-prior-canonical-map-verified-by-final-merge-preview",
+      "changedByFinalNavigation": false
+    },
+    {
+      "path": "docs/modules/runtime.codex/IMPLEMENTATION_MAP.json",
+      "blob": "20ad0366e259258f85c208e79cfd2c5fea6f3370",
+      "sha256": "05cd7719c09ff661cdbd5d3a0328527442ce57c2473f85e65b050d9a622aa909",
+      "bytes": 16458,
+      "origin": "unchanged-prior-canonical-map-verified-by-final-merge-preview",
+      "changedByFinalNavigation": false
+    },
+    {
+      "path": "docs/modules/runtime.fleet/IMPLEMENTATION_MAP.json",
+      "blob": "c6dfea9f118d456b81e058155b3edc80851435b5",
+      "sha256": "35881aca21712608552740995fb31b883b534dcd428ca98566acc551e8fb8492",
+      "bytes": 5060,
+      "origin": "unchanged-prior-canonical-map-verified-by-final-merge-preview",
+      "changedByFinalNavigation": false
+    },
+    {
+      "path": "docs/modules/runtime.supervisor/IMPLEMENTATION_MAP.json",
+      "blob": "ad668f903ff47c897cf2fc32de7bf93c075c60a6",
+      "sha256": "a0d91f39667b04e9e1897ce558922349cef971d9b37fe2358a6bb95f4a4e2b3e",
+      "bytes": 21426,
+      "origin": "unchanged-prior-canonical-map-verified-by-final-merge-preview",
+      "changedByFinalNavigation": false
+    },
+    {
+      "path": "docs/modules/secrets.heptabao/IMPLEMENTATION_MAP.json",
+      "blob": "fd043f3b38b6f9e72968a7eec5763ba157e33932",
+      "sha256": "3643aeb71f1a6cf03dba0447b734a95701427a2d37b8c9a346cd00baf669cbfb",
+      "bytes": 4465,
+      "origin": "unchanged-prior-canonical-map-verified-by-final-merge-preview",
+      "changedByFinalNavigation": false
+    },
+    {
+      "path": "docs/modules/ui.control/IMPLEMENTATION_MAP.json",
+      "blob": "69c29b168567252cb5f9d4c0a0892b6c6b8b4284",
+      "sha256": "f05c165b85dd9a800e62f5818759648dbe138e932e79b3e77c00f1b0d8453d0c",
+      "bytes": 4587,
+      "origin": "unchanged-prior-canonical-map-verified-by-final-merge-preview",
+      "changedByFinalNavigation": false
+    },
+    {
+      "path": "docs/modules/ui.native/IMPLEMENTATION_MAP.json",
+      "blob": "781dc2075b3f53e11a4160b51ca886af82dcc5ee",
+      "sha256": "92319084652ea2cebf58731454ed2c52afdfc05110707b64ba83c254a2ab6480",
+      "bytes": 5530,
+      "origin": "unchanged-prior-canonical-map-verified-by-final-merge-preview",
+      "changedByFinalNavigation": false
+    },
+    {
+      "path": "docs/modules/utility.ndu/IMPLEMENTATION_MAP.json",
+      "blob": "b5ebc37366f011aff003d24253a8c44f1ed55a90",
+      "sha256": "011b2d06cc200feb05df02018bea2d5aac8b7d81a784e724d4c175895381fb3c",
+      "bytes": 28293,
+      "origin": "unchanged-prior-canonical-map-verified-by-final-merge-preview",
+      "changedByFinalNavigation": false
+    }
+  ],
+  "sourceHistory": [
+    {
+      "path": "qualification/module-execution-dossiers/modules40-20261105-da8578/source-navigation-history.json",
+      "blob": "3f2299e5b453e500caf910d8bb732619b9abb3d4",
+      "sha256": "485bc0826092755850f2722320c8e7aeb653e6c77047c97fdc56f6b56216f0e7",
+      "bytes": 17374
+    },
+    {
+      "path": "qualification/module-execution-dossiers/modules40-20261105-da8578/source-navigation-history-final.json",
+      "blob": "a75623f5eb6103f17fb8d396fd57965756cf1f22",
+      "sha256": "7ec6f404b3c5438bece2170b19ded4ff785cacbafa8e610fa1ab53ea794546a3",
+      "bytes": 21486
+    },
+    {
+      "path": "qualification/module-execution-dossiers/modules40-20261105-da8578/source-navigation-history-spelling.json",
+      "blob": "6d39404b76052381138d6c4db4c3a24d3ddaedbb",
+      "sha256": "ac5e4805fa60d849fbbf85caa803b4b760845676bed5f87a80a10b91e05dd68d",
+      "bytes": 2587
+    }
+  ],
+  "navigationReplacementMapCount": 0,
+  "provenance": {
+    "priorFactSnapshot": {
+      "path": "windows-775-report-prep/MODULES40-SOURCE-FACTS.json",
+      "bytes": 807852,
+      "sha256": "b84950be36234c768aa51c74be18bc05fee6f5d6f3bd63a5c1e878ce21701f02",
+      "sourceCommit": "775bf555b0a7faf6eed17627acb0d0433294b737",
+      "sourceTree": "e6f4644152d11a06457fdd92d8e5066675b26565"
+    },
+    "priorVerifiedBlobManifest": {
+      "path": "windows-775-report-prep/source-verified-blobs.json",
+      "bytes": 27708,
+      "sha256": "269da9320132a4ab72be6b59648325e45c06a61da8e42fc4ac53ee24a34bb11d"
+    },
+    "priorSourceProvenance": {
+      "priorFactSnapshot": {
+        "path": "successor-report-prep/MODULES40-SOURCE-FACTS.json",
+        "bytes": 801211,
+        "sha256": "ac3d0b4982745240a619a0af716ee59ce8a6292e9d074d78918605ba564e7dfe",
+        "sourceCommit": "797116d61cf422c26274ffef31297dce84a53a80",
+        "sourceTree": "67ce024db1679aa6cd301856ba3a694ea18bc4b6"
+      },
+      "priorVerifiedBlobManifest": {
+        "path": "successor-report-prep/source-verified-blobs.json",
+        "bytes": 21016,
+        "sha256": "f128e25ca412767b25ad1c948b3e4e72e20dc57c148363ec8af7d22096cf194c"
+      },
+      "priorSourceProvenance": {
+        "priorFactSnapshot": {
+          "path": "final-report-prep/MODULES40-SOURCE-FACTS.json",
+          "sha256": "41f6cdf00744ec99417af7cae7056c2198ce75b6b1d28fa490163fb9baf0524c",
+          "sourceCommit": "bb55b0d7d263c396ec504c45393d938c3428dae5",
+          "sourceTree": "19116ccdf440a1cddc2a29f3d709ebe1a3cd06c1"
+        },
+        "priorVerifiedBlobManifest": {
+          "path": "final-report-prep/final-source-verified-blobs.json",
+          "sha256": "6b89ca8b417c80e6b20ebd8defc2c833097b83e74e02477267e6c7b9aa252021"
+        },
+        "priorSourceProvenance": {
+          "priorFactSnapshot": {
+            "path": "final-report-prep/f581-snapshot/MODULES40-SOURCE-FACTS.json",
+            "sha256": "5a2ae80faf7b5096a1ea5c1399275771a915780b80d8b6d2684cdd7e9b9b0d1f",
+            "sourceCommit": "f5813506b49eb05efad00f203b9362195875892c",
+            "sourceTree": "00d62de1c2f6ac8a229d23ce9d8e1b9f34b333df"
+          },
+          "navigationExport": {
+            "path": "integration/final-navigation-export.json",
+            "sha256": "0d5bb9414ca82c473f745c187ab586a1bda8561b8f947cc3ea6e03a23e590ea9",
+            "nativeCommit": "8ab12f162b659a209a87f3254fe87cb07f4c07e8",
+            "nativeTree": "19116ccdf440a1cddc2a29f3d709ebe1a3cd06c1",
+            "sourceBefore": {
+              "commit": "38bd86afdec6ee0558af47ae58bb2813e2ad788e",
+              "tree": "62f767b394adbda686f21499f4af5cb4584673dc"
+            }
+          },
+          "codeExport": {
+            "path": "integration/ready-source-export.json",
+            "sha256": "8ea47a169db74e759f1e606881fa9dfa70cc6a7ec54ded55a630748f819423b7"
+          },
+          "executionEvidenceTransferred": false,
+          "mapOverlayLayers": [
+            {
+              "kind": "initial-verified-map-manifest",
+              "path": "integration/navigation-baseline/manifest.json",
+              "sha256": "b73cbef87725fee0d62c222a87e8ebae98cd2eac5acf758ee3c52a6034d42e1e",
+              "sourceCommit": "dd6a8cad33a9f351501b90bf1e0ae6e9bc902db8",
+              "sourceTree": "57eae0abde46eae539ff36a96dda12048825f9be",
+              "mapCount": 40
+            },
+            {
+              "kind": "prior-navigation-replacements",
+              "path": "integration/navigation-export.json",
+              "sha256": "391d5785ea0448ca69a28ed348ec05cb8adb6d068227f4ccefc4f1af2105350c",
+              "canonicalCommit": "f5813506b49eb05efad00f203b9362195875892c",
+              "canonicalTree": "00d62de1c2f6ac8a229d23ce9d8e1b9f34b333df",
+              "nativeCommit": "d1ae243ba581c6f0b8e495d6ffcad9137aed583c",
+              "mapCount": 9
+            },
+            {
+              "kind": "final-navigation-replacements",
+              "path": "integration/final-navigation-export.json",
+              "sha256": "0d5bb9414ca82c473f745c187ab586a1bda8561b8f947cc3ea6e03a23e590ea9",
+              "canonicalCommit": "bb55b0d7d263c396ec504c45393d938c3428dae5",
+              "canonicalTree": "19116ccdf440a1cddc2a29f3d709ebe1a3cd06c1",
+              "nativeCommit": "8ab12f162b659a209a87f3254fe87cb07f4c07e8",
+              "mapCount": 11
+            }
+          ],
+          "distinctMapCountChangedFromInitialBaseline": 13,
+          "localBaselineDirectoryObservation": "The current local navigation-baseline Map files already contain the prior nine navigation replacements; its manifest remains the immutable initial download manifest. The prior complete fact snapshot verifies that intermediate layer."
+        },
+        "navigationExport": {
+          "path": "integration/spelling-navigation-export.json",
+          "sha256": "9050b886676e08f86aedf6dc33b81c6ac4717266b67b6b13ebe9afc64bee52e1",
+          "nativeCommit": "c77786bd2b786b801197dad684f6f5af1a3d5af5",
+          "nativeTree": "67ce024db1679aa6cd301856ba3a694ea18bc4b6",
+          "sourceBefore": {
+            "commit": "c4863123b65f895be0eb14e0958d5cfe6c9c78bd",
+            "tree": "81e2217141060f123adbe1da78c3dbecf57f3073"
+          }
+        },
+        "canonicalCommitObject": {
+          "path": "integration/canonical-spelling-final-object.json",
+          "sha256": "c1f6868bb876dec571587b34160b446c7fe13568839bef6720778458020dfbd8"
+        },
+        "mapOverlayLayers": [
+          {
+            "kind": "initial-verified-map-manifest",
+            "path": "integration/navigation-baseline/manifest.json",
+            "sha256": "b73cbef87725fee0d62c222a87e8ebae98cd2eac5acf758ee3c52a6034d42e1e",
+            "sourceCommit": "dd6a8cad33a9f351501b90bf1e0ae6e9bc902db8",
+            "sourceTree": "57eae0abde46eae539ff36a96dda12048825f9be",
+            "mapCount": 40
+          },
+          {
+            "kind": "prior-navigation-replacements",
+            "path": "integration/navigation-export.json",
+            "sha256": "391d5785ea0448ca69a28ed348ec05cb8adb6d068227f4ccefc4f1af2105350c",
+            "canonicalCommit": "f5813506b49eb05efad00f203b9362195875892c",
+            "canonicalTree": "00d62de1c2f6ac8a229d23ce9d8e1b9f34b333df",
+            "nativeCommit": "d1ae243ba581c6f0b8e495d6ffcad9137aed583c",
+            "mapCount": 9
+          },
+          {
+            "kind": "final-navigation-replacements",
+            "path": "integration/final-navigation-export.json",
+            "sha256": "0d5bb9414ca82c473f745c187ab586a1bda8561b8f947cc3ea6e03a23e590ea9",
+            "canonicalCommit": "bb55b0d7d263c396ec504c45393d938c3428dae5",
+            "canonicalTree": "19116ccdf440a1cddc2a29f3d709ebe1a3cd06c1",
+            "nativeCommit": "8ab12f162b659a209a87f3254fe87cb07f4c07e8",
+            "mapCount": 11
+          },
+          {
+            "kind": "successor-navigation-replacements",
+            "path": "integration/spelling-navigation-export.json",
+            "sha256": "9050b886676e08f86aedf6dc33b81c6ac4717266b67b6b13ebe9afc64bee52e1",
+            "canonicalCommit": "797116d61cf422c26274ffef31297dce84a53a80",
+            "canonicalTree": "67ce024db1679aa6cd301856ba3a694ea18bc4b6",
+            "nativeCommit": "c77786bd2b786b801197dad684f6f5af1a3d5af5",
+            "codeParent": {
+              "commit": "c4863123b65f895be0eb14e0958d5cfe6c9c78bd",
+              "tree": "81e2217141060f123adbe1da78c3dbecf57f3073"
+            },
+            "mapCount": 1
+          }
+        ],
+        "executionEvidenceTransferred": false
+      },
+      "nativeSourceExport": {
+        "path": "integration/windows-source-evidence/windows-name-source-run1-export.json",
+        "bytes": 15779,
+        "sha256": "ea87ddb40a785b62cafd25bbebdc8464254e8062be28a788644900abf09dfc67",
+        "nativeCommit": "587a37f7cb3196426962024a094dab8947596fef",
+        "nativeTree": "e6f4644152d11a06457fdd92d8e5066675b26565",
+        "sourceBefore": {
+          "commit": "797116d61cf422c26274ffef31297dce84a53a80",
+          "tree": "67ce024db1679aa6cd301856ba3a694ea18bc4b6",
+          "status": ""
+        },
+        "changedPaths": [
+          "codex-rs/utils/pty/src/win/native_observation_tests.rs",
+          "codex-rs/windows-sandbox-rs/src/unified_exec/delete_permission_tests.rs"
+        ]
+      },
+      "nativeNavigationPreview": {
+        "path": "integration/windows-source-evidence/windows-canonical-run1-navigation-preview.json",
+        "bytes": 7059,
+        "sha256": "dd827058ddc3ae750a0751b794a5fef4c96af0eff0ac1f05450f59e6d6bae82a"
+      },
+      "canonicalCommitObject": {
+        "path": "integration/canonical-windows-final-object.json",
+        "bytes": 559,
+        "sha256": "54b616326064e46d155834d3967a47c70245206542e575cc143946824a2e0caa"
+      },
+      "githubExactParentComparison": {
+        "path": "windows-775-report-prep/github-797-to-775-compare.json",
+        "bytes": 14971,
+        "sha256": "0e945319f944725b5c0f932ab48947d3cb198423ffd3a8441a49cc12b7fbd15b"
+      },
+      "githubExactRegistryRead": {
+        "path": "windows-775-report-prep/github-775-registry-capture.json",
+        "bytes": 66710,
+        "sha256": "07aa7e50f6e659757b0245587d29dffde15286c4a513139facc1be18a5e9fc57"
+      },
+      "mapOverlayLayers": [
+        {
+          "kind": "initial-verified-map-manifest",
+          "path": "integration/navigation-baseline/manifest.json",
+          "sha256": "b73cbef87725fee0d62c222a87e8ebae98cd2eac5acf758ee3c52a6034d42e1e",
+          "sourceCommit": "dd6a8cad33a9f351501b90bf1e0ae6e9bc902db8",
+          "sourceTree": "57eae0abde46eae539ff36a96dda12048825f9be",
+          "mapCount": 40
+        },
+        {
+          "kind": "prior-navigation-replacements",
+          "path": "integration/navigation-export.json",
+          "sha256": "391d5785ea0448ca69a28ed348ec05cb8adb6d068227f4ccefc4f1af2105350c",
+          "canonicalCommit": "f5813506b49eb05efad00f203b9362195875892c",
+          "canonicalTree": "00d62de1c2f6ac8a229d23ce9d8e1b9f34b333df",
+          "nativeCommit": "d1ae243ba581c6f0b8e495d6ffcad9137aed583c",
+          "mapCount": 9
+        },
+        {
+          "kind": "final-navigation-replacements",
+          "path": "integration/final-navigation-export.json",
+          "sha256": "0d5bb9414ca82c473f745c187ab586a1bda8561b8f947cc3ea6e03a23e590ea9",
+          "canonicalCommit": "bb55b0d7d263c396ec504c45393d938c3428dae5",
+          "canonicalTree": "19116ccdf440a1cddc2a29f3d709ebe1a3cd06c1",
+          "nativeCommit": "8ab12f162b659a209a87f3254fe87cb07f4c07e8",
+          "mapCount": 11
+        },
+        {
+          "kind": "successor-navigation-replacements",
+          "path": "integration/spelling-navigation-export.json",
+          "sha256": "9050b886676e08f86aedf6dc33b81c6ac4717266b67b6b13ebe9afc64bee52e1",
+          "canonicalCommit": "797116d61cf422c26274ffef31297dce84a53a80",
+          "canonicalTree": "67ce024db1679aa6cd301856ba3a694ea18bc4b6",
+          "nativeCommit": "c77786bd2b786b801197dad684f6f5af1a3d5af5",
+          "codeParent": {
+            "commit": "c4863123b65f895be0eb14e0958d5cfe6c9c78bd",
+            "tree": "81e2217141060f123adbe1da78c3dbecf57f3073"
+          },
+          "mapCount": 1
+        },
+        {
+          "kind": "source-only-successor-no-navigation-mutation",
+          "canonicalCommit": "775bf555b0a7faf6eed17627acb0d0433294b737",
+          "canonicalTree": "e6f4644152d11a06457fdd92d8e5066675b26565",
+          "nativeSourceCommit": "587a37f7cb3196426962024a094dab8947596fef",
+          "mapCount": 0,
+          "navigationPreview": {
+            "path": "integration/windows-source-evidence/windows-canonical-run1-navigation-preview.json",
+            "bytes": 7059,
+            "sha256": "dd827058ddc3ae750a0751b794a5fef4c96af0eff0ac1f05450f59e6d6bae82a"
+          },
+          "newSourceHistoryLedger": null
+        }
+      ],
+      "executionEvidenceTransferred": false
+    },
+    "nativeMergeExport": {
+      "path": "integration/upstream-3a39-native-export.json",
+      "bytes": 85045,
+      "sha256": "2486c4784e87b6b8e4b5c62227bcd5d9d5c22b65b72d18b265df1d7405b1b7b0",
+      "nativeCommit": "c2834dcade885fb9ff5da41b3947773067ec652d",
+      "nativeTree": "6bc86196d10cf83b010f9917e5e9cb471b5f6b68",
+      "orderedParents": [
+        "775bf555b0a7faf6eed17627acb0d0433294b737",
+        "3a39c799a3f776b0aeedfce350341d865d3cc1c4"
+      ],
+      "changedPathsFromPrior": [
+        ".github/scripts/aggregate_windows_current_ci.py",
+        ".github/scripts/test_windows_current_ci_shards.py",
+        ".github/scripts/windows_current_ci.py",
+        ".github/workflows/hepta-windows-current-ci.yml",
+        "codex-rs/hepta-operator-acceptance/src/openssh_windows.rs"
+      ]
+    },
+    "nativeNavigationPreview": {
+      "path": "integration/complete-navigation-preview.json",
+      "bytes": 7060,
+      "sha256": "9de3099b6cb4c2900f9b41b5068c216824a501346459be44b101f232b5298d3f"
+    },
+    "canonicalCommitObject": {
+      "path": "integration/canonical-complete-object.json",
+      "bytes": 1291,
+      "sha256": "960db478dd765e9f922ca33062b734e286f79310571295894752cf7d1e5dd5fe"
+    },
+    "canonicalCommitMetadata": {
+      "path": "integration/canonical-complete-metadata.json",
+      "bytes": 2313,
+      "sha256": "c746c3bb4d096925e5866c4d93d522a92371407b16109359189b1c3d696c9858"
+    },
+    "githubExactPriorComparison": {
+      "path": "final-windows-report-prep/github-775-to-865-compare.json",
+      "bytes": 104323,
+      "sha256": "79d3a16afe07c7408a8f8183220ac8ce1e5e875cc7db64e868c15b025b3182c0"
+    },
+    "githubExactRegistryRead": {
+      "path": "final-windows-report-prep/github-865-registry-capture.json",
+      "bytes": 66710,
+      "sha256": "314aef4267c69a074e521230109eea8522844f6d235891dba32023d5bbc32380"
+    },
+    "frozenUpstreamComparison": {
+      "path": "integration/live-base-073-to-3a39-compare.json",
+      "bytes": 116560,
+      "sha256": "f16796e79d0b4565ff5153d7fe52c89d93166a2d6ef64dd6941d7dabb83efc95"
+    },
+    "openSshPreformat": {
+      "path": "integration/upstream-3a39-openssh-preformat.rs",
+      "bytes": 18294,
+      "sha256": "e9c3f582dab7e8041db09c7082c728b9021c1ad25060ee98e02312a35ff11b6b"
+    },
+    "mapOverlayLayers": [
+      {
+        "kind": "initial-verified-map-manifest",
+        "path": "integration/navigation-baseline/manifest.json",
+        "sha256": "b73cbef87725fee0d62c222a87e8ebae98cd2eac5acf758ee3c52a6034d42e1e",
+        "sourceCommit": "dd6a8cad33a9f351501b90bf1e0ae6e9bc902db8",
+        "sourceTree": "57eae0abde46eae539ff36a96dda12048825f9be",
+        "mapCount": 40
+      },
+      {
+        "kind": "prior-navigation-replacements",
+        "path": "integration/navigation-export.json",
+        "sha256": "391d5785ea0448ca69a28ed348ec05cb8adb6d068227f4ccefc4f1af2105350c",
+        "canonicalCommit": "f5813506b49eb05efad00f203b9362195875892c",
+        "canonicalTree": "00d62de1c2f6ac8a229d23ce9d8e1b9f34b333df",
+        "nativeCommit": "d1ae243ba581c6f0b8e495d6ffcad9137aed583c",
+        "mapCount": 9
+      },
+      {
+        "kind": "final-navigation-replacements",
+        "path": "integration/final-navigation-export.json",
+        "sha256": "0d5bb9414ca82c473f745c187ab586a1bda8561b8f947cc3ea6e03a23e590ea9",
+        "canonicalCommit": "bb55b0d7d263c396ec504c45393d938c3428dae5",
+        "canonicalTree": "19116ccdf440a1cddc2a29f3d709ebe1a3cd06c1",
+        "nativeCommit": "8ab12f162b659a209a87f3254fe87cb07f4c07e8",
+        "mapCount": 11
+      },
+      {
+        "kind": "successor-navigation-replacements",
+        "path": "integration/spelling-navigation-export.json",
+        "sha256": "9050b886676e08f86aedf6dc33b81c6ac4717266b67b6b13ebe9afc64bee52e1",
+        "canonicalCommit": "797116d61cf422c26274ffef31297dce84a53a80",
+        "canonicalTree": "67ce024db1679aa6cd301856ba3a694ea18bc4b6",
+        "nativeCommit": "c77786bd2b786b801197dad684f6f5af1a3d5af5",
+        "codeParent": {
+          "commit": "c4863123b65f895be0eb14e0958d5cfe6c9c78bd",
+          "tree": "81e2217141060f123adbe1da78c3dbecf57f3073"
+        },
+        "mapCount": 1
+      },
+      {
+        "kind": "source-only-successor-no-navigation-mutation",
+        "canonicalCommit": "775bf555b0a7faf6eed17627acb0d0433294b737",
+        "canonicalTree": "e6f4644152d11a06457fdd92d8e5066675b26565",
+        "nativeSourceCommit": "587a37f7cb3196426962024a094dab8947596fef",
+        "mapCount": 0,
+        "navigationPreview": {
+          "path": "integration/windows-source-evidence/windows-canonical-run1-navigation-preview.json",
+          "bytes": 7059,
+          "sha256": "dd827058ddc3ae750a0751b794a5fef4c96af0eff0ac1f05450f59e6d6bae82a"
+        },
+        "newSourceHistoryLedger": null
+      },
+      {
+        "kind": "fixed-two-parent-merge-no-navigation-mutation",
+        "canonicalCommit": "8658210499706130788c216ff14fd342809b45a4",
+        "canonicalTree": "6bc86196d10cf83b010f9917e5e9cb471b5f6b68",
+        "orderedParents": [
+          "775bf555b0a7faf6eed17627acb0d0433294b737",
+          "3a39c799a3f776b0aeedfce350341d865d3cc1c4"
+        ],
+        "nativeMergeCommit": "c2834dcade885fb9ff5da41b3947773067ec652d",
+        "mapCount": 0,
+        "navigationPreview": {
+          "path": "integration/complete-navigation-preview.json",
+          "bytes": 7060,
+          "sha256": "9de3099b6cb4c2900f9b41b5068c216824a501346459be44b101f232b5298d3f"
+        },
+        "newSourceHistoryLedger": null
+      }
+    ],
+    "executionEvidenceTransferred": false
+  },
+  "verification": {
+    "all40MapGitBlobsLocallyVerified": true,
+    "all40MapHashesMatchFinalNativePreview": true,
+    "all40OriginalMapBytesUnchanged": true,
+    "allNonNavigationSemanticsUnchanged": true,
+    "allThreeHistoryLedgerBytesUnchanged": true,
+    "noNavigationMutationAndNoNewHistoryLedger": true,
+    "canonicalAndNativeCommitObjectsVerified": true,
+    "orderedTwoParentsVerified": true,
+    "githubPriorComparisonHasExactlyFiveAllowedChanges": true,
+    "allFourCiBlobsMatchFrozenUpstream": true,
+    "openSshChangesFromUpstreamAreExactlyFourFormatLayoutsAndTwoTrailingCommas": true,
+    "ptyReviewedBytesRetainedInCanonicalMerge": true,
+    "registryBlobVerifiedByExactCanonicalFetch": true,
+    "nativeAndPlatformExecutionResultTransferred": false
+  }
+}

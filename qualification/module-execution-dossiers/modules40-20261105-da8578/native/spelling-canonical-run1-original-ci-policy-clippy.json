@@ -1,0 +1,39 @@
+{
+  "command": [
+    "just",
+    "clippy",
+    "--locked",
+    "-p",
+    "codex-exec-server",
+    "-p",
+    "codex-app-server",
+    "-p",
+    "codex-app-server-client",
+    "--",
+    "-D",
+    "clippy::correctness",
+    "-D",
+    "clippy::await_holding_lock",
+    "-D",
+    "clippy::await_holding_invalid_type"
+  ],
+  "cwd": "/home/qq/work/hepta-modules40-20261105-da8578/source",
+  "source_before": {
+    "commit": "797116d61cf422c26274ffef31297dce84a53a80",
+    "tree": "67ce024db1679aa6cd301856ba3a694ea18bc4b6",
+    "status": ""
+  },
+  "start_unix_ns": 1793895919782382494,
+  "environment_sha256": "0eba31f9edc07ffc869f685c2dfcf3eab856be5f4dce622721ed36f43b0875d5",
+  "exit": 0,
+  "elapsed_seconds": 3.0036879420513287,
+  "end_unix_ns": 1793895922786071886,
+  "source_after": {
+    "commit": "797116d61cf422c26274ffef31297dce84a53a80",
+    "tree": "67ce024db1679aa6cd301856ba3a694ea18bc4b6",
+    "status": ""
+  },
+  "log_path": "/home/qq/work/hepta-modules40-20261105-da8578/evidence/spelling-canonical-run1-original-ci-policy-clippy.log",
+  "log_sha256": "b54a8e95283d8d9ac7e47cae2866eda9998fd4f50313869d6c20139f1683f9b2",
+  "log_bytes": 8953
+}

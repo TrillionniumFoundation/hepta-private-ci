@@ -1,0 +1,200 @@
+{
+  "kind": "minimal_source_only_windows_test_name_resolution_fix",
+  "sourceCommit": "797116d61cf422c26274ffef31297dce84a53a80",
+  "sourceTree": "67ce024db1679aa6cd301856ba3a694ea18bc4b6",
+  "executedFailureSource": "bb55b0d7d263c396ec504c45393d938c3428dae5",
+  "bothTargetPreimagesIdenticalBetweenFailureSourceAndFrozenSource": true,
+  "files": [
+    {
+      "path": "codex-rs/utils/pty/src/win/native_observation_tests.rs",
+      "beforeBlob": "45d6ece35f88b73d87a95ec148e130341e059ec9",
+      "afterBlob": "9f2d9773c78c240c0af7af4cfca04048e19cdb65",
+      "beforeSha256": "9c31c93c0cb2dbd25ec9932e615f5977ed6b6fb92112ac45bb1c4023746baa23",
+      "afterSha256": "0fac4605800cb88dc0d48f8dda1529ac0e376c075593e8b6e495e70b3d203435",
+      "beforeBytes": 6360,
+      "afterBytes": 6419,
+      "postimagePath": "/workspace/scratch/da8578abae00/candidate-review/windows-name-resolution/after/codex-rs/utils/pty/src/win/native_observation_tests.rs",
+      "assertionMacroCountsUnchanged": {
+        "assert": 6,
+        "assert_eq": 8,
+        "assert_ne": 0,
+        "matches": 0
+      },
+      "functionNamesUnchanged": true,
+      "stringLiteralsUnchanged": true,
+      "numericLiteralsUnchanged": true,
+      "unsafeTokenCountUnchanged": true
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/unified_exec/delete_permission_tests.rs",
+      "beforeBlob": "a0cb1647d95f067fcf135bc9ea2a654ca3e5e7a2",
+      "afterBlob": "d8511f92f9fbd9d58061238dbf3181152c74ccbc",
+      "beforeSha256": "8dc0ae01935586ac22001a5b567c148fa9ff744bf10e4de691c6fbe0993021da",
+      "afterSha256": "397abb256644d00394b64d0d48cf02b72a32ca835163b1b7aed793617f68dcf3",
+      "beforeBytes": 6807,
+      "afterBytes": 6841,
+      "postimagePath": "/workspace/scratch/da8578abae00/candidate-review/windows-name-resolution/after/codex-rs/windows-sandbox-rs/src/unified_exec/delete_permission_tests.rs",
+      "assertionMacroCountsUnchanged": {
+        "assert": 0,
+        "assert_eq": 8,
+        "assert_ne": 0,
+        "matches": 0
+      },
+      "functionNamesUnchanged": true,
+      "stringLiteralsUnchanged": true,
+      "numericLiteralsUnchanged": true,
+      "unsafeTokenCountUnchanged": true
+    }
+  ],
+  "patch": {
+    "path": "/workspace/scratch/da8578abae00/candidate-review/windows-name-resolution/windows-native-name-resolution.patch",
+    "sha256": "8231928c3cb094b969344a2d9d2e82c004b0ebb63bae7523ea26b720fe4592b4",
+    "bytes": 2358
+  },
+  "changes": {
+    "pty": "Three method calls explicitly resolve the existing std::os::windows::io::AsRawHandle trait; one now-long match header is wrapped without token changes. Both original trait imports remain.",
+    "sandbox": "One explicit pretty_assertions::assert_eq import matches the parent and sibling modules. All eight assertion invocations and the entire test body remain byte-identical."
+  },
+  "reviewFindings": {
+    "nativeHandle": "NativeChild.child is std::process::Child. The existing AsRawHandle import is the Windows std trait. Qualified trait calls keep the same borrowed native HANDLE and cast; no handle transfer, fallback, null substitute, access-mask change or process replacement is introduced.",
+    "portableTraitRetained": "portable_pty::Child as _ remains needed to resolve WinChild.wait and WinChild.try_wait; the production parent implements that trait for WinChild.",
+    "unsafeBoundary": "DuplicateHandle and both WaitForSingleObject calls retain their original unsafe scopes, arguments and result handling; OwnedHandle::from_raw_handle stays unchanged.",
+    "macro": "The immediate parent tests.rs imports pretty_assertions::assert_eq, declares the delete-permission child module, and sibling acl_setup_tests.rs uses the same explicit import. The crate already declares pretty_assertions as a dev dependency.",
+    "oracle": "All native access-denied and exit-code-259 checks, child release protocol, delete-route physical readback, host controls, allowed-file deletion, outside-path deletion denials and original assertion operands remain.",
+    "budget": "The original five-second PTY deadline, host wait 5000ms, sandbox timeout 5000ms and collector ten-second limit remain unchanged."
+  },
+  "reviewedParentSources": [
+    {
+      "path": "codex-rs/utils/pty/src/win/mod.rs",
+      "blob": "c01cfe0b315a0fcab3bc49d0f1afc8faeb687c2b",
+      "sha256": "9abc4288ea4b6c509f84cb6aa0e9083e9331e8699b054c489e7256fd4c6881d0"
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/unified_exec/mod.rs",
+      "blob": "bcf4346746dbcb2983d10c3d1518af4b7be8f4e4",
+      "sha256": "2c4c3ec8d8ad4525852ac979212b969075d6b87e71a0a644ba16c8240fd5a4db"
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/unified_exec/tests.rs",
+      "blob": "c38a6a0fc4873c971ec301106f02d0401aeaa59d",
+      "sha256": "42894f9897a356bb4285dd830d8064a14d0949fe4a2c00391879a917efc87a64"
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/unified_exec/acl_setup_tests.rs",
+      "blob": "8fbbf27b4f6f71599e0f850b20c3786617ac7028",
+      "sha256": "281b430bf679b4d6df2891bc7e5d502a0d4b23b2c959fbaa14194a297b11207f"
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/Cargo.toml",
+      "blob": "aa41ed5f08608c0275785b2f5e27ec5db08f50dd",
+      "sha256": "183a3691be018640668dfb766f29651d8fd75ab08f7fd526f3d378ae2a86469d"
+    },
+    {
+      "path": "codex-rs/utils/pty/src/lib.rs",
+      "blob": "aba8e8a8f0a43a7d3508b110f63f26249916e39c",
+      "sha256": "aa774e8efc32934e300ddc92d5649e540ff9ffbd0e046914b261ec802e05ffee"
+    }
+  ],
+  "failureEvidence": [
+    {
+      "runId": 42058694002,
+      "jobId": 127354042203,
+      "headSha": "bb55b0d7d263c396ec504c45393d938c3428dae5",
+      "executionBinding": {
+        "commit": "bb55b0d7d263c396ec504c45393d938c3428dae5",
+        "commitEvidence": "logs/job-127354042203.log",
+        "tree": "19116ccdf440a1cddc2a29f3d709ebe1a3cd06c1",
+        "treeEvidence": "logs/job-127354042203.log",
+        "treeBindingMethod": "Directly printed by executed job"
+      },
+      "observedJobStatus": "completed",
+      "observedJobConclusion": "failure",
+      "jobTerminalAtObservation": true,
+      "firstError": "2026-11-05T16:01:33.0690223Z error[E0034]: multiple applicable items in scope",
+      "firstErrorAt": "2026-11-05T16:01:33.0690223Z",
+      "fullLogPath": "/workspace/scratch/da8578abae00/candidate-review/platform-bb55/logs/job-127354042203.log",
+      "fullLogSha256": "42f9d49000a50e4cedc9a3cab719c8f657e4d0cd54bf857002392681be05d699"
+    },
+    {
+      "runId": 42058694002,
+      "jobId": 127354042307,
+      "headSha": "bb55b0d7d263c396ec504c45393d938c3428dae5",
+      "executionBinding": {
+        "commit": "bb55b0d7d263c396ec504c45393d938c3428dae5",
+        "commitEvidence": "logs/job-127354042307.log",
+        "tree": "19116ccdf440a1cddc2a29f3d709ebe1a3cd06c1",
+        "treeEvidence": "candidate-source-commit.raw.json",
+        "treeBindingMethod": "Immutable commit API for exact executed checkout SHA printed in job log"
+      },
+      "observedJobStatus": "completed",
+      "observedJobConclusion": "failure",
+      "jobTerminalAtObservation": true,
+      "firstError": "2026-11-05T16:17:08.3177061Z error[E0034]: multiple applicable items in scope",
+      "firstErrorAt": "2026-11-05T16:17:08.3177061Z",
+      "fullLogPath": "/workspace/scratch/da8578abae00/candidate-review/platform-bb55/logs/job-127354042307.log",
+      "fullLogSha256": "fd352d5fa11f7de64ee1ad25b68a76eec2433d66d1456c68cd1cbbe8c15592e4"
+    },
+    {
+      "runId": 42058694002,
+      "jobId": 127354042546,
+      "headSha": "bb55b0d7d263c396ec504c45393d938c3428dae5",
+      "executionBinding": {
+        "commit": "bb55b0d7d263c396ec504c45393d938c3428dae5",
+        "commitEvidence": "logs/job-127354042546.log",
+        "tree": "19116ccdf440a1cddc2a29f3d709ebe1a3cd06c1",
+        "treeEvidence": "logs/job-127354042546.log",
+        "treeBindingMethod": "Directly printed by executed job"
+      },
+      "observedJobStatus": "in_progress",
+      "observedJobConclusion": null,
+      "jobTerminalAtObservation": false,
+      "firstError": "2026-11-05T16:19:05.2507981Z error[E0659]: `assert_eq` is ambiguous",
+      "firstErrorAt": "2026-11-05T16:19:05.2507981Z",
+      "fullLogPath": "/workspace/scratch/da8578abae00/candidate-review/platform-bb55/logs/job-127354042546.log",
+      "fullLogSha256": "9be7d11d6c3cf0e734b4786f684d78221ff11e8ac40df01c5dc3667979c6a759"
+    },
+    {
+      "runId": 42058694002,
+      "jobId": 127354042573,
+      "headSha": "bb55b0d7d263c396ec504c45393d938c3428dae5",
+      "executionBinding": {
+        "commit": "bb55b0d7d263c396ec504c45393d938c3428dae5",
+        "commitEvidence": "logs/job-127354042573.log",
+        "tree": "19116ccdf440a1cddc2a29f3d709ebe1a3cd06c1",
+        "treeEvidence": "logs/job-127354042573.log",
+        "treeBindingMethod": "Directly printed by executed job"
+      },
+      "observedJobStatus": "completed",
+      "observedJobConclusion": "failure",
+      "jobTerminalAtObservation": true,
+      "firstError": "2026-11-05T16:03:48.4033463Z error[E0659]: `assert_eq` is ambiguous",
+      "firstErrorAt": "2026-11-05T16:03:48.4033463Z",
+      "fullLogPath": "/workspace/scratch/da8578abae00/candidate-review/platform-bb55/logs/job-127354042573.log",
+      "fullLogSha256": "92a1c91b513da883b4132ded106a5ec0319217971adc096a47490e1a013b6bfe"
+    }
+  ],
+  "validation": {
+    "allFetchedGitBlobsVerified": true,
+    "exactAllowedReplacementAndImportChecks": true,
+    "originalFunctionStringNumericAndAssertionSequencesOrCountsPreserved": true,
+    "localGitApplyCheckWhitespaceErrorAllExitCode": 0,
+    "nativeExecuted": false,
+    "windowsCompilationExecuted": false,
+    "formatterExecuted": false,
+    "sourceReviewOnly": true
+  },
+  "scope": {
+    "targetFiles": 2,
+    "productionSourceChanged": false,
+    "assertionsRemovedOrWeakened": false,
+    "budgetRetryOrSkipChanges": false,
+    "dependencyOrCiChanges": false,
+    "bazelChanges": false,
+    "remoteSourceRefsOrCiMutated": false
+  },
+  "executionBoundary": "Historical bb55 Windows failures remain bound to their actual run/job source. The 797 Linux/native results are not Windows compilation evidence. This local patch requires the original Windows checks on the next fixed candidate; no Windows pass is claimed.",
+  "reviewDocument": {
+    "path": "/workspace/scratch/da8578abae00/candidate-review/windows-name-resolution/REVIEW.md",
+    "sha256": "1425b9505f9b8b0e01fe0b6453d5366fe70f1a6a4de9182361747d36970b0c96"
+  }
+}

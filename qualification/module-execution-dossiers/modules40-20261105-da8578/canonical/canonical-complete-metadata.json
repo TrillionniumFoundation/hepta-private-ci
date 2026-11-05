@@ -1,0 +1,40 @@
+{
+  "sha": "8658210499706130788c216ff14fd342809b45a4",
+  "node_id": "C_kwDOTrgxoNoAKDg2NTgyMTA0OTk3MDYxMzA3ODhjMjE2ZmYxNGZkMzQyODA5YjQ1YTQ",
+  "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/8658210499706130788c216ff14fd342809b45a4",
+  "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/8658210499706130788c216ff14fd342809b45a4",
+  "author": {
+    "name": "Franksudoman",
+    "email": "273670192+Franksudoman@users.noreply.github.com",
+    "date": "2026-11-05T17:01:35Z"
+  },
+  "committer": {
+    "name": "Franksudoman",
+    "email": "273670192+Franksudoman@users.noreply.github.com",
+    "date": "2026-11-05T17:01:35Z"
+  },
+  "tree": {
+    "sha": "6bc86196d10cf83b010f9917e5e9cb471b5f6b68",
+    "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/trees/6bc86196d10cf83b010f9917e5e9cb471b5f6b68"
+  },
+  "message": "Integrate fixed concurrent Windows qualification and verifier diagnostics\n\nPreserve the exact eight-commit 3a39 upstream history and the 775 source checkpoint as ordered parents. Resolve the PTY formatting-only overlap with the reviewed explicit std AsRawHandle calls; retain all upstream Windows original-scope aggregation and test-only verifier diagnostics. Native formatting changes no assertion, privilege, timeout, retry or qualification boundary.\n\nFresh execution and platform evidence remain separately source-bound; all 40 production flags remain false.",
+  "parents": [
+    {
+      "sha": "775bf555b0a7faf6eed17627acb0d0433294b737",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/775bf555b0a7faf6eed17627acb0d0433294b737",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/775bf555b0a7faf6eed17627acb0d0433294b737"
+    },
+    {
+      "sha": "3a39c799a3f776b0aeedfce350341d865d3cc1c4",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/3a39c799a3f776b0aeedfce350341d865d3cc1c4",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/3a39c799a3f776b0aeedfce350341d865d3cc1c4"
+    }
+  ],
+  "verification": {
+    "verified": false,
+    "reason": "unsigned",
+    "signature": null,
+    "payload": null,
+    "verified_at": null
+  }
+}

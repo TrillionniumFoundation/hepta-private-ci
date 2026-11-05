@@ -1,0 +1,508 @@
+RUST_MIN_STACK=8388608 NEXTEST_PROFILE=local python3 ../scripts/run-nextest.py "$@"
+warning: use of deprecated associated function `tokio::io::unix::AsyncFd::<T>::new`: unsound due to lack of I/O safety; use `AsyncFd::register` instead (see https://github.com/tokio-rs/tokio/pull/8587)
+  --> utils/pty/src/unix_io.rs:38:60
+   |
+38 |         let fd = std::panic::catch_unwind(move || AsyncFd::new(File::from(fd)))
+   |                                                            ^^^
+   |
+   = note: `#[warn(deprecated)]` on by default
+
+warning: `codex-utils-pty` (lib) generated 1 warning
+warning: hiding a lifetime that's elided elsewhere is confusing
+   --> third_party/i18n-config-0.4.8/src/lib.rs:144:9
+    |
+144 |         &self,
+    |         ^^^^^ the lifetime is elided here
+145 |     ) -> Result<Option<(&'_ Crate, &'_ I18nConfig)>, I18nConfigError> {
+    |                          ^^ ^^^^^   ^^ the same lifetime is elided here
+    |                          |  |
+    |                          |  the same lifetime is hidden here
+    |                          the same lifetime is elided here
+    |
+    = help: the same lifetime is referred to in inconsistent ways, making the signature confusing
+    = note: `#[warn(mismatched_lifetime_syntaxes)]` on by default
+help: use `'_` for type paths
+    |
+145 |     ) -> Result<Option<(&'_ Crate<'_>, &'_ I18nConfig)>, I18nConfigError> {
+    |                                  ++++
+
+warning: hiding a lifetime that's elided elsewhere is confusing
+   --> third_party/i18n-config-0.4.8/src/lib.rs:155:26
+    |
+155 |     pub fn active_config(&self) -> Result<Option<(&'_ Crate, &'_ I18nConfig)>, I18nConfigError> {
+    |                          ^^^^^                     ^^ ^^^^^   ^^ the same lifetime is elided here
+    |                          |                         |  |
+    |                          |                         |  the same lifetime is hidden here
+    |                          |                         the same lifetime is elided here
+    |                          the lifetime is elided here
+    |
+    = help: the same lifetime is referred to in inconsistent ways, making the signature confusing
+help: use `'_` for type paths
+    |
+155 |     pub fn active_config(&self) -> Result<Option<(&'_ Crate<'_>, &'_ I18nConfig)>, I18nConfigError> {
+    |                                                            ++++
+
+warning: `i18n-config` (lib) generated 2 warnings (run `cargo fix --lib -p i18n-config` to apply 2 suggestions)
+warning: use of deprecated associated function `tokio::io::unix::AsyncFd::<T>::new`: unsound due to lack of I/O safety; use `AsyncFd::register` instead (see https://github.com/tokio-rs/tokio/pull/8587)
+   --> shell-escalation/src/unix/socket.rs:258:37
+    |
+258 |         let async_socket = AsyncFd::new(socket)?;
+    |                                     ^^^
+    |
+    = note: `#[warn(deprecated)]` on by default
+
+warning: use of deprecated associated function `tokio::io::unix::AsyncFd::<T>::new`: unsound due to lack of I/O safety; use `AsyncFd::register` instead (see https://github.com/tokio-rs/tokio/pull/8587)
+   --> shell-escalation/src/unix/socket.rs:374:29
+    |
+374 |             inner: AsyncFd::new(socket)?,
+    |                             ^^^
+
+warning: `codex-shell-escalation` (lib) generated 2 warnings
+warning: use of deprecated method `landlock::RulesetCreatedAttr::set_no_new_privs`: Use no_new_privs() instead.
+   --> linux-sandbox/src/landlock.rs:150:10
+    |
+150 |         .set_no_new_privs(true);
+    |          ^^^^^^^^^^^^^^^^
+    |
+    = note: `#[warn(deprecated)]` on by default
+
+warning: `codex-linux-sandbox` (lib) generated 1 warning
+warning: associated function `new` is never used
+   --> ext/hepta-memory/src/cognitive/mod.rs:274:19
+    |
+273 | impl CognitiveExtension {
+    | ----------------------- associated function in this implementation
+274 |     pub(crate) fn new(runtime: CognitiveRuntime) -> Self {
+    |                   ^^^
+    |
+    = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: function `api_digest` is never used
+   --> ext/hepta-memory/src/cognitive/federation.rs:864:4
+    |
+864 | fn api_digest(
+    |    ^^^^^^^^^^
+
+warning: `codex-hepta-memory-extension` (lib) generated 2 warnings
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.69s
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#proc-macro2@1.0.107` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#quote@1.0.47` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#libc@0.2.191` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde@1.0.229` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde_core@1.0.229` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#parking_lot_core@0.9.12` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#portable-atomic@1.15.0` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#libc@0.2.191` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#getrandom@0.4.3` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#thiserror@2.0.21` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#zmij@1.0.23` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#generic-array@0.14.7` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde_core@1.0.229` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#num-traits@0.2.19` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde_json@1.0.154` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#prettyplease@0.2.37` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#clang-sys@1.9.1` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#getrandom@0.3.4` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#bindgen@0.73.2` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#aws-lc-sys@0.46.0` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#icu_properties_data@2.3.0` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#icu_normalizer_data@2.3.0` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#zerocopy@0.8.63` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#aws-lc-rs@1.18.2` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#crossbeam-utils@0.8.23` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#httparse@1.10.1` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#ring@0.17.14` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#rustversion@1.0.23` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#crc32fast@1.5.2` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#rustls@0.23.46` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#rustix@1.1.5` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#anyhow@1.0.104` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde_json@1.0.154` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#ahash@0.8.12` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#crossbeam-epoch@0.9.21` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#openssl-sys@0.9.117` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#mime_guess@2.0.5` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#openssl@0.10.81` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#native-tls@0.2.18` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#crossbeam-deque@0.8.8` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#cookie@0.18.2` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#oid-registry@0.8.1` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#encoding_rs@0.8.42` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#rayon-core@1.13.0` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#syn@1.0.109` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#schemars@0.8.22` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#ref-cast@1.0.27` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#zstd-sys@2.1.2+zstd.1.5.7` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#zstd-safe@8.2.0` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#typeid@1.0.3` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#heapless@0.7.17` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#allocative@0.3.6` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#erased-serde@0.4.10` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#logos-codegen@0.15.1` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#blake3@1.8.2` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#nix@0.28.0` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#rama-http-headers@0.3.0` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#bindgen@0.72.1` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#starlark_map@0.14.2` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#paste@1.0.15` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#icu_locale_fallback_data@2.3.0` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#memoffset@0.9.1` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#icu_decimal_data@2.3.0` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#starlark@0.14.2` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#rama-dns@0.3.0` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#heapless@0.8.0` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#faster-hex@0.10.1` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#thiserror@1.0.69` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#curve25519-dalek@4.1.3` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#nix@0.31.3` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#tree-sitter-language@0.1.9` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#windows_x86_64_gnu@0.52.6` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#tree-sitter-bash@0.25.1` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#tree-sitter-powershell@0.26.4` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#tree-sitter@0.25.10` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#generic-array@0.14.7` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#ring@0.17.14` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#num-traits@0.2.19` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#crossbeam-utils@0.8.23` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#rustls@0.23.46` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#thiserror@2.0.21` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#aws-types@1.6.0` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#libsqlite3-sys@0.37.0` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#getrandom@0.3.4` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#object@0.37.3` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#rustix@1.1.5` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#findshlibs@0.10.2` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#rmcp@3.1.3` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#sentry-contexts@0.46.2` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#sentry@0.46.2` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#libm@0.2.16` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#noyalib@0.0.58` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#constant_time_eq@0.6.1` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#pulldown-cmark@0.10.3` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#stop-words@0.9.0` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#inotify-sys@0.1.8` which wasn't produced by cargo metadata
+────────────
+ Nextest run ID 69bf3a0b-8974-48f6-aa63-799964fda044 with nextest profile: local
+    Starting 319 tests across 2 binaries
+        PASS [   0.011s] codex-app-server-client tests::remote_connect_rejects_non_loopback_ws_when_auth_configured
+        PASS [   0.011s] codex-app-server-client remote::tests::shutdown_tolerates_worker_exit_after_command_is_queued
+        PASS [   0.013s] codex-app-server-client tests::remote_unknown_server_request_is_rejected
+        PASS [   0.013s] codex-app-server-client tests::remote_disconnect_surfaces_as_event
+        PASS [   0.015s] codex-app-server-client remote::process_indeterminate_tests::process_spawn_checks_this_connection_echo_and_decodes_unknown_notifications
+        PASS [   0.008s] codex-exec-server client::recovery::tests::process_event_reorder_rejects_oversized_output
+        PASS [   0.011s] codex-exec-server client::accepted::tests::replacement_claim_is_released_when_handoff_is_cancelled
+        PASS [   0.013s] codex-exec-server client::observation_tests::transport_failure_without_native_observation_is_not_closed
+        PASS [   0.028s] codex-app-server-client tests::shutdown_waits_for_in_process_drain
+        PASS [   0.014s] codex-exec-server client::observation_tests::failure_preserves_observed_exit_with_or_without_numeric_code
+        PASS [   0.029s] codex-app-server-client tests::remote_auth_token_transport_policy_allows_wss_and_loopback_ws
+        PASS [   0.015s] codex-exec-server client::recovery::tests::process_event_reorder_accepts_gap_closing_event_at_limits
+        PASS [   0.032s] codex-app-server-client tests::remote_connect_includes_auth_header_when_configured
+        PASS [   0.018s] codex-app-server-client tests::remote_unix_socket_typed_request_roundtrip_works
+        PASS [   0.011s] codex-exec-server client::recovery::tests::recovery_adds_sandbox_denial_to_pending_exit_event
+        PASS [   0.020s] codex-exec-server client::observation_tests::unknown_notification_keeps_output_order_and_actual_exit_events
+        PASS [   0.021s] codex-app-server-client tests::remote_notifications_arrive_over_websocket
+        PASS [   0.007s] codex-exec-server client::recovery::tests::recovery_retries_registry_request_timeouts
+        PASS [   0.010s] codex-exec-server client::recovery::tests::recovery_does_not_retry_other_registry_conflicts
+        PASS [   0.008s] codex-exec-server client::recovery::tests::recovery_rejects_output_at_closed_sequence
+        PASS [   0.037s] codex-app-server-client remote::shutdown::tests::cancelling_shutdown_while_command_queue_is_full_stops_original_worker
+        PASS [   0.037s] codex-app-server-client tests::remote_initialize_params_forward_openai_form_capability
+        PASS [   0.008s] codex-exec-server client::recovery::tests::recovery_retries_transient_registry_errors
+        PASS [   0.010s] codex-exec-server client::recovery::tests::recovery_handles_dense_tail_output_and_newer_notification
+        PASS [   0.009s] codex-exec-server client::recovery::tests::recovery_retries_environment_offline_conflicts
+        PASS [   0.012s] codex-exec-server client::observation_tests::legacy_server_is_rejected_before_process_admission
+        PASS [   0.007s] codex-exec-server client::recovery::tests::registry_recovery_retry_delay_exponentially_backs_off_and_caps
+        PASS [   0.025s] codex-app-server-client tests::remote_server_request_resolution_roundtrip_works
+        PASS [   0.027s] codex-app-server-client tests::typed_request_error_exposes_sources
+        PASS [   0.028s] codex-app-server-client tests::runtime_start_args_forward_environment_manager_and_openai_form_capability
+        PASS [   0.009s] codex-exec-server client::tests::connect_stdio_command_initializes_json_rpc_client
+        PASS [   0.011s] codex-exec-server client::tests::connect_for_transport_initializes_stdio_command
+        PASS [   0.009s] codex-exec-server client::tests::environment_info_is_cached::test_case_1_from_initialize
+        PASS [   0.007s] codex-exec-server client::tests::process_events_are_delivered_in_seq_order_when_notifications_are_reordered
+        PASS [   0.009s] codex-exec-server client::tests::initial_connection_is_shared_by_all_waiters
+        PASS [   0.010s] codex-exec-server client::tests::network_policy_tests::policy_decisions_reject_forged_process_and_use_trusted_controller_metadata
+        PASS [   0.010s] codex-exec-server client::tests::remote_websocket_client_resumes_session
+        PASS [   0.010s] codex-exec-server client::tests::process_start_propagates_caller_trace_context_across_background_task
+        PASS [   0.008s] codex-exec-server client::tests::transport_disconnect_fails_sessions_and_rejects_new_sessions
+        PASS [   0.010s] codex-exec-server client::tests::terminal_stdio_startup_failure_is_remembered
+        PASS [   0.012s] codex-exec-server client::tests::retryable_startup_failure_does_not_burn_environment
+        PASS [   0.009s] codex-exec-server client_transport::tests::initial_noise_connection_bounds_a_stalled_initial_request
+        PASS [   0.008s] codex-exec-server client_transport::tests::initial_noise_connection_retries_a_stalled_initial_request
+        PASS [   0.008s] codex-exec-server client_transport::tests::initial_noise_connection_bounds_offline_retries
+        PASS [   0.007s] codex-exec-server client_transport::tests::initial_noise_connection_retries_registry_request_timeouts
+        PASS [   0.010s] codex-exec-server client_transport::tests::initial_noise_connection_bounds_a_stalled_retry_request
+        PASS [   0.009s] codex-exec-server client_transport::tests::noise_session_resume_leaves_offline_retries_to_recovery
+        PASS [   0.006s] codex-exec-server connection::tests::stdio_connection_accepts_message_at_size_limit
+        PASS [   0.006s] codex-exec-server connection::tests::stdio_connection_rejects_overlong_unterminated_message
+        PASS [   0.015s] codex-exec-server client_transport::tests::initial_noise_connection_refreshes_bundle_after_exhausting_initial_retries
+        PASS [   0.008s] codex-exec-server connection::tests::websocket_connection_accepts_binary_jsonrpc_message
+        PASS [   0.018s] codex-exec-server client_transport::tests::initial_noise_connection_retries_transient_registry_statuses
+        PASS [   0.007s] codex-exec-server environment::tests::create_local_environment_does_not_connect
+        PASS [   0.060s] codex-app-server-client tests::remote_typed_request_roundtrip_works
+        PASS [   0.008s] codex-exec-server environment::tests::default_environment_has_ready_local_executor
+        PASS [   0.076s] codex-app-server-client tests::remote_server_request_received_during_initialize_is_delivered
+        PASS [   0.006s] codex-exec-server environment::tests::disabled_environment_manager_has_no_default_or_local_environment
+        PASS [   0.077s] codex-app-server-client tests::remote_backpressure_preserves_transcript_notifications
+        PASS [   0.012s] codex-exec-server connection::tests::websocket_connection_reports_server_close
+        PASS [   0.008s] codex-exec-server environment::tests::environment_manager_builds_from_snapshot
+        PASS [   0.006s] codex-exec-server environment::tests::environment_manager_default_environment_caches_environment
+        PASS [   0.007s] codex-exec-server environment::tests::environment_manager_creates_remote_environment_for_url
+        PASS [   0.008s] codex-exec-server environment::tests::environment_manager_carries_local_runtime_paths
+        PASS [   0.005s] codex-exec-server environment::tests::environment_manager_leaves_stdio_environment_lazy
+        PASS [   0.006s] codex-exec-server environment::tests::environment_manager_includes_local_for_default_provider_without_url
+        PASS [   0.006s] codex-exec-server environment::tests::environment_manager_disables_provider_default
+        PASS [   0.087s] codex-app-server-client tests::bounded_remote_events_disconnect_and_require_resync_on_overflow
+        PASS [   0.052s] codex-exec-server client::tests::environment_info_is_cached::test_case_2_legacy_server
+        PASS [   0.050s] codex-exec-server client::tests::network_policy_tests::abandoned_process_start_unregisters_and_cleans_up
+        PASS [   0.007s] codex-exec-server environment::tests::environment_manager_rejects_empty_environment_id
+        PASS [   0.007s] codex-exec-server environment::tests::environment_manager_omits_default_provider_local_lookup_when_default_disabled
+        PASS [   0.008s] codex-exec-server environment::tests::environment_manager_normalizes_empty_url
+        PASS [   0.007s] codex-exec-server environment::tests::environment_manager_rejects_empty_remote_environment_url
+        PASS [   0.006s] codex-exec-server environment::tests::environment_manager_rejects_provider_supplied_local_environment
+        PASS [   0.007s] codex-exec-server environment::tests::environment_manager_rejects_unknown_provider_default
+        PASS [   0.007s] codex-exec-server environment::tests::environment_manager_snapshot_without_local_environment_disables_local_default
+        PASS [   0.008s] codex-exec-server environment::tests::environment_manager_uses_explicit_provider_default
+        PASS [   0.010s] codex-exec-server environment::tests::environment_manager_upserts_named_remote_environment
+        PASS [   0.063s] codex-exec-server client::tests::explicit_resume_drains_notifications_before_initialize_response
+        PASS [   0.010s] codex-exec-server environment::tests::environment_status_keeps_stdio_environment_pending
+        PASS [   0.010s] codex-exec-server environment::tests::replacing_environment_stops_its_startup_task
+        PASS [   0.010s] codex-exec-server environment::tests::local_environment_info_includes_current_directory
+        PASS [   0.013s] codex-exec-server environment::tests::environment_manager_starts_remote_environment_when_upserted
+        PASS [   0.049s] codex-exec-server client_transport::tests::initial_noise_connection_does_not_retry_permanent_registry_errors
+        PASS [   0.035s] codex-exec-server connection::tests::websocket_connection_sends_configured_ping
+        PASS [   0.012s] codex-exec-server environment::tests::noise_environment_config_selects_remote_as_default
+        PASS [   0.011s] codex-exec-server environment::tests::selected_capability_inspection_keeps_stdio_environment_lazy
+        PASS [   0.014s] codex-exec-server environment::tests::get_environment_returns_none_for_unknown_id
+        PASS [   0.014s] codex-exec-server environment::tests::local_environment_passes_runtime_paths_to_exec_backend
+        PASS [   0.008s] codex-exec-server environment::tests::test_environment_rejects_sandboxed_filesystem_without_runtime_paths
+        PASS [   0.005s] codex-exec-server environment_bootstrap::tests::prepared_remote_environment_is_detected_without_constructing_a_connection
+        PASS [   0.006s] codex-exec-server environment_bootstrap::tests::prepared_local_and_disabled_environments_are_not_remote
+        PASS [   0.006s] codex-exec-server environment_bootstrap::tests::prepared_noise_environment_is_detected_before_http_policy_is_resolved
+        PASS [   0.007s] codex-exec-server environment_bootstrap::tests::prepared_environment_manager_builds_with_the_explicit_http_policy
+        PASS [   0.005s] codex-exec-server environment_provider::tests::default_provider_omits_local_environment_for_none_value
+        PASS [   0.068s] codex-exec-server client::tests::network_policy_tests::policy_requests_use_process_decider_and_cancel_on_unregister
+        PASS [   0.009s] codex-exec-server environment_bootstrap::tests::prepared_noise_environment_rejects_invalid_configuration
+        PASS [   0.008s] codex-exec-server environment_provider::tests::default_provider_requests_local_environment_when_url_is_empty
+        PASS [   0.007s] codex-exec-server environment_provider::tests::normalizes_exec_server_url
+        PASS [   0.007s] codex-exec-server environment_provider::tests::default_provider_requests_local_environment_when_url_is_missing
+        PASS [   0.007s] codex-exec-server environment_toml::tests::environment_provider_from_codex_home_falls_back_when_file_is_missing
+        PASS [   0.010s] codex-exec-server environment_provider::tests::default_provider_adds_remote_environment_for_websocket_url
+        PASS [   0.009s] codex-exec-server environment_registry::tests::connect_response_debug_redacts_authorizations
+        PASS [   0.007s] codex-exec-server environment_toml::tests::toml_provider_default_omitted_selects_local
+        PASS [   0.008s] codex-exec-server environment_toml::tests::toml_provider_can_disable_local_environment
+        PASS [   0.005s] codex-exec-server environment_toml::tests::toml_provider_parses_configured_transport_timeouts
+        PASS [   0.009s] codex-exec-server environment_toml::tests::toml_provider_default_none_disables_default
+        PASS [   0.009s] codex-exec-server environment_toml::tests::load_environments_toml_rejects_unknown_fields
+        PASS [   0.006s] codex-exec-server environment_toml::tests::toml_provider_rejects_local_default_when_local_is_disabled
+        PASS [   0.011s] codex-exec-server environment_toml::tests::environment_provider_from_codex_home_uses_present_environments_file
+        PASS [   0.006s] codex-exec-server environment_toml::tests::toml_provider_rejects_invalid_environments
+        PASS [   0.009s] codex-exec-server environment_toml::tests::toml_provider_includes_local_and_adds_configured_environments
+        PASS [   0.006s] codex-exec-server environment_toml::tests::toml_provider_rejects_duplicate_ids
+        PASS [   0.006s] codex-exec-server environment_toml::tests::toml_provider_rejects_malformed_websocket_url
+        PASS [   0.006s] codex-exec-server environment_toml::tests::toml_provider_rejects_overlong_id
+        PASS [   0.013s] codex-exec-server environment_toml::tests::load_environments_toml_reads_root_environment_list
+        PASS [   0.059s] codex-exec-server connection::tests::websocket_connection_ignores_server_pong
+        PASS [   0.058s] codex-exec-server connection::tests::websocket_connection_keeps_outbound_message_while_send_is_backpressured
+        PASS [   0.009s] codex-exec-server environment_toml::tests::toml_provider_resolves_relative_stdio_cwd_from_config_dir
+        PASS [   0.008s] codex-exec-server environment_toml::tests::toml_provider_without_local_and_default_omitted_disables_default
+        PASS [   0.011s] codex-exec-server environment_toml::tests::toml_provider_rejects_relative_stdio_cwd_without_config_dir
+        PASS [   0.010s] codex-exec-server fs_sandbox::tests::helper_env_preserves_path_for_system_bwrap_discovery_without_leaking_secrets
+        PASS [   0.008s] codex-exec-server fs_sandbox::tests::helper_permissions_include_only_the_helper_executable
+        PASS [   0.010s] codex-exec-server fs_sandbox::tests::helper_env_carries_only_allowlisted_runtime_vars
+        PASS [   0.010s] codex-exec-server fs_sandbox::tests::helper_permissions_enable_minimal_reads_for_restricted_profile_with_writes
+        PASS [   0.010s] codex-exec-server fs_helper::tests::helper_protocol_uses_path_uris
+        PASS [   0.013s] codex-exec-server environment_toml::tests::toml_provider_rejects_unknown_default
+        PASS [   0.011s] codex-exec-server fs_sandbox::tests::helper_permissions_enable_minimal_reads_for_restricted_profile
+        PASS [   0.010s] codex-exec-server fs_sandbox::tests::helper_permissions_include_only_linux_sandbox_alias_executable
+        PASS [   0.009s] codex-exec-server fs_sandbox::tests::helper_permissions_preserve_existing_writes
+        PASS [   0.007s] codex-exec-server fs_sandbox::tests::sandbox_cwd_uses_context_cwd
+        PASS [   0.009s] codex-exec-server fs_sandbox::tests::sandbox_cwd_rejects_cwd_dependent_profile_without_context_cwd
+        PASS [   0.009s] codex-exec-server fs_sandbox::tests::sandbox_cwd_rejects_non_native_context_cwd_without_fallback
+        PASS [   0.008s] codex-exec-server fs_sandbox::tests::sandbox_exec_request_carries_helper_env
+        PASS [   0.006s] codex-exec-server linux_authorized_read::tests::secure_reopen_reads_only_the_same_regular_file_from_a_private_pin
+        PASS [   0.006s] codex-exec-server linux_authorized_read::tests::path_pin_supports_identity_proof_without_opening_for_read
+        PASS [   0.006s] codex-exec-server linux_authorized_read::tests::secure_reopen_rejects_namespace_and_mount_identity_mismatches
+        PASS [   0.008s] codex-exec-server local_file_system::authorized_read_tests::stable_handle_bounded_read_never_returns_oversize_prefix
+        PASS [   0.010s] codex-exec-server linux_authorized_read::tests::kernel_probe_and_advertised_capability_support_the_real_bounded_read
+        PASS [   0.009s] codex-exec-server local_file_system::authorized_read_tests::stable_handle_read_authorizes_resolved_symlink_target
+        PASS [   0.009s] codex-exec-server local_file_system::authorized_read_tests::stable_handle_read_keeps_authorized_handle_after_later_hardlink
+        PASS [   0.092s] codex-exec-server client::tests::wake_notifications_do_not_block_other_sessions
+        PASS [   0.011s] codex-exec-server local_file_system::authorized_read_tests::stable_handle_read_redacts_missing_target_path
+        PASS [   0.008s] codex-exec-server local_file_system::path_uri_tests::direct_file_system_rejects_non_native_uri_as_invalid_input
+        PASS [   0.010s] codex-exec-server local_file_system::authorized_read_tests::stable_handle_read_rejects_file_path_identity_aba
+        PASS [   0.098s] codex-exec-server client::tests::session_write_retries_same_write_id_after_recovery
+        PASS [   0.013s] codex-exec-server local_file_system::authorized_read_tests::stable_handle_read_is_bound_to_opened_inode_after_path_replacement
+        PASS [   0.006s] codex-exec-server local_file_system::walk_tests::sync_walk_cancellation_stops_before_io
+        PASS [   0.009s] codex-exec-server local_file_system::authorized_read_tests::stable_handle_read_rejects_unlinked_initial_handle
+        PASS [   0.010s] codex-exec-server local_file_system::authorized_read_tests::stable_handle_read_rejects_hardlink_added_before_reopen
+        PASS [   0.016s] codex-exec-server local_file_system::authorized_read_tests::stable_handle_read_applies_deny_glob_to_resolved_target
+        PASS [   0.008s] codex-exec-server local_file_system::tests::resolve_existing_path_handles_symlink_parent_dotdot_escape
+        PASS [   0.007s] codex-exec-server local_file_system::walk_tests::sync_walk_response_budget_counts_entries_and_errors
+        PASS [   0.007s] codex-exec-server local_file_system::walk_tests::sync_walk_rejects_sandbox_context
+        PASS [   0.012s] codex-exec-server local_file_system::authorized_read_tests::stable_handle_read_rejects_parent_directory_decoy
+        PASS [   0.011s] codex-exec-server local_file_system::authorized_read_tests::stable_handle_read_rejects_parent_symlink_replacement
+        PASS [   0.012s] codex-exec-server local_file_system::authorized_read_tests::stable_handle_read_rejects_hardlink_provenance_ambiguity
+        PASS [   0.030s] codex-exec-server forward::tests::transport_disconnect_cancels_an_unfinished_websocket_handshake
+        PASS [   0.007s] codex-exec-server local_process::tests::child_env_applies_policy_then_overlay
+        PASS [   0.010s] codex-exec-server local_process::observation_tests::actual_exit_fact_survives_cancelled_map_publication
+        PASS [   0.007s] codex-exec-server local_process::observation_tests::lost_exit_observation_retains_owner_and_fences_other_sessions
+        PASS [   0.007s] codex-exec-server local_process::tests::child_env_defaults_to_exact_env
+        PASS [   0.008s] codex-exec-server local_process::observation_tests::cancelled_exit_watcher_retains_unknown_and_wakes_observers
+        PASS [   0.008s] codex-exec-server local_process::observation_tests::cancelling_before_effect_releases_only_the_unused_reservation
+        PASS [   0.007s] codex-exec-server local_process::tests::callback_enabled_start_bounds_process_id_before_proxy_launch
+        PASS [   0.110s] codex-exec-server client::tests::malformed_stdio_message_terminates_spawned_process
+        PASS [   0.009s] codex-exec-server local_process::observation_tests::blocked_stdin_reservation_wakes_for_retained_outcome
+        PASS [   0.010s] codex-exec-server local_process::observation_tests::actual_exit_releases_only_its_original_registry_reservation
+        PASS [   0.114s] codex-exec-server client::tests::dropping_stdio_client_terminates_spawned_process
+        PASS [   0.034s] codex-exec-server forward::tests::destination_close_is_acknowledged
+        PASS [   0.010s] codex-exec-server local_process::tests::start_process_rejects_non_native_cwd_before_launch
+        PASS [   0.008s] codex-exec-server network_policy_decisions::tests::configured_decision_timeout_fails_closed
+        PASS [   0.010s] codex-exec-server local_process::tests::termination_request_after_exit_cancels_network_policy_decisions
+        PASS [   0.011s] codex-exec-server network_policy_decisions::tests::boundary_host_is_relayed
+        PASS [   0.009s] codex-exec-server noise_channel::tests::prologue_encoding_is_stable_and_unambiguous
+        PASS [   0.011s] codex-exec-server network_policy_decisions::tests::policy_response_reasons_are_bounded_and_fail_closed
+        PASS [   0.012s] codex-exec-server network_policy_decisions::tests::returns_client_policy_decision
+        PASS [   0.014s] codex-exec-server network_policy_decisions::tests::process_exit_and_disconnect_fail_closed
+        PASS [   0.014s] codex-exec-server network_policy_decisions::tests::invalid_hosts_fail_closed_before_reverse_rpc
+        PASS [   0.009s] codex-exec-server noise_channel::tests::public_key_serializes_with_expected_suite
+        PASS [   0.017s] codex-exec-server noise_channel::tests::initiator_rejects_oversized_handshake_payload
+        PASS [   0.006s] codex-exec-server noise_relay::executor_stream::tests::executor_requests_attach_trace_context_only_to_the_first_noise_record
+        PASS [   0.011s] codex-exec-server noise_channel::tests::public_key_validation_rejects_unknown_suite
+        PASS [   0.025s] codex-exec-server local_process::tests::shutdown_before_exit_records_terminated
+        PASS [   0.026s] codex-exec-server local_process::tests::exit_before_shutdown_records_success
+        PASS [   0.028s] codex-exec-server local_process::tests::exited_process_keeps_network_proxy_until_inherited_streams_close
+        PASS [   0.029s] codex-exec-server local_process::tests::executor_proxy_sends_final_network_policy_notification
+        PASS [   0.024s] codex-exec-server local_process::tests::termination_request_before_exit_records_terminated
+        PASS [   0.026s] codex-exec-server noise_channel::tests::initiator_rejects_wrong_responder_key
+        PASS [   0.005s] codex-exec-server noise_relay::message_framing::tests::rejects_declared_message_length_above_limit_without_payload
+        PASS [   0.005s] codex-exec-server noise_relay::message_framing::tests::rejects_oversized_plaintext_record
+        PASS [   0.006s] codex-exec-server noise_relay::ordered_ciphertext::tests::ignores_duplicate_ciphertexts_without_replacing_buffered_record
+        PASS [   0.018s] codex-exec-server noise_relay::harness::tests::application_event_delivery_is_bounded
+        PASS [   0.011s] codex-exec-server noise_relay::message_framing::tests::reassembles_many_messages_from_one_record
+        PASS [   0.011s] codex-exec-server noise_relay::message_framing::tests::fragments_and_reassembles_large_jsonrpc_message
+        PASS [   0.005s] codex-exec-server noise_relay::ordered_ciphertext::tests::rejects_unbounded_reordering
+        PASS [   0.022s] codex-exec-server noise_channel::tests::responder_rejects_mismatched_prologue
+        PASS [   0.039s] codex-exec-server local_process::tests::closed_process_is_evicted_after_retention
+        PASS [   0.006s] codex-exec-server noise_relay::ordered_ciphertext::tests::releases_ciphertexts_only_in_nonce_order
+        PASS [   0.006s] codex-exec-server noise_relay::stream_handler::tests::local_decode_starts_request_span_before_queueing
+        PASS [   0.181s] codex-app-server-client tests::remote_duplicate_request_id_keeps_original_waiter
+        PASS [   0.038s] codex-exec-server noise_channel::tests::hybrid_ik_roundtrip_authenticates_both_endpoints
+        PASS [   0.007s] codex-exec-server process_sandbox::tests::native_request_preserves_native_launch_fields
+        PASS [   0.045s] codex-exec-server local_process::tests::exited_process_retains_late_output_past_retention
+        PASS [   0.008s] codex-exec-server process::tests::event_history_replay_is_bounded_by_retained_bytes
+        PASS [   0.008s] codex-exec-server process_sandbox::tests::disabled_remote_proxy_config_is_rejected_before_exporting_ports
+        PASS [   0.008s] codex-exec-server process_sandbox::tests::sandbox_request_routes_custom_arg0_to_inner_helper
+        PASS [   0.009s] codex-exec-server process_sandbox::tests::sandbox_request_wraps_native_argv_on_executor
+        PASS [   0.007s] codex-exec-server regular_file::tests::read_sensitive_file_rejects_symlink
+        PASS [   0.007s] codex-exec-server regular_file::tests::read_sensitive_file_rejects_directory
+        PASS [   0.008s] codex-exec-server regular_file::tests::read_sensitive_file_reads_regular_file
+        PASS [   0.032s] codex-exec-server noise_channel::tests::transport_rejects_tampered_ciphertext
+        PASS [   0.032s] codex-exec-server noise_channel::tests::transport_rejects_replayed_ciphertext
+        PASS [   0.019s] codex-exec-server process::tests::empty_event_receiver_stays_open
+        PASS [   0.036s] codex-exec-server noise_relay::executor_stream::tests::processor_exit_reports_closed_virtual_stream
+        PASS [   0.009s] codex-exec-server relay::tests::harness_connection_reports_server_close
+        PASS [   0.009s] codex-exec-server relay::tests::harness_connection_reports_text_frames_as_malformed
+        PASS [   0.022s] codex-exec-server relay::noise_tests::oversized_harness_authorization_is_rejected_before_validation
+        PASS [   0.053s] codex-exec-server noise_relay::harness::tests::first_encrypted_request_frame_exposes_only_its_trace_context
+        PASS [   0.056s] codex-exec-server noise_relay::harness::tests::fragmented_writes_yield_to_keepalive_and_queued_pong
+        PASS [   0.033s] codex-exec-server relay::tests::send_event_with_keepalive_pings_while_incoming_queue_is_full
+        PASS [   0.032s] codex-exec-server remote::noise_tests::noise_connect_provider_uses_supplied_system_proxy_policy
+        PASS [   0.036s] codex-exec-server relay::tests::multiplexed_environment_sends_keepalive
+        PASS [   0.080s] codex-exec-server noise_relay::executor_stream::forward_tests::forwards_opaque_noise_payloads_and_drains_before_closing
+        PASS [   0.038s] codex-exec-server remote::noise_tests::registry_requests_do_not_log_sensitive_urls_or_response_headers
+        PASS [   0.059s] codex-exec-server relay::tests::harness_connection_keeps_outbound_frame_while_send_is_backpressured
+        PASS [   0.032s] codex-exec-server remote::noise_tests::validate_harness_key_does_not_expose_error_body
+        PASS [   0.028s] codex-exec-server remote::noise_tests::validate_harness_key_requires_explicit_valid_response
+        PASS [   0.060s] codex-exec-server relay::tests::harness_connection_sends_keepalive_and_receives_relay_data
+        PASS [   0.007s] codex-exec-server remote::tests::debug_output_redacts_auth_provider
+        PASS [   0.006s] codex-exec-server remote::tests::remote_environment_config_preserves_http_client_factory_policy
+        PASS [   0.073s] codex-exec-server relay::noise_tests::processor_exit_resets_noise_harness_stream
+        PASS [   0.008s] codex-exec-server remote_file_system::path_uri_tests::authorized_read_rejects_invalid_bounds_before_connecting
+        PASS [   0.035s] codex-exec-server remote::tests::connect_environment_does_not_retry_malformed_successful_responses
+        PASS [   0.035s] codex-exec-server remote::tests::connect_environment_retries_interrupted_registry_response_bodies
+        PASS [   0.081s] codex-exec-server relay::noise_tests::repeated_early_data_during_validation_closes_the_physical_relay
+        PASS [   0.088s] codex-exec-server relay::noise_tests::pending_harness_key_validation_does_not_block_new_handshakes
+        PASS [   0.090s] codex-exec-server relay::noise_tests::repeated_malformed_handshakes_close_the_physical_relay
+        PASS [   0.031s] codex-exec-server remote::tests::register_environment_does_not_follow_redirects_with_auth_headers
+        PASS [   0.034s] codex-exec-server remote::tests::noise_connect_provider_requests_and_validates_a_full_bundle
+        PASS [   0.034s] codex-exec-server remote::tests::register_environment_posts_with_auth_provider_headers
+        PASS [   0.005s] codex-exec-server remote_file_system::tests::authorized_read_transport_errors_are_fixed
+        PASS [   0.005s] codex-exec-server remote_file_system::tests::remote_sandbox_context_drops_unused_cwd
+        PASS [   0.004s] codex-exec-server remote_file_system::tests::remote_sandbox_context_preserves_required_cwd
+        PASS [   0.004s] codex-exec-server remote_file_system::tests::transport_errors_map_to_broken_pipe
+        PASS [   0.062s] codex-exec-server remote::tests::connect_environment_times_out_when_registry_response_body_stalls
+        PASS [   0.004s] codex-exec-server rpc::tests::best_effort_notifications_preserve_outbound_control_capacity
+        PASS [   0.006s] codex-exec-server rpc::tests::inbound_request_span_stays_open_until_event_consumption
+        PASS [   0.062s] codex-exec-server remote::tests::connect_environment_times_out_when_registry_stalls
+        PASS [   0.007s] codex-exec-server rpc::tests::rpc_client_call_has_no_implicit_deadline
+        PASS [   0.008s] codex-exec-server rpc::tests::rpc_client_matches_out_of_order_responses_by_request_id
+        PASS [   0.007s] codex-exec-server rpc::tests::rpc_client_propagates_current_trace_context
+        PASS [   0.005s] codex-exec-server rpc_server_requests::tests::rpc_server_sender_matches_out_of_order_responses_by_request_id
+        PASS [   0.007s] codex-exec-server rpc_server_requests::tests::rpc_server_sender_bounds_and_drains_pending_requests_on_close
+        PASS [   0.022s] codex-exec-server rpc::tests::rpc_client_bounds_in_flight_calls_and_preserves_cleanup
+        PASS [   0.052s] codex-exec-server remote_file_system::path_uri_tests::concurrent_remote_metadata_errors_are_shared_but_retried
+        PASS [   0.005s] codex-exec-server rpc_server_requests::tests::rpc_server_sender_preserves_response_received_before_close
+        PASS [   0.005s] codex-exec-server sandboxed_file_system::path_uri_tests::sandboxed_file_system_rejects_non_native_uri_as_invalid_input
+        PASS [   0.005s] codex-exec-server rpc_server_requests::tests::rpc_server_sender_timeout_removes_pending_request
+        PASS [   0.018s] codex-exec-server rpc::tests::rpc_client_timeout_removes_pending_request
+        PASS [   0.006s] codex-exec-server server::file_system_handler::tests::no_platform_sandbox_policies_do_not_require_configured_sandbox_helper
+        PASS [   0.005s] codex-exec-server server::handler::tests::active_session_resume_is_rejected
+        PASS [   0.005s] codex-exec-server server::handler::tests::legacy_client_cannot_start_a_process_without_exit_observation
+        PASS [   0.140s] codex-exec-server relay::noise_tests::missing_pong_disconnects_physical_relay
+        PASS [   0.006s] codex-exec-server server::handler::tests::legacy_resume_refuses_before_attaching_to_original_session
+        PASS [   0.053s] codex-exec-server remote_file_system::path_uri_tests::remote_file_system_sends_path_and_sandbox_cwd_uris_without_native_conversion
+        PASS [   0.007s] codex-exec-server server::processor::tests::disconnect_completes_queued_network_policy_response
+        PASS [   0.008s] codex-exec-server server::processor::tests::connection_accepts_pipelined_scalar_requests
+        PASS [   0.004s] codex-exec-server server::request_dispatcher::tests::concurrent_request_limit_rejects_invalid_values
+        PASS [   0.173s] codex-exec-server noise_relay::harness::tests::post_deadline_drain_stops_before_frame_33
+        PASS [   0.005s] codex-exec-server server::request_dispatcher::tests::request_dispatch_mode_parses_bounded_concurrency
+        PASS [   0.005s] codex-exec-server server::request_dispatcher::tests::request_span_uses_bounded_name_wire_method_and_inbound_trace_parent
+        PASS [   0.005s] codex-exec-server server::tests::telemetry_entrypoint_emits_root_span
+        PASS [   0.004s] codex-exec-server server::transport::transport_tests::parse_listen_url_accepts_stdio
+        PASS [   0.005s] codex-exec-server server::transport::transport_tests::parse_listen_url_accepts_default_websocket_url
+        PASS [   0.006s] codex-exec-server server::transport::transport_tests::parse_listen_url_accepts_websocket_url
+        PASS [   0.006s] codex-exec-server server::transport::transport_tests::parse_listen_url_accepts_stdio_url
+        PASS [   0.104s] codex-exec-server remote_file_system::path_uri_tests::authorized_read_redacts_all_remote_server_errors
+        PASS [   0.004s] codex-exec-server server::transport::transport_tests::parse_listen_url_rejects_unsupported_url
+        PASS [   0.004s] codex-exec-server server::transport::transport_tests::parse_listen_url_rejects_invalid_websocket_url
+        PASS [   0.034s] codex-exec-server server::handler::tests::terminate_reports_false_after_process_exit
+        PASS [   0.090s] codex-exec-server remote_file_system::path_uri_tests::concurrent_remote_metadata_requests_share_only_in_flight_results
+        PASS [   0.100s] codex-exec-server remote_file_system::path_uri_tests::authorized_reads_fail_closed_for_legacy_or_disabled_capability
+        PASS [   0.100s] codex-exec-server remote_file_system::path_uri_tests::authorized_reads_reject_oversized_and_invalid_responses
+        PASS [   0.007s] codex-exec-server shell_snapshot::tests::snapshot_caches_only_unmanaged_proxy_state
+        PASS [   0.004s] codex-exec-server shell_snapshot::tests::snapshot_filters_profile_exports_after_capture
+        PASS [   0.007s] codex-exec-server server::transport::transport_tests::stdio_listen_transport_serves_initialize
+        PASS [   0.039s] codex-exec-server server::processor::tests::transport_disconnect_detaches_session_during_in_flight_read
+        PASS [   0.103s] codex-exec-server remote_file_system::path_uri_tests::authorized_reads_use_cached_capability_and_preserve_wire_authority
+        PASS [   0.006s] codex-exec-server websocket_pong_watchdog::tests::pong_starts_a_fresh_deadline
+        PASS [   0.008s] codex-exec-server shell_snapshot::tests::snapshot_preserves_profile_exports_with_restrictive_inheritance
+        PASS [   0.095s] codex-exec-server remote_file_system::path_uri_tests::remote_metadata_requests_do_not_cross_path_or_sandbox_boundaries
+        PASS [   0.008s] codex-exec-server websocket_pong_watchdog::tests::repeated_ping_does_not_extend_deadline
+        PASS [   0.009s] codex-exec-server trace_context::tests::creates_traceparent_header_from_current_span
+        PASS [   0.189s] codex-exec-server relay::noise_tests::pong_keeps_physical_relay_connected
+        PASS [   0.396s] codex-app-server-client tests::remote_typed_request_accepts_large_single_frame_response
+        PASS [   0.256s] codex-exec-server process_sandbox::tests::native_request_handles_remote_proxy_config_for_platform
+        PASS [   0.422s] codex-app-server-client tests::typed_request_reports_json_rpc_errors
+        PASS [   0.422s] codex-app-server-client tests::tiny_channel_capacity_still_supports_request_roundtrip
+        PASS [   0.422s] codex-app-server-client tests::typed_request_roundtrip_works
+        PASS [   0.422s] codex-app-server-client tests::shutdown_completes_promptly_without_retained_managers
+        PASS [   0.095s] codex-exec-server shell_snapshot::tests::snapshot_failure_retries_are_bounded_and_single_flight::test_case_1_recovers_on_second_attempt
+        PASS [   0.285s] codex-exec-server relay::noise_tests::duplicate_handshakes_exhaust_failure_budget
+        PASS [   0.159s] codex-exec-server server::handler::tests::duplicate_process_ids_allow_only_one_successful_start
+        PASS [   0.121s] codex-exec-server shell_snapshot::tests::snapshot_failure_retries_are_bounded_and_single_flight::test_case_3_stops_after_three_failures
+        PASS [   0.127s] codex-exec-server shell_snapshot::tests::snapshot_failure_retries_are_bounded_and_single_flight::test_case_2_recovers_on_last_attempt
+        PASS [   0.377s] codex-exec-server local_process::tests::process_read_replay_is_bounded_by_chunk_count
+        PASS [   0.367s] codex-exec-server noise_relay::harness::tests::pong_keeps_harness_alive_until_peer_stops_responding
+        PASS [   0.212s] codex-exec-server server::handler::tests::output_and_exit_are_retained_after_notification_receiver_closes
+        PASS [   0.511s] codex-exec-server client::tests::failed_reconnect_does_not_burn_environment
+        PASS [   0.249s] codex-exec-server server::request_dispatcher::tests::request_queue_waits_for_dispatcher_admission_before_recording_telemetry
+        PASS [   0.576s] codex-app-server-client tests::unread_lossless_notifications_do_not_block_in_process_requests
+        PASS [   0.591s] codex-app-server-client tests::caller_provided_session_source_is_applied
+        PASS [   0.577s] codex-app-server-client tests::threads_started_via_app_server_are_visible_through_typed_requests
+        PASS [   0.432s] codex-exec-server remote_file_system::path_uri_tests::remote_metadata_starts_fresh_after_intervening_filesystem_mutation
+        PASS [   0.510s] codex-exec-server server::handler::tests::long_poll_read_fails_after_session_resume
+        PASS [   3.035s] codex-exec-server remote::noise_tests::reconnect_reuses_registration_until_url_is_rejected
+        PASS [   5.014s] codex-app-server-client remote::shutdown::tests::shutdown_deadline_includes_waiting_for_a_full_command_queue
+  TRY 1 SLOW [> 30.000s] codex-app-server-client tests::next_event_surfaces_lagged_markers
+        PASS [  45.014s] codex-app-server-client tests::next_event_surfaces_lagged_markers
+────────────
+     Summary [  45.015s] 319 tests run: 319 passed (1 slow), 0 skipped

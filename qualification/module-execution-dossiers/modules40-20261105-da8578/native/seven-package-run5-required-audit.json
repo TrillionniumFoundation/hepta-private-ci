@@ -1,0 +1,39 @@
+{
+  "command": [
+    "python3",
+    "/home/qq/work/hepta-modules40-20261105-da8578/audit-tools/audit_native_junit.py",
+    "--review-manifest",
+    "/home/qq/work/hepta-modules40-20261105-da8578/audit-tools/required-tests.69.json",
+    "--manifest",
+    "/home/qq/work/hepta-modules40-20261105-da8578/evidence/seven-package-run5-required-tests.69.source-bound.json",
+    "--candidate-commit",
+    "8658210499706130788c216ff14fd342809b45a4",
+    "--candidate-tree",
+    "6bc86196d10cf83b010f9917e5e9cb471b5f6b68",
+    "--junit",
+    "/home/qq/work/hepta-modules40-20261105-da8578/evidence/seven-package-run5.junit.xml",
+    "--suite-exit-code",
+    "0",
+    "--report",
+    "/home/qq/work/hepta-modules40-20261105-da8578/evidence/seven-package-run5-required-tests.69.native-audit.json"
+  ],
+  "cwd": "/home/qq/work/hepta-modules40-20261105-da8578/source",
+  "source_before": {
+    "commit": "8658210499706130788c216ff14fd342809b45a4",
+    "tree": "6bc86196d10cf83b010f9917e5e9cb471b5f6b68",
+    "status": ""
+  },
+  "start_unix_ns": 1793898191443258223,
+  "environment_sha256": "0eba31f9edc07ffc869f685c2dfcf3eab856be5f4dce622721ed36f43b0875d5",
+  "exit": 0,
+  "elapsed_seconds": 0.3150980280479416,
+  "end_unix_ns": 1793898191758392720,
+  "source_after": {
+    "commit": "8658210499706130788c216ff14fd342809b45a4",
+    "tree": "6bc86196d10cf83b010f9917e5e9cb471b5f6b68",
+    "status": ""
+  },
+  "log_path": "/home/qq/work/hepta-modules40-20261105-da8578/evidence/seven-package-run5-required-audit.log",
+  "log_sha256": "48c76a0774d89548a81d3847aa6d5befd7228a32a7c43abf476ce435d4463b24",
+  "log_bytes": 107
+}

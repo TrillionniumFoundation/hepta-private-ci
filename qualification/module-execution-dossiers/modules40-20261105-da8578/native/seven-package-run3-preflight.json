@@ -1,0 +1,135 @@
+{
+  "source": {
+    "commit": "797116d61cf422c26274ffef31297dce84a53a80",
+    "tree": "67ce024db1679aa6cd301856ba3a694ea18bc4b6",
+    "status": ""
+  },
+  "packages": [
+    "codex-hepta-agent-protocol",
+    "codex-hepta-agentd",
+    "codex-hepta-infer-worker-host",
+    "codex-hepta-runtime",
+    "codex-hepta-contracts",
+    "codex-hepta-learning-ledger",
+    "codex-hepta-supervisor"
+  ],
+  "command": [
+    "just",
+    "test",
+    "--locked",
+    "-p",
+    "codex-hepta-agent-protocol",
+    "-p",
+    "codex-hepta-agentd",
+    "-p",
+    "codex-hepta-infer-worker-host",
+    "-p",
+    "codex-hepta-runtime",
+    "-p",
+    "codex-hepta-contracts",
+    "-p",
+    "codex-hepta-learning-ledger",
+    "-p",
+    "codex-hepta-supervisor",
+    "--tool-config-file",
+    "hepta-evidence:/home/qq/work/hepta-modules40-20261105-da8578/seven-package-run3-report-only.nextest.toml",
+    "--cargo-metadata",
+    "/home/qq/work/hepta-modules40-20261105-da8578/evidence/seven-package-run3-original-scoped-metadata.json"
+  ],
+  "cwd": "/home/qq/work/hepta-modules40-20261105-da8578/source",
+  "original_profile": "local",
+  "required_cases": 69,
+  "filter_used": false,
+  "toolchain": {
+    "rustc": {
+      "command": [
+        "rustc",
+        "--version"
+      ],
+      "executable": "/home/qq/work/hepta-convergence-20261105-0c901b/rustup-home-1.96.0/toolchains/1.96.0-x86_64-unknown-linux-gnu/bin/rustc",
+      "version": "rustc 1.96.0 (ac68faa20 2026-05-25)"
+    },
+    "cargo": {
+      "command": [
+        "cargo",
+        "--version"
+      ],
+      "executable": "/home/qq/work/hepta-convergence-20261105-0c901b/rustup-home-1.96.0/toolchains/1.96.0-x86_64-unknown-linux-gnu/bin/cargo",
+      "version": "cargo 1.96.0 (30a34c682 2026-05-25)"
+    },
+    "rustfmt": {
+      "command": [
+        "rustfmt",
+        "--version"
+      ],
+      "executable": "/home/qq/work/hepta-convergence-20261105-0c901b/rustup-home-1.96.0/toolchains/1.96.0-x86_64-unknown-linux-gnu/bin/rustfmt",
+      "version": "rustfmt 1.9.0-stable (ac68faa20c 2026-05-25)"
+    },
+    "clippy": {
+      "command": [
+        "cargo",
+        "clippy",
+        "--version"
+      ],
+      "executable": "/home/qq/work/hepta-convergence-20261105-0c901b/rustup-home-1.96.0/toolchains/1.96.0-x86_64-unknown-linux-gnu/bin/cargo",
+      "version": "clippy 0.1.96 (ac68faa20c 2026-05-25)"
+    },
+    "just": {
+      "command": [
+        "just",
+        "--version"
+      ],
+      "executable": "/home/qq/work/hepta-worker-unified-20261105-4d868a11/tools/bin/just",
+      "version": "just 1.51.0"
+    },
+    "nextest": {
+      "command": [
+        "cargo",
+        "nextest",
+        "--version"
+      ],
+      "executable": "/home/qq/work/hepta-convergence-20261105-0c901b/rustup-home-1.96.0/toolchains/1.96.0-x86_64-unknown-linux-gnu/bin/cargo",
+      "version": "cargo-nextest 0.9.103 (d2e7b879f 2025-08-25)\nrelease: 0.9.103\ncommit-hash: d2e7b879fb79975e8b47a8e3ce569b651e6381c0\ncommit-date: 2025-08-25\nhost: x86_64-unknown-linux-gnu"
+    }
+  },
+  "review_manifest_sha256": "bd5fa881bf712098f23b4f2193af548b5f3b70cf99694a2704d1d9458f5717ed",
+  "source_bound_manifest_sha256": "d6837ba137871b7a722b5b69d15dd352c1c1a4050ebddb2611f59f717d4fb640",
+  "report_only_config": {
+    "path": "/home/qq/work/hepta-modules40-20261105-da8578/seven-package-run3-report-only.nextest.toml",
+    "content": "[profile.local.junit]\npath = \"/home/qq/work/hepta-modules40-20261105-da8578/evidence/seven-package-run3.junit.xml\"\n",
+    "sha256": "94387bb62b410110a7b09e79e118a2ef434b702aa71bd98f6173224356461943"
+  },
+  "metadata": {
+    "command": [
+      "cargo",
+      "metadata",
+      "--no-deps",
+      "--format-version=1",
+      "--locked"
+    ],
+    "cwd": "/home/qq/work/hepta-modules40-20261105-da8578/source/codex-rs",
+    "exit": 0,
+    "elapsed_seconds": 0.22943228902295232,
+    "sha256": "3ec7d59d8e9d1f565086059ed198262bb927faf23795886f8d063cf7c02ccef4"
+  },
+  "selected_environment": {
+    "PATH": "/home/qq/work/hepta-modules40-20261105-a9f4ebc7/tools/venv/bin:/home/qq/work/hepta-convergence-20261105-0c901b/rustup-home-1.96.0/toolchains/1.96.0-x86_64-unknown-linux-gnu/bin:/home/qq/work/hepta-modules40-20261105-a9f4ebc7/tools/venv/bin:/home/qq/work/hepta-worker-unified-20261105-4d868a11/tools/rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/bin:/home/qq/work/hepta-worker-unified-20261105-4d868a11/tools/bin:/home/qq/work/hepta-worker-unified-20261105-4d868a11/tools/sysroot/usr/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/bin",
+    "PKG_CONFIG_PATH": "/home/qq/work/hepta-worker-unified-20261105-4d868a11/tools/sysroot/usr/lib/x86_64-linux-gnu/pkgconfig:/home/qq/work/hepta-worker-unified-20261105-4d868a11/tools/sysroot/usr/share/pkgconfig",
+    "PKG_CONFIG_SYSROOT_DIR": "/home/qq/work/hepta-worker-unified-20261105-4d868a11/tools/sysroot",
+    "LD_LIBRARY_PATH": "/home/qq/work/hepta-worker-unified-20261105-4d868a11/tools/sysroot/usr/lib/x86_64-linux-gnu:/home/qq/work/hepta-worker-unified-20261105-4d868a11/tools/sysroot/usr/lib/llvm-21/lib:",
+    "CARGO_HOME": "/home/qq/work/hepta-worker-unified-20261105-4d868a11/cargo-home",
+    "RUSTUP_HOME": "/home/qq/work/hepta-convergence-20261105-0c901b/rustup-home-1.96.0",
+    "RUSTUP_TOOLCHAIN": "1.96.0",
+    "RUSTUP_AUTO_INSTALL": "0",
+    "CARGO_BUILD_JOBS": "2",
+    "DOTSLASH_CACHE": "/home/qq/work/hepta-worker-unified-20261105-4d868a11/dotslash-cache",
+    "LIBCLANG_PATH": "/home/qq/work/hepta-worker-unified-20261105-4d868a11/tools/sysroot/usr/lib/llvm-21/lib",
+    "CARGO_TARGET_DIR": "/home/qq/work/hepta-modules40-20261105-da8578/target",
+    "XDG_CACHE_HOME": "/home/qq/work/hepta-modules40-20261105-da8578/xdg-cache",
+    "TMPDIR": "/tmp/da8578",
+    "UV_CACHE_DIR": "/home/qq/work/hepta-modules40-20261105-da8578/uv-cache",
+    "CODEX_REPO_ROOT": "/home/qq/work/hepta-modules40-20261105-da8578/source",
+    "CFLAGS": "-I/home/qq/work/hepta-worker-unified-20261105-4d868a11/tools/sysroot/usr/include/x86_64-linux-gnu"
+  },
+  "scope": "seven complete packages with original local profile, timeout, retry and assertions; reporting configuration only"
+}

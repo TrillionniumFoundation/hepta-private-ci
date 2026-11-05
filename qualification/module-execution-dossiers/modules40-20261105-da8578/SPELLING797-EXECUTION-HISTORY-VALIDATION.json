@@ -1,0 +1,1021 @@
+{
+  "schema": "hepta.modules40.checkpoint-execution-report-validation.v1",
+  "sourceCommit": "797116d61cf422c26274ffef31297dce84a53a80",
+  "sourceTree": "67ce024db1679aa6cd301856ba3a694ea18bc4b6",
+  "readOnlyLocalEvidenceValidation": true,
+  "newNativeExecutionPerformed": false,
+  "runtime": {
+    "jobId": "1a1ac84ead1-fc05-54ef",
+    "state": "succeeded",
+    "exitCode": 0,
+    "outputComplete": true,
+    "outputDurable": true,
+    "timedOut": false,
+    "cancelled": false,
+    "automaticRetry": false
+  },
+  "archive": {
+    "path": "integration/native-797-file-read-checkpoint.tar.gz",
+    "bytes": 313492,
+    "sha256": "6e95dfc4723db20a4bfa158bedae04e8fc537622bbd0a20abf59783552c7571a",
+    "manifestEntryCount": 122,
+    "totalFileCountIncludingManifest": 123,
+    "allExtractedManifestEntriesMatch": true,
+    "baseEvidence": {
+      "commit": "f038947fd20992e15213d41f7f6d8ac1d2ca10fc",
+      "path": "qualification/module-execution-dossiers/modules40-20261105-da8578/native/native-final-bb55-checkpoint.tar.gz",
+      "archive_bytes": 1026914,
+      "archive_sha256": "28424496bd400d6c5ff6370158f7b093355e463f19ebb550b1df6e7330504886",
+      "source_commit": "bb55b0d7d263c396ec504c45393d938c3428dae5"
+    },
+    "atomicSnapshot": false,
+    "collectionScope": "Complete known output files of completed create-only native writers, read independently through the file API; no cross-file atomic snapshot or current remote checkout attestation.",
+    "readCustodySha256": "a07c195e44ada5bc8a2ebb5409c60198ee17ba4daaea24182d8d84c3c15e1391"
+  },
+  "suite": {
+    "elapsedSeconds": 66.007,
+    "testsRun": 1219,
+    "passed": 1219,
+    "slow": 2,
+    "skipped": 78,
+    "failed": 0,
+    "timedOut": 0
+  },
+  "junit": {
+    "bytes": 280620,
+    "sha256": "9c08b92ba417f2a99ed449bad0373b5359f535572546138ff735f2e2d9b66510",
+    "testSuiteCount": 34,
+    "testCaseCount": 1219,
+    "failures": 0,
+    "errors": 0,
+    "skippedCasesInJunit": 0,
+    "skipMeaning": "Original runner summary remains authoritative for selection skips omitted from this JUnit."
+  },
+  "requiredAudit": {
+    "count": 69,
+    "cleanPasses": 69,
+    "uniqueRequiredIdentities": 69,
+    "allMatchesFoundIndependentlyInJunit": true,
+    "gateResult": "CLEAN",
+    "candidateIdentityBound": true
+  },
+  "sevenStrictChecks": {
+    "maps-qualification": 0,
+    "status-facts": 0,
+    "module-registry": 0,
+    "documents-qualification": 0,
+    "chef-custody": 0,
+    "rust-ci-feedback": 0,
+    "module-docs-metadata": 0
+  },
+  "sevenWrapperChecks": {
+    "original-codespell": 0,
+    "seven-package-original-runner": 0,
+    "original-workspace-format": 0,
+    "original-four-package-format": 0,
+    "original-ci-policy-clippy": 0,
+    "two-library-regression": 0,
+    "app-server-process-regression": 0
+  },
+  "twoLibraryResult": {
+    "elapsedSeconds": 45.061,
+    "testsRun": 319,
+    "passed": 319,
+    "slow": 1,
+    "skipped": 0,
+    "failed": 0,
+    "timedOut": 0
+  },
+  "appServerProcessExecResult": {
+    "elapsedSeconds": 1.337,
+    "testsRun": 5,
+    "passed": 5,
+    "slow": 0,
+    "skipped": 1016,
+    "failed": 0,
+    "timedOut": 0
+  },
+  "codespellVersionPath": "/home/qq/work/hepta-modules40-20261105-da8578/tools/codespell-2.4.3/bin/codespell",
+  "codespellOriginalArgumentsRetained": true,
+  "clippyOriginalThreeDenyPolicyRetained": true,
+  "formatIgnoredNightlyOptionWarningCounts": {
+    "original-workspace-format": 426,
+    "original-four-package-format": 29
+  },
+  "sourceBoundSuccessfulReceiptCount": 17,
+  "receipts": [
+    {
+      "path": "integration/spelling-native-checkpoint/native/seven-package-run3-bind-manifest.json",
+      "command": [
+        "python3",
+        "/home/qq/work/hepta-modules40-20261105-da8578/audit-tools/bind_native_audit_manifest.py",
+        "--repo",
+        "/home/qq/work/hepta-modules40-20261105-da8578/source",
+        "--review-manifest",
+        "/home/qq/work/hepta-modules40-20261105-da8578/audit-tools/required-tests.69.json",
+        "--candidate-commit",
+        "797116d61cf422c26274ffef31297dce84a53a80",
+        "--candidate-tree",
+        "67ce024db1679aa6cd301856ba3a694ea18bc4b6",
+        "--output",
+        "/home/qq/work/hepta-modules40-20261105-da8578/evidence/seven-package-run3-required-tests.69.source-bound.json"
+      ],
+      "exit": 0,
+      "elapsedSeconds": 0.34014616010244936,
+      "logSha256": "7f94ae9f74238eb86169f45352ba32e8b41a70163f339e4cd29f8326f1c55dbc"
+    },
+    {
+      "path": "integration/spelling-native-checkpoint/native/seven-package-run3-chef-custody.json",
+      "command": [
+        "python3",
+        "scripts/test_hepta_ci_chef.py"
+      ],
+      "exit": 0,
+      "elapsedSeconds": 0.42020788695663214,
+      "logSha256": "df6c882e5d1c565722416565b1476e53a52bcc14c25fef625504700294d8458a"
+    },
+    {
+      "path": "integration/spelling-native-checkpoint/native/seven-package-run3-documents-qualification.json",
+      "command": [
+        "python3",
+        "scripts/hepta-module-docs.py",
+        "verify",
+        "--profile",
+        "qualification"
+      ],
+      "exit": 0,
+      "elapsedSeconds": 7.294917529914528,
+      "logSha256": "db8def5c9333745c8aa3af8688d7d9e2b67b9041e6b005a45d15db8eecbf3e10"
+    },
+    {
+      "path": "integration/spelling-native-checkpoint/native/seven-package-run3-maps-qualification.json",
+      "command": [
+        "python3",
+        "scripts/hepta-implementation-maps.py",
+        "verify",
+        "--profile",
+        "qualification",
+        "--expected-sha",
+        "797116d61cf422c26274ffef31297dce84a53a80",
+        "--expected-tree",
+        "67ce024db1679aa6cd301856ba3a694ea18bc4b6"
+      ],
+      "exit": 0,
+      "elapsedSeconds": 7.835917353047989,
+      "logSha256": "659570c4df0a5c4313d76c08ebd0c1c1bef4032ad3f03c203c6fe07ef5b5c251"
+    },
+    {
+      "path": "integration/spelling-native-checkpoint/native/seven-package-run3-module-docs-metadata.json",
+      "command": [
+        "python3",
+        "scripts/test_hepta_module_doc_metadata.py"
+      ],
+      "exit": 0,
+      "elapsedSeconds": 0.1308490929659456,
+      "logSha256": "91bf10ce34b2b5f6f6efdd64fd681002bb5816631b2608575fab164709c80992"
+    },
+    {
+      "path": "integration/spelling-native-checkpoint/native/seven-package-run3-module-registry.json",
+      "command": [
+        "python3",
+        "scripts/hepta_module_registry.py",
+        "--strict",
+        "--pretty"
+      ],
+      "exit": 0,
+      "elapsedSeconds": 0.20526123698800802,
+      "logSha256": "e856e4c966f130ea6d3f52ab8ca8bcf31ead62ccc173424ac57c809887e3b2e9"
+    },
+    {
+      "path": "integration/spelling-native-checkpoint/native/seven-package-run3-original-test.json",
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-agent-protocol",
+        "-p",
+        "codex-hepta-agentd",
+        "-p",
+        "codex-hepta-infer-worker-host",
+        "-p",
+        "codex-hepta-runtime",
+        "-p",
+        "codex-hepta-contracts",
+        "-p",
+        "codex-hepta-learning-ledger",
+        "-p",
+        "codex-hepta-supervisor",
+        "--tool-config-file",
+        "hepta-evidence:/home/qq/work/hepta-modules40-20261105-da8578/seven-package-run3-report-only.nextest.toml",
+        "--cargo-metadata",
+        "/home/qq/work/hepta-modules40-20261105-da8578/evidence/seven-package-run3-original-scoped-metadata.json"
+      ],
+      "exit": 0,
+      "elapsedSeconds": 95.16100234398618,
+      "logSha256": "330ae7e4cc6e6ff7aadc01be359791b8e15ee5f7910be3c99ce1b29ac3a51250"
+    },
+    {
+      "path": "integration/spelling-native-checkpoint/native/seven-package-run3-required-audit.json",
+      "command": [
+        "python3",
+        "/home/qq/work/hepta-modules40-20261105-da8578/audit-tools/audit_native_junit.py",
+        "--review-manifest",
+        "/home/qq/work/hepta-modules40-20261105-da8578/audit-tools/required-tests.69.json",
+        "--manifest",
+        "/home/qq/work/hepta-modules40-20261105-da8578/evidence/seven-package-run3-required-tests.69.source-bound.json",
+        "--candidate-commit",
+        "797116d61cf422c26274ffef31297dce84a53a80",
+        "--candidate-tree",
+        "67ce024db1679aa6cd301856ba3a694ea18bc4b6",
+        "--junit",
+        "/home/qq/work/hepta-modules40-20261105-da8578/evidence/seven-package-run3.junit.xml",
+        "--suite-exit-code",
+        "0",
+        "--report",
+        "/home/qq/work/hepta-modules40-20261105-da8578/evidence/seven-package-run3-required-tests.69.native-audit.json"
+      ],
+      "exit": 0,
+      "elapsedSeconds": 0.9724165080115199,
+      "logSha256": "48c76a0774d89548a81d3847aa6d5befd7228a32a7c43abf476ce435d4463b24"
+    },
+    {
+      "path": "integration/spelling-native-checkpoint/native/seven-package-run3-rust-ci-feedback.json",
+      "command": [
+        "python3",
+        "scripts/test_hepta_rust_ci_feedback.py"
+      ],
+      "exit": 0,
+      "elapsedSeconds": 0.5434650219976902,
+      "logSha256": "379485ece0fd3cb98d384cb372c91b7eef0349936c9ed5acec01cf9e5b52c52c"
+    },
+    {
+      "path": "integration/spelling-native-checkpoint/native/seven-package-run3-status-facts.json",
+      "command": [
+        "python3",
+        "scripts/test_hepta_module_status_facts.py"
+      ],
+      "exit": 0,
+      "elapsedSeconds": 0.09779822500422597,
+      "logSha256": "ad61be9b74efb8a4b8ae7d0427622d79c722d44dc55c2f4aeb51140568dfc278"
+    },
+    {
+      "path": "integration/spelling-native-checkpoint/native/spelling-canonical-run1-app-server-process-regression.json",
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-app-server",
+        "--test",
+        "all",
+        "-E",
+        "test(process_exec)",
+        "--no-tests",
+        "fail"
+      ],
+      "exit": 0,
+      "elapsedSeconds": 3.2083318709628657,
+      "logSha256": "38f87235bc6858b2a85405b1d3246ab33ab80eb52e6887bae7a119aff74cdc3a"
+    },
+    {
+      "path": "integration/spelling-native-checkpoint/native/spelling-canonical-run1-original-ci-policy-clippy.json",
+      "command": [
+        "just",
+        "clippy",
+        "--locked",
+        "-p",
+        "codex-exec-server",
+        "-p",
+        "codex-app-server",
+        "-p",
+        "codex-app-server-client",
+        "--",
+        "-D",
+        "clippy::correctness",
+        "-D",
+        "clippy::await_holding_lock",
+        "-D",
+        "clippy::await_holding_invalid_type"
+      ],
+      "exit": 0,
+      "elapsedSeconds": 3.0036879420513287,
+      "logSha256": "b54a8e95283d8d9ac7e47cae2866eda9998fd4f50313869d6c20139f1683f9b2"
+    },
+    {
+      "path": "integration/spelling-native-checkpoint/native/spelling-canonical-run1-original-codespell.json",
+      "command": [
+        "/home/qq/work/hepta-modules40-20261105-da8578/tools/codespell-2.4.3/bin/codespell",
+        "--ignore-words",
+        ".codespellignore",
+        "--skip",
+        "./.git"
+      ],
+      "exit": 0,
+      "elapsedSeconds": 15.032685459009372,
+      "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "integration/spelling-native-checkpoint/native/spelling-canonical-run1-original-four-package-format.json",
+      "command": [
+        "cargo",
+        "fmt",
+        "--package",
+        "codex-utils-path",
+        "--package",
+        "codex-hepta-prompt-registry",
+        "--package",
+        "codex-hepta-contracts",
+        "--package",
+        "codex-hepta-agentd",
+        "--",
+        "--check"
+      ],
+      "exit": 0,
+      "elapsedSeconds": 2.7180915829958394,
+      "logSha256": "569f5b0a5f26ebfbf85e01faa3030747603915fa1d636fda3e4a801a553411ad"
+    },
+    {
+      "path": "integration/spelling-native-checkpoint/native/spelling-canonical-run1-original-workspace-format.json",
+      "command": [
+        "cargo",
+        "fmt",
+        "--",
+        "--config",
+        "imports_granularity=Item",
+        "--check"
+      ],
+      "exit": 0,
+      "elapsedSeconds": 31.253904073964804,
+      "logSha256": "48230365c06813d60fa46b6117c843a84166fb279b565ff886b5c70a2a2dcd2d"
+    },
+    {
+      "path": "integration/spelling-native-checkpoint/native/spelling-canonical-run1-seven-package-original-runner.json",
+      "command": [
+        "python3",
+        "/home/qq/work/hepta-modules40-20261105-da8578/run-final-native.py",
+        "--candidate-commit",
+        "797116d61cf422c26274ffef31297dce84a53a80",
+        "--candidate-tree",
+        "67ce024db1679aa6cd301856ba3a694ea18bc4b6",
+        "--run-label",
+        "seven-package-run3"
+      ],
+      "exit": 0,
+      "elapsedSeconds": 114.4751404109411,
+      "logSha256": "69f41e0173ba4a1322f8ce129a9f10ef0246942398c10115ccc58a9721b21ba6"
+    },
+    {
+      "path": "integration/spelling-native-checkpoint/native/spelling-canonical-run1-two-library-regression.json",
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-exec-server",
+        "-p",
+        "codex-app-server-client",
+        "--lib"
+      ],
+      "exit": 0,
+      "elapsedSeconds": 47.215742989908904,
+      "logSha256": "5b4ecba0054f56f4147dd4cd4a9e91e16bc88208e2394d1cbba499d9b081a0da"
+    }
+  ],
+  "limits": [
+    "Linux scope only; no Windows or Darwin compilation/runtime qualification is inferred.",
+    "No result is transferred to a later commit, same-tree identity, merge candidate or evidence carrier.",
+    "The 69-case manifest is an audit subset, not an execution filter; complete-suite failure would remain failure.",
+    "Skipped tests remain skipped; separate command scopes and repeated candidates are not added together.",
+    "Stable rustfmt ignores the recorded nightly-only imports_granularity option.",
+    "All 40 production flags remain false; provider/deployment/independent acceptance remains open.",
+    "File API collection uses independent per-file versions and hashes; it is not an atomic cross-file snapshot or current-checkout attestation."
+  ],
+  "inputs": [
+    {
+      "path": "integration/runtime-receipts/spelling-canonical-797-runtime-status.json",
+      "bytes": 738,
+      "sha256": "5afbbce2960a3fe020376f15deb158d02a3b265430b6cef1057023cdb26f15ee"
+    },
+    {
+      "path": "integration/native-797-file-read-checkpoint.tar.gz",
+      "bytes": 313492,
+      "sha256": "6e95dfc4723db20a4bfa158bedae04e8fc537622bbd0a20abf59783552c7571a"
+    },
+    {
+      "path": "integration/spelling-native-checkpoint/MANIFEST.json",
+      "bytes": 22859,
+      "sha256": "a2b12146625c7682aeb51a70fd8913b1cfb87c706635efe8e3e1510feac678d0"
+    },
+    {
+      "path": "integration/spelling-native-checkpoint/READ-CUSTODY.json",
+      "bytes": 37531,
+      "sha256": "a07c195e44ada5bc8a2ebb5409c60198ee17ba4daaea24182d8d84c3c15e1391"
+    },
+    {
+      "path": "integration/spelling-native-checkpoint/README.md",
+      "bytes": 1267,
+      "sha256": "8531ac2e499f99bcdb1747545f36b072412cf796226cbbe3946287a0a6ea5bc9"
+    },
+    {
+      "path": "integration/spelling-native-checkpoint/native-source-history/797116d61cf422c26274ffef31297dce84a53a80.commit",
+      "bytes": 340,
+      "sha256": "24bc549de0bc6e95eb636ca1402562a152de0d8597deea4635f068c26bf696e7"
+    },
+    {
+      "path": "integration/spelling-native-checkpoint/native-source-history/bb55b0d7d263c396ec504c45393d938c3428dae5.commit",
+      "bytes": 354,
+      "sha256": "b0430401ca59249d514908dcf38817546cd95efb52ad5aa63ecd08191c9cc8af"
+    },
+    {
+      "path": "integration/spelling-native-checkpoint/native-source-history/c4863123b65f895be0eb14e0958d5cfe6c9c78bd.commit",
+      "bytes": 344,
+      "sha256": "170c41fbdbac042f0889451959b767394c0a72a34d2fbee9195e91d752b0eb29"
+    },
+    {
+      "path": "integration/spelling-native-checkpoint/native-source-history/c77786bd2b786b801197dad684f6f5af1a3d5af5.commit",
+      "bytes": 345,
+      "sha256": "19b85bd2f5bd9eeab32f509f8025d2bc0689c4e0663695cc451e9121464151d9"
+    },
+    {
+      "path": "integration/spelling-native-checkpoint/native-source-history/identities.json",
+      "bytes": 783,
+      "sha256": "b6e6146e46c1e91654afb2dad3adcf091bca1c843974368de99c77436c28c976"
+    },
+    {
+      "path": "integration/spelling-native-checkpoint/native/codespell-setup-run1-pip-report.json",
+      "bytes": 18101,
+      "sha256": "56f1cd98f28d9a43a16131daeac9d49378d1a4601034a3c07b2b9859d28aba7d"
+    },
+    {
+      "path": "integration/spelling-native-checkpoint/native/codespell-setup-run1.json",
+      "bytes": 1154,
+      "sha256": "a8912d804789ab6bff10b83b4089062e432f46dd100731d6404522f5a74c058b"
+    },
+    {
+      "path": "integration/spelling-native-checkpoint/native/codespell-setup-run1.log",
+      "bytes": 226,
+      "sha256": "7c74e59cfddd7c2a00fd677d153931a6ced8f3ba25c88bc20054e94811744cff"
+    },
+    {
+      "path": "integration/spelling-native-checkpoint/native/seven-package-run3-bind-manifest.json",
+      "bytes": 1414,
+      "sha256": "80ba6f0c72ba8458198efc0b30d6339f6779dd5a60d56980c9bc6c13213825cf"
+    },
+    {
+      "path": "integration/spelling-native-checkpoint/native/seven-package-run3-bind-manifest.log",
+      "bytes": 566,
+      "sha256": "7f94ae9f74238eb86169f45352ba32e8b41a70163f339e4cd29f8326f1c55dbc"
+    },
+    {
+      "path": "integration/spelling-native-checkpoint/native/seven-package-run3-chef-custody.json",
+      "bytes": 890,
+      "sha256": "eb2bb3ab75a29913d41fa54698742ade7ff12e3a2a10538716923265edb7d2f2"
+    },
+    {
+      "path": "integration/spelling-native-checkpoint/native/seven-package-run3-chef-custody.log",
+      "bytes": 4728,
+      "sha256": "df6c882e5d1c565722416565b1476e53a52bcc14c25fef625504700294d8458a"
+    },
+    {
+      "path": "integration/spelling-native-checkpoint/native/seven-package-run3-documents-qualification.json",
+      "bytes": 949,
+      "sha256": "91c8e10cecdd4a11404d8346d18ecde84e51d655dd07acb38a94555353cb864a"
+    },
+    {
+      "path": "integration/spelling-native-checkpoint/native/seven-package-run3-documents-qualification.log",
+      "bytes": 323,
+      "sha256": "db8def5c9333745c8aa3af8688d7d9e2b67b9041e6b005a45d15db8eecbf3e10"
+    },
+    {
+      "path": "integration/spelling-native-checkpoint/native/seven-package-run3-maps-qualification.json",
+      "bytes": 1093,
+      "sha256": "313014e7b7d055b949f3beaa9330b4be40bec33e59d3a47acde448eee41a3425"
+    },
+    {
+      "path": "integration/spelling-native-checkpoint/native/seven-package-run3-maps-qualification.log",
+      "bytes": 691,
+      "sha256": "659570c4df0a5c4313d76c08ebd0c1c1bef4032ad3f03c203c6fe07ef5b5c251"
+    },
+    {
+      "path": "integration/spelling-native-checkpoint/native/seven-package-run3-module-docs-metadata.json",
+      "bytes": 908,
+      "sha256": "6cbeded073505243ca97d3db6a0da4242c1f7638f314bc3d589bfaa671a41f11"
+    },
+    {
+      "path": "integration/spelling-native-checkpoint/native/seven-package-run3-module-docs-metadata.log",
+      "bytes": 104,
+      "sha256": "91bf10ce34b2b5f6f6efdd64fd681002bb5816631b2608575fab164709c80992"
+    },
+    {
+      "path": "integration/spelling-native-checkpoint/native/seven-package-run3-module-registry.json",
+      "bytes": 927,
+      "sha256": "3a5d61d3492605c7f9d9c10bc0a39c9512598a87178a9e17c67dcc7d94fef334"
+    },
+    {
+      "path": "integration/spelling-native-checkpoint/native/seven-package-run3-module-registry.log",
+      "bytes": 896,
+      "sha256": "e856e4c966f130ea6d3f52ab8ca8bcf31ead62ccc173424ac57c809887e3b2e9"
+    },
+    {
+      "path": "integration/spelling-native-checkpoint/native/seven-package-run3-original-scoped-metadata.json",
+      "bytes": 937669,
+      "sha256": "3ec7d59d8e9d1f565086059ed198262bb927faf23795886f8d063cf7c02ccef4"
+    },
+    {
+      "path": "integration/spelling-native-checkpoint/native/seven-package-run3-original-test.json",
+      "bytes": 1440,
+      "sha256": "65e14a77cb9b1ccf07bcc38e145872bfbb5ca9e8fd9faf06ed5cd059abd46f9e"
+    },
+    {
+      "path": "integration/spelling-native-checkpoint/native/seven-package-run3-original-test.log",
+      "bytes": 194467,
+      "sha256": "330ae7e4cc6e6ff7aadc01be359791b8e15ee5f7910be3c99ce1b29ac3a51250"
+    },
+    {
+      "path": "integration/spelling-native-checkpoint/native/seven-package-run3-preflight.json",
+      "bytes": 6145,
+      "sha256": "56e5dc608c98b11815ab8adc2b25a89256d6b8619ebcb56b6eb0a6bc4fccf902"
+    },
+    {
+      "path": "integration/spelling-native-checkpoint/native/seven-package-run3-required-audit.json",
+      "bytes": 1607,
+      "sha256": "e00cf2b5e1b91db3ceeab1091722a02ceadb347dd36a6e005352ebdbade1bbbb"
+    },
+    {
+      "path": "integration/spelling-native-checkpoint/native/seven-package-run3-required-audit.log",
+      "bytes": 107,
+      "sha256": "48c76a0774d89548a81d3847aa6d5befd7228a32a7c43abf476ce435d4463b24"
+    },
+    {
+      "path": "integration/spelling-native-checkpoint/native/seven-package-run3-required-tests.69.native-audit.json",
+      "bytes": 73601,
+      "sha256": "bed4022b5155f71458b9bd18b34a9141ee53db74b782d1729ab2ec566f549676"
+    },
+    {
+      "path": "integration/spelling-native-checkpoint/native/seven-package-run3-required-tests.69.source-bound.json",
+      "bytes": 78628,
+      "sha256": "d6837ba137871b7a722b5b69d15dd352c1c1a4050ebddb2611f59f717d4fb640"
+    },
+    {
+      "path": "integration/spelling-native-checkpoint/native/seven-package-run3-rust-ci-feedback.json",
+      "bytes": 901,
+      "sha256": "12717550acfdb34181b8ae85530aa957ffd4b9b192d425d1b4683d0bb6deaf0c"
+    },
+    {
+      "path": "integration/spelling-native-checkpoint/native/seven-package-run3-rust-ci-feedback.log",
+      "bytes": 119,
+      "sha256": "379485ece0fd3cb98d384cb372c91b7eef0349936c9ed5acec01cf9e5b52c52c"
+    },
+    {
+      "path": "integration/spelling-native-checkpoint/native/seven-package-run3-status-facts.json",
+      "bytes": 901,
+      "sha256": "64a95082ccfd49d42975d3b6fdc78d0d5b62f4731296574f9648230f097cfa88"
+    },
+    {
+      "path": "integration/spelling-native-checkpoint/native/seven-package-run3-status-facts.log",
+      "bytes": 100,
+      "sha256": "ad61be9b74efb8a4b8ae7d0427622d79c722d44dc55c2f4aeb51140568dfc278"
+    },
+    {
+      "path": "integration/spelling-native-checkpoint/native/seven-package-run3-summary.json",
+      "bytes": 1569,
+      "sha256": "01dd2a895f714bacf1a461741d364acaee239d837f6ba10de40b44b9944cbe20"
+    },
+    {
+      "path": "integration/spelling-native-checkpoint/native/seven-package-run3.junit.xml",
+      "bytes": 280620,
+      "sha256": "9c08b92ba417f2a99ed449bad0373b5359f535572546138ff735f2e2d9b66510"
+    },
+    {
+      "path": "integration/spelling-native-checkpoint/native/spelling-canonical-run1-app-server-process-regression.json",
+      "bytes": 1025,
+      "sha256": "65b170b5251938cbe155fdf4229c34a2ad8a23d22c85471ccd8f339afebabc20"
+    },
+    {
+      "path": "integration/spelling-native-checkpoint/native/spelling-canonical-run1-app-server-process-regression.log",
+      "bytes": 19541,
+      "sha256": "38f87235bc6858b2a85405b1d3246ab33ab80eb52e6887bae7a119aff74cdc3a"
+    },
+    {
+      "path": "integration/spelling-native-checkpoint/native/spelling-canonical-run1-original-ci-policy-clippy.json",
+      "bytes": 1150,
+      "sha256": "4a5fc3f62d8e40fe32576efe19c531d1a3f4458cdf5c8f69d6385725febdd6fe"
+    },
+    {
+      "path": "integration/spelling-native-checkpoint/native/spelling-canonical-run1-original-ci-policy-clippy.log",
+      "bytes": 8953,
+      "sha256": "b54a8e95283d8d9ac7e47cae2866eda9998fd4f50313869d6c20139f1683f9b2"
+    },
+    {
+      "path": "integration/spelling-native-checkpoint/native/spelling-canonical-run1-original-codespell.json",
+      "bytes": 1008,
+      "sha256": "4ea20ce8f428d2edeee13b55bf96b73fd63c4b29edcc4fd5a750e17d69ff13a8"
+    },
+    {
+      "path": "integration/spelling-native-checkpoint/native/spelling-canonical-run1-original-codespell.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "integration/spelling-native-checkpoint/native/spelling-canonical-run1-original-four-package-format.json",
+      "bytes": 1098,
+      "sha256": "d5ceb8ee31c62cdeafd69ca67d6fab3da38d9107dbedc632b12ba69a25a2ce2e"
+    },
+    {
+      "path": "integration/spelling-native-checkpoint/native/spelling-canonical-run1-original-four-package-format.log",
+      "bytes": 3074,
+      "sha256": "569f5b0a5f26ebfbf85e01faa3030747603915fa1d636fda3e4a801a553411ad"
+    },
+    {
+      "path": "integration/spelling-native-checkpoint/native/spelling-canonical-run1-original-workspace-format.json",
+      "bytes": 962,
+      "sha256": "7da9ee0ff2726cee8f2368838a0a810e03f1fed3b6d4fd840a18e336562c0c5b"
+    },
+    {
+      "path": "integration/spelling-native-checkpoint/native/spelling-canonical-run1-original-workspace-format.log",
+      "bytes": 45156,
+      "sha256": "48230365c06813d60fa46b6117c843a84166fb279b565ff886b5c70a2a2dcd2d"
+    },
+    {
+      "path": "integration/spelling-native-checkpoint/native/spelling-canonical-run1-seven-package-original-runner.json",
+      "bytes": 1138,
+      "sha256": "fbd4c9f1e35a8c53e3660b386f25c4b4b7d819583b8398d3601222da46e4e661"
+    },
+    {
+      "path": "integration/spelling-native-checkpoint/native/spelling-canonical-run1-seven-package-original-runner.log",
+      "bytes": 12202,
+      "sha256": "69f41e0173ba4a1322f8ce129a9f10ef0246942398c10115ccc58a9721b21ba6"
+    },
+    {
+      "path": "integration/spelling-native-checkpoint/native/spelling-canonical-run1-source-checkout.json",
+      "bytes": 965,
+      "sha256": "cd2443e1f0abcbb8299682f98b5ec1451ab9da0e15c72f38885d60693269c097"
+    },
+    {
+      "path": "integration/spelling-native-checkpoint/native/spelling-canonical-run1-summary.json",
+      "bytes": 836,
+      "sha256": "d48296bc7f73f678a2e0db968b923a651717e0458cf000d4dab365d9ebecff76"
+    },
+    {
+      "path": "integration/spelling-native-checkpoint/native/spelling-canonical-run1-two-library-regression.json",
+      "bytes": 982,
+      "sha256": "a81230a5bb80b74e98dfca34069917ec23feb426b4e4a88dbaee11e45699b335"
+    },
+    {
+      "path": "integration/spelling-native-checkpoint/native/spelling-canonical-run1-two-library-regression.log",
+      "bytes": 57048,
+      "sha256": "5b4ecba0054f56f4147dd4cd4a9e91e16bc88208e2394d1cbba499d9b081a0da"
+    },
+    {
+      "path": "integration/spelling-native-checkpoint/native/spelling-navigation-run1-apply.log",
+      "bytes": 520,
+      "sha256": "c8cd4903aafd1df9434ef819d961e7243e15fa01d7b5728fe34f2f14a58cac59"
+    },
+    {
+      "path": "integration/spelling-native-checkpoint/native/spelling-navigation-run1-codespell-code-green.json",
+      "bytes": 1034,
+      "sha256": "aea51c1f056be90ff4c0d6fac37c2eb286f376811f94602b526a220f7389cfa0"
+    },
+    {
+      "path": "integration/spelling-native-checkpoint/native/spelling-navigation-run1-codespell-code-green.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "integration/spelling-native-checkpoint/native/spelling-navigation-run1-codespell-red.json",
+      "bytes": 1028,
+      "sha256": "389ac5709e26a839c8c6d1ed0032c0615a71d66472b848c47bfb0c5af154663c"
+    },
+    {
+      "path": "integration/spelling-native-checkpoint/native/spelling-navigation-run1-codespell-red.log",
+      "bytes": 91,
+      "sha256": "c77fa26c1f9a51683acc613bcf036eb3394c9b4b89c44c132130988a8d960867"
+    },
+    {
+      "path": "integration/spelling-native-checkpoint/native/spelling-navigation-run1-export.json",
+      "bytes": 13095,
+      "sha256": "9050b886676e08f86aedf6dc33b81c6ac4717266b67b6b13ebe9afc64bee52e1"
+    },
+    {
+      "path": "integration/spelling-native-checkpoint/native/spelling-navigation-run1-export.json.z",
+      "bytes": 3586,
+      "sha256": "a903f7d55c3cdf845d74f967206b53e5bd621f97b133e78c0a353f0d83dc6d73"
+    },
+    {
+      "path": "integration/spelling-native-checkpoint/native/spelling-navigation-run1-format.log",
+      "bytes": 73,
+      "sha256": "b6a6d5ad920f48c9b49a3ca8c2308227b7849b9e0a498dc452f3a7bd2f7fb752"
+    },
+    {
+      "path": "integration/spelling-native-checkpoint/native/spelling-navigation-run1-preview.log",
+      "bytes": 521,
+      "sha256": "354bcb2f1aa7398c23ea39949044443cea951b83b436885beb1b2fc3d53a9b20"
+    },
+    {
+      "path": "integration/spelling-native-checkpoint/native/spelling-navigation-run1-source.patch",
+      "bytes": 3737,
+      "sha256": "f9782566a707900fa23910809cfdd855b96d14d42f5936945bf7ee080f919c80"
+    },
+    {
+      "path": "integration/spelling-native-checkpoint/reads/audit-0.json",
+      "bytes": 361,
+      "sha256": "5914c4876d667b764c3c2f8f728d9ed31214d8b8ecf38f6c580db081bdd22eaa"
+    },
+    {
+      "path": "integration/spelling-native-checkpoint/reads/audit-65536.json",
+      "bytes": 364,
+      "sha256": "21266616687c7cfe1dabf89b8eff7e253933fcbef94f4e2bcaca470226a11eed"
+    },
+    {
+      "path": "integration/spelling-native-checkpoint/reads/audit-info.json",
+      "bytes": 574,
+      "sha256": "18a30f8c90bd88a67d70af2df1c748f919654736eabb1d349c94e5b8851b5d6a"
+    },
+    {
+      "path": "integration/spelling-native-checkpoint/reads/audit-tools-a.json",
+      "bytes": 91021,
+      "sha256": "c14f6b2c6c85f38842f850b53755d45a468d93809ab8f3c9a289190e44ef8251"
+    },
+    {
+      "path": "integration/spelling-native-checkpoint/reads/audit-tools-b.json",
+      "bytes": 70338,
+      "sha256": "de3ea55e34d679bb0f5b1579fbae30b9412c8a4905eab302df6384329e1894c0"
+    },
+    {
+      "path": "integration/spelling-native-checkpoint/reads/bound-0.json",
+      "bytes": 361,
+      "sha256": "48f87009cad359e6bdecda36b0a67a5eb4674f2cdbad5111f961324e754f36bd"
+    },
+    {
+      "path": "integration/spelling-native-checkpoint/reads/bound-65536.json",
+      "bytes": 364,
+      "sha256": "79033bf698af859148bf710e25c744cf6939be7a5e19b9ee121d037b29117354"
+    },
+    {
+      "path": "integration/spelling-native-checkpoint/reads/critical-01.json",
+      "bytes": 18051,
+      "sha256": "252d4301c51e378109dad8cec7623f0f2ee41b1718e7a10388292f6ca15da623"
+    },
+    {
+      "path": "integration/spelling-native-checkpoint/reads/history-small.json",
+      "bytes": 26913,
+      "sha256": "6ccaf92956ac9a35908e0532d6429e5ce96c45e8122d3514aac6aa39b667e5e8"
+    },
+    {
+      "path": "integration/spelling-native-checkpoint/reads/junit-0.json",
+      "bytes": 337,
+      "sha256": "b995249ab065015170c5c094b951b8651061e8151eb8518041b2c16132937d6d"
+    },
+    {
+      "path": "integration/spelling-native-checkpoint/reads/junit-131072.json",
+      "bytes": 343,
+      "sha256": "6228e166fbd1b27a1d0cbf02f4e4b6b03486b2ebebc1bcfa9d54bc8b7733a874"
+    },
+    {
+      "path": "integration/spelling-native-checkpoint/reads/junit-196608.json",
+      "bytes": 343,
+      "sha256": "c536feb3322a8d7dfe3c220d865f9aee1cb588d2210ebeeacc92e003646d71c2"
+    },
+    {
+      "path": "integration/spelling-native-checkpoint/reads/junit-262144.json",
+      "bytes": 342,
+      "sha256": "d1e9ecf3c78bbde253cb256df82028f0e95cf50438bc229f2a41aa7b60e5a19e"
+    },
+    {
+      "path": "integration/spelling-native-checkpoint/reads/junit-65536.json",
+      "bytes": 342,
+      "sha256": "aa594ad3ef8bf425cbed7759e253abdb52882450c126c58c43d9aa6ec8d26d8d"
+    },
+    {
+      "path": "integration/spelling-native-checkpoint/reads/metadata-0.json",
+      "bytes": 357,
+      "sha256": "718d0dc4d9b445a52f341b308c3d7a21401c7a0c2aeecd0e1c5f41cc99d327d7"
+    },
+    {
+      "path": "integration/spelling-native-checkpoint/reads/metadata-131072.json",
+      "bytes": 363,
+      "sha256": "c1ef4b1c2b5876fddefdeb7258e7d84708955d16fcf4414db608460408f50c34"
+    },
+    {
+      "path": "integration/spelling-native-checkpoint/reads/metadata-196608.json",
+      "bytes": 363,
+      "sha256": "867fdd67bcd08ec489505fc4090ef62bedf8eb569bf0629fd0fc58de1be730f0"
+    },
+    {
+      "path": "integration/spelling-native-checkpoint/reads/metadata-262144.json",
+      "bytes": 363,
+      "sha256": "278b08aa9528c5ecb6a33bab1d5b559f29352d6b7b3dc7c1eeebf2a28fde4b66"
+    },
+    {
+      "path": "integration/spelling-native-checkpoint/reads/metadata-327680.json",
+      "bytes": 363,
+      "sha256": "30b1a7b7d41d830a0984024965b67fac5bfa7d81ebbf62f386d28b5c152008a0"
+    },
+    {
+      "path": "integration/spelling-native-checkpoint/reads/metadata-393216.json",
+      "bytes": 363,
+      "sha256": "1371dcafa8a609c67fe47ab72579b21154fc86574de8c338ffb771f7a27fd3f2"
+    },
+    {
+      "path": "integration/spelling-native-checkpoint/reads/metadata-458752.json",
+      "bytes": 363,
+      "sha256": "19442edd000e754fb1e13e12b45dd2df508ab5c1e3b67434701f07a5692832b1"
+    },
+    {
+      "path": "integration/spelling-native-checkpoint/reads/metadata-524288.json",
+      "bytes": 363,
+      "sha256": "083f8c3a42d2c8ddd5e3b802d3e9104a34197c1decf6eb13babbdea154a22312"
+    },
+    {
+      "path": "integration/spelling-native-checkpoint/reads/metadata-589824.json",
+      "bytes": 363,
+      "sha256": "e474b0c5d4d0c80e6e82270cc0aa321b2f6b1c6515b6c6d75994d001631f7fa3"
+    },
+    {
+      "path": "integration/spelling-native-checkpoint/reads/metadata-65536.json",
+      "bytes": 362,
+      "sha256": "73a6ac72667fd2b790c18b1c5364500dc98fec6241c51cee6134601cdd56a683"
+    },
+    {
+      "path": "integration/spelling-native-checkpoint/reads/metadata-655360.json",
+      "bytes": 363,
+      "sha256": "52b32c03da10913190ac1fdb092cee16cb1ca80c491e3a4c3b3f21d9d21c2ee1"
+    },
+    {
+      "path": "integration/spelling-native-checkpoint/reads/metadata-720896.json",
+      "bytes": 363,
+      "sha256": "ac3b24dd4449a7160db3e8d759e651b0fbdd4ca72e6dca97be563b849e694328"
+    },
+    {
+      "path": "integration/spelling-native-checkpoint/reads/metadata-786432.json",
+      "bytes": 363,
+      "sha256": "e2f9eac67b28b4edd581bcedea0894e86245485ac7014f18068b86343b54dbc5"
+    },
+    {
+      "path": "integration/spelling-native-checkpoint/reads/metadata-851968.json",
+      "bytes": 363,
+      "sha256": "7ef3813dc3b8ac2ade098bfc855e5cb91042e6ba192e85ff315cdc9e5cda7334"
+    },
+    {
+      "path": "integration/spelling-native-checkpoint/reads/metadata-917504.json",
+      "bytes": 362,
+      "sha256": "bc1f2c9bae126d391390a89b8cdeae5e1fd2a08c0195094ac5f2393d50f15492"
+    },
+    {
+      "path": "integration/spelling-native-checkpoint/reads/nav-compressed.json",
+      "bytes": 341,
+      "sha256": "0f77dfb6a2d45fb931c7542617769cfb0de9954b5f13520df1a7e28dd6705bbd"
+    },
+    {
+      "path": "integration/spelling-native-checkpoint/reads/remaining-core-small.json",
+      "bytes": 74269,
+      "sha256": "2121716772dfd4c181f6cd0f897bae945d6ae68091ace5f89373fabc55ce7c49"
+    },
+    {
+      "path": "integration/spelling-native-checkpoint/reads/reproduction-small.json",
+      "bytes": 51418,
+      "sha256": "0f3aa64ffbbddce7fb93fbf94fa90d43f9b0387a07a518a21a59049b3df19842"
+    },
+    {
+      "path": "integration/spelling-native-checkpoint/reads/scope.json",
+      "bytes": 84732,
+      "sha256": "be515626113866121b986b1be558580e990b2ddc2726e8bb1916befca8d1a32c"
+    },
+    {
+      "path": "integration/spelling-native-checkpoint/reads/setup-files.json",
+      "bytes": 19884,
+      "sha256": "c27f80314d99709d79e70b6ba70cd0b8a5e7b85cf2c6b49197f4c7d54a9e7638"
+    },
+    {
+      "path": "integration/spelling-native-checkpoint/reads/strict-small.json",
+      "bytes": 23226,
+      "sha256": "7b5d41a3afcea95c1e2a71a20ab2224343e72707dd3053f5f42cc5f008ecd9d3"
+    },
+    {
+      "path": "integration/spelling-native-checkpoint/reads/test-0.json",
+      "bytes": 345,
+      "sha256": "8d1391e5c601dc11c4d51f7632f9f8070ec0fd51da5613ef4959464e5dd00590"
+    },
+    {
+      "path": "integration/spelling-native-checkpoint/reads/test-131072.json",
+      "bytes": 350,
+      "sha256": "e23dae738e5dd98870b249d7ef4145c6d991d0d3872586b2a02c1a2fdfede602"
+    },
+    {
+      "path": "integration/spelling-native-checkpoint/reads/test-65536.json",
+      "bytes": 350,
+      "sha256": "93400674c808bf941e6ad2f388eff4cd7a3868bc6a47d0eb81b6361d9a2631f3"
+    },
+    {
+      "path": "integration/spelling-native-checkpoint/reproduction/audit-tools/PREPARATION.json",
+      "bytes": 3189,
+      "sha256": "97200e2d0abfdba28cc44da9fc7878c40968d065339475abcc40a5050f0d89ac"
+    },
+    {
+      "path": "integration/spelling-native-checkpoint/reproduction/audit-tools/README.md",
+      "bytes": 6621,
+      "sha256": "ce6cdfdd2645087a0f32d28f3339013002746749e1b736ee95b925b2911f2c7b"
+    },
+    {
+      "path": "integration/spelling-native-checkpoint/reproduction/audit-tools/audit_native_junit.py",
+      "bytes": 9205,
+      "sha256": "a7796625ad2fd604c2f99c233ba530958ec652bad003c124e2c2138b7f612151"
+    },
+    {
+      "path": "integration/spelling-native-checkpoint/reproduction/audit-tools/bind_native_audit_manifest.py",
+      "bytes": 8610,
+      "sha256": "1fd7070c5bff70acfe7890da820e50c25dfa60c6ac3f72b775c4a78a795ab580"
+    },
+    {
+      "path": "integration/spelling-native-checkpoint/reproduction/audit-tools/history/bind_required_tests_manifest.py",
+      "bytes": 8470,
+      "sha256": "ac912800a10b48382800a92edc21ad2ce8e15c435e83ff7359f1a9a8951bdfc9"
+    },
+    {
+      "path": "integration/spelling-native-checkpoint/reproduction/audit-tools/history/check_required_junit.py",
+      "bytes": 10111,
+      "sha256": "043448357a05cd2c71f3a812a0d9e623e4313a50c6222cbbba03172f95dcae5b"
+    },
+    {
+      "path": "integration/spelling-native-checkpoint/reproduction/audit-tools/history/required-tests.with-e65.json",
+      "bytes": 43938,
+      "sha256": "f832236003c1937c29ba9ca3f6faeafa2dc9799664ae1069d0df78339366f56e"
+    },
+    {
+      "path": "integration/spelling-native-checkpoint/reproduction/audit-tools/history/required-tests.with-e65.md",
+      "bytes": 1816,
+      "sha256": "a0a4d379063435834ba87e0fa7e4be098fc3c2acee7b81fe779afd1f29015215"
+    },
+    {
+      "path": "integration/spelling-native-checkpoint/reproduction/audit-tools/required-tests.69.json",
+      "bytes": 56061,
+      "sha256": "bd5fa881bf712098f23b4f2193af548b5f3b70cf99694a2704d1d9458f5717ed"
+    },
+    {
+      "path": "integration/spelling-native-checkpoint/reproduction/environment.json",
+      "bytes": 2040,
+      "sha256": "0eba31f9edc07ffc869f685c2dfcf3eab856be5f4dce622721ed36f43b0875d5"
+    },
+    {
+      "path": "integration/spelling-native-checkpoint/reproduction/local-collector/build-spelling-file-read-checkpoint.py",
+      "bytes": 12261,
+      "sha256": "04ada583467be0f38ac56b88c5b0cd6735cb02a29976e2aada92069728bd66ab"
+    },
+    {
+      "path": "integration/spelling-native-checkpoint/reproduction/local-collector/ingest-spelling-evidence.py",
+      "bytes": 2655,
+      "sha256": "b636497d66eec1361074022fb7d9897b51bb628fe4152c920ebd3e6cdc9d7b9a"
+    },
+    {
+      "path": "integration/spelling-native-checkpoint/reproduction/refresh-navigation-explicit-pins.py",
+      "bytes": 13331,
+      "sha256": "940f0fe0d5fccf53dc8d00dacbd4f572cf9b02419704dba0cde35d495f9e7e3b"
+    },
+    {
+      "path": "integration/spelling-native-checkpoint/reproduction/run-final-native.py",
+      "bytes": 8758,
+      "sha256": "9590be884338146913ddec0fc4c0770cd2f134daf69d67c5a4a8bb14d60097eb"
+    },
+    {
+      "path": "integration/spelling-native-checkpoint/reproduction/run-spelling-canonical.py",
+      "bytes": 5924,
+      "sha256": "5acced7b44540ca858dbea1d7c67197385081268bb7c70d705ccce9e08ed6fc0"
+    },
+    {
+      "path": "integration/spelling-native-checkpoint/reproduction/run-spelling-navigation.py",
+      "bytes": 9177,
+      "sha256": "b75a419f40ababd2865ecdf3f1a2dec18623d262fb8a69b68b6eb9b4de1fe579"
+    },
+    {
+      "path": "integration/spelling-native-checkpoint/reproduction/seven-package-run3-report-only.nextest.toml",
+      "bytes": 115,
+      "sha256": "94387bb62b410110a7b09e79e118a2ef434b702aa71bd98f6173224356461943"
+    },
+    {
+      "path": "integration/spelling-native-checkpoint/reproduction/spelling-canonical-object.json",
+      "bytes": 540,
+      "sha256": "261c312c0874f1c67400cad55e084f4b4b2d15e4b6d99f4ed4ba302db8cd4719"
+    },
+    {
+      "path": "integration/spelling-native-checkpoint/reproduction/spelling-navigation-input.json",
+      "bytes": 7061,
+      "sha256": "67cd615fe74ca4f12a645150b9aedba847f058e2fdfdbab8254c2ac84a02e316"
+    },
+    {
+      "path": "integration/spelling-native-checkpoint/runtime-receipts/codespell-setup-run1-runtime-status.json",
+      "bytes": 730,
+      "sha256": "08ba10ad85f6650bbd6102092ddcb3dbe3a094c50a619673fcf1ed0c798265f6"
+    },
+    {
+      "path": "integration/spelling-native-checkpoint/runtime-receipts/spelling-canonical-797-runtime-status.json",
+      "bytes": 738,
+      "sha256": "5afbbce2960a3fe020376f15deb158d02a3b265430b6cef1057023cdb26f15ee"
+    },
+    {
+      "path": "integration/spelling-native-checkpoint/runtime-receipts/spelling-navigation-run1-runtime.json",
+      "bytes": 5151,
+      "sha256": "43781fb4be8cb3ed2cbf3949eb8243ab1cd00b16c67baf491f9a4e0b987737fa"
+    }
+  ]
+}

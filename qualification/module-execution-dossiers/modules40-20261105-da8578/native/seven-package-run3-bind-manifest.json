@@ -1,0 +1,35 @@
+{
+  "command": [
+    "python3",
+    "/home/qq/work/hepta-modules40-20261105-da8578/audit-tools/bind_native_audit_manifest.py",
+    "--repo",
+    "/home/qq/work/hepta-modules40-20261105-da8578/source",
+    "--review-manifest",
+    "/home/qq/work/hepta-modules40-20261105-da8578/audit-tools/required-tests.69.json",
+    "--candidate-commit",
+    "797116d61cf422c26274ffef31297dce84a53a80",
+    "--candidate-tree",
+    "67ce024db1679aa6cd301856ba3a694ea18bc4b6",
+    "--output",
+    "/home/qq/work/hepta-modules40-20261105-da8578/evidence/seven-package-run3-required-tests.69.source-bound.json"
+  ],
+  "cwd": "/home/qq/work/hepta-modules40-20261105-da8578/source",
+  "source_before": {
+    "commit": "797116d61cf422c26274ffef31297dce84a53a80",
+    "tree": "67ce024db1679aa6cd301856ba3a694ea18bc4b6",
+    "status": ""
+  },
+  "start_unix_ns": 1793895771284760498,
+  "environment_sha256": "0eba31f9edc07ffc869f685c2dfcf3eab856be5f4dce622721ed36f43b0875d5",
+  "exit": 0,
+  "elapsed_seconds": 0.34014616010244936,
+  "end_unix_ns": 1793895771625059273,
+  "source_after": {
+    "commit": "797116d61cf422c26274ffef31297dce84a53a80",
+    "tree": "67ce024db1679aa6cd301856ba3a694ea18bc4b6",
+    "status": ""
+  },
+  "log_path": "/home/qq/work/hepta-modules40-20261105-da8578/evidence/seven-package-run3-bind-manifest.log",
+  "log_sha256": "7f94ae9f74238eb86169f45352ba32e8b41a70163f339e4cd29f8326f1c55dbc",
+  "log_bytes": 566
+}

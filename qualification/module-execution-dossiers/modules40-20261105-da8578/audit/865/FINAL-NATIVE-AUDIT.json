@@ -1,0 +1,1900 @@
+{
+  "schema": "hepta.independent-native-checkpoint-audit.v2",
+  "status": "CLEAN_WITHIN_RECORDED_SCOPE",
+  "source": {
+    "commit": "8658210499706130788c216ff14fd342809b45a4",
+    "tree": "6bc86196d10cf83b010f9917e5e9cb471b5f6b68",
+    "status": ""
+  },
+  "archive": {
+    "path": "integration/native-865-checkpoint.tar.gz",
+    "bytes": 325679,
+    "sha256": "ba0299e0531d3a3fe4b0c5c5320233e696d5e5436303bc8d082d4fb0d627b430",
+    "members": 81,
+    "manifest_entries": 80,
+    "all_member_hashes_and_extracted_bytes_verified": true,
+    "manifest_sha256": "eb90f2d3417d9e87b3c5ef13e9c5c0f9c00840c08c1993ce948edcb70a4b9ba9",
+    "base_evidence": {
+      "commit": "f038947fd20992e15213d41f7f6d8ac1d2ca10fc",
+      "path": "qualification/module-execution-dossiers/modules40-20261105-da8578/native/native-final-bb55-checkpoint.tar.gz",
+      "archive_bytes": 1026914,
+      "archive_sha256": "28424496bd400d6c5ff6370158f7b093355e463f19ebb550b1df6e7330504886",
+      "source_commit": "bb55b0d7d263c396ec504c45393d938c3428dae5"
+    },
+    "independent_file_api_custody": null
+  },
+  "authoritative_runtime": {
+    "receipt": {
+      "path": "integration/runtime-receipts/complete-canonical-865-runtime-status.json",
+      "bytes": 738,
+      "sha256": "920005419553ea64959c613743e2a9fdf239686c7c4bfef5ccac7287f26114ff"
+    },
+    "job_id": "1a1aca9512d-fc05-5638",
+    "state": "succeeded",
+    "exit_code": 0,
+    "output_complete": true,
+    "output_durable": true,
+    "cancelled": false,
+    "timed_out": false,
+    "automatic_retry": false
+  },
+  "source_binding": {
+    "canonical_raw_commit_verified": true,
+    "historical_raw_objects_verified": 11,
+    "bound_receipts": 18,
+    "all_receipts_match_clean_candidate_before_and_after": true,
+    "ordered_parents": [
+      "775bf555b0a7faf6eed17627acb0d0433294b737",
+      "3a39c799a3f776b0aeedfce350341d865d3cc1c4"
+    ],
+    "expected_ordered_parents_verified": true,
+    "review_manifest_sha256": "bd5fa881bf712098f23b4f2193af548b5f3b70cf99694a2704d1d9458f5717ed",
+    "historical59_manifest_sha256": "f832236003c1937c29ba9ca3f6faeafa2dc9799664ae1069d0df78339366f56e",
+    "bound_manifest_sha256": "2b6a8426bc1f26fe65265cbd30ecbadae28ad3e27df030c46d9c4375746bf57f",
+    "reviewed_source_files": 22,
+    "runner_source_context_files": 14,
+    "original14_runner_contexts_unchanged": true,
+    "original_profile_observed": "local",
+    "report_config_only_adds_junit_path": true,
+    "cargo_metadata_workspace_packages": 193,
+    "no_added_seven_package_filter": true,
+    "original_runner_sha256": "9590be884338146913ddec0fc4c0770cd2f134daf69d67c5a4a8bb14d60097eb",
+    "wrapper_pins_original_runner": true,
+    "environment_sha256": "0eba31f9edc07ffc869f685c2dfcf3eab856be5f4dce622721ed36f43b0875d5"
+  },
+  "seven_package": {
+    "junit": {
+      "path": "integration/complete-native-checkpoint/native/seven-package-run5.junit.xml",
+      "bytes": 280619,
+      "sha256": "f17813bb320d0583756f9b19edf87b50b4f2e734028d694c5ec577fa4510c851"
+    },
+    "original_log": {
+      "path": "integration/complete-native-checkpoint/native/seven-package-run5-original-test.log",
+      "bytes": 194188,
+      "sha256": "57847b122b6411df2432fbedd490babee33fe99f05767509bce3b5d26f3a9a6e"
+    },
+    "run_uuid": "be1087cc-91e5-4bae-b70f-a1962bf0ab5b",
+    "junit_suites": 34,
+    "junit_testcases": 1219,
+    "passed": 1219,
+    "failures": 0,
+    "errors": 0,
+    "timeouts": 0,
+    "retries": 0,
+    "duplicate_case_identities": 0,
+    "junit_skipped_elements": 0,
+    "runner_reported_skipped": 78,
+    "skip_evidence_boundary": "The runner reports existing-profile skips; JUnit serializes executed cases only, not the skipped identities.",
+    "summary": "     Summary [  36.472s] 1219 tests run: 1219 passed (1 slow), 78 skipped",
+    "announced_binaries": 36,
+    "package_counts": {
+      "codex-hepta-agent-protocol": 14,
+      "codex-hepta-agentd": 624,
+      "codex-hepta-contracts": 259,
+      "codex-hepta-infer-worker-host": 59,
+      "codex-hepta-learning-ledger": 125,
+      "codex-hepta-runtime": 16,
+      "codex-hepta-supervisor": 122
+    },
+    "suites": [
+      {
+        "name": "codex-hepta-agent-protocol",
+        "tests": 14
+      },
+      {
+        "name": "codex-hepta-agentd",
+        "tests": 578
+      },
+      {
+        "name": "codex-hepta-agentd::cognitive_product_e2e",
+        "tests": 9
+      },
+      {
+        "name": "codex-hepta-agentd::authbus_text_product",
+        "tests": 8
+      },
+      {
+        "name": "codex-hepta-agentd::intuition_policy_product",
+        "tests": 1
+      },
+      {
+        "name": "codex-hepta-agentd::fleet_harness_diagnostics",
+        "tests": 1
+      },
+      {
+        "name": "codex-hepta-agentd::kernel_evidence_product",
+        "tests": 3
+      },
+      {
+        "name": "codex-hepta-agentd::runtime_shutdown_outcomes",
+        "tests": 9
+      },
+      {
+        "name": "codex-hepta-agentd::plasticity_process_e2e",
+        "tests": 1
+      },
+      {
+        "name": "codex-hepta-agentd::supervisord_product_e2e",
+        "tests": 2
+      },
+      {
+        "name": "codex-hepta-agentd::two_agent_turn_recovery",
+        "tests": 2
+      },
+      {
+        "name": "codex-hepta-contracts",
+        "tests": 258
+      },
+      {
+        "name": "codex-hepta-agentd::queue_capacity_product",
+        "tests": 2
+      },
+      {
+        "name": "codex-hepta-agentd::cognitive_store_product_writer",
+        "tests": 1
+      },
+      {
+        "name": "codex-hepta-agentd::terminal_cell_owner",
+        "tests": 2
+      },
+      {
+        "name": "codex-hepta-agentd::optional_module_restart",
+        "tests": 1
+      },
+      {
+        "name": "codex-hepta-agentd::runtime_codex_product_e2e",
+        "tests": 1
+      },
+      {
+        "name": "codex-hepta-contracts::final_use_linearization",
+        "tests": 1
+      },
+      {
+        "name": "codex-hepta-infer-worker-host",
+        "tests": 58
+      },
+      {
+        "name": "codex-hepta-learning-ledger",
+        "tests": 125
+      },
+      {
+        "name": "codex-hepta-infer-worker-host::bin/hepta-infer-worker",
+        "tests": 1
+      },
+      {
+        "name": "codex-hepta-runtime",
+        "tests": 16
+      },
+      {
+        "name": "codex-hepta-agentd::supervised_two_agents",
+        "tests": 1
+      },
+      {
+        "name": "codex-hepta-supervisor",
+        "tests": 111
+      },
+      {
+        "name": "codex-hepta-supervisor::process_deadline_unix",
+        "tests": 1
+      },
+      {
+        "name": "codex-hepta-supervisor::signed_intent_recovery",
+        "tests": 1
+      },
+      {
+        "name": "codex-hepta-supervisor::restart_budget",
+        "tests": 1
+      },
+      {
+        "name": "codex-hepta-supervisor::restart_budget_recovery",
+        "tests": 1
+      },
+      {
+        "name": "codex-hepta-supervisor::isolated_execution_handoff_unix",
+        "tests": 1
+      },
+      {
+        "name": "codex-hepta-supervisor::daemon_product",
+        "tests": 1
+      },
+      {
+        "name": "codex-hepta-supervisor::writer_handoff_production",
+        "tests": 1
+      },
+      {
+        "name": "codex-hepta-supervisor::robrix_control_projection",
+        "tests": 2
+      },
+      {
+        "name": "codex-hepta-agentd::five_agent_rolling_upgrade",
+        "tests": 2
+      },
+      {
+        "name": "codex-hepta-supervisor::paired_process_product",
+        "tests": 2
+      }
+    ],
+    "first_attempt_slow_messages": [
+      "TRY 1 SLOW [> 30.000s] codex-hepta-agentd runtime::hos2_recovery_tests::actual_reconciler_asks_original_issuer_for_same_k_d_and_does_not_resend_unknown"
+    ],
+    "paired_product_cases": [
+      {
+        "target": "codex-hepta-supervisor::paired_process_product",
+        "test": "two_real_pairs_restart_one_without_peer_pid_churn",
+        "seconds": 8.283
+      },
+      {
+        "target": "codex-hepta-supervisor::paired_process_product",
+        "test": "five_real_pairs_adopt_all_ten_children_and_isolate_one_matrix_crash",
+        "seconds": 23.436
+      }
+    ]
+  },
+  "required": {
+    "count": 69,
+    "exact_unique_clean_passes": 69,
+    "original59_preserved": true,
+    "required_by_package": {
+      "codex-hepta-agent-protocol": 3,
+      "codex-hepta-agentd": 15,
+      "codex-hepta-runtime": 3,
+      "codex-hepta-infer-worker-host": 40,
+      "codex-hepta-learning-ledger": 5,
+      "codex-hepta-supervisor": 3
+    },
+    "cases": [
+      {
+        "package": "codex-hepta-agent-protocol",
+        "binary": "codex_hepta_agent_protocol",
+        "test": "tests::run_lifecycle_wire_round_trip_is_strict_and_bounded",
+        "target": "codex-hepta-agent-protocol",
+        "matches": 1,
+        "status": "CLEAN_PASS",
+        "source_path": "codex-rs/hepta-agent-protocol/src/lib.rs",
+        "review_source_sha256": "452ac7bca18ca9994097a822c1c0813e0b0c4e7aaafeeadf70e9081ba1002a10",
+        "tested_source_sha256": "452ac7bca18ca9994097a822c1c0813e0b0c4e7aaafeeadf70e9081ba1002a10",
+        "source_git_blob": "3996c7b7950d04026dbf7539645d9c6de73be4c9"
+      },
+      {
+        "package": "codex-hepta-agent-protocol",
+        "binary": "codex_hepta_agent_protocol",
+        "test": "tests::health_wire_round_trip_is_strict_and_bounded",
+        "target": "codex-hepta-agent-protocol",
+        "matches": 1,
+        "status": "CLEAN_PASS",
+        "source_path": "codex-rs/hepta-agent-protocol/src/lib.rs",
+        "review_source_sha256": "452ac7bca18ca9994097a822c1c0813e0b0c4e7aaafeeadf70e9081ba1002a10",
+        "tested_source_sha256": "452ac7bca18ca9994097a822c1c0813e0b0c4e7aaafeeadf70e9081ba1002a10",
+        "source_git_blob": "3996c7b7950d04026dbf7539645d9c6de73be4c9"
+      },
+      {
+        "package": "codex-hepta-agent-protocol",
+        "binary": "codex_hepta_agent_protocol",
+        "test": "tests::host_turn_authority_binding_is_strict_and_fail_closed",
+        "target": "codex-hepta-agent-protocol",
+        "matches": 1,
+        "status": "CLEAN_PASS",
+        "source_path": "codex-rs/hepta-agent-protocol/src/lib.rs",
+        "review_source_sha256": "452ac7bca18ca9994097a822c1c0813e0b0c4e7aaafeeadf70e9081ba1002a10",
+        "tested_source_sha256": "452ac7bca18ca9994097a822c1c0813e0b0c4e7aaafeeadf70e9081ba1002a10",
+        "source_git_blob": "3996c7b7950d04026dbf7539645d9c6de73be4c9"
+      },
+      {
+        "package": "codex-hepta-agentd",
+        "binary": "codex_hepta_agentd",
+        "test": "lane_b_runtime::bound::tests::reused_run_ids_cannot_redirect_bound_mutations_or_idempotent_acknowledgements",
+        "target": "codex-hepta-agentd",
+        "matches": 1,
+        "status": "CLEAN_PASS",
+        "source_path": "codex-rs/hepta-agentd/src/lane_b_bound_tests.rs",
+        "review_source_sha256": "538f338f319cee9e178d09838307a011bf28c725a030a382cf5da333bcec2764",
+        "tested_source_sha256": "538f338f319cee9e178d09838307a011bf28c725a030a382cf5da333bcec2764",
+        "source_git_blob": "203ccd3060e04b559a7cf1cd982c9955005a30dc"
+      },
+      {
+        "package": "codex-hepta-agentd",
+        "binary": "codex_hepta_agentd",
+        "test": "lane_b_runtime::bound::tests::exact_bound_transitions_compare_revision_before_any_idempotent_return",
+        "target": "codex-hepta-agentd",
+        "matches": 1,
+        "status": "CLEAN_PASS",
+        "source_path": "codex-rs/hepta-agentd/src/lane_b_bound_tests.rs",
+        "review_source_sha256": "538f338f319cee9e178d09838307a011bf28c725a030a382cf5da333bcec2764",
+        "tested_source_sha256": "538f338f319cee9e178d09838307a011bf28c725a030a382cf5da333bcec2764",
+        "source_git_blob": "203ccd3060e04b559a7cf1cd982c9955005a30dc"
+      },
+      {
+        "package": "codex-hepta-agentd",
+        "binary": "codex_hepta_agentd",
+        "test": "lane_b_runtime::fault_tests::exhausted_recovered_revision_keeps_unresolved_reservation",
+        "target": "codex-hepta-agentd",
+        "matches": 1,
+        "status": "CLEAN_PASS",
+        "source_path": "codex-rs/hepta-agentd/src/lane_b_runtime_fault_tests.rs",
+        "review_source_sha256": "de0ddcdf7d01ac7a665c0a2312002ab4e8aee0d8434c384c24ba037707da7e52",
+        "tested_source_sha256": "de0ddcdf7d01ac7a665c0a2312002ab4e8aee0d8434c384c24ba037707da7e52",
+        "source_git_blob": "f671452d61ef1a48a437d5b4e000121d0a69a261"
+      },
+      {
+        "package": "codex-hepta-agentd",
+        "binary": "codex_hepta_agentd",
+        "test": "lane_b_runtime::fault_tests::acknowledgement_deadline_overflow_preserves_dispatched_record",
+        "target": "codex-hepta-agentd",
+        "matches": 1,
+        "status": "CLEAN_PASS",
+        "source_path": "codex-rs/hepta-agentd/src/lane_b_runtime_fault_tests.rs",
+        "review_source_sha256": "de0ddcdf7d01ac7a665c0a2312002ab4e8aee0d8434c384c24ba037707da7e52",
+        "tested_source_sha256": "de0ddcdf7d01ac7a665c0a2312002ab4e8aee0d8434c384c24ba037707da7e52",
+        "source_git_blob": "f671452d61ef1a48a437d5b4e000121d0a69a261"
+      },
+      {
+        "package": "codex-hepta-agentd",
+        "binary": "codex_hepta_agentd",
+        "test": "lane_b_runtime::fault_tests::last_representable_terminal_transition_still_reconciles",
+        "target": "codex-hepta-agentd",
+        "matches": 1,
+        "status": "CLEAN_PASS",
+        "source_path": "codex-rs/hepta-agentd/src/lane_b_runtime_fault_tests.rs",
+        "review_source_sha256": "de0ddcdf7d01ac7a665c0a2312002ab4e8aee0d8434c384c24ba037707da7e52",
+        "tested_source_sha256": "de0ddcdf7d01ac7a665c0a2312002ab4e8aee0d8434c384c24ba037707da7e52",
+        "source_git_blob": "f671452d61ef1a48a437d5b4e000121d0a69a261"
+      },
+      {
+        "package": "codex-hepta-agentd",
+        "binary": "codex_hepta_agentd",
+        "test": "intelligence_product::tests::signed::canonical_runtime::running_canonical_admission_preserves_the_recovered_run_start",
+        "target": "codex-hepta-agentd",
+        "matches": 1,
+        "status": "CLEAN_PASS",
+        "source_path": "codex-rs/hepta-agentd/src/intelligence_canonical_runtime_tests.rs",
+        "review_source_sha256": "be223c0929255287fb08306419e5feb25559f6f6fbc2123696deae14ac4a115a",
+        "tested_source_sha256": "7d17e02f5c54de30b516a6c3528f36549e189e2fbf42fdc67e23ad537264269b",
+        "source_git_blob": "cc6609ed2b37bce74f4b9d74fa3e3809ef7eeabc"
+      },
+      {
+        "package": "codex-hepta-agentd",
+        "binary": "codex_hepta_agentd",
+        "test": "intelligence_product::tests::signed::canonical_runtime::canonical_recovery_rejects_old_generation_fence_and_signature_before_provider",
+        "target": "codex-hepta-agentd",
+        "matches": 1,
+        "status": "CLEAN_PASS",
+        "source_path": "codex-rs/hepta-agentd/src/intelligence_canonical_runtime_tests.rs",
+        "review_source_sha256": "be223c0929255287fb08306419e5feb25559f6f6fbc2123696deae14ac4a115a",
+        "tested_source_sha256": "7d17e02f5c54de30b516a6c3528f36549e189e2fbf42fdc67e23ad537264269b",
+        "source_git_blob": "cc6609ed2b37bce74f4b9d74fa3e3809ef7eeabc"
+      },
+      {
+        "package": "codex-hepta-agentd",
+        "binary": "codex_hepta_agentd",
+        "test": "intelligence_product::tests::signed::canonical_runtime::canonical_body_does_not_alias_the_run_lifecycle_generation",
+        "target": "codex-hepta-agentd",
+        "matches": 1,
+        "status": "CLEAN_PASS",
+        "source_path": "codex-rs/hepta-agentd/src/intelligence_canonical_runtime_tests.rs",
+        "review_source_sha256": "be223c0929255287fb08306419e5feb25559f6f6fbc2123696deae14ac4a115a",
+        "tested_source_sha256": "7d17e02f5c54de30b516a6c3528f36549e189e2fbf42fdc67e23ad537264269b",
+        "source_git_blob": "cc6609ed2b37bce74f4b9d74fa3e3809ef7eeabc"
+      },
+      {
+        "package": "codex-hepta-agentd",
+        "binary": "codex_hepta_agentd",
+        "test": "intelligence_product::tests::signed::canonical_runtime::owner_transition_during_canonical_preparation_never_refreshes_the_old_run",
+        "target": "codex-hepta-agentd",
+        "matches": 1,
+        "status": "CLEAN_PASS",
+        "source_path": "codex-rs/hepta-agentd/src/intelligence_canonical_runtime_tests.rs",
+        "review_source_sha256": "be223c0929255287fb08306419e5feb25559f6f6fbc2123696deae14ac4a115a",
+        "tested_source_sha256": "7d17e02f5c54de30b516a6c3528f36549e189e2fbf42fdc67e23ad537264269b",
+        "source_git_blob": "cc6609ed2b37bce74f4b9d74fa3e3809ef7eeabc"
+      },
+      {
+        "package": "codex-hepta-agentd",
+        "binary": "codex_hepta_agentd",
+        "test": "intelligence_product::runner::run_start::tests::preparation_budget_is_capped_by_the_original_deadline",
+        "target": "codex-hepta-agentd",
+        "matches": 1,
+        "status": "CLEAN_PASS",
+        "source_path": "codex-rs/hepta-agentd/src/intelligence_run_start_tests.rs",
+        "review_source_sha256": "b7521baab11ce269f7f31335091c8f6f625da5c12d124726a8cab57825c58153",
+        "tested_source_sha256": "b7521baab11ce269f7f31335091c8f6f625da5c12d124726a8cab57825c58153",
+        "source_git_blob": "c6668f022eabb9a180986a9177c90d37392c5047"
+      },
+      {
+        "package": "codex-hepta-agentd",
+        "binary": "codex_hepta_agentd",
+        "test": "deployment_issuer::desktop::tests::desktop_policy_two_successors_keep_one_original_issuer_then_revocation_fences_the_pair",
+        "target": "codex-hepta-agentd",
+        "matches": 1,
+        "status": "CLEAN_PASS",
+        "source_path": "codex-rs/hepta-agentd/src/deployment_desktop_tests.rs",
+        "review_source_sha256": "876c93db858c43893186332f001202cc6ad45a026c2ca557840b6149a6da9054",
+        "tested_source_sha256": "1f2cbdc78e1f13571a018f793f1164af1c447bda6f1b2502bc2d9e72d5a6763c",
+        "source_git_blob": "6f5c10573102f0c040ed0b9a036ced4224b2193e"
+      },
+      {
+        "package": "codex-hepta-agentd",
+        "binary": "codex_hepta_agentd",
+        "test": "deployment_issuer::desktop::tests::desktop_policy_expired_or_revoked_writer_keeps_both_original_slots",
+        "target": "codex-hepta-agentd",
+        "matches": 1,
+        "status": "CLEAN_PASS",
+        "source_path": "codex-rs/hepta-agentd/src/deployment_desktop_tests.rs",
+        "review_source_sha256": "876c93db858c43893186332f001202cc6ad45a026c2ca557840b6149a6da9054",
+        "tested_source_sha256": "1f2cbdc78e1f13571a018f793f1164af1c447bda6f1b2502bc2d9e72d5a6763c",
+        "source_git_blob": "6f5c10573102f0c040ed0b9a036ced4224b2193e"
+      },
+      {
+        "package": "codex-hepta-agentd",
+        "binary": "codex_hepta_agentd",
+        "test": "deployment_issuer::desktop::tests::desktop_policy_pair_cas_preserves_original_owner_and_reconciles_exact_lost_ack",
+        "target": "codex-hepta-agentd",
+        "matches": 1,
+        "status": "CLEAN_PASS",
+        "source_path": "codex-rs/hepta-agentd/src/deployment_desktop_tests.rs",
+        "review_source_sha256": "876c93db858c43893186332f001202cc6ad45a026c2ca557840b6149a6da9054",
+        "tested_source_sha256": "1f2cbdc78e1f13571a018f793f1164af1c447bda6f1b2502bc2d9e72d5a6763c",
+        "source_git_blob": "6f5c10573102f0c040ed0b9a036ced4224b2193e"
+      },
+      {
+        "package": "codex-hepta-runtime",
+        "binary": "codex_hepta_runtime",
+        "test": "organs::tests::public_governed_topology_denies_before_grant_consumption_or_callbacks",
+        "target": "codex-hepta-runtime",
+        "matches": 1,
+        "status": "CLEAN_PASS",
+        "source_path": "codex-rs/hepta-runtime/src/organs_tests.rs",
+        "review_source_sha256": "8100a42fd789269b2444a443f3869592c575ebfb94946417c99a47e9d12f0733",
+        "tested_source_sha256": "8100a42fd789269b2444a443f3869592c575ebfb94946417c99a47e9d12f0733",
+        "source_git_blob": "06a42540a0d857b26d85e9fa4bbac83cba04f4c8"
+      },
+      {
+        "package": "codex-hepta-runtime",
+        "binary": "codex_hepta_runtime",
+        "test": "organs::tests::public_topology_recovery_denies_before_grant_consumption_or_callbacks",
+        "target": "codex-hepta-runtime",
+        "matches": 1,
+        "status": "CLEAN_PASS",
+        "source_path": "codex-rs/hepta-runtime/src/organs_tests.rs",
+        "review_source_sha256": "8100a42fd789269b2444a443f3869592c575ebfb94946417c99a47e9d12f0733",
+        "tested_source_sha256": "8100a42fd789269b2444a443f3869592c575ebfb94946417c99a47e9d12f0733",
+        "source_git_blob": "06a42540a0d857b26d85e9fa4bbac83cba04f4c8"
+      },
+      {
+        "package": "codex-hepta-runtime",
+        "binary": "codex_hepta_runtime",
+        "test": "organs::tests::revoked_final_use_never_mutates_the_live_topology",
+        "target": "codex-hepta-runtime",
+        "matches": 1,
+        "status": "CLEAN_PASS",
+        "source_path": "codex-rs/hepta-runtime/src/organs_tests.rs",
+        "review_source_sha256": "8100a42fd789269b2444a443f3869592c575ebfb94946417c99a47e9d12f0733",
+        "tested_source_sha256": "8100a42fd789269b2444a443f3869592c575ebfb94946417c99a47e9d12f0733",
+        "source_git_blob": "06a42540a0d857b26d85e9fa4bbac83cba04f4c8"
+      },
+      {
+        "package": "codex-hepta-infer-worker-host",
+        "binary": "codex_hepta_infer_worker_host",
+        "test": "native_app_server::control::intelligence_recovery::tests::terminal_publication_preserves_local_boundary_and_authority_loss",
+        "target": "codex-hepta-infer-worker-host",
+        "matches": 1,
+        "status": "CLEAN_PASS",
+        "source_path": "codex-rs/hepta-infer-worker-host/src/native_intelligence_recovery_tests.rs",
+        "review_source_sha256": "e50f1193ac71530016f6d134d8ab5574191944b7fc0a861b1ea41201f4b1773c",
+        "tested_source_sha256": "e50f1193ac71530016f6d134d8ab5574191944b7fc0a861b1ea41201f4b1773c",
+        "source_git_blob": "32d4f47384cc7765c7cdbf6c15aff272e444c3e7"
+      },
+      {
+        "package": "codex-hepta-infer-worker-host",
+        "binary": "codex_hepta_infer_worker_host",
+        "test": "native_app_server::control::intelligence_recovery::tests::current_revision_does_not_relax_original_snapshot_binding",
+        "target": "codex-hepta-infer-worker-host",
+        "matches": 1,
+        "status": "CLEAN_PASS",
+        "source_path": "codex-rs/hepta-infer-worker-host/src/native_intelligence_recovery_tests.rs",
+        "review_source_sha256": "e50f1193ac71530016f6d134d8ab5574191944b7fc0a861b1ea41201f4b1773c",
+        "tested_source_sha256": "e50f1193ac71530016f6d134d8ab5574191944b7fc0a861b1ea41201f4b1773c",
+        "source_git_blob": "32d4f47384cc7765c7cdbf6c15aff272e444c3e7"
+      },
+      {
+        "package": "codex-hepta-infer-worker-host",
+        "binary": "codex_hepta_infer_worker_host",
+        "test": "native_app_server::control::intelligence_recovery::tests::process::settled_terminal_survives_worker_loss_before_agentd_publication",
+        "target": "codex-hepta-infer-worker-host",
+        "matches": 1,
+        "status": "CLEAN_PASS",
+        "source_path": "codex-rs/hepta-infer-worker-host/src/native_intelligence_recovery_process_tests.rs",
+        "review_source_sha256": "89d3746404eb971f4c52d9be106a2f3c5caf75d1c19f33d65110303388204107",
+        "tested_source_sha256": "89d3746404eb971f4c52d9be106a2f3c5caf75d1c19f33d65110303388204107",
+        "source_git_blob": "3950a539bf5e3d8cc740f04e62ceeb04a5999cf3"
+      },
+      {
+        "package": "codex-hepta-infer-worker-host",
+        "binary": "codex_hepta_infer_worker_host",
+        "test": "native_app_server::control::intelligence_recovery::tests::process::retained_app_server_terminal_reconciles_current_agentd_revision",
+        "target": "codex-hepta-infer-worker-host",
+        "matches": 1,
+        "status": "CLEAN_PASS",
+        "source_path": "codex-rs/hepta-infer-worker-host/src/native_intelligence_recovery_process_tests.rs",
+        "review_source_sha256": "89d3746404eb971f4c52d9be106a2f3c5caf75d1c19f33d65110303388204107",
+        "tested_source_sha256": "89d3746404eb971f4c52d9be106a2f3c5caf75d1c19f33d65110303388204107",
+        "source_git_blob": "3950a539bf5e3d8cc740f04e62ceeb04a5999cf3"
+      },
+      {
+        "package": "codex-hepta-infer-worker-host",
+        "binary": "codex_hepta_infer_worker_host",
+        "test": "native_app_server::recovery::tests::real_agentd_reconciles_reopened_worker_without_replaying_provider",
+        "target": "codex-hepta-infer-worker-host",
+        "matches": 1,
+        "status": "CLEAN_PASS",
+        "source_path": "codex-rs/hepta-infer-worker-host/src/native_recovery_tests.rs",
+        "review_source_sha256": "e8faaf565c1de02ecc39d709712eb47406d1985bf41c915307cf516b703aaf66",
+        "tested_source_sha256": "c93fdc4340692799961d3ca6fb9b3112bdcaad07b712d7ea62f9cae009d40e5f",
+        "source_git_blob": "f1a9d567ff6e67e99e35be166462973a19cabaa0"
+      },
+      {
+        "package": "codex-hepta-infer-worker-host",
+        "binary": "codex_hepta_infer_worker_host",
+        "test": "native_app_server::recovery::tests::real_agentd_reconciles_failed_terminal_without_replaying_provider",
+        "target": "codex-hepta-infer-worker-host",
+        "matches": 1,
+        "status": "CLEAN_PASS",
+        "source_path": "codex-rs/hepta-infer-worker-host/src/native_recovery_tests.rs",
+        "review_source_sha256": "e8faaf565c1de02ecc39d709712eb47406d1985bf41c915307cf516b703aaf66",
+        "tested_source_sha256": "c93fdc4340692799961d3ca6fb9b3112bdcaad07b712d7ea62f9cae009d40e5f",
+        "source_git_blob": "f1a9d567ff6e67e99e35be166462973a19cabaa0"
+      },
+      {
+        "package": "codex-hepta-infer-worker-host",
+        "binary": "codex_hepta_infer_worker_host",
+        "test": "native_app_server::recovery::tests::real_agentd_reconciles_interrupted_terminal_without_replaying_provider",
+        "target": "codex-hepta-infer-worker-host",
+        "matches": 1,
+        "status": "CLEAN_PASS",
+        "source_path": "codex-rs/hepta-infer-worker-host/src/native_recovery_tests.rs",
+        "review_source_sha256": "e8faaf565c1de02ecc39d709712eb47406d1985bf41c915307cf516b703aaf66",
+        "tested_source_sha256": "c93fdc4340692799961d3ca6fb9b3112bdcaad07b712d7ea62f9cae009d40e5f",
+        "source_git_blob": "f1a9d567ff6e67e99e35be166462973a19cabaa0"
+      },
+      {
+        "package": "codex-hepta-infer-worker-host",
+        "binary": "codex_hepta_infer_worker_host",
+        "test": "native_app_server::failure_tests::worker_loss_before_cleanup_preserves_timeout_usage_and_owner_loss",
+        "target": "codex-hepta-infer-worker-host",
+        "matches": 1,
+        "status": "CLEAN_PASS",
+        "source_path": "codex-rs/hepta-infer-worker-host/src/native_failure_tests.rs",
+        "review_source_sha256": "fe52b4848fae4c6e40cbb38cae71ed58ea3f08cab86775806888fdd8d2c612f5",
+        "tested_source_sha256": "fe52b4848fae4c6e40cbb38cae71ed58ea3f08cab86775806888fdd8d2c612f5",
+        "source_git_blob": "fa63e0d084f4e6df5be0754fd11ca48389ccb6e1"
+      },
+      {
+        "package": "codex-hepta-infer-worker-host",
+        "binary": "codex_hepta_infer_worker_host",
+        "test": "native_app_server::recovery::reconciliation_tests::reopened_terminal_reconciliation_preserves_usage_and_irreversible_boundaries",
+        "target": "codex-hepta-infer-worker-host",
+        "matches": 1,
+        "status": "CLEAN_PASS",
+        "source_path": "codex-rs/hepta-infer-worker-host/src/native_reconciliation_tests.rs",
+        "review_source_sha256": "8c3687fa21556c7cceb100faa69cb4d4718b3a2539e380600fa518e4037ff532",
+        "tested_source_sha256": "7c076275d998fc40eba0a1b1aa7de3bc577dbcaba3ced752ed3f3bd5ca906326",
+        "source_git_blob": "b998d5f8cb3a9961b63ae6da23b8d94ff343e08c"
+      },
+      {
+        "package": "codex-hepta-infer-worker-host",
+        "binary": "codex_hepta_infer_worker_host",
+        "test": "native_app_server::recovery::reconciliation_tests::reopened_cancellation_intent_never_upgrades_a_completed_turn_to_success",
+        "target": "codex-hepta-infer-worker-host",
+        "matches": 1,
+        "status": "CLEAN_PASS",
+        "source_path": "codex-rs/hepta-infer-worker-host/src/native_reconciliation_tests.rs",
+        "review_source_sha256": "8c3687fa21556c7cceb100faa69cb4d4718b3a2539e380600fa518e4037ff532",
+        "tested_source_sha256": "7c076275d998fc40eba0a1b1aa7de3bc577dbcaba3ced752ed3f3bd5ca906326",
+        "source_git_blob": "b998d5f8cb3a9961b63ae6da23b8d94ff343e08c"
+      },
+      {
+        "package": "codex-hepta-infer-worker-host",
+        "binary": "codex_hepta_infer_worker_host",
+        "test": "native_app_server::recovery::reconciliation_tests::terminal_reconciliation_rejects_cross_request_and_cross_turn_usage",
+        "target": "codex-hepta-infer-worker-host",
+        "matches": 1,
+        "status": "CLEAN_PASS",
+        "source_path": "codex-rs/hepta-infer-worker-host/src/native_reconciliation_tests.rs",
+        "review_source_sha256": "8c3687fa21556c7cceb100faa69cb4d4718b3a2539e380600fa518e4037ff532",
+        "tested_source_sha256": "7c076275d998fc40eba0a1b1aa7de3bc577dbcaba3ced752ed3f3bd5ca906326",
+        "source_git_blob": "b998d5f8cb3a9961b63ae6da23b8d94ff343e08c"
+      },
+      {
+        "package": "codex-hepta-infer-worker-host",
+        "binary": "codex_hepta_infer_worker_host",
+        "test": "native_app_server::control::tests::reopened_dispatch_and_completed_duplicate_never_connect_to_provider",
+        "target": "codex-hepta-infer-worker-host",
+        "matches": 1,
+        "status": "CLEAN_PASS",
+        "source_path": "codex-rs/hepta-infer-worker-host/src/native_run_control_tests.rs",
+        "review_source_sha256": "130bb012f8773153f3106937fad9434895999ac3288252b367e0f54d87ae7e91",
+        "tested_source_sha256": "130bb012f8773153f3106937fad9434895999ac3288252b367e0f54d87ae7e91",
+        "source_git_blob": "84241e5f026aa00218e96789ea697539bd790334"
+      },
+      {
+        "package": "codex-hepta-infer-worker-host",
+        "binary": "codex_hepta_infer_worker_host",
+        "test": "native_app_server::control::tests::pre_dispatch_cancellation_and_connection_failure_release_without_usage_claims",
+        "target": "codex-hepta-infer-worker-host",
+        "matches": 1,
+        "status": "CLEAN_PASS",
+        "source_path": "codex-rs/hepta-infer-worker-host/src/native_run_control_tests.rs",
+        "review_source_sha256": "130bb012f8773153f3106937fad9434895999ac3288252b367e0f54d87ae7e91",
+        "tested_source_sha256": "130bb012f8773153f3106937fad9434895999ac3288252b367e0f54d87ae7e91",
+        "source_git_blob": "84241e5f026aa00218e96789ea697539bd790334"
+      },
+      {
+        "package": "codex-hepta-infer-worker-host",
+        "binary": "codex_hepta_infer_worker_host",
+        "test": "native_app_server::control::tests::reopened_explicit_dispatch_rejection_never_connects_or_becomes_unknown",
+        "target": "codex-hepta-infer-worker-host",
+        "matches": 1,
+        "status": "CLEAN_PASS",
+        "source_path": "codex-rs/hepta-infer-worker-host/src/native_run_control_tests.rs",
+        "review_source_sha256": "130bb012f8773153f3106937fad9434895999ac3288252b367e0f54d87ae7e91",
+        "tested_source_sha256": "130bb012f8773153f3106937fad9434895999ac3288252b367e0f54d87ae7e91",
+        "source_git_blob": "84241e5f026aa00218e96789ea697539bd790334"
+      },
+      {
+        "package": "codex-hepta-infer-worker-host",
+        "binary": "codex_hepta_infer_worker_host",
+        "test": "native_app_server::control::tests::intelligence_handoff_is_committed_to_native_admission_identity",
+        "target": "codex-hepta-infer-worker-host",
+        "matches": 1,
+        "status": "CLEAN_PASS",
+        "source_path": "codex-rs/hepta-infer-worker-host/src/native_run_control_tests.rs",
+        "review_source_sha256": "130bb012f8773153f3106937fad9434895999ac3288252b367e0f54d87ae7e91",
+        "tested_source_sha256": "130bb012f8773153f3106937fad9434895999ac3288252b367e0f54d87ae7e91",
+        "source_git_blob": "84241e5f026aa00218e96789ea697539bd790334"
+      },
+      {
+        "package": "codex-hepta-infer-worker-host",
+        "binary": "codex_hepta_infer_worker_host",
+        "test": "native_app_server::native_output::tests::full_message_without_deltas_preserves_terminal_usage_and_local_boundary",
+        "target": "codex-hepta-infer-worker-host",
+        "matches": 1,
+        "status": "CLEAN_PASS",
+        "source_path": "codex-rs/hepta-infer-worker-host/src/native_output_tests.rs",
+        "review_source_sha256": "4b36f8fa7ef821078083079f9d1fdf127cab297dad36fc1e3a5d3260219cb75d",
+        "tested_source_sha256": "0366e3be147bac2a0839de76bd0ae3428d7fc57d9a783bcba8543f9c19dd462b",
+        "source_git_blob": "42f35deccbf558be66ddd906fb423a18ebfb84f7"
+      },
+      {
+        "package": "codex-hepta-infer-worker-host",
+        "binary": "codex_hepta_infer_worker_host",
+        "test": "native_app_server::native_output::tests::completed_items_replace_partial_text_once_in_item_order",
+        "target": "codex-hepta-infer-worker-host",
+        "matches": 1,
+        "status": "CLEAN_PASS",
+        "source_path": "codex-rs/hepta-infer-worker-host/src/native_output_tests.rs",
+        "review_source_sha256": "4b36f8fa7ef821078083079f9d1fdf127cab297dad36fc1e3a5d3260219cb75d",
+        "tested_source_sha256": "0366e3be147bac2a0839de76bd0ae3428d7fc57d9a783bcba8543f9c19dd462b",
+        "source_git_blob": "42f35deccbf558be66ddd906fb423a18ebfb84f7"
+      },
+      {
+        "package": "codex-hepta-infer-worker-host",
+        "binary": "codex_hepta_infer_worker_host",
+        "test": "native_app_server::native_output::tests::completed_text_and_deltas_share_an_atomic_byte_limit",
+        "target": "codex-hepta-infer-worker-host",
+        "matches": 1,
+        "status": "CLEAN_PASS",
+        "source_path": "codex-rs/hepta-infer-worker-host/src/native_output_tests.rs",
+        "review_source_sha256": "4b36f8fa7ef821078083079f9d1fdf127cab297dad36fc1e3a5d3260219cb75d",
+        "tested_source_sha256": "0366e3be147bac2a0839de76bd0ae3428d7fc57d9a783bcba8543f9c19dd462b",
+        "source_git_blob": "42f35deccbf558be66ddd906fb423a18ebfb84f7"
+      },
+      {
+        "package": "codex-hepta-infer-worker-host",
+        "binary": "codex_hepta_infer_worker_host",
+        "test": "native_app_server::native_output::tests::empty_messages_and_item_ids_cannot_grow_unbounded_metadata",
+        "target": "codex-hepta-infer-worker-host",
+        "matches": 1,
+        "status": "CLEAN_PASS",
+        "source_path": "codex-rs/hepta-infer-worker-host/src/native_output_tests.rs",
+        "review_source_sha256": "4b36f8fa7ef821078083079f9d1fdf127cab297dad36fc1e3a5d3260219cb75d",
+        "tested_source_sha256": "0366e3be147bac2a0839de76bd0ae3428d7fc57d9a783bcba8543f9c19dd462b",
+        "source_git_blob": "42f35deccbf558be66ddd906fb423a18ebfb84f7"
+      },
+      {
+        "package": "codex-hepta-infer-worker-host",
+        "binary": "hepta-infer-worker",
+        "test": "tests::snapshot_input_roundtrips_and_never_fills_missing_identity",
+        "target": "codex-hepta-infer-worker-host::bin/hepta-infer-worker",
+        "matches": 1,
+        "status": "CLEAN_PASS",
+        "source_path": "codex-rs/hepta-infer-worker-host/src/native_worker_cli_tests.rs",
+        "review_source_sha256": "687bc18709a110d276e652d3293e5cfdc676f44e867ac6a41b1eda9d4fae2e35",
+        "tested_source_sha256": "687bc18709a110d276e652d3293e5cfdc676f44e867ac6a41b1eda9d4fae2e35",
+        "source_git_blob": "6bf2e5cac2ce073eea6f01e6d80dc0edd5cadcd9"
+      },
+      {
+        "package": "codex-hepta-infer-worker-host",
+        "binary": "codex_hepta_infer_worker_host",
+        "test": "native_app_server::tests::owner_loss_stays_denied_after_interrupt_grace_observes_completed",
+        "target": "codex-hepta-infer-worker-host",
+        "matches": 1,
+        "status": "CLEAN_PASS",
+        "source_path": "codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs",
+        "review_source_sha256": "1584e5043b928b65f4026efdf79eb5fcfc935b2da97c8b33a13df5ac74238450",
+        "tested_source_sha256": "fd7ea4563b75640e65ec70d5a2032d3a3b4c2157c567501481227e5c31a638ee",
+        "source_git_blob": "c0bba5586a32095f25f3ee20784fd91ee7485575"
+      },
+      {
+        "package": "codex-hepta-infer-worker-host",
+        "binary": "codex_hepta_infer_worker_host",
+        "test": "native_app_server::tests::owner_timeout_and_terminal_first_selection_cannot_authorize_success",
+        "target": "codex-hepta-infer-worker-host",
+        "matches": 1,
+        "status": "CLEAN_PASS",
+        "source_path": "codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs",
+        "review_source_sha256": "1584e5043b928b65f4026efdf79eb5fcfc935b2da97c8b33a13df5ac74238450",
+        "tested_source_sha256": "fd7ea4563b75640e65ec70d5a2032d3a3b4c2157c567501481227e5c31a638ee",
+        "source_git_blob": "c0bba5586a32095f25f3ee20784fd91ee7485575"
+      },
+      {
+        "package": "codex-hepta-infer-worker-host",
+        "binary": "codex_hepta_infer_worker_host",
+        "test": "native_app_server::tests::success_requires_both_matching_completion_and_final_ready_owner",
+        "target": "codex-hepta-infer-worker-host",
+        "matches": 1,
+        "status": "CLEAN_PASS",
+        "source_path": "codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs",
+        "review_source_sha256": "1584e5043b928b65f4026efdf79eb5fcfc935b2da97c8b33a13df5ac74238450",
+        "tested_source_sha256": "fd7ea4563b75640e65ec70d5a2032d3a3b4c2157c567501481227e5c31a638ee",
+        "source_git_blob": "c0bba5586a32095f25f3ee20784fd91ee7485575"
+      },
+      {
+        "package": "codex-hepta-infer-worker-host",
+        "binary": "codex_hepta_infer_worker_host",
+        "test": "native_app_server::tests::late_completed_cannot_upgrade_cancelled_or_timed_out_boundary",
+        "target": "codex-hepta-infer-worker-host",
+        "matches": 1,
+        "status": "CLEAN_PASS",
+        "source_path": "codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs",
+        "review_source_sha256": "1584e5043b928b65f4026efdf79eb5fcfc935b2da97c8b33a13df5ac74238450",
+        "tested_source_sha256": "fd7ea4563b75640e65ec70d5a2032d3a3b4c2157c567501481227e5c31a638ee",
+        "source_git_blob": "c0bba5586a32095f25f3ee20784fd91ee7485575"
+      },
+      {
+        "package": "codex-hepta-infer-worker-host",
+        "binary": "codex_hepta_infer_worker_host",
+        "test": "native_app_server::tests::cognitive_final_use_revalidation_follows_durable_dispatch_and_precedes_turn_start",
+        "target": "codex-hepta-infer-worker-host",
+        "matches": 1,
+        "status": "CLEAN_PASS",
+        "source_path": "codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs",
+        "review_source_sha256": "1584e5043b928b65f4026efdf79eb5fcfc935b2da97c8b33a13df5ac74238450",
+        "tested_source_sha256": "fd7ea4563b75640e65ec70d5a2032d3a3b4c2157c567501481227e5c31a638ee",
+        "source_git_blob": "c0bba5586a32095f25f3ee20784fd91ee7485575"
+      },
+      {
+        "package": "codex-hepta-infer-worker-host",
+        "binary": "codex_hepta_infer_worker_host",
+        "test": "native_app_server::tests::real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombstone",
+        "target": "codex-hepta-infer-worker-host",
+        "matches": 1,
+        "status": "CLEAN_PASS",
+        "source_path": "codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs",
+        "review_source_sha256": "1584e5043b928b65f4026efdf79eb5fcfc935b2da97c8b33a13df5ac74238450",
+        "tested_source_sha256": "fd7ea4563b75640e65ec70d5a2032d3a3b4c2157c567501481227e5c31a638ee",
+        "source_git_blob": "c0bba5586a32095f25f3ee20784fd91ee7485575"
+      },
+      {
+        "package": "codex-hepta-infer-worker-host",
+        "binary": "codex_hepta_infer_worker_host",
+        "test": "native_app_server::tests::lost_turn_start_ack_reconciles_only_the_exact_in_progress_thread",
+        "target": "codex-hepta-infer-worker-host",
+        "matches": 1,
+        "status": "CLEAN_PASS",
+        "source_path": "codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs",
+        "review_source_sha256": "1584e5043b928b65f4026efdf79eb5fcfc935b2da97c8b33a13df5ac74238450",
+        "tested_source_sha256": "fd7ea4563b75640e65ec70d5a2032d3a3b4c2157c567501481227e5c31a638ee",
+        "source_git_blob": "c0bba5586a32095f25f3ee20784fd91ee7485575"
+      },
+      {
+        "package": "codex-hepta-infer-worker-host",
+        "binary": "codex_hepta_infer_worker_host",
+        "test": "native_app_server::tests::only_the_bound_turn_can_complete_the_native_request",
+        "target": "codex-hepta-infer-worker-host",
+        "matches": 1,
+        "status": "CLEAN_PASS",
+        "source_path": "codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs",
+        "review_source_sha256": "1584e5043b928b65f4026efdf79eb5fcfc935b2da97c8b33a13df5ac74238450",
+        "tested_source_sha256": "fd7ea4563b75640e65ec70d5a2032d3a3b4c2157c567501481227e5c31a638ee",
+        "source_git_blob": "c0bba5586a32095f25f3ee20784fd91ee7485575"
+      },
+      {
+        "package": "codex-hepta-infer-worker-host",
+        "binary": "codex_hepta_infer_worker_host",
+        "test": "native_app_server::tests::actual_usage_is_bound_monotonic_and_survives_terminal_failure",
+        "target": "codex-hepta-infer-worker-host",
+        "matches": 1,
+        "status": "CLEAN_PASS",
+        "source_path": "codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs",
+        "review_source_sha256": "1584e5043b928b65f4026efdf79eb5fcfc935b2da97c8b33a13df5ac74238450",
+        "tested_source_sha256": "fd7ea4563b75640e65ec70d5a2032d3a3b4c2157c567501481227e5c31a638ee",
+        "source_git_blob": "c0bba5586a32095f25f3ee20784fd91ee7485575"
+      },
+      {
+        "package": "codex-hepta-infer-worker-host",
+        "binary": "codex_hepta_infer_worker_host",
+        "test": "native_app_server::tests::final_use_fence_rejects_owner_ingress_cancel_and_deadline_drift",
+        "target": "codex-hepta-infer-worker-host",
+        "matches": 1,
+        "status": "CLEAN_PASS",
+        "source_path": "codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs",
+        "review_source_sha256": "1584e5043b928b65f4026efdf79eb5fcfc935b2da97c8b33a13df5ac74238450",
+        "tested_source_sha256": "fd7ea4563b75640e65ec70d5a2032d3a3b4c2157c567501481227e5c31a638ee",
+        "source_git_blob": "c0bba5586a32095f25f3ee20784fd91ee7485575"
+      },
+      {
+        "package": "codex-hepta-infer-worker-host",
+        "binary": "codex_hepta_infer_worker_host",
+        "test": "native_app_server::tests::message_output::complete_only_message_is_observed_only_for_the_bound_turn",
+        "target": "codex-hepta-infer-worker-host",
+        "matches": 1,
+        "status": "CLEAN_PASS",
+        "source_path": "codex-rs/hepta-infer-worker-host/src/native_message_output_tests.rs",
+        "review_source_sha256": "e72edce0e1941c52f1564daa2e4c8f1aca54aa141c4c68f4a3008a3f5303bdfe",
+        "tested_source_sha256": "0b7347ea0f34d4835fe7ac9e137049b7aa920b8a12c35d5c4de24ad02f03932e",
+        "source_git_blob": "65b472a8de133def910129eb8e2fc8783deeecd9"
+      },
+      {
+        "package": "codex-hepta-infer-worker-host",
+        "binary": "codex_hepta_infer_worker_host",
+        "test": "native_app_server::tests::message_output::completed_snapshot_replaces_partial_text_without_double_counting",
+        "target": "codex-hepta-infer-worker-host",
+        "matches": 1,
+        "status": "CLEAN_PASS",
+        "source_path": "codex-rs/hepta-infer-worker-host/src/native_message_output_tests.rs",
+        "review_source_sha256": "e72edce0e1941c52f1564daa2e4c8f1aca54aa141c4c68f4a3008a3f5303bdfe",
+        "tested_source_sha256": "0b7347ea0f34d4835fe7ac9e137049b7aa920b8a12c35d5c4de24ad02f03932e",
+        "source_git_blob": "65b472a8de133def910129eb8e2fc8783deeecd9"
+      },
+      {
+        "package": "codex-hepta-infer-worker-host",
+        "binary": "codex_hepta_infer_worker_host",
+        "test": "native_app_server::tests::message_output::distinct_item_ids_preserve_identical_message_text",
+        "target": "codex-hepta-infer-worker-host",
+        "matches": 1,
+        "status": "CLEAN_PASS",
+        "source_path": "codex-rs/hepta-infer-worker-host/src/native_message_output_tests.rs",
+        "review_source_sha256": "e72edce0e1941c52f1564daa2e4c8f1aca54aa141c4c68f4a3008a3f5303bdfe",
+        "tested_source_sha256": "0b7347ea0f34d4835fe7ac9e137049b7aa920b8a12c35d5c4de24ad02f03932e",
+        "source_git_blob": "65b472a8de133def910129eb8e2fc8783deeecd9"
+      },
+      {
+        "package": "codex-hepta-infer-worker-host",
+        "binary": "codex_hepta_infer_worker_host",
+        "test": "native_app_server::tests::message_output::item_start_order_survives_later_item_text_arriving_first",
+        "target": "codex-hepta-infer-worker-host",
+        "matches": 1,
+        "status": "CLEAN_PASS",
+        "source_path": "codex-rs/hepta-infer-worker-host/src/native_message_output_tests.rs",
+        "review_source_sha256": "e72edce0e1941c52f1564daa2e4c8f1aca54aa141c4c68f4a3008a3f5303bdfe",
+        "tested_source_sha256": "0b7347ea0f34d4835fe7ac9e137049b7aa920b8a12c35d5c4de24ad02f03932e",
+        "source_git_blob": "65b472a8de133def910129eb8e2fc8783deeecd9"
+      },
+      {
+        "package": "codex-hepta-infer-worker-host",
+        "binary": "codex_hepta_infer_worker_host",
+        "test": "native_app_server::tests::message_output::terminal_summary_merges_last_message_without_dropping_earlier_messages",
+        "target": "codex-hepta-infer-worker-host",
+        "matches": 1,
+        "status": "CLEAN_PASS",
+        "source_path": "codex-rs/hepta-infer-worker-host/src/native_message_output_tests.rs",
+        "review_source_sha256": "e72edce0e1941c52f1564daa2e4c8f1aca54aa141c4c68f4a3008a3f5303bdfe",
+        "tested_source_sha256": "0b7347ea0f34d4835fe7ac9e137049b7aa920b8a12c35d5c4de24ad02f03932e",
+        "source_git_blob": "65b472a8de133def910129eb8e2fc8783deeecd9"
+      },
+      {
+        "package": "codex-hepta-infer-worker-host",
+        "binary": "codex_hepta_infer_worker_host",
+        "test": "native_app_server::tests::message_output::interrupt_grace_keeps_item_identity_and_cannot_restore_cancelled_authority",
+        "target": "codex-hepta-infer-worker-host",
+        "matches": 1,
+        "status": "CLEAN_PASS",
+        "source_path": "codex-rs/hepta-infer-worker-host/src/native_message_output_tests.rs",
+        "review_source_sha256": "e72edce0e1941c52f1564daa2e4c8f1aca54aa141c4c68f4a3008a3f5303bdfe",
+        "tested_source_sha256": "0b7347ea0f34d4835fe7ac9e137049b7aa920b8a12c35d5c4de24ad02f03932e",
+        "source_git_blob": "65b472a8de133def910129eb8e2fc8783deeecd9"
+      },
+      {
+        "package": "codex-hepta-infer-worker-host",
+        "binary": "codex_hepta_infer_worker_host",
+        "test": "native_app_server::tests::message_output::oversized_complete_item_preserves_previous_output_and_pending_state",
+        "target": "codex-hepta-infer-worker-host",
+        "matches": 1,
+        "status": "CLEAN_PASS",
+        "source_path": "codex-rs/hepta-infer-worker-host/src/native_message_output_tests.rs",
+        "review_source_sha256": "e72edce0e1941c52f1564daa2e4c8f1aca54aa141c4c68f4a3008a3f5303bdfe",
+        "tested_source_sha256": "0b7347ea0f34d4835fe7ac9e137049b7aa920b8a12c35d5c4de24ad02f03932e",
+        "source_git_blob": "65b472a8de133def910129eb8e2fc8783deeecd9"
+      },
+      {
+        "package": "codex-hepta-infer-worker-host",
+        "binary": "codex_hepta_infer_worker_host",
+        "test": "native_app_server::tests::message_output::empty_items_cannot_retain_unbounded_metadata",
+        "target": "codex-hepta-infer-worker-host",
+        "matches": 1,
+        "status": "CLEAN_PASS",
+        "source_path": "codex-rs/hepta-infer-worker-host/src/native_message_output_tests.rs",
+        "review_source_sha256": "e72edce0e1941c52f1564daa2e4c8f1aca54aa141c4c68f4a3008a3f5303bdfe",
+        "tested_source_sha256": "0b7347ea0f34d4835fe7ac9e137049b7aa920b8a12c35d5c4de24ad02f03932e",
+        "source_git_blob": "65b472a8de133def910129eb8e2fc8783deeecd9"
+      },
+      {
+        "package": "codex-hepta-infer-worker-host",
+        "binary": "codex_hepta_infer_worker_host",
+        "test": "native_app_server::tests::message_output::conflicting_completion_or_late_delta_cannot_change_a_completed_item",
+        "target": "codex-hepta-infer-worker-host",
+        "matches": 1,
+        "status": "CLEAN_PASS",
+        "source_path": "codex-rs/hepta-infer-worker-host/src/native_message_output_tests.rs",
+        "review_source_sha256": "e72edce0e1941c52f1564daa2e4c8f1aca54aa141c4c68f4a3008a3f5303bdfe",
+        "tested_source_sha256": "0b7347ea0f34d4835fe7ac9e137049b7aa920b8a12c35d5c4de24ad02f03932e",
+        "source_git_blob": "65b472a8de133def910129eb8e2fc8783deeecd9"
+      },
+      {
+        "package": "codex-hepta-infer-worker-host",
+        "binary": "codex_hepta_infer_worker_host",
+        "test": "native_app_server::tests::message_output::oversized_terminal_snapshot_cannot_authorize_completion",
+        "target": "codex-hepta-infer-worker-host",
+        "matches": 1,
+        "status": "CLEAN_PASS",
+        "source_path": "codex-rs/hepta-infer-worker-host/src/native_message_output_tests.rs",
+        "review_source_sha256": "e72edce0e1941c52f1564daa2e4c8f1aca54aa141c4c68f4a3008a3f5303bdfe",
+        "tested_source_sha256": "0b7347ea0f34d4835fe7ac9e137049b7aa920b8a12c35d5c4de24ad02f03932e",
+        "source_git_blob": "65b472a8de133def910129eb8e2fc8783deeecd9"
+      },
+      {
+        "package": "codex-hepta-agentd",
+        "binary": "codex_hepta_agentd",
+        "test": "cognitive_context::tests::hnmf::final_use_revalidation_rejects_tombstone_during_provider_callback",
+        "target": "codex-hepta-agentd",
+        "matches": 1,
+        "status": "CLEAN_PASS",
+        "source_path": "codex-rs/hepta-agentd/src/cognitive_context_hnmf_tests.rs",
+        "review_source_sha256": "0fd308417f12a1061407989eec115bb190f0cbb2a2b5b9030bfe802b3ac4f3e8",
+        "tested_source_sha256": "78e204ce9087e6e2e8975b84145dcc6563ebe0115027eb958a7317cf90cd01c7",
+        "source_git_blob": "14fada2d50796ddc596c92d3b4a0f02c3d9d780d"
+      },
+      {
+        "package": "codex-hepta-agentd",
+        "binary": "codex_hepta_agentd",
+        "test": "cognitive_context::tests::hnmf::final_use_revalidation_rejects_source_drift_during_provider_callback",
+        "target": "codex-hepta-agentd",
+        "matches": 1,
+        "status": "CLEAN_PASS",
+        "source_path": "codex-rs/hepta-agentd/src/cognitive_context_hnmf_tests.rs",
+        "review_source_sha256": "0fd308417f12a1061407989eec115bb190f0cbb2a2b5b9030bfe802b3ac4f3e8",
+        "tested_source_sha256": "78e204ce9087e6e2e8975b84145dcc6563ebe0115027eb958a7317cf90cd01c7",
+        "source_git_blob": "14fada2d50796ddc596c92d3b4a0f02c3d9d780d"
+      },
+      {
+        "package": "codex-hepta-learning-ledger",
+        "binary": "codex_hepta_learning_ledger",
+        "test": "production::reconciliation::tests::committed_decision_recovers_after_lost_ack_expiry_and_reopen",
+        "target": "codex-hepta-learning-ledger",
+        "matches": 1,
+        "status": "CLEAN_PASS",
+        "source_path": "codex-rs/hepta-learning-ledger/src/production_reconciliation_tests.rs",
+        "review_source_sha256": "8d141b25dc3c73873b286831ca2e97d8f77c1b046bf07e5e8b7a1dd91f233a03",
+        "tested_source_sha256": "f8e7cb9eb9143002f0c015b13a49e13095a2a8ef6d3a4f1a4868faabfb58b732",
+        "source_git_blob": "1795c1791b0add2348cf8027e2f52c4b7e478673"
+      },
+      {
+        "package": "codex-hepta-learning-ledger",
+        "binary": "codex_hepta_learning_ledger",
+        "test": "production::reconciliation::tests::committed_outcome_recovers_after_lost_ack_expiry_and_reopen",
+        "target": "codex-hepta-learning-ledger",
+        "matches": 1,
+        "status": "CLEAN_PASS",
+        "source_path": "codex-rs/hepta-learning-ledger/src/production_reconciliation_tests.rs",
+        "review_source_sha256": "8d141b25dc3c73873b286831ca2e97d8f77c1b046bf07e5e8b7a1dd91f233a03",
+        "tested_source_sha256": "f8e7cb9eb9143002f0c015b13a49e13095a2a8ef6d3a4f1a4868faabfb58b732",
+        "source_git_blob": "1795c1791b0add2348cf8027e2f52c4b7e478673"
+      },
+      {
+        "package": "codex-hepta-learning-ledger",
+        "binary": "codex_hepta_learning_ledger",
+        "test": "production::reconciliation::tests::mismatched_or_missing_committed_reference_never_writes",
+        "target": "codex-hepta-learning-ledger",
+        "matches": 1,
+        "status": "CLEAN_PASS",
+        "source_path": "codex-rs/hepta-learning-ledger/src/production_reconciliation_tests.rs",
+        "review_source_sha256": "8d141b25dc3c73873b286831ca2e97d8f77c1b046bf07e5e8b7a1dd91f233a03",
+        "tested_source_sha256": "f8e7cb9eb9143002f0c015b13a49e13095a2a8ef6d3a4f1a4868faabfb58b732",
+        "source_git_blob": "1795c1791b0add2348cf8027e2f52c4b7e478673"
+      },
+      {
+        "package": "codex-hepta-learning-ledger",
+        "binary": "codex_hepta_learning_ledger",
+        "test": "production::reconciliation::tests::reconciliation_neither_revives_revoked_decision_nor_admits_other_event_kinds",
+        "target": "codex-hepta-learning-ledger",
+        "matches": 1,
+        "status": "CLEAN_PASS",
+        "source_path": "codex-rs/hepta-learning-ledger/src/production_reconciliation_tests.rs",
+        "review_source_sha256": "8d141b25dc3c73873b286831ca2e97d8f77c1b046bf07e5e8b7a1dd91f233a03",
+        "tested_source_sha256": "f8e7cb9eb9143002f0c015b13a49e13095a2a8ef6d3a4f1a4868faabfb58b732",
+        "source_git_blob": "1795c1791b0add2348cf8027e2f52c4b7e478673"
+      },
+      {
+        "package": "codex-hepta-learning-ledger",
+        "binary": "codex_hepta_learning_ledger",
+        "test": "witness::tests::complete_unconfirmed_witness_frame_requires_successful_recovery_sync",
+        "target": "codex-hepta-learning-ledger",
+        "matches": 1,
+        "status": "CLEAN_PASS",
+        "source_path": "codex-rs/hepta-learning-ledger/src/witness_tests.rs",
+        "review_source_sha256": "a3f46b143d9bc2d77d3a84fa015b254cbfb9d5d3509e924bbe163a8c46aa1ba8",
+        "tested_source_sha256": "07bd20924e81419378d6dfbef7fc621d426f11210bc5b5df30747dfc8af1d150",
+        "source_git_blob": "4b90fb052ba6e24eb5588867d0e9bc74bce2fa3d"
+      },
+      {
+        "package": "codex-hepta-supervisor",
+        "binary": "codex_hepta_supervisor",
+        "test": "writer_handoff::recovery_tests::writer_handoff_owner_drop_releases_lock_with_passive_duplicate",
+        "target": "codex-hepta-supervisor",
+        "matches": 1,
+        "status": "CLEAN_PASS",
+        "source_path": "codex-rs/hepta-supervisor/src/writer_handoff_recovery_tests.rs",
+        "review_source_sha256": "c9b7fba60a7fec31e9e65e0d7caeb0843137844e816f192f284a4c50927cd8e3",
+        "tested_source_sha256": "c9b7fba60a7fec31e9e65e0d7caeb0843137844e816f192f284a4c50927cd8e3",
+        "source_git_blob": "304d0fb7d7a5185d84dc78ec5aa9b39fbdd724f2"
+      },
+      {
+        "package": "codex-hepta-supervisor",
+        "binary": "codex_hepta_supervisor",
+        "test": "writer_handoff::recovery_tests::writer_handoff_failed_recovery_releases_acquired_lock_with_passive_duplicate",
+        "target": "codex-hepta-supervisor",
+        "matches": 1,
+        "status": "CLEAN_PASS",
+        "source_path": "codex-rs/hepta-supervisor/src/writer_handoff_recovery_tests.rs",
+        "review_source_sha256": "c9b7fba60a7fec31e9e65e0d7caeb0843137844e816f192f284a4c50927cd8e3",
+        "tested_source_sha256": "c9b7fba60a7fec31e9e65e0d7caeb0843137844e816f192f284a4c50927cd8e3",
+        "source_git_blob": "304d0fb7d7a5185d84dc78ec5aa9b39fbdd724f2"
+      },
+      {
+        "package": "codex-hepta-supervisor",
+        "binary": "codex_hepta_supervisor",
+        "test": "writer_handoff::journal_file::tests::fork_copy_drop_does_not_unlock_original_handoff_owner",
+        "target": "codex-hepta-supervisor",
+        "matches": 1,
+        "status": "CLEAN_PASS",
+        "source_path": "codex-rs/hepta-supervisor/src/writer_handoff_lock_tests.rs",
+        "review_source_sha256": "76edfc7812f012d72e7d6be87ac51e4edd0e719ed02ccc9136f2108568fc134f",
+        "tested_source_sha256": "76edfc7812f012d72e7d6be87ac51e4edd0e719ed02ccc9136f2108568fc134f",
+        "source_git_blob": "12fd8065eacc726f2ac4284bc6b02b4816442323"
+      }
+    ],
+    "native_report_independently_agrees": true
+  },
+  "strict_checks": {
+    "maps-qualification": 0,
+    "status-facts": 0,
+    "module-registry": 0,
+    "documents-qualification": 0,
+    "chef-custody": 0,
+    "rust-ci-feedback": 0,
+    "module-docs-metadata": 0
+  },
+  "scope_checks": {
+    "original-codespell": 0,
+    "seven-package-original-runner": 0,
+    "original-workspace-format": 0,
+    "original-four-package-format": 0,
+    "original-ci-policy-clippy": 0,
+    "two-library-regression": 0,
+    "app-server-process-regression": 0,
+    "original-windows-ci-receipt-controls": 0
+  },
+  "codespell": {
+    "version": "2.4.3",
+    "original_cli": [
+      "/home/qq/work/hepta-modules40-20261105-da8578/tools/codespell-2.4.3/bin/codespell",
+      "--ignore-words",
+      ".codespellignore",
+      "--skip",
+      "./.git"
+    ],
+    "exit": 0,
+    "empty_log": true
+  },
+  "format_policy_limit": {
+    "ignored_unstable_option": "imports_granularity=Item",
+    "warning_counts": {
+      "original-workspace-format": 426,
+      "original-four-package-format": 29
+    },
+    "recorded_commands_exit": 0,
+    "nightly_imports_granularity_enforcement_established": false
+  },
+  "scoped_regressions": {
+    "two_library": {
+      "count": 319,
+      "passed": 319,
+      "skipped_reported_by_runner": 0,
+      "announced_binaries": 2,
+      "summary": "     Summary [  45.015s] 319 tests run: 319 passed (1 slow), 0 skipped",
+      "seconds": 45.015,
+      "first_attempt_slow_messages": [
+        "TRY 1 SLOW [> 30.000s] codex-app-server-client tests::next_event_surfaces_lagged_markers"
+      ],
+      "retried_attempts": 0
+    },
+    "app_server_process": {
+      "count": 5,
+      "passed": 5,
+      "skipped_reported_by_runner": 1016,
+      "announced_binaries": 1,
+      "summary": "     Summary [   0.451s] 5 tests run: 5 passed, 1016 skipped",
+      "seconds": 0.451,
+      "first_attempt_slow_messages": [],
+      "retried_attempts": 0
+    }
+  },
+  "navigation_preview": {
+    "receipt": {
+      "path": "integration/complete-native-checkpoint/native/complete-canonical-run1-navigation-preview.json",
+      "bytes": 7060,
+      "sha256": "9de3099b6cb4c2900f9b41b5068c216824a501346459be44b101f232b5298d3f"
+    },
+    "log": {
+      "path": "integration/complete-native-checkpoint/native/complete-canonical-run1-navigation-preview.log",
+      "bytes": 363,
+      "sha256": "2d7167dd10e741a94fcc8a93e487a3ecf3c9f6d0f242c84ce88bb2fabf1bb7e6"
+    },
+    "output": {
+      "candidateSource": {
+        "commit": "8658210499706130788c216ff14fd342809b45a4",
+        "tree": "6bc86196d10cf83b010f9917e5e9cb471b5f6b68"
+      },
+      "changedMaps": 0,
+      "executionEvidenceTransferred": false,
+      "historicalSourceBasesModified": false,
+      "ledger": null,
+      "maps": [],
+      "modules": 40,
+      "qualificationAfterCommitRequired": true,
+      "scope": "source_navigation_only",
+      "written": false
+    },
+    "map_count": 40,
+    "history_count": 3,
+    "snapshot_bytes_crosschecked": true,
+    "scope": "Lightweight navigation source receipt, checked separately from the before/after execution receipts."
+  },
+  "historical_codespell": [],
+  "windows_ci_receipt_controls": {
+    "command": [
+      "python3",
+      "-m",
+      "unittest",
+      "discover",
+      "-s",
+      ".github/scripts",
+      "-p",
+      "test_windows_current_ci*.py"
+    ],
+    "tests": 28,
+    "seconds": 0.068,
+    "exit": 0,
+    "native_os": "Linux",
+    "windows_test_execution_established": false,
+    "scope": "Original workflow Python receipt-validation rejection controls; not execution of the Windows original-scope native tests."
+  },
+  "receipts": [
+    {
+      "name": "seven-package-run5-original-test",
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-agent-protocol",
+        "-p",
+        "codex-hepta-agentd",
+        "-p",
+        "codex-hepta-infer-worker-host",
+        "-p",
+        "codex-hepta-runtime",
+        "-p",
+        "codex-hepta-contracts",
+        "-p",
+        "codex-hepta-learning-ledger",
+        "-p",
+        "codex-hepta-supervisor",
+        "--tool-config-file",
+        "hepta-evidence:/home/qq/work/hepta-modules40-20261105-da8578/seven-package-run5-report-only.nextest.toml",
+        "--cargo-metadata",
+        "/home/qq/work/hepta-modules40-20261105-da8578/evidence/seven-package-run5-original-scoped-metadata.json"
+      ],
+      "cwd": "/home/qq/work/hepta-modules40-20261105-da8578/source",
+      "exit": 0,
+      "source_before": {
+        "commit": "8658210499706130788c216ff14fd342809b45a4",
+        "tree": "6bc86196d10cf83b010f9917e5e9cb471b5f6b68",
+        "status": ""
+      },
+      "source_after": {
+        "commit": "8658210499706130788c216ff14fd342809b45a4",
+        "tree": "6bc86196d10cf83b010f9917e5e9cb471b5f6b68",
+        "status": ""
+      },
+      "start_unix_ns": 1793898152962803772,
+      "end_unix_ns": 1793898191412305971,
+      "receipt": {
+        "path": "integration/complete-native-checkpoint/native/seven-package-run5-original-test.json",
+        "bytes": 1440,
+        "sha256": "bd8df907ed2ae2b1d4afa4d263d73d5b7e32ab704b897980045df53ceca9b339"
+      },
+      "log": {
+        "path": "integration/complete-native-checkpoint/native/seven-package-run5-original-test.log",
+        "bytes": 194188,
+        "sha256": "57847b122b6411df2432fbedd490babee33fe99f05767509bce3b5d26f3a9a6e"
+      }
+    },
+    {
+      "name": "seven-package-run5-bind-manifest",
+      "command": [
+        "python3",
+        "/home/qq/work/hepta-modules40-20261105-da8578/audit-tools/bind_native_audit_manifest.py",
+        "--repo",
+        "/home/qq/work/hepta-modules40-20261105-da8578/source",
+        "--review-manifest",
+        "/home/qq/work/hepta-modules40-20261105-da8578/audit-tools/required-tests.69.json",
+        "--candidate-commit",
+        "8658210499706130788c216ff14fd342809b45a4",
+        "--candidate-tree",
+        "6bc86196d10cf83b010f9917e5e9cb471b5f6b68",
+        "--output",
+        "/home/qq/work/hepta-modules40-20261105-da8578/evidence/seven-package-run5-required-tests.69.source-bound.json"
+      ],
+      "cwd": "/home/qq/work/hepta-modules40-20261105-da8578/source",
+      "exit": 0,
+      "source_before": {
+        "commit": "8658210499706130788c216ff14fd342809b45a4",
+        "tree": "6bc86196d10cf83b010f9917e5e9cb471b5f6b68",
+        "status": ""
+      },
+      "source_after": {
+        "commit": "8658210499706130788c216ff14fd342809b45a4",
+        "tree": "6bc86196d10cf83b010f9917e5e9cb471b5f6b68",
+        "status": ""
+      },
+      "start_unix_ns": 1793898152612834883,
+      "end_unix_ns": 1793898152742716379,
+      "receipt": {
+        "path": "integration/complete-native-checkpoint/native/seven-package-run5-bind-manifest.json",
+        "bytes": 1413,
+        "sha256": "ced48ed411d92406d5b9b809690f34b92f9de9b42c1514571513b82581c372e4"
+      },
+      "log": {
+        "path": "integration/complete-native-checkpoint/native/seven-package-run5-bind-manifest.log",
+        "bytes": 566,
+        "sha256": "47fb7141e32162b333c80f7248ef23b9232bfebf898234858942943db7360e2d"
+      }
+    },
+    {
+      "name": "seven-package-run5-required-audit",
+      "command": [
+        "python3",
+        "/home/qq/work/hepta-modules40-20261105-da8578/audit-tools/audit_native_junit.py",
+        "--review-manifest",
+        "/home/qq/work/hepta-modules40-20261105-da8578/audit-tools/required-tests.69.json",
+        "--manifest",
+        "/home/qq/work/hepta-modules40-20261105-da8578/evidence/seven-package-run5-required-tests.69.source-bound.json",
+        "--candidate-commit",
+        "8658210499706130788c216ff14fd342809b45a4",
+        "--candidate-tree",
+        "6bc86196d10cf83b010f9917e5e9cb471b5f6b68",
+        "--junit",
+        "/home/qq/work/hepta-modules40-20261105-da8578/evidence/seven-package-run5.junit.xml",
+        "--suite-exit-code",
+        "0",
+        "--report",
+        "/home/qq/work/hepta-modules40-20261105-da8578/evidence/seven-package-run5-required-tests.69.native-audit.json"
+      ],
+      "cwd": "/home/qq/work/hepta-modules40-20261105-da8578/source",
+      "exit": 0,
+      "source_before": {
+        "commit": "8658210499706130788c216ff14fd342809b45a4",
+        "tree": "6bc86196d10cf83b010f9917e5e9cb471b5f6b68",
+        "status": ""
+      },
+      "source_after": {
+        "commit": "8658210499706130788c216ff14fd342809b45a4",
+        "tree": "6bc86196d10cf83b010f9917e5e9cb471b5f6b68",
+        "status": ""
+      },
+      "start_unix_ns": 1793898191443258223,
+      "end_unix_ns": 1793898191758392720,
+      "receipt": {
+        "path": "integration/complete-native-checkpoint/native/seven-package-run5-required-audit.json",
+        "bytes": 1607,
+        "sha256": "0dd0c2a5b98d2009be40182eb4a4938aa24be03c149b96ab524a6f62d6aeee9a"
+      },
+      "log": {
+        "path": "integration/complete-native-checkpoint/native/seven-package-run5-required-audit.log",
+        "bytes": 107,
+        "sha256": "48c76a0774d89548a81d3847aa6d5befd7228a32a7c43abf476ce435d4463b24"
+      }
+    },
+    {
+      "name": "seven-package-run5-maps-qualification",
+      "command": [
+        "python3",
+        "scripts/hepta-implementation-maps.py",
+        "verify",
+        "--profile",
+        "qualification",
+        "--expected-sha",
+        "8658210499706130788c216ff14fd342809b45a4",
+        "--expected-tree",
+        "6bc86196d10cf83b010f9917e5e9cb471b5f6b68"
+      ],
+      "cwd": "/home/qq/work/hepta-modules40-20261105-da8578/source",
+      "exit": 0,
+      "source_before": {
+        "commit": "8658210499706130788c216ff14fd342809b45a4",
+        "tree": "6bc86196d10cf83b010f9917e5e9cb471b5f6b68",
+        "status": ""
+      },
+      "source_after": {
+        "commit": "8658210499706130788c216ff14fd342809b45a4",
+        "tree": "6bc86196d10cf83b010f9917e5e9cb471b5f6b68",
+        "status": ""
+      },
+      "start_unix_ns": 1793898191788982684,
+      "end_unix_ns": 1793898194425631731,
+      "receipt": {
+        "path": "integration/complete-native-checkpoint/native/seven-package-run5-maps-qualification.json",
+        "bytes": 1094,
+        "sha256": "94f3cbd1dcfb5a89690811e87bdda2e331e1ff0eb386bffd831c9b8acc1be361"
+      },
+      "log": {
+        "path": "integration/complete-native-checkpoint/native/seven-package-run5-maps-qualification.log",
+        "bytes": 691,
+        "sha256": "3d7d93030b8eea0515fe072645e77c8f36e1bec943a6b79c3477b2a8f316aa89"
+      }
+    },
+    {
+      "name": "seven-package-run5-status-facts",
+      "command": [
+        "python3",
+        "scripts/test_hepta_module_status_facts.py"
+      ],
+      "cwd": "/home/qq/work/hepta-modules40-20261105-da8578/source",
+      "exit": 0,
+      "source_before": {
+        "commit": "8658210499706130788c216ff14fd342809b45a4",
+        "tree": "6bc86196d10cf83b010f9917e5e9cb471b5f6b68",
+        "status": ""
+      },
+      "source_after": {
+        "commit": "8658210499706130788c216ff14fd342809b45a4",
+        "tree": "6bc86196d10cf83b010f9917e5e9cb471b5f6b68",
+        "status": ""
+      },
+      "start_unix_ns": 1793898194452560431,
+      "end_unix_ns": 1793898194486713263,
+      "receipt": {
+        "path": "integration/complete-native-checkpoint/native/seven-package-run5-status-facts.json",
+        "bytes": 901,
+        "sha256": "5ddc9397ac57c273950cb37394f80853292219bdfbeb1bed9c0466deac4915f8"
+      },
+      "log": {
+        "path": "integration/complete-native-checkpoint/native/seven-package-run5-status-facts.log",
+        "bytes": 100,
+        "sha256": "6f283ee6225d2cef4c0127d95456a6f954c45141c92b97dd89016cb1c630e8f4"
+      }
+    },
+    {
+      "name": "seven-package-run5-module-registry",
+      "command": [
+        "python3",
+        "scripts/hepta_module_registry.py",
+        "--strict",
+        "--pretty"
+      ],
+      "cwd": "/home/qq/work/hepta-modules40-20261105-da8578/source",
+      "exit": 0,
+      "source_before": {
+        "commit": "8658210499706130788c216ff14fd342809b45a4",
+        "tree": "6bc86196d10cf83b010f9917e5e9cb471b5f6b68",
+        "status": ""
+      },
+      "source_after": {
+        "commit": "8658210499706130788c216ff14fd342809b45a4",
+        "tree": "6bc86196d10cf83b010f9917e5e9cb471b5f6b68",
+        "status": ""
+      },
+      "start_unix_ns": 1793898194513884486,
+      "end_unix_ns": 1793898194577799090,
+      "receipt": {
+        "path": "integration/complete-native-checkpoint/native/seven-package-run5-module-registry.json",
+        "bytes": 926,
+        "sha256": "74e8530ef7cf3b5a26580b6fd8132d82681a92d8ff0ce9fdfcadaff71cc6957a"
+      },
+      "log": {
+        "path": "integration/complete-native-checkpoint/native/seven-package-run5-module-registry.log",
+        "bytes": 896,
+        "sha256": "e856e4c966f130ea6d3f52ab8ca8bcf31ead62ccc173424ac57c809887e3b2e9"
+      }
+    },
+    {
+      "name": "seven-package-run5-documents-qualification",
+      "command": [
+        "python3",
+        "scripts/hepta-module-docs.py",
+        "verify",
+        "--profile",
+        "qualification"
+      ],
+      "cwd": "/home/qq/work/hepta-modules40-20261105-da8578/source",
+      "exit": 0,
+      "source_before": {
+        "commit": "8658210499706130788c216ff14fd342809b45a4",
+        "tree": "6bc86196d10cf83b010f9917e5e9cb471b5f6b68",
+        "status": ""
+      },
+      "source_after": {
+        "commit": "8658210499706130788c216ff14fd342809b45a4",
+        "tree": "6bc86196d10cf83b010f9917e5e9cb471b5f6b68",
+        "status": ""
+      },
+      "start_unix_ns": 1793898194607262574,
+      "end_unix_ns": 1793898197281398199,
+      "receipt": {
+        "path": "integration/complete-native-checkpoint/native/seven-package-run5-documents-qualification.json",
+        "bytes": 949,
+        "sha256": "77b88831d36425de1ad36d82257da68453f1060a4ea18a75b47bc40bc902aff9"
+      },
+      "log": {
+        "path": "integration/complete-native-checkpoint/native/seven-package-run5-documents-qualification.log",
+        "bytes": 323,
+        "sha256": "db8def5c9333745c8aa3af8688d7d9e2b67b9041e6b005a45d15db8eecbf3e10"
+      }
+    },
+    {
+      "name": "seven-package-run5-chef-custody",
+      "command": [
+        "python3",
+        "scripts/test_hepta_ci_chef.py"
+      ],
+      "cwd": "/home/qq/work/hepta-modules40-20261105-da8578/source",
+      "exit": 0,
+      "source_before": {
+        "commit": "8658210499706130788c216ff14fd342809b45a4",
+        "tree": "6bc86196d10cf83b010f9917e5e9cb471b5f6b68",
+        "status": ""
+      },
+      "source_after": {
+        "commit": "8658210499706130788c216ff14fd342809b45a4",
+        "tree": "6bc86196d10cf83b010f9917e5e9cb471b5f6b68",
+        "status": ""
+      },
+      "start_unix_ns": 1793898197310867813,
+      "end_unix_ns": 1793898197478351564,
+      "receipt": {
+        "path": "integration/complete-native-checkpoint/native/seven-package-run5-chef-custody.json",
+        "bytes": 890,
+        "sha256": "e4b8e802648d590f296c4cfce24e0bbdba2287e101607f158a3bdf1dde1c41e2"
+      },
+      "log": {
+        "path": "integration/complete-native-checkpoint/native/seven-package-run5-chef-custody.log",
+        "bytes": 4728,
+        "sha256": "d5b4b1d23c456d0a73e00842a095e8ff7906ac39aa2aae39a4b16c8d9ce7c569"
+      }
+    },
+    {
+      "name": "seven-package-run5-rust-ci-feedback",
+      "command": [
+        "python3",
+        "scripts/test_hepta_rust_ci_feedback.py"
+      ],
+      "cwd": "/home/qq/work/hepta-modules40-20261105-da8578/source",
+      "exit": 0,
+      "source_before": {
+        "commit": "8658210499706130788c216ff14fd342809b45a4",
+        "tree": "6bc86196d10cf83b010f9917e5e9cb471b5f6b68",
+        "status": ""
+      },
+      "source_after": {
+        "commit": "8658210499706130788c216ff14fd342809b45a4",
+        "tree": "6bc86196d10cf83b010f9917e5e9cb471b5f6b68",
+        "status": ""
+      },
+      "start_unix_ns": 1793898197506609659,
+      "end_unix_ns": 1793898197735056267,
+      "receipt": {
+        "path": "integration/complete-native-checkpoint/native/seven-package-run5-rust-ci-feedback.json",
+        "bytes": 902,
+        "sha256": "ac93610d8d1fa80f318d69363fbd2b29407322f704ca1673b27509306e202f3f"
+      },
+      "log": {
+        "path": "integration/complete-native-checkpoint/native/seven-package-run5-rust-ci-feedback.log",
+        "bytes": 119,
+        "sha256": "7283b041a568dffac4bf6d21cdafa7285afdb00bd11870ba6c97cf0b3439743a"
+      }
+    },
+    {
+      "name": "seven-package-run5-module-docs-metadata",
+      "command": [
+        "python3",
+        "scripts/test_hepta_module_doc_metadata.py"
+      ],
+      "cwd": "/home/qq/work/hepta-modules40-20261105-da8578/source",
+      "exit": 0,
+      "source_before": {
+        "commit": "8658210499706130788c216ff14fd342809b45a4",
+        "tree": "6bc86196d10cf83b010f9917e5e9cb471b5f6b68",
+        "status": ""
+      },
+      "source_after": {
+        "commit": "8658210499706130788c216ff14fd342809b45a4",
+        "tree": "6bc86196d10cf83b010f9917e5e9cb471b5f6b68",
+        "status": ""
+      },
+      "start_unix_ns": 1793898197764955716,
+      "end_unix_ns": 1793898197808521053,
+      "receipt": {
+        "path": "integration/complete-native-checkpoint/native/seven-package-run5-module-docs-metadata.json",
+        "bytes": 908,
+        "sha256": "51cf21962300e52f6bf5d061e09c58328859c46d79662e50f6b79b33706e5085"
+      },
+      "log": {
+        "path": "integration/complete-native-checkpoint/native/seven-package-run5-module-docs-metadata.log",
+        "bytes": 104,
+        "sha256": "e11bbb630c1a6ea91f4322ac92d7ce2a6c043ad84d3e41ecf0d0f5a73e9c9fd0"
+      }
+    },
+    {
+      "name": "complete-canonical-run1-original-codespell",
+      "command": [
+        "/home/qq/work/hepta-modules40-20261105-da8578/tools/codespell-2.4.3/bin/codespell",
+        "--ignore-words",
+        ".codespellignore",
+        "--skip",
+        "./.git"
+      ],
+      "cwd": "/home/qq/work/hepta-modules40-20261105-da8578/source",
+      "exit": 0,
+      "source_before": {
+        "commit": "8658210499706130788c216ff14fd342809b45a4",
+        "tree": "6bc86196d10cf83b010f9917e5e9cb471b5f6b68",
+        "status": ""
+      },
+      "source_after": {
+        "commit": "8658210499706130788c216ff14fd342809b45a4",
+        "tree": "6bc86196d10cf83b010f9917e5e9cb471b5f6b68",
+        "status": ""
+      },
+      "start_unix_ns": 1793898145740206190,
+      "end_unix_ns": 1793898152532842234,
+      "receipt": {
+        "path": "integration/complete-native-checkpoint/native/complete-canonical-run1-original-codespell.json",
+        "bytes": 1007,
+        "sha256": "dfbee26c19c45741da888d13cc27aee37d32cf71d699a4a5d8a0f3a56c550514"
+      },
+      "log": {
+        "path": "integration/complete-native-checkpoint/native/complete-canonical-run1-original-codespell.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "name": "complete-canonical-run1-seven-package-original-runner",
+      "command": [
+        "python3",
+        "/home/qq/work/hepta-modules40-20261105-da8578/run-final-native.py",
+        "--candidate-commit",
+        "8658210499706130788c216ff14fd342809b45a4",
+        "--candidate-tree",
+        "6bc86196d10cf83b010f9917e5e9cb471b5f6b68",
+        "--run-label",
+        "seven-package-run5"
+      ],
+      "cwd": "/home/qq/work/hepta-modules40-20261105-da8578/source",
+      "exit": 0,
+      "source_before": {
+        "commit": "8658210499706130788c216ff14fd342809b45a4",
+        "tree": "6bc86196d10cf83b010f9917e5e9cb471b5f6b68",
+        "status": ""
+      },
+      "source_after": {
+        "commit": "8658210499706130788c216ff14fd342809b45a4",
+        "tree": "6bc86196d10cf83b010f9917e5e9cb471b5f6b68",
+        "status": ""
+      },
+      "start_unix_ns": 1793898152562102384,
+      "end_unix_ns": 1793898197842929545,
+      "receipt": {
+        "path": "integration/complete-native-checkpoint/native/complete-canonical-run1-seven-package-original-runner.json",
+        "bytes": 1138,
+        "sha256": "6d39ea1f86b38d618e00ee3f3aa7514d22397eec1fdee30cdfcd85147d9a973b"
+      },
+      "log": {
+        "path": "integration/complete-native-checkpoint/native/complete-canonical-run1-seven-package-original-runner.log",
+        "bytes": 12201,
+        "sha256": "3b787dea1013e8ffa7d1be9dd4c6be3e17aa5f188efb664555fb99a039c159f9"
+      }
+    },
+    {
+      "name": "complete-canonical-run1-original-workspace-format",
+      "command": [
+        "cargo",
+        "fmt",
+        "--",
+        "--config",
+        "imports_granularity=Item",
+        "--check"
+      ],
+      "cwd": "/home/qq/work/hepta-modules40-20261105-da8578/source/codex-rs",
+      "exit": 0,
+      "source_before": {
+        "commit": "8658210499706130788c216ff14fd342809b45a4",
+        "tree": "6bc86196d10cf83b010f9917e5e9cb471b5f6b68",
+        "status": ""
+      },
+      "source_after": {
+        "commit": "8658210499706130788c216ff14fd342809b45a4",
+        "tree": "6bc86196d10cf83b010f9917e5e9cb471b5f6b68",
+        "status": ""
+      },
+      "start_unix_ns": 1793898197869867056,
+      "end_unix_ns": 1793898207425290281,
+      "receipt": {
+        "path": "integration/complete-native-checkpoint/native/complete-canonical-run1-original-workspace-format.json",
+        "bytes": 961,
+        "sha256": "39de4bf30097b9db9b2c51106c2287a8295e05e9d2ac0095ba6be1e770e31f8b"
+      },
+      "log": {
+        "path": "integration/complete-native-checkpoint/native/complete-canonical-run1-original-workspace-format.log",
+        "bytes": 45156,
+        "sha256": "48230365c06813d60fa46b6117c843a84166fb279b565ff886b5c70a2a2dcd2d"
+      }
+    },
+    {
+      "name": "complete-canonical-run1-original-four-package-format",
+      "command": [
+        "cargo",
+        "fmt",
+        "--package",
+        "codex-utils-path",
+        "--package",
+        "codex-hepta-prompt-registry",
+        "--package",
+        "codex-hepta-contracts",
+        "--package",
+        "codex-hepta-agentd",
+        "--",
+        "--check"
+      ],
+      "cwd": "/home/qq/work/hepta-modules40-20261105-da8578/source/codex-rs",
+      "exit": 0,
+      "source_before": {
+        "commit": "8658210499706130788c216ff14fd342809b45a4",
+        "tree": "6bc86196d10cf83b010f9917e5e9cb471b5f6b68",
+        "status": ""
+      },
+      "source_after": {
+        "commit": "8658210499706130788c216ff14fd342809b45a4",
+        "tree": "6bc86196d10cf83b010f9917e5e9cb471b5f6b68",
+        "status": ""
+      },
+      "start_unix_ns": 1793898207456993258,
+      "end_unix_ns": 1793898208330829602,
+      "receipt": {
+        "path": "integration/complete-native-checkpoint/native/complete-canonical-run1-original-four-package-format.json",
+        "bytes": 1098,
+        "sha256": "a5512e3f35c958ae0547738645ee50c09c889acec6bfd5a89d481627e4b7d3cd"
+      },
+      "log": {
+        "path": "integration/complete-native-checkpoint/native/complete-canonical-run1-original-four-package-format.log",
+        "bytes": 3074,
+        "sha256": "569f5b0a5f26ebfbf85e01faa3030747603915fa1d636fda3e4a801a553411ad"
+      }
+    },
+    {
+      "name": "complete-canonical-run1-original-ci-policy-clippy",
+      "command": [
+        "just",
+        "clippy",
+        "--locked",
+        "-p",
+        "codex-exec-server",
+        "-p",
+        "codex-app-server",
+        "-p",
+        "codex-app-server-client",
+        "--",
+        "-D",
+        "clippy::correctness",
+        "-D",
+        "clippy::await_holding_lock",
+        "-D",
+        "clippy::await_holding_invalid_type"
+      ],
+      "cwd": "/home/qq/work/hepta-modules40-20261105-da8578/source",
+      "exit": 0,
+      "source_before": {
+        "commit": "8658210499706130788c216ff14fd342809b45a4",
+        "tree": "6bc86196d10cf83b010f9917e5e9cb471b5f6b68",
+        "status": ""
+      },
+      "source_after": {
+        "commit": "8658210499706130788c216ff14fd342809b45a4",
+        "tree": "6bc86196d10cf83b010f9917e5e9cb471b5f6b68",
+        "status": ""
+      },
+      "start_unix_ns": 1793898208363120008,
+      "end_unix_ns": 1793898209295289250,
+      "receipt": {
+        "path": "integration/complete-native-checkpoint/native/complete-canonical-run1-original-ci-policy-clippy.json",
+        "bytes": 1150,
+        "sha256": "19dc691ac9c611d616b5b915837a43db35233a68d8f6a68a71eb0f68441d86ee"
+      },
+      "log": {
+        "path": "integration/complete-native-checkpoint/native/complete-canonical-run1-original-ci-policy-clippy.log",
+        "bytes": 8953,
+        "sha256": "5a273b352efa183e5494396214a3a2b9b231e91e1d4e8717b2a420cd7673ed09"
+      }
+    },
+    {
+      "name": "complete-canonical-run1-two-library-regression",
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-exec-server",
+        "-p",
+        "codex-app-server-client",
+        "--lib"
+      ],
+      "cwd": "/home/qq/work/hepta-modules40-20261105-da8578/source",
+      "exit": 0,
+      "source_before": {
+        "commit": "8658210499706130788c216ff14fd342809b45a4",
+        "tree": "6bc86196d10cf83b010f9917e5e9cb471b5f6b68",
+        "status": ""
+      },
+      "source_after": {
+        "commit": "8658210499706130788c216ff14fd342809b45a4",
+        "tree": "6bc86196d10cf83b010f9917e5e9cb471b5f6b68",
+        "status": ""
+      },
+      "start_unix_ns": 1793898209327082593,
+      "end_unix_ns": 1793898255055188680,
+      "receipt": {
+        "path": "integration/complete-native-checkpoint/native/complete-canonical-run1-two-library-regression.json",
+        "bytes": 980,
+        "sha256": "aeb2414b51ee297a7cb3b330653c52e27b04c46873dbefa3d3527bcfbdcba231"
+      },
+      "log": {
+        "path": "integration/complete-native-checkpoint/native/complete-canonical-run1-two-library-regression.log",
+        "bytes": 57048,
+        "sha256": "d22252e0c7ab876f493c9b18d758a6659190936f7500aa8ad0971ec564f563b0"
+      }
+    },
+    {
+      "name": "complete-canonical-run1-app-server-process-regression",
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-app-server",
+        "--test",
+        "all",
+        "-E",
+        "test(process_exec)",
+        "--no-tests",
+        "fail"
+      ],
+      "cwd": "/home/qq/work/hepta-modules40-20261105-da8578/source",
+      "exit": 0,
+      "source_before": {
+        "commit": "8658210499706130788c216ff14fd342809b45a4",
+        "tree": "6bc86196d10cf83b010f9917e5e9cb471b5f6b68",
+        "status": ""
+      },
+      "source_after": {
+        "commit": "8658210499706130788c216ff14fd342809b45a4",
+        "tree": "6bc86196d10cf83b010f9917e5e9cb471b5f6b68",
+        "status": ""
+      },
+      "start_unix_ns": 1793898255084938114,
+      "end_unix_ns": 1793898256241144614,
+      "receipt": {
+        "path": "integration/complete-native-checkpoint/native/complete-canonical-run1-app-server-process-regression.json",
+        "bytes": 1025,
+        "sha256": "0f6ddf8a615a661faebcccba7328581d64128a58a367a6cf087eaed4a59055b9"
+      },
+      "log": {
+        "path": "integration/complete-native-checkpoint/native/complete-canonical-run1-app-server-process-regression.log",
+        "bytes": 19541,
+        "sha256": "06b13d96a90088d499b2fe9e62ad3ec4782824dd86df90458aad625d46d19fd6"
+      }
+    },
+    {
+      "name": "complete-canonical-run1-original-windows-ci-receipt-controls",
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        ".github/scripts",
+        "-p",
+        "test_windows_current_ci*.py"
+      ],
+      "cwd": "/home/qq/work/hepta-modules40-20261105-da8578/source",
+      "exit": 0,
+      "source_before": {
+        "commit": "8658210499706130788c216ff14fd342809b45a4",
+        "tree": "6bc86196d10cf83b010f9917e5e9cb471b5f6b68",
+        "status": ""
+      },
+      "source_after": {
+        "commit": "8658210499706130788c216ff14fd342809b45a4",
+        "tree": "6bc86196d10cf83b010f9917e5e9cb471b5f6b68",
+        "status": ""
+      },
+      "start_unix_ns": 1793898256268828339,
+      "end_unix_ns": 1793898256378451009,
+      "receipt": {
+        "path": "integration/complete-native-checkpoint/native/complete-canonical-run1-original-windows-ci-receipt-controls.json",
+        "bytes": 1002,
+        "sha256": "e534379a9dd5d8886553d666413f47706847d55e91f2d3f85fe6859f549b302d"
+      },
+      "log": {
+        "path": "integration/complete-native-checkpoint/native/complete-canonical-run1-original-windows-ci-receipt-controls.log",
+        "bytes": 1332,
+        "sha256": "5ead9099ec7ffa16a41d5f8225c15c7bfec1b30406817d29cac88049aa1c929c"
+      }
+    }
+  ],
+  "historical_bb55_audit_files_preserved": 50,
+  "auditor": {
+    "path": "recovery/audit_native_checkpoint_v3.py",
+    "bytes": 46087,
+    "sha256": "34367eb60fcbc3345e19d672f17e9c980bde1503e1b66af6c46a64c1b248a8d3"
+  },
+  "auditor_actions": "Read saved bytes, hash archive members, parse JSON/TOML/XML/logs; no native execution, remote command, source or ref mutation.",
+  "limits": [
+    "This audits the captured Linux seven-package run and explicit related scopes; it does not qualify all workspace tests or another OS/architecture.",
+    "The five AppServer process_exec cases use the recorded -E expression; 1016 other cases are skipped in that scope.",
+    "Clippy passes only the recorded three -D policies; this does not mean zero warnings or -D warnings.",
+    "Stable rustfmt ignores imports_granularity=Item with warnings even when both original format commands return zero.",
+    "Clean source-before/after receipts are not an independent concurrent-process, filesystem, physical-hardware or real-provider attestation.",
+    "Historical candidates and same-tree navigation commits retain separate identities; no execution result transfers to another candidate.",
+    "All production, real-provider, platform, deployment, activation and release boundaries remain unchanged."
+  ]
+}

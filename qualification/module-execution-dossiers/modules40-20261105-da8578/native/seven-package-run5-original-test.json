@@ -1,0 +1,44 @@
+{
+  "command": [
+    "just",
+    "test",
+    "--locked",
+    "-p",
+    "codex-hepta-agent-protocol",
+    "-p",
+    "codex-hepta-agentd",
+    "-p",
+    "codex-hepta-infer-worker-host",
+    "-p",
+    "codex-hepta-runtime",
+    "-p",
+    "codex-hepta-contracts",
+    "-p",
+    "codex-hepta-learning-ledger",
+    "-p",
+    "codex-hepta-supervisor",
+    "--tool-config-file",
+    "hepta-evidence:/home/qq/work/hepta-modules40-20261105-da8578/seven-package-run5-report-only.nextest.toml",
+    "--cargo-metadata",
+    "/home/qq/work/hepta-modules40-20261105-da8578/evidence/seven-package-run5-original-scoped-metadata.json"
+  ],
+  "cwd": "/home/qq/work/hepta-modules40-20261105-da8578/source",
+  "source_before": {
+    "commit": "8658210499706130788c216ff14fd342809b45a4",
+    "tree": "6bc86196d10cf83b010f9917e5e9cb471b5f6b68",
+    "status": ""
+  },
+  "start_unix_ns": 1793898152962803772,
+  "environment_sha256": "0eba31f9edc07ffc869f685c2dfcf3eab856be5f4dce622721ed36f43b0875d5",
+  "exit": 0,
+  "elapsed_seconds": 38.44946334999986,
+  "end_unix_ns": 1793898191412305971,
+  "source_after": {
+    "commit": "8658210499706130788c216ff14fd342809b45a4",
+    "tree": "6bc86196d10cf83b010f9917e5e9cb471b5f6b68",
+    "status": ""
+  },
+  "log_path": "/home/qq/work/hepta-modules40-20261105-da8578/evidence/seven-package-run5-original-test.log",
+  "log_sha256": "57847b122b6411df2432fbedd490babee33fe99f05767509bce3b5d26f3a9a6e",
+  "log_bytes": 194188
+}

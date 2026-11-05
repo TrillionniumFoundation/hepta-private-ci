@@ -1,0 +1,831 @@
+{
+  "schema": "hepta.modules40.checkpoint-execution-report-validation.v1",
+  "sourceCommit": "8658210499706130788c216ff14fd342809b45a4",
+  "sourceTree": "6bc86196d10cf83b010f9917e5e9cb471b5f6b68",
+  "readOnlyLocalEvidenceValidation": true,
+  "newNativeExecutionPerformed": false,
+  "runtime": {
+    "jobId": "1a1aca9512d-fc05-5638",
+    "state": "succeeded",
+    "exitCode": 0,
+    "outputComplete": true,
+    "outputDurable": true,
+    "timedOut": false,
+    "cancelled": false,
+    "automaticRetry": false
+  },
+  "archive": {
+    "path": "integration/native-865-checkpoint.tar.gz",
+    "bytes": 325679,
+    "sha256": "ba0299e0531d3a3fe4b0c5c5320233e696d5e5436303bc8d082d4fb0d627b430",
+    "manifestEntryCount": 80,
+    "totalFileCountIncludingManifest": 81,
+    "allExtractedManifestEntriesMatch": true,
+    "baseEvidence": {
+      "commit": "f038947fd20992e15213d41f7f6d8ac1d2ca10fc",
+      "path": "qualification/module-execution-dossiers/modules40-20261105-da8578/native/native-final-bb55-checkpoint.tar.gz",
+      "archive_bytes": 1026914,
+      "archive_sha256": "28424496bd400d6c5ff6370158f7b093355e463f19ebb550b1df6e7330504886",
+      "source_commit": "bb55b0d7d263c396ec504c45393d938c3428dae5"
+    }
+  },
+  "suite": {
+    "elapsedSeconds": 36.472,
+    "testsRun": 1219,
+    "passed": 1219,
+    "slow": 1,
+    "skipped": 78,
+    "failed": 0,
+    "timedOut": 0
+  },
+  "junit": {
+    "bytes": 280619,
+    "sha256": "f17813bb320d0583756f9b19edf87b50b4f2e734028d694c5ec577fa4510c851",
+    "testSuiteCount": 34,
+    "testCaseCount": 1219,
+    "failures": 0,
+    "errors": 0,
+    "skippedCasesInJunit": 0,
+    "skipMeaning": "Original runner summary remains authoritative for selection skips omitted from this JUnit."
+  },
+  "requiredAudit": {
+    "count": 69,
+    "cleanPasses": 69,
+    "uniqueRequiredIdentities": 69,
+    "allMatchesFoundIndependentlyInJunit": true,
+    "gateResult": "CLEAN",
+    "candidateIdentityBound": true
+  },
+  "sevenStrictChecks": {
+    "maps-qualification": 0,
+    "status-facts": 0,
+    "module-registry": 0,
+    "documents-qualification": 0,
+    "chef-custody": 0,
+    "rust-ci-feedback": 0,
+    "module-docs-metadata": 0
+  },
+  "twoLibraryResult": {
+    "elapsedSeconds": 45.015,
+    "testsRun": 319,
+    "passed": 319,
+    "slow": 1,
+    "skipped": 0,
+    "failed": 0,
+    "timedOut": 0
+  },
+  "appServerProcessExecResult": {
+    "elapsedSeconds": 0.451,
+    "testsRun": 5,
+    "passed": 5,
+    "slow": 0,
+    "skipped": 1016,
+    "failed": 0,
+    "timedOut": 0
+  },
+  "codespellVersionPath": "/home/qq/work/hepta-modules40-20261105-da8578/tools/codespell-2.4.3/bin/codespell",
+  "codespellOriginalArgumentsRetained": true,
+  "clippyOriginalThreeDenyPolicyRetained": true,
+  "formatIgnoredNightlyOptionWarningCounts": {
+    "original-workspace-format": 426,
+    "original-four-package-format": 29
+  },
+  "sourceBoundSuccessfulReceiptCount": 18,
+  "receipts": [
+    {
+      "path": "integration/complete-native-checkpoint/native/complete-canonical-run1-app-server-process-regression.json",
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-app-server",
+        "--test",
+        "all",
+        "-E",
+        "test(process_exec)",
+        "--no-tests",
+        "fail"
+      ],
+      "exit": 0,
+      "elapsedSeconds": 1.1562061599688604,
+      "logSha256": "06b13d96a90088d499b2fe9e62ad3ec4782824dd86df90458aad625d46d19fd6"
+    },
+    {
+      "path": "integration/complete-native-checkpoint/native/complete-canonical-run1-original-ci-policy-clippy.json",
+      "command": [
+        "just",
+        "clippy",
+        "--locked",
+        "-p",
+        "codex-exec-server",
+        "-p",
+        "codex-app-server",
+        "-p",
+        "codex-app-server-client",
+        "--",
+        "-D",
+        "clippy::correctness",
+        "-D",
+        "clippy::await_holding_lock",
+        "-D",
+        "clippy::await_holding_invalid_type"
+      ],
+      "exit": 0,
+      "elapsedSeconds": 0.9321685719769448,
+      "logSha256": "5a273b352efa183e5494396214a3a2b9b231e91e1d4e8717b2a420cd7673ed09"
+    },
+    {
+      "path": "integration/complete-native-checkpoint/native/complete-canonical-run1-original-codespell.json",
+      "command": [
+        "/home/qq/work/hepta-modules40-20261105-da8578/tools/codespell-2.4.3/bin/codespell",
+        "--ignore-words",
+        ".codespellignore",
+        "--skip",
+        "./.git"
+      ],
+      "exit": 0,
+      "elapsedSeconds": 6.792634292971343,
+      "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "integration/complete-native-checkpoint/native/complete-canonical-run1-original-four-package-format.json",
+      "command": [
+        "cargo",
+        "fmt",
+        "--package",
+        "codex-utils-path",
+        "--package",
+        "codex-hepta-prompt-registry",
+        "--package",
+        "codex-hepta-contracts",
+        "--package",
+        "codex-hepta-agentd",
+        "--",
+        "--check"
+      ],
+      "exit": 0,
+      "elapsedSeconds": 0.8738390340004116,
+      "logSha256": "569f5b0a5f26ebfbf85e01faa3030747603915fa1d636fda3e4a801a553411ad"
+    },
+    {
+      "path": "integration/complete-native-checkpoint/native/complete-canonical-run1-original-windows-ci-receipt-controls.json",
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        ".github/scripts",
+        "-p",
+        "test_windows_current_ci*.py"
+      ],
+      "exit": 0,
+      "elapsedSeconds": 0.10962260002270341,
+      "logSha256": "5ead9099ec7ffa16a41d5f8225c15c7bfec1b30406817d29cac88049aa1c929c"
+    },
+    {
+      "path": "integration/complete-native-checkpoint/native/complete-canonical-run1-original-workspace-format.json",
+      "command": [
+        "cargo",
+        "fmt",
+        "--",
+        "--config",
+        "imports_granularity=Item",
+        "--check"
+      ],
+      "exit": 0,
+      "elapsedSeconds": 9.555427014944144,
+      "logSha256": "48230365c06813d60fa46b6117c843a84166fb279b565ff886b5c70a2a2dcd2d"
+    },
+    {
+      "path": "integration/complete-native-checkpoint/native/complete-canonical-run1-seven-package-original-runner.json",
+      "command": [
+        "python3",
+        "/home/qq/work/hepta-modules40-20261105-da8578/run-final-native.py",
+        "--candidate-commit",
+        "8658210499706130788c216ff14fd342809b45a4",
+        "--candidate-tree",
+        "6bc86196d10cf83b010f9917e5e9cb471b5f6b68",
+        "--run-label",
+        "seven-package-run5"
+      ],
+      "exit": 0,
+      "elapsedSeconds": 45.28082661109511,
+      "logSha256": "3b787dea1013e8ffa7d1be9dd4c6be3e17aa5f188efb664555fb99a039c159f9"
+    },
+    {
+      "path": "integration/complete-native-checkpoint/native/complete-canonical-run1-two-library-regression.json",
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-exec-server",
+        "-p",
+        "codex-app-server-client",
+        "--lib"
+      ],
+      "exit": 0,
+      "elapsedSeconds": 45.7281056670472,
+      "logSha256": "d22252e0c7ab876f493c9b18d758a6659190936f7500aa8ad0971ec564f563b0"
+    },
+    {
+      "path": "integration/complete-native-checkpoint/native/seven-package-run5-bind-manifest.json",
+      "command": [
+        "python3",
+        "/home/qq/work/hepta-modules40-20261105-da8578/audit-tools/bind_native_audit_manifest.py",
+        "--repo",
+        "/home/qq/work/hepta-modules40-20261105-da8578/source",
+        "--review-manifest",
+        "/home/qq/work/hepta-modules40-20261105-da8578/audit-tools/required-tests.69.json",
+        "--candidate-commit",
+        "8658210499706130788c216ff14fd342809b45a4",
+        "--candidate-tree",
+        "6bc86196d10cf83b010f9917e5e9cb471b5f6b68",
+        "--output",
+        "/home/qq/work/hepta-modules40-20261105-da8578/evidence/seven-package-run5-required-tests.69.source-bound.json"
+      ],
+      "exit": 0,
+      "elapsedSeconds": 0.1298372281016782,
+      "logSha256": "47fb7141e32162b333c80f7248ef23b9232bfebf898234858942943db7360e2d"
+    },
+    {
+      "path": "integration/complete-native-checkpoint/native/seven-package-run5-chef-custody.json",
+      "command": [
+        "python3",
+        "scripts/test_hepta_ci_chef.py"
+      ],
+      "exit": 0,
+      "elapsedSeconds": 0.16744644311256707,
+      "logSha256": "d5b4b1d23c456d0a73e00842a095e8ff7906ac39aa2aae39a4b16c8d9ce7c569"
+    },
+    {
+      "path": "integration/complete-native-checkpoint/native/seven-package-run5-documents-qualification.json",
+      "command": [
+        "python3",
+        "scripts/hepta-module-docs.py",
+        "verify",
+        "--profile",
+        "qualification"
+      ],
+      "exit": 0,
+      "elapsedSeconds": 2.674106205930002,
+      "logSha256": "db8def5c9333745c8aa3af8688d7d9e2b67b9041e6b005a45d15db8eecbf3e10"
+    },
+    {
+      "path": "integration/complete-native-checkpoint/native/seven-package-run5-maps-qualification.json",
+      "command": [
+        "python3",
+        "scripts/hepta-implementation-maps.py",
+        "verify",
+        "--profile",
+        "qualification",
+        "--expected-sha",
+        "8658210499706130788c216ff14fd342809b45a4",
+        "--expected-tree",
+        "6bc86196d10cf83b010f9917e5e9cb471b5f6b68"
+      ],
+      "exit": 0,
+      "elapsedSeconds": 2.6366246880497783,
+      "logSha256": "3d7d93030b8eea0515fe072645e77c8f36e1bec943a6b79c3477b2a8f316aa89"
+    },
+    {
+      "path": "integration/complete-native-checkpoint/native/seven-package-run5-module-docs-metadata.json",
+      "command": [
+        "python3",
+        "scripts/test_hepta_module_doc_metadata.py"
+      ],
+      "exit": 0,
+      "elapsedSeconds": 0.0435429880162701,
+      "logSha256": "e11bbb630c1a6ea91f4322ac92d7ce2a6c043ad84d3e41ecf0d0f5a73e9c9fd0"
+    },
+    {
+      "path": "integration/complete-native-checkpoint/native/seven-package-run5-module-registry.json",
+      "command": [
+        "python3",
+        "scripts/hepta_module_registry.py",
+        "--strict",
+        "--pretty"
+      ],
+      "exit": 0,
+      "elapsedSeconds": 0.0638922150246799,
+      "logSha256": "e856e4c966f130ea6d3f52ab8ca8bcf31ead62ccc173424ac57c809887e3b2e9"
+    },
+    {
+      "path": "integration/complete-native-checkpoint/native/seven-package-run5-original-test.json",
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-agent-protocol",
+        "-p",
+        "codex-hepta-agentd",
+        "-p",
+        "codex-hepta-infer-worker-host",
+        "-p",
+        "codex-hepta-runtime",
+        "-p",
+        "codex-hepta-contracts",
+        "-p",
+        "codex-hepta-learning-ledger",
+        "-p",
+        "codex-hepta-supervisor",
+        "--tool-config-file",
+        "hepta-evidence:/home/qq/work/hepta-modules40-20261105-da8578/seven-package-run5-report-only.nextest.toml",
+        "--cargo-metadata",
+        "/home/qq/work/hepta-modules40-20261105-da8578/evidence/seven-package-run5-original-scoped-metadata.json"
+      ],
+      "exit": 0,
+      "elapsedSeconds": 38.44946334999986,
+      "logSha256": "57847b122b6411df2432fbedd490babee33fe99f05767509bce3b5d26f3a9a6e"
+    },
+    {
+      "path": "integration/complete-native-checkpoint/native/seven-package-run5-required-audit.json",
+      "command": [
+        "python3",
+        "/home/qq/work/hepta-modules40-20261105-da8578/audit-tools/audit_native_junit.py",
+        "--review-manifest",
+        "/home/qq/work/hepta-modules40-20261105-da8578/audit-tools/required-tests.69.json",
+        "--manifest",
+        "/home/qq/work/hepta-modules40-20261105-da8578/evidence/seven-package-run5-required-tests.69.source-bound.json",
+        "--candidate-commit",
+        "8658210499706130788c216ff14fd342809b45a4",
+        "--candidate-tree",
+        "6bc86196d10cf83b010f9917e5e9cb471b5f6b68",
+        "--junit",
+        "/home/qq/work/hepta-modules40-20261105-da8578/evidence/seven-package-run5.junit.xml",
+        "--suite-exit-code",
+        "0",
+        "--report",
+        "/home/qq/work/hepta-modules40-20261105-da8578/evidence/seven-package-run5-required-tests.69.native-audit.json"
+      ],
+      "exit": 0,
+      "elapsedSeconds": 0.3150980280479416,
+      "logSha256": "48c76a0774d89548a81d3847aa6d5befd7228a32a7c43abf476ce435d4463b24"
+    },
+    {
+      "path": "integration/complete-native-checkpoint/native/seven-package-run5-rust-ci-feedback.json",
+      "command": [
+        "python3",
+        "scripts/test_hepta_rust_ci_feedback.py"
+      ],
+      "exit": 0,
+      "elapsedSeconds": 0.22842454898636788,
+      "logSha256": "7283b041a568dffac4bf6d21cdafa7285afdb00bd11870ba6c97cf0b3439743a"
+    },
+    {
+      "path": "integration/complete-native-checkpoint/native/seven-package-run5-status-facts.json",
+      "command": [
+        "python3",
+        "scripts/test_hepta_module_status_facts.py"
+      ],
+      "exit": 0,
+      "elapsedSeconds": 0.03413167200051248,
+      "logSha256": "6f283ee6225d2cef4c0127d95456a6f954c45141c92b97dd89016cb1c630e8f4"
+    }
+  ],
+  "limits": [
+    "Linux scope only; no Windows or Darwin compilation/runtime qualification is inferred.",
+    "No result is transferred to a later commit, same-tree identity, merge candidate or evidence carrier.",
+    "The 69-case manifest is an audit subset, not an execution filter; complete-suite failure would remain failure.",
+    "Skipped tests remain skipped; separate command scopes and repeated candidates are not added together.",
+    "Stable rustfmt ignores the recorded nightly-only imports_granularity option.",
+    "All 40 production flags remain false; provider/deployment/independent acceptance remains open."
+  ],
+  "inputs": [
+    {
+      "path": "integration/runtime-receipts/complete-canonical-865-runtime-status.json",
+      "bytes": 738,
+      "sha256": "920005419553ea64959c613743e2a9fdf239686c7c4bfef5ccac7287f26114ff"
+    },
+    {
+      "path": "integration/native-865-checkpoint.tar.gz",
+      "bytes": 325679,
+      "sha256": "ba0299e0531d3a3fe4b0c5c5320233e696d5e5436303bc8d082d4fb0d627b430"
+    },
+    {
+      "path": "integration/complete-native-checkpoint/MANIFEST.json",
+      "bytes": 16772,
+      "sha256": "eb90f2d3417d9e87b3c5ef13e9c5c0f9c00840c08c1993ce948edcb70a4b9ba9"
+    },
+    {
+      "path": "integration/complete-native-checkpoint/native-source-history/22b4a16ace0b97aaf490b05eb5ee39bcb65c8c34.commit",
+      "bytes": 646,
+      "sha256": "39fce58b10ce217eacb32583453e2f242f1603dd27b0fcd70d55080119599b04"
+    },
+    {
+      "path": "integration/complete-native-checkpoint/native-source-history/3a39c799a3f776b0aeedfce350341d865d3cc1c4.commit",
+      "bytes": 332,
+      "sha256": "4e77412f1d65db0dd462af9a867a183a96804f0e6e4f0893ef0ce83eba144f6d"
+    },
+    {
+      "path": "integration/complete-native-checkpoint/native-source-history/775bf555b0a7faf6eed17627acb0d0433294b737.commit",
+      "bytes": 333,
+      "sha256": "ef545b7aca658cf9f4d3e8783956220e97ca3df3a58e7da6075517e9084a690c"
+    },
+    {
+      "path": "integration/complete-native-checkpoint/native-source-history/8658210499706130788c216ff14fd342809b45a4.commit",
+      "bytes": 881,
+      "sha256": "c5b84493b6b54792027afa852dacb49052327176cb6bb48fb9fd96b6d51f6eaa"
+    },
+    {
+      "path": "integration/complete-native-checkpoint/native-source-history/a045ce9d58170b9d0c4d868bb977d5debf8c9aa2.commit",
+      "bytes": 336,
+      "sha256": "d9766bb6695cd3ffab696f714b2b5164b1addcf1877c174409af2e3a68f29b8a"
+    },
+    {
+      "path": "integration/complete-native-checkpoint/native-source-history/a25fec842bb492556108dc9c5b20ac66a0b2ed2b.commit",
+      "bytes": 678,
+      "sha256": "e21ce91d9b0f2487d8d65a99f9564d21946498fe4fd6cb820e636dbb0d2994b2"
+    },
+    {
+      "path": "integration/complete-native-checkpoint/native-source-history/c2834dcade885fb9ff5da41b3947773067ec652d.commit",
+      "bytes": 394,
+      "sha256": "0c5a3a31a7642037f2d165cae1a838c84d4dde24cda6c44bb8b702b5386c7335"
+    },
+    {
+      "path": "integration/complete-native-checkpoint/native-source-history/daa46e7d1a5a2b7038eec5aabb96aa2189c7ce73.commit",
+      "bytes": 723,
+      "sha256": "e480368effd24d7c8422626e4d3c924c328c5a9957d6065c07c5fde7098c7211"
+    },
+    {
+      "path": "integration/complete-native-checkpoint/native-source-history/de7f7ac83922ba6a477adf6adbfe2c7607163307.commit",
+      "bytes": 345,
+      "sha256": "744e7ac9329bcac45bc336c95bae51432478892d9b17ca08b28790812b531f5b"
+    },
+    {
+      "path": "integration/complete-native-checkpoint/native-source-history/e5c3f72be991a2fef223170b547142af9820a04f.commit",
+      "bytes": 730,
+      "sha256": "fb1b30207f428f73ee4f16652ae6c170831d6da5e9bb1e058114f52bbce7409a"
+    },
+    {
+      "path": "integration/complete-native-checkpoint/native-source-history/f2fd6c66c30d393226fb1282e1ec005004356dc2.commit",
+      "bytes": 619,
+      "sha256": "f8c1be861031950f3d6b59c8ebfc97cb08612a6ef5a3251ce41ecf2e56dd2c8c"
+    },
+    {
+      "path": "integration/complete-native-checkpoint/native-source-history/identities.json",
+      "bytes": 2248,
+      "sha256": "5bfcf0ff5c4b7416e6b9c51b31dd7673016f3015eb9fe6b8a400dc5078912f55"
+    },
+    {
+      "path": "integration/complete-native-checkpoint/native/complete-canonical-run1-app-server-process-regression.json",
+      "bytes": 1025,
+      "sha256": "0f6ddf8a615a661faebcccba7328581d64128a58a367a6cf087eaed4a59055b9"
+    },
+    {
+      "path": "integration/complete-native-checkpoint/native/complete-canonical-run1-app-server-process-regression.log",
+      "bytes": 19541,
+      "sha256": "06b13d96a90088d499b2fe9e62ad3ec4782824dd86df90458aad625d46d19fd6"
+    },
+    {
+      "path": "integration/complete-native-checkpoint/native/complete-canonical-run1-navigation-preview.json",
+      "bytes": 7060,
+      "sha256": "9de3099b6cb4c2900f9b41b5068c216824a501346459be44b101f232b5298d3f"
+    },
+    {
+      "path": "integration/complete-native-checkpoint/native/complete-canonical-run1-navigation-preview.log",
+      "bytes": 363,
+      "sha256": "2d7167dd10e741a94fcc8a93e487a3ecf3c9f6d0f242c84ce88bb2fabf1bb7e6"
+    },
+    {
+      "path": "integration/complete-native-checkpoint/native/complete-canonical-run1-original-ci-policy-clippy.json",
+      "bytes": 1150,
+      "sha256": "19dc691ac9c611d616b5b915837a43db35233a68d8f6a68a71eb0f68441d86ee"
+    },
+    {
+      "path": "integration/complete-native-checkpoint/native/complete-canonical-run1-original-ci-policy-clippy.log",
+      "bytes": 8953,
+      "sha256": "5a273b352efa183e5494396214a3a2b9b231e91e1d4e8717b2a420cd7673ed09"
+    },
+    {
+      "path": "integration/complete-native-checkpoint/native/complete-canonical-run1-original-codespell.json",
+      "bytes": 1007,
+      "sha256": "dfbee26c19c45741da888d13cc27aee37d32cf71d699a4a5d8a0f3a56c550514"
+    },
+    {
+      "path": "integration/complete-native-checkpoint/native/complete-canonical-run1-original-codespell.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "integration/complete-native-checkpoint/native/complete-canonical-run1-original-four-package-format.json",
+      "bytes": 1098,
+      "sha256": "a5512e3f35c958ae0547738645ee50c09c889acec6bfd5a89d481627e4b7d3cd"
+    },
+    {
+      "path": "integration/complete-native-checkpoint/native/complete-canonical-run1-original-four-package-format.log",
+      "bytes": 3074,
+      "sha256": "569f5b0a5f26ebfbf85e01faa3030747603915fa1d636fda3e4a801a553411ad"
+    },
+    {
+      "path": "integration/complete-native-checkpoint/native/complete-canonical-run1-original-windows-ci-receipt-controls.json",
+      "bytes": 1002,
+      "sha256": "e534379a9dd5d8886553d666413f47706847d55e91f2d3f85fe6859f549b302d"
+    },
+    {
+      "path": "integration/complete-native-checkpoint/native/complete-canonical-run1-original-windows-ci-receipt-controls.log",
+      "bytes": 1332,
+      "sha256": "5ead9099ec7ffa16a41d5f8225c15c7bfec1b30406817d29cac88049aa1c929c"
+    },
+    {
+      "path": "integration/complete-native-checkpoint/native/complete-canonical-run1-original-workspace-format.json",
+      "bytes": 961,
+      "sha256": "39de4bf30097b9db9b2c51106c2287a8295e05e9d2ac0095ba6be1e770e31f8b"
+    },
+    {
+      "path": "integration/complete-native-checkpoint/native/complete-canonical-run1-original-workspace-format.log",
+      "bytes": 45156,
+      "sha256": "48230365c06813d60fa46b6117c843a84166fb279b565ff886b5c70a2a2dcd2d"
+    },
+    {
+      "path": "integration/complete-native-checkpoint/native/complete-canonical-run1-seven-package-original-runner.json",
+      "bytes": 1138,
+      "sha256": "6d39ea1f86b38d618e00ee3f3aa7514d22397eec1fdee30cdfcd85147d9a973b"
+    },
+    {
+      "path": "integration/complete-native-checkpoint/native/complete-canonical-run1-seven-package-original-runner.log",
+      "bytes": 12201,
+      "sha256": "3b787dea1013e8ffa7d1be9dd4c6be3e17aa5f188efb664555fb99a039c159f9"
+    },
+    {
+      "path": "integration/complete-native-checkpoint/native/complete-canonical-run1-source-checkout.json",
+      "bytes": 1680,
+      "sha256": "aa5ca8ccb84c48c88b7016019a3fae1f714ab9b95216fcc4732adf5d3cbb41d5"
+    },
+    {
+      "path": "integration/complete-native-checkpoint/native/complete-canonical-run1-summary.json",
+      "bytes": 935,
+      "sha256": "2d69324a4e17b3d05539568f026f5d5862f94f1eea5b275223e57688354d63f9"
+    },
+    {
+      "path": "integration/complete-native-checkpoint/native/complete-canonical-run1-two-library-regression.json",
+      "bytes": 980,
+      "sha256": "aeb2414b51ee297a7cb3b330653c52e27b04c46873dbefa3d3527bcfbdcba231"
+    },
+    {
+      "path": "integration/complete-native-checkpoint/native/complete-canonical-run1-two-library-regression.log",
+      "bytes": 57048,
+      "sha256": "d22252e0c7ab876f493c9b18d758a6659190936f7500aa8ad0971ec564f563b0"
+    },
+    {
+      "path": "integration/complete-native-checkpoint/native/seven-package-run5-bind-manifest.json",
+      "bytes": 1413,
+      "sha256": "ced48ed411d92406d5b9b809690f34b92f9de9b42c1514571513b82581c372e4"
+    },
+    {
+      "path": "integration/complete-native-checkpoint/native/seven-package-run5-bind-manifest.log",
+      "bytes": 566,
+      "sha256": "47fb7141e32162b333c80f7248ef23b9232bfebf898234858942943db7360e2d"
+    },
+    {
+      "path": "integration/complete-native-checkpoint/native/seven-package-run5-chef-custody.json",
+      "bytes": 890,
+      "sha256": "e4b8e802648d590f296c4cfce24e0bbdba2287e101607f158a3bdf1dde1c41e2"
+    },
+    {
+      "path": "integration/complete-native-checkpoint/native/seven-package-run5-chef-custody.log",
+      "bytes": 4728,
+      "sha256": "d5b4b1d23c456d0a73e00842a095e8ff7906ac39aa2aae39a4b16c8d9ce7c569"
+    },
+    {
+      "path": "integration/complete-native-checkpoint/native/seven-package-run5-documents-qualification.json",
+      "bytes": 949,
+      "sha256": "77b88831d36425de1ad36d82257da68453f1060a4ea18a75b47bc40bc902aff9"
+    },
+    {
+      "path": "integration/complete-native-checkpoint/native/seven-package-run5-documents-qualification.log",
+      "bytes": 323,
+      "sha256": "db8def5c9333745c8aa3af8688d7d9e2b67b9041e6b005a45d15db8eecbf3e10"
+    },
+    {
+      "path": "integration/complete-native-checkpoint/native/seven-package-run5-maps-qualification.json",
+      "bytes": 1094,
+      "sha256": "94f3cbd1dcfb5a89690811e87bdda2e331e1ff0eb386bffd831c9b8acc1be361"
+    },
+    {
+      "path": "integration/complete-native-checkpoint/native/seven-package-run5-maps-qualification.log",
+      "bytes": 691,
+      "sha256": "3d7d93030b8eea0515fe072645e77c8f36e1bec943a6b79c3477b2a8f316aa89"
+    },
+    {
+      "path": "integration/complete-native-checkpoint/native/seven-package-run5-module-docs-metadata.json",
+      "bytes": 908,
+      "sha256": "51cf21962300e52f6bf5d061e09c58328859c46d79662e50f6b79b33706e5085"
+    },
+    {
+      "path": "integration/complete-native-checkpoint/native/seven-package-run5-module-docs-metadata.log",
+      "bytes": 104,
+      "sha256": "e11bbb630c1a6ea91f4322ac92d7ce2a6c043ad84d3e41ecf0d0f5a73e9c9fd0"
+    },
+    {
+      "path": "integration/complete-native-checkpoint/native/seven-package-run5-module-registry.json",
+      "bytes": 926,
+      "sha256": "74e8530ef7cf3b5a26580b6fd8132d82681a92d8ff0ce9fdfcadaff71cc6957a"
+    },
+    {
+      "path": "integration/complete-native-checkpoint/native/seven-package-run5-module-registry.log",
+      "bytes": 896,
+      "sha256": "e856e4c966f130ea6d3f52ab8ca8bcf31ead62ccc173424ac57c809887e3b2e9"
+    },
+    {
+      "path": "integration/complete-native-checkpoint/native/seven-package-run5-original-scoped-metadata.json",
+      "bytes": 937669,
+      "sha256": "3ec7d59d8e9d1f565086059ed198262bb927faf23795886f8d063cf7c02ccef4"
+    },
+    {
+      "path": "integration/complete-native-checkpoint/native/seven-package-run5-original-test.json",
+      "bytes": 1440,
+      "sha256": "bd8df907ed2ae2b1d4afa4d263d73d5b7e32ab704b897980045df53ceca9b339"
+    },
+    {
+      "path": "integration/complete-native-checkpoint/native/seven-package-run5-original-test.log",
+      "bytes": 194188,
+      "sha256": "57847b122b6411df2432fbedd490babee33fe99f05767509bce3b5d26f3a9a6e"
+    },
+    {
+      "path": "integration/complete-native-checkpoint/native/seven-package-run5-preflight.json",
+      "bytes": 6145,
+      "sha256": "d286acbdde6632332c2453eea12c3ddc6b924724546790a338286217809d9484"
+    },
+    {
+      "path": "integration/complete-native-checkpoint/native/seven-package-run5-required-audit.json",
+      "bytes": 1607,
+      "sha256": "0dd0c2a5b98d2009be40182eb4a4938aa24be03c149b96ab524a6f62d6aeee9a"
+    },
+    {
+      "path": "integration/complete-native-checkpoint/native/seven-package-run5-required-audit.log",
+      "bytes": 107,
+      "sha256": "48c76a0774d89548a81d3847aa6d5befd7228a32a7c43abf476ce435d4463b24"
+    },
+    {
+      "path": "integration/complete-native-checkpoint/native/seven-package-run5-required-tests.69.native-audit.json",
+      "bytes": 73601,
+      "sha256": "54df9e3a9794cb7526e8c4c9d13ff977fc1496d7b72d2b0821cfadf3fb98beae"
+    },
+    {
+      "path": "integration/complete-native-checkpoint/native/seven-package-run5-required-tests.69.source-bound.json",
+      "bytes": 78628,
+      "sha256": "2b6a8426bc1f26fe65265cbd30ecbadae28ad3e27df030c46d9c4375746bf57f"
+    },
+    {
+      "path": "integration/complete-native-checkpoint/native/seven-package-run5-rust-ci-feedback.json",
+      "bytes": 902,
+      "sha256": "ac93610d8d1fa80f318d69363fbd2b29407322f704ca1673b27509306e202f3f"
+    },
+    {
+      "path": "integration/complete-native-checkpoint/native/seven-package-run5-rust-ci-feedback.log",
+      "bytes": 119,
+      "sha256": "7283b041a568dffac4bf6d21cdafa7285afdb00bd11870ba6c97cf0b3439743a"
+    },
+    {
+      "path": "integration/complete-native-checkpoint/native/seven-package-run5-status-facts.json",
+      "bytes": 901,
+      "sha256": "5ddc9397ac57c273950cb37394f80853292219bdfbeb1bed9c0466deac4915f8"
+    },
+    {
+      "path": "integration/complete-native-checkpoint/native/seven-package-run5-status-facts.log",
+      "bytes": 100,
+      "sha256": "6f283ee6225d2cef4c0127d95456a6f954c45141c92b97dd89016cb1c630e8f4"
+    },
+    {
+      "path": "integration/complete-native-checkpoint/native/seven-package-run5-summary.json",
+      "bytes": 1569,
+      "sha256": "0c24eb62769b5f475a5b912a347a88cbf3c15e1666447badf105c36d87cc51d3"
+    },
+    {
+      "path": "integration/complete-native-checkpoint/native/seven-package-run5.junit.xml",
+      "bytes": 280619,
+      "sha256": "f17813bb320d0583756f9b19edf87b50b4f2e734028d694c5ec577fa4510c851"
+    },
+    {
+      "path": "integration/complete-native-checkpoint/native/upstream-3a39-integration-run1-export.json",
+      "bytes": 85045,
+      "sha256": "2486c4784e87b6b8e4b5c62227bcd5d9d5c22b65b72d18b265df1d7405b1b7b0"
+    },
+    {
+      "path": "integration/complete-native-checkpoint/native/upstream-3a39-integration-run1-export.json.z",
+      "bytes": 22407,
+      "sha256": "bf26377c829b668c297b262826deb324bfa8b599e9cd047a9b727e254e05fdf7"
+    },
+    {
+      "path": "integration/complete-native-checkpoint/native/upstream-3a39-integration-run1-format.log",
+      "bytes": 530,
+      "sha256": "1d126a9a58a3b27ac409c1fb1c667778515f4fb266243088bd31c6063d8efbcb"
+    },
+    {
+      "path": "integration/complete-native-checkpoint/native/upstream-3a39-integration-run1-merge.log",
+      "bytes": 227,
+      "sha256": "c8f37407a4b312413b2bfa819c5fca8321de65bb10585d711634973d41b4b295"
+    },
+    {
+      "path": "integration/complete-native-checkpoint/native/upstream-3a39-integration-run1-source.patch",
+      "bytes": 56395,
+      "sha256": "f6020b3d00e7ce6c5f01fe99018fbd5e3901a42f01b880923a64183eb56c248b"
+    },
+    {
+      "path": "integration/complete-native-checkpoint/reproduction/archive-complete-native.py",
+      "bytes": 6568,
+      "sha256": "483a52e056f0b825f671cbdefa8e77174229fcb58dd7e122901f45a76c333087"
+    },
+    {
+      "path": "integration/complete-native-checkpoint/reproduction/audit-tools/PREPARATION.json",
+      "bytes": 3189,
+      "sha256": "97200e2d0abfdba28cc44da9fc7878c40968d065339475abcc40a5050f0d89ac"
+    },
+    {
+      "path": "integration/complete-native-checkpoint/reproduction/audit-tools/README.md",
+      "bytes": 6621,
+      "sha256": "ce6cdfdd2645087a0f32d28f3339013002746749e1b736ee95b925b2911f2c7b"
+    },
+    {
+      "path": "integration/complete-native-checkpoint/reproduction/audit-tools/audit_native_junit.py",
+      "bytes": 9205,
+      "sha256": "a7796625ad2fd604c2f99c233ba530958ec652bad003c124e2c2138b7f612151"
+    },
+    {
+      "path": "integration/complete-native-checkpoint/reproduction/audit-tools/bind_native_audit_manifest.py",
+      "bytes": 8610,
+      "sha256": "1fd7070c5bff70acfe7890da820e50c25dfa60c6ac3f72b775c4a78a795ab580"
+    },
+    {
+      "path": "integration/complete-native-checkpoint/reproduction/audit-tools/history/bind_required_tests_manifest.py",
+      "bytes": 8470,
+      "sha256": "ac912800a10b48382800a92edc21ad2ce8e15c435e83ff7359f1a9a8951bdfc9"
+    },
+    {
+      "path": "integration/complete-native-checkpoint/reproduction/audit-tools/history/check_required_junit.py",
+      "bytes": 10111,
+      "sha256": "043448357a05cd2c71f3a812a0d9e623e4313a50c6222cbbba03172f95dcae5b"
+    },
+    {
+      "path": "integration/complete-native-checkpoint/reproduction/audit-tools/history/required-tests.with-e65.json",
+      "bytes": 43938,
+      "sha256": "f832236003c1937c29ba9ca3f6faeafa2dc9799664ae1069d0df78339366f56e"
+    },
+    {
+      "path": "integration/complete-native-checkpoint/reproduction/audit-tools/history/required-tests.with-e65.md",
+      "bytes": 1816,
+      "sha256": "a0a4d379063435834ba87e0fa7e4be098fc3c2acee7b81fe779afd1f29015215"
+    },
+    {
+      "path": "integration/complete-native-checkpoint/reproduction/audit-tools/required-tests.69.json",
+      "bytes": 56061,
+      "sha256": "bd5fa881bf712098f23b4f2193af548b5f3b70cf99694a2704d1d9458f5717ed"
+    },
+    {
+      "path": "integration/complete-native-checkpoint/reproduction/complete-canonical-object.json",
+      "bytes": 1291,
+      "sha256": "960db478dd765e9f922ca33062b734e286f79310571295894752cf7d1e5dd5fe"
+    },
+    {
+      "path": "integration/complete-native-checkpoint/reproduction/environment.json",
+      "bytes": 2040,
+      "sha256": "0eba31f9edc07ffc869f685c2dfcf3eab856be5f4dce622721ed36f43b0875d5"
+    },
+    {
+      "path": "integration/complete-native-checkpoint/reproduction/refresh-navigation-explicit-pins.py",
+      "bytes": 13331,
+      "sha256": "940f0fe0d5fccf53dc8d00dacbd4f572cf9b02419704dba0cde35d495f9e7e3b"
+    },
+    {
+      "path": "integration/complete-native-checkpoint/reproduction/run-complete-canonical.py",
+      "bytes": 8564,
+      "sha256": "73086528ccc12e1d37795e46fa5662879a3637403c5f1f760936808eda303bff"
+    },
+    {
+      "path": "integration/complete-native-checkpoint/reproduction/run-final-native.py",
+      "bytes": 8758,
+      "sha256": "9590be884338146913ddec0fc4c0770cd2f134daf69d67c5a4a8bb14d60097eb"
+    },
+    {
+      "path": "integration/complete-native-checkpoint/reproduction/run-upstream-3a39-integration.py",
+      "bytes": 8020,
+      "sha256": "cb0613fd97cd06605630d5c16f182a1c093e698fa8efe92eb145764f824629e1"
+    },
+    {
+      "path": "integration/complete-native-checkpoint/reproduction/upstream-3a39-input.json",
+      "bytes": 241132,
+      "sha256": "da84194262d2aa04e0f323be8b2b94b21d6f8626dea85b8216e70a7bedaf1893"
+    }
+  ],
+  "scopeChecks": {
+    "original-codespell": 0,
+    "seven-package-original-runner": 0,
+    "original-workspace-format": 0,
+    "original-four-package-format": 0,
+    "original-ci-policy-clippy": 0,
+    "two-library-regression": 0,
+    "app-server-process-regression": 0,
+    "original-windows-ci-receipt-controls": 0
+  },
+  "scopeCheckCount": 8,
+  "pythonCiReceiptControls": {
+    "testCount": 28,
+    "elapsedSeconds": 0.068,
+    "exitCode": 0,
+    "scope": "Original Python CI receipt rejection controls executed on Linux; not a Windows compilation or runtime qualification."
+  }
+}

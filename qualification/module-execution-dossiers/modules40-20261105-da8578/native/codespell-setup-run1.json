@@ -1,0 +1,40 @@
+{
+  "source_before": {
+    "commit": "bb55b0d7d263c396ec504c45393d938c3428dae5",
+    "tree": "19116ccdf440a1cddc2a29f3d709ebe1a3cd06c1",
+    "status": ""
+  },
+  "source_after": {
+    "commit": "bb55b0d7d263c396ec504c45393d938c3428dae5",
+    "tree": "19116ccdf440a1cddc2a29f3d709ebe1a3cd06c1",
+    "status": ""
+  },
+  "commands": [
+    [
+      "/usr/bin/python3",
+      "-m",
+      "venv",
+      "/home/qq/work/hepta-modules40-20261105-da8578/tools/codespell-2.4.3"
+    ],
+    [
+      "/home/qq/work/hepta-modules40-20261105-da8578/tools/codespell-2.4.3/bin/python",
+      "-m",
+      "pip",
+      "--isolated",
+      "install",
+      "--disable-pip-version-check",
+      "--no-cache-dir",
+      "--index-url",
+      "https://pypi.org/simple",
+      "--report",
+      "/home/qq/work/hepta-modules40-20261105-da8578/evidence/codespell-setup-run1-pip-report.json",
+      "codespell==2.4.3"
+    ]
+  ],
+  "exit": 0,
+  "version": "2.4.3",
+  "elapsed_seconds": 12.788342484040186,
+  "log_bytes": 226,
+  "log_sha256": "7c74e59cfddd7c2a00fd677d153931a6ced8f3ba25c88bc20054e94811744cff",
+  "scope": "isolated pinned dependency preparation, not a Codespell pass"
+}

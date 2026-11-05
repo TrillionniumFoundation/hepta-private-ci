@@ -1,0 +1,1049 @@
+diff --git a/.github/scripts/aggregate_windows_current_ci.py b/.github/scripts/aggregate_windows_current_ci.py
+new file mode 100644
+index 0000000000..df95ec285c
+--- /dev/null
++++ b/.github/scripts/aggregate_windows_current_ci.py
+@@ -0,0 +1,242 @@
++#!/usr/bin/env python3
++"""Require both current native shards and every original Windows terminal result."""
++
++from __future__ import annotations
++import argparse
++import hashlib
++import json
++from pathlib import Path, PureWindowsPath
++import re
++
++from windows_current_ci import (
++    ANSI,
++    SANDBOX_HELPERS,
++    SHARD_PACKAGES,
++    assess,
++    git,
++    original_command,
++    scope_digest,
++    selected_groups,
++    valid_source,
++)
++
++
++def require(condition: bool, message: str) -> None:
++    if not condition:
++        raise ValueError(message)
++
++
++def unique_object(pairs):
++    result = {}
++    for key, value in pairs:
++        require(key not in result, "duplicate JSON receipt key")
++        result[key] = value
++    return result
++
++
++def read_bytes(path: Path) -> bytes:
++    require(path.is_file() and not path.is_symlink(), f"missing or redirected evidence: {path.name}")
++    return path.read_bytes()
++
++
++def read_json(path: Path):
++    return json.loads(read_bytes(path), object_pairs_hook=unique_object)
++
++
++def sha256(data: bytes) -> str:
++    return hashlib.sha256(data).hexdigest()
++
++
++def artifact_name(head: str, run_id: str, attempt: str, shard: str) -> str:
++    return f"windows-current-ci-{head}-{run_id}-{attempt}-{shard}"
++
++
++def single_nextest_run(group: dict, raw: str) -> dict:
++    # Keep the original outcome assessor unchanged. A second complete run must
++    # not disappear when that assessor deduplicates its terminal test names.
++    text = ANSI.sub("", raw).replace("\r\n", "\n")
++    headers = list(re.finditer(r"^[ \t]*Nextest run ID[^\n]*$", text, re.MULTILINE))
++    starts = list(re.finditer(r"^[ \t]*Starting [^\n]*$", text, re.MULTILINE))
++    summaries = list(re.finditer(r"^[ \t]*Summary \[[^\n]*$", text, re.MULTILINE))
++    require(len(headers) == len(starts) == len(summaries) == 1, "original group must contain exactly one Nextest run ID, Starting and Summary")
++    header = re.fullmatch(r"\s*Nextest run ID ([0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}) with nextest profile: local", headers[0].group())
++    start = re.fullmatch(r"\s*Starting (\d+) tests? across 1 binary(?: \((\d+) tests? skipped\))?", starts[0].group())
++    summary = re.fullmatch(r"\s*Summary \[[^\]\n]+\] (\d+) tests? run: (\d+) passed(?:, (\d+) skipped)?", summaries[0].group())
++    require(header is not None and start is not None and summary is not None, "original single-run profile or terminal summary is invalid")
++    require(headers[0].start() < starts[0].start() < summaries[0].start(), "original Nextest run envelope is out of order")
++    selected = group["expectedTestCount"]
++    skipped = int(start[2] or 0)
++    require(int(start[1]) == int(summary[1]) == int(summary[2]) == selected and int(summary[3] or 0) == skipped, "original single-run selected, passed or skipped totals disagree")
++    return {"runId": header[1], "profile": "local", "selected": selected, "skipped": skipped}
++
++
++def native_path(value, label: str) -> PureWindowsPath:
++    require(isinstance(value, str) and bool(value), f"missing native {label} path")
++    path = PureWindowsPath(value)
++    require(path.is_absolute() and ".." not in path.parts, f"invalid native {label} path")
++    return path
++
++
++def validate_helper_bytes(directory: Path, helpers: dict, native_paths: dict) -> None:
++    require(isinstance(native_paths, dict) and set(native_paths) == {"checkout", "target"}, "missing native checkout/target paths")
++    root = native_path(native_paths["checkout"], "checkout")
++    target = native_path(native_paths["target"], "target")
++    require(not target.is_relative_to(root), "native helper target must remain outside the source checkout")
++    manifest = root / "codex-rs/windows-sandbox-rs/Cargo.toml"
++    profile = target / "dev-small"
++    sources = {
++        "codex-windows-sandbox-setup": "src/bin/setup_main/main.rs",
++        "codex-command-runner": "src/bin/command_runner/main.rs",
++    }
++    build = read_bytes(directory / "sandbox-helper-build.log")
++    require(sha256(build) == helpers.get("logSha256"), "helper build log changed")
++    records = {name: [] for name in SANDBOX_HELPERS}
++    completed = []
++    for line in build.decode("utf-8").splitlines():
++        try:
++            record = json.loads(line, object_pairs_hook=unique_object)
++        except json.JSONDecodeError:
++            continue
++        if not isinstance(record, dict):
++            continue
++        if record.get("reason") == "build-finished":
++            completed.append(record.get("success"))
++        item = record.get("target", {})
++        if record.get("reason") == "compiler-artifact" and item.get("name") in records:
++            records[item["name"]].append(record)
++    require(len(completed) == 1 and completed[0] is True, "helper Cargo build has no unique successful terminal")
++    artifacts = helpers["artifacts"]
++    require(isinstance(artifacts, list) and [item["name"] for item in artifacts] == list(SANDBOX_HELPERS), "missing original native helper")
++    binaries = directory / "sandbox-helper-binaries"
++    require(binaries.is_dir() and not binaries.is_symlink(), "missing or redirected compiled helper evidence directory")
++    require({path.name for path in binaries.iterdir()} == {name + ".exe" for name in SANDBOX_HELPERS}, "missing or extra compiled helper evidence")
++    for item in artifacts:
++        name = item["name"]
++        binary = profile / (name + ".exe")
++        sibling = profile / "deps" / binary.name
++        require(len(records[name]) == 1, "helper must have exactly one original Cargo compiler artifact")
++        record = records[name][0]
++        require(record["target"].get("kind") == ["bin"] and record["target"].get("crate_types") == ["bin"], "helper is not the original native binary target")
++        require(native_path(record.get("manifest_path"), "Cargo manifest") == manifest and native_path(record["target"].get("src_path"), "Cargo source") == manifest.parent / sources[name], "helper Cargo source belongs to another checkout or target")
++        require(native_path(record.get("executable"), "Cargo executable") == binary and record.get("profile", {}).get("test") is False, "helper Cargo artifact escaped the original native profile")
++        require(isinstance(record.get("filenames"), list) and binary in [native_path(path, "Cargo output") for path in record["filenames"]], "helper is absent from original Cargo output files")
++        require(native_path(item.get("source"), "helper source") == binary and native_path(item.get("testSibling"), "helper test sibling") == sibling, "helper metadata is not bound to the original compiler artifact and test sibling")
++        require(item.get("evidenceFile") == "sandbox-helper-binaries/" + binary.name, "helper evidence path changed")
++        data = read_bytes(binaries / binary.name)
++        require(data.startswith(b"MZ") and type(item.get("bytes")) is int and item["bytes"] == len(data) and item.get("sha256") == sha256(data), "compiled helper bytes, PE header, length or SHA256 disagree")
++
++
++def validate_shards(
++    manifest: dict, head: str, tree: str, lock: bytes, run_id: str, attempt: str,
++    matrix_result: str, evidence: Path,
++) -> dict:
++    require(bool(re.fullmatch(r"[0-9a-f]{40}", head)), "expected head is not immutable")
++    require(bool(re.fullmatch(r"[0-9a-f]{40}", tree)), "expected tree is not immutable")
++    require(all(re.fullmatch(r"[1-9][0-9]*", value) for value in (run_id, attempt)), "missing current workflow identity")
++    all_groups = selected_groups(manifest)
++    expected_policy = {
++        "testRetries": 0, "testThreads": 1, "emptySelection": "fail",
++        "allSelectedFailuresFatal": True, "productionAuthorityGranted": False,
++        "finalProductQualification": False,
++    }
++    require(json.dumps(manifest["policy"], sort_keys=True) == json.dumps(expected_policy, sort_keys=True), "original strict scope policy changed")
++    require(b"\r" not in lock, "aggregate source lock must use canonical repository LF bytes")
++    allowed_locks = {sha256(lock), sha256(lock.replace(b"\n", b"\r\n"))}
++    expected_dirs = {artifact_name(head, run_id, attempt, shard) for shard in SHARD_PACKAGES}
++    require(evidence.is_dir() and not evidence.is_symlink(), "current shard evidence is missing")
++    require({path.name for path in evidence.iterdir()} == expected_dirs, "missing, duplicate, historical or extra shard artifacts")
++    results = []
++    sources = []
++    runners = []
++    nextest_runs = []
++    for shard in SHARD_PACKAGES:
++        directory = evidence / artifact_name(head, run_id, attempt, shard)
++        require(directory.is_dir() and not directory.is_symlink(), "redirected shard directory")
++        receipt = read_json(directory / "receipt.json")
++        require(receipt.get("schema") == "hepta.windows-current-ci-shard-receipt.v1", "missing complete shard receipt")
++        require(receipt.get("shard") == shard, "wrong shard binding")
++        require(receipt.get("status") == "PASS_DECLARED_WINDOWS_SHARD", "shard did not reach a passing terminal")
++        require(receipt.get("declaredScopeDigest") == scope_digest(manifest), "scope changed or historical scope substituted")
++        require(receipt.get("productionAuthorityGranted") is False and receipt.get("finalProductQualification") is False, "CI evidence must never grant product authority")
++        require(type(receipt.get("testRetries")) is int and receipt["testRetries"] == 0, "test retry policy changed")
++        identity = receipt["workflow"]
++        require(identity.get("runId") == run_id and identity.get("runAttempt") == attempt, "historical workflow receipt")
++        require(identity.get("runnerOs") == "Windows" and isinstance(identity.get("runnerName"), str) and bool(identity["runnerName"]), "missing native Windows runner identity")
++        runners.append(identity["runnerName"])
++        require(isinstance(receipt.get("platform"), str) and receipt["platform"].startswith("Windows-"), "non-Windows producer")
++        before, after = receipt["sourceBefore"], receipt["sourceAfter"]
++        require(set(before) == {"head", "tree", "trackedChanges", "cargoLockSha256"} and set(after) == set(before), "invalid source evidence shape")
++        require(valid_source(head, before, after) and type(before["trackedChanges"]) is str and before["trackedChanges"] == "" and before["tree"] == tree and before["cargoLockSha256"] in allowed_locks, "wrong, changed or dirty native source")
++        require(receipt.get("sourceUnchanged") is True, "native source terminal not intact")
++        require(read_json(directory / "source-before.json") == before and read_json(directory / "source-after.json") == after, "source sidecars disagree with terminal receipt")
++        sources.append(before)
++        compiler = read_bytes(directory / "compiler.txt")
++        compiler_text = compiler.decode("utf-8").replace("\r\n", "\n")
++        require(sha256(compiler) == receipt.get("compilerSha256") and compiler_text.startswith("rustc 1.96.0 ") and "\nhost: x86_64-pc-windows-msvc\n" in compiler_text, "wrong native compiler evidence")
++        groups = selected_groups(manifest, shard)
++        rows = receipt["groups"]
++        require(isinstance(rows, list) and [row.get("id") for row in rows] == [group["id"] for group in groups], "missing, duplicate, reordered or extra original group")
++        require(read_json(directory / "groups.json") == rows, "group sidecar differs from terminal receipt")
++        for group, row in zip(groups, rows):
++            raw = read_bytes(directory / (group["id"] + ".log"))
++            require(row.get("logSha256") == sha256(raw), "original group log changed")
++            require(row.get("command") == original_command(group), "original command, filter, profile or retry budget changed")
++            require(type(row.get("exitCode")) is int, "missing native command terminal")
++            observed = assess(group, row["exitCode"], raw.decode("utf-8"))
++            require(all(type(row.get(key)) is type(value) and row[key] == value for key, value in observed.items()), "claimed test outcome disagrees with original raw log")
++            require(observed["passed"] is True, "an original selected test failed or did not run")
++            envelope = single_nextest_run(group, raw.decode("utf-8"))
++            nextest_runs.append(envelope["runId"])
++            results.append({**observed, "shard": shard, "logSha256": sha256(raw), "command": row["command"], "source": before, "nextestRun": envelope})
++        helpers = receipt["sandboxHelperPreparation"]
++        if any(group["package"] == "codex-windows-sandbox" for group in groups):
++            require(isinstance(helpers, dict) and helpers.get("passed") is True and type(helpers.get("exitCode")) is int and helpers["exitCode"] == 0, "original native sandbox helpers did not build")
++            expected_helper_command = ["cargo", "build", "--locked", "-p", "codex-windows-sandbox", "--profile", "dev-small", "--message-format=json"]
++            for name in SANDBOX_HELPERS:
++                expected_helper_command.extend(["--bin", name])
++            require(helpers.get("command") == expected_helper_command, "original native helper build command changed")
++            require(read_json(directory / "sandbox-helper-preparation.json") == helpers, "helper preparation sidecar differs")
++            validate_helper_bytes(directory, helpers, receipt.get("nativePaths"))
++        else:
++            require(helpers is None, "non-sandbox shard must not claim helper preparation")
++    require(sources[0] == sources[1] and len(set(runners)) == len(SHARD_PACKAGES), "shards did not bind the same source on independent runners")
++    require({row["id"] for row in results} == {group["id"] for group in all_groups} and len(results) == 19, "incomplete or duplicate aggregate group coverage")
++    require(sum(row["selectedTestCount"] for row in results) == 167, "incomplete aggregate original case coverage")
++    require(len(set(nextest_runs)) == len(results), "original group run IDs are duplicated")
++    require(matrix_result == "success", "native matrix jobs did not all finish successfully")
++    return {"groups": results, "groupCount": 19, "testCount": 167, "source": sources[0], "runners": runners}
++
++
++def main() -> int:
++    parser = argparse.ArgumentParser()
++    parser.add_argument("--expected-head", required=True)
++    parser.add_argument("--run-id", required=True)
++    parser.add_argument("--run-attempt", required=True)
++    parser.add_argument("--matrix-result", required=True)
++    parser.add_argument("--input", required=True, type=Path)
++    parser.add_argument("--output", required=True, type=Path)
++    args = parser.parse_args()
++    root = Path(__file__).resolve().parents[2]
++    output = args.output.resolve()
++    require(not output.is_relative_to(root), "aggregate diagnostics must stay outside source")
++    output.mkdir(parents=True, exist_ok=True)
++    result = {
++        "schema": "hepta.windows-current-ci-aggregate.v1", "status": "FAIL_DECLARED_WINDOWS_SCOPE",
++        "head": args.expected_head, "runId": args.run_id, "runAttempt": args.run_attempt,
++        "nativeMatrixResult": args.matrix_result, "productionAuthorityGranted": False,
++        "finalProductQualification": False,
++    }
++    try:
++        require(git(root, "rev-parse", "HEAD") == args.expected_head and not git(root, "status", "--porcelain", "--untracked-files=no"), "aggregate checkout is not the exact clean head")
++        manifest = read_json(root / ".github/fixtures/windows-current-ci-scope.json")
++        result.update(validate_shards(manifest, args.expected_head, git(root, "rev-parse", "HEAD^{tree}"), read_bytes(root / "codex-rs/Cargo.lock"), args.run_id, args.run_attempt, args.matrix_result, args.input.resolve()))
++        result["status"] = "PASS_DECLARED_WINDOWS_SCOPE"
++    except Exception as error:
++        result["error"] = f"{type(error).__name__}: {error}"
++    (output / "receipt.json").write_text(json.dumps(result, indent=2) + "\n", encoding="utf-8")
++    print(json.dumps(result), flush=True)
++    return 0 if result["status"] == "PASS_DECLARED_WINDOWS_SCOPE" else 1
++
++
++if __name__ == "__main__":
++    raise SystemExit(main())
+diff --git a/.github/scripts/test_windows_current_ci_shards.py b/.github/scripts/test_windows_current_ci_shards.py
+new file mode 100644
+index 0000000000..7caf46f078
+--- /dev/null
++++ b/.github/scripts/test_windows_current_ci_shards.py
+@@ -0,0 +1,379 @@
++"""Synthetic receipt rejection controls; these are not native Windows evidence."""
++
++import copy
++import hashlib
++import json
++import tempfile
++import unittest
++from pathlib import Path, PureWindowsPath
++
++from aggregate_windows_current_ci import artifact_name, validate_shards
++from windows_current_ci import (
++    SANDBOX_HELPERS,
++    SHARD_PACKAGES,
++    assess,
++    export_sandbox_helper_evidence,
++    original_command,
++    scope_digest,
++    selected_groups,
++)
++
++
++class OriginalWindowsShardControls(unittest.TestCase):
++    def setUp(self):
++        self.temp = tempfile.TemporaryDirectory()
++        self.addCleanup(self.temp.cleanup)
++        self.evidence = Path(self.temp.name)
++        self.manifest = json.loads(
++            (Path(__file__).resolve().parents[1] / "fixtures/windows-current-ci-scope.json").read_text()
++        )
++        self.head, self.tree, self.run_id, self.attempt = "a" * 40, "b" * 40, "123", "1"
++        self.lock = b"version = 4\n"
++        self.native_paths = {"checkout": r"D:\a\source", "target": r"D:\a\_temp\native-target"}
++        self.receipts = {}
++        self.source = {
++            "head": self.head, "tree": self.tree, "trackedChanges": "",
++            "cargoLockSha256": hashlib.sha256(self.lock).hexdigest(),
++        }
++        for shard in SHARD_PACKAGES:
++            directory = self.directory(shard)
++            directory.mkdir()
++            rows = []
++            for group in selected_groups(self.manifest, shard):
++                index = self.manifest["groups"].index(group) + 1
++                log = f"Nextest run ID {index:08x}-0000-4000-8000-000000000001 with nextest profile: local\n"
++                log += f"Starting {group['expectedTestCount']} tests across 1 binary\n"
++                log += "".join(f"PASS [ 0.01s] {group['package']} {name}\n" for name in group["requiredTests"])
++                log += f"Summary [ 0.01s] {group['expectedTestCount']} tests run: {group['expectedTestCount']} passed, 0 skipped\n"
++                data = log.encode()
++                (directory / (group["id"] + ".log")).write_bytes(data)
++                rows.append({**assess(group, 0, log), "command": original_command(group), "logSha256": hashlib.sha256(data).hexdigest(), "durationSeconds": 0.01})
++            helpers = None
++            if shard == "process":
++                artifacts, records = [], []
++                binaries = directory / "sandbox-helper-binaries"
++                binaries.mkdir()
++                root = PureWindowsPath(self.native_paths["checkout"])
++                profile = PureWindowsPath(self.native_paths["target"]) / "dev-small"
++                for name, source in zip(SANDBOX_HELPERS, ("setup_main", "command_runner")):
++                    data = b"MZ-synthetic-receipt-unit-fixture-only-" + name.encode()
++                    binary = profile / (name + ".exe")
++                    (binaries / binary.name).write_bytes(data)
++                    artifacts.append({"name": name, "source": str(binary), "testSibling": str(profile / "deps" / binary.name), "bytes": len(data), "sha256": hashlib.sha256(data).hexdigest(), "evidenceFile": "sandbox-helper-binaries/" + binary.name})
++                    records.append({"reason": "compiler-artifact", "manifest_path": str(root / "codex-rs/windows-sandbox-rs/Cargo.toml"), "target": {"name": name, "kind": ["bin"], "crate_types": ["bin"], "src_path": str(root / f"codex-rs/windows-sandbox-rs/src/bin/{source}/main.rs")}, "executable": str(binary), "filenames": [str(binary)], "profile": {"test": False}})
++                records.append({"reason": "build-finished", "success": True})
++                build = ("\n".join(json.dumps(record) for record in records) + "\n").encode()
++                (directory / "sandbox-helper-build.log").write_bytes(build)
++                command = ["cargo", "build", "--locked", "-p", "codex-windows-sandbox", "--profile", "dev-small", "--message-format=json"]
++                for name in SANDBOX_HELPERS:
++                    command.extend(["--bin", name])
++                helpers = {"command": command, "exitCode": 0, "passed": True, "logSha256": hashlib.sha256(build).hexdigest(), "artifacts": artifacts}
++                self.write_json(directory / "sandbox-helper-preparation.json", helpers)
++            compiler = b"rustc 1.96.0 (unit-fixture)\nhost: x86_64-pc-windows-msvc\n"
++            (directory / "compiler.txt").write_bytes(compiler)
++            receipt = {
++                "schema": "hepta.windows-current-ci-shard-receipt.v1", "shard": shard,
++                "status": "PASS_DECLARED_WINDOWS_SHARD", "declaredScopeDigest": scope_digest(self.manifest),
++                "sourceBefore": self.source.copy(), "sourceAfter": self.source.copy(), "sourceUnchanged": True,
++                "workflow": {"runId": self.run_id, "runAttempt": self.attempt, "runnerOs": "Windows", "runnerName": "synthetic-" + shard},
++                "nativePaths": self.native_paths.copy(),
++                "platform": "Windows-unit-fixture", "compilerSha256": hashlib.sha256(compiler).hexdigest(),
++                "groups": rows, "sandboxHelperPreparation": helpers, "testRetries": 0,
++                "productionAuthorityGranted": False, "finalProductQualification": False,
++            }
++            self.receipts[shard] = receipt
++            self.save(shard, receipt)
++
++    def directory(self, shard):
++        return self.evidence / artifact_name(self.head, self.run_id, self.attempt, shard)
++
++    def write_json(self, path, value):
++        path.write_text(json.dumps(value, indent=2) + "\n", encoding="utf-8")
++
++    def save(self, shard, receipt):
++        directory = self.directory(shard)
++        self.write_json(directory / "receipt.json", receipt)
++        self.write_json(directory / "groups.json", receipt["groups"])
++        self.write_json(directory / "source-before.json", receipt["sourceBefore"])
++        self.write_json(directory / "source-after.json", receipt["sourceAfter"])
++
++    def validate(self, matrix_result="success"):
++        return validate_shards(self.manifest, self.head, self.tree, self.lock, self.run_id, self.attempt, matrix_result, self.evidence)
++
++    def test_exact_disjoint_partition_and_complete_synthetic_receipts(self):
++        owners = selected_groups(self.manifest, "owners")
++        process = selected_groups(self.manifest, "process")
++        self.assertEqual((len(owners), sum(g["expectedTestCount"] for g in owners)), (8, 98))
++        self.assertEqual((len(process), sum(g["expectedTestCount"] for g in process)), (11, 69))
++        self.assertFalse({g["package"] for g in owners} & {g["package"] for g in process})
++        result = self.validate()
++        self.assertEqual((result["groupCount"], result["testCount"]), (19, 167))
++        self.assertTrue(all(row["source"] == self.source for row in result["groups"]))
++
++    def test_unknown_shard_or_changed_scope_cannot_silently_drop_cases(self):
++        with self.assertRaises(ValueError):
++            selected_groups(self.manifest, "typo")
++        for change in ("drop", "duplicate", "unknown-package"):
++            manifest = copy.deepcopy(self.manifest)
++            if change == "drop":
++                manifest["groups"].pop()
++            elif change == "duplicate":
++                manifest["groups"][-1] = copy.deepcopy(manifest["groups"][0])
++            else:
++                manifest["groups"][0]["package"] = "unassigned"
++            with self.subTest(change=change), self.assertRaises(ValueError):
++                selected_groups(manifest)
++
++    def test_missing_partial_duplicate_and_extra_artifacts_fail_closed(self):
++        path = self.directory("process") / "receipt.json"
++        data = path.read_bytes()
++        path.unlink()
++        with self.assertRaises(ValueError):
++            self.validate()
++        path.write_bytes(data)
++        for rows in (self.receipts["owners"]["groups"][:-1], self.receipts["owners"]["groups"] + [self.receipts["owners"]["groups"][0]]):
++            receipt = copy.deepcopy(self.receipts["owners"])
++            receipt["groups"] = rows
++            self.save("owners", receipt)
++            with self.assertRaises(ValueError):
++                self.validate()
++        self.save("owners", self.receipts["owners"])
++        (self.evidence / "historical-or-duplicate").mkdir()
++        with self.assertRaises(ValueError):
++            self.validate()
++
++    def test_raw_failure_cannot_be_relabelled_as_pass_even_with_updated_hash(self):
++        original = self.receipts["owners"]
++        path = self.directory("owners") / (original["groups"][0]["id"] + ".log")
++        data = path.read_bytes()
++        for status in (b"FAIL", b"TIMEOUT", b"EXECFAIL", b"LEAK", b"SKIP"):
++            changed = data.replace(b"PASS [", status + b" [", 1)
++            receipt = copy.deepcopy(original)
++            receipt["groups"][0]["logSha256"] = hashlib.sha256(changed).hexdigest()
++            path.write_bytes(changed)
++            self.save("owners", receipt)
++            with self.subTest(status=status), self.assertRaises(ValueError):
++                self.validate()
++
++    def test_nonzero_missing_or_boolean_native_exit_is_not_a_terminal_pass(self):
++        for code in (100, None, False):
++            receipt = copy.deepcopy(self.receipts["owners"])
++            receipt["groups"][0]["exitCode"] = code
++            self.save("owners", receipt)
++            with self.subTest(code=code), self.assertRaises(ValueError):
++                self.validate()
++
++    def test_raw_log_or_exact_command_change_is_rejected(self):
++        original = self.receipts["owners"]
++        path = self.directory("owners") / (original["groups"][0]["id"] + ".log")
++        data = path.read_bytes()
++        path.write_bytes(data + b"unbound bytes\n")
++        with self.assertRaises(ValueError):
++            self.validate()
++        path.write_bytes(data)
++        for flag, value in (("--retries", "1"), ("--cargo-profile", "test"), ("-E", "all()")):
++            receipt = copy.deepcopy(original)
++            command = receipt["groups"][0]["command"]
++            command[command.index(flag) + 1] = value
++            self.save("owners", receipt)
++            with self.subTest(flag=flag), self.assertRaises(ValueError):
++                self.validate()
++
++    def test_wrong_dirty_or_changed_source_is_rejected(self):
++        for key, value in (("head", "d" * 40), ("tree", "d" * 40), ("cargoLockSha256", "d" * 64), ("trackedChanges", " M source.rs"), ("trackedChanges", False)):
++            receipt = copy.deepcopy(self.receipts["owners"])
++            receipt["sourceBefore"][key] = value
++            receipt["sourceAfter"][key] = value
++            self.save("owners", receipt)
++            with self.subTest(key=key, value=value), self.assertRaises(ValueError):
++                self.validate()
++        receipt = copy.deepcopy(self.receipts["owners"])
++        receipt["sourceAfter"]["tree"] = "d" * 40
++        self.save("owners", receipt)
++        with self.assertRaises(ValueError):
++            self.validate()
++
++    def test_historical_run_wrong_shard_or_raised_authority_is_rejected(self):
++        mutations = [
++            lambda r: r["workflow"].update(runId="122"),
++            lambda r: r["workflow"].update(runAttempt="2"),
++            lambda r: r["workflow"].update(runnerName="synthetic-process"),
++            lambda r: r["workflow"].update(runnerOs="Linux"),
++            lambda r: r.update(shard="process"),
++            lambda r: r.update(declaredScopeDigest="0" * 64),
++            lambda r: r.update(status="FAIL_DECLARED_WINDOWS_SHARD"),
++            lambda r: r.update(productionAuthorityGranted=True),
++            lambda r: r.update(finalProductQualification=True),
++        ]
++        for index, change in enumerate(mutations):
++            receipt = copy.deepcopy(self.receipts["owners"])
++            change(receipt)
++            self.save("owners", receipt)
++            with self.subTest(index=index), self.assertRaises(ValueError):
++                self.validate()
++
++    def test_native_compiler_host_and_helper_build_are_required(self):
++        directory = self.directory("owners")
++        compiler = (directory / "compiler.txt").read_bytes()
++        changed = compiler.replace(b"x86_64-pc-windows-msvc", b"x86_64-unknown-linux-gnu")
++        receipt = copy.deepcopy(self.receipts["owners"])
++        receipt["compilerSha256"] = hashlib.sha256(changed).hexdigest()
++        (directory / "compiler.txt").write_bytes(changed)
++        self.save("owners", receipt)
++        with self.assertRaises(ValueError):
++            self.validate()
++        (directory / "compiler.txt").write_bytes(compiler)
++        self.save("owners", self.receipts["owners"])
++        for change in ("failed", "missing-artifact", "command"):
++            receipt = copy.deepcopy(self.receipts["process"])
++            helpers = receipt["sandboxHelperPreparation"]
++            if change == "failed":
++                helpers.update(passed=False, exitCode=101)
++            elif change == "missing-artifact":
++                helpers["artifacts"].pop()
++            else:
++                helpers["command"].append("--release")
++            self.save("process", receipt)
++            self.write_json(self.directory("process") / "sandbox-helper-preparation.json", helpers)
++            with self.subTest(change=change), self.assertRaises(ValueError):
++                self.validate()
++
++    def test_native_matrix_failure_cannot_be_overridden_by_receipts(self):
++        for status in ("failure", "cancelled", "skipped"):
++            with self.subTest(status=status), self.assertRaises(ValueError):
++                self.validate(matrix_result=status)
++
++    def test_json_boolean_cannot_substitute_for_original_integer_policy(self):
++        self.manifest["policy"]["testRetries"] = False
++        for shard, original in self.receipts.items():
++            receipt = copy.deepcopy(original)
++            receipt["declaredScopeDigest"] = scope_digest(self.manifest)
++            self.save(shard, receipt)
++        with self.assertRaises(ValueError):
++            self.validate()
++
++    def test_duplicate_json_keys_are_rejected(self):
++        path = self.directory("owners") / "receipt.json"
++        text = path.read_text().rstrip()
++        path.write_text(text[:-1] + ', "status": "PASS_DECLARED_WINDOWS_SHARD"}\n')
++        with self.assertRaises(ValueError):
++            self.validate()
++
++    def test_two_complete_runs_cannot_be_deduplicated_into_one_pass(self):
++        receipt = copy.deepcopy(self.receipts["owners"])
++        row = receipt["groups"][0]
++        path = self.directory("owners") / (row["id"] + ".log")
++        changed = path.read_bytes() * 2
++        path.write_bytes(changed)
++        row["logSha256"] = hashlib.sha256(changed).hexdigest()
++        self.save("owners", receipt)
++        with self.assertRaisesRegex(ValueError, "exactly one Nextest"):
++            self.validate()
++
++    def test_all_selected_success_may_omit_zero_skipped_suffix(self):
++        receipt = copy.deepcopy(self.receipts["owners"])
++        row = receipt["groups"][0]
++        path = self.directory("owners") / (row["id"] + ".log")
++        data = path.read_bytes().replace(b", 0 skipped\n", b"\n")
++        path.write_bytes(data)
++        row["logSha256"] = hashlib.sha256(data).hexdigest()
++        self.save("owners", receipt)
++        self.assertEqual(self.validate()["testCount"], 167)
++
++    def test_fake_historical_helper_metadata_cannot_replace_actual_bytes(self):
++        receipt = copy.deepcopy(self.receipts["process"])
++        helpers = receipt["sandboxHelperPreparation"]
++        for item in helpers["artifacts"]:
++            item.update(bytes=1, sha256="e" * 64, source=r"Z:\historical\helper.exe", testSibling=r"Z:\historical\deps\helper.exe")
++        self.save("process", receipt)
++        self.write_json(self.directory("process") / "sandbox-helper-preparation.json", helpers)
++        with self.assertRaisesRegex(ValueError, "original compiler artifact"):
++            self.validate()
++
++    def test_exported_helper_bytes_are_independently_verified(self):
++        original = self.receipts["process"]
++        item = original["sandboxHelperPreparation"]["artifacts"][0]
++        path = self.directory("process") / item["evidenceFile"]
++        data = path.read_bytes()
++        for changed in (None, data + b"changed", b"NO" + data[2:]):
++            receipt = copy.deepcopy(original)
++            if changed is None:
++                path.unlink()
++            else:
++                path.write_bytes(changed)
++                if changed.startswith(b"NO"):
++                    claim = receipt["sandboxHelperPreparation"]["artifacts"][0]
++                    claim.update(bytes=len(changed), sha256=hashlib.sha256(changed).hexdigest())
++            self.save("process", receipt)
++            self.write_json(self.directory("process") / "sandbox-helper-preparation.json", receipt["sandboxHelperPreparation"])
++            with self.subTest(changed=changed), self.assertRaises(ValueError):
++                self.validate()
++            path.write_bytes(data)
++
++    def test_helper_cargo_source_target_and_profile_are_checked(self):
++        directory = self.directory("process")
++        build_path = directory / "sandbox-helper-build.log"
++        records = [json.loads(line) for line in build_path.read_text().splitlines()]
++        mutations = [
++            lambda r: r[0].update(manifest_path=r"Z:\historical\Cargo.toml"),
++            lambda r: r[0]["target"].update(src_path=r"Z:\historical\main.rs"),
++            lambda r: r[0]["target"].update(name="different-helper"),
++            lambda r: r[0]["target"].update(kind=["lib"]),
++            lambda r: r[0]["profile"].update(test=True),
++            lambda r: r[0].update(executable=r"D:\a\_temp\native-target\release\wrong.exe"),
++            lambda r: r[-1].update(success=False),
++        ]
++        for index, mutation in enumerate(mutations):
++            changed = copy.deepcopy(records)
++            mutation(changed)
++            data = ("\n".join(json.dumps(record) for record in changed) + "\n").encode()
++            build_path.write_bytes(data)
++            receipt = copy.deepcopy(self.receipts["process"])
++            helpers = receipt["sandboxHelperPreparation"]
++            helpers["logSha256"] = hashlib.sha256(data).hexdigest()
++            self.save("process", receipt)
++            self.write_json(directory / "sandbox-helper-preparation.json", helpers)
++            with self.subTest(index=index), self.assertRaises(ValueError):
++                self.validate()
++
++    def test_missing_or_mismatched_single_run_terminal_is_rejected(self):
++        original = self.receipts["owners"]
++        path = self.directory("owners") / (original["groups"][0]["id"] + ".log")
++        data = path.read_bytes()
++        mutations = [
++            lambda d: b"\n".join(d.splitlines()[1:]) + b"\n",
++            lambda d: b"\n".join(d.splitlines()[:-1]) + b"\n",
++            lambda d: d.replace(b"profile: local", b"profile: default"),
++            lambda d: d.replace(b"passed, 0 skipped", b"passed, 1 skipped"),
++            lambda d: d + d.splitlines()[-1] + b"\n",
++        ]
++        for index, mutation in enumerate(mutations):
++            changed = mutation(data)
++            path.write_bytes(changed)
++            receipt = copy.deepcopy(original)
++            receipt["groups"][0]["logSha256"] = hashlib.sha256(changed).hexdigest()
++            self.save("owners", receipt)
++            with self.subTest(index=index), self.assertRaises(ValueError):
++                self.validate()
++
++    def test_helper_export_preserves_bytes_and_rejects_stale_sibling(self):
++        root = self.evidence / "export-unit-fixture"
++        root.mkdir()
++        source, sibling = root / "source.exe", root / "sibling.exe"
++        data = b"MZ-synthetic-export-control"
++        source.write_bytes(data)
++        sibling.write_bytes(data)
++        item = {"name": SANDBOX_HELPERS[0], "source": str(source), "testSibling": str(sibling), "bytes": len(data), "sha256": hashlib.sha256(data).hexdigest()}
++        output = root / "valid"
++        output.mkdir()
++        export_sandbox_helper_evidence(output, [item])
++        self.assertEqual((output / item["evidenceFile"]).read_bytes(), data)
++        sibling.write_bytes(data + b"stale")
++        output = root / "stale"
++        output.mkdir()
++        with self.assertRaisesRegex(ValueError, "before evidence export"):
++            export_sandbox_helper_evidence(output, [item])
++
++
++if __name__ == "__main__":
++    unittest.main()
+diff --git a/.github/scripts/windows_current_ci.py b/.github/scripts/windows_current_ci.py
+index 161ed1149c..18fdd1a2af 100644
+--- a/.github/scripts/windows_current_ci.py
++++ b/.github/scripts/windows_current_ci.py
+@@ -17,6 +17,43 @@ import time
+ ANSI = re.compile(r"\x1b\[[0-?]*[ -/]*[@-~]")
+ 
+ 
++SHARD_PACKAGES = {
++    "owners": frozenset({
++        "codex-state", "codex-git-utils", "codex-mcp", "codex-hepta-memory",
++        "codex-hepta-operator-acceptance", "codex-hepta-shadow-qualification",
++    }),
++    "process": frozenset({
++        "codex-windows-sandbox", "codex-utils-pty", "codex-core",
++        "codex-exec-server", "codex-exec-server-protocol",
++    }),
++}
++
++
++def scope_digest(manifest: dict) -> str:
++    # A content checksum, not an owner signature or effect authority.
++    data = json.dumps(manifest, sort_keys=True, separators=(",", ":")).encode()
++    return hashlib.sha256(data).hexdigest()
++
++
++def selected_groups(manifest: dict, shard: str | None = None) -> list[dict]:
++    groups = manifest["groups"]
++    ids = [group["id"] for group in groups]
++    cases = [(group["package"], name) for group in groups for name in group["requiredTests"]]
++    packages = set().union(*SHARD_PACKAGES.values())
++    if (len(groups) != 19 or len(cases) != 167 or len(set(ids)) != 19
++            or len(set(cases)) != 167
++            or any(not re.fullmatch(r"[a-z0-9-]+", name) for name in ids)
++            or any(group["expectedTestCount"] != len(group["requiredTests"]) for group in groups)
++            or {group["package"] for group in groups} != packages
++            or SHARD_PACKAGES["owners"] & SHARD_PACKAGES["process"]):
++        raise ValueError("the original 19 groups / 167 exact cases must remain a fixed partition")
++    if shard is None:
++        return groups
++    if shard not in SHARD_PACKAGES:
++        raise ValueError("unknown original Windows shard")
++    return [group for group in groups if group["package"] in SHARD_PACKAGES[shard]]
++
++
+ def assess(group: dict, returncode: int, log: str) -> dict:
+     text = ANSI.sub("", log)
+     starts = re.findall(r"Starting (\d+) tests? across", text)
+@@ -72,29 +109,33 @@ def valid_source(expected: str, before: dict, after: dict) -> bool:
+     )
+ 
+ 
++def original_command(group: dict) -> list[str]:
++    return [
++        "just",
++        "test",
++        "--locked",
++        "-p",
++        group["package"],
++        "--lib",
++        "--cargo-profile",
++        "dev-small",
++        "-E",
++        group["filter"],
++        "--test-threads",
++        "1",
++        "--no-tests",
++        "fail",
++        "--retries",
++        "0",
++    ]
++
++
+ def execute_groups(
+     root: Path, output: Path, groups: list[dict], invoke=None
+ ) -> list[dict]:
+     results = []
+     for group in groups:
+-        command = [
+-            "just",
+-            "test",
+-            "--locked",
+-            "-p",
+-            group["package"],
+-            "--lib",
+-            "--cargo-profile",
+-            "dev-small",
+-            "-E",
+-            group["filter"],
+-            "--test-threads",
+-            "1",
+-            "--no-tests",
+-            "fail",
+-            "--retries",
+-            "0",
+-        ]
++        command = original_command(group)
+         path = output / (group["id"] + ".log")
+         started = time.monotonic()
+         if invoke is None:
+@@ -113,7 +154,8 @@ def execute_groups(
+             path.write_text(text, encoding="utf-8")
+         result = assess(group, code, text)
+         result.update(
+-            command=command, durationSeconds=round(time.monotonic() - started, 3)
++            command=command, durationSeconds=round(time.monotonic() - started, 3),
++            logSha256=hashlib.sha256(path.read_bytes()).hexdigest()
+         )
+         results.append(result)
+         (output / "groups.json").write_text(json.dumps(results, indent=2) + "\n")
+@@ -191,6 +233,30 @@ def publish_sandbox_helpers(root: Path, target: Path, cargo_log: str) -> list[di
+     return artifacts
+ 
+ 
++def export_sandbox_helper_evidence(output: Path, artifacts: list[dict]) -> None:
++    """Retain the actual published helper bytes for the independent aggregate."""
++    directory = output / "sandbox-helper-binaries"
++    directory.mkdir(exist_ok=False)
++    for item in artifacts:
++        binary, sibling = Path(item["source"]), Path(item["testSibling"])
++        if any(path.is_symlink() or not path.is_file() for path in (binary, sibling)):
++            raise ValueError("sandbox helper evidence source is missing or redirected")
++        data = binary.read_bytes()
++        if (not data.startswith(b"MZ") or len(data) != item["bytes"]
++                or hashlib.sha256(data).hexdigest() != item["sha256"]
++                or sibling.read_bytes() != data):
++            raise ValueError("sandbox helper changed before evidence export")
++        destination = directory / (item["name"] + ".exe")
++        with destination.open("xb") as stream:
++            stream.write(data)
++            stream.flush()
++            os.fsync(stream.fileno())
++        if (destination.read_bytes() != data or binary.read_bytes() != data
++                or sibling.read_bytes() != data):
++            raise ValueError("sandbox helper changed during evidence export")
++        item["evidenceFile"] = "sandbox-helper-binaries/" + destination.name
++
++
+ def prepare_sandbox_helpers(root: Path, output: Path) -> dict:
+     command = [
+         "cargo",
+@@ -223,12 +289,14 @@ def prepare_sandbox_helpers(root: Path, output: Path) -> dict:
+                 Path(os.environ["CARGO_TARGET_DIR"]),
+                 log.read_text(encoding="utf-8", errors="replace"),
+             )
++            export_sandbox_helper_evidence(output, result["artifacts"])
+             result["passed"] = True
+     except Exception as error:
+         # This is a failed prerequisite, never a skipped original regression.
+         # Keep running the declared groups so every original result is retained.
+         result["error"] = f"{type(error).__name__}: {error}"
+     result["durationSeconds"] = round(time.monotonic() - started, 3)
++    result["logSha256"] = hashlib.sha256(log.read_bytes()).hexdigest() if log.exists() else None
+     (output / "sandbox-helper-preparation.json").write_text(
+         json.dumps(result, indent=2) + "\n", encoding="utf-8"
+     )
+@@ -240,6 +308,7 @@ def main() -> int:
+     parser = argparse.ArgumentParser()
+     parser.add_argument("--expected-head", required=True)
+     parser.add_argument("--output", required=True, type=Path)
++    parser.add_argument("--shard", choices=tuple(SHARD_PACKAGES))
+     args = parser.parse_args()
+     root = Path(__file__).resolve().parents[2]
+     output = args.output.resolve()
+@@ -261,6 +330,18 @@ def main() -> int:
+     manifest = json.loads(
+         (root / ".github/fixtures/windows-current-ci-scope.json").read_text()
+     )
++    groups = selected_groups(manifest, args.shard)
++    workflow = {
++        "runId": os.environ.get("GITHUB_RUN_ID"),
++        "runAttempt": os.environ.get("GITHUB_RUN_ATTEMPT"),
++        "runnerName": os.environ.get("RUNNER_NAME"),
++        "runnerOs": os.environ.get("RUNNER_OS"),
++    }
++    if args.shard and (
++        not all(re.fullmatch(r"[1-9][0-9]*", workflow[key] or "") for key in ("runId", "runAttempt"))
++        or not workflow["runnerName"] or workflow["runnerOs"] != "Windows"
++    ):
++        raise RuntimeError("shard receipts require the current native Windows workflow identity")
+     temporary = {
+         "originalTemp": os.environ.get("TEMP"),
+         "originalTmp": os.environ.get("TMP"),
+@@ -276,19 +357,28 @@ def main() -> int:
+     (output / "temporary-environment.json").write_text(
+         json.dumps(temporary, indent=2) + "\n"
+     )
+-    helpers = prepare_sandbox_helpers(root, output)
+-    results = execute_groups(root, output, manifest["groups"])
++    helpers = (prepare_sandbox_helpers(root, output)
++               if any(group["package"] == "codex-windows-sandbox" for group in groups) else None)
++    results = execute_groups(root, output, groups)
+     after = source(root)
++    (output / "source-after.json").write_text(json.dumps(after, indent=2) + "\n")
+     intact = valid_source(args.expected_head, before, after)
+     passed = (
+-        intact and helpers["passed"] and all(result["passed"] for result in results)
++        intact and (helpers is None or helpers["passed"]) and all(result["passed"] for result in results)
+     )
+     receipt = {
+-        "schema": "hepta.windows-current-ci-receipt.v1",
++        "schema": "hepta.windows-current-ci-shard-receipt.v1" if args.shard else "hepta.windows-current-ci-receipt.v1",
++        "shard": args.shard,
++        "declaredScopeDigest": scope_digest(manifest),
++        "workflow": workflow,
++        "nativePaths": {
++            "checkout": str(root),
++            "target": str(Path(os.environ["CARGO_TARGET_DIR"]).resolve()),
++        },
++        "compilerSha256": hashlib.sha256((output / "compiler.txt").read_bytes()).hexdigest(),
+         "createdAt": datetime.datetime.now(datetime.timezone.utc).isoformat(),
+-        "status": "PASS_DECLARED_WINDOWS_SCOPE"
+-        if passed
+-        else "FAIL_DECLARED_WINDOWS_SCOPE",
++        "status": ("PASS_DECLARED_WINDOWS_SHARD" if passed else "FAIL_DECLARED_WINDOWS_SHARD")
++        if args.shard else ("PASS_DECLARED_WINDOWS_SCOPE" if passed else "FAIL_DECLARED_WINDOWS_SCOPE"),
+         "sourceBefore": before,
+         "sourceAfter": after,
+         "sourceUnchanged": intact,
+diff --git a/.github/workflows/hepta-windows-current-ci.yml b/.github/workflows/hepta-windows-current-ci.yml
+index d9dc4986a8..aabe70b244 100644
+--- a/.github/workflows/hepta-windows-current-ci.yml
++++ b/.github/workflows/hepta-windows-current-ci.yml
+@@ -6,8 +6,15 @@ on:
+       - ".github/workflows/hepta-windows-current-ci.yml"
+       - ".github/scripts/windows_current_ci.py"
+       - ".github/scripts/test_windows_current_ci.py"
++      - ".github/scripts/test_windows_current_ci_shards.py"
++      - ".github/scripts/aggregate_windows_current_ci.py"
+       - ".github/fixtures/windows-current-ci-scope.json"
+-      - "codex-rs/git-utils/src/git_process_tests.rs"
++      - "codex-rs/git-utils/**"
++      - "codex-rs/codex-mcp/**"
++      - "codex-rs/core/**"
++      - "codex-rs/utils/pty/**"
++      - "codex-rs/exec-server/**"
++      - "codex-rs/exec-server-protocol/**"
+       - "codex-rs/state/**"
+       - "codex-rs/hepta-memory/**"
+       - "codex-rs/hepta-operator-acceptance/**"
+@@ -35,6 +42,11 @@ env:
+ 
+ jobs:
+   original-regressions:
++    name: Original regressions (${{ matrix.shard }})
++    strategy:
++      fail-fast: false
++      matrix:
++        shard: [owners, process]
+     runs-on: windows-latest
+     timeout-minutes: 65
+     steps:
+@@ -52,19 +64,55 @@ jobs:
+       - name: Verify strict receipt rejection controls
+         shell: pwsh
+         run: |
+-          python -m unittest discover -s .github/scripts -p test_windows_current_ci.py
++          python -m unittest discover -s .github/scripts -p "test_windows_current_ci*.py"
+           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+       - name: Run the original process, transport and backend regressions
+         shell: pwsh
+         run: |
+           $env:CARGO_TARGET_DIR = Join-Path $env:RUNNER_TEMP "hepta-windows-current-target"
+-          python .github/scripts/windows_current_ci.py --expected-head "${{ github.event.pull_request.head.sha || github.sha }}" --output "$env:RUNNER_TEMP/hepta-windows-current-ci"
++          python .github/scripts/windows_current_ci.py --expected-head "${{ github.event.pull_request.head.sha || github.sha }}" --shard "${{ matrix.shard }}" --output "$env:RUNNER_TEMP/hepta-windows-current-ci"
+           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+       - name: Retain every result with exact source identity
+         if: always()
+         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+         with:
+-          name: windows-current-ci-${{ github.event.pull_request.head.sha || github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
++          name: windows-current-ci-${{ github.event.pull_request.head.sha || github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.shard }}
+           path: ${{ runner.temp }}/hepta-windows-current-ci/
+           if-no-files-found: error
+           retention-days: 14
++
++  original-regressions-complete:
++    name: Require all 19 original groups and 167 exact cases
++    needs: original-regressions
++    if: always()
++    runs-on: ubuntu-latest
++    timeout-minutes: 5
++    steps:
++      - name: Checkout the same exact source head
++        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
++        with:
++          ref: ${{ github.event.pull_request.head.sha || github.sha }}
++          persist-credentials: false
++      - name: Read only this run and attempt's shard artifacts
++        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
++        with:
++          pattern: windows-current-ci-${{ github.event.pull_request.head.sha || github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}-*
++          path: ${{ runner.temp }}/hepta-windows-shards/
++          merge-multiple: false
++      - name: Reject missing, failing, changed or incomplete original evidence
++        if: always()
++        run: >-
++          python3 .github/scripts/aggregate_windows_current_ci.py
++          --expected-head "${{ github.event.pull_request.head.sha || github.sha }}"
++          --run-id "${{ github.run_id }}" --run-attempt "${{ github.run_attempt }}"
++          --matrix-result "${{ needs.original-regressions.result }}"
++          --input "${{ runner.temp }}/hepta-windows-shards"
++          --output "${{ runner.temp }}/hepta-windows-aggregate"
++      - name: Retain the aggregate decision including failure
++        if: always()
++        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
++        with:
++          name: windows-current-ci-aggregate-${{ github.event.pull_request.head.sha || github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
++          path: ${{ runner.temp }}/hepta-windows-aggregate/
++          if-no-files-found: error
++          retention-days: 14
+diff --git a/codex-rs/hepta-operator-acceptance/src/openssh_windows.rs b/codex-rs/hepta-operator-acceptance/src/openssh_windows.rs
+index bfb5da7ad7..fd62301f72 100644
+--- a/codex-rs/hepta-operator-acceptance/src/openssh_windows.rs
++++ b/codex-rs/hepta-operator-acceptance/src/openssh_windows.rs
+@@ -302,6 +302,60 @@ impl TrustedOpenSsh {
+     }
+ }
+ 
++// This receipt observes the existing inherited-handle path. It does not change
++// the child's arguments, environment, working directory, stdio, or custody.
++#[cfg(test)]
++fn report_inherited_verifier_context(verifier: &TrustedOpenSsh) {
++    use sha2::Digest as _;
++    use std::os::windows::fs::FileExt;
++    use windows_sys::Win32::Foundation::GetHandleInformation;
++    use windows_sys::Win32::Storage::FileSystem::GetFileType;
++
++    let executable_sha256 = (|| -> std::io::Result<String> {
++        let length = verifier.file.metadata()?.len();
++        if length > 64 * 1024 * 1024 {
++            return Err(std::io::Error::other(
++                "diagnostic executable exceeds 64 MiB read bound",
++            ));
++        }
++        let mut digest = sha2::Sha256::new();
++        let mut offset = 0;
++        let mut bytes = [0_u8; 64 * 1024];
++        while offset < length {
++            let wanted = usize::try_from((length - offset).min(bytes.len() as u64)).unwrap();
++            let count = verifier.file.seek_read(&mut bytes[..wanted], offset)?;
++            if count == 0 {
++                return Err(std::io::Error::other(
++                    "diagnostic executable ended before its bound",
++                ));
++            }
++            digest.update(&bytes[..count]);
++            offset += count as u64;
++        }
++        Ok(format!("{:x}", digest.finalize()))
++    })();
++    eprintln!(
++        "HEPTA_OPENSSH_DIAGNOSTIC inherited_stdio_unchanged=true executable={:?} file_id={:?} sha256={:?} cwd={:?}",
++        verifier.path, verifier.id, executable_sha256, verifier.system_directory
++    );
++    for (name, handle) in [
++        ("stdin", std::io::stdin().as_raw_handle()),
++        ("stdout", std::io::stdout().as_raw_handle()),
++        ("stderr", std::io::stderr().as_raw_handle()),
++    ] {
++        let mut flags = 0;
++        // SAFETY: these borrowed process handles are observed without mutation
++        // or closure. Invalid handles produce diagnostic errors only.
++        let ok = unsafe { GetHandleInformation(handle as HANDLE, &mut flags) };
++        let error = (ok == 0).then(std::io::Error::last_os_error);
++        // SAFETY: GetFileType only observes the same borrowed process handle.
++        let kind = unsafe { GetFileType(handle as HANDLE) };
++        eprintln!(
++            "HEPTA_OPENSSH_DIAGNOSTIC parent_handle={name} file_type={kind} handle_information_ok={ok} flags={flags} error={error:?}"
++        );
++    }
++}
++
+ // Verification is serialized for this process. At most one child whose
+ // termination is unknown can retain its input/executable pins.
+ static PENDING_VERIFIER: Mutex<Option<ActiveVerifier>> = Mutex::new(None);
+@@ -355,6 +409,8 @@ pub(crate) fn verify(
+         .system_directory
+         .parent()
+         .ok_or_else(|| invalid("Windows system directory has no root"))?;
++    #[cfg(test)]
++    report_inherited_verifier_context(&verifier);
+     let mut child = Command::new(&verifier.path)
+         // Diagnose the same original verifier child in tests; production stays quiet.
+         .args(if cfg!(test) { &["-vvv"][..] } else { &[][..] })
+@@ -396,6 +452,8 @@ pub(crate) fn verify(
+                 "failed to start trusted Windows ssh-keygen: {error}"
+             ))
+         })?;
++    #[cfg(test)]
++    eprintln!("HEPTA_OPENSSH_DIAGNOSTIC spawned_child_pid={}", child.id());
+     let write_result = match child.stdin.take() {
+         Some(mut stdin) => stdin.write_all(statement),
+         None => Err(std::io::Error::other(
+@@ -405,6 +463,10 @@ pub(crate) fn verify(
+     let status = match child.wait() {
+         Ok(status) => status,
+         Err(error) => {
++            #[cfg(test)]
++            eprintln!(
++                "HEPTA_OPENSSH_DIAGNOSTIC wait_unknown={error:?}; original_child_and_pins_retained=true"
++            );
+             // Keep the original Child and its pins in the single process slot.
+             // Later calls can only reconcile it until termination is observed.
+             *pending = Some(ActiveVerifier {
+@@ -415,6 +477,10 @@ pub(crate) fn verify(
+             return Err(error.into());
+         }
+     };
++    #[cfg(test)]
++    eprintln!(
++        "HEPTA_OPENSSH_DIAGNOSTIC child_terminal={status:?} stdin_write_result={write_result:?}"
++    );
+     write_result?;
+     inputs.verify()?;
+     if identity(&verifier.file, Kind::File)? != verifier.id {

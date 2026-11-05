@@ -1,0 +1,37 @@
+{
+  "schema": "hepta.independent-native-audit-artifacts.v1",
+  "source": {
+    "commit": "797116d61cf422c26274ffef31297dce84a53a80",
+    "tree": "67ce024db1679aa6cd301856ba3a694ea18bc4b6",
+    "status": ""
+  },
+  "inputs": {
+    "archive": {
+      "path": "integration/native-797-file-read-checkpoint.tar.gz",
+      "bytes": 313492,
+      "sha256": "6e95dfc4723db20a4bfa158bedae04e8fc537622bbd0a20abf59783552c7571a"
+    },
+    "runtime": {
+      "path": "integration/runtime-receipts/spelling-canonical-797-runtime-status.json",
+      "bytes": 738,
+      "sha256": "5afbbce2960a3fe020376f15deb158d02a3b265430b6cef1057023cdb26f15ee"
+    }
+  },
+  "artifacts": [
+    {
+      "path": "recovery/audit_native_checkpoint.py",
+      "bytes": 41684,
+      "sha256": "acab3590f36b6796b6f6f6b44ea545dd759a9f8e0ce2648605db15905043e166"
+    },
+    {
+      "path": "recovery/successor-candidate-audit/FINAL-NATIVE-AUDIT.json",
+      "bytes": 85122,
+      "sha256": "591e94f15cc95e5fa2f4d23398e390a6850d0ebb8c3d97f119ffe64f39927271"
+    },
+    {
+      "path": "recovery/successor-candidate-audit/FINAL-NATIVE-AUDIT.zh.md",
+      "bytes": 2365,
+      "sha256": "cb1d76a6247f4e44ce72b267d0b0f24d85fe025cbd34c19df50ebb186409d4d8"
+    }
+  ]
+}

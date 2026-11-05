@@ -1,0 +1,63 @@
+{"argv": ["git", "--no-replace-objects", "-C", "/tmp/da8578/chef fixture 39tt3sn0/repository with spaces", "worktree", "add", "--detach", "/tmp/da8578/chef fixture 39tt3sn0/runner temp/chef-9w8mr_2i/source", "1a4fe369b0072ea0341bd1e2ced5a9c8e8d037ae"], "cwd": "/tmp/da8578/chef fixture 39tt3sn0/repository with spaces"}
+Preparing worktree (detached HEAD 1a4fe36)
+HEAD is now at 1a4fe36 original source
+{"argv": ["/home/qq/work/hepta-modules40-20261105-a9f4ebc7/tools/venv/bin/python3", "/tmp/da8578/chef fixture 39tt3sn0/destructive_cargo.py", "/tmp/da8578/chef fixture 39tt3sn0/cargo-calls.jsonl", "0", "chef", "prepare", "--recipe-path", "/tmp/da8578/chef fixture 39tt3sn0/runner temp/chef-9w8mr_2i/recipe.json"], "cwd": "/tmp/da8578/chef fixture 39tt3sn0/runner temp/chef-9w8mr_2i/source/codex-rs"}
+{"argv": ["/home/qq/work/hepta-modules40-20261105-a9f4ebc7/tools/venv/bin/python3", "/tmp/da8578/chef fixture 39tt3sn0/destructive_cargo.py", "/tmp/da8578/chef fixture 39tt3sn0/cargo-calls.jsonl", "0", "chef", "cook", "--recipe-path", "/tmp/da8578/chef fixture 39tt3sn0/runner temp/chef-9w8mr_2i/recipe.json", "--target", "fixture-target", "--release", "--target-dir", "/tmp/da8578/chef fixture 39tt3sn0/shared target"], "cwd": "/tmp/da8578/chef fixture 39tt3sn0/runner temp/chef-9w8mr_2i/source/codex-rs"}
+{"argv": ["git", "--no-replace-objects", "-C", "/tmp/da8578/chef fixture 39tt3sn0/repository with spaces", "worktree", "remove", "--force", "/tmp/da8578/chef fixture 39tt3sn0/runner temp/chef-9w8mr_2i/source"], "cwd": "/tmp/da8578/chef fixture 39tt3sn0/repository with spaces"}
+{
+  "before": {
+    "head": "1a4fe369b0072ea0341bd1e2ced5a9c8e8d037ae",
+    "tree": "7746a429299ffeb9b86c98facf2da1d75cc23ab8"
+  },
+  "target": "fixture-target",
+  "target_dir": "/tmp/da8578/chef fixture 39tt3sn0/shared target",
+  "cargo_chef_version": "cargo-chef-chef 0.1.78",
+  "prewarm_checkout": {
+    "head": "1a4fe369b0072ea0341bd1e2ced5a9c8e8d037ae",
+    "tree": "7746a429299ffeb9b86c98facf2da1d75cc23ab8"
+  },
+  "recipe_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+  "prewarm_source_changes": [
+    "codex-rs/Cargo.toml",
+    "codex-rs/src/lib.rs"
+  ],
+  "after": {
+    "head": "1a4fe369b0072ea0341bd1e2ced5a9c8e8d037ae",
+    "tree": "7746a429299ffeb9b86c98facf2da1d75cc23ab8"
+  }
+}
+
+...{"argv": ["git", "--no-replace-objects", "-C", "/tmp/da8578/chef fixture fn6mfob5/repository with spaces", "worktree", "add", "--detach", "/tmp/da8578/chef fixture fn6mfob5/runner temp/chef-a0zvnk62/source", "1a4fe369b0072ea0341bd1e2ced5a9c8e8d037ae"], "cwd": "/tmp/da8578/chef fixture fn6mfob5/repository with spaces"}
+Preparing worktree (detached HEAD 1a4fe36)
+HEAD is now at 1a4fe36 original source
+{"argv": ["/home/qq/work/hepta-modules40-20261105-a9f4ebc7/tools/venv/bin/python3", "/tmp/da8578/chef fixture fn6mfob5/destructive_cargo.py", "/tmp/da8578/chef fixture fn6mfob5/cargo-calls.jsonl", "23", "chef", "prepare", "--recipe-path", "/tmp/da8578/chef fixture fn6mfob5/runner temp/chef-a0zvnk62/recipe.json"], "cwd": "/tmp/da8578/chef fixture fn6mfob5/runner temp/chef-a0zvnk62/source/codex-rs"}
+{"argv": ["/home/qq/work/hepta-modules40-20261105-a9f4ebc7/tools/venv/bin/python3", "/tmp/da8578/chef fixture fn6mfob5/destructive_cargo.py", "/tmp/da8578/chef fixture fn6mfob5/cargo-calls.jsonl", "23", "chef", "cook", "--recipe-path", "/tmp/da8578/chef fixture fn6mfob5/runner temp/chef-a0zvnk62/recipe.json", "--target", "fixture-target", "--release", "--target-dir", "/tmp/da8578/chef fixture fn6mfob5/shared target"], "cwd": "/tmp/da8578/chef fixture fn6mfob5/runner temp/chef-a0zvnk62/source/codex-rs"}
+{"argv": ["git", "--no-replace-objects", "-C", "/tmp/da8578/chef fixture fn6mfob5/repository with spaces", "worktree", "remove", "--force", "/tmp/da8578/chef fixture fn6mfob5/runner temp/chef-a0zvnk62/source"], "cwd": "/tmp/da8578/chef fixture fn6mfob5/repository with spaces"}
+{
+  "before": {
+    "head": "1a4fe369b0072ea0341bd1e2ced5a9c8e8d037ae",
+    "tree": "7746a429299ffeb9b86c98facf2da1d75cc23ab8"
+  },
+  "target": "fixture-target",
+  "target_dir": "/tmp/da8578/chef fixture fn6mfob5/shared target",
+  "cargo_chef_version": "cargo-chef-chef 0.1.78",
+  "prewarm_checkout": {
+    "head": "1a4fe369b0072ea0341bd1e2ced5a9c8e8d037ae",
+    "tree": "7746a429299ffeb9b86c98facf2da1d75cc23ab8"
+  },
+  "recipe_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+  "prewarm_source_changes": [
+    "codex-rs/Cargo.toml",
+    "codex-rs/src/lib.rs"
+  ],
+  "after": {
+    "head": "1a4fe369b0072ea0341bd1e2ced5a9c8e8d037ae",
+    "tree": "7746a429299ffeb9b86c98facf2da1d75cc23ab8"
+  }
+}
+
+.
+----------------------------------------------------------------------
+Ran 4 tests in 0.325s
+
+OK

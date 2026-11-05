@@ -1,0 +1,34 @@
+{
+  "command": [
+    "just",
+    "test",
+    "--locked",
+    "-p",
+    "codex-app-server",
+    "--test",
+    "all",
+    "-E",
+    "test(process_exec)",
+    "--no-tests",
+    "fail"
+  ],
+  "cwd": "/home/qq/work/hepta-modules40-20261105-da8578/source",
+  "source_before": {
+    "commit": "8658210499706130788c216ff14fd342809b45a4",
+    "tree": "6bc86196d10cf83b010f9917e5e9cb471b5f6b68",
+    "status": ""
+  },
+  "start_unix_ns": 1793898255084938114,
+  "environment_sha256": "0eba31f9edc07ffc869f685c2dfcf3eab856be5f4dce622721ed36f43b0875d5",
+  "exit": 0,
+  "elapsed_seconds": 1.1562061599688604,
+  "end_unix_ns": 1793898256241144614,
+  "source_after": {
+    "commit": "8658210499706130788c216ff14fd342809b45a4",
+    "tree": "6bc86196d10cf83b010f9917e5e9cb471b5f6b68",
+    "status": ""
+  },
+  "log_path": "/home/qq/work/hepta-modules40-20261105-da8578/evidence/complete-canonical-run1-app-server-process-regression.log",
+  "log_sha256": "06b13d96a90088d499b2fe9e62ad3ec4782824dd86df90458aad625d46d19fd6",
+  "log_bytes": 19541
+}

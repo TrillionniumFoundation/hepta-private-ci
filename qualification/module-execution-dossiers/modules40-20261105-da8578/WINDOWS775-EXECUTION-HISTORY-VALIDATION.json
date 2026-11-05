@@ -1,0 +1,752 @@
+{
+  "schema": "hepta.modules40.checkpoint-execution-report-validation.v1",
+  "sourceCommit": "775bf555b0a7faf6eed17627acb0d0433294b737",
+  "sourceTree": "e6f4644152d11a06457fdd92d8e5066675b26565",
+  "readOnlyLocalEvidenceValidation": true,
+  "newNativeExecutionPerformed": false,
+  "runtime": {
+    "jobId": "1a1ac9e9596-fc05-55ec",
+    "state": "succeeded",
+    "exitCode": 0,
+    "outputComplete": true,
+    "outputDurable": true,
+    "timedOut": false,
+    "cancelled": false,
+    "automaticRetry": false
+  },
+  "archive": {
+    "path": "integration/native-775-checkpoint.tar.gz",
+    "bytes": 217229,
+    "sha256": "1c59a87b3802c3a6d451907fcd2815ee49129234acfba8aae4868a7a8bb20a59",
+    "manifestEntryCount": 69,
+    "totalFileCountIncludingManifest": 70,
+    "allExtractedManifestEntriesMatch": true,
+    "baseEvidence": {
+      "commit": "f038947fd20992e15213d41f7f6d8ac1d2ca10fc",
+      "path": "qualification/module-execution-dossiers/modules40-20261105-da8578/native/native-final-bb55-checkpoint.tar.gz",
+      "archive_bytes": 1026914,
+      "archive_sha256": "28424496bd400d6c5ff6370158f7b093355e463f19ebb550b1df6e7330504886",
+      "source_commit": "bb55b0d7d263c396ec504c45393d938c3428dae5"
+    }
+  },
+  "suite": {
+    "elapsedSeconds": 36.538,
+    "testsRun": 1219,
+    "passed": 1219,
+    "slow": 1,
+    "skipped": 78,
+    "failed": 0,
+    "timedOut": 0
+  },
+  "junit": {
+    "bytes": 280618,
+    "sha256": "17954158f84b9e560182b4b22f86cadab6d37a3d472bf8e08351dbae48040e28",
+    "testSuiteCount": 34,
+    "testCaseCount": 1219,
+    "failures": 0,
+    "errors": 0,
+    "skippedCasesInJunit": 0,
+    "skipMeaning": "Original runner summary remains authoritative for selection skips omitted from this JUnit."
+  },
+  "requiredAudit": {
+    "count": 69,
+    "cleanPasses": 69,
+    "uniqueRequiredIdentities": 69,
+    "allMatchesFoundIndependentlyInJunit": true,
+    "gateResult": "CLEAN",
+    "candidateIdentityBound": true
+  },
+  "sevenStrictChecks": {
+    "maps-qualification": 0,
+    "status-facts": 0,
+    "module-registry": 0,
+    "documents-qualification": 0,
+    "chef-custody": 0,
+    "rust-ci-feedback": 0,
+    "module-docs-metadata": 0
+  },
+  "sevenWrapperChecks": {
+    "original-codespell": 0,
+    "seven-package-original-runner": 0,
+    "original-workspace-format": 0,
+    "original-four-package-format": 0,
+    "original-ci-policy-clippy": 0,
+    "two-library-regression": 0,
+    "app-server-process-regression": 0
+  },
+  "twoLibraryResult": {
+    "elapsedSeconds": 45.015,
+    "testsRun": 319,
+    "passed": 319,
+    "slow": 1,
+    "skipped": 0,
+    "failed": 0,
+    "timedOut": 0
+  },
+  "appServerProcessExecResult": {
+    "elapsedSeconds": 0.455,
+    "testsRun": 5,
+    "passed": 5,
+    "slow": 0,
+    "skipped": 1016,
+    "failed": 0,
+    "timedOut": 0
+  },
+  "codespellVersionPath": "/home/qq/work/hepta-modules40-20261105-da8578/tools/codespell-2.4.3/bin/codespell",
+  "codespellOriginalArgumentsRetained": true,
+  "clippyOriginalThreeDenyPolicyRetained": true,
+  "formatIgnoredNightlyOptionWarningCounts": {
+    "original-workspace-format": 426,
+    "original-four-package-format": 29
+  },
+  "sourceBoundSuccessfulReceiptCount": 17,
+  "receipts": [
+    {
+      "path": "integration/windows-native-checkpoint/native/seven-package-run4-bind-manifest.json",
+      "command": [
+        "python3",
+        "/home/qq/work/hepta-modules40-20261105-da8578/audit-tools/bind_native_audit_manifest.py",
+        "--repo",
+        "/home/qq/work/hepta-modules40-20261105-da8578/source",
+        "--review-manifest",
+        "/home/qq/work/hepta-modules40-20261105-da8578/audit-tools/required-tests.69.json",
+        "--candidate-commit",
+        "775bf555b0a7faf6eed17627acb0d0433294b737",
+        "--candidate-tree",
+        "e6f4644152d11a06457fdd92d8e5066675b26565",
+        "--output",
+        "/home/qq/work/hepta-modules40-20261105-da8578/evidence/seven-package-run4-required-tests.69.source-bound.json"
+      ],
+      "exit": 0,
+      "elapsedSeconds": 0.13726870389655232,
+      "logSha256": "5ba809896d6d0d9795dc17940c1352188ddee7ac5d1a63c9761ae3bf7d9418f0"
+    },
+    {
+      "path": "integration/windows-native-checkpoint/native/seven-package-run4-chef-custody.json",
+      "command": [
+        "python3",
+        "scripts/test_hepta_ci_chef.py"
+      ],
+      "exit": 0,
+      "elapsedSeconds": 0.16267294599674642,
+      "logSha256": "98217c2c23e5ae9ff09bd2dbb65b4c97bd9052ac38d81082304ff5e50ac02ad1"
+    },
+    {
+      "path": "integration/windows-native-checkpoint/native/seven-package-run4-documents-qualification.json",
+      "command": [
+        "python3",
+        "scripts/hepta-module-docs.py",
+        "verify",
+        "--profile",
+        "qualification"
+      ],
+      "exit": 0,
+      "elapsedSeconds": 2.756679951911792,
+      "logSha256": "db8def5c9333745c8aa3af8688d7d9e2b67b9041e6b005a45d15db8eecbf3e10"
+    },
+    {
+      "path": "integration/windows-native-checkpoint/native/seven-package-run4-maps-qualification.json",
+      "command": [
+        "python3",
+        "scripts/hepta-implementation-maps.py",
+        "verify",
+        "--profile",
+        "qualification",
+        "--expected-sha",
+        "775bf555b0a7faf6eed17627acb0d0433294b737",
+        "--expected-tree",
+        "e6f4644152d11a06457fdd92d8e5066675b26565"
+      ],
+      "exit": 0,
+      "elapsedSeconds": 2.768267159932293,
+      "logSha256": "e1e63d8f40d08e12f9569ee3351f6fd9ce48bf0c9713ebce5bffb0ed773161e4"
+    },
+    {
+      "path": "integration/windows-native-checkpoint/native/seven-package-run4-module-docs-metadata.json",
+      "command": [
+        "python3",
+        "scripts/test_hepta_module_doc_metadata.py"
+      ],
+      "exit": 0,
+      "elapsedSeconds": 0.042227300931699574,
+      "logSha256": "e11bbb630c1a6ea91f4322ac92d7ce2a6c043ad84d3e41ecf0d0f5a73e9c9fd0"
+    },
+    {
+      "path": "integration/windows-native-checkpoint/native/seven-package-run4-module-registry.json",
+      "command": [
+        "python3",
+        "scripts/hepta_module_registry.py",
+        "--strict",
+        "--pretty"
+      ],
+      "exit": 0,
+      "elapsedSeconds": 0.0636410010047257,
+      "logSha256": "e856e4c966f130ea6d3f52ab8ca8bcf31ead62ccc173424ac57c809887e3b2e9"
+    },
+    {
+      "path": "integration/windows-native-checkpoint/native/seven-package-run4-original-test.json",
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-agent-protocol",
+        "-p",
+        "codex-hepta-agentd",
+        "-p",
+        "codex-hepta-infer-worker-host",
+        "-p",
+        "codex-hepta-runtime",
+        "-p",
+        "codex-hepta-contracts",
+        "-p",
+        "codex-hepta-learning-ledger",
+        "-p",
+        "codex-hepta-supervisor",
+        "--tool-config-file",
+        "hepta-evidence:/home/qq/work/hepta-modules40-20261105-da8578/seven-package-run4-report-only.nextest.toml",
+        "--cargo-metadata",
+        "/home/qq/work/hepta-modules40-20261105-da8578/evidence/seven-package-run4-original-scoped-metadata.json"
+      ],
+      "exit": 0,
+      "elapsedSeconds": 38.60684882791247,
+      "logSha256": "a80c36090c9448aaefdfec7c6f8bf8311eef104734a3ce9582710dabe4107a74"
+    },
+    {
+      "path": "integration/windows-native-checkpoint/native/seven-package-run4-required-audit.json",
+      "command": [
+        "python3",
+        "/home/qq/work/hepta-modules40-20261105-da8578/audit-tools/audit_native_junit.py",
+        "--review-manifest",
+        "/home/qq/work/hepta-modules40-20261105-da8578/audit-tools/required-tests.69.json",
+        "--manifest",
+        "/home/qq/work/hepta-modules40-20261105-da8578/evidence/seven-package-run4-required-tests.69.source-bound.json",
+        "--candidate-commit",
+        "775bf555b0a7faf6eed17627acb0d0433294b737",
+        "--candidate-tree",
+        "e6f4644152d11a06457fdd92d8e5066675b26565",
+        "--junit",
+        "/home/qq/work/hepta-modules40-20261105-da8578/evidence/seven-package-run4.junit.xml",
+        "--suite-exit-code",
+        "0",
+        "--report",
+        "/home/qq/work/hepta-modules40-20261105-da8578/evidence/seven-package-run4-required-tests.69.native-audit.json"
+      ],
+      "exit": 0,
+      "elapsedSeconds": 0.3149132989346981,
+      "logSha256": "48c76a0774d89548a81d3847aa6d5befd7228a32a7c43abf476ce435d4463b24"
+    },
+    {
+      "path": "integration/windows-native-checkpoint/native/seven-package-run4-rust-ci-feedback.json",
+      "command": [
+        "python3",
+        "scripts/test_hepta_rust_ci_feedback.py"
+      ],
+      "exit": 0,
+      "elapsedSeconds": 0.23808221600484103,
+      "logSha256": "fc00f9085fd0e26655c90ad2d0d0cec957883f919280802f9649af00700082ed"
+    },
+    {
+      "path": "integration/windows-native-checkpoint/native/seven-package-run4-status-facts.json",
+      "command": [
+        "python3",
+        "scripts/test_hepta_module_status_facts.py"
+      ],
+      "exit": 0,
+      "elapsedSeconds": 0.038818907109089196,
+      "logSha256": "24adda79e21044fef19cdc7f0606a9cd7770fc9a99c705a8622ee923c13bce5d"
+    },
+    {
+      "path": "integration/windows-native-checkpoint/native/windows-canonical-run1-app-server-process-regression.json",
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-app-server",
+        "--test",
+        "all",
+        "-E",
+        "test(process_exec)",
+        "--no-tests",
+        "fail"
+      ],
+      "exit": 0,
+      "elapsedSeconds": 1.168746171053499,
+      "logSha256": "9259653cd68f750afb1346ad2ad27ff5a4260bf06b6c796fef21ad89befd0c29"
+    },
+    {
+      "path": "integration/windows-native-checkpoint/native/windows-canonical-run1-original-ci-policy-clippy.json",
+      "command": [
+        "just",
+        "clippy",
+        "--locked",
+        "-p",
+        "codex-exec-server",
+        "-p",
+        "codex-app-server",
+        "-p",
+        "codex-app-server-client",
+        "--",
+        "-D",
+        "clippy::correctness",
+        "-D",
+        "clippy::await_holding_lock",
+        "-D",
+        "clippy::await_holding_invalid_type"
+      ],
+      "exit": 0,
+      "elapsedSeconds": 1.2981597620528191,
+      "logSha256": "ffaf2f327b2dea4eacc1fcca3ec97616e5ca88c7a6b406b70a1ed40c03cfd49e"
+    },
+    {
+      "path": "integration/windows-native-checkpoint/native/windows-canonical-run1-original-codespell.json",
+      "command": [
+        "/home/qq/work/hepta-modules40-20261105-da8578/tools/codespell-2.4.3/bin/codespell",
+        "--ignore-words",
+        ".codespellignore",
+        "--skip",
+        "./.git"
+      ],
+      "exit": 0,
+      "elapsedSeconds": 6.840561149059795,
+      "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "integration/windows-native-checkpoint/native/windows-canonical-run1-original-four-package-format.json",
+      "command": [
+        "cargo",
+        "fmt",
+        "--package",
+        "codex-utils-path",
+        "--package",
+        "codex-hepta-prompt-registry",
+        "--package",
+        "codex-hepta-contracts",
+        "--package",
+        "codex-hepta-agentd",
+        "--",
+        "--check"
+      ],
+      "exit": 0,
+      "elapsedSeconds": 0.8913441690383479,
+      "logSha256": "569f5b0a5f26ebfbf85e01faa3030747603915fa1d636fda3e4a801a553411ad"
+    },
+    {
+      "path": "integration/windows-native-checkpoint/native/windows-canonical-run1-original-workspace-format.json",
+      "command": [
+        "cargo",
+        "fmt",
+        "--",
+        "--config",
+        "imports_granularity=Item",
+        "--check"
+      ],
+      "exit": 0,
+      "elapsedSeconds": 9.933017120929435,
+      "logSha256": "48230365c06813d60fa46b6117c843a84166fb279b565ff886b5c70a2a2dcd2d"
+    },
+    {
+      "path": "integration/windows-native-checkpoint/native/windows-canonical-run1-seven-package-original-runner.json",
+      "command": [
+        "python3",
+        "/home/qq/work/hepta-modules40-20261105-da8578/run-final-native.py",
+        "--candidate-commit",
+        "775bf555b0a7faf6eed17627acb0d0433294b737",
+        "--candidate-tree",
+        "e6f4644152d11a06457fdd92d8e5066675b26565",
+        "--run-label",
+        "seven-package-run4"
+      ],
+      "exit": 0,
+      "elapsedSeconds": 45.67886800505221,
+      "logSha256": "50a7491b239800c625e9c76c41f3ea81c48a552c815dca187f7612ee3eb63e66"
+    },
+    {
+      "path": "integration/windows-native-checkpoint/native/windows-canonical-run1-two-library-regression.json",
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-exec-server",
+        "-p",
+        "codex-app-server-client",
+        "--lib"
+      ],
+      "exit": 0,
+      "elapsedSeconds": 45.91950474004261,
+      "logSha256": "83b568d10b9700fcf2dadbe54930b146e1ec33b0677b456e4a5ffb51fba77a50"
+    }
+  ],
+  "limits": [
+    "Linux scope only; no Windows or Darwin compilation/runtime qualification is inferred.",
+    "No result is transferred to a later commit, same-tree identity, merge candidate or evidence carrier.",
+    "The 69-case manifest is an audit subset, not an execution filter; complete-suite failure would remain failure.",
+    "Skipped tests remain skipped; separate command scopes and repeated candidates are not added together.",
+    "Stable rustfmt ignores the recorded nightly-only imports_granularity option.",
+    "All 40 production flags remain false; provider/deployment/independent acceptance remains open."
+  ],
+  "inputs": [
+    {
+      "path": "integration/runtime-receipts/windows-canonical-775-runtime-status.json",
+      "bytes": 738,
+      "sha256": "e3c2afebeb77c3f158a7edfe1a1bc41b0071a7615bf64e28d56e5e76de54f265"
+    },
+    {
+      "path": "integration/native-775-checkpoint.tar.gz",
+      "bytes": 217229,
+      "sha256": "1c59a87b3802c3a6d451907fcd2815ee49129234acfba8aae4868a7a8bb20a59"
+    },
+    {
+      "path": "integration/windows-native-checkpoint/MANIFEST.json",
+      "bytes": 13905,
+      "sha256": "7bf4f3a9d3e23c4baefed97c4174601de363a530727a76c8f510d55954876c56"
+    },
+    {
+      "path": "integration/windows-native-checkpoint/native-source-history/587a37f7cb3196426962024a094dab8947596fef.commit",
+      "bytes": 334,
+      "sha256": "f49703e7337c665bb1d2443660b13594247ef7628a6ecedbc7f9edcde12e9b55"
+    },
+    {
+      "path": "integration/windows-native-checkpoint/native-source-history/775bf555b0a7faf6eed17627acb0d0433294b737.commit",
+      "bytes": 333,
+      "sha256": "ef545b7aca658cf9f4d3e8783956220e97ca3df3a58e7da6075517e9084a690c"
+    },
+    {
+      "path": "integration/windows-native-checkpoint/native-source-history/797116d61cf422c26274ffef31297dce84a53a80.commit",
+      "bytes": 340,
+      "sha256": "24bc549de0bc6e95eb636ca1402562a152de0d8597deea4635f068c26bf696e7"
+    },
+    {
+      "path": "integration/windows-native-checkpoint/native-source-history/identities.json",
+      "bytes": 588,
+      "sha256": "8edccddc3c4750f4d416dac106ab0707975360e6b4d481763e16c5f3665d4983"
+    },
+    {
+      "path": "integration/windows-native-checkpoint/native/seven-package-run4-bind-manifest.json",
+      "bytes": 1414,
+      "sha256": "aa625aef6f753268c923168dbdeae1aaa10f27c3885edaf3f78403101e15f42e"
+    },
+    {
+      "path": "integration/windows-native-checkpoint/native/seven-package-run4-bind-manifest.log",
+      "bytes": 566,
+      "sha256": "5ba809896d6d0d9795dc17940c1352188ddee7ac5d1a63c9761ae3bf7d9418f0"
+    },
+    {
+      "path": "integration/windows-native-checkpoint/native/seven-package-run4-chef-custody.json",
+      "bytes": 890,
+      "sha256": "ca2acf7f8ffcae319356701387eaa25056a78389ad35c0e90a65d520f063ad4b"
+    },
+    {
+      "path": "integration/windows-native-checkpoint/native/seven-package-run4-chef-custody.log",
+      "bytes": 4728,
+      "sha256": "98217c2c23e5ae9ff09bd2dbb65b4c97bd9052ac38d81082304ff5e50ac02ad1"
+    },
+    {
+      "path": "integration/windows-native-checkpoint/native/seven-package-run4-documents-qualification.json",
+      "bytes": 949,
+      "sha256": "1bfa7b6445348f92a1756da10710d07cfcd81c932d06dfa42866aac386f9ac26"
+    },
+    {
+      "path": "integration/windows-native-checkpoint/native/seven-package-run4-documents-qualification.log",
+      "bytes": 323,
+      "sha256": "db8def5c9333745c8aa3af8688d7d9e2b67b9041e6b005a45d15db8eecbf3e10"
+    },
+    {
+      "path": "integration/windows-native-checkpoint/native/seven-package-run4-maps-qualification.json",
+      "bytes": 1093,
+      "sha256": "8e3a3f5085e108a87258f838882a5f17b6dc29fd82ae011c0a4f0065180111c4"
+    },
+    {
+      "path": "integration/windows-native-checkpoint/native/seven-package-run4-maps-qualification.log",
+      "bytes": 691,
+      "sha256": "e1e63d8f40d08e12f9569ee3351f6fd9ce48bf0c9713ebce5bffb0ed773161e4"
+    },
+    {
+      "path": "integration/windows-native-checkpoint/native/seven-package-run4-module-docs-metadata.json",
+      "bytes": 910,
+      "sha256": "6bb39aa005565046f76746912504d5c451004967ceed612b406305ba215aadc2"
+    },
+    {
+      "path": "integration/windows-native-checkpoint/native/seven-package-run4-module-docs-metadata.log",
+      "bytes": 104,
+      "sha256": "e11bbb630c1a6ea91f4322ac92d7ce2a6c043ad84d3e41ecf0d0f5a73e9c9fd0"
+    },
+    {
+      "path": "integration/windows-native-checkpoint/native/seven-package-run4-module-registry.json",
+      "bytes": 926,
+      "sha256": "d6f9c35b6685982751d6fbe4f571700e5e2c2cb15aa565f16103d19ca786b4dc"
+    },
+    {
+      "path": "integration/windows-native-checkpoint/native/seven-package-run4-module-registry.log",
+      "bytes": 896,
+      "sha256": "e856e4c966f130ea6d3f52ab8ca8bcf31ead62ccc173424ac57c809887e3b2e9"
+    },
+    {
+      "path": "integration/windows-native-checkpoint/native/seven-package-run4-original-scoped-metadata.json",
+      "bytes": 937669,
+      "sha256": "3ec7d59d8e9d1f565086059ed198262bb927faf23795886f8d063cf7c02ccef4"
+    },
+    {
+      "path": "integration/windows-native-checkpoint/native/seven-package-run4-original-test.json",
+      "bytes": 1440,
+      "sha256": "5cec88121d50ed0a4158f10253e5275b903c380e10947193563bdc4490b83f10"
+    },
+    {
+      "path": "integration/windows-native-checkpoint/native/seven-package-run4-original-test.log",
+      "bytes": 194188,
+      "sha256": "a80c36090c9448aaefdfec7c6f8bf8311eef104734a3ce9582710dabe4107a74"
+    },
+    {
+      "path": "integration/windows-native-checkpoint/native/seven-package-run4-preflight.json",
+      "bytes": 6145,
+      "sha256": "6ac836b5f8e7102751f23d72af4412c4603732569c8daa121faf85a9ef7afbf6"
+    },
+    {
+      "path": "integration/windows-native-checkpoint/native/seven-package-run4-required-audit.json",
+      "bytes": 1607,
+      "sha256": "9ed3f702c52b79df2cea9a653ab378d8d20c583156c0a65c520044748e3b7670"
+    },
+    {
+      "path": "integration/windows-native-checkpoint/native/seven-package-run4-required-audit.log",
+      "bytes": 107,
+      "sha256": "48c76a0774d89548a81d3847aa6d5befd7228a32a7c43abf476ce435d4463b24"
+    },
+    {
+      "path": "integration/windows-native-checkpoint/native/seven-package-run4-required-tests.69.native-audit.json",
+      "bytes": 73601,
+      "sha256": "4527e75bbfa019fc3f9a2d8b0a21fc69322371638d9c86055ff663156f40db17"
+    },
+    {
+      "path": "integration/windows-native-checkpoint/native/seven-package-run4-required-tests.69.source-bound.json",
+      "bytes": 78628,
+      "sha256": "73fd6cf3c93b082a62a8b9c63b07ed2610a41f62b3384aab89cafdff6ed9067a"
+    },
+    {
+      "path": "integration/windows-native-checkpoint/native/seven-package-run4-rust-ci-feedback.json",
+      "bytes": 902,
+      "sha256": "dc3fbeae469e3c9babab792532706136d013f74f27ca8f9a4bb0210ea26a8f42"
+    },
+    {
+      "path": "integration/windows-native-checkpoint/native/seven-package-run4-rust-ci-feedback.log",
+      "bytes": 119,
+      "sha256": "fc00f9085fd0e26655c90ad2d0d0cec957883f919280802f9649af00700082ed"
+    },
+    {
+      "path": "integration/windows-native-checkpoint/native/seven-package-run4-status-facts.json",
+      "bytes": 902,
+      "sha256": "522f69417c51c4afbdae7bff9f0cb9bca44d88128a820148d45d6bc31d971424"
+    },
+    {
+      "path": "integration/windows-native-checkpoint/native/seven-package-run4-status-facts.log",
+      "bytes": 100,
+      "sha256": "24adda79e21044fef19cdc7f0606a9cd7770fc9a99c705a8622ee923c13bce5d"
+    },
+    {
+      "path": "integration/windows-native-checkpoint/native/seven-package-run4-summary.json",
+      "bytes": 1569,
+      "sha256": "665adfc6067a2aecc8a6b8cc450bc38eefbf4539ff185ae829e7da4cf17e5241"
+    },
+    {
+      "path": "integration/windows-native-checkpoint/native/seven-package-run4.junit.xml",
+      "bytes": 280618,
+      "sha256": "17954158f84b9e560182b4b22f86cadab6d37a3d472bf8e08351dbae48040e28"
+    },
+    {
+      "path": "integration/windows-native-checkpoint/native/windows-canonical-run1-app-server-process-regression.json",
+      "bytes": 1023,
+      "sha256": "af6d23315e449d8dff66dfdad122242730fb027688717f5303d02ea26dc9eb33"
+    },
+    {
+      "path": "integration/windows-native-checkpoint/native/windows-canonical-run1-app-server-process-regression.log",
+      "bytes": 19541,
+      "sha256": "9259653cd68f750afb1346ad2ad27ff5a4260bf06b6c796fef21ad89befd0c29"
+    },
+    {
+      "path": "integration/windows-native-checkpoint/native/windows-canonical-run1-navigation-preview.json",
+      "bytes": 7059,
+      "sha256": "dd827058ddc3ae750a0751b794a5fef4c96af0eff0ac1f05450f59e6d6bae82a"
+    },
+    {
+      "path": "integration/windows-native-checkpoint/native/windows-canonical-run1-navigation-preview.log",
+      "bytes": 363,
+      "sha256": "ef8f050c2da4a70ce1bf9c922dbbef816e5752e6f57c70cdc8362570956cac1a"
+    },
+    {
+      "path": "integration/windows-native-checkpoint/native/windows-canonical-run1-original-ci-policy-clippy.json",
+      "bytes": 1149,
+      "sha256": "d94c5f5a0bc71d2e1188fe4e818bb549e3af2a3f8cc590d18b69bcf0093c710a"
+    },
+    {
+      "path": "integration/windows-native-checkpoint/native/windows-canonical-run1-original-ci-policy-clippy.log",
+      "bytes": 8953,
+      "sha256": "ffaf2f327b2dea4eacc1fcca3ec97616e5ca88c7a6b406b70a1ed40c03cfd49e"
+    },
+    {
+      "path": "integration/windows-native-checkpoint/native/windows-canonical-run1-original-codespell.json",
+      "bytes": 1006,
+      "sha256": "67b41928c30a7f4cc8841147651bee8393f2a960d4f3cdfb7c9145c797953ebd"
+    },
+    {
+      "path": "integration/windows-native-checkpoint/native/windows-canonical-run1-original-codespell.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "integration/windows-native-checkpoint/native/windows-canonical-run1-original-four-package-format.json",
+      "bytes": 1097,
+      "sha256": "495eb3c7c0b6ae51c0a89d39ed222807fbd8c7c7ff7bc5adc1f20a6c3d4e6448"
+    },
+    {
+      "path": "integration/windows-native-checkpoint/native/windows-canonical-run1-original-four-package-format.log",
+      "bytes": 3074,
+      "sha256": "569f5b0a5f26ebfbf85e01faa3030747603915fa1d636fda3e4a801a553411ad"
+    },
+    {
+      "path": "integration/windows-native-checkpoint/native/windows-canonical-run1-original-workspace-format.json",
+      "bytes": 960,
+      "sha256": "c6a8f8dac82d13ce372ec335fc88f7a405c7ee1d8ce37580ada4a072b3d7b810"
+    },
+    {
+      "path": "integration/windows-native-checkpoint/native/windows-canonical-run1-original-workspace-format.log",
+      "bytes": 45156,
+      "sha256": "48230365c06813d60fa46b6117c843a84166fb279b565ff886b5c70a2a2dcd2d"
+    },
+    {
+      "path": "integration/windows-native-checkpoint/native/windows-canonical-run1-seven-package-original-runner.json",
+      "bytes": 1137,
+      "sha256": "ce07f4daa3fec1f30912477f7baf647f2326ca2b44ec2bcda66e0b4b152ced57"
+    },
+    {
+      "path": "integration/windows-native-checkpoint/native/windows-canonical-run1-seven-package-original-runner.log",
+      "bytes": 12204,
+      "sha256": "50a7491b239800c625e9c76c41f3ea81c48a552c815dca187f7612ee3eb63e66"
+    },
+    {
+      "path": "integration/windows-native-checkpoint/native/windows-canonical-run1-source-checkout.json",
+      "bytes": 948,
+      "sha256": "0f7306db7e73d296eed295e0f547ba400c1a1618c8684b098316eb546996533c"
+    },
+    {
+      "path": "integration/windows-native-checkpoint/native/windows-canonical-run1-summary.json",
+      "bytes": 836,
+      "sha256": "389df864b70fca32f324dba71a5f6d8f0c1d424bf2ddc3b069a9a1d3d3f21e11"
+    },
+    {
+      "path": "integration/windows-native-checkpoint/native/windows-canonical-run1-two-library-regression.json",
+      "bytes": 980,
+      "sha256": "c0b9d81e824cc2c2cfa112efcdb73c328ec776135515f94a2c721f00da1e63bf"
+    },
+    {
+      "path": "integration/windows-native-checkpoint/native/windows-canonical-run1-two-library-regression.log",
+      "bytes": 57048,
+      "sha256": "83b568d10b9700fcf2dadbe54930b146e1ec33b0677b456e4a5ffb51fba77a50"
+    },
+    {
+      "path": "integration/windows-native-checkpoint/native/windows-name-source-run1-export.json",
+      "bytes": 15779,
+      "sha256": "ea87ddb40a785b62cafd25bbebdc8464254e8062be28a788644900abf09dfc67"
+    },
+    {
+      "path": "integration/windows-native-checkpoint/native/windows-name-source-run1-export.json.z",
+      "bytes": 5060,
+      "sha256": "f10a39dff8fd99ab286dcb5d509743eaf9f818cb2c83beae1582c9c27a68b226"
+    },
+    {
+      "path": "integration/windows-native-checkpoint/native/windows-name-source-run1-format.log",
+      "bytes": 742,
+      "sha256": "23344fde97c212d876ef998126f0b666c3bb98ca91e58f649403740fe05dd46d"
+    },
+    {
+      "path": "integration/windows-native-checkpoint/native/windows-name-source-run1-source.patch",
+      "bytes": 2309,
+      "sha256": "5fdaaa1e16a20793d879cbee9b47a3effad9e1b2d2434c5da4d54357e9e8264f"
+    },
+    {
+      "path": "integration/windows-native-checkpoint/reproduction/archive-windows-native.py",
+      "bytes": 5704,
+      "sha256": "9cb9f54eae6e4d90335784ba661b37a871bced0fecc00f79c271a4e347bd4d92"
+    },
+    {
+      "path": "integration/windows-native-checkpoint/reproduction/audit-tools/PREPARATION.json",
+      "bytes": 3189,
+      "sha256": "97200e2d0abfdba28cc44da9fc7878c40968d065339475abcc40a5050f0d89ac"
+    },
+    {
+      "path": "integration/windows-native-checkpoint/reproduction/audit-tools/README.md",
+      "bytes": 6621,
+      "sha256": "ce6cdfdd2645087a0f32d28f3339013002746749e1b736ee95b925b2911f2c7b"
+    },
+    {
+      "path": "integration/windows-native-checkpoint/reproduction/audit-tools/audit_native_junit.py",
+      "bytes": 9205,
+      "sha256": "a7796625ad2fd604c2f99c233ba530958ec652bad003c124e2c2138b7f612151"
+    },
+    {
+      "path": "integration/windows-native-checkpoint/reproduction/audit-tools/bind_native_audit_manifest.py",
+      "bytes": 8610,
+      "sha256": "1fd7070c5bff70acfe7890da820e50c25dfa60c6ac3f72b775c4a78a795ab580"
+    },
+    {
+      "path": "integration/windows-native-checkpoint/reproduction/audit-tools/history/bind_required_tests_manifest.py",
+      "bytes": 8470,
+      "sha256": "ac912800a10b48382800a92edc21ad2ce8e15c435e83ff7359f1a9a8951bdfc9"
+    },
+    {
+      "path": "integration/windows-native-checkpoint/reproduction/audit-tools/history/check_required_junit.py",
+      "bytes": 10111,
+      "sha256": "043448357a05cd2c71f3a812a0d9e623e4313a50c6222cbbba03172f95dcae5b"
+    },
+    {
+      "path": "integration/windows-native-checkpoint/reproduction/audit-tools/history/required-tests.with-e65.json",
+      "bytes": 43938,
+      "sha256": "f832236003c1937c29ba9ca3f6faeafa2dc9799664ae1069d0df78339366f56e"
+    },
+    {
+      "path": "integration/windows-native-checkpoint/reproduction/audit-tools/history/required-tests.with-e65.md",
+      "bytes": 1816,
+      "sha256": "a0a4d379063435834ba87e0fa7e4be098fc3c2acee7b81fe779afd1f29015215"
+    },
+    {
+      "path": "integration/windows-native-checkpoint/reproduction/audit-tools/required-tests.69.json",
+      "bytes": 56061,
+      "sha256": "bd5fa881bf712098f23b4f2193af548b5f3b70cf99694a2704d1d9458f5717ed"
+    },
+    {
+      "path": "integration/windows-native-checkpoint/reproduction/environment.json",
+      "bytes": 2040,
+      "sha256": "0eba31f9edc07ffc869f685c2dfcf3eab856be5f4dce622721ed36f43b0875d5"
+    },
+    {
+      "path": "integration/windows-native-checkpoint/reproduction/refresh-navigation-explicit-pins.py",
+      "bytes": 13331,
+      "sha256": "940f0fe0d5fccf53dc8d00dacbd4f572cf9b02419704dba0cde35d495f9e7e3b"
+    },
+    {
+      "path": "integration/windows-native-checkpoint/reproduction/run-final-native.py",
+      "bytes": 8758,
+      "sha256": "9590be884338146913ddec0fc4c0770cd2f134daf69d67c5a4a8bb14d60097eb"
+    },
+    {
+      "path": "integration/windows-native-checkpoint/reproduction/run-windows-canonical.py",
+      "bytes": 8306,
+      "sha256": "4c6dab7617c16f0b30eaf4cc9beecb8a899f65a3d3fb1790cb4e6aa5b23bc3cf"
+    },
+    {
+      "path": "integration/windows-native-checkpoint/reproduction/run-windows-name-source.py",
+      "bytes": 4634,
+      "sha256": "184a2b0f42b107b7996ee107d12740f4778b6d76f5e3dcb70f30c037bf5e459d"
+    },
+    {
+      "path": "integration/windows-native-checkpoint/reproduction/windows-canonical-object.json",
+      "bytes": 559,
+      "sha256": "54b616326064e46d155834d3967a47c70245206542e575cc143946824a2e0caa"
+    },
+    {
+      "path": "integration/windows-native-checkpoint/reproduction/windows-name-input.json",
+      "bytes": 15387,
+      "sha256": "cc793ce76ff81cbc3d969e163da148e3d4e3452205722a1c53fd80ec3de46564"
+    }
+  ]
+}

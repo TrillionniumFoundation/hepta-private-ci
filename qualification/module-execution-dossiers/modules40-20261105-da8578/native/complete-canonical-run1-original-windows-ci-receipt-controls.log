@@ -1,0 +1,11 @@
+......{"id": "original", "package": "owner", "exitCode": 100, "expectedTestCount": 1, "selectedTestCount": 1, "observedTests": ["original"], "missingRequiredTests": [], "nonPassingTests": [], "selectionMatches": true, "passed": false, "command": ["just", "test", "--locked", "-p", "owner", "--lib", "--cargo-profile", "dev-small", "-E", "test(=original)", "--test-threads", "1", "--no-tests", "fail", "--retries", "0"], "durationSeconds": 0.0, "logSha256": "4e499e2a7b36c3653f13f969846bd763b24b6fb780524456db3410422f76c9fb"}
+Starting 1 tests across 1 binary (99 tests skipped)
+PASS [ 0.1s] (1/1) owner original
+{"id": "second", "package": "owner", "exitCode": 0, "expectedTestCount": 1, "selectedTestCount": 1, "observedTests": ["original"], "missingRequiredTests": [], "nonPassingTests": [], "selectionMatches": true, "passed": true, "command": ["just", "test", "--locked", "-p", "owner", "--lib", "--cargo-profile", "dev-small", "-E", "test(=original)", "--test-threads", "1", "--no-tests", "fail", "--retries", "0"], "durationSeconds": 0.0, "logSha256": "4e499e2a7b36c3653f13f969846bd763b24b6fb780524456db3410422f76c9fb"}
+Starting 1 tests across 1 binary (99 tests skipped)
+PASS [ 0.1s] (1/1) owner original
+......................
+----------------------------------------------------------------------
+Ran 28 tests in 0.068s
+
+OK

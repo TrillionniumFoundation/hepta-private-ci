@@ -1,0 +1,37 @@
+{
+  "schema": "hepta.independent-native-audit-artifacts.v1",
+  "source": {
+    "commit": "775bf555b0a7faf6eed17627acb0d0433294b737",
+    "tree": "e6f4644152d11a06457fdd92d8e5066675b26565",
+    "status": ""
+  },
+  "inputs": {
+    "archive": {
+      "path": "integration/native-775-checkpoint.tar.gz",
+      "bytes": 217229,
+      "sha256": "1c59a87b3802c3a6d451907fcd2815ee49129234acfba8aae4868a7a8bb20a59"
+    },
+    "runtime": {
+      "path": "integration/runtime-receipts/windows-canonical-775-runtime-status.json",
+      "bytes": 738,
+      "sha256": "e3c2afebeb77c3f158a7edfe1a1bc41b0071a7615bf64e28d56e5e76de54f265"
+    }
+  },
+  "artifacts": [
+    {
+      "path": "recovery/audit_native_checkpoint_v2.py",
+      "bytes": 43424,
+      "sha256": "ac40d4844a6abb7303169374726e4bd65b6e70b5728c1adb0e12fd7dacea8a60"
+    },
+    {
+      "path": "recovery/windows-candidate-audit/FINAL-NATIVE-AUDIT.json",
+      "bytes": 83831,
+      "sha256": "ed675f31baff951afa15abb62623e9626e5c8af208e85d64d91f3830be1797a8"
+    },
+    {
+      "path": "recovery/windows-candidate-audit/FINAL-NATIVE-AUDIT.zh.md",
+      "bytes": 1861,
+      "sha256": "6fd6c4e202c6d6c9f918ad508cdfc701d8157af9231268e4915d33a8a40db8a5"
+    }
+  ]
+}

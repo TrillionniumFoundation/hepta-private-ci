@@ -1,0 +1,1833 @@
+{
+  "gate_result": "CLEAN",
+  "original_suite_exit_code": 0,
+  "candidate_identity_supplied_by_operator": {
+    "commit": "8658210499706130788c216ff14fd342809b45a4",
+    "tree": "6bc86196d10cf83b010f9917e5e9cb471b5f6b68"
+  },
+  "manifest": {
+    "path": "/home/qq/work/hepta-modules40-20261105-da8578/evidence/seven-package-run5-required-tests.69.source-bound.json",
+    "sha256": "2b6a8426bc1f26fe65265cbd30ecbadae28ad3e27df030c46d9c4375746bf57f"
+  },
+  "junit_inputs": [
+    {
+      "path": "/home/qq/work/hepta-modules40-20261105-da8578/evidence/seven-package-run5.junit.xml",
+      "bytes": 280619,
+      "sha256": "f17813bb320d0583756f9b19edf87b50b4f2e734028d694c5ec577fa4510c851"
+    }
+  ],
+  "required_count": 69,
+  "required_clean_passes": 69,
+  "observed_case_count": 1219,
+  "required_results": [
+    {
+      "package": "codex-hepta-agent-protocol",
+      "binary": "codex_hepta_agent_protocol",
+      "test": "tests::run_lifecycle_wire_round_trip_is_strict_and_bounded",
+      "area": "protocol and host authority wire",
+      "status": "PASS",
+      "matches": [
+        {
+          "junit": "/home/qq/work/hepta-modules40-20261105-da8578/evidence/seven-package-run5.junit.xml",
+          "name": "tests::run_lifecycle_wire_round_trip_is_strict_and_bounded",
+          "classname": "codex-hepta-agent-protocol",
+          "suites": [
+            "nextest-run",
+            "codex-hepta-agent-protocol"
+          ],
+          "nearest_testsuite": "codex-hepta-agent-protocol",
+          "skipped": false,
+          "failed": false,
+          "flaky_or_retried": false,
+          "status_attribute": null,
+          "result_attribute": null,
+          "time": "0.007"
+        }
+      ],
+      "same_name_wrong_target": []
+    },
+    {
+      "package": "codex-hepta-agent-protocol",
+      "binary": "codex_hepta_agent_protocol",
+      "test": "tests::health_wire_round_trip_is_strict_and_bounded",
+      "area": "protocol and host authority wire",
+      "status": "PASS",
+      "matches": [
+        {
+          "junit": "/home/qq/work/hepta-modules40-20261105-da8578/evidence/seven-package-run5.junit.xml",
+          "name": "tests::health_wire_round_trip_is_strict_and_bounded",
+          "classname": "codex-hepta-agent-protocol",
+          "suites": [
+            "nextest-run",
+            "codex-hepta-agent-protocol"
+          ],
+          "nearest_testsuite": "codex-hepta-agent-protocol",
+          "skipped": false,
+          "failed": false,
+          "flaky_or_retried": false,
+          "status_attribute": null,
+          "result_attribute": null,
+          "time": "0.008"
+        }
+      ],
+      "same_name_wrong_target": []
+    },
+    {
+      "package": "codex-hepta-agent-protocol",
+      "binary": "codex_hepta_agent_protocol",
+      "test": "tests::host_turn_authority_binding_is_strict_and_fail_closed",
+      "area": "protocol and host authority wire",
+      "status": "PASS",
+      "matches": [
+        {
+          "junit": "/home/qq/work/hepta-modules40-20261105-da8578/evidence/seven-package-run5.junit.xml",
+          "name": "tests::host_turn_authority_binding_is_strict_and_fail_closed",
+          "classname": "codex-hepta-agent-protocol",
+          "suites": [
+            "nextest-run",
+            "codex-hepta-agent-protocol"
+          ],
+          "nearest_testsuite": "codex-hepta-agent-protocol",
+          "skipped": false,
+          "failed": false,
+          "flaky_or_retried": false,
+          "status_attribute": null,
+          "result_attribute": null,
+          "time": "0.007"
+        }
+      ],
+      "same_name_wrong_target": []
+    },
+    {
+      "package": "codex-hepta-agentd",
+      "binary": "codex_hepta_agentd",
+      "test": "lane_b_runtime::bound::tests::reused_run_ids_cannot_redirect_bound_mutations_or_idempotent_acknowledgements",
+      "area": "bound original snapshot and ABA",
+      "status": "PASS",
+      "matches": [
+        {
+          "junit": "/home/qq/work/hepta-modules40-20261105-da8578/evidence/seven-package-run5.junit.xml",
+          "name": "lane_b_runtime::bound::tests::reused_run_ids_cannot_redirect_bound_mutations_or_idempotent_acknowledgements",
+          "classname": "codex-hepta-agentd",
+          "suites": [
+            "nextest-run",
+            "codex-hepta-agentd"
+          ],
+          "nearest_testsuite": "codex-hepta-agentd",
+          "skipped": false,
+          "failed": false,
+          "flaky_or_retried": false,
+          "status_attribute": null,
+          "result_attribute": null,
+          "time": "0.008"
+        }
+      ],
+      "same_name_wrong_target": []
+    },
+    {
+      "package": "codex-hepta-agentd",
+      "binary": "codex_hepta_agentd",
+      "test": "lane_b_runtime::bound::tests::exact_bound_transitions_compare_revision_before_any_idempotent_return",
+      "area": "bound original snapshot and ABA",
+      "status": "PASS",
+      "matches": [
+        {
+          "junit": "/home/qq/work/hepta-modules40-20261105-da8578/evidence/seven-package-run5.junit.xml",
+          "name": "lane_b_runtime::bound::tests::exact_bound_transitions_compare_revision_before_any_idempotent_return",
+          "classname": "codex-hepta-agentd",
+          "suites": [
+            "nextest-run",
+            "codex-hepta-agentd"
+          ],
+          "nearest_testsuite": "codex-hepta-agentd",
+          "skipped": false,
+          "failed": false,
+          "flaky_or_retried": false,
+          "status_attribute": null,
+          "result_attribute": null,
+          "time": "0.006"
+        }
+      ],
+      "same_name_wrong_target": []
+    },
+    {
+      "package": "codex-hepta-agentd",
+      "binary": "codex_hepta_agentd",
+      "test": "lane_b_runtime::fault_tests::exhausted_recovered_revision_keeps_unresolved_reservation",
+      "area": "overflow must preserve unresolved state",
+      "status": "PASS",
+      "matches": [
+        {
+          "junit": "/home/qq/work/hepta-modules40-20261105-da8578/evidence/seven-package-run5.junit.xml",
+          "name": "lane_b_runtime::fault_tests::exhausted_recovered_revision_keeps_unresolved_reservation",
+          "classname": "codex-hepta-agentd",
+          "suites": [
+            "nextest-run",
+            "codex-hepta-agentd"
+          ],
+          "nearest_testsuite": "codex-hepta-agentd",
+          "skipped": false,
+          "failed": false,
+          "flaky_or_retried": false,
+          "status_attribute": null,
+          "result_attribute": null,
+          "time": "0.006"
+        }
+      ],
+      "same_name_wrong_target": []
+    },
+    {
+      "package": "codex-hepta-agentd",
+      "binary": "codex_hepta_agentd",
+      "test": "lane_b_runtime::fault_tests::acknowledgement_deadline_overflow_preserves_dispatched_record",
+      "area": "overflow must preserve unresolved state",
+      "status": "PASS",
+      "matches": [
+        {
+          "junit": "/home/qq/work/hepta-modules40-20261105-da8578/evidence/seven-package-run5.junit.xml",
+          "name": "lane_b_runtime::fault_tests::acknowledgement_deadline_overflow_preserves_dispatched_record",
+          "classname": "codex-hepta-agentd",
+          "suites": [
+            "nextest-run",
+            "codex-hepta-agentd"
+          ],
+          "nearest_testsuite": "codex-hepta-agentd",
+          "skipped": false,
+          "failed": false,
+          "flaky_or_retried": false,
+          "status_attribute": null,
+          "result_attribute": null,
+          "time": "0.007"
+        }
+      ],
+      "same_name_wrong_target": []
+    },
+    {
+      "package": "codex-hepta-agentd",
+      "binary": "codex_hepta_agentd",
+      "test": "lane_b_runtime::fault_tests::last_representable_terminal_transition_still_reconciles",
+      "area": "overflow must preserve unresolved state",
+      "status": "PASS",
+      "matches": [
+        {
+          "junit": "/home/qq/work/hepta-modules40-20261105-da8578/evidence/seven-package-run5.junit.xml",
+          "name": "lane_b_runtime::fault_tests::last_representable_terminal_transition_still_reconciles",
+          "classname": "codex-hepta-agentd",
+          "suites": [
+            "nextest-run",
+            "codex-hepta-agentd"
+          ],
+          "nearest_testsuite": "codex-hepta-agentd",
+          "skipped": false,
+          "failed": false,
+          "flaky_or_retried": false,
+          "status_attribute": null,
+          "result_attribute": null,
+          "time": "0.006"
+        }
+      ],
+      "same_name_wrong_target": []
+    },
+    {
+      "package": "codex-hepta-agentd",
+      "binary": "codex_hepta_agentd",
+      "test": "intelligence_product::tests::signed::canonical_runtime::running_canonical_admission_preserves_the_recovered_run_start",
+      "area": "canonical original identity, generation, fence and trust",
+      "status": "PASS",
+      "matches": [
+        {
+          "junit": "/home/qq/work/hepta-modules40-20261105-da8578/evidence/seven-package-run5.junit.xml",
+          "name": "intelligence_product::tests::signed::canonical_runtime::running_canonical_admission_preserves_the_recovered_run_start",
+          "classname": "codex-hepta-agentd",
+          "suites": [
+            "nextest-run",
+            "codex-hepta-agentd"
+          ],
+          "nearest_testsuite": "codex-hepta-agentd",
+          "skipped": false,
+          "failed": false,
+          "flaky_or_retried": false,
+          "status_attribute": null,
+          "result_attribute": null,
+          "time": "0.504"
+        }
+      ],
+      "same_name_wrong_target": []
+    },
+    {
+      "package": "codex-hepta-agentd",
+      "binary": "codex_hepta_agentd",
+      "test": "intelligence_product::tests::signed::canonical_runtime::canonical_recovery_rejects_old_generation_fence_and_signature_before_provider",
+      "area": "canonical original identity, generation, fence and trust",
+      "status": "PASS",
+      "matches": [
+        {
+          "junit": "/home/qq/work/hepta-modules40-20261105-da8578/evidence/seven-package-run5.junit.xml",
+          "name": "intelligence_product::tests::signed::canonical_runtime::canonical_recovery_rejects_old_generation_fence_and_signature_before_provider",
+          "classname": "codex-hepta-agentd",
+          "suites": [
+            "nextest-run",
+            "codex-hepta-agentd"
+          ],
+          "nearest_testsuite": "codex-hepta-agentd",
+          "skipped": false,
+          "failed": false,
+          "flaky_or_retried": false,
+          "status_attribute": null,
+          "result_attribute": null,
+          "time": "0.285"
+        }
+      ],
+      "same_name_wrong_target": []
+    },
+    {
+      "package": "codex-hepta-agentd",
+      "binary": "codex_hepta_agentd",
+      "test": "intelligence_product::tests::signed::canonical_runtime::canonical_body_does_not_alias_the_run_lifecycle_generation",
+      "area": "canonical original identity, generation, fence and trust",
+      "status": "PASS",
+      "matches": [
+        {
+          "junit": "/home/qq/work/hepta-modules40-20261105-da8578/evidence/seven-package-run5.junit.xml",
+          "name": "intelligence_product::tests::signed::canonical_runtime::canonical_body_does_not_alias_the_run_lifecycle_generation",
+          "classname": "codex-hepta-agentd",
+          "suites": [
+            "nextest-run",
+            "codex-hepta-agentd"
+          ],
+          "nearest_testsuite": "codex-hepta-agentd",
+          "skipped": false,
+          "failed": false,
+          "flaky_or_retried": false,
+          "status_attribute": null,
+          "result_attribute": null,
+          "time": "0.274"
+        }
+      ],
+      "same_name_wrong_target": []
+    },
+    {
+      "package": "codex-hepta-agentd",
+      "binary": "codex_hepta_agentd",
+      "test": "intelligence_product::tests::signed::canonical_runtime::owner_transition_during_canonical_preparation_never_refreshes_the_old_run",
+      "area": "canonical original identity, generation, fence and trust",
+      "status": "PASS",
+      "matches": [
+        {
+          "junit": "/home/qq/work/hepta-modules40-20261105-da8578/evidence/seven-package-run5.junit.xml",
+          "name": "intelligence_product::tests::signed::canonical_runtime::owner_transition_during_canonical_preparation_never_refreshes_the_old_run",
+          "classname": "codex-hepta-agentd",
+          "suites": [
+            "nextest-run",
+            "codex-hepta-agentd"
+          ],
+          "nearest_testsuite": "codex-hepta-agentd",
+          "skipped": false,
+          "failed": false,
+          "flaky_or_retried": false,
+          "status_attribute": null,
+          "result_attribute": null,
+          "time": "0.473"
+        }
+      ],
+      "same_name_wrong_target": []
+    },
+    {
+      "package": "codex-hepta-agentd",
+      "binary": "codex_hepta_agentd",
+      "test": "intelligence_product::runner::run_start::tests::preparation_budget_is_capped_by_the_original_deadline",
+      "area": "original deadline cap",
+      "status": "PASS",
+      "matches": [
+        {
+          "junit": "/home/qq/work/hepta-modules40-20261105-da8578/evidence/seven-package-run5.junit.xml",
+          "name": "intelligence_product::runner::run_start::tests::preparation_budget_is_capped_by_the_original_deadline",
+          "classname": "codex-hepta-agentd",
+          "suites": [
+            "nextest-run",
+            "codex-hepta-agentd"
+          ],
+          "nearest_testsuite": "codex-hepta-agentd",
+          "skipped": false,
+          "failed": false,
+          "flaky_or_retried": false,
+          "status_attribute": null,
+          "result_attribute": null,
+          "time": "0.006"
+        }
+      ],
+      "same_name_wrong_target": []
+    },
+    {
+      "package": "codex-hepta-agentd",
+      "binary": "codex_hepta_agentd",
+      "test": "deployment_issuer::desktop::tests::desktop_policy_two_successors_keep_one_original_issuer_then_revocation_fences_the_pair",
+      "area": "Desktop original issuer and writer joint fence",
+      "status": "PASS",
+      "matches": [
+        {
+          "junit": "/home/qq/work/hepta-modules40-20261105-da8578/evidence/seven-package-run5.junit.xml",
+          "name": "deployment_issuer::desktop::tests::desktop_policy_two_successors_keep_one_original_issuer_then_revocation_fences_the_pair",
+          "classname": "codex-hepta-agentd",
+          "suites": [
+            "nextest-run",
+            "codex-hepta-agentd"
+          ],
+          "nearest_testsuite": "codex-hepta-agentd",
+          "skipped": false,
+          "failed": false,
+          "flaky_or_retried": false,
+          "status_attribute": null,
+          "result_attribute": null,
+          "time": "0.074"
+        }
+      ],
+      "same_name_wrong_target": []
+    },
+    {
+      "package": "codex-hepta-agentd",
+      "binary": "codex_hepta_agentd",
+      "test": "deployment_issuer::desktop::tests::desktop_policy_expired_or_revoked_writer_keeps_both_original_slots",
+      "area": "Desktop original issuer and writer joint fence",
+      "status": "PASS",
+      "matches": [
+        {
+          "junit": "/home/qq/work/hepta-modules40-20261105-da8578/evidence/seven-package-run5.junit.xml",
+          "name": "deployment_issuer::desktop::tests::desktop_policy_expired_or_revoked_writer_keeps_both_original_slots",
+          "classname": "codex-hepta-agentd",
+          "suites": [
+            "nextest-run",
+            "codex-hepta-agentd"
+          ],
+          "nearest_testsuite": "codex-hepta-agentd",
+          "skipped": false,
+          "failed": false,
+          "flaky_or_retried": false,
+          "status_attribute": null,
+          "result_attribute": null,
+          "time": "0.068"
+        }
+      ],
+      "same_name_wrong_target": []
+    },
+    {
+      "package": "codex-hepta-agentd",
+      "binary": "codex_hepta_agentd",
+      "test": "deployment_issuer::desktop::tests::desktop_policy_pair_cas_preserves_original_owner_and_reconciles_exact_lost_ack",
+      "area": "Desktop original issuer and writer joint fence",
+      "status": "PASS",
+      "matches": [
+        {
+          "junit": "/home/qq/work/hepta-modules40-20261105-da8578/evidence/seven-package-run5.junit.xml",
+          "name": "deployment_issuer::desktop::tests::desktop_policy_pair_cas_preserves_original_owner_and_reconciles_exact_lost_ack",
+          "classname": "codex-hepta-agentd",
+          "suites": [
+            "nextest-run",
+            "codex-hepta-agentd"
+          ],
+          "nearest_testsuite": "codex-hepta-agentd",
+          "skipped": false,
+          "failed": false,
+          "flaky_or_retried": false,
+          "status_attribute": null,
+          "result_attribute": null,
+          "time": "0.081"
+        }
+      ],
+      "same_name_wrong_target": []
+    },
+    {
+      "package": "codex-hepta-runtime",
+      "binary": "codex_hepta_runtime",
+      "test": "organs::tests::public_governed_topology_denies_before_grant_consumption_or_callbacks",
+      "area": "public apply/recover refusal before authority use",
+      "status": "PASS",
+      "matches": [
+        {
+          "junit": "/home/qq/work/hepta-modules40-20261105-da8578/evidence/seven-package-run5.junit.xml",
+          "name": "organs::tests::public_governed_topology_denies_before_grant_consumption_or_callbacks",
+          "classname": "codex-hepta-runtime",
+          "suites": [
+            "nextest-run",
+            "codex-hepta-runtime"
+          ],
+          "nearest_testsuite": "codex-hepta-runtime",
+          "skipped": false,
+          "failed": false,
+          "flaky_or_retried": false,
+          "status_attribute": null,
+          "result_attribute": null,
+          "time": "0.047"
+        }
+      ],
+      "same_name_wrong_target": []
+    },
+    {
+      "package": "codex-hepta-runtime",
+      "binary": "codex_hepta_runtime",
+      "test": "organs::tests::public_topology_recovery_denies_before_grant_consumption_or_callbacks",
+      "area": "public apply/recover refusal before authority use",
+      "status": "PASS",
+      "matches": [
+        {
+          "junit": "/home/qq/work/hepta-modules40-20261105-da8578/evidence/seven-package-run5.junit.xml",
+          "name": "organs::tests::public_topology_recovery_denies_before_grant_consumption_or_callbacks",
+          "classname": "codex-hepta-runtime",
+          "suites": [
+            "nextest-run",
+            "codex-hepta-runtime"
+          ],
+          "nearest_testsuite": "codex-hepta-runtime",
+          "skipped": false,
+          "failed": false,
+          "flaky_or_retried": false,
+          "status_attribute": null,
+          "result_attribute": null,
+          "time": "0.041"
+        }
+      ],
+      "same_name_wrong_target": []
+    },
+    {
+      "package": "codex-hepta-runtime",
+      "binary": "codex_hepta_runtime",
+      "test": "organs::tests::revoked_final_use_never_mutates_the_live_topology",
+      "area": "public apply/recover refusal before authority use",
+      "status": "PASS",
+      "matches": [
+        {
+          "junit": "/home/qq/work/hepta-modules40-20261105-da8578/evidence/seven-package-run5.junit.xml",
+          "name": "organs::tests::revoked_final_use_never_mutates_the_live_topology",
+          "classname": "codex-hepta-runtime",
+          "suites": [
+            "nextest-run",
+            "codex-hepta-runtime"
+          ],
+          "nearest_testsuite": "codex-hepta-runtime",
+          "skipped": false,
+          "failed": false,
+          "flaky_or_retried": false,
+          "status_attribute": null,
+          "result_attribute": null,
+          "time": "0.014"
+        }
+      ],
+      "same_name_wrong_target": []
+    },
+    {
+      "package": "codex-hepta-infer-worker-host",
+      "binary": "codex_hepta_infer_worker_host",
+      "test": "native_app_server::control::intelligence_recovery::tests::terminal_publication_preserves_local_boundary_and_authority_loss",
+      "area": "terminal qualification and full immutable binding",
+      "status": "PASS",
+      "matches": [
+        {
+          "junit": "/home/qq/work/hepta-modules40-20261105-da8578/evidence/seven-package-run5.junit.xml",
+          "name": "native_app_server::control::intelligence_recovery::tests::terminal_publication_preserves_local_boundary_and_authority_loss",
+          "classname": "codex-hepta-infer-worker-host",
+          "suites": [
+            "nextest-run",
+            "codex-hepta-infer-worker-host"
+          ],
+          "nearest_testsuite": "codex-hepta-infer-worker-host",
+          "skipped": false,
+          "failed": false,
+          "flaky_or_retried": false,
+          "status_attribute": null,
+          "result_attribute": null,
+          "time": "0.018"
+        }
+      ],
+      "same_name_wrong_target": []
+    },
+    {
+      "package": "codex-hepta-infer-worker-host",
+      "binary": "codex_hepta_infer_worker_host",
+      "test": "native_app_server::control::intelligence_recovery::tests::current_revision_does_not_relax_original_snapshot_binding",
+      "area": "terminal qualification and full immutable binding",
+      "status": "PASS",
+      "matches": [
+        {
+          "junit": "/home/qq/work/hepta-modules40-20261105-da8578/evidence/seven-package-run5.junit.xml",
+          "name": "native_app_server::control::intelligence_recovery::tests::current_revision_does_not_relax_original_snapshot_binding",
+          "classname": "codex-hepta-infer-worker-host",
+          "suites": [
+            "nextest-run",
+            "codex-hepta-infer-worker-host"
+          ],
+          "nearest_testsuite": "codex-hepta-infer-worker-host",
+          "skipped": false,
+          "failed": false,
+          "flaky_or_retried": false,
+          "status_attribute": null,
+          "result_attribute": null,
+          "time": "0.019"
+        }
+      ],
+      "same_name_wrong_target": []
+    },
+    {
+      "package": "codex-hepta-infer-worker-host",
+      "binary": "codex_hepta_infer_worker_host",
+      "test": "native_app_server::control::intelligence_recovery::tests::process::settled_terminal_survives_worker_loss_before_agentd_publication",
+      "area": "worker crash between durable terminal and Agentd acknowledgement",
+      "status": "PASS",
+      "matches": [
+        {
+          "junit": "/home/qq/work/hepta-modules40-20261105-da8578/evidence/seven-package-run5.junit.xml",
+          "name": "native_app_server::control::intelligence_recovery::tests::process::settled_terminal_survives_worker_loss_before_agentd_publication",
+          "classname": "codex-hepta-infer-worker-host",
+          "suites": [
+            "nextest-run",
+            "codex-hepta-infer-worker-host"
+          ],
+          "nearest_testsuite": "codex-hepta-infer-worker-host",
+          "skipped": false,
+          "failed": false,
+          "flaky_or_retried": false,
+          "status_attribute": null,
+          "result_attribute": null,
+          "time": "0.915"
+        }
+      ],
+      "same_name_wrong_target": []
+    },
+    {
+      "package": "codex-hepta-infer-worker-host",
+      "binary": "codex_hepta_infer_worker_host",
+      "test": "native_app_server::control::intelligence_recovery::tests::process::retained_app_server_terminal_reconciles_current_agentd_revision",
+      "area": "worker crash between durable terminal and Agentd acknowledgement",
+      "status": "PASS",
+      "matches": [
+        {
+          "junit": "/home/qq/work/hepta-modules40-20261105-da8578/evidence/seven-package-run5.junit.xml",
+          "name": "native_app_server::control::intelligence_recovery::tests::process::retained_app_server_terminal_reconciles_current_agentd_revision",
+          "classname": "codex-hepta-infer-worker-host",
+          "suites": [
+            "nextest-run",
+            "codex-hepta-infer-worker-host"
+          ],
+          "nearest_testsuite": "codex-hepta-infer-worker-host",
+          "skipped": false,
+          "failed": false,
+          "flaky_or_retried": false,
+          "status_attribute": null,
+          "result_attribute": null,
+          "time": "1.008"
+        }
+      ],
+      "same_name_wrong_target": []
+    },
+    {
+      "package": "codex-hepta-infer-worker-host",
+      "binary": "codex_hepta_infer_worker_host",
+      "test": "native_app_server::recovery::tests::real_agentd_reconciles_reopened_worker_without_replaying_provider",
+      "area": "real thread/read recovery without provider replay",
+      "status": "PASS",
+      "matches": [
+        {
+          "junit": "/home/qq/work/hepta-modules40-20261105-da8578/evidence/seven-package-run5.junit.xml",
+          "name": "native_app_server::recovery::tests::real_agentd_reconciles_reopened_worker_without_replaying_provider",
+          "classname": "codex-hepta-infer-worker-host",
+          "suites": [
+            "nextest-run",
+            "codex-hepta-infer-worker-host"
+          ],
+          "nearest_testsuite": "codex-hepta-infer-worker-host",
+          "skipped": false,
+          "failed": false,
+          "flaky_or_retried": false,
+          "status_attribute": null,
+          "result_attribute": null,
+          "time": "1.210"
+        }
+      ],
+      "same_name_wrong_target": []
+    },
+    {
+      "package": "codex-hepta-infer-worker-host",
+      "binary": "codex_hepta_infer_worker_host",
+      "test": "native_app_server::recovery::tests::real_agentd_reconciles_failed_terminal_without_replaying_provider",
+      "area": "real thread/read recovery without provider replay",
+      "status": "PASS",
+      "matches": [
+        {
+          "junit": "/home/qq/work/hepta-modules40-20261105-da8578/evidence/seven-package-run5.junit.xml",
+          "name": "native_app_server::recovery::tests::real_agentd_reconciles_failed_terminal_without_replaying_provider",
+          "classname": "codex-hepta-infer-worker-host",
+          "suites": [
+            "nextest-run",
+            "codex-hepta-infer-worker-host"
+          ],
+          "nearest_testsuite": "codex-hepta-infer-worker-host",
+          "skipped": false,
+          "failed": false,
+          "flaky_or_retried": false,
+          "status_attribute": null,
+          "result_attribute": null,
+          "time": "0.973"
+        }
+      ],
+      "same_name_wrong_target": []
+    },
+    {
+      "package": "codex-hepta-infer-worker-host",
+      "binary": "codex_hepta_infer_worker_host",
+      "test": "native_app_server::recovery::tests::real_agentd_reconciles_interrupted_terminal_without_replaying_provider",
+      "area": "real thread/read recovery without provider replay",
+      "status": "PASS",
+      "matches": [
+        {
+          "junit": "/home/qq/work/hepta-modules40-20261105-da8578/evidence/seven-package-run5.junit.xml",
+          "name": "native_app_server::recovery::tests::real_agentd_reconciles_interrupted_terminal_without_replaying_provider",
+          "classname": "codex-hepta-infer-worker-host",
+          "suites": [
+            "nextest-run",
+            "codex-hepta-infer-worker-host"
+          ],
+          "nearest_testsuite": "codex-hepta-infer-worker-host",
+          "skipped": false,
+          "failed": false,
+          "flaky_or_retried": false,
+          "status_attribute": null,
+          "result_attribute": null,
+          "time": "0.937"
+        }
+      ],
+      "same_name_wrong_target": []
+    },
+    {
+      "package": "codex-hepta-infer-worker-host",
+      "binary": "codex_hepta_infer_worker_host",
+      "test": "native_app_server::failure_tests::worker_loss_before_cleanup_preserves_timeout_usage_and_owner_loss",
+      "area": "process loss before cleanup retains timeout, usage and owner loss",
+      "status": "PASS",
+      "matches": [
+        {
+          "junit": "/home/qq/work/hepta-modules40-20261105-da8578/evidence/seven-package-run5.junit.xml",
+          "name": "native_app_server::failure_tests::worker_loss_before_cleanup_preserves_timeout_usage_and_owner_loss",
+          "classname": "codex-hepta-infer-worker-host",
+          "suites": [
+            "nextest-run",
+            "codex-hepta-infer-worker-host"
+          ],
+          "nearest_testsuite": "codex-hepta-infer-worker-host",
+          "skipped": false,
+          "failed": false,
+          "flaky_or_retried": false,
+          "status_attribute": null,
+          "result_attribute": null,
+          "time": "17.294"
+        }
+      ],
+      "same_name_wrong_target": []
+    },
+    {
+      "package": "codex-hepta-infer-worker-host",
+      "binary": "codex_hepta_infer_worker_host",
+      "test": "native_app_server::recovery::reconciliation_tests::reopened_terminal_reconciliation_preserves_usage_and_irreversible_boundaries",
+      "area": "strict retained assignment and irreversible boundaries",
+      "status": "PASS",
+      "matches": [
+        {
+          "junit": "/home/qq/work/hepta-modules40-20261105-da8578/evidence/seven-package-run5.junit.xml",
+          "name": "native_app_server::recovery::reconciliation_tests::reopened_terminal_reconciliation_preserves_usage_and_irreversible_boundaries",
+          "classname": "codex-hepta-infer-worker-host",
+          "suites": [
+            "nextest-run",
+            "codex-hepta-infer-worker-host"
+          ],
+          "nearest_testsuite": "codex-hepta-infer-worker-host",
+          "skipped": false,
+          "failed": false,
+          "flaky_or_retried": false,
+          "status_attribute": null,
+          "result_attribute": null,
+          "time": "0.033"
+        }
+      ],
+      "same_name_wrong_target": []
+    },
+    {
+      "package": "codex-hepta-infer-worker-host",
+      "binary": "codex_hepta_infer_worker_host",
+      "test": "native_app_server::recovery::reconciliation_tests::reopened_cancellation_intent_never_upgrades_a_completed_turn_to_success",
+      "area": "strict retained assignment and irreversible boundaries",
+      "status": "PASS",
+      "matches": [
+        {
+          "junit": "/home/qq/work/hepta-modules40-20261105-da8578/evidence/seven-package-run5.junit.xml",
+          "name": "native_app_server::recovery::reconciliation_tests::reopened_cancellation_intent_never_upgrades_a_completed_turn_to_success",
+          "classname": "codex-hepta-infer-worker-host",
+          "suites": [
+            "nextest-run",
+            "codex-hepta-infer-worker-host"
+          ],
+          "nearest_testsuite": "codex-hepta-infer-worker-host",
+          "skipped": false,
+          "failed": false,
+          "flaky_or_retried": false,
+          "status_attribute": null,
+          "result_attribute": null,
+          "time": "0.023"
+        }
+      ],
+      "same_name_wrong_target": []
+    },
+    {
+      "package": "codex-hepta-infer-worker-host",
+      "binary": "codex_hepta_infer_worker_host",
+      "test": "native_app_server::recovery::reconciliation_tests::terminal_reconciliation_rejects_cross_request_and_cross_turn_usage",
+      "area": "strict retained assignment and irreversible boundaries",
+      "status": "PASS",
+      "matches": [
+        {
+          "junit": "/home/qq/work/hepta-modules40-20261105-da8578/evidence/seven-package-run5.junit.xml",
+          "name": "native_app_server::recovery::reconciliation_tests::terminal_reconciliation_rejects_cross_request_and_cross_turn_usage",
+          "classname": "codex-hepta-infer-worker-host",
+          "suites": [
+            "nextest-run",
+            "codex-hepta-infer-worker-host"
+          ],
+          "nearest_testsuite": "codex-hepta-infer-worker-host",
+          "skipped": false,
+          "failed": false,
+          "flaky_or_retried": false,
+          "status_attribute": null,
+          "result_attribute": null,
+          "time": "0.031"
+        }
+      ],
+      "same_name_wrong_target": []
+    },
+    {
+      "package": "codex-hepta-infer-worker-host",
+      "binary": "codex_hepta_infer_worker_host",
+      "test": "native_app_server::control::tests::reopened_dispatch_and_completed_duplicate_never_connect_to_provider",
+      "area": "durable journal never replays a completed or rejected request",
+      "status": "PASS",
+      "matches": [
+        {
+          "junit": "/home/qq/work/hepta-modules40-20261105-da8578/evidence/seven-package-run5.junit.xml",
+          "name": "native_app_server::control::tests::reopened_dispatch_and_completed_duplicate_never_connect_to_provider",
+          "classname": "codex-hepta-infer-worker-host",
+          "suites": [
+            "nextest-run",
+            "codex-hepta-infer-worker-host"
+          ],
+          "nearest_testsuite": "codex-hepta-infer-worker-host",
+          "skipped": false,
+          "failed": false,
+          "flaky_or_retried": false,
+          "status_attribute": null,
+          "result_attribute": null,
+          "time": "0.024"
+        }
+      ],
+      "same_name_wrong_target": []
+    },
+    {
+      "package": "codex-hepta-infer-worker-host",
+      "binary": "codex_hepta_infer_worker_host",
+      "test": "native_app_server::control::tests::pre_dispatch_cancellation_and_connection_failure_release_without_usage_claims",
+      "area": "durable journal never replays a completed or rejected request",
+      "status": "PASS",
+      "matches": [
+        {
+          "junit": "/home/qq/work/hepta-modules40-20261105-da8578/evidence/seven-package-run5.junit.xml",
+          "name": "native_app_server::control::tests::pre_dispatch_cancellation_and_connection_failure_release_without_usage_claims",
+          "classname": "codex-hepta-infer-worker-host",
+          "suites": [
+            "nextest-run",
+            "codex-hepta-infer-worker-host"
+          ],
+          "nearest_testsuite": "codex-hepta-infer-worker-host",
+          "skipped": false,
+          "failed": false,
+          "flaky_or_retried": false,
+          "status_attribute": null,
+          "result_attribute": null,
+          "time": "0.025"
+        }
+      ],
+      "same_name_wrong_target": []
+    },
+    {
+      "package": "codex-hepta-infer-worker-host",
+      "binary": "codex_hepta_infer_worker_host",
+      "test": "native_app_server::control::tests::reopened_explicit_dispatch_rejection_never_connects_or_becomes_unknown",
+      "area": "durable journal never replays a completed or rejected request",
+      "status": "PASS",
+      "matches": [
+        {
+          "junit": "/home/qq/work/hepta-modules40-20261105-da8578/evidence/seven-package-run5.junit.xml",
+          "name": "native_app_server::control::tests::reopened_explicit_dispatch_rejection_never_connects_or_becomes_unknown",
+          "classname": "codex-hepta-infer-worker-host",
+          "suites": [
+            "nextest-run",
+            "codex-hepta-infer-worker-host"
+          ],
+          "nearest_testsuite": "codex-hepta-infer-worker-host",
+          "skipped": false,
+          "failed": false,
+          "flaky_or_retried": false,
+          "status_attribute": null,
+          "result_attribute": null,
+          "time": "0.024"
+        }
+      ],
+      "same_name_wrong_target": []
+    },
+    {
+      "package": "codex-hepta-infer-worker-host",
+      "binary": "codex_hepta_infer_worker_host",
+      "test": "native_app_server::control::tests::intelligence_handoff_is_committed_to_native_admission_identity",
+      "area": "durable journal never replays a completed or rejected request",
+      "status": "PASS",
+      "matches": [
+        {
+          "junit": "/home/qq/work/hepta-modules40-20261105-da8578/evidence/seven-package-run5.junit.xml",
+          "name": "native_app_server::control::tests::intelligence_handoff_is_committed_to_native_admission_identity",
+          "classname": "codex-hepta-infer-worker-host",
+          "suites": [
+            "nextest-run",
+            "codex-hepta-infer-worker-host"
+          ],
+          "nearest_testsuite": "codex-hepta-infer-worker-host",
+          "skipped": false,
+          "failed": false,
+          "flaky_or_retried": false,
+          "status_attribute": null,
+          "result_attribute": null,
+          "time": "0.025"
+        }
+      ],
+      "same_name_wrong_target": []
+    },
+    {
+      "package": "codex-hepta-infer-worker-host",
+      "binary": "codex_hepta_infer_worker_host",
+      "test": "native_app_server::native_output::tests::full_message_without_deltas_preserves_terminal_usage_and_local_boundary",
+      "area": "complete bounded message output without terminal or usage fabrication",
+      "status": "PASS",
+      "matches": [
+        {
+          "junit": "/home/qq/work/hepta-modules40-20261105-da8578/evidence/seven-package-run5.junit.xml",
+          "name": "native_app_server::native_output::tests::full_message_without_deltas_preserves_terminal_usage_and_local_boundary",
+          "classname": "codex-hepta-infer-worker-host",
+          "suites": [
+            "nextest-run",
+            "codex-hepta-infer-worker-host"
+          ],
+          "nearest_testsuite": "codex-hepta-infer-worker-host",
+          "skipped": false,
+          "failed": false,
+          "flaky_or_retried": false,
+          "status_attribute": null,
+          "result_attribute": null,
+          "time": "0.018"
+        }
+      ],
+      "same_name_wrong_target": []
+    },
+    {
+      "package": "codex-hepta-infer-worker-host",
+      "binary": "codex_hepta_infer_worker_host",
+      "test": "native_app_server::native_output::tests::completed_items_replace_partial_text_once_in_item_order",
+      "area": "complete bounded message output without terminal or usage fabrication",
+      "status": "PASS",
+      "matches": [
+        {
+          "junit": "/home/qq/work/hepta-modules40-20261105-da8578/evidence/seven-package-run5.junit.xml",
+          "name": "native_app_server::native_output::tests::completed_items_replace_partial_text_once_in_item_order",
+          "classname": "codex-hepta-infer-worker-host",
+          "suites": [
+            "nextest-run",
+            "codex-hepta-infer-worker-host"
+          ],
+          "nearest_testsuite": "codex-hepta-infer-worker-host",
+          "skipped": false,
+          "failed": false,
+          "flaky_or_retried": false,
+          "status_attribute": null,
+          "result_attribute": null,
+          "time": "0.021"
+        }
+      ],
+      "same_name_wrong_target": []
+    },
+    {
+      "package": "codex-hepta-infer-worker-host",
+      "binary": "codex_hepta_infer_worker_host",
+      "test": "native_app_server::native_output::tests::completed_text_and_deltas_share_an_atomic_byte_limit",
+      "area": "complete bounded message output without terminal or usage fabrication",
+      "status": "PASS",
+      "matches": [
+        {
+          "junit": "/home/qq/work/hepta-modules40-20261105-da8578/evidence/seven-package-run5.junit.xml",
+          "name": "native_app_server::native_output::tests::completed_text_and_deltas_share_an_atomic_byte_limit",
+          "classname": "codex-hepta-infer-worker-host",
+          "suites": [
+            "nextest-run",
+            "codex-hepta-infer-worker-host"
+          ],
+          "nearest_testsuite": "codex-hepta-infer-worker-host",
+          "skipped": false,
+          "failed": false,
+          "flaky_or_retried": false,
+          "status_attribute": null,
+          "result_attribute": null,
+          "time": "0.021"
+        }
+      ],
+      "same_name_wrong_target": []
+    },
+    {
+      "package": "codex-hepta-infer-worker-host",
+      "binary": "codex_hepta_infer_worker_host",
+      "test": "native_app_server::native_output::tests::empty_messages_and_item_ids_cannot_grow_unbounded_metadata",
+      "area": "complete bounded message output without terminal or usage fabrication",
+      "status": "PASS",
+      "matches": [
+        {
+          "junit": "/home/qq/work/hepta-modules40-20261105-da8578/evidence/seven-package-run5.junit.xml",
+          "name": "native_app_server::native_output::tests::empty_messages_and_item_ids_cannot_grow_unbounded_metadata",
+          "classname": "codex-hepta-infer-worker-host",
+          "suites": [
+            "nextest-run",
+            "codex-hepta-infer-worker-host"
+          ],
+          "nearest_testsuite": "codex-hepta-infer-worker-host",
+          "skipped": false,
+          "failed": false,
+          "flaky_or_retried": false,
+          "status_attribute": null,
+          "result_attribute": null,
+          "time": "0.037"
+        }
+      ],
+      "same_name_wrong_target": []
+    },
+    {
+      "package": "codex-hepta-infer-worker-host",
+      "binary": "hepta-infer-worker",
+      "test": "tests::snapshot_input_roundtrips_and_never_fills_missing_identity",
+      "area": "CLI original snapshot required",
+      "status": "PASS",
+      "matches": [
+        {
+          "junit": "/home/qq/work/hepta-modules40-20261105-da8578/evidence/seven-package-run5.junit.xml",
+          "name": "tests::snapshot_input_roundtrips_and_never_fills_missing_identity",
+          "classname": "codex-hepta-infer-worker-host::bin/hepta-infer-worker",
+          "suites": [
+            "nextest-run",
+            "codex-hepta-infer-worker-host::bin/hepta-infer-worker"
+          ],
+          "nearest_testsuite": "codex-hepta-infer-worker-host::bin/hepta-infer-worker",
+          "skipped": false,
+          "failed": false,
+          "flaky_or_retried": false,
+          "status_attribute": null,
+          "result_attribute": null,
+          "time": "0.012"
+        }
+      ],
+      "same_name_wrong_target": []
+    },
+    {
+      "package": "codex-hepta-infer-worker-host",
+      "binary": "codex_hepta_infer_worker_host",
+      "test": "native_app_server::tests::owner_loss_stays_denied_after_interrupt_grace_observes_completed",
+      "area": "retained real context, final-use, owner-loss and terminal boundaries",
+      "status": "PASS",
+      "matches": [
+        {
+          "junit": "/home/qq/work/hepta-modules40-20261105-da8578/evidence/seven-package-run5.junit.xml",
+          "name": "native_app_server::tests::owner_loss_stays_denied_after_interrupt_grace_observes_completed",
+          "classname": "codex-hepta-infer-worker-host",
+          "suites": [
+            "nextest-run",
+            "codex-hepta-infer-worker-host"
+          ],
+          "nearest_testsuite": "codex-hepta-infer-worker-host",
+          "skipped": false,
+          "failed": false,
+          "flaky_or_retried": false,
+          "status_attribute": null,
+          "result_attribute": null,
+          "time": "0.024"
+        }
+      ],
+      "same_name_wrong_target": []
+    },
+    {
+      "package": "codex-hepta-infer-worker-host",
+      "binary": "codex_hepta_infer_worker_host",
+      "test": "native_app_server::tests::owner_timeout_and_terminal_first_selection_cannot_authorize_success",
+      "area": "retained real context, final-use, owner-loss and terminal boundaries",
+      "status": "PASS",
+      "matches": [
+        {
+          "junit": "/home/qq/work/hepta-modules40-20261105-da8578/evidence/seven-package-run5.junit.xml",
+          "name": "native_app_server::tests::owner_timeout_and_terminal_first_selection_cannot_authorize_success",
+          "classname": "codex-hepta-infer-worker-host",
+          "suites": [
+            "nextest-run",
+            "codex-hepta-infer-worker-host"
+          ],
+          "nearest_testsuite": "codex-hepta-infer-worker-host",
+          "skipped": false,
+          "failed": false,
+          "flaky_or_retried": false,
+          "status_attribute": null,
+          "result_attribute": null,
+          "time": "0.021"
+        }
+      ],
+      "same_name_wrong_target": []
+    },
+    {
+      "package": "codex-hepta-infer-worker-host",
+      "binary": "codex_hepta_infer_worker_host",
+      "test": "native_app_server::tests::success_requires_both_matching_completion_and_final_ready_owner",
+      "area": "retained real context, final-use, owner-loss and terminal boundaries",
+      "status": "PASS",
+      "matches": [
+        {
+          "junit": "/home/qq/work/hepta-modules40-20261105-da8578/evidence/seven-package-run5.junit.xml",
+          "name": "native_app_server::tests::success_requires_both_matching_completion_and_final_ready_owner",
+          "classname": "codex-hepta-infer-worker-host",
+          "suites": [
+            "nextest-run",
+            "codex-hepta-infer-worker-host"
+          ],
+          "nearest_testsuite": "codex-hepta-infer-worker-host",
+          "skipped": false,
+          "failed": false,
+          "flaky_or_retried": false,
+          "status_attribute": null,
+          "result_attribute": null,
+          "time": "0.018"
+        }
+      ],
+      "same_name_wrong_target": []
+    },
+    {
+      "package": "codex-hepta-infer-worker-host",
+      "binary": "codex_hepta_infer_worker_host",
+      "test": "native_app_server::tests::late_completed_cannot_upgrade_cancelled_or_timed_out_boundary",
+      "area": "retained real context, final-use, owner-loss and terminal boundaries",
+      "status": "PASS",
+      "matches": [
+        {
+          "junit": "/home/qq/work/hepta-modules40-20261105-da8578/evidence/seven-package-run5.junit.xml",
+          "name": "native_app_server::tests::late_completed_cannot_upgrade_cancelled_or_timed_out_boundary",
+          "classname": "codex-hepta-infer-worker-host",
+          "suites": [
+            "nextest-run",
+            "codex-hepta-infer-worker-host"
+          ],
+          "nearest_testsuite": "codex-hepta-infer-worker-host",
+          "skipped": false,
+          "failed": false,
+          "flaky_or_retried": false,
+          "status_attribute": null,
+          "result_attribute": null,
+          "time": "0.017"
+        }
+      ],
+      "same_name_wrong_target": []
+    },
+    {
+      "package": "codex-hepta-infer-worker-host",
+      "binary": "codex_hepta_infer_worker_host",
+      "test": "native_app_server::tests::cognitive_final_use_revalidation_follows_durable_dispatch_and_precedes_turn_start",
+      "area": "retained real context, final-use, owner-loss and terminal boundaries",
+      "status": "PASS",
+      "matches": [
+        {
+          "junit": "/home/qq/work/hepta-modules40-20261105-da8578/evidence/seven-package-run5.junit.xml",
+          "name": "native_app_server::tests::cognitive_final_use_revalidation_follows_durable_dispatch_and_precedes_turn_start",
+          "classname": "codex-hepta-infer-worker-host",
+          "suites": [
+            "nextest-run",
+            "codex-hepta-infer-worker-host"
+          ],
+          "nearest_testsuite": "codex-hepta-infer-worker-host",
+          "skipped": false,
+          "failed": false,
+          "flaky_or_retried": false,
+          "status_attribute": null,
+          "result_attribute": null,
+          "time": "0.020"
+        }
+      ],
+      "same_name_wrong_target": []
+    },
+    {
+      "package": "codex-hepta-infer-worker-host",
+      "binary": "codex_hepta_infer_worker_host",
+      "test": "native_app_server::tests::real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombstone",
+      "area": "retained real context, final-use, owner-loss and terminal boundaries",
+      "status": "PASS",
+      "matches": [
+        {
+          "junit": "/home/qq/work/hepta-modules40-20261105-da8578/evidence/seven-package-run5.junit.xml",
+          "name": "native_app_server::tests::real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombstone",
+          "classname": "codex-hepta-infer-worker-host",
+          "suites": [
+            "nextest-run",
+            "codex-hepta-infer-worker-host"
+          ],
+          "nearest_testsuite": "codex-hepta-infer-worker-host",
+          "skipped": false,
+          "failed": false,
+          "flaky_or_retried": false,
+          "status_attribute": null,
+          "result_attribute": null,
+          "time": "1.213"
+        }
+      ],
+      "same_name_wrong_target": []
+    },
+    {
+      "package": "codex-hepta-infer-worker-host",
+      "binary": "codex_hepta_infer_worker_host",
+      "test": "native_app_server::tests::lost_turn_start_ack_reconciles_only_the_exact_in_progress_thread",
+      "area": "retained real context, final-use, owner-loss and terminal boundaries",
+      "status": "PASS",
+      "matches": [
+        {
+          "junit": "/home/qq/work/hepta-modules40-20261105-da8578/evidence/seven-package-run5.junit.xml",
+          "name": "native_app_server::tests::lost_turn_start_ack_reconciles_only_the_exact_in_progress_thread",
+          "classname": "codex-hepta-infer-worker-host",
+          "suites": [
+            "nextest-run",
+            "codex-hepta-infer-worker-host"
+          ],
+          "nearest_testsuite": "codex-hepta-infer-worker-host",
+          "skipped": false,
+          "failed": false,
+          "flaky_or_retried": false,
+          "status_attribute": null,
+          "result_attribute": null,
+          "time": "0.018"
+        }
+      ],
+      "same_name_wrong_target": []
+    },
+    {
+      "package": "codex-hepta-infer-worker-host",
+      "binary": "codex_hepta_infer_worker_host",
+      "test": "native_app_server::tests::only_the_bound_turn_can_complete_the_native_request",
+      "area": "retained real context, final-use, owner-loss and terminal boundaries",
+      "status": "PASS",
+      "matches": [
+        {
+          "junit": "/home/qq/work/hepta-modules40-20261105-da8578/evidence/seven-package-run5.junit.xml",
+          "name": "native_app_server::tests::only_the_bound_turn_can_complete_the_native_request",
+          "classname": "codex-hepta-infer-worker-host",
+          "suites": [
+            "nextest-run",
+            "codex-hepta-infer-worker-host"
+          ],
+          "nearest_testsuite": "codex-hepta-infer-worker-host",
+          "skipped": false,
+          "failed": false,
+          "flaky_or_retried": false,
+          "status_attribute": null,
+          "result_attribute": null,
+          "time": "0.022"
+        }
+      ],
+      "same_name_wrong_target": []
+    },
+    {
+      "package": "codex-hepta-infer-worker-host",
+      "binary": "codex_hepta_infer_worker_host",
+      "test": "native_app_server::tests::actual_usage_is_bound_monotonic_and_survives_terminal_failure",
+      "area": "retained real context, final-use, owner-loss and terminal boundaries",
+      "status": "PASS",
+      "matches": [
+        {
+          "junit": "/home/qq/work/hepta-modules40-20261105-da8578/evidence/seven-package-run5.junit.xml",
+          "name": "native_app_server::tests::actual_usage_is_bound_monotonic_and_survives_terminal_failure",
+          "classname": "codex-hepta-infer-worker-host",
+          "suites": [
+            "nextest-run",
+            "codex-hepta-infer-worker-host"
+          ],
+          "nearest_testsuite": "codex-hepta-infer-worker-host",
+          "skipped": false,
+          "failed": false,
+          "flaky_or_retried": false,
+          "status_attribute": null,
+          "result_attribute": null,
+          "time": "0.019"
+        }
+      ],
+      "same_name_wrong_target": []
+    },
+    {
+      "package": "codex-hepta-infer-worker-host",
+      "binary": "codex_hepta_infer_worker_host",
+      "test": "native_app_server::tests::final_use_fence_rejects_owner_ingress_cancel_and_deadline_drift",
+      "area": "retained real context, final-use, owner-loss and terminal boundaries",
+      "status": "PASS",
+      "matches": [
+        {
+          "junit": "/home/qq/work/hepta-modules40-20261105-da8578/evidence/seven-package-run5.junit.xml",
+          "name": "native_app_server::tests::final_use_fence_rejects_owner_ingress_cancel_and_deadline_drift",
+          "classname": "codex-hepta-infer-worker-host",
+          "suites": [
+            "nextest-run",
+            "codex-hepta-infer-worker-host"
+          ],
+          "nearest_testsuite": "codex-hepta-infer-worker-host",
+          "skipped": false,
+          "failed": false,
+          "flaky_or_retried": false,
+          "status_attribute": null,
+          "result_attribute": null,
+          "time": "0.015"
+        }
+      ],
+      "same_name_wrong_target": []
+    },
+    {
+      "package": "codex-hepta-infer-worker-host",
+      "binary": "codex_hepta_infer_worker_host",
+      "test": "native_app_server::tests::message_output::complete_only_message_is_observed_only_for_the_bound_turn",
+      "area": "e65 canonical App Server terminal message merging and bounds",
+      "status": "PASS",
+      "matches": [
+        {
+          "junit": "/home/qq/work/hepta-modules40-20261105-da8578/evidence/seven-package-run5.junit.xml",
+          "name": "native_app_server::tests::message_output::complete_only_message_is_observed_only_for_the_bound_turn",
+          "classname": "codex-hepta-infer-worker-host",
+          "suites": [
+            "nextest-run",
+            "codex-hepta-infer-worker-host"
+          ],
+          "nearest_testsuite": "codex-hepta-infer-worker-host",
+          "skipped": false,
+          "failed": false,
+          "flaky_or_retried": false,
+          "status_attribute": null,
+          "result_attribute": null,
+          "time": "0.018"
+        }
+      ],
+      "same_name_wrong_target": []
+    },
+    {
+      "package": "codex-hepta-infer-worker-host",
+      "binary": "codex_hepta_infer_worker_host",
+      "test": "native_app_server::tests::message_output::completed_snapshot_replaces_partial_text_without_double_counting",
+      "area": "e65 canonical App Server terminal message merging and bounds",
+      "status": "PASS",
+      "matches": [
+        {
+          "junit": "/home/qq/work/hepta-modules40-20261105-da8578/evidence/seven-package-run5.junit.xml",
+          "name": "native_app_server::tests::message_output::completed_snapshot_replaces_partial_text_without_double_counting",
+          "classname": "codex-hepta-infer-worker-host",
+          "suites": [
+            "nextest-run",
+            "codex-hepta-infer-worker-host"
+          ],
+          "nearest_testsuite": "codex-hepta-infer-worker-host",
+          "skipped": false,
+          "failed": false,
+          "flaky_or_retried": false,
+          "status_attribute": null,
+          "result_attribute": null,
+          "time": "0.018"
+        }
+      ],
+      "same_name_wrong_target": []
+    },
+    {
+      "package": "codex-hepta-infer-worker-host",
+      "binary": "codex_hepta_infer_worker_host",
+      "test": "native_app_server::tests::message_output::distinct_item_ids_preserve_identical_message_text",
+      "area": "e65 canonical App Server terminal message merging and bounds",
+      "status": "PASS",
+      "matches": [
+        {
+          "junit": "/home/qq/work/hepta-modules40-20261105-da8578/evidence/seven-package-run5.junit.xml",
+          "name": "native_app_server::tests::message_output::distinct_item_ids_preserve_identical_message_text",
+          "classname": "codex-hepta-infer-worker-host",
+          "suites": [
+            "nextest-run",
+            "codex-hepta-infer-worker-host"
+          ],
+          "nearest_testsuite": "codex-hepta-infer-worker-host",
+          "skipped": false,
+          "failed": false,
+          "flaky_or_retried": false,
+          "status_attribute": null,
+          "result_attribute": null,
+          "time": "0.022"
+        }
+      ],
+      "same_name_wrong_target": []
+    },
+    {
+      "package": "codex-hepta-infer-worker-host",
+      "binary": "codex_hepta_infer_worker_host",
+      "test": "native_app_server::tests::message_output::item_start_order_survives_later_item_text_arriving_first",
+      "area": "e65 canonical App Server terminal message merging and bounds",
+      "status": "PASS",
+      "matches": [
+        {
+          "junit": "/home/qq/work/hepta-modules40-20261105-da8578/evidence/seven-package-run5.junit.xml",
+          "name": "native_app_server::tests::message_output::item_start_order_survives_later_item_text_arriving_first",
+          "classname": "codex-hepta-infer-worker-host",
+          "suites": [
+            "nextest-run",
+            "codex-hepta-infer-worker-host"
+          ],
+          "nearest_testsuite": "codex-hepta-infer-worker-host",
+          "skipped": false,
+          "failed": false,
+          "flaky_or_retried": false,
+          "status_attribute": null,
+          "result_attribute": null,
+          "time": "0.017"
+        }
+      ],
+      "same_name_wrong_target": []
+    },
+    {
+      "package": "codex-hepta-infer-worker-host",
+      "binary": "codex_hepta_infer_worker_host",
+      "test": "native_app_server::tests::message_output::terminal_summary_merges_last_message_without_dropping_earlier_messages",
+      "area": "e65 canonical App Server terminal message merging and bounds",
+      "status": "PASS",
+      "matches": [
+        {
+          "junit": "/home/qq/work/hepta-modules40-20261105-da8578/evidence/seven-package-run5.junit.xml",
+          "name": "native_app_server::tests::message_output::terminal_summary_merges_last_message_without_dropping_earlier_messages",
+          "classname": "codex-hepta-infer-worker-host",
+          "suites": [
+            "nextest-run",
+            "codex-hepta-infer-worker-host"
+          ],
+          "nearest_testsuite": "codex-hepta-infer-worker-host",
+          "skipped": false,
+          "failed": false,
+          "flaky_or_retried": false,
+          "status_attribute": null,
+          "result_attribute": null,
+          "time": "0.018"
+        }
+      ],
+      "same_name_wrong_target": []
+    },
+    {
+      "package": "codex-hepta-infer-worker-host",
+      "binary": "codex_hepta_infer_worker_host",
+      "test": "native_app_server::tests::message_output::interrupt_grace_keeps_item_identity_and_cannot_restore_cancelled_authority",
+      "area": "e65 canonical App Server terminal message merging and bounds",
+      "status": "PASS",
+      "matches": [
+        {
+          "junit": "/home/qq/work/hepta-modules40-20261105-da8578/evidence/seven-package-run5.junit.xml",
+          "name": "native_app_server::tests::message_output::interrupt_grace_keeps_item_identity_and_cannot_restore_cancelled_authority",
+          "classname": "codex-hepta-infer-worker-host",
+          "suites": [
+            "nextest-run",
+            "codex-hepta-infer-worker-host"
+          ],
+          "nearest_testsuite": "codex-hepta-infer-worker-host",
+          "skipped": false,
+          "failed": false,
+          "flaky_or_retried": false,
+          "status_attribute": null,
+          "result_attribute": null,
+          "time": "0.017"
+        }
+      ],
+      "same_name_wrong_target": []
+    },
+    {
+      "package": "codex-hepta-infer-worker-host",
+      "binary": "codex_hepta_infer_worker_host",
+      "test": "native_app_server::tests::message_output::oversized_complete_item_preserves_previous_output_and_pending_state",
+      "area": "e65 canonical App Server terminal message merging and bounds",
+      "status": "PASS",
+      "matches": [
+        {
+          "junit": "/home/qq/work/hepta-modules40-20261105-da8578/evidence/seven-package-run5.junit.xml",
+          "name": "native_app_server::tests::message_output::oversized_complete_item_preserves_previous_output_and_pending_state",
+          "classname": "codex-hepta-infer-worker-host",
+          "suites": [
+            "nextest-run",
+            "codex-hepta-infer-worker-host"
+          ],
+          "nearest_testsuite": "codex-hepta-infer-worker-host",
+          "skipped": false,
+          "failed": false,
+          "flaky_or_retried": false,
+          "status_attribute": null,
+          "result_attribute": null,
+          "time": "0.016"
+        }
+      ],
+      "same_name_wrong_target": []
+    },
+    {
+      "package": "codex-hepta-infer-worker-host",
+      "binary": "codex_hepta_infer_worker_host",
+      "test": "native_app_server::tests::message_output::empty_items_cannot_retain_unbounded_metadata",
+      "area": "e65 canonical App Server terminal message merging and bounds",
+      "status": "PASS",
+      "matches": [
+        {
+          "junit": "/home/qq/work/hepta-modules40-20261105-da8578/evidence/seven-package-run5.junit.xml",
+          "name": "native_app_server::tests::message_output::empty_items_cannot_retain_unbounded_metadata",
+          "classname": "codex-hepta-infer-worker-host",
+          "suites": [
+            "nextest-run",
+            "codex-hepta-infer-worker-host"
+          ],
+          "nearest_testsuite": "codex-hepta-infer-worker-host",
+          "skipped": false,
+          "failed": false,
+          "flaky_or_retried": false,
+          "status_attribute": null,
+          "result_attribute": null,
+          "time": "0.019"
+        }
+      ],
+      "same_name_wrong_target": []
+    },
+    {
+      "package": "codex-hepta-infer-worker-host",
+      "binary": "codex_hepta_infer_worker_host",
+      "test": "native_app_server::tests::message_output::conflicting_completion_or_late_delta_cannot_change_a_completed_item",
+      "area": "e65 canonical App Server terminal message merging and bounds",
+      "status": "PASS",
+      "matches": [
+        {
+          "junit": "/home/qq/work/hepta-modules40-20261105-da8578/evidence/seven-package-run5.junit.xml",
+          "name": "native_app_server::tests::message_output::conflicting_completion_or_late_delta_cannot_change_a_completed_item",
+          "classname": "codex-hepta-infer-worker-host",
+          "suites": [
+            "nextest-run",
+            "codex-hepta-infer-worker-host"
+          ],
+          "nearest_testsuite": "codex-hepta-infer-worker-host",
+          "skipped": false,
+          "failed": false,
+          "flaky_or_retried": false,
+          "status_attribute": null,
+          "result_attribute": null,
+          "time": "0.013"
+        }
+      ],
+      "same_name_wrong_target": []
+    },
+    {
+      "package": "codex-hepta-infer-worker-host",
+      "binary": "codex_hepta_infer_worker_host",
+      "test": "native_app_server::tests::message_output::oversized_terminal_snapshot_cannot_authorize_completion",
+      "area": "e65 canonical App Server terminal message merging and bounds",
+      "status": "PASS",
+      "matches": [
+        {
+          "junit": "/home/qq/work/hepta-modules40-20261105-da8578/evidence/seven-package-run5.junit.xml",
+          "name": "native_app_server::tests::message_output::oversized_terminal_snapshot_cannot_authorize_completion",
+          "classname": "codex-hepta-infer-worker-host",
+          "suites": [
+            "nextest-run",
+            "codex-hepta-infer-worker-host"
+          ],
+          "nearest_testsuite": "codex-hepta-infer-worker-host",
+          "skipped": false,
+          "failed": false,
+          "flaky_or_retried": false,
+          "status_attribute": null,
+          "result_attribute": null,
+          "time": "0.068"
+        }
+      ],
+      "same_name_wrong_target": []
+    },
+    {
+      "package": "codex-hepta-agentd",
+      "binary": "codex_hepta_agentd",
+      "test": "cognitive_context::tests::hnmf::final_use_revalidation_rejects_tombstone_during_provider_callback",
+      "area": "final-use owner freshness after provider callback",
+      "status": "PASS",
+      "matches": [
+        {
+          "junit": "/home/qq/work/hepta-modules40-20261105-da8578/evidence/seven-package-run5.junit.xml",
+          "name": "cognitive_context::tests::hnmf::final_use_revalidation_rejects_tombstone_during_provider_callback",
+          "classname": "codex-hepta-agentd",
+          "suites": [
+            "nextest-run",
+            "codex-hepta-agentd"
+          ],
+          "nearest_testsuite": "codex-hepta-agentd",
+          "skipped": false,
+          "failed": false,
+          "flaky_or_retried": false,
+          "status_attribute": null,
+          "result_attribute": null,
+          "time": "0.119"
+        }
+      ],
+      "same_name_wrong_target": []
+    },
+    {
+      "package": "codex-hepta-agentd",
+      "binary": "codex_hepta_agentd",
+      "test": "cognitive_context::tests::hnmf::final_use_revalidation_rejects_source_drift_during_provider_callback",
+      "area": "final-use owner freshness after provider callback",
+      "status": "PASS",
+      "matches": [
+        {
+          "junit": "/home/qq/work/hepta-modules40-20261105-da8578/evidence/seven-package-run5.junit.xml",
+          "name": "cognitive_context::tests::hnmf::final_use_revalidation_rejects_source_drift_during_provider_callback",
+          "classname": "codex-hepta-agentd",
+          "suites": [
+            "nextest-run",
+            "codex-hepta-agentd"
+          ],
+          "nearest_testsuite": "codex-hepta-agentd",
+          "skipped": false,
+          "failed": false,
+          "flaky_or_retried": false,
+          "status_attribute": null,
+          "result_attribute": null,
+          "time": "0.122"
+        }
+      ],
+      "same_name_wrong_target": []
+    },
+    {
+      "package": "codex-hepta-learning-ledger",
+      "binary": "codex_hepta_learning_ledger",
+      "test": "production::reconciliation::tests::committed_decision_recovers_after_lost_ack_expiry_and_reopen",
+      "area": "historical committed Decision/Outcome recovery; exact identity and no authority revival",
+      "status": "PASS",
+      "matches": [
+        {
+          "junit": "/home/qq/work/hepta-modules40-20261105-da8578/evidence/seven-package-run5.junit.xml",
+          "name": "production::reconciliation::tests::committed_decision_recovers_after_lost_ack_expiry_and_reopen",
+          "classname": "codex-hepta-learning-ledger",
+          "suites": [
+            "nextest-run",
+            "codex-hepta-learning-ledger"
+          ],
+          "nearest_testsuite": "codex-hepta-learning-ledger",
+          "skipped": false,
+          "failed": false,
+          "flaky_or_retried": false,
+          "status_attribute": null,
+          "result_attribute": null,
+          "time": "0.058"
+        }
+      ],
+      "same_name_wrong_target": []
+    },
+    {
+      "package": "codex-hepta-learning-ledger",
+      "binary": "codex_hepta_learning_ledger",
+      "test": "production::reconciliation::tests::committed_outcome_recovers_after_lost_ack_expiry_and_reopen",
+      "area": "historical committed Decision/Outcome recovery; exact identity and no authority revival",
+      "status": "PASS",
+      "matches": [
+        {
+          "junit": "/home/qq/work/hepta-modules40-20261105-da8578/evidence/seven-package-run5.junit.xml",
+          "name": "production::reconciliation::tests::committed_outcome_recovers_after_lost_ack_expiry_and_reopen",
+          "classname": "codex-hepta-learning-ledger",
+          "suites": [
+            "nextest-run",
+            "codex-hepta-learning-ledger"
+          ],
+          "nearest_testsuite": "codex-hepta-learning-ledger",
+          "skipped": false,
+          "failed": false,
+          "flaky_or_retried": false,
+          "status_attribute": null,
+          "result_attribute": null,
+          "time": "0.060"
+        }
+      ],
+      "same_name_wrong_target": []
+    },
+    {
+      "package": "codex-hepta-learning-ledger",
+      "binary": "codex_hepta_learning_ledger",
+      "test": "production::reconciliation::tests::mismatched_or_missing_committed_reference_never_writes",
+      "area": "historical committed Decision/Outcome recovery; exact identity and no authority revival",
+      "status": "PASS",
+      "matches": [
+        {
+          "junit": "/home/qq/work/hepta-modules40-20261105-da8578/evidence/seven-package-run5.junit.xml",
+          "name": "production::reconciliation::tests::mismatched_or_missing_committed_reference_never_writes",
+          "classname": "codex-hepta-learning-ledger",
+          "suites": [
+            "nextest-run",
+            "codex-hepta-learning-ledger"
+          ],
+          "nearest_testsuite": "codex-hepta-learning-ledger",
+          "skipped": false,
+          "failed": false,
+          "flaky_or_retried": false,
+          "status_attribute": null,
+          "result_attribute": null,
+          "time": "0.021"
+        }
+      ],
+      "same_name_wrong_target": []
+    },
+    {
+      "package": "codex-hepta-learning-ledger",
+      "binary": "codex_hepta_learning_ledger",
+      "test": "production::reconciliation::tests::reconciliation_neither_revives_revoked_decision_nor_admits_other_event_kinds",
+      "area": "historical committed Decision/Outcome recovery; exact identity and no authority revival",
+      "status": "PASS",
+      "matches": [
+        {
+          "junit": "/home/qq/work/hepta-modules40-20261105-da8578/evidence/seven-package-run5.junit.xml",
+          "name": "production::reconciliation::tests::reconciliation_neither_revives_revoked_decision_nor_admits_other_event_kinds",
+          "classname": "codex-hepta-learning-ledger",
+          "suites": [
+            "nextest-run",
+            "codex-hepta-learning-ledger"
+          ],
+          "nearest_testsuite": "codex-hepta-learning-ledger",
+          "skipped": false,
+          "failed": false,
+          "flaky_or_retried": false,
+          "status_attribute": null,
+          "result_attribute": null,
+          "time": "0.032"
+        }
+      ],
+      "same_name_wrong_target": []
+    },
+    {
+      "package": "codex-hepta-learning-ledger",
+      "binary": "codex_hepta_learning_ledger",
+      "test": "witness::tests::complete_unconfirmed_witness_frame_requires_successful_recovery_sync",
+      "area": "complete valid witness history must synchronize before recovered owner is returned",
+      "status": "PASS",
+      "matches": [
+        {
+          "junit": "/home/qq/work/hepta-modules40-20261105-da8578/evidence/seven-package-run5.junit.xml",
+          "name": "witness::tests::complete_unconfirmed_witness_frame_requires_successful_recovery_sync",
+          "classname": "codex-hepta-learning-ledger",
+          "suites": [
+            "nextest-run",
+            "codex-hepta-learning-ledger"
+          ],
+          "nearest_testsuite": "codex-hepta-learning-ledger",
+          "skipped": false,
+          "failed": false,
+          "flaky_or_retried": false,
+          "status_attribute": null,
+          "result_attribute": null,
+          "time": "0.005"
+        }
+      ],
+      "same_name_wrong_target": []
+    },
+    {
+      "package": "codex-hepta-supervisor",
+      "binary": "codex_hepta_supervisor",
+      "test": "writer_handoff::recovery_tests::writer_handoff_owner_drop_releases_lock_with_passive_duplicate",
+      "area": "writer handoff lock release after owner drop and failed recovery",
+      "status": "PASS",
+      "matches": [
+        {
+          "junit": "/home/qq/work/hepta-modules40-20261105-da8578/evidence/seven-package-run5.junit.xml",
+          "name": "writer_handoff::recovery_tests::writer_handoff_owner_drop_releases_lock_with_passive_duplicate",
+          "classname": "codex-hepta-supervisor",
+          "suites": [
+            "nextest-run",
+            "codex-hepta-supervisor"
+          ],
+          "nearest_testsuite": "codex-hepta-supervisor",
+          "skipped": false,
+          "failed": false,
+          "flaky_or_retried": false,
+          "status_attribute": null,
+          "result_attribute": null,
+          "time": "0.005"
+        }
+      ],
+      "same_name_wrong_target": []
+    },
+    {
+      "package": "codex-hepta-supervisor",
+      "binary": "codex_hepta_supervisor",
+      "test": "writer_handoff::recovery_tests::writer_handoff_failed_recovery_releases_acquired_lock_with_passive_duplicate",
+      "area": "writer handoff lock release after owner drop and failed recovery",
+      "status": "PASS",
+      "matches": [
+        {
+          "junit": "/home/qq/work/hepta-modules40-20261105-da8578/evidence/seven-package-run5.junit.xml",
+          "name": "writer_handoff::recovery_tests::writer_handoff_failed_recovery_releases_acquired_lock_with_passive_duplicate",
+          "classname": "codex-hepta-supervisor",
+          "suites": [
+            "nextest-run",
+            "codex-hepta-supervisor"
+          ],
+          "nearest_testsuite": "codex-hepta-supervisor",
+          "skipped": false,
+          "failed": false,
+          "flaky_or_retried": false,
+          "status_attribute": null,
+          "result_attribute": null,
+          "time": "0.004"
+        }
+      ],
+      "same_name_wrong_target": []
+    },
+    {
+      "package": "codex-hepta-supervisor",
+      "binary": "codex_hepta_supervisor",
+      "test": "writer_handoff::journal_file::tests::fork_copy_drop_does_not_unlock_original_handoff_owner",
+      "area": "forked passive copy cannot unlock original handoff owner; mandatory on Linux",
+      "status": "PASS",
+      "matches": [
+        {
+          "junit": "/home/qq/work/hepta-modules40-20261105-da8578/evidence/seven-package-run5.junit.xml",
+          "name": "writer_handoff::journal_file::tests::fork_copy_drop_does_not_unlock_original_handoff_owner",
+          "classname": "codex-hepta-supervisor",
+          "suites": [
+            "nextest-run",
+            "codex-hepta-supervisor"
+          ],
+          "nearest_testsuite": "codex-hepta-supervisor",
+          "skipped": false,
+          "failed": false,
+          "flaky_or_retried": false,
+          "status_attribute": null,
+          "result_attribute": null,
+          "time": "0.005"
+        }
+      ],
+      "same_name_wrong_target": []
+    }
+  ],
+  "all_failed_cases": [],
+  "all_flaky_or_retried_cases": [],
+  "all_skipped_cases": [],
+  "aggregate_failures": [],
+  "parse_errors": [],
+  "semantics": [
+    "This checks existing results; it does not run tests or change profiles, timeouts, retries or filters.",
+    "NOT_CLEAN is a completeness/outcome audit result, not a rewrite of the original runner exit code.",
+    "A retry remains visible even if the original profile permits it and the runner exits zero.",
+    "Noncritical skips are listed; a skipped/missing required case or any failed/flaky case prevents CLEAN.",
+    "Test names match exact Rust module paths plus known target aliases; no leaf-name-only matching.",
+    "Target identity requires exact testcase class or nearest actual testsuite metadata; aggregate names and conflicting target metadata cannot supply it.",
+    "JUnit cannot prove absence of in-test early returns; process tests must keep their completion-marker assertions.",
+    "The operator must bind these report hashes to the recorded command, frozen source tree and run interval; XML alone cannot authenticate candidate provenance."
+  ]
+}

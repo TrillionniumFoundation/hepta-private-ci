@@ -1,0 +1,45 @@
+diff --git a/codex-rs/utils/pty/src/win/native_observation_tests.rs b/codex-rs/utils/pty/src/win/native_observation_tests.rs
+index 45d6ece35f..9f2d9773c7 100644
+--- a/codex-rs/utils/pty/src/win/native_observation_tests.rs
++++ b/codex-rs/utils/pty/src/win/native_observation_tests.rs
+@@ -52,7 +52,7 @@ impl NativeChild {
+         let duplicated = unsafe {
+             DuplicateHandle(
+                 GetCurrentProcess(),
+-                self.child.as_raw_handle().cast(),
++                AsRawHandle::as_raw_handle(&self.child).cast(),
+                 GetCurrentProcess(),
+                 &mut duplicate,
+                 access,
+@@ -67,7 +67,7 @@ impl NativeChild {
+     }
+ 
+     fn is_running(&self) -> io::Result<bool> {
+-        match unsafe { WaitForSingleObject(self.child.as_raw_handle().cast(), 0) } {
++        match unsafe { WaitForSingleObject(AsRawHandle::as_raw_handle(&self.child).cast(), 0) } {
+             WAIT_TIMEOUT => Ok(true),
+             WAIT_OBJECT_0 => Ok(false),
+             WAIT_FAILED => Err(io::Error::last_os_error()),
+@@ -90,7 +90,9 @@ impl NativeChild {
+                 io::Error::new(io::ErrorKind::TimedOut, "fixture observation expired")
+             })?;
+         let wait_ms = remaining.as_millis().min(u128::from(u32::MAX)) as u32;
+-        match unsafe { WaitForSingleObject(self.child.as_raw_handle().cast(), wait_ms) } {
++        match unsafe {
++            WaitForSingleObject(AsRawHandle::as_raw_handle(&self.child).cast(), wait_ms)
++        } {
+             WAIT_OBJECT_0 => {}
+             WAIT_TIMEOUT => {
+                 return Err(io::Error::new(
+diff --git a/codex-rs/windows-sandbox-rs/src/unified_exec/delete_permission_tests.rs b/codex-rs/windows-sandbox-rs/src/unified_exec/delete_permission_tests.rs
+index a0cb1647d9..d8511f92f9 100644
+--- a/codex-rs/windows-sandbox-rs/src/unified_exec/delete_permission_tests.rs
++++ b/codex-rs/windows-sandbox-rs/src/unified_exec/delete_permission_tests.rs
+@@ -2,6 +2,7 @@ use super::*;
+ use crate::delete_permission_matrix::DeleteMatrix;
+ use crate::delete_permission_matrix::DeleteOutcome;
+ use crate::delete_permission_matrix::DeleteRoute;
++use pretty_assertions::assert_eq;
+ 
+ fn matrix_script(matrix: &DeleteMatrix) -> (String, HashMap<String, String>) {
+     let mut script = "@echo off\r\n".to_owned();

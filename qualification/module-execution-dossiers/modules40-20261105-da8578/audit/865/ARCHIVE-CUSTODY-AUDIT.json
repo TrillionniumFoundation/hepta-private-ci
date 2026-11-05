@@ -1,0 +1,48 @@
+{
+  "schema": "hepta.native-archive-custody-audit.v1",
+  "source": {
+    "commit": "8658210499706130788c216ff14fd342809b45a4",
+    "tree": "6bc86196d10cf83b010f9917e5e9cb471b5f6b68",
+    "status": ""
+  },
+  "archive": {
+    "path": "integration/native-865-checkpoint.tar.gz",
+    "bytes": 325679,
+    "sha256": "ba0299e0531d3a3fe4b0c5c5320233e696d5e5436303bc8d082d4fb0d627b430"
+  },
+  "native_execution_job": "1a1aca9512d-fc05-5638",
+  "archive_job": {
+    "job_id": "1a1acae42ad-fc05-5656",
+    "state": "succeeded",
+    "exit_code": 0,
+    "output_complete": true,
+    "output_durable": true,
+    "cancelled": false,
+    "timed_out": false,
+    "automatic_retry": false
+  },
+  "transport_recovery": {
+    "initial_transport_timeout_record": "integration/runtime-receipts/complete-archive-initial-transport-error.json",
+    "recovery_receipt": "integration/runtime-receipts/complete-archive-launch-recovery.json",
+    "reused": true,
+    "same_stable_key": "modules40-da8578-native-865-archive-run1",
+    "recovered_original_command_bytes_match_saved_typed_arguments": true,
+    "new_key_replay_performed_by_auditor": false
+  },
+  "manifest_capture_after_native_terminal_before_archive_terminal": true,
+  "predecessor_archive_hashes_verified": [
+    {
+      "source": "797116d61cf422c26274ffef31297dce84a53a80",
+      "archive": "native-797-file-read-checkpoint.tar.gz",
+      "sha256": "6e95dfc4723db20a4bfa158bedae04e8fc537622bbd0a20abf59783552c7571a",
+      "collection": "independently versioned read-only file API collection; non-atomic"
+    },
+    {
+      "source": "775bf555b0a7faf6eed17627acb0d0433294b737",
+      "archive": "native-775-checkpoint.tar.gz",
+      "sha256": "1c59a87b3802c3a6d451907fcd2815ee49129234acfba8aae4868a7a8bb20a59"
+    }
+  ],
+  "file_download_provenance": "integration/complete-native-archive-download-verification.json",
+  "scope": "The native execution and archive process each have separate authoritative success receipts. A transport timeout did not constitute another native run or failed experiment."
+}
