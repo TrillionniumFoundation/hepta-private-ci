@@ -28,6 +28,14 @@ from cryptography.hazmat.primitives.serialization import Encoding, PublicFormat
 COMPONENTS = frozenset(('model', 'memory', 'encoder', 'tokenizer', 'schema', 'routing',
                         'calibration', 'optimizer', 'rng', 'sampler', 'runtime'))
 DOMAIN = 'hepta.memory-cell.v15'
+MAX_COUNTER = (1 << 63) - 1
+
+
+def next_counter(value, reserve=1):
+    # SQLite INTEGER arithmetic otherwise promotes overflow to inexact REAL.
+    if type(value) is not int or type(reserve) is not int or not 0 <= value <= MAX_COUNTER - reserve:
+        raise Rejected('monotone counter exhausted or invalid')
+    return value + 1
 
 
 class Rejected(Exception):
@@ -238,6 +246,7 @@ class Authority:
             raise Rejected('epoch or bundle CAS failed')
         if row['state'] != 'active' and not (allow_prepared and row['state'] == 'prepared'):
             raise Rejected('cell frozen or retired')
+        next_counter(row['epoch'])
         return row
 
     def _admin(self, actor):
@@ -289,7 +298,7 @@ class Authority:
             prior = row[0] if row else 0
             if type(a['expected_revision']) is not int or a['expected_revision'] != prior or type(a['active']) is not bool:
                 raise Rejected('source CAS failed')
-            record = (a['scope'], a['id'], prior + 1, digest(a['body'].encode()), a['body'], int(a['active']))
+            record = (a['scope'], a['id'], next_counter(prior), digest(a['body'].encode()), a['body'], int(a['active']))
             self.db.execute('INSERT OR REPLACE INTO sources VALUES (?,?,?,?,?,?)', record)
             self.db.execute('INSERT INTO source_history VALUES (?,?,?,?,?,?)', record)
             return dict(id=a['id'], revision=record[2], hash=record[3], active=a['active'])
@@ -320,6 +329,8 @@ class Authority:
                 self.db.execute('UPDATE cells SET acl=?,epoch=epoch+1 WHERE id=?', (canonical(acl).decode(), row['id']))
                 return dict(cell=row['id'], epoch=row['epoch']+1, acl=acl)
             self._fresh(self._manifest(row['bundle']))
+            # Prepare must reserve a second increment for either commit or abort.
+            next_counter(row['epoch'], reserve=2)
             target = _identity(a['target'])
             if target == row['owner']:
                 raise Rejected('same-owner transfer')
@@ -355,6 +366,7 @@ class Authority:
                     self.db.execute("UPDATE transfers SET state='ready',ready_request=? WHERE id=?", (digest(canonical(a)), t['id']))
                     return dict(transfer=t['id'], state='ready', epoch=t['epoch'], bundle=t['bundle'])
                 new_owner, state = t['target'], 'committed'
+            next_counter(row['epoch'])
             self.db.execute("UPDATE cells SET state='active',owner=?,epoch=epoch+1 WHERE id=?", (new_owner, row['id']))
             self.db.execute('UPDATE transfers SET state=? WHERE id=?', (state, t['id']))
             return dict(transfer=t['id'], cell=row['id'], state=state, owner=new_owner, epoch=row['epoch']+1, bundle=row['bundle'])
