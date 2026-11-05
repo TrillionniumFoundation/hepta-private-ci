@@ -58,6 +58,10 @@ pub async fn run(
     #[cfg(not(target_os = "linux"))]
     let app_server_model_tools = crate::app_runtime::AppServerModelToolProfile::Standard;
     let plasticity_bootstrap = config.take_plasticity_runtime_bootstrap();
+    let learning_iteration = config.take_learning_iteration_bootstrap();
+    if learning_iteration.is_some() && plasticity_bootstrap.is_none() {
+        return Err(AgentdError::Invalid("learning iteration requires the governed plasticity owner".into()));
+    }
     let trust_file = config
         .authbus_trust_file()
         .map(std::path::Path::to_path_buf);
@@ -388,6 +392,12 @@ pub async fn run(
         if let Some(owner) = plasticity_runtime {
             tasks.spawn_required(
                 "plasticity-owner",
+                owner.run(Arc::clone(&state), cancellation.clone()),
+            )?;
+        }
+        if let Some(owner) = learning_iteration {
+            tasks.spawn_required(
+                "learning-iteration-owner",
                 owner.run(Arc::clone(&state), cancellation.clone()),
             )?;
         }

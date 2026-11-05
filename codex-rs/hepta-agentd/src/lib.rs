@@ -331,6 +331,10 @@ mod notes_ui_endpoint;
 mod notes_ui_queue;
 #[cfg(target_os = "linux")]
 mod notes_ui_wire;
+mod learning_iteration;
+mod learning_iteration_auth;
+mod learning_iteration_ports;
+mod learning_iteration_proposal;
 mod objective_runtime;
 mod plasticity_anchor_journal;
 mod plasticity_host;
@@ -665,6 +669,14 @@ pub use plasticity_runtime::PlasticityRuntimeCallErrorV1;
 pub use plasticity_runtime::PlasticityRuntimeHandleV1;
 pub use plasticity_runtime::PlasticityRuntimeOwnerV1;
 pub use plasticity_runtime::plasticity_runtime_channel_v1;
+pub use learning_iteration::LearningIterationHandleV1;
+pub use learning_iteration::LearningIterationRuntimeBootstrapV1;
+pub use learning_iteration::LearningIterationRuntimeErrorV1;
+pub use learning_iteration::learning_iteration_channel_v1;
+pub use learning_iteration_ports::LearningIterationOwnerFutureV1;
+pub use learning_iteration_ports::LearningIterationOwnerPortsV1;
+pub use learning_iteration_ports::LearningIterationProposalPayloadV1;
+pub use learning_iteration_ports::PreparedLearningIterationProposalV1;
 #[cfg(target_os = "linux")]
 pub use production_authority::AgentdFinalUseHostInputs;
 #[cfg(target_os = "linux")]
