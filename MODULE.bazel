@@ -493,6 +493,19 @@ crate.annotation(
 
 inject_repo(crate, "openssl")
 
+# These pinned Git crates share the Chain repository’s nested workspace.
+crate.annotation(
+    crate = "trnm-crypto-primitives",
+    workspace_cargo_toml = "trillionnium/Cargo.toml",
+)
+crate.annotation(
+    crate = "trnm-protocol",
+    workspace_cargo_toml = "trillionnium/Cargo.toml",
+)
+crate.annotation(
+    crate = "trnm-release-bundle",
+    workspace_cargo_toml = "trillionnium/Cargo.toml",
+)
 crate.annotation(
     crate = "runfiles",
     workspace_cargo_toml = "rust/runfiles/Cargo.toml",

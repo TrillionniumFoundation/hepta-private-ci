@@ -1,28 +1,35 @@
+load("@rules_rust//rust:defs.bzl", "rust_library")
 load("//:defs.bzl", "codex_rust_crate")
+load("//bazel/rules/testing:fleet_release_dependencies.bzl", "FLEET_RELEASE_TEST_DEPENDENCIES")
+load("//bazel/rules/testing:rust_test_dependencies.bzl", "rust_test_dependencies")
+
+_COMPILE_DATA = [
+    "ordinary_cpu_owner.sql",
+    "fixtures/smollm-cell-tcd1-synthetic-v1.json",
+    "fixtures/smollm-consumed-prompts-067-v2.json",
+    "fixtures/smollm-consumed-prompts-all-through-a593-v3.json.part-01",
+    "fixtures/smollm-consumed-prompts-all-through-a593-v3.json.part-02",
+    "fixtures/smollm-diverse60-training-v3.json",
+]
+
+_CRATE_SRCS = glob(
+    ["src/**/*.rs"],
+    exclude = ["src/bin/**/*.rs"],
+) + [
+    "//codex-rs/hepta-agentd:src/cognitive_process_wire.rs",
+    "//codex-rs/hepta-agentd:src/cognitive_process_learning_auth.rs",
+    "//codex-rs/hepta-agentd:src/cognitive_process_learning_auth_tests.rs",
+    "//codex-rs/hepta-agentd:src/cognitive_process_evidence.rs",
+    "//codex-rs/hepta-agentd:src/cognitive_process_evaluation.rs",
+    "//codex-rs/hepta-agentd:src/cognitive_process_materials.rs",
+    "//codex-rs/hepta-agentd:src/cognitive_process_product_wire.rs",
+]
 
 codex_rust_crate(
     name = "hepta-infer-worker-host",
-    compile_data = [
-        "ordinary_cpu_owner.sql",
-        "fixtures/smollm-cell-tcd1-synthetic-v1.json",
-        "fixtures/smollm-consumed-prompts-067-v2.json",
-        "fixtures/smollm-consumed-prompts-all-through-a593-v3.json.part-01",
-        "fixtures/smollm-consumed-prompts-all-through-a593-v3.json.part-02",
-        "fixtures/smollm-diverse60-training-v3.json",
-    ],
+    compile_data = _COMPILE_DATA,
     crate_name = "codex_hepta_infer_worker_host",
-    crate_srcs = glob(
-        ["src/**/*.rs"],
-        exclude = ["src/bin/**/*.rs"],
-    ) + [
-        "//codex-rs/hepta-agentd:src/cognitive_process_wire.rs",
-        "//codex-rs/hepta-agentd:src/cognitive_process_learning_auth.rs",
-        "//codex-rs/hepta-agentd:src/cognitive_process_learning_auth_tests.rs",
-        "//codex-rs/hepta-agentd:src/cognitive_process_evidence.rs",
-        "//codex-rs/hepta-agentd:src/cognitive_process_evaluation.rs",
-        "//codex-rs/hepta-agentd:src/cognitive_process_materials.rs",
-        "//codex-rs/hepta-agentd:src/cognitive_process_product_wire.rs",
-    ],
+    crate_srcs = _CRATE_SRCS,
     unit_test_dependency_replacements = {
         "//codex-rs/app-server-client": "//codex-rs/app-server-client:app-server-client-test-lib",
         "//codex-rs/hepta-codex-adapter": "//codex-rs/hepta-codex-adapter:hepta-codex-adapter-test-lib",
@@ -32,6 +39,21 @@ codex_rust_crate(
         "@platforms//os:macos": {"//codex-rs/cli:codex": "CARGO_BIN_EXE_codex"},
         "//conditions:default": {},
     }),
+)
+
+# Agentd's integration harness passes AgentdConfig and NeuralCognitivePinV1
+# through this library. Its test dependency must be the same physical crate.
+rust_library(
+    name = "hepta-infer-worker-host-fleet-test-lib",
+    testonly = True,
+    srcs = _CRATE_SRCS,
+    compile_data = _COMPILE_DATA,
+    crate_name = "codex_hepta_infer_worker_host",
+    crate_root = "src/lib.rs",
+    edition = "2024",
+    rustc_env = {"BAZEL_PACKAGE": "codex-rs/hepta-infer-worker-host"},
+    visibility = ["//codex-rs:__subpackages__"],
+    deps = rust_test_dependencies(FLEET_RELEASE_TEST_DEPENDENCIES),
 )
 
 exports_files(

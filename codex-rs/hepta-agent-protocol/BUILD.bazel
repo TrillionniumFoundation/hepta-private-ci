@@ -1,6 +1,8 @@
 load("//:defs.bzl", "codex_rust_crate")
+load("//bazel/rules/testing:fleet_release_dependencies.bzl", "FLEET_RELEASE_TEST_DEPENDENCIES")
 
 codex_rust_crate(
     name = "hepta-agent-protocol",
     crate_name = "codex_hepta_agent_protocol",
+    unit_test_dependency_replacements = FLEET_RELEASE_TEST_DEPENDENCIES,
 )

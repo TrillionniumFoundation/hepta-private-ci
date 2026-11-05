@@ -1,6 +1,7 @@
 package(default_visibility = ["//visibility:public"])
 
 exports_files([
+    "fleet_release_dependencies.bzl",
     "foreign_platform_binary.bzl",
     "rust_test_dependencies.bzl",
 ])

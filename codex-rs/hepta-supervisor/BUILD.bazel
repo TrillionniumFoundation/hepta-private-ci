@@ -1,4 +1,12 @@
-load("//:defs.bzl", "codex_rust_crate")
+load("@rules_rust//rust:defs.bzl", "rust_binary", "rust_library", "rust_test")
+load("//:defs.bzl", "WINDOWS_GNULLVM_INCOMPATIBLE", "WINDOWS_RUSTC_LINK_FLAGS", "codex_rust_crate")
+load("//bazel/rules/testing:fleet_release_dependencies.bzl", "FLEET_RELEASE_TEST_DEPENDENCIES")
+load("//bazel/rules/testing:rust_test_dependencies.bzl", "rust_test_dependencies")
+
+_AUTHORITY_CLI_TESTS = [
+    "tests/authority_signer_pq_cli.rs",
+    "tests/unknown_recovery_signer.rs",
+]
 
 codex_rust_crate(
     name = "hepta-supervisor",
@@ -23,7 +31,91 @@ codex_rust_crate(
         "src/paired_process_fixture.rs",
         "//codex-rs/hepta-infer-worker-host:ordinary_cpu_owner.sql",
     ],
+    integration_test_dependency_replacements = {
+        path.removeprefix("tests/").removesuffix(".rs"): FLEET_RELEASE_TEST_DEPENDENCIES
+        for path in glob(
+            ["tests/*.rs"],
+            exclude = _AUTHORITY_CLI_TESTS,
+        )
+    },
+    integration_tests_exclude = _AUTHORITY_CLI_TESTS,
     test_data_extra = glob(["fixtures/robrix-control-v2/**"]),
+    unit_test_dependency_replacements = FLEET_RELEASE_TEST_DEPENDENCIES,
+)
+
+# Cargo requires production-authority for this CLI. Keep that feature and the
+# Fleet fixture type closure on test-only targets, separate from product rules.
+rust_library(
+    name = "hepta-supervisor-authority-test-lib",
+    testonly = True,
+    srcs = glob(
+        ["src/**/*.rs"],
+        exclude = [
+            "src/main.rs",
+            "src/bin/**/*.rs",
+        ],
+    ),
+    crate_features = ["production-authority"],
+    crate_name = "codex_hepta_supervisor",
+    crate_root = "src/lib.rs",
+    edition = "2024",
+    rustc_env = {"BAZEL_PACKAGE": "codex-rs/hepta-supervisor"},
+    visibility = ["//visibility:private"],
+    deps = rust_test_dependencies(FLEET_RELEASE_TEST_DEPENDENCIES),
+)
+
+rust_binary(
+    name = "hepta-authority-signer-production-authority-test-bin",
+    testonly = True,
+    srcs = glob(["src/**/*.rs"]),
+    crate_features = ["production-authority"],
+    crate_name = "hepta_authority_signer",
+    crate_root = "src/bin/hepta-authority-signer.rs",
+    edition = "2024",
+    rustc_env = {"BAZEL_PACKAGE": "codex-rs/hepta-supervisor"},
+    rustc_flags = WINDOWS_RUSTC_LINK_FLAGS,
+    visibility = ["//visibility:private"],
+    deps = rust_test_dependencies(FLEET_RELEASE_TEST_DEPENDENCIES) + [":hepta-supervisor-authority-test-lib"],
+)
+
+rust_test(
+    name = "hepta-supervisor-authority_signer_pq_cli-test",
+    srcs = ["tests/authority_signer_pq_cli.rs"],
+    crate_features = ["production-authority"],
+    crate_name = "authority_signer_pq_cli",
+    crate_root = "tests/authority_signer_pq_cli.rs",
+    data = [":hepta-authority-signer-production-authority-test-bin"],
+    edition = "2024",
+    env = {"CARGO_BIN_EXE_hepta-authority-signer": "$(rlocationpath :hepta-authority-signer-production-authority-test-bin)"},
+    rustc_env = {"BAZEL_PACKAGE": "codex-rs/hepta-supervisor"},
+    rustc_flags = WINDOWS_RUSTC_LINK_FLAGS,
+    target_compatible_with = select({
+        "@platforms//os:linux": [],
+        "@platforms//os:macos": [],
+        "//conditions:default": ["@platforms//:incompatible"],
+    }),
+    deps = rust_test_dependencies(
+        FLEET_RELEASE_TEST_DEPENDENCIES,
+        normal_dev = True,
+    ) + [":hepta-supervisor-authority-test-lib"],
+)
+
+rust_test(
+    name = "hepta-supervisor-unknown_recovery_signer-test",
+    srcs = ["tests/unknown_recovery_signer.rs"],
+    crate_features = ["production-authority"],
+    crate_name = "unknown_recovery_signer",
+    crate_root = "tests/unknown_recovery_signer.rs",
+    data = [":hepta-authority-signer-production-authority-test-bin"],
+    edition = "2024",
+    env = {"CARGO_BIN_EXE_hepta-authority-signer": "$(rlocationpath :hepta-authority-signer-production-authority-test-bin)"},
+    rustc_env = {"BAZEL_PACKAGE": "codex-rs/hepta-supervisor"},
+    rustc_flags = WINDOWS_RUSTC_LINK_FLAGS,
+    target_compatible_with = WINDOWS_GNULLVM_INCOMPATIBLE,
+    deps = rust_test_dependencies(
+        FLEET_RELEASE_TEST_DEPENDENCIES,
+        normal_dev = True,
+    ) + [":hepta-supervisor-authority-test-lib"],
 )
 
 # Caller evidence inspected by the Hepta contracts tests.

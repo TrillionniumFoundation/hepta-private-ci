@@ -1,8 +1,14 @@
 load("//:defs.bzl", "codex_rust_crate")
+load("//bazel/rules/testing:fleet_release_dependencies.bzl", "FLEET_RELEASE_TEST_DEPENDENCIES")
 
 codex_rust_crate(
     name = "hepta-matrixd",
     crate_name = "codex_hepta_matrixd",
+    integration_test_dependency_replacements = {
+        path.removeprefix("tests/").removesuffix(".rs"): FLEET_RELEASE_TEST_DEPENDENCIES
+        for path in glob(["tests/*.rs"])
+    },
+    unit_test_dependency_replacements = FLEET_RELEASE_TEST_DEPENDENCIES,
 )
 
 # Caller evidence inspected by the Hepta contracts tests.
