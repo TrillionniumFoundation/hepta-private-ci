@@ -119,6 +119,7 @@ pub struct AgentdConfig {
     cognitive_retrieval_learning: Option<std::sync::Arc<crate::CognitiveRetrievalLearningSink>>,
     plasticity_bootstrap: Option<crate::PlasticityRuntimeBootstrapV1>,
     learning_iteration_bootstrap: Option<crate::LearningIterationRuntimeBootstrapV1>,
+    terminal_learning_bootstrap: Option<crate::TerminalLearningRuntimeBootstrapV1>,
     intuition_policy_host: Option<std::sync::Arc<crate::AgentdIntuitionPolicyHostV1>>,
     intelligence_product_runner: Option<std::sync::Arc<crate::AgentdIntelligenceProductRunnerV1>>,
     intelligence_invocation_provider:
@@ -281,6 +282,7 @@ impl AgentdConfig {
             cognitive_retrieval_learning: None,
             plasticity_bootstrap: None,
             learning_iteration_bootstrap: None,
+            terminal_learning_bootstrap: None,
             intuition_policy_host: None,
             intelligence_product_runner: None,
             intelligence_invocation_provider: None,
@@ -735,6 +737,24 @@ impl AgentdConfig {
         self.learning_iteration_bootstrap.take()
     }
 
+    /// Attach the narrow native terminal-value learner explicitly. It shares
+    /// the existing ledger/Memory owners and runs outside foreground turns.
+    pub fn with_terminal_learning_bootstrap(
+        mut self,
+        bootstrap: crate::TerminalLearningRuntimeBootstrapV1,
+    ) -> Result<Self, AgentdError> {
+        bootstrap.require_identity(&self.identity)?;
+        if self.terminal_learning_bootstrap.is_some() {
+            return Err(AgentdError::Invalid("terminal learning owner already configured".into()));
+        }
+        self.terminal_learning_bootstrap = Some(bootstrap);
+        Ok(self)
+    }
+
+    pub(crate) fn take_terminal_learning_bootstrap(&mut self) -> Option<crate::TerminalLearningRuntimeBootstrapV1> {
+        self.terminal_learning_bootstrap.take()
+    }
+
     /// Attach the authenticated current intuition-policy product caller.
     /// The caller is pinned to this exact Agentd identity/generation and owns
     /// no model, scorer, RNG or learning facts itself.
@@ -835,6 +855,7 @@ impl AgentdConfig {
             || self.cognitive_retrieval_learning.is_some()
             || self.plasticity_bootstrap.is_some()
             || self.learning_iteration_bootstrap.is_some()
+            || self.terminal_learning_bootstrap.is_some()
             || self.intuition_policy_host.is_some()
             || self.intelligence_product_runner.is_some()
             || self.intelligence_invocation_provider.is_some()

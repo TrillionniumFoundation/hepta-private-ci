@@ -59,6 +59,7 @@ pub async fn run(
     let app_server_model_tools = crate::app_runtime::AppServerModelToolProfile::Standard;
     let plasticity_bootstrap = config.take_plasticity_runtime_bootstrap();
     let learning_iteration = config.take_learning_iteration_bootstrap();
+    let terminal_learning = config.take_terminal_learning_bootstrap();
     if learning_iteration.is_some() && plasticity_bootstrap.is_none() {
         return Err(AgentdError::Invalid("learning iteration requires the governed plasticity owner".into()));
     }
@@ -398,6 +399,12 @@ pub async fn run(
         if let Some(owner) = learning_iteration {
             tasks.spawn_required(
                 "learning-iteration-owner",
+                owner.run(Arc::clone(&state), cancellation.clone()),
+            )?;
+        }
+        if let Some(owner) = terminal_learning {
+            tasks.spawn_required(
+                "terminal-learning-owner",
                 owner.run(Arc::clone(&state), cancellation.clone()),
             )?;
         }

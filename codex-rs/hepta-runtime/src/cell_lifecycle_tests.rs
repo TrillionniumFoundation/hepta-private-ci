@@ -415,3 +415,47 @@ async fn stale_no_contact_proof_cannot_clear_a_new_prepare_at_the_same_timestamp
         Some(applied),
     );
 }
+
+#[tokio::test]
+async fn intent_reserves_its_observation_capacity_against_other_operations() {
+    let directory = tempfile::tempdir().unwrap();
+    let plan = plan(RuntimeCellStructuralChangeV1::Split);
+    let mut journal = RuntimeCellLifecycleJournalV1::attach(
+        pool(&directory.path().join("owner.sqlite")).await, plan.agent_id.clone(),
+        1, Witness::new(&plan.agent_id), /*max_events*/ 3,
+    ).await.unwrap();
+    journal.create(&plan, 100).await.unwrap();
+    let pending = journal.prepare_next(&plan, 0, 101).await.unwrap();
+    let mut competing = plan.clone();
+    competing.operation_id = id("operation:other");
+    assert_eq!(journal.create(&competing, 102).await.unwrap_err(), RuntimeCellLifecycleError::Capacity);
+    let settled = journal.record_observation(&plan, 1, observation(&plan, &pending, 102), &Observer).await.unwrap();
+    assert!(!settled.pending_reconciliation());
+    assert_eq!(settled.revision(), 2);
+}
+
+#[tokio::test]
+async fn insufficient_global_or_per_operation_capacity_never_returns_a_fresh_intent() {
+    for maximum in [2, 100] {
+        let directory = tempfile::tempdir().unwrap();
+        let plan = plan(RuntimeCellStructuralChangeV1::Split);
+        let mut journal = RuntimeCellLifecycleJournalV1::attach(
+            pool(&directory.path().join("owner.sqlite")).await, plan.agent_id.clone(),
+            1, Witness::new(&plan.agent_id), maximum,
+        ).await.unwrap();
+        let mut snapshot = journal.create(&plan, 100).await.unwrap();
+        if maximum == 100 {
+            for _ in 0..31 {
+                let intent = journal.prepare_next(&plan, snapshot.revision(), 101).await.unwrap();
+                let mut absent = observation(&plan, &intent, 101);
+                absent.outcome = RuntimeCellLifecycleNativeOutcomeV1::NotApplied;
+                absent.admission_closed = false;
+                snapshot = journal.record_observation(&plan, intent.prepared_revision, absent, &Observer).await.unwrap();
+            }
+            assert_eq!(snapshot.revision(), 62);
+        }
+        assert_eq!(journal.prepare_next(&plan, snapshot.revision(), 102).await.unwrap_err(), RuntimeCellLifecycleError::Capacity);
+        assert_eq!(journal.pending_intent(&plan).await.unwrap(), None);
+        assert_eq!(journal.read(&plan).await.unwrap(), Some(snapshot));
+    }
+}

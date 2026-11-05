@@ -226,7 +226,16 @@ impl<A: RuntimeCellLifecycleAnchorStoreV1> RuntimeCellLifecycleJournalV1<A> {
             return Err(RuntimeCellLifecycleError::Conflict);
         }
         let next = transition(plan, previous.as_ref(), &event)?;
-        if next.revision >= 64 {
+        // Every emitted intent reserves one eventual observation slot, both
+        // in this operation and across every pending operation in the journal.
+        let retained_pending = pending_observations(&mut tx, &self.agent_id, self.max_events).await?;
+        let pending_after = retained_pending
+            .checked_sub(u64::from(previous.as_ref().is_some_and(|state| state.pending)))
+            .and_then(|count| count.checked_add(u64::from(next.pending)))
+            .ok_or(RuntimeCellLifecycleError::Corrupt)?;
+        if next.revision + u64::from(next.pending) >= 64
+            || anchor.sequence + 1 + pending_after > self.max_events
+        {
             return Err(RuntimeCellLifecycleError::Capacity);
         }
         let event_json = serde_json::to_string(&event).map_err(unavailable)?;
@@ -261,6 +270,36 @@ impl<A: RuntimeCellLifecycleAnchorStoreV1> RuntimeCellLifecycleJournalV1<A> {
             .map_err(|_| RuntimeCellLifecycleError::CommitUncertain)?;
         Ok(next)
     }
+}
+
+
+/// Called only after the complete immutable chain has been verified in the
+/// same SQLite transaction. Derive reservations from canonical events, never
+/// from an unchecked projection or a caller-supplied pending counter.
+async fn pending_observations(
+    tx: &mut sqlx::Transaction<'_, sqlx::Sqlite>,
+    agent: &StableId,
+    maximum: u64,
+) -> Result<u64, RuntimeCellLifecycleError> {
+    let events: Vec<String> = sqlx::query_scalar(
+        "SELECT substr(e.event_json, 1, 16385)
+         FROM hepta_cell_lifecycle_event_v1 AS e
+         JOIN (SELECT operation_id, MAX(sequence) AS sequence
+               FROM hepta_cell_lifecycle_event_v1 WHERE agent_id = ?
+               GROUP BY operation_id) AS latest
+         ON e.operation_id = latest.operation_id AND e.sequence = latest.sequence
+         WHERE e.agent_id = ? LIMIT ?",
+    )
+        .bind(agent.as_str()).bind(agent.as_str()).bind((maximum + 1) as i64)
+        .fetch_all(&mut **tx).await.map_err(unavailable)?;
+    if events.len() as u64 > maximum { return Err(RuntimeCellLifecycleError::Corrupt); }
+    let mut pending = 0_u64;
+    for bytes in events {
+        let event: LifecycleEventV1 = serde_json::from_str(&bytes)
+            .map_err(|_| RuntimeCellLifecycleError::Corrupt)?;
+        if matches!(event, LifecycleEventV1::Prepared { .. }) { pending += 1; }
+    }
+    Ok(pending)
 }
 
 pub(crate) async fn read_head(

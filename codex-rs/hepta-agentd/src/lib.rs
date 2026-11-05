@@ -743,3 +743,17 @@ pub use topology_plasticity_host::rollover_agentd_topology_writer_v1;
 use control::AgentdControlServer;
 use event_buffer::EventBuffer;
 use state::AgentdState;
+
+mod terminal_learning;
+mod terminal_learning_runtime;
+mod terminal_learning_types;
+
+pub use terminal_learning::AgentdTerminalLearningOwnerV1;
+pub use terminal_learning_runtime::TerminalLearningHandleV1;
+pub use terminal_learning_runtime::TerminalLearningRuntimeBootstrapV1;
+pub use terminal_learning_runtime::terminal_learning_channel_v1;
+pub use terminal_learning_types::TerminalLearningBudgetV1;
+pub use terminal_learning_types::TerminalLearningErrorV1;
+pub use terminal_learning_types::TerminalLearningReceiptV1;
+pub use terminal_learning_types::TerminalLearningRequestV1;
+pub use terminal_learning_types::TerminalLearningSourceLineageV1;
