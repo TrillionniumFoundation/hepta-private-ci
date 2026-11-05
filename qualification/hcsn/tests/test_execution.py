@@ -10,9 +10,25 @@ import unittest
 from unittest.mock import Mock, patch
 
 from .. import benchmark
-from ..execution import close_energy_interval, configure_cuda, execution_policy, training_memory_peak
+from ..execution import (canonical_gpu_uuid, close_energy_interval, configure_cuda,
+                        execution_policy, training_memory_peak)
 
 TORCH_AVAILABLE = importlib.util.find_spec("torch") is not None
+
+
+class CudaUuidFixture:
+    """Public PyTorch 2.8 CUuuid shape: 16 bytes and bare 8-4-4-4-12 __str__."""
+    def __init__(self):
+        self.bytes = list(bytes.fromhex("00112233445566778899aabbccddeeff"))
+
+    def __str__(self):
+        value = bytes(self.bytes).hex()
+        return "-".join((value[:8], value[8:12], value[12:16], value[16:20], value[20:]))
+
+
+BARE_UUID = str(CudaUuidFixture())
+GPU_UUID = "GPU-"+BARE_UUID
+OTHER_UUID = "GPU-10112233-4455-6677-8899-aabbccddeeff"
 
 
 def tiny_config(**changes):
@@ -25,6 +41,78 @@ def tiny_config(**changes):
 
 
 class ExecutionEvidenceTests(unittest.TestCase):
+    def test_uuid_normalizes_public_bare_format_and_prefixed_hex_case(self):
+        self.assertEqual(len(CudaUuidFixture().bytes), 16)
+        for raw in (BARE_UUID, BARE_UUID.upper(), GPU_UUID, "GPU-"+BARE_UUID.upper()):
+            with self.subTest(raw=raw):
+                self.assertEqual(canonical_gpu_uuid(raw), GPU_UUID)
+                self.assertEqual(canonical_gpu_uuid(canonical_gpu_uuid(raw)), GPU_UUID)
+
+    def test_uuid_rejects_malformed_mig_ordinals_ambiguous_and_nontext_values(self):
+        for raw in (None, 0, True, b"GPU-"+BARE_UUID.encode(), "", "0", "cuda:0", "GPU-test",
+                    "gpu-"+BARE_UUID, "MIG-"+BARE_UUID, "MIG-"+GPU_UUID+"/1/0",
+                    BARE_UUID.replace("-", ""), "{"+BARE_UUID+"}", " "+BARE_UUID,
+                    BARE_UUID+"\n", GPU_UUID+","+OTHER_UUID, "GPU-"+GPU_UUID,
+                    BARE_UUID[:-1]+"g", BARE_UUID[:-1]):
+            with self.subTest(raw=raw), self.assertRaises(ValueError):
+                canonical_gpu_uuid(raw)
+
+    def test_invalid_cuda_identity_refuses_smi_and_cap_without_ordinal_fallback(self):
+        for raw in (None, "0", "MIG-"+BARE_UUID, "GPU-test", GPU_UUID+","+OTHER_UUID):
+            cuda = Mock()
+            cuda.is_available.return_value = True
+            cuda.get_device_properties.return_value = SimpleNamespace(
+                uuid=raw, name="fixture", total_memory=8*2**30, major=8, minor=9)
+            with self.subTest(raw=raw), patch("hcsn.execution.subprocess.run") as query:
+                result = configure_cuda(SimpleNamespace(cuda=cuda), SimpleNamespace(type="cuda"), .5)
+            query.assert_not_called()
+            cuda.set_per_process_memory_fraction.assert_not_called()
+            self.assertIsNone(result["uuid"])
+            self.assertEqual(result["uuid_raw"], raw)
+            self.assertIn("ordinal/MIG/ambiguous", result["setup_error"])
+
+    def test_energy_counter_uses_canonical_nvml_identity_and_retains_both_raw_values(self):
+        cuda = SimpleNamespace(get_device_properties=lambda device: SimpleNamespace(uuid=CudaUuidFixture()))
+        torch = SimpleNamespace(cuda=cuda, device=lambda value: value)
+        nvml = Mock()
+        handle = object()
+        def get_handle(value):
+            if value != GPU_UUID:
+                raise ValueError("fixture NVML requires canonical GPU UUID")
+            return handle
+        nvml.nvmlDeviceGetHandleByUUID.side_effect = get_handle
+        nvml.nvmlDeviceGetUUID.return_value = "GPU-"+BARE_UUID.upper()
+        nvml.nvmlDeviceGetTotalEnergyConsumption.side_effect = [1000, 1000, 2500]
+        with patch.dict("sys.modules", torch=torch, pynvml=nvml), patch("hcsn.benchmark.Path.glob", return_value=[]):
+            meter = benchmark.EnergyCounter("cuda:0")
+            meter._sample()
+            result = meter.stop()
+        nvml.nvmlDeviceGetHandleByUUID.assert_called_once_with(GPU_UUID)
+        nvml.nvmlDeviceGetUUID.assert_called_once_with(handle)
+        self.assertEqual(result["joules_by_physical_counter"], {"nvml_"+GPU_UUID: 1.5})
+        self.assertEqual(result["gpu_device_identity"], dict(cuda_uuid_raw=BARE_UUID, cuda_uuid=GPU_UUID,
+                         nvml_uuid_raw="GPU-"+BARE_UUID.upper(), nvml_uuid=GPU_UUID, mapping_verified=True))
+        nvml.nvmlShutdown.assert_called_once_with()
+
+    def test_nvml_wrong_or_invalid_identity_and_unsupported_counter_remain_missing(self):
+        torch = SimpleNamespace(device=lambda value: value, cuda=SimpleNamespace(
+            get_device_properties=lambda device: SimpleNamespace(uuid=CudaUuidFixture())))
+        for readback in (OTHER_UUID, "MIG-"+BARE_UUID, None, b"GPU-"+BARE_UUID.encode(), GPU_UUID):
+            nvml = Mock()
+            nvml.nvmlDeviceGetUUID.return_value = readback
+            if readback == GPU_UUID:
+                nvml.nvmlDeviceGetTotalEnergyConsumption.side_effect = NotImplementedError("Not Supported")
+            with self.subTest(readback=readback), patch.dict("sys.modules", torch=torch, pynvml=nvml), \
+                    patch("hcsn.benchmark.Path.glob", return_value=[]):
+                result = benchmark.EnergyCounter("cuda:0").stop()
+            self.assertIsNone(result["joules_by_physical_counter"])
+            self.assertEqual(result["gpu_device_identity"]["mapping_verified"], readback == GPU_UUID)
+            if readback != GPU_UUID:
+                nvml.nvmlDeviceGetTotalEnergyConsumption.assert_not_called()
+            else:
+                self.assertIn("Not Supported", result["missing_reason"])
+            json.dumps(result, allow_nan=False)
+
     def test_mixed_energy_intervals_keep_cost_and_do_not_promote_legacy(self):
         from ..attempts import accounting
         attempts = [dict(result=dict(status=status, training_status=status,
@@ -70,22 +158,26 @@ class ExecutionEvidenceTests(unittest.TestCase):
 
     def test_cuda_public_metadata_and_cap_are_bound_without_ordinal_guess(self):
         device = SimpleNamespace(type="cuda")
-        props = SimpleNamespace(uuid="GPU-test", name="fixture", total_memory=8*2**30, major=8, minor=9)
+        props = SimpleNamespace(uuid=CudaUuidFixture(), name="fixture", total_memory=8*2**30, major=8, minor=9)
         cuda = Mock()
         cuda.is_available.return_value = True
         cuda.get_device_properties.return_value = props
         cuda.memory.get_per_process_memory_fraction.return_value = .5
-        with patch("hcsn.execution.subprocess.run", return_value=SimpleNamespace(stdout="GPU-test, 570.00\n")) as query:
+        with patch("hcsn.execution.subprocess.run", return_value=SimpleNamespace(stdout=GPU_UUID+", 570.00\n")) as query:
             info = configure_cuda(SimpleNamespace(cuda=cuda), device, .5)
         cuda.set_per_process_memory_fraction.assert_called_once_with(.5, device)
         self.assertEqual((info["uuid"], info["driver_version"], info["compute_capability"],
                           info["allocator_limit_bytes"], info["setup_error"]),
-                         ("GPU-test", "570.00", [8, 9], 4*2**30, None))
-        self.assertEqual(query.call_args.args[0][1:3], ["-i", "GPU-test"])
-        with patch("hcsn.execution.subprocess.run", return_value=SimpleNamespace(stdout="GPU-other, 570.00\n")):
-            mismatched = configure_cuda(SimpleNamespace(cuda=cuda), device, .5)
-        self.assertIsNone(mismatched["driver_version"])
-        self.assertIn("requested UUID", mismatched["metadata_missing_reasons"]["driver_version"])
+                         (GPU_UUID, "570.00", [8, 9], 4*2**30, None))
+        self.assertEqual((info["uuid_raw"], info["nvidia_smi_uuid_raw"], info["nvidia_smi_uuid_matches"]),
+                         (BARE_UUID, GPU_UUID, True))
+        self.assertEqual(query.call_args.args[0][1:3], ["-i", GPU_UUID])
+        for stdout in (OTHER_UUID+", 570.00\n", GPU_UUID+", 570.00\n"+OTHER_UUID+", 570.00\n"):
+            with self.subTest(stdout=stdout), patch("hcsn.execution.subprocess.run", return_value=SimpleNamespace(stdout=stdout)):
+                mismatched = configure_cuda(SimpleNamespace(cuda=cuda), device, .5)
+            self.assertIsNone(mismatched["driver_version"])
+            self.assertIn("requested UUID", mismatched["metadata_missing_reasons"]["driver_version"])
+            self.assertIsNotNone(mismatched["setup_error"])
         props.uuid = None
         with patch("hcsn.execution.subprocess.run", side_effect=AssertionError("no ordinal fallback")):
             missing = configure_cuda(SimpleNamespace(cuda=cuda), device, .5)
@@ -96,7 +188,7 @@ class ExecutionEvidenceTests(unittest.TestCase):
         cuda = Mock()
         cuda.is_available.return_value = True
         cuda.get_device_properties.return_value = SimpleNamespace(
-            uuid="GPU-test", name="fixture", total_memory=8*2**30, major=8, minor=9)
+            uuid=CudaUuidFixture(), name="fixture", total_memory=8*2**30, major=8, minor=9)
         cuda.set_per_process_memory_fraction.side_effect = RuntimeError("injected cap rejection")
         device = SimpleNamespace(type="cuda")
         fake = SimpleNamespace(cuda=cuda, device=lambda value: device, set_num_threads=lambda value: None,

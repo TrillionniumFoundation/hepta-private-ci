@@ -23,7 +23,7 @@ import tempfile
 import numpy as np
 
 from . import attempts
-from .execution import (close_energy_interval, configure_cuda, execution_policy,
+from .execution import (canonical_gpu_uuid, close_energy_interval, configure_cuda, execution_policy,
                         implementation_record, training_memory_peak)
 
 
@@ -85,6 +85,7 @@ class EnergyCounter:
     """
     def __init__(self, device="cpu"):
         self.sources, self.reason, self.nvml = [], [], None
+        self.gpu_device_identity = None
         powercap = Path("/sys/class/powercap")
         for path in sorted(powercap.glob("intel-rapl:*/energy_uj")):
             if path.parent.name.count(":") == 1:
@@ -96,21 +97,34 @@ class EnergyCounter:
                 except (OSError, ValueError) as exc:
                     self.reason.append(f"RAPL inaccessible: {type(exc).__name__}")
         if str(device).startswith("cuda"):
+            self.gpu_device_identity = dict(cuda_uuid_raw=None, cuda_uuid=None,
+                                            nvml_uuid_raw=None, nvml_uuid=None, mapping_verified=False)
             try:
                 import pynvml
                 pynvml.nvmlInit()
                 self.nvml = pynvml
                 import torch
                 # Logical CUDA indices can be remapped by CUDA_VISIBLE_DEVICES.
-                uuid = str(torch.cuda.get_device_properties(torch.device(device)).uuid)
+                value = getattr(torch.cuda.get_device_properties(torch.device(device)), "uuid", None)
+                self.gpu_device_identity["cuda_uuid_raw"] = str(value) if value is not None else None
+                uuid = canonical_gpu_uuid(self.gpu_device_identity["cuda_uuid_raw"])
+                self.gpu_device_identity["cuda_uuid"] = uuid
                 handle = pynvml.nvmlDeviceGetHandleByUUID(uuid)
+                nvml_uuid = pynvml.nvmlDeviceGetUUID(handle)
+                self.gpu_device_identity["nvml_uuid_raw"] = (nvml_uuid if isinstance(nvml_uuid, (str, type(None)))
+                                                             else repr(nvml_uuid))
+                actual = canonical_gpu_uuid(nvml_uuid)
+                self.gpu_device_identity["nvml_uuid"] = actual
+                if actual != uuid:
+                    raise ValueError("NVML handle UUID differs from the requested CUDA UUID")
+                self.gpu_device_identity["mapping_verified"] = True
                 pynvml.nvmlDeviceGetTotalEnergyConsumption(handle)
                 self.sources.append((f"nvml_{uuid}",
                                      lambda: pynvml.nvmlDeviceGetTotalEnergyConsumption(handle)/1000,
                                      None))
             except Exception as exc:
                 # NVML reports device/driver-specific exception classes.
-                self.reason.append(f"NVML unavailable: {type(exc).__name__}")
+                self.reason.append(f"NVML unavailable: {type(exc).__name__}: {exc}")
         self.before, self.measured, self.invalid = {}, {}, set()
         self.stop_event, self.thread = threading.Event(), None
 
@@ -148,6 +162,7 @@ class EnergyCounter:
             self.thread.join(timeout=5.0)
             if self.thread.is_alive():
                 return {"joules_by_physical_counter": None, "scope": "training wall interval",
+                        "gpu_device_identity": self.gpu_device_identity,
                         "missing_reason": "hardware energy read did not finish"}
         self._sample()
         if self.nvml is not None:
@@ -156,6 +171,7 @@ class EnergyCounter:
             except Exception as exc:
                 self.reason.append(f"NVML shutdown: {type(exc).__name__}")
         return {"joules_by_physical_counter": self.measured or None,
+                "gpu_device_identity": self.gpu_device_identity,
                 "scope": "training wall interval; device/package, not process attribution",
                 "sampling_interval_seconds": 1.0,
                 "partial_unavailable_reasons": self.reason,
