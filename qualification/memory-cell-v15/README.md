@@ -114,6 +114,14 @@ Its 10.238-second wall time is a validation cost, not a model-serving benchmark.
 Earlier independent review receipts remain labeled with their own source identities;
 the unified `checks.json` is the final local source receipt.
 
+The independent GitHub-hosted Linux run also passed **53/53** at exact commit
+`7eac806adfa4e8dc3ebf182788484b3b06ad196f`:
+[run 41947667160](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41947667160).
+The downloaded artifact ZIP digest, all eight source hashes and the raw test-log
+digest were verified. Original CI receipts and acquisition metadata are retained in
+[`evidence/ci_41947667160`](evidence/ci_41947667160). Its Python validation wall time
+was 1.740 seconds; this is another protocol run, not another efficacy sample.
+
 The local environment lacks Rust/cargo/just and contains only a partial historical
 checkout. The required `just fmt` attempt exited 127 (`just: command not found`). No
 Rust source changed in this delta and no V15 Rust formatter/native test claim is made.
