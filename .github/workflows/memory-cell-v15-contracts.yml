@@ -1,0 +1,45 @@
+name: Memory cell V15 reference contracts
+
+on:
+  push:
+    branches:
+      - research/memory-cell-v15-20261104
+    paths:
+      - 'qualification/memory-cell-v15/**.py'
+      - 'qualification/memory-cell-v15/requirements.txt'
+      - '.github/workflows/memory-cell-v15-contracts.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: memory-v15-reference-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  verify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 1
+          persist-credentials: false
+          sparse-checkout: qualification/memory-cell-v15
+      - name: Install the recorded reference dependency
+        run: |
+          python3 -m venv /tmp/memory-v15-env
+          /tmp/memory-v15-env/bin/python -m pip install -r qualification/memory-cell-v15/requirements.txt
+      - name: Run actual bounded protocol checks
+        timeout-minutes: 3
+        run: /tmp/memory-v15-env/bin/python qualification/memory-cell-v15/verify.py
+      - name: Preserve exact-source check receipts
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: memory-v15-reference-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            qualification/memory-cell-v15/evidence/checks.json
+            qualification/memory-cell-v15/evidence/checks.log
+          if-no-files-found: error
+          retention-days: 30
