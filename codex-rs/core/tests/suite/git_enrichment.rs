@@ -33,6 +33,9 @@ use std::time::Duration;
 use tempfile::TempDir;
 use test_case::test_case;
 
+#[path = "git_enrichment_diagnostic_tests.rs"]
+mod diagnostic;
+
 const ORIGIN_URL: &str = "https://example.invalid/cxa5426/repo.git";
 
 fn run_git(cwd: &Path, args: &[&str]) -> Result<String> {
@@ -318,8 +321,12 @@ async fn ephemeral_system_thread_prewarm_skips_and_turn_observes_fresh_state(
             text_elements: Vec::new(),
         }]))
         .await?;
-    wait_for_event(system_thread.thread.as_ref(), |event| {
-        matches!(event, EventMsg::TurnComplete(_))
+    diagnostic::wait_for_ephemeral_turn(system_thread.thread.as_ref(), || {
+        let connections = server.connections();
+        (
+            connections.len(),
+            connections.iter().take(4).map(Vec::len).collect(),
+        )
     })
     .await;
     let turn = server
