@@ -1,0 +1,32 @@
+[
+  {
+    "commit": "42069d8873362b993e9793862f19ac26482cb589",
+    "title": "fix(hepta): fence final-use journal drift and late expiry",
+    "paths": [
+      "codex-rs/hepta-contracts/src/final_use_store.rs",
+      "codex-rs/hepta-contracts/src/final_use.rs",
+      "codex-rs/hepta-contracts/src/final_use_live_owner.rs",
+      "codex-rs/hepta-contracts/src/final_use_store_tests.rs",
+      "codex-rs/hepta-contracts/src/final_use_tests.rs"
+    ]
+  },
+  {
+    "commit": "10896ab92c42ca9f57ac478a0512f3c69809bfd6",
+    "title": "fix(hepta): serialize final dispatch with operation recovery",
+    "paths": [
+      "codex-rs/hepta-operations/src/durable_store.rs",
+      "codex-rs/hepta-operations/src/durable_store_tests.rs",
+      "codex-rs/hepta-operations/src/durable_dispatch.rs",
+      "codex-rs/hepta-operations/src/durable_dispatch_tests.rs"
+    ]
+  },
+  {
+    "commit": "14e07bffb0394d853aac58829abdd60c27d6be9c",
+    "title": "fix(hepta): deny topology effects without lifecycle owner",
+    "paths": [
+      "codex-rs/hepta-runtime/src/lib.rs",
+      "codex-rs/hepta-runtime/src/topology_execution.rs",
+      "codex-rs/hepta-runtime/src/organs_tests.rs"
+    ]
+  }
+]

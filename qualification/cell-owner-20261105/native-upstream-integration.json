@@ -1,0 +1,66 @@
+[
+  {
+    "command": [
+      "git",
+      "rev-parse",
+      "HEAD"
+    ],
+    "exit_code": 0,
+    "stdout": "5bf9e9eb7dc49ef56caf5143531f3a705fcd0e52\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "git",
+      "fetch",
+      "origin",
+      "484ce165522026d915c4cf526cd7df2effab632c"
+    ],
+    "exit_code": 0,
+    "stdout": "",
+    "stderr": "\u6765\u81ea https://github.com/TrillionniumFoundation/hepta-private-ci\n * branch                  484ce165522026d915c4cf526cd7df2effab632c -> FETCH_HEAD\n"
+  },
+  {
+    "command": [
+      "git",
+      "diff",
+      "--name-only",
+      "5bf9e9eb7dc49ef56caf5143531f3a705fcd0e52",
+      "484ce165522026d915c4cf526cd7df2effab632c"
+    ],
+    "exit_code": 0,
+    "stdout": "codex-rs/hepta-infer-worker-host/src/final_use_authorizer/pq.rs\ncodex-rs/hepta-infer-worker-host/src/final_use_authorizer/pq_path_tests.rs\nevidence/pq-final-use-endpoint-separation-20261104/README.md\nevidence/pq-final-use-endpoint-separation-20261104/endpoint-source-manifest.json\nevidence/pq-final-use-endpoint-separation-20261104/repository-format-initial-clone-receipt.json\nevidence/pq-final-use-endpoint-separation-20261104/repository-format-receipt.json\nevidence/pq-final-use-endpoint-separation-20261104/reproduction.json\nevidence/pq-final-use-endpoint-separation-20261104/unix-socket-probe.json\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "git",
+      "merge",
+      "--ff-only",
+      "484ce165522026d915c4cf526cd7df2effab632c"
+    ],
+    "exit_code": 0,
+    "stdout": "\u66f4\u65b0 5bf9e9eb7d..484ce16552\nFast-forward\n .../src/final_use_authorizer/pq.rs                 |   1 +\n .../src/final_use_authorizer/pq_path_tests.rs      |  75 ++++++++++\n .../README.md                                      |  46 +++++++\n .../endpoint-source-manifest.json                  |  18 +++\n .../repository-format-initial-clone-receipt.json   |  43 ++++++\n .../repository-format-receipt.json                 | 152 +++++++++++++++++++++\n .../reproduction.json                              |  35 +++++\n .../unix-socket-probe.json                         |   8 ++\n 8 files changed, 378 insertions(+)\n create mode 100644 evidence/pq-final-use-endpoint-separation-20261104/README.md\n create mode 100644 evidence/pq-final-use-endpoint-separation-20261104/endpoint-source-manifest.json\n create mode 100644 evidence/pq-final-use-endpoint-separation-20261104/repository-format-initial-clone-receipt.json\n create mode 100644 evidence/pq-final-use-endpoint-separation-20261104/repository-format-receipt.json\n create mode 100644 evidence/pq-final-use-endpoint-separation-20261104/reproduction.json\n create mode 100644 evidence/pq-final-use-endpoint-separation-20261104/unix-socket-probe.json\n",
+    "stderr": "\u6b63\u5728\u66f4\u65b0\u6587\u4ef6: 100% (2/2)\n\u6b63\u5728\u66f4\u65b0\u6587\u4ef6: 100% (2/2), \u5b8c\u6210.\n"
+  },
+  {
+    "command": [
+      "git",
+      "rev-parse",
+      "HEAD"
+    ],
+    "exit_code": 0,
+    "stdout": "484ce165522026d915c4cf526cd7df2effab632c\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "git",
+      "rev-parse",
+      "HEAD"
+    ],
+    "exit_code": 0,
+    "stdout": "484ce165522026d915c4cf526cd7df2effab632c\n",
+    "stderr": ""
+  }
+]

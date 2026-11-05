@@ -1,0 +1,86 @@
+{
+  "schema": "hepta-cell-owner-local-regressions-v1",
+  "recorded_at_utc": "2026-11-05T01:42:57.358593+00:00",
+  "verdict": "DENY_ALL",
+  "production_activation": false,
+  "complete_lifecycle_owner_implemented": false,
+  "independent_host_operator_observer_custody_verified": false,
+  "physical_power_loss_verified": false,
+  "cross_host_and_windows_verified": false,
+  "baseline_commit": "5bf9e9eb7dc49ef56caf5143531f3a705fcd0e52",
+  "integrated_upstream_commit": "484ce165522026d915c4cf526cd7df2effab632c",
+  "code_commit": "14e07bffb0394d853aac58829abdd60c27d6be9c",
+  "source_manifest": "final-source-manifest.json",
+  "platform": "native Linux x86_64",
+  "toolchain": {
+    "rustc": "rustc 1.96.0 (ac68faa20 2026-05-25)\nbinary: rustc\ncommit-hash: ac68faa20c58cbccd01ee7208bf3b6e93a7d7f96\ncommit-date: 2026-05-25\nhost: x86_64-unknown-linux-gnu\nrelease: 1.96.0\nLLVM version: 22.1.2",
+    "cargo": "cargo 1.96.0 (30a34c682 2026-05-25)",
+    "just": "just 1.51.0"
+  },
+  "tests": {
+    "baseline": {
+      "passed": 264,
+      "skipped": 1,
+      "exit_code": 0,
+      "record": "native-baseline.json"
+    },
+    "tests_only_negative_control": {
+      "run": 7,
+      "passed": 1,
+      "expected_failures": 6,
+      "exit_code": 100,
+      "record": "native-red.json"
+    },
+    "initial_candidate": {
+      "passed": 277,
+      "skipped": 1,
+      "exit_code": 0,
+      "record": "native-green.json"
+    },
+    "final_candidate": {
+      "passed": 277,
+      "skipped": 1,
+      "exit_code": 0,
+      "record": "native-final-green.json"
+    },
+    "skipped_test": "destination_recovery_binding::destination_crash_worker",
+    "skip_reason": "Existing child-process crash fixture invoked by parent tests",
+    "counts_are_not_additive": true
+  },
+  "style": {
+    "clippy_fix_exit_code": 0,
+    "format_exit_code": 0,
+    "final_source_changed": false,
+    "record": "native-final-style.json",
+    "preexisting_vendored_deprecation_warnings": true
+  },
+  "critical_dependencies": {
+    "verified_files": 760,
+    "scope": "sqlx-core, ed25519-dalek, tokio, tracked vendored sqlx-sqlite",
+    "record": "dependency-critical-source-checksums.json"
+  },
+  "implemented_scope": [
+    "Same operation-database writer serialization through bounded synchronous final adapter entry and outcome commit",
+    "Opaque opened-store origin binding on in-flight authorized dispatch",
+    "Observed Unix claims-journal identity/EOF drift poisons live owner; final entry rechecks WAL and trusted time",
+    "Public governed topology apply/recover reject before grant consumption and callbacks"
+  ],
+  "remaining_engineering": [
+    "Unified physical Cell lifecycle coordinator and mandatory native phase capabilities",
+    "Durable CNS cutover and generation recovery",
+    "AuthBus plus provider actual-last-use serialization",
+    "Live Control-bound Memory reader capability",
+    "Independent monotonic security backend for consumed use, quota, retirement, revocation and tombstone floors"
+  ],
+  "external_inputs_not_qualified": [
+    "Actual target Cell, artifact, scopes, parent and child deployment identities",
+    "Independent real host/operator/observer signing services and trust pins",
+    "Authenticated current external safety frontier and authoritative original-operation lookups",
+    "Isolated actual clean/power-loss recovery target and independent observations"
+  ],
+  "not_proven": [
+    "Distributed exactly-once effects or immediate revoke of previously admitted remote work",
+    "Same-inode same-length WAL alteration, owner-lock namespace replacement, or pre-start full snapshot rollback",
+    "Production source custody from synthetic test keys or local native markers"
+  ]
+}

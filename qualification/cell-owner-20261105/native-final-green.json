@@ -1,0 +1,21 @@
+{
+  "command": [
+    "/home/qian-qi/.cargo/bin/just",
+    "test",
+    "-p",
+    "codex-hepta-contracts",
+    "-p",
+    "codex-hepta-operations",
+    "-p",
+    "codex-hepta-runtime",
+    "--locked",
+    "--retries",
+    "0"
+  ],
+  "base_commit": "484ce165522026d915c4cf526cd7df2effab632c",
+  "started_at_utc": "2026-11-05T01:37:38.071716+00:00",
+  "reason": "Manual test setup correction to use the existing SQLite shim, plus explicitly integrated upstream endpoint separation.",
+  "exit_code": 0,
+  "completed_at_utc": "2026-11-05T01:38:01.952453+00:00",
+  "log_sha256": "97cd86b490169d3e49d5600dc331d7093c9beab6ff022d9d5b1f14080069c3b6"
+}

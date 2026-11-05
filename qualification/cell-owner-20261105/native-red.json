@@ -1,0 +1,22 @@
+{
+  "stage": "baseline_plus_tests_only",
+  "base": "5bf9e9eb7dc49ef56caf5143531f3a705fcd0e52",
+  "command": [
+    "/home/qian-qi/.cargo/bin/just",
+    "test",
+    "-p",
+    "codex-hepta-contracts",
+    "-p",
+    "codex-hepta-operations",
+    "--locked",
+    "--retries",
+    "0",
+    "-E",
+    "test(stale_dispatch_never_crosses_the_effect_boundary) | test(concurrent_recovery_cannot_interleave_with_dispatch_and_receipt) | test(dropped_entry_waiting_for_writer_never_dispatches_or_refunds_nonce) | test(live_claim_journal_loss_denies_existing_tokens_at_every_final_entry) | test(journal_loss_during_clock_callback_is_rechecked_before_dispatch) | test(grant_expiring_between_time_samples_is_denied_at_final_entry) | test(external_final_use_frontier_ahead_after_local_failure_fences_reopen)"
+  ],
+  "started_at_utc": "2026-11-05T01:20:07.996385+00:00",
+  "completed_at_utc": "2026-11-05T01:22:18.067210+00:00",
+  "exit_code": 100,
+  "archive_sha256": "4c81169ddb4c415114777782dbedadfa7157cfbdc97b0e4f41754b0656c349b4",
+  "production_authorization": false
+}
