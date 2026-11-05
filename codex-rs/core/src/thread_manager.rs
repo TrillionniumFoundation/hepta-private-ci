@@ -1268,13 +1268,38 @@ impl ThreadManager {
         parent_trace: Option<W3cTraceContext>,
         client_mcp_extensions: ClientMcpExtensions,
     ) -> CodexResult<NewThread> {
+        Box::pin(self.resume_thread_from_rollout_with_environments(
+            config,
+            rollout_path,
+            auth_manager,
+            parent_trace,
+            client_mcp_extensions,
+            /*environments*/ None,
+        ))
+        .await
+    }
+
+    /// Resumes stored history with explicitly reconstructed thread-owned environments.
+    ///
+    /// Supply these only when the resume request preserves the recorded execution context.
+    /// The store still reads the original rollout, and Core verifies the recovery binding.
+    pub async fn resume_thread_from_rollout_with_environments(
+        &self,
+        config: Config,
+        rollout_path: PathBuf,
+        auth_manager: Arc<AuthManager>,
+        parent_trace: Option<W3cTraceContext>,
+        client_mcp_extensions: ClientMcpExtensions,
+        environments: Option<Vec<TurnEnvironmentSelection>>,
+    ) -> CodexResult<NewThread> {
         let initial_history = self.initial_history_from_rollout_path(rollout_path).await?;
-        Box::pin(self.resume_thread_with_history(
+        Box::pin(self.resume_thread_with_history_and_environments(
             config,
             initial_history,
             auth_manager,
             parent_trace,
             client_mcp_extensions,
+            environments,
         ))
         .await
     }
