@@ -43,7 +43,10 @@ fn fixture() -> anyhow::Result<(tempfile::TempDir, FleetRegistry, AgentdState)> 
 }
 
 fn fixture_notes_ready(state: &AgentdState) {
-    let mut runtime = state.runtime.lock().unwrap();
+    let mut runtime = state
+        .runtime
+        .lock()
+        .unwrap_or_else(|_| panic!("Notes readiness fixture mutex poisoned"));
     runtime.notes_organ_ready = true;
     runtime.critical_stores_ready = true;
     runtime.revocation_ready = true;
