@@ -9,8 +9,14 @@ use crate::release_authority::invalid;
 impl FleetReleaseTrustConfig {
     /// Loads an explicitly named out-of-band configuration. No root, expected
     /// checkpoint, or service identity is inferred from the Fleet journal.
+    /// Only root or the daemon's effective user may own this trust input.
     #[cfg(unix)]
     pub fn read(path: &Path) -> Result<Self, FleetRegistryError> {
+        Self::read_for_effective_uid(path, rustix::process::geteuid().as_raw())
+    }
+
+    #[cfg(unix)]
+    fn read_for_effective_uid(path: &Path, effective_uid: u32) -> Result<Self, FleetRegistryError> {
         use std::os::unix::fs::MetadataExt;
         use std::os::unix::fs::OpenOptionsExt;
         use std::os::unix::fs::PermissionsExt;
@@ -40,9 +46,10 @@ impl FleetReleaseTrustConfig {
             || metadata.nlink() != 1
             || metadata.permissions().mode() & 0o022 != 0
             || metadata.len() > MAX_CONFIG_BYTES
+            || (metadata.uid() != 0 && metadata.uid() != effective_uid)
         {
             return Err(invalid(
-                "release trust configuration must be bounded, regular and not writable by other users",
+                "release trust configuration must be bounded, regular, owned by root or the daemon user, and not writable by other users",
             ));
         }
         let mut bytes = Vec::new();
@@ -61,3 +68,7 @@ impl FleetReleaseTrustConfig {
         Err(invalid("PQ release authority requires Unix trust services"))
     }
 }
+
+#[cfg(all(test, unix))]
+#[path = "release_authority_config_tests.rs"]
+mod tests;
