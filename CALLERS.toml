@@ -6,157 +6,7 @@ ignored_path_fragments = ["/tests/", "/examples/", "_tests.rs"]
 rule = "Every privileged Hepta boundary has an exact closed set of product call sites. Test, example and definition-only uses do not grant production authority."
 
 [privileged_inventory]
-required_boundary_ids = [
-  "supervisor_authorized_boot",
-  "memory_production_writer_open",
-  "cognitive_store_recovery_open",
-  "cognitive_production_mutation_capability",
-  "agentd_production_writer_host",
-  "agentd_production_operation_runtime",
-  "learning_artifact_owner_bootstrap",
-  "learning_artifact_owner_restart",
-  "learning_artifact_verified_current_view",
-  "provider_effect_coordinator",
-  "http_provider_effect_adapter",
-  "final_use_open_state",
-  "final_use_claim",
-  "final_use_claim_raw",
-  "final_use_delivery",
-  "final_use_delivery_witness",
-  "final_use_delivery_raw",
-  "final_use_dispatch",
-  "final_use_dispatch_witness",
-  "final_use_dispatch_raw",
-  "final_use_revocation_update",
-  "final_use_approval_trust",
-  "final_use_approval_verify",
-  "final_use_revocation_feed_trust",
-  "final_use_revocation_feed_apply",
-  "final_use_revocation_convergence_trust",
-  "final_use_revocation_convergence_verify",
-  "bao_final_use_consumer",
-  "bao_registered_consumer_new",
-  "bao_final_use_host_new",
-  "bao_registered_revocation_update",
-  "bao_registered_final_use_host",
-  "authority_lease_open_state",
-  "authority_lease_put",
-  "authority_lease_revoke",
-  "authority_lease_prune",
-  "authority_lease_epoch_advance",
-  "authority_lease_verify_use",
-  "authority_lease_delivery",
-  "authority_lease_delivery_witness",
-  "authority_lease_dispatch_raw",
-  "authority_lease_dispatch_witness",
-  "final_use_async_dispatch_fence",
-  "automation_taskflow_provider_effect_bridge",
-  "final_use_guarded_effect",
-  "notes_original_pending_call_proof",
-  "notes_original_operation_observation_proof",
-  "notes_original_thread_prepare",
-  "notes_original_writer_terminal_receipt",
-  "memory_original_owner_current_publication",
-  "memory_original_protected_current_readback",
-  "original_authbus_human_delivery_read",
-  "notes_original_human_turn_proof",
-  "root_registered_human_text_writer",
-  "root_registered_human_text_admission",
-  "root_human_text_same_issuer_cas",
-  "root_retained_human_text_lookup",
-  "root_live_human_session_install",
-  "root_original_human_text_verification",
-  "notes_original_turn_unprepared_admission",
-  "root_host_original_human_text_verification",
-  "notes_original_human_text_verification",
-  "root_prepared_fresh_session",
-  "root_retained_native_ui_launch",
-  "root_prepared_native_ui_execution",
-  "root_material_capture_original_image",
-  "root_material_verify_retained_image",
-  "root_material_install_original_generation",
-  "root_material_reopen_original_installation",
-  "root_material_release_registered_custody",
-  "root_material_fresh_registered_session",
-  "root_material_recover_registered_session",
-  "root_material_existing_session_open",
-  "root_material_resume_registered_handoff",
-  "root_material_current_observation_chain",
-  "root_original_writer_descriptor_chain",
-  "root_same_retained_service_serve",
-  "root_registered_material_recovery",
-  "root_registered_material_handoff_resume",
-  "root_original_writer_purpose_send",
-  "root_original_writer_purpose_receive",
-  "agentd_original_root_writer_consume",
-  "root_registered_writer_rotation",
-  "native_original_operation_host_attach",
-  "native_original_owner_current_ack",
-  "native_original_terminal_history_observation",
-  "root_original_authority_initialize",
-  "root_original_writer_authorize",
-  "root_same_registered_bootstrap_seal",
-  "root_same_registered_bootstrap_capture",
-  "root_original_physical_login_install",
-  "root_original_writer_successor_shape",
-  "root_original_issuer_writer_rotation",
-  "root_physical_current_retired_adoption",
-  "root_physical_recovery_retirement_admission",
-  "root_physical_fresh_service_genesis",
-  "root_physical_registered_checkpoint_genesis",
-  "root_physical_current_backend_genesis",
-  "root_registered_physical_current_observation",
-  "root_original_two_descriptor_send",
-  "root_original_two_descriptor_receive",
-  "native_original_writer_terminal_observation",
-  "native_original_writer_next_delivery_observation",
-  "root_notes_original_startup_before",
-  "root_notes_recovered_successor_startup_before",
-  "root_notes_original_reserved_session_binding",
-  "root_notes_registered_successor_policy_replace",
-  "root_notes_original_issuer_policy_cas",
-  "root_desktop_original_issuer_pair_policy_cas",
-  "root_retained_native_ready_launch",
-  "root_prepared_native_ready_execution",
-  "root_prepared_native_ready_text_session",
-  "root_original_bound_native_lanes",
-  "root_original_bound_native_lane_acceptance",
-  "root_original_ready_lane_bridge",
-  "notes_original_retained_reference_projection",
-  "desktop_original_retained_reference_projection",
-  "memory_original_sender_read_only_cut",
-  "notes_recorded_original_observation_proof",
-  "notes_previous_recovery_typed_resolution",
-  "root_live_admin_enable",
-  "root_live_admin_mint",
-  "root_live_admin_exchange",
-  "root_live_admin_checked_dispatch",
-  "root_live_admin_signed_artifact_verify",
-  "root_live_admin_exact_issuer_head_revoke",
-  "root_live_admin_fixed_notes_revoke_prepare",
-  "root_live_admin_existing_effect_revoke",
-  "root_live_admin_existing_signed_grant_revoke",
-  "root_live_admin_same_service_signed_revoke",
-  "root_live_admin_original_issue_observer_enable",
-  "root_live_admin_original_issue_observation",
-  "root_live_admin_original_bounded_lease_revoke",
-  "root_live_admin_retained_artifact_observe",
-  "root_live_admin_original_effect_state_observe",
-  "root_live_admin_same_service_effect_state_observe",
-  "agentd_original_registered_writer_custody",
-  "agentd_original_recovered_writer_custody_factory",
-  "agentd_original_root_handoff_unique_file",
-  "calculator_previous_recovery_owner_target",
-  "calculator_previous_recovery_host_attach",
-  "calculator_previous_recovery_process_attach",
-  "calculator_previous_recovery_runtime_selection",
-  "calculator_previous_recovery_config_selection",
-  "root_original_issuer_renewal_prepare",
-  "root_original_issuer_renewal_commit",
-  "root_desktop_original_startup_before",
-  "root_desktop_recovered_successor_startup_before",
-  "root_desktop_registered_successor_policy_replace",
-]
+required_boundary_ids = ["supervisor_authorized_boot", "memory_production_writer_open", "cognitive_store_recovery_open", "cognitive_production_mutation_capability", "agentd_production_writer_host", "agentd_production_operation_runtime", "learning_artifact_owner_bootstrap", "learning_artifact_owner_restart", "learning_artifact_verified_current_view", "provider_effect_coordinator", "http_provider_effect_adapter", "final_use_open_state", "final_use_claim", "final_use_claim_raw", "final_use_delivery", "final_use_delivery_witness", "final_use_delivery_raw", "final_use_dispatch", "final_use_dispatch_witness", "final_use_dispatch_raw", "final_use_revocation_update", "final_use_approval_trust", "final_use_approval_verify", "final_use_revocation_feed_trust", "final_use_revocation_feed_apply", "final_use_revocation_convergence_trust", "final_use_revocation_convergence_verify", "bao_final_use_consumer", "bao_registered_consumer_new", "bao_final_use_host_new", "bao_registered_revocation_update", "bao_registered_final_use_host", "authority_lease_open_state", "authority_lease_put", "authority_lease_revoke", "authority_lease_prune", "authority_lease_epoch_advance", "authority_lease_verify_use", "authority_lease_delivery", "authority_lease_delivery_witness", "authority_lease_dispatch_raw", "authority_lease_dispatch_witness", "final_use_async_dispatch_fence", "automation_taskflow_provider_effect_bridge", "final_use_guarded_effect", "notes_original_pending_call_proof", "notes_original_operation_observation_proof", "notes_original_thread_prepare", "notes_original_writer_terminal_receipt", "memory_original_owner_current_publication", "memory_original_protected_current_readback", "original_authbus_human_delivery_read", "notes_original_human_turn_proof", "root_registered_human_text_writer", "root_registered_human_text_admission", "root_human_text_same_issuer_cas", "root_retained_human_text_lookup", "root_live_human_session_install", "root_original_human_text_verification", "notes_original_turn_unprepared_admission", "root_host_original_human_text_verification", "notes_original_human_text_verification", "root_prepared_fresh_session", "root_retained_native_ui_launch", "root_prepared_native_ui_execution", "root_material_capture_original_image", "root_material_verify_retained_image", "root_material_install_original_generation", "root_material_reopen_original_installation", "root_material_release_registered_custody", "root_material_fresh_registered_session", "root_material_recover_registered_session", "root_material_existing_session_open", "root_material_resume_registered_handoff", "root_material_current_observation_chain", "root_original_writer_descriptor_chain", "root_same_retained_service_serve", "root_registered_material_recovery", "root_registered_material_handoff_resume", "root_original_writer_purpose_send", "root_original_writer_purpose_receive", "agentd_original_root_writer_consume", "root_registered_writer_rotation", "native_original_operation_host_attach", "native_original_owner_current_ack", "native_original_terminal_history_observation", "root_original_authority_initialize", "root_original_writer_authorize", "root_same_registered_bootstrap_seal", "root_same_registered_bootstrap_capture", "root_original_physical_login_install", "root_original_writer_successor_shape", "root_original_issuer_writer_rotation", "root_physical_current_retired_adoption", "root_physical_recovery_retirement_admission", "root_physical_fresh_service_genesis", "root_physical_registered_checkpoint_genesis", "root_physical_current_backend_genesis", "root_registered_physical_current_observation", "root_original_two_descriptor_send", "root_original_two_descriptor_receive", "native_original_writer_terminal_observation", "native_original_writer_next_delivery_observation", "root_notes_original_startup_before", "root_notes_recovered_successor_startup_before", "root_notes_original_reserved_session_binding", "root_notes_registered_successor_policy_replace", "root_notes_original_issuer_policy_cas", "root_desktop_original_issuer_pair_policy_cas", "root_retained_native_ready_launch", "root_prepared_native_ready_execution", "root_prepared_native_ready_text_session", "root_original_bound_native_lanes", "root_original_bound_native_lane_acceptance", "root_original_ready_lane_bridge", "notes_original_retained_reference_projection", "desktop_original_retained_reference_projection", "memory_original_sender_read_only_cut", "notes_recorded_original_observation_proof", "notes_previous_recovery_typed_resolution", "root_live_admin_enable", "root_live_admin_mint", "root_live_admin_exchange", "root_live_admin_checked_dispatch", "root_live_admin_signed_artifact_verify", "root_live_admin_exact_issuer_head_revoke", "root_live_admin_fixed_notes_revoke_prepare", "root_live_admin_existing_effect_revoke", "root_live_admin_existing_signed_grant_revoke", "root_live_admin_same_service_signed_revoke", "root_live_admin_original_issue_observer_enable", "root_live_admin_original_issue_observation", "root_live_admin_original_bounded_lease_revoke", "root_live_admin_retained_artifact_observe", "root_live_admin_original_effect_state_observe", "root_live_admin_same_service_effect_state_observe", "agentd_original_registered_writer_custody", "agentd_original_recovered_writer_custody_factory", "agentd_original_root_handoff_unique_file", "calculator_previous_recovery_owner_target", "calculator_previous_recovery_host_attach", "calculator_previous_recovery_process_attach", "calculator_previous_recovery_runtime_selection", "calculator_previous_recovery_config_selection", "root_original_issuer_renewal_prepare", "root_original_issuer_renewal_commit", "root_desktop_original_startup_before", "root_desktop_recovered_successor_startup_before", "root_desktop_registered_successor_policy_replace", "desktop_previous_original_cut_selection", "desktop_previous_joint_config_selection"]
 
 [[boundary]]
 id = "supervisor_authorized_boot"
@@ -1566,7 +1416,7 @@ symbol = "ProductionObjectiveSender::retained_owner_requests"
 call_pattern = "(?:\\.\\s*|ProductionObjectiveSender\\s*::\\s*)retained_owner_requests\\s*\\("
 definition_path = "codex-rs/hepta-memory/src/objective_sender_read.rs"
 definition_markers = ["pub async fn retained_owner_requests(", ".observation_pool()", "store::retained_owner_requests(&mut transaction, self.writer.owner_agent_id())", "transaction.rollback().await"]
-product_callers = ["codex-rs/hepta-agentd/src/notes_thread_recorded.rs", "codex-rs/hepta-agentd/src/desktop_thread_recorded.rs"]
+product_callers = ["codex-rs/hepta-agentd/src/notes_thread_recorded.rs", "codex-rs/hepta-agentd/src/desktop_thread_recorded.rs", "codex-rs/hepta-agentd/src/desktop_thread_recovery.rs"]
 caller_markers = ["tokio::time::timeout_at(end,"]
 
 [[boundary]]
@@ -2080,12 +1930,11 @@ caller_markers = []
 [[boundary]]
 id = "calculator_previous_recovery_config_selection"
 symbol = "AgentdConfig::with_original_calculator_previous_recovery"
-call_pattern = '(?:\.\s*|AgentdConfig\s*::\s*)with_original_calculator_previous_recovery\s*\('
+call_pattern = "(?:\\.\\s*|AgentdConfig\\s*::\\s*)with_original_calculator_previous_recovery\\s*\\("
 definition_path = "codex-rs/hepta-agentd/src/config.rs"
 definition_markers = ["pub fn with_original_calculator_previous_recovery(", ".ok_or(AgentdError::CognitiveWriteRuntimeUnavailable)?", ".select_previous_calculator_process(current, launch)?"]
-product_callers = []
-caller_markers = []
-
+product_callers = ["codex-rs/hepta-agentd/src/config_desktop.rs"]
+caller_markers = [".resolve_previous_recovery(", ".with_original_calculator_previous_recovery("]
 
 [[protected_file]]
 path = "codex-rs/hepta-memory/src/production_calculator_previous.rs"
@@ -2173,3 +2022,41 @@ path = "codex-rs/hepta-agentd/src/desktop_root_composition.rs"
 required = ["end.remaining()?", "host.writer().acknowledge_current()", "config.install_production_hosts(Arc::new(host), operations)?"]
 forbidden = ["initialize_host_authority", "create_protected", "put_lease", "observed_current_owner_receipt"]
 required_function_order = [{ function = "fn attach_root_desktop_operation_host_with_startup_before(", sequence = ["open_with_protected_recovery(", "primary_notes_runtime_before(", ".with_calculator_from_session_expected_before(", "with_notes_receipt_recovery(", "host.writer().acknowledge_current()", "config.install_production_hosts("] }]
+
+[[boundary]]
+id = "desktop_previous_original_cut_selection"
+symbol = "AgentdNotesLiteralAdapter::desktop_previous_operation_ids"
+call_pattern = "(?:\\.\\s*|AgentdNotesLiteralAdapter\\s*::\\s*)desktop_previous_operation_ids\\s*\\("
+definition_path = "codex-rs/hepta-agentd/src/desktop_thread_recovery.rs"
+definition_markers = ["pub(crate) async fn desktop_previous_operation_ids(", ".retained_owner_requests()", ".verify_desktop_recorded(route, &tool, request).await?", ".retained_notes_retirement_ack(&found.run_id)", ".retained_calculator_retirement_ack(&found.run_id)"]
+product_callers = ["codex-rs/hepta-agentd/src/desktop_thread_recovery_runtime.rs"]
+caller_markers = ["deadline.capped(Duration::from_secs(5))?", "self.seed.verify_persisted()?;", "session.check_alive()?;", "end.remaining()?;"]
+
+
+[[boundary]]
+id = "desktop_previous_joint_config_selection"
+symbol = "AgentdConfig::with_original_desktop_previous_recovery_requests"
+call_pattern = "(?:\\.\\s*|AgentdConfig\\s*::\\s*)with_original_desktop_previous_recovery_requests\\s*\\("
+definition_path = "codex-rs/hepta-agentd/src/config_desktop.rs"
+definition_markers = ["pub(crate) async fn with_original_desktop_previous_recovery_requests(", ".resolve_previous_recovery(notes, calculator, deadline)", ".with_original_notes_previous_recovery(notes)?", ".with_original_calculator_previous_recovery("]
+product_callers = ["codex-rs/hepta-agentd/src/production_launcher.rs"]
+caller_markers = [".with_root_desktop_thread_tools(", "if let Some((notes, calculator)) = previous_recovery", "deadline.remaining()?;"]
+
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/desktop_previous_recovery.rs"
+required = ["#[serde(deny_unknown_fields)]", "DesktopPreviousRecovery::deserialize(deserializer).map(Some)", "self.notes.previous_target.session_instance", "self.notes.previous_target.task_id == self.calculator.previous_target.task_id", "!helper.is_absolute() || !directory.is_absolute()", "&self.notes.helper", "&self.calculator.helper", "Sha256Digest::parse(digest.clone())", "self.validate()?;"]
+forbidden = ["AllowVerifier", "permit_all", "transmute"]
+
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/desktop_thread_recovery.rs"
+required = ["self.profile != NotesAdapterProfile::OriginalDesktop", "tokio::time::timeout_at(end, async {", ".retained_owner_requests()", ".verify_desktop_recorded(route, &tool, request).await?", "if !orders.insert(order)", "if !operation_ids.insert(found.run_id.clone())", "LocalOutcomeState::Indeterminate | LocalOutcomeState::Committed", ".retained_notes_retirement_ack(&found.run_id)", ".retained_calculator_retirement_ack(&found.run_id)", "matches_previous: target == notes.previous_target", "matches_previous: target == calculator.previous_target", "!candidate.retirement_ack", "selected.is_none_or(|chosen| chosen.operation_id != candidate.operation_id)", "deadline.remaining()?;", "self.check_available()?;"]
+forbidden = [".sign_objective(", ".retain_before_send(", ".prepare_operation(", ".acknowledge_current(", "AllowVerifier", "permit_all"]
+required_function_order = [{ function = "fn desktop_previous_operation_ids(", sequence = ["self.check_available()?;", ".retained_owner_requests()", ".verify_desktop_recorded(route, &tool, request).await?", "matches_previous: target == notes.previous_target", "let notes = select(", "let calculator = select("] }]
+
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/desktop_thread_recovery_runtime.rs"
+required = ["deadline.capped(Duration::from_secs(5))?", "self.seed.verify_persisted()?;", "session.check_alive()?;", ".desktop_previous_operation_ids(&self.route, &notes, &calculator, end)", ".resolved(operation_id)", "self.adapter.check_available()?;", "end.remaining()?;"]
+forbidden = [".sign_objective(", ".prepare_operation(", ".acknowledge_current(", "AllowVerifier", "permit_all"]

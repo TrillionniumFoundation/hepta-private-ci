@@ -28,6 +28,8 @@ pub(crate) mod arguments;
 mod observe;
 #[path = "desktop_thread_proof.rs"]
 mod proof;
+#[path = "desktop_thread_recovery_runtime.rs"]
+mod recovery;
 #[path = "desktop_thread_runtime.rs"]
 mod runtime;
 #[path = "desktop_thread_transport.rs"]

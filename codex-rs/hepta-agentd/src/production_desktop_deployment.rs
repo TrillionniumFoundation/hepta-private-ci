@@ -1,6 +1,6 @@
 //! Distinct joint deployment from the original Root's sealed, read-only FD.
 //! Called only after the real Root handoff. These bounded public bindings do
-//! not create a grant, writer, thread, recovery request or replacement catalog.
+//! not create a grant, writer, thread or replacement catalog.
 
 use std::fs::File;
 use std::io::Read;
@@ -16,6 +16,7 @@ use crate::AgentdNotesUiPeer;
 use crate::DesktopThreadSeedReceipt;
 use crate::desktop_launch::DesktopInteraction;
 use crate::desktop_launch::FrozenBindings;
+use crate::desktop_previous_recovery::DesktopPreviousRecovery;
 use crate::text_session::AgentdTextSessionConfig;
 
 pub(super) struct DesktopDeployment {
@@ -26,6 +27,10 @@ pub(super) struct DesktopDeployment {
     pub(super) startup_release: AgentdDesktopStartupRelease,
     pub(super) route: AgentdTextSessionConfig,
     pub(super) seed: DesktopThreadSeedReceipt,
+    pub(super) previous_recovery: Option<(
+        crate::AgentdNotesPreviousRecoveryRequest,
+        crate::AgentdCalculatorPreviousRecoveryRequest,
+    )>,
 }
 
 #[derive(Deserialize)]
@@ -48,6 +53,11 @@ struct Deployment {
     bindings: FrozenBindings,
     startup_release: AgentdDesktopStartupRelease,
     interaction: DesktopInteraction,
+    #[serde(
+        default,
+        deserialize_with = "crate::desktop_previous_recovery::deserialize_present"
+    )]
+    previous_recovery: Option<DesktopPreviousRecovery>,
 }
 
 impl Deployment {
@@ -57,8 +67,11 @@ impl Deployment {
         spawn_generation: u64,
         owner: u32,
     ) -> Result<(), AgentdError> {
-        if self.schema != "hepta.agentd.original_desktop_launch.v1"
-            || self.profile != "notes_calculator_v1"
+        if !matches!(
+            (self.schema.as_str(), self.previous_recovery.as_ref()),
+            ("hepta.agentd.original_desktop_launch.v1", None)
+                | ("hepta.agentd.original_desktop_launch.v2", Some(_))
+        ) || self.profile != "notes_calculator_v1"
             || self.agent_id != agent_id
             || self.spawn_generation != spawn_generation
             || owner == 0
@@ -70,7 +83,11 @@ impl Deployment {
         {
             return Err(invalid("profile or actual Agentd/Session identity differs"));
         }
-        self.startup_release.validate()
+        self.startup_release.validate()?;
+        if let Some(previous) = &self.previous_recovery {
+            previous.validate()?;
+        }
+        Ok(())
     }
 }
 
@@ -93,6 +110,10 @@ pub(super) fn read(
     // SAFETY: geteuid reads this process's actual post-handoff credential.
     let owner = unsafe { libc::geteuid() };
     value.validate_identity(identity.agent_id.as_str(), identity.spawn_generation, owner)?;
+    let previous_recovery = value
+        .previous_recovery
+        .map(DesktopPreviousRecovery::into_requests)
+        .transpose()?;
     let bindings = value.bindings.into_original()?;
     value
         .interaction
@@ -109,6 +130,7 @@ pub(super) fn read(
         startup_release: value.startup_release,
         route,
         seed,
+        previous_recovery,
     })
 }
 

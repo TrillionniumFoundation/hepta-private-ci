@@ -103,3 +103,84 @@ fn joint_wire_never_defaults_a_release_interaction_or_old_recovery() {
     changed["bindings"]["grant"] = true.into();
     assert!(serde_json::from_value::<Deployment>(changed).is_err());
 }
+
+#[test]
+fn recovery_schema_requires_exact_typed_previous_pair_and_fresh_never_consumes_it()
+-> anyhow::Result<()> {
+    let previous = json!({
+        "notes":{"helper":"/fixture/notes-helper","helper_sha256":"b".repeat(64),
+            "state_directory":"/fixture/previous-notes",
+            "previous_target":{"session_instance":"c".repeat(32),"task_id":1,"incarnation":"d".repeat(32)},
+            "selector":{"kind":"latest_recorded_original_notes"}},
+        "calculator":{"helper":"/fixture/calculator-helper","helper_sha256":"e".repeat(64),
+            "state_directory":"/fixture/previous-calculator",
+            "previous_target":{"session_instance":"c".repeat(32),"task_id":2,"incarnation":"f".repeat(32)},
+            "selector":{"kind":"latest_recorded_original_calculator"}}
+    });
+    let mut valid = wire();
+    valid["schema"] = "hepta.agentd.original_desktop_launch.v2".into();
+    let missing: Deployment = serde_json::from_value(valid.clone())?;
+    assert!(
+        missing
+            .validate_identity(AGENT, /*spawn_generation*/ 1, /*owner*/ 1000)
+            .is_err()
+    );
+    valid["previous_recovery"] = previous;
+    let decoded: Deployment = serde_json::from_value(valid.clone())?;
+    decoded.validate_identity(AGENT, /*spawn_generation*/ 1, /*owner*/ 1000)?;
+    decoded.previous_recovery.unwrap().into_requests()?;
+    let mut fresh = valid.clone();
+    fresh["schema"] = "hepta.agentd.original_desktop_launch.v1".into();
+    let fresh: Deployment = serde_json::from_value(fresh)?;
+    assert!(
+        fresh
+            .validate_identity(AGENT, /*spawn_generation*/ 1, /*owner*/ 1000)
+            .is_err()
+    );
+    for pointer in [
+        "/previous_recovery",
+        "/previous_recovery/notes",
+        "/previous_recovery/calculator",
+    ] {
+        let mut changed = valid.clone();
+        *changed.pointer_mut(pointer).unwrap() = Value::Null;
+        assert!(serde_json::from_value::<Deployment>(changed).is_err());
+    }
+    for (pointer, bad) in [
+        (
+            "/previous_recovery/calculator/previous_target/session_instance",
+            json!("a".repeat(32)),
+        ),
+        (
+            "/previous_recovery/calculator/previous_target/task_id",
+            json!(1),
+        ),
+        ("/previous_recovery/notes/helper", json!("relative")),
+        (
+            "/previous_recovery/calculator/helper_sha256",
+            json!("not-a-digest"),
+        ),
+    ] {
+        let mut changed = valid.clone();
+        *changed.pointer_mut(pointer).unwrap() = bad;
+        let changed: Deployment = serde_json::from_value(changed)?;
+        assert!(
+            changed
+                .validate_identity(AGENT, /*spawn_generation*/ 1, /*owner*/ 1000)
+                .is_err()
+        );
+    }
+    for (field, value) in [
+        ("grant", json!(true)),
+        ("operation_id", json!("unselected-operation")),
+    ] {
+        let mut changed = valid.clone();
+        changed["previous_recovery"]["notes"][field] = value;
+        assert!(serde_json::from_value::<Deployment>(changed).is_err());
+    }
+    let mut changed = valid;
+    changed["previous_recovery"]["notes"]["selector"]["kind"] =
+        "latest_recorded_original_calculator".into();
+    assert!(serde_json::from_value::<Deployment>(changed).is_err());
+    Ok(())
+}

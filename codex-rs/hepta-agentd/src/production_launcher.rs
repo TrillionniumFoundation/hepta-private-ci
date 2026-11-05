@@ -288,6 +288,7 @@ impl AgentdProductionLaunch {
                         startup_release,
                         route,
                         seed,
+                        previous_recovery,
                     } = desktop_deployment::read(deployment, config.identity())?;
                     let session =
                         crate::AgentdNotesSessionLifetime::from_inherited(session_pidfd, &peer)?;
@@ -313,6 +314,14 @@ impl AgentdProductionLaunch {
                         Duration::from_secs(10),
                     )?;
                     deadline.remaining()?;
+                    if let Some((notes, calculator)) = previous_recovery {
+                        config = config
+                            .with_original_desktop_previous_recovery_requests(
+                                notes, calculator, deadline,
+                            )
+                            .await?;
+                        deadline.remaining()?;
+                    }
                     // Retain the whole joint attachment, including Calculator's
                     // read-only observer, until the original runtime stops.
                     desktop_attachment = Some(joint);
