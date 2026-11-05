@@ -1584,6 +1584,10 @@
             "null"
           ]
         },
+        "processIndeterminate": {
+          "description": "Accept `process/indeterminate` and its retained-owner, no-handle-reuse semantics. Required together with experimentalApi for `process/spawn`.",
+          "type": "boolean"
+        },
         "requestAttestation": {
           "default": false,
           "description": "Opt into `attestation/generate` requests for upstream `x-oai-attestation`.",
