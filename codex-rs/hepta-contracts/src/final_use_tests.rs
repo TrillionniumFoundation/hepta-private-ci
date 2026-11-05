@@ -564,6 +564,33 @@ fn issuer_key_ring_supports_overlap_and_epoch_retirement() {
 
 #[test]
 fn external_final_use_frontier_ahead_after_local_failure_fences_reopen() {
+    #[derive(Debug)]
+    struct FailLocalAppendAfterCas {
+        frontier: MemoryFinalUseFrontier,
+        directory: std::path::PathBuf,
+    }
+    impl AuthorityFrontierStore<FinalUseFrontier> for FailLocalAppendAfterCas {
+        fn load(&self, owner_id: &str) -> Result<FinalUseFrontier, AuthorityTrustError> {
+            self.frontier.load(owner_id)
+        }
+
+        fn compare_and_set(
+            &self,
+            owner_id: &str,
+            expected: &FinalUseFrontier,
+            next: &FinalUseFrontier,
+        ) -> Result<(), AuthorityTrustError> {
+            self.frontier.compare_and_set(owner_id, expected, next)?;
+            // The live-owner check now rejects a pre-existing fault before
+            // CAS. Inject after CAS to retain the external-ahead crash case.
+            std::fs::rename(
+                self.directory.join("authority.claims"),
+                self.directory.join("saved.claims"),
+            )
+            .and_then(|()| std::fs::create_dir(self.directory.join("authority.claims")))
+            .map_err(|_| AuthorityTrustError::Unavailable)
+        }
+    }
     let issuer = SigningKey::from_bytes(&[59; 32]);
     let head = FinalUseRevocations {
         authority_epoch: 6,
@@ -595,9 +622,12 @@ fn external_final_use_frontier_ahead_after_local_failure_fences_reopen() {
     };
     let directory = tempfile::tempdir().unwrap();
     std::fs::set_permissions(directory.path(), std::fs::Permissions::from_mode(0o700)).unwrap();
-    let frontier_store = Arc::new(MemoryFinalUseFrontier(Mutex::new(
-        FinalUseFrontier::for_initial_head(&head).unwrap(),
-    )));
+    let frontier_store = Arc::new(FailLocalAppendAfterCas {
+        frontier: MemoryFinalUseFrontier(Mutex::new(
+            FinalUseFrontier::for_initial_head(&head).unwrap(),
+        )),
+        directory: directory.path().to_path_buf(),
+    });
     let authority = FinalUseAuthority::open_state_dir_with_trust(
         directory.path(),
         "failure-owner".into(),
@@ -608,12 +638,6 @@ fn external_final_use_frontier_ahead_after_local_failure_fences_reopen() {
     )
     .unwrap();
 
-    std::fs::rename(
-        directory.path().join("authority.claims"),
-        directory.path().join("saved.claims"),
-    )
-    .unwrap();
-    std::fs::create_dir(directory.path().join("authority.claims")).unwrap();
     assert_eq!(
         authority.claim(&signed, &signed.grant.binding).unwrap_err(),
         FinalUseError::Unavailable
@@ -890,4 +914,173 @@ fn missing_or_truncated_claim_journal_fails_closed_on_restart() {
             FinalUseError::InvalidTrust
         );
     }
+}
+
+#[test]
+fn live_claim_journal_loss_denies_existing_tokens_at_every_final_entry() {
+    #[derive(Clone, Copy, Debug)]
+    enum Damage {
+        Truncate,
+        Replace,
+        Remove,
+    }
+    #[derive(Clone, Copy, Debug)]
+    enum Boundary {
+        Token,
+        Consumer,
+        Effect,
+        Dispatch,
+        Async,
+    }
+    for damage in [Damage::Truncate, Damage::Replace, Damage::Remove] {
+        for boundary in [
+            Boundary::Token,
+            Boundary::Consumer,
+            Boundary::Effect,
+            Boundary::Dispatch,
+            Boundary::Async,
+        ] {
+            let (authority, signed, directory) = fixture().unwrap();
+            let binding = signed.grant.binding.clone();
+            let token = authority.claim(&signed, &binding).unwrap();
+            let clone = authority.clone();
+            let claims_path = directory.path().join("authority.claims");
+            let claims = std::fs::read(&claims_path).unwrap();
+            match damage {
+                Damage::Truncate => std::fs::OpenOptions::new()
+                    .write(true)
+                    .open(&claims_path)
+                    .unwrap()
+                    .set_len(0)
+                    .unwrap(),
+                Damage::Replace => {
+                    std::fs::rename(&claims_path, directory.path().join("moved.claims")).unwrap();
+                    std::fs::write(&claims_path, &claims).unwrap();
+                    std::fs::set_permissions(&claims_path, std::fs::Permissions::from_mode(0o600))
+                        .unwrap();
+                }
+                Damage::Remove => std::fs::remove_file(&claims_path).unwrap(),
+            }
+            let entered = std::cell::Cell::new(false);
+            let result = match boundary {
+                Boundary::Token => token.enter(&binding).map(|_| entered.set(true)),
+                Boundary::Consumer => {
+                    authority.with_verified_use(token, &binding, || entered.set(true))
+                }
+                Boundary::Effect => {
+                    authority.with_verified_effect(token, &binding, || entered.set(true))
+                }
+                Boundary::Dispatch => {
+                    authority.with_dispatch_boundary(token, &binding, || entered.set(true))
+                }
+                Boundary::Async => {
+                    let mut future =
+                        Box::pin(authority.with_verified_use_async(token, &binding, || {
+                            entered.set(true);
+                            std::future::ready(())
+                        }));
+                    let mut context = Context::from_waker(Waker::noop());
+                    match future.as_mut().poll(&mut context) {
+                        Poll::Ready(result) => result,
+                        Poll::Pending => panic!("refused effect must not reach its future"),
+                    }
+                }
+            };
+            assert_eq!(
+                result,
+                Err(FinalUseError::Unavailable),
+                "{damage:?}/{boundary:?}"
+            );
+            assert!(!entered.get(), "{damage:?}/{boundary:?}");
+            // The failure belongs to the shared owner, even if bytes return.
+            std::fs::write(&claims_path, &claims).unwrap();
+            std::fs::set_permissions(&claims_path, std::fs::Permissions::from_mode(0o600)).unwrap();
+            assert_eq!(clone.revocation_head(), Err(FinalUseError::Unavailable));
+            assert_eq!(
+                clone.claim(&signed, &binding).unwrap_err(),
+                FinalUseError::Unavailable
+            );
+        }
+    }
+}
+
+#[test]
+fn journal_loss_during_clock_callback_is_rechecked_before_dispatch() {
+    #[derive(Debug)]
+    struct JournalLossClock {
+        now_unix_ms: u64,
+        claims_path: std::path::PathBuf,
+        armed: std::sync::atomic::AtomicBool,
+    }
+    impl AuthorityClock for JournalLossClock {
+        fn now_unix_ms(&self) -> Result<u64, AuthorityTrustError> {
+            if self.armed.swap(false, Ordering::AcqRel) {
+                std::fs::OpenOptions::new()
+                    .write(true)
+                    .open(&self.claims_path)
+                    .and_then(|file| file.set_len(0))
+                    .map_err(|_| AuthorityTrustError::Unavailable)?;
+            }
+            Ok(self.now_unix_ms)
+        }
+    }
+    let (mut authority, signed, directory) = fixture().unwrap();
+    let clock = Arc::new(JournalLossClock {
+        now_unix_ms: signed.grant.not_before_unix_ms + 1000,
+        claims_path: directory.path().join("authority.claims"),
+        armed: std::sync::atomic::AtomicBool::new(false),
+    });
+    Arc::get_mut(&mut authority.0).unwrap().clock = clock.clone();
+    let binding = signed.grant.binding.clone();
+    let token = authority.claim(&signed, &binding).unwrap();
+    let claims = std::fs::read(&clock.claims_path).unwrap();
+    clock.armed.store(true, Ordering::Release);
+    let entered = std::cell::Cell::new(false);
+    assert_eq!(
+        authority.with_dispatch_boundary(token, &binding, || entered.set(true)),
+        Err(FinalUseError::Unavailable)
+    );
+    assert!(!entered.get());
+    std::fs::write(&clock.claims_path, claims).unwrap();
+    assert_eq!(authority.revocation_head(), Err(FinalUseError::Unavailable));
+}
+
+#[test]
+fn grant_expiring_between_time_samples_is_denied_at_final_entry() {
+    #[derive(Debug)]
+    struct ExpiringClock {
+        now_unix_ms: std::sync::atomic::AtomicU64,
+        expires_at_unix_ms: u64,
+        expire_next: std::sync::atomic::AtomicBool,
+    }
+    impl AuthorityClock for ExpiringClock {
+        fn now_unix_ms(&self) -> Result<u64, AuthorityTrustError> {
+            let now = self.now_unix_ms.load(Ordering::Acquire);
+            if self.expire_next.swap(false, Ordering::AcqRel) {
+                self.now_unix_ms
+                    .store(self.expires_at_unix_ms, Ordering::Release);
+            }
+            Ok(now)
+        }
+    }
+    let (mut authority, signed, _directory) = fixture().unwrap();
+    let clock = Arc::new(ExpiringClock {
+        now_unix_ms: std::sync::atomic::AtomicU64::new(signed.grant.not_before_unix_ms + 1000),
+        expires_at_unix_ms: signed.grant.expires_at_unix_ms,
+        expire_next: std::sync::atomic::AtomicBool::new(false),
+    });
+    Arc::get_mut(&mut authority.0).unwrap().clock = clock.clone();
+    let binding = signed.grant.binding.clone();
+    let token = authority.claim(&signed, &binding).unwrap();
+    clock.expire_next.store(true, Ordering::Release);
+    let entered = std::cell::Cell::new(false);
+    assert_eq!(
+        authority.with_dispatch_boundary(token, &binding, || entered.set(true)),
+        Err(FinalUseError::Expired)
+    );
+    assert!(!entered.get());
+    assert_eq!(
+        authority.claim(&signed, &binding).unwrap_err(),
+        FinalUseError::Expired
+    );
 }

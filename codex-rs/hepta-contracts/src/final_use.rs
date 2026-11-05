@@ -358,12 +358,23 @@ impl VerifiedUseToken {
         &self,
         head: &FinalUseRevocations,
         now_unix_ms: u64,
-    ) -> Result<(), FinalUseError> {
+    ) -> Result<u64, FinalUseError> {
         validate_live(&self.grant, head, now_unix_ms)?;
         if head != &self.claimed_head {
             return Err(FinalUseError::StaleRevocationHead);
         }
-        Ok(())
+        // Clock/frontier callbacks can block after the earlier live-state
+        // check. Refusal poisons the store shared by every owner clone. The
+        // journal I/O can also outlast a grant, so return a fresh time sample
+        // for both final validation and the consumer's entry witness.
+        #[cfg(unix)]
+        let now_unix_ms = {
+            self.owner.store.revalidate_owner()?;
+            let now_unix_ms = self.owner.clock.now_unix_ms().map_err(map_trust_error)?;
+            validate_live(&self.grant, head, now_unix_ms)?;
+            now_unix_ms
+        };
+        Ok(now_unix_ms)
     }
 }
 
@@ -841,8 +852,7 @@ impl FinalUseAuthority {
             .lock()
             .map_err(|_| FinalUseError::Unavailable)?;
         let state = self.0.ensure_current_effect_state(state)?;
-        let now_unix_ms = self.now_unix_ms()?;
-        token.validate_entry(&state.head, now_unix_ms)?;
+        let now_unix_ms = token.validate_entry(&state.head, self.now_unix_ms()?)?;
         Ok(VerifiedUseTokenWitnessV1::final_use(
             self.0.signer_id.clone(),
             token.grant.grant_id.clone(),
@@ -869,8 +879,7 @@ impl FinalUseAuthority {
             .lock()
             .map_err(|_| FinalUseError::Unavailable)?;
         let state = self.0.ensure_current_effect_state(state)?;
-        let now_unix_ms = self.now_unix_ms()?;
-        token.validate_entry(&state.head, now_unix_ms)?;
+        let now_unix_ms = token.validate_entry(&state.head, self.now_unix_ms()?)?;
         let witness = VerifiedUseTokenWitnessV1::final_use(
             self.0.signer_id.clone(),
             token.grant.grant_id,

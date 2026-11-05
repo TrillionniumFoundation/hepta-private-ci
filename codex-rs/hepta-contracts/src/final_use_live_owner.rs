@@ -20,7 +20,7 @@ impl Inner {
         if state.failed {
             return Err(FinalUseError::Unavailable);
         }
-        #[cfg(windows)]
+        #[cfg(any(unix, windows))]
         {
             let mut state = state;
             if self.store.revalidate_owner().is_err() {
@@ -29,7 +29,7 @@ impl Inner {
             }
             Ok(state)
         }
-        #[cfg(not(windows))]
+        #[cfg(not(any(unix, windows)))]
         {
             Ok(state)
         }
