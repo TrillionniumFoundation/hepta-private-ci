@@ -388,11 +388,7 @@ impl CognitiveStore {
         request.validate()?;
         attempt.validate()?;
 
-        let mut transaction = self
-            .pool
-            .begin_with("BEGIN IMMEDIATE")
-            .await
-            .map_err(crate::cognitive_store::unavailable)?;
+        let mut transaction = self.begin_owner_write().await?;
         let identity_sha256 = logical_identity_digest(
             self.owner_agent_id(),
             &request.logical_turn_id,

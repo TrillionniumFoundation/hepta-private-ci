@@ -50,11 +50,7 @@ pub(crate) async fn record_rejection(
     now_unix_ms: u64,
 ) -> Result<(), LocalLeaseOutboxError> {
     let (binding, entered, dispatch_event_id, stage, rejected_nonce) = proof.into_parts();
-    let mut transaction = store
-        .pool
-        .begin_with("BEGIN IMMEDIATE")
-        .await
-        .map_err(crate::cognitive_store::unavailable)?;
+    let mut transaction = store.begin_owner_write().await?;
     verify_binding(&mut transaction, store, &binding, &dispatch_event_id).await?;
     let previous = latest_claim(&mut transaction, &binding.operation_id)
         .await?
@@ -179,11 +175,7 @@ pub(crate) async fn claim_reauthorization(
         now_unix_ms,
         lease_duration_ms,
     )?;
-    let mut transaction = store
-        .pool
-        .begin_with("BEGIN IMMEDIATE")
-        .await
-        .map_err(crate::cognitive_store::unavailable)?;
+    let mut transaction = store.begin_owner_write().await?;
     let Some((proof, previous)) = current_proof(&mut transaction, store, binding).await? else {
         transaction
             .commit()
@@ -295,11 +287,7 @@ pub(crate) async fn enter_reauthorization(
     dispatch_event_id: &str,
     now_unix_ms: u64,
 ) -> Result<DurableDispatchClaim, LocalLeaseOutboxError> {
-    let mut transaction = store
-        .pool
-        .begin_with("BEGIN IMMEDIATE")
-        .await
-        .map_err(crate::cognitive_store::unavailable)?;
+    let mut transaction = store.begin_owner_write().await?;
     verify_binding(&mut transaction, store, binding, dispatch_event_id).await?;
     let previous = latest_claim(&mut transaction, &binding.operation_id)
         .await?

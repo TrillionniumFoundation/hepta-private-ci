@@ -74,11 +74,7 @@ impl CognitiveStore {
         draft: &MemoryDraft,
         facts: &KgFactSetDraft,
     ) -> Result<CognitiveWriteReceipt, CognitiveStoreError> {
-        let mut transaction = self
-            .pool
-            .begin_with("BEGIN IMMEDIATE")
-            .await
-            .map_err(unavailable)?;
+        let mut transaction = self.begin_owner_write().await?;
         let receipt = self
             .remember_with_kg_tx(&mut transaction, access, source, draft, facts)
             .await?;
@@ -133,11 +129,7 @@ impl CognitiveStore {
         draft: &MemoryRevisionDraft,
         facts: &KgFactSetDraft,
     ) -> Result<CognitiveWriteReceipt, CognitiveStoreError> {
-        let mut transaction = self
-            .pool
-            .begin_with("BEGIN IMMEDIATE")
-            .await
-            .map_err(unavailable)?;
+        let mut transaction = self.begin_owner_write().await?;
         let receipt = self
             .correct_with_kg_tx(
                 &mut transaction,
@@ -209,11 +201,7 @@ impl CognitiveStore {
         source: &SourceDraft,
         draft: &ForgetMemoryDraft,
     ) -> Result<CognitiveWriteReceipt, CognitiveStoreError> {
-        let mut transaction = self
-            .pool
-            .begin_with("BEGIN IMMEDIATE")
-            .await
-            .map_err(unavailable)?;
+        let mut transaction = self.begin_owner_write().await?;
         let receipt = self
             .forget_with_kg_tx(
                 &mut transaction,

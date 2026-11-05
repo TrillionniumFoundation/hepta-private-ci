@@ -95,11 +95,7 @@ pub(crate) async fn claim(
         now_unix_ms,
         lease_duration_ms,
     )?;
-    let mut transaction = store
-        .pool
-        .begin_with("BEGIN IMMEDIATE")
-        .await
-        .map_err(crate::cognitive_store::unavailable)?;
+    let mut transaction = store.begin_owner_write().await?;
     verify_operation_fence(
         &mut transaction,
         store,
@@ -207,11 +203,7 @@ pub(crate) async fn renew(
         now_unix_ms,
         lease_duration_ms,
     )?;
-    let mut transaction = store
-        .pool
-        .begin_with("BEGIN IMMEDIATE")
-        .await
-        .map_err(crate::cognitive_store::unavailable)?;
+    let mut transaction = store.begin_owner_write().await?;
     verify_operation_fence(
         &mut transaction,
         store,
@@ -300,11 +292,7 @@ async fn transition_claim(
             "dispatch claim timestamp must be non-zero".to_string(),
         ));
     }
-    let mut transaction = store
-        .pool
-        .begin_with("BEGIN IMMEDIATE")
-        .await
-        .map_err(crate::cognitive_store::unavailable)?;
+    let mut transaction = store.begin_owner_write().await?;
     verify_operation_fence(
         &mut transaction,
         store,
