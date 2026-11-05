@@ -86,6 +86,8 @@ impl AgentdNotesLiteralAdapter {
         }
         let end = tokio::time::Instant::now() + deadline.remaining()?;
         let result = tokio::time::timeout_at(end, async {
+            let before = self.writer.observed_current_owner_receipt().await?;
+            deadline.remaining()?;
             let requests = self
                 .sender
                 .retained_owner_requests()
@@ -227,6 +229,13 @@ impl AgentdNotesLiteralAdapter {
                     }
                 },
             )?;
+            let after = self.writer.observed_current_owner_receipt().await?;
+            if after != before {
+                return Err(invalid(
+                    "protected Current changed during joint Desktop recovery selection",
+                ));
+            }
+            deadline.remaining()?;
             Ok::<_, AgentdError>(ResolvedDesktopOperationIds { notes, calculator })
         })
         .await
