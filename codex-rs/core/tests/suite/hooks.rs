@@ -1796,7 +1796,8 @@ async fn async_hook_finishing_while_idle_waits_for_the_next_turn() -> Result<()>
     );
 
     let next_prompt = "observe the buffered async context";
-    let next_submission = test.codex
+    let next_submission = test
+        .codex
         .start_or_steer_turn(TurnInputRequest::user_input(vec![UserInput::Text {
             text: next_prompt.to_string(),
             text_elements: Vec::new(),

@@ -362,7 +362,9 @@ def main() -> int:
             args.testlogs_dir, args.output_dir, targets, retention=retention
         )
     except (OSError, UnicodeError, ValueError, RuntimeError) as error:
-        print(f"{archive_kind}-log archive could not be written: {error}", file=sys.stderr)
+        print(
+            f"{archive_kind}-log archive could not be written: {error}", file=sys.stderr
+        )
         return 1
     print(
         f"{archive_kind}-log archive: {archive} (complete_for_selected_targets={complete})"

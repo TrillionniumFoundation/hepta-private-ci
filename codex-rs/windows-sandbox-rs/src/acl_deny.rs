@@ -180,7 +180,12 @@ pub(super) unsafe fn add_deny_ace(
         },
     };
     let mut new_dacl = std::ptr::null_mut();
-    let code = SetEntriesInAclW(/*ccountofexplicitentries*/ 1, &entry, dacl, &mut new_dacl);
+    let code = SetEntriesInAclW(
+        /*ccountofexplicitentries*/ 1,
+        &entry,
+        dacl,
+        &mut new_dacl,
+    );
     let allocation = LocalAllocation(new_dacl.cast());
     acl_api_result(path, "SetEntriesInAclW", code)?;
     let code = SetSecurityInfo(

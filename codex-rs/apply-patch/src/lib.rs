@@ -446,9 +446,7 @@ async fn apply_hunks_with_options(
             } else {
                 writeln!(stderr, "{msg}")
             }
-            .map_err(|error| {
-                ApplyPatchFailure::new(ApplyPatchError::from(error), delta.clone())
-            })?;
+            .map_err(|error| ApplyPatchFailure::new(ApplyPatchError::from(error), delta.clone()))?;
             let error = if let Some(io) = error.downcast_ref::<std::io::Error>() {
                 ApplyPatchError::from(io)
             } else {

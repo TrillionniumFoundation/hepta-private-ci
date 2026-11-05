@@ -4059,7 +4059,10 @@ mod tests {
             for (method, handler) in handlers {
                 let (observations, result) = match handler.await {
                     Ok(outcome) => outcome,
-                    Err(error) => (Vec::new(), Err(format!("probe handler task failed: {error}"))),
+                    Err(error) => (
+                        Vec::new(),
+                        Err(format!("probe handler task failed: {error}")),
+                    ),
                 };
                 outcomes.push((method, observations, result));
             }
@@ -4067,9 +4070,11 @@ mod tests {
         });
 
         let client_started_at = started_at.elapsed().as_micros();
-        let status =
-            mcp_http_probe_url_with_timeout(&format!("http://{addr}/mcp"), Duration::from_millis(10))
-                .await;
+        let status = mcp_http_probe_url_with_timeout(
+            &format!("http://{addr}/mcp"),
+            Duration::from_millis(10),
+        )
+        .await;
         let client_returned_at = started_at.elapsed().as_micros();
         let server_result = server.await;
         // Retain I/O errors and sampled stages before any assertion can unwind.
@@ -4078,8 +4083,15 @@ mod tests {
             "mcp_http_timeout_fixture get_response={get_response:?} client_started_us={client_started_at} client_returned_us={client_returned_at} server_result=(accept_errors,[(method,[(phase,us)],request_line_or_error)]):{server_result:?}"
         );
         let (accept_errors, outcomes) = server_result.expect("probe server task should finish");
-        assert!(accept_errors.is_empty(), "probe accepts failed: {accept_errors:?}");
-        assert_eq!(outcomes.len(), 2, "both real probe requests must be observed");
+        assert!(
+            accept_errors.is_empty(),
+            "probe accepts failed: {accept_errors:?}"
+        );
+        assert_eq!(
+            outcomes.len(),
+            2,
+            "both real probe requests must be observed"
+        );
         for (method, _, result) in outcomes {
             let request_line = result.expect("probe request handler should finish");
             assert_eq!(request_line, format!("{method} /mcp HTTP/1.1\r\n"));

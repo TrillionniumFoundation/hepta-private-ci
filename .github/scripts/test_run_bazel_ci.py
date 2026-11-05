@@ -609,7 +609,8 @@ class RunBazelCiIntegrationTest(unittest.TestCase):
             BAZEL_PROBE_SUMMARY_FILE=str(summary),
         )
         payloads = {
-            "codex-rs/tui/tui-unit-tests/shard_1_of_2/test.log": bytes(range(256)) * 4097,
+            "codex-rs/tui/tui-unit-tests/shard_1_of_2/test.log": bytes(range(256))
+            * 4097,
             "codex-rs/tui/tui-unit-tests/shard_1_of_2/test.xml": b'<testsuite tests="1"/>\n',
             "codex-rs/tui/tui-unit-tests/shard_2_of_2/test.log": b"second shard\n",
             "codex-rs/ext/queue/queue-queue_service-test/test.log": b"cached record\n",
@@ -712,8 +713,12 @@ class RunBazelCiIntegrationTest(unittest.TestCase):
                     BAZEL_PROBE_FAIL="1" if original_status else "0",
                 )
                 result, calls = self.run_wrapper(
-                    "--print-failed-test-logs", "--", "test", "--",
-                    "//fake:target", "//codex-rs/tui:tui-unit-tests",
+                    "--print-failed-test-logs",
+                    "--",
+                    "test",
+                    "--",
+                    "//fake:target",
+                    "//codex-rs/tui:tui-unit-tests",
                 )
                 self.assertEqual(
                     result.returncode, original_status, result.stdout + result.stderr
@@ -735,7 +740,9 @@ class RunBazelCiIntegrationTest(unittest.TestCase):
                 )
                 self.assertTrue(manifest["errors"])
                 self.assertEqual(
-                    len(list(output.glob("failed-test-logs/invocation-*/manifest.json"))),
+                    len(
+                        list(output.glob("failed-test-logs/invocation-*/manifest.json"))
+                    ),
                     1 if original_status else 0,
                 )
                 if original_status:
@@ -756,11 +763,17 @@ class RunBazelCiIntegrationTest(unittest.TestCase):
             BAZEL_PROBE_SUMMARY_FILE=str(summary),
         )
         result, calls = self.run_wrapper(
-            "--print-failed-test-logs", "--", "test", "--", "//codex-rs/tui:tui-unit-tests"
+            "--print-failed-test-logs",
+            "--",
+            "test",
+            "--",
+            "//codex-rs/tui:tui-unit-tests",
         )
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
         self.assertEqual(len(calls), 2, calls)
-        manifests = list(output.glob("selected-target-test-logs/invocation-*/manifest.json"))
+        manifests = list(
+            output.glob("selected-target-test-logs/invocation-*/manifest.json")
+        )
         self.assertEqual(len(manifests), 1)
         manifest = json.loads(manifests[0].read_text(encoding="utf-8"))
         self.assertFalse(manifest["complete_for_selected_targets"])

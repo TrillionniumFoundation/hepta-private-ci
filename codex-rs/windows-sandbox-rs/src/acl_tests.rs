@@ -246,7 +246,6 @@ fn deny_ace_update_failure_is_an_error() {
     );
 }
 
-
 #[test]
 fn normalized_denies_require_same_sid_complete_masks_and_both_directory_scopes() -> Result<()> {
     use super::deny::DenyObjectScope;
@@ -268,10 +267,34 @@ fn normalized_denies_require_same_sid_complete_masks_and_both_directory_scopes()
             (full, full, &other, recursive, (true, false)),
             (full, full & !READ_CONTROL, &sid, recursive, (true, false)),
             (full & !READ_CONTROL, full, &sid, recursive, (false, false)),
-            (full, full, &sid, recursive | NO_PROPAGATE_INHERIT_ACE, (true, false)),
-            (full, full, &sid, recursive | u32::from(INHERITED_ACE), (true, false)),
-            (full, full, &sid, OBJECT_INHERIT_ACE | u32::from(INHERIT_ONLY_ACE), (true, false)),
-            (full, full, &sid, CONTAINER_INHERIT_ACE | u32::from(INHERIT_ONLY_ACE), (true, false)),
+            (
+                full,
+                full,
+                &sid,
+                recursive | NO_PROPAGATE_INHERIT_ACE,
+                (true, false),
+            ),
+            (
+                full,
+                full,
+                &sid,
+                recursive | u32::from(INHERITED_ACE),
+                (true, false),
+            ),
+            (
+                full,
+                full,
+                &sid,
+                OBJECT_INHERIT_ACE | u32::from(INHERIT_ONLY_ACE),
+                (true, false),
+            ),
+            (
+                full,
+                full,
+                &sid,
+                CONTAINER_INHERIT_ACE | u32::from(INHERIT_ONLY_ACE),
+                (true, false),
+            ),
         ] {
             let mut acl = NativeAcl::new()?;
             acl.deny(&sid, effective, /*flags*/ 0)?;
@@ -279,8 +302,18 @@ fn normalized_denies_require_same_sid_complete_masks_and_both_directory_scopes()
             // SAFETY: these initialized native ACLs/SIDs outlive both queries.
             let actual = unsafe {
                 (
-                    dacl_has_complete_deny_for_object(acl.as_ptr(), sid.as_ptr(), kind, DenyObjectScope::File),
-                    dacl_has_complete_deny_for_object(acl.as_ptr(), sid.as_ptr(), kind, DenyObjectScope::Directory),
+                    dacl_has_complete_deny_for_object(
+                        acl.as_ptr(),
+                        sid.as_ptr(),
+                        kind,
+                        DenyObjectScope::File,
+                    ),
+                    dacl_has_complete_deny_for_object(
+                        acl.as_ptr(),
+                        sid.as_ptr(),
+                        kind,
+                        DenyObjectScope::Directory,
+                    ),
                 )
             };
             assert_eq!(actual, expected, "flags={flags:#x}");
@@ -289,12 +322,23 @@ fn normalized_denies_require_same_sid_complete_masks_and_both_directory_scopes()
         }
         let mut acl = NativeAcl::new()?;
         unsafe {
-            assert_ne!(AddAccessAllowedAceEx(acl.as_ptr(), ACL_REVISION, /*aceflags*/ 0, FILE_ALL_ACCESS, sid.as_ptr()), 0);
+            assert_ne!(
+                AddAccessAllowedAceEx(
+                    acl.as_ptr(),
+                    ACL_REVISION,
+                    /*aceflags*/ 0,
+                    FILE_ALL_ACCESS,
+                    sid.as_ptr()
+                ),
+                0
+            );
         }
         acl.deny(&sid, full, /*flags*/ 0)?;
         acl.deny(&sid, full, recursive)?;
         for scope in [DenyObjectScope::File, DenyObjectScope::Directory] {
-            assert!(!unsafe { dacl_has_complete_deny_for_object(acl.as_ptr(), sid.as_ptr(), kind, scope) });
+            assert!(!unsafe {
+                dacl_has_complete_deny_for_object(acl.as_ptr(), sid.as_ptr(), kind, scope)
+            });
         }
     }
     Ok(())
@@ -339,9 +383,15 @@ fn existing_native_deny_does_not_require_write_dac() -> Result<()> {
     let fixture = tempfile::tempdir()?;
     let path = fixture.path().join("read-control-only.txt");
     std::fs::write(&path, "retained")?;
-    let file = OpenOptions::new().access_mode(READ_CONTROL | WRITE_DAC).open(&path)?;
+    let file = OpenOptions::new()
+        .access_mode(READ_CONTROL | WRITE_DAC)
+        .open(&path)?;
     let (dacl, descriptor) = unsafe { fetch_dacl_handle(&path)? };
-    let restore = RestoreDacl { file, dacl, descriptor };
+    let restore = RestoreDacl {
+        file,
+        dacl,
+        descriptor,
+    };
     let sid = LocalSid::from_string("S-1-5-21-201-302-403-504")?;
     let owner_rights = LocalSid::from_string("S-1-3-4")?;
     unsafe {
@@ -353,18 +403,36 @@ fn existing_native_deny_does_not_require_write_dac() -> Result<()> {
             grfAccessMode: DENY_ACCESS,
             grfInheritance: 0,
             Trustee: TRUSTEE_W {
-                pMultipleTrustee: std::ptr::null_mut(), MultipleTrusteeOperation: 0,
-                TrusteeForm: TRUSTEE_IS_SID, TrusteeType: TRUSTEE_IS_UNKNOWN,
+                pMultipleTrustee: std::ptr::null_mut(),
+                MultipleTrusteeOperation: 0,
+                TrusteeForm: TRUSTEE_IS_SID,
+                TrusteeType: TRUSTEE_IS_UNKNOWN,
                 ptstrName: owner_rights.as_ptr().cast(),
             },
         };
         let mut protected = std::ptr::null_mut();
-        let code = SetEntriesInAclW(/*ccountofexplicitentries*/ 1, &entry, current, &mut protected);
+        let code = SetEntriesInAclW(
+            /*ccountofexplicitentries*/ 1,
+            &entry,
+            current,
+            &mut protected,
+        );
         let code = if code == ERROR_SUCCESS {
-            SetSecurityInfo(restore.file.as_raw_handle() as HANDLE, SE_FILE_OBJECT, DACL_SECURITY_INFORMATION,
-                std::ptr::null_mut(), std::ptr::null_mut(), protected, std::ptr::null_mut())
-        } else { code };
-        if !protected.is_null() { LocalFree(protected as HLOCAL); }
+            SetSecurityInfo(
+                restore.file.as_raw_handle() as HANDLE,
+                SE_FILE_OBJECT,
+                DACL_SECURITY_INFORMATION,
+                std::ptr::null_mut(),
+                std::ptr::null_mut(),
+                protected,
+                std::ptr::null_mut(),
+            )
+        } else {
+            code
+        };
+        if !protected.is_null() {
+            LocalFree(protected as HLOCAL);
+        }
         LocalFree(current_descriptor as HLOCAL);
         acl_api_result(&path, "seed owner WRITE_DAC denial", code)?;
     }
@@ -373,7 +441,8 @@ fn existing_native_deny_does_not_require_write_dac() -> Result<()> {
     // is closed before the host-control assertion fails.
     let write_denied = unsafe {
         let raw = windows_sys::Win32::Storage::FileSystem::ReOpenFile(
-            query.as_raw_handle() as HANDLE, WRITE_DAC,
+            query.as_raw_handle() as HANDLE,
+            WRITE_DAC,
             FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE,
             FILE_FLAG_BACKUP_SEMANTICS,
         );
@@ -384,10 +453,17 @@ fn existing_native_deny_does_not_require_write_dac() -> Result<()> {
             None
         }
     };
-    assert_eq!(write_denied, Some(ERROR_ACCESS_DENIED as i32), "host control must really lack WRITE_DAC");
+    assert_eq!(
+        write_denied,
+        Some(ERROR_ACCESS_DENIED as i32),
+        "host control must really lack WRITE_DAC"
+    );
     let before = native_dacl_bytes(&path)?;
     let noops = unsafe {
-        (add_deny_write_ace(&path, sid.as_ptr())?, add_deny_read_ace(&path, sid.as_ptr())?)
+        (
+            add_deny_write_ace(&path, sid.as_ptr())?,
+            add_deny_read_ace(&path, sid.as_ptr())?,
+        )
     };
     assert_eq!(noops, (false, false));
     assert_eq!(native_dacl_bytes(&path)?, before);

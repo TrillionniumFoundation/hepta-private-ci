@@ -464,19 +464,41 @@ fn workspace_capability_delete_routes_require_the_capability_in_all_four_cells()
     let host = DeleteMatrix::new(&fixture.path().join("host"))?;
     let restricted = DeleteMatrix::new(&fixture.path().join("restricted"))?;
     host.assert_same_acls(&restricted);
-    let host_errors: Vec<_> = host.paths().map(|(file, directory)| {
-        [std::fs::remove_file(file), std::fs::remove_dir(directory)]
-            .map(|result| result.err().map(|error| (error.kind(), error.raw_os_error())))
-    }).collect();
+    let host_errors: Vec<_> = host
+        .paths()
+        .map(|(file, directory)| {
+            [std::fs::remove_file(file), std::fs::remove_dir(directory)].map(|result| {
+                result
+                    .err()
+                    .map(|error| (error.kind(), error.raw_os_error()))
+            })
+        })
+        .collect();
     let host_outcomes = host.finish("ordinary-host")?;
     eprintln!("delete_matrix host_native_errors={host_errors:?}");
-    assert_eq!(host_errors, vec![
-        [Some((std::io::ErrorKind::PermissionDenied, Some(5))); 2],
-        [None; 2], [None; 2], [None; 2],
-    ]);
-    assert_eq!(host_outcomes, [DeleteRoute::Neither, DeleteRoute::TargetOnly, DeleteRoute::ParentOnly, DeleteRoute::Both]
-        .map(|route| DeleteOutcome { route, file_deleted: route != DeleteRoute::Neither,
-            directory_deleted: route != DeleteRoute::Neither }));
+    assert_eq!(
+        host_errors,
+        vec![
+            [Some((std::io::ErrorKind::PermissionDenied, Some(5))); 2],
+            [None; 2],
+            [None; 2],
+            [None; 2],
+        ]
+    );
+    assert_eq!(
+        host_outcomes,
+        [
+            DeleteRoute::Neither,
+            DeleteRoute::TargetOnly,
+            DeleteRoute::ParentOnly,
+            DeleteRoute::Both
+        ]
+        .map(|route| DeleteOutcome {
+            route,
+            file_deleted: route != DeleteRoute::Neither,
+            directory_deleted: route != DeleteRoute::Neither
+        })
+    );
 
     let base = OwnedToken(unsafe { get_current_token_for_restriction()? });
     let capability = LocalSid::from_string("S-1-5-21-101-202-303-404")?;
@@ -488,15 +510,26 @@ fn workspace_capability_delete_routes_require_the_capability_in_all_four_cells()
     std::fs::create_dir(allowed.join("directory"))?;
     // This is the unchanged product constructor and flags, not a diagnostic token variant.
     let token = OwnedToken(unsafe {
-        create_workspace_write_token_with_caps_from(base.0, &[capability.as_ptr(), second_capability.as_ptr()])?
+        create_workspace_write_token_with_caps_from(
+            base.0,
+            &[capability.as_ptr(), second_capability.as_ptr()],
+        )?
     });
     let mut logon = unsafe { get_logon_sid_bytes(base.0)? };
     let mut everyone = unsafe { world_sid()? };
-    let membership: Vec<_> = [capability.as_ptr(), second_capability.as_ptr(),
-        logon.as_mut_ptr().cast(), everyone.as_mut_ptr().cast()].into_iter()
-        .map(|sid| unsafe { token_has_restricting_sid(token.0, sid) }).collect::<Result<_>>()?;
+    let membership: Vec<_> = [
+        capability.as_ptr(),
+        second_capability.as_ptr(),
+        logon.as_mut_ptr().cast(),
+        everyone.as_mut_ptr().cast(),
+    ]
+    .into_iter()
+    .map(|sid| unsafe { token_has_restricting_sid(token.0, sid) })
+    .collect::<Result<_>>()?;
     assert_eq!(membership, [true, true, false, false]);
-    eprintln!("delete_matrix restricting_membership=[cap_a,cap_b,logon,everyone] values={membership:?}");
+    eprintln!(
+        "delete_matrix restricting_membership=[cap_a,cap_b,logon,everyone] values={membership:?}"
+    );
     let mut reads = Vec::new();
     let mut errors = Vec::new();
     {
@@ -505,18 +538,48 @@ fn workspace_capability_delete_routes_require_the_capability_in_all_four_cells()
         std::fs::remove_dir(allowed.join("directory"))?;
         for (file, directory) in restricted.paths() {
             reads.push(std::fs::read_to_string(file)?);
-            errors.push([std::fs::remove_file(file), std::fs::remove_dir(directory)]
-                .map(|result| result.err().map(|error| (error.kind(), error.raw_os_error()))));
+            errors.push(
+                [std::fs::remove_file(file), std::fs::remove_dir(directory)].map(|result| {
+                    result
+                        .err()
+                        .map(|error| (error.kind(), error.raw_os_error()))
+                }),
+            );
         }
     }
     // All four observations are taken before asserting, after RevertToSelf.
     eprintln!("delete_matrix restricted_native_errors={errors:?}");
     let outcomes = restricted.finish("after-revert")?;
     assert_eq!(reads, vec!["matrix-original"; 4]);
-    assert_eq!(std::fs::symlink_metadata(allowed.join("file")).unwrap_err().kind(), std::io::ErrorKind::NotFound);
-    assert_eq!(std::fs::symlink_metadata(allowed.join("directory")).unwrap_err().kind(), std::io::ErrorKind::NotFound);
-    assert_eq!(errors, vec![[Some((std::io::ErrorKind::PermissionDenied, Some(5))); 2]; 4]);
-    assert_eq!(outcomes, [DeleteRoute::Neither, DeleteRoute::TargetOnly, DeleteRoute::ParentOnly, DeleteRoute::Both]
-        .map(|route| DeleteOutcome { route, file_deleted: false, directory_deleted: false }));
+    assert_eq!(
+        std::fs::symlink_metadata(allowed.join("file"))
+            .unwrap_err()
+            .kind(),
+        std::io::ErrorKind::NotFound
+    );
+    assert_eq!(
+        std::fs::symlink_metadata(allowed.join("directory"))
+            .unwrap_err()
+            .kind(),
+        std::io::ErrorKind::NotFound
+    );
+    assert_eq!(
+        errors,
+        vec![[Some((std::io::ErrorKind::PermissionDenied, Some(5))); 2]; 4]
+    );
+    assert_eq!(
+        outcomes,
+        [
+            DeleteRoute::Neither,
+            DeleteRoute::TargetOnly,
+            DeleteRoute::ParentOnly,
+            DeleteRoute::Both
+        ]
+        .map(|route| DeleteOutcome {
+            route,
+            file_deleted: false,
+            directory_deleted: false
+        })
+    );
     Ok(())
 }

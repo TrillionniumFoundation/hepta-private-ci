@@ -7,8 +7,14 @@ fn matrix_script(matrix: &DeleteMatrix) -> (String, HashMap<String, String>) {
     let mut script = "@echo off\r\n".to_owned();
     let mut env = HashMap::new();
     for (index, (file, directory)) in matrix.paths().enumerate() {
-        env.insert(format!("MATRIX_FILE_{index}"), file.to_string_lossy().into_owned());
-        env.insert(format!("MATRIX_DIR_{index}"), directory.to_string_lossy().into_owned());
+        env.insert(
+            format!("MATRIX_FILE_{index}"),
+            file.to_string_lossy().into_owned(),
+        );
+        env.insert(
+            format!("MATRIX_DIR_{index}"),
+            directory.to_string_lossy().into_owned(),
+        );
         script.push_str(&format!("echo MATRIX_ATTEMPT_{index}\r\n"));
         script.push_str(&format!("del /f /q \"%MATRIX_FILE_{index}%\"\r\n"));
         script.push_str(&format!("echo FILE_RC_{index}=%ERRORLEVEL%\r\n"));

@@ -27,7 +27,13 @@ impl ParentLiveness {
         }
         // SAFETY: duplicate our owned, unread file above the standard FDs.
         // Dropping file restores the originally closed standard descriptor.
-        let fd = unsafe { libc::fcntl(file.as_raw_fd(), libc::F_DUPFD_CLOEXEC, libc::STDERR_FILENO + 1) };
+        let fd = unsafe {
+            libc::fcntl(
+                file.as_raw_fd(),
+                libc::F_DUPFD_CLOEXEC,
+                libc::STDERR_FILENO + 1,
+            )
+        };
         if fd < 0 {
             return Err(io::Error::last_os_error());
         }
@@ -49,11 +55,28 @@ impl ParentLiveness {
     /// The device/inode check rejects descriptor reuse during launcher setup;
     /// it is not an authentication scheme for arbitrary caller-supplied FDs.
     pub(crate) fn from_inherited(argument: &str) -> io::Result<Self> {
-        let invalid = || io::Error::new(io::ErrorKind::InvalidInput, "invalid parent liveness descriptor");
+        let invalid = || {
+            io::Error::new(
+                io::ErrorKind::InvalidInput,
+                "invalid parent liveness descriptor",
+            )
+        };
         let mut fields = argument.split(':');
-        let fd: RawFd = fields.next().ok_or_else(invalid)?.parse().map_err(|_| invalid())?;
-        let device: u64 = fields.next().ok_or_else(invalid)?.parse().map_err(|_| invalid())?;
-        let inode: u64 = fields.next().ok_or_else(invalid)?.parse().map_err(|_| invalid())?;
+        let fd: RawFd = fields
+            .next()
+            .ok_or_else(invalid)?
+            .parse()
+            .map_err(|_| invalid())?;
+        let device: u64 = fields
+            .next()
+            .ok_or_else(invalid)?
+            .parse()
+            .map_err(|_| invalid())?;
+        let inode: u64 = fields
+            .next()
+            .ok_or_else(invalid)?
+            .parse()
+            .map_err(|_| invalid())?;
         if fields.next().is_some() || fd <= libc::STDERR_FILENO {
             return Err(invalid());
         }
@@ -72,7 +95,10 @@ impl ParentLiveness {
         }
         let metadata = file.metadata()?;
         if (metadata.dev(), metadata.ino()) != (device, inode) {
-            return Err(io::Error::new(io::ErrorKind::InvalidData, "parent liveness descriptor identity changed"));
+            return Err(io::Error::new(
+                io::ErrorKind::InvalidData,
+                "parent liveness descriptor identity changed",
+            ));
         }
         let mut filesystem = MaybeUninit::<libc::statfs>::uninit();
         // SAFETY: fd is valid, and fstatfs initializes the output on success.
@@ -97,7 +123,10 @@ impl ParentLiveness {
             || status_flags & (libc::O_PATH | libc::O_ACCMODE) != libc::O_RDONLY
             || position != 0
         {
-            return Err(io::Error::new(io::ErrorKind::InvalidInput, "parent liveness descriptor must be an unread read-only procfs file"));
+            return Err(io::Error::new(
+                io::ErrorKind::InvalidInput,
+                "parent liveness descriptor must be an unread read-only procfs file",
+            ));
         }
         Ok(Self(file))
     }
@@ -109,40 +138,68 @@ impl ParentLiveness {
     pub(crate) fn arm_and_check(mut self) -> io::Result<()> {
         // SAFETY: PR_SET_PDEATHSIG takes a signal number, no pointer arguments.
         if unsafe {
-            libc::prctl(libc::PR_SET_PDEATHSIG, libc::SIGKILL as libc::c_ulong,
-                0 as libc::c_ulong, 0 as libc::c_ulong, 0 as libc::c_ulong)
-        } < 0 {
+            libc::prctl(
+                libc::PR_SET_PDEATHSIG,
+                libc::SIGKILL as libc::c_ulong,
+                0 as libc::c_ulong,
+                0 as libc::c_ulong,
+                0 as libc::c_ulong,
+            )
+        } < 0
+        {
             return Err(io::Error::last_os_error());
         }
         let mut record = Vec::new();
-        (&mut self.0).take(MAX_STAT_BYTES + 1).read_to_end(&mut record)?;
-        let malformed = || io::Error::new(io::ErrorKind::InvalidData, "malformed original parent proc stat");
+        (&mut self.0)
+            .take(MAX_STAT_BYTES + 1)
+            .read_to_end(&mut record)?;
+        let malformed = || {
+            io::Error::new(
+                io::ErrorKind::InvalidData,
+                "malformed original parent proc stat",
+            )
+        };
         if record.is_empty() || record.len() as u64 > MAX_STAT_BYTES {
             return Err(malformed());
         }
         // comm can contain spaces, parentheses and non-UTF8 bytes. The final
         // ')' precedes the fixed numeric fields, so never split comm on spaces.
-        let closing = record.iter().rposition(|byte| *byte == b')').ok_or_else(malformed)?;
-        let opening = record.iter().position(|byte| *byte == b'(').ok_or_else(malformed)?;
+        let closing = record
+            .iter()
+            .rposition(|byte| *byte == b')')
+            .ok_or_else(malformed)?;
+        let opening = record
+            .iter()
+            .position(|byte| *byte == b'(')
+            .ok_or_else(malformed)?;
         if opening >= closing {
             return Err(malformed());
         }
-        let pid = std::str::from_utf8(&record[..opening]).map_err(|_| malformed())?
-            .trim().parse::<u64>().map_err(|_| malformed())?;
+        let pid = std::str::from_utf8(&record[..opening])
+            .map_err(|_| malformed())?
+            .trim()
+            .parse::<u64>()
+            .map_err(|_| malformed())?;
         if pid == 0 || record.get(closing + 1) != Some(&b' ') {
             return Err(malformed());
         }
-        let mut fields = record[closing + 1..].split(u8::is_ascii_whitespace)
+        let mut fields = record[closing + 1..]
+            .split(u8::is_ascii_whitespace)
             .filter(|field| !field.is_empty());
         let state = fields.next().ok_or_else(malformed)?;
         let flags = std::str::from_utf8(fields.nth(5).ok_or_else(malformed)?)
-            .map_err(|_| malformed())?.parse::<u64>().map_err(|_| malformed())?;
+            .map_err(|_| malformed())?
+            .parse::<u64>()
+            .map_err(|_| malformed())?;
         match state {
             b"R" | b"S" | b"D" | b"T" | b"t" | b"W" | b"K" | b"P" | b"I" | b"Z" | b"X" | b"x" => {}
             _ => return Err(malformed()),
         }
         if flags & PF_EXITING != 0 || matches!(state, b"Z" | b"X" | b"x") {
-            return Err(io::Error::new(io::ErrorKind::BrokenPipe, "original sandbox launcher is exiting or exited"));
+            return Err(io::Error::new(
+                io::ErrorKind::BrokenPipe,
+                "original sandbox launcher is exiting or exited",
+            ));
         }
         Ok(())
     }

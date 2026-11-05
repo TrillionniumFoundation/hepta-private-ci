@@ -230,7 +230,8 @@ pub fn run_main() -> ! {
             panic!("Linux sandbox retained effective or permitted capabilities");
         }
 
-        let parent_liveness = parent_liveness.as_deref()
+        let parent_liveness = parent_liveness
+            .as_deref()
             .unwrap_or_else(|| panic!("inner sandbox stage requires original-parent custody"));
         let original_parent = ParentLiveness::from_inherited(parent_liveness)
             .unwrap_or_else(|error| panic!("invalid original sandbox parent custody: {error}"));
@@ -257,7 +258,8 @@ pub fn run_main() -> ! {
         // Re-arm after exec and all restrictions. The original proc inode
         // also detects exit-in-progress before reparenting/zombie publication.
         // Consuming the guard closes its FD before any user-command fork.
-        original_parent.arm_and_check()
+        original_parent
+            .arm_and_check()
             .unwrap_or_else(|error| panic!("failed to bind original sandbox parent: {error}"));
         let signal_mask = ForwardedSignalMask::block();
         let command_pid = unsafe { libc::fork() };
@@ -580,7 +582,11 @@ fn run_or_exec_bwrap(bwrap_args: crate::bwrap::BwrapArgs) -> ! {
     if bwrap_args.synthetic_mount_targets.is_empty()
         && bwrap_args.protected_create_targets.is_empty()
     {
-        exec_bwrap(bwrap_args.args, bwrap_args.preserved_files, BwrapCommandRole::SandboxReaper);
+        exec_bwrap(
+            bwrap_args.args,
+            bwrap_args.preserved_files,
+            BwrapCommandRole::SandboxReaper,
+        );
     }
     run_bwrap_in_child_with_synthetic_mount_cleanup(bwrap_args);
 }

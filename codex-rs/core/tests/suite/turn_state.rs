@@ -156,7 +156,9 @@ fn assert_tool_stdout(body: &Value, call_id: &str, expected: &str) {
     let output = item["output"].as_str().expect("text tool output");
     let (status, stdout) = output.split_once("Output:\n").expect("unified exec output");
     assert!(
-        status.lines().any(|line| line == "Process exited with code 0"),
+        status
+            .lines()
+            .any(|line| line == "Process exited with code 0"),
         "{call_id} did not exit successfully: {output}"
     );
     assert_eq!(stdout.trim(), expected);
@@ -312,7 +314,12 @@ async fn websocket_turn_state_is_stable_within_turn() -> Result<()> {
             .iter()
             .map(|metadata| metadata["request_kind"].clone())
             .collect::<Vec<_>>(),
-        vec![json!("prewarm"), json!("turn"), json!("turn"), json!("turn")]
+        vec![
+            json!("prewarm"),
+            json!("turn"),
+            json!("turn"),
+            json!("turn")
+        ]
     );
     assert!(
         turn_metadata
@@ -400,7 +407,12 @@ async fn websocket_turn_state_survives_permission_change_by_reconnecting() -> Re
             .iter()
             .map(|metadata| metadata["request_kind"].clone())
             .collect::<Vec<_>>(),
-        vec![json!("prewarm"), json!("turn"), json!("turn"), json!("turn")]
+        vec![
+            json!("prewarm"),
+            json!("turn"),
+            json!("turn"),
+            json!("turn")
+        ]
     );
     assert_eq!(bodies[0]["generate"], json!(false));
     assert!(bodies[1..].iter().all(|body| body["generate"].is_null()));

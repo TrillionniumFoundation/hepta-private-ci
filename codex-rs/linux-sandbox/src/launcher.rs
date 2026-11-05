@@ -54,15 +54,20 @@ pub(crate) fn exec_bwrap(
         // optional cleanup fork; never accept a caller-selected parent FD.
         let parent = ParentLiveness::capture_current_process()
             .unwrap_or_else(|error| panic!("failed to capture original sandbox parent: {error}"));
-        let argument = parent.inheritance_argument()
+        let argument = parent
+            .inheritance_argument()
             .unwrap_or_else(|error| panic!("failed to identify original sandbox parent: {error}"));
-        let separator = argv.iter().position(|arg| arg == "--")
+        let separator = argv
+            .iter()
+            .position(|arg| arg == "--")
             .unwrap_or_else(|| panic!("bubblewrap argv is missing command separator '--'"));
         if argv.get(separator + 1).is_none() {
             panic!("bubblewrap argv is missing the inner reaper");
         }
-        argv.splice(separator + 2..separator + 2,
-            ["--parent-liveness".to_string(), argument]);
+        argv.splice(
+            separator + 2..separator + 2,
+            ["--parent-liveness".to_string(), argument],
+        );
         preserved_files.push(parent.into_file());
     }
 
