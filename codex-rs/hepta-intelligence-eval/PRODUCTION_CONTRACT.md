@@ -10,7 +10,12 @@ An evaluation can establish eligibility for a later independent selector. It
 never selects, activates, promotes or releases a candidate. Every evaluation
 decision remains `AuthorityPosture::DENY_ALL`.
 
-External or production callers enter through `ProductEvaluationRunnerV1`; the runner invokes signature-verified V2/V3 admission internally. Asserted `AuthenticatedPrincipalV1` values are not external authentication, and direct signed-decision functions are intentionally not part of the default cross-crate surface.
+All external or product qualification must converge on `ProductEvaluationRunnerV1`
+and its sealed `ProductQualificationReceiptV1`. The runner invokes
+signature-verified V2/V3 admission internally. This is the required production
+boundary; the current caller gaps below remain implementation debt and prevent
+a claim of sole sealed ingress. Asserted `AuthenticatedPrincipalV1` values are
+not external authentication.
 
 ## API status
 
@@ -18,7 +23,8 @@ External or production callers enter through `ProductEvaluationRunnerV1`; the ru
 |---|---|---|
 | `ProductEvaluationRunnerV1::qualify_and_persist` | **Production ingress** | Builds the exact bound bundle internally, runs signed V2/V3 verification and requires durable evidence publication |
 | `evaluation_signing_payload_v2` / `longitudinal_evaluation_signing_payload_v3` | **Public signer contracts** | External signers attest exactly the runner-derived bundle/timing bytes |
-| `decide_with_signed_evidence_v2` / `decide_with_signed_longitudinal_evidence_v3` | **Crate-internal verification primitives** | Not default cross-crate APIs; only the product runner may turn them into product qualification |
+| `decide_with_signed_evidence_v2` | **Currently public; caller migration outstanding** | Used directly by Agentd evaluation consumption and parameter plasticity proposal admission; these callers do not yet require the sealed product receipt |
+| `decide_with_signed_longitudinal_evidence_v3` | **Crate-internal verification primitive** | Used by the product runner and the public self-evolution preparation path; the latter does not yet require the sealed product receipt |
 | `freeze_product_evaluation_plan_v1` | **Production plan freeze** | Freezes V2 metric roles, metric-to-estimator mapping and candidate/baseline temporal plan identities before holdout release |
 | `FencedFinalHoldoutOwnerV1` + `FinalHoldoutCasStoreV1` | **Production-required when multiple writers/hosts can contend** | Linearizable CAS, monotonic writer fencing and accepted-or-unknown reconciliation |
 | `DurableFinalHoldoutJournalV1` | Single-host/cooperative-owner only | Local file durability when the host can guarantee exclusive namespace ownership |
@@ -98,8 +104,28 @@ and `ClusterOpeEstimate` receipts; a caller cannot submit replacement
 
 ## Canonical product consumer
 
-The repository's current signed consumer is
-`codex-rs/hepta-intelligence/src/evaluated_shadow.rs::run_evaluated_shadow_v1`. It now accepts only a sealed `ProductQualificationReceiptV1`, checks its trust digest against the current host verifier, binds its dataset/objective/snapshot set and requires the same evaluator to sign the candidate bytes against that terminal receipt. It no longer re-runs low-level V2 admission. This closes the repository-controlled product qualification spine without claiming runtime activation, target-host qualification or production longitudinal efficacy.
+The sealed product consumer is
+`codex-rs/hepta-intelligence/src/evaluated_shadow.rs::run_evaluated_shadow_v1`.
+It accepts only a sealed `ProductQualificationReceiptV1`, checks its trust digest
+against the current host verifier, binds its dataset/objective/snapshot set and
+requires the same evaluator to sign the candidate bytes against that terminal
+receipt. It does not re-run low-level V2 admission. It invokes the shadow ports
+and owns the durable shadow `Decision` append; it does not execute dispatch or
+activate an artifact. This establishes that consumer's receipt boundary, while
+the following source paths still accept generic signed bundles:
+
+| Current caller | Admission and result | Remaining sealed-receipt gap |
+|---|---|---|
+| [`AgentdEvaluationSessionV1::evaluate`](../hepta-agentd/src/intelligence_evaluation.rs) | Direct V2 plus a current-owner, request-bound evaluator attestation; returns an evaluation-consumption digest to canonical preparation | `AgentdSignedEvaluationV1` carries a bundle, roles and signatures, without a `ProductQualificationReceiptV1` |
+| [`propose_authenticated_parameter_plasticity_v1`](../hepta-intelligence/src/plasticity_product.rs) | Direct V2 for every update candidate, with independent generator/evaluator/observer checks; writes a governed proposal only | `CandidateEvaluationAdmissionV1` carries a bundle, roles and signatures, without a `ProductQualificationReceiptV1`; the separate signed `NoAdmissibleUpdate` path must remain intact |
+| [`prepare_self_evolution_selection_v1`](src/self_evolution_selection.rs) | Public preparation API invokes internal V3 with longitudinal time evidence and ledger-bound dataset checks; later selector admission is separate | Accepts an `IndependentEvaluationBundleV1`, without a `ProductQualificationReceiptV1` |
+
+These source paths are not gated by `trusted-inprocess-eval`. Their presence is
+not evidence of deployed activation or target-host qualification. The remaining
+gap is proof that each consumed product qualification came through bound
+estimators, authoritative holdout consumption and durable evidence publication.
+Existing independent signatures, current trust, no-update behavior and later
+authorization for physical effects by their current owners remain required.
 
 ## CI closure evidence
 
@@ -129,3 +155,8 @@ promotion or release evidence.
 head and ordered-parent synthetic merge pass the Lane E workflow including the
 mandatory learning-eval qualification artifact. External evidence gates remain
 open independently and must not be collapsed into source qualification.
+
+A claim of sole sealed product-qualification ingress additionally requires every
+candidate-qualification path above to consume and validate the canonical product receipt, with tests
+that reject missing or mismatched receipts before candidate use or downstream
+writes. The current caller gaps do not satisfy that acceptance condition.

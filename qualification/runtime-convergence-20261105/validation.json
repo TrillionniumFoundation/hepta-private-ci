@@ -1,0 +1,65 @@
+{
+  "schema": "hepta.runtime-convergence-evidence.v1",
+  "implementation_commit": "1d87082c0d5afd2b474a2c453ea98005fd540dea",
+  "implementation_tree": "f6e6406653d45c8d6b19f2271183c42300f6d051",
+  "lifecycle_merge_commit": "12f793efff9d701b4ea781e5990ac434067e20ff",
+  "lifecycle_merge_parents": [
+    "4e31abc907f09740d402d1ddef7a1d2fe0a366a6",
+    "3247636513f4cddaede6e9b45110925e9065d507"
+  ],
+  "rust_toolchain_required": "1.96.0",
+  "review_scope": "Independent source reviews of Agentd arithmetic ordering, complete qualification decision binding, public lifecycle refusal and current caller documentation.",
+  "checks": {
+    "source_blob_tree_parent_readback": "PASS",
+    "patch_applicability": "PASS",
+    "patch_whitespace": "PASS",
+    "native_format": "NOT_RUN",
+    "native_negative_controls": "NOT_RUN",
+    "native_changed_package_tests": "NOT_RUN",
+    "scoped_clippy": "NOT_RUN",
+    "original_platform_ci": "QUEUED",
+    "real_product_acceptance": "NOT_ESTABLISHED"
+  },
+  "source_readback": {
+    "changed_paths_vs_r3": 12,
+    "all_expected_blobs_match": true,
+    "merge_has_both_expected_ordered_parents": true
+  },
+  "required_packages": [
+    "codex-hepta-agentd",
+    "codex-hepta-runtime",
+    "codex-hepta-intelligence-eval",
+    "codex-hepta-intelligence"
+  ],
+  "original_blocking_ci_run": 41981375133,
+  "preparation": {
+    "host": "mac",
+    "source_partial_fetch_job": "1a1aa6f6bb1-fc05-430f",
+    "source_partial_fetch_exit_code": 0,
+    "source_checkout": "RUNNING_AT_LAST_OBSERVATION",
+    "original_unfiltered_fetch_job": "1a1aa6408cc-fc05-4249",
+    "original_unfiltered_fetch_state": "CANCELLED",
+    "rust_install_job": "1a1aa663584-fc05-4275",
+    "rust_install": "RUNNING_AT_LAST_OBSERVATION"
+  },
+  "negative_controls": {
+    "A": "Restore only lane_b_runtime.rs from R3 and retain the new tests.",
+    "B1": "Remove only the two canonical plan checks; retain the complete decision seal.",
+    "B2": "Restore only the old decision digest/seal encoding; retain the canonical plan checks and real consumer test.",
+    "C": "Remove only the two public admission calls; retain typed error and refusal tests."
+  },
+  "interpretation": "Source checks and fixture definitions do not establish Rust execution, model benefit, production activation or full candidate qualification. This initial evidence record must be superseded by actual execution receipts before any such claim.",
+  "product_release": "HOLD",
+  "adaptive_promotion": "NO_NEW_EFFICACY_ADMISSION",
+  "public_topology_execution": "DENY_ALL",
+  "known_unclosed": [
+    "real provider goal-to-effect-to-terminal-to-restart task chain",
+    "durable Intelligence pending Decision/Outcome append recovery",
+    "all signed evaluation and self-evolution callers require sealed receipt",
+    "same-information complete-cost independent efficacy qualification",
+    "single durable Control lifecycle owner and physical recovery",
+    "original Windows isolation and remaining original platform failures",
+    "independent acceptance and release"
+  ],
+  "recorded_at_utc": "2026-11-05T06:44:20Z"
+}
