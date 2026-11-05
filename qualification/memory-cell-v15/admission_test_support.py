@@ -1,7 +1,30 @@
 """Artificial registration for protocol fixtures only; no measured future cohort."""
 
-from admission import digest
+from dataclasses import replace
+
+from admission import COSTS, digest
 from cohort import INFORMATION
+
+
+def fixture_cost_protocol(protocol):
+    """Explicit artificial prices/caps for controls, never a device cost model."""
+    prices = protocol.prices or (("train_cpu_s", 1.0),)
+    positive = {name for name, value in prices if value > 0}
+    return replace(protocol, prices=prices,
+                   limits=(("serve_cpu_s", 32.0), ("peak_rss_bytes", 256 * 1024 * 1024)),
+                   zero_cost_reasons=tuple((name, "Synthetic control: resource recorded without economic weight")
+                                           for name in COSTS if name not in positive),
+                   workload_digest=digest({"fixture": protocol.identity,
+                                           "uniform_source_clusters": True,
+                                           "horizon_reads": protocol.expected_reads}))
+
+
+def fixture_ledger(evaluator, model):
+    """Conservative synthetic worker allowance, not a measured production bill."""
+    resources = dict.fromkeys(COSTS, 0.0)
+    resources.update(serve_cpu_s=10.0, peak_rss_bytes=128 * 1024 * 1024)
+    return dict(evaluator.cost_binding(model), all_searches_and_failures_included=True,
+                synthetic_control_costs=True, resources=resources)
 
 
 def fixture_registration(cases, protocol, candidate, incumbent):

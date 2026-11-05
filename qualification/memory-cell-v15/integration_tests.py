@@ -11,8 +11,8 @@ import unittest
 
 from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
 
-from admission import COSTS, Case, MatchedEvaluator, Protocol, Run, digest as evidence_digest
-from admission_test_support import fixture_registration
+from admission import Case, MatchedEvaluator, Protocol, Run, budget_digest
+from admission_test_support import fixture_cost_protocol, fixture_ledger, fixture_registration
 from authority import COMPONENTS, Authority, GateDecision, Rejected, bundle, canonical, digest, public, sign
 
 
@@ -20,8 +20,8 @@ class IntegratedAdmissionTests(unittest.TestCase):
     def test_verified_parameter_bytes_control_activation(self):
         keys = [Ed25519PrivateKey.generate() for _ in range(3)]
         service_key, admin, owner = keys
-        protocol = Protocol("serialized-fixture-v1", True, 1000, .05, 1, .1, 30, 1.,
-                            ("old", "new"), (("train_cpu_s", 1.),), ())
+        protocol = fixture_cost_protocol(Protocol("serialized-fixture-v1", True, 1000, .05, 1, .1, 30, 1.,
+                            ("old", "new"), (("train_cpu_s", 1.),), ()))
         cases = [Case(str(i), str(i), "old" if i < 2000 else "new",
                       "old" if i < 2000 else "new", i, i) for i in range(4000)]
         known = {}
@@ -37,16 +37,14 @@ class IntegratedAdmissionTests(unittest.TestCase):
             parameters = json.loads(verified["model"])
             return Run(identifier, manifest["components"]["memory"],
                        manifest["components"]["memory"], "copy-executor-v1",
-                       evidence_digest(vars(protocol)), lambda query: parameters.get(query),
+                       budget_digest(protocol), lambda query: parameters.get(query),
                        "fixture-encoder", "fixture-decoder", "fixture-tools")
 
-        def costs(identifier, verified):
-            resources = dict.fromkeys(COSTS, 0.)
+        def costs(evaluator, model, verified):
+            ledger = fixture_ledger(evaluator, model)
             if json.loads(verified["model"]).get("unmeasured_energy"):
-                resources["energy_joules"] = None
-            return {"bundle": identifier, "protocol": protocol.identity,
-                    "protocol_settings": evidence_digest(vars(protocol)), "horizon_reads": 1000,
-                    "all_searches_and_failures_included": True, "resources": resources}
+                ledger["resources"]["energy_joules"] = None
+            return ledger
 
         def gate(identifier, parents, manifest, verified):
             if not parents:
@@ -61,7 +59,7 @@ class IntegratedAdmissionTests(unittest.TestCase):
                         lambda: (lambda choice, payload: payload if choice == "copy" else None),
                         protocol, registration=fixture_registration(cases, protocol, candidate, incumbent))
             report = evaluator.evaluate(candidate, incumbent,
-                     costs(identifier, verified), costs(parents[0], prior_bytes),
+                     costs(evaluator, candidate, verified), costs(evaluator, incumbent, prior_bytes),
                      manifest=dict(manifest, bundle=identifier, memory=manifest["components"]["memory"]))
             reports.append(report)
             return GateDecision(identifier, parents, report["approved"], report["evidence"])

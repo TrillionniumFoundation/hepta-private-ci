@@ -4,16 +4,16 @@ from copy import deepcopy
 from dataclasses import replace
 import unittest
 
-from admission import COSTS, Case, MatchedEvaluator, Protocol, Run, digest
-from admission_test_support import fixture_registration
+from admission import Case, MatchedEvaluator, Protocol, Run, budget_digest, digest
+from admission_test_support import fixture_cost_protocol, fixture_ledger, fixture_registration
 
 
 class CohortTests(unittest.TestCase):
     def setUp(self):
         self.cases = [Case(str(i), str(i), "retained", "query", i, i) for i in range(256)]
-        self.protocol = Protocol("cohort-fixture", True, 256, .05, 1, .25, 16, 1.,
-                                 ("retained",), (), ())
-        self.candidate = Run("new", "memory", "history", "executor", "budget", lambda _: True,
+        self.protocol = fixture_cost_protocol(Protocol("cohort-fixture", True, 256, .05, 1, .25, 16, 1.,
+                                 ("retained",), (), ()))
+        self.candidate = Run("new", "memory", "history", "executor", budget_digest(self.protocol), lambda _: True,
                              "encoder", "decoder", "tools")
         self.incumbent = replace(self.candidate, bundle="old", predict=lambda _: False)
         self.registration = fixture_registration(self.cases, self.protocol,
@@ -25,12 +25,9 @@ class CohortTests(unittest.TestCase):
             registration=registration)
         if mutate is not None:
             mutate()
-        def ledger(bundle):
-            return {"bundle": bundle, "protocol": self.protocol.identity, "horizon_reads": 256,
-                    "protocol_settings": digest(vars(self.protocol)),
-                    "all_searches_and_failures_included": True, "resources": dict.fromkeys(COSTS, 0)}
         return evaluator.evaluate(candidate or self.candidate, self.incumbent,
-                                  ledger("new"), ledger("old"),
+                                  fixture_ledger(evaluator, candidate or self.candidate),
+                                  fixture_ledger(evaluator, self.incumbent),
                                   manifest={"bundle": "new", "memory": "memory"})
 
     def test_prospective_flag_alone_no_longer_authorizes_admission(self):
@@ -99,6 +96,29 @@ class CohortTests(unittest.TestCase):
         self.assertTrue(result["approved"], result["reasons"])
         self.assertAlmostEqual(result["per_bound_alpha"], initial["per_bound_alpha"] / 10)
         self.assertLess(result["paired_lower_bound"], initial["paired_lower_bound"])
+
+    def test_public_protocol_reassignment_cannot_shrink_registered_error_budget(self):
+        cases = [replace(case, query=str(i)) for i, case in enumerate(self.cases)]
+        protocol = replace(self.protocol, planned_looks=10000, retention_margin=.5)
+        candidate = self.candidate
+        incumbent = replace(self.incumbent, predict=lambda query: int(query) < 192)
+        registration = fixture_registration(cases, protocol, candidate, incumbent)
+        evaluator = MatchedEvaluator(cases, lambda: (lambda choice, payload: payload if choice else None),
+                                     protocol, registration=registration)
+        def assess():
+            return evaluator.evaluate(candidate, incumbent, fixture_ledger(evaluator, candidate),
+                                      fixture_ledger(evaluator, incumbent),
+                                      manifest={"bundle": candidate.bundle, "memory": candidate.memory})
+        original = assess()
+        evaluator.protocol = replace(evaluator.protocol, planned_looks=1)
+        changed = assess()
+        self.assertFalse(original["approved"])
+        self.assertFalse(changed["approved"])
+        self.assertIn("protocol_changed_after_freeze", changed["reasons"])
+        self.assertEqual(changed["per_bound_alpha"], original["per_bound_alpha"])
+        self.assertEqual(changed["paired_lower_bound"], original["paired_lower_bound"])
+        self.assertEqual(changed["protocol_settings"], registration["protocol_settings"])
+        self.assertNotEqual(changed["observed_protocol_settings"], changed["protocol_settings"])
 
     def test_ten_nodes_cannot_turn_one_source_task_into_ten_samples(self):
         registered = deepcopy(self.registration)
