@@ -1,0 +1,153 @@
+{
+  "schema": "ndu-guidance-secondary-coverage-v1",
+  "planned_at": "2026-10-21T13:54:26.700565+00:00",
+  "scope": "Post-primary descriptive supplement; not preregistered confirmatory efficacy",
+  "reason": "Guidance was in the frozen validation grid but absent from heldout core when direct decoding won selection for every seed. Fill method coverage without changing primary result.",
+  "original_primary_already_observed": true,
+  "heldout_guidance_accessed_before_this_plan": false,
+  "original_primary_summary_sha256": "b246fd4d3764eb60ff5c1b694b646e30a2b404915e11e795c3d7de46c755b005",
+  "selection_rule": "Within each trained-field variant choose lowest original validation CVaR90 under original1.10x NDU CPU budget; no new hyperparameters or training.",
+  "cost_limit": "Timings are measured after primary run on same runtime; original NDU cost is a reference, not a simultaneous new timing experiment.",
+  "per_seed": [
+    {
+      "seed": 101,
+      "validation_cpu_cap": 0.0015669123851563384,
+      "choices": [
+        {
+          "choice": {
+            "variant": "flow_trained",
+            "arm": "guidance",
+            "steps": 32,
+            "strength": 2.0,
+            "name": "flow_trained__guidance__n32__g2"
+          },
+          "validation_world_cvar90": 0.06559388926969124,
+          "validation_cpu_seconds_per_world": 0.00031584439843745926
+        },
+        {
+          "choice": {
+            "variant": "ndu_trained",
+            "arm": "guidance",
+            "steps": 32,
+            "strength": 8.0,
+            "name": "ndu_trained__guidance__n32__g8"
+          },
+          "validation_world_cvar90": 0.041000160245368115,
+          "validation_cpu_seconds_per_world": 0.00033240113281252093
+        }
+      ]
+    },
+    {
+      "seed": 211,
+      "validation_cpu_cap": 0.0015127900476560542,
+      "choices": [
+        {
+          "choice": {
+            "variant": "flow_trained",
+            "arm": "guidance",
+            "steps": 8,
+            "strength": 2.0,
+            "name": "flow_trained__guidance__n8__g2"
+          },
+          "validation_world_cvar90": 0.09270495718989807,
+          "validation_cpu_seconds_per_world": 0.00012169819531271386
+        },
+        {
+          "choice": {
+            "variant": "ndu_trained",
+            "arm": "guidance",
+            "steps": 32,
+            "strength": 8.0,
+            "name": "ndu_trained__guidance__n32__g8"
+          },
+          "validation_world_cvar90": 0.025981425450971492,
+          "validation_cpu_seconds_per_world": 0.0002335717187498254
+        }
+      ]
+    },
+    {
+      "seed": 307,
+      "validation_cpu_cap": 0.0014501824046876167,
+      "choices": [
+        {
+          "choice": {
+            "variant": "flow_trained",
+            "arm": "guidance",
+            "steps": 8,
+            "strength": 0.5,
+            "name": "flow_trained__guidance__n8__g0.5"
+          },
+          "validation_world_cvar90": 0.04164416935796348,
+          "validation_cpu_seconds_per_world": 0.00012342747656290953
+        },
+        {
+          "choice": {
+            "variant": "ndu_trained",
+            "arm": "guidance",
+            "steps": 16,
+            "strength": 8.0,
+            "name": "ndu_trained__guidance__n16__g8"
+          },
+          "validation_world_cvar90": 0.021265033525056563,
+          "validation_cpu_seconds_per_world": 0.00017041110937565662
+        }
+      ]
+    },
+    {
+      "seed": 401,
+      "validation_cpu_cap": 0.0021227039796874792,
+      "choices": [
+        {
+          "choice": {
+            "variant": "flow_trained",
+            "arm": "guidance",
+            "steps": 8,
+            "strength": 8.0,
+            "name": "flow_trained__guidance__n8__g8"
+          },
+          "validation_world_cvar90": 0.07471415524084407,
+          "validation_cpu_seconds_per_world": 0.00017277587499986424
+        },
+        {
+          "choice": {
+            "variant": "ndu_trained",
+            "arm": "guidance",
+            "steps": 16,
+            "strength": 8.0,
+            "name": "ndu_trained__guidance__n16__g8"
+          },
+          "validation_world_cvar90": 0.0410533758919113,
+          "validation_cpu_seconds_per_world": 0.00023850225781174572
+        }
+      ]
+    },
+    {
+      "seed": 503,
+      "validation_cpu_cap": 0.002114639355467496,
+      "choices": [
+        {
+          "choice": {
+            "variant": "flow_trained",
+            "arm": "guidance",
+            "steps": 8,
+            "strength": 2.0,
+            "name": "flow_trained__guidance__n8__g2"
+          },
+          "validation_world_cvar90": 0.050367285282565996,
+          "validation_cpu_seconds_per_world": 0.0001378871640618229
+        },
+        {
+          "choice": {
+            "variant": "ndu_trained",
+            "arm": "guidance",
+            "steps": 8,
+            "strength": 2.0,
+            "name": "ndu_trained__guidance__n8__g2"
+          },
+          "validation_world_cvar90": 0.02173159770273532,
+          "validation_cpu_seconds_per_world": 0.00017264502343827814
+        }
+      ]
+    }
+  ]
+}

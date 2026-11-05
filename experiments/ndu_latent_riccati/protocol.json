@@ -1,0 +1,121 @@
+{
+  "protocol_id": "ndu-continuous-latent-riccati-v2",
+  "status": "preregister-before-heldout",
+  "scope": "Synthetic continuous multimodal mechanism experiment; no foundation-model or native-Hepta qualification claim",
+  "seeds": [
+    101,
+    211,
+    307,
+    401,
+    503
+  ],
+  "development_seed": 919,
+  "train_worlds": 2048,
+  "validation_worlds": 128,
+  "heldout_worlds": {
+    "iid": 512,
+    "missing": 256,
+    "correlated_shift": 256
+  },
+  "split_seed_offsets": {
+    "train": 3000000,
+    "validation": 4000000,
+    "test": 5000000
+  },
+  "decoder_updates": 10000,
+  "foundation_updates": 500,
+  "continued_updates": 100,
+  "batch_size": 64,
+  "training_rollout_steps": 6,
+  "primary_steps": 8,
+  "secondary_steps": [
+    4,
+    16
+  ],
+  "baseline_candidate_steps": [
+    8,
+    16,
+    32
+  ],
+  "guidance_strengths": [
+    0.5,
+    2.0,
+    8.0
+  ],
+  "draws_per_world": 4,
+  "riccati_lookahead_steps": 4,
+  "learning_rate": 0.001,
+  "primary": {
+    "arm": "ndu_trained__ndu",
+    "scenario": "iid",
+    "metric": "world_mean_raw_factual_loss_CVaR90",
+    "comparator": "Validation-selected direct supervised decoder, ordinary guidance, or trained free joint controller within1.10 times NDU measured CPU inference budget; at least one same-actuator free controller must be eligible",
+    "selection": "minimum validation CVaR90 among cost-eligible candidates; same data, codec, initial foundation, context and public target predictor",
+    "relative_improvement_required": 0.05,
+    "paired_hierarchical_bootstrap_replicates": 2000,
+    "confidence": 0.95,
+    "require_CI_upper_below_zero": true,
+    "max_resolved_correctness_drop": 0.02,
+    "min_style_entropy_ratio": 0.9,
+    "diversity_definition": "Mean per-condition entropy in bits of four lawful-and-crossmodally-consistent generated styles; invalid styles contribute zero mass. Ratio to selected baseline, with both near-zero scored as failure.",
+    "require_resolved_lower_CI_above_negative_margin": true,
+    "max_lawful_consistent_rate_drop": 0.02,
+    "require_nonzero_conditional_entropy": true,
+    "require_free_training_time_match": true,
+    "entropy_zero_epsilon": 1e-08,
+    "lawful_rate_gate_is_point_estimate": true
+  },
+  "training_variants": [
+    "continued_flow_matching",
+    "joint_ndu_through_riccati",
+    "joint_free_controller",
+    "joint_free_controller_equal_updates"
+  ],
+  "inference_arms": [
+    "flow",
+    "guidance",
+    "free_joint",
+    "fixed_valuation_mpc",
+    "ndu",
+    "ndu_no_cross",
+    "ndu_rank3"
+  ],
+  "training_factorial": [
+    "flow_trained__flow",
+    "flow_trained__ndu",
+    "ndu_trained__flow",
+    "ndu_trained__ndu"
+  ],
+  "external_evaluation": "Fixed true facts read back from actual decoded text/audio/image/video; p never changes the evaluator",
+  "stochasticity": "Flow initial latent noise supplies diversity; no claim that it is semantic uncertainty or a reverse diffusion SDE",
+  "valuation": "Costly controlled p changes bounded per-fact valuation and correction gains; operational NDU special case, with fixed external evaluation",
+  "control": "Receding-horizon differentiable affine discrete Riccati on Euler linearization and Gauss-Newton cost; exact only for each local quadratic subproblem",
+  "oracle": "Separate continuous risk-neutral joint LQ reference with zero preference diffusion and independent BVP/QP/finite-difference checks",
+  "cost_accounting": "End-to-end CPU wall and process time including encoder, flow, controller/linearization/solves and all decoders; record training time separately; no incomplete MAC count called total FLOPs",
+  "test_rules": [
+    "Publish protocol and freeze implementation hashes before heldout execution",
+    "Development runs use separate seed and cannot satisfy scientific gates",
+    "Freeze all baseline choices before generating heldout worlds",
+    "Retain every heldout attempt and negative result; no outcome-dependent retuning",
+    "Bootstrap groups all four draws within each world and resamples training seeds",
+    "If no same-actuator comparator fits measured cost, mark fairness blocker instead of replacing it with fixed-p",
+    "A successful process exit certifies execution, not scientific superiority",
+    "Dedicated cloud requires externally verified runner assignment and matching source receipt"
+  ],
+  "free_controller_compute_match": {
+    "minimum_updates": 100,
+    "maximum_updates": 1000,
+    "rule": "Continue on same training pool until CPU wall training time reaches joint NDU training time, or cap; record actual steps and time."
+  },
+  "continuation_encoder": "Frozen identical encoder after foundation; decoder also frozen. NDU training updates vector-field parameters through the solver; does not claim joint NDU codec training.",
+  "timing": "Fixed128-world batches,4draws perworld,8-world warmup excluded and recorded; median3validation repeats,1heldout repeat; bothwall andprocessCPU times",
+  "explicitness": "Textminimumtopprob>=0.20; image/video fittedsingleGaussian residual<0.50,width0.045-0.120; audioamp>0.1,fitresidual<0.50; nonfiniteoutputs loss1 invalid",
+  "decoder_min_learning_rate": 0.0001,
+  "decoder_schedule": "Fresh shared time-conditioned frame decoder with squared nonnegative image/video link and raw physical moment training loss; cosine learning rate 0.001 to 0.0001; fixed 10000 updates",
+  "initial_condition": "All trajectories start at z_facts(0) = encoder_estimate + 0.5 * standard_normal_noise; z_style(0) = standard_normal_noise; p(0) = 0. Flow Matching uses the same conditional initial distribution.",
+  "codec_capability_minima": {
+    "resolved": 0.9,
+    "correct_resolved": 0.8,
+    "lawful_consistent": 0.8
+  }
+}
