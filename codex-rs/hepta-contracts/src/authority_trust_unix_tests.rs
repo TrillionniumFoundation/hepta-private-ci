@@ -85,6 +85,9 @@ impl TestService {
             while !stopping.load(Ordering::Relaxed) && Instant::now() < deadline {
                 match listener.accept() {
                     Ok((mut stream, _)) => {
+                        // Darwin inherits the listener's nonblocking flag. The
+                        // fixture uses bounded blocking I/O on accepted peers.
+                        stream.set_nonblocking(false)?;
                         stream.set_read_timeout(Some(Duration::from_secs(2)))?;
                         stream.set_write_timeout(Some(Duration::from_secs(2)))?;
                         let mut size = [0; 4];
@@ -99,8 +102,8 @@ impl TestService {
                         count.fetch_add(1, Ordering::Relaxed);
                         let response = handler(request, &signer)?;
                         let raw = serde_json::to_vec(&response)?;
-                        let _ = stream.write_all(&(raw.len() as u32).to_be_bytes());
-                        let _ = stream.write_all(&raw);
+                        stream.write_all(&(raw.len() as u32).to_be_bytes())?;
+                        stream.write_all(&raw)?;
                     }
                     Err(e) if e.kind() == std::io::ErrorKind::WouldBlock => {
                         thread::sleep(Duration::from_millis(1))

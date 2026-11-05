@@ -26,7 +26,7 @@ mod transport;
 pub use release::UnixPqReleaseFrontier;
 
 const MAX_REQUEST_BYTES: usize = 16 * 1024;
-#[cfg(target_os = "linux")]
+#[cfg(any(target_os = "linux", target_os = "macos"))]
 const MAX_RESPONSE_BYTES: usize = 64 * 1024;
 const DOMAIN: &[u8] = b"hepta.kernel.authority.external-trust.pq.v2\0";
 
@@ -394,14 +394,14 @@ fn validate_operation(operation: &PqTrustOperationV2) -> Result<(), AuthorityTru
     }
 }
 
-#[cfg(all(test, target_os = "linux"))]
+#[cfg(all(test, any(target_os = "linux", target_os = "macos")))]
 #[path = "authority_trust_unix_tests.rs"]
 pub(crate) mod tests;
 
-#[cfg(all(test, target_os = "linux"))]
+#[cfg(all(test, any(target_os = "linux", target_os = "macos")))]
 #[path = "authority_trust_learning_tests.rs"]
 mod learning_tests;
 
-#[cfg(all(test, target_os = "linux"))]
+#[cfg(all(test, any(target_os = "linux", target_os = "macos")))]
 #[path = "authority_trust_release_tests.rs"]
 mod release_tests;
