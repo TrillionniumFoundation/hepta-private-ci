@@ -25,6 +25,7 @@ use sqlx::SqliteConnection;
 use sqlx::TypeInfo;
 use sqlx::ValueRef;
 
+use super::CognitiveCommitGate;
 use super::CognitiveStore;
 use super::CognitiveStoreError;
 use super::CognitiveStoreOpenGuard;
@@ -34,6 +35,7 @@ use super::protect_database_file;
 use super::publish_active_database;
 use super::recovered_database_filename;
 use super::resolve_active_database_path;
+use super::sync_cognitive_directory;
 use super::unavailable;
 use super::verify_store;
 use crate::ProductionAuthorityLease;
@@ -44,6 +46,14 @@ use crate::framing::frame_part;
 #[path = "cognitive_store_recovery_read_only.rs"]
 mod read_only;
 pub use read_only::RecoveredCognitiveReadOnly;
+
+#[cfg(target_os = "linux")]
+#[path = "cognitive_checkpoint_image.rs"]
+mod checkpoint_image;
+#[cfg(target_os = "linux")]
+pub use checkpoint_image::CognitiveCheckpointImage;
+#[cfg(target_os = "linux")]
+pub use checkpoint_image::InstalledRootCheckpointImage;
 
 const PROFILE: &str = "hepta:cognitive:exact-current-cut:v1";
 const MAX_ROWS: i64 = 262_144;
@@ -97,12 +107,14 @@ impl CognitiveStore {
     /// independently; this method does not publish an acknowledgement witness.
     pub async fn recovery_anchor(&self) -> Result<CognitiveRecoveryAnchor, CognitiveStoreError> {
         let mut transaction = self
-            .pool
+            .observation_pool()
             .begin_with("BEGIN IMMEDIATE")
             .await
             .map_err(unavailable)?;
         let anchor = capture(&mut transaction, &self.owner_agent_id).await?;
-        transaction.commit().await.map_err(unavailable)?;
+        // This observation performs no writes. Roll back explicitly so it
+        // remains available after the whole-owner commit gate is fenced.
+        transaction.rollback().await.map_err(unavailable)?;
         Ok(anchor)
     }
 
@@ -146,11 +158,8 @@ impl CognitiveStore {
                     "cognitive recovery root does not exist".to_string(),
                 )
             })?;
-        if canonical_root != root {
-            return Err(CognitiveRecoveryError::Indeterminate(
-                "cognitive recovery root is redirected".to_string(),
-            ));
-        }
+        // The shared identity check already rejects redirected components.
+        // Keep its OS spelling, including Windows drive/UNC verbatim prefixes.
         let exclusive_guard = CognitiveStoreOpenGuard::acquire_exclusive(&canonical_root)
             .map_err(|error| CognitiveRecoveryError::Unavailable(error.to_string()))?;
         let source_path = resolve_active_database_path(&canonical_root)
@@ -158,18 +167,36 @@ impl CognitiveStore {
         let sqlite_home = AbsolutePathBuf::try_from(canonical_root.clone())
             .map_err(|error| CognitiveRecoveryError::Invalid(error.to_string()))?;
         let config = SqliteConfig::from_sqlite_home(sqlite_home);
+        // AbsolutePathBuf normalizes Windows device prefixes. Keep the
+        // canonical spelling for Memory's fence and active-generation checks,
+        // and derive every State child from this exact SqliteConfig home.
+        let source_name = source_path
+            .file_name()
+            .filter(|_| source_path.parent() == Some(canonical_root.as_path()))
+            .ok_or_else(|| {
+                CognitiveRecoveryError::Indeterminate(
+                    "retained cognitive source is not a child of the canonical root".to_string(),
+                )
+            })?;
+        let sqlite_source = config.home().join(source_name);
         let source_guard = config
-            .bind_existing_recovery_database(&source_path)
-            .map_err(recovery_error)?;
+            .bind_existing_recovery_database(&sqlite_source)
+            .map_err(|error| recovery_error_at("retained_source_bind", error))?;
 
-        let candidate = canonical_root.join(recovered_database_filename(expected, &writer_fence));
+        let candidate_name = recovered_database_filename(expected, &writer_fence);
+        let candidate = canonical_root.join(&candidate_name);
+        let sqlite_candidate = config.home().join(&candidate_name);
         config
-            .materialize_identity_bound_recovery_copy(&source_guard, &candidate)
-            .map_err(recovery_error)?;
+            .materialize_identity_bound_recovery_copy(&source_guard, &sqlite_candidate)
+            .map_err(|error| recovery_error_at("candidate_materialization", error))?;
 
         let result = async {
+            let commit_gate = CognitiveCommitGate::default();
+            let connection_gate = commit_gate.clone();
             let pool = config
-                .open_durable_evidence_pool(&candidate)
+                .open_durable_evidence_pool_guarded(&sqlite_candidate, move || {
+                    connection_gate.commit_allowed()
+                })
                 .await
                 .map_err(|error| CognitiveRecoveryError::Unavailable(error.to_string()))?;
             let authenticated = async {
@@ -213,22 +240,37 @@ impl CognitiveStore {
             pool.close().await;
 
             config
-                .checkpoint_private_recovery_database(&candidate)
+                .checkpoint_private_recovery_database(&sqlite_candidate)
                 .await
                 .map_err(|error| CognitiveRecoveryError::Unavailable(error.to_string()))?;
 
             cleanup_candidate_sidecars(&candidate)?;
             protect_database_file(&candidate)
                 .map_err(|error| CognitiveRecoveryError::Unavailable(error.to_string()))?;
-            std::fs::File::open(&candidate)
-                .and_then(|file| file.sync_all())
-                .map_err(|error| CognitiveRecoveryError::Unavailable(error.to_string()))?;
-            std::fs::File::open(&canonical_root)
-                .and_then(|directory| directory.sync_all())
+            {
+                let mut options = std::fs::OpenOptions::new();
+                options.read(true);
+                #[cfg(windows)]
+                options.write(true);
+                let file = options.open(&candidate).map_err(|error| {
+                    CognitiveRecoveryError::Unavailable(format!(
+                        "open recovered cognitive database for sync: {error}"
+                    ))
+                })?;
+                file.sync_all().map_err(|error| {
+                    CognitiveRecoveryError::Unavailable(format!(
+                        "sync recovered cognitive database: {error}"
+                    ))
+                })?;
+            }
+            sync_cognitive_directory(&canonical_root)
                 .map_err(|error| CognitiveRecoveryError::Unavailable(error.to_string()))?;
 
+            let connection_gate = commit_gate.clone();
             let pool = config
-                .open_durable_evidence_pool(&candidate)
+                .open_durable_evidence_pool_guarded(&sqlite_candidate, move || {
+                    connection_gate.commit_allowed()
+                })
                 .await
                 .map_err(|error| CognitiveRecoveryError::Unavailable(error.to_string()))?;
             let final_check = async {
@@ -267,8 +309,12 @@ impl CognitiveStore {
             // immediately after a security-sensitive recovery.
             Ok(CognitiveStore {
                 pool,
+                observation_pool: None,
+                checkpoint_barrier: None,
+                bound_publication: None,
                 owner_agent_id: layout.agent_id().clone(),
                 path: candidate.clone(),
+                commit_gate,
                 _open_guard: Some(std::sync::Arc::new(exclusive_guard)),
             })
         }
@@ -353,6 +399,15 @@ fn validate_requirement<'a>(
     Ok(expected)
 }
 
+fn recovery_error_at(stage: &'static str, error: SqliteRecoveryError) -> CognitiveRecoveryError {
+    let message = format!("{stage}: {error}");
+    match error {
+        SqliteRecoveryError::Unavailable => CognitiveRecoveryError::Unavailable(message),
+        SqliteRecoveryError::Indeterminate => CognitiveRecoveryError::Indeterminate(message),
+        _ => CognitiveRecoveryError::Indeterminate(message),
+    }
+}
+
 fn recovery_error(error: SqliteRecoveryError) -> CognitiveRecoveryError {
     match error {
         SqliteRecoveryError::Unavailable => CognitiveRecoveryError::Unavailable(error.to_string()),
@@ -363,7 +418,7 @@ fn recovery_error(error: SqliteRecoveryError) -> CognitiveRecoveryError {
     }
 }
 
-async fn capture(
+pub(crate) async fn capture(
     connection: &mut SqliteConnection,
     owner: &AgentId,
 ) -> Result<CognitiveRecoveryAnchor, CognitiveStoreError> {

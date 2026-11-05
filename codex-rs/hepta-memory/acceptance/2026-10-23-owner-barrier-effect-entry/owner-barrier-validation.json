@@ -1,0 +1,90 @@
+{
+  "status": "qualified within original-owner SQLite and explicit checkpoint/target fixture scope",
+  "qualified": true,
+  "counterexample": "/home/qian-qi/Documents/Codex/2026-10-23/https-github-com-trillionniumfoundation-trillionnium-os-4/work/owner-barrier-counterexample.json",
+  "source": "fd2c7fe81af4163ea58bcff93f5357370e8e6729",
+  "tree": "/home/qian-qi/Documents/Codex/2026-10-23/https-github-com-trillionniumfoundation-trillionnium-os-4/work/goal-owner-barrier-fix",
+  "target": "/data/organ-hepta-integration-target-20261023",
+  "target_owner": "desktop_architecture; continuing next parent-assigned finite Notes validation",
+  "source_stack": [
+    "614a78188b8cf5b190be9311eaf3e9445e61019f",
+    "c6a4c41d5ef98cc6b43eea86e9f69c4c95bbfd5b",
+    "fd2c7fe81af4163ea58bcff93f5357370e8e6729"
+  ],
+  "jobs": [
+    {
+      "host": "main",
+      "job_id": "1a16ad3eb0e-1b6abb-3ef2",
+      "state": "failed",
+      "exit_code": 101,
+      "log": "work/owner-barrier-positive-v1.log",
+      "failure": "SQLx0.9 SqlStr explicit conversion missing; no tests ran"
+    },
+    {
+      "host": "main",
+      "job_id": "1a16ad935e7-1b6abb-3efb",
+      "state": "failed",
+      "exit_code": 100,
+      "source": "c6a4c41d5ef98cc6b43eea86e9f69c4c95bbfd5b",
+      "log": "work/owner-barrier-positive-v2.log",
+      "passed": 66,
+      "failed": 1,
+      "failure": "managed missing barrier returned error without permanently fencing original gate",
+      "new_actual_barrier_tests_passed": 3,
+      "notes_retirement_lock_regression": "passed, actual competing admission blocked",
+      "nine_sigkill_scenarios": "passed in25.026s with original60s watchdog",
+      "provenance": "work/owner-test-artifacts/owner-barrier-positive-v2/provenance.json"
+    },
+    {
+      "host": "main",
+      "job_id": "1a16ae1db7a-1b6abb-3f06",
+      "state": "succeeded",
+      "log": "work/owner-barrier-positive-v3.log",
+      "scope": "only missing-capability failed regression and original State sqlite_recovery tests",
+      "exit_code": 0,
+      "passed": 8,
+      "failed": 0,
+      "provenance": [
+        "work/owner-test-artifacts/owner-barrier-positive-v3/provenance.json",
+        "work/owner-test-artifacts/owner-barrier-positive-v3-codex-state/provenance.json"
+      ]
+    },
+    {
+      "host": "main",
+      "job_id": "1a16ae897d9-1b6abb-3f0f",
+      "state": "succeeded",
+      "exit_code": 0,
+      "source": "fd2c7fe81af4163ea58bcff93f5357370e8e6729",
+      "log": "work/owner-barrier-fix-v1.log",
+      "scope": "scoped just fix Memory+State",
+      "source_changed": false
+    }
+  ],
+  "scope": "original SQLite owner and explicit issuer/checkpoint/target fixtures; not installed Root/native-device qualification",
+  "cancellation_limit": "test cancels a pending acquisition and verifies replacement still rejects writes; it does not prove cancellation at every initialization instruction",
+  "remaining": [],
+  "format_check": {
+    "command": "just fmt --base 8d10ae4b52 --check",
+    "exit_code": 0,
+    "source": "fd2c7fe81af4163ea58bcff93f5357370e8e6729"
+  },
+  "final_composed_source": "2ff0a02710c39c5f47030eb1896585ca667484f8",
+  "final_composed_checkout": "/home/qian-qi/Documents/Codex/2026-10-23/https-github-com-trillionniumfoundation-trillionnium-os-4/work/goal-effect-entry-barrier-fix",
+  "final_aggregate": "work/owner-barrier-final-aggregate.json",
+  "final_provenance": "work/owner-test-artifacts/effect-entry-positive-v3/provenance.json",
+  "final_scoped_fix": {
+    "host": "main",
+    "job_id": "1a16af7be8e-1b6abb-3f19",
+    "state": "succeeded",
+    "exit_code": 0,
+    "source": "2ff0a02710c39c5f47030eb1896585ca667484f8",
+    "log": "work/effect-entry-fix-v2.log",
+    "source_changed": false,
+    "warning_scope": "Existing lib-test unwrap/expect and AsyncFd deprecation warnings retained; not a zero-warning claim"
+  },
+  "final_format_check": {
+    "command": "just fmt --base 0f7a96752529a7914b7c24d07fadd527c5bd7bce --check",
+    "exit_code": 0,
+    "source": "2ff0a02710c39c5f47030eb1896585ca667484f8"
+  }
+}

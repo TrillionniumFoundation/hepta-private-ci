@@ -123,6 +123,76 @@ class RunBazelCiIntegrationTest(unittest.TestCase):
         ]
         return result, calls
 
+    def test_macos_bounds_scheduler_after_remote_configs_and_keeps_full_roster(
+        self,
+    ) -> None:
+        self.env["RUNNER_OS"] = "macOS"
+        targets = [
+            "//...",
+            "-//third_party/v8:all",
+            "-//codex-rs/v8-poc:v8-poc-unit-tests",
+        ]
+        for authenticated in (False, True):
+            with self.subTest(authenticated=authenticated):
+                self.env.pop("BUILDBUDDY_API_KEY", None)
+                if authenticated:
+                    self.env["BUILDBUDDY_API_KEY"] = "test-only-token"
+                if self.log.exists():
+                    self.log.unlink()
+                result, calls = self.run_wrapper(
+                    "--",
+                    "test",
+                    "--jobs=800",
+                    "--test_tag_filters=-argument-comment-lint",
+                    "--test_verbose_timeout_warnings",
+                    "--",
+                    *targets,
+                )
+                self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+                self.assertEqual(len(calls), 1)
+                args = calls[0]
+                self.assertEqual(
+                    [arg for arg in args if arg.startswith("--jobs=")][-1], "--jobs=30"
+                )
+                self.assertTrue(
+                    all(
+                        index < args.index("--jobs=30")
+                        for index, arg in enumerate(args)
+                        if arg.startswith("--config=")
+                    )
+                )
+                if authenticated:
+                    self.assertIn("--config=ci-macos", args)
+                else:
+                    self.assertNotIn("--config=ci-macos", args)
+                self.assertIn("--test_tag_filters=-argument-comment-lint", args)
+                self.assertIn("--test_verbose_timeout_warnings", args)
+                self.assertEqual(args[args.index("--") + 1 :], targets)
+
+    def test_macos_scheduler_bound_preserves_real_child_failure(self) -> None:
+        self.env.update(RUNNER_OS="macOS", BAZEL_PROBE_FAIL="1")
+        result, calls = self.run_wrapper(
+            "--print-failed-action-summary",
+            "--print-failed-test-logs",
+            "--",
+            "test",
+            "--",
+            "//fake:target",
+        )
+        self.assertEqual(result.returncode, 37, result.stdout + result.stderr)
+        self.assertIn("--jobs=30", calls[0])
+        self.assertIn("actual failing test diagnostic", result.stdout)
+        self.assertIn("undefined symbol: __stack_chk_fail", result.stdout)
+
+    def test_linux_scheduler_selection_is_not_changed_by_macos_bound(self) -> None:
+        self.env.update(RUNNER_OS="Linux", BUILDBUDDY_API_KEY="test-only-token")
+        result, calls = self.run_wrapper(
+            "--", "test", "--jobs=800", "--", "//fake:target"
+        )
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        self.assertIn("--jobs=800", calls[0])
+        self.assertNotIn("--jobs=30", calls[0])
+
     def test_keyless_cross_uses_msvc_exec_and_gnullvm_target(self) -> None:
         result, calls = self.run_wrapper(
             "--windows-cross-compile",

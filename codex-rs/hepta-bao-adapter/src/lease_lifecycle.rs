@@ -5,14 +5,21 @@
 //! trusted reconciler observes the original operation.
 
 use std::collections::BTreeMap;
+#[cfg(not(windows))]
 use std::fs::File;
 use std::io::Read;
+#[cfg(not(windows))]
 use std::io::Write;
+#[cfg(not(windows))]
 use std::path::Path;
 use std::path::PathBuf;
 
 use serde::Deserialize;
 use serde::Serialize;
+
+#[cfg(windows)]
+#[path = "lease_lifecycle_windows.rs"]
+mod windows;
 
 const SCHEMA_VERSION: u32 = 1;
 const MAX_RECORDS: usize = 65_536;
@@ -103,6 +110,8 @@ struct StoredRegistryV1 {
 
 pub struct DurableLeaseRegistryV1 {
     path: PathBuf,
+    #[cfg(windows)]
+    retained: windows::RetainedRegistry,
     state: StoredRegistryV1,
 }
 
@@ -140,10 +149,18 @@ impl std::error::Error for LeaseRegistryErrorV1 {}
 impl DurableLeaseRegistryV1 {
     pub fn open(path: impl Into<PathBuf>) -> Result<Self, LeaseRegistryErrorV1> {
         let path = path.into();
-        let state = if path.exists() {
+        #[cfg(windows)]
+        let (retained, file) = windows::RetainedRegistry::open(&path)?;
+        #[cfg(not(windows))]
+        let file = if path.exists() {
+            Some(File::open(&path).map_err(|_| LeaseRegistryErrorV1::Unavailable)?)
+        } else {
+            None
+        };
+        let state = if let Some(file) = file {
             let mut bytes = Vec::new();
-            File::open(&path)
-                .and_then(|file| file.take(8 * 1024 * 1024 + 1).read_to_end(&mut bytes))
+            file.take(8 * 1024 * 1024 + 1)
+                .read_to_end(&mut bytes)
                 .map_err(|_| LeaseRegistryErrorV1::Unavailable)?;
             if bytes.len() > 8 * 1024 * 1024 {
                 return Err(LeaseRegistryErrorV1::CorruptState);
@@ -159,7 +176,12 @@ impl DurableLeaseRegistryV1 {
                 leases: BTreeMap::new(),
             }
         };
-        Ok(Self { path, state })
+        Ok(Self {
+            path,
+            #[cfg(windows)]
+            retained,
+            state,
+        })
     }
 
     pub fn lease(&self, lease_id: &str) -> Option<&SecretLeaseMetadataV1> {
@@ -423,6 +445,9 @@ impl DurableLeaseRegistryV1 {
 
     fn commit(&mut self, next: StoredRegistryV1) -> Result<(), LeaseRegistryErrorV1> {
         validate_state(&next)?;
+        #[cfg(windows)]
+        self.retained.persist(&next)?;
+        #[cfg(not(windows))]
         persist(&self.path, &next)?;
         self.state = next;
         Ok(())
@@ -495,6 +520,7 @@ fn validate_lease(lease: &SecretLeaseMetadataV1) -> Result<(), LeaseRegistryErro
     Ok(())
 }
 
+#[cfg(not(windows))]
 fn persist(path: &Path, state: &StoredRegistryV1) -> Result<(), LeaseRegistryErrorV1> {
     let parent = path.parent().ok_or(LeaseRegistryErrorV1::Unavailable)?;
     std::fs::create_dir_all(parent).map_err(|_| LeaseRegistryErrorV1::Unavailable)?;

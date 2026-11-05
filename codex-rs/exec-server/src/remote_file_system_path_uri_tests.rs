@@ -187,6 +187,10 @@ async fn authorized_reads_fail_closed_for_legacy_or_disabled_capability() {
 #[tokio::test]
 async fn authorized_read_redacts_all_remote_server_errors() {
     let cases = [
+        (
+            AUTHORIZED_READ_BOUND_EXCEEDED_ERROR_CODE,
+            std::io::ErrorKind::InvalidData,
+        ),
         (INVALID_REQUEST_ERROR_CODE, std::io::ErrorKind::InvalidInput),
         (-32602, std::io::ErrorKind::InvalidInput),
         (NOT_FOUND_ERROR_CODE, std::io::ErrorKind::NotFound),

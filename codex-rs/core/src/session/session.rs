@@ -51,6 +51,7 @@ type PendingTaskTerminalizationCompletion = (
     Option<crate::tasks::SuspensionHandoffSlot>,
     Option<crate::tasks::TaskAbortHandoffSlot>,
     Option<crate::tasks::TaskFinishHandoffSlot>,
+    String,
 );
 
 /// Context for an initialized model agent

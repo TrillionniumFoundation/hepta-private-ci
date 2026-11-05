@@ -160,6 +160,8 @@
       "allowedCallers": [
         "codex-rs/hepta-agentd/src/automation_effect_host.rs",
         "codex-rs/hepta-agentd/src/bin/hepta-agentd-browser.rs",
+        "codex-rs/hepta-agentd/src/production_authority.rs",
+        "codex-rs/hepta-agentd/src/root_production_inputs.rs",
         "codex-rs/hepta-infer-worker-host/src/final_use_authorizer.rs"
       ]
     },
@@ -271,6 +273,7 @@
       ],
       "allowedCallers": [
         "codex-rs/hepta-agentd/src/automation_effect_host.rs",
+        "codex-rs/hepta-agentd/src/root_authority_session.rs",
         "codex-rs/hepta-contracts/src/final_use_control.rs",
         "codex-rs/hepta-infer-worker-host/src/final_use_authorizer.rs"
       ]
@@ -400,7 +403,9 @@
         "AuthorityLeaseRegistry\\s*::\\s*open_state_dir_with_clock\\s*\\(",
         "AuthorityLeaseRegistry\\s*::\\s*open_state_dir_with_trust\\s*\\("
       ],
-      "allowedCallers": []
+      "allowedCallers": [
+        "codex-rs/hepta-agentd/src/authority_host_runtime.rs"
+      ]
     },
     {
       "id": "authority_lease_put",
@@ -410,7 +415,10 @@
         "\\.\\s*put_lease\\s*\\(",
         "AuthorityLeaseRegistry\\s*::\\s*put_lease\\s*\\("
       ],
-      "allowedCallers": []
+      "allowedCallers": [
+        "codex-rs/hepta-agentd/src/authority_host_runtime.rs",
+        "codex-rs/hepta-agentd/src/deployment_notes.rs"
+      ]
     },
     {
       "id": "authority_lease_revoke",
@@ -451,6 +459,9 @@
         "AuthorityLeaseVerifier\\s*::\\s*verify_use\\s*\\("
       ],
       "allowedCallers": [
+        "codex-rs/hepta-agentd/src/deployment_issuer_root.rs",
+        "codex-rs/hepta-agentd/src/deployment_writer.rs",
+        "codex-rs/hepta-contracts/src/authority_host_issuer.rs",
         "codex-rs/hepta-fleet/src/authority_port.rs"
       ]
     },
@@ -481,7 +492,10 @@
         "\\.\\s*with_dispatch_boundary\\s*\\(",
         "AuthorityLeaseVerifier\\s*::\\s*with_dispatch_boundary\\s*\\("
       ],
-      "allowedCallers": []
+      "allowedCallers": [
+        "codex-rs/hepta-agentd/src/deployment_issuer_root.rs",
+        "codex-rs/hepta-contracts/src/authority_host_issuer.rs"
+      ]
     },
     {
       "id": "authority_lease_dispatch_witness",
@@ -491,6 +505,7 @@
         "\\bdispatch_authority_lease_with_witness\\s*\\("
       ],
       "allowedCallers": [
+        "codex-rs/hepta-agentd/src/deployment_writer.rs",
         "codex-rs/hepta-fleet/src/authority_port.rs"
       ]
     },

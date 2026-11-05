@@ -1,12 +1,83 @@
 #[cfg(unix)]
 use std::os::unix::fs::PermissionsExt;
 
+use std::path::Path;
+use std::path::PathBuf;
+use std::sync::OnceLock;
+
 use tempfile::TempDir;
 
-pub(crate) fn private_tempdir(label: &str) -> TempDir {
+/// Resolve one installed OpenSSH executable for fixture generation only.
+/// Production trust verification deliberately keeps its original binary policy.
+pub(crate) fn openssh_keygen() -> &'static Path {
+    static EXECUTABLE: OnceLock<PathBuf> = OnceLock::new();
+    EXECUTABLE.get_or_init(|| {
+        let mut candidates = Vec::new();
+        #[cfg(windows)]
+        let executable = "ssh-keygen.exe";
+        #[cfg(not(windows))]
+        let executable = "ssh-keygen";
+        #[cfg(windows)]
+        if let Some(system_root) = std::env::var_os("SystemRoot") {
+            candidates.push(
+                PathBuf::from(system_root)
+                    .join("System32/OpenSSH")
+                    .join(executable),
+            );
+        }
+        #[cfg(not(windows))]
+        candidates.push(PathBuf::from("/usr/bin/ssh-keygen"));
+        if let Some(path) = std::env::var_os("PATH") {
+            candidates.extend(
+                std::env::split_paths(&path).map(|directory| directory.join(executable)),
+            );
+        }
+        let resolved = candidates
+            .into_iter()
+            .filter(|path| path.is_absolute())
+            .find_map(|path| path.canonicalize().ok().filter(|resolved| resolved.is_file()))
+            .unwrap_or_else(|| {
+                panic!("signing fixtures require OpenSSH {executable}; not found in platform directory or absolute PATH")
+            });
+        eprintln!("HEPTA_FIXTURE_OPENSSH_KEYGEN={}", resolved.display());
+        resolved
+    })
+}
+
+#[cfg(not(windows))]
+pub(crate) type PrivateTempDir = TempDir;
+
+#[cfg(windows)]
+#[derive(Debug)]
+pub(crate) struct PrivateTempDir {
+    _temporary: TempDir,
+    path: PathBuf,
+}
+
+#[cfg(windows)]
+impl PrivateTempDir {
+    pub(crate) fn path(&self) -> &Path {
+        &self.path
+    }
+}
+
+pub(crate) fn private_tempdir(label: &str) -> PrivateTempDir {
     let temporary = tempfile::tempdir().unwrap_or_else(|error| panic!("{label}: {error}"));
     #[cfg(unix)]
     std::fs::set_permissions(temporary.path(), std::fs::Permissions::from_mode(0o700))
         .unwrap_or_else(|error| panic!("secure {label}: {error}"));
+    #[cfg(windows)]
+    {
+        let path = temporary.path().join("private");
+        drop(
+            codex_utils_path::create_private_state_directory(&path)
+                .unwrap_or_else(|error| panic!("secure {label}: {error}")),
+        );
+        PrivateTempDir {
+            _temporary: temporary,
+            path,
+        }
+    }
+    #[cfg(not(windows))]
     temporary
 }

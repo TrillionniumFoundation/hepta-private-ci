@@ -150,9 +150,12 @@ async fn exit_interrupts_before_requesting_shutdown() -> Result<()> {
         .set_feature_enabled(Feature::Goals, /*enabled*/ true);
     let (mut app_server, mut tui) =
         prepare_background_exit_test(&app, &mut app_event_rx, &mut op_rx).await?;
-    let started = app_server
-        .start_thread(app.chat_widget.config_ref())
-        .await?;
+    // This test runs a real shell command. The chat-widget fixture's display-only
+    // cwd is not guaranteed to exist on the native test host.
+    let workspace = tempdir()?;
+    let mut thread_config = app.chat_widget.config_ref().clone();
+    thread_config.cwd = AbsolutePathBuf::from_absolute_path(workspace.path())?;
+    let started = app_server.start_thread(&thread_config).await?;
     let thread_id = started.session.thread_id;
     app.active_thread_id = Some(thread_id);
     app.chat_widget
