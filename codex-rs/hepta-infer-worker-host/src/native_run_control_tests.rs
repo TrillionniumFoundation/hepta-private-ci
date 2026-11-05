@@ -276,7 +276,17 @@ fn intelligence_handoff_is_committed_to_native_admission_identity() {
     let socket = std::path::Path::new("/tmp/native-owner.sock");
     let none = native_source_payload_digest("prompt", &None, socket, 5000, None).unwrap();
     let original = NativeIntelligenceRunBinding {
-        run_id: "intelligence-run".to_string(),
+        snapshot: codex_hepta_agentd::AgentRunSnapshot {
+            run_id: "intelligence-run".to_string(),
+            request_digest: "1".repeat(64),
+            objective_digest: "2".repeat(64),
+            body_digest: "3".repeat(64),
+            artifact_set_digest: "4".repeat(64),
+            authority_epoch: 9,
+            generation: 1,
+            fence_digest: "5".repeat(64),
+            deadline_ms: 10_000,
+        },
         expected_revision: 2,
         context_digest: "a".repeat(64),
         envelope_digest: "b".repeat(64),
@@ -284,12 +294,20 @@ fn intelligence_handoff_is_committed_to_native_admission_identity() {
     let bound =
         native_source_payload_digest("prompt", &None, socket, 5000, Some(&original)).unwrap();
     assert_ne!(none, bound);
-    for field in 0..4 {
+    for field in 0..12 {
         let mut changed = original.clone();
         match field {
-            0 => changed.run_id.push_str("-other"),
-            1 => changed.expected_revision += 1,
-            2 => changed.context_digest = "c".repeat(64),
+            0 => changed.snapshot.run_id.push_str("-other"),
+            1 => changed.snapshot.request_digest = "6".repeat(64),
+            2 => changed.snapshot.objective_digest = "6".repeat(64),
+            3 => changed.snapshot.body_digest = "6".repeat(64),
+            4 => changed.snapshot.artifact_set_digest = "6".repeat(64),
+            5 => changed.snapshot.authority_epoch += 1,
+            6 => changed.snapshot.generation += 1,
+            7 => changed.snapshot.fence_digest = "6".repeat(64),
+            8 => changed.snapshot.deadline_ms += 1,
+            9 => changed.expected_revision += 1,
+            10 => changed.context_digest = "c".repeat(64),
             _ => changed.envelope_digest = "d".repeat(64),
         }
         assert_ne!(

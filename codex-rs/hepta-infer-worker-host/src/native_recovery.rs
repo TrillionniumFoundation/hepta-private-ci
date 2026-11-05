@@ -1,4 +1,4 @@
-//! Reconcile previously dispatched App Server operations without another dispatch.
+//! Reconcile exact retained App Server turns without another provider dispatch.
 
 use codex_app_server_client::RemoteAppServerClient;
 use codex_app_server_client::RemoteAppServerConnectArgs;
@@ -40,7 +40,7 @@ impl AppServerModelDriver {
     /// Reconcile a previously prepared/dispatched operation without issuing a
     /// new turn/start. Only an opaque thread/read response from the current
     /// exact-generation Agent/App Server may settle the durable record.
-    pub(crate) async fn reconcile_existing(
+    pub(super) async fn reconcile_existing(
         &self,
         record: &NativeRunRecord,
         expected_prompt: &str,
@@ -218,6 +218,15 @@ impl AppServerModelDriver {
             .find(|turn| turn.id == turn_id)
             .ok_or("reconciled terminal receipt turn disappeared")?;
 
+        if record
+            .turn_id
+            .as_ref()
+            .is_some_and(|expected| expected != &turn.id)
+        {
+            let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
+            return Err("reconciled turn does not match the durably observed turn".into());
+        }
+
         let mut output_text = String::new();
         for item in &turn.items {
             if let ThreadItem::AgentMessage { text, .. } = item {
@@ -250,9 +259,18 @@ impl AppServerModelDriver {
             status,
             boundary_status,
             output: output_text,
-            observed_output_tokens: None,
+            // thread/read contains no token-usage witness. Retain previously
+            // observed counts without converting missing usage to zero.
+            observed_output_tokens: record
+                .observation
+                .as_ref()
+                .and_then(|previous| previous.observed_output_tokens),
             terminal_observed: true,
-            owner_authority: NativeOwnerAuthority::Unverified,
+            owner_authority: record
+                .observation
+                .as_ref()
+                .map(|previous| previous.owner_authority.clone())
+                .unwrap_or(NativeOwnerAuthority::Unverified),
             stop_reason: turn
                 .error
                 .as_ref()
@@ -264,6 +282,31 @@ impl AppServerModelDriver {
                     .to_string(),
             ),
         };
+        if let Some(previous) = &record.observation
+            && matches!(
+                previous.boundary_status,
+                NativeBoundaryStatus::Cancelled
+                    | NativeBoundaryStatus::TimedOut
+                    | NativeBoundaryStatus::Quarantined
+            )
+        {
+            // A later provider terminal resolves execution uncertainty. It
+            // cannot undo the local cancellation, deadline, or authority loss.
+            output.boundary_status = previous.boundary_status;
+            output.stop_reason = previous.stop_reason.clone();
+        }
+        if record.cancel_requested
+            && matches!(
+                output.boundary_status,
+                NativeBoundaryStatus::Succeeded
+                    | NativeBoundaryStatus::Failed
+                    | NativeBoundaryStatus::Interrupted
+            )
+        {
+            output.boundary_status = NativeBoundaryStatus::Cancelled;
+            output.stop_reason =
+                Some("cancellation was durably requested before terminal recovery".to_string());
+        }
         let _ =
             verify_owner_health(&mut output, owner.health(), Instant::now() + RPC_TIMEOUT).await;
         downgrade_for_owner_loss(&mut output);
@@ -271,3 +314,7 @@ impl AppServerModelDriver {
         Ok(Some(output))
     }
 }
+
+#[cfg(all(test, unix))]
+#[path = "native_recovery_tests.rs"]
+mod tests;

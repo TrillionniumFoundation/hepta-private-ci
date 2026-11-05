@@ -13,6 +13,9 @@ use super::NativeRunOutput;
 use super::NativeRunStatus;
 use super::Result;
 
+#[path = "native_intelligence_recovery.rs"]
+mod intelligence_recovery;
+
 /// Explicit local capacity policy; the first request pins the journal's limit.
 /// This limits admitted runs, not provider tokens, billing or device memory.
 pub struct NativeAdmission {
@@ -24,10 +27,57 @@ pub struct NativeAdmission {
 /// physical App Server turn can start.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct NativeIntelligenceRunBinding {
-    pub run_id: String,
+    pub snapshot: codex_hepta_agentd::AgentRunSnapshot,
     pub expected_revision: u64,
     pub context_digest: String,
     pub envelope_digest: String,
+}
+
+impl NativeIntelligenceRunBinding {
+    pub(super) fn expected_run_binding(
+        &self,
+        expected_revision: u64,
+    ) -> codex_hepta_agentd::AgentRunBinding {
+        codex_hepta_agentd::AgentRunBinding {
+            snapshot: self.snapshot.clone(),
+            expected_revision,
+            context_digest: self.context_digest.clone(),
+            compilation_receipt_digest: self.envelope_digest.clone(),
+        }
+    }
+
+    pub(super) fn validate_current(
+        &self,
+        current: &codex_hepta_agentd::AgentRunReconciliationState,
+        generation: u64,
+    ) -> Result<()> {
+        if current.snapshot != self.snapshot {
+            return Err(
+                "Agentd original run snapshot differs from the durable native binding".into(),
+            );
+        }
+        self.validate_receipt(&current.receipt, generation)
+    }
+
+    pub(super) fn validate_receipt(
+        &self,
+        receipt: &codex_hepta_agentd::AgentRunReceipt,
+        generation: u64,
+    ) -> Result<()> {
+        if self.snapshot.generation != generation
+            || receipt.revision < self.expected_revision
+            || receipt.run_id != self.snapshot.run_id
+            || receipt.generation != self.snapshot.generation
+            || receipt.authority_epoch != self.snapshot.authority_epoch
+            || receipt.fence_digest != self.snapshot.fence_digest
+            || receipt.deadline_ms != self.snapshot.deadline_ms
+            || receipt.context_digest.as_deref() != Some(self.context_digest.as_str())
+            || receipt.compilation_receipt_digest.as_deref() != Some(self.envelope_digest.as_str())
+        {
+            return Err("Agentd receipt differs from the durable intelligence binding".into());
+        }
+        Ok(())
+    }
 }
 
 impl AppServerModelDriver {
@@ -123,13 +173,18 @@ impl AppServerModelDriver {
                 .as_ref()
                 .filter(|output| output.terminal_observed)
             {
+                self.reconcile_intelligence_terminal(intelligence, output)
+                    .await?;
                 return Ok(output.clone());
             }
             if let Some(reconciled) = self.reconcile_existing(&record, &prompt).await? {
                 let settled = control.settle_native(&record.request.request_id, reconciled)?;
-                return settled.observation.ok_or_else(|| {
-                    "durable reconciliation omitted its normalized observation".into()
-                });
+                let output = settled
+                    .observation
+                    .ok_or("durable reconciliation omitted its normalized observation")?;
+                self.reconcile_intelligence_terminal(intelligence, &output)
+                    .await?;
+                return Ok(output);
             }
             if let Some(output) = record.observation {
                 return Ok(output);
@@ -175,9 +230,12 @@ impl AppServerModelDriver {
                     control.cancel_native(&request_id)?;
                 }
                 let settled = control.settle_native(&request_id, output)?;
-                settled.observation.ok_or_else(|| {
-                    "durable execution settlement omitted its normalized observation".into()
-                })
+                let output = settled
+                    .observation
+                    .ok_or("durable execution settlement omitted its normalized observation")?;
+                self.reconcile_intelligence_terminal(intelligence, &output)
+                    .await?;
+                Ok(output)
             }
             Err(error) => {
                 if control
@@ -210,12 +268,12 @@ fn native_source_payload_digest(
             timeout_ms,
         ))?,
         Some(binding) => serde_json::to_vec(&(
-            "hepta.native-intelligence-request.v2",
+            "hepta.native-intelligence-request.v3",
             prompt,
             context_query,
             socket,
             timeout_ms,
-            &binding.run_id,
+            &binding.snapshot,
             binding.expected_revision,
             &binding.context_digest,
             &binding.envelope_digest,
