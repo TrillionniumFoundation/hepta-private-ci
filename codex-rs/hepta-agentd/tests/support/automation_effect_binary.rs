@@ -201,7 +201,10 @@ pub(super) fn retain_live_daemon(
             (
                 original.retained_path.clone(),
                 original.retained.try_clone()?,
-                original.record["sha256"].as_str().context("original image digest")?.to_owned(),
+                original.record["sha256"]
+                    .as_str()
+                    .context("original image digest")?
+                    .to_owned(),
                 "same-held-file-object-reuse",
                 original.record["pid"].clone(),
                 original.record["start_ticks"].clone(),
@@ -278,7 +281,11 @@ pub(super) fn retain_live_daemon(
 
 #[test]
 fn held_daemon_image_reuse_refuses_wrong_changed_or_missing_files() -> Result<()> {
-    for mutation in ["different_file_object", "changed_held_image", "missing_copy"] {
+    for mutation in [
+        "different_file_object",
+        "changed_held_image",
+        "missing_copy",
+    ] {
         let directory = tempfile::tempdir()?;
         let path = directory.path().join("image");
         let copy = directory.path().join("retained");

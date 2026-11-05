@@ -95,7 +95,12 @@ fn native_comparison_input_requires_v2_and_independently_pinned_snapshot() -> na
     assert_eq!(read(value.clone())?, snapshot);
     let mut legacy = value.clone();
     legacy["schema"] = serde_json::json!("hepta-smollm-neural-comparison-native-v1");
-    assert!(read(legacy).unwrap_err().to_string().contains("requires v2"));
+    assert!(
+        read(legacy)
+            .unwrap_err()
+            .to_string()
+            .contains("requires v2")
+    );
     for field in ["runtime_snapshot", "runtime_snapshot_sha256"] {
         let mut missing = value.clone();
         missing.as_object_mut().unwrap().remove(field);
@@ -105,9 +110,18 @@ fn native_comparison_input_requires_v2_and_independently_pinned_snapshot() -> na
     relative["runtime_snapshot"] = serde_json::json!("relative-runtime.json");
     assert!(read(relative).unwrap_err().to_string().contains("absolute"));
     let mut changed = value.clone();
-    changed["runtime_snapshot_sha256"] = serde_json::json!(Digest32::from_array([3;32]).to_string());
-    assert!(read(changed).unwrap_err().to_string().contains("snapshot mismatch"));
-    OpenOptions::new().write(true).open(&path)?.set_len(16 * 1024 * 1024 + 1)?;
+    changed["runtime_snapshot_sha256"] =
+        serde_json::json!(Digest32::from_array([3; 32]).to_string());
+    assert!(
+        read(changed)
+            .unwrap_err()
+            .to_string()
+            .contains("snapshot mismatch")
+    );
+    OpenOptions::new()
+        .write(true)
+        .open(&path)?
+        .set_len(16 * 1024 * 1024 + 1)?;
     assert!(read(value).unwrap_err().to_string().contains("byte bound"));
     assert!(!root.join("must-not-create-comparison").exists());
     assert!(!root.join("unopened-model").exists());

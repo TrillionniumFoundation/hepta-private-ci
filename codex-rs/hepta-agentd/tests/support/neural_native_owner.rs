@@ -83,7 +83,9 @@ impl Input {
             || metadata.len() > limit
             || self.runtime_snapshot.canonicalize()? != self.runtime_snapshot
         {
-            return Err("runtime snapshot requires a canonical regular file within its byte bound".into());
+            return Err(
+                "runtime snapshot requires a canonical regular file within its byte bound".into(),
+            );
         }
         let file = fs::File::open(&self.runtime_snapshot)?;
         if !file.metadata()?.is_file() || file.metadata()?.len() != metadata.len() {
@@ -91,10 +93,7 @@ impl Input {
         }
         let mut raw = Vec::new();
         file.take(limit + 1).read_to_end(&mut raw)?;
-        if raw.is_empty()
-            || raw.len() as u64 > limit
-            || Digest32::of_bytes(&raw) != expected
-        {
+        if raw.is_empty() || raw.len() as u64 > limit || Digest32::of_bytes(&raw) != expected {
             return Err("independently pinned runtime snapshot mismatch or byte bound".into());
         }
         let value: serde_json::Value = serde_json::from_slice(&raw)?;
