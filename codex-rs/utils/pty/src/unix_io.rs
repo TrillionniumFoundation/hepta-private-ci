@@ -12,6 +12,14 @@ use tokio::io::unix::AsyncFd;
 use tokio::sync::mpsc;
 use tokio::task::JoinHandle;
 
+#[cfg(test)]
+#[path = "unix_io_diagnostics.rs"]
+mod diagnostics;
+#[cfg(test)]
+pub(crate) use diagnostics::PtyIoDiagnostics;
+#[cfg(test)]
+use diagnostics::ReaderEvent;
+
 pub(crate) enum StdinCloseBehavior {
     SendEof,
     NoEof,
@@ -19,6 +27,8 @@ pub(crate) enum StdinCloseBehavior {
 
 pub(crate) struct PtyIo {
     fd: Arc<AsyncFd<File>>,
+    #[cfg(test)]
+    diagnostics: Arc<PtyIoDiagnostics>,
 }
 
 impl PtyIo {
@@ -42,7 +52,17 @@ impl PtyIo {
             unsafe { AsyncFd::register(File::from(fd)) }
         })
         .map_err(|_| io::Error::other("PTY I/O requires a Tokio runtime with I/O enabled"))??;
-        Ok(Self { fd: Arc::new(fd) })
+        let fd = Arc::new(fd);
+        Ok(Self {
+            #[cfg(test)]
+            diagnostics: Arc::new(PtyIoDiagnostics::new(Arc::downgrade(&fd))),
+            fd,
+        })
+    }
+
+    #[cfg(test)]
+    pub(crate) fn diagnostics(&self) -> Arc<PtyIoDiagnostics> {
+        Arc::clone(&self.diagnostics)
     }
 
     pub(crate) fn spawn(
@@ -52,22 +72,51 @@ impl PtyIo {
         stdin_close: StdinCloseBehavior,
     ) -> (JoinHandle<()>, JoinHandle<()>) {
         let fd = self.fd;
+        #[cfg(test)]
+        let diagnostics = self.diagnostics;
         let reader = Arc::clone(&fd);
         let reader_handle = tokio::spawn(async move {
             let mut buf = [0u8; 8_192];
             loop {
+                #[cfg(test)]
+                diagnostics.observe(ReaderEvent::WaitingForRead);
                 match reader
-                    .async_io(Interest::READABLE, |mut file| file.read(&mut buf))
+                    .async_io(Interest::READABLE, |mut file| {
+                        #[cfg(test)]
+                        diagnostics.observe(ReaderEvent::ReadStarted);
+                        let result = file.read(&mut buf);
+                        #[cfg(test)]
+                        diagnostics.observe(ReaderEvent::ReadResult(&result));
+                        result
+                    })
                     .await
                 {
-                    Ok(0) => break,
+                    Ok(0) => {
+                        #[cfg(test)]
+                        diagnostics.observe(ReaderEvent::Eof);
+                        break;
+                    }
                     Ok(count) => {
                         // Output caps may close the receiver before the child exits.
+                        #[cfg(test)]
+                        {
+                            diagnostics.observe(ReaderEvent::Sending);
+                            if stdout_tx.send(buf[..count].to_vec()).await.is_err() {
+                                diagnostics.observe(ReaderEvent::Discarded(count));
+                            }
+                        }
+                        #[cfg(not(test))]
                         let _ = stdout_tx.send(buf[..count].to_vec()).await;
                     }
                     Err(err) if err.kind() == io::ErrorKind::Interrupted => continue,
                     // Unix PTYs may report EIO rather than EOF when the slave closes.
-                    Err(_) => break,
+                    Err(err) => {
+                        #[cfg(test)]
+                        diagnostics.observe(ReaderEvent::Failed(&err));
+                        #[cfg(not(test))]
+                        let _ = err;
+                        break;
+                    }
                 }
             }
         });
