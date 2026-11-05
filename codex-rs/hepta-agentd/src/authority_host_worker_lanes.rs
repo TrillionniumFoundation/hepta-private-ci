@@ -31,6 +31,11 @@ mod listeners;
 use listeners::BoundWorkerLanes;
 use listeners::WorkerLane;
 
+enum RootWorkerLaneSelection<'a> {
+    ObservationOnly,
+    Journal { parent: &'a std::path::Path },
+}
+
 struct ConnectedLane {
     lane: WorkerLane,
     channel: HostAuthorityPeerChannel,
@@ -73,7 +78,7 @@ impl HeldWorkerRootRegistration<'_> {
     /// fallback, restart claim, reconnect, successor reset or refund exists.
     /// This blocks until the peer closes a lane or an original owner fails.
     pub fn serve_worker_lanes(self, timeout: Duration, lifetime: Duration) -> io::Result<()> {
-        self.serve_worker_lanes_selected(timeout, lifetime, None)
+        self.serve_worker_lanes_selected(timeout, lifetime, RootWorkerLaneSelection::ObservationOnly)
     }
 
     /// Root alone selects a safe journal parent. The actual retained Child,
@@ -81,10 +86,10 @@ impl HeldWorkerRootRegistration<'_> {
     /// This publishes only an empty directory and a second sealed offer; the
     /// Worker, after confirmation, creates its own journal as its actual UID.
     pub fn serve_worker_journal_lanes(self, journal_parent: &std::path::Path, timeout: Duration, lifetime: Duration) -> io::Result<()> {
-        self.serve_worker_lanes_selected(timeout, lifetime, Some(journal_parent))
+        self.serve_worker_lanes_selected(timeout, lifetime, RootWorkerLaneSelection::Journal { parent: journal_parent })
     }
 
-    fn serve_worker_lanes_selected(self, timeout: Duration, lifetime: Duration, journal_parent: Option<&std::path::Path>) -> io::Result<()> {
+    fn serve_worker_lanes_selected(self, timeout: Duration, lifetime: Duration, selection: RootWorkerLaneSelection<'_>) -> io::Result<()> {
         if timeout.is_zero() || timeout > Duration::from_millis(self._session.config.timeout_ms.min(5_000))
             || lifetime.is_zero() || lifetime > Duration::from_millis(self._session.config.lifetime_ms.min(300_000))
         {
@@ -97,14 +102,14 @@ impl HeldWorkerRootRegistration<'_> {
         // No error below can restore the prior Provisioned record.
         let result = (|| {
             self.verify_original_custody(handoff_end)?;
-            let mut journal = match journal_parent {
-                Some(parent) => Some(self._session.service.with_worker_floor_fence(Some(&self.registration), |view| {
+            let mut journal = match selection {
+                RootWorkerLaneSelection::Journal { parent } => Some(self._session.service.with_worker_floor_fence(Some(&self.registration), |view| {
                     self.verify_original_custody(handoff_end)?;
                     let journal = RootWorkerJournal::create_fresh(&floor, &self.registration, &view.owner_id, floor.frontier_for_handoff(&view.head)?, parent)?;
                     self.verify_original_custody(handoff_end)?;
                     Ok(journal)
                 })?),
-                None => None,
+                RootWorkerLaneSelection::ObservationOnly => None,
             };
             let bound = BoundWorkerLanes::bind(&self.registration, floor.slot_sequence())?;
             self._session.service.with_worker_floor_fence(Some(&self.registration), |view| {

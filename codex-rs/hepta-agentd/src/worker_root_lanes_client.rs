@@ -30,6 +30,11 @@ use std::time::Instant;
 #[path = "worker_root_journal_client.rs"]
 pub(super) mod journal;
 
+enum WorkerLaneSelection {
+    ObservationOnly,
+    Journal,
+}
+
 /// Non-cloneable, non-deserializable custody of the original Root lanes.
 /// No raw-FD, trait/config or public-observation constructor exists. Keeping
 /// this receipt alive alone grants no provider, tool, writer or Cell ability.
@@ -55,7 +60,7 @@ impl WorkerRootRegistrationReceipt {
     /// fixed lanes before reading any response. Missing confirmation returns
     /// no receipt. There is no retry or local-disk fallback on any error.
     pub async fn receive_worker_lanes(self, timeout: Duration) -> io::Result<WorkerRootLaneReceipt> {
-        let (lanes, journal) = self.receive_selected_worker_lanes(timeout, false).await?;
+        let (lanes, journal) = self.receive_selected_worker_lanes(timeout, WorkerLaneSelection::ObservationOnly).await?;
         if journal.is_some() { return Err(refused("observation-only lane receiver cannot activate a journal")); }
         Ok(lanes)
     }
@@ -63,11 +68,11 @@ impl WorkerRootRegistrationReceipt {
     /// Consume the original Root registration and the distinct journal offer.
     /// No caller path, key, clock, floor or initialization flag is accepted.
     pub async fn receive_worker_journal(self, timeout: Duration) -> io::Result<journal::WorkerRootJournal> {
-        let (lanes, directory) = self.receive_selected_worker_lanes(timeout, true).await?;
+        let (lanes, directory) = self.receive_selected_worker_lanes(timeout, WorkerLaneSelection::Journal).await?;
         journal::WorkerRootJournal::from_confirmed_lanes(lanes, directory.ok_or_else(|| refused("actual Root journal offer required"))?)
     }
 
-    async fn receive_selected_worker_lanes(self, timeout: Duration, expect_journal: bool) -> io::Result<(WorkerRootLaneReceipt, Option<super::journal_path::WorkerJournalDirectory>)> {
+    async fn receive_selected_worker_lanes(self, timeout: Duration, selection: WorkerLaneSelection) -> io::Result<(WorkerRootLaneReceipt, Option<super::journal_path::WorkerJournalDirectory>)> {
         let handoff_end = wire::deadline(timeout)?;
         process::verify(&self.registration.root, &self._root_pidfd, handoff_end)?;
         let (mut sealed, root_pidfd) = crate::receive_root_production_handoff(self.channel.try_clone()?, wire::remaining(handoff_end)?)
@@ -80,14 +85,17 @@ impl WorkerRootRegistrationReceipt {
             return Err(refused("complete sealed Worker lane bootstrap required"));
         }
         crate::authority_host_bootstrap_seal::validate_sealed(&sealed, size)?;
-        let (bootstrap, journal) = if expect_journal {
-            let bundle: super::journal_wire::WorkerRootJournalBootstrapV1 = serde_json::from_slice(&bytes).map_err(io::Error::other)?;
-            bundle.validate()?;
-            let directory = super::journal_path::WorkerJournalDirectory::open_from_root_pin(&bundle.journal)?;
-            (bundle.lanes, Some(directory))
-        } else {
-            let bootstrap: lanes_wire::WorkerRootLaneBootstrapV1 = serde_json::from_slice(&bytes).map_err(io::Error::other)?;
-            (bootstrap, None)
+        let (bootstrap, journal) = match selection {
+            WorkerLaneSelection::Journal => {
+                let bundle: super::journal_wire::WorkerRootJournalBootstrapV1 = serde_json::from_slice(&bytes).map_err(io::Error::other)?;
+                bundle.validate()?;
+                let directory = super::journal_path::WorkerJournalDirectory::open_from_root_pin(&bundle.journal)?;
+                (bundle.lanes, Some(directory))
+            }
+            WorkerLaneSelection::ObservationOnly => {
+                let bootstrap: lanes_wire::WorkerRootLaneBootstrapV1 = serde_json::from_slice(&bytes).map_err(io::Error::other)?;
+                (bootstrap, None)
+            }
         };
         bootstrap.validate()?;
         if bootstrap.registration != self.registration
