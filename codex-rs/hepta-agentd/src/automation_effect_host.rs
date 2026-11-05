@@ -1153,7 +1153,9 @@ impl AgentdAutomationEffectHost {
             #[cfg(test)]
             self.refresh_revocations()?;
             #[cfg(not(test))]
-            return Err(AgentdError::Invalid("ordinary automation effect PQ owner missing".to_string()));
+            return Err(AgentdError::Invalid(
+                "ordinary automation effect PQ owner missing".to_string(),
+            ));
             #[cfg(test)]
             None
         };
@@ -1668,32 +1670,48 @@ fn read_protected_file(path: &Path, max_bytes: u64, label: &str) -> Result<Vec<u
     // All content and permission checks below refer to that same descriptor.
     let initial = fs::symlink_metadata(path)?;
     if !initial.is_file() || initial.file_type().is_symlink() {
-        return Err(AgentdError::Invalid(format!("{label} must be a regular non-symlink file")));
+        return Err(AgentdError::Invalid(format!(
+            "{label} must be a regular non-symlink file"
+        )));
     }
     let mut file = fs::File::open(path)?;
     let metadata = file.metadata()?;
     let named = fs::symlink_metadata(path)?;
-    if !metadata.is_file() || named.file_type().is_symlink()
+    if !metadata.is_file()
+        || named.file_type().is_symlink()
         || path.canonicalize()?.as_os_str() != path.as_os_str()
-        || metadata.len() == 0 || metadata.len() > max_bytes
+        || metadata.len() == 0
+        || metadata.len() > max_bytes
     {
-        return Err(AgentdError::Invalid(format!("{label} must be a bounded canonical regular file")));
+        return Err(AgentdError::Invalid(format!(
+            "{label} must be a bounded canonical regular file"
+        )));
     }
     #[cfg(unix)]
     {
         use std::os::unix::fs::MetadataExt;
-        let parent = fs::metadata(path.parent().ok_or_else(|| AgentdError::Invalid(format!("{label} has no parent")))?)?;
-        if metadata.mode() & 0o077 != 0 || metadata.nlink() != 1
-            || metadata.dev() != named.dev() || metadata.ino() != named.ino()
-            || metadata.uid() != parent.uid() || parent.mode() & 0o022 != 0
+        let parent = fs::metadata(
+            path.parent()
+                .ok_or_else(|| AgentdError::Invalid(format!("{label} has no parent")))?,
+        )?;
+        if metadata.mode() & 0o077 != 0
+            || metadata.nlink() != 1
+            || metadata.dev() != named.dev()
+            || metadata.ino() != named.ino()
+            || metadata.uid() != parent.uid()
+            || parent.mode() & 0o022 != 0
         {
-            return Err(AgentdError::Invalid(format!("{label} file identity or private ownership is unsafe")));
+            return Err(AgentdError::Invalid(format!(
+                "{label} file identity or private ownership is unsafe"
+            )));
         }
     }
     let mut bytes = Vec::new();
     file.by_ref().take(max_bytes + 1).read_to_end(&mut bytes)?;
     if bytes.is_empty() || bytes.len() as u64 > max_bytes || bytes.len() as u64 != metadata.len() {
-        return Err(AgentdError::Invalid(format!("{label} changed size or exceeded its bound")));
+        return Err(AgentdError::Invalid(format!(
+            "{label} changed size or exceeded its bound"
+        )));
     }
     Ok(bytes)
 }
@@ -2618,4 +2636,3 @@ mod tests {
         Ok(())
     }
 }
-

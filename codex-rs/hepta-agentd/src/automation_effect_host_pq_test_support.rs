@@ -120,7 +120,12 @@ impl Service {
             }
             Ok(())
         });
-        Ok(Self { config, requests, stop, join: Some(join) })
+        Ok(Self {
+            config,
+            requests,
+            stop,
+            join: Some(join),
+        })
     }
 
     pub(super) fn config_json(&self) -> Value {
@@ -155,9 +160,11 @@ pub(super) fn frontier_service(root: &Path, initial: FinalUseFrontier) -> anyhow
             PqTrustOperationV2::FrontierLoad { owner_id } if owner_id == "pq-issuer" => {
                 PqTrustOutcomeV2::Frontier { value: current }
             }
-            PqTrustOperationV2::FrontierCompareAndSet { owner_id, expected, next }
-                if owner_id == "pq-issuer" && *expected == current =>
-            {
+            PqTrustOperationV2::FrontierCompareAndSet {
+                owner_id,
+                expected,
+                next,
+            } if owner_id == "pq-issuer" && *expected == current => {
                 let temporary = path.with_extension("next");
                 write_private(&temporary, &serde_json::to_vec(next)?)?;
                 fs::rename(&temporary, &path)?;
@@ -168,7 +175,9 @@ pub(super) fn frontier_service(root: &Path, initial: FinalUseFrontier) -> anyhow
             PqTrustOperationV2::FrontierLoad { .. }
             | PqTrustOperationV2::ClockNow
             | PqTrustOperationV2::LearningFrontierLoad { .. }
-            | PqTrustOperationV2::LearningFrontierCompareAndSet { .. } => PqTrustOutcomeV2::Unavailable,
+            | PqTrustOperationV2::LearningFrontierCompareAndSet { .. } => {
+                PqTrustOutcomeV2::Unavailable
+            }
         })
     })
 }

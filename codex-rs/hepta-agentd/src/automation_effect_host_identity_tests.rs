@@ -189,7 +189,7 @@ async fn host_provider_identity_legacy_http_queries_original_occurrence_and_reta
     let binding = intent.final_use_binding()?;
     let mut legacy = LegacyHttpDriver(AgentdAuthorizedEffectDriver {
         adapter: host.adapter.clone(),
-            lease: None,
+        lease: None,
         provider_scope: host.provider_scope.clone(),
         destination_id: host.destination_id.clone(),
     });
@@ -313,4 +313,3 @@ async fn host_provider_identity_legacy_http_queries_original_occurrence_and_reta
     server.verify().await;
     Ok(())
 }
-

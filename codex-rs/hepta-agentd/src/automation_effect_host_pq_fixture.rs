@@ -36,25 +36,36 @@ impl PqFixture {
         let private_root = root.path().canonicalize()?;
         let now = Arc::new(AtomicU64::new(NOW + 5));
         let time = Arc::clone(&now);
-        let clock = Service::start(&private_root, "clock.sock", /*seed*/ 74, move |operation| {
-            Ok(match operation {
-                PqTrustOperationV2::ClockNow => PqTrustOutcomeV2::Clock {
-                    unix_ms: time.load(Ordering::SeqCst),
-                },
-                PqTrustOperationV2::FrontierLoad { .. }
-                | PqTrustOperationV2::FrontierCompareAndSet { .. }
-                | PqTrustOperationV2::LearningFrontierLoad { .. }
-                | PqTrustOperationV2::LearningFrontierCompareAndSet { .. } => PqTrustOutcomeV2::Unavailable,
-            })
-        })?;
+        let clock = Service::start(
+            &private_root,
+            "clock.sock",
+            /*seed*/ 74,
+            move |operation| {
+                Ok(match operation {
+                    PqTrustOperationV2::ClockNow => PqTrustOutcomeV2::Clock {
+                        unix_ms: time.load(Ordering::SeqCst),
+                    },
+                    PqTrustOperationV2::FrontierLoad { .. }
+                    | PqTrustOperationV2::FrontierCompareAndSet { .. }
+                    | PqTrustOperationV2::LearningFrontierLoad { .. }
+                    | PqTrustOperationV2::LearningFrontierCompareAndSet { .. } => {
+                        PqTrustOutcomeV2::Unavailable
+                    }
+                })
+            },
+        )?;
         let head = FinalUseRevocations {
             authority_epoch: 9,
             revision: 1,
             revoked_grant_ids: BTreeSet::new(),
         };
-        let frontier = frontier_service(&private_root, FinalUseFrontier::for_initial_head_with_profile(
-            &head, FinalUseAuthenticationProfile::MlDsa65V2,
-        )?)?;
+        let frontier = frontier_service(
+            &private_root,
+            FinalUseFrontier::for_initial_head_with_profile(
+                &head,
+                FinalUseAuthenticationProfile::MlDsa65V2,
+            )?,
+        )?;
         let (issuer, issuer_pin) = key(/*seed*/ 71)?;
         let (feed_signer, feed_pin) = key(/*seed*/ 72)?;
         let (contract_signer, contract_pin) = key(/*seed*/ 73)?;
@@ -82,8 +93,19 @@ impl PqFixture {
                 "signed_revocations_file": feed_path, "external_clock": clock.config_json(),
                 "external_frontier": frontier.config_json() },
         });
-        let mut fixture = Self { root, clock, frontier: Some(frontier), now, issuer, feed_signer,
-            contract_signer, head, config, config_path, feed_path };
+        let mut fixture = Self {
+            root,
+            clock,
+            frontier: Some(frontier),
+            now,
+            issuer,
+            feed_signer,
+            contract_signer,
+            head,
+            config,
+            config_path,
+            feed_path,
+        };
         fixture.sign_contract(&digest)?;
         fixture.publish_feed(&fixture.feed(fixture.head.clone(), NOW - 1000, NOW + 60_000)?)?;
         Ok(fixture)
@@ -92,9 +114,12 @@ impl PqFixture {
     pub(super) fn sign_contract(&mut self, digest: &Sha256Digest) -> anyhow::Result<()> {
         self.config["contract_sha256"] = serde_json::json!(digest.as_str());
         let message = HttpProviderEffectContractAttestation::statement_for_pq(
-            self.config["contract_id"].as_str().expect("contract id"), digest, /*authority_epoch*/ 9,
+            self.config["contract_id"].as_str().expect("contract id"),
+            digest,
+            /*authority_epoch*/ 9,
         );
-        self.config["contract_signature"] = serde_json::json!(self.contract_signer.sign_exact_message(&message)?.to_vec());
+        self.config["contract_signature"] =
+            serde_json::json!(self.contract_signer.sign_exact_message(&message)?.to_vec());
         self.write_config()
     }
 
@@ -102,29 +127,55 @@ impl PqFixture {
         write_private(&self.config_path, &serde_json::to_vec(&self.config)?)
     }
 
-    pub(super) fn feed(&self, head: FinalUseRevocations, issued: u64, expires: u64) -> anyhow::Result<SignedFinalUseRevocationUpdate> {
+    pub(super) fn feed(
+        &self,
+        head: FinalUseRevocations,
+        issued: u64,
+        expires: u64,
+    ) -> anyhow::Result<SignedFinalUseRevocationUpdate> {
         let update = FinalUseRevocationUpdate::new_pq("pq-feed".to_string(), head, issued, expires);
-        let signature = self.feed_signer.sign_exact_message(&update.signing_bytes()?)?.to_vec();
+        let signature = self
+            .feed_signer
+            .sign_exact_message(&update.signing_bytes()?)?
+            .to_vec();
         Ok(SignedFinalUseRevocationUpdate { update, signature })
     }
 
-    pub(super) fn publish_feed(&self, signed: &SignedFinalUseRevocationUpdate) -> anyhow::Result<()> {
+    pub(super) fn publish_feed(
+        &self,
+        signed: &SignedFinalUseRevocationUpdate,
+    ) -> anyhow::Result<()> {
         write_private(&self.feed_path, &serde_json::to_vec(signed)?)
     }
 
-    pub(super) fn grant(&self, intent: &AuthorizedEffectIntent, expires: u64) -> anyhow::Result<SignedFinalUseGrant> {
+    pub(super) fn grant(
+        &self,
+        intent: &AuthorizedEffectIntent,
+        expires: u64,
+    ) -> anyhow::Result<SignedFinalUseGrant> {
         let grant = FinalUseGrant {
-            schema_version: 2, signer_id: "pq-issuer".to_string(), authority_epoch: 9,
-            grant_id: "pq-http-grant".to_string(), nonce: [92; 32], binding: intent.final_use_binding()?,
-            not_before_unix_ms: NOW - 1000, expires_at_unix_ms: expires,
+            schema_version: 2,
+            signer_id: "pq-issuer".to_string(),
+            authority_epoch: 9,
+            grant_id: "pq-http-grant".to_string(),
+            nonce: [92; 32],
+            binding: intent.final_use_binding()?,
+            not_before_unix_ms: NOW - 1000,
+            expires_at_unix_ms: expires,
         };
-        let signature = self.issuer.sign_exact_message(&grant.signing_bytes()?)?.to_vec();
+        let signature = self
+            .issuer
+            .sign_exact_message(&grant.signing_bytes()?)?
+            .to_vec();
         Ok(SignedFinalUseGrant { grant, signature })
     }
 
     pub(super) fn trust_requests(&self) -> usize {
         self.clock.requests.load(Ordering::SeqCst)
-            + self.frontier.as_ref().map_or(0, |service| service.requests.load(Ordering::SeqCst))
+            + self
+                .frontier
+                .as_ref()
+                .map_or(0, |service| service.requests.load(Ordering::SeqCst))
     }
 }
 
@@ -133,4 +184,3 @@ fn pin_json(pin: &PqAuthorityTrustKey) -> Value {
         "public_key_spki": pin.public_key_spki, "not_before_authority_epoch": pin.not_before_authority_epoch,
         "not_after_authority_epoch": pin.not_after_authority_epoch })
 }
-

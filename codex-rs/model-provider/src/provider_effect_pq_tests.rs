@@ -76,9 +76,7 @@ fn pq_contract_rejects_every_changed_signed_binding() {
     let signer = pq_signer(32);
     let digest = Sha256Digest::for_bytes(b"contract");
     let statement = HttpProviderEffectContractAttestation::statement_for_pq(
-        "contract",
-        &digest,
-        /*authority_epoch*/ 7,
+        "contract", &digest, /*authority_epoch*/ 7,
     );
     let signature = signer.sign_exact_message(&statement).expect("PQ signature");
     for (id, changed_digest, epoch) in [
@@ -124,9 +122,7 @@ fn pq_contract_requires_matching_pinned_key_and_exact_mldsa65_spki() {
     let other = pq_signer(34);
     let digest = Sha256Digest::for_bytes(b"contract");
     let statement = HttpProviderEffectContractAttestation::statement_for_pq(
-        "contract",
-        &digest,
-        /*authority_epoch*/ 7,
+        "contract", &digest, /*authority_epoch*/ 7,
     );
     let signature = signer.sign_exact_message(&statement).expect("PQ signature");
     let mut wrong_algorithm = *signer.public_spki();
@@ -157,14 +153,10 @@ fn pq_contract_refuses_v1_and_foreign_signing_domains() {
     let signer = pq_signer(35);
     let digest = Sha256Digest::for_bytes(b"contract");
     let legacy = HttpProviderEffectContractAttestation::statement_for(
-        "contract",
-        &digest,
-        /*authority_epoch*/ 7,
+        "contract", &digest, /*authority_epoch*/ 7,
     );
     let pq_statement = HttpProviderEffectContractAttestation::statement_for_pq(
-        "contract",
-        &digest,
-        /*authority_epoch*/ 7,
+        "contract", &digest, /*authority_epoch*/ 7,
     );
     let mut foreign = pq_statement.clone();
     foreign[0] ^= 1;

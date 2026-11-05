@@ -24,11 +24,17 @@ pub(super) fn pon_provider(root: &Path) -> anyhow::Result<Value> {
     fs::copy(Path::new("/bin/true").canonicalize()?, &binary)?;
     fs::set_permissions(&binary, fs::Permissions::from_mode(0o700))?;
     let bytes = fs::read(&binary)?;
-    anyhow::ensure!(bytes.starts_with(b"\x7fELF"), "fixture must be an actual ELF");
+    anyhow::ensure!(
+        bytes.starts_with(b"\x7fELF"),
+        "fixture must be an actual ELF"
+    );
     let store = root.join("chain-store");
     fs::create_dir(&store)?;
     fs::set_permissions(&store, fs::Permissions::from_mode(0o700))?;
-    write_private(&store.join("native.sqlite"), b"loader-only namespace fixture")?;
+    write_private(
+        &store.join("native.sqlite"),
+        b"loader-only namespace fixture",
+    )?;
     Ok(serde_json::json!({
         "provider_kind": "trillionnium-pon-local-v1", "chain_binary": binary.canonicalize()?,
         "chain_binary_sha256": Sha256Digest::for_bytes(&bytes).as_str(), "chain_store": store.canonicalize()?,
@@ -73,12 +79,16 @@ pub(super) fn configurations(
             "lookup_url_template": provider.lookup_url_template, "headers": {}, "timeout_ms": 2000 })
             .as_object().expect("HTTP fields").clone(),
     );
-    sign(&mut http, &provider.contract_sha256().map_err(anyhow::Error::msg)?, &contract_signer);
+    sign(
+        &mut http,
+        &provider.contract_sha256().map_err(anyhow::Error::msg)?,
+        &contract_signer,
+    );
     let mut pon = common;
     pon["schema_version"] = serde_json::json!(3);
-    pon.as_object_mut().expect("PoN config").extend(
-        pon_provider(root)?.as_object().expect("PoN fields").clone(),
-    );
+    pon.as_object_mut()
+        .expect("PoN config")
+        .extend(pon_provider(root)?.as_object().expect("PoN fields").clone());
     let parsed: AutomationEffectHostFileV3 = serde_json::from_value(pon.clone())?;
     sign(&mut pon, &pon_contract_digest(&parsed)?, &contract_signer);
     Ok([http, pon])
@@ -87,7 +97,9 @@ pub(super) fn configurations(
 fn sign(config: &mut Value, digest: &Sha256Digest, signer: &SigningKey) {
     config["contract_sha256"] = serde_json::json!(digest.as_str());
     let statement = HttpProviderEffectContractAttestation::statement_for(
-        "legacy-valid-contract", digest, /*authority_epoch*/ 9,
+        "legacy-valid-contract",
+        digest,
+        /*authority_epoch*/ 9,
     );
     config["contract_signature_hex"] = serde_json::json!(hex(&signer.sign(&statement).to_bytes()));
 }
