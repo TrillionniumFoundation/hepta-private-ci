@@ -1,0 +1,58 @@
+{
+  "commands": [
+    {
+      "argv": [
+        "python3",
+        "-B",
+        "run_shift_ablation.py",
+        "--inputs",
+        "INPUT_ROOT",
+        "--protocol",
+        "PROTOCOL_FROZEN.json",
+        "--output",
+        "execution_r1"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "python3",
+        "-B",
+        "digital_belief_state/qualify.py",
+        "--output",
+        "digital_belief_state/execution_r4"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "python3",
+        "-B",
+        "verification/verify.py",
+        "--inputs",
+        "INPUT_ROOT",
+        "--evidence",
+        "execution_r1",
+        "--output",
+        "verification/RESULTS.json"
+      ],
+      "exit_code": 0
+    }
+  ],
+  "environment": {
+    "OMP_NUM_THREADS": "1",
+    "OPENBLAS_NUM_THREADS": "1",
+    "numpy": "2.3.5",
+    "python": "3.12",
+    "scipy": "1.17.0"
+  },
+  "existing_remote_stage_inspected": {
+    "file": "hepta-wsp-bellman-20261105-stage-v1/integrate_bellman.py",
+    "finding": "contains Rust MCP finite-DAG Bellman tool registration; distinct from the new distribution/component/cost experiment",
+    "scope": "read-only on desktop; did not run or modify its integration",
+    "sha256": "8af2f294769225f1adfcab3465f8a9e06dbcce030d0913720ad802595ea4764f"
+  },
+  "full_development_cpu_cost_known": false,
+  "prior_jobs_interrupted": false,
+  "schema": "wsp-digital-execution-record-v1"
+}

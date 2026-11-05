@@ -1,0 +1,730 @@
+{
+  "all_raw_arithmetic_pass": true,
+  "cpu_seconds": 7.399734648000001,
+  "extended_descriptive_results": {
+    "high_outage": {
+      "J_minus_M": {
+        "mean": 0.02837791309339787,
+        "per_fit": [
+          0.02417346891542163,
+          0.03771089172339659,
+          0.011499021886639926,
+          0.03534012688042379,
+          0.033166056061107424
+        ],
+        "posthoc_twelve_contrast_familywise95": [
+          0.00011994255171153545,
+          0.056635883635084205
+        ]
+      },
+      "cost_break_even": {
+        "J_vs_C": {
+          "1": {
+            "delta_cpu_seconds": 0.29139342511666533,
+            "delta_utility": 0.1495628448178809,
+            "utility_units_per_cpu_second": 0.5132677401969532
+          },
+          "10": {
+            "delta_cpu_seconds": 0.040100591375416515,
+            "delta_utility": 0.1495628448178809,
+            "utility_units_per_cpu_second": 3.729691749872041
+          },
+          "100": {
+            "delta_cpu_seconds": 0.014971308001291631,
+            "delta_utility": 0.1495628448178809,
+            "utility_units_per_cpu_second": 9.989965125624131
+          }
+        },
+        "J_vs_M": {
+          "1": {
+            "delta_cpu_seconds": 0.29212352917083245,
+            "delta_utility": 0.02837791309339787,
+            "utility_units_per_cpu_second": 0.09714353778330058
+          },
+          "10": {
+            "delta_cpu_seconds": 0.0408306954295836,
+            "delta_utility": 0.02837791309339787,
+            "utility_units_per_cpu_second": 0.6950141993622977
+          },
+          "100": {
+            "delta_cpu_seconds": 0.015701412055458712,
+            "delta_utility": 0.02837791309339787,
+            "utility_units_per_cpu_second": 1.8073478355427326
+          }
+        }
+      },
+      "interaction": {
+        "mean": 0.05208162891508321,
+        "per_fit": [
+          0.031678305159937845,
+          0.024368349499982414,
+          0.07214761554656893,
+          0.04908895236325224,
+          0.08312492200567465
+        ],
+        "positive_count": 5
+      }
+    },
+    "high_time_price": {
+      "J_minus_M": {
+        "mean": 0.010796118726064601,
+        "per_fit": [
+          0.015049750339271556,
+          -0.0013456781786926053,
+          0.02027055353744267,
+          0.0,
+          0.02000596793230139
+        ],
+        "posthoc_twelve_contrast_familywise95": [
+          -0.017326127615282415,
+          0.038918365067411614
+        ]
+      },
+      "cost_break_even": {
+        "J_vs_C": {
+          "1": {
+            "delta_cpu_seconds": 0.265719008570833,
+            "delta_utility": 0.3074197104004878,
+            "utility_units_per_cpu_second": 1.1569353357666867
+          },
+          "10": {
+            "delta_cpu_seconds": 0.03658287349708313,
+            "delta_utility": 0.3074197104004878,
+            "utility_units_per_cpu_second": 8.40337789280001
+          },
+          "100": {
+            "delta_cpu_seconds": 0.013669259989708134,
+            "delta_utility": 0.3074197104004878,
+            "utility_units_per_cpu_second": 22.4898575805823
+          }
+        },
+        "J_vs_M": {
+          "1": {
+            "delta_cpu_seconds": 0.2657524690249999,
+            "delta_utility": 0.010796118726064594,
+            "utility_units_per_cpu_second": 0.040624716547973
+          },
+          "10": {
+            "delta_cpu_seconds": 0.036616333951249934,
+            "delta_utility": 0.010796118726064594,
+            "utility_units_per_cpu_second": 0.29484433751446215
+          },
+          "100": {
+            "delta_cpu_seconds": 0.013702720443874944,
+            "delta_utility": 0.010796118726064594,
+            "utility_units_per_cpu_second": 0.7878814115988487
+          }
+        }
+      },
+      "interaction": {
+        "mean": 0.03735696373777838,
+        "per_fit": [
+          0.0622776050156256,
+          -0.035141164568957606,
+          0.06633149598071289,
+          0.03416542872334906,
+          0.059151453538161966
+        ],
+        "positive_count": 4
+      }
+    },
+    "low_signal_cheap": {
+      "J_minus_M": {
+        "mean": 0.02875585085122855,
+        "per_fit": [
+          0.03107516480525839,
+          0.019173064279548332,
+          0.04122960324713329,
+          0.01513646467644103,
+          0.037164957247761685
+        ],
+        "posthoc_twelve_contrast_familywise95": [
+          -0.0009344564993812379,
+          0.058446158201838336
+        ]
+      },
+      "cost_break_even": {
+        "J_vs_C": {
+          "1": {
+            "delta_cpu_seconds": 0.29782753982499904,
+            "delta_utility": 0.05354081396621119,
+            "utility_units_per_cpu_second": 0.17977119912306067
+          },
+          "10": {
+            "delta_cpu_seconds": 0.042745956126249984,
+            "delta_utility": 0.05354081396621119,
+            "utility_units_per_cpu_second": 1.2525351826984203
+          },
+          "100": {
+            "delta_cpu_seconds": 0.017237797756375073,
+            "delta_utility": 0.05354081396621119,
+            "utility_units_per_cpu_second": 3.1060124224053003
+          }
+        },
+        "J_vs_M": {
+          "1": {
+            "delta_cpu_seconds": 0.29828625997083186,
+            "delta_utility": 0.02875585085122855,
+            "utility_units_per_cpu_second": 0.09640353817852844
+          },
+          "10": {
+            "delta_cpu_seconds": 0.043204676272082757,
+            "delta_utility": 0.02875585085122855,
+            "utility_units_per_cpu_second": 0.6655726493617892
+          },
+          "100": {
+            "delta_cpu_seconds": 0.017696517902207845,
+            "delta_utility": 0.02875585085122855,
+            "utility_units_per_cpu_second": 1.6249440149827963
+          }
+        }
+      },
+      "interaction": {
+        "mean": 0.0069897588931989605,
+        "per_fit": [
+          0.006116678151388569,
+          0.0031102708138728147,
+          0.009096342526495327,
+          0.005455687458671296,
+          0.011169815515566797
+        ],
+        "positive_count": 5
+      }
+    }
+  },
+  "max_selected_replay_error": 1.1102230246251565e-16,
+  "posthoc_note": "J versus M intervals were not a frozen primary comparison; Bonferroni twelve includes the nine primary contrasts and three J-M comparisons. They are explicitly post hoc. Interaction signs are descriptive, not an adoption test.",
+  "rows": 240,
+  "schema": "wsp-shift-verification-v1",
+  "selected_arm_replays": 75,
+  "selected_replays": [
+    {
+      "arm": "C",
+      "error": 0.0,
+      "original_utility": -0.026491097449328982,
+      "pinned_evaluator_utility": -0.026491097449328982,
+      "world_id": "shift_ablation_11_high_outage_0"
+    },
+    {
+      "arm": "P",
+      "error": 0.0,
+      "original_utility": -0.041468367845934766,
+      "pinned_evaluator_utility": -0.041468367845934766,
+      "world_id": "shift_ablation_11_high_outage_0"
+    },
+    {
+      "arm": "Q",
+      "error": 0.0,
+      "original_utility": 0.07331449502650746,
+      "pinned_evaluator_utility": 0.07331449502650746,
+      "world_id": "shift_ablation_11_high_outage_0"
+    },
+    {
+      "arm": "J",
+      "error": 1.1102230246251565e-16,
+      "original_utility": 0.12059852528332653,
+      "pinned_evaluator_utility": 0.12059852528332642,
+      "world_id": "shift_ablation_11_high_outage_0"
+    },
+    {
+      "arm": "M",
+      "error": 0.0,
+      "original_utility": 0.08331449502650745,
+      "pinned_evaluator_utility": 0.08331449502650745,
+      "world_id": "shift_ablation_11_high_outage_0"
+    },
+    {
+      "arm": "C",
+      "error": 1.1102230246251565e-16,
+      "original_utility": 0.2937663967740848,
+      "pinned_evaluator_utility": 0.2937663967740849,
+      "world_id": "shift_ablation_11_high_time_price_0"
+    },
+    {
+      "arm": "P",
+      "error": 1.1102230246251565e-16,
+      "original_utility": 0.2937663967740848,
+      "pinned_evaluator_utility": 0.2937663967740849,
+      "world_id": "shift_ablation_11_high_time_price_0"
+    },
+    {
+      "arm": "Q",
+      "error": 1.1102230246251565e-16,
+      "original_utility": 0.2937663967740848,
+      "pinned_evaluator_utility": 0.2937663967740849,
+      "world_id": "shift_ablation_11_high_time_price_0"
+    },
+    {
+      "arm": "J",
+      "error": 1.1102230246251565e-16,
+      "original_utility": 0.2937663967740848,
+      "pinned_evaluator_utility": 0.2937663967740849,
+      "world_id": "shift_ablation_11_high_time_price_0"
+    },
+    {
+      "arm": "M",
+      "error": 1.1102230246251565e-16,
+      "original_utility": 0.2937663967740848,
+      "pinned_evaluator_utility": 0.2937663967740849,
+      "world_id": "shift_ablation_11_high_time_price_0"
+    },
+    {
+      "arm": "C",
+      "error": 0.0,
+      "original_utility": 0.04236086966116133,
+      "pinned_evaluator_utility": 0.04236086966116133,
+      "world_id": "shift_ablation_11_low_signal_cheap_0"
+    },
+    {
+      "arm": "P",
+      "error": 0.0,
+      "original_utility": 0.04942636634881939,
+      "pinned_evaluator_utility": 0.04942636634881939,
+      "world_id": "shift_ablation_11_low_signal_cheap_0"
+    },
+    {
+      "arm": "Q",
+      "error": 0.0,
+      "original_utility": 0.0637384486837369,
+      "pinned_evaluator_utility": 0.0637384486837369,
+      "world_id": "shift_ablation_11_low_signal_cheap_0"
+    },
+    {
+      "arm": "J",
+      "error": 0.0,
+      "original_utility": 0.0637384486837369,
+      "pinned_evaluator_utility": 0.0637384486837369,
+      "world_id": "shift_ablation_11_low_signal_cheap_0"
+    },
+    {
+      "arm": "M",
+      "error": 0.0,
+      "original_utility": 0.0637384486837369,
+      "pinned_evaluator_utility": 0.0637384486837369,
+      "world_id": "shift_ablation_11_low_signal_cheap_0"
+    },
+    {
+      "arm": "C",
+      "error": 0.0,
+      "original_utility": -0.0377547314821267,
+      "pinned_evaluator_utility": -0.0377547314821267,
+      "world_id": "shift_ablation_23_high_outage_0"
+    },
+    {
+      "arm": "P",
+      "error": 2.7755575615628914e-17,
+      "original_utility": 0.03540926074853319,
+      "pinned_evaluator_utility": 0.035409260748533164,
+      "world_id": "shift_ablation_23_high_outage_0"
+    },
+    {
+      "arm": "Q",
+      "error": 0.0,
+      "original_utility": 0.15558265949566263,
+      "pinned_evaluator_utility": 0.15558265949566263,
+      "world_id": "shift_ablation_23_high_outage_0"
+    },
+    {
+      "arm": "J",
+      "error": 5.551115123125783e-17,
+      "original_utility": 0.21896279504976823,
+      "pinned_evaluator_utility": 0.21896279504976818,
+      "world_id": "shift_ablation_23_high_outage_0"
+    },
+    {
+      "arm": "M",
+      "error": 0.0,
+      "original_utility": 0.07922516944263203,
+      "pinned_evaluator_utility": 0.07922516944263203,
+      "world_id": "shift_ablation_23_high_outage_0"
+    },
+    {
+      "arm": "C",
+      "error": 0.0,
+      "original_utility": -0.8834178480484849,
+      "pinned_evaluator_utility": -0.8834178480484849,
+      "world_id": "shift_ablation_23_high_time_price_0"
+    },
+    {
+      "arm": "P",
+      "error": 0.0,
+      "original_utility": -0.7167985988577004,
+      "pinned_evaluator_utility": -0.7167985988577004,
+      "world_id": "shift_ablation_23_high_time_price_0"
+    },
+    {
+      "arm": "Q",
+      "error": 0.0,
+      "original_utility": -0.07341784804846418,
+      "pinned_evaluator_utility": -0.07341784804846418,
+      "world_id": "shift_ablation_23_high_time_price_0"
+    },
+    {
+      "arm": "J",
+      "error": 0.0,
+      "original_utility": 0.07341784804846418,
+      "pinned_evaluator_utility": 0.07341784804846418,
+      "world_id": "shift_ablation_23_high_time_price_0"
+    },
+    {
+      "arm": "M",
+      "error": 0.0,
+      "original_utility": 0.07341784804846418,
+      "pinned_evaluator_utility": 0.07341784804846418,
+      "world_id": "shift_ablation_23_high_time_price_0"
+    },
+    {
+      "arm": "C",
+      "error": 0.0,
+      "original_utility": -0.023723697165483615,
+      "pinned_evaluator_utility": -0.023723697165483615,
+      "world_id": "shift_ablation_23_low_signal_cheap_0"
+    },
+    {
+      "arm": "P",
+      "error": 3.469446951953614e-17,
+      "original_utility": 0.04262774228641024,
+      "pinned_evaluator_utility": 0.042627742286410204,
+      "world_id": "shift_ablation_23_low_signal_cheap_0"
+    },
+    {
+      "arm": "Q",
+      "error": 0.0,
+      "original_utility": -0.023723697165483615,
+      "pinned_evaluator_utility": -0.023723697165483615,
+      "world_id": "shift_ablation_23_low_signal_cheap_0"
+    },
+    {
+      "arm": "J",
+      "error": 1.3877787807814457e-17,
+      "original_utility": 0.06432774228641044,
+      "pinned_evaluator_utility": 0.06432774228641043,
+      "world_id": "shift_ablation_23_low_signal_cheap_0"
+    },
+    {
+      "arm": "M",
+      "error": 1.1102230246251565e-16,
+      "original_utility": 0.023723697165483615,
+      "pinned_evaluator_utility": 0.023723697165483504,
+      "world_id": "shift_ablation_23_low_signal_cheap_0"
+    },
+    {
+      "arm": "C",
+      "error": 0.0,
+      "original_utility": 0.3216111145232683,
+      "pinned_evaluator_utility": 0.3216111145232683,
+      "world_id": "shift_ablation_37_high_outage_0"
+    },
+    {
+      "arm": "P",
+      "error": 0.0,
+      "original_utility": 0.3216111145232683,
+      "pinned_evaluator_utility": 0.3216111145232683,
+      "world_id": "shift_ablation_37_high_outage_0"
+    },
+    {
+      "arm": "Q",
+      "error": 0.0,
+      "original_utility": 0.3216111145232683,
+      "pinned_evaluator_utility": 0.3216111145232683,
+      "world_id": "shift_ablation_37_high_outage_0"
+    },
+    {
+      "arm": "J",
+      "error": 0.0,
+      "original_utility": 0.3216111145232683,
+      "pinned_evaluator_utility": 0.3216111145232683,
+      "world_id": "shift_ablation_37_high_outage_0"
+    },
+    {
+      "arm": "M",
+      "error": 0.0,
+      "original_utility": 0.3216111145232683,
+      "pinned_evaluator_utility": 0.3216111145232683,
+      "world_id": "shift_ablation_37_high_outage_0"
+    },
+    {
+      "arm": "C",
+      "error": 0.0,
+      "original_utility": -0.5167817001775744,
+      "pinned_evaluator_utility": -0.5167817001775744,
+      "world_id": "shift_ablation_37_high_time_price_0"
+    },
+    {
+      "arm": "P",
+      "error": 0.0,
+      "original_utility": -0.5167817001775744,
+      "pinned_evaluator_utility": -0.5167817001775744,
+      "world_id": "shift_ablation_37_high_time_price_0"
+    },
+    {
+      "arm": "Q",
+      "error": 0.0,
+      "original_utility": 0.20321829982242545,
+      "pinned_evaluator_utility": 0.20321829982242545,
+      "world_id": "shift_ablation_37_high_time_price_0"
+    },
+    {
+      "arm": "J",
+      "error": 0.0,
+      "original_utility": 0.20321829982242545,
+      "pinned_evaluator_utility": 0.20321829982242545,
+      "world_id": "shift_ablation_37_high_time_price_0"
+    },
+    {
+      "arm": "M",
+      "error": 0.0,
+      "original_utility": 0.20321829982242545,
+      "pinned_evaluator_utility": 0.20321829982242545,
+      "world_id": "shift_ablation_37_high_time_price_0"
+    },
+    {
+      "arm": "C",
+      "error": 0.0,
+      "original_utility": -0.03742051497242105,
+      "pinned_evaluator_utility": -0.03742051497242105,
+      "world_id": "shift_ablation_37_low_signal_cheap_0"
+    },
+    {
+      "arm": "P",
+      "error": 1.1102230246251565e-16,
+      "original_utility": 0.03742051497242105,
+      "pinned_evaluator_utility": 0.03742051497242116,
+      "world_id": "shift_ablation_37_low_signal_cheap_0"
+    },
+    {
+      "arm": "Q",
+      "error": 0.0,
+      "original_utility": -0.04242051497242105,
+      "pinned_evaluator_utility": -0.04242051497242105,
+      "world_id": "shift_ablation_37_low_signal_cheap_0"
+    },
+    {
+      "arm": "J",
+      "error": 4.163336342344337e-17,
+      "original_utility": 0.07946800852773103,
+      "pinned_evaluator_utility": 0.07946800852773107,
+      "world_id": "shift_ablation_37_low_signal_cheap_0"
+    },
+    {
+      "arm": "M",
+      "error": 1.1102230246251565e-16,
+      "original_utility": 0.03742051497242105,
+      "pinned_evaluator_utility": 0.03742051497242116,
+      "world_id": "shift_ablation_37_low_signal_cheap_0"
+    },
+    {
+      "arm": "C",
+      "error": 0.0,
+      "original_utility": -0.012715516888639922,
+      "pinned_evaluator_utility": -0.012715516888639922,
+      "world_id": "shift_ablation_53_high_outage_0"
+    },
+    {
+      "arm": "P",
+      "error": 0.0,
+      "original_utility": -0.012715516888639922,
+      "pinned_evaluator_utility": -0.012715516888639922,
+      "world_id": "shift_ablation_53_high_outage_0"
+    },
+    {
+      "arm": "Q",
+      "error": 0.0,
+      "original_utility": -0.012715516888639922,
+      "pinned_evaluator_utility": -0.012715516888639922,
+      "world_id": "shift_ablation_53_high_outage_0"
+    },
+    {
+      "arm": "J",
+      "error": 0.0,
+      "original_utility": -0.012715516888639922,
+      "pinned_evaluator_utility": -0.012715516888639922,
+      "world_id": "shift_ablation_53_high_outage_0"
+    },
+    {
+      "arm": "M",
+      "error": 0.0,
+      "original_utility": -0.012715516888639922,
+      "pinned_evaluator_utility": -0.012715516888639922,
+      "world_id": "shift_ablation_53_high_outage_0"
+    },
+    {
+      "arm": "C",
+      "error": 0.0,
+      "original_utility": -0.3541256635939253,
+      "pinned_evaluator_utility": -0.3541256635939253,
+      "world_id": "shift_ablation_53_high_time_price_0"
+    },
+    {
+      "arm": "P",
+      "error": 0.0,
+      "original_utility": -0.3541256635939253,
+      "pinned_evaluator_utility": -0.3541256635939253,
+      "world_id": "shift_ablation_53_high_time_price_0"
+    },
+    {
+      "arm": "Q",
+      "error": 0.0,
+      "original_utility": 0.09587433640607479,
+      "pinned_evaluator_utility": 0.09587433640607479,
+      "world_id": "shift_ablation_53_high_time_price_0"
+    },
+    {
+      "arm": "J",
+      "error": 0.0,
+      "original_utility": 0.09587433640607479,
+      "pinned_evaluator_utility": 0.09587433640607479,
+      "world_id": "shift_ablation_53_high_time_price_0"
+    },
+    {
+      "arm": "M",
+      "error": 0.0,
+      "original_utility": 0.09587433640607479,
+      "pinned_evaluator_utility": 0.09587433640607479,
+      "world_id": "shift_ablation_53_high_time_price_0"
+    },
+    {
+      "arm": "C",
+      "error": 0.0,
+      "original_utility": -0.03848178467681612,
+      "pinned_evaluator_utility": -0.03848178467681612,
+      "world_id": "shift_ablation_53_low_signal_cheap_0"
+    },
+    {
+      "arm": "P",
+      "error": 0.0,
+      "original_utility": -0.024050906040821732,
+      "pinned_evaluator_utility": -0.024050906040821732,
+      "world_id": "shift_ablation_53_low_signal_cheap_0"
+    },
+    {
+      "arm": "Q",
+      "error": 0.0,
+      "original_utility": 0.0014946488560776405,
+      "pinned_evaluator_utility": 0.0014946488560776405,
+      "world_id": "shift_ablation_53_low_signal_cheap_0"
+    },
+    {
+      "arm": "J",
+      "error": 0.0,
+      "original_utility": 0.0014946488560776405,
+      "pinned_evaluator_utility": 0.0014946488560776405,
+      "world_id": "shift_ablation_53_low_signal_cheap_0"
+    },
+    {
+      "arm": "M",
+      "error": 0.0,
+      "original_utility": 0.0014946488560776405,
+      "pinned_evaluator_utility": 0.0014946488560776405,
+      "world_id": "shift_ablation_53_low_signal_cheap_0"
+    },
+    {
+      "arm": "C",
+      "error": 0.0,
+      "original_utility": -0.13664438104944154,
+      "pinned_evaluator_utility": -0.13664438104944154,
+      "world_id": "shift_ablation_71_high_outage_0"
+    },
+    {
+      "arm": "P",
+      "error": 0.0,
+      "original_utility": 0.13664438104944154,
+      "pinned_evaluator_utility": 0.13664438104944154,
+      "world_id": "shift_ablation_71_high_outage_0"
+    },
+    {
+      "arm": "Q",
+      "error": 0.0,
+      "original_utility": -0.13664438104944154,
+      "pinned_evaluator_utility": -0.13664438104944154,
+      "world_id": "shift_ablation_71_high_outage_0"
+    },
+    {
+      "arm": "J",
+      "error": 0.0,
+      "original_utility": 0.13664438104944154,
+      "pinned_evaluator_utility": 0.13664438104944154,
+      "world_id": "shift_ablation_71_high_outage_0"
+    },
+    {
+      "arm": "M",
+      "error": 0.0,
+      "original_utility": 0.13664438104944154,
+      "pinned_evaluator_utility": 0.13664438104944154,
+      "world_id": "shift_ablation_71_high_outage_0"
+    },
+    {
+      "arm": "C",
+      "error": 1.1102230246251565e-16,
+      "original_utility": 0.12908212744387482,
+      "pinned_evaluator_utility": 0.12908212744387493,
+      "world_id": "shift_ablation_71_high_time_price_0"
+    },
+    {
+      "arm": "P",
+      "error": 1.1102230246251565e-16,
+      "original_utility": -0.34710177850139234,
+      "pinned_evaluator_utility": -0.34710177850139223,
+      "world_id": "shift_ablation_71_high_time_price_0"
+    },
+    {
+      "arm": "Q",
+      "error": 1.1102230246251565e-16,
+      "original_utility": 0.12908212744387482,
+      "pinned_evaluator_utility": 0.12908212744387493,
+      "world_id": "shift_ablation_71_high_time_price_0"
+    },
+    {
+      "arm": "J",
+      "error": 1.1102230246251565e-16,
+      "original_utility": 0.12908212744387482,
+      "pinned_evaluator_utility": 0.12908212744387493,
+      "world_id": "shift_ablation_71_high_time_price_0"
+    },
+    {
+      "arm": "M",
+      "error": 1.1102230246251565e-16,
+      "original_utility": 0.12908212744387482,
+      "pinned_evaluator_utility": 0.12908212744387493,
+      "world_id": "shift_ablation_71_high_time_price_0"
+    },
+    {
+      "arm": "C",
+      "error": 0.0,
+      "original_utility": 0.11409847987301718,
+      "pinned_evaluator_utility": 0.11409847987301718,
+      "world_id": "shift_ablation_71_low_signal_cheap_0"
+    },
+    {
+      "arm": "P",
+      "error": 2.7755575615628914e-17,
+      "original_utility": 0.11456368846385936,
+      "pinned_evaluator_utility": 0.11456368846385934,
+      "world_id": "shift_ablation_71_low_signal_cheap_0"
+    },
+    {
+      "arm": "Q",
+      "error": 0.0,
+      "original_utility": 0.1250398949192144,
+      "pinned_evaluator_utility": 0.1250398949192144,
+      "world_id": "shift_ablation_71_low_signal_cheap_0"
+    },
+    {
+      "arm": "J",
+      "error": 0.0,
+      "original_utility": 0.1871880846498481,
+      "pinned_evaluator_utility": 0.1871880846498481,
+      "world_id": "shift_ablation_71_low_signal_cheap_0"
+    },
+    {
+      "arm": "M",
+      "error": 0.0,
+      "original_utility": 0.1250398949192144,
+      "pinned_evaluator_utility": 0.1250398949192144,
+      "world_id": "shift_ablation_71_low_signal_cheap_0"
+    }
+  ],
+  "selected_worlds": 15,
+  "source_sha256": "3c73f64a78dd98c8ce3b5097b9ef0e3ef06fd713ff83588ee341950d8aed8a40",
+  "wall_seconds": 7.417503494001721
+}

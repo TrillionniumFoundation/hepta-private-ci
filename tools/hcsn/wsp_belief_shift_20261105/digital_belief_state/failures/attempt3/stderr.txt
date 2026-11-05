@@ -1,0 +1,13 @@
+Traceback (most recent call last):
+  File "/workspace/scratch/728b043792c6/wsp_digital/package/digital_belief_state/qualify.py", line 115, in <module>
+    if __name__=='__main__':main()
+                            ^^^^^^
+  File "/workspace/scratch/728b043792c6/wsp_digital/package/digital_belief_state/qualify.py", line 110, in main
+    save(ROOT / 'RESULTS.json',outcome)
+  File "/workspace/scratch/728b043792c6/wsp_digital/package/digital_belief_state/qualify.py", line 18, in save
+    with path.open('x') as f:
+         ^^^^^^^^^^^^^^
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/pathlib.py", line 1013, in open
+    return io.open(self, mode, buffering, encoding, errors, newline)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileExistsError: [Errno 17] File exists: '/workspace/scratch/728b043792c6/wsp_digital/package/digital_belief_state/RESULTS.json'

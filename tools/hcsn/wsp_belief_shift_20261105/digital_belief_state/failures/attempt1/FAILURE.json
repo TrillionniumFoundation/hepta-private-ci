@@ -1,0 +1,6 @@
+{
+  "status": "failed during strict JSON serialization of an illegal action score -Infinity",
+  "cpu_seconds_before_failed_write": 6.974195683,
+  "remediation": "serialize illegal scores as null; fully serialize before opening output; count per-instance fresh cache entries; clear reference class cache before each cold timing",
+  "do_not_treat_partial_result_as_completed": true
+}

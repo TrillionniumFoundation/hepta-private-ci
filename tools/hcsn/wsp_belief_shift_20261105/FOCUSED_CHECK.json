@@ -1,0 +1,34 @@
+{
+  "binary_exclusions_added": [
+    "./tools/hcsn/wsp_belief_shift_20261105/execution_r1/*.json.gz",
+    "./tools/hcsn/wsp_belief_shift_20261105/reproduction/inputs.tar.gz"
+  ],
+  "candidate_codespell_config_sha256": "433e1e6cc84820e59718f273ec778e80555bd99dd1830ceb885af312fb48aa62",
+  "codespell_version": "2.4.3",
+  "command": [
+    "python3",
+    "-B",
+    "-m",
+    "codespell_lib",
+    "--count",
+    "--ignore-words",
+    ".codespellignore",
+    "--skip",
+    "./.git",
+    "./tools/hcsn/wsp_belief_shift_20261105"
+  ],
+  "exit_code": 0,
+  "input_archive_actual_extraction": {
+    "exit_code": 0,
+    "sha256": "142904de63b108cd8e615fec7c676b337638e978a90a63be8ea4039ee3369226",
+    "verified_members": 65
+  },
+  "matching_binary_files": 17,
+  "official_checker_git_blob_sha": "994c5c4a662950b9eaf51ae2fb1ca2831d7dc59d",
+  "repository_ci_qualified": false,
+  "schema": "wsp-shift-focused-check-v1",
+  "scope": "new 61-file research package; not full repository CI",
+  "source_markdown_json_excluded": false,
+  "stderr": "0\n",
+  "stdout": ""
+}
