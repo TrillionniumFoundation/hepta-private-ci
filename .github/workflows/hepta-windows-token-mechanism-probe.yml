@@ -3,6 +3,9 @@ name: Windows token mechanisms (observations only)
 on:
   pull_request:
     paths:
+      - codex-rs/windows-sandbox-rs/src/acl_deny.rs
+      - codex-rs/windows-sandbox-rs/src/acl_tests.rs
+      - codex-rs/windows-sandbox-rs/src/unified_exec/acl_setup_tests.rs
       - codex-rs/windows-sandbox-rs/src/token.rs
       - codex-rs/windows-sandbox-rs/src/token_integrity_probe_tests.rs
       - codex-rs/windows-sandbox-rs/src/token_integrity_probe_support.rs

@@ -442,7 +442,7 @@ fn existing_native_deny_does_not_require_write_dac() -> Result<()> {
     let write_denied = unsafe {
         let raw = windows_sys::Win32::Storage::FileSystem::ReOpenFile(
             query.as_raw_handle() as HANDLE,
-            WRITE_DAC,
+            READ_CONTROL | WRITE_DAC,
             FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE,
             FILE_FLAG_BACKUP_SEMANTICS,
         );

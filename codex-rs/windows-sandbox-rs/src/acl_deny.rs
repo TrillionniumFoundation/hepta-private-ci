@@ -155,10 +155,11 @@ pub(super) unsafe fn add_deny_ace(
         return Ok(false);
     }
 
-    // Reopen this object, not its path. No-op callers never require WRITE_DAC.
+    // Keep query and update access on the same object. No-op callers never
+    // require WRITE_DAC.
     let raw_write = ReOpenFile(
         handle,
-        WRITE_DAC,
+        READ_CONTROL | WRITE_DAC,
         FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE,
         FILE_FLAG_BACKUP_SEMANTICS,
     );
