@@ -444,7 +444,7 @@ async fn original_store_driver_refuses_authenticated_lease_after_exact_head_chan
         provider_scope: host.provider_scope.clone(),
         destination_id: host.destination_id.clone(),
         packet_retention: None,
-            packet_execution: None,
+        packet_execution: None,
     };
     let binding = intent.final_use_binding()?;
     let result = fixture

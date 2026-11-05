@@ -3,8 +3,8 @@ use crate::control_packet::AdmittedEffectPacketV1;
 use tokio::sync::Semaphore;
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
-async fn packet_v1_refuses_http_even_with_valid_pq_grant_before_consumption()
--> anyhow::Result<()> {
+async fn packet_v1_refuses_http_even_with_valid_pq_grant_before_consumption() -> anyhow::Result<()>
+{
     let fixture = Fixture::new().await?;
     let server = MockServer::start().await;
     let scope = Sha256Digest::for_bytes(b"packet-http-refusal");
@@ -22,14 +22,36 @@ async fn packet_v1_refuses_http_even_with_valid_pq_grant_before_consumption()
         &intent.payload_digest,
         Arc::new(Semaphore::new(/*permits*/ 2)),
         &crate::NeuralCognitiveExecutionV1::bounded_read(),
-    ).await?;
-    assert!(host.execute_packet_v1(
-        &fixture.store, &intent, &packet, &grant, "packet-http", NOW + 5,
-    ).await.is_err());
+    )
+    .await?;
+    assert!(
+        host.execute_packet_v1(
+            &fixture.store,
+            &intent,
+            &packet,
+            &grant,
+            "packet-http",
+            NOW + 5,
+        )
+        .await
+        .is_err()
+    );
     assert_eq!(setup.trust_requests(), before);
     assert_eq!(host.authority.capacity()?.used_nonces, 0);
-    assert!(fixture.store.pending_authorized_taskflow_effects(8).await?.is_empty());
-    assert!(server.received_requests().await.expect("HTTP observations").is_empty());
+    assert!(
+        fixture
+            .store
+            .pending_authorized_taskflow_effects(8)
+            .await?
+            .is_empty()
+    );
+    assert!(
+        server
+            .received_requests()
+            .await
+            .expect("HTTP observations")
+            .is_empty()
+    );
     fixture.store.close().await;
     Ok(())
 }
@@ -64,36 +86,60 @@ async fn packet_v1_keeps_full_intent_binding_and_refuses_missing_or_classical_ow
         &intent.payload_digest,
         Arc::new(Semaphore::new(/*permits*/ 2)),
         &crate::NeuralCognitiveExecutionV1::bounded_read(),
-    ).await?;
+    )
+    .await?;
     let mut changed = vec![intent.clone(); 4];
     changed[0].subject_id = "foreign-agent".to_string();
     changed[1].destination_id = "foreign-provider".to_string();
     changed[2].final_use_scope_digest = Sha256Digest::for_bytes(b"foreign-scope");
     changed[3].payload_digest = Sha256Digest::for_bytes(b"foreign-payload");
     for wrong in changed {
-        assert!(host.execute_packet_v1(
-            &fixture.store, &wrong, &packet, &grant, "packet-binding", NOW + 5,
-        ).await.is_err());
+        assert!(
+            host.execute_packet_v1(
+                &fixture.store,
+                &wrong,
+                &packet,
+                &grant,
+                "packet-binding",
+                NOW + 5,
+            )
+            .await
+            .is_err()
+        );
     }
     // Cancellation after framing must still refuse before authority or provider
     // entry; a successfully admitted body is not an execution lease.
     let cancellation = tokio_util::sync::CancellationToken::new();
     let execution = crate::NeuralCognitiveExecutionV1::with_deadline(
-        Instant::now() + Duration::from_secs(2), cancellation.clone(),
+        Instant::now() + Duration::from_secs(2),
+        cancellation.clone(),
     );
     let cancelled = AdmittedEffectPacketV1::read(
-        &mut wire.as_slice(), u32::try_from(wire.len())?, &intent.payload_digest,
-        Arc::new(Semaphore::new(/*permits*/ 2)), &execution,
-    ).await?;
+        &mut wire.as_slice(),
+        u32::try_from(wire.len())?,
+        &intent.payload_digest,
+        Arc::new(Semaphore::new(/*permits*/ 2)),
+        &execution,
+    )
+    .await?;
     cancellation.cancel();
     assert!(matches!(host.execute_packet_v1(
         &fixture.store, &intent, &cancelled, &grant, "packet-binding", NOW + 5,
     ).await, Err(AgentdError::Protocol(message)) if message.contains("cancelled")));
     let pq = host.pq.take();
     assert!(!host.supports_packet_v1());
-    assert!(host.execute_packet_v1(
-        &fixture.store, &intent, &packet, &grant, "packet-binding", NOW + 5,
-    ).await.is_err());
+    assert!(
+        host.execute_packet_v1(
+            &fixture.store,
+            &intent,
+            &packet,
+            &grant,
+            "packet-binding",
+            NOW + 5,
+        )
+        .await
+        .is_err()
+    );
     host.pq = pq;
     let current = host.authority.clone();
     host.authority = FinalUseAuthority::open_state_dir(
@@ -103,13 +149,28 @@ async fn packet_v1_keeps_full_intent_binding_and_refuses_missing_or_classical_ow
         setup.head.clone(),
     )?;
     assert!(!host.supports_packet_v1());
-    assert!(host.execute_packet_v1(
-        &fixture.store, &intent, &packet, &grant, "packet-binding", NOW + 5,
-    ).await.is_err());
+    assert!(
+        host.execute_packet_v1(
+            &fixture.store,
+            &intent,
+            &packet,
+            &grant,
+            "packet-binding",
+            NOW + 5,
+        )
+        .await
+        .is_err()
+    );
     assert_eq!(current.capacity()?.used_nonces, 0);
     assert_eq!(host.authority.capacity()?.used_nonces, 0);
     assert_eq!(setup.trust_requests(), before);
-    assert!(fixture.store.pending_authorized_taskflow_effects(8).await?.is_empty());
+    assert!(
+        fixture
+            .store
+            .pending_authorized_taskflow_effects(8)
+            .await?
+            .is_empty()
+    );
     fixture.store.close().await;
     Ok(())
 }

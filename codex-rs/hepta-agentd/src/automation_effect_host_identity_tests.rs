@@ -195,7 +195,7 @@ async fn host_provider_identity_legacy_http_queries_original_occurrence_and_reta
         provider_scope: host.provider_scope.clone(),
         destination_id: host.destination_id.clone(),
         packet_retention: None,
-            packet_execution: None,
+        packet_execution: None,
     });
     fixture
         .store

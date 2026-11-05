@@ -13,8 +13,7 @@ impl AgentdAutomationEffectHost {
     pub(crate) fn supports_packet_v1(&self) -> bool {
         matches!(&self.adapter, AgentdProviderEffectAdapter::Pon(_))
             && self.pq.is_some()
-            && self.authority.authentication_profile()
-                == FinalUseAuthenticationProfile::MlDsa65V2
+            && self.authority.authentication_profile() == FinalUseAuthenticationProfile::MlDsa65V2
     }
 
     pub(crate) async fn execute_packet_v1(
@@ -69,12 +68,25 @@ impl PonLocalProviderEffectAdapter {
         let command = self.command(operation, executable.path());
         let outcome = runtime.block_on(async {
             match execution {
-                Some(execution) => pon_process::run_packet(
-                    command, wire_payload, deadline, MAX_PON_PROCESS_OUTPUT_BYTES, execution,
-                ).await,
-                None => pon_process::run(
-                    command, wire_payload, deadline, MAX_PON_PROCESS_OUTPUT_BYTES,
-                ).await,
+                Some(execution) => {
+                    pon_process::run_packet(
+                        command,
+                        wire_payload,
+                        deadline,
+                        MAX_PON_PROCESS_OUTPUT_BYTES,
+                        execution,
+                    )
+                    .await
+                }
+                None => {
+                    pon_process::run(
+                        command,
+                        wire_payload,
+                        deadline,
+                        MAX_PON_PROCESS_OUTPUT_BYTES,
+                    )
+                    .await
+                }
             }
         });
         match outcome {

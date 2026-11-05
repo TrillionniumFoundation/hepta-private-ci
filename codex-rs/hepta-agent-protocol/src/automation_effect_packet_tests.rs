@@ -57,7 +57,10 @@ fn packet_header_preserves_complete_intent_without_inline_hex() {
     });
     let header = serde_json::to_vec(&request).expect("header");
     assert!(header.len() as u64 + 1 <= MAX_CONTROL_FRAME_BYTES);
-    assert_eq!(serde_json::to_value(&request).expect("wire shape"), expected);
+    assert_eq!(
+        serde_json::to_value(&request).expect("wire shape"),
+        expected
+    );
     assert_eq!(
         serde_json::from_slice::<AgentdRequest>(&header).expect("round trip"),
         request

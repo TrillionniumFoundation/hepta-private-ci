@@ -17,10 +17,8 @@ fn marker_command(marker: &Path, script: &str) -> Command {
 async fn packet_process_expired_before_entry_creates_no_child_marker() -> anyhow::Result<()> {
     let root = tempfile::tempdir()?;
     let marker = root.path().join("expired.marker");
-    let execution = crate::NeuralCognitiveExecutionV1::with_deadline(
-        Instant::now(),
-        CancellationToken::new(),
-    );
+    let execution =
+        crate::NeuralCognitiveExecutionV1::with_deadline(Instant::now(), CancellationToken::new());
     let outcome = run_packet(
         marker_command(&marker, "printf started > \"$1\"; exec /bin/cat"),
         b"complete-packet",
@@ -40,7 +38,8 @@ async fn packet_process_cancelled_before_entry_creates_no_child_marker() -> anyh
     let marker = root.path().join("cancelled.marker");
     let cancellation = CancellationToken::new();
     let deadline = Instant::now() + Duration::from_secs(/*secs*/ 30);
-    let execution = crate::NeuralCognitiveExecutionV1::with_deadline(deadline, cancellation.clone());
+    let execution =
+        crate::NeuralCognitiveExecutionV1::with_deadline(deadline, cancellation.clone());
     cancellation.cancel();
     let outcome = run_packet(
         marker_command(&marker, "printf started > \"$1\"; exec /bin/cat"),
@@ -61,7 +60,8 @@ async fn packet_process_preserves_complete_stdin_and_output() -> anyhow::Result<
     let marker = root.path().join("complete.marker");
     let payload = (0_u8..=255).cycle().take(49_508).collect::<Vec<_>>();
     let deadline = Instant::now() + Duration::from_secs(/*secs*/ 30);
-    let execution = crate::NeuralCognitiveExecutionV1::with_deadline(deadline, CancellationToken::new());
+    let execution =
+        crate::NeuralCognitiveExecutionV1::with_deadline(deadline, CancellationToken::new());
     let outcome = run_packet(
         marker_command(&marker, "printf started > \"$1\"; exec /bin/cat"),
         &payload,
@@ -85,10 +85,14 @@ async fn packet_process_cancelled_after_entry_is_unknown_and_reaps_owned_child()
     let marker = root.path().join("owned-child.pid");
     let cancellation = CancellationToken::new();
     let deadline = Instant::now() + Duration::from_secs(/*secs*/ 30);
-    let execution = crate::NeuralCognitiveExecutionV1::with_deadline(deadline, cancellation.clone());
+    let execution =
+        crate::NeuralCognitiveExecutionV1::with_deadline(deadline, cancellation.clone());
     // exec preserves the observed shell PID and creates no descendant tree.
     let mut running = Box::pin(run_packet(
-        marker_command(&marker, "printf '%s\\n' \"$$\" > \"$1\"; exec /bin/sleep 30"),
+        marker_command(
+            &marker,
+            "printf '%s\\n' \"$$\" > \"$1\"; exec /bin/sleep 30",
+        ),
         b"complete-packet",
         deadline,
         super::super::MAX_PON_PROCESS_OUTPUT_BYTES,
@@ -117,9 +121,16 @@ async fn packet_process_cancelled_after_entry_is_unknown_and_reaps_owned_child()
     // This signal-0 probe targets only the child PID read from this test's own
     // private marker; it does not send a terminating signal or inspect others.
     let still_present = Command::new("/bin/sh")
-        .args(["-c", "kill -0 \"$1\" 2>/dev/null", "hepta-owned-child-probe"])
+        .args([
+            "-c",
+            "kill -0 \"$1\" 2>/dev/null",
+            "hepta-owned-child-probe",
+        ])
         .arg(pid.to_string())
         .status()?;
-    assert!(!still_present.success(), "owned child remained after cancellation cleanup");
+    assert!(
+        !still_present.success(),
+        "owned child remained after cancellation cleanup"
+    );
     Ok(())
 }

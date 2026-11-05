@@ -39,7 +39,14 @@ pub(super) async fn run(
     deadline: Instant,
     output_limit: usize,
 ) -> Outcome {
-    run_inner(command, payload, deadline, output_limit, /*execution*/ None).await
+    run_inner(
+        command,
+        payload,
+        deadline,
+        output_limit,
+        /*execution*/ None,
+    )
+    .await
 }
 
 pub(super) async fn run_packet(
@@ -66,9 +73,7 @@ async fn run_inner(
     output_limit: usize,
     execution: Option<&crate::NeuralCognitiveExecutionV1>,
 ) -> Outcome {
-    if Instant::now() >= deadline
-        || execution.is_some_and(|execution| execution.check().is_err())
-    {
+    if Instant::now() >= deadline || execution.is_some_and(|execution| execution.check().is_err()) {
         return Outcome::BeforeStart;
     }
     // The sealed ELF identity does not cover ambient loader configuration or
@@ -87,9 +92,7 @@ async fn run_inner(
     // Configuration and executable preparation cannot renew the caller's
     // window. This check is immediately before spawn, but is not an atomic
     // transaction between cancellation and the operating system's spawn.
-    if Instant::now() >= deadline
-        || execution.is_some_and(|execution| execution.check().is_err())
-    {
+    if Instant::now() >= deadline || execution.is_some_and(|execution| execution.check().is_err()) {
         return Outcome::BeforeStart;
     }
     let mut child = match command.spawn() {

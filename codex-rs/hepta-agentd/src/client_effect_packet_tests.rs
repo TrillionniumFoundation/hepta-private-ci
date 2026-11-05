@@ -175,7 +175,10 @@ async fn packet_client_refuses_legacy_capability_without_an_effect_connection() 
         let (header, mut reader) = request(&mut listener).await;
         reply(
             &mut reader,
-            response(&header, advertised(AGENTD_CAPABILITY_AUTOMATION_EXTERNAL_EFFECT)),
+            response(
+                &header,
+                advertised(AGENTD_CAPABILITY_AUTOMATION_EXTERNAL_EFFECT),
+            ),
         )
         .await;
         listener
@@ -184,9 +187,15 @@ async fn packet_client_refuses_legacy_capability_without_an_effect_connection() 
         .automation_execute_effect_packet_v1(intent, b"packet", grant, "packet-command".to_string())
         .await
         .expect_err("legacy capability must not admit a packet");
-    assert!(matches!(error, AgentdError::Protocol(message) if message.contains("does not advertise")));
+    assert!(
+        matches!(error, AgentdError::Protocol(message) if message.contains("does not advertise"))
+    );
     let mut listener = server.await.expect("server");
-    assert!(timeout(Duration::from_millis(20), listener.accept()).await.is_err());
+    assert!(
+        timeout(Duration::from_millis(20), listener.accept())
+            .await
+            .is_err()
+    );
 }
 
 #[tokio::test]
@@ -259,7 +268,9 @@ async fn packet_responses_keep_identity_framing_and_overload_checks() {
     assert!(client.decode_response(request.request_id, &bytes).is_err());
     bytes.push(b'\n');
     assert_eq!(
-        client.decode_response(request.request_id, &bytes).expect("identity-bound response"),
+        client
+            .decode_response(request.request_id, &bytes)
+            .expect("identity-bound response"),
         expected
     );
     assert!(matches!(
@@ -319,5 +330,7 @@ async fn packet_client_deadline_includes_capability_discovery_and_response() {
             .await,
         Err(AgentdError::Protocol(message)) if message.contains("packet request timed out")
     ));
-    server.await.expect("server observed the complete original packet");
+    server
+        .await
+        .expect("server observed the complete original packet");
 }

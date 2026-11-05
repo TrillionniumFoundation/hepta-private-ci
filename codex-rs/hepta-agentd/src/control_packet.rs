@@ -43,11 +43,14 @@ impl AdmittedEffectPacketV1 {
             .ok_or_else(|| {
                 AgentdError::Invalid("automation effect packet length is invalid".to_string())
             })?;
-        let retention = Arc::new(permits.try_acquire_owned().map_err(|_| {
-            AgentdError::Overloaded {
-                retry_after_ms: AGENTD_OVERLOAD_RETRY_AFTER_MS,
-            }
-        })?);
+        let retention =
+            Arc::new(
+                permits
+                    .try_acquire_owned()
+                    .map_err(|_| AgentdError::Overloaded {
+                        retry_after_ms: AGENTD_OVERLOAD_RETRY_AFTER_MS,
+                    })?,
+            );
         let mut wire_payload = vec![0_u8; wire_len];
         reader.read_exact(&mut wire_payload).await?;
         let mut trailing = [0_u8; 1];

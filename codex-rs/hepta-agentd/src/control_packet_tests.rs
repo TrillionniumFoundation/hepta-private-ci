@@ -18,7 +18,10 @@ async fn coalesced_header_preserves_prefetched_complete_packet() -> anyhow::Resu
     let mut wire = b"{}\n".to_vec();
     wire.extend_from_slice(&body);
     let mut reader = BufReader::new(wire.as_slice());
-    assert_eq!(crate::control::read_request_frame(&mut reader).await?, b"{}\n");
+    assert_eq!(
+        crate::control::read_request_frame(&mut reader).await?,
+        b"{}\n"
+    );
     assert!(!reader.buffer().is_empty());
     let permits = Arc::new(Semaphore::new(PACKET_CONNECTION_CAPACITY));
     let packet = AdmittedEffectPacketV1::read(
@@ -50,7 +53,10 @@ async fn fragmented_header_and_body_require_exact_write_side_eof() -> anyhow::Re
         writer.shutdown().await
     });
     let mut reader = BufReader::new(reader);
-    assert_eq!(crate::control::read_request_frame(&mut reader).await?, b"{}\n");
+    assert_eq!(
+        crate::control::read_request_frame(&mut reader).await?,
+        b"{}\n"
+    );
     let packet = AdmittedEffectPacketV1::read(
         &mut reader,
         u32::try_from(body.len())?,
@@ -88,7 +94,11 @@ async fn invalid_lengths_refuse_before_permit_or_input_read() -> anyhow::Result<
     let execution = NeuralCognitiveExecutionV1::bounded_read();
     let body = b"unread";
     let expected = Sha256Digest::for_bytes(body);
-    for length in [0, u32::try_from(MAX_AUTOMATION_EFFECT_PACKET_V1_BYTES)? + 1, u32::MAX] {
+    for length in [
+        0,
+        u32::try_from(MAX_AUTOMATION_EFFECT_PACKET_V1_BYTES)? + 1,
+        u32::MAX,
+    ] {
         let mut reader = body.as_slice();
         assert!(matches!(
             AdmittedEffectPacketV1::read(
@@ -145,7 +155,8 @@ async fn truncated_trailing_and_wrong_digest_packets_release_capacity() -> anyho
             &expected,
             Arc::clone(&permits),
             &execution,
-        ).await,
+        )
+        .await,
         Err(AgentdError::Protocol(_))
     ));
     assert!(matches!(
@@ -155,7 +166,8 @@ async fn truncated_trailing_and_wrong_digest_packets_release_capacity() -> anyho
             &expected,
             Arc::clone(&permits),
             &execution,
-        ).await,
+        )
+        .await,
         Err(AgentdError::Invalid(_))
     ));
     assert_eq!(permits.available_permits(), PACKET_CONNECTION_CAPACITY);
@@ -174,7 +186,8 @@ async fn capacity_stays_reserved_until_last_execution_owner_finishes() -> anyhow
         &expected,
         Arc::clone(&permits),
         &execution,
-    ).await?;
+    )
+    .await?;
     let retained = packet.retention();
     drop(packet);
     let mut reader = body.as_slice();
@@ -185,7 +198,8 @@ async fn capacity_stays_reserved_until_last_execution_owner_finishes() -> anyhow
             &expected,
             Arc::clone(&permits),
             &execution,
-        ).await,
+        )
+        .await,
         Err(AgentdError::Overloaded { .. })
     ));
     assert_eq!(reader, body);
@@ -196,7 +210,8 @@ async fn capacity_stays_reserved_until_last_execution_owner_finishes() -> anyhow
         &expected,
         Arc::clone(&permits),
         &execution,
-    ).await?;
+    )
+    .await?;
     assert_eq!(packet.wire_payload(), body);
     drop(packet);
     assert_eq!(permits.available_permits(), 1);
@@ -212,16 +227,20 @@ async fn caller_deadline_bounds_stalled_body_and_missing_eof() -> anyhow::Result
     for sent in [0, body.len() - 1, body.len()] {
         let (mut writer, mut reader) = duplex(/*max_buf_size*/ 64);
         writer.write_all(&body[..sent]).await?;
-        assert!(timeout(
-            Duration::from_millis(/*millis*/ 25),
-            AdmittedEffectPacketV1::read(
-                &mut reader,
-                u32::try_from(body.len())?,
-                &expected,
-                Arc::clone(&permits),
-                &execution,
-            ),
-        ).await.is_err());
+        assert!(
+            timeout(
+                Duration::from_millis(/*millis*/ 25),
+                AdmittedEffectPacketV1::read(
+                    &mut reader,
+                    u32::try_from(body.len())?,
+                    &expected,
+                    Arc::clone(&permits),
+                    &execution,
+                ),
+            )
+            .await
+            .is_err()
+        );
         assert_eq!(permits.available_permits(), PACKET_CONNECTION_CAPACITY);
         drop(writer);
     }
@@ -241,9 +260,7 @@ async fn cancelled_partial_read_releases_its_reserved_capacity() -> anyhow::Resu
         Arc::clone(&permits),
         &execution,
     ));
-    assert!(poll_fn(|context| {
-        Poll::Ready(pending.as_mut().poll(context).is_pending())
-    }).await);
+    assert!(poll_fn(|context| { Poll::Ready(pending.as_mut().poll(context).is_pending()) }).await);
     assert_eq!(permits.available_permits(), PACKET_CONNECTION_CAPACITY - 1);
     drop(pending);
     assert_eq!(permits.available_permits(), PACKET_CONNECTION_CAPACITY);
@@ -256,10 +273,8 @@ async fn expired_or_cancelled_execution_refuses_before_reading() -> anyhow::Resu
     let expected = Sha256Digest::for_bytes(body);
     let cancellation = CancellationToken::new();
     cancellation.cancel();
-    let expired = NeuralCognitiveExecutionV1::with_deadline(
-        Instant::now(),
-        CancellationToken::new(),
-    );
+    let expired =
+        NeuralCognitiveExecutionV1::with_deadline(Instant::now(), CancellationToken::new());
     let cancelled = NeuralCognitiveExecutionV1::with_deadline(
         Instant::now() + Duration::from_secs(/*secs*/ 2),
         cancellation,
@@ -274,7 +289,8 @@ async fn expired_or_cancelled_execution_refuses_before_reading() -> anyhow::Resu
                 &expected,
                 Arc::clone(&permits),
                 &execution,
-            ).await,
+            )
+            .await,
             Err(AgentdError::Protocol(_))
         ));
         assert_eq!(reader, body);
@@ -302,9 +318,7 @@ async fn cancellation_before_eof_refuses_the_complete_packet() -> anyhow::Result
         Arc::clone(&permits),
         &execution,
     ));
-    assert!(poll_fn(|context| {
-        Poll::Ready(pending.as_mut().poll(context).is_pending())
-    }).await);
+    assert!(poll_fn(|context| { Poll::Ready(pending.as_mut().poll(context).is_pending()) }).await);
     assert_eq!(permits.available_permits(), PACKET_CONNECTION_CAPACITY - 1);
     cancellation.cancel();
     writer.shutdown().await?;
@@ -329,9 +343,7 @@ async fn deadline_before_eof_refuses_the_complete_packet() -> anyhow::Result<()>
         Arc::clone(&permits),
         &execution,
     ));
-    assert!(poll_fn(|context| {
-        Poll::Ready(pending.as_mut().poll(context).is_pending())
-    }).await);
+    assert!(poll_fn(|context| { Poll::Ready(pending.as_mut().poll(context).is_pending()) }).await);
     tokio::time::sleep_until(tokio::time::Instant::from_std(deadline)).await;
     writer.shutdown().await?;
     assert!(matches!(pending.await, Err(AgentdError::Protocol(_))));

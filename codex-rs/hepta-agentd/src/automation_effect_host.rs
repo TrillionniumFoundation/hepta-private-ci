@@ -60,10 +60,10 @@ use sha2::Sha256;
 use crate::AgentdError;
 use crate::AgentdIdentity;
 
-#[path = "automation_effect_host_pq.rs"]
-mod pq;
 #[path = "automation_effect_host_packet.rs"]
 mod packet;
+#[path = "automation_effect_host_pq.rs"]
+mod pq;
 use packet::EffectWire;
 
 #[path = "automation_effect_host_pon_task_acceptance.rs"]
@@ -1147,7 +1147,11 @@ impl AgentdAutomationEffectHost {
                 packet.execution().check().map_err(AgentdError::Protocol)?;
                 let bytes = packet.wire_payload();
                 self.validate_intent_binding(intent, bytes)?;
-                (bytes, Some(packet.retention()), Some(packet.execution().clone()))
+                (
+                    bytes,
+                    Some(packet.retention()),
+                    Some(packet.execution().clone()),
+                )
             }
         };
         // Exact terminal readback mints no authority and must remain usable
@@ -1564,7 +1568,11 @@ impl AuthorizedEffectDriver for AgentdAuthorizedEffectDriver {
             return Err(AuthorizedEffectDriverError::BeforeProviderContact);
         }
         self.lease.check()?;
-        if self.packet_execution.as_ref().is_some_and(|execution| execution.check().is_err()) {
+        if self
+            .packet_execution
+            .as_ref()
+            .is_some_and(|execution| execution.check().is_err())
+        {
             return Err(AuthorizedEffectDriverError::BeforeProviderContact);
         }
         let expected = self.recovery_key(request.owner_agent_id, request.intent)?;
@@ -1599,7 +1607,9 @@ impl AuthorizedEffectDriver for AgentdAuthorizedEffectDriver {
                     Err(_) => return ProviderThreadOutcome::BeforeContact,
                 };
                 if lease.check().is_err()
-                    || packet_execution.as_ref().is_some_and(|execution| execution.check().is_err())
+                    || packet_execution
+                        .as_ref()
+                        .is_some_and(|execution| execution.check().is_err())
                 {
                     return ProviderThreadOutcome::BeforeContact;
                 }
@@ -1607,7 +1617,11 @@ impl AuthorizedEffectDriver for AgentdAuthorizedEffectDriver {
                     let AgentdProviderEffectAdapter::Pon(adapter) = adapter else {
                         return ProviderThreadOutcome::BeforeContact;
                     };
-                    runtime.block_on(adapter.dispatch_packet(thread_intent, wire_payload, execution))
+                    runtime.block_on(adapter.dispatch_packet(
+                        thread_intent,
+                        wire_payload,
+                        execution,
+                    ))
                 } else {
                     runtime.block_on(adapter.dispatch_with_payload(&thread_intent, &wire_payload))
                 };

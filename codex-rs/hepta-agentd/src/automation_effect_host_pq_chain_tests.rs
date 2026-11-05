@@ -118,7 +118,8 @@ async fn real_chain_ordinary_pq_packet_v1_dispatches_once_and_reads_original_rec
         ));
         assert_eq!(host.authority.capacity()?.used_nonces, 0);
         assert!(
-            fixture.store
+            fixture
+                .store
                 .authorized_taskflow_effect_attempt(&intent.run_id, &intent.step_id, intent.attempt)
                 .await?
                 .is_none()
@@ -133,7 +134,8 @@ async fn real_chain_ordinary_pq_packet_v1_dispatches_once_and_reads_original_rec
                 Instant::now() + Duration::from_secs(30),
                 tokio_util::sync::CancellationToken::new(),
             ),
-        ).await?;
+        )
+        .await?;
         let receipt = host
             .execute_packet_v1(
                 &fixture.store,
