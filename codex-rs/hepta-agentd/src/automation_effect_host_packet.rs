@@ -105,6 +105,13 @@ impl PonLocalProviderEffectAdapter {
         wire_payload: Vec<u8>,
         execution: crate::NeuralCognitiveExecutionV1,
     ) -> ProviderEffectDispatch {
+        if wire_payload.is_empty()
+            || wire_payload.len() > crate::MAX_AUTOMATION_EFFECT_PACKET_V1_BYTES
+        {
+            return ProviderEffectDispatch::NotDispatched {
+                reason_code: "pon_packet_v1_length_invalid".to_string(),
+            };
+        }
         let adapter = self.clone();
         tokio::task::spawn_blocking(move || {
             if execution.check().is_err()

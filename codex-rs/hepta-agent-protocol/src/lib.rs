@@ -62,9 +62,11 @@ pub const AGENTD_CONTROL_SCHEMA_VERSION: u32 = 2;
 pub const HOST_TURN_AUTHORITY_BINDING_SCHEMA_VERSION: u32 = 1;
 pub const MAX_CONTROL_FRAME_BYTES: u64 = 65_536;
 pub const MAX_AUTOMATION_EFFECT_WIRE_BYTES: usize = 24 * 1024;
-/// Body bound for the separately negotiated raw packet transport. The JSON
-/// header keeps the existing control-frame bound and the legacy hex limit.
-pub const MAX_AUTOMATION_EFFECT_PACKET_V1_BYTES: usize = 1024 * 1024;
+/// Body bound for the separately negotiated raw packet transport, limited by
+/// the existing AutomationStore recovery ledger's 64-KiB wire ceiling. Reject
+/// larger bodies before consuming a FinalUse nonce. The JSON header and legacy
+/// inline payload retain their independent, unchanged bounds.
+pub const MAX_AUTOMATION_EFFECT_PACKET_V1_BYTES: usize = 64 * 1024;
 /// Maximum serialized cognitive context accepted by both Agentd and the final model consumer.
 pub const MAX_COGNITIVE_CONTEXT_BYTES: usize = 8 * 1024;
 pub const COGNITIVE_CONTEXT_REVALIDATION_CAPABILITY: &str = "cognitive.context.revalidate";

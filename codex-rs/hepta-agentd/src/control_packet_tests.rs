@@ -94,11 +94,9 @@ async fn invalid_lengths_refuse_before_permit_or_input_read() -> anyhow::Result<
     let execution = NeuralCognitiveExecutionV1::bounded_read();
     let body = b"unread";
     let expected = Sha256Digest::for_bytes(body);
-    for length in [
-        0,
-        u32::try_from(MAX_AUTOMATION_EFFECT_PACKET_V1_BYTES)? + 1,
-        u32::MAX,
-    ] {
+    // Pin the original durable ledger boundary as a regression input. Using
+    // only the transport constant here would miss a future accidental increase.
+    for length in [0, 65_537, u32::MAX] {
         let mut reader = body.as_slice();
         assert!(matches!(
             AdmittedEffectPacketV1::read(
