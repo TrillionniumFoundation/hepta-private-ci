@@ -379,6 +379,7 @@ mod tests {
                     codex_home,
                     platform_family: "unix".to_string(),
                     platform_os: "linux".to_string(),
+                    process_indeterminate: false,
                 },
             )),
         });

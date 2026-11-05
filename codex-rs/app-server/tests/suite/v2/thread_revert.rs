@@ -365,6 +365,7 @@ async fn initialize_experimental(mcp: &mut TestAppServer) -> Result<()> {
                 version: "0.1.0".to_string(),
             },
             Some(InitializeCapabilities {
+                process_indeterminate: false,
                 experimental_api: true,
                 request_attestation: false,
                 opt_out_notification_methods: None,
