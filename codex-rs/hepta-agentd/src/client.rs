@@ -92,15 +92,24 @@ impl AgentdClient {
     }
 
     pub async fn health(&self) -> Result<HealthSnapshot, AgentdError> {
-        match self
+        let (_, snapshot) = self.health_with_current_generation().await?;
+        Ok(snapshot)
+    }
+
+    /// Read health and its lifecycle generation from the same identity-checked
+    /// response. This generation can initialize a new admission; it must not
+    /// replace the original generation of an already admitted run.
+    pub async fn health_with_current_generation(
+        &self,
+    ) -> Result<(u64, HealthSnapshot), AgentdError> {
+        let response = self
             .send(AgentdRequest::health(
                 self.request_id(),
                 self.spawn_generation,
             ))
-            .await?
-            .payload
-        {
-            AgentdPayload::Health(snapshot) => Ok(snapshot),
+            .await?;
+        match response.payload {
+            AgentdPayload::Health(snapshot) => Ok((response.current_generation, snapshot)),
             payload => unexpected(payload),
         }
     }

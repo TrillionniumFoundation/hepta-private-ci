@@ -27,6 +27,8 @@ pub struct NativeAdmission {
 /// physical App Server turn can start.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct NativeIntelligenceRunBinding {
+    /// Original Agentd run identity, including its admission-time lifecycle
+    /// generation. This is distinct from the worker's Agentd spawn generation.
     pub snapshot: codex_hepta_agentd::AgentRunSnapshot,
     pub expected_revision: u64,
     pub context_digest: String,
@@ -49,23 +51,20 @@ impl NativeIntelligenceRunBinding {
     pub(super) fn validate_current(
         &self,
         current: &codex_hepta_agentd::AgentRunReconciliationState,
-        generation: u64,
     ) -> Result<()> {
         if current.snapshot != self.snapshot {
             return Err(
                 "Agentd original run snapshot differs from the durable native binding".into(),
             );
         }
-        self.validate_receipt(&current.receipt, generation)
+        self.validate_receipt(&current.receipt)
     }
 
     pub(super) fn validate_receipt(
         &self,
         receipt: &codex_hepta_agentd::AgentRunReceipt,
-        generation: u64,
     ) -> Result<()> {
-        if self.snapshot.generation != generation
-            || receipt.revision < self.expected_revision
+        if receipt.revision < self.expected_revision
             || receipt.run_id != self.snapshot.run_id
             || receipt.generation != self.snapshot.generation
             || receipt.authority_epoch != self.snapshot.authority_epoch

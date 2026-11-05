@@ -55,7 +55,10 @@ impl AppServerModelDriver {
             .run_reconciliation_state(binding.snapshot.run_id.clone())
             .await?
             .ok_or("intelligence terminal run has not been recovered by Agentd")?;
-        binding.validate_current(&current, self.config.generation)?;
+        // The control client pins the original Agentd spawn. The retained run
+        // separately pins its admission-time lifecycle generation, including
+        // when the same spawn advances to Draining before publication.
+        binding.validate_current(&current)?;
         let current = current.receipt;
         if current.revision <= binding.expected_revision {
             return Err("Agentd recovered intelligence revision has not crossed dispatch".into());
@@ -83,7 +86,7 @@ impl AppServerModelDriver {
                 terminal_observed: true,
             })
             .await?;
-        binding.validate_receipt(&receipt, self.config.generation)?;
+        binding.validate_receipt(&receipt)?;
         if receipt.phase != phase
             || !receipt.terminal_observed
             || receipt.revision < current.revision

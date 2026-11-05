@@ -30,6 +30,7 @@ const PROMPT: &str = "return the durable intelligence terminal marker";
 const REQUEST_ID: &str = "intelligence-terminal-recovery";
 const MODEL: &str = "mock-model";
 const CRASH_EXIT: i32 = 75;
+const SPAWN_GENERATION: u64 = 1;
 
 #[derive(Deserialize, Serialize)]
 enum WorkerMode {
@@ -42,6 +43,7 @@ struct ChildCase {
     mode: WorkerMode,
     socket: PathBuf,
     agent: String,
+    spawn_generation: u64,
     journal: PathBuf,
     authority: PathBuf,
     output: PathBuf,
@@ -100,12 +102,17 @@ async fn recovery_case(from_thread_read: bool, test_name: &str) -> Result<()> {
     let owner = AgentdClient::new(
         host.control_socket().to_path_buf(),
         agent.clone(),
-        /*spawn_generation*/ 1,
+        SPAWN_GENERATION,
     )?;
+    let (current_generation, health) = owner.health_with_current_generation().await?;
+    assert!(health.ready && !health.fenced);
+    // Starting -> Running advances the lifecycle generation while the control
+    // connection remains bound to the original process's spawn identity.
+    assert_ne!(current_generation, SPAWN_GENERATION);
     let mut fence = b"hepta:agentd:objective-fence:v1\0".to_vec();
     fence.extend_from_slice(agent.as_str().as_bytes());
-    fence.extend_from_slice(&1_u64.to_be_bytes());
-    fence.extend_from_slice(&1_u64.to_be_bytes());
+    fence.extend_from_slice(&SPAWN_GENERATION.to_be_bytes());
+    fence.extend_from_slice(&current_generation.to_be_bytes());
     let snapshot = AgentRunSnapshot {
         run_id: "intelligence.terminal.run".to_string(),
         request_digest: "1".repeat(64),
@@ -113,10 +120,23 @@ async fn recovery_case(from_thread_read: bool, test_name: &str) -> Result<()> {
         body_digest: "3".repeat(64),
         artifact_set_digest: "4".repeat(64),
         authority_epoch: 9,
-        generation: 1,
+        generation: current_generation,
         fence_digest: Digest32::of_bytes(&fence).to_string(),
         deadline_ms: unix_time_ms()? + 120_000,
     };
+    let mut stale = snapshot.clone();
+    stale.generation = SPAWN_GENERATION;
+    let rejection = owner
+        .run_start(stale)
+        .await
+        .expect_err("the spawn generation cannot replace the run's current generation");
+    assert!(rejection.to_string().contains("run generation"));
+    assert!(
+        owner
+            .run_reconciliation_state(snapshot.run_id.clone())
+            .await?
+            .is_none()
+    );
     let admitted = owner.run_start(snapshot.clone()).await?;
     let run_id = snapshot.run_id.clone();
     owner
@@ -141,6 +161,7 @@ async fn recovery_case(from_thread_read: bool, test_name: &str) -> Result<()> {
         mode: WorkerMode::CrashBeforePublication,
         socket: host.control_socket().to_path_buf(),
         agent: agent.to_string(),
+        spawn_generation: SPAWN_GENERATION,
         journal: directory.path().join("worker.journal"),
         authority: directory.path().join("authority"),
         output: directory.path().join("recovered.json"),
@@ -160,6 +181,12 @@ async fn recovery_case(from_thread_read: bool, test_name: &str) -> Result<()> {
         .clone()
         .ok_or("missing terminal observation")?;
     assert_eq!(record.state, NativeReservationState::Released);
+    assert_eq!(record.request.worker_generation, case.spawn_generation);
+    assert_eq!(case.run.snapshot.generation, current_generation);
+    assert_ne!(
+        record.request.worker_generation,
+        case.run.snapshot.generation
+    );
     assert_eq!(
         record
             .dispatch
@@ -245,7 +272,7 @@ async fn run_worker(case: ChildCase) -> Result<()> {
     let mut driver = AppServerModelDriver::new(NativeWorkerConfig {
         agentd_socket: case.socket,
         agent_id: AgentId::parse(&case.agent)?,
-        generation: 1,
+        generation: case.spawn_generation,
         model: MODEL.to_string(),
         timeout: Duration::from_secs(180),
     })?;

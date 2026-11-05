@@ -132,6 +132,8 @@ pub trait TurnStartAuthorizer: Send + Sync {
 pub struct NativeWorkerConfig {
     pub agentd_socket: PathBuf,
     pub agent_id: AgentId,
+    /// Exact Agentd spawn identity used by the control connection and native
+    /// journal. An Intelligence run freezes its own lifecycle generation.
     pub generation: u64,
     pub model: String,
     pub timeout: Duration,
@@ -213,9 +215,7 @@ impl AppServerModelDriver {
             }
         }
         let mut intelligence_revision = match intelligence {
-            Some(binding) => {
-                Some(require_intelligence_handoff(&owner, binding, self.config.generation).await?)
-            }
+            Some(binding) => Some(require_intelligence_handoff(&owner, binding).await?),
             None => None,
         };
         let ingress = owner.session_ingress().await?;
@@ -310,8 +310,7 @@ impl AppServerModelDriver {
             return Err("cancelled before model dispatch".into());
         }
         if let Some(binding) = intelligence {
-            let current_revision =
-                require_intelligence_handoff(&owner, binding, self.config.generation).await?;
+            let current_revision = require_intelligence_handoff(&owner, binding).await?;
             if Some(current_revision) != intelligence_revision {
                 let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
                 return Err("intelligence handoff revision changed before dispatch".into());
@@ -450,12 +449,10 @@ impl AppServerModelDriver {
             };
             // Idempotent acknowledgement is reconciliation, not a second
             // physical-send permit. A competing worker must not redispatch.
-            if binding
-                .validate_receipt(&dispatched, self.config.generation)
-                .is_err()
+            if binding.validate_receipt(&dispatched).is_err()
                 || dispatched.phase != AgentRunPhase::Dispatched
                 || dispatched.idempotent
-                || dispatched.generation != self.config.generation
+                || dispatched.generation != binding.snapshot.generation
                 || dispatched.terminal_observed
                 || dispatched.context_digest.as_deref() != Some(binding.context_digest.as_str())
                 || dispatched.compilation_receipt_digest.as_deref()
@@ -1064,7 +1061,6 @@ async fn reconcile_intelligence_start_unknown(
 async fn require_intelligence_handoff(
     owner: &AgentdClient,
     binding: &NativeIntelligenceRunBinding,
-    generation: u64,
 ) -> Result<u64> {
     if binding.snapshot.run_id.is_empty()
         || binding.expected_revision == 0
@@ -1083,7 +1079,7 @@ async fn require_intelligence_handoff(
         .run_reconciliation_state(binding.snapshot.run_id.clone())
         .await?
         .ok_or("intelligence run is not admitted in Agentd")?;
-    binding.validate_current(&current, generation)?;
+    binding.validate_current(&current)?;
     let run = current.receipt;
     if run.phase != AgentRunPhase::ContextAttached
         || run.revision != binding.expected_revision

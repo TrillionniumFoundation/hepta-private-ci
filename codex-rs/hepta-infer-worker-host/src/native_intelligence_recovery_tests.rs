@@ -101,7 +101,7 @@ fn current_revision_does_not_relax_original_snapshot_binding() {
             body_digest: "3".repeat(64),
             artifact_set_digest: "4".repeat(64),
             authority_epoch: 9,
-            generation: 1,
+            generation: 2,
             fence_digest: "d".repeat(64),
             deadline_ms: 10_000,
         },
@@ -127,9 +127,7 @@ fn current_revision_does_not_relax_original_snapshot_binding() {
             idempotent: false,
         },
     };
-    binding
-        .validate_current(&current, /*generation*/ 1)
-        .unwrap();
+    binding.validate_current(&current).unwrap();
     for field in 0..9 {
         let mut changed = current.clone();
         match field {
@@ -143,11 +141,7 @@ fn current_revision_does_not_relax_original_snapshot_binding() {
             7 => changed.snapshot.fence_digest = "e".repeat(64),
             _ => changed.snapshot.deadline_ms += 1,
         }
-        assert!(
-            binding
-                .validate_current(&changed, /*generation*/ 1)
-                .is_err()
-        );
+        assert!(binding.validate_current(&changed).is_err());
     }
     for field in 0..9 {
         let mut changed = current.clone();
@@ -162,11 +156,7 @@ fn current_revision_does_not_relax_original_snapshot_binding() {
             7 => changed.receipt.fence_digest = "e".repeat(64),
             _ => changed.receipt.deadline_ms += 1,
         }
-        assert!(
-            binding
-                .validate_current(&changed, /*generation*/ 1)
-                .is_err()
-        );
+        assert!(binding.validate_current(&changed).is_err());
     }
 }
 
