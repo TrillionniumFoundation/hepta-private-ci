@@ -138,3 +138,159 @@ async fn protected_checkpoint_barrier_never_commits_even_if_query_only_is_disabl
     assert_eq!(count, 0);
     assert_eq!(fixture.store.recovery_anchor().await.unwrap(), before);
 }
+
+#[tokio::test]
+async fn queued_owner_write_refreshes_dirty_after_an_intervening_current_publication() {
+    let fixture = ManagedFixture::new().await;
+    let mut barrier = fixture.store.begin_checkpoint_barrier().await.unwrap();
+    fixture
+        .writer
+        .acknowledge_bound_owner_transaction(&mut barrier)
+        .await
+        .unwrap();
+    let before = fixture.peer.receipt.lock().unwrap().clone();
+
+    // Observe the real checkout protocol before republishing Current. The
+    // original SQLite barrier keeps this writer's BEGIN IMMEDIATE queued.
+    let began_writes = fixture.peer.began_writes.notified();
+    tokio::pin!(began_writes);
+    began_writes.as_mut().enable();
+    let writer = fixture.writer.clone();
+    let mutation = tokio::spawn(async move {
+        writer
+            .admit("queued-after-publication", "fixture", "{}")
+            .await
+    });
+    tokio::time::timeout(Duration::from_secs(5), began_writes)
+        .await
+        .unwrap();
+    fixture
+        .writer
+        .acknowledge_bound_owner_transaction(&mut barrier)
+        .await
+        .unwrap();
+    let published = fixture.peer.receipt.lock().unwrap().clone();
+    assert_eq!(published.head.phase, CognitiveCheckpointPhase::Current);
+    assert_eq!(published.head.last_current, before.head.last_current);
+    assert!(!fixture.store.commit_gate.commit_allowed());
+    assert!(!mutation.is_finished());
+    barrier.rollback().await.unwrap();
+
+    let admitted = tokio::time::timeout(Duration::from_secs(5), mutation)
+        .await
+        .unwrap()
+        .unwrap()
+        .unwrap();
+    assert!(!admitted.external_effect);
+    assert_eq!(
+        fixture
+            .writer
+            .status("queued-after-publication")
+            .await
+            .unwrap(),
+        crate::LocalOutcomeState::Queued
+    );
+    let dirty = fixture.peer.receipt.lock().unwrap().clone();
+    assert_eq!(dirty.head.phase, CognitiveCheckpointPhase::Dirty);
+    assert_eq!(dirty.head.last_current, published.head.last_current);
+    assert_ne!(
+        fixture.store.recovery_anchor().await.unwrap(),
+        dirty.head.last_current
+    );
+    assert!(!fixture.writer.checkpoint_fenced());
+}
+
+#[tokio::test]
+async fn queued_owner_write_cannot_reopen_after_an_intervening_lost_publication_ack() {
+    let fixture = ManagedFixture::new().await;
+    let mut barrier = fixture.store.begin_checkpoint_barrier().await.unwrap();
+    fixture
+        .writer
+        .acknowledge_bound_owner_transaction(&mut barrier)
+        .await
+        .unwrap();
+    let before = fixture.peer.receipt.lock().unwrap().clone();
+    let began_writes = fixture.peer.began_writes.notified();
+    tokio::pin!(began_writes);
+    began_writes.as_mut().enable();
+    let writer = fixture.writer.clone();
+    let mutation =
+        tokio::spawn(async move { writer.admit("queued-after-lost-ack", "fixture", "{}").await });
+    tokio::time::timeout(Duration::from_secs(5), began_writes)
+        .await
+        .unwrap();
+    fixture
+        .peer
+        .hold_current_reply
+        .store(true, Ordering::SeqCst);
+    assert!(
+        fixture
+            .writer
+            .acknowledge_bound_owner_transaction(&mut barrier)
+            .await
+            .is_err()
+    );
+    assert!(fixture.writer.checkpoint_fenced());
+    barrier.rollback().await.unwrap();
+    assert!(
+        tokio::time::timeout(Duration::from_secs(5), mutation)
+            .await
+            .unwrap()
+            .unwrap()
+            .is_err()
+    );
+    assert_eq!(
+        fixture.store.recovery_anchor().await.unwrap(),
+        before.head.last_current
+    );
+    assert!(!fixture.store.commit_gate.commit_allowed());
+    assert!(fixture.writer.checkpoint_fenced());
+}
+
+#[tokio::test]
+async fn queued_objective_retention_refreshes_dirty_after_an_intervening_current_publication() {
+    let fixture = ManagedFixture::new().await;
+    let mut barrier = fixture.store.begin_checkpoint_barrier().await.unwrap();
+    fixture
+        .writer
+        .acknowledge_bound_owner_transaction(&mut barrier)
+        .await
+        .unwrap();
+    let before = fixture.peer.receipt.lock().unwrap().clone();
+    let began_writes = fixture.peer.began_writes.notified();
+    tokio::pin!(began_writes);
+    began_writes.as_mut().enable();
+    let sender = fixture.sender();
+    let retention = tokio::spawn(async move { sender.retain_before_send(request()).await });
+    tokio::time::timeout(Duration::from_secs(5), began_writes)
+        .await
+        .unwrap();
+    fixture
+        .writer
+        .acknowledge_bound_owner_transaction(&mut barrier)
+        .await
+        .unwrap();
+    assert!(!fixture.store.commit_gate.commit_allowed());
+    assert!(!retention.is_finished());
+    barrier.rollback().await.unwrap();
+
+    let ticket = tokio::time::timeout(Duration::from_secs(5), retention)
+        .await
+        .unwrap()
+        .unwrap()
+        .unwrap();
+    assert!(ticket.request() == &request());
+    let count: i64 = sqlx::query_scalar("SELECT COUNT(*) FROM cognitive_objective_sender_requests")
+        .fetch_one(fixture.store.observation_pool())
+        .await
+        .unwrap();
+    assert_eq!(count, 1);
+    let retained = fixture.peer.receipt.lock().unwrap().clone();
+    assert_eq!(retained.head.phase, CognitiveCheckpointPhase::Current);
+    assert_ne!(retained.head.last_current, before.head.last_current);
+    assert_eq!(
+        fixture.store.recovery_anchor().await.unwrap(),
+        retained.head.last_current
+    );
+    assert!(!fixture.writer.checkpoint_fenced());
+}

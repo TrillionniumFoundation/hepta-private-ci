@@ -2067,13 +2067,7 @@ impl ProductionCognitiveMutation for ProductionCognitiveMutationCapability {
             self.writer.verify_current_authority().await?;
             let prepared =
                 self.prepare_semantic_mutation("remember", source, None, &(draft, facts))?;
-            let mut transaction = self
-                .writer
-                .store()
-                .pool
-                .begin_with("BEGIN IMMEDIATE")
-                .await
-                .map_err(crate::cognitive_store::unavailable)?;
+            let mut transaction = self.writer.store().begin_write_transaction().await?;
             let queued = self
                 .admit_prepared_mutation(&mut transaction, &prepared)
                 .await?;
@@ -2111,13 +2105,7 @@ impl ProductionCognitiveMutation for ProductionCognitiveMutationCapability {
                 Some(expected_revision),
                 &(memory_id.as_str(), draft, facts),
             )?;
-            let mut transaction = self
-                .writer
-                .store()
-                .pool
-                .begin_with("BEGIN IMMEDIATE")
-                .await
-                .map_err(crate::cognitive_store::unavailable)?;
+            let mut transaction = self.writer.store().begin_write_transaction().await?;
             let queued = self
                 .admit_prepared_mutation(&mut transaction, &prepared)
                 .await?;
@@ -2162,13 +2150,7 @@ impl ProductionCognitiveMutation for ProductionCognitiveMutationCapability {
                 Some(expected_revision),
                 &(memory_id.as_str(), draft),
             )?;
-            let mut transaction = self
-                .writer
-                .store()
-                .pool
-                .begin_with("BEGIN IMMEDIATE")
-                .await
-                .map_err(crate::cognitive_store::unavailable)?;
+            let mut transaction = self.writer.store().begin_write_transaction().await?;
             let queued = self
                 .admit_prepared_mutation(&mut transaction, &prepared)
                 .await?;
