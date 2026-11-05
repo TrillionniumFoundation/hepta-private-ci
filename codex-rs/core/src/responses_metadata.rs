@@ -229,6 +229,9 @@ pub struct CodexResponsesMetadata {
     pub(crate) tool_namespaces_info: Option<TurnToolNamespacesInfo>,
     pub(crate) turn_started_at_unix_ms: Option<i64>,
     pub(crate) extra: BTreeMap<String, String>,
+    /// Complete product-owned metadata captured before caller attribution is merged.
+    /// `None` means provenance is unavailable, so connection reuse must bind all `extra`.
+    pub(crate) websocket_connection_extra: Option<BTreeMap<String, String>>,
 }
 
 impl CodexResponsesMetadata {
@@ -264,6 +267,7 @@ impl CodexResponsesMetadata {
             tool_namespaces_info: None,
             turn_started_at_unix_ms: None,
             extra: BTreeMap::new(),
+            websocket_connection_extra: None,
         }
     }
 
@@ -346,6 +350,31 @@ impl CodexResponsesMetadata {
             insert_header(&mut headers, X_OPENAI_SUBAGENT_HEADER, subagent_header);
         }
         headers
+    }
+
+    /// Returns the stable compatibility fields bound to an open WebSocket.
+    ///
+    /// Prewarm and turn requests share the same connection. Their request phase
+    /// is carried in each response.create message, so a prewarm-to-turn phase
+    /// change must not discard an otherwise compatible socket. Parent/root turn
+    /// lineage and caller attribution are also sent with each request; only
+    /// separately captured product-owned extra metadata belongs to the connection.
+    /// Unknown provenance remains conservative and binds all extra metadata.
+    /// Recovery keeps binding the exact request phase, lineage and merged extra
+    /// through its complete projection.
+    pub(crate) fn websocket_connection_compatibility_projection(
+        &self,
+    ) -> TurnRecoveryCompatibilityProjection<'_> {
+        let mut projection = self.turn_recovery_compatibility_projection();
+        if matches!(self.request_kind, Some(CodexResponsesRequestKind::Prewarm)) {
+            projection.request_kind = None;
+        }
+        projection.parent_turn_id = None;
+        projection.root_turn_id = None;
+        if let Some(configured_extra) = &self.websocket_connection_extra {
+            projection.extra = configured_extra;
+        }
+        projection
     }
 
     /// Returns the transport-neutral, behavior-affecting compatibility

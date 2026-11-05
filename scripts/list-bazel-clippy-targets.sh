@@ -19,6 +19,24 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
+runner_os="${RUNNER_OS:-}"
+if [[ -z "${runner_os}" ]]; then
+  case "$(uname -s)" in
+    Linux) runner_os=Linux ;;
+    Darwin) runner_os=macOS ;;
+    MINGW*|MSYS*|CYGWIN*) runner_os=Windows ;;
+    *) echo "Unsupported host platform for Bazel clippy target selection" >&2; exit 1 ;;
+  esac
+fi
+case "${runner_os}" in
+  Linux|macOS|Windows) ;;
+  *) echo "Unsupported RUNNER_OS: ${runner_os}" >&2; exit 1 ;;
+esac
+if [[ $windows_cross_compile -eq 1 && "${runner_os}" != "Windows" ]]; then
+  echo "--windows-cross-compile requires a Windows runner" >&2
+  exit 1
+fi
+
 # Resolve the dynamic targets before printing anything so callers do not
 # continue with a partial list if `bazel query` fails. Target discovery is
 # local on all platforms.
@@ -27,10 +45,20 @@ manual_rust_test_targets="$(
     --output=label \
     -- 'kind("rust_test rule", attr(tags, "manual", //codex-rs/... except //codex-rs/v8-poc/...))'
 )"
-if [[ "${RUNNER_OS:-}" != "Windows" ]]; then
-  # Non-Windows clippy jobs lint the native test binaries; the
+# Native Windows query output may use CRLF. Strip only the record's trailing
+# CR before anchored suffix and exact-label matching.
+manual_rust_test_targets="$(printf '%s\n' "${manual_rust_test_targets}" | sed $'s/\r$//')"
+if [[ $windows_cross_compile -eq 0 ]]; then
+  # All native clippy jobs, including Windows MSVC, lint native test binaries;
   # Windows-cross binaries exist only for the fast Windows test leg.
   manual_rust_test_targets="$(printf '%s\n' "${manual_rust_test_targets}" | grep -v -- '-windows-cross-bin$' || true)"
+  if [[ "${runner_os}" == "Windows" ]]; then
+    # This one manual harness uses UnixProcessDriver and Unix sockets. Its
+    # _COGNITIVE_E2E_COMPATIBILITY in codex-rs/hepta-agentd/BUILD.bazel permits
+    # only Linux/macOS. Keep it in those native lint jobs; retain every other
+    # native manual test here, including sharded *-test-bin helpers.
+    manual_rust_test_targets="$(printf '%s\n' "${manual_rust_test_targets}" | grep -Fvx -- '//codex-rs/hepta-agentd:hepta-agentd-cognitive-product-qualification-test-bin' || true)"
+  fi
 elif [[ $windows_cross_compile -eq 1 ]]; then
   # `bazel query` is intentionally pre-analysis and does not remove targets
   # made incompatible by `target_compatible_with`. Sharded integration tests

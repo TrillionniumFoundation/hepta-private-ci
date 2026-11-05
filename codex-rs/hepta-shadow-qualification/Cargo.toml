@@ -29,6 +29,9 @@ thiserror = { workspace = true }
 tokio = { workspace = true, features = ["io-util", "macros", "net", "process", "rt", "sync", "time"] }
 toml = { workspace = true }
 
+[target.'cfg(windows)'.dependencies]
+codex-utils-path = { workspace = true }
+
 [dev-dependencies]
 codex-hepta-bellman-operator = { path = "../hepta-bellman-operator" }
 codex-hepta-intelligence-eval = { path = "../hepta-intelligence-eval" }

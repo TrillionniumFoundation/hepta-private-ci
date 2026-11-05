@@ -77,7 +77,6 @@ use crate::responses::output_value_to_text;
 use crate::responses::start_mock_server;
 use crate::streaming_sse::StreamingSseServer;
 use crate::test_environment;
-use crate::wait_for_event;
 use crate::wait_for_event_match;
 use crate::wait_for_event_with_timeout;
 use wiremock::Match;
@@ -340,6 +339,20 @@ pub struct TestCodexBuilder {
     models_manager: Option<SharedModelsManager>,
 }
 
+// Only fresh default homes are created here; an explicitly supplied home is
+// preserved for caller-controlled fixtures, including deliberate bad inputs.
+fn new_private_codex_home() -> std::io::Result<TempDir> {
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::PermissionsExt;
+        tempfile::Builder::new()
+            .permissions(std::fs::Permissions::from_mode(0o700))
+            .tempdir()
+    }
+    #[cfg(not(unix))]
+    tempfile::tempdir()
+}
+
 impl TestCodexBuilder {
     pub fn with_config<T>(mut self, mutator: T) -> Self
     where
@@ -470,7 +483,7 @@ impl TestCodexBuilder {
     pub async fn build(&mut self, server: &wiremock::MockServer) -> anyhow::Result<TestCodex> {
         let home = match self.home.clone() {
             Some(home) => home,
-            None => Arc::new(TempDir::new()?),
+            None => Arc::new(new_private_codex_home()?),
         };
         let base_url = format!("{}/v1", server.uri());
         let test_env = TestEnv::local().await?;
@@ -496,7 +509,7 @@ impl TestCodexBuilder {
     ) -> anyhow::Result<TestCodex> {
         let home = match self.home.clone() {
             Some(home) => home,
-            None => Arc::new(TempDir::new()?),
+            None => Arc::new(new_private_codex_home()?),
         };
         let base_url = format!("{}/v1", server.uri());
         let test_env = test_env().await?;
@@ -513,7 +526,7 @@ impl TestCodexBuilder {
     ) -> anyhow::Result<TestCodex> {
         let home = match self.home.clone() {
             Some(home) => home,
-            None => Arc::new(TempDir::new()?),
+            None => Arc::new(new_private_codex_home()?),
         };
         let base_url = format!("{}/v1", server.uri());
         let test_env = test_env().await?;
@@ -531,7 +544,7 @@ impl TestCodexBuilder {
         let base_url = server.uri();
         let home = match self.home.clone() {
             Some(home) => home,
-            None => Arc::new(TempDir::new()?),
+            None => Arc::new(new_private_codex_home()?),
         };
         let test_env = TestEnv::local().await?;
         Box::pin(self.build_with_home_and_base_url(
@@ -551,7 +564,7 @@ impl TestCodexBuilder {
         let base_url = format!("{}/v1", server.uri());
         let home = match self.home.clone() {
             Some(home) => home,
-            None => Arc::new(TempDir::new()?),
+            None => Arc::new(new_private_codex_home()?),
         };
         let base_url_clone = base_url.clone();
         self.config_mutators.push(Box::new(move |config| {
@@ -810,13 +823,17 @@ impl TestCodexBuilder {
         home: &TempDir,
         cwd_override: AbsolutePathBuf,
     ) -> anyhow::Result<(Config, Arc<TempDir>)> {
-        let model_provider = ModelProviderInfo {
+        let mut model_provider = ModelProviderInfo {
             base_url: Some(base_url),
             // Most core tests use SSE-only mock servers, so keep websocket transport off unless
             // a test explicitly opts into websocket coverage.
             supports_websockets: false,
             ..built_in_model_providers(/*openai_base_url*/ None)["openai"].clone()
         };
+        codex_model_provider_info::test_support::allow_internal_metadata_for_mock(
+            &mut model_provider,
+        )
+        .map_err(anyhow::Error::msg)?;
         let cwd = Arc::new(TempDir::new()?);
         for hook in self.pre_build_hooks.drain(..) {
             hook(home.path());
@@ -937,7 +954,18 @@ impl TestCodex {
             }]))
             .await?;
 
-        wait_for_event(&self.codex, |ev| matches!(ev, EventMsg::TurnComplete(_))).await;
+        tokio::time::timeout(Duration::from_secs(10), async {
+            let turn_id = wait_for_event_match(&self.codex, |event| match event {
+                EventMsg::TurnComplete(event) => Some(event.turn_id.clone()),
+                _ => None,
+            })
+            .await;
+            if let Some(completion) = self.codex.pending_normal_turn_finish_completion(&turn_id) {
+                completion.await;
+            }
+        })
+        .await
+        .context("text turn completion and finish owner exceeded the original event budget")?;
         Ok(())
     }
 
@@ -968,10 +996,13 @@ impl TestCodex {
         prompt: &str,
         service_tier: Option<&str>,
     ) -> Result<()> {
+        // A tier change must not also replace the permissions bound to a
+        // prewarmed WebSocket connection.
+        let settings = self.codex.thread_settings_snapshot().await;
         self.submit_turn_with_permission_profile_context(
             prompt,
-            AskForApproval::Never,
-            PermissionProfile::Disabled,
+            settings.approval_policy,
+            settings.permission_profile,
             Some(service_tier.map(str::to_string)),
             /*environments*/ None,
         )
@@ -1091,15 +1122,25 @@ impl TestCodex {
             _ => None,
         })
         .await;
-        wait_for_event_with_timeout(
-            &self.codex,
-            |event| match event {
-                EventMsg::TurnComplete(event) => event.turn_id == turn_id,
-                _ => false,
-            },
-            SUBMIT_TURN_COMPLETE_TIMEOUT,
-        )
-        .await;
+        tokio::time::timeout(SUBMIT_TURN_COMPLETE_TIMEOUT, async {
+            wait_for_event_with_timeout(
+                &self.codex,
+                |event| match event {
+                    EventMsg::TurnComplete(event) => event.turn_id == turn_id,
+                    _ => false,
+                },
+                SUBMIT_TURN_COMPLETE_TIMEOUT,
+            )
+            .await;
+            // TurnComplete precedes the finish owner's post-terminal work.
+            // Observe that exact owner before the fixture starts another turn;
+            // this grants no admission authority and shares the original budget.
+            if let Some(completion) = self.codex.pending_normal_turn_finish_completion(&turn_id) {
+                completion.await;
+            }
+        })
+        .await
+        .context("turn completion and its finish owner exceeded the original fixture budget")?;
         Ok(())
     }
 }

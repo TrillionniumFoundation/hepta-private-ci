@@ -1,0 +1,35 @@
+{
+  "schema": "hepta.source-bound-acceptance-publication.v1",
+  "raw_evidence_directory": "/data/asterinas-audit-build.8tdrjboi/root-checkpoint-finish-01",
+  "files": [
+    {
+      "raw": "format.log",
+      "published": "format.log.gz",
+      "raw_bytes": 73,
+      "raw_sha256": "b6a6d5ad920f48c9b49a3ca8c2308227b7849b9e0a498dc452f3a7bd2f7fb752",
+      "published_sha256": "8d5f1e8612b40722f1cb465624938d6c618418fc8231e9a978d3a58aaf8aa415",
+      "compressed": true
+    },
+    {
+      "raw": "result.json",
+      "published": "result.json",
+      "raw_bytes": 672,
+      "raw_sha256": "dd427ee99af68d98923755ecd31a0b4bb8aa4669152cce42a671074df02a912c",
+      "published_sha256": "dd427ee99af68d98923755ecd31a0b4bb8aa4669152cce42a671074df02a912c",
+      "compressed": false
+    },
+    {
+      "raw": "scoped-fix.log",
+      "published": "scoped-fix.log.gz",
+      "raw_bytes": 67967,
+      "raw_sha256": "9f37c3a97112aba02e0fb48952765dee34758b60706f5ff9813013c3f52b51a1",
+      "published_sha256": "29f24dbfc64f187c314cd298c05fb069dc215e43db65e8f5f2ff2b634671e460",
+      "compressed": true
+    }
+  ],
+  "selection": "Original text receipts/manifests/logs only. Private disks, keys, binaries and targets are not published. Original receipts retain binary hashes.",
+  "production_ready": false,
+  "g2_complete": false,
+  "passed": true,
+  "boundary": "Original scoped just fix and just fmt after successful semantic tests; no source changes and no tests repeated afterward."
+}

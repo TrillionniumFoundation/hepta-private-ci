@@ -2372,6 +2372,67 @@ fn selected_and_resumed_threads_use_server_capability_for_v1_and_v2_children() -
 }
 
 #[test]
+fn attach_live_thread_for_selection_attaches_empty_thread_to_original_live_owner() -> Result<()> {
+    const WORKER_THREADS: usize = 1;
+    const TEST_STACK_SIZE_BYTES: usize = 8 * 1024 * 1024;
+
+    let runtime = tokio::runtime::Builder::new_multi_thread()
+        .worker_threads(WORKER_THREADS)
+        .thread_stack_size(TEST_STACK_SIZE_BYTES)
+        .enable_all()
+        .build()?;
+
+    runtime.block_on(async {
+        let mut app = make_test_app().await;
+        let config = app.chat_widget.config_ref().clone();
+        let mut app_server = crate::start_embedded_app_server_for_picker(&config).await?;
+        let started = app_server.start_thread(&config).await?;
+        let thread_id = started.session.thread_id;
+        let before = app_server
+            .thread_read(thread_id, /*include_turns*/ false)
+            .await?;
+
+        for _ in 0..2 {
+            app.thread_event_channels.remove(&thread_id);
+            assert!(
+                app.attach_live_thread_for_selection(&mut app_server, thread_id)
+                    .await?
+            );
+            let channel = &app.thread_event_channels[&thread_id];
+            assert_eq!(
+                channel.attachment(),
+                thread_events::ThreadEventAttachment::Live
+            );
+            let snapshot = channel.store.lock().await.snapshot();
+            assert_eq!(
+                snapshot.session.as_ref().map(|session| session.thread_id),
+                Some(thread_id)
+            );
+            assert!(snapshot.turns.is_empty());
+            let after = app_server
+                .thread_read(thread_id, /*include_turns*/ false)
+                .await?;
+            assert_eq!(
+                (
+                    &after.id,
+                    &after.session_id,
+                    &after.path,
+                    after.history_mode
+                ),
+                (
+                    &before.id,
+                    &before.session_id,
+                    &before.path,
+                    before.history_mode
+                )
+            );
+        }
+        app_server.shutdown().await?;
+        Ok(())
+    })
+}
+
+#[test]
 fn attach_live_thread_for_selection_rejects_empty_non_ephemeral_fallback_threads() -> Result<()> {
     const WORKER_THREADS: usize = 1;
     const TEST_STACK_SIZE_BYTES: usize = 8 * 1024 * 1024;
@@ -2387,11 +2448,49 @@ fn attach_live_thread_for_selection_rejects_empty_non_ephemeral_fallback_threads
             let app = make_test_app().await;
             app.chat_widget.config_ref().clone()
         };
-        let mut app_server = crate::start_embedded_app_server_for_picker(&config)
+        let mut owner = crate::start_embedded_app_server_for_picker(&config)
             .await
             .expect("embedded app server");
-        let started = app_server.start_thread(&config).await?;
+        let started = owner.start_thread(&config).await?;
         let thread_id = started.session.thread_id;
+        let materialized = owner
+            .resume_thread(
+                config.clone(),
+                thread_id,
+                crate::app_server_session::ResumeModelSettings::PreserveExistingThread,
+            )
+            .await?;
+        assert!(materialized.turns.is_empty());
+
+        // A second manager can inspect the empty durable history, but the original live
+        // writer still owns the thread. This forces a real resume rejection before fallback.
+        let mut app_server = crate::start_embedded_app_server_for_picker(&config).await?;
+        let request_id = app_server.next_request_id();
+        let resume_err = app_server
+            .request_handle()
+            .request_typed::<codex_app_server_protocol::ThreadResumeResponse>(
+                ClientRequest::ThreadResume {
+                    request_id,
+                    params: codex_app_server_protocol::ThreadResumeParams {
+                        thread_id: thread_id.to_string(),
+                        exclude_turns: true,
+                        ..Default::default()
+                    },
+                },
+            )
+            .await
+            .expect_err("the original writer must reject the second manager");
+        let codex_app_server_client::TypedRequestError::Server { source, .. } = resume_err else {
+            panic!("expected the original writer conflict, got {resume_err:?}");
+        };
+        assert_eq!(
+            source,
+            JSONRPCErrorError {
+                code: -32600,
+                message: format!("thread {thread_id} already has an active writer"),
+                data: None,
+            }
+        );
         let mut app = make_test_app().await;
         app.agent_navigation.upsert(
             thread_id,
@@ -2410,6 +2509,8 @@ fn attach_live_thread_for_selection_rejects_empty_non_ephemeral_fallback_threads
             format!("Agent thread {thread_id} is not yet available for replay or live attach.")
         );
         assert!(!app.thread_event_channels.contains_key(&thread_id));
+        app_server.shutdown().await?;
+        owner.shutdown().await?;
         Ok(())
     })
 }

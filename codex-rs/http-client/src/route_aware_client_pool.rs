@@ -448,6 +448,23 @@ impl RouteAwareClientPool {
         )
     }
 
+    /// Preserves the original route and cookie policy while disabling redirects
+    /// and every reqwest request retry. Do not enable TLS fallback on this pool.
+    pub fn with_chatgpt_cloudflare_cookies_for_single_attempts(
+        http_client_factory: HttpClientFactory,
+        route_class: ClientRouteClass,
+    ) -> Self {
+        Self::with_builder(
+            http_client_factory,
+            route_class,
+            HttpClientBuilder::new()
+                .with_chatgpt_cloudflare_cookie_store()
+                .without_redirects()
+                .without_request_retries()
+                .without_request_logging(),
+        )
+    }
+
     /// Creates a ChatGPT Cloudflare-cookie pool without URL or response-header diagnostics.
     pub fn with_chatgpt_cloudflare_cookies_without_request_logging(
         http_client_factory: HttpClientFactory,

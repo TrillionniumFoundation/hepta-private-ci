@@ -3,6 +3,7 @@ use std::sync::Mutex;
 use std::sync::OnceLock;
 use std::time::Duration;
 
+use anyhow::Context;
 use anyhow::Result;
 use anyhow::bail;
 use app_test_support::ChatGptAuthFixture;
@@ -4627,16 +4628,22 @@ async fn wait_for_cached_remote_catalog_plugin_ids(
         .map(str::to_string)
         .collect::<Vec<_>>();
     expected_plugin_ids.sort();
+    let mut observed_plugin_ids = Vec::new();
     timeout(DEFAULT_TIMEOUT, async {
         loop {
-            let plugin_ids = cached_remote_catalog_plugin_ids(codex_home)?;
-            if plugin_ids == expected_plugin_ids {
+            observed_plugin_ids = cached_remote_catalog_plugin_ids(codex_home)?;
+            if observed_plugin_ids == expected_plugin_ids {
                 return Ok::<(), anyhow::Error>(());
             }
             tokio::time::sleep(Duration::from_millis(10)).await;
         }
     })
-    .await??;
+    .await
+    .with_context(|| {
+        format!(
+            "remote catalog cache did not match within the original deadline: expected {expected_plugin_ids:?}, last observed {observed_plugin_ids:?}"
+        )
+    })??;
     Ok(())
 }
 

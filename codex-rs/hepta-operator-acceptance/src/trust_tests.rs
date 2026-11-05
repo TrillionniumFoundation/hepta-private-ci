@@ -1,12 +1,14 @@
+#[cfg(not(windows))]
 use std::fs::OpenOptions;
+#[cfg(not(windows))]
 use std::io::Write;
 use std::path::Path;
 use std::path::PathBuf;
 use std::process::Command;
 
+use crate::test_support::PrivateTempDir;
 use base64::Engine as _;
 use base64::engine::general_purpose::STANDARD;
-use tempfile::TempDir;
 
 use super::SSHSIG_NAMESPACE;
 use super::TRUST_POLICY_SCHEMA;
@@ -17,6 +19,7 @@ use super::TrustPolicy;
 use super::validate_ed25519_blob;
 use crate::durable::canonical_json;
 use crate::durable::sha256;
+use crate::test_support::openssh_keygen;
 use crate::test_support::private_tempdir;
 
 #[test]
@@ -110,7 +113,7 @@ fn weak_ed25519_public_key_is_rejected_before_openssh() {
 }
 
 struct TrustFixture {
-    _temporary: TempDir,
+    _temporary: PrivateTempDir,
     allowed_signers: PathBuf,
     key: PathBuf,
     policy: PathBuf,
@@ -127,12 +130,19 @@ impl TrustFixture {
             .canonicalize()
             .expect("canonical trust root");
         let key = root.join("operator-key");
-        let generated = Command::new("/usr/bin/ssh-keygen")
+        let generated = Command::new(openssh_keygen())
             .args(["-q", "-t", "ed25519", "-N", "", "-f"])
             .arg(&key)
-            .status()
+            .stdin(std::process::Stdio::inherit())
+            .output()
             .expect("start ssh-keygen");
-        assert!(generated.success(), "generate test-only Ed25519 key");
+        assert!(
+            generated.status.success(),
+            "generate test-only Ed25519 key at {}: status={:?}, stderr={}",
+            key.display(),
+            generated.status,
+            String::from_utf8_lossy(&generated.stderr),
+        );
 
         let public =
             std::fs::read_to_string(key.with_extension("pub")).expect("read generated public key");
@@ -144,7 +154,7 @@ impl TrustFixture {
             format!("operator@example {0} {1}\n", fields[0], fields[1]).as_bytes(),
         );
 
-        let fingerprint_output = Command::new("/usr/bin/ssh-keygen")
+        let fingerprint_output = Command::new(openssh_keygen())
             .args(["-E", "sha256", "-lf"])
             .arg(key.with_extension("pub"))
             .output()
@@ -207,18 +217,25 @@ impl TrustFixture {
     }
 
     fn sign(&self, statement: &[u8], namespace: &str, name: &str) -> PathBuf {
+        self.sign_hash(statement, namespace, name, "sha512")
+    }
+
+    fn sign_hash(&self, statement: &[u8], namespace: &str, name: &str, hash: &str) -> PathBuf {
         let statement_path = self.root.join(name);
         write_private(&statement_path, statement);
-        let signed = Command::new("/usr/bin/ssh-keygen")
+        let signed = Command::new(openssh_keygen())
             .args(["-Y", "sign", "-f"])
             .arg(&self.key)
-            .args(["-n", namespace])
+            .args(["-n", namespace, "-O", &format!("hashalg={hash}")])
             .arg(&statement_path)
             .status()
             .expect("start SSHSIG signer for test fixture");
         assert!(signed.success(), "create test-only SSHSIG");
         let signature = PathBuf::from(format!("{}.sig", statement_path.display()));
+        #[cfg(unix)]
         set_private_permissions(&signature);
+        #[cfg(windows)]
+        let signature = crate::test_support::private_generated_signature(&signature);
         signature
     }
 }
@@ -232,6 +249,7 @@ fn ssh_string(bytes: &[u8]) -> Vec<u8> {
     encoded
 }
 
+#[cfg(not(windows))]
 fn write_private(path: &Path, bytes: &[u8]) {
     let mut options = OpenOptions::new();
     options.create_new(true).write(true);
@@ -244,6 +262,7 @@ fn write_private(path: &Path, bytes: &[u8]) {
     file.write_all(bytes).expect("write private test file");
 }
 
+#[cfg(unix)]
 fn set_private_permissions(path: &Path) {
     #[cfg(unix)]
     {
@@ -251,4 +270,14 @@ fn set_private_permissions(path: &Path) {
         std::fs::set_permissions(path, std::fs::Permissions::from_mode(0o600))
             .expect("secure test signature permissions");
     }
+}
+
+#[cfg(unix)]
+#[path = "sshsig_differential_tests.rs"]
+mod differential;
+
+#[cfg(windows)]
+fn write_private(path: &Path, bytes: &[u8]) {
+    crate::durable::write_private_new(path, bytes)
+        .unwrap_or_else(|error| panic!("create private Windows test file: {error}"));
 }

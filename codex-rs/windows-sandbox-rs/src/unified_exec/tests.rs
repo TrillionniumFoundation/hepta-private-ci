@@ -710,11 +710,16 @@ fn legacy_workspace_write_delete_is_limited_to_writable_roots() {
             &script,
             concat!(
                 "@echo off\r\n",
-                "del /f /q \"%WORKSPACE_DELETE%\"\r\n",
-                "del /f /q \"%TEMP_DELETE%\"\r\n",
-                "del /f /q \"%TMP_DELETE%\"\r\n",
-                "del /f /q \"%OUTSIDE_DELETE%\"\r\n",
-                "rmdir \"%PROTECTED_GIT_DIR%\"\r\n",
+                "del /f /q \"%WORKSPACE_DELETE%\" 2>&1\r\n",
+                "echo delete-workspace-error=%errorlevel%\r\n",
+                "del /f /q \"%TEMP_DELETE%\" 2>&1\r\n",
+                "echo delete-temp-error=%errorlevel%\r\n",
+                "del /f /q \"%TMP_DELETE%\" 2>&1\r\n",
+                "echo delete-tmp-error=%errorlevel%\r\n",
+                "del /f /q \"%OUTSIDE_DELETE%\" 2>&1\r\n",
+                "echo delete-outside-error=%errorlevel%\r\n",
+                "rmdir \"%PROTECTED_GIT_DIR%\" 2>&1\r\n",
+                "echo delete-protected-error=%errorlevel%\r\n",
                 "exit /b 0\r\n",
             ),
         )
@@ -771,6 +776,26 @@ fn legacy_workspace_write_delete_is_limited_to_writable_roots() {
             collect_stdout_and_exit(spawned, codex_home.path(), Duration::from_secs(/*secs*/ 10))
                 .await;
         let stdout = String::from_utf8_lossy(&stdout);
+        let diagnostics = crate::token::delete_diagnostics::observe_legacy(
+            codex_home.path(),
+            &workspace,
+            &[&workspace, &temp_root, &tmp_root],
+            &[
+                ("workspace-dir", workspace.as_path()),
+                ("workspace-file", workspace_file.as_path()),
+                ("temp-dir", temp_root.as_path()),
+                ("temp-file", temp_file.as_path()),
+                ("tmp-dir", tmp_root.as_path()),
+                ("tmp-file", tmp_file.as_path()),
+                ("outside-dir", outside_root.as_path()),
+                ("outside-file", outside_file.as_path()),
+                ("protected-dir", protected_git_dir.as_path()),
+            ],
+        );
+        eprintln!(
+            "delete-native legacy-observation-complete={}",
+            diagnostics.is_ok()
+        );
 
         assert_eq!(
             (

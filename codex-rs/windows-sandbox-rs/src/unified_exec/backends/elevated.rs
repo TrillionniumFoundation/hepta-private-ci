@@ -23,6 +23,9 @@ use codex_utils_pty::SpawnedProcess;
 use std::collections::HashMap;
 use std::path::Path;
 use std::path::PathBuf;
+use std::sync::Arc;
+use std::sync::atomic::AtomicBool;
+use std::sync::atomic::Ordering;
 use tokio::sync::broadcast;
 use tokio::sync::mpsc;
 use tokio::sync::oneshot;
@@ -187,7 +190,7 @@ pub(crate) async fn spawn_windows_sandbox_session_elevated_for_permission_profil
         proxy_settings_mode,
     };
     let transport = spawn_runner_transport_task(sandbox_creds, request).await?;
-    let (pipe_write, pipe_read) = transport.into_files();
+    let (pipe_write, pipe_read, runner_process) = transport.into_parts();
 
     let (writer_tx, writer_rx) = mpsc::channel::<Vec<u8>>(128);
     let (stdout_tx, stdout_rx) = broadcast::channel::<Vec<u8>>(256);
@@ -200,9 +203,12 @@ pub(crate) async fn spawn_windows_sandbox_session_elevated_for_permission_profil
 
     let outbound_tx = start_runner_pipe_writer(pipe_write);
     let writer_handle = start_runner_stdin_writer(writer_rx, outbound_tx.clone(), tty, stdin_open);
+    let termination_requested = Arc::new(AtomicBool::new(false));
     let terminator = {
         let outbound_tx = outbound_tx.clone();
+        let termination_requested = Arc::clone(&termination_requested);
         Some(Box::new(move || {
+            termination_requested.store(true, Ordering::SeqCst);
             let _ = outbound_tx.send(FramedMessage {
                 version: IPC_PROTOCOL_VERSION,
                 message: Message::Terminate {
@@ -214,6 +220,8 @@ pub(crate) async fn spawn_windows_sandbox_session_elevated_for_permission_profil
 
     start_runner_stdout_reader(
         pipe_read,
+        runner_process,
+        termination_requested,
         stdout_tx,
         stderr_rx.as_ref().map(|(tx, _rx)| tx.clone()),
         exit_tx,

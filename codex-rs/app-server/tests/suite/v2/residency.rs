@@ -94,7 +94,7 @@ async fn managed_residency_overrides_provider_headers(transport: ModelTransport)
     .await;
     let model_base_url = match transport {
         ModelTransport::Http => http_server.uri(),
-        ModelTransport::Websocket => websocket_server.uri().to_string(),
+        ModelTransport::Websocket => websocket_server.uri().replacen("ws://", "http://", 1),
     };
 
     let codex_home = TempDir::new()?;

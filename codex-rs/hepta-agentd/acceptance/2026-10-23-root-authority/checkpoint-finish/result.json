@@ -1,0 +1,31 @@
+{
+  "source_head_before": "d0e6ae59950eebfd483ebeac1447bd07937954db",
+  "commands": [
+    {
+      "stage": "scoped-fix",
+      "argv": [
+        "/home/qian-qi/.cargo/bin/just",
+        "fix",
+        "-p",
+        "codex-hepta-agentd",
+        "--profile",
+        "dev-small"
+      ],
+      "exit_code": 0,
+      "seconds": 458.137
+    },
+    {
+      "stage": "format",
+      "argv": [
+        "/home/qian-qi/.cargo/bin/just",
+        "fmt"
+      ],
+      "exit_code": 0,
+      "seconds": 0.266
+    }
+  ],
+  "passed": true,
+  "tests_repeated_after_fix_or_fmt": false,
+  "diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "status": ""
+}

@@ -71,6 +71,11 @@ fn supervisord_child_entry() -> Result<()> {
 #[tokio::test(flavor = "multi_thread", worker_threads = 8)]
 async fn five_real_agents_survive_daemon_restart_and_isolate_one_agent_release_changes()
 -> Result<()> {
+    // Keep this independent product fixture within Darwin's original socket
+    // path limit; the fleet layout, five identities and deadlines stay intact.
+    #[cfg(target_os = "macos")]
+    let temp = tempfile::tempdir_in(Path::new("/tmp").canonicalize()?)?;
+    #[cfg(not(target_os = "macos"))]
     let temp = tempfile::tempdir()?;
     let root = temp.path().canonicalize()?;
     let fleet_root = HeptaFleetRoot::parse(root.join("fleet"))?;
