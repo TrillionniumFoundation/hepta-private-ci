@@ -4,6 +4,7 @@ from dataclasses import replace
 import unittest
 
 from admission import COSTS, Case, MatchedEvaluator, Protocol, Run, digest
+from admission_test_support import fixture_registration
 
 
 class AdmissionTests(unittest.TestCase):
@@ -14,9 +15,9 @@ class AdmissionTests(unittest.TestCase):
         self.protocol = Protocol("frozen-fixture-v1", True, 1000, .05, 1, .1, 30, 1.,
                                  ("old", "new"), (("train_cpu_s", 1.),),
                                  (("peak_rss_bytes", 1000000),))
-        self.candidate = Run("new", "input", "training", "executor", "budget", lambda _: "copy")
+        self.candidate = Run("new", "input", "training", "executor", "budget", lambda _: "copy", "encoder-v1", "decoder-v1", "tools-v1")
         self.incumbent = Run("old", "input", "training", "executor", "budget",
-                             lambda q: "copy" if q == "old" else "miss")
+                             lambda q: "copy" if q == "old" else "miss", "encoder-v1", "decoder-v1", "tools-v1")
 
     def ledger(self, bundle):
         return {"bundle": bundle, "protocol": self.protocol.identity, "horizon_reads": 1000,
@@ -26,9 +27,12 @@ class AdmissionTests(unittest.TestCase):
 
     def evaluate(self, **changes):
         protocol = changes.get("protocol", self.protocol)
-        evaluator = MatchedEvaluator(changes.get("cases", self.cases),
+        cases = changes.get("cases", self.cases)
+        candidate = changes.get("candidate", self.candidate)
+        registration = fixture_registration(cases, protocol, candidate, self.incumbent)
+        evaluator = MatchedEvaluator(cases,
                                      lambda: (lambda op, payload: payload if op == "copy" else None),
-                                     protocol)
+                                     protocol, registration=registration)
         return evaluator.evaluate(changes.get("candidate", self.candidate), self.incumbent,
                                   changes.get("candidate_cost", self.ledger("new")),
                                   self.ledger("old"), manifest=changes.get("manifest", {
