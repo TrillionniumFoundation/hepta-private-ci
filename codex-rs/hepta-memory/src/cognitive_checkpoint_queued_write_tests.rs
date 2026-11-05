@@ -1,6 +1,7 @@
 //! A checked-out writer must reauthorize Dirty after a queued SQLite BEGIN.
 
 use super::*;
+use pretty_assertions::assert_eq;
 
 #[tokio::test]
 async fn queued_writer_reconfirms_dirty_after_intervening_current_publication() {
