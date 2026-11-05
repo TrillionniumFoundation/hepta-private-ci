@@ -2,7 +2,8 @@
 """Avoid unrelated all-feature metadata downloads for scoped workspace tests.
 
 Cargo still builds the requested targets and features. Dependency-graph filters,
-workspace runs and reused builds retain nextest's normal metadata path.
+workspace runs and reused builds retain nextest's normal metadata path. Fresh
+builds also expose selected cross-package helpers from official binary metadata.
 """
 
 import json
@@ -219,10 +220,23 @@ def use_scoped_metadata(args, cwd):
     return True
 
 
+def run_binary_command(command, metadata=None):
+    # Resolve our companion by exact path, including when this script is loaded
+    # through importlib by its existing tests from another working directory.
+    import importlib.util
+
+    spec = importlib.util.spec_from_file_location(
+        "nextest_binary_environment", Path(__file__).with_name("nextest_binary_environment.py")
+    )
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module.run(command, metadata)
+
+
 def run(args):
     command = ["cargo", "nextest", "run", "--no-fail-fast", *args]
     if not use_scoped_metadata(args, Path.cwd()):
-        return subprocess.call(command)
+        return run_binary_command(command)
     metadata_command = ["cargo", "metadata", "--no-deps", "--format-version=1"]
     for index, arg in enumerate(args):
         if arg == "--":
@@ -244,7 +258,7 @@ def run(args):
         if workspace_config.is_file() and re.search(
             r"\b(?:rdeps|deps)\s*\(", workspace_config.read_text()
         ):
-            return subprocess.call(command)
+            return run_binary_command(command, metadata)
         workspace_members = set(metadata["workspace_members"])
         names = {
             p["name"] for p in metadata["packages"] if p["id"] in workspace_members
@@ -252,7 +266,7 @@ def run(args):
         # Cargo package IDs, globs and external dependencies retain Cargo's
         # ordinary selection semantics rather than approximating them here.
         if not all(package in names for package in scoped_packages(args)):
-            return subprocess.call(command)
+            return run_binary_command(command, metadata)
         # Nextest derives its build manifest from the supplied metadata and
         # rejects combining --manifest-path with --cargo-metadata. Keep the
         # original arguments for fallback; remove only this resolved selector.
@@ -269,7 +283,7 @@ def run(args):
         command = ["cargo", "nextest", "run", "--no-fail-fast", *build_args]
         separator = command.index("--") if "--" in command else len(command)
         command[separator:separator] = ["--cargo-metadata", str(metadata_path)]
-        return subprocess.call(command)
+        return run_binary_command(command, metadata)
 
 
 if __name__ == "__main__":
