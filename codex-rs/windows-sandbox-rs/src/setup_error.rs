@@ -309,8 +309,11 @@ mod tests {
     #[test]
     fn typed_setup_report_preserves_code_and_message_through_context() -> Result<()> {
         let codex_home = tempfile::tempdir()?;
-        let error = failure(SetupErrorCode::HelperSandboxLockFailed, "typed lock failure")
-            .context("outer setup context");
+        let error = failure(
+            SetupErrorCode::HelperSandboxLockFailed,
+            "typed lock failure",
+        )
+        .context("outer setup context");
 
         let report = SetupErrorReport::from_error(&error);
         write_setup_error_report(codex_home.path(), &report)?;
@@ -319,7 +322,10 @@ mod tests {
 
         assert_eq!(
             SetupFailure::from_report(restored),
-            SetupFailure::new(SetupErrorCode::HelperSandboxLockFailed, "typed lock failure")
+            SetupFailure::new(
+                SetupErrorCode::HelperSandboxLockFailed,
+                "typed lock failure"
+            )
         );
         Ok(())
     }
