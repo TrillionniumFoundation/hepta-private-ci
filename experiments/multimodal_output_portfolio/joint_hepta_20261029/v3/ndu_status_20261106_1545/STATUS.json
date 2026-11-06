@@ -1,0 +1,141 @@
+{
+  "schema": "ndu.current-disposition.addendum.v1",
+  "as_of_utc": "2026-11-06T15:45:50Z",
+  "source_checkpoint": {
+    "commit": "7bf0472af73eb9fbd92dff44cb15cc9526cb5d80",
+    "tree": "b6e3970dff858ffcd1d3537b2ab654e618697539",
+    "branch": "research/ndu-acl-repair-same-object-handle-20261106",
+    "pr": 5077,
+    "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/5077"
+  },
+  "all_scientific_blockers_closed": false,
+  "full_repository_ci_green": false,
+  "decision": "NO_GO_FOR_LARGE_SCALE_TRAINING",
+  "historical_status_and_results_rewritten": false,
+  "status_record_is_new_experiment": false,
+  "research": {
+    "target_semantics": "INTERNALLY_CORRECTED_UNDER_EXPLICIT_ASSUMPTIONS",
+    "same_data_finite_empirical_dp_gap": "RESOLVED_WITHIN_AUDITED_FINITE_MODEL",
+    "strong_baseline": {
+      "status": "FAILED_CURRENT_CANDIDATE",
+      "comparator": "same-data myopic VOI",
+      "true_utility_wins_ties_losses": [
+        0,
+        143,
+        1
+      ],
+      "primary_lifecycle_deployments": 1000,
+      "primary_positive_cells": 0,
+      "primary_total_cells": 144,
+      "primary_absolute_lower_bounds_negative": 144,
+      "global_research_acquisition_score_units": 88866.778,
+      "resource_prices": "DECLARED_SYNTHETIC_UNITS_NOT_PROVIDER_MONEY",
+      "hardware_and_engineering_monetary_cost": "UNPRICED"
+    },
+    "pure_information_mechanism": {
+      "status": "EXACT_MECHANISM_ESTABLISHED_IN_DECLARED_MODEL",
+      "correctness_reward_depends_on_internal_state": false,
+      "proposed_rule_vs_same_structure_mle_dp": "PATHWISE_EQUIVALENT",
+      "superiority_comparison": "NEGATIVE_BEFORE_SAMPLING",
+      "contract_law_pairs": 36,
+      "feasible_count_triples": 968,
+      "new_random_confirmation_performed": false
+    },
+    "finite_catalog": {
+      "status": "RESTRICTED_CLASSICAL_POINTWISE_ASYMPTOTIC_RESULT",
+      "candidate_laws_provided": true,
+      "unknown_true_catalog_member": true,
+      "calibration_regenerative_and_paid": true,
+      "deterministic_verifier_checks": 45,
+      "kl_deadline_condition_sufficient": false,
+      "new_learned_stateful_algorithm_near_bound": "NOT_ESTABLISHED"
+    },
+    "frozen_local_models": {
+      "status": "ACTUAL_DEVELOPMENT_EXECUTION_WITH_NEGATIVE_TASK_OUTCOMES",
+      "procedures": 3,
+      "responses_including_qualification": 54,
+      "task_episodes_across_reused_procedures": 48,
+      "distinct_disclosed_tasks": 8,
+      "source_clusters": 2,
+      "untouched_independent_confirmation": false,
+      "external_paid_model_api_calls": 0,
+      "host_monetary_cost": "UNKNOWN",
+      "per_procedure": [
+        {
+          "name": "SmolLM2-135M strict JSON",
+          "responses": 17,
+          "task_episodes": 16,
+          "tool_dispatches": 0,
+          "delivered_task_answers": 0,
+          "correct_delivered_task_answers": 0
+        },
+        {
+          "name": "Qwen2.5-0.5B strict JSON",
+          "responses": 17,
+          "task_episodes": 16,
+          "tool_dispatches": 0,
+          "delivered_task_answers": 0,
+          "correct_delivered_task_answers": 0
+        },
+        {
+          "name": "Same frozen Qwen with prospectively fixed JSON transport",
+          "responses": 20,
+          "task_episodes": 16,
+          "tool_dispatches": 4,
+          "sql_observations": 3,
+          "sql_worker_failures": 1,
+          "direct_delivered_answers": 4,
+          "direct_exactly_correct_answers": 0,
+          "tool_assisted_delivered_answers": 0,
+          "tool_assisted_final_verifier_calls": 0
+        }
+      ]
+    },
+    "external_scientific_review": "NOT_OBTAINED",
+    "new_rl_originality": "NOT_ESTABLISHED",
+    "independent_net_benefit": "NOT_ESTABLISHED"
+  },
+  "engineering": {
+    "code_review_and_git_readback_are_native_execution": false,
+    "recent_main_drafts": [
+      {
+        "pr": 5072,
+        "scope": "Windows CLI helper bundle",
+        "complete_native_qualification": "PENDING"
+      },
+      {
+        "pr": 5074,
+        "scope": "Selected executor MCP publication",
+        "complete_native_qualification": "PENDING"
+      },
+      {
+        "pr": 5075,
+        "scope": "Attestation fixture message handling",
+        "complete_native_qualification": "PENDING"
+      },
+      {
+        "pr": 5076,
+        "scope": "Safe SDK persistence stage diagnostic",
+        "complete_native_qualification": "PENDING",
+        "persistence_fixed": false
+      },
+      {
+        "pr": 5077,
+        "scope": "Same-object ACL repair handle",
+        "complete_native_qualification": "PENDING",
+        "restricted_token_delete_fixed": false
+      }
+    ],
+    "remaining": [
+      "Windows legacy outside-read and outside-delete contract remains unresolved; limited refusal is containment only.",
+      "Current Linux restricted-read capability has no qualified namespace/link-count proof and implementation.",
+      "Windows SDK persistence still fails; precise lower-level diagnostic and generated-lock integration remain pending.",
+      "Port #5058 correctly rejected two lawful successor files not yet covered by an additive source amendment.",
+      "Vodozemac #5073 native generator and independent original artifact validation remain pending.",
+      "Full native CI includes failures, queued jobs, and unqualified new-source changes."
+    ],
+    "merges_performed_for_this_record": 0,
+    "scientific_result_changed_by_ci_success": false
+  },
+  "decision_rule": "Keep the current candidate negative. A new candidate needs prospective differences from qualified strong baselines, complete costs and real deadlines, untouched task clusters, positive baseline and lifecycle gates, and separate novelty assessment."
+}
