@@ -1,0 +1,275 @@
+{
+  "automatic_commit_or_ref_update": false,
+  "command_exits": [
+    {
+      "argv": [
+        "cargo",
+        "+1.96.0",
+        "--version"
+      ],
+      "cwd": ".",
+      "exit_code": 0,
+      "stage": "cargo-version"
+    },
+    {
+      "argv": [
+        "rustc",
+        "+1.96.0",
+        "--version"
+      ],
+      "cwd": ".",
+      "exit_code": 0,
+      "stage": "rustc-version"
+    },
+    {
+      "argv": [
+        "cargo",
+        "+1.96.0",
+        "deny",
+        "--version"
+      ],
+      "cwd": ".",
+      "exit_code": 0,
+      "stage": "deny-version"
+    },
+    {
+      "argv": [
+        "just",
+        "--version"
+      ],
+      "cwd": ".",
+      "exit_code": 0,
+      "stage": "just-version"
+    },
+    {
+      "argv": [
+        "bazel",
+        "--version"
+      ],
+      "cwd": ".",
+      "exit_code": 0,
+      "stage": "bazel-version"
+    },
+    {
+      "argv": [
+        "cargo",
+        "+1.96.0",
+        "metadata",
+        "--locked",
+        "--no-deps",
+        "--format-version",
+        "1"
+      ],
+      "cwd": "codex-rs",
+      "exit_code": 0,
+      "stage": "workspace-before"
+    },
+    {
+      "argv": [
+        "./scripts/check-module-bazel-lock.sh"
+      ],
+      "cwd": ".",
+      "exit_code": 0,
+      "stage": "baseline-bazel-lock-check"
+    },
+    {
+      "argv": [
+        "cargo",
+        "+1.96.0",
+        "update",
+        "-p",
+        "vodozemac@0.11.1",
+        "--precise",
+        "0.11.2"
+      ],
+      "cwd": "codex-rs",
+      "exit_code": 0,
+      "stage": "cargo-lock-update"
+    },
+    {
+      "argv": [
+        "cargo",
+        "+1.96.0",
+        "update",
+        "-p",
+        "itertools@0.14.0",
+        "--precise",
+        "0.14.0"
+      ],
+      "cwd": "codex-rs",
+      "exit_code": 0,
+      "stage": "cargo-existing-itertools-update"
+    },
+    {
+      "argv": [
+        "cargo",
+        "+1.96.0",
+        "update",
+        "-p",
+        "getrandom@0.3.4",
+        "--precise",
+        "0.3.4"
+      ],
+      "cwd": "codex-rs",
+      "exit_code": 0,
+      "stage": "cargo-existing-getrandom-update"
+    },
+    {
+      "argv": [
+        "cargo",
+        "+1.96.0",
+        "update",
+        "-p",
+        "vodozemac@0.11.2",
+        "--precise",
+        "0.11.2"
+      ],
+      "cwd": "codex-rs",
+      "exit_code": 0,
+      "stage": "cargo-lock-repeat"
+    },
+    {
+      "argv": [
+        "cargo",
+        "+1.96.0",
+        "update",
+        "-p",
+        "itertools@0.14.0",
+        "--precise",
+        "0.14.0"
+      ],
+      "cwd": "codex-rs",
+      "exit_code": 0,
+      "stage": "cargo-existing-itertools-repeat"
+    },
+    {
+      "argv": [
+        "cargo",
+        "+1.96.0",
+        "update",
+        "-p",
+        "getrandom@0.3.4",
+        "--precise",
+        "0.3.4"
+      ],
+      "cwd": "codex-rs",
+      "exit_code": 0,
+      "stage": "cargo-existing-getrandom-repeat"
+    },
+    {
+      "argv": [
+        "cargo",
+        "+1.96.0",
+        "metadata",
+        "--locked",
+        "--no-deps",
+        "--format-version",
+        "1"
+      ],
+      "cwd": "codex-rs",
+      "exit_code": 0,
+      "stage": "workspace-after"
+    },
+    {
+      "argv": [
+        "cargo",
+        "+1.96.0",
+        "tree",
+        "--color",
+        "never",
+        "--locked",
+        "--package",
+        "vodozemac@0.11.2",
+        "--target",
+        "all",
+        "--edges",
+        "normal,build",
+        "--prefix",
+        "none",
+        "--format",
+        "{p}|{f}"
+      ],
+      "cwd": "codex-rs",
+      "exit_code": 0,
+      "stage": "features-after"
+    },
+    {
+      "argv": [
+        "just",
+        "bazel-lock-update"
+      ],
+      "cwd": ".",
+      "exit_code": 0,
+      "stage": "bazel-lock-update"
+    },
+    {
+      "argv": [
+        "./scripts/check-module-bazel-lock.sh"
+      ],
+      "cwd": ".",
+      "exit_code": 0,
+      "stage": "bazel-lock-check"
+    },
+    {
+      "argv": [
+        "just",
+        "bazel-lock-update"
+      ],
+      "cwd": ".",
+      "exit_code": 0,
+      "stage": "bazel-lock-repeat"
+    },
+    {
+      "argv": [
+        "./scripts/check-module-bazel-lock.sh"
+      ],
+      "cwd": ".",
+      "exit_code": 0,
+      "stage": "bazel-lock-check-repeat"
+    },
+    {
+      "argv": [
+        "cargo-deny",
+        "--log-level",
+        "warn",
+        "--manifest-path",
+        "./codex-rs/Cargo.toml",
+        "--all-features",
+        "check"
+      ],
+      "cwd": ".",
+      "exit_code": 0,
+      "stage": "cargo-deny-original"
+    }
+  ],
+  "exact_six_zeroize_features_verified_by_native_cargo_tree": true,
+  "forward_and_reverse_patch_replayed": true,
+  "original_cargo_deny_passed": true,
+  "proposal_tree_including_only_the_original_proposal_tools": "1bbbd6a333549bb2c7d9973b2dab5c20cb466b6d",
+  "proposal_validated": true,
+  "schema": "vodozemac-lock-proposal-result-v1",
+  "two_actual_locks_repeat_byte_equal": true,
+  "validated_payload_identities": {
+    "after/Cargo.lock": {
+      "bytes": 419311,
+      "git_blob": "4807d7da16d576a6f34830ff1039e3224808c7b4",
+      "sha256": "df62d73836673ec7cfb69d8f232cb81be610cea94e8ce95f81d41235f4a3317f"
+    },
+    "after/Cargo.toml": {
+      "bytes": 23028,
+      "git_blob": "b21f7ffc0ee52722ddf82e5a996ff9d82ae0fbb0",
+      "sha256": "cefa440b6b696fff0ede20159324a5dce1bfe4eff881477d0e0522887a064bda"
+    },
+    "after/MODULE.bazel.lock": {
+      "bytes": 1725951,
+      "git_blob": "7d77e06d95a3e4d014870990031d5920bc779939",
+      "sha256": "90225dce14839069862401db906babcee1d1f19349f2da87024740e97747adaf"
+    },
+    "proposal.patch": {
+      "bytes": 8091,
+      "git_blob": "2da6f845689f31aba7a1696d03788ae06ee8c3b2",
+      "sha256": "adcad58480f67b7ea334dfd9709c25874a613224d125aeb0cd948921b009aaf4"
+    }
+  },
+  "workspace_members_not_expanded": true
+}

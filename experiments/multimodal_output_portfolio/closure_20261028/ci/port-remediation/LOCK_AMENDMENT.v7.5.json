@@ -1,0 +1,129 @@
+{
+  "changes": {
+    "MODULE.bazel.lock": {
+      "after": {
+        "bytes": 1725951,
+        "sha256": "90225dce14839069862401db906babcee1d1f19349f2da87024740e97747adaf"
+      },
+      "before": {
+        "bytes": 1725804,
+        "sha256": "333b2545bd671a88aeb762afd74c725801138f8f53ddfc30af1e75b5f446deed"
+      },
+      "mode": "100644"
+    },
+    "codex-rs/Cargo.lock": {
+      "after": {
+        "bytes": 419311,
+        "sha256": "df62d73836673ec7cfb69d8f232cb81be610cea94e8ce95f81d41235f4a3317f"
+      },
+      "before": {
+        "bytes": 419275,
+        "sha256": "70d1590734ce663b956981e5c3e7253c6b712039ca5e11e090487a371fbece7b"
+      },
+      "mode": "100644"
+    }
+  },
+  "native_proposal": {
+    "archive": {
+      "bytes": 5882120,
+      "git_blob": "caaf60e0de9e2e3eeec4e708444a6e6aea911d99",
+      "sha256": "47ac0b11330212d9836fda483369173365eb3729c131367c618450761884eaa5"
+    },
+    "artifact_id": 13532386250,
+    "both_locks_repeat_byte_equal": true,
+    "exact_commands_exit_zero": 20,
+    "head": "f11cc0a1c46f4a1a49e21580a80a9306b42f5dfa",
+    "job_id": 128069141553,
+    "original_all_features_cargo_deny_passed": true,
+    "run_id": 42269231206,
+    "tree": "c01815f9a8aac7116747a2d6895060b8c646deb3"
+  },
+  "operation": "bind-native-vodozemac-zeroize-locks",
+  "parents": {
+    "experiments/multimodal_output_portfolio/closure_20261028/ci/port-remediation/BUILD_AMENDMENT.v7.3.json": {
+      "bytes": 2820,
+      "sha256": "2ebd2e0ceacf4f22f2c3b28b7397d353c52e95d944ef664e9dcf6cb70b0e6a5e"
+    },
+    "experiments/multimodal_output_portfolio/closure_20261028/ci/port-remediation/DEPENDENCY_AMENDMENT.v7.2.json": {
+      "bytes": 76071,
+      "sha256": "334d6a0000bb6c14c1f8742e680c799d7e9f768e035ce06a99593bedd0e1d538"
+    },
+    "experiments/multimodal_output_portfolio/closure_20261028/ci/port-remediation/INTEGRATION.v7.json": {
+      "bytes": 9120,
+      "sha256": "ef1fc0a4cfd8c2621eeb82e413555c1ea1780020a1f74f7c666253b62a5bfde2"
+    },
+    "experiments/multimodal_output_portfolio/closure_20261028/ci/port-remediation/SOURCE_AMENDMENT.v7.1.json": {
+      "bytes": 3256,
+      "sha256": "f802638dd5d01f3b3d7583986848c1ad6264c3ec478ed055f4e1edebc7a0d40a"
+    },
+    "experiments/multimodal_output_portfolio/closure_20261028/ci/port-remediation/SOURCE_AMENDMENT.v7.4.json": {
+      "bytes": 3111,
+      "sha256": "56c5b2a709caa0ae7749e1281c9e6ac56085244303cdbb8b158fc26d1cf106d0"
+    },
+    "experiments/multimodal_output_portfolio/closure_v2_20261027/ci/port-remediation/RECIPE.v7.json": {
+      "bytes": 348278,
+      "sha256": "8c655b7b3c539527e6506869a52d0e98a88ed37e334e9d34d13be83713bce03f"
+    }
+  },
+  "promotion_allowed": false,
+  "proofs": {
+    "qualification/ndu-ci-repairs-20261106/port-vodozemac-native-locks/artifact-manifest.json": {
+      "bytes": 10133,
+      "sha256": "c60b1b4697e385fb2b14d43d8be09e88b4919e076cd4f80c9fc53b112d8400d6"
+    },
+    "qualification/ndu-ci-repairs-20261106/port-vodozemac-native-locks/current-source-comparison.json.gz": {
+      "bytes": 13632,
+      "sha256": "5ecd7c4f628927dfb8aafb452aa5109f7067404d28b4e570fc01916633307904"
+    },
+    "qualification/ndu-ci-repairs-20261106/port-vodozemac-native-locks/feature-proof.json": {
+      "bytes": 895,
+      "sha256": "4950272b2e60efb738a26a4c6d6e2f17d3eaeea9910cbb853ff522e0bab4c59a"
+    },
+    "qualification/ndu-ci-repairs-20261106/port-vodozemac-native-locks/lock-graph-proof.json": {
+      "bytes": 609,
+      "sha256": "b12c7485bd39780474fea66b52c9ed5fba7d3e32de8fac3c06b4afe4913cf512"
+    },
+    "qualification/ndu-ci-repairs-20261106/port-vodozemac-native-locks/module-lock-proof.json": {
+      "bytes": 438,
+      "sha256": "f5f4ca010625a43612abd7d938cedde1863f99f42113a7aa1150c83df691d2ca"
+    },
+    "qualification/ndu-ci-repairs-20261106/port-vodozemac-native-locks/native-artifact-audit.json.gz": {
+      "bytes": 2644,
+      "sha256": "1856718db69fbe724f10aa8c7384054aa59c044964a34baa3557fe954e9c71c9"
+    },
+    "qualification/ndu-ci-repairs-20261106/port-vodozemac-native-locks/native-console-binding.json.gz": {
+      "bytes": 672,
+      "sha256": "7a0a2f99a1efd958cedb1b3174787a26a34e83651063a8ac7ae8d11261bbcba6"
+    },
+    "qualification/ndu-ci-repairs-20261106/port-vodozemac-native-locks/native-job-128069141553.log.gz": {
+      "bytes": 172006,
+      "sha256": "91a756a4cc9da7a182ddacee334706396fd75e5770515ea1dd5c78c12c218ad6"
+    },
+    "qualification/ndu-ci-repairs-20261106/port-vodozemac-native-locks/proposal.patch.gz": {
+      "bytes": 1702,
+      "sha256": "3650680cc96e7019a0d7cdfd146eb10b7edd6e6dff99b1a8e569aa568442ae4a"
+    },
+    "qualification/ndu-ci-repairs-20261106/port-vodozemac-native-locks/result.json": {
+      "bytes": 5741,
+      "sha256": "2ce655693890f5bad6612e495e6ed9fb7ad17f73409b6f008e9631201a3b35eb"
+    },
+    "qualification/ndu-ci-repairs-20261106/port-vodozemac-native-locks/upstream-proof.json": {
+      "bytes": 510,
+      "sha256": "060b3e2c08315278b7c8ff95fd63fbc323cdb1e8dac10d8ce03332f2bbec1cb8"
+    }
+  },
+  "reviewed_product": {
+    "commit": "b36bd44b00d8130d821c15e172e34542c9470d7c",
+    "pull_request": 5115,
+    "tree": "9dd1191cc10992b27c6cdab61fdb1b492baaeceb"
+  },
+  "reviewed_product_predecessor": {
+    "branch": "research/ndu-credential-diagnostic-evidence-20261106",
+    "head": "f191a1d87ca34ae378fc9c6ae87cc6096f5165d2",
+    "pull_request": 5106,
+    "tree": "748a6807f02ccb77785f344e86b883b38340ba5e"
+  },
+  "reviewed_two_lock_successor_tree": "9dd1191cc10992b27c6cdab61fdb1b492baaeceb",
+  "schema": "hepta.port-native-lock-amendment.v1",
+  "scope": "Two native lock outputs only. All older sealed source records remain byte-identical. Full current product qualification remains separate."
+}
