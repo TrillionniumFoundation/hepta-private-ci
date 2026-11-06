@@ -22,6 +22,10 @@ use crate::WorkspaceBinding;
 #[path = "registry_lifecycle_gate_tests.rs"]
 mod lifecycle_gate_tests;
 
+#[cfg(target_os = "linux")]
+#[path = "registry_lifecycle_gate_path_tests.rs"]
+mod lifecycle_gate_path_tests;
+
 const FIRST_AGENT_ID: &str = "018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12";
 const SECOND_AGENT_ID: &str = "019153a4-3088-7e03-a56a-9b1964f75dd3";
 
