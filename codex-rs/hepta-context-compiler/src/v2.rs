@@ -97,7 +97,6 @@ pub trait ContextProviderDeliveryVerifierV2 {
     /// Authenticate provider-owned attempt evidence against this exact
     /// pre-dispatch preparation. The provider witness remains provider-owned;
     /// context.compiler does not reinterpret it as a raw preparation digest.
-
     fn verify_delivery(
         &self,
         receipt: &ProviderInvocationReceipt,
@@ -1834,6 +1833,15 @@ pub struct ContextDeliveryReceiptV2 {
 
 pub type ContextDeliveryObservationV2 = ContextDeliveryReceiptV2;
 
+/// Caller-local identity and time for observing a provider delivery.
+///
+/// These values do not replace authenticated provider evidence or its recorded time.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct ContextDeliveryObservationMetadataV2 {
+    pub delivery_id: StableId,
+    pub observed_unix_ms: u64,
+}
+
 impl ContextDeliveryReceiptV2 {
     #[must_use]
     pub const fn payload_digest(&self) -> Digest32 {
@@ -1997,11 +2005,14 @@ pub fn observe_delivery(
     attachment: &ContextAttachmentV2,
     serialization: &SerializedContextV2,
     profile: &ContextModelProfileV2,
-    delivery_id: StableId,
+    observation: ContextDeliveryObservationMetadataV2,
     provider_receipt: &ProviderInvocationReceipt,
     delivery_verifier: &impl ContextProviderDeliveryVerifierV2,
-    observed_unix_ms: u64,
 ) -> Result<ContextDeliveryReceiptV2, ContextCompilerV2Error> {
+    let ContextDeliveryObservationMetadataV2 {
+        delivery_id,
+        observed_unix_ms,
+    } = observation;
     preparation.validate_for(attachment, serialization, profile)?;
     provider_receipt
         .validate()
