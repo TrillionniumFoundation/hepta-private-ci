@@ -115,6 +115,9 @@ jobs:
       CHAIN_EXECUTION_PROFILE: hepta-integrated-chain-execution-v10
       CHAIN_BASE_SHA: dd6e1c3cbeacbdc532b0679297835b3a0aac78f0
       HEPTA_PON_CHAIN_SOURCE: ${{ matrix.lane == 'source-head' && '04be5f02c84cf5cb626a53f34bc03a5bd6ff5137' || 'd7b97e4fc54ad5f25bae4da1393a94094352d5ff' }}
+      HEPTA_PON_NPQ6_EXECUTION_PROFILE: hepta-ordinary-pon-npq6-execution-v1
+      HEPTA_PON_NPQ6_CHAIN_SOURCE: 840522d0b65b4989f1a2a1d09c0ad51af1a1956d
+      HEPTA_PON_NPQ6_CHAIN_TREE: 70377cc0a9c8d029907f6c49bbb8dee1435a6cd1
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
