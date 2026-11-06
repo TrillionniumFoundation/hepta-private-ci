@@ -7,6 +7,8 @@ use std::sync::Arc;
 use codex_hepta_neuron::AnchorWitnessStore;
 use codex_hepta_neuron::CellGenerationControlPortV2;
 use codex_hepta_neuron::CellGenerationErrorV2;
+use codex_hepta_neuron::CellGenerationRequestV2;
+use codex_hepta_neuron::CellOutputChunkV2;
 use tokio_util::sync::CancellationToken;
 
 use crate::AgentdError;
@@ -85,7 +87,7 @@ where
                 self.owner
                     .journal()
                     .pending_request()
-                    .map(|request| request.cloned()),
+                    .map(Option::<&CellGenerationRequestV2>::cloned),
             ),
             GenerationCommand::PendingOutput(response) => respond(
                 state,
@@ -93,7 +95,7 @@ where
                 self.owner
                     .journal()
                     .pending_output()
-                    .map(|chunk| chunk.cloned()),
+                    .map(Option::<&CellOutputChunkV2>::cloned),
             ),
             GenerationCommand::TaskCost(response) => {
                 respond(state, response, self.owner.journal().task_cost().cloned())

@@ -146,12 +146,12 @@ impl NeuronGenerationProjection {
     }
 
     pub(crate) fn quarantine(&self) {
-        if let Ok(mut observed) = self.observation.lock() {
-            if observed.phase != Phase::Retired {
-                observed.phase = Phase::Quarantined;
-                observed.owner_clear = false;
-                observed.retirement_ready = false;
-            }
+        if let Ok(mut observed) = self.observation.lock()
+            && observed.phase != Phase::Retired
+        {
+            observed.phase = Phase::Quarantined;
+            observed.owner_clear = false;
+            observed.retirement_ready = false;
         }
     }
 
@@ -165,13 +165,12 @@ impl NeuronGenerationProjection {
 
     fn drain_blockers(&self) -> Result<u32, AgentdError> {
         let observed = self.observation.lock().map_err(poisoned_state)?;
-        Ok(u32::from(
-            !matches!(observed.phase, Phase::Retired)
-                && !(observed.phase == Phase::Running
-                    && observed.host_draining
-                    && observed.owner_clear
-                    && self.command_sender.upgrade().is_some()),
-        ))
+        let acknowledged = observed.phase == Phase::Retired
+            || (observed.phase == Phase::Running
+                && observed.host_draining
+                && observed.owner_clear
+                && self.command_sender.upgrade().is_some());
+        Ok(u32::from(!acknowledged))
     }
 }
 
