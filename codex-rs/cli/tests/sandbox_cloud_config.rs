@@ -99,6 +99,21 @@ async fn sandbox_fetches_and_enforces_cloud_managed_permission_profile() -> Resu
         .await;
 
     let codex = codex_utils_cargo_bin::cargo_bin("codex")?;
+    #[cfg(windows)]
+    let windows_bundle = TempDir::new().context("create private Windows CLI bundle")?;
+    #[cfg(windows)]
+    let codex = {
+        // The production helper lookup uses the executable's package layout.
+        let staged_codex = windows_bundle.path().join("codex.exe");
+        std::fs::copy(&codex, &staged_codex).context("stage the Windows Codex executable")?;
+        for helper_name in ["codex-windows-sandbox-setup", "codex-command-runner"] {
+            let helper = codex_utils_cargo_bin::cargo_bin(helper_name)?;
+            let destination = windows_bundle.path().join(format!("{helper_name}.exe"));
+            std::fs::copy(&helper, &destination)
+                .with_context(|| format!("stage Windows sandbox helper {helper_name}"))?;
+        }
+        staged_codex
+    };
     let chatgpt_base_url_override = format!("chatgpt_base_url=\"{chatgpt_base_url}\"");
     let output = Command::new(&codex)
         .current_dir(codex_home.path())
