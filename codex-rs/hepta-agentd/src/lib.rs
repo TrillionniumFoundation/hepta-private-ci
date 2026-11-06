@@ -311,6 +311,10 @@ mod neuron_generation_process_bootstrap;
 mod neuron_generation_runtime;
 mod neuron_generation_service;
 #[cfg(unix)]
+mod neuron_generation_update;
+#[cfg(unix)]
+mod neuron_generation_update_forward;
+#[cfg(unix)]
 mod neuron_generation_update_live;
 #[cfg(unix)]
 mod neuron_generation_update_bootstrap;
@@ -659,6 +663,22 @@ pub use neuron_generation_process_bootstrap::neuron_generation_process_identity_
 pub use neuron_generation_runtime::NeuronGenerationRuntimeBootstrapV2;
 pub use neuron_generation_runtime::NeuronGenerationRuntimeHandleV2;
 pub use neuron_generation_runtime::neuron_generation_channel_v2;
+#[cfg(unix)]
+pub use neuron_generation_update::AgentdGenerationUpdateRecoveryV1;
+#[cfg(unix)]
+pub use neuron_generation_update::AgentdGenerationUpdateRequestV1;
+#[cfg(unix)]
+pub use neuron_generation_update::AgentdGenerationUpdateTargetV1;
+#[cfg(unix)]
+pub use neuron_generation_update::PreparedAgentdGenerationUpdateV1;
+#[cfg(unix)]
+pub use neuron_generation_update::prepare_agentd_generation_update_v1;
+#[cfg(unix)]
+pub use neuron_generation_update::recover_agentd_generation_update_v1;
+#[cfg(unix)]
+pub use neuron_generation_update_forward::AgentdGenerationForwardRecoveryV1;
+#[cfg(unix)]
+pub use neuron_generation_update_forward::prepare_agentd_generation_forward_recovery_v1;
 #[cfg(unix)]
 pub use neuron_generation_update_live::AgentdGenerationUpdateAuthoritiesV1;
 #[cfg(unix)]
