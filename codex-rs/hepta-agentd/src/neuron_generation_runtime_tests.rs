@@ -15,6 +15,9 @@ use crate::neuron_generation_service::spawn_neuron_generation_service;
 mod joint;
 #[path = "neuron_generation_runtime_test_support.rs"]
 mod support;
+
+#[path = "neuron_generation_control_tests.rs"]
+mod control;
 use support::Fixture;
 use support::checked;
 use support::cost;

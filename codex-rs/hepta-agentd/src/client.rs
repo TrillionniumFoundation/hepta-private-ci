@@ -91,6 +91,30 @@ impl AgentdClient {
         }
     }
 
+    /// Operate the explicitly configured generation owner over its existing
+    /// private socket. An uncertain response must be retried with the exact
+    /// original request or inspected by its retained request digest.
+    pub async fn generation(
+        &self,
+        request: codex_hepta_agent_protocol::GenerationControlRequestV1,
+    ) -> Result<codex_hepta_agent_protocol::GenerationControlResponseV1, AgentdError> {
+        match self
+            .send(AgentdRequest {
+                schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
+                request_id: self.request_id(),
+                spawn_generation: self.spawn_generation,
+                method: crate::AgentdMethod::Generation {
+                    request: Box::new(request),
+                },
+            })
+            .await?
+            .payload
+        {
+            AgentdPayload::Generation(response) => Ok(response),
+            payload => unexpected(payload),
+        }
+    }
+
     pub async fn health(&self) -> Result<HealthSnapshot, AgentdError> {
         match self
             .send(AgentdRequest::health(

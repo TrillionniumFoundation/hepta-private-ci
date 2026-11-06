@@ -122,6 +122,28 @@ impl McpBinding {
             .cloned()
     }
 
+    /// Binds a configured host hook to a permitted tool in this exact catalog.
+    ///
+    /// The host must authorize the configured hook through its hook trust and
+    /// approval path before calling this method. Model calls must use
+    /// [`Self::prepare_call`]; model visibility does not govern trusted host hooks.
+    /// Server readiness, tool policy, the expected executor environment, and the
+    /// prepared call's catalog revision remain enforced.
+    pub fn prepare_configured_hook_call(
+        &self,
+        server: &str,
+        tool: &str,
+        expected_environment_id: Option<&str>,
+    ) -> Option<PreparedMcpCall> {
+        self.calls
+            .get(&(server.to_string(), tool.to_string()))
+            .filter(|call| {
+                expected_environment_id
+                    .is_none_or(|expected| call.server_environment_id() == expected)
+            })
+            .cloned()
+    }
+
     pub fn has_servers(&self) -> bool {
         self.connections.has_servers()
     }

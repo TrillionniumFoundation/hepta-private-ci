@@ -830,6 +830,9 @@ impl TestCodexBuilder {
             supports_websockets: false,
             ..built_in_model_providers(/*openai_base_url*/ None)["openai"].clone()
         };
+        // The default fixture models a metadata-capable backend. Tests for a
+        // custom endpoint's wire boundary must explicitly clear this permit
+        // in their config mutator, independently of the provider display name.
         codex_model_provider_info::test_support::allow_internal_metadata_for_mock(
             &mut model_provider,
         )

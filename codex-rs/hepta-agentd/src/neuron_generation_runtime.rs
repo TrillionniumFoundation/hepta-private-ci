@@ -35,6 +35,10 @@ pub(crate) struct OutputAcknowledgement {
 }
 
 pub(crate) enum GenerationCommand {
+    Control {
+        request: Box<codex_hepta_agent_protocol::GenerationControlRequestV1>,
+        response: Response<codex_hepta_agent_protocol::GenerationControlResponseV1>,
+    },
     Step {
         request: Box<CellGenerationRequestV2>,
         response: Response<CellGenerationReceiptV2>,
@@ -187,6 +191,7 @@ pub struct NeuronGenerationRuntimeBootstrapV2 {
     pub(crate) owner: Box<dyn GenerationRuntimeOwner>,
     pub(crate) receiver: mpsc::Receiver<GenerationCommand>,
     pub(crate) projection: Arc<NeuronGenerationProjection>,
+    control_endpoint: Option<mpsc::Sender<GenerationCommand>>,
 }
 
 /// Consume one exclusive journal and its already admitted control adapter.
@@ -262,11 +267,24 @@ where
             owner,
             receiver,
             projection,
+            control_endpoint: None,
         },
     ))
 }
 
 impl NeuronGenerationRuntimeBootstrapV2 {
+    /// Explicitly expose bounded commands through this Agentd's private control
+    /// socket. The service retains the sender only for its own lifetime. This
+    /// grants no model adoption, remote transport or publication authority.
+    pub fn with_control_endpoint(mut self) -> Result<Self, AgentdError> {
+        let sender = self.projection.command_sender.upgrade().ok_or_else(|| {
+            AgentdError::Protocol("generation command channel is already closed".into())
+        })?;
+        self.projection.enable_control();
+        self.control_endpoint = Some(sender);
+        Ok(self)
+    }
+
     /// An explicitly admitted host service replacement, after the same owner
     /// has drained and reopened. These execution generations are independent
     /// of the Cell's model/state generation and are not adoption evidence.
@@ -286,6 +304,9 @@ impl NeuronGenerationRuntimeBootstrapV2 {
             self.projection.opening_checkpoint,
             self.projection.command_sender.clone(),
         ));
+        if self.control_endpoint.is_some() {
+            self.projection.enable_control();
+        }
         Ok(self)
     }
 

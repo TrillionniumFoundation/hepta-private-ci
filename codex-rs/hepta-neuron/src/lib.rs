@@ -17,6 +17,7 @@ use codex_hepta_types::StableId;
 
 pub use codex_hepta_infer_core::NeuronFeatureReceiptV1;
 pub use codex_hepta_infer_core::NeuronFeatureRequestV1;
+pub use codex_hepta_infer_core::durable_control::DurableInferenceControl;
 
 mod cell;
 mod cell_batch;
@@ -71,6 +72,7 @@ pub use cell_generation_types::CellEvolutionBindingV2;
 pub use cell_generation_types::CellGenerationControlPortV2;
 pub use cell_generation_types::CellGenerationDispositionV2;
 pub use cell_generation_types::CellGenerationErrorV2;
+pub use cell_generation_types::CellGenerationIntentV2;
 pub use cell_generation_types::CellGenerationProposalV2;
 pub use cell_generation_types::CellGenerationReceiptV2;
 pub use cell_generation_types::CellGenerationRequestV2;
@@ -83,6 +85,8 @@ pub use cell_inference::infer_cell;
 pub use cell_inference::recover_cell_inference;
 #[cfg(target_os = "linux")]
 pub use cell_joint_generation::JointGenerationProcessConfigV1;
+#[cfg(target_os = "linux")]
+pub use cell_joint_generation::JointGenerationProcessFilesV1;
 #[cfg(target_os = "linux")]
 pub use cell_joint_generation::JointGenerationProcessWorkerV1;
 #[cfg(target_os = "linux")]

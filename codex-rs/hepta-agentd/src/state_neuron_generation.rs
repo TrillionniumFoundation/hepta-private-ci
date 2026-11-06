@@ -3,6 +3,8 @@
 
 use std::sync::Arc;
 use std::sync::Mutex;
+use std::sync::atomic::AtomicBool;
+use std::sync::atomic::Ordering;
 
 use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;
@@ -39,6 +41,7 @@ pub(crate) struct NeuronGenerationProjection {
     pub(crate) command_sender: mpsc::WeakSender<GenerationCommand>,
     observation: Mutex<Observation>,
     notify: Notify,
+    control_enabled: AtomicBool,
 }
 
 impl NeuronGenerationProjection {
@@ -62,7 +65,12 @@ impl NeuronGenerationProjection {
                 admission_cancellation: None,
             }),
             notify: Notify::new(),
+            control_enabled: AtomicBool::new(false),
         }
+    }
+
+    pub(crate) fn enable_control(&self) {
+        self.control_enabled.store(true, Ordering::Release);
     }
 
     pub(crate) fn activate(
@@ -184,6 +192,53 @@ impl NeuronGenerationProjection {
 }
 
 impl AgentdState {
+    pub(crate) fn generation_control_enabled(&self) -> Result<bool, AgentdError> {
+        Ok(self
+            .neuron_generation
+            .lock()
+            .map_err(poisoned_state)?
+            .as_ref()
+            .is_some_and(|projection| {
+                projection.control_enabled.load(Ordering::Acquire)
+                    && projection.command_sender.upgrade().is_some()
+            }))
+    }
+
+    pub(crate) async fn generation_control(
+        &self,
+        request: Box<codex_hepta_agent_protocol::GenerationControlRequestV1>,
+    ) -> Result<codex_hepta_agent_protocol::GenerationControlResponseV1, AgentdError> {
+        self.require_neuron_generation_recovery()?;
+        let sender = {
+            let attached = self.neuron_generation.lock().map_err(poisoned_state)?;
+            attached
+                .as_ref()
+                .filter(|projection| projection.control_enabled.load(Ordering::Acquire))
+                .and_then(|projection| projection.command_sender.upgrade())
+                .ok_or_else(|| {
+                    AgentdError::Protocol("generation control is not configured".into())
+                })?
+        };
+        let (response, receive) = tokio::sync::oneshot::channel();
+        sender
+            .try_send(GenerationCommand::Control { request, response })
+            .map_err(|error| match error {
+                mpsc::error::TrySendError::Full(_) => {
+                    AgentdError::Protocol("generation command capacity exhausted".into())
+                }
+                mpsc::error::TrySendError::Closed(_) => {
+                    AgentdError::Protocol("generation owner is unavailable".into())
+                }
+            })?;
+        let result = receive.await.map_err(|_| {
+            AgentdError::Protocol(
+                "generation response is uncertain; inspect original operation".into(),
+            )
+        })?;
+        self.require_neuron_generation_recovery()?;
+        result.map_err(|error| AgentdError::Protocol(format!("generation control: {error}")))
+    }
+
     pub(crate) fn attach_neuron_generation(
         &self,
         projection: Arc<NeuronGenerationProjection>,

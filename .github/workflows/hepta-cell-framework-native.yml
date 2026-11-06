@@ -6,6 +6,7 @@ on:
       - codex/cell-framework-20261105
       - codex/neuron-convergence-20261106-734df8
       - codex/neuron-generation-bridge-20261106-734df8
+      - codex/neuron-normal-entry-20261106-734df8
   workflow_dispatch:
 
 permissions:
@@ -23,6 +24,7 @@ env:
   PYTHONDONTWRITEBYTECODE: "1"
   CARGO_INCREMENTAL: "0"
   CARGO_BUILD_JOBS: "2"
+  NEXTEST_TEST_THREADS: "2"
   CARGO_PROFILE_TEST_DEBUG: "0"
   CARGO_PROFILE_DEV_DEBUG: "0"
 
@@ -36,6 +38,7 @@ jobs:
       matrix:
         include:
           - owner: mechanisms
+            helper_packages: --package codex-hepta-infer-worker-host
             packages: >-
               -p codex-hepta-neuron -p codex-hepta-learning-artifacts
               -p codex-hepta-automation -p codex-hepta-runtime
@@ -44,8 +47,11 @@ jobs:
               -p codex-hepta-intelligence
               -p codex-hepta-infer-core
           - owner: agentd-composition
+            helper_packages: ""
             packages: >-
               -p codex-hepta-agentd -p codex-core
+              -p codex-hepta-contracts
+              -p codex-mcp
               -p codex-model-provider-info -p codex-exec-server
               -p codex-hepta-agent-protocol -p codex-hepta-memory
               -p codex-hepta-infer-worker-host -p codex-shell-escalation
@@ -101,6 +107,14 @@ jobs:
           cargo --version
           cargo metadata --locked --format-version=1 > "$RUNNER_TEMP/cell-framework-records/cargo-metadata.json"
           test -z "$(git status --porcelain)"
+      - name: Verify the helper and JUnit evidence gates
+        run: |
+          python3 scripts/hepta_ci_exec.py --timeout-seconds 120 --minimum-tests 1 \
+            --output "$RUNNER_TEMP/cell-framework-records/evidence-gate-tests.json" \
+            -- python3 -m unittest discover -s scripts -p 'test_hepta_ci_junit.py'
+          python3 scripts/hepta_ci_exec.py --timeout-seconds 120 --minimum-tests 1 \
+            --output "$RUNNER_TEMP/cell-framework-records/helper-gate-tests.json" \
+            -- python3 -m unittest discover -s scripts -p 'test_hepta_cell_test_helpers.py'
       - name: Strict lint of the changed owners and dependencies
         env:
           PACKAGES: ${{ matrix.packages }}
@@ -131,10 +145,12 @@ jobs:
       - name: Run scoped suites through the repository runner
         env:
           PACKAGES: ${{ matrix.packages }}
+          HELPER_PACKAGES: ${{ matrix.helper_packages }}
         shell: bash
         run: |
           set -euo pipefail
           read -r -a packages <<< "$PACKAGES"
+          read -r -a helper_packages <<< "$HELPER_PACKAGES"
           records="$RUNNER_TEMP/cell-framework-records"
           junit="codex-rs/target/nextest/local/junit.xml"
           if [[ -f "$junit" ]]; then
@@ -145,12 +161,16 @@ jobs:
             --output "$records/scoped-tests.json" \
             -- just test --locked "${packages[@]}"
           result=$?
+          python3 scripts/hepta_cell_test_helpers.py --output-dir "$records/helpers" \
+            --verify-only "${helper_packages[@]}" > "$records/helpers-after-scoped.json"
+          helper_result=$?
+          python3 scripts/hepta_ci_junit.py --execution "$records/scoped-tests.json" \
+            --junit "$junit" --output "$records/junit-scoped.xml"
+          junit_result=$?
           set -e
-          if [[ -f "$junit" ]]; then
-            cp "$junit" "$records/junit-scoped.xml"
-            sha256sum "$records/junit-scoped.xml" > "$records/junit-scoped.sha256"
-          fi
-          exit "$result"
+          if [[ "$result" -ne 0 ]]; then exit "$result"; fi
+          if [[ "$helper_result" -ne 0 ]]; then exit "$helper_result"; fi
+          exit "$junit_result"
       - name: Run the complete default workspace after the Core suite
         if: matrix.owner == 'agentd-composition'
         shell: bash
@@ -166,12 +186,16 @@ jobs:
             --output "$records/workspace-tests.json" \
             -- just test --locked
           result=$?
+          python3 scripts/hepta_cell_test_helpers.py --output-dir "$records/helpers" \
+            --verify-only > "$records/helpers-after-workspace.json"
+          helper_result=$?
+          python3 scripts/hepta_ci_junit.py --execution "$records/workspace-tests.json" \
+            --junit "$junit" --output "$records/junit-workspace.xml"
+          junit_result=$?
           set -e
-          if [[ -f "$junit" ]]; then
-            cp "$junit" "$records/junit-workspace.xml"
-            sha256sum "$records/junit-workspace.xml" > "$records/junit-workspace.sha256"
-          fi
-          exit "$result"
+          if [[ "$result" -ne 0 ]]; then exit "$result"; fi
+          if [[ "$helper_result" -ne 0 ]]; then exit "$helper_result"; fi
+          exit "$junit_result"
       - name: Retain final source state
         if: always()
         shell: bash
@@ -186,6 +210,10 @@ jobs:
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: cell-framework-${{ matrix.owner }}-${{ github.sha }}-${{ github.run_attempt }}
-          path: ${{ runner.temp }}/cell-framework-records
+          # Retain source-bound logs, manifests and reports. Executable copies
+          # stay on the runner; their exact bytes/modes/hashes are in manifests.
+          path: |
+            ${{ runner.temp }}/cell-framework-records
+            !${{ runner.temp }}/cell-framework-records/helpers/bin/**
           if-no-files-found: error
           retention-days: 14

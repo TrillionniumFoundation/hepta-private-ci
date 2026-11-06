@@ -23,6 +23,9 @@ use crate::neuron_generation_runtime::OutputAcknowledgement;
 use crate::neuron_generation_runtime::Response;
 use crate::state::neuron_generation::NeuronGenerationProjection;
 
+#[path = "neuron_generation_control.rs"]
+mod control;
+
 pub(crate) const NEURON_GENERATION_SERVICE: &str = "neuron-generation";
 
 /// Private type erasure keeps AgentdConfig concrete while accepting only an
@@ -56,6 +59,10 @@ where
     ) -> Result<(), AgentdError> {
         state.require_neuron_generation_recovery()?;
         match command {
+            GenerationCommand::Control { request, response } => {
+                let result = self.control(*request, state);
+                respond(state, response, result)
+            }
             GenerationCommand::Step { request, response } => {
                 let result =
                     self.owner

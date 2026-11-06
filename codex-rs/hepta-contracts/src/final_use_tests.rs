@@ -1130,7 +1130,11 @@ fn unrelated_revocation_head_advance_denies_every_final_entry() {
                 }
             }
         };
-        assert_eq!(result, Err(FinalUseError::StaleRevocationHead), "{boundary:?}");
+        assert_eq!(
+            result,
+            Err(FinalUseError::StaleRevocationHead),
+            "{boundary:?}"
+        );
         assert!(!entered.get(), "{boundary:?}");
     }
 }

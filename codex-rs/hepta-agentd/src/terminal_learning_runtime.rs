@@ -34,24 +34,41 @@ pub struct TerminalLearningHandleV1 {
 }
 
 impl TerminalLearningHandleV1 {
-    pub async fn submit(&self, request: TerminalLearningRequestV1) -> Result<TerminalLearningReceiptV1, TerminalLearningErrorV1> {
+    pub async fn submit(
+        &self,
+        request: TerminalLearningRequestV1,
+    ) -> Result<TerminalLearningReceiptV1, TerminalLearningErrorV1> {
         self.call(request, TerminalLearningModeV1::Train).await
     }
 
-    pub async fn readback(&self, request: TerminalLearningRequestV1) -> Result<TerminalLearningReceiptV1, TerminalLearningErrorV1> {
+    pub async fn readback(
+        &self,
+        request: TerminalLearningRequestV1,
+    ) -> Result<TerminalLearningReceiptV1, TerminalLearningErrorV1> {
         self.call(request, TerminalLearningModeV1::Readback).await
     }
 
-    async fn call(&self, request: TerminalLearningRequestV1, mode: TerminalLearningModeV1) -> Result<TerminalLearningReceiptV1, TerminalLearningErrorV1> {
+    async fn call(
+        &self,
+        request: TerminalLearningRequestV1,
+        mode: TerminalLearningModeV1,
+    ) -> Result<TerminalLearningReceiptV1, TerminalLearningErrorV1> {
         // Reject unbounded caller vectors before retaining them in the queue.
         request.job_digest(&self.agent_id, &self.producer_id)?;
         let (response, receive) = oneshot::channel();
-        self.sender.try_send(Command { request: Box::new(request), mode, response })
+        self.sender
+            .try_send(Command {
+                request: Box::new(request),
+                mode,
+                response,
+            })
             .map_err(|error| match error {
                 mpsc::error::TrySendError::Full(_) => TerminalLearningErrorV1::QueueFull,
                 mpsc::error::TrySendError::Closed(_) => TerminalLearningErrorV1::Unavailable,
             })?;
-        receive.await.map_err(|_| TerminalLearningErrorV1::CommitUncertain)?
+        receive
+            .await
+            .map_err(|_| TerminalLearningErrorV1::CommitUncertain)?
     }
 }
 
@@ -71,27 +88,50 @@ pub fn terminal_learning_channel_v1(
     capacity: usize,
 ) -> Result<(TerminalLearningHandleV1, TerminalLearningRuntimeBootstrapV1), AgentdError> {
     if spawn_generation == 0 || !(1..=64).contains(&capacity) || owner.agent_id() != &agent_id {
-        return Err(AgentdError::Invalid("terminal learning requires exact scope and bounded queue".into()));
+        return Err(AgentdError::Invalid(
+            "terminal learning requires exact scope and bounded queue".into(),
+        ));
     }
     let (sender, receiver) = mpsc::channel(capacity);
-    let handle = TerminalLearningHandleV1 { sender, agent_id: agent_id.clone(), producer_id: owner.producer_id().clone() };
-    Ok((handle, TerminalLearningRuntimeBootstrapV1 { agent_id, spawn_generation, owner, receiver }))
+    let handle = TerminalLearningHandleV1 {
+        sender,
+        agent_id: agent_id.clone(),
+        producer_id: owner.producer_id().clone(),
+    };
+    Ok((
+        handle,
+        TerminalLearningRuntimeBootstrapV1 {
+            agent_id,
+            spawn_generation,
+            owner,
+            receiver,
+        },
+    ))
 }
 
 impl TerminalLearningRuntimeBootstrapV1 {
     pub(crate) fn require_identity(&self, identity: &AgentdIdentity) -> Result<(), AgentdError> {
-        if self.agent_id != identity.agent_id || self.spawn_generation != identity.spawn_generation {
-            return Err(AgentdError::GenerationFenced("terminal learning owner scope does not match Agentd".into()));
+        if self.agent_id != identity.agent_id || self.spawn_generation != identity.spawn_generation
+        {
+            return Err(AgentdError::GenerationFenced(
+                "terminal learning owner scope does not match Agentd".into(),
+            ));
         }
         Ok(())
     }
 
-    pub(crate) async fn run(self, state: Arc<AgentdState>, cancellation: CancellationToken) -> Result<(), AgentdError> {
+    pub(crate) async fn run(
+        self,
+        state: Arc<AgentdState>,
+        cancellation: CancellationToken,
+    ) -> Result<(), AgentdError> {
         self.run_with_clock(state, cancellation, now_seconds).await
     }
 
     pub(crate) async fn run_with_clock(
-        mut self, state: Arc<AgentdState>, cancellation: CancellationToken,
+        mut self,
+        state: Arc<AgentdState>,
+        cancellation: CancellationToken,
         clock: impl Fn() -> Result<u64, TerminalLearningErrorV1> + Send + Sync,
     ) -> Result<(), AgentdError> {
         self.require_identity(state.identity())?;
@@ -100,9 +140,18 @@ impl TerminalLearningRuntimeBootstrapV1 {
                 _ = cancellation.cancelled() => return Ok(()),
                 command = self.receiver.recv() => command,
             };
-            let Some(command) = command else { cancellation.cancelled().await; return Ok(()); };
-            let Command { request, mode, response } = command;
-            if response.is_closed() { continue; }
+            let Some(command) = command else {
+                cancellation.cancelled().await;
+                return Ok(());
+            };
+            let Command {
+                request,
+                mode,
+                response,
+            } = command;
+            if response.is_closed() {
+                continue;
+            }
             let result = tokio::select! {
                 _ = cancellation.cancelled() => {
                     let _ = response.send(Err(TerminalLearningErrorV1::CommitUncertain));
@@ -125,13 +174,18 @@ impl TerminalLearningRuntimeBootstrapV1 {
 }
 
 fn require_ready(state: &AgentdState) -> Result<(), TerminalLearningErrorV1> {
-    if !state.plasticity_admission_ready().map_err(|_| TerminalLearningErrorV1::Unavailable)? {
+    if !state
+        .plasticity_admission_ready()
+        .map_err(|_| TerminalLearningErrorV1::Unavailable)?
+    {
         return Err(TerminalLearningErrorV1::Unavailable);
     }
     Ok(())
 }
 
 fn now_seconds() -> Result<u64, TerminalLearningErrorV1> {
-    SystemTime::now().duration_since(UNIX_EPOCH).map(|value| value.as_secs())
+    SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .map(|value| value.as_secs())
         .map_err(|_| TerminalLearningErrorV1::Unavailable)
 }

@@ -119,16 +119,16 @@ async fn recover_turn_if_idle_requires_hepta_turn_recovery_feature() {
 async fn recover_turn_if_idle_preserves_id_and_resumes_plan_mode() {
     let (first_response_release, first_response_gate) = oneshot::channel();
     let (server, _completions) = start_streaming_sse_server(vec![
-        vec![
-            StreamingSseChunk {
-                gate: None,
-                body: responses::sse(vec![ev_response_created("resp-interrupted")]),
-            },
-            StreamingSseChunk {
-                gate: Some(first_response_gate),
-                body: responses::sse(vec![ev_completed("resp-interrupted")]),
-            },
-        ],
+        // Recovery is available only before the outer turn executor consumes
+        // any provider event, including response.created. Keep the entire
+        // first response gated while proving that the request was dispatched.
+        vec![StreamingSseChunk {
+            gate: Some(first_response_gate),
+            body: responses::sse(vec![
+                ev_response_created("resp-interrupted"),
+                ev_completed("resp-interrupted"),
+            ]),
+        }],
         vec![StreamingSseChunk {
             gate: None,
             body: responses::sse(vec![

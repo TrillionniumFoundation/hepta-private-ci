@@ -305,8 +305,12 @@ mod learning_iteration_auth;
 mod learning_iteration_ports;
 mod learning_iteration_proposal;
 mod neuron_generation;
+mod neuron_generation_process_bootstrap;
 mod neuron_generation_runtime;
 mod neuron_generation_service;
+#[cfg(all(test, target_os = "linux"))]
+#[path = "../tests/support/neuron_generation.rs"]
+mod neuron_generation_test_support;
 mod neuron_runtime;
 #[cfg(target_os = "linux")]
 mod notes_bootstrap;
@@ -618,6 +622,8 @@ pub use learning_iteration_ports::LearningIterationOwnerPortsV1;
 pub use learning_iteration_ports::LearningIterationProposalPayloadV1;
 pub use learning_iteration_ports::PreparedLearningIterationProposalV1;
 pub use neuron_generation::AgentdNeuronGenerationOwnerV2;
+pub use neuron_generation_process_bootstrap::load_neuron_generation_process_bootstrap_v1;
+pub use neuron_generation_process_bootstrap::neuron_generation_process_identity_digest_v1;
 pub use neuron_generation_runtime::NeuronGenerationRuntimeBootstrapV2;
 pub use neuron_generation_runtime::NeuronGenerationRuntimeHandleV2;
 pub use neuron_generation_runtime::neuron_generation_channel_v2;

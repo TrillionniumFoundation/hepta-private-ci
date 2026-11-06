@@ -406,7 +406,14 @@ async fn unified_exec_persists_across_requests() -> anyhow::Result<()> {
         "expected environment variable output"
     );
 
-    assert!(session.terminate_background_terminal(process_id).await);
+    // A termination request is not itself proof of process exit. Retain the
+    // same process identity and wait for its actual exit observation.
+    tokio::time::timeout(Duration::from_secs(5), async {
+        while !session.terminate_background_terminal(process_id).await {
+            tokio::time::sleep(Duration::from_millis(10)).await;
+        }
+    })
+    .await?;
     assert!(!session.terminate_background_terminal(process_id).await);
     assert!(session.list_background_terminals().await.is_empty());
 
