@@ -1,0 +1,35 @@
+{
+  "schema": "hepta.root-r14-repair-independent-review.v1",
+  "state": "STATIC_REVIEW_PASSED_NATIVE_VALIDATION_PENDING",
+  "reviewer": "root",
+  "base_commit": "b44d4ca4aa0ef9f894eff29e9975938e066a82f5",
+  "base_tree": "d3d2313b838422818bf9448ce5a1b86d89abdf69",
+  "candidate": "core-exec-events-r14-repair",
+  "patch_sha256": "e312b0dd838833fe4893cc49eaefdefcd34dccd0555a9bdac5dcf860d48d5fd4",
+  "files": [
+    {
+      "path": "codex-rs/core/tests/suite/unified_exec_process_events.rs",
+      "before": {
+        "bytes": 40402,
+        "sha256": "0a5285472039a89d62d62e50e3ad94e84c64700f4f893bbe3fe3177debe4bb54",
+        "git_blob": "a8a2f67bf853481dec244c5ba7939279fe0eb6ce"
+      },
+      "after": {
+        "bytes": 41379,
+        "sha256": "f3a58d32dac0ecab83d45bd1460b34babcfb17500ebcffdfb4dbc302ed656b77",
+        "git_blob": "0be5dc7774419edf11f7b3256a9f8ad2025882fa"
+      },
+      "original_assertion_macros_exactly_preserved": 56,
+      "candidate_assertion_macros": 56,
+      "numeric_duration_multiset_unchanged": true,
+      "original_source_local_path": "core-exec-events-r14-repair/original/codex-rs/core/tests/suite/unified_exec_process_events.rs",
+      "original_git_blob_independently_confirmed_against_b44d4_github_metadata": true
+    }
+  ],
+  "forward_reverse_patch_exact_without_fuzz_or_offset": true,
+  "source_reasoning": "Both original and stage42 production terminate paths finish after confirmed native exit without promising an extra terminate RPC. The fixture channel is sent only after original TurnComplete or the existing second managed model request. It is not a process-exit acknowledgement. Ready RPCs retain priority; all read/terminate handlers, original read counts, event scripts, permissions and timeout values remain.",
+  "limits": [
+    "No native build, test or formatter executed in this review.",
+    "Source-supported interleavings are distinguished from actual observed failure messages; runtime validation remains pending."
+  ]
+}

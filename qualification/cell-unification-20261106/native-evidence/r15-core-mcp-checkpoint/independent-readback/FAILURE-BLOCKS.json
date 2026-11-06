@@ -1,0 +1,55 @@
+{
+  "schema": "hepta.independent-r15-failure-blocks.v1",
+  "log_sha256": "2e9b11682a84cce7be7e1db72e47eb4be260e8d7ef7a3b1fa916fe59c5a3e39f",
+  "offset_unit": "UTF-8 raw bytes, zero-based, half-open",
+  "blocks": [
+    {
+      "status": "FAIL",
+      "elapsed": "5.262s",
+      "binary": "codex-core",
+      "name": "session::tests::managed_network_proxy_decider_survives_full_access_start",
+      "log_byte_offset": 211007,
+      "log_line": 1822,
+      "log_byte_range_half_open": [
+        211007,
+        211765
+      ],
+      "bytes": 758,
+      "sha256": "cc777669f33e6b70e79e15b3056c83b4d876556e7f0b1a6ca63ea3c9844c8479",
+      "excerpt": "        FAIL [   5.262s] codex-core session::tests::managed_network_proxy_decider_survives_full_access_start\n  stdout ───\n\n    running 1 test\n    test session::tests::managed_network_proxy_decider_survives_full_access_start ... FAILED\n\n    failures:\n\n    failures:\n        session::tests::managed_network_proxy_decider_survives_full_access_start\n\n    test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 2452 filtered out; finished in 5.25s\n\n  stderr ───\n\n    thread 'session::tests::managed_network_proxy_decider_survives_full_access_start' (1210358) panicked at core/src/session/tests.rs:2591:10:\n    timed out waiting for proxy response: Elapsed(())\n    note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n",
+      "native_review_range_and_bytes_equal": true
+    },
+    {
+      "status": "FAIL",
+      "elapsed": "5.166s",
+      "binary": "codex-core::all",
+      "name": "suite::turn_input_submission::recover_turn_if_idle_preserves_id_and_resumes_plan_mode",
+      "log_byte_offset": 476277,
+      "log_line": 3966,
+      "log_byte_range_half_open": [
+        476277,
+        477124
+      ],
+      "bytes": 847,
+      "sha256": "d22af15eb161af09b2c051dbc386d4929b09ec86e428e59022da62789524dfe5",
+      "excerpt": "        FAIL [   5.166s] codex-core::all suite::turn_input_submission::recover_turn_if_idle_preserves_id_and_resumes_plan_mode\n  stdout ───\n\n    running 1 test\n    test suite::turn_input_submission::recover_turn_if_idle_preserves_id_and_resumes_plan_mode ... FAILED\n\n    failures:\n\n    failures:\n        suite::turn_input_submission::recover_turn_if_idle_preserves_id_and_resumes_plan_mode\n\n    test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1425 filtered out; finished in 5.15s\n\n  stderr ───\n\n    thread 'suite::turn_input_submission::recover_turn_if_idle_preserves_id_and_resumes_plan_mode' (1368796) panicked at core/tests/suite/turn_input_submission.rs:212:6:\n    interrupted idle turn should expose its recovery epoch: Elapsed(())\n    note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n",
+      "native_review_range_and_bytes_equal": true
+    },
+    {
+      "status": "FAIL",
+      "elapsed": "0.569s",
+      "binary": "codex-core::all",
+      "name": "suite::unified_exec_zsh_fork_approvals::unified_exec_zsh_fork_parent_approval_preserves_denied_reads",
+      "log_byte_offset": 484059,
+      "log_line": 4036,
+      "log_byte_range_half_open": [
+        484059,
+        485047
+      ],
+      "bytes": 988,
+      "sha256": "692fcb858778ffff1e21f48b8dc67564101848adc3bace4898724f186511363f",
+      "excerpt": "        FAIL [   0.569s] codex-core::all suite::unified_exec_zsh_fork_approvals::unified_exec_zsh_fork_parent_approval_preserves_denied_reads\n  stdout ───\n\n    running 1 test\n    test suite::unified_exec_zsh_fork_approvals::unified_exec_zsh_fork_parent_approval_preserves_denied_reads ... FAILED\n\n    failures:\n\n    failures:\n        suite::unified_exec_zsh_fork_approvals::unified_exec_zsh_fork_parent_approval_preserves_denied_reads\n\n    test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1425 filtered out; finished in 0.55s\n\n  stderr ───\n\n    thread 'suite::unified_exec_zsh_fork_approvals::unified_exec_zsh_fork_parent_approval_preserves_denied_reads' (1375996) panicked at core/tests/suite/unified_exec_zsh_fork_approvals.rs:893:13:\n    unexpected approval request: [\"/usr/bin/cat\", \"/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/core/.tmpHlgOPP/secret.env\"]\n    note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n",
+      "native_review_range_and_bytes_equal": true
+    }
+  ]
+}

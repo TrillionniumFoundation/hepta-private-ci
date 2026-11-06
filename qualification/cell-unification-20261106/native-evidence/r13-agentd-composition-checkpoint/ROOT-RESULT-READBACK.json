@@ -1,0 +1,384 @@
+{
+  "schema": "hepta.r13-root-result-readback.v1",
+  "source_tree": "6be3dbb1420c0ac7e0590c6e3c17191a073af9a9",
+  "unique_passed": 696,
+  "passed_by_package": {
+    "codex-hepta-agent-protocol": 14,
+    "codex-hepta-agentd": 632,
+    "codex-hepta-infer-worker-host": 50
+  },
+  "all_nonignored_listing_ids_equal_original_passed_ids": true,
+  "listed_cases": 762,
+  "original_summary_skipped": 66,
+  "followup_ignored_ids": [
+    {
+      "binary_id": "codex-hepta-agentd",
+      "test": "authority_host_bootstrap_seal::tests::original_writer::root_native_writer_purpose_cannot_pass_the_unchanged_original_two_rights_receiver",
+      "package": "codex-hepta-agentd"
+    },
+    {
+      "binary_id": "codex-hepta-agentd",
+      "test": "authority_host_bootstrap_seal::tests::original_writer::root_writer_transfer_consumes_sender_and_releases_original_lock_after_recipient_closes",
+      "package": "codex-hepta-agentd"
+    },
+    {
+      "binary_id": "codex-hepta-agentd",
+      "test": "authority_host_bootstrap_seal::tests::root_descriptor_is_unlinked_sealed_and_never_mutable",
+      "package": "codex-hepta-agentd"
+    },
+    {
+      "binary_id": "codex-hepta-agentd",
+      "test": "authority_host_checkpoint::adoption::tests::physical_material::adopted_current_before_uid_release_cannot_be_adopted_again_or_reinitialized",
+      "package": "codex-hepta-agentd"
+    },
+    {
+      "binary_id": "codex-hepta-agentd",
+      "test": "authority_host_checkpoint::adoption::tests::physical_material::interrupted_install_resumes_same_original_current_cas_without_republication",
+      "package": "codex-hepta-agentd"
+    },
+    {
+      "binary_id": "codex-hepta-agentd",
+      "test": "authority_host_checkpoint::adoption::tests::physical_material::physical_current_survives_live_source_loss_and_refuses_corrupt_retained_image",
+      "package": "codex-hepta-agentd"
+    },
+    {
+      "binary_id": "codex-hepta-agentd",
+      "test": "authority_host_checkpoint::adoption::tests::physical_material::physical_material_never_promotes_actual_dirty_current_predecessor",
+      "package": "codex-hepta-agentd"
+    },
+    {
+      "binary_id": "codex-hepta-agentd",
+      "test": "authority_host_checkpoint::adoption::tests::physical_material::physical_recovery_requires_actual_old_exit_and_old_lease_expiry_before_installation",
+      "package": "codex-hepta-agentd"
+    },
+    {
+      "binary_id": "codex-hepta-agentd",
+      "test": "authority_host_checkpoint::adoption::tests::root_current_adoption_without_any_retained_old_pidfd_preserves_exact_cut",
+      "package": "codex-hepta-agentd"
+    },
+    {
+      "binary_id": "codex-hepta-agentd",
+      "test": "authority_host_checkpoint::adoption::tests::root_current_handoff_never_promotes_actual_dirty_publishing_or_fenced",
+      "package": "codex-hepta-agentd"
+    },
+    {
+      "binary_id": "codex-hepta-agentd",
+      "test": "authority_host_checkpoint::adoption::tests::root_current_handoff_post_cas_clock_failure_is_unknown_not_definite_conflict",
+      "package": "codex-hepta-agentd"
+    },
+    {
+      "binary_id": "codex-hepta-agentd",
+      "test": "authority_host_checkpoint::adoption::tests::root_current_handoff_post_cas_expiry_is_unknown_but_new_head_is_reconciled",
+      "package": "codex-hepta-agentd"
+    },
+    {
+      "binary_id": "codex-hepta-agentd",
+      "test": "authority_host_checkpoint::adoption::tests::root_current_handoff_refuses_changed_cut_phase_generation_and_dead_successor",
+      "package": "codex-hepta-agentd"
+    },
+    {
+      "binary_id": "codex-hepta-agentd",
+      "test": "authority_host_checkpoint::adoption::tests::root_current_handoff_requires_actual_exit_and_preserves_cut_and_counter",
+      "package": "codex-hepta-agentd"
+    },
+    {
+      "binary_id": "codex-hepta-agentd",
+      "test": "authority_host_checkpoint::adoption::tests::root_current_handoff_two_real_cas_handles_choose_one_successor",
+      "package": "codex-hepta-agentd"
+    },
+    {
+      "binary_id": "codex-hepta-agentd",
+      "test": "authority_host_checkpoint::adoption::tests::root_retired_adoption_never_promotes_dirty_publishing_or_fenced",
+      "package": "codex-hepta-agentd"
+    },
+    {
+      "binary_id": "codex-hepta-agentd",
+      "test": "authority_host_checkpoint::adoption::tests::root_retired_adoption_post_cas_clock_error_is_unknown_and_exactly_reconciled",
+      "package": "codex-hepta-agentd"
+    },
+    {
+      "binary_id": "codex-hepta-agentd",
+      "test": "authority_host_checkpoint::adoption::tests::root_retirement_observation_refuses_live_lifetime_uid_change_and_other_boot",
+      "package": "codex-hepta-agentd"
+    },
+    {
+      "binary_id": "codex-hepta-agentd",
+      "test": "authority_host_checkpoint::adoption::tests::root_retirement_proof_cannot_replace_protected_predecessor_lifetime",
+      "package": "codex-hepta-agentd"
+    },
+    {
+      "binary_id": "codex-hepta-agentd",
+      "test": "authority_host_checkpoint::fresh_tests::root_fresh_publication_binds_original_exclusive_owner_and_checkpoint_client",
+      "package": "codex-hepta-agentd"
+    },
+    {
+      "binary_id": "codex-hepta-agentd",
+      "test": "authority_host_checkpoint::tests::root_cycle_is_durable_exact_and_never_implicitly_reinitialized",
+      "package": "codex-hepta-agentd"
+    },
+    {
+      "binary_id": "codex-hepta-agentd",
+      "test": "authority_host_checkpoint::tests::root_expiry_after_actual_cas_returns_unknown_and_permanently_closes_object",
+      "package": "codex-hepta-agentd"
+    },
+    {
+      "binary_id": "codex-hepta-agentd",
+      "test": "authority_host_checkpoint::tests::root_invalid_bindings_and_late_request_ids_leave_exact_head_unchanged",
+      "package": "codex-hepta-agentd"
+    },
+    {
+      "binary_id": "codex-hepta-agentd",
+      "test": "authority_host_checkpoint::tests::root_read_ids_do_not_advance_mutation_highwater_or_revive_fenced_state",
+      "package": "codex-hepta-agentd"
+    },
+    {
+      "binary_id": "codex-hepta-agentd",
+      "test": "authority_host_checkpoint::tests::root_trusted_successor_keeps_global_counter_separate_from_publisher_sequence",
+      "package": "codex-hepta-agentd"
+    },
+    {
+      "binary_id": "codex-hepta-agentd",
+      "test": "authority_host_checkpoint::tests::root_two_independent_handles_cannot_both_win_the_same_original_cas",
+      "package": "codex-hepta-agentd"
+    },
+    {
+      "binary_id": "codex-hepta-agentd",
+      "test": "authority_host_checkpoint::tests::root_unavailable_read_permanently_fences_even_after_original_file_returns",
+      "package": "codex-hepta-agentd"
+    },
+    {
+      "binary_id": "codex-hepta-agentd",
+      "test": "authority_host_consumer_frontier::tests::root_forged_epoch_revision_namespace_and_replayed_transport_ids_do_not_mutate",
+      "package": "codex-hepta-agentd"
+    },
+    {
+      "binary_id": "codex-hepta-agentd",
+      "test": "authority_host_consumer_frontier::tests::root_post_cas_expiry_returns_no_ack_and_never_revives_the_uncertain_object",
+      "package": "codex-hepta-agentd"
+    },
+    {
+      "binary_id": "codex-hepta-agentd",
+      "test": "authority_host_consumer_frontier::tests::root_storage_disappearance_and_restoration_does_not_revive_a_lane",
+      "package": "codex-hepta-agentd"
+    },
+    {
+      "binary_id": "codex-hepta-agentd",
+      "test": "authority_host_consumer_frontier::tests::root_two_original_stores_are_isolated_and_exact_cas_survives_reopen",
+      "package": "codex-hepta-agentd"
+    },
+    {
+      "binary_id": "codex-hepta-agentd",
+      "test": "authority_host_consumer_frontier::tests::root_two_real_handles_race_one_durable_cas_and_refuse_the_other",
+      "package": "codex-hepta-agentd"
+    },
+    {
+      "binary_id": "codex-hepta-agentd",
+      "test": "authority_host_runtime::listeners::tests::all_original_listeners_precede_the_one_shot_handoff_and_failure_cleans_up",
+      "package": "codex-hepta-agentd"
+    },
+    {
+      "binary_id": "codex-hepta-agentd",
+      "test": "authority_host_runtime::process_tests::original_owner_process_rejects_same_uid_with_different_gid",
+      "package": "codex-hepta-agentd"
+    },
+    {
+      "binary_id": "codex-hepta-agentd",
+      "test": "authority_host_runtime::session::filesystem::tests::original_registry_reader_child",
+      "package": "codex-hepta-agentd"
+    },
+    {
+      "binary_id": "codex-hepta-agentd",
+      "test": "authority_host_runtime::session::filesystem::tests::original_root_filesystem_preserves_registry_reads_and_denies_control_writes",
+      "package": "codex-hepta-agentd"
+    },
+    {
+      "binary_id": "codex-hepta-agentd",
+      "test": "authority_host_runtime::session::filesystem::tests::original_root_filesystem_rejects_aliases_and_existing_workspace_before_ownership_change",
+      "package": "codex-hepta-agentd"
+    },
+    {
+      "binary_id": "codex-hepta-agentd",
+      "test": "authority_host_runtime::session::notes_startup::tests::original_root_seals_only_empty_private_deployment_and_readonly_consumer_observes_it",
+      "package": "codex-hepta-agentd"
+    },
+    {
+      "binary_id": "codex-hepta-agentd",
+      "test": "authority_host_service::logind::tests::original_held_physical_login_matches_actual_logind_and_wrong_birth_or_uid_refuses",
+      "package": "codex-hepta-agentd"
+    },
+    {
+      "binary_id": "codex-hepta-agentd",
+      "test": "authority_host_service::tests::root::protected_service_client",
+      "package": "codex-hepta-agentd"
+    },
+    {
+      "binary_id": "codex-hepta-agentd",
+      "test": "authority_host_service::tests::root::root_data_service_three_lanes_use_original_wire_key_and_dedicated_peer",
+      "package": "codex-hepta-agentd"
+    },
+    {
+      "binary_id": "codex-hepta-agentd",
+      "test": "authority_host_service::writer::fresh::tests::original_fresh_state_retains_writer_lock_and_refuses_nonempty_or_changed_registry",
+      "package": "codex-hepta-agentd"
+    },
+    {
+      "binary_id": "codex-hepta-agentd",
+      "test": "config::root_handoff::tests::original_root_preparation_releases_same_lock_for_fresh_owner_without_changing_registry",
+      "package": "codex-hepta-agentd"
+    },
+    {
+      "binary_id": "codex-hepta-agentd",
+      "test": "deployment_issuer::notes::tests::deployment_notes_actual_root_clock_registry_and_canonical_issuer_issue_distinct_payloads",
+      "package": "codex-hepta-agentd"
+    },
+    {
+      "binary_id": "codex-hepta-agentd",
+      "test": "deployment_issuer::root::tests::deployment_protected_root_factory_retains_original_key_head_counter_and_lease",
+      "package": "codex-hepta-agentd"
+    },
+    {
+      "binary_id": "codex-hepta-agentd",
+      "test": "native_g2_socket_publication::tests::configured_inode_is_published_and_accepts_the_dedicated_role",
+      "package": "codex-hepta-agentd"
+    },
+    {
+      "binary_id": "codex-hepta-agentd",
+      "test": "native_g2_socket_publication::tests::existing_final_is_not_replaced_and_own_pending_is_removed",
+      "package": "codex-hepta-agentd"
+    },
+    {
+      "binary_id": "codex-hepta-agentd",
+      "test": "native_g2_socket_publication::tests::final_replacement_inode_survives_listener_drop",
+      "package": "codex-hepta-agentd"
+    },
+    {
+      "binary_id": "codex-hepta-agentd",
+      "test": "native_g2_socket_publication::tests::pending_collision_is_preserved_without_publishing",
+      "package": "codex-hepta-agentd"
+    },
+    {
+      "binary_id": "codex-hepta-agentd",
+      "test": "native_g2_socket_publication::tests::pending_replacement_inode_survives_failed_publication_cleanup",
+      "package": "codex-hepta-agentd"
+    },
+    {
+      "binary_id": "codex-hepta-agentd",
+      "test": "native_g2_socket_publication::tests::preexisting_same_inode_alias_is_rejected_without_removing_final",
+      "package": "codex-hepta-agentd"
+    },
+    {
+      "binary_id": "codex-hepta-agentd",
+      "test": "production_composition::tests::owner_custody::root_preparation_does_not_unlock_a_retained_uninstalled_original_writer",
+      "package": "codex-hepta-agentd"
+    },
+    {
+      "binary_id": "codex-hepta-agentd",
+      "test": "root_bound_socket::tests::original_root_bound_listener_child",
+      "package": "codex-hepta-agentd"
+    },
+    {
+      "binary_id": "codex-hepta-agentd",
+      "test": "root_bound_socket::tests::original_root_bound_listener_preserves_peer_identity_and_path_custody",
+      "package": "codex-hepta-agentd"
+    },
+    {
+      "binary_id": "codex-hepta-agentd",
+      "test": "runtime::hos2_recovery_tests::notes_tests::gui_tests::crash_owner_tests::notes_actual_app_crash_original_owner_reopen_and_helper_ack_restart",
+      "package": "codex-hepta-agentd"
+    },
+    {
+      "binary_id": "codex-hepta-agentd",
+      "test": "runtime::hos2_recovery_tests::notes_tests::gui_tests::crash_owner_tests::notes_actual_app_legacy_checkpoint_original_owner_reopen_and_helper_ack_restart",
+      "package": "codex-hepta-agentd"
+    },
+    {
+      "binary_id": "codex-hepta-agentd",
+      "test": "runtime::hos2_recovery_tests::notes_tests::gui_tests::notes_actual_ui_original_owner_roundtrip",
+      "package": "codex-hepta-agentd"
+    },
+    {
+      "binary_id": "codex-hepta-agentd",
+      "test": "state::notes_objective::lock_tests::notes_objective_drain_child",
+      "package": "codex-hepta-agentd"
+    },
+    {
+      "binary_id": "codex-hepta-agentd",
+      "test": "text_session::provider::tests::fifo_reader_child",
+      "package": "codex-hepta-agentd"
+    },
+    {
+      "binary_id": "codex-hepta-agentd",
+      "test": "text_session::provider::tests::root_configuration_fifo_is_rejected_before_read",
+      "package": "codex-hepta-agentd"
+    },
+    {
+      "binary_id": "codex-hepta-agentd::cognitive_product_e2e",
+      "test": "real_agentd_external_gpt53_spark_read_only_smoke",
+      "package": "codex-hepta-agentd"
+    },
+    {
+      "binary_id": "codex-hepta-agentd::cognitive_product_e2e",
+      "test": "real_agentd_loopback_provider_read_only_smoke",
+      "package": "codex-hepta-agentd"
+    },
+    {
+      "binary_id": "codex-hepta-agentd::cognitive_product_e2e",
+      "test": "real_agentd_remember_recall_correct_and_forget_revalidate_physical_sends",
+      "package": "codex-hepta-agentd"
+    },
+    {
+      "binary_id": "codex-hepta-agentd::cognitive_product_e2e",
+      "test": "two_real_agentd_app_servers_never_cross_recall",
+      "package": "codex-hepta-agentd"
+    },
+    {
+      "binary_id": "codex-hepta-agentd::optional_module_restart",
+      "test": "optional_module_process_entrypoint",
+      "package": "codex-hepta-agentd"
+    },
+    {
+      "binary_id": "codex-hepta-agentd::terminal_cell_owner",
+      "test": "durable_owner_history_and_concurrent_training_profile",
+      "package": "codex-hepta-agentd"
+    }
+  ],
+  "nonignored_filter_mismatches": [],
+  "summary_lines": [
+    "     Summary [  95.082s] 696 tests run: 696 passed (1 slow), 66 skipped"
+  ],
+  "original_test_receipt": {
+    "schema": "hepta.native-gate-receipt.v1",
+    "phase": "tests",
+    "source_tree": "6be3dbb1420c0ac7e0590c6e3c17191a073af9a9",
+    "source_manifest": "native-candidate-r13-source.json",
+    "source_commit": "d313ba51180a838269677d28b2d91e1777b7b463",
+    "command": [
+      "just",
+      "test",
+      "--locked",
+      "-p",
+      "codex-hepta-agentd",
+      "-p",
+      "codex-hepta-agent-protocol",
+      "-p",
+      "codex-hepta-infer-worker-host",
+      "--retries",
+      "0"
+    ],
+    "cwd": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs",
+    "start_unix": 1793947218.3109634,
+    "end_unix": 1793947721.7373805,
+    "elapsed_seconds": 503.42641711235046,
+    "exit_code": 0,
+    "log_sha256": "5e86e781d00c0fb235369686e7beaf2f737169ad70de87a9f1750a1270f5fb43",
+    "resources_sha256": "009ea6d53e0308c80e5a30f431a3a19dd669e70e6fabe626de5d14a3416e8a8e",
+    "environment_manifest": "native-agentd-composition-r13-environment.json",
+    "packages": [
+      "codex-hepta-agentd",
+      "codex-hepta-agent-protocol",
+      "codex-hepta-infer-worker-host"
+    ],
+    "retries": 0
+  },
+  "scope": "Original closed test log and same-frozen-source/profile followup nextest listing matched by unique binary/test ID. Listing runs no tests. No counts transferred to later source trees; no ignored cases executed."
+}

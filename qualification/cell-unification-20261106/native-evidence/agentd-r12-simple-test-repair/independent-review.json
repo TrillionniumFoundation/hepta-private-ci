@@ -1,0 +1,87 @@
+{
+  "schema": "hepta.agentd-r12-simple-test-independent-review.v1",
+  "reviewer": "differentiation_study",
+  "result": "NO_SOURCE_REVIEW_BLOCKER",
+  "scope": "Independent read-only review of five test files and seven diagnosed transformations; no native qualification claim.",
+  "source_tree": "a0d24a6cca704bb1bb43c4090a275a38832f7b19",
+  "source_commit": "13a740f6751a0dc5033525f15b14b8da7139b5d9",
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_admin_issuer_tests.rs",
+      "before_sha256": "12efc9975b17c10f05ac31e7cf89699509aca7af21501954c4afc8160dab46d3",
+      "before_git_blob": "9f1f043b9f55ecac764fa9ff6ab50ceb2cfada45",
+      "after_sha256": "60bf227d6b4630a26078b18c7a7d294cbfe331c3b2afe2409c3b893dc9e51875",
+      "after_git_blob": "3f865200105061a2d47cd778293ea5680e9e0df5",
+      "native_original_exact": true,
+      "independent_inverse_exact": true,
+      "assertions_preserved": 12,
+      "test_and_cfg_attributes_unchanged": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/deployment_authbus_issuer_followup_tests.rs",
+      "before_sha256": "c1c506d021d08155cbb97a2edd90d31ea18d29d982b709d1c5da48f2124d4df8",
+      "before_git_blob": "c32b358544c705ad024e4a4edabe85a006fdd4ba",
+      "after_sha256": "7a4ce845d6edd7c6abb7422a8633893b49f76dd8682c373d101329414bd1d3e0",
+      "after_git_blob": "740e3a5258a7043fb530c358545f856d5092a58a",
+      "native_original_exact": true,
+      "independent_inverse_exact": true,
+      "assertions_preserved": 17,
+      "test_and_cfg_attributes_unchanged": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/deployment_authbus_issuer_final_tests.rs",
+      "before_sha256": "9e0ca15d1be4e72d418b42a96c56540f121460d583f61e147c9830d1e84a1924",
+      "before_git_blob": "08b66ce7c06cd1d035fd119714d763e97e6da62f",
+      "after_sha256": "f24e2b811345992f75b88fc44bebe03d7ddb73d066dd6f55ea4565a564119d9b",
+      "after_git_blob": "9f2c801484531dd13e86c7b79ed1f56bd83f2954",
+      "native_original_exact": true,
+      "independent_inverse_exact": true,
+      "assertions_preserved": 14,
+      "test_and_cfg_attributes_unchanged": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/deployment_notes_issuer_deadline_tests.rs",
+      "before_sha256": "1e7b219bbf7afc8f257ebc5064483e0a2856faf87d7ba6a849983341cec0e9d6",
+      "before_git_blob": "c794efc293462a56e8b9125cb4e45b02cb026118",
+      "after_sha256": "8963d354b7993cb7b3163d9c892dde32e67d81adb657d0bb5f040040038bdf54",
+      "after_git_blob": "31bf37db37577bd6490d68d12549258290920dfd",
+      "native_original_exact": true,
+      "independent_inverse_exact": true,
+      "assertions_preserved": 4,
+      "test_and_cfg_attributes_unchanged": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_desktop_startup_tests.rs",
+      "before_sha256": "17f6d5b14c720b87afb46d28d97767feb138fa513ff04e0b3ef64eca25cfd617",
+      "before_git_blob": "bf0aeee0d3d1c6e89ca4f73214807ff43d7986aa",
+      "after_sha256": "bd207a085eff1bd5b0f6136e27004a1ac76537cef85bee368ecc43bd2aae25c3",
+      "after_git_blob": "459e57b322b688f43adc6702cfbb9044dd4b4eaa",
+      "native_original_exact": true,
+      "independent_inverse_exact": true,
+      "assertions_preserved": 10,
+      "test_and_cfg_attributes_unchanged": true
+    }
+  ],
+  "patch_sha256": "1cf0f6e9feef5e0256f79e3e8e2c39234258529a1690719d4ea8e7491d08f801",
+  "patch_regenerated_exactly": true,
+  "lease_type_support": {
+    "path": "native-validation-results/r8-blockers/extra/source/codex-rs/hepta-contracts/src/authority_lease.rs",
+    "bytes": 61661,
+    "sha256": "9f151ac75919c4b901e798b5eb34b74ba2c7a5548e0c72844ec2a02555ea0d10",
+    "git_blob": "924e4552472038934f665f6acf7a95438294893f",
+    "verified_github_commit": "13a740f6751a0dc5033525f15b14b8da7139b5d9",
+    "github_blob_matches_local_source": true
+  },
+  "ownership_findings": [
+    "Both whole-lease moves occur after the final original read in their respective tests; subsequent mutations target only the new owned binding.",
+    "Four struct updates explicitly replace lease_id, binding, and expires_at_unix_ms. Their only inherited AuthorityLease fields are u32/u64 Copy scalars, so the original registration or writer remains usable and its owned fields are not moved.",
+    "AuthorityLease uses derived Clone; removing these clones does not omit a custom side effect.",
+    "The if-let evaluates the same serde conversion once, executes the same rejection assertion on Ok, and silently drops the same Err result."
+  ],
+  "preserved": [
+    "All assertion arguments, test attributes, input variants, deadlines, expected errors, final-use checks, and registry frontier checks.",
+    "No lint suppression, retry, filtering, production source, serializer, wire format, or owner logic change."
+  ],
+  "native_tests_run_by_reviewer": false,
+  "source_files_modified_by_reviewer": false
+}

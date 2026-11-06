@@ -1,0 +1,38 @@
+{
+  "source_tree": "64ab95198effb0a0de22b0c4a30a1e8d509e2840",
+  "source_manifest": "native-candidate-r9-source.json",
+  "previous_task_profile_overrides": {
+    "CARGO_PROFILE_TEST_DEBUG": null,
+    "CARGO_PROFILE_DEV_DEBUG": null,
+    "CARGO_INCREMENTAL": null
+  },
+  "selected_environment": {
+    "RUSTUP_TOOLCHAIN": "1.96.0",
+    "CARGO_BUILD_JOBS": "2",
+    "CARGO_TARGET_DIR": "/home/alex/work/hepta-cell-unified-20261106-a/target",
+    "NEXTEST_TEST_THREADS": "2",
+    "NEXTEST_PROFILE": null,
+    "CARGO_PROFILE_TEST_DEBUG": "0",
+    "CARGO_PROFILE_DEV_DEBUG": "0",
+    "CARGO_INCREMENTAL": null
+  },
+  "change_reason": "Align the two debug-info overrides with the existing native CI workflow after preserving original debug-limited project tests and the single-thread paired diagnostic. No opt-level, feature, lock, exclusion, deadline, retry or sandbox-environment change.",
+  "compiler_versions": {
+    "rustc": "rustc 1.96.0 (ac68faa20 2026-05-25)",
+    "cargo": "cargo 1.96.0 (30a34c682 2026-05-25)",
+    "nextest": "cargo-nextest 0.9.103 (d2e7b879f 2025-08-25)\nrelease: 0.9.103\ncommit-hash: d2e7b879fb79975e8b47a8e3ce569b651e6381c0\ncommit-date: 2025-08-25\nhost: x86_64-unknown-linux-gnu",
+    "just": "just 1.58.0"
+  },
+  "source_config_sha256": {
+    "codex-rs/Cargo.lock": "4165307bb6c41d08e6c1c362060f2a958c8200ea43fdab2b8b1e6220ad82b55c",
+    "codex-rs/Cargo.toml": "de54aafbd8e041cdaec30705fb6c286bd308f2a03de1c598a778f20feaade34b",
+    ".github/workflows/hepta-cell-framework-native.yml": "2e5525a0a910430f8a5873c387116c63c9e3043024d38c3e977c9417c959e93b",
+    "scripts/run-nextest.py": "45c4e35d1ff24840d9e1e05331af0b89475bfe1aec3231afc56fecb8cea66127",
+    "codex-rs/.config/nextest.toml": "351cdfe17480eae1124145e32a0de6de2889a38f01b14036187bc42e2553fdde"
+  },
+  "disk_before": {
+    "total": 1966736678912,
+    "used": 1655911280640,
+    "free": 210845147136
+  }
+}

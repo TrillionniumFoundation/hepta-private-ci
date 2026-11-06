@@ -1,0 +1,55 @@
+{
+  "parent_head": "bef6fa7645df9df12b69fda499e97eed25de6c75",
+  "merge_head": "caf06e0d9c78ba2b8e2ab860ec1b37f049e30f1b",
+  "staged_tree": "73bc5da08b54612ff662542c20124e96d3d51908",
+  "input_files": [
+    {
+      "path": "codex-rs/hepta-neuron/src/cell_feature_projection.rs",
+      "sha256": "a097dcf4f02d586f38f1d0b130b6de0f4b6091698f0640a073fd11d60278ca24",
+      "size": 7385
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/cell_feature_projection_tests.rs",
+      "sha256": "c633ff470d3401ebd5c4e6327872814a5b431952ee4e5ed2ca3f420a12ac9a3d",
+      "size": 8401
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/cell_registry.rs",
+      "sha256": "a46a22a1f0e3cc66fa4be9fff9f2f2928c858ac39a4456737d6340c43fc60031",
+      "size": 10123
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/cell_registry_tests.rs",
+      "sha256": "4f214b73bc5a4db230bdab44002f3f7bb774068826877327c7476e4174959afd",
+      "size": 13799
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/lib.rs",
+      "sha256": "55207d398669384a454482f7403598d4d190fa6295b6f5c77ec0aa986551659d",
+      "size": 12516
+    }
+  ],
+  "cargo_lock_sha256": "4165307bb6c41d08e6c1c362060f2a958c8200ea43fdab2b8b1e6220ad82b55c",
+  "environment": {
+    "RUSTUP_TOOLCHAIN": "1.96.0",
+    "CARGO_BUILD_JOBS": "2",
+    "CARGO_TARGET_DIR": "/home/alex/work/hepta-cell-unified-20261106-a/target",
+    "CARGO_NET_GIT_FETCH_WITH_CLI": "true"
+  },
+  "command": [
+    "just",
+    "test",
+    "-p",
+    "codex-hepta-neuron",
+    "-p",
+    "codex-hepta-plasticity",
+    "--locked",
+    "--retries",
+    "0"
+  ],
+  "disk_before": {
+    "total": 1966736678912,
+    "used": 1532590931968,
+    "free": 334165495808
+  }
+}

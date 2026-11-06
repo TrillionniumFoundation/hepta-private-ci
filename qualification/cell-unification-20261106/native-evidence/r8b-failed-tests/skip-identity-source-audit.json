@@ -1,0 +1,138 @@
+{
+  "schema": "hepta.r8b-skip-source-identity-audit.v1",
+  "source_tree": "6d88ca9c8964669a408d8549efaeff7b94d68674",
+  "reported_skip_count": 17,
+  "source_bound_cases": [
+    {
+      "source": "codex-rs/hepta-supervisor/tests/paired_process_product.rs",
+      "line_in_tree_6d88": 515,
+      "function": "paired_child_process",
+      "reason": "spawned only as a controlled process fixture",
+      "origin": "unconditional_ignore_attribute"
+    },
+    {
+      "source": "codex-rs/hepta-memory/src/local_compact_executor_tests.rs",
+      "line_in_tree_6d88": 991,
+      "function": "sqlite_1000_operation_seeded_reopen_replay_stress",
+      "reason": "qualification stress: 1000 SQLite operations with deterministic reopen/replay",
+      "origin": "unconditional_ignore_attribute"
+    },
+    {
+      "source": "codex-rs/hepta-memory/src/local_compact_executor_tests.rs",
+      "line_in_tree_6d88": 1486,
+      "function": "host_restart_reopen_replay_process_soak",
+      "reason": "qualification stress: 1000 real child-process kill/reopen/replay operations",
+      "origin": "unconditional_ignore_attribute"
+    },
+    {
+      "source": "codex-rs/hepta-memory/src/cognitive_kg_benchmark_tests.rs",
+      "line_in_tree_6d88": 117,
+      "function": "qualification_knowledge_graph_capacity_receipt",
+      "reason": "qualification: knowledge.graph PERF-LIBRARY capacity receipt",
+      "origin": "unconditional_ignore_attribute"
+    },
+    {
+      "source": "codex-rs/hepta-memory/src/cognitive_retrieval_observation_tests.rs",
+      "line_in_tree_6d88": 446,
+      "function": "target_host_owner_retrieval_reports_latency_percentiles",
+      "reason": "target-host qualification probe; run explicitly with --ignored --nocapture",
+      "origin": "unconditional_ignore_attribute"
+    },
+    {
+      "source": "codex-rs/hepta-memory/src/objective_sender_crash_tests.rs",
+      "line_in_tree_6d88": 61,
+      "function": "objective_sender_subprocess_fixture",
+      "reason": "subprocess fixture is invoked with a private test root by the parent test",
+      "origin": "unconditional_ignore_attribute"
+    },
+    {
+      "source": "codex-rs/hepta-memory/tests/root_install_reentry.rs",
+      "line_in_tree_6d88": 136,
+      "function": "install_in_subprocess_until_parent_kills",
+      "reason": "internal subprocess fixture, selected only by its crash-boundary parent",
+      "origin": "unconditional_ignore_attribute"
+    },
+    {
+      "source": "codex-rs/hepta-memory/tests/root_install_reentry.rs",
+      "line_in_tree_6d88": 202,
+      "function": "killed_installer_reopens_exact_inode_and_pointer_without_republication",
+      "reason": "explicit isolated Root physical-install process-loss qualification",
+      "origin": "unconditional_ignore_attribute"
+    },
+    {
+      "source": "codex-rs/hepta-memory/tests/root_install_reentry.rs",
+      "line_in_tree_6d88": 259,
+      "function": "a_different_valid_independent_image_cannot_replace_an_unreleased_installation",
+      "reason": "explicit isolated Root independent-image identity qualification",
+      "origin": "unconditional_ignore_attribute"
+    },
+    {
+      "source": "codex-rs/hepta-memory/tests/root_install_reentry.rs",
+      "line_in_tree_6d88": 286,
+      "function": "ambiguous_partial_and_aliased_installations_are_preserved_and_refused",
+      "reason": "explicit isolated Root partial-material qualification",
+      "origin": "unconditional_ignore_attribute"
+    },
+    {
+      "source": "codex-rs/hepta-memory/src/cognitive_store_tests.rs",
+      "line_in_tree_6d88": 355,
+      "function": "kg_projection_crash_child",
+      "reason": "qualification: child-process KG transaction crash probe",
+      "origin": "unconditional_ignore_attribute"
+    },
+    {
+      "source": "codex-rs/hepta-memory/src/cognitive_store_tests.rs",
+      "line_in_tree_6d88": 436,
+      "function": "qualification_kg_projection_crash_windows_restore_exact_predecessor",
+      "reason": "qualification: child-process KG transaction crash/reopen matrix",
+      "origin": "unconditional_ignore_attribute"
+    },
+    {
+      "source": "codex-rs/hepta-memory/src/cognitive_checkpoint_observation_tests.rs",
+      "line_in_tree_6d88": 191,
+      "function": "protected_checkpoint_observation_subprocess_fixture",
+      "reason": "controlled subprocess fixture; invoked by its parent with a private root",
+      "origin": "unconditional_ignore_attribute"
+    },
+    {
+      "source": "codex-rs/hepta-memory/src/local_lease_outbox_tests.rs",
+      "line_in_tree_6d88": 2472,
+      "function": "qualification_durable_writer_crash_reopen_probe",
+      "reason": "qualification: child-process crash/reopen probe",
+      "origin": "unconditional_ignore_attribute"
+    },
+    {
+      "source": "codex-rs/exec-server/tests/exec_process.rs",
+      "function": "remote_windows_sandbox_process_accepts_process_write",
+      "generated_case": null,
+      "reason": "Windows-only exec-server sandbox process test",
+      "origin": "cfg_attr_not_windows_active_on_native_linux",
+      "generated_case_name_status": "direct function name"
+    },
+    {
+      "source": "codex-rs/exec-server/tests/exec_process.rs",
+      "function": "exec_process_signal_terminates_on_windows",
+      "generated_case": "test_case_1_local",
+      "reason": "Windows-only exec-server process test",
+      "origin": "cfg_attr_not_windows_active_on_native_linux",
+      "generated_case_name_status": "source expansion inferred using same test_case macro naming seen in adjacent passing cases"
+    },
+    {
+      "source": "codex-rs/exec-server/tests/exec_process.rs",
+      "function": "exec_process_signal_terminates_on_windows",
+      "generated_case": "test_case_2_remote",
+      "reason": "Windows-only exec-server process test",
+      "origin": "cfg_attr_not_windows_active_on_native_linux",
+      "generated_case_name_status": "source expansion inferred using same test_case macro naming seen in adjacent passing cases"
+    }
+  ],
+  "breakdown": {
+    "memory_explicit_ignored_helpers_or_qualification": 13,
+    "supervisor_controlled_child_fixture": 1,
+    "windows_only_exec_cases_on_linux": 3
+  },
+  "no_runner_filter_or_ignore_attribute_changed": true,
+  "limitation": "The original default log reports only the 17 count, not individual SKIP rows. This is static source/target expansion reconciliation, not a newly executed nextest list or run.",
+  "source_map_inventory_sha256": "1f93b17daf5bd1a85e0353009bf5fae972ab8cbfa7124e1f5e10306c8e6d5bef",
+  "exec_process_source_sha256": "40a210ce7d533746d95c184844fe3425c9d52aec6911dddf810200549691ce93"
+}

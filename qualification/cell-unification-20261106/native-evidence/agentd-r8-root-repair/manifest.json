@@ -1,0 +1,61 @@
+{
+  "base_source_commit": "e0eca9e265c4deeb069ec940c9ec3acbe8cf0f81",
+  "base_source_tree": "6d88ca9c8964669a408d8549efaeff7b94d68674",
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/browser_servo.rs",
+      "before": {
+        "bytes": 40351,
+        "sha256": "4a8b89e32ec1c23a6394d5ed0e7b994d4245297f47d315dea6162ebc9912678e",
+        "git_blob_sha": "89bf62c8da8808a59047718313b43ed74bcf5ac5"
+      },
+      "after": {
+        "bytes": 40314,
+        "sha256": "2a1b9a4697094f0303082e4874bd12b560579220f2528f130b39ddf399afd0f9",
+        "git_blob_sha": "d6232415313fa47c332a309c9c377aad8d6e6278"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/calculator_recovery_selection.rs",
+      "before": {
+        "bytes": 3664,
+        "sha256": "7bead137c042c9bd503ebd66d0511eafbeb54a1c42d2c7512a00f8f8623f3e04",
+        "git_blob_sha": "326c4e3065f99e8849841b5f992a0d0db42ff1dc"
+      },
+      "after": {
+        "bytes": 3021,
+        "sha256": "560f43a37182ed423216a7f3d4e70b6e4374eb751b77adb5d188805651ff4e41",
+        "git_blob_sha": "e6e4b7a56115d4501daa0de2f01fbb407a9c5b68"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/calculator_recovery_selection_tests.rs",
+      "before": {
+        "bytes": 1303,
+        "sha256": "ab215fd9f2388d7f1f0c4707603198646b8ef8a615804aba52aba44be6208f28",
+        "git_blob_sha": "35a99b86e14b346f769b8ff80e758ef88cb0013a"
+      },
+      "after": {
+        "bytes": 2080,
+        "sha256": "6bdbf13523cd8a16666748708dbb67fae58f4b9ea44ecb1bf2b58ba9ae909449",
+        "git_blob_sha": "811c395b79024b074f2358d317a5aa9dcbc085e8"
+      }
+    }
+  ],
+  "checks": {
+    "browser_changes_only_unread_return_field_and_initializer": true,
+    "browser_wire_sequence_parse_monotonic_check_checked_increment_digest_order_preserved": true,
+    "calculator_production_changed_only_by_removing_test_only_legacy_wrapper": true,
+    "calculator_deserializer_checked_exact_resolved_unchanged": true,
+    "calculator_all_original_assertion_bodies_preserved_except_helper_call_name": true,
+    "calculator_legacy_wrapper_logic_preserved_in_test_fixture": true,
+    "new_lint_allowances": false,
+    "runtime_tests_run_on_this_candidate": false
+  },
+  "scope_notes": [
+    "Complete native call map finds four calculator from_fields test call sites and no production call; Notes same-name method has production callers and is not changed.",
+    "Production PreviousCalculatorRecovery strictly deserializes a typed selector and DesktopThreadRecovery matches that typed selector against retained original candidates.",
+    "Moved legacy field arbitration remains fixture-only and is not evidence of a production compatibility path.",
+    "No browser wire sequence field removed: the parsed value remains checked against next_incoming_sequence before checked increment. Only redundant returned storage is removed."
+  ]
+}

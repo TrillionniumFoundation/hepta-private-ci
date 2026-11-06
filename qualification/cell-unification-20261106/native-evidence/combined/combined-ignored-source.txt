@@ -1,0 +1,11 @@
+hepta-learning-artifacts/src/owner_host.rs-2081-            thread::sleep(Duration::from_secs(1));
+hepta-learning-artifacts/src/owner_host.rs-2082-        }
+hepta-learning-artifacts/src/owner_host.rs-2083-    }
+hepta-learning-artifacts/src/owner_host.rs-2084-
+hepta-learning-artifacts/src/owner_host.rs-2085-    #[test]
+hepta-learning-artifacts/src/owner_host.rs:2086:    #[ignore = "worker is invoked only by owner_host_process_kill_reopen_matrix"]
+hepta-learning-artifacts/src/owner_host.rs-2087-    fn owner_host_process_fault_worker() {
+hepta-learning-artifacts/src/owner_host.rs-2088-        if std::env::var("HEPTA_ARTIFACT_OWNER_WORKER").ok().as_deref() != Some("1") {
+hepta-learning-artifacts/src/owner_host.rs-2089-            return;
+hepta-learning-artifacts/src/owner_host.rs-2090-        }
+hepta-learning-artifacts/src/owner_host.rs-2091-        let root = std::env::var_os("HEPTA_ARTIFACT_OWNER_ROOT")

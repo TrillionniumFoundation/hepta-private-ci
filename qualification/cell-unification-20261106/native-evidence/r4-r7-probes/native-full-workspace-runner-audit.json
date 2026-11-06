@@ -1,0 +1,45 @@
+{
+  "files": [
+    {
+      "path": "justfile",
+      "sha256": "74f869224eba12fc4212b043428e7f5b35b551d26f5b06161c25d8aca525f124",
+      "git_blob": "a215a76cf407ace9715bca39c20497014e7dd4dc",
+      "unchanged_from_bef": true
+    },
+    {
+      "path": "scripts/run-nextest.py",
+      "sha256": "45c4e35d1ff24840d9e1e05331af0b89475bfe1aec3231afc56fecb8cea66127",
+      "git_blob": "1ed63abe84267b320cbfb0123a70aac5507f4595",
+      "unchanged_from_bef": true
+    },
+    {
+      "path": "codex-rs/.config/nextest.toml",
+      "sha256": "351cdfe17480eae1124145e32a0de6de2889a38f01b14036187bc42e2553fdde",
+      "git_blob": "bad30f934f89b22c48d972c28d4b493fc10299bd",
+      "unchanged_from_bef": true
+    }
+  ],
+  "inherited_shell_environment_whitelist": {
+    "NEXTEST_PROFILE": null,
+    "RUN_CODEX_FUNCTIONAL_TESTS": null,
+    "CI": null,
+    "HEPTA_NEXTTEST_FULL_METADATA": null,
+    "NEXTEST_DEFAULT_FILTER": null,
+    "NEXTEST_FILTER": null,
+    "CARGO_PROFILE": null,
+    "NEXTEST_TEST_THREADS": null
+  },
+  "task_overrides": {
+    "NEXTEST_TEST_THREADS": "2",
+    "RUSTUP_TOOLCHAIN": "1.96.0",
+    "CARGO_BUILD_JOBS": "2",
+    "CARGO_TARGET_DIR": "/home/alex/work/hepta-cell-unified-20261106-a/target",
+    "CARGO_NET_GIT_FETCH_WITH_CLI": "true",
+    "PYTHONDONTWRITEBYTECODE": "1"
+  },
+  "recipe_override": {
+    "NEXTEST_PROFILE": "local",
+    "RUST_MIN_STACK": "8388608"
+  },
+  "does_not_modify_filters": true
+}

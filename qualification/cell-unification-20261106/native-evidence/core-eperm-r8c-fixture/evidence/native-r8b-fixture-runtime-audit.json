@@ -1,0 +1,221 @@
+{
+  "purpose": "Read-only fixture attribution and login-profile audit; no network probes, no process or environment changes",
+  "source_tree": "6d88ca9c8964669a408d8549efaeff7b94d68674",
+  "network_proxy_runtime": {
+    "sha256": "3214446d85796e5d1c4a308ba53aab3bf7098fc18cd38cfc6f97a1cbb14d2e4f",
+    "git_blob": "1a449a44381fafa4a5d6a5d0e08753f425f339fc",
+    "base_git_blob": "1a449a44381fafa4a5d6a5d0e08753f425f339fc",
+    "unchanged_from_bef": true
+  },
+  "profile_logging_commands": [],
+  "relevant_environment_presence": {
+    "BASH_ENV": false,
+    "ENV": false,
+    "SHELL": true
+  },
+  "systemd_cat": {
+    "exists": true,
+    "contains_exact_error_message": true
+  },
+  "fixture_binaries": [
+    {
+      "path": "/home/alex/work/hepta-cell-unified-20261106-a/target/debug/deps/paired_process_product-fb69192cb464f450",
+      "bytes": 311699168,
+      "mtime": 1793939405.448757
+    },
+    {
+      "path": "/home/alex/work/hepta-cell-unified-20261106-a/target/debug/deps/paired_process_product-294c4d78f66022be",
+      "bytes": 313720144,
+      "mtime": 1793941318.4441044
+    }
+  ],
+  "r8b_time_window": {
+    "start_unix": 1793940950.196795,
+    "end_unix": 1793941575.8543801
+  },
+  "fixture_directories": [
+    {
+      "path": "/tmp/hsup-pairs-puLlUc",
+      "ctime": 1793941511.3121648,
+      "matching_release_paths": [
+        "/tmp/hsup-pairs-puLlUc/fleet/releases/paired-process-fixture-v1"
+      ],
+      "fixture_owner_directories": [
+        "/tmp/hsup-pairs-puLlUc/fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12"
+      ],
+      "files": [
+        {
+          "path": "fleet/releases/paired-process-fixture-v1/release.json",
+          "bytes": 538
+        },
+        {
+          "path": "fleet/releases/paired-process-fixture-v1/bin/hepta-matrixd",
+          "bytes": 313720144
+        },
+        {
+          "path": "fleet/releases/paired-process-fixture-v1/bin/hepta-agentd",
+          "bytes": 313720144
+        },
+        {
+          "path": "fleet/agents/019153a4-3088-7e03-a56a-9b1964f75dd3/agent.toml",
+          "bytes": 238
+        },
+        {
+          "path": "fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12/agent.toml",
+          "bytes": 238
+        },
+        {
+          "path": "fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12/matrix/binding.json",
+          "bytes": 313
+        },
+        {
+          "path": "fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12/releases/allow-paired-process-fixture-v1.json",
+          "bytes": 197
+        },
+        {
+          "path": "fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12/releases/release-state-00000000000000000000.json",
+          "bytes": 117
+        },
+        {
+          "path": "fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12/run/supervisor-process.json",
+          "bytes": 210
+        },
+        {
+          "path": "fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12/run/lifecycle-00000000000000000001.json",
+          "bytes": 109
+        },
+        {
+          "path": "fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12/run/lifecycle-00000000000000000000.json",
+          "bytes": 108
+        },
+        {
+          "path": "fleet/agents/019153a4-3088-7e03-a56a-9b1964f75dd3/matrix/binding.json",
+          "bytes": 313
+        },
+        {
+          "path": "fleet/agents/019153a4-3088-7e03-a56a-9b1964f75dd3/releases/allow-paired-process-fixture-v1.json",
+          "bytes": 197
+        },
+        {
+          "path": "fleet/agents/019153a4-3088-7e03-a56a-9b1964f75dd3/releases/release-state-00000000000000000000.json",
+          "bytes": 117
+        },
+        {
+          "path": "fleet/agents/019153a4-3088-7e03-a56a-9b1964f75dd3/run/lifecycle-00000000000000000000.json",
+          "bytes": 108
+        }
+      ],
+      "attribution": "r8b creation interval plus exact fixture release and owner"
+    },
+    {
+      "path": "/tmp/hsup-pairs-0dQibr",
+      "ctime": 1793941511.2695384,
+      "matching_release_paths": [
+        "/tmp/hsup-pairs-0dQibr/fleet/releases/paired-process-fixture-v1"
+      ],
+      "fixture_owner_directories": [
+        "/tmp/hsup-pairs-0dQibr/fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12"
+      ],
+      "files": [
+        {
+          "path": "fleet/releases/paired-process-fixture-v1/release.json",
+          "bytes": 538
+        },
+        {
+          "path": "fleet/releases/paired-process-fixture-v1/bin/hepta-matrixd",
+          "bytes": 313720144
+        },
+        {
+          "path": "fleet/releases/paired-process-fixture-v1/bin/hepta-agentd",
+          "bytes": 313720144
+        },
+        {
+          "path": "fleet/agents/019153a4-3088-7e03-a56a-9b1964f75dd6/agent.toml",
+          "bytes": 238
+        },
+        {
+          "path": "fleet/agents/019153a4-3088-7e03-a56a-9b1964f75dd5/agent.toml",
+          "bytes": 238
+        },
+        {
+          "path": "fleet/agents/019153a4-3088-7e03-a56a-9b1964f75dd4/agent.toml",
+          "bytes": 238
+        },
+        {
+          "path": "fleet/agents/019153a4-3088-7e03-a56a-9b1964f75dd3/agent.toml",
+          "bytes": 238
+        },
+        {
+          "path": "fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12/agent.toml",
+          "bytes": 238
+        },
+        {
+          "path": "fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12/matrix/binding.json",
+          "bytes": 313
+        },
+        {
+          "path": "fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12/releases/allow-paired-process-fixture-v1.json",
+          "bytes": 197
+        },
+        {
+          "path": "fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12/releases/release-state-00000000000000000000.json",
+          "bytes": 117
+        },
+        {
+          "path": "fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12/run/lifecycle-00000000000000000000.json",
+          "bytes": 108
+        },
+        {
+          "path": "fleet/agents/019153a4-3088-7e03-a56a-9b1964f75dd3/matrix/binding.json",
+          "bytes": 313
+        },
+        {
+          "path": "fleet/agents/019153a4-3088-7e03-a56a-9b1964f75dd3/releases/allow-paired-process-fixture-v1.json",
+          "bytes": 197
+        },
+        {
+          "path": "fleet/agents/019153a4-3088-7e03-a56a-9b1964f75dd3/releases/release-state-00000000000000000000.json",
+          "bytes": 117
+        },
+        {
+          "path": "fleet/agents/019153a4-3088-7e03-a56a-9b1964f75dd3/run/lifecycle-00000000000000000000.json",
+          "bytes": 108
+        },
+        {
+          "path": "fleet/agents/019153a4-3088-7e03-a56a-9b1964f75dd4/matrix/binding.json",
+          "bytes": 313
+        },
+        {
+          "path": "fleet/agents/019153a4-3088-7e03-a56a-9b1964f75dd4/releases/allow-paired-process-fixture-v1.json",
+          "bytes": 197
+        },
+        {
+          "path": "fleet/agents/019153a4-3088-7e03-a56a-9b1964f75dd4/releases/release-state-00000000000000000000.json",
+          "bytes": 117
+        },
+        {
+          "path": "fleet/agents/019153a4-3088-7e03-a56a-9b1964f75dd4/run/lifecycle-00000000000000000000.json",
+          "bytes": 108
+        },
+        {
+          "path": "fleet/agents/019153a4-3088-7e03-a56a-9b1964f75dd5/releases/release-state-00000000000000000000.json",
+          "bytes": 117
+        },
+        {
+          "path": "fleet/agents/019153a4-3088-7e03-a56a-9b1964f75dd5/run/lifecycle-00000000000000000000.json",
+          "bytes": 108
+        },
+        {
+          "path": "fleet/agents/019153a4-3088-7e03-a56a-9b1964f75dd6/releases/release-state-00000000000000000000.json",
+          "bytes": 117
+        },
+        {
+          "path": "fleet/agents/019153a4-3088-7e03-a56a-9b1964f75dd6/run/lifecycle-00000000000000000000.json",
+          "bytes": 108
+        }
+      ],
+      "attribution": "r8b creation interval plus exact fixture release and owner"
+    }
+  ],
+  "fixture_processes": []
+}

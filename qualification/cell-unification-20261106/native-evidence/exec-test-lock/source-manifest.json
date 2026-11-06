@@ -1,0 +1,40 @@
+{
+  "schema": "hepta.exec-observation-test-repair-source.v1",
+  "scope": "test source only; native tests/strict/fmt pending",
+  "base_commit": "bef6fa7645df9df12b69fda499e97eed25de6c75",
+  "source_tree_before": "7a4727b8ffaccf914ccbca2b2c57bbe90409f5e3",
+  "nearest_agents": [
+    "AGENTS.md"
+  ],
+  "files": [
+    {
+      "path": "codex-rs/exec-server/src/local_process_observation_tests.rs",
+      "base_commit": "bef6fa7645df9df12b69fda499e97eed25de6c75",
+      "before": {
+        "sha256": "b3786b3cf98f558835710cd2bea3f8518a62b21ed169cabf693f0c71be2a4007",
+        "git_blob": "80194ff41059c668148b595b80561c1795cc0303",
+        "bytes": 13137
+      },
+      "after": {
+        "sha256": "4694183400d00235b67a664c081934fb94ae5906d2bb1528676244fc2392162e",
+        "git_blob": "1f5067599e570fc1744a8211faa4628a6faffdb0",
+        "bytes": 15170
+      }
+    },
+    {
+      "path": "codex-rs/exec-server/src/server/handler/tests.rs",
+      "base_commit": "bef6fa7645df9df12b69fda499e97eed25de6c75",
+      "before": {
+        "sha256": "8ac618d934a0dc7199709305eebec9a03cbfa077adca08aff8e325324d0dd9e9",
+        "git_blob": "7cf34265b7a27596f564476677814b5a0da3c833",
+        "bytes": 14478
+      },
+      "after": {
+        "sha256": "60017ed06781a3fa4df6bdfed937184682ec784c070a4b36991a9f2ef864ff98",
+        "git_blob": "f64362633467e3a27626b6a4e29eb4f83d421b26",
+        "bytes": 14456
+      }
+    }
+  ],
+  "patch_sha256": "5cae19bcba4e4c678e05f05793e9804c5e40daa734423bcc0a7c59c46023d8a1"
+}

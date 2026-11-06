@@ -1,0 +1,1443 @@
+{
+  "schema": "hepta.candidate-audit-closure-mapping.v1",
+  "purpose": "Exact-byte archive and source/reference closure. This task does not rerun Rust, qualify candidate behavior, or rewrite frozen audits.",
+  "original_executed_source44": {
+    "commit": "638997499470f0b7dd33ad18226feacf0198ef3d",
+    "tree": "1646e1656cf6365e74accae19a1225fd2ce6d964",
+    "gate": "r15 Core+MCP",
+    "terminal": "FAIL",
+    "counts": {
+      "run": 4026,
+      "passed": 4023,
+      "failed": 3,
+      "timeout": 0,
+      "skipped": 9
+    }
+  },
+  "published_candidate_source45": {
+    "commit": "96dc9232535fedf735e3099ef1391b69477270d4",
+    "tree": "3ebd193f213d640e5330a1be4b983bcc4b06617a",
+    "candidate_after_pins_match_root_publication": true,
+    "execution_outcome": "NOT_ESTABLISHED_BY_THIS_ARCHIVE"
+  },
+  "retained_artifacts": [
+    {
+      "original_path": "core-zsh-denied-r15-repair/caller-map/native-core-r15-zsh-parent-constructors-map.json",
+      "archived_path": "caller-map/native-core-r15-zsh-parent-constructors-map.json",
+      "bytes": 3237,
+      "sha256": "ce96b7ae9a5e8c81aca4b34a7e46ecf36129112e1f4c149863390a13e294cdd9",
+      "copied_bytes_exact": true
+    },
+    {
+      "original_path": "core-zsh-denied-r15-repair/caller-map/native-core-r15-zsh-runtime-owner-map.json",
+      "archived_path": "caller-map/native-core-r15-zsh-runtime-owner-map.json",
+      "bytes": 2870,
+      "sha256": "a06262cd5122cfc4c108612d9be33ed80ff8822f6598b0876fea1466389ebc51",
+      "copied_bytes_exact": true
+    },
+    {
+      "original_path": "core-zsh-denied-r15-repair/caller-map/zsh-parent-approval-map.json",
+      "archived_path": "caller-map/zsh-parent-approval-map.json",
+      "bytes": 7521,
+      "sha256": "957b8b10888457a8cf10853e391dcc24c27c9cc2db212912f74cb0fe9b32030f",
+      "copied_bytes_exact": true
+    },
+    {
+      "original_path": "core-zsh-denied-r15-repair/edit-operations.json",
+      "archived_path": "edit-operations.json",
+      "bytes": 1102,
+      "sha256": "3b80a19de9f568fdb362cb7b89d2c02ae830c55a44765f8af0abd1350c20769a",
+      "copied_bytes_exact": true
+    },
+    {
+      "original_path": "core-zsh-denied-r15-repair/failure-blocks.json",
+      "archived_path": "failure-blocks.json",
+      "bytes": 1709,
+      "sha256": "e8d536c06301226c9a28cb81ce8ca10d4a8b5ec33c7722f4edf34ab260c37354",
+      "copied_bytes_exact": true
+    },
+    {
+      "original_path": "core-zsh-denied-r15-repair/repair-audit.json",
+      "archived_path": "repair-audit.json",
+      "bytes": 21291,
+      "sha256": "5b51e7f3c13a400c8f75d85e40b2f3756ced8d1b06895ef263c611663272b994",
+      "copied_bytes_exact": true
+    },
+    {
+      "original_path": "core-zsh-denied-r15-repair/repair.patch",
+      "archived_path": "repair.patch",
+      "bytes": 1360,
+      "sha256": "646926bc7e25b9c45cd4d12ac88cfd348c00c7d08769302ec4afb23cecc933f3",
+      "copied_bytes_exact": true
+    },
+    {
+      "original_path": "core-zsh-denied-r15-repair/root-independent-review.json",
+      "archived_path": "root-independent-review.json",
+      "bytes": 1704,
+      "sha256": "b4cbce2295dcfb04ac46725f7b6e57db3143baf1e6e7f46f78e5a7ccd95186b3",
+      "copied_bytes_exact": true
+    },
+    {
+      "original_path": "core-zsh-denied-r15-repair/source-input-pins.json",
+      "archived_path": "source-input-pins.json",
+      "bytes": 10482,
+      "sha256": "906bffaf32b8ad944f6ca31c1208663102172cbc062bf1cfd2a6558bc9c81149",
+      "copied_bytes_exact": true
+    },
+    {
+      "original_path": "core-zsh-denied-r15-repair/source-manifest.json",
+      "archived_path": "source-manifest.json",
+      "bytes": 1052,
+      "sha256": "bebc8527443e123e08638399137624a9eda1537fd2ad30757bd1faa518b4452e",
+      "copied_bytes_exact": true
+    },
+    {
+      "original_path": "core-zsh-denied-r15-independent-review/INDEPENDENT-REVIEW.json",
+      "archived_path": "independent-review.json",
+      "bytes": 9127,
+      "sha256": "bbb74f83e93ad441dafc73ada7cfa533d7053f6120b89af1d3edb0b78a64fa9a",
+      "copied_bytes_exact": true
+    }
+  ],
+  "reference_mappings": [
+    {
+      "artifact": "caller-map/native-core-r15-zsh-parent-constructors-map.json",
+      "pointer": "/source_pins/0/path",
+      "reference": "codex-rs/core/src/tools/runtimes/unified_exec.rs",
+      "source_keys": [
+        "codex-rs/core/src/tools/runtimes/unified_exec.rs@4567c379d9c3f444c78987c14636d6fddbcd98b2ccf47a4a006aef61a856dd1f"
+      ]
+    },
+    {
+      "artifact": "caller-map/native-core-r15-zsh-parent-constructors-map.json",
+      "pointer": "/source_pins/1/path",
+      "reference": "codex-rs/core/src/tools/runtimes/zsh_fork.rs",
+      "source_keys": [
+        "codex-rs/core/src/tools/runtimes/zsh_fork.rs@05da9ad627feea279f959ec0977a47d82759da650dec4c573edabd08ac9459b4"
+      ]
+    },
+    {
+      "artifact": "caller-map/native-core-r15-zsh-parent-constructors-map.json",
+      "pointer": "/source_pins/2/path",
+      "reference": "codex-rs/core/src/tools/runtimes/zsh_fork/unix_escalation.rs",
+      "source_keys": [
+        "codex-rs/core/src/tools/runtimes/zsh_fork/unix_escalation.rs@c4dbf8d0c3fdd572e20aacaf9a91a7bc9f75742bd4ff75dd08a685b6d79bbc31"
+      ]
+    },
+    {
+      "artifact": "caller-map/native-core-r15-zsh-parent-constructors-map.json",
+      "pointer": "/source_pins/3/path",
+      "reference": "codex-rs/core/src/tools/runtimes/zsh_fork/unix_escalation_tests.rs",
+      "source_keys": [
+        "codex-rs/core/src/tools/runtimes/zsh_fork/unix_escalation_tests.rs@e361b5f09b92a8e853635c717b9077780ffb350ebb7558ca179c9e30ce1802c2"
+      ]
+    },
+    {
+      "artifact": "caller-map/native-core-r15-zsh-runtime-owner-map.json",
+      "pointer": "/source_pins/0/path",
+      "reference": "codex-rs/core/src/tools/approvals.rs",
+      "source_keys": [
+        "codex-rs/core/src/tools/approvals.rs@1c4e6ac0210db815e68ef53e167d0691c5da94e50b860b5de930182bb05d3783"
+      ]
+    },
+    {
+      "artifact": "caller-map/native-core-r15-zsh-runtime-owner-map.json",
+      "pointer": "/source_pins/1/path",
+      "reference": "codex-rs/core/src/tools/orchestrator.rs",
+      "source_keys": [
+        "codex-rs/core/src/tools/orchestrator.rs@dd744d39c62ca6dcf10f107b8163617a1e536fddf60d22d328489410af7efcf1"
+      ]
+    },
+    {
+      "artifact": "caller-map/native-core-r15-zsh-runtime-owner-map.json",
+      "pointer": "/source_pins/2/path",
+      "reference": "codex-rs/core/src/tools/runtimes/unified_exec.rs",
+      "source_keys": [
+        "codex-rs/core/src/tools/runtimes/unified_exec.rs@4567c379d9c3f444c78987c14636d6fddbcd98b2ccf47a4a006aef61a856dd1f"
+      ]
+    },
+    {
+      "artifact": "caller-map/native-core-r15-zsh-runtime-owner-map.json",
+      "pointer": "/source_pins/3/path",
+      "reference": "codex-rs/core/src/unified_exec/process_manager.rs",
+      "source_keys": [
+        "codex-rs/core/src/unified_exec/process_manager.rs@3eea68b72bb4186609aa1ed6622ac4e20a0afd98d700f8c0577faf49a3f1b916"
+      ]
+    },
+    {
+      "artifact": "caller-map/zsh-parent-approval-map.json",
+      "pointer": "/source_pins/0/path",
+      "reference": "codex-rs/core/src/agent/role_tests.rs",
+      "source_keys": [
+        "codex-rs/core/src/agent/role_tests.rs@6f17c35d5e34fa726bd1f02e6c56ac2acfba90a34fd59e66995ecfd6f5d06cb2"
+      ]
+    },
+    {
+      "artifact": "caller-map/zsh-parent-approval-map.json",
+      "pointer": "/source_pins/1/path",
+      "reference": "codex-rs/core/src/config/config_tests.rs",
+      "source_keys": [
+        "codex-rs/core/src/config/config_tests.rs@65e53740b4ef031fdaeb6a611fda95c58bc84b13a4099a1c2bfa01f453af35da"
+      ]
+    },
+    {
+      "artifact": "caller-map/zsh-parent-approval-map.json",
+      "pointer": "/source_pins/2/path",
+      "reference": "codex-rs/core/src/guardian/prompt.rs",
+      "source_keys": [
+        "codex-rs/core/src/guardian/prompt.rs@21cefd2abb50d2355d1fb969293d71f57851379c21eef48986a5b8649cb921a2"
+      ]
+    },
+    {
+      "artifact": "caller-map/zsh-parent-approval-map.json",
+      "pointer": "/source_pins/3/path",
+      "reference": "codex-rs/core/src/session/snapshots/codex_core__codex_tests__fork_startup_context_then_first_turn_diff.snap",
+      "source_keys": [
+        "codex-rs/core/src/session/snapshots/codex_core__codex_tests__fork_startup_context_then_first_turn_diff.snap@58f130b8b8e74f5b7f4d0ef30585cbe791e4113307aafcb73d8b6398b60d87b0"
+      ]
+    },
+    {
+      "artifact": "caller-map/zsh-parent-approval-map.json",
+      "pointer": "/source_pins/4/path",
+      "reference": "codex-rs/core/src/session/tests.rs",
+      "source_keys": [
+        "codex-rs/core/src/session/tests.rs@29da32a96770cc74df87d09465c9d138dbabc539d038d1641001a0affd29d085"
+      ]
+    },
+    {
+      "artifact": "caller-map/zsh-parent-approval-map.json",
+      "pointer": "/source_pins/5/path",
+      "reference": "codex-rs/core/src/tools/handlers/multi_agents_common.rs",
+      "source_keys": [
+        "codex-rs/core/src/tools/handlers/multi_agents_common.rs@57335e3a2af8b9a655bb29336fdf2000f396bd13b84e6c74dec48ddb62dd1ce3"
+      ]
+    },
+    {
+      "artifact": "caller-map/zsh-parent-approval-map.json",
+      "pointer": "/source_pins/6/path",
+      "reference": "codex-rs/core/src/tools/runtimes/zsh_fork/unix_escalation_tests.rs",
+      "source_keys": [
+        "codex-rs/core/src/tools/runtimes/zsh_fork/unix_escalation_tests.rs@e361b5f09b92a8e853635c717b9077780ffb350ebb7558ca179c9e30ce1802c2"
+      ]
+    },
+    {
+      "artifact": "caller-map/zsh-parent-approval-map.json",
+      "pointer": "/source_pins/7/path",
+      "reference": "codex-rs/core/src/tools/sandboxing.rs",
+      "source_keys": [
+        "codex-rs/core/src/tools/sandboxing.rs@cfb40b7ab43826d5fa40047b93c6ca1fc438c54df3da025ed5dac5f7ed5858ce"
+      ]
+    },
+    {
+      "artifact": "caller-map/zsh-parent-approval-map.json",
+      "pointer": "/source_pins/8/path",
+      "reference": "codex-rs/core/tests/suite/approvals.rs",
+      "source_keys": [
+        "codex-rs/core/tests/suite/approvals.rs@084f6c13d38d42f8e13eb90f1afc68a7efe0087f2c71bf60766a44d6e36108c6"
+      ]
+    },
+    {
+      "artifact": "caller-map/zsh-parent-approval-map.json",
+      "pointer": "/source_pins/9/path",
+      "reference": "codex-rs/core/tests/suite/cyber_exec_policy.rs",
+      "source_keys": [
+        "codex-rs/core/tests/suite/cyber_exec_policy.rs@f75f1ee6781c3f792431fdbfa433c83c5bc4d0669ff8ebdd992187c8ce377d7b"
+      ]
+    },
+    {
+      "artifact": "caller-map/zsh-parent-approval-map.json",
+      "pointer": "/source_pins/10/path",
+      "reference": "codex-rs/core/tests/suite/network_approval.rs",
+      "source_keys": [
+        "codex-rs/core/tests/suite/network_approval.rs@02a421b66fde55e88c8f13c67aa3fe45b80abc9bd98eb258977778a14247b220"
+      ]
+    },
+    {
+      "artifact": "caller-map/zsh-parent-approval-map.json",
+      "pointer": "/source_pins/11/path",
+      "reference": "codex-rs/core/tests/suite/unified_exec_zsh_fork_approvals.rs",
+      "source_keys": [
+        "codex-rs/core/tests/suite/unified_exec_zsh_fork_approvals.rs@35982a2804b74d3f2eb1027bda62e097abe20c546937b25ee251274b7bdbd6ec"
+      ]
+    },
+    {
+      "artifact": "caller-map/zsh-parent-approval-map.json",
+      "pointer": "/source_pins/12/path",
+      "reference": "codex-rs/protocol/src/permissions.rs",
+      "source_keys": [
+        "codex-rs/protocol/src/permissions.rs@3ad7c54a19a3bddd72e9e8d8d0641835674ac2b596001ee0d7ce32293863fe06"
+      ]
+    },
+    {
+      "artifact": "repair-audit.json",
+      "pointer": "/source_manifest/path",
+      "reference": "source-manifest.json",
+      "formal_artifact": {
+        "path": "source-manifest.json",
+        "bytes": 1052,
+        "sha256": "bebc8527443e123e08638399137624a9eda1537fd2ad30757bd1faa518b4452e"
+      }
+    },
+    {
+      "artifact": "repair-audit.json",
+      "pointer": "/patch/path",
+      "reference": "repair.patch",
+      "formal_artifact": {
+        "path": "repair.patch",
+        "bytes": 1360,
+        "sha256": "646926bc7e25b9c45cd4d12ac88cfd348c00c7d08769302ec4afb23cecc933f3"
+      }
+    },
+    {
+      "artifact": "repair-audit.json",
+      "pointer": "/input_sources/path",
+      "reference": "source-input-pins.json",
+      "formal_artifact": {
+        "path": "source-input-pins.json",
+        "bytes": 10482,
+        "sha256": "906bffaf32b8ad944f6ca31c1208663102172cbc062bf1cfd2a6558bc9c81149"
+      }
+    },
+    {
+      "artifact": "repair-audit.json",
+      "pointer": "/candidate/path",
+      "reference": "source/codex-rs/core/src/tools/runtimes/zsh_fork/unix_escalation.rs",
+      "source_keys": [
+        "codex-rs/core/src/tools/runtimes/zsh_fork/unix_escalation.rs@4568501da5cf0c5b74be83a41d632f877087d77d128feed2db05d56bb4a3207a"
+      ]
+    },
+    {
+      "artifact": "repair-audit.json",
+      "pointer": "/failure/closed_failure_block/path",
+      "reference": "failure-blocks.json",
+      "formal_artifact": {
+        "path": "failure-blocks.json",
+        "bytes": 1709,
+        "sha256": "e8d536c06301226c9a28cb81ce8ca10d4a8b5ec33c7722f4edf34ab260c37354"
+      }
+    },
+    {
+      "artifact": "repair-audit.json",
+      "pointer": "/call_graph/native_maps/0/artifact/path",
+      "reference": "caller-map/zsh-parent-approval-map.json",
+      "formal_artifact": {
+        "path": "caller-map/zsh-parent-approval-map.json",
+        "bytes": 7521,
+        "sha256": "957b8b10888457a8cf10853e391dcc24c27c9cc2db212912f74cb0fe9b32030f"
+      }
+    },
+    {
+      "artifact": "repair-audit.json",
+      "pointer": "/call_graph/native_maps/0/locally_rehashed_source_pins/0",
+      "reference": "codex-rs/core/src/tools/runtimes/zsh_fork/unix_escalation_tests.rs",
+      "source_keys": [
+        "codex-rs/core/src/tools/runtimes/zsh_fork/unix_escalation_tests.rs@e361b5f09b92a8e853635c717b9077780ffb350ebb7558ca179c9e30ce1802c2"
+      ]
+    },
+    {
+      "artifact": "repair-audit.json",
+      "pointer": "/call_graph/native_maps/0/locally_rehashed_source_pins/1",
+      "reference": "codex-rs/core/src/tools/sandboxing.rs",
+      "source_keys": [
+        "codex-rs/core/src/tools/sandboxing.rs@cfb40b7ab43826d5fa40047b93c6ca1fc438c54df3da025ed5dac5f7ed5858ce"
+      ]
+    },
+    {
+      "artifact": "repair-audit.json",
+      "pointer": "/call_graph/native_maps/0/locally_rehashed_source_pins/2",
+      "reference": "codex-rs/core/tests/suite/unified_exec_zsh_fork_approvals.rs",
+      "source_keys": [
+        "codex-rs/core/tests/suite/unified_exec_zsh_fork_approvals.rs@35982a2804b74d3f2eb1027bda62e097abe20c546937b25ee251274b7bdbd6ec"
+      ]
+    },
+    {
+      "artifact": "repair-audit.json",
+      "pointer": "/call_graph/native_maps/0/locally_rehashed_source_pins/3",
+      "reference": "codex-rs/protocol/src/permissions.rs",
+      "source_keys": [
+        "codex-rs/protocol/src/permissions.rs@3ad7c54a19a3bddd72e9e8d8d0641835674ac2b596001ee0d7ce32293863fe06"
+      ]
+    },
+    {
+      "artifact": "repair-audit.json",
+      "pointer": "/call_graph/native_maps/1/artifact/path",
+      "reference": "caller-map/native-core-r15-zsh-parent-constructors-map.json",
+      "formal_artifact": {
+        "path": "caller-map/native-core-r15-zsh-parent-constructors-map.json",
+        "bytes": 3237,
+        "sha256": "ce96b7ae9a5e8c81aca4b34a7e46ecf36129112e1f4c149863390a13e294cdd9"
+      }
+    },
+    {
+      "artifact": "repair-audit.json",
+      "pointer": "/call_graph/native_maps/1/locally_rehashed_source_pins/0",
+      "reference": "codex-rs/core/src/tools/runtimes/unified_exec.rs",
+      "source_keys": [
+        "codex-rs/core/src/tools/runtimes/unified_exec.rs@4567c379d9c3f444c78987c14636d6fddbcd98b2ccf47a4a006aef61a856dd1f"
+      ]
+    },
+    {
+      "artifact": "repair-audit.json",
+      "pointer": "/call_graph/native_maps/1/locally_rehashed_source_pins/1",
+      "reference": "codex-rs/core/src/tools/runtimes/zsh_fork.rs",
+      "source_keys": [
+        "codex-rs/core/src/tools/runtimes/zsh_fork.rs@05da9ad627feea279f959ec0977a47d82759da650dec4c573edabd08ac9459b4"
+      ]
+    },
+    {
+      "artifact": "repair-audit.json",
+      "pointer": "/call_graph/native_maps/1/locally_rehashed_source_pins/2",
+      "reference": "codex-rs/core/src/tools/runtimes/zsh_fork/unix_escalation.rs",
+      "source_keys": [
+        "codex-rs/core/src/tools/runtimes/zsh_fork/unix_escalation.rs@c4dbf8d0c3fdd572e20aacaf9a91a7bc9f75742bd4ff75dd08a685b6d79bbc31"
+      ]
+    },
+    {
+      "artifact": "repair-audit.json",
+      "pointer": "/call_graph/native_maps/1/locally_rehashed_source_pins/3",
+      "reference": "codex-rs/core/src/tools/runtimes/zsh_fork/unix_escalation_tests.rs",
+      "source_keys": [
+        "codex-rs/core/src/tools/runtimes/zsh_fork/unix_escalation_tests.rs@e361b5f09b92a8e853635c717b9077780ffb350ebb7558ca179c9e30ce1802c2"
+      ]
+    },
+    {
+      "artifact": "repair-audit.json",
+      "pointer": "/call_graph/native_maps/2/artifact/path",
+      "reference": "caller-map/native-core-r15-zsh-runtime-owner-map.json",
+      "formal_artifact": {
+        "path": "caller-map/native-core-r15-zsh-runtime-owner-map.json",
+        "bytes": 2870,
+        "sha256": "a06262cd5122cfc4c108612d9be33ed80ff8822f6598b0876fea1466389ebc51"
+      }
+    },
+    {
+      "artifact": "repair-audit.json",
+      "pointer": "/call_graph/native_maps/2/locally_rehashed_source_pins/0",
+      "reference": "codex-rs/core/src/tools/approvals.rs",
+      "source_keys": [
+        "codex-rs/core/src/tools/approvals.rs@1c4e6ac0210db815e68ef53e167d0691c5da94e50b860b5de930182bb05d3783"
+      ]
+    },
+    {
+      "artifact": "repair-audit.json",
+      "pointer": "/call_graph/native_maps/2/locally_rehashed_source_pins/1",
+      "reference": "codex-rs/core/src/tools/orchestrator.rs",
+      "source_keys": [
+        "codex-rs/core/src/tools/orchestrator.rs@dd744d39c62ca6dcf10f107b8163617a1e536fddf60d22d328489410af7efcf1"
+      ]
+    },
+    {
+      "artifact": "repair-audit.json",
+      "pointer": "/call_graph/native_maps/2/locally_rehashed_source_pins/2",
+      "reference": "codex-rs/core/src/tools/runtimes/unified_exec.rs",
+      "source_keys": [
+        "codex-rs/core/src/tools/runtimes/unified_exec.rs@4567c379d9c3f444c78987c14636d6fddbcd98b2ccf47a4a006aef61a856dd1f"
+      ]
+    },
+    {
+      "artifact": "repair-audit.json",
+      "pointer": "/call_graph/native_maps/2/locally_rehashed_source_pins/3",
+      "reference": "codex-rs/core/src/unified_exec/process_manager.rs",
+      "source_keys": [
+        "codex-rs/core/src/unified_exec/process_manager.rs@3eea68b72bb4186609aa1ed6622ac4e20a0afd98d700f8c0577faf49a3f1b916"
+      ]
+    },
+    {
+      "artifact": "repair-audit.json",
+      "pointer": "/call_graph/admission_chain/0/path",
+      "reference": "codex-rs/core/src/unified_exec/process_manager.rs",
+      "source_keys": [
+        "codex-rs/core/src/unified_exec/process_manager.rs@3eea68b72bb4186609aa1ed6622ac4e20a0afd98d700f8c0577faf49a3f1b916"
+      ]
+    },
+    {
+      "artifact": "repair-audit.json",
+      "pointer": "/call_graph/admission_chain/1/path",
+      "reference": "codex-rs/core/src/tools/orchestrator.rs",
+      "source_keys": [
+        "codex-rs/core/src/tools/orchestrator.rs@dd744d39c62ca6dcf10f107b8163617a1e536fddf60d22d328489410af7efcf1"
+      ]
+    },
+    {
+      "artifact": "repair-audit.json",
+      "pointer": "/call_graph/admission_chain/2/path",
+      "reference": "codex-rs/core/src/tools/approvals.rs",
+      "source_keys": [
+        "codex-rs/core/src/tools/approvals.rs@1c4e6ac0210db815e68ef53e167d0691c5da94e50b860b5de930182bb05d3783"
+      ]
+    },
+    {
+      "artifact": "repair-audit.json",
+      "pointer": "/call_graph/admission_chain/3/path",
+      "reference": "codex-rs/core/src/tools/orchestrator.rs",
+      "source_keys": [
+        "codex-rs/core/src/tools/orchestrator.rs@dd744d39c62ca6dcf10f107b8163617a1e536fddf60d22d328489410af7efcf1"
+      ]
+    },
+    {
+      "artifact": "repair-audit.json",
+      "pointer": "/call_graph/admission_chain/4/path",
+      "reference": "codex-rs/core/src/tools/runtimes/unified_exec.rs",
+      "source_keys": [
+        "codex-rs/core/src/tools/runtimes/unified_exec.rs@4567c379d9c3f444c78987c14636d6fddbcd98b2ccf47a4a006aef61a856dd1f"
+      ]
+    },
+    {
+      "artifact": "repair-audit.json",
+      "pointer": "/call_graph/admission_chain/5/path",
+      "reference": "codex-rs/core/src/tools/runtimes/zsh_fork.rs",
+      "source_keys": [
+        "codex-rs/core/src/tools/runtimes/zsh_fork.rs@05da9ad627feea279f959ec0977a47d82759da650dec4c573edabd08ac9459b4"
+      ]
+    },
+    {
+      "artifact": "repair-audit.json",
+      "pointer": "/call_graph/admission_chain/6/path",
+      "reference": "codex-rs/core/src/tools/runtimes/zsh_fork/unix_escalation.rs",
+      "source_keys": [
+        "codex-rs/core/src/tools/runtimes/zsh_fork/unix_escalation.rs@c4dbf8d0c3fdd572e20aacaf9a91a7bc9f75742bd4ff75dd08a685b6d79bbc31"
+      ]
+    },
+    {
+      "artifact": "repair-audit.json",
+      "pointer": "/call_graph/admission_chain/7/path",
+      "reference": "codex-rs/core/src/tools/runtimes/zsh_fork/unix_escalation.rs",
+      "source_keys": [
+        "codex-rs/core/src/tools/runtimes/zsh_fork/unix_escalation.rs@c4dbf8d0c3fdd572e20aacaf9a91a7bc9f75742bd4ff75dd08a685b6d79bbc31"
+      ]
+    },
+    {
+      "artifact": "repair-audit.json",
+      "pointer": "/call_graph/admission_chain/8/path",
+      "reference": "codex-rs/core/src/exec_policy.rs",
+      "source_keys": [
+        "codex-rs/core/src/exec_policy.rs@876e42cd25f8bab1b494328ceb1bbe04d87d25003b43db2e8d9d64cf1b53bdff"
+      ]
+    },
+    {
+      "artifact": "repair-audit.json",
+      "pointer": "/sandbox_permissions_definition/definition_source/source_path",
+      "reference": "codex-rs/protocol/src/models.rs",
+      "source_keys": [
+        "codex-rs/protocol/src/models.rs@fedc0c42e2cee3f0e1ac9412690c11081286168d02f3473a039f2ade46cb6d09"
+      ]
+    },
+    {
+      "artifact": "repair-audit.json",
+      "pointer": "/sandbox_permissions_definition/definition_source/path",
+      "reference": "original/codex-rs/protocol/src/models.rs",
+      "source_keys": [
+        "codex-rs/protocol/src/models.rs@fedc0c42e2cee3f0e1ac9412690c11081286168d02f3473a039f2ade46cb6d09"
+      ]
+    },
+    {
+      "artifact": "repair-audit.json",
+      "pointer": "/sandbox_permissions_definition/core_reexport_source/source_path",
+      "reference": "codex-rs/core/src/sandboxing/mod.rs",
+      "source_keys": [
+        "codex-rs/core/src/sandboxing/mod.rs@76a0f3d0a2bddabef6398a1d71053d23459354b461422ea1ceb20eeacab1e642"
+      ]
+    },
+    {
+      "artifact": "repair-audit.json",
+      "pointer": "/sandbox_permissions_definition/core_reexport_source/path",
+      "reference": "original/codex-rs/core/src/sandboxing/mod.rs",
+      "source_keys": [
+        "codex-rs/core/src/sandboxing/mod.rs@76a0f3d0a2bddabef6398a1d71053d23459354b461422ea1ceb20eeacab1e642"
+      ]
+    },
+    {
+      "artifact": "root-independent-review.json",
+      "pointer": "/files/0/path",
+      "reference": "codex-rs/core/src/tools/runtimes/zsh_fork/unix_escalation.rs",
+      "versions": [
+        {
+          "role": "before",
+          "source_key": "codex-rs/core/src/tools/runtimes/zsh_fork/unix_escalation.rs@c4dbf8d0c3fdd572e20aacaf9a91a7bc9f75742bd4ff75dd08a685b6d79bbc31"
+        },
+        {
+          "role": "after",
+          "source_key": "codex-rs/core/src/tools/runtimes/zsh_fork/unix_escalation.rs@4568501da5cf0c5b74be83a41d632f877087d77d128feed2db05d56bb4a3207a"
+        }
+      ],
+      "source_keys": [
+        "codex-rs/core/src/tools/runtimes/zsh_fork/unix_escalation.rs@c4dbf8d0c3fdd572e20aacaf9a91a7bc9f75742bd4ff75dd08a685b6d79bbc31",
+        "codex-rs/core/src/tools/runtimes/zsh_fork/unix_escalation.rs@4568501da5cf0c5b74be83a41d632f877087d77d128feed2db05d56bb4a3207a"
+      ]
+    },
+    {
+      "artifact": "source-input-pins.json",
+      "pointer": "/files/0/source_path",
+      "reference": "AGENTS.md",
+      "source_keys": [
+        "AGENTS.md@c3f80e8386eb170b00af1e21de40d770c4941e464915687e728e2d14a7e79480"
+      ]
+    },
+    {
+      "artifact": "source-input-pins.json",
+      "pointer": "/files/0/path",
+      "reference": "original/AGENTS.md",
+      "source_keys": [
+        "AGENTS.md@c3f80e8386eb170b00af1e21de40d770c4941e464915687e728e2d14a7e79480"
+      ]
+    },
+    {
+      "artifact": "source-input-pins.json",
+      "pointer": "/files/1/source_path",
+      "reference": "codex-rs/core/tests/suite/unified_exec_zsh_fork_approvals.rs",
+      "source_keys": [
+        "codex-rs/core/tests/suite/unified_exec_zsh_fork_approvals.rs@35982a2804b74d3f2eb1027bda62e097abe20c546937b25ee251274b7bdbd6ec"
+      ]
+    },
+    {
+      "artifact": "source-input-pins.json",
+      "pointer": "/files/1/path",
+      "reference": "original/codex-rs/core/tests/suite/unified_exec_zsh_fork_approvals.rs",
+      "source_keys": [
+        "codex-rs/core/tests/suite/unified_exec_zsh_fork_approvals.rs@35982a2804b74d3f2eb1027bda62e097abe20c546937b25ee251274b7bdbd6ec"
+      ]
+    },
+    {
+      "artifact": "source-input-pins.json",
+      "pointer": "/files/2/source_path",
+      "reference": "codex-rs/core/tests/common/zsh_fork.rs",
+      "source_keys": [
+        "codex-rs/core/tests/common/zsh_fork.rs@c8ec104fe613f1b0695e9c0cc35120540a223a57f3cd5b0ac1c56699b631531f"
+      ]
+    },
+    {
+      "artifact": "source-input-pins.json",
+      "pointer": "/files/2/path",
+      "reference": "original/codex-rs/core/tests/common/zsh_fork.rs",
+      "source_keys": [
+        "codex-rs/core/tests/common/zsh_fork.rs@c8ec104fe613f1b0695e9c0cc35120540a223a57f3cd5b0ac1c56699b631531f"
+      ]
+    },
+    {
+      "artifact": "source-input-pins.json",
+      "pointer": "/files/3/source_path",
+      "reference": "codex-rs/protocol/src/permissions.rs",
+      "source_keys": [
+        "codex-rs/protocol/src/permissions.rs@3ad7c54a19a3bddd72e9e8d8d0641835674ac2b596001ee0d7ce32293863fe06"
+      ]
+    },
+    {
+      "artifact": "source-input-pins.json",
+      "pointer": "/files/3/path",
+      "reference": "original/codex-rs/protocol/src/permissions.rs",
+      "source_keys": [
+        "codex-rs/protocol/src/permissions.rs@3ad7c54a19a3bddd72e9e8d8d0641835674ac2b596001ee0d7ce32293863fe06"
+      ]
+    },
+    {
+      "artifact": "source-input-pins.json",
+      "pointer": "/files/4/source_path",
+      "reference": "codex-rs/core/src/tools/runtimes/unified_exec.rs",
+      "source_keys": [
+        "codex-rs/core/src/tools/runtimes/unified_exec.rs@4567c379d9c3f444c78987c14636d6fddbcd98b2ccf47a4a006aef61a856dd1f"
+      ]
+    },
+    {
+      "artifact": "source-input-pins.json",
+      "pointer": "/files/4/path",
+      "reference": "original/codex-rs/core/src/tools/runtimes/unified_exec.rs",
+      "source_keys": [
+        "codex-rs/core/src/tools/runtimes/unified_exec.rs@4567c379d9c3f444c78987c14636d6fddbcd98b2ccf47a4a006aef61a856dd1f"
+      ]
+    },
+    {
+      "artifact": "source-input-pins.json",
+      "pointer": "/files/5/source_path",
+      "reference": "codex-rs/core/src/unified_exec/process_manager.rs",
+      "source_keys": [
+        "codex-rs/core/src/unified_exec/process_manager.rs@3eea68b72bb4186609aa1ed6622ac4e20a0afd98d700f8c0577faf49a3f1b916"
+      ]
+    },
+    {
+      "artifact": "source-input-pins.json",
+      "pointer": "/files/5/path",
+      "reference": "original/codex-rs/core/src/unified_exec/process_manager.rs",
+      "source_keys": [
+        "codex-rs/core/src/unified_exec/process_manager.rs@3eea68b72bb4186609aa1ed6622ac4e20a0afd98d700f8c0577faf49a3f1b916"
+      ]
+    },
+    {
+      "artifact": "source-input-pins.json",
+      "pointer": "/files/6/source_path",
+      "reference": "codex-rs/core/src/tools/orchestrator.rs",
+      "source_keys": [
+        "codex-rs/core/src/tools/orchestrator.rs@dd744d39c62ca6dcf10f107b8163617a1e536fddf60d22d328489410af7efcf1"
+      ]
+    },
+    {
+      "artifact": "source-input-pins.json",
+      "pointer": "/files/6/path",
+      "reference": "original/codex-rs/core/src/tools/orchestrator.rs",
+      "source_keys": [
+        "codex-rs/core/src/tools/orchestrator.rs@dd744d39c62ca6dcf10f107b8163617a1e536fddf60d22d328489410af7efcf1"
+      ]
+    },
+    {
+      "artifact": "source-input-pins.json",
+      "pointer": "/files/7/source_path",
+      "reference": "codex-rs/core/src/tools/approvals.rs",
+      "source_keys": [
+        "codex-rs/core/src/tools/approvals.rs@1c4e6ac0210db815e68ef53e167d0691c5da94e50b860b5de930182bb05d3783"
+      ]
+    },
+    {
+      "artifact": "source-input-pins.json",
+      "pointer": "/files/7/path",
+      "reference": "original/codex-rs/core/src/tools/approvals.rs",
+      "source_keys": [
+        "codex-rs/core/src/tools/approvals.rs@1c4e6ac0210db815e68ef53e167d0691c5da94e50b860b5de930182bb05d3783"
+      ]
+    },
+    {
+      "artifact": "source-input-pins.json",
+      "pointer": "/files/8/source_path",
+      "reference": "codex-rs/core/src/tools/runtimes/zsh_fork.rs",
+      "source_keys": [
+        "codex-rs/core/src/tools/runtimes/zsh_fork.rs@05da9ad627feea279f959ec0977a47d82759da650dec4c573edabd08ac9459b4"
+      ]
+    },
+    {
+      "artifact": "source-input-pins.json",
+      "pointer": "/files/8/path",
+      "reference": "original/codex-rs/core/src/tools/runtimes/zsh_fork.rs",
+      "source_keys": [
+        "codex-rs/core/src/tools/runtimes/zsh_fork.rs@05da9ad627feea279f959ec0977a47d82759da650dec4c573edabd08ac9459b4"
+      ]
+    },
+    {
+      "artifact": "source-input-pins.json",
+      "pointer": "/files/9/source_path",
+      "reference": "codex-rs/core/src/tools/runtimes/zsh_fork/unix_escalation.rs",
+      "source_keys": [
+        "codex-rs/core/src/tools/runtimes/zsh_fork/unix_escalation.rs@c4dbf8d0c3fdd572e20aacaf9a91a7bc9f75742bd4ff75dd08a685b6d79bbc31"
+      ]
+    },
+    {
+      "artifact": "source-input-pins.json",
+      "pointer": "/files/9/path",
+      "reference": "original/codex-rs/core/src/tools/runtimes/zsh_fork/unix_escalation.rs",
+      "source_keys": [
+        "codex-rs/core/src/tools/runtimes/zsh_fork/unix_escalation.rs@c4dbf8d0c3fdd572e20aacaf9a91a7bc9f75742bd4ff75dd08a685b6d79bbc31"
+      ]
+    },
+    {
+      "artifact": "source-input-pins.json",
+      "pointer": "/files/10/source_path",
+      "reference": "codex-rs/core/src/tools/runtimes/zsh_fork/unix_escalation_tests.rs",
+      "source_keys": [
+        "codex-rs/core/src/tools/runtimes/zsh_fork/unix_escalation_tests.rs@e361b5f09b92a8e853635c717b9077780ffb350ebb7558ca179c9e30ce1802c2"
+      ]
+    },
+    {
+      "artifact": "source-input-pins.json",
+      "pointer": "/files/10/path",
+      "reference": "original/codex-rs/core/src/tools/runtimes/zsh_fork/unix_escalation_tests.rs",
+      "source_keys": [
+        "codex-rs/core/src/tools/runtimes/zsh_fork/unix_escalation_tests.rs@e361b5f09b92a8e853635c717b9077780ffb350ebb7558ca179c9e30ce1802c2"
+      ]
+    },
+    {
+      "artifact": "source-input-pins.json",
+      "pointer": "/files/11/source_path",
+      "reference": "codex-rs/core/src/tools/sandboxing.rs",
+      "source_keys": [
+        "codex-rs/core/src/tools/sandboxing.rs@cfb40b7ab43826d5fa40047b93c6ca1fc438c54df3da025ed5dac5f7ed5858ce"
+      ]
+    },
+    {
+      "artifact": "source-input-pins.json",
+      "pointer": "/files/11/path",
+      "reference": "original/codex-rs/core/src/tools/sandboxing.rs",
+      "source_keys": [
+        "codex-rs/core/src/tools/sandboxing.rs@cfb40b7ab43826d5fa40047b93c6ca1fc438c54df3da025ed5dac5f7ed5858ce"
+      ]
+    },
+    {
+      "artifact": "source-input-pins.json",
+      "pointer": "/files/12/source_path",
+      "reference": "codex-rs/core/src/exec_policy.rs",
+      "source_keys": [
+        "codex-rs/core/src/exec_policy.rs@876e42cd25f8bab1b494328ceb1bbe04d87d25003b43db2e8d9d64cf1b53bdff"
+      ]
+    },
+    {
+      "artifact": "source-input-pins.json",
+      "pointer": "/files/12/path",
+      "reference": "original/codex-rs/core/src/exec_policy.rs",
+      "source_keys": [
+        "codex-rs/core/src/exec_policy.rs@876e42cd25f8bab1b494328ceb1bbe04d87d25003b43db2e8d9d64cf1b53bdff"
+      ]
+    },
+    {
+      "artifact": "source-input-pins.json",
+      "pointer": "/files/13/source_path",
+      "reference": "codex-rs/core/src/sandboxing/mod.rs",
+      "source_keys": [
+        "codex-rs/core/src/sandboxing/mod.rs@76a0f3d0a2bddabef6398a1d71053d23459354b461422ea1ceb20eeacab1e642"
+      ]
+    },
+    {
+      "artifact": "source-input-pins.json",
+      "pointer": "/files/13/path",
+      "reference": "original/codex-rs/core/src/sandboxing/mod.rs",
+      "source_keys": [
+        "codex-rs/core/src/sandboxing/mod.rs@76a0f3d0a2bddabef6398a1d71053d23459354b461422ea1ceb20eeacab1e642"
+      ]
+    },
+    {
+      "artifact": "source-input-pins.json",
+      "pointer": "/files/14/source_path",
+      "reference": "codex-rs/protocol/src/models.rs",
+      "source_keys": [
+        "codex-rs/protocol/src/models.rs@fedc0c42e2cee3f0e1ac9412690c11081286168d02f3473a039f2ade46cb6d09"
+      ]
+    },
+    {
+      "artifact": "source-input-pins.json",
+      "pointer": "/files/14/path",
+      "reference": "original/codex-rs/protocol/src/models.rs",
+      "source_keys": [
+        "codex-rs/protocol/src/models.rs@fedc0c42e2cee3f0e1ac9412690c11081286168d02f3473a039f2ade46cb6d09"
+      ]
+    },
+    {
+      "artifact": "source-manifest.json",
+      "pointer": "/files/0/path",
+      "reference": "codex-rs/core/src/tools/runtimes/zsh_fork/unix_escalation.rs",
+      "versions": [
+        {
+          "role": "before",
+          "source_key": "codex-rs/core/src/tools/runtimes/zsh_fork/unix_escalation.rs@c4dbf8d0c3fdd572e20aacaf9a91a7bc9f75742bd4ff75dd08a685b6d79bbc31"
+        },
+        {
+          "role": "after",
+          "source_key": "codex-rs/core/src/tools/runtimes/zsh_fork/unix_escalation.rs@4568501da5cf0c5b74be83a41d632f877087d77d128feed2db05d56bb4a3207a"
+        }
+      ],
+      "source_keys": [
+        "codex-rs/core/src/tools/runtimes/zsh_fork/unix_escalation.rs@c4dbf8d0c3fdd572e20aacaf9a91a7bc9f75742bd4ff75dd08a685b6d79bbc31",
+        "codex-rs/core/src/tools/runtimes/zsh_fork/unix_escalation.rs@4568501da5cf0c5b74be83a41d632f877087d77d128feed2db05d56bb4a3207a"
+      ]
+    },
+    {
+      "artifact": "independent-review.json",
+      "pointer": "/candidate/path",
+      "reference": "codex-rs/core/src/tools/runtimes/zsh_fork/unix_escalation.rs",
+      "versions": [
+        {
+          "role": "before",
+          "source_key": "codex-rs/core/src/tools/runtimes/zsh_fork/unix_escalation.rs@c4dbf8d0c3fdd572e20aacaf9a91a7bc9f75742bd4ff75dd08a685b6d79bbc31"
+        },
+        {
+          "role": "after",
+          "source_key": "codex-rs/core/src/tools/runtimes/zsh_fork/unix_escalation.rs@4568501da5cf0c5b74be83a41d632f877087d77d128feed2db05d56bb4a3207a"
+        }
+      ],
+      "source_keys": [
+        "codex-rs/core/src/tools/runtimes/zsh_fork/unix_escalation.rs@c4dbf8d0c3fdd572e20aacaf9a91a7bc9f75742bd4ff75dd08a685b6d79bbc31",
+        "codex-rs/core/src/tools/runtimes/zsh_fork/unix_escalation.rs@4568501da5cf0c5b74be83a41d632f877087d77d128feed2db05d56bb4a3207a"
+      ]
+    },
+    {
+      "artifact": "independent-review.json",
+      "pointer": "/patch/path",
+      "reference": "core-zsh-denied-r15-repair/repair.patch",
+      "formal_artifact": {
+        "path": "repair.patch",
+        "bytes": 1360,
+        "sha256": "646926bc7e25b9c45cd4d12ac88cfd348c00c7d08769302ec4afb23cecc933f3"
+      }
+    },
+    {
+      "artifact": "independent-review.json",
+      "pointer": "/findings/0/source_chain/0/path",
+      "reference": "codex-rs/core/src/unified_exec/process_manager.rs",
+      "source_keys": [
+        "codex-rs/core/src/unified_exec/process_manager.rs@3eea68b72bb4186609aa1ed6622ac4e20a0afd98d700f8c0577faf49a3f1b916"
+      ]
+    },
+    {
+      "artifact": "independent-review.json",
+      "pointer": "/findings/0/source_chain/1/path",
+      "reference": "codex-rs/core/src/tools/orchestrator.rs",
+      "source_keys": [
+        "codex-rs/core/src/tools/orchestrator.rs@dd744d39c62ca6dcf10f107b8163617a1e536fddf60d22d328489410af7efcf1"
+      ]
+    },
+    {
+      "artifact": "independent-review.json",
+      "pointer": "/findings/0/source_chain/2/path",
+      "reference": "codex-rs/core/src/tools/orchestrator.rs",
+      "source_keys": [
+        "codex-rs/core/src/tools/orchestrator.rs@dd744d39c62ca6dcf10f107b8163617a1e536fddf60d22d328489410af7efcf1"
+      ]
+    },
+    {
+      "artifact": "independent-review.json",
+      "pointer": "/findings/0/source_chain/3/path",
+      "reference": "codex-rs/core/src/tools/orchestrator.rs",
+      "source_keys": [
+        "codex-rs/core/src/tools/orchestrator.rs@dd744d39c62ca6dcf10f107b8163617a1e536fddf60d22d328489410af7efcf1"
+      ]
+    },
+    {
+      "artifact": "independent-review.json",
+      "pointer": "/findings/0/source_chain/4/path",
+      "reference": "codex-rs/core/src/tools/runtimes/unified_exec.rs",
+      "source_keys": [
+        "codex-rs/core/src/tools/runtimes/unified_exec.rs@4567c379d9c3f444c78987c14636d6fddbcd98b2ccf47a4a006aef61a856dd1f"
+      ]
+    },
+    {
+      "artifact": "independent-review.json",
+      "pointer": "/findings/0/source_chain/5/path",
+      "reference": "codex-rs/core/src/tools/runtimes/zsh_fork.rs",
+      "source_keys": [
+        "codex-rs/core/src/tools/runtimes/zsh_fork.rs@05da9ad627feea279f959ec0977a47d82759da650dec4c573edabd08ac9459b4"
+      ]
+    },
+    {
+      "artifact": "independent-review.json",
+      "pointer": "/findings/1/source_chain/0/path",
+      "reference": "codex-rs/core/src/tools/sandboxing.rs",
+      "source_keys": [
+        "codex-rs/core/src/tools/sandboxing.rs@cfb40b7ab43826d5fa40047b93c6ca1fc438c54df3da025ed5dac5f7ed5858ce"
+      ]
+    },
+    {
+      "artifact": "independent-review.json",
+      "pointer": "/findings/1/source_chain/1/path",
+      "reference": "codex-rs/core/src/tools/runtimes/unified_exec.rs",
+      "source_keys": [
+        "codex-rs/core/src/tools/runtimes/unified_exec.rs@4567c379d9c3f444c78987c14636d6fddbcd98b2ccf47a4a006aef61a856dd1f"
+      ]
+    },
+    {
+      "artifact": "independent-review.json",
+      "pointer": "/findings/1/source_chain/2/path",
+      "reference": "codex-rs/core/src/tools/runtimes/zsh_fork/unix_escalation.rs",
+      "source_keys": [
+        "codex-rs/core/src/tools/runtimes/zsh_fork/unix_escalation.rs@c4dbf8d0c3fdd572e20aacaf9a91a7bc9f75742bd4ff75dd08a685b6d79bbc31"
+      ]
+    },
+    {
+      "artifact": "independent-review.json",
+      "pointer": "/findings/2/source_chain/0/path",
+      "reference": "codex-rs/core/src/tools/runtimes/zsh_fork/unix_escalation.rs",
+      "source_keys": [
+        "codex-rs/core/src/tools/runtimes/zsh_fork/unix_escalation.rs@c4dbf8d0c3fdd572e20aacaf9a91a7bc9f75742bd4ff75dd08a685b6d79bbc31"
+      ]
+    },
+    {
+      "artifact": "independent-review.json",
+      "pointer": "/findings/2/source_chain/1/path",
+      "reference": "codex-rs/core/src/exec_policy.rs",
+      "source_keys": [
+        "codex-rs/core/src/exec_policy.rs@876e42cd25f8bab1b494328ceb1bbe04d87d25003b43db2e8d9d64cf1b53bdff"
+      ]
+    },
+    {
+      "artifact": "independent-review.json",
+      "pointer": "/findings/2/source_chain/2/path",
+      "reference": "codex-rs/core/src/tools/runtimes/zsh_fork/unix_escalation.rs",
+      "source_keys": [
+        "codex-rs/core/src/tools/runtimes/zsh_fork/unix_escalation.rs@c4dbf8d0c3fdd572e20aacaf9a91a7bc9f75742bd4ff75dd08a685b6d79bbc31"
+      ]
+    },
+    {
+      "artifact": "independent-review.json",
+      "pointer": "/findings/2/source_chain/3/path",
+      "reference": "codex-rs/core/src/tools/runtimes/zsh_fork/unix_escalation.rs",
+      "source_keys": [
+        "codex-rs/core/src/tools/runtimes/zsh_fork/unix_escalation.rs@c4dbf8d0c3fdd572e20aacaf9a91a7bc9f75742bd4ff75dd08a685b6d79bbc31"
+      ]
+    },
+    {
+      "artifact": "independent-review.json",
+      "pointer": "/findings/3/source_chain/0/path",
+      "reference": "codex-rs/core/src/tools/runtimes/zsh_fork/unix_escalation.rs",
+      "source_keys": [
+        "codex-rs/core/src/tools/runtimes/zsh_fork/unix_escalation.rs@c4dbf8d0c3fdd572e20aacaf9a91a7bc9f75742bd4ff75dd08a685b6d79bbc31"
+      ]
+    },
+    {
+      "artifact": "independent-review.json",
+      "pointer": "/findings/3/source_chain/1/path",
+      "reference": "codex-rs/core/src/tools/runtimes/zsh_fork/unix_escalation.rs",
+      "source_keys": [
+        "codex-rs/core/src/tools/runtimes/zsh_fork/unix_escalation.rs@c4dbf8d0c3fdd572e20aacaf9a91a7bc9f75742bd4ff75dd08a685b6d79bbc31"
+      ]
+    },
+    {
+      "artifact": "independent-review.json",
+      "pointer": "/findings/4/source_chain/0/path",
+      "reference": "codex-rs/core/src/tools/runtimes/zsh_fork/unix_escalation_tests.rs",
+      "source_keys": [
+        "codex-rs/core/src/tools/runtimes/zsh_fork/unix_escalation_tests.rs@e361b5f09b92a8e853635c717b9077780ffb350ebb7558ca179c9e30ce1802c2"
+      ]
+    },
+    {
+      "artifact": "independent-review.json",
+      "pointer": "/native_caller_maps/0/path",
+      "reference": "core-zsh-denied-r15-repair/caller-map/native-core-r15-zsh-parent-constructors-map.json",
+      "formal_artifact": {
+        "path": "caller-map/native-core-r15-zsh-parent-constructors-map.json",
+        "bytes": 3237,
+        "sha256": "ce96b7ae9a5e8c81aca4b34a7e46ecf36129112e1f4c149863390a13e294cdd9"
+      }
+    },
+    {
+      "artifact": "independent-review.json",
+      "pointer": "/native_caller_maps/1/path",
+      "reference": "core-zsh-denied-r15-repair/caller-map/native-core-r15-zsh-runtime-owner-map.json",
+      "formal_artifact": {
+        "path": "caller-map/native-core-r15-zsh-runtime-owner-map.json",
+        "bytes": 2870,
+        "sha256": "a06262cd5122cfc4c108612d9be33ed80ff8822f6598b0876fea1466389ebc51"
+      }
+    },
+    {
+      "artifact": "independent-review.json",
+      "pointer": "/native_caller_maps/2/path",
+      "reference": "core-zsh-denied-r15-repair/caller-map/zsh-parent-approval-map.json",
+      "formal_artifact": {
+        "path": "caller-map/zsh-parent-approval-map.json",
+        "bytes": 7521,
+        "sha256": "957b8b10888457a8cf10853e391dcc24c27c9cc2db212912f74cb0fe9b32030f"
+      }
+    }
+  ],
+  "source_objects": [
+    {
+      "path": "AGENTS.md",
+      "commit": "638997499470f0b7dd33ad18226feacf0198ef3d",
+      "sha256": "c3f80e8386eb170b00af1e21de40d770c4941e464915687e728e2d14a7e79480",
+      "git_blob": "faa57cc0db48123e1011f1eb47692cd3bbbcfc3a",
+      "immutable_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/638997499470f0b7dd33ad18226feacf0198ef3d/AGENTS.md",
+      "pin_evidence": "core-recovery-r15-repair/input-pins.json",
+      "bytes": 22519
+    },
+    {
+      "path": "codex-rs/core/src/agent/role_tests.rs",
+      "commit": "638997499470f0b7dd33ad18226feacf0198ef3d",
+      "sha256": "6f17c35d5e34fa726bd1f02e6c56ac2acfba90a34fd59e66995ecfd6f5d06cb2",
+      "git_blob": "164851e112a8014fd4645278d1e7d70486e026a9",
+      "immutable_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/638997499470f0b7dd33ad18226feacf0198ef3d/codex-rs/core/src/agent/role_tests.rs",
+      "pin_evidence": "core-zsh-denied-r15-repair/caller-map/zsh-parent-approval-map.json",
+      "bytes": 24007
+    },
+    {
+      "path": "codex-rs/core/src/config/config_tests.rs",
+      "commit": "638997499470f0b7dd33ad18226feacf0198ef3d",
+      "sha256": "65e53740b4ef031fdaeb6a611fda95c58bc84b13a4099a1c2bfa01f453af35da",
+      "git_blob": "cb5ce3308688262655c3e4af38a2b24997bfbb2b",
+      "immutable_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/638997499470f0b7dd33ad18226feacf0198ef3d/codex-rs/core/src/config/config_tests.rs",
+      "pin_evidence": "core-zsh-denied-r15-repair/caller-map/zsh-parent-approval-map.json",
+      "bytes": 403930
+    },
+    {
+      "path": "codex-rs/core/src/exec_policy.rs",
+      "commit": "638997499470f0b7dd33ad18226feacf0198ef3d",
+      "sha256": "876e42cd25f8bab1b494328ceb1bbe04d87d25003b43db2e8d9d64cf1b53bdff",
+      "git_blob": "f24b062469d579929739c2cb4221661499ca9248",
+      "immutable_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/638997499470f0b7dd33ad18226feacf0198ef3d/codex-rs/core/src/exec_policy.rs",
+      "pin_evidence": "core-zsh-denied-r15-repair/source-input-pins.json",
+      "bytes": 39414
+    },
+    {
+      "path": "codex-rs/core/src/guardian/prompt.rs",
+      "commit": "638997499470f0b7dd33ad18226feacf0198ef3d",
+      "sha256": "21cefd2abb50d2355d1fb969293d71f57851379c21eef48986a5b8649cb921a2",
+      "git_blob": "c1ff54d213a3ffac42a2db4fa628b8466368c3eb",
+      "immutable_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/638997499470f0b7dd33ad18226feacf0198ef3d/codex-rs/core/src/guardian/prompt.rs",
+      "pin_evidence": "core-zsh-denied-r15-repair/caller-map/zsh-parent-approval-map.json",
+      "bytes": 32077
+    },
+    {
+      "path": "codex-rs/core/src/sandboxing/mod.rs",
+      "commit": "638997499470f0b7dd33ad18226feacf0198ef3d",
+      "sha256": "76a0f3d0a2bddabef6398a1d71053d23459354b461422ea1ceb20eeacab1e642",
+      "git_blob": "af3647d09680f57ae705a36451c7e9102ad1a5f9",
+      "immutable_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/638997499470f0b7dd33ad18226feacf0198ef3d/codex-rs/core/src/sandboxing/mod.rs",
+      "pin_evidence": "core-zsh-denied-r15-repair/repair-audit.json",
+      "bytes": 8200
+    },
+    {
+      "path": "codex-rs/core/src/session/snapshots/codex_core__codex_tests__fork_startup_context_then_first_turn_diff.snap",
+      "commit": "638997499470f0b7dd33ad18226feacf0198ef3d",
+      "sha256": "58f130b8b8e74f5b7f4d0ef30585cbe791e4113307aafcb73d8b6398b60d87b0",
+      "git_blob": "c51cb93ac60e7d0f09032eb6fff5c69d7229246f",
+      "immutable_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/638997499470f0b7dd33ad18226feacf0198ef3d/codex-rs/core/src/session/snapshots/codex_core__codex_tests__fork_startup_context_then_first_turn_diff.snap",
+      "pin_evidence": "core-zsh-denied-r15-repair/caller-map/zsh-parent-approval-map.json",
+      "bytes": 548
+    },
+    {
+      "path": "codex-rs/core/src/session/tests.rs",
+      "commit": "638997499470f0b7dd33ad18226feacf0198ef3d",
+      "sha256": "29da32a96770cc74df87d09465c9d138dbabc539d038d1641001a0affd29d085",
+      "git_blob": "dce43c7f844f45036a7b58b307de500029f1f001",
+      "immutable_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/638997499470f0b7dd33ad18226feacf0198ef3d/codex-rs/core/src/session/tests.rs",
+      "pin_evidence": "core-managed-proxy-r15-fixture/repair-audit.json",
+      "bytes": 504602
+    },
+    {
+      "path": "codex-rs/core/src/tools/approvals.rs",
+      "commit": "638997499470f0b7dd33ad18226feacf0198ef3d",
+      "sha256": "1c4e6ac0210db815e68ef53e167d0691c5da94e50b860b5de930182bb05d3783",
+      "git_blob": "ce939f37b1279c829e3428b597e210f7f6396cc5",
+      "immutable_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/638997499470f0b7dd33ad18226feacf0198ef3d/codex-rs/core/src/tools/approvals.rs",
+      "pin_evidence": "core-zsh-denied-r15-repair/caller-map/native-core-r15-zsh-runtime-owner-map.json",
+      "bytes": 28970
+    },
+    {
+      "path": "codex-rs/core/src/tools/handlers/multi_agents_common.rs",
+      "commit": "638997499470f0b7dd33ad18226feacf0198ef3d",
+      "sha256": "57335e3a2af8b9a655bb29336fdf2000f396bd13b84e6c74dec48ddb62dd1ce3",
+      "git_blob": "843030b274730b9e48e57f87e6d15d6c14ecaf50",
+      "immutable_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/638997499470f0b7dd33ad18226feacf0198ef3d/codex-rs/core/src/tools/handlers/multi_agents_common.rs",
+      "pin_evidence": "core-zsh-denied-r15-repair/caller-map/zsh-parent-approval-map.json",
+      "bytes": 16680
+    },
+    {
+      "path": "codex-rs/core/src/tools/orchestrator.rs",
+      "commit": "638997499470f0b7dd33ad18226feacf0198ef3d",
+      "sha256": "dd744d39c62ca6dcf10f107b8163617a1e536fddf60d22d328489410af7efcf1",
+      "git_blob": "184757bb146da53bf93a5ef848ab96a0d826087c",
+      "immutable_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/638997499470f0b7dd33ad18226feacf0198ef3d/codex-rs/core/src/tools/orchestrator.rs",
+      "pin_evidence": "core-zsh-denied-r15-repair/caller-map/native-core-r15-zsh-runtime-owner-map.json",
+      "bytes": 23923
+    },
+    {
+      "path": "codex-rs/core/src/tools/runtimes/unified_exec.rs",
+      "commit": "638997499470f0b7dd33ad18226feacf0198ef3d",
+      "sha256": "4567c379d9c3f444c78987c14636d6fddbcd98b2ccf47a4a006aef61a856dd1f",
+      "git_blob": "84144f674d37cb4474c01cb4d25c4aa07b16f5a8",
+      "immutable_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/638997499470f0b7dd33ad18226feacf0198ef3d/codex-rs/core/src/tools/runtimes/unified_exec.rs",
+      "pin_evidence": "core-zsh-denied-r15-repair/caller-map/native-core-r15-zsh-parent-constructors-map.json",
+      "bytes": 30496
+    },
+    {
+      "path": "codex-rs/core/src/tools/runtimes/zsh_fork.rs",
+      "commit": "638997499470f0b7dd33ad18226feacf0198ef3d",
+      "sha256": "05da9ad627feea279f959ec0977a47d82759da650dec4c573edabd08ac9459b4",
+      "git_blob": "4daa0f18b0c76075027cd38b3ceb6727546edf7e",
+      "immutable_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/638997499470f0b7dd33ad18226feacf0198ef3d/codex-rs/core/src/tools/runtimes/zsh_fork.rs",
+      "pin_evidence": "core-zsh-denied-r15-repair/caller-map/native-core-r15-zsh-parent-constructors-map.json",
+      "bytes": 3381
+    },
+    {
+      "path": "codex-rs/core/src/tools/runtimes/zsh_fork/unix_escalation.rs",
+      "commit": "96dc9232535fedf735e3099ef1391b69477270d4",
+      "sha256": "4568501da5cf0c5b74be83a41d632f877087d77d128feed2db05d56bb4a3207a",
+      "git_blob": "03f497fb524b187c62325679dcff465663c4f30b",
+      "immutable_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/96dc9232535fedf735e3099ef1391b69477270d4/codex-rs/core/src/tools/runtimes/zsh_fork/unix_escalation.rs",
+      "pin_evidence": "core-zsh-denied-r15-repair/independent-review.json",
+      "bytes": 33969
+    },
+    {
+      "path": "codex-rs/core/src/tools/runtimes/zsh_fork/unix_escalation.rs",
+      "commit": "638997499470f0b7dd33ad18226feacf0198ef3d",
+      "sha256": "c4dbf8d0c3fdd572e20aacaf9a91a7bc9f75742bd4ff75dd08a685b6d79bbc31",
+      "git_blob": "631bf4c6db2876fe32f653c73e386c253ffc939d",
+      "immutable_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/638997499470f0b7dd33ad18226feacf0198ef3d/codex-rs/core/src/tools/runtimes/zsh_fork/unix_escalation.rs",
+      "pin_evidence": "core-zsh-denied-r15-repair/caller-map/native-core-r15-zsh-parent-constructors-map.json",
+      "bytes": 33515
+    },
+    {
+      "path": "codex-rs/core/src/tools/runtimes/zsh_fork/unix_escalation_tests.rs",
+      "commit": "638997499470f0b7dd33ad18226feacf0198ef3d",
+      "sha256": "e361b5f09b92a8e853635c717b9077780ffb350ebb7558ca179c9e30ce1802c2",
+      "git_blob": "05facffdb473397a81748af4f84044875ede7b72",
+      "immutable_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/638997499470f0b7dd33ad18226feacf0198ef3d/codex-rs/core/src/tools/runtimes/zsh_fork/unix_escalation_tests.rs",
+      "pin_evidence": "core-zsh-denied-r15-repair/caller-map/native-core-r15-zsh-parent-constructors-map.json",
+      "bytes": 35558
+    },
+    {
+      "path": "codex-rs/core/src/tools/sandboxing.rs",
+      "commit": "638997499470f0b7dd33ad18226feacf0198ef3d",
+      "sha256": "cfb40b7ab43826d5fa40047b93c6ca1fc438c54df3da025ed5dac5f7ed5858ce",
+      "git_blob": "0ec30aa9fb6b4141d31cc95c9459fe97f61737b8",
+      "immutable_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/638997499470f0b7dd33ad18226feacf0198ef3d/codex-rs/core/src/tools/sandboxing.rs",
+      "pin_evidence": "core-zsh-denied-r15-repair/caller-map/zsh-parent-approval-map.json",
+      "bytes": 18296
+    },
+    {
+      "path": "codex-rs/core/src/unified_exec/process_manager.rs",
+      "commit": "638997499470f0b7dd33ad18226feacf0198ef3d",
+      "sha256": "3eea68b72bb4186609aa1ed6622ac4e20a0afd98d700f8c0577faf49a3f1b916",
+      "git_blob": "c3166418abbb514f1b6fbaacd9815e5a79613fa5",
+      "immutable_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/638997499470f0b7dd33ad18226feacf0198ef3d/codex-rs/core/src/unified_exec/process_manager.rs",
+      "pin_evidence": "r15-core-mcp-checkpoint/native-candidate-r15-source.json",
+      "bytes": 62568,
+      "mode": "100644"
+    },
+    {
+      "path": "codex-rs/core/tests/common/zsh_fork.rs",
+      "commit": "638997499470f0b7dd33ad18226feacf0198ef3d",
+      "sha256": "c8ec104fe613f1b0695e9c0cc35120540a223a57f3cd5b0ac1c56699b631531f",
+      "git_blob": "225867d8c72283b57540a38c97d6c44106eef33e",
+      "immutable_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/638997499470f0b7dd33ad18226feacf0198ef3d/codex-rs/core/tests/common/zsh_fork.rs",
+      "pin_evidence": "core-zsh-denied-r15-repair/source-input-pins.json",
+      "bytes": 4047
+    },
+    {
+      "path": "codex-rs/core/tests/suite/approvals.rs",
+      "commit": "638997499470f0b7dd33ad18226feacf0198ef3d",
+      "sha256": "084f6c13d38d42f8e13eb90f1afc68a7efe0087f2c71bf60766a44d6e36108c6",
+      "git_blob": "08d271738fdff1dcb5b5504c33ac8aacd036fcbe",
+      "immutable_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/638997499470f0b7dd33ad18226feacf0198ef3d/codex-rs/core/tests/suite/approvals.rs",
+      "pin_evidence": "r15-core-mcp-checkpoint/native-candidate-r15-source.json",
+      "bytes": 158045,
+      "mode": "100644"
+    },
+    {
+      "path": "codex-rs/core/tests/suite/cyber_exec_policy.rs",
+      "commit": "638997499470f0b7dd33ad18226feacf0198ef3d",
+      "sha256": "f75f1ee6781c3f792431fdbfa433c83c5bc4d0669ff8ebdd992187c8ce377d7b",
+      "git_blob": "f3e37df9a9a9a583a6d2039c99c602c0f7139dc6",
+      "immutable_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/638997499470f0b7dd33ad18226feacf0198ef3d/codex-rs/core/tests/suite/cyber_exec_policy.rs",
+      "pin_evidence": "core-zsh-denied-r15-repair/caller-map/zsh-parent-approval-map.json",
+      "bytes": 13041
+    },
+    {
+      "path": "codex-rs/core/tests/suite/network_approval.rs",
+      "commit": "638997499470f0b7dd33ad18226feacf0198ef3d",
+      "sha256": "02a421b66fde55e88c8f13c67aa3fe45b80abc9bd98eb258977778a14247b220",
+      "git_blob": "4de596b85053441bfc8d7aee222c4c17f939035d",
+      "immutable_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/638997499470f0b7dd33ad18226feacf0198ef3d/codex-rs/core/tests/suite/network_approval.rs",
+      "pin_evidence": "core-zsh-denied-r15-repair/caller-map/zsh-parent-approval-map.json",
+      "bytes": 97781
+    },
+    {
+      "path": "codex-rs/core/tests/suite/unified_exec_zsh_fork_approvals.rs",
+      "commit": "638997499470f0b7dd33ad18226feacf0198ef3d",
+      "sha256": "35982a2804b74d3f2eb1027bda62e097abe20c546937b25ee251274b7bdbd6ec",
+      "git_blob": "02a8e0abc60f415327cd2713d92d23bc503ab3e4",
+      "immutable_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/638997499470f0b7dd33ad18226feacf0198ef3d/codex-rs/core/tests/suite/unified_exec_zsh_fork_approvals.rs",
+      "pin_evidence": "r15-core-mcp-checkpoint/native-candidate-r15-source.json",
+      "bytes": 31429,
+      "mode": "100644"
+    },
+    {
+      "path": "codex-rs/protocol/src/models.rs",
+      "commit": "638997499470f0b7dd33ad18226feacf0198ef3d",
+      "sha256": "fedc0c42e2cee3f0e1ac9412690c11081286168d02f3473a039f2ade46cb6d09",
+      "git_blob": "e8bcab9c981c7e613dec75b3c42aa1ed091c9877",
+      "immutable_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/638997499470f0b7dd33ad18226feacf0198ef3d/codex-rs/protocol/src/models.rs",
+      "pin_evidence": "core-zsh-denied-r15-repair/repair-audit.json",
+      "bytes": 150095
+    },
+    {
+      "path": "codex-rs/protocol/src/permissions.rs",
+      "commit": "638997499470f0b7dd33ad18226feacf0198ef3d",
+      "sha256": "3ad7c54a19a3bddd72e9e8d8d0641835674ac2b596001ee0d7ce32293863fe06",
+      "git_blob": "1537230e0a8f1685530eb03c2c782a587ad6bb6a",
+      "immutable_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/638997499470f0b7dd33ad18226feacf0198ef3d/codex-rs/protocol/src/permissions.rs",
+      "pin_evidence": "core-zsh-denied-r15-repair/caller-map/zsh-parent-approval-map.json",
+      "bytes": 145214
+    }
+  ],
+  "candidate_source_objects": [
+    {
+      "path": "codex-rs/core/src/tools/runtimes/zsh_fork/unix_escalation.rs",
+      "commit": "96dc9232535fedf735e3099ef1391b69477270d4",
+      "sha256": "4568501da5cf0c5b74be83a41d632f877087d77d128feed2db05d56bb4a3207a",
+      "git_blob": "03f497fb524b187c62325679dcff465663c4f30b",
+      "immutable_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/96dc9232535fedf735e3099ef1391b69477270d4/codex-rs/core/src/tools/runtimes/zsh_fork/unix_escalation.rs",
+      "pin_evidence": "core-zsh-denied-r15-repair/independent-review.json",
+      "bytes": 33969
+    }
+  ],
+  "formal_evidence": [
+    {
+      "path": "../r15-core-mcp-checkpoint/native-core-mcp-r15-result-review.json",
+      "bytes": 9965,
+      "sha256": "a31121be22b0ff02347fbae5266a21597fe58e811f2cd697617e1bda577bc061"
+    },
+    {
+      "path": "../r15-core-mcp-checkpoint/native-core-mcp-r15-tests.log.gz",
+      "bytes": 80935,
+      "sha256": "200254fdc071f68f4a67f6c8b5518775ecc4bf7bd4a0f0b6db29aad3ed3d9829",
+      "representation": "gzip of the exact original raw log",
+      "raw_bytes": 515261,
+      "raw_sha256": "2e9b11682a84cce7be7e1db72e47eb4be260e8d7ef7a3b1fa916fe59c5a3e39f"
+    },
+    {
+      "path": "../r15-core-mcp-checkpoint/native-candidate-r15-source.json",
+      "bytes": 48734,
+      "sha256": "ee85feeca1c8da886ab3f52ab26fb741bb5d8569880b26985a2b0d7f8533dc2d"
+    },
+    {
+      "path": "../r15-core-mcp-checkpoint/native-core-mcp-r15-tests-receipt.json",
+      "bytes": 903,
+      "sha256": "cae7277834a12e8a42fc3e559eb1c99996a72f19d276cecda55871768e9ed2f6"
+    },
+    {
+      "path": "../r15-core-mcp-checkpoint/ROOT-RESULT-READBACK.json",
+      "bytes": 8337,
+      "sha256": "afd285a66165a0f28ec41a2f2926c1c313d07f5a4cafe5ab53f5d0673361a8de"
+    },
+    {
+      "path": "../r15-core-mcp-checkpoint/ROOT-SOURCE-ROUNDTRIP.json",
+      "bytes": 524,
+      "sha256": "1d2967bbf8914f22d3b3fb4eb3684ab66e8a165ebbb7624e3a8a6ddc6ad9fa2f"
+    },
+    {
+      "path": "../r16-stage45-input/root-published-source.json",
+      "bytes": 3039,
+      "sha256": "815c43fa1bb9e2ceddcc0ff6491b310b0a731fd7b26baa50a89345047f16448b"
+    },
+    {
+      "path": "../r16-stage45-input/root-publish-manifest.json",
+      "bytes": 2915,
+      "sha256": "ce5772f0884caa85935f066044521eec2dc66ea58415541f1b83bcf378422aee"
+    },
+    {
+      "path": "../r16-stage45-input/ROOT-SOURCE-REVIEWS.json",
+      "bytes": 6512,
+      "sha256": "0eb1bf5c6e9a6cf60c60097006fc9657baf061566e7007fdc2f7ca0f0268ad11"
+    }
+  ],
+  "closed_original_failures": [
+    {
+      "binary": "codex-core::all",
+      "name": "suite::unified_exec_zsh_fork_approvals::unified_exec_zsh_fork_parent_approval_preserves_denied_reads",
+      "status": "FAIL",
+      "elapsed": "0.569s",
+      "log_byte_range": [
+        484059,
+        485047
+      ],
+      "excerpt_sha256": "692fcb858778ffff1e21f48b8dc67564101848adc3bace4898724f186511363f",
+      "excerpt_exact_against_closed_raw_log": true
+    }
+  ],
+  "closed_log_raw_sha256": "2e9b11682a84cce7be7e1db72e47eb4be260e8d7ef7a3b1fa916fe59c5a3e39f",
+  "closed_log_raw_bytes": 515261,
+  "local_materialized_original_source_pins_checked": [
+    {
+      "group": "core-zsh-denied-r15-repair",
+      "path": "AGENTS.md",
+      "bytes": 22519,
+      "sha256": "c3f80e8386eb170b00af1e21de40d770c4941e464915687e728e2d14a7e79480",
+      "git_blob": "faa57cc0db48123e1011f1eb47692cd3bbbcfc3a"
+    },
+    {
+      "group": "core-zsh-denied-r15-repair",
+      "path": "codex-rs/core/src/exec_policy.rs",
+      "bytes": 39414,
+      "sha256": "876e42cd25f8bab1b494328ceb1bbe04d87d25003b43db2e8d9d64cf1b53bdff",
+      "git_blob": "f24b062469d579929739c2cb4221661499ca9248"
+    },
+    {
+      "group": "core-zsh-denied-r15-repair",
+      "path": "codex-rs/core/src/sandboxing/mod.rs",
+      "bytes": 8200,
+      "sha256": "76a0f3d0a2bddabef6398a1d71053d23459354b461422ea1ceb20eeacab1e642",
+      "git_blob": "af3647d09680f57ae705a36451c7e9102ad1a5f9"
+    },
+    {
+      "group": "core-zsh-denied-r15-repair",
+      "path": "codex-rs/core/src/tools/approvals.rs",
+      "bytes": 28970,
+      "sha256": "1c4e6ac0210db815e68ef53e167d0691c5da94e50b860b5de930182bb05d3783",
+      "git_blob": "ce939f37b1279c829e3428b597e210f7f6396cc5"
+    },
+    {
+      "group": "core-zsh-denied-r15-repair",
+      "path": "codex-rs/core/src/tools/orchestrator.rs",
+      "bytes": 23923,
+      "sha256": "dd744d39c62ca6dcf10f107b8163617a1e536fddf60d22d328489410af7efcf1",
+      "git_blob": "184757bb146da53bf93a5ef848ab96a0d826087c"
+    },
+    {
+      "group": "core-zsh-denied-r15-repair",
+      "path": "codex-rs/core/src/tools/runtimes/unified_exec.rs",
+      "bytes": 30496,
+      "sha256": "4567c379d9c3f444c78987c14636d6fddbcd98b2ccf47a4a006aef61a856dd1f",
+      "git_blob": "84144f674d37cb4474c01cb4d25c4aa07b16f5a8"
+    },
+    {
+      "group": "core-zsh-denied-r15-repair",
+      "path": "codex-rs/core/src/tools/runtimes/zsh_fork/unix_escalation.rs",
+      "bytes": 33515,
+      "sha256": "c4dbf8d0c3fdd572e20aacaf9a91a7bc9f75742bd4ff75dd08a685b6d79bbc31",
+      "git_blob": "631bf4c6db2876fe32f653c73e386c253ffc939d"
+    },
+    {
+      "group": "core-zsh-denied-r15-repair",
+      "path": "codex-rs/core/src/tools/runtimes/zsh_fork/unix_escalation_tests.rs",
+      "bytes": 35558,
+      "sha256": "e361b5f09b92a8e853635c717b9077780ffb350ebb7558ca179c9e30ce1802c2",
+      "git_blob": "05facffdb473397a81748af4f84044875ede7b72"
+    },
+    {
+      "group": "core-zsh-denied-r15-repair",
+      "path": "codex-rs/core/src/tools/runtimes/zsh_fork.rs",
+      "bytes": 3381,
+      "sha256": "05da9ad627feea279f959ec0977a47d82759da650dec4c573edabd08ac9459b4",
+      "git_blob": "4daa0f18b0c76075027cd38b3ceb6727546edf7e"
+    },
+    {
+      "group": "core-zsh-denied-r15-repair",
+      "path": "codex-rs/core/src/tools/sandboxing.rs",
+      "bytes": 18296,
+      "sha256": "cfb40b7ab43826d5fa40047b93c6ca1fc438c54df3da025ed5dac5f7ed5858ce",
+      "git_blob": "0ec30aa9fb6b4141d31cc95c9459fe97f61737b8"
+    },
+    {
+      "group": "core-zsh-denied-r15-repair",
+      "path": "codex-rs/core/src/unified_exec/process_manager.rs",
+      "bytes": 62568,
+      "sha256": "3eea68b72bb4186609aa1ed6622ac4e20a0afd98d700f8c0577faf49a3f1b916",
+      "git_blob": "c3166418abbb514f1b6fbaacd9815e5a79613fa5"
+    },
+    {
+      "group": "core-zsh-denied-r15-repair",
+      "path": "codex-rs/core/tests/common/zsh_fork.rs",
+      "bytes": 4047,
+      "sha256": "c8ec104fe613f1b0695e9c0cc35120540a223a57f3cd5b0ac1c56699b631531f",
+      "git_blob": "225867d8c72283b57540a38c97d6c44106eef33e"
+    },
+    {
+      "group": "core-zsh-denied-r15-repair",
+      "path": "codex-rs/core/tests/suite/unified_exec_zsh_fork_approvals.rs",
+      "bytes": 31429,
+      "sha256": "35982a2804b74d3f2eb1027bda62e097abe20c546937b25ee251274b7bdbd6ec",
+      "git_blob": "02a8e0abc60f415327cd2713d92d23bc503ab3e4"
+    },
+    {
+      "group": "core-zsh-denied-r15-repair",
+      "path": "codex-rs/protocol/src/models.rs",
+      "bytes": 150095,
+      "sha256": "fedc0c42e2cee3f0e1ac9412690c11081286168d02f3473a039f2ade46cb6d09",
+      "git_blob": "e8bcab9c981c7e613dec75b3c42aa1ed091c9877"
+    },
+    {
+      "group": "core-zsh-denied-r15-repair",
+      "path": "codex-rs/protocol/src/permissions.rs",
+      "bytes": 145214,
+      "sha256": "3ad7c54a19a3bddd72e9e8d8d0641835674ac2b596001ee0d7ce32293863fe06",
+      "git_blob": "1537230e0a8f1685530eb03c2c782a587ad6bb6a"
+    }
+  ],
+  "qualifications": [
+    "The source44 r15 result is the original failed execution. It is not a source45 result and does not qualify any changed source45 behavior.",
+    "Source45 publication metadata and matching Git blob/SHA pins establish content identity only, not a successful native or CI run.",
+    "Frozen pending/native-not-run wording is preserved as written at candidate creation; later execution receipts must remain separate.",
+    "Source/original trees and duplicate full logs are not copied. Immutable source URLs and existing formal raw-log gzip/receipts close those references.",
+    "Copied native support maps/proofs are source-content evidence unless the artifact expressly records an executed result. No event trace, DNS timing, or new permission grant is inferred.",
+    "Zsh independent review checked its then-existing 13 original inputs; the final author pins add two enum/reexport inputs without changing candidate source or patch.",
+    "The CI package-owner pin establishes core_test_support from its manifest. This archive does not reinterpret a literal Cargo.toml members search as Cargo metadata membership or claim full platform/feature/service coverage.",
+    "Reproduction scripts require materializing their pinned originals from the immutable source before use; merely archiving a script is not execution evidence."
+  ],
+  "scientific_disposition": "HOLD",
+  "cell_authority": "DENY_ALL",
+  "unresolved_references": [],
+  "rust_or_ci_execution_by_archive_task": false
+}

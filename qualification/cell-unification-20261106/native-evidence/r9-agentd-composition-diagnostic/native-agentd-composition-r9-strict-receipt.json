@@ -1,0 +1,29 @@
+{
+  "command": [
+    "just",
+    "clippy",
+    "--locked",
+    "-p",
+    "codex-hepta-agentd",
+    "-p",
+    "codex-hepta-agent-protocol",
+    "--",
+    "-D",
+    "warnings"
+  ],
+  "kind": "strict",
+  "staged_tree": "64ab95198effb0a0de22b0c4a30a1e8d509e2840",
+  "source_manifest": "native-candidate-r9-source.json",
+  "environment_manifest": "native-agentd-composition-r9-environment.json",
+  "start_unix": 1793943752.5909567,
+  "end_unix": 1793944086.4588854,
+  "elapsed_seconds": 333.8679287433624,
+  "exit_code": 101,
+  "log_sha256": "980c5a7a326a91c5784cc90161210437797f99b44082ef3602b56591057212be",
+  "summaries": [],
+  "disk_after": {
+    "total": 1966736678912,
+    "used": 1662856269824,
+    "free": 203900157952
+  }
+}

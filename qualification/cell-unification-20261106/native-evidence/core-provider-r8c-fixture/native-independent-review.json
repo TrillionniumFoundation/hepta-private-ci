@@ -1,0 +1,56 @@
+{
+  "reviewer": "/root/native_validation",
+  "state": "INDEPENDENT_SOURCE_REVIEW_PASS_PENDING_NATIVE_TESTS",
+  "native_source_tree": "6ec19f0bae87ffc2dc3c5343c3e5ac390c22a6f0",
+  "all_eight_originals_match_native_6d88_pins": true,
+  "native_pin_verification_sha256": "9122d546aebad6258fe74c7913c1fbdcdcba4271e404f7b5205cfc86d3072f62",
+  "patch_sha256": "52a70f9404917bb2f7f0b132fde4a8ec612a9b09f401f4a6e026b8b77c661bc0",
+  "independent_full_forward_patch_matches_frozen_hashes": true,
+  "independent_full_reverse_restores_all_original_bytes": true,
+  "files": [
+    {
+      "path": "codex-rs/core/tests/suite/additional_context.rs",
+      "before_sha256": "57d63945b6b86bce2ecfd541c3f75f2fa6609118647a4daae84c1c958c2afa3e",
+      "after_sha256": "eabc0cbdc1486aa11d01ba261786494b13ec8cbac49c50f8d3d0396f2b25180d",
+      "assertion_macro_lines_identical": true,
+      "assertion_macro_lines": 26
+    },
+    {
+      "path": "codex-rs/core/tests/suite/client.rs",
+      "before_sha256": "98a7a334eb5aa0635fce3f6f10c2a1584bb233f94e085da7dba4ee793de32e25",
+      "after_sha256": "614ba97ff4ffc5e3db77c43930eeb5a5f7de3234731b8f77281464d3f43e89e9",
+      "assertion_macro_lines_identical": true,
+      "assertion_macro_lines": 156
+    },
+    {
+      "path": "codex-rs/core/tests/suite/compact.rs",
+      "before_sha256": "a62f21d8143b937107895b7b1199c3d10712e0818e608e522167caddbb0c91c0",
+      "after_sha256": "051e39ed713ae26790401210d131f033750b0f50e6597c238c50e931397de25d",
+      "assertion_macro_lines_identical": true,
+      "assertion_macro_lines": 219
+    },
+    {
+      "path": "codex-rs/core/tests/suite/responses_lite.rs",
+      "before_sha256": "3120ea943d773a78bc1a211ecf3587eb10a72b4d69c252f25a97651fa4d55fd1",
+      "after_sha256": "be81511e629f49f025c9566e093d6f07e007b0f23203ae1455700147764a831f",
+      "assertion_macro_lines_identical": true,
+      "assertion_macro_lines": 48
+    },
+    {
+      "path": "codex-rs/core/tests/suite/code_mode.rs",
+      "before_sha256": "71f53adec0b1ca9665a359dc45f87b6b1db1671792b04efc96ad9bf187bb9ec2",
+      "after_sha256": "3af9bbc554126d3c4a570076ba4211bb3f1ec455c9ec82bcc408096f4610437d",
+      "assertion_macro_lines_identical": true,
+      "assertion_macro_lines": 253
+    }
+  ],
+  "semantic_review": [
+    "TestCodexBuilder.prepare_config grants one explicit loopback provider instance permit before executing queued with_config mutators.",
+    "The modified seven fixtures explicitly clear only that instance permit when testing custom endpoint metadata stripping.",
+    "accepts_internal_chat_message_metadata_for_request still uses the unchanged production endpoint policy; serde/schema skips prevent configuration from granting the mock permit.",
+    "The code_mode wrapper changed to its existing with_config variant; the prior wrapper calls that same function with a no-op mutator, so model, feature flags, SSE inputs and turn are unchanged apart from the explicit permit clear.",
+    "All patch hunks were read; no assertion, expected value, deadline, provider production implementation or shared default fixture changed."
+  ],
+  "native_files_modified_by_reviewer": false,
+  "rust_execution_by_reviewer": false
+}

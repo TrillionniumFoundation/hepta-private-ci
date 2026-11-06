@@ -1,0 +1,80 @@
+{
+  "schema": "hepta.agentd-r12-fixture-input-audit.v1",
+  "source_tree": "a0d24a6cca704bb1bb43c4090a275a38832f7b19",
+  "source_commit": "13a740f6751a0dc5033525f15b14b8da7139b5d9",
+  "source_manifest": "source-manifest.json",
+  "patch_sha256": "ef7c39b0eccf9381bbf1baaa36528a3ca6d954025baf1001c3a59b3381a5758e",
+  "owned_diagnostics": [
+    "clippy::type_complexity in hos2_device_bootstrap_tests::transport",
+    "clippy::too_many_arguments (8/7) in authority_host_service_consumers_root::release"
+  ],
+  "captured_requests_alias": {
+    "definition": "type CapturedRequests = Arc<Mutex<Vec<Vec<u8>>>>",
+    "uses": [
+      "AbiTransport.requests field",
+      "transport return tuple"
+    ],
+    "same_concrete_type": true,
+    "no_new_wrapper_allocation_or_drop": true,
+    "transport_and_all_following_tests_byte_identical": {
+      "bytes": 5897,
+      "sha256": "5728c12161fae3f22127026133b63ca1d122b85cbf8c2fc4f00148565f349b8c"
+    }
+  },
+  "release_readback_group": {
+    "type": "ReleaseReadback",
+    "fields_in_evaluation_order": [
+      "bootstrap: expected",
+      "issuer_expiry: expected_issuer_expiry"
+    ],
+    "arguments_before": 8,
+    "arguments_after": 7,
+    "visibility": "pub(super), only the existing fixture parent consumes it",
+    "configuration": "same cfg(test) as the original release helper; no original function or assertion was newly gated",
+    "immediate_destructure_to_original_bindings": true,
+    "original_body_and_following_helper_byte_identical": {
+      "bytes": 6586,
+      "sha256": "c554cbc219102d71a4a55b55d4e85b3c71d9c69a0a770c48de0f5de18c8fa3dd"
+    },
+    "full_checkout_definition_count": 1,
+    "full_checkout_actual_rust_callers": 1,
+    "caller": "codex-rs/hepta-agentd/src/authority_host_service_root_tests.rs:670",
+    "caller_module_binding": "#[path = \"authority_host_service_consumers_root.rs\"] mod consumer_fixture;",
+    "native_caller_source_sha256": "d280d0041512014ea6106b25350c5bb78bb3dbf215011bddbfe16158bacebca1",
+    "call_order_before": [
+      "&mut child",
+      "&config",
+      "&config_path",
+      "&registration_path",
+      "&pidfd",
+      "&prepared",
+      "expected",
+      "expected_issuer_expiry"
+    ],
+    "call_order_after_flattened": [
+      "&mut child",
+      "&config",
+      "&config_path",
+      "&registration_path",
+      "&pidfd",
+      "&prepared",
+      "expected",
+      "expected_issuer_expiry"
+    ],
+    "extra_serialization_or_derive_or_drop": false
+  },
+  "preserved_boundaries": [
+    "Independent bootstrap readback remains an assertion oracle; prepared original owner still produces the sealed bootstrap.",
+    "Issuer expiry retains the original fixed-width fixture pipe encoding and remains separate from sealed bootstrap bytes.",
+    "Actual pidfd, UID/GID, runtime-mode, owner-lock and retained-frontier assertions are unchanged.",
+    "No production writer, wire format, digest domain, authority grant, timeout, feature, test filter, retry, or skip was modified.",
+    "Every original test attribute and assertion sequence is retained; exact inverse returns all three original rawSHA/Gitblob values.",
+    "The concurrent spawn-collection barrier belongs to a different owner and is untouched."
+  ],
+  "full_checkout_map_confirmation": "Native validation performed full checkout rg; complete map attachment will be bound when its existing export finishes.",
+  "full_source_inverse_verified": true,
+  "rust_source_compatibility": "Only private/test fixture helper signature changes; its sole actual caller is updated atomically. Alias retains the original type.",
+  "native_validation": "PENDING_ORIGINAL_STRICT_AND_TEST_GATES",
+  "no_rust_execution": true,
+  "root_or_native_source_modified": false
+}

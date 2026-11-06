@@ -1,0 +1,56 @@
+{
+  "schema": "hepta.fixture-repair-source.v1",
+  "base_commit": "638997499470f0b7dd33ad18226feacf0198ef3d",
+  "base_tree": "1646e1656cf6365e74accae19a1225fd2ce6d964",
+  "files": [
+    {
+      "path": "codex-rs/core/tests/common/streaming_sse.rs",
+      "before": {
+        "bytes": 26206,
+        "sha256": "ed1e35fa973116adf94c8ddbb39bb7e0d2c4c7773b980277921f859ce40d252b",
+        "git_blob": "3766bbd88084f0ba514df52143918450be7d21eb",
+        "mode": "100644"
+      },
+      "after": {
+        "bytes": 27584,
+        "sha256": "0d8d35afd738823226e0aa9c0636e7337b958de5a66418e49190a231b3dd79c0",
+        "git_blob": "5650fb5d4738ca0442fd2afebd2268e3414e9b1d",
+        "mode": "100644"
+      },
+      "edit_count": 6,
+      "added_lines": 48,
+      "removed_lines": 11,
+      "exact_inverse_to_stage44": true,
+      "original_assertions_outside_edit_regions": true
+    },
+    {
+      "path": "codex-rs/core/tests/suite/turn_input_submission.rs",
+      "before": {
+        "bytes": 21096,
+        "sha256": "ae71b734d0b46ce5b285afc827d765d0a4a066bbe825ffd0aba467a4d78e1824",
+        "git_blob": "4ee793ddfc1a9592c933e8b861e76d46bf111c40",
+        "mode": "100644"
+      },
+      "after": {
+        "bytes": 21320,
+        "sha256": "7dc33fdd6c892deda4b145edbd61a653c1cd3b4eaaae6c635caadaf2fd2e5919",
+        "git_blob": "a3e4ecc296ff71736bac1e2c441d7e7b0762a2a7",
+        "mode": "100644"
+      },
+      "edit_count": 2,
+      "added_lines": 22,
+      "removed_lines": 18,
+      "exact_inverse_to_stage44": true,
+      "original_assertions_outside_edit_regions": true
+    }
+  ],
+  "rust_commands_executed": false,
+  "candidate_executed": false,
+  "patch": {
+    "path": "repair.patch",
+    "bytes": 7039,
+    "sha256": "7fd5e5f0e43ecd80505ca93630ccc9c5ebd29e24b9d16615f9cf0714ca8b55f5",
+    "git_blob": "cf209a91f37031f3cae1fa36fb569f38c7a6dcd7",
+    "mode": "100644"
+  }
+}

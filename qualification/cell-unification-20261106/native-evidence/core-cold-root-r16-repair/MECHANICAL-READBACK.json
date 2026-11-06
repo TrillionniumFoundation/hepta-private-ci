@@ -1,0 +1,40 @@
+{
+  "schema": "hepta.cold-root-r16-mechanical-readback.v1",
+  "status": "PASS_STATIC_ONLY",
+  "original": {
+    "bytes": 24392,
+    "sha256": "0c6f0f9f0cccef45f677734eca2ace36715165ff6edd864990442ed6536338d7",
+    "git_blob": "e09a48aceeef1d3b76432cf21002a4d2d624523f"
+  },
+  "candidate": {
+    "bytes": 25239,
+    "sha256": "5c3676743f6900e1c921822b98a505b6563b657266d1c3b2796cc009c8bffabf",
+    "git_blob": "916c4508fa8250324a27e659f22539215ff67ab7"
+  },
+  "patch": {
+    "bytes": 1628,
+    "sha256": "555c1b3879a5239ebf3d355e3f59dcbeb37e177f34d223a6cc69037a6a786887",
+    "git_blob": "0dd010e086f8f3d7b66f7aea0dd3b541f1da8494"
+  },
+  "exact_forward_edit_application": true,
+  "whole_file_inverse_bytes_equal": true,
+  "regenerated_unified_diff_equal": true,
+  "assertions": {
+    "before": 17,
+    "after": 17,
+    "all_changed_exact_operations_exclude_assertion_macros": true,
+    "entire_unchanged_assertion_text_retained": true
+  },
+  "calls": {
+    "flush_before": 3,
+    "flush_after": 3,
+    "shutdown_before": 3,
+    "shutdown_after": 3
+  },
+  "capacity_literal": 3,
+  "all_duration_expressions_identical": true,
+  "original_waits_retries_permissions_unchanged": true,
+  "worker_flush_after_original_role_config_assertions_before_sibling_admission": true,
+  "runtime_tests_executed": false,
+  "rust_commands_executed": false
+}

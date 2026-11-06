@@ -1,0 +1,26 @@
+{
+  "source_tree": "6ec19f0bae87ffc2dc3c5343c3e5ac390c22a6f0",
+  "command": [
+    "dotslash",
+    "--",
+    "fetch",
+    "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/app-server/tests/suite/zsh"
+  ],
+  "bounded_wrapper": [
+    "/usr/bin/timeout",
+    "--signal=TERM",
+    "--kill-after=5s",
+    "180s",
+    "dotslash"
+  ],
+  "source_manifest": "native-zsh-dotslash-prerequisite-r10-source.json",
+  "start_unix": 1793945251.4220808,
+  "end_unix": 1793945251.4269302,
+  "elapsed_seconds": 0.004849433898925781,
+  "exit_code": 0,
+  "bounded_timeout": false,
+  "log_sha256": "c281256c49d2d6c34adbbe5787aae891c95d555c15818d2a1b13dc4e5d1a27e7",
+  "test_execution": false,
+  "test_deadline_unchanged": true,
+  "output": "/home/alex/work/hepta-cell-unified-20261106-a/tools/dotslash-cache/d6/3dc793604e3ff05ef5e1bc69512a022915cc49/package/vendor/x86_64-unknown-linux-musl/zsh/ubuntu-24.04/zsh\n"
+}

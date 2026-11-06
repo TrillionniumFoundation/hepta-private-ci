@@ -1,0 +1,43 @@
+{
+  "command": [
+    "just",
+    "clippy",
+    "--locked",
+    "--keep-going",
+    "-p",
+    "codex-model-provider-info",
+    "-p",
+    "codex-shell-escalation",
+    "-p",
+    "codex-linux-sandbox",
+    "-p",
+    "codex-hepta-memory",
+    "-p",
+    "codex-exec-server",
+    "-p",
+    "codex-hepta-supervisor",
+    "-p",
+    "codex-hepta-memory-extension",
+    "-p",
+    "codex-core",
+    "-p",
+    "codex-hepta-agentd",
+    "--",
+    "-D",
+    "warnings"
+  ],
+  "kind": "diagnostic",
+  "staged_tree": "6d88ca9c8964669a408d8549efaeff7b94d68674",
+  "source_manifest": "native-candidate-r8-source.json",
+  "start_unix": 1793940626.265151,
+  "end_unix": 1793940686.0871482,
+  "elapsed_seconds": 59.82199716567993,
+  "exit_code": 101,
+  "log_sha256": "04424a725bff43ebb69deb2090a509cd6eface05b2a1ff61341b5eb433ca6013",
+  "summaries": [],
+  "disk_after": {
+    "total": 1966736678912,
+    "used": 1596139687936,
+    "free": 270616739840
+  }
+}
