@@ -1,0 +1,52 @@
+{
+  "unit": "04_authorized_read_contract",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "base_commit": "7f1bb73b49e5fcc0f1bd46845c3acbfb78767a7a",
+  "failed_run_id": 42160192456,
+  "failed_linux_job_id": 127712940876,
+  "source_donor": {
+    "capability_contract_pr": 4735,
+    "capability_contract_head": "aaf74551dccf99f2d0d1525d02337cf804233817",
+    "error_mapping_and_mac_fixture_pr": 4797,
+    "error_mapping_head": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed",
+    "adaptation": "Keep all four existing Local/Remote instances; do not import donor's platform-gated-away Remote tests or its outdated Local positive expectation on non-macOS."
+  },
+  "reason": "Existing integration expectations were inconsistent with the explicitly advertised stable-handle capability and non-macOS refusal; remote oversize failures also lost their original InvalidData classification.",
+  "files": [
+    {
+      "path": "codex-rs/exec-server/tests/file_system_unix.rs",
+      "base_blob_sha": "2ebd7e53986eb4cceaabaad4b8bc1b3f55ba1d64",
+      "candidate_blob_sha": "71d10d49846918d79bd07a715720dcdf6c52ec41",
+      "candidate_sha256": "9cc7a7283b3d795284144e9b78890df6eba0b77eb82168f8bbdd573448f3e275",
+      "additions": 63,
+      "deletions": 9
+    },
+    {
+      "path": "codex-rs/exec-server/src/remote_file_system.rs",
+      "base_blob_sha": "a578c0548e8b7437979e749dbcfa4d3f6a263835",
+      "candidate_blob_sha": "b5e7a30d62a828d1594bd7bd66557ed47fccf14b",
+      "candidate_sha256": "4911a73ffcd690aeddbf01505f05db2a517abb1bc4891cb7b1b01ad4eb9c10cc",
+      "additions": 31,
+      "deletions": 0
+    }
+  ],
+  "authored_changed_lines": 103,
+  "static_checks": [
+    "Current protocol documents stable_handle_authorized_read as false until a platform probe succeeds; non-macOS probe is explicitly false.",
+    "PR 4735 records Unsupported-before-I/O as a deliberate concrete-executor security contract; the generic trait fallback remains a distinct weaker abstraction.",
+    "All integration test names, test_case attributes, four original read requests and ignore attributes remain unchanged.",
+    "Non-macOS asserts exact Unsupported for permitted, oversized, symlink-escape and parent-escape requests; no arbitrary-error acceptance or runtime capability skip is added.",
+    "macOS still requires exact successful bytes, InvalidData on overflow and denial on both escapes; canonical temporary roots match the unchanged authorization namespace.",
+    "Only the exact server pair (-32603, authorized file read exceeds bound) gains the fixed InvalidData mapping copied from donor 4797.",
+    "A new mapping regression rejects near-miss messages and wrong codes without forwarding any private server details.",
+    "Local authorization, capability advertisement, server request handler, file-system trait and RPC acceptance test are unchanged."
+  ],
+  "required_native_targets": [
+    "//codex-rs/exec-server:exec-server-file_system_unix-test",
+    "//codex-rs/exec-server:exec-server-unit-tests",
+    "//codex-rs/exec-server:exec-server-authorized_read_rpc-test"
+  ],
+  "current_candidate_native_execution": "NOT_RUN_NO_RUST_BAZEL_JUST_TOOLCHAIN",
+  "current_candidate_qualified": false,
+  "publication_owner": "root"
+}

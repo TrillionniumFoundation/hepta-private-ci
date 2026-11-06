@@ -510,6 +510,14 @@ fn unsupported_authorized_read() -> io::Error {
 
 fn map_authorized_read_remote_error(error: ExecServerError) -> io::Error {
     match error {
+        ExecServerError::Server {
+            code: -32603,
+            message,
+        } if message == "authorized file read exceeds bound" => {
+            // Preserve the server's bounded-read failure without forwarding
+            // arbitrary server messages or returning a truncated prefix.
+            invalid_authorized_read_data(READ_EXCEEDED)
+        }
         ExecServerError::Server { code, .. } if code == METHOD_NOT_FOUND_ERROR_CODE => {
             unsupported_authorized_read()
         }
@@ -632,6 +640,29 @@ mod tests {
             let error = map_authorized_read_remote_error(error);
             assert_eq!(error.kind(), io::ErrorKind::BrokenPipe);
             assert_eq!(error.to_string(), "exec-server transport closed");
+        }
+    }
+
+    #[test]
+    fn authorized_read_oversize_error_preserves_kind_without_server_details() {
+        let error = map_authorized_read_remote_error(ExecServerError::Server {
+            code: -32603,
+            message: "authorized file read exceeds bound".to_string(),
+        });
+        assert_eq!(error.kind(), io::ErrorKind::InvalidData);
+        assert_eq!(error.to_string(), READ_EXCEEDED);
+
+        for (code, message) in [
+            (-32603, "authorized file read exceeds bound: /private/secret"),
+            (-1, "authorized file read exceeds bound"),
+            (-32603, "/private/secret internal failure"),
+        ] {
+            let error = map_authorized_read_remote_error(ExecServerError::Server {
+                code,
+                message: message.to_string(),
+            });
+            assert_eq!(error.kind(), io::ErrorKind::Other);
+            assert_eq!(error.to_string(), "remote authorized file read failed");
         }
     }
 

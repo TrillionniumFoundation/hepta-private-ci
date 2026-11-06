@@ -109,6 +109,23 @@ fn assert_normalized_path_rejected(error: &std::io::Error) {
     }
 }
 
+#[cfg(not(target_os = "macos"))]
+fn assert_authorized_read_unsupported(
+    error: &std::io::Error,
+    implementation: FileSystemImplementation,
+) {
+    // The concrete executor requires stable-handle provenance. Its non-macOS
+    // capability is false and must reject before ordinary filesystem access.
+    assert_eq!(error.kind(), std::io::ErrorKind::Unsupported);
+    let expected = match implementation {
+        FileSystemImplementation::Local => "bounded authorized file reads are unsupported",
+        FileSystemImplementation::Remote => {
+            "remote exec-server does not support stable-handle authorized reads"
+        }
+    };
+    assert_eq!(error.to_string(), expected);
+}
+
 fn alias_root_candidate() -> Result<Option<PathBuf>> {
     for root in [Path::new("/tmp").to_path_buf(), std::env::temp_dir()] {
         if root.is_dir() && root.canonicalize().is_ok_and(|canonical| canonical != root) {
@@ -1110,7 +1127,8 @@ async fn file_system_bounded_authorized_read_enforces_limit_without_prefix(
     let context = create_file_system_context(implementation).await?;
     let file_system = context.file_system;
 
-    let tmp = TempDir::new()?;
+    // Grant the canonical namespace required by stable-handle authorization.
+    let tmp = TempDir::new_in(std::env::temp_dir().canonicalize()?)?;
     let root = tmp.path().join("allowed");
     std::fs::create_dir_all(&root)?;
     let exact_path = root.join("exact.txt");
@@ -1121,9 +1139,17 @@ async fn file_system_bounded_authorized_read_enforces_limit_without_prefix(
 
     let exact = file_system
         .read_file_bounded_authorized(&PathUri::from_host_native_path(&exact_path)?, &sandbox, 8)
-        .await
-        .with_context(|| format!("mode={implementation}, exact bound"))?;
-    assert_eq!(exact, b"12345678");
+        .await;
+    #[cfg(target_os = "macos")]
+    {
+        let exact = exact.with_context(|| format!("mode={implementation}, exact bound"))?;
+        assert_eq!(exact, b"12345678");
+    }
+    #[cfg(not(target_os = "macos"))]
+    assert_authorized_read_unsupported(
+        &exact.expect_err("an unsupported stable-handle read must never return file bytes"),
+        implementation,
+    );
 
     let error = file_system
         .read_file_bounded_authorized(
@@ -1133,8 +1159,17 @@ async fn file_system_bounded_authorized_read_enforces_limit_without_prefix(
         )
         .await
         .expect_err("a file larger than the bound must fail closed");
-    assert_eq!(error.kind(), std::io::ErrorKind::InvalidData);
-    assert_eq!(error.to_string(), "authorized file read exceeds bound");
+    #[cfg(target_os = "macos")]
+    {
+        assert_eq!(error.kind(), std::io::ErrorKind::InvalidData);
+        let expected = match implementation {
+            FileSystemImplementation::Local => "authorized file read exceeds bound",
+            FileSystemImplementation::Remote => "remote authorized file read exceeded its bound",
+        };
+        assert_eq!(error.to_string(), expected);
+    }
+    #[cfg(not(target_os = "macos"))]
+    assert_authorized_read_unsupported(&error, implementation);
 
     Ok(())
 }
@@ -1148,7 +1183,8 @@ async fn file_system_bounded_authorized_read_rejects_symlink_and_parent_escape(
     let context = create_file_system_context(implementation).await?;
     let file_system = context.file_system;
 
-    let tmp = TempDir::new()?;
+    // Grant the canonical namespace required by stable-handle authorization.
+    let tmp = TempDir::new_in(std::env::temp_dir().canonicalize()?)?;
     let allowed_dir = tmp.path().join("allowed");
     let outside_dir = tmp.path().join("outside");
     std::fs::create_dir_all(&allowed_dir)?;
@@ -1167,7 +1203,16 @@ async fn file_system_bounded_authorized_read_rejects_symlink_and_parent_escape(
         )
         .await
         .expect_err("a symlink escaping the readable root must fail closed");
-    assert_sandbox_denied(&error);
+    #[cfg(target_os = "macos")]
+    match implementation {
+        FileSystemImplementation::Local => assert_sandbox_denied(&error),
+        FileSystemImplementation::Remote => {
+            assert_eq!(error.kind(), std::io::ErrorKind::InvalidInput);
+            assert_eq!(error.to_string(), "remote authorized file read was rejected");
+        }
+    }
+    #[cfg(not(target_os = "macos"))]
+    assert_authorized_read_unsupported(&error, implementation);
 
     let parent_escape = allowed_dir
         .join("nested")
@@ -1183,7 +1228,16 @@ async fn file_system_bounded_authorized_read_rejects_symlink_and_parent_escape(
         )
         .await
         .expect_err("a parent traversal escaping the readable root must fail closed");
-    assert_normalized_path_rejected(&error);
+    #[cfg(target_os = "macos")]
+    match implementation {
+        FileSystemImplementation::Local => assert_normalized_path_rejected(&error),
+        FileSystemImplementation::Remote => {
+            assert_eq!(error.kind(), std::io::ErrorKind::InvalidInput);
+            assert_eq!(error.to_string(), "remote authorized file read was rejected");
+        }
+    }
+    #[cfg(not(target_os = "macos"))]
+    assert_authorized_read_unsupported(&error, implementation);
 
     Ok(())
 }
