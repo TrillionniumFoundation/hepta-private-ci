@@ -14,11 +14,23 @@ use codex_hepta_learning_artifacts::ArtifactRegistry;
 use codex_hepta_learning_artifacts::CreateOnlyArtifactFile;
 use codex_hepta_learning_artifacts::write_registry_snapshot;
 use codex_hepta_learning_ledger::AuthenticatedPrincipalV1;
-use codex_hepta_learning_ledger::CandidateSetCompleteness;
+use codex_hepta_learning_ledger::CandidateSetCompletenessReceiptV1;
 use codex_hepta_learning_ledger::DatasetFreezeRequestV1;
 use codex_hepta_learning_ledger::DurableLedger;
-use codex_hepta_learning_ledger::EpisodeDecision;
-use codex_hepta_learning_ledger::LedgerEvent;
+use codex_hepta_learning_ledger::LearningEvidenceRoleV1;
+use codex_hepta_learning_ledger::LearningEvidenceTrustV1;
+use codex_hepta_learning_ledger::LearningTrustDistributionV1;
+use codex_hepta_learning_ledger::LearningTrustRootV1;
+use codex_hepta_learning_ledger::LedgerWitnessStore;
+use codex_hepta_learning_ledger::LedgerWriter;
+use codex_hepta_learning_ledger::ProductionDecisionV2;
+use codex_hepta_learning_ledger::SignedLearningEvidenceV1;
+use codex_hepta_learning_ledger::SignedLearningTrustDistributionV1;
+use codex_hepta_learning_ledger::TrustedLearningSignerV1;
+use codex_hepta_learning_ledger::activate_learning_trust;
+use codex_hepta_learning_ledger::candidate_ids_digest_v2;
+use codex_hepta_learning_ledger::candidate_order_digest_v2;
+use codex_hepta_learning_ledger::decision_signing_payload_v2;
 use codex_hepta_learning_ledger::freeze_dataset_receipt_v3;
 use codex_hepta_ndu::NduProjectionJournalV1;
 use codex_hepta_ndu::NduProjectionKindV1;
@@ -31,6 +43,7 @@ use codex_hepta_types::FixedQ32;
 use codex_hepta_types::Generation;
 use codex_hepta_types::ProbabilityQ32;
 use codex_hepta_types::StableId;
+use ed25519_dalek::Signer;
 use ed25519_dalek::SigningKey;
 use serde_json::json;
 
@@ -111,24 +124,129 @@ async fn supervisor_exec_reconstructs_named_plasticity_owner_from_durable_descri
 
     let ledger_path = root.join("learning-ledger");
     let ledger_binding = digest("plasticity-process-ledger-binding");
-    let mut ledger = DurableLedger::create(new_rw(&ledger_path), ledger_binding, 32)?;
-    ledger.append_qualification(
-        Digest32::ZERO,
-        LedgerEvent::Decision(EpisodeDecision {
-            record_id: id("decision:plasticity-process"),
-            episode_id: id("episode:plasticity-process"),
-            objective_digest,
-            policy_id: id("policy:plasticity-process"),
-            candidate_ids: vec![id("candidate:update"), id("abstain")],
-            selected_candidate_id: id("candidate:update"),
-            selected_propensity: ProbabilityQ32::from_raw(1_u64 << 31)?,
-            completeness: CandidateSetCompleteness::Complete,
-            support_digest: digest("plasticity-process-decision-support"),
-        }),
+    // Seed the *product* ledger through its signed, witnessed admission path.
+    // This test must not enable the raw-event legacy fixture writer in Agentd.
+    let generator_key = SigningKey::from_bytes(&[7; 32]);
+    let root_key = SigningKey::from_bytes(&[8; 32]);
+    let generator_scope = digest("plasticity-process-ledger-generator-scope");
+    let generator = AuthenticatedPrincipalV1 {
+        principal_id: id("generator:plasticity-process"),
+        credential_chain_digest: digest("plasticity-process-generator-credential"),
+        signing_key_digest: Digest32::of_bytes(&generator_key.verifying_key().to_bytes()),
+        scope_digest: generator_scope,
+        authority_epoch: 7,
+        authenticated_at: 10,
+        expires_at: 100,
+    };
+    let trust_root = LearningTrustRootV1 {
+        root_id: id("root:plasticity-process-ledger"),
+        scope_digest: generator_scope,
+        verifying_key: root_key.verifying_key().to_bytes(),
+        valid_from: 1,
+        expires_at: 200,
+        revoked_at: None,
+    };
+    let mut distribution = SignedLearningTrustDistributionV1 {
+        distribution: LearningTrustDistributionV1 {
+            distribution_id: id("distribution:plasticity-process-ledger"),
+            generation: 1,
+            effective_at: 20,
+            trust: LearningEvidenceTrustV1 {
+                scope_digest: generator_scope,
+                objective_digest,
+                authority_epoch: 7,
+                signers: vec![TrustedLearningSignerV1 {
+                    principal: generator.clone(),
+                    controller_id: id("controller:plasticity-process-generator"),
+                    verifying_key: generator_key.verifying_key().to_bytes(),
+                    roles: vec![LearningEvidenceRoleV1::Generator],
+                    revoked_at: None,
+                }],
+            },
+        },
+        root_id: trust_root.root_id.clone(),
+        issued_at: 15,
+        expires_at: 90,
+        signature: [0; 64],
+    };
+    distribution.signature = root_key.sign(&distribution.signing_bytes()?).to_bytes();
+    let activated_trust = activate_learning_trust(&trust_root, distribution, None, 50)?;
+    let ledger = DurableLedger::create(new_rw(&ledger_path), ledger_binding, 32)?;
+    let witness_path = root.join("learning-ledger.witness");
+    let witness = LedgerWitnessStore::create(new_rw(&witness_path), ledger_binding)?;
+    let containing_directory = std::fs::File::open(&root)?;
+    let mut writer = LedgerWriter::from_durable(
+        ledger,
+        witness,
+        activated_trust,
+        &containing_directory,
+        &containing_directory,
     )?;
-    let ledger_snapshot = ledger.snapshot()?;
+    let candidates = vec![id("candidate:update"), id("abstain")];
+    let decision = ProductionDecisionV2 {
+        record_id: id("decision:plasticity-process"),
+        episode_id: id("episode:plasticity-process"),
+        run_snapshot_digest: digest("plasticity-process-run-snapshot"),
+        objective_digest,
+        policy_digest: digest("plasticity-process-policy"),
+        candidate_ids: candidates.clone(),
+        selected_candidate_id: id("candidate:update"),
+        selected_propensity: ProbabilityQ32::from_raw(1_u64 << 31)?,
+        completeness: CandidateSetCompletenessReceiptV1 {
+            set_id: id("candidate-set:plasticity-process"),
+            state_digest: digest("plasticity-process-state"),
+            generator_id: generator.principal_id.clone(),
+            generator_code_digest: digest("plasticity-process-generator-code"),
+            grammar_digest: digest("plasticity-process-grammar"),
+            hard_filter_digest: digest("plasticity-process-hard-filter"),
+            truncation_digest: digest("plasticity-process-truncation"),
+            candidates_digest: candidate_ids_digest_v2(&candidates),
+            candidate_count: 2,
+            omitted_count_bound: 0,
+            canonical_order_digest: candidate_order_digest_v2(&candidates),
+            complete_for_generator: true,
+        },
+        support_digest: digest("plasticity-process-decision-support"),
+    };
+    let payload = decision_signing_payload_v2(&decision)?;
+    let mut evidence = SignedLearningEvidenceV1 {
+        evidence_id: id("evidence:plasticity-process-generator"),
+        principal_id: generator.principal_id,
+        role: LearningEvidenceRoleV1::Generator,
+        trust_digest: writer.verifier().trust_digest(),
+        scope_digest: generator_scope,
+        objective_digest,
+        authority_epoch: 7,
+        issued_at: 20,
+        expires_at: 90,
+        payload_digest: Digest32::of_bytes(&payload),
+        signature: [0; 64],
+    };
+    evidence.signature = generator_key.sign(&evidence.signing_bytes()).to_bytes();
+
+    // A tampered generator signature must fail before the durable ledger moves.
+    let mut tampered_evidence = evidence.clone();
+    tampered_evidence.signature[0] ^= 1;
+    assert!(
+        writer
+            .append_decision(Digest32::ZERO, decision.clone(), &tampered_evidence, 50)
+            .is_err(),
+        "tampered generator signature must be rejected",
+    );
+    assert!(
+        writer.snapshot()?.records().is_empty(),
+        "rejected evidence must not advance the durable ledger",
+    );
+
+    writer.append_decision(Digest32::ZERO, decision, &evidence, 50)?;
+    let ledger_snapshot = writer.snapshot()?;
     let ledger_head = ledger_snapshot.head_digest;
     let ledger_records = u64::try_from(ledger_snapshot.records().len())?;
+    let source_event_digest = ledger_snapshot
+        .records()
+        .first()
+        .ok_or_else(|| anyhow::anyhow!("authenticated decision missing from ledger"))?
+        .event_digest;
 
     let dataset_principal = AuthenticatedPrincipalV1 {
         principal_id: id("owner:dataset"),
@@ -150,7 +268,7 @@ async fn supervisor_exec_reconstructs_named_plasticity_owner_from_durable_descri
             correction_cut_digest: digest("dataset:correction"),
             revocation_cut_digest: digest("dataset:revocation"),
             inclusion_policy_digest: digest("dataset:policy"),
-            source_record_digests: vec![ledger_head],
+            source_record_digests: vec![source_event_digest],
             pending_outcomes: 0,
             censored_outcomes: 0,
         },
@@ -450,7 +568,7 @@ async fn supervisor_exec_reconstructs_named_plasticity_owner_from_durable_descri
 
     // The child must own every mutable descriptor referenced above.
     drop(neuron);
-    drop(ledger);
+    drop(writer);
     drop(artifacts);
 
     harness.start_with_plasticity_bootstrap_descriptor(
