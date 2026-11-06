@@ -1,0 +1,124 @@
+{
+  "schema": "hepta.r31-export-initial-static-correction.v1",
+  "before": {
+    "bytes": 77357,
+    "sha256": "1b34b7c197b81aade4565e738170ff61917675430a9cbc1a6e511768a6465f9a",
+    "git_blob": "a15cfccc48e1854f2ca14230b178e2827603b61e"
+  },
+  "after": {
+    "bytes": 77450,
+    "sha256": "0a0b60ec209527b03cf54a7d7566409c9714aca13c4423fc8ef9dd0cc88be910",
+    "git_blob": "034bab9de3433dfb43b0a8498d59c7b5ad8a3082"
+  },
+  "reason": "Original R28 tests argv has package selectors before --retries 0; R30 has retries before the single package selector. Compare each original order without changing either command.",
+  "only_exporter_readback_expression_changed": true,
+  "neither_exporter_version_executed": true,
+  "original_raw_commands": [
+    {
+      "path": "native-validation-results/r28-archive-closed/original/evidence/native-source52-project-r28-python-runner-raw-process-result.json",
+      "bytes": 551,
+      "sha256": "51d4478678c3776377e3cc9874e858319f41ad9bf091f36549b5324dc176cc94",
+      "git_blob": "2a2e2543143462b85ec2187c09aba8a0fc435f54",
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "scripts",
+        "-p",
+        "test_run_nextest*.py",
+        "-v"
+      ],
+      "exact_actual_order": true,
+      "runner_not_executed": true
+    },
+    {
+      "path": "native-validation-results/r28-archive-closed/original/evidence/native-source52-project-r28-strict-raw-process-result.json",
+      "bytes": 648,
+      "sha256": "ba9571183c1718b35852a662348685b649df801ca7a8d81b997b1eabf8ee65f0",
+      "git_blob": "6343eaf98b91f8688f91f27e38129290bd2df8b0",
+      "command": [
+        "just",
+        "clippy",
+        "--locked",
+        "-p",
+        "codex-cli",
+        "-p",
+        "codex-exec-server",
+        "-p",
+        "codex-network-proxy",
+        "-p",
+        "codex-external-agent-migration",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exact_actual_order": true,
+      "runner_not_executed": true
+    },
+    {
+      "path": "native-validation-results/r28-archive-closed/original/evidence/native-source52-project-r28-tests-raw-process-result.json",
+      "bytes": 634,
+      "sha256": "cf8237de117ec35091a76f9aa19616bfbddf565902cf260b00a3c67c7b8942b5",
+      "git_blob": "53bc6903ef316420b915d2ddb004b82827a6d09e",
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-cli",
+        "-p",
+        "codex-exec-server",
+        "-p",
+        "codex-network-proxy",
+        "-p",
+        "codex-external-agent-migration",
+        "--retries",
+        "0"
+      ],
+      "exact_actual_order": true,
+      "runner_not_executed": true
+    },
+    {
+      "path": "native-validation-results/r30-closed-input/evidence/native-source53-project-r30-strict-raw-process-result.json",
+      "bytes": 535,
+      "sha256": "0c9b0aef317c6dc152637cd6a1bbb2686c897b9ef2c2b73bd0cba7a35c06c170",
+      "git_blob": "8c5b8453ff10241e38b7b0fc31165137ee6e7776",
+      "command": [
+        "just",
+        "clippy",
+        "--locked",
+        "-p",
+        "codex-app-server",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exact_actual_order": true,
+      "runner_not_executed": true
+    },
+    {
+      "path": "native-validation-results/r30-closed-input/evidence/native-source53-project-r30-tests-raw-process-result.json",
+      "bytes": 522,
+      "sha256": "2df64589cf5b4b7201889af325bac0ef88457aeb444bbb45ee55f31bd60d99fa",
+      "git_blob": "c54552ec8aab603869cdc6f6ac36e91b9235771e",
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "--retries",
+        "0",
+        "-p",
+        "codex-app-server"
+      ],
+      "exact_actual_order": true,
+      "runner_not_executed": true
+    }
+  ],
+  "patch": {
+    "bytes": 672,
+    "sha256": "803b33dac70450f5d9e969ad363a6d6f3a470fcbc631cfad374324ab27cb15d6",
+    "git_blob": "89cfe2fc838d0fc6a7e62768a6e0a0c53f87b616"
+  }
+}

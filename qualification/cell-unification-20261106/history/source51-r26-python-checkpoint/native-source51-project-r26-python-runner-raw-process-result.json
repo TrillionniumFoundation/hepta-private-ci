@@ -1,0 +1,22 @@
+{
+  "schema": "hepta.native-raw-process-result.v1",
+  "phase": "python-runner",
+  "source_tree": "763c8d2b4089f6e9806c3bbb68fa247bc2f6af36",
+  "source_commit": "e28b0f385ee882f842911044958b2810f62f6379",
+  "command": [
+    "python3",
+    "-m",
+    "unittest",
+    "discover",
+    "-s",
+    "scripts",
+    "-p",
+    "test_run_nextest*.py",
+    "-v"
+  ],
+  "cwd": "/home/alex/work/hepta-cell-unified-20261106-a/source",
+  "start_unix": 1793982975.1078691,
+  "end_unix": 1793983046.2573051,
+  "exit_code": 0,
+  "log_and_resource_hashing_pending": true
+}

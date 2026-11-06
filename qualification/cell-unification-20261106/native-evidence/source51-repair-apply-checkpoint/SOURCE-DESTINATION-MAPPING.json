@@ -1,0 +1,2262 @@
+{
+  "schema": "hepta.source51-attachment-source-destination-map.v1",
+  "source_workspace_at_assembly": "/workspace/scratch/08f5efd48967",
+  "input_files": 225,
+  "raw_input_bytes_including_duplicates": 2016307,
+  "unique_stored_original_paths": 219,
+  "large_copy_deduplication_threshold_bytes": 16384,
+  "all_sources_exact_and_unmodified": true,
+  "compression": "none; all originals identity copied, existing input tar retained unchanged",
+  "files": [
+    {
+      "source": "native-validation-results/source51-bwrap-comparison-closed/LOCAL-READBACK.json",
+      "destination": "native-comparison/LOCAL-READBACK.json",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "closed diagnostic, not a Rust gate",
+      "bytes": 10490,
+      "sha256": "8937cac7daac507e031c98e76a2b4e1c00fb059dcb716f2d86496ba0400495ff",
+      "git_blob": "29818cf652bc8f06ffdf389fb2221976007422d3"
+    },
+    {
+      "source": "native-validation-results/source51-bwrap-comparison-closed/bwrap.rs.source.txt",
+      "destination": "native-comparison/bwrap.rs.source.txt",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "closed diagnostic, not a Rust gate",
+      "bytes": 6734,
+      "sha256": "43abc86eb6a62689c6aa75dc27f6cd05101cab831b339d4e85e316c1c296d19c",
+      "git_blob": "633487136abe00065ee0f30707573ceb67b04e5b"
+    },
+    {
+      "source": "native-validation-results/source51-bwrap-comparison-closed/complete.json",
+      "destination": "native-comparison/complete.json",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "closed diagnostic, not a Rust gate",
+      "bytes": 4745,
+      "sha256": "77f3622e0bf8dd7cc693fcf17d4a509859abc81f72b8613ec671a7a9eebd43d2",
+      "git_blob": "4602fd2c48edeebb5b30b8ae496412bc87f18f94"
+    },
+    {
+      "source": "native-validation-results/source51-bwrap-comparison-closed/fake_bwrap.rs.source.txt",
+      "destination": "native-comparison/fake_bwrap.rs.source.txt",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "closed diagnostic, not a Rust gate",
+      "bytes": 1635,
+      "sha256": "ae37954afd591c387652cd8ea036a15f461dbad48946274bbca57be4bd1648de",
+      "git_blob": "cc79362f7a8a3a44b0a93949d18494281511ec7b"
+    },
+    {
+      "source": "native-validation-results/source51-bwrap-comparison-closed/original-command.txt",
+      "destination": "native-comparison/original-command.txt",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "closed diagnostic, not a Rust gate",
+      "bytes": 6059,
+      "sha256": "f077fac9d5979554f2d9c64d6a5ed09410661876f98a826bc19bccf8c21d2927",
+      "git_blob": "da2d1e79e2b67e45cf907f4f0c898224ce798b39"
+    },
+    {
+      "source": "native-validation-results/source51-bwrap-comparison-closed/original-launch.json",
+      "destination": "native-comparison/original-launch.json",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "closed diagnostic, not a Rust gate",
+      "bytes": 7152,
+      "sha256": "29d7a5f10e92e40757c8703acbc8c1058d5fde18c72f34fb579f14f3499c0295",
+      "git_blob": "499ecacd6e06c1f09621bc8098185aa45dff5e80"
+    },
+    {
+      "source": "native-validation-results/source51-bwrap-comparison-closed/preconditions.json",
+      "destination": "native-comparison/preconditions.json",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "closed diagnostic, not a Rust gate",
+      "bytes": 3950,
+      "sha256": "0a2e32c7702af314a897ba67e7ba7cf33945d42fecd00ab2b5b5acace13f8011",
+      "git_blob": "bcfb0f8611625bc58a8232868abb61b3fbab7fe5"
+    },
+    {
+      "source": "native-validation-results/source51-bwrap-comparison-closed/repo-bwrap.d",
+      "destination": "native-comparison/repo-bwrap.d",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "closed diagnostic, not a Rust gate",
+      "bytes": 623,
+      "sha256": "042edf2feee665ef33cd72c60e37e452e7865ae3194f988c875956d96a967233",
+      "git_blob": "ad12cba3e05ad451e11fc75487c9dba3ff33dbfd"
+    },
+    {
+      "source": "native-validation-results/source51-bwrap-comparison-closed/repo-probe-intent.json",
+      "destination": "native-comparison/repo-probe-intent.json",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "closed diagnostic, not a Rust gate",
+      "bytes": 730,
+      "sha256": "a03ffbc53579d61fed5c01608df788fb25d48ccdb7aee975e718419e24d31e01",
+      "git_blob": "80f079805dba094934b38defd371c56e8bb939f3"
+    },
+    {
+      "source": "native-validation-results/source51-bwrap-comparison-closed/repo-probe-raw-process-result.json",
+      "destination": "native-comparison/repo-probe-raw-process-result.json",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "closed diagnostic, not a Rust gate",
+      "bytes": 444,
+      "sha256": "c387251df949523a2e30a1c72e28bf4b13ff7f7760049b8c88d8b8285c0689c8",
+      "git_blob": "3900f20d635e9180e97618890ac658fece5c8901"
+    },
+    {
+      "source": "native-validation-results/source51-bwrap-comparison-closed/repo-probe-receipt.json",
+      "destination": "native-comparison/repo-probe-receipt.json",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "closed diagnostic, not a Rust gate",
+      "bytes": 745,
+      "sha256": "6c004656294449339dbc2d069a6199a819d98e7336027400f219903243c3ec4d",
+      "git_blob": "8155c44ffb701924e10fda51615d22c61104ce73"
+    },
+    {
+      "source": "native-validation-results/source51-bwrap-comparison-closed/repo-probe-stderr.txt",
+      "destination": "native-comparison/repo-probe-stderr.txt",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "closed diagnostic, not a Rust gate",
+      "bytes": 61,
+      "sha256": "ed3471f7900377f86150471417911309833a36d664cb5af7409e139103f67ddf",
+      "git_blob": "78d974bb32e69e6ff02b444e7bb35fde2886dbd6"
+    },
+    {
+      "source": "native-validation-results/source51-bwrap-comparison-closed/repo-probe-stdout.txt",
+      "destination": "native-comparison/repo-probe-stdout.txt",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "closed diagnostic, not a Rust gate",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "source": "native-validation-results/source51-bwrap-comparison-closed/repo-version-intent.json",
+      "destination": "native-comparison/repo-version-intent.json",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "closed diagnostic, not a Rust gate",
+      "bytes": 652,
+      "sha256": "91e8d373428a679e98908258a7ce0fa99b7797bff058c3836e1035a4ead19650",
+      "git_blob": "ace798cb2fac4c88c9e4017ad49b8431ea4814d2"
+    },
+    {
+      "source": "native-validation-results/source51-bwrap-comparison-closed/repo-version-raw-process-result.json",
+      "destination": "native-comparison/repo-version-raw-process-result.json",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "closed diagnostic, not a Rust gate",
+      "bytes": 367,
+      "sha256": "dccc164ede018d3eb559fd4748ce3f3d16c44372087185f54725969727c0ef32",
+      "git_blob": "d3c3049f9235425aa6b0c29b8605bddf5d146357"
+    },
+    {
+      "source": "native-validation-results/source51-bwrap-comparison-closed/repo-version-receipt.json",
+      "destination": "native-comparison/repo-version-receipt.json",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "closed diagnostic, not a Rust gate",
+      "bytes": 636,
+      "sha256": "805e1e965a9fe685ccbdaa4331dfc6c68d42d83a85ef21284b490307c225ad71",
+      "git_blob": "e1f3b0f794d406f97b4c58918fc3e06cdad38fdf"
+    },
+    {
+      "source": "native-validation-results/source51-bwrap-comparison-closed/repo-version-stderr.txt",
+      "destination": "native-comparison/repo-version-stderr.txt",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "closed diagnostic, not a Rust gate",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "source": "native-validation-results/source51-bwrap-comparison-closed/repo-version-stdout.txt",
+      "destination": "native-comparison/repo-version-stdout.txt",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "closed diagnostic, not a Rust gate",
+      "bytes": 27,
+      "sha256": "214d11e8b4e9feaaae36992fa6e67707f70319ff49f0b9b47da85c52bab7c53b",
+      "git_blob": "8f8400bdf5a776773c393cbdc7499c55f3baf096"
+    },
+    {
+      "source": "native-validation-results/source51-bwrap-comparison-closed/system-probe-intent.json",
+      "destination": "native-comparison/system-probe-intent.json",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "closed diagnostic, not a Rust gate",
+      "bytes": 624,
+      "sha256": "dc3d26773a99418f7471fc98e9f3595ce8f156ec85a31a3b4cb3bace685eaff9",
+      "git_blob": "603e6cd28a0203b06bb95d572d2c879b81f082da"
+    },
+    {
+      "source": "native-validation-results/source51-bwrap-comparison-closed/system-probe-raw-process-result.json",
+      "destination": "native-comparison/system-probe-raw-process-result.json",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "closed diagnostic, not a Rust gate",
+      "bytes": 393,
+      "sha256": "6878ea38f8e7a1226298cfb5b3b4ebb98f8b6dc3288a67c8b8c4352afd7b89a0",
+      "git_blob": "8432a162cccfbfdff752a744ab7e9dd4695eccea"
+    },
+    {
+      "source": "native-validation-results/source51-bwrap-comparison-closed/system-probe-receipt.json",
+      "destination": "native-comparison/system-probe-receipt.json",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "closed diagnostic, not a Rust gate",
+      "bytes": 634,
+      "sha256": "28442a2a1e6db62053cd5a470ee9b4adcc269f2271dc7fdb4b81df810214fea3",
+      "git_blob": "aa45abef6d429f523cd301905bd1a11555904259"
+    },
+    {
+      "source": "native-validation-results/source51-bwrap-comparison-closed/system-probe-stderr.txt",
+      "destination": "native-comparison/system-probe-stderr.txt",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "closed diagnostic, not a Rust gate",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "source": "native-validation-results/source51-bwrap-comparison-closed/system-probe-stdout.txt",
+      "destination": "native-comparison/system-probe-stdout.txt",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "closed diagnostic, not a Rust gate",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "source": "native-validation-results/source51-bwrap-comparison-closed/system-version-intent.json",
+      "destination": "native-comparison/system-version-intent.json",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "closed diagnostic, not a Rust gate",
+      "bytes": 546,
+      "sha256": "88aadf2fc12a34c990f52b470382dc4e4e38590bb57ad55860fcc1e70f668fec",
+      "git_blob": "4e57e2f866328a432f90633ce141a7db9abc5dec"
+    },
+    {
+      "source": "native-validation-results/source51-bwrap-comparison-closed/system-version-raw-process-result.json",
+      "destination": "native-comparison/system-version-raw-process-result.json",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "closed diagnostic, not a Rust gate",
+      "bytes": 317,
+      "sha256": "7fb11aaf8196e171eda73ccdd613e2343fb10ec68ebd1ab3e1c474b62a234b96",
+      "git_blob": "f8bd24eceff392a479509f7fa5ad2c0559a9890b"
+    },
+    {
+      "source": "native-validation-results/source51-bwrap-comparison-closed/system-version-receipt.json",
+      "destination": "native-comparison/system-version-receipt.json",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "closed diagnostic, not a Rust gate",
+      "bytes": 579,
+      "sha256": "3a8cf5f10c547ca07beee07a38c83f5d62fd74b72e003eefacac7f6c7d822b43",
+      "git_blob": "48d39d882a0c374bcb33d7be98378daaf5f435bc"
+    },
+    {
+      "source": "native-validation-results/source51-bwrap-comparison-closed/system-version-stderr.txt",
+      "destination": "native-comparison/system-version-stderr.txt",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "closed diagnostic, not a Rust gate",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "source": "native-validation-results/source51-bwrap-comparison-closed/system-version-stdout.txt",
+      "destination": "native-comparison/system-version-stdout.txt",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "closed diagnostic, not a Rust gate",
+      "bytes": 18,
+      "sha256": "3982b5c6efde838f903123b493520814ab1b56dfb7f35ac96af62ef443eb6acc",
+      "git_blob": "10e93cb849ff6343a9bf2dbc994bfc6a9915bc9c"
+    },
+    {
+      "source": "native-validation-results/source51-bwrap-comparison-closed/terminal-process-read.json",
+      "destination": "native-comparison/terminal-process-read.json",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "closed diagnostic, not a Rust gate",
+      "bytes": 12058,
+      "sha256": "30885bb986a8b311260150751812e1a09e00de607e8ac377e05134a0638e6782",
+      "git_blob": "fc5a08e62f90da5b67343f83f302a0dfd7258a00"
+    },
+    {
+      "source": "native-validation-results/source51-bwrap-comparison-closed/terminal-process-status.json",
+      "destination": "native-comparison/terminal-process-status.json",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "closed diagnostic, not a Rust gate",
+      "bytes": 731,
+      "sha256": "b89473e3162761adf039920332a82a7f42e7e4b7f8e083d10fbe00a4046242bd",
+      "git_blob": "e0e774b9c31dc8d1f1f2b7cc38ef05dc4f432778"
+    },
+    {
+      "source": "native-validation-results/source51-apply-closed/GIT-COMMAND-STREAMS-READBACK.json",
+      "destination": "native-apply/GIT-COMMAND-STREAMS-READBACK.json",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "closed source application only",
+      "bytes": 3103,
+      "sha256": "cc81b94e333157f5889dbb9e2a1b4098f802d6b757a1223afec6b03f991fe464",
+      "git_blob": "779b98208f120fe3689ded603b355e8482a7b6f0"
+    },
+    {
+      "source": "native-validation-results/source51-apply-closed/LOCAL-READBACK.json",
+      "destination": "native-apply/LOCAL-READBACK.json",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "closed source application only",
+      "bytes": 9259,
+      "sha256": "befe323d6068f855f654dceb49b5e51be0d6a0f1f38a5fbbe48be4f94d70468d",
+      "git_blob": "d7211e4f59d3875d11cace96883c46071c0e99f2"
+    },
+    {
+      "source": "native-validation-results/source51-apply-closed/controller/final-runner-file-info.json",
+      "destination": "native-apply/controller/final-runner-file-info.json",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "closed source application only",
+      "bytes": 458,
+      "sha256": "98ac52d77676c316457e37d06797f882170876399acfcaaf3453e9528ddadb5d",
+      "git_blob": "a7dbd56e4d5774f1632d1d9890c4050ecece4267"
+    },
+    {
+      "source": "native-validation-results/source51-apply-closed/controller/final-runner-upload-original.json",
+      "destination": "native-apply/controller/final-runner-upload-original.json",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "closed source application only",
+      "bytes": 190,
+      "sha256": "22d6ffee7440a13099a6946689ec6d638818971263b4fa2298f42dc5f87cdb8a",
+      "git_blob": "2985996db12175592fa99c4087002dc5c47fc98b"
+    },
+    {
+      "source": "native-validation-results/source51-apply-closed/controller/input-upload-original.json",
+      "destination": "native-apply/controller/input-upload-original.json",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "closed source application only",
+      "bytes": 190,
+      "sha256": "89bfbe5c944904b742a8ec55b7067a4c9f1609db409cbf5108542d2277626cfb",
+      "git_blob": "a82cf360730288060dd6256c4583fe4c3c06e08e"
+    },
+    {
+      "source": "native-validation-results/source51-apply-closed/controller/original-command.txt",
+      "destination": "native-apply/controller/original-command.txt",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "closed source application only",
+      "bytes": 542,
+      "sha256": "931b2a1a255f221b1ac08876b153e8c24acc682da848c0005f7a820c8ef86b46",
+      "git_blob": "48ce139655beb34340c970feed5c03af1918ff41"
+    },
+    {
+      "source": "native-validation-results/source51-apply-closed/controller/original-launch.json",
+      "destination": "native-apply/controller/original-launch.json",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "closed source application only",
+      "bytes": 1565,
+      "sha256": "9ff66fe85f2a2d38c9af00c1726644f0c9d2f965353ec0862adf92989f87aa01",
+      "git_blob": "bf9fb97eea7b36158b1b92d1c50c2b21814ef1b8"
+    },
+    {
+      "source": "native-validation-results/source51-apply-closed/controller/original-process-read.json",
+      "destination": "native-apply/controller/original-process-read.json",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "closed source application only",
+      "bytes": 983,
+      "sha256": "abea5835562c55f3f6a862f93cd3848890864600236a7eaae0d3ed0acd5a6584",
+      "git_blob": "fba6ebe97064ec01ec2373290b49ac4a06f2fd3f"
+    },
+    {
+      "source": "native-validation-results/source51-apply-closed/controller/terminal-process-status.json",
+      "destination": "native-apply/controller/terminal-process-status.json",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "closed source application only",
+      "bytes": 729,
+      "sha256": "643fcba8ca0fd15bbff9afe41bbb3c16cd767a4ab70fce27f929d31921c0b1bf",
+      "git_blob": "7ea604acdf470c87e43c118a539747ee765f8696"
+    },
+    {
+      "source": "native-validation-results/source51-apply-closed/controller/terminal-upload-original.json",
+      "destination": "native-apply/controller/terminal-upload-original.json",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "closed source application only",
+      "bytes": 184,
+      "sha256": "412cb80bc4a1d031598daf2735293804eec57c282883d4612d117f63246ce3da",
+      "git_blob": "aae0cedcd8ad0b71de435f2e264fe7ce945e7093"
+    },
+    {
+      "source": "native-validation-results/source51-apply-closed/original/native-candidate-r26-source.json",
+      "destination": "native-apply/original/native-candidate-r26-source.json",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "closed source application only",
+      "bytes": 55418,
+      "sha256": "74b7a35a77019ec90e42ec33dc0e81bbdbaca585541a028d57fffbe77c69a41a",
+      "git_blob": "09ad6990ac2eeec1eb7d21689eef7733a531f75b"
+    },
+    {
+      "source": "native-validation-results/source51-apply-closed/original/native-source51-apply/actual-source50-to-source51.patch",
+      "destination": "native-apply/original/native-source51-apply/actual-source50-to-source51.patch",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "closed source application only",
+      "bytes": 1396,
+      "sha256": "86a1e4d42601ce866639b30e91566791237724eb39ef31422820bfb664bbf753",
+      "git_blob": "2e6c9849538b5288d09c0797c02656141ac5c61b"
+    },
+    {
+      "source": "native-validation-results/source51-apply-closed/original/native-source51-apply/apply-check-raw-process-result.json",
+      "destination": "native-apply/original/native-source51-apply/apply-check-raw-process-result.json",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "closed source application only",
+      "bytes": 455,
+      "sha256": "dc8cd3b81aaa6bee29f70ab38f56c980377e3b5ede06bdd656cc5904aa452f7d",
+      "git_blob": "4ca2a1b37f0e200339f0eec557003d2b0a2f2f5d"
+    },
+    {
+      "source": "native-validation-results/source51-apply-closed/original/native-source51-apply/apply-check-receipt.json",
+      "destination": "native-apply/original/native-source51-apply/apply-check-receipt.json",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "closed source application only",
+      "bytes": 807,
+      "sha256": "cd2e4e94479d68fe9c55905bbacecd0b7479144dc05c7bc6caa622c49ab64d4c",
+      "git_blob": "4fccc1b6532f080ccea96ac51bef136c9067285b"
+    },
+    {
+      "source": "native-validation-results/source51-apply-closed/original/native-source51-apply/apply-check-started.json",
+      "destination": "native-apply/original/native-source51-apply/apply-check-started.json",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "closed source application only",
+      "bytes": 270,
+      "sha256": "3ebef9eb93e79160614e7cc1bcf38e54f427dea410844d8c7284a67042780ebb",
+      "git_blob": "d8f290632ceabb03a609914e325bf1db8fc2f2d8"
+    },
+    {
+      "source": "native-validation-results/source51-apply-closed/original/native-source51-apply/apply-check-stderr.log",
+      "destination": "native-apply/original/native-source51-apply/apply-check-stderr.log",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "closed source application only",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "source": "native-validation-results/source51-apply-closed/original/native-source51-apply/apply-check-stdout.log",
+      "destination": "native-apply/original/native-source51-apply/apply-check-stdout.log",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "closed source application only",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "source": "native-validation-results/source51-apply-closed/original/native-source51-apply/apply-raw-process-result.json",
+      "destination": "native-apply/original/native-source51-apply/apply-raw-process-result.json",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "closed source application only",
+      "bytes": 440,
+      "sha256": "505a76ae1f837e26d3907c567f72e039cf86377865ff18aa44a054f11d629dd9",
+      "git_blob": "1cf9addbd0dd0d1e34f40d7765452b618ced8f35"
+    },
+    {
+      "source": "native-validation-results/source51-apply-closed/original/native-source51-apply/apply-receipt.json",
+      "destination": "native-apply/original/native-source51-apply/apply-receipt.json",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "closed source application only",
+      "bytes": 792,
+      "sha256": "1c7ef24d3928d0a602b64bdcf9f4d067d72141541aec43da6d5af4a72562e9a5",
+      "git_blob": "d2cc84e5076ba3045e40d482a8b088d4e2742854"
+    },
+    {
+      "source": "native-validation-results/source51-apply-closed/original/native-source51-apply/apply-started.json",
+      "destination": "native-apply/original/native-source51-apply/apply-started.json",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "closed source application only",
+      "bytes": 255,
+      "sha256": "cb39826020d294a6530868d57eba35ff0755040751930cf081cf421aa48c24c0",
+      "git_blob": "b7eaeffe144a423db436914c47f709368cda28e3"
+    },
+    {
+      "source": "native-validation-results/source51-apply-closed/original/native-source51-apply/apply-stderr.log",
+      "destination": "native-apply/original/native-source51-apply/apply-stderr.log",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "closed source application only",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "source": "native-validation-results/source51-apply-closed/original/native-source51-apply/apply-stdout.log",
+      "destination": "native-apply/original/native-source51-apply/apply-stdout.log",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "closed source application only",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "source": "native-validation-results/source51-apply-closed/original/native-source51-apply/complete.json",
+      "destination": "native-apply/original/native-source51-apply/complete.json",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "closed source application only",
+      "bytes": 1898,
+      "sha256": "9e295dd805964c19f283a8a43c803844ee0470f7105d67fa01dc4b7f2e81f3ff",
+      "git_blob": "081141875674403f84575bfbb7980c1ec6fb4ab4"
+    },
+    {
+      "source": "native-validation-results/source51-apply-closed/original/native-source51-apply/immediately-before-apply-source-guard.json",
+      "destination": "native-apply/original/native-source51-apply/immediately-before-apply-source-guard.json",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "closed source application only",
+      "bytes": 11705,
+      "sha256": "92723ebc1020da9fb37209f85255cbede92f6fb38d210b0322ed80ab66eaec41",
+      "git_blob": "5f8c2b18f9b20a8ca66f6f9c45c54032e2c24cc0"
+    },
+    {
+      "source": "native-validation-results/source51-apply-closed/original/native-source51-apply/input/delta-manifest.json",
+      "destination": "native-apply/original/native-source51-apply/input/delta-manifest.json",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "closed source application only",
+      "bytes": 1583,
+      "sha256": "b0a7085b6731978cea2614ff9660c2b47e9c0a0ac5228c5b96694c62ba56a74d",
+      "git_blob": "cc51d64769a0d0664f9d1f46ee6e8a1e57307e14"
+    },
+    {
+      "source": "native-validation-results/source51-apply-closed/original/native-source51-apply/input-validation.json",
+      "destination": "native-apply/original/native-source51-apply/input-validation.json",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "closed source application only",
+      "bytes": 896,
+      "sha256": "07a75e6a7c58370d07d303bdb42ad5f5ecbb527a447e1ce5d4b34f9c8cfc8805",
+      "git_blob": "d5cdb31a748a75499447465a7b87fae590191cf4"
+    },
+    {
+      "source": "native-validation-results/source51-apply-closed/original/native-source51-apply/post-apply-source-guard.json",
+      "destination": "native-apply/original/native-source51-apply/post-apply-source-guard.json",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "closed source application only",
+      "bytes": 11970,
+      "sha256": "82795155856d7a1f7db3e35db53b3e7d32f7adf080cd00cf90200dcc68fade15",
+      "git_blob": "cea11a9b4278aa615291ec8a669c9bebb2afad9e"
+    },
+    {
+      "source": "native-validation-results/source51-apply-closed/original/native-source51-apply/pre-apply-source-guard.json",
+      "destination": "native-apply/original/native-source51-apply/pre-apply-source-guard.json",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "closed source application only",
+      "bytes": 11705,
+      "sha256": "92723ebc1020da9fb37209f85255cbede92f6fb38d210b0322ed80ab66eaec41",
+      "git_blob": "5f8c2b18f9b20a8ca66f6f9c45c54032e2c24cc0"
+    },
+    {
+      "source": "native-validation-results/source51-apply-closed/original/native-source51-apply/prestage-source-guard.json",
+      "destination": "native-apply/original/native-source51-apply/prestage-source-guard.json",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "closed source application only",
+      "bytes": 483,
+      "sha256": "14da7e6c82ab8a78102214386bddc01601c2c446a631be76e65313564b70180d",
+      "git_blob": "5b37c1878f35cccfaf48ba91cb01f749c04a3dc0"
+    },
+    {
+      "source": "native-validation-results/source51-apply-closed/original/native-source51-apply/stage-exact-paths-raw-process-result.json",
+      "destination": "native-apply/original/native-source51-apply/stage-exact-paths-raw-process-result.json",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "closed source application only",
+      "bytes": 444,
+      "sha256": "f6eed130eef6b471d01487874a485f8d7b6d91760aec0372ef6c0167496ca6fa",
+      "git_blob": "caae5c8613ad18e203e9d695be5700ef6d1d6a21"
+    },
+    {
+      "source": "native-validation-results/source51-apply-closed/original/native-source51-apply/stage-exact-paths-receipt.json",
+      "destination": "native-apply/original/native-source51-apply/stage-exact-paths-receipt.json",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "closed source application only",
+      "bytes": 796,
+      "sha256": "8136d4f6c388859fd3622ad594427c9263943508d13ded6501d269f3fd361643",
+      "git_blob": "d287a0cc78d2c9ed3199eb49bbd8cd4998bee80a"
+    },
+    {
+      "source": "native-validation-results/source51-apply-closed/original/native-source51-apply/stage-exact-paths-started.json",
+      "destination": "native-apply/original/native-source51-apply/stage-exact-paths-started.json",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "closed source application only",
+      "bytes": 260,
+      "sha256": "f4430a9f4916c9378ae4df9f7e331996ce8878b823fd024723ae7a8e13e73840",
+      "git_blob": "e6bab19c0938dc0cb0b63a293d2502f6184667b9"
+    },
+    {
+      "source": "native-validation-results/source51-apply-closed/original/native-source51-apply/stage-exact-paths-stderr.log",
+      "destination": "native-apply/original/native-source51-apply/stage-exact-paths-stderr.log",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "closed source application only",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "source": "native-validation-results/source51-apply-closed/original/native-source51-apply/stage-exact-paths-stdout.log",
+      "destination": "native-apply/original/native-source51-apply/stage-exact-paths-stdout.log",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "closed source application only",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "source": "source51-preparation/CANDIDATE-INPUT-MAPPING.json",
+      "destination": "registration/CANDIDATE-INPUT-MAPPING.json",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "historical preparation plus actual registration and root authorizations",
+      "bytes": 2990,
+      "sha256": "4b5eeed6b86e46299a9920f58eafaefcc2231ea4da169d7bc32c079c9f1e9b17",
+      "git_blob": "bef9e0d2340e9208068043d37be552db2a4cce99"
+    },
+    {
+      "source": "source51-preparation/CREATED-COMMIT-API-ORIGINAL.json",
+      "destination": "registration/CREATED-COMMIT-API-ORIGINAL.json",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "historical preparation plus actual registration and root authorizations",
+      "bytes": 1747,
+      "sha256": "9367a85d429750157b21109ecc39d544e3af20341af059f0633b1f4570ea231e",
+      "git_blob": "687ac238fe6e86d59ed815bc65f1ecbbd5fa2729"
+    },
+    {
+      "source": "source51-preparation/HANDOFF-MANIFEST.json",
+      "destination": "registration/HANDOFF-MANIFEST.json",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "historical preparation plus actual registration and root authorizations",
+      "bytes": 7289,
+      "sha256": "960504c1368aef8ebca4dc8d0e10a0becb26183b1d0369257f36fade1a215e90",
+      "git_blob": "5a3c7503a928fe323e7a5581ce43d6042d7e5c0f"
+    },
+    {
+      "source": "source51-preparation/PLAN.json",
+      "destination": "registration/PLAN.json",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "historical preparation plus actual registration and root authorizations",
+      "bytes": 3293,
+      "sha256": "fa84e65fa7e1b97f4fe7d7283a4b91833be57753279d1d7cdf30c88b60045bb9",
+      "git_blob": "5dbd9c4b39a4cb9c19e75ef6189c9c3bb43e7ee0"
+    },
+    {
+      "source": "source51-preparation/ROOT-APPLY-BINDINGS.json",
+      "destination": "registration/ROOT-APPLY-BINDINGS.json",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "historical preparation plus actual registration and root authorizations",
+      "bytes": 1705,
+      "sha256": "54374df9f016f8a745935f065320736bee57cd95c883ff93c5de60ced41e977b",
+      "git_blob": "04c21a7372221b084a260f2a88e863b1d2473df7"
+    },
+    {
+      "source": "source51-preparation/ROOT-APPLY-INPUT-FREEZE.json",
+      "destination": "registration/ROOT-APPLY-INPUT-FREEZE.json",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "historical preparation plus actual registration and root authorizations",
+      "bytes": 3462,
+      "sha256": "fe70d3c5d20db12f7ee97ace62ee01bf8d083400e95e73dd4862b4f979bac0d9",
+      "git_blob": "73e2442e224d40850e076f6afb06eafd04f32c4e"
+    },
+    {
+      "source": "source51-preparation/ROOT-APPLY-LAUNCH-AUTHORIZATION.json",
+      "destination": "registration/ROOT-APPLY-LAUNCH-AUTHORIZATION.json",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "historical preparation plus actual registration and root authorizations",
+      "bytes": 2377,
+      "sha256": "ec8aa086d24072b0f2a9c02b8e2fbb2906724f5be3289e83039af3d404c1689a",
+      "git_blob": "969650eeefa9fecf2d3aeda59cb5891135224760"
+    },
+    {
+      "source": "source51-preparation/ROOT-APPROVED-APPLY.py",
+      "destination": "registration/ROOT-APPROVED-APPLY.py",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "historical preparation plus actual registration and root authorizations",
+      "bytes": 29384,
+      "sha256": "4e436858cd5b42b83d7d7159d2c5d075842f4008d124086ae800e15d83814ca0",
+      "git_blob": "5e2e42b67cfa58a1a381ccb34041e2c35c3700a2"
+    },
+    {
+      "source": "source51-preparation/ROOT-APPROVED-R26.py",
+      "destination": "registration/ROOT-APPROVED-R26.py",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "historical preparation plus actual registration and root authorizations",
+      "bytes": 46796,
+      "sha256": "c46f22be2c4b71004dc086870eaf5a69efed0ee32cde47cf33a2ef818f168396",
+      "git_blob": "7c946b313cfbc9d6e884b9b8216150fdc15e6040"
+    },
+    {
+      "source": "source51-preparation/ROOT-INDEPENDENT-READBACK.json",
+      "destination": "registration/ROOT-INDEPENDENT-READBACK.json",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "historical preparation plus actual registration and root authorizations",
+      "bytes": 3103,
+      "sha256": "bc3123852906da0361a19723ea0b652b0756c944f3b5db7fa0b41bfab601b04f",
+      "git_blob": "05a1a30d7f7d8051b6d9c29345c13a4bb69850d8"
+    },
+    {
+      "source": "source51-preparation/ROOT-R26-LAUNCH-AUTHORIZATION.json",
+      "destination": "registration/ROOT-R26-LAUNCH-AUTHORIZATION.json",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "historical preparation plus actual registration and root authorizations",
+      "bytes": 2668,
+      "sha256": "02f4834ed65c6ac86659da7910c245226326ee5b0a1037c37147688e0d3de1d7",
+      "git_blob": "796f194490dfd184c13ce918acc70bcfde249469"
+    },
+    {
+      "source": "source51-preparation/TREE-AND-PATCH-READBACK.json",
+      "destination": "registration/TREE-AND-PATCH-READBACK.json",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "historical preparation plus actual registration and root authorizations",
+      "bytes": 2519,
+      "sha256": "569a096fcf08a78c851098a05e555dce93b8d931a40468e9f8251b0bc458159d",
+      "git_blob": "d828d88ac04c686ed0c49f29a8b0715832dc2fdf"
+    },
+    {
+      "source": "source51-preparation/build_preparation.py",
+      "destination": "registration/build_preparation.py",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "historical preparation plus actual registration and root authorizations",
+      "bytes": 17725,
+      "sha256": "e952354475f62e8bc5eead31281eb290dc806aced5a5c83412fa511cc792aee0",
+      "git_blob": "48710e661617b733bddade780791d12c6ada4c3f"
+    },
+    {
+      "source": "source51-preparation/candidate-source-manifest.json",
+      "destination": "registration/candidate-source-manifest.json",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "historical preparation plus actual registration and root authorizations",
+      "bytes": 55167,
+      "sha256": "52448f9b066a9ed4ab73876e1d7b6c88d5b23234ea42d9bc02a87ab32d1da6be",
+      "git_blob": "c32b5e23b7a61f34af8efaae7b0606ef3dc732d9"
+    },
+    {
+      "source": "source51-preparation/combined.patch",
+      "destination": "registration/combined.patch",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "historical preparation plus actual registration and root authorizations",
+      "bytes": 1083,
+      "sha256": "55181ee269a2f06d83a04d4326d22f0ebe5e08a3ba387e5691e79f987b3d8d29",
+      "git_blob": "3600118628e4f98de2a90e0be43e650790ca9fdb"
+    },
+    {
+      "source": "source51-preparation/derived-trees/codex.json",
+      "destination": "registration/derived-trees/codex.json",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "historical preparation plus actual registration and root authorizations",
+      "bytes": 24868,
+      "sha256": "a2f9110a9352f9d1b3ff2dc86b9179a18b280ff2f519306caeed381cd937f532",
+      "git_blob": "8b9bd269cd17edaf288bfcb0b512bd57efa3854f"
+    },
+    {
+      "source": "source51-preparation/derived-trees/exec.json",
+      "destination": "registration/derived-trees/exec.json",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "historical preparation plus actual registration and root authorizations",
+      "bytes": 1524,
+      "sha256": "69fd8f007bbbd25561b825c5b280e7e5ac1d84c7b904dd7dfc8da3474a1711bc",
+      "git_blob": "1cd8763f8ac865de79668da5a632e0cbff5cb988"
+    },
+    {
+      "source": "source51-preparation/derived-trees/exec_common.json",
+      "destination": "registration/derived-trees/exec_common.json",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "historical preparation plus actual registration and root authorizations",
+      "bytes": 1132,
+      "sha256": "d04eccca528cdc49878c384597a634c957db45eaa8c43ff7935113e392e6c59c",
+      "git_blob": "ac6b5eb092af237627595e9552183a728a2d9275"
+    },
+    {
+      "source": "source51-preparation/derived-trees/exec_tests.json",
+      "destination": "registration/derived-trees/exec_tests.json",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "historical preparation plus actual registration and root authorizations",
+      "bytes": 4266,
+      "sha256": "fb840cca85912b127ac04f25c6819abf50215f777b24c12b43b94ae7adc89324",
+      "git_blob": "7b72630138a0b719adcc8677d11a544576a8c262"
+    },
+    {
+      "source": "source51-preparation/derived-trees/network.json",
+      "destination": "registration/derived-trees/network.json",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "historical preparation plus actual registration and root authorizations",
+      "bytes": 1241,
+      "sha256": "bfbf50a3199032e109323862dc1575294633e1a9ac5e1e6ba4479bee0aee1bf7",
+      "git_blob": "0c0d23481cba0228529e16b54de5ee0470345e3d"
+    },
+    {
+      "source": "source51-preparation/derived-trees/network_src.json",
+      "destination": "registration/derived-trees/network_src.json",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "historical preparation plus actual registration and root authorizations",
+      "bytes": 6068,
+      "sha256": "006496380980a4497c807e3a797a3321d6776a164b883e004611a95ba0d98ffc",
+      "git_blob": "4d47e88c640db7fc8bd0c5c3e8865d1cce35b039"
+    },
+    {
+      "source": "source51-preparation/derived-trees/root.json",
+      "destination": "registration/derived-trees/root.json",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "historical preparation plus actual registration and root authorizations",
+      "bytes": 8013,
+      "sha256": "7d5f1a3f728d01ab83c56eb98924e4c15c5882e0626f3d635c51054e66bc9b72",
+      "git_blob": "5ee701a5cf2be0ce96186b1a29bb46c5e1f8a731"
+    },
+    {
+      "source": "source51-preparation/input/GIT-TREE-QUERIES.json",
+      "destination": "registration/input/GIT-TREE-QUERIES.json",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "historical preparation plus actual registration and root authorizations",
+      "bytes": 5000,
+      "sha256": "8159eb74b91af8c06ec194659c7e1ec1fd71fee98bb0ea887ecf775a69874356",
+      "git_blob": "b7564a98bc1a4d1c4a2ae0a03cb563ddcf4b67d6"
+    },
+    {
+      "source": "source51-preparation/input/exec-server-candidate-HANDOFF.json",
+      "destination": "registration/input/exec-server-candidate-HANDOFF.json",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "historical preparation plus actual registration and root authorizations",
+      "bytes": 17119,
+      "sha256": "4fbf019c6434b256c72f303d3c34312292d97b63c03a1d25f73e3668210eb4fb",
+      "git_blob": "c30847bb3628f74572e6cc3408e9959d241e6076"
+    },
+    {
+      "source": "source51-preparation/input/exec-server-candidate-audit.json",
+      "destination": "registration/input/exec-server-candidate-audit.json",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "historical preparation plus actual registration and root authorizations",
+      "bytes": 4919,
+      "sha256": "67cad6020cceb7815056859c16c2ab1b4a20b967c4d0016c153b1e61cd12efb6",
+      "git_blob": "2a4872edd0bb6a306507c6883fbd8bbe78954726"
+    },
+    {
+      "source": "source51-preparation/input/exec-server-probe-independent-readback.json",
+      "destination": "registration/input/exec-server-probe-independent-readback.json",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "historical preparation plus actual registration and root authorizations",
+      "bytes": 16817,
+      "sha256": "d22d2515d9e98b66902a8782d6f997004e12d02890997e2b42707afe945e83ca",
+      "git_blob": "166c8723dac23eef6570832ac8f73ade19cc1b1c"
+    },
+    {
+      "source": "source51-preparation/input/network-candidate-readback.json",
+      "destination": "registration/input/network-candidate-readback.json",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "historical preparation plus actual registration and root authorizations",
+      "bytes": 2830,
+      "sha256": "19de5b64c3fa2d4a345b29e01d70f35d405a06a78d4e260dbdaa4d5257f8cb9d",
+      "git_blob": "5d581cd49325518151b7efd70290bf07fbd8b654"
+    },
+    {
+      "source": "source51-preparation/input/original-trees/codex.json",
+      "destination": "registration/input/original-trees/codex.json",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "historical preparation plus actual registration and root authorizations",
+      "bytes": 38696,
+      "sha256": "f0dd58a9652399dd469fa0eb755b760d1580c8f275f78981e11ca9d0ca8da987",
+      "git_blob": "28d24659ba7793832bd515258b276dd00d7a12f8"
+    },
+    {
+      "source": "source51-preparation/input/original-trees/exec.json",
+      "destination": "registration/input/original-trees/exec.json",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "historical preparation plus actual registration and root authorizations",
+      "bytes": 1829,
+      "sha256": "bf13dfe8f5bfdb3054481484262af07f0edbbf78eee2cfe21838f6e9dc81f0c9",
+      "git_blob": "a81feafe33d637d0a36ab7a6abad68d7a4eee650"
+    },
+    {
+      "source": "source51-preparation/input/original-trees/exec_common.json",
+      "destination": "registration/input/original-trees/exec_common.json",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "historical preparation plus actual registration and root authorizations",
+      "bytes": 1172,
+      "sha256": "2cb5a442595cf54350262cbc1d0286cfdc58dd9700dc4a9d60d44142f6479282",
+      "git_blob": "e444fc777a7357c90c1fb94cfa529a6888ec952b"
+    },
+    {
+      "source": "source51-preparation/input/original-trees/exec_tests.json",
+      "destination": "registration/input/original-trees/exec_tests.json",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "historical preparation plus actual registration and root authorizations",
+      "bytes": 6340,
+      "sha256": "e41b53de986890b781fe7b202552bed2567ab3d881f5491a28fc86a53f68b187",
+      "git_blob": "e2249e4420af619b6b7c8352fb4b5d3289285c26"
+    },
+    {
+      "source": "source51-preparation/input/original-trees/network.json",
+      "destination": "registration/input/original-trees/network.json",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "historical preparation plus actual registration and root authorizations",
+      "bytes": 1373,
+      "sha256": "b6302d254248daa97a869aae6e87f011576a3a9cc0f61921f09a4fff61cb6531",
+      "git_blob": "a125ce20960856108b3c9e1d55cddd322c9d6ed4"
+    },
+    {
+      "source": "source51-preparation/input/original-trees/network_src.json",
+      "destination": "registration/input/original-trees/network_src.json",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "historical preparation plus actual registration and root authorizations",
+      "bytes": 9338,
+      "sha256": "67ccd64ad0d6cc7eadf927ffc6810485ebfa14bead7b4670185ef342193a6b7f",
+      "git_blob": "14cd3678f072e4f825a42837978d74e4c79cf3e6"
+    },
+    {
+      "source": "source51-preparation/input/original-trees/root.json",
+      "destination": "registration/input/original-trees/root.json",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "historical preparation plus actual registration and root authorizations",
+      "bytes": 12554,
+      "sha256": "0d3c9a9e9297ef12645e81e50d1f5ff50fcdbe8ca01162d268b2381da90eccf6",
+      "git_blob": "98b968eaa24c6ecb5b68bc2e75d7a4fe913b2f06"
+    },
+    {
+      "source": "source51-preparation/input/source50-actual-manifest.json",
+      "destination": "registration/input/source50-actual-manifest.json",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "historical preparation plus actual registration and root authorizations",
+      "bytes": 53832,
+      "sha256": "ba7515c75980451e0b2514bce338b0ada8847daeef5ace5deacf45ca02e940c0",
+      "git_blob": "2b6988709adfd80084a846688453ceafd3f4accf"
+    },
+    {
+      "source": "source51-preparation/native-candidate-r26-source.json",
+      "destination": "native-apply/original/native-candidate-r26-source.json",
+      "encoding": "identity",
+      "deduplicated_large_copy": true,
+      "stage": "historical preparation plus actual registration and root authorizations",
+      "bytes": 55418,
+      "sha256": "74b7a35a77019ec90e42ec33dc0e81bbdbaca585541a028d57fffbe77c69a41a",
+      "git_blob": "09ad6990ac2eeec1eb7d21689eef7733a531f75b"
+    },
+    {
+      "source": "source51-preparation/original/codex-rs/exec-server/tests/common/fake_bwrap.rs",
+      "destination": "registration/original/codex-rs/exec-server/tests/common/fake_bwrap.rs",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "historical preparation plus actual registration and root authorizations",
+      "bytes": 1635,
+      "sha256": "ae37954afd591c387652cd8ea036a15f461dbad48946274bbca57be4bd1648de",
+      "git_blob": "cc79362f7a8a3a44b0a93949d18494281511ec7b"
+    },
+    {
+      "source": "source51-preparation/original/codex-rs/network-proxy/src/http_proxy.rs",
+      "destination": "registration/original/codex-rs/network-proxy/src/http_proxy.rs",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "historical preparation plus actual registration and root authorizations",
+      "bytes": 69053,
+      "sha256": "7500b8820d7894da45ed4f444aca28573f1e5f9462f94c97ccb19019a0f6b430",
+      "git_blob": "50135c6cd4c426c3ec16d65d448c01a1fb776ddd"
+    },
+    {
+      "source": "source51-preparation/publication-ledger-before-source51.json",
+      "destination": "registration/publication-ledger-before-source51.json",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "historical preparation plus actual registration and root authorizations",
+      "bytes": 41815,
+      "sha256": "18c5f1fc2dd0662abad33c0c8d25dca53c252fcca3cb527d66e1013f26d72626",
+      "git_blob": "edb6d631182fcfd71d93d0c6926c93e66858bbff"
+    },
+    {
+      "source": "source51-preparation/publication-ledger-source51-ready.json",
+      "destination": "registration/publication-ledger-source51-ready.json",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "historical preparation plus actual registration and root authorizations",
+      "bytes": 43118,
+      "sha256": "2b817e35c094226de6e72e8ca6af1939585302d0ae4652dad7f4a02699571a23",
+      "git_blob": "ee78f0fd2645cecb637f53ec43686389cb68a211"
+    },
+    {
+      "source": "source51-preparation/source/codex-rs/exec-server/tests/common/fake_bwrap.rs",
+      "destination": "registration/source/codex-rs/exec-server/tests/common/fake_bwrap.rs",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "historical preparation plus actual registration and root authorizations",
+      "bytes": 1817,
+      "sha256": "83d3637f2648b967c70e2368c623fe0b84afe1cdf32860284d897923ad0dc1ca",
+      "git_blob": "e74489437549cf2c61075fd893945cd78e34247c"
+    },
+    {
+      "source": "source51-preparation/source/codex-rs/network-proxy/src/http_proxy.rs",
+      "destination": "registration/source/codex-rs/network-proxy/src/http_proxy.rs",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "historical preparation plus actual registration and root authorizations",
+      "bytes": 69092,
+      "sha256": "f8b6cb1adf67ea828efb29f68e10fd97a30e379574c93374c2a88f5364153967",
+      "git_blob": "17220a242091325aa66bd4cdb3419cd3a30b09ed"
+    },
+    {
+      "source": "source51-preparation/source51-apply-input.tar.gz",
+      "destination": "registration/source51-apply-input.tar.gz",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "historical preparation plus actual registration and root authorizations",
+      "bytes": 43449,
+      "sha256": "dc2f53ce98abf1e4d4c7172fd10fbf14815a1e33d26fda817932c60ed85b9357",
+      "git_blob": "09aa5469689cc2d0af5402b506997a3b77f188a4"
+    },
+    {
+      "source": "source51-preparation/source51-delta-manifest.json",
+      "destination": "registration/source51-delta-manifest.json",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "historical preparation plus actual registration and root authorizations",
+      "bytes": 1583,
+      "sha256": "b0a7085b6731978cea2614ff9660c2b47e9c0a0ac5228c5b96694c62ba56a74d",
+      "git_blob": "cc51d64769a0d0664f9d1f46ee6e8a1e57307e14"
+    },
+    {
+      "source": "exec-server-bwrap-r24-repair/CLOSURE-MAPPING.json",
+      "destination": "candidates/exec-helper/CLOSURE-MAPPING.json",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "frozen candidate, retained failure and diagnostic provenance",
+      "bytes": 961,
+      "sha256": "98eaffc9c90db83b0cf5303a1183c4c011454397d0e5703a0e3f3486befd19c8",
+      "git_blob": "280201b3a9fa0000be35517cc297e73b52be1106"
+    },
+    {
+      "source": "exec-server-bwrap-r24-repair/HANDOFF-MANIFEST.json",
+      "destination": "registration/input/exec-server-candidate-HANDOFF.json",
+      "encoding": "identity",
+      "deduplicated_large_copy": true,
+      "stage": "frozen candidate, retained failure and diagnostic provenance",
+      "bytes": 17119,
+      "sha256": "4fbf019c6434b256c72f303d3c34312292d97b63c03a1d25f73e3668210eb4fb",
+      "git_blob": "c30847bb3628f74572e6cc3408e9959d241e6076"
+    },
+    {
+      "source": "exec-server-bwrap-r24-repair/PROBE-INDEPENDENT-READBACK.json",
+      "destination": "registration/input/exec-server-probe-independent-readback.json",
+      "encoding": "identity",
+      "deduplicated_large_copy": true,
+      "stage": "frozen candidate, retained failure and diagnostic provenance",
+      "bytes": 16817,
+      "sha256": "d22d2515d9e98b66902a8782d6f997004e12d02890997e2b42707afe945e83ca",
+      "git_blob": "166c8723dac23eef6570832ac8f73ade19cc1b1c"
+    },
+    {
+      "source": "exec-server-bwrap-r24-repair/README.md",
+      "destination": "candidates/exec-helper/README.md",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "frozen candidate, retained failure and diagnostic provenance",
+      "bytes": 2615,
+      "sha256": "3bb1e9e3fa24054d5f8a0786edc9993b5ef900a917a9f3486f2172545895a16f",
+      "git_blob": "3a7c1e655188504a1d7a28c0e08e04d4ef730fdf"
+    },
+    {
+      "source": "exec-server-bwrap-r24-repair/STATIC-READBACK.json",
+      "destination": "candidates/exec-helper/STATIC-READBACK.json",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "frozen candidate, retained failure and diagnostic provenance",
+      "bytes": 6077,
+      "sha256": "9635b913b6c2541753e322351968c46de0e1841cd601152f6c4681763e7d6ed1",
+      "git_blob": "628dc91e84956628297c649a6e9ffc1b90eebed5"
+    },
+    {
+      "source": "exec-server-bwrap-r24-repair/build_static_readback.py",
+      "destination": "candidates/exec-helper/build_static_readback.py",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "frozen candidate, retained failure and diagnostic provenance",
+      "bytes": 10547,
+      "sha256": "66579f85a61c09dd816a8fcafe3d0f36ab77a5d308e66c52f56a8b9695fc1a61",
+      "git_blob": "4ef1c2542ee6d6b2408ce12fd2a9d9aa2511f716"
+    },
+    {
+      "source": "exec-server-bwrap-r24-repair/evidence/launcher-comparison/LOCAL-READBACK.json",
+      "destination": "candidates/exec-helper/evidence/launcher-comparison/LOCAL-READBACK.json",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "frozen candidate, retained failure and diagnostic provenance",
+      "bytes": 10490,
+      "sha256": "8937cac7daac507e031c98e76a2b4e1c00fb059dcb716f2d86496ba0400495ff",
+      "git_blob": "29818cf652bc8f06ffdf389fb2221976007422d3"
+    },
+    {
+      "source": "exec-server-bwrap-r24-repair/evidence/launcher-comparison/bwrap.rs.source.txt",
+      "destination": "candidates/exec-helper/evidence/launcher-comparison/bwrap.rs.source.txt",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "frozen candidate, retained failure and diagnostic provenance",
+      "bytes": 6734,
+      "sha256": "43abc86eb6a62689c6aa75dc27f6cd05101cab831b339d4e85e316c1c296d19c",
+      "git_blob": "633487136abe00065ee0f30707573ceb67b04e5b"
+    },
+    {
+      "source": "exec-server-bwrap-r24-repair/evidence/launcher-comparison/complete.json",
+      "destination": "candidates/exec-helper/evidence/launcher-comparison/complete.json",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "frozen candidate, retained failure and diagnostic provenance",
+      "bytes": 4745,
+      "sha256": "77f3622e0bf8dd7cc693fcf17d4a509859abc81f72b8613ec671a7a9eebd43d2",
+      "git_blob": "4602fd2c48edeebb5b30b8ae496412bc87f18f94"
+    },
+    {
+      "source": "exec-server-bwrap-r24-repair/evidence/launcher-comparison/fake_bwrap.rs.source.txt",
+      "destination": "candidates/exec-helper/evidence/launcher-comparison/fake_bwrap.rs.source.txt",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "frozen candidate, retained failure and diagnostic provenance",
+      "bytes": 1635,
+      "sha256": "ae37954afd591c387652cd8ea036a15f461dbad48946274bbca57be4bd1648de",
+      "git_blob": "cc79362f7a8a3a44b0a93949d18494281511ec7b"
+    },
+    {
+      "source": "exec-server-bwrap-r24-repair/evidence/launcher-comparison/original-command.txt",
+      "destination": "candidates/exec-helper/evidence/launcher-comparison/original-command.txt",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "frozen candidate, retained failure and diagnostic provenance",
+      "bytes": 6059,
+      "sha256": "f077fac9d5979554f2d9c64d6a5ed09410661876f98a826bc19bccf8c21d2927",
+      "git_blob": "da2d1e79e2b67e45cf907f4f0c898224ce798b39"
+    },
+    {
+      "source": "exec-server-bwrap-r24-repair/evidence/launcher-comparison/original-launch.json",
+      "destination": "candidates/exec-helper/evidence/launcher-comparison/original-launch.json",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "frozen candidate, retained failure and diagnostic provenance",
+      "bytes": 7152,
+      "sha256": "29d7a5f10e92e40757c8703acbc8c1058d5fde18c72f34fb579f14f3499c0295",
+      "git_blob": "499ecacd6e06c1f09621bc8098185aa45dff5e80"
+    },
+    {
+      "source": "exec-server-bwrap-r24-repair/evidence/launcher-comparison/preconditions.json",
+      "destination": "candidates/exec-helper/evidence/launcher-comparison/preconditions.json",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "frozen candidate, retained failure and diagnostic provenance",
+      "bytes": 3950,
+      "sha256": "0a2e32c7702af314a897ba67e7ba7cf33945d42fecd00ab2b5b5acace13f8011",
+      "git_blob": "bcfb0f8611625bc58a8232868abb61b3fbab7fe5"
+    },
+    {
+      "source": "exec-server-bwrap-r24-repair/evidence/launcher-comparison/repo-bwrap.d",
+      "destination": "candidates/exec-helper/evidence/launcher-comparison/repo-bwrap.d",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "frozen candidate, retained failure and diagnostic provenance",
+      "bytes": 623,
+      "sha256": "042edf2feee665ef33cd72c60e37e452e7865ae3194f988c875956d96a967233",
+      "git_blob": "ad12cba3e05ad451e11fc75487c9dba3ff33dbfd"
+    },
+    {
+      "source": "exec-server-bwrap-r24-repair/evidence/launcher-comparison/repo-probe-intent.json",
+      "destination": "candidates/exec-helper/evidence/launcher-comparison/repo-probe-intent.json",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "frozen candidate, retained failure and diagnostic provenance",
+      "bytes": 730,
+      "sha256": "a03ffbc53579d61fed5c01608df788fb25d48ccdb7aee975e718419e24d31e01",
+      "git_blob": "80f079805dba094934b38defd371c56e8bb939f3"
+    },
+    {
+      "source": "exec-server-bwrap-r24-repair/evidence/launcher-comparison/repo-probe-raw-process-result.json",
+      "destination": "candidates/exec-helper/evidence/launcher-comparison/repo-probe-raw-process-result.json",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "frozen candidate, retained failure and diagnostic provenance",
+      "bytes": 444,
+      "sha256": "c387251df949523a2e30a1c72e28bf4b13ff7f7760049b8c88d8b8285c0689c8",
+      "git_blob": "3900f20d635e9180e97618890ac658fece5c8901"
+    },
+    {
+      "source": "exec-server-bwrap-r24-repair/evidence/launcher-comparison/repo-probe-receipt.json",
+      "destination": "candidates/exec-helper/evidence/launcher-comparison/repo-probe-receipt.json",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "frozen candidate, retained failure and diagnostic provenance",
+      "bytes": 745,
+      "sha256": "6c004656294449339dbc2d069a6199a819d98e7336027400f219903243c3ec4d",
+      "git_blob": "8155c44ffb701924e10fda51615d22c61104ce73"
+    },
+    {
+      "source": "exec-server-bwrap-r24-repair/evidence/launcher-comparison/repo-probe-stderr.txt",
+      "destination": "candidates/exec-helper/evidence/launcher-comparison/repo-probe-stderr.txt",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "frozen candidate, retained failure and diagnostic provenance",
+      "bytes": 61,
+      "sha256": "ed3471f7900377f86150471417911309833a36d664cb5af7409e139103f67ddf",
+      "git_blob": "78d974bb32e69e6ff02b444e7bb35fde2886dbd6"
+    },
+    {
+      "source": "exec-server-bwrap-r24-repair/evidence/launcher-comparison/repo-probe-stdout.txt",
+      "destination": "candidates/exec-helper/evidence/launcher-comparison/repo-probe-stdout.txt",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "frozen candidate, retained failure and diagnostic provenance",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "source": "exec-server-bwrap-r24-repair/evidence/launcher-comparison/repo-version-intent.json",
+      "destination": "candidates/exec-helper/evidence/launcher-comparison/repo-version-intent.json",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "frozen candidate, retained failure and diagnostic provenance",
+      "bytes": 652,
+      "sha256": "91e8d373428a679e98908258a7ce0fa99b7797bff058c3836e1035a4ead19650",
+      "git_blob": "ace798cb2fac4c88c9e4017ad49b8431ea4814d2"
+    },
+    {
+      "source": "exec-server-bwrap-r24-repair/evidence/launcher-comparison/repo-version-raw-process-result.json",
+      "destination": "candidates/exec-helper/evidence/launcher-comparison/repo-version-raw-process-result.json",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "frozen candidate, retained failure and diagnostic provenance",
+      "bytes": 367,
+      "sha256": "dccc164ede018d3eb559fd4748ce3f3d16c44372087185f54725969727c0ef32",
+      "git_blob": "d3c3049f9235425aa6b0c29b8605bddf5d146357"
+    },
+    {
+      "source": "exec-server-bwrap-r24-repair/evidence/launcher-comparison/repo-version-receipt.json",
+      "destination": "candidates/exec-helper/evidence/launcher-comparison/repo-version-receipt.json",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "frozen candidate, retained failure and diagnostic provenance",
+      "bytes": 636,
+      "sha256": "805e1e965a9fe685ccbdaa4331dfc6c68d42d83a85ef21284b490307c225ad71",
+      "git_blob": "e1f3b0f794d406f97b4c58918fc3e06cdad38fdf"
+    },
+    {
+      "source": "exec-server-bwrap-r24-repair/evidence/launcher-comparison/repo-version-stderr.txt",
+      "destination": "candidates/exec-helper/evidence/launcher-comparison/repo-version-stderr.txt",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "frozen candidate, retained failure and diagnostic provenance",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "source": "exec-server-bwrap-r24-repair/evidence/launcher-comparison/repo-version-stdout.txt",
+      "destination": "candidates/exec-helper/evidence/launcher-comparison/repo-version-stdout.txt",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "frozen candidate, retained failure and diagnostic provenance",
+      "bytes": 27,
+      "sha256": "214d11e8b4e9feaaae36992fa6e67707f70319ff49f0b9b47da85c52bab7c53b",
+      "git_blob": "8f8400bdf5a776773c393cbdc7499c55f3baf096"
+    },
+    {
+      "source": "exec-server-bwrap-r24-repair/evidence/launcher-comparison/system-probe-intent.json",
+      "destination": "candidates/exec-helper/evidence/launcher-comparison/system-probe-intent.json",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "frozen candidate, retained failure and diagnostic provenance",
+      "bytes": 624,
+      "sha256": "dc3d26773a99418f7471fc98e9f3595ce8f156ec85a31a3b4cb3bace685eaff9",
+      "git_blob": "603e6cd28a0203b06bb95d572d2c879b81f082da"
+    },
+    {
+      "source": "exec-server-bwrap-r24-repair/evidence/launcher-comparison/system-probe-raw-process-result.json",
+      "destination": "candidates/exec-helper/evidence/launcher-comparison/system-probe-raw-process-result.json",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "frozen candidate, retained failure and diagnostic provenance",
+      "bytes": 393,
+      "sha256": "6878ea38f8e7a1226298cfb5b3b4ebb98f8b6dc3288a67c8b8c4352afd7b89a0",
+      "git_blob": "8432a162cccfbfdff752a744ab7e9dd4695eccea"
+    },
+    {
+      "source": "exec-server-bwrap-r24-repair/evidence/launcher-comparison/system-probe-receipt.json",
+      "destination": "candidates/exec-helper/evidence/launcher-comparison/system-probe-receipt.json",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "frozen candidate, retained failure and diagnostic provenance",
+      "bytes": 634,
+      "sha256": "28442a2a1e6db62053cd5a470ee9b4adcc269f2271dc7fdb4b81df810214fea3",
+      "git_blob": "aa45abef6d429f523cd301905bd1a11555904259"
+    },
+    {
+      "source": "exec-server-bwrap-r24-repair/evidence/launcher-comparison/system-probe-stderr.txt",
+      "destination": "candidates/exec-helper/evidence/launcher-comparison/system-probe-stderr.txt",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "frozen candidate, retained failure and diagnostic provenance",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "source": "exec-server-bwrap-r24-repair/evidence/launcher-comparison/system-probe-stdout.txt",
+      "destination": "candidates/exec-helper/evidence/launcher-comparison/system-probe-stdout.txt",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "frozen candidate, retained failure and diagnostic provenance",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "source": "exec-server-bwrap-r24-repair/evidence/launcher-comparison/system-version-intent.json",
+      "destination": "candidates/exec-helper/evidence/launcher-comparison/system-version-intent.json",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "frozen candidate, retained failure and diagnostic provenance",
+      "bytes": 546,
+      "sha256": "88aadf2fc12a34c990f52b470382dc4e4e38590bb57ad55860fcc1e70f668fec",
+      "git_blob": "4e57e2f866328a432f90633ce141a7db9abc5dec"
+    },
+    {
+      "source": "exec-server-bwrap-r24-repair/evidence/launcher-comparison/system-version-raw-process-result.json",
+      "destination": "candidates/exec-helper/evidence/launcher-comparison/system-version-raw-process-result.json",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "frozen candidate, retained failure and diagnostic provenance",
+      "bytes": 317,
+      "sha256": "7fb11aaf8196e171eda73ccdd613e2343fb10ec68ebd1ab3e1c474b62a234b96",
+      "git_blob": "f8bd24eceff392a479509f7fa5ad2c0559a9890b"
+    },
+    {
+      "source": "exec-server-bwrap-r24-repair/evidence/launcher-comparison/system-version-receipt.json",
+      "destination": "candidates/exec-helper/evidence/launcher-comparison/system-version-receipt.json",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "frozen candidate, retained failure and diagnostic provenance",
+      "bytes": 579,
+      "sha256": "3a8cf5f10c547ca07beee07a38c83f5d62fd74b72e003eefacac7f6c7d822b43",
+      "git_blob": "48d39d882a0c374bcb33d7be98378daaf5f435bc"
+    },
+    {
+      "source": "exec-server-bwrap-r24-repair/evidence/launcher-comparison/system-version-stderr.txt",
+      "destination": "candidates/exec-helper/evidence/launcher-comparison/system-version-stderr.txt",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "frozen candidate, retained failure and diagnostic provenance",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "source": "exec-server-bwrap-r24-repair/evidence/launcher-comparison/system-version-stdout.txt",
+      "destination": "candidates/exec-helper/evidence/launcher-comparison/system-version-stdout.txt",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "frozen candidate, retained failure and diagnostic provenance",
+      "bytes": 18,
+      "sha256": "3982b5c6efde838f903123b493520814ab1b56dfb7f35ac96af62ef443eb6acc",
+      "git_blob": "10e93cb849ff6343a9bf2dbc994bfc6a9915bc9c"
+    },
+    {
+      "source": "exec-server-bwrap-r24-repair/evidence/launcher-comparison/terminal-process-read.json",
+      "destination": "candidates/exec-helper/evidence/launcher-comparison/terminal-process-read.json",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "frozen candidate, retained failure and diagnostic provenance",
+      "bytes": 12058,
+      "sha256": "30885bb986a8b311260150751812e1a09e00de607e8ac377e05134a0638e6782",
+      "git_blob": "fc5a08e62f90da5b67343f83f302a0dfd7258a00"
+    },
+    {
+      "source": "exec-server-bwrap-r24-repair/evidence/launcher-comparison/terminal-process-status.json",
+      "destination": "candidates/exec-helper/evidence/launcher-comparison/terminal-process-status.json",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "frozen candidate, retained failure and diagnostic provenance",
+      "bytes": 731,
+      "sha256": "b89473e3162761adf039920332a82a7f42e7e4b7f8e083d10fbe00a4046242bd",
+      "git_blob": "e0e774b9c31dc8d1f1f2b7cc38ef05dc4f432778"
+    },
+    {
+      "source": "exec-server-bwrap-r24-repair/evidence/r24/INDEX.json",
+      "destination": "candidates/exec-helper/evidence/r24/INDEX.json",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "frozen candidate, retained failure and diagnostic provenance",
+      "bytes": 3075,
+      "sha256": "64364c37175a2d8504e5addfce37f3f802674a2e0072057920db3a37a34ce6f0",
+      "git_blob": "6dfbd5c2b2e3f564aafb6d76f2a29c6bb786eff2"
+    },
+    {
+      "source": "exec-server-bwrap-r24-repair/evidence/r24/failure-1.txt",
+      "destination": "candidates/exec-helper/evidence/r24/failure-1.txt",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "frozen candidate, retained failure and diagnostic provenance",
+      "bytes": 3377,
+      "sha256": "dbc1ae386f88e2bc8360c19ed9477e6ebc56b7c095b514d9d78cc50df9530ebf",
+      "git_blob": "d3fd35b918af98ef9630734e9c8e7f51682bb73e"
+    },
+    {
+      "source": "exec-server-bwrap-r24-repair/evidence/r24/failure-2.txt",
+      "destination": "candidates/exec-helper/evidence/r24/failure-2.txt",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "frozen candidate, retained failure and diagnostic provenance",
+      "bytes": 586,
+      "sha256": "04f9cbe2e82c0ee4cf709e81f90953d10f9d9d7c6d0ad1523fd8b755721e9106",
+      "git_blob": "6f01559229e2a6a83a49e2f69de884b6a294a311"
+    },
+    {
+      "source": "exec-server-bwrap-r24-repair/evidence/r24/native-source50-project-r24-tests-raw-process-result.json",
+      "destination": "candidates/exec-helper/evidence/r24/native-source50-project-r24-tests-raw-process-result.json",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "frozen candidate, retained failure and diagnostic provenance",
+      "bytes": 637,
+      "sha256": "052f63cb18e5fb4ff97004286a336ada1437ac7484826895c059497fb139125c",
+      "git_blob": "08f0da46feb91202bd18ab94d6626992c7ecc563"
+    },
+    {
+      "source": "exec-server-bwrap-r24-repair/evidence/r24/native-source50-project-r24-tests-receipt.json",
+      "destination": "candidates/exec-helper/evidence/r24/native-source50-project-r24-tests-receipt.json",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "frozen candidate, retained failure and diagnostic provenance",
+      "bytes": 2314,
+      "sha256": "cfd55b78649de4920ea9a3307b1fdfd6f9674b757cf39586cfa45bcee927e3af",
+      "git_blob": "ea1872fa78fcfd7543b8b6d1b5680fe4880ef58e"
+    },
+    {
+      "source": "exec-server-bwrap-r24-repair/evidence/r24/native-source50-project-r24-tests-resources.txt",
+      "destination": "candidates/exec-helper/evidence/r24/native-source50-project-r24-tests-resources.txt",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "frozen candidate, retained failure and diagnostic provenance",
+      "bytes": 915,
+      "sha256": "77cea1deeb7b6f99eac6428cbff583fc65fb82a713c88cfca686b6776191ad3a",
+      "git_blob": "5a64618dc21fe6c56facde010f903216ba474953"
+    },
+    {
+      "source": "exec-server-bwrap-r24-repair/evidence/r24/native-source50-project-r24-tests-result-review.json",
+      "destination": "candidates/exec-helper/evidence/r24/native-source50-project-r24-tests-result-review.json",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "frozen candidate, retained failure and diagnostic provenance",
+      "bytes": 2762,
+      "sha256": "bfca8c9d49fbcab1bca861e1e28a8a8c4420209c2b70c4078eb079d9afdb7c27",
+      "git_blob": "a376d5fd9ff4d74f70f827cfc164ac3fb4ddd0da"
+    },
+    {
+      "source": "exec-server-bwrap-r24-repair/evidence/r24/native-source50-project-r24-tests-source-post-verification.json",
+      "destination": "candidates/exec-helper/evidence/r24/native-source50-project-r24-tests-source-post-verification.json",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "frozen candidate, retained failure and diagnostic provenance",
+      "bytes": 633,
+      "sha256": "5188c63a461f0f3f0a11a3c238b2df7aceb97f8f599c48e53dba15514d358728",
+      "git_blob": "46bd35240347a046f9be70a8460c1661611f601b"
+    },
+    {
+      "source": "exec-server-bwrap-r24-repair/evidence/r24/terminal-process-status.json",
+      "destination": "candidates/exec-helper/evidence/r24/terminal-process-status.json",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "frozen candidate, retained failure and diagnostic provenance",
+      "bytes": 730,
+      "sha256": "644e58b095e57c8b037cb282aa1da04f50501cb04b7c3f472d18e48272cda14f",
+      "git_blob": "bec33f505f774d6ed6056df873bb2dbf4b751c43"
+    },
+    {
+      "source": "exec-server-bwrap-r24-repair/history/READBACK-CORRECTION.json",
+      "destination": "candidates/exec-helper/history/READBACK-CORRECTION.json",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "frozen candidate, retained failure and diagnostic provenance",
+      "bytes": 1056,
+      "sha256": "c34107b2543ab1396a82cc4caf41eecd7797e813b698dccbcff268eaaa673f9e",
+      "git_blob": "5870794a98ba9bb64a8dce2052e8da17e8b57dc8"
+    },
+    {
+      "source": "exec-server-bwrap-r24-repair/history/seal_handoff_v1.py",
+      "destination": "candidates/exec-helper/history/seal_handoff_v1.py",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "frozen candidate, retained failure and diagnostic provenance",
+      "bytes": 15837,
+      "sha256": "7ba61da6bbda3391f2a2e79107798eef85051a8cd36ae23551786b6a51bdbbd1",
+      "git_blob": "ecacebb32cb983ee147d92652b01531a282bb579"
+    },
+    {
+      "source": "exec-server-bwrap-r24-repair/independent-review/C-SOURCE-AUDIT.json",
+      "destination": "candidates/exec-helper/independent-review/C-SOURCE-AUDIT.json",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "frozen candidate, retained failure and diagnostic provenance",
+      "bytes": 14026,
+      "sha256": "9b2edbd109468a7bc207e7d71d1d96b562e52340822e2db36516f16db98e0145",
+      "git_blob": "d0c5aa7d1690978a79a16fd2cabc50361dedab02"
+    },
+    {
+      "source": "exec-server-bwrap-r24-repair/independent-review/CANDIDATE-STATIC-REVIEW.json",
+      "destination": "candidates/exec-helper/independent-review/CANDIDATE-STATIC-REVIEW.json",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "frozen candidate, retained failure and diagnostic provenance",
+      "bytes": 8198,
+      "sha256": "1570f493d0cb763a1e07a46ddccab0b1a02752de796559decdb83b3ba1c270e4",
+      "git_blob": "3bf5eae11d1d6e2a0b8b44815ad46be58962afe8"
+    },
+    {
+      "source": "exec-server-bwrap-r24-repair/original/AGENTS.md",
+      "destination": "candidates/exec-helper/original/AGENTS.md",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "frozen candidate, retained failure and diagnostic provenance",
+      "bytes": 22519,
+      "sha256": "c3f80e8386eb170b00af1e21de40d770c4941e464915687e728e2d14a7e79480",
+      "git_blob": "faa57cc0db48123e1011f1eb47692cd3bbbcfc3a"
+    },
+    {
+      "source": "exec-server-bwrap-r24-repair/original/codex-rs/exec-server/BUILD.bazel",
+      "destination": "candidates/exec-helper/original/codex-rs/exec-server/BUILD.bazel",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "frozen candidate, retained failure and diagnostic provenance",
+      "bytes": 890,
+      "sha256": "7ebe1f8d7aa1f5bbe8eb55b8f3914af11ca97032cd604cc68686ad4fd2cc2244",
+      "git_blob": "73c71a65112db4c7d306f3be215ab17907decfa5"
+    },
+    {
+      "source": "exec-server-bwrap-r24-repair/original/codex-rs/exec-server/Cargo.toml",
+      "destination": "candidates/exec-helper/original/codex-rs/exec-server/Cargo.toml",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "frozen candidate, retained failure and diagnostic provenance",
+      "bytes": 2741,
+      "sha256": "c45429a966e8d087144085598cac8c63e6e9b285fad97a5700294b409665ee14",
+      "git_blob": "455df9eedc14b77ac3779899087cd8391b153b37"
+    },
+    {
+      "source": "exec-server-bwrap-r24-repair/original/codex-rs/exec-server/src/capability_discovery.rs",
+      "destination": "candidates/exec-helper/original/codex-rs/exec-server/src/capability_discovery.rs",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "frozen candidate, retained failure and diagnostic provenance",
+      "bytes": 16142,
+      "sha256": "5e29def719a059ba21690a8dfc51d5fb3573fa303b422d99122733e7caa091c5",
+      "git_blob": "43721630e2e8e7776ed1456db9f7b752164690ca"
+    },
+    {
+      "source": "exec-server-bwrap-r24-repair/original/codex-rs/exec-server/src/fs_helper_main.rs",
+      "destination": "candidates/exec-helper/original/codex-rs/exec-server/src/fs_helper_main.rs",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "frozen candidate, retained failure and diagnostic provenance",
+      "bytes": 3028,
+      "sha256": "feca100953e8cb151371eaada589fccc67fab59a3efd33058691b09013d0a7f8",
+      "git_blob": "3ca9ecc21e3d9e525a807680f91d8ebe04059a6d"
+    },
+    {
+      "source": "exec-server-bwrap-r24-repair/original/codex-rs/exec-server/src/fs_sandbox.rs",
+      "destination": "candidates/exec-helper/original/codex-rs/exec-server/src/fs_sandbox.rs",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "frozen candidate, retained failure and diagnostic provenance",
+      "bytes": 28294,
+      "sha256": "6bd757ade4b4df954c30478fdeecf4de955ee94bc959d88e0b546b8a28228b4e",
+      "git_blob": "ca715ef44ed7c30e4da11149dcc2cf8248c67ab3"
+    },
+    {
+      "source": "exec-server-bwrap-r24-repair/original/codex-rs/exec-server/tests/capability_discovery.rs",
+      "destination": "candidates/exec-helper/original/codex-rs/exec-server/tests/capability_discovery.rs",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "frozen candidate, retained failure and diagnostic provenance",
+      "bytes": 19002,
+      "sha256": "dd0258e9127580d3b3c961d395249f37621324e6aa863b6ab8bad44c30f223df",
+      "git_blob": "80484ecfa01dac48189cbcc3324caa4374961ea0"
+    },
+    {
+      "source": "exec-server-bwrap-r24-repair/original/codex-rs/exec-server/tests/common/exec_server.rs",
+      "destination": "candidates/exec-helper/original/codex-rs/exec-server/tests/common/exec_server.rs",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "frozen candidate, retained failure and diagnostic provenance",
+      "bytes": 13010,
+      "sha256": "5a8ad34ef0f3367b83dd3d3722dc7362b95ec5c82af1be9b7a3f92e4f7db14b2",
+      "git_blob": "ea4f5b166cac271930382ef158edd5ac7db66253"
+    },
+    {
+      "source": "exec-server-bwrap-r24-repair/original/codex-rs/exec-server/tests/common/fake_bwrap.rs",
+      "destination": "candidates/exec-helper/original/codex-rs/exec-server/tests/common/fake_bwrap.rs",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "frozen candidate, retained failure and diagnostic provenance",
+      "bytes": 1635,
+      "sha256": "ae37954afd591c387652cd8ea036a15f461dbad48946274bbca57be4bd1648de",
+      "git_blob": "cc79362f7a8a3a44b0a93949d18494281511ec7b"
+    },
+    {
+      "source": "exec-server-bwrap-r24-repair/original/codex-rs/exec-server/tests/common/mod.rs",
+      "destination": "candidates/exec-helper/original/codex-rs/exec-server/tests/common/mod.rs",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "frozen candidate, retained failure and diagnostic provenance",
+      "bytes": 10201,
+      "sha256": "a804f8d14a61633cc987a2394077181883f7f8c6a156b7bf6955a2d23913d423",
+      "git_blob": "161728f5127d5a311579603b480bc0351a605880"
+    },
+    {
+      "source": "exec-server-bwrap-r24-repair/original/codex-rs/exec-server/tests/file_system_unix.rs",
+      "destination": "candidates/exec-helper/original/codex-rs/exec-server/tests/file_system_unix.rs",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "frozen candidate, retained failure and diagnostic provenance",
+      "bytes": 59067,
+      "sha256": "0c34cb581b87a81650821cad7dad3e53dc06de277f5987231b73e7b9cc4ca63c",
+      "git_blob": "5051ec2e5bbc625c090e335cc8872044415a85ad"
+    },
+    {
+      "source": "exec-server-bwrap-r24-repair/original/codex-rs/linux-sandbox/src/bundled_bwrap.rs",
+      "destination": "candidates/exec-helper/original/codex-rs/linux-sandbox/src/bundled_bwrap.rs",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "frozen candidate, retained failure and diagnostic provenance",
+      "bytes": 11001,
+      "sha256": "6d57a035029048db8aeabed4a56c18f7fc72017dafb9ce61a53bd1b384e49566",
+      "git_blob": "61d10547d3b3eb499f8b8a06d6444845c4ff7f93"
+    },
+    {
+      "source": "exec-server-bwrap-r24-repair/original/codex-rs/linux-sandbox/src/launcher.rs",
+      "destination": "candidates/exec-helper/original/codex-rs/linux-sandbox/src/launcher.rs",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "frozen candidate, retained failure and diagnostic provenance",
+      "bytes": 16007,
+      "sha256": "bf1d23f8020d4e73f7a3e235165f0953154170256a92cf0c8254e5ab32578f91",
+      "git_blob": "d4e9b521bf93f0861cf497c3153a9efdc6e3c67b"
+    },
+    {
+      "source": "exec-server-bwrap-r24-repair/original/codex-rs/sandboxing/src/bwrap.rs",
+      "destination": "candidates/exec-helper/original/codex-rs/sandboxing/src/bwrap.rs",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "frozen candidate, retained failure and diagnostic provenance",
+      "bytes": 6734,
+      "sha256": "43abc86eb6a62689c6aa75dc27f6cd05101cab831b339d4e85e316c1c296d19c",
+      "git_blob": "633487136abe00065ee0f30707573ceb67b04e5b"
+    },
+    {
+      "source": "exec-server-bwrap-r24-repair/original/codex-rs/sandboxing/src/lib.rs",
+      "destination": "candidates/exec-helper/original/codex-rs/sandboxing/src/lib.rs",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "frozen candidate, retained failure and diagnostic provenance",
+      "bytes": 3504,
+      "sha256": "33d4349a394bd02f729d015d818da34bbd262cb7a1632ae58efb4b7881d9e7c6",
+      "git_blob": "a756012a272a794ca1302a87327d9eb9ac1c48ae"
+    },
+    {
+      "source": "exec-server-bwrap-r24-repair/repair-audit.json",
+      "destination": "candidates/exec-helper/repair-audit.json",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "frozen candidate, retained failure and diagnostic provenance",
+      "bytes": 4919,
+      "sha256": "67cad6020cceb7815056859c16c2ab1b4a20b967c4d0016c153b1e61cd12efb6",
+      "git_blob": "2a4872edd0bb6a306507c6883fbd8bbe78954726"
+    },
+    {
+      "source": "exec-server-bwrap-r24-repair/repair.patch",
+      "destination": "candidates/exec-helper/repair.patch",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "frozen candidate, retained failure and diagnostic provenance",
+      "bytes": 663,
+      "sha256": "0f8ee51664c850a9fd450bcba800d3ffb6866633f1924845b058ffadcc7b1ba8",
+      "git_blob": "8330f69c096dae85afbd9ec10346a5c93acd81d5"
+    },
+    {
+      "source": "exec-server-bwrap-r24-repair/seal_handoff.py",
+      "destination": "candidates/exec-helper/seal_handoff.py",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "frozen candidate, retained failure and diagnostic provenance",
+      "bytes": 16470,
+      "sha256": "741ef6a645ae9d2a2200a0091efd19f9d49a00e5b25579740afba48975daecf8",
+      "git_blob": "75ee347d640d99df2ae1e64c1bf91674060e24b9"
+    },
+    {
+      "source": "exec-server-bwrap-r24-repair/source/codex-rs/exec-server/tests/common/fake_bwrap.rs",
+      "destination": "candidates/exec-helper/source/codex-rs/exec-server/tests/common/fake_bwrap.rs",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "frozen candidate, retained failure and diagnostic provenance",
+      "bytes": 1817,
+      "sha256": "83d3637f2648b967c70e2368c623fe0b84afe1cdf32860284d897923ad0dc1ca",
+      "git_blob": "e74489437549cf2c61075fd893945cd78e34247c"
+    },
+    {
+      "source": "exec-server-bwrap-r24-repair/source-input-pins.json",
+      "destination": "candidates/exec-helper/source-input-pins.json",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "frozen candidate, retained failure and diagnostic provenance",
+      "bytes": 6572,
+      "sha256": "79e03fd6cea5b8c14e2a6487499a557b9f893becc7b744d905c1aa266d4db9b2",
+      "git_blob": "3b7fceb226553247605642ba83758e8af0bd84e0"
+    },
+    {
+      "source": "exec-server-bwrap-r24-repair/source-manifest.json",
+      "destination": "candidates/exec-helper/source-manifest.json",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "frozen candidate, retained failure and diagnostic provenance",
+      "bytes": 1126,
+      "sha256": "6d56296d878d0da8f0c402f92f8a68a1359a68d7f718d651a25140c7792beb88",
+      "git_blob": "ee924b708d2b1f7e7795e50e17c51efcc769deb2"
+    },
+    {
+      "source": "source51-network-candidate/READBACK.json",
+      "destination": "candidates/network/READBACK.json",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "frozen fixture candidate",
+      "bytes": 2830,
+      "sha256": "19de5b64c3fa2d4a345b29e01d70f35d405a06a78d4e260dbdaa4d5257f8cb9d",
+      "git_blob": "5d581cd49325518151b7efd70290bf07fbd8b654"
+    },
+    {
+      "source": "source51-network-candidate/context/codex-rs/network-proxy/src/network_policy.rs",
+      "destination": "candidates/network/context/codex-rs/network-proxy/src/network_policy.rs",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "frozen fixture candidate",
+      "bytes": 37311,
+      "sha256": "87fdcffab34867f3e182ed67983fad3298dbfa3aa640e0f79906d8cd02a11dc2",
+      "git_blob": "b5d2d2719ea23c713f6ee2e679bb023ae7bf47b5"
+    },
+    {
+      "source": "source51-network-candidate/context/codex-rs/network-proxy/src/runtime.rs",
+      "destination": "candidates/network/context/codex-rs/network-proxy/src/runtime.rs",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "frozen fixture candidate",
+      "bytes": 75473,
+      "sha256": "3214446d85796e5d1c4a308ba53aab3bf7098fc18cd38cfc6f97a1cbb14d2e4f",
+      "git_blob": "1a449a44381fafa4a5d6a5d0e08753f425f339fc"
+    },
+    {
+      "source": "source51-network-candidate/context/codex-rs/network-proxy/src/state.rs",
+      "destination": "candidates/network/context/codex-rs/network-proxy/src/state.rs",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "frozen fixture candidate",
+      "bytes": 16501,
+      "sha256": "c091b59fecd76052e97fecf2443a68ab8a4650732af9c00330dfb92ebd56ee72",
+      "git_blob": "90731a8b4e8103fb2f8e1e60413539949085aac8"
+    },
+    {
+      "source": "source51-network-candidate/network-fixture.patch",
+      "destination": "candidates/network/network-fixture.patch",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "frozen fixture candidate",
+      "bytes": 420,
+      "sha256": "24fcba74cab54f242f1249bddf43ebc3be2bd3bbb7f16964dd7f24f334989198",
+      "git_blob": "09235650429cab4b8cc24360eadd9a7eeae1fb85"
+    },
+    {
+      "source": "source51-network-candidate/original/codex-rs/network-proxy/src/http_proxy.rs",
+      "destination": "registration/original/codex-rs/network-proxy/src/http_proxy.rs",
+      "encoding": "identity",
+      "deduplicated_large_copy": true,
+      "stage": "frozen fixture candidate",
+      "bytes": 69053,
+      "sha256": "7500b8820d7894da45ed4f444aca28573f1e5f9462f94c97ccb19019a0f6b430",
+      "git_blob": "50135c6cd4c426c3ec16d65d448c01a1fb776ddd"
+    },
+    {
+      "source": "source51-network-candidate/original-failure-block.txt",
+      "destination": "candidates/network/original-failure-block.txt",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "frozen fixture candidate",
+      "bytes": 1033,
+      "sha256": "713acb54080010d3ecafa27c529e978ec778daa337767674c8f0d37fc3913e36",
+      "git_blob": "af6badf1cc39163e6813421091448b641a88d607"
+    },
+    {
+      "source": "source51-network-candidate/source/codex-rs/network-proxy/src/http_proxy.rs",
+      "destination": "registration/source/codex-rs/network-proxy/src/http_proxy.rs",
+      "encoding": "identity",
+      "deduplicated_large_copy": true,
+      "stage": "frozen fixture candidate",
+      "bytes": 69092,
+      "sha256": "f8b6cb1adf67ea828efb29f68e10fd97a30e379574c93374c2a88f5364153967",
+      "git_blob": "17220a242091325aa66bd4cdb3419cd3a30b09ed"
+    },
+    {
+      "source": "source51-network-independent-review/INDEPENDENT-REVIEW.json",
+      "destination": "reviews/network/INDEPENDENT-REVIEW.json",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "independent static review",
+      "bytes": 3477,
+      "sha256": "b67e8ec7832747b9435855fbf81e0e80bc259315195d8b6b80ab75476f940e25",
+      "git_blob": "5cf1117543b426bea0b1d38acde09c82a21b4d08"
+    },
+    {
+      "source": "source51-apply-preparation/AST-READBACK.json",
+      "destination": "apply-preparation/AST-READBACK.json",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "inert historical template and input contract",
+      "bytes": 755,
+      "sha256": "aeae3e1d3f1c953ff520b9daf1c0036e525790452c404b0a4ddc8a3e5eb3bbdd",
+      "git_blob": "5ec18c109c073ad0b6c8747b26f2975d76338b83"
+    },
+    {
+      "source": "source51-apply-preparation/INPUT-CONTRACT.json",
+      "destination": "apply-preparation/INPUT-CONTRACT.json",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "inert historical template and input contract",
+      "bytes": 2617,
+      "sha256": "ab045776acf8f21f00236605d4812cb5326a52db175e262c2a71ea1a2ff12a87",
+      "git_blob": "ad7fe9b23f3a39fa7fb698c5cefbed8149379f81"
+    },
+    {
+      "source": "source51-apply-preparation/PREPARATION.json",
+      "destination": "apply-preparation/PREPARATION.json",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "inert historical template and input contract",
+      "bytes": 2889,
+      "sha256": "553c76ad6ae89bc3c294a4b982acbe31f078310066f60b2f37dd52873b730ed4",
+      "git_blob": "d31a86c7514fb71733aeb0834256801188e33115"
+    },
+    {
+      "source": "source51-apply-preparation/native-source51-apply-template.py",
+      "destination": "apply-preparation/native-source51-apply-template.py",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "inert historical template and input contract",
+      "bytes": 28145,
+      "sha256": "743a9f7ff2c4992b91aab39aa22298b6599c169c15089360e7dbcfbff4cf0f8e",
+      "git_blob": "723e428af9a132b08a07164e2117956ece26e27f"
+    },
+    {
+      "source": "source51-apply-input-independent-review/BOUND-INDEPENDENT-READBACK.json",
+      "destination": "reviews/apply-input/BOUND-INDEPENDENT-READBACK.json",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "independent static binding review",
+      "bytes": 9366,
+      "sha256": "a2e5ee7b012d1911c5773a2419de828199a648fd2e570982f649e008d2fad5bf",
+      "git_blob": "f120d40e1253793e6679bc464ab46ae661923c53"
+    },
+    {
+      "source": "source51-apply-input-independent-review/FINAL-INDEPENDENT-READBACK.json",
+      "destination": "reviews/apply-input/FINAL-INDEPENDENT-READBACK.json",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "independent static binding review",
+      "bytes": 1384,
+      "sha256": "f55945c43be2e01398909c4dbe4e3a4b35ce28f1dd98755e085b3f96742390b3",
+      "git_blob": "78adfac1c81572d75a4b9076fd772a62b1d15dbc"
+    },
+    {
+      "source": "source51-apply-input-independent-review/verify_bound_input.py",
+      "destination": "reviews/apply-input/verify_bound_input.py",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "independent static binding review",
+      "bytes": 14697,
+      "sha256": "bcbfda77606804987e1fc79333526017875c4fe723a3c0ff2e953d69b7a82f9a",
+      "git_blob": "ab391122ec9255cc288e1c964b1b7cc1d1481e1a"
+    },
+    {
+      "source": "source51-apply-native-independent-review/INDEPENDENT-REVIEW.json",
+      "destination": "reviews/apply-native/INDEPENDENT-REVIEW.json",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "independent static template review",
+      "bytes": 3814,
+      "sha256": "ca620c5ab645f9dd70af45fb53675a5bb0e66f2ceb80432b8e99bc70962a8811",
+      "git_blob": "8c865c7af810fd405f2d960180a1c633ad640bff"
+    },
+    {
+      "source": "source51-native-gates-preparation/HANDOFF-MANIFEST.json",
+      "destination": "r26-preparation/HANDOFF-MANIFEST.json",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "inert historical r26 templates",
+      "bytes": 2531,
+      "sha256": "7c790812a9d826f192ad6078cf8f7018d7b8ead3ee921096d6f7e0bc9060e2b2",
+      "git_blob": "74bc97b6dac5bde8302652b4b043eca4e4001f57"
+    },
+    {
+      "source": "source51-native-gates-preparation/PREPARATION-READBACK.json",
+      "destination": "r26-preparation/PREPARATION-READBACK.json",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "inert historical r26 templates",
+      "bytes": 1562,
+      "sha256": "2a0737581d02ddffdfc9c37a85d2940757f8458b7c151567067b575919293cb2",
+      "git_blob": "ffdff81b8951af4588663512aa0ff3114ac6fee0"
+    },
+    {
+      "source": "source51-native-gates-preparation/README.md",
+      "destination": "r26-preparation/README.md",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "inert historical r26 templates",
+      "bytes": 3473,
+      "sha256": "d75f0b9d323e3829328a472775606855ecc98307053345d122dfcf85127b8b4e",
+      "git_blob": "79ba005c3d72ae8434fab42d5472f376d4b22a9e"
+    },
+    {
+      "source": "source51-native-gates-preparation/V2-CONTRACT-READBACK.json",
+      "destination": "r26-preparation/V2-CONTRACT-READBACK.json",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "inert historical r26 templates",
+      "bytes": 858,
+      "sha256": "ca3a9f27f59899d2f83d93e9881d60da796335c4057c73592a1a031aeabf130a",
+      "git_blob": "281f18857ef4924bbe7e8c25771f276e510cde3f"
+    },
+    {
+      "source": "source51-native-gates-preparation/build_inert_r26.py",
+      "destination": "r26-preparation/build_inert_r26.py",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "inert historical r26 templates",
+      "bytes": 23953,
+      "sha256": "7dd4a4e7640ac89ec2b21903dc482282191c3675154eee98a6c19c0675a9a6a7",
+      "git_blob": "d28e16c83957fe37a181a7fce6a98ecb08923568"
+    },
+    {
+      "source": "source51-native-gates-preparation/native-run-r26-template-v2.py",
+      "destination": "r26-preparation/native-run-r26-template-v2.py",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "inert historical r26 templates",
+      "bytes": 46300,
+      "sha256": "f89ecbf2fe8585b739c3ecc5cb5057b762473ba73a7fea9dd6483213d3f8a6a0",
+      "git_blob": "c36c9b67cea1bd64499775f822650bf290b1c79f"
+    },
+    {
+      "source": "source51-native-gates-preparation/native-run-r26-template.py",
+      "destination": "r26-preparation/native-run-r26-template.py",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "inert historical r26 templates",
+      "bytes": 45721,
+      "sha256": "2de46bcdc1644438c553b945006e68e5a7e60af4a77b4d855d4b4339ec4e2925",
+      "git_blob": "e18442d2192ec9fa70908106c870cf1f6f403e2a"
+    },
+    {
+      "source": "source51-native-gates-preparation/r24-r26-preparation.patch",
+      "destination": "r26-preparation/r24-r26-preparation.patch",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "inert historical r26 templates",
+      "bytes": 28683,
+      "sha256": "d45642b7ed89ade79924e03a2e99cc8fb9312a34221fe3e7b9ebf3f0364fab10",
+      "git_blob": "70678ec4ad4ee1091a5f9e78d872fdd8b8c4f710"
+    },
+    {
+      "source": "source51-native-gates-preparation/r24-r26-v2-preparation.patch",
+      "destination": "r26-preparation/r24-r26-v2-preparation.patch",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "inert historical r26 templates",
+      "bytes": 29273,
+      "sha256": "8a7f32a50b4b8d0e27a6c35bdec9a5369b5d22441126ac152e4a74c4f90aed62",
+      "git_blob": "6c37dffac803852066e8601f55c4a0714c61f4ee"
+    },
+    {
+      "source": "source51-native-gates-preparation/r26-v1-v2-contract.patch",
+      "destination": "r26-preparation/r26-v1-v2-contract.patch",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "inert historical r26 templates",
+      "bytes": 3068,
+      "sha256": "89e6eee4037da13fa3afe80d900c4bdfb59dc1e484e4a9311c4381719ef73ee2",
+      "git_blob": "884148e6f9812b276fb863d1fe9fc9dbdf6595ea"
+    },
+    {
+      "source": "source51-native-gates-preparation/reference-native-run-r24.py",
+      "destination": "r26-preparation/reference-native-run-r24.py",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "inert historical r26 templates",
+      "bytes": 31087,
+      "sha256": "a5831d0af0f0eaec8905a2cd2a62cafc6b545885b8705dc509b87f4981aad0bf",
+      "git_blob": "317337e3bb452e9c59baaa6ad7e11fc2600a84f9"
+    },
+    {
+      "source": "native-validation-results/r26-source51-bound-input/ACTUAL-BINDINGS.json",
+      "destination": "r26-bound/ACTUAL-BINDINGS.json",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "frozen bound/final runner input, not a result",
+      "bytes": 964,
+      "sha256": "25a82c0f442377cce2649f4a18f103872dcb404934c6cfa8d6a6ae4306e97298",
+      "git_blob": "4a64678ef9379fed612dd65579524c69196c7343"
+    },
+    {
+      "source": "native-validation-results/r26-source51-bound-input/BINDING-READBACK.json",
+      "destination": "r26-bound/BINDING-READBACK.json",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "frozen bound/final runner input, not a result",
+      "bytes": 3390,
+      "sha256": "8f804eff660018ab6bb5d9d3457775ac67d2b93fbfcbd815ae9045d733ff6bff",
+      "git_blob": "881a6e818016b8e87a26d12a2a9b81b590d95738"
+    },
+    {
+      "source": "native-validation-results/r26-source51-bound-input/binding-only.patch",
+      "destination": "r26-bound/binding-only.patch",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "frozen bound/final runner input, not a result",
+      "bytes": 2843,
+      "sha256": "030e568922c7994afd435ddc16d79eebc73bdcfafaf047701d65cc67c528d568",
+      "git_blob": "fd58d504d80572c2c5d79e823ebea407357b1130"
+    },
+    {
+      "source": "native-validation-results/r26-source51-bound-input/frozen-only.patch",
+      "destination": "r26-bound/frozen-only.patch",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "frozen bound/final runner input, not a result",
+      "bytes": 278,
+      "sha256": "20ba060bf0d7e5ef546ca37668ca220921cff7dda5e39c5f13ab265f4ea86101",
+      "git_blob": "268869b424011a1bcc645847321f64e105a590b0"
+    },
+    {
+      "source": "native-validation-results/r26-source51-bound-input/native-run-r26-bound.py",
+      "destination": "r26-bound/native-run-r26-bound.py",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "frozen bound/final runner input, not a result",
+      "bytes": 46797,
+      "sha256": "ade5e1a827e36b821f4fb562aa175ad58147811419255732e0c62c27743802a6",
+      "git_blob": "47b37340973fbc57f3ad2d8810dc6451e0a789d4"
+    },
+    {
+      "source": "native-validation-results/r26-source51-bound-input/native-run-r26.py",
+      "destination": "registration/ROOT-APPROVED-R26.py",
+      "encoding": "identity",
+      "deduplicated_large_copy": true,
+      "stage": "frozen bound/final runner input, not a result",
+      "bytes": 46796,
+      "sha256": "c46f22be2c4b71004dc086870eaf5a69efed0ee32cde47cf33a2ef818f168396",
+      "git_blob": "7c946b313cfbc9d6e884b9b8216150fdc15e6040"
+    },
+    {
+      "source": "source51-r26-template-independent-review/BOUND-INDEPENDENT-READBACK.json",
+      "destination": "reviews/r26-template/BOUND-INDEPENDENT-READBACK.json",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "independent static template/binding review",
+      "bytes": 4314,
+      "sha256": "308a104c672c1a12dcd9c7ca07933a0e9181eed7d5793b9bba3f900eb36039b7",
+      "git_blob": "9a226860dd44a749f02f97d20c04dc2efa38f2bd"
+    },
+    {
+      "source": "source51-r26-template-independent-review/FINAL-INDEPENDENT-READBACK.json",
+      "destination": "reviews/r26-template/FINAL-INDEPENDENT-READBACK.json",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "independent static template/binding review",
+      "bytes": 438,
+      "sha256": "97f4d9efad30833064e3408fc99eacf5f0435c237919b76141fe7a53950fb25e",
+      "git_blob": "95467ad12d4ac1ea32c759dfdcfa6cf495e23663"
+    },
+    {
+      "source": "source51-r26-template-independent-review/INDEPENDENT-REVIEW.json",
+      "destination": "reviews/r26-template/INDEPENDENT-REVIEW.json",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "independent static template/binding review",
+      "bytes": 7172,
+      "sha256": "b5e64e4d6b3f8d19f8ba0bbe2efd232ccd789c5d3426002171b38021901287e0",
+      "git_blob": "3c1e790f75115c1335b6704c5b65ab80fc24bbf8"
+    },
+    {
+      "source": "source51-r26-template-independent-review/MECHANICAL-READBACK.json",
+      "destination": "reviews/r26-template/MECHANICAL-READBACK.json",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "independent static template/binding review",
+      "bytes": 3489,
+      "sha256": "89da7524c1ebc378670f8c0c34487b241f042ad35a2858297b800b763a14064e",
+      "git_blob": "9db07bea6fcee3cb56ad57024c15b3d03c75483e"
+    },
+    {
+      "source": "r26-bound-independent-review/INDEPENDENT-REVIEW.json",
+      "destination": "reviews/r26-bound/INDEPENDENT-REVIEW.json",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "independent static actual binding review",
+      "bytes": 7944,
+      "sha256": "1667916091b0b711d257ec2a1ef91b3de7524b44c618746736c7f1f4f05fac26",
+      "git_blob": "6a900c6f5c13222c4a6a5cb41bf7503157b97c33"
+    },
+    {
+      "source": "native-validation-results/r26-start-launch/LAUNCH-READBACK.json",
+      "destination": "r26-launch/LAUNCH-READBACK.json",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "immutable initial launch observation only",
+      "bytes": 1895,
+      "sha256": "571501ada59abcfcee33154bea247547458e64d5d9e2e3843a5ff210e7d50595",
+      "git_blob": "a53bd25ab1424a5601a70325b73ae04666f69d76"
+    },
+    {
+      "source": "native-validation-results/r26-start-launch/initial-process-read-query-error.txt",
+      "destination": "r26-launch/initial-process-read-query-error.txt",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "immutable initial launch observation only",
+      "bytes": 57,
+      "sha256": "2882aaf7fc2a093327e5d388bc582377d0fc8ea46e1597b5ffc7f7c6fb3cd948",
+      "git_blob": "c02af07036d44b860a2fc71fe352744d73c4cd4f"
+    },
+    {
+      "source": "native-validation-results/r26-start-launch/initial-status-query-error.txt",
+      "destination": "r26-launch/initial-status-query-error.txt",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "immutable initial launch observation only",
+      "bytes": 55,
+      "sha256": "b8875bfb184478b5869490e02c56fc58e4a71b78bdcc015807b05a8f621ff6bb",
+      "git_blob": "f6749845305cc23a279912f1f36bd6bf17ae6fb6"
+    },
+    {
+      "source": "native-validation-results/r26-start-launch/original-command.txt",
+      "destination": "r26-launch/original-command.txt",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "immutable initial launch observation only",
+      "bytes": 533,
+      "sha256": "32ed4a48bd79ef784246f78e4afe4af97a25f69b19cd2ced1862aedc8733be98",
+      "git_blob": "d0c59b658cf7026cd333729f3c103826530be0e0"
+    },
+    {
+      "source": "native-validation-results/r26-start-launch/original-launch.json",
+      "destination": "r26-launch/original-launch.json",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "immutable initial launch observation only",
+      "bytes": 1557,
+      "sha256": "a3c6cdbbceba179a7d59d236bcf740d4bc9b1a6aee7634d067a305044467d6fb",
+      "git_blob": "1c8ce8ba752191c4c1d39ef5f8d2036a71a969d8"
+    },
+    {
+      "source": "native-validation-results/r26-start-launch/runner-file-info.json",
+      "destination": "r26-launch/runner-file-info.json",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "immutable initial launch observation only",
+      "bytes": 451,
+      "sha256": "7ab16e085419f21d7b3ed141c5d9935a87a6831ec303b56245f7f86b1f0ddb43",
+      "git_blob": "8f7a0b78780daea8ea5bfe3eb6f0ca4444090a7b"
+    },
+    {
+      "source": "native-validation-results/r26-start-launch/runner-upload-original.json",
+      "destination": "r26-launch/runner-upload-original.json",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "immutable initial launch observation only",
+      "bytes": 190,
+      "sha256": "553a40968bd525934ae5d89e92490244fcca108ff9a7ab0460f5e1a9480e1ccb",
+      "git_blob": "a6948e0b2eb5d5174496de42bd7bed487dfdb253"
+    },
+    {
+      "source": "r26_bound_independent_review.py",
+      "destination": "reviews/r26-bound/verify_actual_bindings.py",
+      "encoding": "identity",
+      "deduplicated_large_copy": false,
+      "stage": "exact independent static audit script, retained only",
+      "bytes": 10259,
+      "sha256": "ac6d762cf6b9699aa5f23ad0e2347e6e56d21b48865962f699b54406ad33ebe8",
+      "git_blob": "9182f77d333941004acbddac5cb9b411e144c63e"
+    }
+  ]
+}

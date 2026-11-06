@@ -1,0 +1,52 @@
+{
+  "schema": "hepta.source53-app-server-closed-readback.v1",
+  "log": {
+    "bytes": 221127,
+    "sha256": "f9dc6ce6b656b146658ad7d28b377c4c69046d54d6c8e52656c620d84612a88c",
+    "git_blob": "94368f0a948939e7b25fb67ba361a084161602d7"
+  },
+  "starting": {
+    "line": 357,
+    "byte_offset": 39890,
+    "text": "    Starting 1345 tests across 6 binaries (2 tests skipped)"
+  },
+  "summary": {
+    "line": 1704,
+    "byte_offset": 221063,
+    "text": "     Summary [ 404.442s] 1345 tests run: 1345 passed, 2 skipped",
+    "seconds": 404.442
+  },
+  "unique_test_count": 1345,
+  "execution_rows": 1345,
+  "counts": {
+    "PASS": 1345,
+    "FAIL": 0,
+    "TIMEOUT": 0
+  },
+  "summary_counts": {
+    "PASS": 1345,
+    "FAIL": 0,
+    "TIMEOUT": 0
+  },
+  "reported_skipped": 2,
+  "skip_identities_inferred": false,
+  "duplicate_execution_ids": false,
+  "footer_rows_excluded": [],
+  "baseline_count": 1345,
+  "baseline_is_source52_r29_actual_app_server_population": true,
+  "diagnostic_only": true,
+  "behavior_repair_claimed": false,
+  "baseline_missing": [],
+  "baseline_not_pass": [],
+  "additional_test_ids": [],
+  "unexpected_packages": [],
+  "per_package": {
+    "codex-app-server": {
+      "PASS": 1345,
+      "FAIL": 0,
+      "TIMEOUT": 0
+    }
+  },
+  "baseline_used_as_filter": false,
+  "pass": true
+}

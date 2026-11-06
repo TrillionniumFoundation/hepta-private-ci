@@ -1,0 +1,1776 @@
+{
+  "schema": "hepta.source52-current-default-workspace-scope.v1",
+  "source_tree": "211f15baff19095e8c98bcea2b0ed99ca2270ade",
+  "source_commit": "1e0910becc37383e6d17ecf861ea844fd07d8862",
+  "metadata_command": [
+    "cargo",
+    "metadata",
+    "--locked",
+    "--no-deps",
+    "--format-version",
+    "1"
+  ],
+  "metadata": {
+    "path": "native-workspace-r29-metadata.json",
+    "bytes": 937659,
+    "sha256": "b29d6b0c49c63d6345f50597873e3fa98c79ea0cbfe923ae3dd700b5cc08af8d",
+    "git_blob": "0db6b5ccf051718a85b4aa0e7a57b7d62b393ecb"
+  },
+  "metadata_generated_on_current_source": true,
+  "old_metadata_reused_as_current": false,
+  "workspace_root": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs",
+  "target_directory": "/home/alex/work/hepta-cell-unified-20261106-a/target",
+  "workspace_member_count": 193,
+  "workspace_default_member_count": 193,
+  "workspace_members": [
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/aws-auth#codex-aws-auth@0.0.0",
+      "name": "codex-aws-auth",
+      "manifest_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/aws-auth/Cargo.toml"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/analytics#codex-analytics@0.0.0",
+      "name": "codex-analytics",
+      "manifest_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/analytics/Cargo.toml"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/app-server-protocol#codex-app-server-protocol@0.0.0",
+      "name": "codex-app-server-protocol",
+      "manifest_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/app-server-protocol/Cargo.toml"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/app-server-protocol-noop-macros#codex-app-server-protocol-noop-macros@0.0.0",
+      "name": "codex-app-server-protocol-noop-macros",
+      "manifest_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/app-server-protocol-noop-macros/Cargo.toml"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/codex-experimental-api-macros#0.0.0",
+      "name": "codex-experimental-api-macros",
+      "manifest_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/codex-experimental-api-macros/Cargo.toml"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/ext/items#codex-extension-items@0.0.0",
+      "name": "codex-extension-items",
+      "manifest_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/ext/items/Cargo.toml"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/utils/absolute-path#codex-utils-absolute-path@0.0.0",
+      "name": "codex-utils-absolute-path",
+      "manifest_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/utils/absolute-path/Cargo.toml"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/history#codex-history@0.0.0",
+      "name": "codex-history",
+      "manifest_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/history/Cargo.toml"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/protocol#codex-protocol@0.0.0",
+      "name": "codex-protocol",
+      "manifest_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/protocol/Cargo.toml"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/async-utils#codex-async-utils@0.0.0",
+      "name": "codex-async-utils",
+      "manifest_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/async-utils/Cargo.toml"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/execpolicy#codex-execpolicy@0.0.0",
+      "name": "codex-execpolicy",
+      "manifest_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/execpolicy/Cargo.toml"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/http-client#codex-http-client@0.0.0",
+      "name": "codex-http-client",
+      "manifest_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/http-client/Cargo.toml"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/utils/rustls-provider#codex-utils-rustls-provider@0.0.0",
+      "name": "codex-utils-rustls-provider",
+      "manifest_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/utils/rustls-provider/Cargo.toml"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/utils/cargo-bin#codex-utils-cargo-bin@0.0.0",
+      "name": "codex-utils-cargo-bin",
+      "manifest_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/utils/cargo-bin/Cargo.toml"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/network-proxy#codex-network-proxy@0.0.0",
+      "name": "codex-network-proxy",
+      "manifest_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/network-proxy/Cargo.toml"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/utils/home-dir#codex-utils-home-dir@0.0.0",
+      "name": "codex-utils-home-dir",
+      "manifest_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/utils/home-dir/Cargo.toml"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/windows-sandbox-rs#codex-windows-sandbox@0.0.0",
+      "name": "codex-windows-sandbox",
+      "manifest_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/windows-sandbox-rs/Cargo.toml"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/otel#codex-otel@0.0.0",
+      "name": "codex-otel",
+      "manifest_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/otel/Cargo.toml"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/codex-api#0.0.0",
+      "name": "codex-api",
+      "manifest_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/codex-api/Cargo.toml"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/codex-client#0.0.0",
+      "name": "codex-client",
+      "manifest_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/codex-client/Cargo.toml"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/websocket-client#codex-websocket-client@0.0.0",
+      "name": "codex-websocket-client",
+      "manifest_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/websocket-client/Cargo.toml"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/utils/string#codex-utils-string@0.0.0",
+      "name": "codex-utils-string",
+      "manifest_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/utils/string/Cargo.toml"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/utils/pty#codex-utils-pty@0.0.0",
+      "name": "codex-utils-pty",
+      "manifest_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/utils/pty/Cargo.toml"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/utils/image#codex-utils-image@0.0.0",
+      "name": "codex-utils-image",
+      "manifest_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/utils/image/Cargo.toml"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/utils/cache#codex-utils-cache@0.0.0",
+      "name": "codex-utils-cache",
+      "manifest_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/utils/cache/Cargo.toml"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/utils/path-uri#codex-utils-path-uri@0.0.0",
+      "name": "codex-utils-path-uri",
+      "manifest_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/utils/path-uri/Cargo.toml"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/utils/redacted-string#codex-utils-redacted-string@0.0.0",
+      "name": "codex-utils-redacted-string",
+      "manifest_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/utils/redacted-string/Cargo.toml"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/rollout#codex-rollout@0.0.0",
+      "name": "codex-rollout",
+      "manifest_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/rollout/Cargo.toml"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/file-search#codex-file-search@0.0.0",
+      "name": "codex-file-search",
+      "manifest_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/file-search/Cargo.toml"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/git-utils#codex-git-utils@0.0.0",
+      "name": "codex-git-utils",
+      "manifest_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/git-utils/Cargo.toml"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/file-system#codex-file-system@0.0.0",
+      "name": "codex-file-system",
+      "manifest_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/file-system/Cargo.toml"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/state#codex-state@0.0.0",
+      "name": "codex-state",
+      "manifest_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/state/Cargo.toml"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/utils/path-utils#codex-utils-path@0.0.0",
+      "name": "codex-utils-path",
+      "manifest_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/utils/path-utils/Cargo.toml"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/secrets#codex-secrets@0.0.0",
+      "name": "codex-secrets",
+      "manifest_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/secrets/Cargo.toml"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/keyring-store#codex-keyring-store@0.0.0",
+      "name": "codex-keyring-store",
+      "manifest_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/keyring-store/Cargo.toml"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/shell-command#codex-shell-command@0.0.0",
+      "name": "codex-shell-command",
+      "manifest_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/shell-command/Cargo.toml"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/login#codex-login@0.0.0",
+      "name": "codex-login",
+      "manifest_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/login/Cargo.toml"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/agent-identity#codex-agent-identity@0.0.0",
+      "name": "codex-agent-identity",
+      "manifest_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/agent-identity/Cargo.toml"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/config#codex-config@0.0.0",
+      "name": "codex-config",
+      "manifest_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/config/Cargo.toml"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/features#codex-features@0.0.0",
+      "name": "codex-features",
+      "manifest_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/features/Cargo.toml"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/model-provider-info#codex-model-provider-info@0.0.0",
+      "name": "codex-model-provider-info",
+      "manifest_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/model-provider-info/Cargo.toml"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/terminal-detection#codex-terminal-detection@0.0.0",
+      "name": "codex-terminal-detection",
+      "manifest_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/terminal-detection/Cargo.toml"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/utils/template#codex-utils-template@0.0.0",
+      "name": "codex-utils-template",
+      "manifest_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/utils/template/Cargo.toml"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/workload-identity#codex-workload-identity@0.0.0",
+      "name": "codex-workload-identity",
+      "manifest_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/workload-identity/Cargo.toml"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/core/tests/common#core_test_support@0.0.0",
+      "name": "core_test_support",
+      "manifest_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/core/tests/common/Cargo.toml"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/arg0#codex-arg0@0.0.0",
+      "name": "codex-arg0",
+      "manifest_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/arg0/Cargo.toml"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/apply-patch#codex-apply-patch@0.0.0",
+      "name": "codex-apply-patch",
+      "manifest_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/apply-patch/Cargo.toml"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/exec-server#codex-exec-server@0.0.0",
+      "name": "codex-exec-server",
+      "manifest_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/exec-server/Cargo.toml"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/exec-server-protocol#codex-exec-server-protocol@0.0.0",
+      "name": "codex-exec-server-protocol",
+      "manifest_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/exec-server-protocol/Cargo.toml"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/sandboxing#codex-sandboxing@0.0.0",
+      "name": "codex-sandboxing",
+      "manifest_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/sandboxing/Cargo.toml"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/exec-server/tests/support#codex-exec-server-test-support@0.0.0",
+      "name": "codex-exec-server-test-support",
+      "manifest_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/exec-server/tests/support/Cargo.toml"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/test-binary-support#codex-test-binary-support@0.0.0",
+      "name": "codex-test-binary-support",
+      "manifest_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/test-binary-support/Cargo.toml"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/install-context#codex-install-context@0.0.0",
+      "name": "codex-install-context",
+      "manifest_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/install-context/Cargo.toml"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/linux-sandbox#codex-linux-sandbox@0.0.0",
+      "name": "codex-linux-sandbox",
+      "manifest_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/linux-sandbox/Cargo.toml"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/process-hardening#codex-process-hardening@0.0.0",
+      "name": "codex-process-hardening",
+      "manifest_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/process-hardening/Cargo.toml"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/core#codex-core@0.0.0",
+      "name": "codex-core",
+      "manifest_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/core/Cargo.toml"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/agent-graph-store#codex-agent-graph-store@0.0.0",
+      "name": "codex-agent-graph-store",
+      "manifest_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/agent-graph-store/Cargo.toml"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/code-mode#codex-code-mode@0.0.0",
+      "name": "codex-code-mode",
+      "manifest_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/code-mode/Cargo.toml"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/code-mode-protocol#codex-code-mode-protocol@0.0.0",
+      "name": "codex-code-mode-protocol",
+      "manifest_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/code-mode-protocol/Cargo.toml"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/connectors#codex-connectors@0.0.0",
+      "name": "codex-connectors",
+      "manifest_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/connectors/Cargo.toml"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/plugin#codex-plugin@0.0.0",
+      "name": "codex-plugin",
+      "manifest_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/plugin/Cargo.toml"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/utils/plugins#codex-utils-plugins@0.0.0",
+      "name": "codex-utils-plugins",
+      "manifest_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/utils/plugins/Cargo.toml"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/context-fragments#codex-context-fragments@0.0.0",
+      "name": "codex-context-fragments",
+      "manifest_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/context-fragments/Cargo.toml"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/core-plugins#codex-core-plugins@0.0.0",
+      "name": "codex-core-plugins",
+      "manifest_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/core-plugins/Cargo.toml"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/hooks#codex-hooks@0.0.0",
+      "name": "codex-hooks",
+      "manifest_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/hooks/Cargo.toml"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/utils/output-truncation#codex-utils-output-truncation@0.0.0",
+      "name": "codex-utils-output-truncation",
+      "manifest_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/utils/output-truncation/Cargo.toml"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/codex-mcp#0.0.0",
+      "name": "codex-mcp",
+      "manifest_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/codex-mcp/Cargo.toml"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/diagnostics#codex-diagnostics@0.0.0",
+      "name": "codex-diagnostics",
+      "manifest_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/diagnostics/Cargo.toml"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/model-provider#codex-model-provider@0.0.0",
+      "name": "codex-model-provider",
+      "manifest_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/model-provider/Cargo.toml"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/feedback#codex-feedback@0.0.0",
+      "name": "codex-feedback",
+      "manifest_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/feedback/Cargo.toml"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/hepta-contracts#codex-hepta-contracts@0.0.0",
+      "name": "codex-hepta-contracts",
+      "manifest_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/hepta-contracts/Cargo.toml"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/models-manager#codex-models-manager@0.0.0",
+      "name": "codex-models-manager",
+      "manifest_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/models-manager/Cargo.toml"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/collaboration-mode-templates#codex-collaboration-mode-templates@0.0.0",
+      "name": "codex-collaboration-mode-templates",
+      "manifest_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/collaboration-mode-templates/Cargo.toml"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/response-debug-context#codex-response-debug-context@0.0.0",
+      "name": "codex-response-debug-context",
+      "manifest_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/response-debug-context/Cargo.toml"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/rmcp-client#codex-rmcp-client@0.0.0",
+      "name": "codex-rmcp-client",
+      "manifest_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/rmcp-client/Cargo.toml"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/skills#codex-skills@0.0.0",
+      "name": "codex-skills",
+      "manifest_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/skills/Cargo.toml"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/tools#codex-tools@0.0.0",
+      "name": "codex-tools",
+      "manifest_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/tools/Cargo.toml"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/ext/extension-api#codex-extension-api@0.0.0",
+      "name": "codex-extension-api",
+      "manifest_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/ext/extension-api/Cargo.toml"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/memories/read#codex-memories-read@0.0.0",
+      "name": "codex-memories-read",
+      "manifest_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/memories/read/Cargo.toml"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/prompts#codex-prompts@0.0.0",
+      "name": "codex-prompts",
+      "manifest_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/prompts/Cargo.toml"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/rollout-trace#codex-rollout-trace@0.0.0",
+      "name": "codex-rollout-trace",
+      "manifest_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/rollout-trace/Cargo.toml"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/ext/skills#codex-skills-extension@0.0.0",
+      "name": "codex-skills-extension",
+      "manifest_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/ext/skills/Cargo.toml"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/thread-store#codex-thread-store@0.0.0",
+      "name": "codex-thread-store",
+      "manifest_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/thread-store/Cargo.toml"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/utils/audio#codex-utils-audio@0.0.0",
+      "name": "codex-utils-audio",
+      "manifest_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/utils/audio/Cargo.toml"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/utils/stream-parser#codex-utils-stream-parser@0.0.0",
+      "name": "codex-utils-stream-parser",
+      "manifest_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/utils/stream-parser/Cargo.toml"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/codex-home#0.0.0",
+      "name": "codex-home",
+      "manifest_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/codex-home/Cargo.toml"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/ext/image-generation#codex-image-generation-extension@0.0.0",
+      "name": "codex-image-generation-extension",
+      "manifest_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/ext/image-generation/Cargo.toml"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/ext/web-search#codex-web-search-extension@0.0.0",
+      "name": "codex-web-search-extension",
+      "manifest_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/ext/web-search/Cargo.toml"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/shell-escalation#codex-shell-escalation@0.0.0",
+      "name": "codex-shell-escalation",
+      "manifest_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/shell-escalation/Cargo.toml"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/backend-client#codex-backend-client@0.0.0",
+      "name": "codex-backend-client",
+      "manifest_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/backend-client/Cargo.toml"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/codex-backend-openapi-models#0.0.0",
+      "name": "codex-backend-openapi-models",
+      "manifest_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/codex-backend-openapi-models/Cargo.toml"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/bwrap#codex-bwrap@0.0.0",
+      "name": "codex-bwrap",
+      "manifest_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/bwrap/Cargo.toml"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/build-info#codex-build-info@0.0.0",
+      "name": "codex-build-info",
+      "manifest_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/build-info/Cargo.toml"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/ansi-escape#codex-ansi-escape@0.0.0",
+      "name": "codex-ansi-escape",
+      "manifest_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/ansi-escape/Cargo.toml"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/app-server#codex-app-server@0.0.0",
+      "name": "codex-app-server",
+      "manifest_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/app-server/Cargo.toml"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/ext/agent#codex-agent-extension@0.0.0",
+      "name": "codex-agent-extension",
+      "manifest_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/ext/agent/Cargo.toml"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/app-server-transport#codex-app-server-transport@0.0.0",
+      "name": "codex-app-server-transport",
+      "manifest_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/app-server-transport/Cargo.toml"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/uds#codex-uds@0.0.0",
+      "name": "codex-uds",
+      "manifest_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/uds/Cargo.toml"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/chatgpt#codex-chatgpt@0.0.0",
+      "name": "codex-chatgpt",
+      "manifest_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/chatgpt/Cargo.toml"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/utils/cli#codex-utils-cli@0.0.0",
+      "name": "codex-utils-cli",
+      "manifest_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/utils/cli/Cargo.toml"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/cloud-config#codex-cloud-config@0.0.0",
+      "name": "codex-cloud-config",
+      "manifest_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/cloud-config/Cargo.toml"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/external-agent-migration#codex-external-agent-migration@0.0.0",
+      "name": "codex-external-agent-migration",
+      "manifest_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/external-agent-migration/Cargo.toml"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/memories/write#codex-memories-write@0.0.0",
+      "name": "codex-memories-write",
+      "manifest_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/memories/write/Cargo.toml"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/file-watcher#codex-file-watcher@0.0.0",
+      "name": "codex-file-watcher",
+      "manifest_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/file-watcher/Cargo.toml"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/ext/git-attribution#codex-git-attribution@0.0.0",
+      "name": "codex-git-attribution",
+      "manifest_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/ext/git-attribution/Cargo.toml"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/ext/goal#codex-goal-extension@0.0.0",
+      "name": "codex-goal-extension",
+      "manifest_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/ext/goal/Cargo.toml"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/ext/guardian-v2#codex-guardian-v2@0.0.0",
+      "name": "codex-guardian-v2",
+      "manifest_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/ext/guardian-v2/Cargo.toml"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/hepta-evidence#codex-hepta-evidence@0.0.0",
+      "name": "codex-hepta-evidence",
+      "manifest_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/hepta-evidence/Cargo.toml"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/hepta-authbus#codex-hepta-authbus@0.0.0",
+      "name": "codex-hepta-authbus",
+      "manifest_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/hepta-authbus/Cargo.toml"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/hepta-types#codex-hepta-types@0.0.0",
+      "name": "codex-hepta-types",
+      "manifest_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/hepta-types/Cargo.toml"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/ext/hepta-governance#codex-hepta-governance@0.0.0",
+      "name": "codex-hepta-governance",
+      "manifest_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/ext/hepta-governance/Cargo.toml"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/hepta-memory#codex-hepta-memory@0.0.0",
+      "name": "codex-hepta-memory",
+      "manifest_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/hepta-memory/Cargo.toml"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/hepta-cognitive-read#codex-hepta-cognitive-read@0.0.0",
+      "name": "codex-hepta-cognitive-read",
+      "manifest_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/hepta-cognitive-read/Cargo.toml"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/hepta-cognitive-types#codex-hepta-cognitive-types@0.0.0",
+      "name": "codex-hepta-cognitive-types",
+      "manifest_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/hepta-cognitive-types/Cargo.toml"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/hepta-kg#codex-hepta-kg@0.0.0",
+      "name": "codex-hepta-kg",
+      "manifest_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/hepta-kg/Cargo.toml"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/hepta-prompt-registry#codex-hepta-prompt-registry@0.0.0",
+      "name": "codex-hepta-prompt-registry",
+      "manifest_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/hepta-prompt-registry/Cargo.toml"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/hepta-memory-federation#codex-hepta-memory-federation@0.0.0",
+      "name": "codex-hepta-memory-federation",
+      "manifest_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/hepta-memory-federation/Cargo.toml"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/hepta-memory-retrieval#codex-hepta-memory-retrieval@0.0.0",
+      "name": "codex-hepta-memory-retrieval",
+      "manifest_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/hepta-memory-retrieval/Cargo.toml"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/hepta-operations#codex-hepta-operations@0.0.0",
+      "name": "codex-hepta-operations",
+      "manifest_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/hepta-operations/Cargo.toml"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/hepta-paths#codex-hepta-paths@0.0.0",
+      "name": "codex-hepta-paths",
+      "manifest_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/hepta-paths/Cargo.toml"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/ext/hepta-memory#codex-hepta-memory-extension@0.0.0",
+      "name": "codex-hepta-memory-extension",
+      "manifest_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/ext/hepta-memory/Cargo.toml"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/ext/hepta-prompt#codex-hepta-prompt-extension@0.0.0",
+      "name": "codex-hepta-prompt-extension",
+      "manifest_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/ext/hepta-prompt/Cargo.toml"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/ext/history-notes#codex-history-notes-extension@0.0.0",
+      "name": "codex-history-notes-extension",
+      "manifest_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/ext/history-notes/Cargo.toml"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/ext/mcp#codex-mcp-extension@0.0.0",
+      "name": "codex-mcp-extension",
+      "manifest_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/ext/mcp/Cargo.toml"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/ext/connectors#codex-connectors-extension@0.0.0",
+      "name": "codex-connectors-extension",
+      "manifest_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/ext/connectors/Cargo.toml"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/ext/memories#codex-memories-extension@0.0.0",
+      "name": "codex-memories-extension",
+      "manifest_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/ext/memories/Cargo.toml"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/ext/queue#codex-queue-extension@0.0.0",
+      "name": "codex-queue-extension",
+      "manifest_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/ext/queue/Cargo.toml"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/utils/json-to-toml#codex-utils-json-to-toml@0.0.0",
+      "name": "codex-utils-json-to-toml",
+      "manifest_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/utils/json-to-toml/Cargo.toml"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/app-server/tests/common#app_test_support@0.0.0",
+      "name": "app_test_support",
+      "manifest_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/app-server/tests/common/Cargo.toml"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/app-server-daemon#codex-app-server-daemon@0.0.0",
+      "name": "codex-app-server-daemon",
+      "manifest_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/app-server-daemon/Cargo.toml"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/app-server-client#codex-app-server-client@0.0.0",
+      "name": "codex-app-server-client",
+      "manifest_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/app-server-client/Cargo.toml"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/app-server-test-client#codex-app-server-test-client@0.0.0",
+      "name": "codex-app-server-test-client",
+      "manifest_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/app-server-test-client/Cargo.toml"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/code-mode-host#codex-code-mode-host@0.0.0",
+      "name": "codex-code-mode-host",
+      "manifest_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/code-mode-host/Cargo.toml"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/code-mode-runtime#codex-code-mode-runtime@0.0.0",
+      "name": "codex-code-mode-runtime",
+      "manifest_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/code-mode-runtime/Cargo.toml"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/cloud-tasks#codex-cloud-tasks@0.0.0",
+      "name": "codex-cloud-tasks",
+      "manifest_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/cloud-tasks/Cargo.toml"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/cloud-tasks-client#codex-cloud-tasks-client@0.0.0",
+      "name": "codex-cloud-tasks-client",
+      "manifest_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/cloud-tasks-client/Cargo.toml"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/cloud-tasks-mock-client#codex-cloud-tasks-mock-client@0.0.0",
+      "name": "codex-cloud-tasks-mock-client",
+      "manifest_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/cloud-tasks-mock-client/Cargo.toml"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/tui#codex-tui@0.0.0",
+      "name": "codex-tui",
+      "manifest_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/tui/Cargo.toml"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/message-history#codex-message-history@0.0.0",
+      "name": "codex-message-history",
+      "manifest_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/message-history/Cargo.toml"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/utils/approval-presets#codex-utils-approval-presets@0.0.0",
+      "name": "codex-utils-approval-presets",
+      "manifest_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/utils/approval-presets/Cargo.toml"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/utils/elapsed#codex-utils-elapsed@0.0.0",
+      "name": "codex-utils-elapsed",
+      "manifest_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/utils/elapsed/Cargo.toml"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/utils/fuzzy-match#codex-utils-fuzzy-match@0.0.0",
+      "name": "codex-utils-fuzzy-match",
+      "manifest_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/utils/fuzzy-match/Cargo.toml"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/utils/oss#codex-utils-oss@0.0.0",
+      "name": "codex-utils-oss",
+      "manifest_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/utils/oss/Cargo.toml"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/lmstudio#codex-lmstudio@0.0.0",
+      "name": "codex-lmstudio",
+      "manifest_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/lmstudio/Cargo.toml"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/ollama#codex-ollama@0.0.0",
+      "name": "codex-ollama",
+      "manifest_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/ollama/Cargo.toml"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/utils/sandbox-summary#codex-utils-sandbox-summary@0.0.0",
+      "name": "codex-utils-sandbox-summary",
+      "manifest_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/utils/sandbox-summary/Cargo.toml"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/utils/sleep-inhibitor#codex-utils-sleep-inhibitor@0.0.0",
+      "name": "codex-utils-sleep-inhibitor",
+      "manifest_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/utils/sleep-inhibitor/Cargo.toml"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/cli#codex-cli@0.0.0",
+      "name": "codex-cli",
+      "manifest_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/cli/Cargo.toml"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/exec#codex-exec@0.0.0",
+      "name": "codex-exec",
+      "manifest_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/exec/Cargo.toml"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/hepta-native-gateway#codex-hepta-native-gateway@0.0.0",
+      "name": "codex-hepta-native-gateway",
+      "manifest_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/hepta-native-gateway/Cargo.toml"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/hepta-runtime#codex-hepta-runtime@0.0.0",
+      "name": "codex-hepta-runtime",
+      "manifest_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/hepta-runtime/Cargo.toml"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/hepta-control-plane#codex-hepta-control-plane@0.0.0",
+      "name": "codex-hepta-control-plane",
+      "manifest_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/hepta-control-plane/Cargo.toml"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/hepta-ndu#codex-hepta-ndu@0.0.0",
+      "name": "codex-hepta-ndu",
+      "manifest_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/hepta-ndu/Cargo.toml"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/hepta-plasticity#codex-hepta-plasticity@0.0.0",
+      "name": "codex-hepta-plasticity",
+      "manifest_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/hepta-plasticity/Cargo.toml"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/hepta-wire#codex-hepta-wire@0.0.0",
+      "name": "codex-hepta-wire",
+      "manifest_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/hepta-wire/Cargo.toml"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/hepta-intelligence#codex-hepta-intelligence@0.0.0",
+      "name": "codex-hepta-intelligence",
+      "manifest_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/hepta-intelligence/Cargo.toml"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/hepta-context-compiler#codex-hepta-context-compiler@0.0.0",
+      "name": "codex-hepta-context-compiler",
+      "manifest_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/hepta-context-compiler/Cargo.toml"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/hepta-intelligence-eval#codex-hepta-intelligence-eval@0.0.0",
+      "name": "codex-hepta-intelligence-eval",
+      "manifest_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/hepta-intelligence-eval/Cargo.toml"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/hepta-learning-ledger#codex-hepta-learning-ledger@0.0.0",
+      "name": "codex-hepta-learning-ledger",
+      "manifest_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/hepta-learning-ledger/Cargo.toml"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/hepta-intuition#codex-hepta-intuition@0.0.0",
+      "name": "codex-hepta-intuition",
+      "manifest_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/hepta-intuition/Cargo.toml"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/hepta-learning-artifacts#codex-hepta-learning-artifacts@0.0.0",
+      "name": "codex-hepta-learning-artifacts",
+      "manifest_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/hepta-learning-artifacts/Cargo.toml"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/hepta-neuron#codex-hepta-neuron@0.0.0",
+      "name": "codex-hepta-neuron",
+      "manifest_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/hepta-neuron/Cargo.toml"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/hepta-infer-core#codex-hepta-infer-core@0.0.0",
+      "name": "codex-hepta-infer-core",
+      "manifest_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/hepta-infer-core/Cargo.toml"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/hepta-objective#codex-hepta-objective@0.0.0",
+      "name": "codex-hepta-objective",
+      "manifest_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/hepta-objective/Cargo.toml"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/hepta-prompt-optimizer#codex-hepta-prompt-optimizer@0.0.0",
+      "name": "codex-hepta-prompt-optimizer",
+      "manifest_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/hepta-prompt-optimizer/Cargo.toml"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/mcp-server#codex-mcp-server@0.0.0",
+      "name": "codex-mcp-server",
+      "manifest_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/mcp-server/Cargo.toml"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/mcp-server/tests/common#mcp_test_support@0.0.0",
+      "name": "mcp_test_support",
+      "manifest_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/mcp-server/tests/common/Cargo.toml"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/responses-api-proxy#codex-responses-api-proxy@0.0.0",
+      "name": "codex-responses-api-proxy",
+      "manifest_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/responses-api-proxy/Cargo.toml"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/stdio-to-uds#codex-stdio-to-uds@0.0.0",
+      "name": "codex-stdio-to-uds",
+      "manifest_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/stdio-to-uds/Cargo.toml"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/utils/build-identity#codex-utils-build-identity@0.0.0",
+      "name": "codex-utils-build-identity",
+      "manifest_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/utils/build-identity/Cargo.toml"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/core-api#codex-core-api@0.0.0",
+      "name": "codex-core-api",
+      "manifest_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/core-api/Cargo.toml"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/hepta-agent-protocol#codex-hepta-agent-protocol@0.0.0",
+      "name": "codex-hepta-agent-protocol",
+      "manifest_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/hepta-agent-protocol/Cargo.toml"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/hepta-automation#codex-hepta-automation@0.0.0",
+      "name": "codex-hepta-automation",
+      "manifest_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/hepta-automation/Cargo.toml"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/hepta-fleet#codex-hepta-fleet@0.0.0",
+      "name": "codex-hepta-fleet",
+      "manifest_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/hepta-fleet/Cargo.toml"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/hepta-agentd#codex-hepta-agentd@0.0.0",
+      "name": "codex-hepta-agentd",
+      "manifest_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/hepta-agentd/Cargo.toml"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/hepta-bellman-operator#codex-hepta-bellman-operator@0.0.0",
+      "name": "codex-hepta-bellman-operator",
+      "manifest_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/hepta-bellman-operator/Cargo.toml"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/hepta-codex-adapter#codex-hepta-codex-adapter@0.0.0",
+      "name": "codex-hepta-codex-adapter",
+      "manifest_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/hepta-codex-adapter/Cargo.toml"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/hepta-cognitive-store#codex-hepta-cognitive-store@0.0.0",
+      "name": "codex-hepta-cognitive-store",
+      "manifest_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/hepta-cognitive-store/Cargo.toml"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/hepta-supervisor#codex-hepta-supervisor@0.0.0",
+      "name": "codex-hepta-supervisor",
+      "manifest_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/hepta-supervisor/Cargo.toml"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/hepta-matrix-protocol#codex-hepta-matrix-protocol@0.0.0",
+      "name": "codex-hepta-matrix-protocol",
+      "manifest_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/hepta-matrix-protocol/Cargo.toml"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/hepta-infer-worker-host#codex-hepta-infer-worker-host@0.0.0",
+      "name": "codex-hepta-infer-worker-host",
+      "manifest_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/hepta-infer-worker-host/Cargo.toml"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/hepta-authbus-p1-3-qualification#codex-hepta-authbus-p1-3-qualification@0.0.0",
+      "name": "codex-hepta-authbus-p1-3-qualification",
+      "manifest_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/hepta-authbus-p1-3-qualification/Cargo.toml"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/hepta-bao-adapter#codex-hepta-bao-adapter@0.0.0",
+      "name": "codex-hepta-bao-adapter",
+      "manifest_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/hepta-bao-adapter/Cargo.toml"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/hepta-compact-engine#codex-hepta-compact-engine@0.0.0",
+      "name": "codex-hepta-compact-engine",
+      "manifest_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/hepta-compact-engine/Cargo.toml"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/hepta-inferd#codex-hepta-inferd@0.0.0",
+      "name": "codex-hepta-inferd",
+      "manifest_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/hepta-inferd/Cargo.toml"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/hepta-matrix-store#codex-hepta-matrix-store@0.0.0",
+      "name": "codex-hepta-matrix-store",
+      "manifest_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/hepta-matrix-store/Cargo.toml"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/hepta-matrix-sdk#codex-hepta-matrix-sdk@0.0.0",
+      "name": "codex-hepta-matrix-sdk",
+      "manifest_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/hepta-matrix-sdk/Cargo.toml"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/hepta-matrixd#codex-hepta-matrixd@0.0.0",
+      "name": "codex-hepta-matrixd",
+      "manifest_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/hepta-matrixd/Cargo.toml"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/hepta-operator-acceptance#codex-hepta-operator-acceptance@0.0.0",
+      "name": "codex-hepta-operator-acceptance",
+      "manifest_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/hepta-operator-acceptance/Cargo.toml"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/hepta-shadow-qualification#codex-hepta-shadow-qualification@0.0.0",
+      "name": "codex-hepta-shadow-qualification",
+      "manifest_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/hepta-shadow-qualification/Cargo.toml"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/v8-poc#codex-v8-poc@0.0.0",
+      "name": "codex-v8-poc",
+      "manifest_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/v8-poc/Cargo.toml"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/utils/readiness#codex-utils-readiness@0.0.0",
+      "name": "codex-utils-readiness",
+      "manifest_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/utils/readiness/Cargo.toml"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/thread-manager-sample#codex-thread-manager-sample@0.0.0",
+      "name": "codex-thread-manager-sample",
+      "manifest_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/thread-manager-sample/Cargo.toml"
+    }
+  ],
+  "workspace_default_members": [
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/aws-auth#codex-aws-auth@0.0.0",
+      "name": "codex-aws-auth"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/analytics#codex-analytics@0.0.0",
+      "name": "codex-analytics"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/app-server-protocol#codex-app-server-protocol@0.0.0",
+      "name": "codex-app-server-protocol"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/app-server-protocol-noop-macros#codex-app-server-protocol-noop-macros@0.0.0",
+      "name": "codex-app-server-protocol-noop-macros"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/codex-experimental-api-macros#0.0.0",
+      "name": "codex-experimental-api-macros"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/ext/items#codex-extension-items@0.0.0",
+      "name": "codex-extension-items"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/utils/absolute-path#codex-utils-absolute-path@0.0.0",
+      "name": "codex-utils-absolute-path"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/history#codex-history@0.0.0",
+      "name": "codex-history"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/protocol#codex-protocol@0.0.0",
+      "name": "codex-protocol"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/async-utils#codex-async-utils@0.0.0",
+      "name": "codex-async-utils"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/execpolicy#codex-execpolicy@0.0.0",
+      "name": "codex-execpolicy"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/http-client#codex-http-client@0.0.0",
+      "name": "codex-http-client"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/utils/rustls-provider#codex-utils-rustls-provider@0.0.0",
+      "name": "codex-utils-rustls-provider"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/utils/cargo-bin#codex-utils-cargo-bin@0.0.0",
+      "name": "codex-utils-cargo-bin"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/network-proxy#codex-network-proxy@0.0.0",
+      "name": "codex-network-proxy"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/utils/home-dir#codex-utils-home-dir@0.0.0",
+      "name": "codex-utils-home-dir"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/windows-sandbox-rs#codex-windows-sandbox@0.0.0",
+      "name": "codex-windows-sandbox"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/otel#codex-otel@0.0.0",
+      "name": "codex-otel"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/codex-api#0.0.0",
+      "name": "codex-api"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/codex-client#0.0.0",
+      "name": "codex-client"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/websocket-client#codex-websocket-client@0.0.0",
+      "name": "codex-websocket-client"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/utils/string#codex-utils-string@0.0.0",
+      "name": "codex-utils-string"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/utils/pty#codex-utils-pty@0.0.0",
+      "name": "codex-utils-pty"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/utils/image#codex-utils-image@0.0.0",
+      "name": "codex-utils-image"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/utils/cache#codex-utils-cache@0.0.0",
+      "name": "codex-utils-cache"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/utils/path-uri#codex-utils-path-uri@0.0.0",
+      "name": "codex-utils-path-uri"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/utils/redacted-string#codex-utils-redacted-string@0.0.0",
+      "name": "codex-utils-redacted-string"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/rollout#codex-rollout@0.0.0",
+      "name": "codex-rollout"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/file-search#codex-file-search@0.0.0",
+      "name": "codex-file-search"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/git-utils#codex-git-utils@0.0.0",
+      "name": "codex-git-utils"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/file-system#codex-file-system@0.0.0",
+      "name": "codex-file-system"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/state#codex-state@0.0.0",
+      "name": "codex-state"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/utils/path-utils#codex-utils-path@0.0.0",
+      "name": "codex-utils-path"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/secrets#codex-secrets@0.0.0",
+      "name": "codex-secrets"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/keyring-store#codex-keyring-store@0.0.0",
+      "name": "codex-keyring-store"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/shell-command#codex-shell-command@0.0.0",
+      "name": "codex-shell-command"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/login#codex-login@0.0.0",
+      "name": "codex-login"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/agent-identity#codex-agent-identity@0.0.0",
+      "name": "codex-agent-identity"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/config#codex-config@0.0.0",
+      "name": "codex-config"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/features#codex-features@0.0.0",
+      "name": "codex-features"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/model-provider-info#codex-model-provider-info@0.0.0",
+      "name": "codex-model-provider-info"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/terminal-detection#codex-terminal-detection@0.0.0",
+      "name": "codex-terminal-detection"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/utils/template#codex-utils-template@0.0.0",
+      "name": "codex-utils-template"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/workload-identity#codex-workload-identity@0.0.0",
+      "name": "codex-workload-identity"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/core/tests/common#core_test_support@0.0.0",
+      "name": "core_test_support"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/arg0#codex-arg0@0.0.0",
+      "name": "codex-arg0"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/apply-patch#codex-apply-patch@0.0.0",
+      "name": "codex-apply-patch"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/exec-server#codex-exec-server@0.0.0",
+      "name": "codex-exec-server"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/exec-server-protocol#codex-exec-server-protocol@0.0.0",
+      "name": "codex-exec-server-protocol"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/sandboxing#codex-sandboxing@0.0.0",
+      "name": "codex-sandboxing"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/exec-server/tests/support#codex-exec-server-test-support@0.0.0",
+      "name": "codex-exec-server-test-support"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/test-binary-support#codex-test-binary-support@0.0.0",
+      "name": "codex-test-binary-support"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/install-context#codex-install-context@0.0.0",
+      "name": "codex-install-context"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/linux-sandbox#codex-linux-sandbox@0.0.0",
+      "name": "codex-linux-sandbox"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/process-hardening#codex-process-hardening@0.0.0",
+      "name": "codex-process-hardening"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/core#codex-core@0.0.0",
+      "name": "codex-core"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/agent-graph-store#codex-agent-graph-store@0.0.0",
+      "name": "codex-agent-graph-store"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/code-mode#codex-code-mode@0.0.0",
+      "name": "codex-code-mode"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/code-mode-protocol#codex-code-mode-protocol@0.0.0",
+      "name": "codex-code-mode-protocol"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/connectors#codex-connectors@0.0.0",
+      "name": "codex-connectors"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/plugin#codex-plugin@0.0.0",
+      "name": "codex-plugin"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/utils/plugins#codex-utils-plugins@0.0.0",
+      "name": "codex-utils-plugins"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/context-fragments#codex-context-fragments@0.0.0",
+      "name": "codex-context-fragments"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/core-plugins#codex-core-plugins@0.0.0",
+      "name": "codex-core-plugins"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/hooks#codex-hooks@0.0.0",
+      "name": "codex-hooks"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/utils/output-truncation#codex-utils-output-truncation@0.0.0",
+      "name": "codex-utils-output-truncation"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/codex-mcp#0.0.0",
+      "name": "codex-mcp"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/diagnostics#codex-diagnostics@0.0.0",
+      "name": "codex-diagnostics"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/model-provider#codex-model-provider@0.0.0",
+      "name": "codex-model-provider"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/feedback#codex-feedback@0.0.0",
+      "name": "codex-feedback"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/hepta-contracts#codex-hepta-contracts@0.0.0",
+      "name": "codex-hepta-contracts"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/models-manager#codex-models-manager@0.0.0",
+      "name": "codex-models-manager"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/collaboration-mode-templates#codex-collaboration-mode-templates@0.0.0",
+      "name": "codex-collaboration-mode-templates"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/response-debug-context#codex-response-debug-context@0.0.0",
+      "name": "codex-response-debug-context"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/rmcp-client#codex-rmcp-client@0.0.0",
+      "name": "codex-rmcp-client"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/skills#codex-skills@0.0.0",
+      "name": "codex-skills"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/tools#codex-tools@0.0.0",
+      "name": "codex-tools"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/ext/extension-api#codex-extension-api@0.0.0",
+      "name": "codex-extension-api"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/memories/read#codex-memories-read@0.0.0",
+      "name": "codex-memories-read"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/prompts#codex-prompts@0.0.0",
+      "name": "codex-prompts"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/rollout-trace#codex-rollout-trace@0.0.0",
+      "name": "codex-rollout-trace"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/ext/skills#codex-skills-extension@0.0.0",
+      "name": "codex-skills-extension"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/thread-store#codex-thread-store@0.0.0",
+      "name": "codex-thread-store"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/utils/audio#codex-utils-audio@0.0.0",
+      "name": "codex-utils-audio"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/utils/stream-parser#codex-utils-stream-parser@0.0.0",
+      "name": "codex-utils-stream-parser"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/codex-home#0.0.0",
+      "name": "codex-home"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/ext/image-generation#codex-image-generation-extension@0.0.0",
+      "name": "codex-image-generation-extension"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/ext/web-search#codex-web-search-extension@0.0.0",
+      "name": "codex-web-search-extension"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/shell-escalation#codex-shell-escalation@0.0.0",
+      "name": "codex-shell-escalation"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/backend-client#codex-backend-client@0.0.0",
+      "name": "codex-backend-client"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/codex-backend-openapi-models#0.0.0",
+      "name": "codex-backend-openapi-models"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/bwrap#codex-bwrap@0.0.0",
+      "name": "codex-bwrap"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/build-info#codex-build-info@0.0.0",
+      "name": "codex-build-info"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/ansi-escape#codex-ansi-escape@0.0.0",
+      "name": "codex-ansi-escape"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/app-server#codex-app-server@0.0.0",
+      "name": "codex-app-server"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/ext/agent#codex-agent-extension@0.0.0",
+      "name": "codex-agent-extension"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/app-server-transport#codex-app-server-transport@0.0.0",
+      "name": "codex-app-server-transport"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/uds#codex-uds@0.0.0",
+      "name": "codex-uds"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/chatgpt#codex-chatgpt@0.0.0",
+      "name": "codex-chatgpt"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/utils/cli#codex-utils-cli@0.0.0",
+      "name": "codex-utils-cli"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/cloud-config#codex-cloud-config@0.0.0",
+      "name": "codex-cloud-config"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/external-agent-migration#codex-external-agent-migration@0.0.0",
+      "name": "codex-external-agent-migration"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/memories/write#codex-memories-write@0.0.0",
+      "name": "codex-memories-write"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/file-watcher#codex-file-watcher@0.0.0",
+      "name": "codex-file-watcher"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/ext/git-attribution#codex-git-attribution@0.0.0",
+      "name": "codex-git-attribution"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/ext/goal#codex-goal-extension@0.0.0",
+      "name": "codex-goal-extension"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/ext/guardian-v2#codex-guardian-v2@0.0.0",
+      "name": "codex-guardian-v2"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/hepta-evidence#codex-hepta-evidence@0.0.0",
+      "name": "codex-hepta-evidence"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/hepta-authbus#codex-hepta-authbus@0.0.0",
+      "name": "codex-hepta-authbus"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/hepta-types#codex-hepta-types@0.0.0",
+      "name": "codex-hepta-types"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/ext/hepta-governance#codex-hepta-governance@0.0.0",
+      "name": "codex-hepta-governance"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/hepta-memory#codex-hepta-memory@0.0.0",
+      "name": "codex-hepta-memory"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/hepta-cognitive-read#codex-hepta-cognitive-read@0.0.0",
+      "name": "codex-hepta-cognitive-read"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/hepta-cognitive-types#codex-hepta-cognitive-types@0.0.0",
+      "name": "codex-hepta-cognitive-types"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/hepta-kg#codex-hepta-kg@0.0.0",
+      "name": "codex-hepta-kg"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/hepta-prompt-registry#codex-hepta-prompt-registry@0.0.0",
+      "name": "codex-hepta-prompt-registry"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/hepta-memory-federation#codex-hepta-memory-federation@0.0.0",
+      "name": "codex-hepta-memory-federation"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/hepta-memory-retrieval#codex-hepta-memory-retrieval@0.0.0",
+      "name": "codex-hepta-memory-retrieval"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/hepta-operations#codex-hepta-operations@0.0.0",
+      "name": "codex-hepta-operations"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/hepta-paths#codex-hepta-paths@0.0.0",
+      "name": "codex-hepta-paths"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/ext/hepta-memory#codex-hepta-memory-extension@0.0.0",
+      "name": "codex-hepta-memory-extension"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/ext/hepta-prompt#codex-hepta-prompt-extension@0.0.0",
+      "name": "codex-hepta-prompt-extension"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/ext/history-notes#codex-history-notes-extension@0.0.0",
+      "name": "codex-history-notes-extension"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/ext/mcp#codex-mcp-extension@0.0.0",
+      "name": "codex-mcp-extension"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/ext/connectors#codex-connectors-extension@0.0.0",
+      "name": "codex-connectors-extension"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/ext/memories#codex-memories-extension@0.0.0",
+      "name": "codex-memories-extension"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/ext/queue#codex-queue-extension@0.0.0",
+      "name": "codex-queue-extension"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/utils/json-to-toml#codex-utils-json-to-toml@0.0.0",
+      "name": "codex-utils-json-to-toml"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/app-server/tests/common#app_test_support@0.0.0",
+      "name": "app_test_support"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/app-server-daemon#codex-app-server-daemon@0.0.0",
+      "name": "codex-app-server-daemon"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/app-server-client#codex-app-server-client@0.0.0",
+      "name": "codex-app-server-client"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/app-server-test-client#codex-app-server-test-client@0.0.0",
+      "name": "codex-app-server-test-client"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/code-mode-host#codex-code-mode-host@0.0.0",
+      "name": "codex-code-mode-host"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/code-mode-runtime#codex-code-mode-runtime@0.0.0",
+      "name": "codex-code-mode-runtime"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/cloud-tasks#codex-cloud-tasks@0.0.0",
+      "name": "codex-cloud-tasks"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/cloud-tasks-client#codex-cloud-tasks-client@0.0.0",
+      "name": "codex-cloud-tasks-client"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/cloud-tasks-mock-client#codex-cloud-tasks-mock-client@0.0.0",
+      "name": "codex-cloud-tasks-mock-client"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/tui#codex-tui@0.0.0",
+      "name": "codex-tui"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/message-history#codex-message-history@0.0.0",
+      "name": "codex-message-history"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/utils/approval-presets#codex-utils-approval-presets@0.0.0",
+      "name": "codex-utils-approval-presets"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/utils/elapsed#codex-utils-elapsed@0.0.0",
+      "name": "codex-utils-elapsed"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/utils/fuzzy-match#codex-utils-fuzzy-match@0.0.0",
+      "name": "codex-utils-fuzzy-match"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/utils/oss#codex-utils-oss@0.0.0",
+      "name": "codex-utils-oss"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/lmstudio#codex-lmstudio@0.0.0",
+      "name": "codex-lmstudio"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/ollama#codex-ollama@0.0.0",
+      "name": "codex-ollama"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/utils/sandbox-summary#codex-utils-sandbox-summary@0.0.0",
+      "name": "codex-utils-sandbox-summary"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/utils/sleep-inhibitor#codex-utils-sleep-inhibitor@0.0.0",
+      "name": "codex-utils-sleep-inhibitor"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/cli#codex-cli@0.0.0",
+      "name": "codex-cli"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/exec#codex-exec@0.0.0",
+      "name": "codex-exec"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/hepta-native-gateway#codex-hepta-native-gateway@0.0.0",
+      "name": "codex-hepta-native-gateway"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/hepta-runtime#codex-hepta-runtime@0.0.0",
+      "name": "codex-hepta-runtime"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/hepta-control-plane#codex-hepta-control-plane@0.0.0",
+      "name": "codex-hepta-control-plane"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/hepta-ndu#codex-hepta-ndu@0.0.0",
+      "name": "codex-hepta-ndu"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/hepta-plasticity#codex-hepta-plasticity@0.0.0",
+      "name": "codex-hepta-plasticity"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/hepta-wire#codex-hepta-wire@0.0.0",
+      "name": "codex-hepta-wire"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/hepta-intelligence#codex-hepta-intelligence@0.0.0",
+      "name": "codex-hepta-intelligence"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/hepta-context-compiler#codex-hepta-context-compiler@0.0.0",
+      "name": "codex-hepta-context-compiler"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/hepta-intelligence-eval#codex-hepta-intelligence-eval@0.0.0",
+      "name": "codex-hepta-intelligence-eval"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/hepta-learning-ledger#codex-hepta-learning-ledger@0.0.0",
+      "name": "codex-hepta-learning-ledger"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/hepta-intuition#codex-hepta-intuition@0.0.0",
+      "name": "codex-hepta-intuition"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/hepta-learning-artifacts#codex-hepta-learning-artifacts@0.0.0",
+      "name": "codex-hepta-learning-artifacts"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/hepta-neuron#codex-hepta-neuron@0.0.0",
+      "name": "codex-hepta-neuron"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/hepta-infer-core#codex-hepta-infer-core@0.0.0",
+      "name": "codex-hepta-infer-core"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/hepta-objective#codex-hepta-objective@0.0.0",
+      "name": "codex-hepta-objective"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/hepta-prompt-optimizer#codex-hepta-prompt-optimizer@0.0.0",
+      "name": "codex-hepta-prompt-optimizer"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/mcp-server#codex-mcp-server@0.0.0",
+      "name": "codex-mcp-server"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/mcp-server/tests/common#mcp_test_support@0.0.0",
+      "name": "mcp_test_support"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/responses-api-proxy#codex-responses-api-proxy@0.0.0",
+      "name": "codex-responses-api-proxy"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/stdio-to-uds#codex-stdio-to-uds@0.0.0",
+      "name": "codex-stdio-to-uds"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/utils/build-identity#codex-utils-build-identity@0.0.0",
+      "name": "codex-utils-build-identity"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/core-api#codex-core-api@0.0.0",
+      "name": "codex-core-api"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/hepta-agent-protocol#codex-hepta-agent-protocol@0.0.0",
+      "name": "codex-hepta-agent-protocol"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/hepta-automation#codex-hepta-automation@0.0.0",
+      "name": "codex-hepta-automation"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/hepta-fleet#codex-hepta-fleet@0.0.0",
+      "name": "codex-hepta-fleet"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/hepta-agentd#codex-hepta-agentd@0.0.0",
+      "name": "codex-hepta-agentd"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/hepta-bellman-operator#codex-hepta-bellman-operator@0.0.0",
+      "name": "codex-hepta-bellman-operator"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/hepta-codex-adapter#codex-hepta-codex-adapter@0.0.0",
+      "name": "codex-hepta-codex-adapter"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/hepta-cognitive-store#codex-hepta-cognitive-store@0.0.0",
+      "name": "codex-hepta-cognitive-store"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/hepta-supervisor#codex-hepta-supervisor@0.0.0",
+      "name": "codex-hepta-supervisor"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/hepta-matrix-protocol#codex-hepta-matrix-protocol@0.0.0",
+      "name": "codex-hepta-matrix-protocol"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/hepta-infer-worker-host#codex-hepta-infer-worker-host@0.0.0",
+      "name": "codex-hepta-infer-worker-host"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/hepta-authbus-p1-3-qualification#codex-hepta-authbus-p1-3-qualification@0.0.0",
+      "name": "codex-hepta-authbus-p1-3-qualification"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/hepta-bao-adapter#codex-hepta-bao-adapter@0.0.0",
+      "name": "codex-hepta-bao-adapter"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/hepta-compact-engine#codex-hepta-compact-engine@0.0.0",
+      "name": "codex-hepta-compact-engine"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/hepta-inferd#codex-hepta-inferd@0.0.0",
+      "name": "codex-hepta-inferd"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/hepta-matrix-store#codex-hepta-matrix-store@0.0.0",
+      "name": "codex-hepta-matrix-store"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/hepta-matrix-sdk#codex-hepta-matrix-sdk@0.0.0",
+      "name": "codex-hepta-matrix-sdk"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/hepta-matrixd#codex-hepta-matrixd@0.0.0",
+      "name": "codex-hepta-matrixd"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/hepta-operator-acceptance#codex-hepta-operator-acceptance@0.0.0",
+      "name": "codex-hepta-operator-acceptance"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/hepta-shadow-qualification#codex-hepta-shadow-qualification@0.0.0",
+      "name": "codex-hepta-shadow-qualification"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/v8-poc#codex-v8-poc@0.0.0",
+      "name": "codex-v8-poc"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/utils/readiness#codex-utils-readiness@0.0.0",
+      "name": "codex-utils-readiness"
+    },
+    {
+      "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/thread-manager-sample#codex-thread-manager-sample@0.0.0",
+      "name": "codex-thread-manager-sample"
+    }
+  ],
+  "command": [
+    "just",
+    "test",
+    "--locked",
+    "--retries",
+    "0"
+  ],
+  "features": "unchanged_defaults",
+  "filters": "no_additions",
+  "all_platforms_features_external_services_qualified": false
+}

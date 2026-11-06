@@ -1,0 +1,71 @@
+{
+  "schema": "hepta.recovered-evidence-binary-plan.v1",
+  "stage": 21,
+  "binary_path_count": 4,
+  "unique_blob_count": 4,
+  "entries": [
+    {
+      "path": "archive/checkpoint-r21-closed.tar.gz",
+      "bytes": 1190333,
+      "sha256": "1d9c0dc71fdda73158d1011d828046aa3c6f02219ed311a10d6e864795519652",
+      "git_blob": "8ddbd58b9be4c3efde5b971ad3e772909c3eba2e",
+      "prefer_existing_git_blob": true,
+      "git_action": "REUSE_ROOT_REGISTERED_BLOB",
+      "uploaded_by_this_audit": false,
+      "gzip_mtime_zero": true,
+      "decompressed": {
+        "bytes": 7813120,
+        "sha256": "dd092b3baca36a3c29f8e4638acd4717cad2bc08c20e51fa98d3347e70958b6b",
+        "git_blob": "c685a312c0816f80b5cbaa383b57f097cadb08d9"
+      }
+    },
+    {
+      "path": "independent-recovery/input/original-framework-recursive-reserialized.json.gz",
+      "bytes": 514183,
+      "sha256": "744e265a4e5552917b931bd65178589ad6a7b82460be4ba896d58c26f8d07f76",
+      "git_blob": "73327f14034f61fb143ea954998854121b486385",
+      "prefer_existing_git_blob": true,
+      "git_action": "ROOT_RESOLVE_OR_REGISTER_EXACT_BLOB",
+      "uploaded_by_this_audit": false,
+      "gzip_mtime_zero": true,
+      "decompressed": {
+        "bytes": 3516577,
+        "sha256": "273f390b8a37a1e05ef7b3a42036826ec30c5a796fe7172dfdf975d06067c42d",
+        "git_blob": "ee0facf816db2ce23bd63dd1adc6844978d8af3b"
+      }
+    },
+    {
+      "path": "original/evidence/native-workspace-r21-metadata.json.gz",
+      "bytes": 38951,
+      "sha256": "144e3eb48250a42476062cf7af8e79e321f196b50c394b0921a3d3b4781a6bf5",
+      "git_blob": "9b2d689f86bbfe5d93b6df6ed15a21ab823e30bf",
+      "prefer_existing_git_blob": true,
+      "git_action": "ROOT_RESOLVE_OR_REGISTER_EXACT_BLOB",
+      "uploaded_by_this_audit": false,
+      "gzip_mtime_zero": true,
+      "decompressed": {
+        "bytes": 937669,
+        "sha256": "99fdbea678582580ebb373c06e4e91cd547f49d83765c22a59a1dd143510a834",
+        "git_blob": "ab7a20655d865adbf7fe783c2eb19318ae2bf72b"
+      }
+    },
+    {
+      "path": "original/input/Cargo.lock.gz",
+      "bytes": 93173,
+      "sha256": "bb41827b6ad258c193d53ebc6eb3ee5d69caea83b53c9fe3dee4f4399937ebf6",
+      "git_blob": "4be162f8e6d725fe1dd26c5304f8085e3c27586c",
+      "prefer_existing_git_blob": true,
+      "git_action": "ROOT_RESOLVE_OR_REGISTER_EXACT_BLOB",
+      "uploaded_by_this_audit": false,
+      "gzip_mtime_zero": true,
+      "decompressed": {
+        "bytes": 417315,
+        "sha256": "4165307bb6c41d08e6c1c362060f2a958c8200ea43fdab2b8b1e6220ad82b55c",
+        "git_blob": "b7e710988d6a3377a7e0a1dc68aef49c68dda36e"
+      }
+    }
+  ],
+  "original_archives_copied_unchanged": true,
+  "git_upload_performed": false,
+  "shared_framework_gzip_is_new_recovery_input": "73327f14034f61fb143ea954998854121b486385"
+}

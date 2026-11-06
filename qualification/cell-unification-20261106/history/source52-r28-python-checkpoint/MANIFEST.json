@@ -1,0 +1,113 @@
+{
+  "schema": "hepta.report-evidence-snapshot.v1",
+  "source_commit": "1e0910becc37383e6d17ecf861ea844fd07d8862",
+  "source_tree": "211f15baff19095e8c98bcea2b0ed99ca2270ade",
+  "job_id": "1a1b1e9bee0-fc05-7b7c",
+  "snapshot": "PYTHON_CLOSED_PASS_STRICT_START_OBSERVED_NO_RUST_OR_OUTER_TERMINAL",
+  "python_count": 32,
+  "python_skipped": 0,
+  "python_raw_exit": 0,
+  "python_effective_exit": 0,
+  "strict_terminal": null,
+  "tests_terminal": null,
+  "outer_terminal": null,
+  "no_rust_or_gate_reexecution": true,
+  "files": [
+    {
+      "path": "LOCAL-READBACK.json",
+      "bytes": 9190,
+      "sha256": "5d0a1b71164ecdd948f5692eb3abd5de79fb3467bfdbe699251f74642ab1fa3e",
+      "git_blob": "4e21c5b14471a59ee5a3db2922b227f491df871e"
+    },
+    {
+      "path": "controller/initial-process-status.json",
+      "bytes": 470,
+      "sha256": "30fd291e5df19e705e08d4a5f6b8aeea3a95811814cd5b28659c43b16c8aa8cd",
+      "git_blob": "a919d73941aa7ba7355f5d6a8d5e13a7bab3237e"
+    },
+    {
+      "path": "controller/launch.json",
+      "bytes": 1400,
+      "sha256": "5647f53aa506ff376103219f91a5de8358f8f04e6d300768a6daf9d633cbf2ac",
+      "git_blob": "b7d1215a8e112a8acb137850f29ed9a180c135f7"
+    },
+    {
+      "path": "controller/process-read-000000.json",
+      "bytes": 9578,
+      "sha256": "a92f2c53e81d034b7bea1180f100e9f90b20365b9c10ed93815eb4c788ace67b",
+      "git_blob": "de71e6a73f3e7ef45ffcac716deaab738f111ec8"
+    },
+    {
+      "path": "controller/runner-file-info.json",
+      "bytes": 451,
+      "sha256": "6cb21fcdb3570d81f5207b1e589a595a73c6c6d6d60678f16ad5334490194ab9",
+      "git_blob": "c6179a5f8df8aa2a0c42768f7c9f9c0e04b65f11"
+    },
+    {
+      "path": "controller/runner-upload.json",
+      "bytes": 190,
+      "sha256": "c5e99658ea9a66e656a5062bcb7b250fa0565eb284efb9059782b5299f400e72",
+      "git_blob": "02a1ba265a2a8ee428ea7ffee0c62c3a6b072495"
+    },
+    {
+      "path": "native-source52-project-r28-environment.json",
+      "bytes": 1341,
+      "sha256": "c892f430fe66420367fd086c9cb2f39158520872ef55409dd222b00adc6825ee",
+      "git_blob": "68fffcf002b20c01cfc444ab8423affc21812290"
+    },
+    {
+      "path": "native-source52-project-r28-preconditions.json",
+      "bytes": 9513,
+      "sha256": "741cd5aa598adecb7d2a2c3a4f976e672aac0b6b84697785bfffbdc6a5ed618e",
+      "git_blob": "ec5e5ab996a1cdfe72cb63e37e03c5c2029200ca"
+    },
+    {
+      "path": "native-source52-project-r28-python-runner-raw-process-result.json",
+      "bytes": 551,
+      "sha256": "51d4478678c3776377e3cc9874e858319f41ad9bf091f36549b5324dc176cc94",
+      "git_blob": "2a2e2543143462b85ec2187c09aba8a0fc435f54"
+    },
+    {
+      "path": "native-source52-project-r28-python-runner-receipt.json",
+      "bytes": 2018,
+      "sha256": "132959ea0f647cdfc6bebf2ad1c6df1932cabaaf478df6766a9efe1b5cc1214c",
+      "git_blob": "6f34305eefd7fe3e5afb91e339e93486b0505cd7"
+    },
+    {
+      "path": "native-source52-project-r28-python-runner-resources.txt",
+      "bytes": 799,
+      "sha256": "b8f3cadb21631aa89ed6461c53c6578185e61201efe71d236849f77b33c11d36",
+      "git_blob": "789c84715e300199038eb855d0d4768f97c263f3"
+    },
+    {
+      "path": "native-source52-project-r28-python-runner-result-review.json",
+      "bytes": 573,
+      "sha256": "5ea50ce13ede9ded54defce0016eb9cfe02dba91e85bb8ade97639d14ec0e56d",
+      "git_blob": "811ed5045d65d6e0737888df44e46e303f9f5e92"
+    },
+    {
+      "path": "native-source52-project-r28-python-runner-source-post-verification.json",
+      "bytes": 639,
+      "sha256": "4c3e8e822a1607b0b0073b9f09cfc07b20161997db7783d3c907c3a56666cb8c",
+      "git_blob": "4f858d0e5dbb9eef84951065663d6adf5e1733d2"
+    },
+    {
+      "path": "native-source52-project-r28-python-runner-source-pre-verification.json",
+      "bytes": 588,
+      "sha256": "4c4767a8f0d137eacd98c7115efe687bda3e6b87b8809442a11d6f78bf7278b1",
+      "git_blob": "bbbe815ffbe848252ae1c3909a65b219f6621b18"
+    },
+    {
+      "path": "native-source52-project-r28-python-runner.log",
+      "bytes": 8449,
+      "sha256": "2eb07b7f4af98d408131099bf8980c3ac298d4447b4b5a6334634696c5f78d78",
+      "git_blob": "a6deee3b21a22596f45f68974a391b8d2a851d60"
+    },
+    {
+      "path": "native-source52-project-r28-source-pre-verification.json",
+      "bytes": 588,
+      "sha256": "4c4767a8f0d137eacd98c7115efe687bda3e6b87b8809442a11d6f78bf7278b1",
+      "git_blob": "bbbe815ffbe848252ae1c3909a65b219f6621b18"
+    }
+  ]
+}

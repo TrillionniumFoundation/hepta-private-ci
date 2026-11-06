@@ -1,0 +1,18 @@
+--- verify_and_bind_r29.py
++++ verify_and_bind_r29-v2.py
+@@ -87,13 +87,13 @@
+         if v is not None:
+             assert pin(raws[v['path']])=={k:v[k] for k in ['bytes','sha256','git_blob']}
+     for suffix in ['-source-pre-verification.json','-source-post-verification.json']:
+-        guard=json.loads(raws[stem+suffix]);assert guard['pass'] and guard['source_tree']==TREE
++        guard=json.loads(raws[stem+suffix]);assert guard['pass'] and guard['expected_tree']==guard['actual_tree']==TREE and guard['source_commit']==COMMIT and guard['changed_file_count']==195
+     phase_proof.append({'phase':phase,'raw_exit_code':0,'effective_exit_code':0,'elapsed_seconds':receipt['elapsed_seconds'],
+                         'receipt':{'path':stem+'-receipt.json',**pin(raws[stem+'-receipt.json'])}})
+ for ptr in complete['phase_receipts']:
+     assert pin(raws[ptr['path']])=={k:ptr[k] for k in ['bytes','sha256','git_blob']}
+ for name in [P+'-source-pre-verification.json',P+'-source-final-verification.json']:
+-    guard=json.loads(raws[name]);assert guard['pass'] and guard['source_tree']==TREE
++    guard=json.loads(raws[name]);assert guard['pass'] and guard['expected_tree']==guard['actual_tree']==TREE and guard['source_commit']==COMMIT and guard['changed_file_count']==195
+ pylog=raws[P+'-python-runner.log']
+ pyids=re.findall(rb'^test_\S+ \(([^)\n]+)\) \.\.\.',pylog,re.M)
+ assert len(pyids)==len(set(pyids))==32 and re.search(rb'^Ran 32 tests in [0-9.]+s$',pylog,re.M) and pylog.rstrip().endswith(b'OK')

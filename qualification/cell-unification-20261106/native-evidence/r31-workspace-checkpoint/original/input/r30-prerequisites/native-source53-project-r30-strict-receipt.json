@@ -1,0 +1,53 @@
+{
+  "schema": "hepta.native-gate-receipt.v2",
+  "phase": "strict",
+  "source_tree": "440d4a8e09af4009e4d9ea067388826308da8803",
+  "source_commit": "f74be175de66a4b351cd239d39d98cd34fe9cc1b",
+  "source_manifest": "native-candidate-r30-source.json",
+  "source_manifest_sha256": "9292bd9002716a0bec35ecea294f9dfef3dbb1e9c1d8fe66660e502aecc5cdda",
+  "environment_manifest": "native-source53-project-r30-environment.json",
+  "command": [
+    "just",
+    "clippy",
+    "--locked",
+    "-p",
+    "codex-app-server",
+    "--",
+    "-D",
+    "warnings"
+  ],
+  "cwd": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs",
+  "start_unix": 1793993690.9035318,
+  "end_unix": 1793993879.9170167,
+  "elapsed_seconds": 189.01348495483398,
+  "exit_code": 0,
+  "effective_exit_code": 0,
+  "raw_process_result": {
+    "path": "native-source53-project-r30-strict-raw-process-result.json",
+    "bytes": 535,
+    "sha256": "0c9b0aef317c6dc152637cd6a1bbb2686c897b9ef2c2b73bd0cba7a35c06c170",
+    "git_blob": "8c5b8453ff10241e38b7b0fc31165137ee6e7776"
+  },
+  "log_sha256": "e8778c2ed53a38a41c85aa9bfeddf33e0350b20cb7e065f144d609621ba81a33",
+  "resources_sha256": "d8879ec8f72cc32c0e657ac2f769ed367ac3c9baec5a914d87b360063571e540",
+  "source_postguard": {
+    "path": "native-source53-project-r30-strict-source-post-verification.json",
+    "bytes": 632,
+    "sha256": "e09604f678e7fad9cc55870a9fc58a3acd3133141a8bb7fd68a540253b86ebe8",
+    "git_blob": "f7fb7c7594a654f6c86127cdebd3d372192a0cd8"
+  },
+  "source_guards_pass": true,
+  "packages": [
+    "codex-app-server"
+  ],
+  "retries": null,
+  "filters": "no_additions",
+  "features": "unchanged_defaults",
+  "acceptance_readback": null,
+  "issues": [],
+  "phase_pass": true,
+  "fix_fmt_executed": false,
+  "baseline_used_as_filter": false,
+  "diagnostic_only": true,
+  "behavior_repair_claimed": false
+}

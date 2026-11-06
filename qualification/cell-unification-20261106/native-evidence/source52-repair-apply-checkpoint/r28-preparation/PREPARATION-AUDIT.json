@@ -1,0 +1,41 @@
+{
+  "schema": "hepta.source52-r28-preparation-audit.v1",
+  "ast": "PASS",
+  "template": {
+    "bytes": 53959,
+    "sha256": "2b8eb323a6072e37892802bf62d1ed4ddb38d07d4829a562093ac27a68c9edcb",
+    "git_blob": "7404ad7f80e311d9d3978e82ddcfd61c359b10c1"
+  },
+  "frozen": false,
+  "unknown_actual_bindings": [
+    "EXPECTED_COMMIT",
+    "EXPECTED_TREE",
+    "EXPECTED_CHANGED_COUNT",
+    "SOURCE_MANIFEST_NAME",
+    "SOURCE_MANIFEST_SHA256",
+    "APPLY_COMPLETE_NAME",
+    "APPLY_COMPLETE_SHA256",
+    "APPLY_COMPLETE_BYTES",
+    "APPLY_TERMINAL_NAME",
+    "APPLY_TERMINAL_SHA256",
+    "APPLY_TERMINAL_BYTES",
+    "APPLY_JOB_ID",
+    "DELTA_MANIFEST_NAME",
+    "DELTA_MANIFEST_SHA256",
+    "DELTA_MANIFEST_BYTES"
+  ],
+  "static_only": true,
+  "native_worktree_edited": false,
+  "native_command_executed": false,
+  "new_head_guard": "Require native HEAD equal the original framework; original per-phase process runner and source hashing otherwise preserved.",
+  "interface_coordinated_with": "source52-apply-preparation author; schema acknowledged via collaboration",
+  "independent_review": "PENDING",
+  "original_source51_project_result": {
+    "PASS": 1562,
+    "FAIL": 2,
+    "TIMEOUT": 0,
+    "reported_skipped": 3,
+    "original_test_exit": 100
+  },
+  "original_source51_is_qualification_for_source52": false
+}

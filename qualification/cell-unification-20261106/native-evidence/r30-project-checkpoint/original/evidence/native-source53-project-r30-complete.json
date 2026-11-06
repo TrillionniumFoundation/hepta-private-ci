@@ -1,0 +1,47 @@
+{
+  "schema": "hepta.source53-project-gates-complete.v1",
+  "source_tree": "440d4a8e09af4009e4d9ea067388826308da8803",
+  "source_commit": "f74be175de66a4b351cd239d39d98cd34fe9cc1b",
+  "source_manifest": "native-candidate-r30-source.json",
+  "source_manifest_sha256": "9292bd9002716a0bec35ecea294f9dfef3dbb1e9c1d8fe66660e502aecc5cdda",
+  "cargo_lock_sha256": "4165307bb6c41d08e6c1c362060f2a958c8200ea43fdab2b8b1e6220ad82b55c",
+  "bazel_lock_sha256": "e80ef06b6f824a19cdcedd6010738b316ccca96b83ad8730fafb52153a2634fb",
+  "strict_exit": 0,
+  "tests_exit": 0,
+  "packages": [
+    "codex-app-server"
+  ],
+  "required_old_ids": 1345,
+  "all_old_ids_observed_pass": true,
+  "phase_receipts": [
+    {
+      "path": "native-source53-project-r30-strict-receipt.json",
+      "bytes": 1842,
+      "sha256": "9a7c05149f620d5a9b4f20c9c21758bc412386c363a4202f6777e47615566b42",
+      "git_blob": "abb584cb21282b7634d64e4e66260133f30a0fe0"
+    },
+    {
+      "path": "native-source53-project-r30-tests-receipt.json",
+      "bytes": 2052,
+      "sha256": "39345148c8689bce57af61b47dca534db4e2dd80e72cc0b1bec5933129d165d5",
+      "git_blob": "3500b8a2d5134e06c5fa4ac36c02bc5c5aff7c97"
+    }
+  ],
+  "source_guards_pass": true,
+  "source50_lock_inherited_for_unchanged_dependency_inputs": true,
+  "source53_bazel_lock_update_executed": false,
+  "source53_apply_complete": {
+    "path": "native-source53-apply/complete.json",
+    "bytes": 2220,
+    "sha256": "5934056021848d5203e40458f97654556b97c113155a5512ed469c8df26efd93",
+    "git_blob": "ac0737a662cb9efc5e4c81f8ce0ee4601ddb5401"
+  },
+  "workspace_not_started_by_this_runner": true,
+  "fix_fmt_executed": false,
+  "python_suite_reexecuted": false,
+  "free_bytes_after": 298359091200,
+  "diagnostic_only": true,
+  "behavior_repair_claimed": false,
+  "original_r29_failure_relabelled_as_pass": false,
+  "whole_workspace_qualification": "PENDING_SEPARATE_ORIGINAL_GATE"
+}

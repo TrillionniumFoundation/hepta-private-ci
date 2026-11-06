@@ -1,0 +1,146 @@
+cargo clippy --tests {args}
+    Checking hyper v1.12.0
+warning: hiding a lifetime that's elided elsewhere is confusing
+   --> third_party/i18n-config-0.4.8/src/lib.rs:144:9
+    |
+144 |         &self,
+    |         ^^^^^ the lifetime is elided here
+145 |     ) -> Result<Option<(&'_ Crate, &'_ I18nConfig)>, I18nConfigError> {
+    |                          ^^ ^^^^^   ^^ the same lifetime is elided here
+    |                          |  |
+    |                          |  the same lifetime is hidden here
+    |                          the same lifetime is elided here
+    |
+    = help: the same lifetime is referred to in inconsistent ways, making the signature confusing
+    = note: `#[warn(mismatched_lifetime_syntaxes)]` on by default
+help: use `'_` for type paths
+    |
+145 |     ) -> Result<Option<(&'_ Crate<'_>, &'_ I18nConfig)>, I18nConfigError> {
+    |                                  ++++
+
+warning: hiding a lifetime that's elided elsewhere is confusing
+   --> third_party/i18n-config-0.4.8/src/lib.rs:155:26
+    |
+155 |     pub fn active_config(&self) -> Result<Option<(&'_ Crate, &'_ I18nConfig)>, I18nConfigError> {
+    |                          ^^^^^                     ^^ ^^^^^   ^^ the same lifetime is elided here
+    |                          |                         |  |
+    |                          |                         |  the same lifetime is hidden here
+    |                          |                         the same lifetime is elided here
+    |                          the lifetime is elided here
+    |
+    = help: the same lifetime is referred to in inconsistent ways, making the signature confusing
+help: use `'_` for type paths
+    |
+155 |     pub fn active_config(&self) -> Result<Option<(&'_ Crate<'_>, &'_ I18nConfig)>, I18nConfigError> {
+    |                                                            ++++
+
+warning: `i18n-config` (lib) generated 2 warnings (run `cargo clippy --fix --lib -p i18n-config -- -D warnings` to apply 2 suggestions)
+    Checking hyper-util v0.1.21
+    Checking hyper-rustls v0.27.10
+    Checking hyper-tls v0.6.0
+    Checking hyper-timeout v0.5.2
+    Checking reqwest v0.12.28
+    Checking tonic v0.14.6
+    Checking codex-http-client v0.0.0 (/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/http-client)
+    Checking tonic-prost v0.14.6
+    Checking opentelemetry-proto v0.31.0
+    Checking codex-protocol v0.0.0 (/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/protocol)
+    Checking codex-websocket-client v0.0.0 (/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/websocket-client)
+    Checking codex-client v0.0.0 (/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/codex-client)
+    Checking opentelemetry-http v0.31.0
+    Checking opentelemetry-otlp v0.31.1
+    Checking aws-smithy-http-client v1.5.0
+    Checking axum v0.8.9
+    Checking aws-smithy-runtime v1.16.0
+    Checking aws-runtime v1.10.0
+    Checking codex-workload-identity v0.0.0 (/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/workload-identity)
+    Checking oauth2 v5.0.0
+    Checking reqwest v0.13.5
+    Checking rmcp v3.1.3
+    Checking aws-sdk-signin v1.27.0
+    Checking aws-sdk-sts v1.119.0
+    Checking codex-file-system v0.0.0 (/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/file-system)
+    Checking codex-api v0.0.0 (/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/codex-api)
+    Checking codex-git-utils v0.0.0 (/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/git-utils)
+    Checking codex-shell-command v0.0.0 (/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/shell-command)
+    Checking codex-exec-server-protocol v0.0.0 (/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/exec-server-protocol)
+    Checking codex-otel v0.0.0 (/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/otel)
+    Checking codex-model-provider-info v0.0.0 (/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/model-provider-info)
+    Checking codex-secrets v0.0.0 (/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/secrets)
+    Checking codex-features v0.0.0 (/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/features)
+    Checking codex-windows-sandbox v0.0.0 (/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/windows-sandbox-rs)
+    Checking codex-sandboxing v0.0.0 (/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/sandboxing)
+    Checking codex-agent-identity v0.0.0 (/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/agent-identity)
+    Checking codex-config v0.0.0 (/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/config)
+    Checking codex-utils-output-truncation v0.0.0 (/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/utils/output-truncation)
+    Checking codex-history v0.0.0 (/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/history)
+    Checking aws-sdk-sso v1.114.0
+    Checking aws-sdk-ssooidc v1.116.0
+    Checking aws-config v1.12.0 (/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/third_party/aws-config-1.12.0)
+    Checking codex-state v0.0.0 (/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/state)
+    Checking codex-exec-server v0.0.0 (/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/exec-server)
+    Checking codex-login v0.0.0 (/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/login)
+    Checking sentry v0.46.2
+    Checking codex-feedback v0.0.0 (/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/feedback)
+    Checking codex-models-manager v0.0.0 (/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/models-manager)
+    Checking codex-aws-auth v0.0.0 (/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/aws-auth)
+    Checking codex-response-debug-context v0.0.0 (/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/response-debug-context)
+    Checking codex-model-provider v0.0.0 (/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/model-provider)
+    Checking codex-code-mode-protocol v0.0.0 (/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/code-mode-protocol)
+    Checking codex-utils-plugins v0.0.0 (/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/utils/plugins)
+    Checking codex-plugin v0.0.0 (/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/plugin)
+    Checking codex-connectors v0.0.0 (/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/connectors)
+    Checking codex-exec-server-test-support v0.0.0 (/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/exec-server/tests/support)
+    Checking codex-code-mode v0.0.0 (/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/code-mode)
+    Checking codex-rmcp-client v0.0.0 (/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/rmcp-client)
+    Checking codex-tools v0.0.0 (/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/tools)
+    Checking codex-context-fragments v0.0.0 (/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/context-fragments)
+    Checking codex-rollout v0.0.0 (/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/rollout)
+    Checking codex-mcp v0.0.0 (/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/codex-mcp)
+    Checking codex-app-server-protocol v0.0.0 (/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/app-server-protocol)
+    Checking codex-extension-api v0.0.0 (/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/ext/extension-api)
+    Checking codex-skills v0.0.0 (/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/skills)
+    Checking codex-hooks v0.0.0 (/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/hooks)
+    Checking codex-apply-patch v0.0.0 (/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/apply-patch)
+    Checking codex-shell-escalation v0.0.0 (/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/shell-escalation)
+    Checking codex-prompts v0.0.0 (/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/prompts)
+    Checking codex-rollout-trace v0.0.0 (/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/rollout-trace)
+    Checking codex-agent-graph-store v0.0.0 (/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/agent-graph-store)
+    Checking codex-memories-read v0.0.0 (/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/memories/read)
+    Checking codex-utils-audio v0.0.0 (/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/utils/audio)
+    Checking codex-backend-client v0.0.0 (/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/backend-client)
+    Checking codex-hepta-operations v0.0.0 (/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/hepta-operations)
+    Checking codex-hepta-authbus v0.0.0 (/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/hepta-authbus)
+    Checking codex-hepta-evidence v0.0.0 (/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/hepta-evidence)
+    Checking codex-hepta-memory v0.0.0 (/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/hepta-memory)
+    Checking codex-analytics v0.0.0 (/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/analytics)
+    Checking codex-core-plugins v0.0.0 (/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/core-plugins)
+    Checking codex-skills-extension v0.0.0 (/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/ext/skills)
+    Checking codex-thread-store v0.0.0 (/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/thread-store)
+    Checking codex-connectors-extension v0.0.0 (/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/ext/connectors)
+    Checking codex-linux-sandbox v0.0.0 (/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/linux-sandbox)
+    Checking codex-utils-cli v0.0.0 (/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/utils/cli)
+    Checking codex-arg0 v0.0.0 (/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/arg0)
+    Checking codex-hepta-memory-extension v0.0.0 (/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/ext/hepta-memory)
+    Checking codex-core v0.0.0 (/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/core)
+    Checking codex-hepta-governance v0.0.0 (/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/ext/hepta-governance)
+    Checking codex-git-attribution v0.0.0 (/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/ext/git-attribution)
+    Checking codex-hepta-prompt-extension v0.0.0 (/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/ext/hepta-prompt)
+    Checking codex-home v0.0.0 (/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/codex-home)
+    Checking codex-memories-write v0.0.0 (/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/memories/write)
+    Checking codex-queue-extension v0.0.0 (/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/ext/queue)
+    Checking codex-mcp-extension v0.0.0 (/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/ext/mcp)
+    Checking codex-external-agent-migration v0.0.0 (/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/external-agent-migration)
+    Checking codex-cloud-config v0.0.0 (/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/cloud-config)
+    Checking codex-history-notes-extension v0.0.0 (/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/ext/history-notes)
+    Checking codex-agent-extension v0.0.0 (/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/ext/agent)
+    Checking codex-memories-extension v0.0.0 (/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/ext/memories)
+    Checking codex-app-server-transport v0.0.0 (/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/app-server-transport)
+    Checking codex-guardian-v2 v0.0.0 (/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/ext/guardian-v2)
+    Checking codex-chatgpt v0.0.0 (/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/chatgpt)
+    Checking codex-web-search-extension v0.0.0 (/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/ext/web-search)
+    Checking codex-image-generation-extension v0.0.0 (/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/ext/image-generation)
+    Checking codex-goal-extension v0.0.0 (/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/ext/goal)
+    Checking codex-app-server v0.0.0 (/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/app-server)
+    Checking codex-app-server-client v0.0.0 (/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/app-server-client)
+    Finished `dev` profile [unoptimized] target(s) in 2m 18s

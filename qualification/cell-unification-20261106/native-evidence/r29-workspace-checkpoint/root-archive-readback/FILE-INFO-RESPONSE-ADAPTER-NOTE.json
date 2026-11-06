@@ -1,0 +1,7 @@
+{
+  "initial_local_parser_error": "TypeError: Cannot read properties of null (reading 'size')",
+  "cause": "Connector returned the original JSON in content[0].text with structuredContent:null.",
+  "correction": "Read the exact JSON text fallback and validate full size/SHA/version.",
+  "full_archive_reads_before_correction": 0,
+  "native_execution_retried": false
+}

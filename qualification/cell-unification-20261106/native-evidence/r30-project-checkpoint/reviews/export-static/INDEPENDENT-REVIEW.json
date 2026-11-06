@@ -1,0 +1,86 @@
+{
+  "schema": "hepta.r30-export-independent-static-review.v1",
+  "reviewer": "/root/historical_assets",
+  "classification": "STATIC_CLEAR_INERT_EXPORTER_ONLY",
+  "template": {
+    "path": "r30-export-preparation/export-r30-closed-template.py",
+    "bytes": 44373,
+    "sha256": "45e64afcdffd597de793c12158f90f605bb2274667b2774ad39d431a4af3700a",
+    "git_blob": "e5b3b0ece9973e315b91da61b02d9de9a16a51aa"
+  },
+  "author_handoff": {
+    "path": "r30-export-preparation/HANDOFF-MANIFEST.json",
+    "bytes": 2955,
+    "sha256": "65a844ed356d4d68d15086843fcac101e52b1fb32368e69b607cf1ad47771a62",
+    "all_12_listed_files_rehashed": true,
+    "superseded_local_draft_retained": true
+  },
+  "mechanical_readback": {
+    "path": "MECHANICAL-READBACK.json",
+    "bytes": 10174,
+    "sha256": "2c5f982f1c0e3e60ce01f326019f3db821b515d77b89aa82304265cc2d721549",
+    "git_blob": "5370ba2a5aa0f13c4de356a5dfe4e91446df1e26"
+  },
+  "verdict": "No remaining static blocker found within the intended already-started R30 closure scope.",
+  "scope_reviewed": [
+    "Full check_bindings, source_guard, recorded_guard, review_closed_originals, export_closed and main bodies.",
+    "Eight support helpers against exact R28 exporter V2 and both log parsers against actual R30 V2, byte for byte.",
+    "Actual closed R30 launch, environment and preconditions originals; no active test log was read.",
+    "R30 producer raw/receipt/complete/incomplete/orchestration-error schemas and original command construction.",
+    "Create-only archive writing, original-file rereads, byte/mode readback and provenance separation."
+  ],
+  "findings": [
+    {
+      "area": "Inert boundary and process scope",
+      "result": "CLEAR",
+      "detail": "FROZEN remains false and all three future closure maps remain None. The require-based FROZEN/__debug__ checks run before any input read or output. The sole subprocess site is the allowlisted Git helper: write-tree, rev-parse, diff, ls-files and ls-tree with --no-optional-locks. No Rust, Cargo metadata, gate, formatter, package installation, apply, reset, process cancellation or remote publication is run."
+    },
+    {
+      "area": "Actual source53 identity and preserved ancestry",
+      "result": "CLEAR",
+      "detail": "The exact source53 f74be175de66a4b351cd239d39d98cd34fe9cc1b / 440d4a8e09af4009e4d9ea067388826308da8803 manifest is pinned. All 197 raw source files, SHA256/Git blobs/modes, staged tree, native HEAD bef6fa7645df9df12b69fda499e97eed25de6c75, changed-path set, no untracked/unstaged paths and both raw locks are checked before and after collection. Parent source52 has 195 unchanged manifest rows and precisely the two diagnostic Bedrock leaves are added. Source50/source51/source52 identities and their historical lock/apply/failure evidence remain distinct."
+    },
+    {
+      "area": "Successful and unsuccessful original sets",
+      "result": "CLEAR",
+      "detail": "The exporter compares the actual producer filenames on disk with the bound map. Only a real successful complete record may demand exactly the 19 successful originals. On failure it preserves the actual existing allowed files, raw returns, incomplete and/or orchestration error records, and reports missing successful files without fabricating replacements. The actual R30 producer deliberately gives incomplete.json no schema field; the consumer correctly uses its real fields without inventing a schema requirement."
+    },
+    {
+      "area": "Original return, postprocessing result and outer terminal",
+      "result": "CLEAR",
+      "detail": "Original phase exit comes from the raw process result; effective exit comes separately from the original receipt; outer exit comes only from the natural durable controller terminal. Identity, commands, phase ordering, receipt pointers, resources, raw timings and actual guard records are cross-checked. Nonzero original exits cannot be changed to zero. A missing receipt never permits inferring its result from the controller. Readback errors are retained separately and archive creation success is not promoted to engineering PASS."
+    },
+    {
+      "area": "Complete log and compile-failure boundary",
+      "result": "CLEAR",
+      "detail": "clean_lines/review_tests are byte-identical to R30 V2. A full valid log recomputes 1345 exact binary/name identities, counts, reported skips and footer duplicates without filters or invented skip identities. Failed rows retain original byte-offset slices and hashes. If no complete Starting/Summary exists, the parse error is recorded and counts remain null; compilation or incomplete execution is not assigned zero failed tests or a passing population."
+    },
+    {
+      "area": "Actual controller launch and complete output custody",
+      "result": "CLEAR",
+      "detail": "The actual closed launch has /usr/bin/python3 with the single direct-file argument /home/alex/work/hepta-cell-unified-20261106-a/native-run-r30.py, cwd at that task root, pocket4, no env_keys, the exact R30 key and job1a1b25b399f-fc05-7daa, launch.ok true and reused false. These match the exporter. Bound original read ranges must have exact UTF8/hex/offset agreement, contiguous non-overlapping nonempty bytes and terminal stored/seen totals; the two terminal copies must be byte-identical."
+    },
+    {
+      "area": "Producer pointers and input schema",
+      "result": "CLEAR",
+      "detail": "Actual R30 environment approved_prerequisite_env_pin contains bytes/SHA256/Git blob and no path. The exporter correctly reads the fixed original agentd-prerequisite-env.json and verifies those pins. Actual preconditions expose all consumed ancestor/apply/provenance keys. The seven-member approved apply input is checked for safe unique regular members, exact full manifest, diagnostic flags, both before/after files and candidate patch; runner and original input archive are also pinned."
+    },
+    {
+      "area": "Archive and error preservation",
+      "result": "CLEAR",
+      "detail": "Every collected original is read as a stable regular file and reread with the same bytes/mode before export. Derived results use separate names and never replace originals. A create-only gzip/tar preserves raw payloads and original permission bits, with an explicit per-member SHA256/Git blob/size/mode index. The written archive is reopened and every member, mode and payload compared before a create-only fsynced result is published. It remains diagnostic-only and establishes no workspace or scientific qualification."
+    }
+  ],
+  "limitations": [
+    "This review did not import, execute or simulate the exporter, and did not run any native process or Git command.",
+    "Future closure maps remain None in the reviewed template. Exact actual terminal/original/controller bindings and root execution authorization remain required.",
+    "The exporter intentionally requires the already-closed R30 startup environment, preconditions and baseline. It is not claimed to export an unrelated failure before those startup prerequisites exist.",
+    "A changed current source or unavailable provenance original blocks archive creation; such a guard failure is not silently converted to a partial qualified archive.",
+    "The subsequently reported natural R30 result is not independently certified by this static review. Full actual closure/archive readback is a separate step.",
+    "Any eventual project PASS applies to this diagnostic source only and does not establish a Bedrock behavior repair, whole-workspace PASS, or scientific authority."
+  ],
+  "blockers": [],
+  "native_runner_exporter_or_test_execution": false,
+  "authorization_to_execute": false,
+  "canonical_source_reports_index_ledger_or_frozen_groups_modified": false
+}

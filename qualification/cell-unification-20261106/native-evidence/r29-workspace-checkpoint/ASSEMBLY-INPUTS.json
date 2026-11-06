@@ -1,0 +1,619 @@
+{
+  "schema": "hepta.r29-local-attachment-inputs.v1",
+  "binding_state": "ACTUAL_CLOSED_ARCHIVE_BOUND",
+  "source_commit": "1e0910becc37383e6d17ecf861ea844fd07d8862",
+  "source_tree": "211f15baff19095e8c98bcea2b0ed99ca2270ade",
+  "gate_job_id": "1a1b1f83e4b-fc05-7bcd",
+  "archive": {
+    "bytes": 3334510,
+    "sha256": "cdfc77e9ac22f1404fc8944a32489e3e38d354ac9ac4c9c3220004d518b188d4",
+    "git_blob": "4147c2510b0f1a462d121eb211d7ac073274fe38",
+    "members": 315,
+    "indexed_members": 314
+  },
+  "closed_directory": "native-validation-results/r29-archive-closed",
+  "unpacked_directory": "native-validation-results/r29-archive-closed/original",
+  "root_readbacks": [
+    {
+      "path": "native-validation-results/r29-archive-closed/ARCHIVE-EXPECTED.json",
+      "destination": "root-archive-readback/ARCHIVE-EXPECTED.json",
+      "bytes": 358,
+      "sha256": "25dde5d3a7874696cbbe2d2a134f17ee0570b5f4a70c4d73cd56a583f868b49c",
+      "git_blob": "9fc8b65ae6b29b555aaad7785d8c66f3c453469e",
+      "role": "root_archive_readback"
+    },
+    {
+      "path": "native-validation-results/r29-archive-closed/ARCHIVE-FILE-INFO.json",
+      "destination": "root-archive-readback/ARCHIVE-FILE-INFO.json",
+      "bytes": 552,
+      "sha256": "4e84c8d06029f2606584a9f0b33cde5e0c4add549abcf68f47fd6fa28b4822d6",
+      "git_blob": "58463ddf0967ea3bb13a905ffe22a1ec00e5a48e",
+      "role": "root_archive_readback"
+    },
+    {
+      "path": "native-validation-results/r29-archive-closed/FILE-INFO-RESPONSE-ADAPTER-NOTE.json",
+      "destination": "root-archive-readback/FILE-INFO-RESPONSE-ADAPTER-NOTE.json",
+      "bytes": 367,
+      "sha256": "20ebabd40374d93cf1d90412cec56c69d512d70bafb8293301aaf1438e026218",
+      "git_blob": "747d9fc603beb6de2344b0645c415cf59db79bb6",
+      "role": "root_archive_readback"
+    },
+    {
+      "path": "native-validation-results/r29-archive-closed/ROOT-ARCHIVE-READBACK.json",
+      "destination": "root-archive-readback/ROOT-ARCHIVE-READBACK.json",
+      "bytes": 2209,
+      "sha256": "dd154b6b2a11c8e593f487860a6baedb58d58b78b87b0c523b45dbe1540da245",
+      "git_blob": "472ff3897ad89d9630382b17b05f1081f21358a3",
+      "role": "root_archive_readback"
+    },
+    {
+      "path": "native-validation-results/r29-archive-closed/TRANSFER-READBACK.json",
+      "destination": "root-archive-readback/TRANSFER-READBACK.json",
+      "bytes": 14146,
+      "sha256": "81341d49f18d8854b8acaf6bdcaa4695e015b70b4c163d1d9dcbd133ef3717c5",
+      "git_blob": "e5b68946ddc348d538809f5fec5c5f6f769ccfc3",
+      "role": "root_archive_readback"
+    },
+    {
+      "path": "r29-closed-root-review/ARCHIVE-REVIEW-ATTEMPT-1-ERROR.json",
+      "destination": "root-closed-readback/ARCHIVE-REVIEW-ATTEMPT-1-ERROR.json",
+      "bytes": 403,
+      "sha256": "ec88f89fee5f6c314511d6b4f4974dfe960af3f15981dd0464e545833f8240e2",
+      "git_blob": "388c6f4e07b19ddd2171042ba162b249138ccdd6",
+      "role": "root_result_readback"
+    },
+    {
+      "path": "r29-closed-root-review/SMALL-ORIGINAL-READBACK.json",
+      "destination": "root-closed-readback/SMALL-ORIGINAL-READBACK.json",
+      "bytes": 858,
+      "sha256": "9c5aef01dc6fa3369db641b6e3e30071033945904b2991f601dc8e2a47960315",
+      "git_blob": "aea2264886e6990b41a8db4df475925334b6d00a",
+      "role": "root_result_readback"
+    },
+    {
+      "path": "r29-closed-root-review/verify_archive-v1.py",
+      "destination": "root-closed-readback/verify_archive-v1.py",
+      "bytes": 12406,
+      "sha256": "2ebe7e2ab46a40de68b28840fa03b81efa36544b74aeb34d9f6a6f5a10e2f683",
+      "git_blob": "d24735dacf1f044e3fc62b8bdfaf924c88aec418",
+      "role": "root_result_readback"
+    },
+    {
+      "path": "r29-closed-root-review/verify_archive.py",
+      "destination": "root-closed-readback/verify_archive.py",
+      "bytes": 12344,
+      "sha256": "bb88a1104080d41b862497fdd36827b406bc0d935bc9073c5b463e9d164ef824",
+      "git_blob": "5b8dfdb9e10ee08c5fd6610d324c08767469ca3c",
+      "role": "root_result_readback"
+    }
+  ],
+  "supplemental_originals": [
+    {
+      "path": "r29-root-review/ROOT-APPROVED-R29.py",
+      "destination": "gate-root-review/ROOT-APPROVED-R29.py",
+      "bytes": 82985,
+      "sha256": "26bb2c31806895b19410f290e1f20232ee3be2dbe09321e081857dddefac1fa2",
+      "git_blob": "c67a237136a0fcf28c0c001ea71fd5262f70e888",
+      "role": "gate_authorization"
+    },
+    {
+      "path": "r29-root-review/ROOT-INDEPENDENT-REVIEW.json",
+      "destination": "gate-root-review/ROOT-INDEPENDENT-REVIEW.json",
+      "bytes": 3114,
+      "sha256": "ce907191ea5c3a215b5a961c965212af8c1f0349e953811cfaa0e8ef8cd58cfd",
+      "git_blob": "23057539f02be2eae20a0303da187f3f14f36025",
+      "role": "gate_authorization"
+    },
+    {
+      "path": "r29-root-review/ROOT-LAUNCH-AUTHORIZATION.json",
+      "destination": "gate-root-review/ROOT-LAUNCH-AUTHORIZATION.json",
+      "bytes": 1878,
+      "sha256": "d5697f431914aa782ab53df52edaf22d33f4492ae7570476838f0285b78f2f2b",
+      "git_blob": "347ee9c9e4346483522e52df91e9b2ca15fe61fb",
+      "role": "gate_authorization"
+    },
+    {
+      "path": "r29-root-review/ROOT-READBACK-PARSER-CORRECTION.json",
+      "destination": "gate-root-review/ROOT-READBACK-PARSER-CORRECTION.json",
+      "bytes": 499,
+      "sha256": "8c61f8a600d330c66a54a4539644452484f92157420271360536d9d64ec3ada7",
+      "git_blob": "b8f333f8a3c434608d1887551ab67de269b9b2cc",
+      "role": "gate_authorization"
+    },
+    {
+      "path": "native-validation-results/r29-bound-input/ACTUAL-BINDINGS.json",
+      "destination": "gate-bound-input/ACTUAL-BINDINGS.json",
+      "bytes": 5804,
+      "sha256": "81075a1ea0f2a2ac2fb7a8bc59bf51f072f65648e8d742edb1667575b9802cdb",
+      "git_blob": "b5a2e8f62b4aea7a287adbefc32532bb6525a90e",
+      "role": "gate_binding"
+    },
+    {
+      "path": "native-validation-results/r29-bound-input/BOUND-INDEPENDENT-READBACK.json",
+      "destination": "gate-bound-input/BOUND-INDEPENDENT-READBACK.json",
+      "bytes": 7256,
+      "sha256": "d5dfa7633c68882b60f87e40fcd443064158fe13a41f61bb276271894f8c063e",
+      "git_blob": "a887bfd951d6257fc34aaa5f6e5f04ae9580521b",
+      "role": "gate_binding"
+    },
+    {
+      "path": "native-validation-results/r29-bound-input/bound-to-final.patch",
+      "destination": "gate-bound-input/bound-to-final.patch",
+      "bytes": 262,
+      "sha256": "d59d86706251453e2d126803edd4e978d422e1dd3c6eca5089289b3d234cf9f4",
+      "git_blob": "64b344beedf1c86598e2476ba2164d3659e43767",
+      "role": "gate_binding"
+    },
+    {
+      "path": "native-validation-results/r29-bound-input/native-run-r29-bound.py",
+      "destination": "gate-bound-input/native-run-r29-bound.py",
+      "bytes": 82986,
+      "sha256": "ef05d4d3cadadeacc02e3f5d3c3b6e476a683840de60d0a5b5dfff7a4f5ce6ac",
+      "git_blob": "afc70e5c878f45a8858d4657bac51bd7397a2eee",
+      "role": "gate_binding"
+    },
+    {
+      "path": "native-validation-results/r29-bound-input/native-run-r29.py",
+      "destination": "gate-bound-input/native-run-r29.py",
+      "bytes": 82985,
+      "sha256": "26bb2c31806895b19410f290e1f20232ee3be2dbe09321e081857dddefac1fa2",
+      "git_blob": "c67a237136a0fcf28c0c001ea71fd5262f70e888",
+      "role": "gate_binding"
+    },
+    {
+      "path": "native-validation-results/r29-bound-input/template-to-bound.patch",
+      "destination": "gate-bound-input/template-to-bound.patch",
+      "bytes": 7567,
+      "sha256": "fde8c7f20ae018415e3b15aa1864e8b440413722ac1ce03232c3ab320aa12404",
+      "git_blob": "4d05f0d714d9e1cdb07914b98a6b1ec70dccc0f8",
+      "role": "gate_binding"
+    },
+    {
+      "path": "source52-r29-independent-static-review/HANDOFF-MANIFEST.json",
+      "destination": "gate-static-review/HANDOFF-MANIFEST.json",
+      "bytes": 709,
+      "sha256": "92b8e92b043abbfb54d728838e90e87d922f265e733f87baf5b2409b404ad70f",
+      "git_blob": "9c7559bc996c35c99d56916debb4fbd3bdf0326c",
+      "role": "gate_static_review"
+    },
+    {
+      "path": "source52-r29-independent-static-review/INDEPENDENT-REVIEW.json",
+      "destination": "gate-static-review/INDEPENDENT-REVIEW.json",
+      "bytes": 6412,
+      "sha256": "56b00268f18f11b4bfb30de7e966d54ded96ffe1e158d184d46f085a86a796f0",
+      "git_blob": "487b6c0893d900df6a2ccb6bf643fa832b31ab23",
+      "role": "gate_static_review"
+    },
+    {
+      "path": "source52-r29-independent-static-review/verify.py",
+      "destination": "gate-static-review/verify.py",
+      "bytes": 8694,
+      "sha256": "8885f8707f1dfe2b1267b3b9545e7106bf02c86f145e575457db299d790f2bd0",
+      "git_blob": "a371b5c694428becb0b965c834d74c51230e1f29",
+      "role": "gate_static_review"
+    },
+    {
+      "path": "source52-r29-binding-independent-review/INDEPENDENT-REVIEW.json",
+      "destination": "gate-binding-review/INDEPENDENT-REVIEW.json",
+      "bytes": 11651,
+      "sha256": "bfde50ace9b605443dfdf859dece893d6784b7334fe9b1c58e15bc380d50a69c",
+      "git_blob": "977c2dc21ec01b4dd9ba0fe5581c31c464443739",
+      "role": "gate_binding_review"
+    },
+    {
+      "path": "source52-r29-binding-independent-review/verify.py",
+      "destination": "gate-binding-review/verify.py",
+      "bytes": 10066,
+      "sha256": "42f9b0fa13d94796a646e6b5eedcf3cc20baaeea3c987f201ad5d24ecbaa1bfa",
+      "git_blob": "d968e3e1475dc852774a8418c216ab18dd2559e5",
+      "role": "gate_binding_review"
+    },
+    {
+      "path": "r29-export-preparation/AST-READBACK.json",
+      "destination": "export-preparation/AST-READBACK.json",
+      "bytes": 2272,
+      "sha256": "95b47c4a87571814cd026a6b5f6e42c5113380d503e40a8e5ecabdc2ff13bcbb",
+      "git_blob": "2122689484bdc7dbaa3137e18dbfad533ccb6ef2",
+      "role": "export_template"
+    },
+    {
+      "path": "r29-export-preparation/HANDOFF-MANIFEST.json",
+      "destination": "export-preparation/HANDOFF-MANIFEST.json",
+      "bytes": 1477,
+      "sha256": "22034c87bb03274e09d22e8afd6ad93af5a8136b4a2229cabd1c20513e0cdb20",
+      "git_blob": "c7a0cf6001e447e3ec767938bff3579dfbd719cd",
+      "role": "export_template"
+    },
+    {
+      "path": "r29-export-preparation/README.md",
+      "destination": "export-preparation/README.md",
+      "bytes": 2914,
+      "sha256": "7876ad65e7df753020e5569cd075cd037426651dda4ed943aef371b217271ca3",
+      "git_blob": "04f3fdf98f3b234bead80a0635e22a81e5e25d7d",
+      "role": "export_template"
+    },
+    {
+      "path": "r29-export-preparation/export-body.py.txt",
+      "destination": "export-preparation/export-body.py.txt",
+      "bytes": 30148,
+      "sha256": "784dd2971cfb6362d61534bc33ffa2008406c96044f6e314b1928d205c909590",
+      "git_blob": "73d3ce8dd3909d7323d6e99078db9ba231be4b3d",
+      "role": "export_template"
+    },
+    {
+      "path": "r29-export-preparation/export-r29-closed-template.py",
+      "destination": "export-preparation/export-r29-closed-template.py",
+      "bytes": 42814,
+      "sha256": "7a7a9b77b4dfdf20851a0c97bae3ea34e8218b062bda33e574133e772c554e13",
+      "git_blob": "16cb736f949989bfff9d849bdd5b752d1a671acd",
+      "role": "export_template"
+    },
+    {
+      "path": "r29-export-preparation/generate_template.py",
+      "destination": "export-preparation/generate_template.py",
+      "bytes": 6046,
+      "sha256": "b98d00c927e41943fdbcecf3b4a79d99d0c1168df6b0a83fcaf1f313aa51ecfc",
+      "git_blob": "190e409c70a39daf27909496fb0f6b5ae498c2e8",
+      "role": "export_template"
+    },
+    {
+      "path": "r29-export-preparation/r28-v2-to-r29.patch",
+      "destination": "export-preparation/r28-v2-to-r29.patch",
+      "bytes": 60898,
+      "sha256": "c496303c454a0b3c20a569ed33d1b05430f80e57d28a12dc511f355d0eeaf70c",
+      "git_blob": "16923ef2802e68aa13a20a8e4e91400913338023",
+      "role": "export_template"
+    },
+    {
+      "path": "r29-export-independent-static-review/INDEPENDENT-REVIEW.json",
+      "destination": "export-static-review/INDEPENDENT-REVIEW.json",
+      "bytes": 4205,
+      "sha256": "03977fcc7e5a3d788e76ce49d6816a086e8276fe1375e5a6a4bc4a27cfaebeb8",
+      "git_blob": "f7a33aa02db7286870db2bb8433d50d61650bc70",
+      "role": "export_static_review"
+    },
+    {
+      "path": "r29-export-independent-static-review/verify.py",
+      "destination": "export-static-review/verify.py",
+      "bytes": 5613,
+      "sha256": "c4772d5f8ec76c6e4b5d62172b873b92ffd5fdd702f828d51e90502a1ee892a0",
+      "git_blob": "4fb2738d6b36ff56945277d75f7058ecf5ad53f7",
+      "role": "export_static_review"
+    },
+    {
+      "path": "r29-export-root-review/ROOT-EXPORT-AUTHORIZATION.json",
+      "destination": "export-root-review/ROOT-EXPORT-AUTHORIZATION.json",
+      "bytes": 1097,
+      "sha256": "2fb05a894946350a24eb4190a64679e3ae72bad3561e3ff9376722727777077c",
+      "git_blob": "e80e7ad0351e9aaa9c7e4aac97fcb8b0be4a2bd7",
+      "role": "export_authorization"
+    },
+    {
+      "path": "r29-export-root-review/STATIC-REVIEW.json",
+      "destination": "export-root-review/STATIC-REVIEW.json",
+      "bytes": 1377,
+      "sha256": "ad6ad3772f01885f03535c4356183e5201fd11cf3dc0c707be00df2103026781",
+      "git_blob": "6379b5c33430a8bcd36348509598b8e6d12438dd",
+      "role": "export_authorization"
+    },
+    {
+      "path": "native-validation-results/r29-export-bound-input/ACTUAL-BINDINGS.json",
+      "destination": "export-bound-input/ACTUAL-BINDINGS.json",
+      "bytes": 3780,
+      "sha256": "d360a6ecfbeaba43d90cbe3ab8d6e451356ecd990c5c924873fdd880e019e911",
+      "git_blob": "d2cedcb9c043aa0ee0b09194976f6c3e67c0e80c",
+      "role": "export_binding"
+    },
+    {
+      "path": "native-validation-results/r29-export-bound-input/BINDING-READBACK.json",
+      "destination": "export-bound-input/BINDING-READBACK.json",
+      "bytes": 6890,
+      "sha256": "3c4e3f7bbc8d26bbf8056563bf1578d2920fa8c537369cf5c618548a60e99308",
+      "git_blob": "6a3abbc16b45fb67734b1d662bb47f4dbd6efc2c",
+      "role": "export_binding"
+    },
+    {
+      "path": "native-validation-results/r29-export-bound-input/bound-to-final.patch",
+      "destination": "export-bound-input/bound-to-final.patch",
+      "bytes": 3399,
+      "sha256": "6f42616ca99f59a5bd9304910d319124aa7e4ff7a801cc69e7200fe27c6de58d",
+      "git_blob": "fc263db121d0d1a3aa1fce87f930276207897529",
+      "role": "export_binding"
+    },
+    {
+      "path": "native-validation-results/r29-export-bound-input/export-r29-closed-bound.py",
+      "destination": "export-bound-input/export-r29-closed-bound.py",
+      "bytes": 45995,
+      "sha256": "e4aaa9b1a02dc23385c123e889feb010a66c21360601271e227dfbe739dfecb2",
+      "git_blob": "e83871fd595243b56e7007c9aa7345f5bde655ff",
+      "role": "export_binding"
+    },
+    {
+      "path": "native-validation-results/r29-export-bound-input/export-r29-closed.py",
+      "destination": "export-bound-input/export-r29-closed.py",
+      "bytes": 45994,
+      "sha256": "36ad29657e97733c926ef6e48be7c485647f09f8f3144ac1e6718b6df4aa874a",
+      "git_blob": "37d8b50f08ee22b1b8262148a794f2f38875bdd1",
+      "role": "export_binding"
+    },
+    {
+      "path": "native-validation-results/r29-export-bound-input/template-to-bound.patch",
+      "destination": "export-bound-input/template-to-bound.patch",
+      "bytes": 3543,
+      "sha256": "f681879c9ade7862023a5cb5ee78caa4e3cc57d4d3e7bd3f68e600ae976fc78c",
+      "git_blob": "d5aa75b34afd19605cbf5d60a932bb3aae7fd2d0",
+      "role": "export_binding"
+    },
+    {
+      "path": "native-validation-results/r29-export-closed/LOCAL-READBACK.json",
+      "destination": "export-custody/LOCAL-READBACK.json",
+      "bytes": 4079,
+      "sha256": "d140c21647dd063bde2007770da065930947d6869f258357caee9102adb52d45",
+      "git_blob": "55139f27e996afddcc102d70de0f81b4c9dd6291",
+      "role": "export_custody"
+    },
+    {
+      "path": "native-validation-results/r29-export-closed/archive-file-info.json",
+      "destination": "export-custody/archive-file-info.json",
+      "bytes": 475,
+      "sha256": "d03203c64a5dce9eb0d1d1fa8517a1f6c9e8dbea5bd01f9c66527de2139f2642",
+      "git_blob": "2991a37b0b0bc65e9b2409ddff0f80296e38b830",
+      "role": "export_custody"
+    },
+    {
+      "path": "native-validation-results/r29-export-closed/checkpoint-r29-export.json",
+      "destination": "export-custody/checkpoint-r29-export.json",
+      "bytes": 878,
+      "sha256": "faed03539e6d476a3f65cd6ea6b08437e29231ca6c670fec5f8051e39275388e",
+      "git_blob": "c52cfff8296a086a58b7419fddf4fd6800b4c89b",
+      "role": "export_custody"
+    },
+    {
+      "path": "native-validation-results/r29-export-closed/controller/closed-original-publish-0.json",
+      "destination": "export-custody/controller/closed-original-publish-0.json",
+      "bytes": 184,
+      "sha256": "a7149bed66c8e3ba98d2ac9e75a102c7f4c893404e1494f1994d6a021bd721c2",
+      "git_blob": "9763870f678370de2a451484d8c3b3db583c24b1",
+      "role": "export_custody"
+    },
+    {
+      "path": "native-validation-results/r29-export-closed/controller/closed-original-publish-1.json",
+      "destination": "export-custody/controller/closed-original-publish-1.json",
+      "bytes": 184,
+      "sha256": "771cc6c9ea4c57a68b846a76ead2a526fd1127b40da8f62fb9a01c76dd3ac187",
+      "git_blob": "f96a5d852122fe9221d65d4990c01e8942eb2fdc",
+      "role": "export_custody"
+    },
+    {
+      "path": "native-validation-results/r29-export-closed/controller/closed-original-publish-2.json",
+      "destination": "export-custody/controller/closed-original-publish-2.json",
+      "bytes": 187,
+      "sha256": "8ea552cee9b16885cc7fd434491876e3cc7e2ae20b8fdb10fd4805efb427fa77",
+      "git_blob": "291aee50c3ba131938957d139d6f9310c34805d4",
+      "role": "export_custody"
+    },
+    {
+      "path": "native-validation-results/r29-export-closed/controller/closed-original-publish-3.json",
+      "destination": "export-custody/controller/closed-original-publish-3.json",
+      "bytes": 187,
+      "sha256": "d924e5accfd1f0ae53a6b043cd24980d5336d69126ab91dd2f2dc37faac43c27",
+      "git_blob": "8c186f3b27b7c0ec4924f8ee5974d91cbdad7140",
+      "role": "export_custody"
+    },
+    {
+      "path": "native-validation-results/r29-export-closed/controller/closed-original-publish-4.json",
+      "destination": "export-custody/controller/closed-original-publish-4.json",
+      "bytes": 187,
+      "sha256": "09938e24592e7dbcb2c7960be0acb23ee67705ddd88f41cbd9731201627021bf",
+      "git_blob": "0643636138c1e7d8f4e9714f5a65ca98840423d1",
+      "role": "export_custody"
+    },
+    {
+      "path": "native-validation-results/r29-export-closed/controller/final-file-info.json",
+      "destination": "export-custody/controller/final-file-info.json",
+      "bytes": 454,
+      "sha256": "501ce690deaf6176a2123158688f5fbd3b96b5d25b64415cd1c82d0cd6f9c113",
+      "git_blob": "36cdcd479ced1d66fe3deb8613fde1941e93475d",
+      "role": "export_custody"
+    },
+    {
+      "path": "native-validation-results/r29-export-closed/controller/final-publish.json",
+      "destination": "export-custody/controller/final-publish.json",
+      "bytes": 190,
+      "sha256": "ae4908905e8d6d1c1c42b91736c37e360c06e1248c1cf5b6dd1f69c52bdc05a2",
+      "git_blob": "447ba7a431a5590dade05b50786e4a57a84b957a",
+      "role": "export_custody"
+    },
+    {
+      "path": "native-validation-results/r29-export-closed/controller/launch.json",
+      "destination": "export-custody/controller/launch.json",
+      "bytes": 1058,
+      "sha256": "5fce33e7c37cbd99790bbd68255e4991cc120c7d3118e041922c5b87b7735e32",
+      "git_blob": "86e8e6d79e65d97667cc4ab4211f828dbe257098",
+      "role": "export_custody"
+    },
+    {
+      "path": "native-validation-results/r29-export-closed/controller/original-stderr.txt",
+      "destination": "export-custody/controller/original-stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "role": "export_custody"
+    },
+    {
+      "path": "native-validation-results/r29-export-closed/controller/original-stdout.txt",
+      "destination": "export-custody/controller/original-stdout.txt",
+      "bytes": 822,
+      "sha256": "c3dfcc76f0f01a866a34b1d4d6433d3cb62122c6a5218c8677f5053b90682d40",
+      "git_blob": "9150378542049d8f6f1ba70a5430fea9f6415091",
+      "role": "export_custody"
+    },
+    {
+      "path": "native-validation-results/r29-export-closed/controller/read-000000.json",
+      "destination": "export-custody/controller/read-000000.json",
+      "bytes": 2844,
+      "sha256": "c402b4c8a5b95198b57028ab804da5bbc7e9eebe8eaf9e5bc29e57528f8d8a52",
+      "git_blob": "ee86c20aa0ac85faf4880c46eed7dc7f8e88ea44",
+      "role": "export_custody"
+    },
+    {
+      "path": "native-validation-results/r29-export-closed/controller/terminal-process-status.json",
+      "destination": "export-custody/controller/terminal-process-status.json",
+      "bytes": 729,
+      "sha256": "adcf1553654ce212d575203a421e8e9d0102e3ee4653ea3ac1de85123e44b080",
+      "git_blob": "efda8bdd44f7bdc540ecad1e3ae74b0f1134d25b",
+      "role": "export_custody"
+    },
+    {
+      "path": "native-validation-results/r29-closed-input/LOCAL-READBACK.json",
+      "destination": "initial-closed-readback/LOCAL-READBACK.json",
+      "bytes": 14136,
+      "sha256": "2e70807657faab33c70f579a02846d71554c53a25b47e5ccd7d1466bc850a8d8",
+      "git_blob": "6764cf8f941f6cf553ef1acbc44eabec444392d7",
+      "role": "initial_closed_readback"
+    },
+    {
+      "path": "native-validation-results/r29-closed-input/PROPOSED-EXPORT-BINDINGS.json",
+      "destination": "initial-closed-readback/PROPOSED-EXPORT-BINDINGS.json",
+      "bytes": 3780,
+      "sha256": "d360a6ecfbeaba43d90cbe3ab8d6e451356ecd990c5c924873fdd880e019e911",
+      "git_blob": "d2cedcb9c043aa0ee0b09194976f6c3e67c0e80c",
+      "role": "initial_closed_readback"
+    },
+    {
+      "path": "native-validation-results/r29-closed-input/file-info/metadata-file-info.json",
+      "destination": "initial-closed-readback/file-info/metadata-file-info.json",
+      "bytes": 479,
+      "sha256": "ab3acfcb06d084c4b1870209598562fb9baaf44548c6b3a83ad9fdad9f857a40",
+      "git_blob": "5c1fd9ed2aa9a185cb880fa8bda011c7e68fa534",
+      "role": "initial_closed_readback"
+    },
+    {
+      "path": "native-validation-results/r29-closed-input/file-info/scope-file-info.json",
+      "destination": "initial-closed-readback/file-info/scope-file-info.json",
+      "bytes": 474,
+      "sha256": "e431926b55676c71cbaec0a223894d121fb222ab413c659a465f47fbc8468e7c",
+      "git_blob": "63340fceaf19be5c7351029982dd6937c9da7af7",
+      "role": "initial_closed_readback"
+    },
+    {
+      "path": "native-validation-results/r29-closed-input/file-info/test-results-file-info.json",
+      "destination": "initial-closed-readback/file-info/test-results-file-info.json",
+      "bytes": 485,
+      "sha256": "90243ac333a821a1518d790beae1a7545d25a9652d8f240c38c76e5b14fa61ad",
+      "git_blob": "bddce0d6d407619a375f49b7f0e4d3de8b0f2c2d",
+      "role": "initial_closed_readback"
+    },
+    {
+      "path": "native-validation-results/r29-closed-input/file-info/tests-log-file-info.json",
+      "destination": "initial-closed-readback/file-info/tests-log-file-info.json",
+      "bytes": 477,
+      "sha256": "10f807a51c48bf9788589c4a89ad66c176dd28f0a4ccdb1952ddd61640d73bbf",
+      "git_blob": "86a19f8b0accca9a76c614e52e52c82bfe2d52de",
+      "role": "initial_closed_readback"
+    },
+    {
+      "path": "native-validation-results/r29-closed-input/blocker-source/AGENTS.md",
+      "destination": "initial-closed-readback/blocker-source/AGENTS.md",
+      "bytes": 22519,
+      "sha256": "c3f80e8386eb170b00af1e21de40d770c4941e464915687e728e2d14a7e79480",
+      "git_blob": "faa57cc0db48123e1011f1eb47692cd3bbbcfc3a",
+      "role": "initial_closed_readback"
+    },
+    {
+      "path": "native-validation-results/r29-closed-input/blocker-source/SOURCE-PINS.json",
+      "destination": "initial-closed-readback/blocker-source/SOURCE-PINS.json",
+      "bytes": 1109,
+      "sha256": "d4defbefb42d5473781757c92fa3b5d49afe7ad3e2a2d73ae71fc11b855c9301",
+      "git_blob": "f7e7c029a17a63e468adb9c9007cd0781bca299e",
+      "role": "initial_closed_readback"
+    },
+    {
+      "path": "native-validation-results/r29-closed-input/blocker-source/codex-rs/app-server/tests/suite/v2/bedrock_setup.rs",
+      "destination": "initial-closed-readback/blocker-source/codex-rs/app-server/tests/suite/v2/bedrock_setup.rs",
+      "bytes": 11612,
+      "sha256": "25c5036f352b673af21adfd37930f3f1762359b7422084c6e4eaaa9c1f513d55",
+      "git_blob": "87cfaf3ae45eafbc54dad94a96226f4a807209a5",
+      "role": "initial_closed_readback"
+    },
+    {
+      "path": "r29-formal-preparation/verify_and_assemble.py",
+      "destination": "local-preparation-history/verify_and_assemble.py",
+      "bytes": 57808,
+      "sha256": "d22e6723a47215d707157093a2b0005048e5e5de4b214b370390ada3017a3c01",
+      "git_blob": "fa055b854dde38d6e846c831099c80d29b5adf20",
+      "role": "local_preparation_history"
+    },
+    {
+      "path": "r29-formal-preparation/ASSEMBLY-INPUTS.template.json",
+      "destination": "local-preparation-history/ASSEMBLY-INPUTS.template.json",
+      "bytes": 826,
+      "sha256": "1b59c1ea41caaaa7400fc25537dfe2f29a1bd7057ce4c0e3c69659924c22b8aa",
+      "git_blob": "3e280da33ebdd03eb55c9df8ea46bb4981a19880",
+      "role": "local_preparation_history"
+    },
+    {
+      "path": "r29-formal-preparation/AST-AND-MECHANICAL-READBACK.json",
+      "destination": "local-preparation-history/AST-AND-MECHANICAL-READBACK.json",
+      "bytes": 1047,
+      "sha256": "db2ec75c06efd3405226e28226185a214986c13c977ebe828729d55f30160c07",
+      "git_blob": "3275e1f353ec52346f9a9add1c07af74d5d0e9b4",
+      "role": "local_preparation_history"
+    },
+    {
+      "path": "r29-formal-preparation/README.md",
+      "destination": "local-preparation-history/README.md",
+      "bytes": 3573,
+      "sha256": "927d447d420b4b74fb97a1e5a645589e220d107112e8c74eca60c53b8265a393",
+      "git_blob": "33658e219e5f19d1376b838d5a36c4486049ba01",
+      "role": "local_preparation_history"
+    },
+    {
+      "path": "r29-formal-preparation/PREPARATION-READBACK.json",
+      "destination": "local-preparation-history/PREPARATION-READBACK.json",
+      "bytes": 1489,
+      "sha256": "102c68ec866a15e333633d70f6ebba412dfff2dc976e3e68a16997c4885cde5f",
+      "git_blob": "f49ad50623a6e9f825e42c1469b187bfa03f6613",
+      "role": "local_preparation_history"
+    },
+    {
+      "path": "r29-formal-preparation/HANDOFF-MANIFEST.json",
+      "destination": "local-preparation-history/HANDOFF-MANIFEST.json",
+      "bytes": 1344,
+      "sha256": "f21f512f82e81d0c8fa8cca6736dc1c65018e09aacf3066dcbd4ac304a84f2b3",
+      "git_blob": "6b6dfd77efd8c18691fa0b3d833ad327f9bcd924",
+      "role": "local_preparation_history"
+    },
+    {
+      "path": "r29-formal-preparation/ACTUAL-ASSEMBLER-ADAPTATION.json",
+      "destination": "local-preparation-history/ACTUAL-ASSEMBLER-ADAPTATION.json",
+      "bytes": 1145,
+      "sha256": "8c60216c45876e7ff5b9a26f550af5c579632640194f9d109af227d4add2744e",
+      "git_blob": "55624b72f802348b5047beaba931f3943916a99b",
+      "role": "local_preparation_history"
+    },
+    {
+      "path": "r29-formal-preparation/v1-v2-actual-authorization.patch",
+      "destination": "local-preparation-history/v1-v2-actual-authorization.patch",
+      "bytes": 4897,
+      "sha256": "535355b07b94b2ec3e5b687c14ef8c66d3572c4844d3d6af421673f82a6af248",
+      "git_blob": "15cd8278356da9cab7b7927d8a8b1c26f8b5c2c4",
+      "role": "local_preparation_history"
+    }
+  ],
+  "export_original_job_id": "1a1b230e041-fc05-7ce2",
+  "export_terminal_destination": "export-custody/controller/terminal-process-status.json",
+  "export_result_destination": "export-custody/checkpoint-r29-export.json",
+  "actual_exporter_files": {
+    "template": "export-preparation/export-r29-closed-template.py",
+    "bound": "export-bound-input/export-r29-closed-bound.py",
+    "final": "export-bound-input/export-r29-closed.py",
+    "binding_values": "export-bound-input/ACTUAL-BINDINGS.json",
+    "authorization": "export-root-review/ROOT-EXPORT-AUTHORIZATION.json"
+  },
+  "gate_authorization_destination": "gate-root-review/ROOT-LAUNCH-AUTHORIZATION.json",
+  "gate_approved_runner_destination": "gate-root-review/ROOT-APPROVED-R29.py",
+  "current_workspace_test_count_is_not_predeclared": true,
+  "prior_r28_counts_are_prerequisite_only": true,
+  "reader_execution_not_a_native_gate": true
+}

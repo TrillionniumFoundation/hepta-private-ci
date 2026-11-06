@@ -1,0 +1,154 @@
+{
+  "schema": "hepta.source53-finalization-independent-closed-readback.v1",
+  "status": "CLOSED_MECHANICAL_AND_STATIC_REVIEW_CLEAR_WITH_RECORDED_WARNINGS",
+  "original_job_id": "1a1b2a75955-fc05-7f27",
+  "original_outer_exit_code": 0,
+  "phase_raw_effective_resource_exit_codes": {
+    "fix": [
+      0,
+      0,
+      0
+    ],
+    "format": [
+      0,
+      0,
+      0
+    ]
+  },
+  "actual_command_scope": {
+    "fix_owners": 26,
+    "default_fmt_rust_paths": 183,
+    "default_fmt_python_paths": 2,
+    "all_flag_added": false,
+    "extra_allow_staged_added": false,
+    "native_head": "bef6fa7645df9df12b69fda499e97eed25de6c75"
+  },
+  "tested_source_commit": "f74be175de66a4b351cd239d39d98cd34fe9cc1b",
+  "tested_source_tree": "440d4a8e09af4009e4d9ea067388826308da8803",
+  "after_fix_tree": "440d4a8e09af4009e4d9ea067388826308da8803",
+  "final_formatted_tree_from_original_evidence": "42c1dd4e1a751c690c2800dfc3868e771dc9c70b",
+  "original_final_commit": null,
+  "root_publication_is_separate_later_evidence": true,
+  "snapshots": {
+    "count": 3,
+    "each_regular_members": 198,
+    "each_source_paths": 197,
+    "full_raw_SHA256_Git_blob_permissions_checked": true,
+    "tested_snapshot_matches_original_R31_197_bytes": true
+  },
+  "changes": {
+    "fix_source_files": 0,
+    "fix_only_patch_bytes": 0,
+    "fix_stage_absent_as_required": true,
+    "format_source_files": 56,
+    "format_rust": 54,
+    "format_python": 2,
+    "three_patches_exact_forward_and_reverse": true,
+    "format_and_tested_to_final_patch_exact_equal": true,
+    "source_modes_unchanged": true,
+    "all_changes_within_original_allowed_paths": true
+  },
+  "semantics": {
+    "protected_assert_and_panic_macros": 1960,
+    "python_AST_equal": 2,
+    "rust_exact_noncomment_token_files": 15,
+    "trailing_comma_deltas": 279,
+    "manually_reviewed_block_semicolon_deltas": 20,
+    "block_files": 6,
+    "declaration_reorder_deltas": 59,
+    "declaration_files": 9,
+    "literal_identifier_operator_order_and_declaration_attached_attributes_preserved": true,
+    "assertion_deadline_retry_filter_weakening_found": false,
+    "not_a_Rust_compiler_AST_or_formal_semantics_proof": true
+  },
+  "warnings": {
+    "diagnostics": 3,
+    "summary_lines": 3,
+    "vendored_i18n_mismatched_lifetime_syntaxes": 2,
+    "agentd_large_enum_variant": 1,
+    "agentd_lib_test_summary_duplicates_existing_diagnostic": true,
+    "strict_lint_all_clear_claimed": false
+  },
+  "original_resources": {
+    "fix_wall_seconds": 478.47458124160767,
+    "format_wall_seconds": 4.21239447593689,
+    "fix_max_RSS_KiB": 3654180,
+    "format_max_RSS_KiB": 51364,
+    "shared_free_space_samples_not_exclusive_task_cost": true
+  },
+  "controller": {
+    "stdout_bytes": 8595,
+    "stderr_bytes": 0,
+    "continuous_original_ranges": true,
+    "natural_no_retry_timeout_cancel": true
+  },
+  "source_and_qualification_boundaries": {
+    "HEAD_and_dual_lock_original_guards_unchanged": true,
+    "whole_untouched_repo_tree_not_independently_rebuilt_here": true,
+    "original_lock_raw_bytes_read_from_R31_archive": true,
+    "final_lock_raw_bytes_not_in_changed_source_tar": true,
+    "post_fix_or_format_tests_executed": false,
+    "R31_20228_PASS_130_skip_remain_bound_to_tested_tree": true,
+    "qualification_transferred_to_formatted_tree": false,
+    "historical_R29_failure_unchanged": true,
+    "source53_diagnostic_only": true,
+    "behavior_repair_claimed": false,
+    "science": "HOLD",
+    "authority": "DENY_ALL"
+  },
+  "reader_attempts": {
+    "v1_exit": 1,
+    "v2_exit": 1,
+    "v3_exit": 0,
+    "corrections": [
+      "./ Python argv paths normalized to exact native-relative names",
+      "owner records compared via their package key"
+    ],
+    "original_native_source_evidence_not_modified": true
+  },
+  "proofs": {
+    "mechanical": {
+      "path": "closed-readback-v3/MECHANICAL-READBACK.json",
+      "bytes": 40259,
+      "sha256": "001ca6707834e117d121522e177fbb58f7654cb43a285133dca8f6febdf44c7c",
+      "git_blob": "a026c87ebfd2a6cc4f54fb094f1df022e90c93fe"
+    },
+    "semantics": {
+      "path": "STATIC-SEMANTIC-READBACK.json",
+      "bytes": 58104,
+      "sha256": "11f8a0009e5f8a76f7c1e45b2168a998b494c9d168a9149881cb4501f9b1de99",
+      "git_blob": "dc19d6a2daae65dc1583d315cc583c1f747f13b4"
+    },
+    "warnings": {
+      "path": "closed-readback-v3/WARNING-READBACK.json",
+      "bytes": 4639,
+      "sha256": "d4c4928591a47b6bbe307b35b7c08713f6740303e2d185c6b753c51e4a9d62ff",
+      "git_blob": "0353543d099ecd4d4f3d291a370cb4a5ec2ef531"
+    },
+    "patch_roundtrip": {
+      "path": "closed-readback-v3/PATCH-ROUNDTRIP-READBACK.json",
+      "bytes": 69386,
+      "sha256": "69a60660c0c0d6222b50c3ef9b7b0194ef20ced04b8bd7cb10338f0e92c72729",
+      "git_blob": "8f7c9dde8639b63de62392cd344b3cea51bfb40f"
+    },
+    "source_inventories": {
+      "path": "closed-readback-v3/SNAPSHOT-SOURCE-INVENTORIES.json",
+      "bytes": 201950,
+      "sha256": "5539fde9d83af7b6d7c58a2d61a51c25a40da97e1b84b7631397b7f9e621f739",
+      "git_blob": "9aef89ebebd9eef1a222c115834edcf5a70c196b"
+    },
+    "original_input_pins": {
+      "path": "closed-readback-v3/INPUT-PINS.json",
+      "bytes": 11322,
+      "sha256": "c89e66db086f6e81c44db966ffbd3d820cffa7e6466df51653c0af1c3ec60a9d",
+      "git_blob": "383640c66ee80b48a0f5bb60fefdfbbbf2ce91a1"
+    },
+    "local_executions": {
+      "path": "LOCAL-EXECUTIONS.json",
+      "bytes": 4755,
+      "sha256": "8fd67a30d8010b471b0d683d06b951f0fa0e2ca93e3c133924eb242c6cafadbe",
+      "git_blob": "ef7c13cd61b73d471548efcb440e5b46152867d0"
+    }
+  },
+  "no_native_Rust_Git_metadata_test_or_formatter_rerun_by_reader": true
+}

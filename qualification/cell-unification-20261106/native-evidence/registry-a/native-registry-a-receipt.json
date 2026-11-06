@@ -1,0 +1,24 @@
+{
+  "source_manifest": "native-registry-a-source.json",
+  "command": [
+    "just",
+    "test",
+    "-p",
+    "codex-hepta-neuron",
+    "-p",
+    "codex-hepta-plasticity",
+    "--locked",
+    "--retries",
+    "0"
+  ],
+  "start_unix": 1793933113.4151776,
+  "end_unix": 1793933116.5132895,
+  "elapsed_seconds": 3.098111867904663,
+  "exit_code": 0,
+  "log_sha256": "d3fe0428c8e8ea1b8d62a5539a1fe378ef6af4627ee52379af10e449e6d49987",
+  "disk_after": {
+    "total": 1966736678912,
+    "used": 1532664815616,
+    "free": 334091612160
+  }
+}

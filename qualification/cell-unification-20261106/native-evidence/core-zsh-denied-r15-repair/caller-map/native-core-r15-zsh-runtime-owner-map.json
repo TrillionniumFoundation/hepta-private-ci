@@ -1,0 +1,34 @@
+{
+  "source_tree": "1646e1656cf6365e74accae19a1225fd2ce6d964",
+  "source_commit": "638997499470f0b7dd33ad18226feacf0198ef3d",
+  "query": "\\bUnifiedExecRuntime\\b",
+  "full_tree": "codex-rs/**/*.rs",
+  "matches": "codex-rs/core/src/unified_exec/process_manager.rs:37:use crate::tools::runtimes::unified_exec::UnifiedExecRuntime;\ncodex-rs/core/src/unified_exec/process_manager.rs:1258:        let mut runtime = UnifiedExecRuntime::new(self, request.shell_mode.clone());\ncodex-rs/core/src/tools/runtimes/unified_exec.rs:101:pub struct UnifiedExecRuntime<'a> {\ncodex-rs/core/src/tools/runtimes/unified_exec.rs:144:impl<'a> UnifiedExecRuntime<'a> {\ncodex-rs/core/src/tools/runtimes/unified_exec.rs:154:impl Sandboxable for UnifiedExecRuntime<'_> {\ncodex-rs/core/src/tools/runtimes/unified_exec.rs:164:impl Approvable<UnifiedExecRequest> for UnifiedExecRuntime<'_> {\ncodex-rs/core/src/tools/runtimes/unified_exec.rs:199:impl<'a> ToolRuntime<UnifiedExecRequest, UnifiedExecAttempt> for UnifiedExecRuntime<'a> {\ncodex-rs/core/src/tools/runtimes/unified_exec.rs:594:        let runtime = UnifiedExecRuntime::new(&manager, UnifiedExecShellMode::Direct);\ncodex-rs/core/src/tools/runtimes/unified_exec.rs:625:        let runtime = UnifiedExecRuntime::new(&manager, UnifiedExecShellMode::Direct);\ncodex-rs/core/src/tools/runtimes/unified_exec.rs:667:        let direct_runtime = UnifiedExecRuntime::new(&manager, UnifiedExecShellMode::Direct);\ncodex-rs/core/src/tools/runtimes/unified_exec.rs:668:        let zsh_fork_runtime = UnifiedExecRuntime::new(&manager, zsh_fork_mode());\ncodex-rs/core/src/tools/runtimes/unified_exec.rs:692:        let zsh_fork_runtime = UnifiedExecRuntime::new(&manager, zsh_fork_mode());\ncodex-rs/core/src/tools/runtimes/unified_exec.rs:711:        let runtime = UnifiedExecRuntime::new(&manager, zsh_fork_mode());\n",
+  "source_pins": [
+    {
+      "path": "codex-rs/core/src/tools/approvals.rs",
+      "bytes": 28970,
+      "sha256": "1c4e6ac0210db815e68ef53e167d0691c5da94e50b860b5de930182bb05d3783",
+      "git_blob": "ce939f37b1279c829e3428b597e210f7f6396cc5"
+    },
+    {
+      "path": "codex-rs/core/src/tools/orchestrator.rs",
+      "bytes": 23923,
+      "sha256": "dd744d39c62ca6dcf10f107b8163617a1e536fddf60d22d328489410af7efcf1",
+      "git_blob": "184757bb146da53bf93a5ef848ab96a0d826087c"
+    },
+    {
+      "path": "codex-rs/core/src/tools/runtimes/unified_exec.rs",
+      "bytes": 30496,
+      "sha256": "4567c379d9c3f444c78987c14636d6fddbcd98b2ccf47a4a006aef61a856dd1f",
+      "git_blob": "84144f674d37cb4474c01cb4d25c4aa07b16f5a8"
+    },
+    {
+      "path": "codex-rs/core/src/unified_exec/process_manager.rs",
+      "bytes": 62568,
+      "sha256": "3eea68b72bb4186609aa1ed6622ac4e20a0afd98d700f8c0577faf49a3f1b916",
+      "git_blob": "c3166418abbb514f1b6fbaacd9815e5a79613fa5"
+    }
+  ],
+  "rust_commands_executed": false
+}

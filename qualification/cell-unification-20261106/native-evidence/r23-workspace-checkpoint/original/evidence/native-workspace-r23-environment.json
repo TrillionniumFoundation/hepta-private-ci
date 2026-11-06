@@ -1,0 +1,47 @@
+{
+  "source_tree": "be34ab1afe622ad3b8f030c8c5018f4f54fbc304",
+  "source_commit": "50dd4bedefcd1b8e2e8cd5cf5023c60a86d38d0a",
+  "source_manifest": "native-candidate-r22-source.json",
+  "source_manifest_sha256": "8cd1ec59c95d6c777d887f3302b257dc5230a7bfa5570fe9df0f0b2ef361aba5",
+  "selection": {
+    "RUSTUP_TOOLCHAIN": "1.96.0",
+    "CARGO_BUILD_JOBS": "2",
+    "CARGO_TARGET_DIR": "/home/alex/work/hepta-cell-unified-20261106-a/target",
+    "CARGO_NET_GIT_FETCH_WITH_CLI": "true",
+    "NEXTEST_TEST_THREADS": "2",
+    "NEXTEST_PROFILE": null,
+    "HEPTA_NEXTTEST_FULL_METADATA": null,
+    "CARGO_PROFILE_TEST_DEBUG": "0",
+    "CARGO_PROFILE_DEV_DEBUG": "0",
+    "CARGO_INCREMENTAL": null,
+    "CARGO_BUILD_TARGET": null,
+    "RUSTFLAGS": null,
+    "DOTSLASH_CACHE": "/home/alex/work/hepta-cell-unified-20261106-a/tools/dotslash-cache",
+    "RUST_MIN_STACK": null
+  },
+  "free_bytes_before": 134956965888,
+  "project_gate_prerequisites": [
+    {
+      "path": "native-app-server-client-r22-strict-receipt.json",
+      "sha256": "d8a960cc1a8e6dfd9fcc51e721b8812be0b43fef2c88cd5c1a420e72c77c179b",
+      "source_tree": "be34ab1afe622ad3b8f030c8c5018f4f54fbc304",
+      "exit_code": 0,
+      "log_sha256": "e7ab2aea734a44d99691015e54840a8711472973e8e7676b580321063f693259",
+      "resources_sha256": "a53fd4341215de7b6ac6fa837800e236a2bbc506c75f58757b902d43f31121cd"
+    },
+    {
+      "path": "native-app-server-client-r22-tests-receipt.json",
+      "sha256": "b8baa551ae1523e5534780222b2727a74a47c054c41d5ac32fec35d9770f181e",
+      "source_tree": "be34ab1afe622ad3b8f030c8c5018f4f54fbc304",
+      "exit_code": 0,
+      "log_sha256": "7802fd1edbec77873c06dfd44e5363307320b8b46fcdb4abf432931594f14dab",
+      "resources_sha256": "5e7e499bebf8158eeaac6fe69516ae5bd99f5a0afce2a12bcb0a11987bf6b2c0"
+    }
+  ],
+  "project_complete_sha256": "4d3a8a86b91f3ecf61cd117500d4777ed612c8fd94355f7dee734fb43cf89ac3",
+  "project_readback_sha256": "4cc4b239f7c3cab8b1889bf67b1487070f8fa1c6b5ae949fa7884af876ba0808",
+  "original_default_workspace_selection": true,
+  "workspace_member_count": 193,
+  "workspace_default_member_count": 193,
+  "test_deadlines_features_filters_retries_unchanged": true
+}

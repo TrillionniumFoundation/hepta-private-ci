@@ -1,0 +1,31 @@
+{
+  "schema": "hepta.native-gate-receipt.v1",
+  "phase": "tests",
+  "source_tree": "e65356fc570296b74644967054eaded15b8ed440",
+  "source_manifest": "native-candidate-r20-source.json",
+  "source_commit": "07699df6fb5bfb46562ecb0c2eccd0d232d18eac",
+  "command": [
+    "just",
+    "test",
+    "--locked",
+    "-p",
+    "codex-app-server",
+    "-p",
+    "codex-linux-sandbox",
+    "--retries",
+    "0"
+  ],
+  "cwd": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs",
+  "start_unix": 1793965972.934502,
+  "end_unix": 1793966631.9714465,
+  "elapsed_seconds": 659.0369446277618,
+  "exit_code": 0,
+  "log_sha256": "8efb59e5fbe125a8f16bd5efe138d1e4d4aed579dd84b873790cfbee8a1973a6",
+  "resources_sha256": "3c4b677dbca435b32582bcce73ce50753e4b3923544f3d177ba29ffc32422cac",
+  "environment_manifest": "native-app-server-r20-environment.json",
+  "packages": [
+    "codex-app-server",
+    "codex-linux-sandbox"
+  ],
+  "retries": 0
+}

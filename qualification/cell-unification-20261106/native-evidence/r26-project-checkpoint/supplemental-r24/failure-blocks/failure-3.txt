@@ -1,0 +1,20 @@
+        FAIL [   5.279s] codex-network-proxy http_proxy::tests::http_connect_accept_defers_brokered_host_mitm_until_protocol_detection
+  stdout ───
+
+    running 1 test
+    test http_proxy::tests::http_connect_accept_defers_brokered_host_mitm_until_protocol_detection ... FAILED
+
+    failures:
+
+    failures:
+        http_proxy::tests::http_connect_accept_defers_brokered_host_mitm_until_protocol_detection
+
+    test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 219 filtered out; finished in 5.28s
+
+  stderr ───
+
+    thread 'http_proxy::tests::http_connect_accept_defers_brokered_host_mitm_until_protocol_detection' (6607) panicked at network-proxy/src/http_proxy.rs:1366:10:
+    brokered credentials should defer MITM until protocol detection: Response { status: 403, version: HTTP/1.1, headers: {content-type: "text/plain", x-proxy-error: "blocked-by-allowlist"}, body: Body(BoxBody) }
+    note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+────────────

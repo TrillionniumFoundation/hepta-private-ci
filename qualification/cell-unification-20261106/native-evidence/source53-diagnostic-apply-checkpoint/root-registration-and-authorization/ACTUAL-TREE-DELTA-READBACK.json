@@ -1,0 +1,101 @@
+{
+  "schema": "hepta.root-source53-actual-tree-delta.v1",
+  "before_commit": "1e0910becc37383e6d17ecf861ea844fd07d8862",
+  "before_tree": "211f15baff19095e8c98bcea2b0ed99ca2270ade",
+  "actual_after_tree": "440d4a8e09af4009e4d9ea067388826308da8803",
+  "classification": "DIAGNOSTIC_ONLY_NOT_BEHAVIOR_REPAIR",
+  "walked_directories": [
+    {
+      "path": "",
+      "before": "211f15baff19095e8c98bcea2b0ed99ca2270ade",
+      "after": "440d4a8e09af4009e4d9ea067388826308da8803",
+      "changed_entries": [
+        "codex-rs"
+      ]
+    },
+    {
+      "path": "codex-rs",
+      "before": "37be3fdad9c7d6b95bcef97dad0ad7f3a89621a4",
+      "after": "1f1eb14b482ea0c394e13aa99f2bd1287061caf6",
+      "changed_entries": [
+        "app-server"
+      ]
+    },
+    {
+      "path": "codex-rs/app-server",
+      "before": "055209eb63c1a2c317cb8bde804fac10928a6be0",
+      "after": "310b98e52f2791443ef65a5939e6b50ff66fe695",
+      "changed_entries": [
+        "src",
+        "tests"
+      ]
+    },
+    {
+      "path": "codex-rs/app-server/src",
+      "before": "f82ff2ccb6a4f9c56db0ee5ef9e41f3333e1754f",
+      "after": "7732908ff6bb028fc5f753b7cd7455aadc466f98",
+      "changed_entries": [
+        "request_processors"
+      ]
+    },
+    {
+      "path": "codex-rs/app-server/tests",
+      "before": "4a0dec3fc5b60bce06dcb1b442ca2bfd43bf26eb",
+      "after": "4b37139dcc626a161ea63cfacaa6ef67f731715d",
+      "changed_entries": [
+        "suite"
+      ]
+    },
+    {
+      "path": "codex-rs/app-server/src/request_processors",
+      "before": "f119c822ddf39ea620ca1cdf2ee40df591f536b1",
+      "after": "f50bdc0dc1078eb33beb92f1936e738fb43ec67f",
+      "changed_entries": [
+        "account_processor"
+      ]
+    },
+    {
+      "path": "codex-rs/app-server/tests/suite",
+      "before": "6cb4ad6ea5593768fe2ffd07e16de4ee611e3d45",
+      "after": "198f35e45a441774d2739742e1f858a994d02556",
+      "changed_entries": [
+        "v2"
+      ]
+    },
+    {
+      "path": "codex-rs/app-server/src/request_processors/account_processor",
+      "before": "a56a209032b4e6a9a359f79c8831e9f44d49c3a4",
+      "after": "a1ebf20e344a11e1cd23cbf126769354c91def68",
+      "changed_entries": [
+        "bedrock_setup.rs"
+      ]
+    },
+    {
+      "path": "codex-rs/app-server/tests/suite/v2",
+      "before": "d0c0cfaa97accb2c2f2793b6d57f1dfbe1892d57",
+      "after": "5c43e523f4a091274aef0211b1ec84d005664365",
+      "changed_entries": [
+        "bedrock_setup.rs"
+      ]
+    }
+  ],
+  "changed_leaves": [
+    {
+      "path": "codex-rs/app-server/tests/suite/v2/bedrock_setup.rs",
+      "before": "87cfaf3ae45eafbc54dad94a96226f4a807209a5",
+      "after": "daaddd66a0b02a044263da26be6302b2d4ee4584",
+      "mode": "100644"
+    },
+    {
+      "path": "codex-rs/app-server/src/request_processors/account_processor/bedrock_setup.rs",
+      "before": "9e7cb31856c2b938c6a8ba73f8affb36bd4b5e3d",
+      "after": "747ae860d47bc33dfa48c7dcfb944dd6e4dd2865",
+      "mode": "100644"
+    }
+  ],
+  "all18_actual_Git_tree_payload_hashes_recomputed": true,
+  "all_other_entries_and_modes_identical": true,
+  "dependency_inputs_changed": false,
+  "native_applied": false,
+  "qualification_not_executed": true
+}

@@ -1,0 +1,167 @@
+{
+  "schema": "hepta.source53-diagnostic-native-static-review.v1",
+  "conclusion": "STATIC_CLEAR_DIAGNOSTIC_ONLY_NO_BEHAVIOR_REPAIR_OR_EXECUTION",
+  "source_before_commit": "1e0910becc37383e6d17ecf861ea844fd07d8862",
+  "source_before_tree": "211f15baff19095e8c98bcea2b0ed99ca2270ade",
+  "candidate_identity": {
+    "commit": null,
+    "tree": null
+  },
+  "files": [
+    {
+      "path": "codex-rs/app-server/src/request_processors/account_processor/bedrock_setup.rs",
+      "before": {
+        "bytes": 5606,
+        "sha256": "af9ceab5047c7ee06bba84d47684748b38bfbb32e287db4a6fca84b2b45fa6fa",
+        "git_blob": "9e7cb31856c2b938c6a8ba73f8affb36bd4b5e3d"
+      },
+      "after": {
+        "bytes": 7325,
+        "sha256": "9d5107471e8d49b49271dda43cec319776c5f05d6ea66bca7e7167a1f345d4b4",
+        "git_blob": "747ae860d47bc33dfa48c7dcfb944dd6e4dd2865"
+      },
+      "native_original_matches": true
+    },
+    {
+      "path": "codex-rs/app-server/tests/suite/v2/bedrock_setup.rs",
+      "before": {
+        "bytes": 11612,
+        "sha256": "25c5036f352b673af21adfd37930f3f1762359b7422084c6e4eaaa9c1f513d55",
+        "git_blob": "87cfaf3ae45eafbc54dad94a96226f4a807209a5"
+      },
+      "after": {
+        "bytes": 11817,
+        "sha256": "f3974a77783e82514a5828e055fdb9baf5bbbfad6dc3c7a10427e16b5c8d6710",
+        "git_blob": "daaddd66a0b02a044263da26be6302b2d4ee4584"
+      },
+      "native_original_matches": true
+    }
+  ],
+  "patch": {
+    "bytes": 3906,
+    "sha256": "cb9c52016c6b106b6d52f4bf2c787193fc11d5f1f98c073a0eed7141bad605e2",
+    "git_blob": "c8e503738a5f958a9846b7a5d5fd388978580a64"
+  },
+  "stage_labels": [
+    "handler_entered",
+    "config_precedence_start",
+    "config_precedence_complete",
+    "profile_validation_start",
+    "profile_validation_complete",
+    "login_cancel_start",
+    "login_cancel_complete",
+    "provider_config_start",
+    "provider_config_complete"
+  ],
+  "production_reverse_exact": true,
+  "fixture_reverse_exact": true,
+  "original_assertion_macros": 22,
+  "original_requests_awaits_oracles_timeouts_unchanged": true,
+  "new_logged_values": "nine fixed stage strings and fixed message; no new variable/payload/credential fields",
+  "fixture_filter_scope": "first child of existing setup_bedrock_profile_and_environment only",
+  "patch_mechanical_commands": [
+    {
+      "argv": [
+        "git",
+        "apply",
+        "--check",
+        "/tmp/source53-native-review-gfpzo3ez/candidate.patch"
+      ],
+      "cwd": "/tmp/source53-native-review-gfpzo3ez",
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "/tmp/source53-native-review-gfpzo3ez/candidate.patch"
+      ],
+      "cwd": "/tmp/source53-native-review-gfpzo3ez",
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "--reverse",
+        "--check",
+        "/tmp/source53-native-review-gfpzo3ez/candidate.patch"
+      ],
+      "cwd": "/tmp/source53-native-review-gfpzo3ez",
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "--reverse",
+        "/tmp/source53-native-review-gfpzo3ez/candidate.patch"
+      ],
+      "cwd": "/tmp/source53-native-review-gfpzo3ez",
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  ],
+  "forward_reverse_whole_files_exact": true,
+  "scope_preparation": {
+    "original_changed_files": 195,
+    "existing_repository_leaves_new_to_manifest": [
+      "codex-rs/app-server/src/request_processors/account_processor/bedrock_setup.rs",
+      "codex-rs/app-server/tests/suite/v2/bedrock_setup.rs"
+    ],
+    "expected_changed_files": 197,
+    "rust_files": 183,
+    "other_files": 14,
+    "owners": [
+      "codex-app-server",
+      "codex-app-server-client",
+      "codex-cli",
+      "codex-core",
+      "codex-exec-server",
+      "codex-external-agent-migration",
+      "codex-hepta-agent-protocol",
+      "codex-hepta-agentd",
+      "codex-hepta-automation",
+      "codex-hepta-context-compiler",
+      "codex-hepta-infer-worker-host",
+      "codex-hepta-intelligence",
+      "codex-hepta-learning-artifacts",
+      "codex-hepta-memory",
+      "codex-hepta-memory-extension",
+      "codex-hepta-neuron",
+      "codex-hepta-plasticity",
+      "codex-hepta-runtime",
+      "codex-hepta-supervisor",
+      "codex-linux-sandbox",
+      "codex-mcp",
+      "codex-model-provider-info",
+      "codex-network-proxy",
+      "codex-shell-escalation",
+      "codex-utils-pty",
+      "core_test_support"
+    ],
+    "owner_count": 26,
+    "new_leaf_owners": {
+      "codex-rs/app-server/src/request_processors/account_processor/bedrock_setup.rs": "codex-app-server",
+      "codex-rs/app-server/tests/suite/v2/bedrock_setup.rs": "codex-app-server"
+    },
+    "ci_selector_count": 27,
+    "ci_source_unchanged": true,
+    "metadata_pin": {
+      "bytes": 937659,
+      "sha256": "b29d6b0c49c63d6345f50597873e3fa98c79ea0cbfe923ae3dd700b5cc08af8d",
+      "git_blob": "0db6b5ccf051718a85b4aa0e7a57b7d62b393ecb"
+    }
+  },
+  "future_native_apply_claimed": false,
+  "rust_or_diagnostic_run": false,
+  "canonical_or_native_source_changed": false,
+  "behavior_fix_or_workspace_qualification_claimed": false
+}

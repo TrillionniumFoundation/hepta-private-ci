@@ -1,0 +1,818 @@
+{
+  "schema": "hepta.source53-finalizer-static-contract-readback.v1",
+  "classification": "INERT_PREPARATION_ONLY_NOT_EXECUTION_OR_QUALIFICATION",
+  "template": {
+    "bytes": 174038,
+    "sha256": "41c18849f6ebd24b17695051ee9c1c47c38ae207f87bf6c004f76248210fa22d",
+    "git_blob": "b0b6bee3dcb61ec58c928ab1325bb1407f83baa5"
+  },
+  "reference_r31": {
+    "bytes": 124806,
+    "sha256": "83aa49f02eca55b409d7685f6719765a46de1ccf3bea84f357cd4d352c06fab6",
+    "git_blob": "bf804fb66bd31e8469d2fcada09dfd8be45b1f25"
+  },
+  "reference_finalizer52_v2": {
+    "bytes": 129529,
+    "sha256": "4e2685dc36f5d714ee0b859394a775f8c93f35f33fe1ef2549e5d40dcc90ea2f",
+    "git_blob": "58b915cfd5e10eeee2a52a72f9a4cabd28b4b3b5"
+  },
+  "static_python_ast_and_symtable_executed": true,
+  "target_imported_or_executed": false,
+  "synthetic_gate_results_used": false,
+  "native_rust_metadata_fix_fmt_git_or_tool_query_executed": false,
+  "FROZEN": false,
+  "none_binding_count": 35,
+  "none_bindings": [
+    "APPLY_COMPLETE_BYTES",
+    "APPLY_COMPLETE_NAME",
+    "APPLY_COMPLETE_SHA256",
+    "APPLY_JOB_ID",
+    "APPLY_TERMINAL_BYTES",
+    "APPLY_TERMINAL_NAME",
+    "APPLY_TERMINAL_SHA256",
+    "DELTA_MANIFEST_BYTES",
+    "DELTA_MANIFEST_NAME",
+    "DELTA_MANIFEST_SHA256",
+    "EXPECTED_CHANGED_COUNT",
+    "EXPECTED_COMMIT",
+    "EXPECTED_TREE",
+    "FRESH_METADATA_PIN",
+    "R30_INPUT_PINS",
+    "R30_JOB_ID",
+    "R30_TERMINAL_BYTES",
+    "R30_TERMINAL_NAME",
+    "R30_TERMINAL_SHA256",
+    "R31_INPUT_PINS",
+    "R31_JOB_ID",
+    "R31_TERMINAL_BYTES",
+    "R31_TERMINAL_NAME",
+    "R31_TERMINAL_SHA256",
+    "SCOPE_INPUT_PINS",
+    "SOURCE_MANIFEST_BYTES",
+    "SOURCE_MANIFEST_NAME",
+    "SOURCE_MANIFEST_SHA256",
+    "TOOL_INVENTORY_BYTES",
+    "TOOL_INVENTORY_NAME",
+    "TOOL_INVENTORY_SCHEMA",
+    "TOOL_INVENTORY_SHA256",
+    "TOOL_INVENTORY_SOURCE_COMMIT",
+    "TOOL_INVENTORY_SOURCE_MANIFEST",
+    "TOOL_INVENTORY_SOURCE_TREE"
+  ],
+  "byte_identical_r31_functions": [
+    "require",
+    "sha",
+    "data_pin",
+    "safe_relative",
+    "hex_digest",
+    "check_source_bindings",
+    "write_json",
+    "announce",
+    "git",
+    "git_paths",
+    "normalized_files",
+    "source_file_pin",
+    "guard",
+    "lock_prerequisite",
+    "load_source",
+    "read_fixed",
+    "read_pinned",
+    "closed_terminal",
+    "r24_failed_prerequisite",
+    "r26_failed_prerequisite",
+    "tree_file_pin",
+    "r29_failed_prerequisite",
+    "inherited_dependency_check",
+    "apply_prerequisite",
+    "load_baseline",
+    "execution_environment",
+    "clean_lines",
+    "review_tests",
+    "pinned_read",
+    "verify_recorded_guard",
+    "verify_pointer",
+    "review_python",
+    "verify_inherited_guard",
+    "review_inherited_tests",
+    "load_inherited_baseline",
+    "r28_required_names",
+    "historical_source52_apply_prerequisite",
+    "r28_inherited_prerequisite",
+    "r30_required_names",
+    "check_bindings",
+    "r30_prerequisite",
+    "review_original_workspace",
+    "load_workspace_baseline",
+    "review_workspace"
+  ],
+  "byte_identical_old_finalizer_functions": [
+    "final_write",
+    "create_final_bytes",
+    "working_file_pin",
+    "frozen_context_check",
+    "indexed_source_check",
+    "stage_phase_changes"
+  ],
+  "old_mutation_function_ast_equal_after_only_source_label_and_diagnostic_fields_removed": [
+    "snapshot_indexed_source",
+    "mutation_guard",
+    "preserve_failed_source",
+    "run_final_phase",
+    "main"
+  ],
+  "old_scope_exact_inverse": {
+    "source": "52 to 53",
+    "fresh_metadata": "R29 to R31",
+    "paths": [
+      195,
+      197
+    ],
+    "rust": [
+      181,
+      183
+    ],
+    "owners": [
+      26,
+      26
+    ],
+    "python": [
+      2,
+      2
+    ]
+  },
+  "default_HEAD_formatter_selector_exact_except_183_count": true,
+  "tool_checks_exact_except_new_current_inventory_binding": true,
+  "producer_consumer": [
+    {
+      "record": "environment",
+      "schema": "hepta.source53-workspace-environment.v1",
+      "producer_function": "run_frozen",
+      "producer_line": 1759,
+      "producer_keys": [
+        "approved_prerequisite_env_pin",
+        "behavior_repair_claimed",
+        "diagnostic_only",
+        "free_bytes_before",
+        "fresh_current_source_metadata_required",
+        "original_default_workspace_selection",
+        "outer_timeout_seconds_contract",
+        "sandbox_or_network_protection_environment_overridden",
+        "schema",
+        "selection",
+        "source_commit",
+        "source_manifest",
+        "source_manifest_sha256",
+        "source_tree",
+        "test_deadlines_features_filters_retries_unchanged"
+      ],
+      "consumer_function": "r31_prerequisite",
+      "consumer_keys_checked": [
+        "approved_prerequisite_env_pin",
+        "behavior_repair_claimed",
+        "diagnostic_only",
+        "fresh_current_source_metadata_required",
+        "original_default_workspace_selection",
+        "outer_timeout_seconds_contract",
+        "sandbox_or_network_protection_environment_overridden",
+        "schema",
+        "selection",
+        "source_commit",
+        "source_manifest",
+        "source_manifest_sha256",
+        "source_tree",
+        "test_deadlines_features_filters_retries_unchanged"
+      ],
+      "missing_keys": []
+    },
+    {
+      "record": "preconditions",
+      "schema": "hepta.source53-workspace-preconditions.v1",
+      "producer_function": "run_frozen",
+      "producer_line": 1772,
+      "producer_keys": [
+        "actual_changed_file_count",
+        "bazel_lock_sha256",
+        "behavior_repair_claimed",
+        "cargo_lock_sha256",
+        "diagnostic_only",
+        "fix_fmt_executed",
+        "historical_project_pass_substitutes_for_r30",
+        "initial_source_guard",
+        "lock_update_performed",
+        "older_source_results_are_not_qualification_for_this_source",
+        "original_r24_failed_100_provenance",
+        "original_r26_failed_100_provenance",
+        "original_r29_failed_100_provenance",
+        "original_r29_workspace_baseline",
+        "patch_application_performed",
+        "prior_source52_workspace",
+        "python_suite_reexecuted",
+        "r25_remains_blocked_and_unexecuted",
+        "r27_remains_blocked_and_unexecuted",
+        "r30_closed_gate_readback",
+        "schema",
+        "source50_lock_inherited_only_for_unchanged_dependency_inputs",
+        "source50_lock_originals_and_outer_terminal",
+        "source50_root_manifest",
+        "source51_historical_manifest",
+        "source52_parent_manifest",
+        "source52_r28_historical_project_gate",
+        "source53_apply",
+        "source53_bazel_lock_update_executed",
+        "source_commit",
+        "source_manifest",
+        "source_tree",
+        "workspace_baseline_exact_set_required_after_complete_execution",
+        "workspace_baseline_used_as_filter",
+        "workspace_test_command"
+      ],
+      "consumer_function": "r31_prerequisite",
+      "consumer_keys_checked": [
+        "actual_changed_file_count",
+        "bazel_lock_sha256",
+        "behavior_repair_claimed",
+        "cargo_lock_sha256",
+        "diagnostic_only",
+        "fix_fmt_executed",
+        "historical_project_pass_substitutes_for_r30",
+        "initial_source_guard",
+        "lock_update_performed",
+        "older_source_results_are_not_qualification_for_this_source",
+        "original_r24_failed_100_provenance",
+        "original_r26_failed_100_provenance",
+        "original_r29_failed_100_provenance",
+        "original_r29_workspace_baseline",
+        "patch_application_performed",
+        "prior_source52_workspace",
+        "python_suite_reexecuted",
+        "r25_remains_blocked_and_unexecuted",
+        "r27_remains_blocked_and_unexecuted",
+        "r30_closed_gate_readback",
+        "schema",
+        "source50_lock_inherited_only_for_unchanged_dependency_inputs",
+        "source50_lock_originals_and_outer_terminal",
+        "source50_root_manifest",
+        "source51_historical_manifest",
+        "source52_parent_manifest",
+        "source52_r28_historical_project_gate",
+        "source53_apply",
+        "source53_bazel_lock_update_executed",
+        "source_commit",
+        "source_manifest",
+        "source_tree",
+        "workspace_baseline_exact_set_required_after_complete_execution",
+        "workspace_baseline_used_as_filter",
+        "workspace_test_command"
+      ],
+      "missing_keys": []
+    },
+    {
+      "record": "metadata_raw",
+      "schema": "hepta.native-raw-process-result.v1",
+      "producer_function": "capture_metadata",
+      "producer_line": 1496,
+      "producer_keys": [
+        "command",
+        "cwd",
+        "end_unix",
+        "exit_code",
+        "log_and_resource_hashing_pending",
+        "phase",
+        "resources_not_collected_for_read_only_metadata",
+        "schema",
+        "source_commit",
+        "source_tree",
+        "start_unix"
+      ],
+      "consumer_function": "r31_prerequisite",
+      "consumer_keys_checked": [
+        "command",
+        "cwd",
+        "end_unix",
+        "exit_code",
+        "phase",
+        "schema",
+        "source_commit",
+        "source_tree",
+        "start_unix"
+      ],
+      "missing_keys": []
+    },
+    {
+      "record": "metadata_receipt",
+      "schema": "hepta.native-metadata-receipt.v1",
+      "producer_function": "capture_metadata",
+      "producer_line": 1507,
+      "producer_keys": [
+        "command",
+        "cwd",
+        "elapsed_seconds",
+        "end_unix",
+        "exit_code",
+        "raw_process_result",
+        "schema",
+        "source_commit",
+        "source_guards_pass",
+        "source_postguard",
+        "source_tree",
+        "start_unix",
+        "stderr",
+        "stdout"
+      ],
+      "consumer_function": "r31_prerequisite",
+      "consumer_keys_checked": [
+        "command",
+        "cwd",
+        "elapsed_seconds",
+        "end_unix",
+        "exit_code",
+        "raw_process_result",
+        "schema",
+        "source_commit",
+        "source_guards_pass",
+        "source_postguard",
+        "source_tree",
+        "start_unix",
+        "stderr",
+        "stdout"
+      ],
+      "missing_keys": []
+    },
+    {
+      "record": "scope",
+      "schema": "hepta.source53-current-default-workspace-scope.v1",
+      "producer_function": "capture_metadata",
+      "producer_line": 1526,
+      "producer_keys": [
+        "all_platforms_features_external_services_qualified",
+        "behavior_repair_claimed",
+        "command",
+        "diagnostic_only",
+        "features",
+        "filters",
+        "metadata",
+        "metadata_command",
+        "metadata_generated_on_current_source",
+        "old_metadata_reused_as_current",
+        "schema",
+        "source_commit",
+        "source_tree",
+        "target_directory",
+        "workspace_default_member_count",
+        "workspace_default_members",
+        "workspace_member_count",
+        "workspace_members",
+        "workspace_root"
+      ],
+      "consumer_function": "r31_prerequisite",
+      "consumer_keys_checked": [
+        "all_platforms_features_external_services_qualified",
+        "behavior_repair_claimed",
+        "command",
+        "diagnostic_only",
+        "features",
+        "filters",
+        "metadata",
+        "metadata_command",
+        "metadata_generated_on_current_source",
+        "old_metadata_reused_as_current",
+        "schema",
+        "source_commit",
+        "source_tree",
+        "target_directory",
+        "workspace_default_member_count",
+        "workspace_default_members",
+        "workspace_member_count",
+        "workspace_members",
+        "workspace_root"
+      ],
+      "missing_keys": []
+    },
+    {
+      "record": "workspace_raw",
+      "schema": "hepta.native-raw-process-result.v1",
+      "producer_function": "run_workspace",
+      "producer_line": 1637,
+      "producer_keys": [
+        "command",
+        "cwd",
+        "end_unix",
+        "exit_code",
+        "log_and_resource_hashing_pending",
+        "phase",
+        "schema",
+        "source_commit",
+        "source_tree",
+        "start_unix"
+      ],
+      "consumer_function": "r31_prerequisite",
+      "consumer_keys_checked": [
+        "command",
+        "cwd",
+        "end_unix",
+        "exit_code",
+        "phase",
+        "schema",
+        "source_commit",
+        "source_tree",
+        "start_unix"
+      ],
+      "missing_keys": []
+    },
+    {
+      "record": "workspace_receipt",
+      "schema": "hepta.native-workspace-gate-receipt.v2",
+      "producer_function": "run_workspace",
+      "producer_line": 1670,
+      "producer_keys": [
+        "acceptance_readback",
+        "behavior_repair_claimed",
+        "command",
+        "cwd",
+        "diagnostic_only",
+        "effective_exit_code",
+        "elapsed_seconds",
+        "end_unix",
+        "environment_manifest",
+        "exact_old_test_id_set_required",
+        "exit_code",
+        "features",
+        "filters",
+        "fix_fmt_executed",
+        "free_bytes_after",
+        "free_space_is_shared_filesystem_sample_not_exclusive_gate_cost",
+        "issues",
+        "log_sha256",
+        "original_r29_workspace_baseline",
+        "outer_timeout_seconds_contract",
+        "packages_argument",
+        "phase",
+        "phase_pass",
+        "raw_process_result",
+        "resources_sha256",
+        "retries",
+        "schema",
+        "scope",
+        "source_commit",
+        "source_guards_pass",
+        "source_manifest",
+        "source_manifest_sha256",
+        "source_postguard",
+        "source_preguard",
+        "source_tree",
+        "start_unix",
+        "test_ids_used_as_filter",
+        "test_scope",
+        "workspace_default_member_count",
+        "workspace_member_count"
+      ],
+      "consumer_function": "r31_prerequisite",
+      "consumer_keys_checked": [
+        "acceptance_readback",
+        "behavior_repair_claimed",
+        "command",
+        "cwd",
+        "diagnostic_only",
+        "effective_exit_code",
+        "elapsed_seconds",
+        "end_unix",
+        "environment_manifest",
+        "exact_old_test_id_set_required",
+        "exit_code",
+        "features",
+        "filters",
+        "fix_fmt_executed",
+        "issues",
+        "log_sha256",
+        "original_r29_workspace_baseline",
+        "outer_timeout_seconds_contract",
+        "packages_argument",
+        "phase",
+        "phase_pass",
+        "raw_process_result",
+        "resources_sha256",
+        "retries",
+        "schema",
+        "scope",
+        "source_commit",
+        "source_guards_pass",
+        "source_manifest",
+        "source_manifest_sha256",
+        "source_postguard",
+        "source_preguard",
+        "source_tree",
+        "start_unix",
+        "test_ids_used_as_filter",
+        "test_scope",
+        "workspace_default_member_count",
+        "workspace_member_count"
+      ],
+      "missing_keys": []
+    },
+    {
+      "record": "complete",
+      "schema": "hepta.source53-default-workspace-complete.v1",
+      "producer_function": "run_workspace",
+      "producer_line": 1697,
+      "producer_keys": [
+        "all_platforms_features_external_services_qualified",
+        "bazel_lock_sha256",
+        "behavior_repair_claimed",
+        "cargo_lock_sha256",
+        "command",
+        "counts",
+        "diagnostic_only",
+        "effective_exit_code",
+        "exact_old_test_id_set_observed_pass",
+        "fix_fmt_executed",
+        "free_bytes_after",
+        "original_r29_failure_relabelled_as_pass",
+        "original_r29_workspace_baseline",
+        "readback",
+        "receipt",
+        "reported_skipped",
+        "schema",
+        "scope",
+        "source_commit",
+        "source_guards_pass",
+        "source_manifest",
+        "source_manifest_sha256",
+        "source_tree",
+        "test_ids_used_as_filter",
+        "unique_test_count",
+        "workspace_default_member_count",
+        "workspace_exit",
+        "workspace_member_count"
+      ],
+      "consumer_function": "r31_prerequisite",
+      "consumer_keys_checked": [
+        "all_platforms_features_external_services_qualified",
+        "bazel_lock_sha256",
+        "behavior_repair_claimed",
+        "cargo_lock_sha256",
+        "command",
+        "counts",
+        "diagnostic_only",
+        "effective_exit_code",
+        "exact_old_test_id_set_observed_pass",
+        "fix_fmt_executed",
+        "original_r29_failure_relabelled_as_pass",
+        "original_r29_workspace_baseline",
+        "readback",
+        "receipt",
+        "reported_skipped",
+        "schema",
+        "scope",
+        "source_commit",
+        "source_guards_pass",
+        "source_manifest",
+        "source_manifest_sha256",
+        "source_tree",
+        "test_ids_used_as_filter",
+        "unique_test_count",
+        "workspace_default_member_count",
+        "workspace_exit",
+        "workspace_member_count"
+      ],
+      "missing_keys": []
+    }
+  ],
+  "scope_dictionary_exact_producer_expression_after_expanding_metadata_filename_stem": true,
+  "required_r31_original_suffixes": [
+    "-environment.json",
+    "-preconditions.json",
+    "-source-pre-verification.json",
+    "-metadata.json",
+    "-metadata-stderr.log",
+    "-metadata-raw-process-result.json",
+    "-metadata-source-post-verification.json",
+    "-metadata-receipt.json",
+    "-scope.json",
+    "-tests-source-pre-verification.json",
+    "-tests.log",
+    "-tests-resources.txt",
+    "-tests-raw-process-result.json",
+    "-source-post-test-verification.json",
+    "-test-results.json",
+    "-result-review.json",
+    "-tests-receipt.json",
+    "-complete.json"
+  ],
+  "successful_r30_original_count": 19,
+  "historical_r28_original_count": 26,
+  "all_gate_originals_and_natural_outer_zero_required_before_fix": true,
+  "workspace_population_exact_20228_post_execution_only": true,
+  "project_population_exact_1345_post_execution_only": true,
+  "historical_source52_r28_not_source53_qualification": true,
+  "original_R29_R26_R24_failures_retained": true,
+  "future_scope_fresh_metadata_and_source53_tools_not_present_or_claimed": true,
+  "mutation_raw_write_line": 2392,
+  "first_derived_output_read_line": 2399,
+  "raw_and_json_create_only_flush_fsync_preserved": true,
+  "original_fix_26_then_default_fmt_no_after_tests": true,
+  "failed_command_or_guard_retains_source_and_stops_next_phase": true,
+  "native_HEAD_expected": "bef6fa7645df9df12b69fda499e97eed25de6c75",
+  "diagnostic_only": true,
+  "behavior_repair_claimed": false,
+  "final_formatted_tree_qualification_transferred": false,
+  "literal_command_inventory_for_review_only": [
+    {
+      "line": 162,
+      "literal_parts": [
+        "just",
+        "test",
+        "--locked",
+        "--retries",
+        "0"
+      ]
+    },
+    {
+      "line": 163,
+      "literal_parts": [
+        "cargo",
+        "metadata",
+        "--locked",
+        "--no-deps",
+        "--format-version",
+        "1"
+      ]
+    },
+    {
+      "line": 2327,
+      "literal_parts": [
+        "git",
+        "add",
+        "--"
+      ]
+    },
+    {
+      "line": 293,
+      "literal_parts": [
+        "git"
+      ]
+    },
+    {
+      "line": 1066,
+      "literal_parts": [
+        "just",
+        "clippy",
+        "--locked",
+        "--",
+        "-D",
+        "warnings"
+      ]
+    },
+    {
+      "line": 1067,
+      "literal_parts": [
+        "just",
+        "test",
+        "--locked",
+        "--retries",
+        "0"
+      ]
+    },
+    {
+      "line": 1260,
+      "literal_parts": [
+        "just",
+        "clippy",
+        "--locked",
+        "-p",
+        "codex-app-server",
+        "--",
+        "-D",
+        "warnings"
+      ]
+    },
+    {
+      "line": 1261,
+      "literal_parts": [
+        "just",
+        "test",
+        "--locked",
+        "--retries",
+        "0",
+        "-p",
+        "codex-app-server"
+      ]
+    },
+    {
+      "line": 2015,
+      "literal_parts": [
+        "just",
+        "fmt"
+      ]
+    },
+    {
+      "line": 2532,
+      "literal_parts": [
+        "just",
+        "fmt"
+      ]
+    },
+    {
+      "line": 2100,
+      "literal_parts": [
+        "just",
+        "python3",
+        "uv"
+      ]
+    },
+    {
+      "line": 519,
+      "literal_parts": [
+        "just",
+        "test",
+        "--locked",
+        "--retries",
+        "0"
+      ]
+    },
+    {
+      "line": 550,
+      "literal_parts": [
+        "just",
+        "test",
+        "--locked",
+        "--retries",
+        "0"
+      ]
+    },
+    {
+      "line": 592,
+      "literal_parts": [
+        "just",
+        "test",
+        "--locked",
+        "--retries",
+        "0"
+      ]
+    },
+    {
+      "line": 1930,
+      "literal_parts": [
+        "uv",
+        "run",
+        "--frozen",
+        "--project",
+        "scripts",
+        "ruff",
+        "format"
+      ]
+    },
+    {
+      "line": 1933,
+      "literal_parts": [
+        "just",
+        "fmt"
+      ]
+    },
+    {
+      "line": 1987,
+      "literal_parts": [
+        "just",
+        "fix",
+        "--locked"
+      ]
+    },
+    {
+      "line": 1988,
+      "literal_parts": [
+        "cargo",
+        "clippy",
+        "--fix",
+        "--tests",
+        "--allow-dirty",
+        "--locked"
+      ]
+    },
+    {
+      "line": 2003,
+      "literal_parts": [
+        "rustfmt",
+        "--edition",
+        "2024",
+        "--config",
+        "imports_granularity=Item,skip_children=true",
+        "--"
+      ]
+    },
+    {
+      "line": 2348,
+      "literal_parts": [
+        "just",
+        "fmt"
+      ]
+    },
+    {
+      "line": 374,
+      "literal_parts": [
+        "just",
+        "bazel-lock-update"
+      ]
+    }
+  ],
+  "unresolved_global_symbols": [],
+  "duplicate_literal_dictionary_keys": []
+}

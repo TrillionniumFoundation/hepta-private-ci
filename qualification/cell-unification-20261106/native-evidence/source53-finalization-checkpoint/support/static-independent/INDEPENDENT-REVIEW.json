@@ -1,0 +1,123 @@
+{
+  "schema": "hepta.source53-finalizer-independent-static-review.v1",
+  "reviewer": "/root/historical_assets",
+  "classification": "STATIC_CLEAR_INERT_TEMPLATE_ONLY",
+  "verdict": "No remaining static blocker found in the frozen template within the reviewed scope.",
+  "template": {
+    "path": "source53-finalize-preparation/native-finalize-source53-template.py",
+    "bytes": 174038,
+    "sha256": "41c18849f6ebd24b17695051ee9c1c47c38ae207f87bf6c004f76248210fa22d",
+    "git_blob": "b0b6bee3dcb61ec58c928ab1325bb1407f83baa5"
+  },
+  "author_handoff": {
+    "path": "source53-finalize-preparation/HANDOFF-MANIFEST.json",
+    "bytes": 7225,
+    "sha256": "3b4c90ee71c3c44d5b9e94479cd12bf1873046e711d1b1d5cdc52cdd246dc782",
+    "all_28_listed_files_independently_rehashed": true,
+    "listed_bytes": 968420
+  },
+  "independent_mechanical_readback": {
+    "path": "MECHANICAL-READBACK.json",
+    "bytes": 20234,
+    "sha256": "d73862bf6b92a8b8d6013689c272900273d16705276dc33695744868badd5c6c",
+    "git_blob": "e30f357bb384c3261f98b134d4ccf74df6b23f2c"
+  },
+  "method": {
+    "read_only_inputs": true,
+    "reviewed_full_new_finalizer_functions": [
+      "r31_required_names", "check_final_bindings", "r31_prerequisite",
+      "load_final_scope", "verify_default_format_selection", "verify_tools",
+      "snapshot_indexed_source", "mutation_guard", "preserve_failed_source",
+      "run_final_phase", "run_finalization", "main"
+    ],
+    "reused_verification": "44 functions are byte-identical to the independently reviewed source53 R31 template; 27 are byte-identical to R30 V2. Six critical finalization helpers are byte-identical to the reviewed source52 finalizer V2.",
+    "schema_only_comparison": "snapshot_indexed_source, mutation_guard, preserve_failed_source and run_final_phase have identical operational AST to source52 V2 after removing only diagnostic_only/behavior_repair_claimed dictionary entries and changing source52/source53 string labels.",
+    "producer_consumer_review": "Eight R31 producer dictionaries were independently compared against literal field accesses in r31_prerequisite, with no missing fields. Dynamic-key loops and semantic comparisons were read manually. The entire expected scope dictionary is AST-identical to the actual R31 producer after expanding only the known metadata filename stem.",
+    "patch": "The complete 155337-byte source52-to-source53 patch was independently regenerated from exact before/after text and matched byte for byte.",
+    "runner_imported_or_executed": false,
+    "rust_cargo_metadata_just_fix_fmt_git_or_native_processes_run": false,
+    "only_local_data_and_ast_verifier_executed": true
+  },
+  "findings": [
+    {
+      "area": "Inert and identity barriers",
+      "result": "CLEAR",
+      "evidence": "main calls check_final_bindings before any output or subprocess. FROZEN remains false, all 35 future bindings remain None, and require-based checks reject optimized Python, missing actual source/apply identities, absent gate maps and absent current tool/scope observations. They are not removable assert statements.",
+      "execution_permission_granted": false
+    },
+    {
+      "area": "Current R30 project gate",
+      "result": "CLEAR",
+      "evidence": "The exact 19-file R30 set plus its separate natural outer terminal are required. Strict and complete app-server tests must use their original commands, current source53 commit/tree/full manifest, unchanged selection and dual locks. Raw process result, receipt, elapsed order, resources, complete record, log hash and recorded guards must all agree. Full-log parsing reconstructs the exact original 1345 binary/name identities as post-execution acceptance, never a test filter. Success in a diagnostic build is allowed to be recorded as that build's project result but is not called a Bedrock behavior repair or a workspace result."
+    },
+    {
+      "area": "Current R31 workspace gate",
+      "result": "CLEAR",
+      "evidence": "The exact 18-file R31 set and separate naturally succeeded outer terminal are required independently of R30. The source53 producer fields match the consumer. The original no-package just test --locked --retries 0 command, 193 members/defaults, phase ordering, raw/effective zero, resources zero, source/HEAD/lock guards, complete record and every original execution row are cross-checked. The unchanged parser reconstructs the exact original 20228 identity set after full execution and requires all observed rows to pass; reported skips are retained without invented identities."
+    },
+    {
+      "area": "Historical evidence stays historical",
+      "result": "CLEAR",
+      "evidence": "R28's 26 original files and terminal are validated against source52 separately. The returned historical proof is compared with R31's recorded historical prerequisite, while explicit fields forbid using it in place of R30 or R31. Original R24, R26 and R29 failures remain failed provenance. Source50's actual Bazel lock result is inherited only through the verified dependency-invariant source chain; no new source53 lock run is claimed."
+    },
+    {
+      "area": "Fresh metadata and exact format/fix scope",
+      "result": "CLEAR",
+      "evidence": "R31 metadata must come from the current source53 original metadata command, match its raw/receipt/output pins and be dated after R30 natural completion. Metadata is parsed again and its complete default scope is recomputed. Four separately pinned new scope inputs then bind current source, 197 changed paths, 183 Rust files, exactly two original Python formatter inputs and 26 owning packages. Longest manifest-directory ownership is checked against actual metadata IDs. All 34 unchanged primary inputs, including the 26 owning manifests, original recipes and formatter configuration, remain frozen.",
+      "static_manifest_observation": {
+        "parent_source52_rows": 195,
+        "parent_rows_unchanged": true,
+        "source53_rows": 197,
+        "rust_files": 183,
+        "other_files": 14,
+        "added_paths": [
+          "codex-rs/app-server/src/request_processors/account_processor/bedrock_setup.rs",
+          "codex-rs/app-server/tests/suite/v2/bedrock_setup.rs"
+        ],
+        "fresh_r31_metadata_exists_or_has_passed_claimed": false
+      }
+    },
+    {
+      "area": "Original HEAD-based formatter selection",
+      "result": "CLEAR",
+      "evidence": "Before initial snapshot and each phase, native HEAD must remain bef6fa7645df9df12b69fda499e97eed25de6c75. The original changed-file and untracked-file selection is recomputed and must equal all 197 declared paths; the selected Rust set must be nonempty and exactly 183, and the two Python paths must match the original formatter command. All 183 per-file rustfmt argv/cwd records use edition2024 and the original imports_granularity=Item,skip_children=true configuration. There is no --all fallback, HEAD change, added allow-staged flag or implicit expansion to all workspace packages."
+    },
+    {
+      "area": "Current tools, not relabelled old observations",
+      "result": "CLEAR",
+      "evidence": "All tool-inventory bindings are still None. A future hepta.source53-formatter-readonly-inventory.v1 record must bind the exact current source53 commit, tree and manifest. The historical source51 inventory is reference material only. The finalizer checks actual executable paths, sizes, SHA256, modes and symlink identities, original recorded version exits/outputs, locked Ruff, Rust 1.96 target and rustup resolver. The current PATH rustfmt shim is compared to the pinned resolver without pretending the older inventory observed it. Only the original three task-local formatter environment keys are applied. The finalizer itself runs no version, installation, sync or metadata probe."
+    },
+    {
+      "area": "fix then fmt and durable process results",
+      "result": "CLEAR",
+      "evidence": "Only the original just fix --locked with the exact 26-package list, then original default just fmt, may run after all proof checks. The original recipe remains cargo clippy --fix --tests --allow-dirty with the unchanged scope. At least 20 GiB is required before finalization and each command. The natural child exit is written create-only with flush and fsync before announce, log/resource hashing or postguard. No terminate/kill or automatic retry is introduced. Phase raw return code remains distinct from effective postprocessing status."
+    },
+    {
+      "area": "Mutation and failure preservation",
+      "result": "CLEAR",
+      "evidence": "Fix may change only the 183 declared Rust paths, and fmt only those plus the two Python paths. HEAD, index, untracked files, dependency/formatter primary inputs, both locks, modes and default selection are checked. A nonzero command or any postprocessing/scope failure prevents exact staging and the following phase. Failure artifacts preserve real working bytes, binary diff, observed index and original rc; no reset, new-tree inference, requalification or automatic retry is performed. Successful snapshots distinguish the tested tree, post-fix tree and final formatted tree, and never transfer tested qualification to changed bytes."
+    },
+    {
+      "area": "No post-format tests or implicit publication",
+      "result": "CLEAR",
+      "evidence": "The only subprocess sites in the complete template are the read-only Git helper, exact approved Git staging and the two finalization commands. No workspace, project test, metadata or lock-update executor was copied into this finalizer. Completion leaves final_formatted_commit null and publication pending root review; it neither creates refs nor runs additional tests after fix/fmt."
+    }
+  ],
+  "remaining_requirements_before_any_execution": [
+    "Actual source53 R30 complete project closure and its natural outer-zero record.",
+    "Actual source53 R31 complete workspace closure, full-log exact-ID readback, current metadata and natural outer-zero record.",
+    "New exact scope artifacts recomputed from those actual R31 metadata bytes.",
+    "A fresh source53 tool inventory in the declared schema and immutable original observations; source51 inventory cannot be substituted.",
+    "Independent exact binding review and explicit root execution authorization; this static report grants neither."
+  ],
+  "limitations": [
+    "This is a code and artifact integrity review, not a native gate or formatter run.",
+    "Future R30/R31 closure, metadata, scope and inventory remain unbound in the reviewed template.",
+    "No actual behavior of finalization or future tool/environment compatibility was measured by executing the runner.",
+    "The source53 code remains diagnostic-only; Bedrock root cause and any behavior repair are not established by this review.",
+    "Scientific HOLD, authority DENY_ALL and all existing research limitations are unaffected."
+  ],
+  "blockers": [],
+  "authorization_to_bind_or_execute": false,
+  "canonical_source_reports_index_ledger_or_frozen_formal_groups_modified": false
+}

@@ -1,0 +1,48 @@
+{
+  "schema": "hepta.source53-apply-delta.v1",
+  "source_before_tree": "211f15baff19095e8c98bcea2b0ed99ca2270ade",
+  "source_before_commit": "1e0910becc37383e6d17ecf861ea844fd07d8862",
+  "source_tree": "440d4a8e09af4009e4d9ea067388826308da8803",
+  "source_commit": "f74be175de66a4b351cd239d39d98cd34fe9cc1b",
+  "patch": {
+    "path": "candidate.patch",
+    "bytes": 3906,
+    "sha256": "cb9c52016c6b106b6d52f4bf2c787193fc11d5f1f98c073a0eed7141bad605e2",
+    "git_blob": "c8e503738a5f958a9846b7a5d5fd388978580a64"
+  },
+  "files": [
+    {
+      "path": "codex-rs/app-server/src/request_processors/account_processor/bedrock_setup.rs",
+      "before": {
+        "mode": "100644",
+        "bytes": 5606,
+        "sha256": "af9ceab5047c7ee06bba84d47684748b38bfbb32e287db4a6fca84b2b45fa6fa",
+        "git_blob": "9e7cb31856c2b938c6a8ba73f8affb36bd4b5e3d"
+      },
+      "after": {
+        "mode": "100644",
+        "bytes": 7325,
+        "sha256": "9d5107471e8d49b49271dda43cec319776c5f05d6ea66bca7e7167a1f345d4b4",
+        "git_blob": "747ae860d47bc33dfa48c7dcfb944dd6e4dd2865"
+      }
+    },
+    {
+      "path": "codex-rs/app-server/tests/suite/v2/bedrock_setup.rs",
+      "before": {
+        "mode": "100644",
+        "bytes": 11612,
+        "sha256": "25c5036f352b673af21adfd37930f3f1762359b7422084c6e4eaaa9c1f513d55",
+        "git_blob": "87cfaf3ae45eafbc54dad94a96226f4a807209a5"
+      },
+      "after": {
+        "mode": "100644",
+        "bytes": 11817,
+        "sha256": "f3974a77783e82514a5828e055fdb9baf5bbbfad6dc3c7a10427e16b5c8d6710",
+        "git_blob": "daaddd66a0b02a044263da26be6302b2d4ee4584"
+      }
+    }
+  ],
+  "identity_status": "REGISTERED_GITDATA_NOT_NATIVE_APPLIED",
+  "diagnostic_only": true,
+  "behavior_repair_claimed": false
+}

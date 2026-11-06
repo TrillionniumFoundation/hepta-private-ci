@@ -1,0 +1,189 @@
+{
+  "actual_r28_producer_consumer_keys": {
+    "complete": {
+      "all_keys_constructed_by_frozen_r28": true,
+      "consumer_keys": [
+        "all_old_ids_observed_pass",
+        "bazel_lock_sha256",
+        "cargo_lock_sha256",
+        "fix_fmt_executed",
+        "packages",
+        "phase_receipts",
+        "python_exit",
+        "python_skipped",
+        "python_tests",
+        "required_old_ids",
+        "schema",
+        "source50_lock_inherited_for_unchanged_dependency_inputs",
+        "source52_apply_complete",
+        "source52_bazel_lock_update_executed",
+        "source_commit",
+        "source_guards_pass",
+        "source_manifest",
+        "source_manifest_sha256",
+        "source_tree",
+        "strict_exit",
+        "tests_exit",
+        "whole_workspace_qualification",
+        "workspace_not_started_by_this_runner"
+      ]
+    },
+    "environment": {
+      "all_keys_constructed_by_frozen_r28": true,
+      "consumer_keys": [
+        "sandbox_or_network_protection_environment_overridden",
+        "schema",
+        "source_commit",
+        "source_environment_immutable_during_gates",
+        "source_manifest",
+        "source_manifest_sha256",
+        "source_tree",
+        "test_deadlines_features_filters_retries_unchanged"
+      ]
+    },
+    "preconditions": {
+      "all_keys_constructed_by_frozen_r28": true,
+      "consumer_keys": [
+        "actual_changed_file_count",
+        "baseline",
+        "baseline_use",
+        "bazel_lock_sha256",
+        "cargo_lock_sha256",
+        "expected_python_tests",
+        "initial_source_guard",
+        "lock_update_performed_by_this_runner",
+        "original_r24_failed_100_provenance",
+        "original_r26_failed_100_provenance",
+        "patch_application_performed_by_this_runner",
+        "previous_source49_workspace_result",
+        "previous_source50_project_result",
+        "previous_source51_project_result",
+        "schema",
+        "source50_lock_inherited_only_for_unchanged_dependency_inputs",
+        "source50_lock_originals_and_outer_terminal",
+        "source50_root_manifest",
+        "source51_parent_manifest",
+        "source52_apply",
+        "source52_bazel_lock_update_executed",
+        "source_commit",
+        "source_manifest",
+        "source_tree"
+      ]
+    }
+  },
+  "ast_parsed_without_import_or_execution": true,
+  "conclusion": "STATIC_CLEAR_ACTUAL_SUCCESS_BINDINGS_REQUIRED",
+  "frozen": false,
+  "handoff": {
+    "bytes": 2143,
+    "git_blob": "230895cded09587d351ba428288a5a55ffef5b63",
+    "sha256": "108157dafc4ba9197609d947876f0d85e99502bfa8c83f49f88cbeeb4c11cf15"
+  },
+  "handoff_original_files_verified": 9,
+  "metadata_command": [
+    "cargo",
+    "metadata",
+    "--locked",
+    "--no-deps",
+    "--format-version",
+    "1"
+  ],
+  "native_written": false,
+  "outer_budget_seconds": 9600,
+  "qualification": "PENDING_FUTURE_ACTUAL_R28_SUCCESS_AND_SEPARATE_R29_EXECUTION",
+  "r27_workspace_functions_only_source_schema_or_comment_identity_changed": [
+    "capture_metadata",
+    "review_workspace",
+    "run_workspace",
+    "main"
+  ],
+  "r28_functions_exact": [
+    "require",
+    "sha",
+    "data_pin",
+    "safe_relative",
+    "hex_digest",
+    "write_json",
+    "announce",
+    "git",
+    "git_paths",
+    "normalized_files",
+    "source_file_pin",
+    "guard",
+    "lock_prerequisite",
+    "load_source",
+    "read_fixed",
+    "read_pinned",
+    "closed_terminal",
+    "r24_failed_prerequisite",
+    "r26_failed_prerequisite",
+    "inherited_dependency_check",
+    "apply_prerequisite",
+    "load_baseline",
+    "execution_environment",
+    "clean_lines",
+    "review_python",
+    "review_tests"
+  ],
+  "r28_source_binding_checker_only_renamed": true,
+  "recorded_guard_only_adds_native_head_equals_framework_parent": true,
+  "reference_r27": {
+    "bytes": 70044,
+    "git_blob": "3229c702600ce8ca6b979bcd7d6e55848fe79b49",
+    "sha256": "38eb6bf07adf3dadfb919a2fce4d83fa9da519d182f9ba2e6a0f1af06da9d389"
+  },
+  "reference_r28": {
+    "bytes": 53959,
+    "git_blob": "7404ad7f80e311d9d3978e82ddcfd61c359b10c1",
+    "sha256": "2b8eb323a6072e37892802bf62d1ed4ddb38d07d4829a562093ac27a68c9edcb"
+  },
+  "reviewed_boundaries": [
+    "FROZEN, missing literal and optimized-Python barriers precede writes and subprocesses.",
+    "Same-source r28 three original phase commands require raw rc0, effective rc0, all source and lock guards, original log/resource pins and reproducible Python32/full1564 baseline acceptance.",
+    "All26 phase/environment/precondition/complete originals plus an independent natural outer0 terminal are required; original r24/r26 failures remain failed history.",
+    "Apply proof independently rechecks source51 194 retained rows plus the existing newly changed runtime leaf, full195, one parent delta, three source50 deltas and unchanged raw dual locks.",
+    "r28 source50-parent/apply/source51-parent and original r26 failed-proof keys match their actual frozen producer.",
+    "Fresh cargo metadata must prove193 members equal193 defaults before the original no-p workspace command; old metadata is not reused.",
+    "Original natural wait and durable raw rc before output hashing/postguards are unchanged; failures cannot emit complete or erase earlier results.",
+    "Parser preserves compile-failure null terminal counts and excludes footer duplicates; no baseline is a test filter.",
+    "No apply/stage/lock update/fix/fmt/retry or runner execution occurred in this review."
+  ],
+  "runner_executed": false,
+  "rust_executed": false,
+  "schema": "hepta.r29-independent-static-review.v1",
+  "template": {
+    "bytes": 78396,
+    "git_blob": "e68ee4c3b78e8563ecdb58455afbc5c3dae9c0c8",
+    "sha256": "4b2d2f5a4f3eb33dfa7f3d744f0d2d322e2e1c1697dfbed45d0047f49dd455b9"
+  },
+  "unknown_bindings": [
+    "APPLY_COMPLETE_BYTES",
+    "APPLY_COMPLETE_NAME",
+    "APPLY_COMPLETE_SHA256",
+    "APPLY_JOB_ID",
+    "APPLY_TERMINAL_BYTES",
+    "APPLY_TERMINAL_NAME",
+    "APPLY_TERMINAL_SHA256",
+    "DELTA_MANIFEST_BYTES",
+    "DELTA_MANIFEST_NAME",
+    "DELTA_MANIFEST_SHA256",
+    "EXPECTED_CHANGED_COUNT",
+    "EXPECTED_COMMIT",
+    "EXPECTED_TREE",
+    "R28_INPUT_PINS",
+    "R28_JOB_ID",
+    "R28_TERMINAL_BYTES",
+    "R28_TERMINAL_NAME",
+    "R28_TERMINAL_SHA256",
+    "SOURCE_MANIFEST_BYTES",
+    "SOURCE_MANIFEST_NAME",
+    "SOURCE_MANIFEST_SHA256"
+  ],
+  "workspace_command": [
+    "just",
+    "test",
+    "--locked",
+    "--retries",
+    "0"
+  ]
+}

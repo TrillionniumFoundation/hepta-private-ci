@@ -1,0 +1,655 @@
+{
+  "schema": "hepta.cell-unification-source-identity.v1",
+  "state": "PRE_FINAL_FIX_FMT",
+  "base_commit": "bef6fa7645df9df12b69fda499e97eed25de6c75",
+  "created_source_commits": [
+    {
+      "purpose": "both-parent merge, exact 200-test tree",
+      "sha": "52b1a257f1c3cedb93edab6946214085cfa23d38",
+      "tree": "50ae18757324959cf8fc7c41389ede13bbc80d44"
+    },
+    {
+      "purpose": "baseline scoped fix/fmt",
+      "sha": "cd029ff52b714496c7cbed96aa136dd50caef8c5",
+      "tree": "e2e5258dd80bbf94e4f302ffac34a6603286f76d"
+    },
+    {
+      "purpose": "context delivery observation API",
+      "sha": "fdce6a7628cd6791d19fd73bf486362f10fcc1e7",
+      "tree": "68b5954993082cd8ec31526eeaa8101092189679"
+    },
+    {
+      "purpose": "effects API repair",
+      "sha": "86d3396f5d8f57b9e8a8c0aad9b9112a2fdddace",
+      "tree": "f06ca6d700f45237199bfa12dad120e37417bb10"
+    },
+    {
+      "purpose": "circuit API repair",
+      "sha": "42a810e717680dc6b37a2bd2bb3ebe7a3e73bab4",
+      "tree": "a6d03f6dc9e1088cda9fd1ff2e9f4858a023966d"
+    },
+    {
+      "purpose": "learning API repair",
+      "sha": "279f75bd4e738a3950032e807ffb90843e97eac6",
+      "tree": "2776e6796083fc94bb80d740875e928b5b3cf665"
+    },
+    {
+      "purpose": "canonical envelope API repair",
+      "sha": "5689b94b087f72b5c7af53dc976ee0accb4a4893",
+      "tree": "1cffa0b38d9fb1a333a71aa4fc60bd06c9ced7fd"
+    },
+    {
+      "purpose": "private lifecycle observation representation repair",
+      "sha": "c309389f85bee1ab3238dd5cc41903bdf99fb60e",
+      "tree": "3d65d6cb54bad091e08b0e73253f5c7a84ed0cac"
+    },
+    {
+      "purpose": "cell_boxes",
+      "sha": "f5e8f4e904055614d7f7ed0d10b884e83695de68",
+      "tree": "565c912193dd6792ceaed927e5a38f60cc4fa2b8"
+    },
+    {
+      "purpose": "gate_repairs",
+      "sha": "0e0ae7e8ef0fd14d38c0f415a703be23cab00fc5",
+      "tree": "d6fb1fa87080c1a3926b110f88437cf7c703de5e"
+    },
+    {
+      "purpose": "projection",
+      "sha": "5a4229c89059adaa5cd0027965ce329fe04994c6",
+      "tree": "f4ecd70fd9a031d9f9982ed108bf0017f8448c27"
+    },
+    {
+      "purpose": "registry",
+      "sha": "5778f6b123c3de79d07722173f7f010b31c4fcf6",
+      "tree": "40da496d1e1c163f67ed83dcdb23d61bf16836aa"
+    },
+    {
+      "purpose": "protocol",
+      "sha": "0a554be7410ba7eb92b39e370f9f7d34d36eaee1",
+      "tree": "634b3a5ce694319af76e5597fffa258a17d2b679"
+    },
+    {
+      "purpose": "memory",
+      "sha": "a8dde18e944fbc593dc442fd2923c92af79c5aa4",
+      "tree": "565ce713a94d2223aeeaa8200908c121778141c3"
+    },
+    {
+      "purpose": "socket",
+      "sha": "9d7c2fe36a05b53e7c48936a8af4b812cff04bf9",
+      "tree": "d3efaf471277af4e93559677289de05f76ebc010"
+    },
+    {
+      "purpose": "inherited_compat",
+      "sha": "d8949c2a215a446779e2ad1ea15ac84ef21cf24a",
+      "tree": "a4c4a141ec488d8b0f4482b0d47c6ea3c31a8896"
+    },
+    {
+      "purpose": "memory_fixture",
+      "sha": "63c4c4d76f074802027bc0a98c695d221bf6210b",
+      "tree": "fa1a20da5bf620fb4e2ab6901cd794ea5530e1a0"
+    },
+    {
+      "purpose": "exec_custody",
+      "sha": "332f6f3d1060ddde633cfcb4ad4fadada27ea624",
+      "tree": "74ef4ad0ed92355ec58a173fc862b9d500c0c104"
+    },
+    {
+      "purpose": "supervisor_matrix_recovery",
+      "sha": "c8ae77fd2f220b285474fbd20f99095affcd3ef1",
+      "tree": "90f4daedb67bf28e48d57d59f3608661d42f303e"
+    },
+    {
+      "purpose": "core_response_event_inputs",
+      "sha": "4c764740d9b7f6f0155d5e5386d8fffeca2cceef",
+      "tree": "7a4727b8ffaccf914ccbca2b2c57bbe90409f5e3"
+    },
+    {
+      "purpose": "core_supervisor_test_cleanup",
+      "sha": "2caf17b336553bfaaf1f08de08a9051f47e62cde",
+      "tree": "5b5c17645ac5d053c35892245c9fa413f918c775"
+    },
+    {
+      "purpose": "extension_cleanup",
+      "sha": "254aa09722487a50390e0101cca7886812e6c0f8",
+      "tree": "213c8ba9b1158dbcfe4553cba5f70aa253f61611"
+    },
+    {
+      "purpose": "exec_test_lock",
+      "sha": "e0eca9e265c4deeb069ec940c9ec3acbe8cf0f81",
+      "tree": "6d88ca9c8964669a408d8549efaeff7b94d68674"
+    },
+    {
+      "purpose": "agentd_root_cleanup",
+      "sha": "907b8a7619f7810f46931584a196a9435d403bf7",
+      "tree": "1bfb843e4c63369e2f5432a2c4bad0ff932f7999"
+    },
+    {
+      "purpose": "agentd_authority_intelligence_boxes",
+      "sha": "4b8f753c5928e9a9e2fa68067b0a73df44fb88ff",
+      "tree": "aaac571f3e48c3018b4d0a87669ac2ac36280b3e"
+    },
+    {
+      "purpose": "agentd_cognitive_plasticity_inputs",
+      "sha": "d6ed5a532594f3f0d5d96358df2c23ed43cc76e4",
+      "tree": "2557486cbc08a9d91b5f5b9896e980ad847f4ae8"
+    },
+    {
+      "purpose": "agentd_notes_authority_and_payloads",
+      "sha": "da5d1ddcde2633a5027bd7ffda3394cadb0e60f2",
+      "tree": "559a5c1fe65a8d97c4b6456d13b77ffc2f9dcfda"
+    },
+    {
+      "purpose": "exec_proxy_fixture_dns_independence",
+      "sha": "84e51c94d831e9b717bbcb6d39df47b04870df4e",
+      "tree": "7e77a1ae207b74d42ec80ff7af4c7033da648195"
+    },
+    {
+      "purpose": "exec_snapshot_fixture_login_isolation",
+      "sha": "a7eaadd2eae5577caedee38f7167aec03ce5462b",
+      "tree": "64ab95198effb0a0de22b0c4a30a1e8d509e2840"
+    },
+    {
+      "purpose": "supervisor_paired_drain_fixture",
+      "sha": "f835cd4bde25cd7958affc65f122c7c39e629213",
+      "tree": "6ec19f0bae87ffc2dc3c5343c3e5ac390c22a6f0"
+    },
+    {
+      "purpose": "infer_worker_host_dispatch_inputs_and_gate_scope",
+      "sha": "2668c37f81d2bfb111049cf294121ea3c349728a",
+      "tree": "86dec7e8998a63a154fed73e157e07175422f996"
+    },
+    {
+      "purpose": "core_custom_provider_metadata_fixture",
+      "sha": "c51a975ddb70e8d912867349ee849c552664d51f",
+      "tree": "da652e666b89d26851829e9f663d73ab22a2b030"
+    },
+    {
+      "purpose": "core_compaction_fixture_finish_observer",
+      "sha": "1a5ec0cb05a9aadc5190f170e43ed746e6d79979",
+      "tree": "9764170e9ef58d16c7aeeeb1c9b35d09605081e9"
+    },
+    {
+      "purpose": "core_sqlite_retained_owner_fixture_preview",
+      "sha": "add4a6d82b5a043903974af2b54c86506defbf89",
+      "tree": "7292a8c3a6484680c1d4f91bf62b6990e3d98cdb"
+    },
+    {
+      "purpose": "core_executor_hook_turn_metadata_forwarding",
+      "sha": "a53cc750be4380473041575fd56813251c3a522d",
+      "tree": "d99d774fd91ccb3432ba5f10d27c926f609a2beb"
+    },
+    {
+      "purpose": "nextest_declared_runtime_helper_preparation",
+      "sha": "051010e12db8162576bb19b9b0596dfe0c2fcf14",
+      "tree": "f20c3860c90853e90ab9d5c4d1b772787e0379a7"
+    },
+    {
+      "purpose": "core_compaction_websocket_phase_fixture",
+      "sha": "b886be1d2cba1e6c5ebdfedaa90e79351173eff0",
+      "tree": "6be7e9ddc86d3379cfc2c2358c489ce37e168dfe"
+    },
+    {
+      "purpose": "ci_original_zsh_resource_and_runner_regression_setup",
+      "sha": "e0e244fd1d89685d78444ee05c4467fd4caf684d",
+      "tree": "aab2fe3fa69bdff6d62dfd7d2570771c807c32c6"
+    },
+    {
+      "purpose": "core_cold_resume_error_stage_diagnostics",
+      "sha": "e267843345a8c33f338c040be41ce23c63719ee9",
+      "tree": "076d8a5712001ffe9833edf83d95342cb56e279e"
+    },
+    {
+      "purpose": "infer_worker_host_failure_hook_error_propagation",
+      "sha": "13a740f6751a0dc5033525f15b14b8da7139b5d9",
+      "tree": "a0d24a6cca704bb1bb43c4090a275a38832f7b19"
+    },
+    {
+      "purpose": "agentd_eager_concurrency_and_test_fixture_inputs",
+      "sha": "d313ba51180a838269677d28b2d91e1777b7b463",
+      "tree": "6be3dbb1420c0ac7e0590c6e3c17191a073af9a9"
+    },
+    {
+      "purpose": "core_native_exit_confirmation_budget",
+      "sha": "05fc1158eee025e1a76d45cef27b4caddc69d22b",
+      "tree": "ccb50851347a0c27e5cbe621790daa78b9c98794"
+    },
+    {
+      "purpose": "core_permission_fixture_nonlogin_isolation",
+      "sha": "b44d4ca4aa0ef9f894eff29e9975938e066a82f5",
+      "tree": "d3d2313b838422818bf9448ce5a1b86d89abdf69"
+    },
+    {
+      "purpose": "core_mcp_calls_and_native_fixture_boundaries",
+      "sha": "638997499470f0b7dd33ad18226feacf0198ef3d",
+      "tree": "1646e1656cf6365e74accae19a1225fd2ce6d964"
+    },
+    {
+      "purpose": "core_recovery_header_gate_and_approved_denied_read_fallback",
+      "sha": "96dc9232535fedf735e3099ef1391b69477270d4",
+      "tree": "3ebd193f213d640e5330a1be4b983bcc4b06617a"
+    },
+    {
+      "purpose": "core_recovery_settings_and_resident_owner_fixture",
+      "sha": "2d7ad1d60019f35fc13d84138ceb2755d914f434",
+      "tree": "ffa0a37f4616c5563169c7f0a9305bf6c982d58b"
+    },
+    {
+      "purpose": "app_server_initialize_response_fixture_and_ci_owner",
+      "sha": "0c78b43424ced27d37892a7744de065c1497d5e8",
+      "tree": "cc2b01c2f69f43d63f8f5c561abd5e941d645769"
+    }
+  ],
+  "current_source_commit": "0c78b43424ced27d37892a7744de065c1497d5e8",
+  "current_source_tree": "cc2b01c2f69f43d63f8f5c561abd5e941d645769",
+  "nine_package_tested_tree": "40da496d1e1c163f67ed83dcdb23d61bf16836aa",
+  "nine_package_identical_tree_commit": "5778f6b123c3de79d07722173f7f010b31c4fcf6",
+  "test_execution_was_staged_tree_not_created_commit_checkout": true,
+  "final_fix_fmt_and_publication_pending": true,
+  "source_commit_mapping_is_tree_identity_not_checkout_claim": true,
+  "chronology_note": "Native commands ran from an isolated checkout at framework HEAD with the recorded staged tree. GitData commits map immutable trees; a matching created commit was not necessarily the checked-out HEAD during execution.",
+  "checkpoint_bindings": [
+    {
+      "stage": "combined_baseline",
+      "tree": "50ae18757324959cf8fc7c41389ede13bbc80d44",
+      "identical_tree_commit": "52b1a257f1c3cedb93edab6946214085cfa23d38",
+      "status": "PASS_SCOPED"
+    },
+    {
+      "stage": "registry_first",
+      "tree": "73bc5da08b54612ff662542c20124e96d3d51908",
+      "identical_tree_commit": null,
+      "status": "PASS_SCOPED_INTERMEDIATE_TREE"
+    },
+    {
+      "stage": "nine_packages_r2",
+      "tree": "40da496d1e1c163f67ed83dcdb23d61bf16836aa",
+      "identical_tree_commit": "5778f6b123c3de79d07722173f7f010b31c4fcf6",
+      "status": "PASS_SCOPED"
+    },
+    {
+      "stage": "protocol_r3",
+      "tree": "634b3a5ce694319af76e5597fffa258a17d2b679",
+      "identical_tree_commit": "0a554be7410ba7eb92b39e370f9f7d34d36eaee1",
+      "status": "PASS_SCOPED"
+    },
+    {
+      "stage": "inherited_and_agentd_r4",
+      "tree": "a4c4a141ec488d8b0f4482b0d47c6ea3c31a8896",
+      "identical_tree_commit": "d8949c2a215a446779e2ad1ea15ac84ef21cf24a",
+      "status": "FAILED_DIAGNOSTIC_RETAINED",
+      "native_tree_matches": true
+    },
+    {
+      "stage": "inherited_and_exec_r5",
+      "tree": "74ef4ad0ed92355ec58a173fc862b9d500c0c104",
+      "identical_tree_commit": "332f6f3d1060ddde633cfcb4ad4fadada27ea624",
+      "status": "FAILED_STRICT_RETAINED",
+      "native_tree_matches": true
+    },
+    {
+      "stage": "supervisor_original_behavior_probe",
+      "tree": "e313f4cc49df5c99f32bb7f22a722efd2c3d01bb",
+      "status": "EXPECTED_FOUR_ASSERTION_FAILURES_CONFIRMED",
+      "github_tree_rebuilt_exactly": true
+    },
+    {
+      "stage": "supervisor_repaired_probe_and_r7_diagnostic",
+      "tree": "7a4727b8ffaccf914ccbca2b2c57bbe90409f5e3",
+      "identical_tree_commit": "4c764740d9b7f6f0155d5e5386d8fffeca2cceef",
+      "status": "FOUR_REGRESSIONS_PASS_LATER_STRICT_DIAGNOSTIC_FAILED"
+    },
+    {
+      "stage": "candidate_r8_strict_diagnostic",
+      "tree": "6d88ca9c8964669a408d8549efaeff7b94d68674",
+      "identical_tree_commit": "e0eca9e265c4deeb069ec940c9ec3acbe8cf0f81",
+      "status": "FAILED_31_AGENTD_DIAGNOSTICS_RETAINED",
+      "original_compiler_debug": "limited",
+      "current_source_qualification": false
+    },
+    {
+      "stage": "inherited_seven_r8b",
+      "tree": "6d88ca9c8964669a408d8549efaeff7b94d68674",
+      "identical_tree_commit": "e0eca9e265c4deeb069ec940c9ec3acbe8cf0f81",
+      "status": "STRICT_PASS_TESTS_1349_PASS_4_FAIL_2_TIMEOUT",
+      "original_compiler_debug": "limited",
+      "current_source_qualification": false
+    },
+    {
+      "stage": "core_r8c",
+      "tree": "6d88ca9c8964669a408d8549efaeff7b94d68674",
+      "identical_tree_commit": "e0eca9e265c4deeb069ec940c9ec3acbe8cf0f81",
+      "status": "STRICT_PASS_TESTS_3608_PASS_206_FAIL_10_TIMEOUT",
+      "original_compiler_debug": "limited",
+      "current_source_qualification": false
+    },
+    {
+      "stage": "paired_r8d_original_j1",
+      "tree": "6d88ca9c8964669a408d8549efaeff7b94d68674",
+      "identical_tree_commit": "e0eca9e265c4deeb069ec940c9ec3acbe8cf0f81",
+      "status": "ORIGINAL_PROFILE_0_PASS_1_FAIL_1_TIMEOUT",
+      "original_compiler_debug": "limited",
+      "current_source_qualification": false
+    },
+    {
+      "stage": "agentd_composition_r9",
+      "tree": "64ab95198effb0a0de22b0c4a30a1e8d509e2840",
+      "identical_tree_commit": "a7eaadd2eae5577caedee38f7167aec03ce5462b",
+      "status": "FAILED_TWO_INFER_WORKER_HOST_LINTS_TESTS_NOT_STARTED",
+      "original_compiler_debug": "0",
+      "github_tree_rebuilt_exactly": true
+    },
+    {
+      "stage": "inherited_seven_r10",
+      "tree": "6ec19f0bae87ffc2dc3c5343c3e5ac390c22a6f0",
+      "identical_tree_commit": "f835cd4bde25cd7958affc65f122c7c39e629213",
+      "status": "STRICT_PASS_TESTS_1355_PASS_17_ORIGINAL_SKIP",
+      "original_compiler_debug": "0",
+      "github_tree_rebuilt_exactly": true
+    },
+    {
+      "stage": "runner_r10",
+      "tree": "6ec19f0bae87ffc2dc3c5343c3e5ac390c22a6f0",
+      "status": "PASS_ALL31_ZERO_SKIP_ISOLATED_FROZEN_RUNNER_CANDIDATE",
+      "runner_source_manifest": "native-evidence/r10-closed-checkpoint/runner-input/SOURCE-MANIFEST.json",
+      "native_source_not_modified": true,
+      "not_entire_tree_qualification": true
+    },
+    {
+      "stage": "agentd_composition_r11",
+      "tree": "f20c3860c90853e90ab9d5c4d1b772787e0379a7",
+      "identical_tree_commit": "051010e12db8162576bb19b9b0596dfe0c2fcf14",
+      "status": "FAILED_TWO_INFER_WORKER_HOST_TEST_HELPER_LINTS_TESTS_NOT_STARTED",
+      "original_compiler_debug": "0",
+      "root_closed_evidence_attachment": "native-evidence/r11-agentd-composition-diagnostic",
+      "github_tree_rebuilt_exactly": true,
+      "source_files_reconstructed": 142
+    },
+    {
+      "stage": "agentd_composition_r12",
+      "tree": "a0d24a6cca704bb1bb43c4090a275a38832f7b19",
+      "identical_tree_commit": "13a740f6751a0dc5033525f15b14b8da7139b5d9",
+      "status": "FAILED_TWELVE_AGENTD_TEST_LINTS_TESTS_NOT_STARTED",
+      "original_compiler_debug": "0",
+      "current_source_qualification": false,
+      "root_closed_evidence_attachment": "native-evidence/r12-agentd-composition-diagnostic",
+      "strict_log_sha256": "bb4dc4d86655634d1e5d55671a843a868fe498ed73388a178f66e2c88a79516b",
+      "github_tree_rebuilt_exactly": true,
+      "source_files_reconstructed": 145
+    },
+    {
+      "stage": "agentd_composition_r13",
+      "tree": "6be3dbb1420c0ac7e0590c6e3c17191a073af9a9",
+      "identical_tree_commit": "d313ba51180a838269677d28b2d91e1777b7b463",
+      "status": "STRICT_PASS_TESTS_696_PASS_66_ORIGINAL_SKIP_CLOSED_AND_REBUILT",
+      "original_compiler_debug": "0",
+      "current_source_qualification": false,
+      "native_job": "1a1af95b061-fc05-69dc",
+      "actual_native_tree_verified": true,
+      "source_files": 154,
+      "strict_elapsed_seconds": 27.5141,
+      "strict_log_sha256": "706bb2fa5685ee187d9a8a1c05ba1b29c6f9ea79488dd804595c00f8ee265e90",
+      "test_log_sha256": "5e86e781d00c0fb235369686e7beaf2f737169ad70de87a9f1750a1270f5fb43",
+      "test_execution_seconds": 95.082,
+      "test_total_seconds": 503.42641711235046,
+      "tests_exit_code": 0,
+      "github_tree_rebuilt_exactly": true,
+      "source_files_reconstructed": 154,
+      "root_closed_evidence_attachment": "native-evidence/r13-agentd-composition-checkpoint"
+    },
+    {
+      "stage": "core_termination_candidate_stage42",
+      "tree": "ccb50851347a0c27e5cbe621790daa78b9c98794",
+      "identical_tree_commit": "05fc1158eee025e1a76d45cef27b4caddc69d22b",
+      "status": "INTEGRATED_IN_STAGE43_NATIVE_GATE_TREE_NOT_SEPARATELY_TESTED",
+      "original_compiler_debug": "0",
+      "current_source_qualification": false,
+      "candidate_source_review": "native-evidence/core-unified-termination-r8c-repair/root-independent-review.json",
+      "new_regressions": 6,
+      "original_assertions_preserved": 111
+    },
+    {
+      "stage": "core_nonlogin_fixture_stage43",
+      "tree": "d3d2313b838422818bf9448ce5a1b86d89abdf69",
+      "identical_tree_commit": "b44d4ca4aa0ef9f894eff29e9975938e066a82f5",
+      "status": "R14_STRICT_PASS_FIVE_FIXTURE_CASES_PASS_FULL_CORE_FAILED",
+      "candidate_source_review": "native-evidence/core-eperm-r8c-fixture/root-independent-review.json",
+      "changed_fixtures": 5,
+      "original_assertions_preserved": 170,
+      "current_source_qualification": false
+    },
+    {
+      "stage": "core_r14",
+      "tree": "d3d2313b838422818bf9448ce5a1b86d89abdf69",
+      "identical_tree_commit": "b44d4ca4aa0ef9f894eff29e9975938e066a82f5",
+      "status": "STRICT_PASS_TESTS_3806_PASS_24_FAIL_0_TIMEOUT_9_ORIGINAL_SKIP_CLOSED",
+      "source_files": 163,
+      "native_job": "1a1afa1f06c-fc05-6a49",
+      "actual_native_tree_verified": true,
+      "strict_elapsed_seconds": 190.0075147151947,
+      "strict_log_sha256": "0cc8b7b14a2f23f283ddb0babfe781ce9e7a605156060bfda3df82d9c9584a16",
+      "original_compiler_debug": "0",
+      "current_source_qualification": false,
+      "root_closed_evidence_attachment": "native-evidence/r14-core-checkpoint",
+      "strict_readback": "native-evidence/r14-core-checkpoint/STRICT-READBACK.json",
+      "tests_exit_code": 100,
+      "test_log_sha256": "443a58d70c34d76ba9b8141ad7ee32d997a4f16af79e8f5a873770966028952c",
+      "test_execution_seconds": 570.123,
+      "test_total_seconds": 1305.3494448661804,
+      "github_tree_rebuilt_exactly": true,
+      "source_files_reconstructed": 163,
+      "independent_source_tree_rebuilt_offline": true,
+      "root_result_readback": "native-evidence/r14-core-checkpoint/ROOT-RESULT-READBACK.json",
+      "independent_result_readback": "native-evidence/r14-core-checkpoint/INDEPENDENT-READBACK.json"
+    },
+    {
+      "stage": "core_mcp_r15_stage44",
+      "tree": "1646e1656cf6365e74accae19a1225fd2ce6d964",
+      "identical_tree_commit": "638997499470f0b7dd33ad18226feacf0198ef3d",
+      "status": "STRICT_PASS_TESTS_4023_PASS_3_FAIL_0_TIMEOUT_9_ORIGINAL_SKIP_CLOSED",
+      "changed_source_files": 177,
+      "stage_files": 16,
+      "packages": [
+        "codex-core",
+        "codex-mcp"
+      ],
+      "current_source_qualification": false,
+      "expected_workflow_sha256": "9b04365dba53f7bf2b9c5f57bbfb264cddfa63d0509ee1d0401762d52ca46d1c",
+      "native_job": "1a1afd6b583-fc05-6c15",
+      "actual_native_tree_verified": true,
+      "strict_exit_code": 0,
+      "strict_elapsed_seconds": 45.16182255744934,
+      "strict_log_sha256": "fa8972cc1cf309346f513dee0ad51e6b7e4f8d4973e240d51564c90080631ab0",
+      "strict_source_manifest_sha256": "ee85feeca1c8da886ab3f52ab26fb741bb5d8569880b26985a2b0d7f8533dc2d",
+      "strict_readback": "native-evidence/r15-core-mcp-checkpoint/ROOT-STRICT-READBACK.json",
+      "tests_terminal_counts": {
+        "tests_run": 4026,
+        "passed": 4023,
+        "failed": 3,
+        "timed_out": 0,
+        "skipped": 9
+      },
+      "default_workspace_result": null,
+      "per_package": {
+        "codex-core": {
+          "PASS": 3827,
+          "FAIL": 3
+        },
+        "codex-mcp": {
+          "PASS": 196
+        }
+      },
+      "tests_exit_code": 100,
+      "test_log_sha256": "2e9b11682a84cce7be7e1db72e47eb4be260e8d7ef7a3b1fa916fe59c5a3e39f",
+      "test_total_seconds": 594.9447140693665,
+      "test_execution_seconds": 479.725,
+      "source_files_reconstructed": 177,
+      "github_tree_rebuilt_exactly": true,
+      "root_result_readback": "native-evidence/r15-core-mcp-checkpoint/ROOT-RESULT-READBACK.json",
+      "source_roundtrip": "native-evidence/r15-core-mcp-checkpoint/ROOT-SOURCE-ROUNDTRIP.json",
+      "root_closed_evidence_attachment": "native-evidence/r15-core-mcp-checkpoint"
+    },
+    {
+      "stage": "core_mcp_support_r16_stage45",
+      "tree": "3ebd193f213d640e5330a1be4b983bcc4b06617a",
+      "identical_tree_commit": "96dc9232535fedf735e3099ef1391b69477270d4",
+      "status": "STRICT_PASS_TESTS_4061_PASS_2_FAIL_0_TIMEOUT_9_ORIGINAL_SKIP_CLOSED",
+      "changed_source_files": 180,
+      "stage_files": 5,
+      "packages": [
+        "codex-core",
+        "codex-mcp",
+        "core_test_support"
+      ],
+      "current_source_qualification": false,
+      "expected_workflow_sha256": "4a0cbfa961838f492423e6897d24802c1b456278032a0cedc8c33da385653ed0",
+      "native_job": "1a1aff6dbfd-fc05-6d15",
+      "actual_native_tree_verified": true,
+      "strict_exit_code": 0,
+      "strict_elapsed_seconds": 36.3511917591095,
+      "strict_log_sha256": "b7b9ef98e984db5a3302f8628b6854b457dd73bbd43530165447b356e12e3991",
+      "strict_source_manifest_sha256": "382446e26171f1cfa73f303052e40fe5b55bc41ca2f747e26c04207099938a97",
+      "strict_readback": "native-evidence/r16-core-mcp-support-checkpoint/ROOT-STRICT-READBACK.json",
+      "tests_terminal_counts": {
+        "tests_run": 4063,
+        "passed": 4061,
+        "failed": 2,
+        "timed_out": 0,
+        "skipped": 9
+      },
+      "default_workspace_result": null,
+      "per_package": {
+        "codex-core": {
+          "PASS": 3828,
+          "FAIL": 2
+        },
+        "codex-mcp": {
+          "PASS": 196
+        },
+        "core_test_support": {
+          "PASS": 37
+        }
+      },
+      "tests_exit_code": 100,
+      "test_log_sha256": "fe6cafe40e0efbe36a34f284234cfbfea68aaf658b5d65d9d0c3d754fbff813b",
+      "test_total_seconds": 562.3899312019348,
+      "test_execution_seconds": 452.452,
+      "source_files_reconstructed": 180,
+      "github_tree_rebuilt_exactly": true,
+      "root_result_readback": "native-evidence/r16-core-mcp-support-checkpoint/ROOT-RESULT-READBACK.json",
+      "source_roundtrip": "native-evidence/r16-core-mcp-support-checkpoint/ROOT-SOURCE-ROUNDTRIP.json",
+      "root_closed_evidence_attachment": "native-evidence/r16-core-mcp-support-checkpoint"
+    },
+    {
+      "stage": "core_mcp_support_r17_stage46",
+      "tree": "ffa0a37f4616c5563169c7f0a9305bf6c982d58b",
+      "identical_tree_commit": "2d7ad1d60019f35fc13d84138ceb2755d914f434",
+      "status": "STRICT_PASS_TESTS_4063_PASS_0_FAIL_0_TIMEOUT_9_ORIGINAL_SKIP_CLOSED",
+      "changed_source_files": 180,
+      "stage_files": 2,
+      "packages": [
+        "codex-core",
+        "codex-mcp",
+        "core_test_support"
+      ],
+      "current_source_qualification": false,
+      "actual_native_tree_verified": true,
+      "default_workspace_result": "R18_COMPILE_FAILED_101_NEXTTEST_NOT_STARTED",
+      "native_job": "1a1b0174198-fc05-6e07",
+      "strict_exit_code": 0,
+      "strict_elapsed_seconds": 14.149122476577759,
+      "strict_log_sha256": "e5b4b31110a13aaf5d1687d9f112031c4db49f29972d8c4a6c29898f6176cb27",
+      "strict_readback": "native-evidence/r17-core-mcp-support-checkpoint/ROOT-STRICT-READBACK.json",
+      "tests_terminal_counts": {
+        "tests_run": 4063,
+        "passed": 4063,
+        "failed": 0,
+        "timed_out": 0,
+        "skipped": 9
+      },
+      "per_package": {
+        "codex-core": {
+          "PASS": 3830
+        },
+        "codex-mcp": {
+          "PASS": 196
+        },
+        "core_test_support": {
+          "PASS": 37
+        }
+      },
+      "tests_exit_code": 0,
+      "test_log_sha256": "198ed7016d4b822feeff64fbbcd7d35d5c8b467c1853084dffe318578b9fa9cf",
+      "test_total_seconds": 478.68775629997253,
+      "test_execution_seconds": 462.084,
+      "source_files_reconstructed": 180,
+      "github_tree_rebuilt_exactly": true,
+      "root_result_readback": "native-evidence/r17-core-mcp-support-checkpoint/ROOT-RESULT-READBACK.json",
+      "source_roundtrip": "native-evidence/r17-core-mcp-support-checkpoint/ROOT-SOURCE-ROUNDTRIP.json",
+      "root_closed_evidence_attachment": "native-evidence/r17-core-mcp-support-checkpoint",
+      "independent_result_readback": "native-evidence/r17-core-mcp-support-checkpoint/independent-readback/INDEPENDENT-READBACK.json",
+      "independent_result_readback_sha256": "66b220d9e6afe9f38cb6ab3a8f7b46a33d74b0dff85ce075af8c02bf90eec002"
+    },
+    {
+      "stage": "default_workspace_r18_stage46",
+      "tree": "ffa0a37f4616c5563169c7f0a9305bf6c982d58b",
+      "identical_tree_commit": "2d7ad1d60019f35fc13d84138ceb2755d914f434",
+      "status": "COMPILE_FAIL_101_NEXTTEST_NOT_STARTED",
+      "changed_source_files": 180,
+      "native_job": "1a1b0205999-fc05-6e4e",
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "--retries",
+        "0"
+      ],
+      "actual_native_tree_verified": true,
+      "workspace_members": 193,
+      "workspace_default_members": 193,
+      "exit_code": 101,
+      "elapsed_seconds": 1130.7959480285645,
+      "log_sha256": "cedada3433e2c782b423857f8abeff744fdf45c3de4523c3c312d2e15586d3ad",
+      "test_execution_started": false,
+      "tests_terminal_counts": null,
+      "compiler_error_count": 1,
+      "compiler_error_code": "E0308",
+      "failure_path": "codex-rs/app-server/tests/suite/v2/process_exec.rs",
+      "failure_line": 251,
+      "current_source_qualification": false,
+      "root_closed_evidence_attachment": "native-evidence/r18-workspace-checkpoint",
+      "root_result_readback": "native-evidence/r18-workspace-checkpoint/ROOT-TERMINAL-RECEIPT-READBACK.json",
+      "full_archive_and_source_roundtrip": "PENDING_EXACT_R18_ARCHIVE_TRANSFER"
+    },
+    {
+      "stage": "app_server_r19_stage47",
+      "tree": "cc2b01c2f69f43d63f8f5c561abd5e941d645769",
+      "identical_tree_commit": "0c78b43424ced27d37892a7744de065c1497d5e8",
+      "status": "STRICT_PASS_TESTS_FAIL100_TERMINAL_COUNTS_PENDING",
+      "changed_source_files": 181,
+      "stage_files": 2,
+      "packages": [
+        "codex-app-server"
+      ],
+      "native_job": "1a1b03cadff-fc05-6f44",
+      "actual_native_tree_verified": true,
+      "strict_exit_code": 0,
+      "strict_elapsed_seconds": 118.43502449989319,
+      "strict_log_sha256": "333adb720288c90c2932075d7f18597e352c808caeeb0ff7d0e379a15ec7437f",
+      "strict_resources_sha256": "ac96f88d8b11f18a02d406d709e206d094fe641ee6c9d4eb5cffb608d98b10b1",
+      "strict_source_manifest_sha256": "64e26c5c3340b27d6b64b7342fac8561300224f9f1e96c22f2aa23b184eafee3",
+      "strict_actual_tree_after_phase": "cc2b01c2f69f43d63f8f5c561abd5e941d645769",
+      "test_execution_status": "FAIL_TERMINAL_COUNTS_PENDING",
+      "tests_exit_code": 100,
+      "tests_terminal_counts": null,
+      "terminal_status_basis": "Native owner authoritative same-job terminal status; raw test receipt/counts pending",
+      "current_source_qualification": false,
+      "root_closed_evidence_attachment": "native-evidence/r19-app-server-checkpoint",
+      "strict_readback": "native-evidence/r19-app-server-checkpoint/ROOT-STRICT-READBACK.json",
+      "stage_input_readback": "native-evidence/r19-stage47-input/ROOT-INPUT-READBACK.json",
+      "default_workspace_result": "NOT_STARTED_R20_PENDING_PROJECT_PASS",
+      "prior_r17_qualification_transferred": false
+    }
+  ],
+  "current_native_applied_tree": "cc2b01c2f69f43d63f8f5c561abd5e941d645769",
+  "current_source_validation_status": "STAGE47_R19_STRICT_PASS_TESTS_FAIL100_COUNTS_PENDING_R18_SOURCE46_WORKSPACE_COMPILE_FAILED_NEXTTEST_NOT_STARTED"
+}

@@ -1,0 +1,541 @@
+{
+  "schema": "hepta.network-runtime-r26-fixture-oracles.v1",
+  "fixtures": [
+    {
+      "name": "host_blocked_requires_allowlist_match",
+      "settings": "network_settings(&[\"example.com\"], &[])",
+      "purpose": "Exact allowlist matching; initial example.com is allowed and public 8.8.8.8 is not in that allowlist. The separate enabled/broker/default-local loop stays unchanged.",
+      "expected_r26_status": "PASS",
+      "changed_setup": "Only the first state in this function. Its independent default-config loop still tests broker defaults and loopback denial.",
+      "original_execution": {
+        "status": "PASS",
+        "seconds": 0.116,
+        "line": "        PASS [   0.116s] codex-network-proxy runtime::tests::host_blocked_requires_allowlist_match"
+      },
+      "all_original_assertions_preserved": true,
+      "original_function": "    async fn host_blocked_requires_allowlist_match() {\n        let state = network_proxy_state_for_policy(network_settings(&[\"example.com\"], &[]));\n\n        assert_eq!(\n            state\n                .host_blocked(\"example.com\", /*port*/ 80)\n                .await\n                .unwrap(),\n            HostBlockDecision::Allowed\n        );\n        assert_eq!(\n            // Use a public IP literal to avoid relying on ambient DNS behavior (some networks\n            // resolve unknown hostnames to private IPs, which would trigger `not_allowed_local`).\n            state.host_blocked(\"8.8.8.8\", /*port*/ 80).await.unwrap(),\n            HostBlockDecision::Blocked(HostBlockReason::NotAllowed)\n        );\n        for enabled in [false, true] {\n            let mut config = NetworkProxyConfig {\n                enabled,\n                ..NetworkProxyConfig::default()\n            };\n            config.set_credential_broker_enabled(/*enabled*/ true);\n            let config_state = build_config_state(config, NetworkProxyConstraints::default())\n                .expect(\"valid credential-broker configuration\");\n            assert_eq!(config_state.brokerage_created_default_allowlist, !enabled);\n            let state = NetworkProxyState::with_reloader(config_state, Arc::new(NoopReloader));\n\n            assert_eq!(\n                state.host_blocked(\"8.8.8.8\", /*port*/ 80).await.unwrap(),\n                if enabled {\n                    HostBlockDecision::Blocked(HostBlockReason::NotAllowed)\n                } else {\n                    HostBlockDecision::Allowed\n                }\n            );\n            assert_eq!(\n                state.host_blocked(\"127.0.0.1\", /*port*/ 80).await.unwrap(),\n                HostBlockDecision::Blocked(HostBlockReason::NotAllowedLocal)\n            );\n        }\n    }\n",
+      "original_function_pin": {
+        "bytes": 1813,
+        "sha256": "caa9f85f9939699ef31a09a605d36384f2bd7ab42c71ffd0dfd340d20a344d2f",
+        "git_blob": "64c67c830dadfb1d5303df00750d4ae06d294c8e"
+      },
+      "candidate_function_pin": {
+        "bytes": 1997,
+        "sha256": "1fefc47708d1081341916b6ffe780e352e9849bf9fce25efcf04060d37587637",
+        "git_blob": "4459743de2ccdc6683729e019a91cb86b6133542"
+      },
+      "source_path": "codex-rs/network-proxy/src/runtime.rs",
+      "original_first_line": 1221,
+      "lookup_path_before": "network_settings -> default allow_local_binding=false -> test-local network_proxy_state_for_policy -> host_blocked -> explicit deny first -> DNS/local-address guard for nonliteral hosts -> allowlist",
+      "candidate_boundary": "Only this fixture's first config sets the existing allow_local_binding=true. No new network request, resolver override, production setting or default is introduced."
+    },
+    {
+      "name": "add_allowed_domain_removes_matching_deny_entry",
+      "settings": "network_settings(&[], &[\"example.com\"])",
+      "purpose": "Normalize the explicit allow update, remove the conflicting deny entry, preserve pattern readback, then evaluate the same hostname.",
+      "expected_r26_status": "PASS",
+      "changed_setup": "Initial config only; original add_allowed_domain, current_patterns and all decision assertions are unchanged.",
+      "original_execution": {
+        "status": "PASS",
+        "seconds": 0.008,
+        "line": "        PASS [   0.008s] codex-network-proxy runtime::tests::add_allowed_domain_removes_matching_deny_entry"
+      },
+      "all_original_assertions_preserved": true,
+      "original_function": "    async fn add_allowed_domain_removes_matching_deny_entry() {\n        let state = network_proxy_state_for_policy(network_settings(&[], &[\"example.com\"]));\n\n        state.add_allowed_domain(\"ExAmPlE.CoM\").await.unwrap();\n\n        let (allowed, denied) = state.current_patterns().await.unwrap();\n        assert_eq!(allowed, vec![\"example.com\".to_string()]);\n        assert!(denied.is_empty());\n        assert_eq!(\n            state\n                .host_blocked(\"example.com\", /*port*/ 80)\n                .await\n                .unwrap(),\n            HostBlockDecision::Allowed\n        );\n    }\n",
+      "original_function_pin": {
+        "bytes": 596,
+        "sha256": "6fd909b7f7975de99fd397c6042d898396851956d1a0bdbe94c691cbe2afca15",
+        "git_blob": "8df26e3e38879069e93269a58182faf1e67be497"
+      },
+      "candidate_function_pin": {
+        "bytes": 780,
+        "sha256": "71bcecdf380d8754e07bdaa37f1af845c65d21b0978d010bd95ca6ed532579dd",
+        "git_blob": "40eda8757377529f23a53dd263187f090af270fb"
+      },
+      "source_path": "codex-rs/network-proxy/src/runtime.rs",
+      "original_first_line": 1264,
+      "lookup_path_before": "network_settings -> default allow_local_binding=false -> test-local network_proxy_state_for_policy -> host_blocked -> explicit deny first -> DNS/local-address guard for nonliteral hosts -> allowlist",
+      "candidate_boundary": "Only this fixture's first config sets the existing allow_local_binding=true. No new network request, resolver override, production setting or default is introduced."
+    },
+    {
+      "name": "host_blocked_subdomain_wildcards_exclude_apex",
+      "settings": "network_settings(&[\"*.openai.com\"], &[])",
+      "purpose": "The subdomain pattern admits api.openai.com and excludes openai.com itself.",
+      "expected_r26_status": "FAIL",
+      "changed_setup": "Initial config only; original hostname, port, apex exclusion and equality assertions are unchanged.",
+      "original_execution": {
+        "status": "FAIL",
+        "seconds": 5.089,
+        "line": "        FAIL [   5.089s] codex-network-proxy runtime::tests::host_blocked_subdomain_wildcards_exclude_apex"
+      },
+      "all_original_assertions_preserved": true,
+      "original_function": "    async fn host_blocked_subdomain_wildcards_exclude_apex() {\n        let state = network_proxy_state_for_policy(network_settings(&[\"*.openai.com\"], &[]));\n\n        assert_eq!(\n            state\n                .host_blocked(\"api.openai.com\", /*port*/ 80)\n                .await\n                .unwrap(),\n            HostBlockDecision::Allowed\n        );\n        assert_eq!(\n            state.host_blocked(\"openai.com\", /*port*/ 80).await.unwrap(),\n            HostBlockDecision::Blocked(HostBlockReason::NotAllowed)\n        );\n    }\n",
+      "original_function_pin": {
+        "bytes": 536,
+        "sha256": "60c69fd557051de53eea106915f858b29f344b5ae0e77e7ca0bb1385c85bbc37",
+        "git_blob": "1b0f3ffe97183066a2549fd77ef96208acc1eefa"
+      },
+      "candidate_function_pin": {
+        "bytes": 720,
+        "sha256": "06b34afc4dd5a13495018073b08c0cfb939eecd41bb7511b67733b1c38555912",
+        "git_blob": "a782925a20d84023d407a035e46af290412b6074"
+      },
+      "source_path": "codex-rs/network-proxy/src/runtime.rs",
+      "original_first_line": 1485,
+      "lookup_path_before": "network_settings -> default allow_local_binding=false -> test-local network_proxy_state_for_policy -> host_blocked -> explicit deny first -> DNS/local-address guard for nonliteral hosts -> allowlist",
+      "candidate_boundary": "Only this fixture's first config sets the existing allow_local_binding=true. No new network request, resolver override, production setting or default is introduced."
+    },
+    {
+      "name": "host_blocked_global_wildcard_allowlist_allows_public_hosts_except_denylist",
+      "settings": "network_settings(&[\"*\"], &[\"evil.example\"])",
+      "purpose": "The global pattern admits two named hosts while the explicit evil.example deny entry wins.",
+      "expected_r26_status": "FAIL",
+      "changed_setup": "Initial config only; original hostnames, ports, all three equality assertions and deny priority are unchanged.",
+      "original_execution": {
+        "status": "FAIL",
+        "seconds": 5.267,
+        "line": "        FAIL [   5.267s] codex-network-proxy runtime::tests::host_blocked_global_wildcard_allowlist_allows_public_hosts_except_denylist"
+      },
+      "all_original_assertions_preserved": true,
+      "original_function": "    async fn host_blocked_global_wildcard_allowlist_allows_public_hosts_except_denylist() {\n        let state = network_proxy_state_for_policy(network_settings(&[\"*\"], &[\"evil.example\"]));\n\n        assert_eq!(\n            state\n                .host_blocked(\"example.com\", /*port*/ 80)\n                .await\n                .unwrap(),\n            HostBlockDecision::Allowed\n        );\n        assert_eq!(\n            state\n                .host_blocked(\"api.openai.com\", /*port*/ 443)\n                .await\n                .unwrap(),\n            HostBlockDecision::Allowed\n        );\n        assert_eq!(\n            state\n                .host_blocked(\"evil.example\", /*port*/ 80)\n                .await\n                .unwrap(),\n            HostBlockDecision::Blocked(HostBlockReason::Denied)\n        );\n    }\n",
+      "original_function_pin": {
+        "bytes": 814,
+        "sha256": "a9da26fa5107a32c9f175184950359be72995c0cc43c4b89ab8219e016bbe874",
+        "git_blob": "0f374ab81a03a6de2575d1e33bbc60f44ae2064d"
+      },
+      "candidate_function_pin": {
+        "bytes": 998,
+        "sha256": "67f9963f48570a3e133a9daa005c45db969b6763718dc104519700eaf1f2f939",
+        "git_blob": "14f25cd2d95aa18c72f84a89580f2dd27a86649e"
+      },
+      "source_path": "codex-rs/network-proxy/src/runtime.rs",
+      "original_first_line": 1502,
+      "lookup_path_before": "network_settings -> default allow_local_binding=false -> test-local network_proxy_state_for_policy -> host_blocked -> explicit deny first -> DNS/local-address guard for nonliteral hosts -> allowlist",
+      "candidate_boundary": "Only this fixture's first config sets the existing allow_local_binding=true. No new network request, resolver override, production setting or default is introduced."
+    }
+  ],
+  "preserved_related_tests": [
+    {
+      "function": "host_blocked_denied_wins_over_allowed",
+      "source_first_line": 1207,
+      "body_pin": {
+        "bytes": 401,
+        "sha256": "b154a271fd03e4106455efcc82d4846e7bcc624f554b3d8f7fc3ec36eeb7c0a5",
+        "git_blob": "7f8aff5c91cbb7c29b77db5dca9f6698ea81dd81"
+      },
+      "body_unchanged": true,
+      "r26_original_execution": {
+        "status": "PASS",
+        "seconds": 0.006,
+        "line": "        PASS [   0.006s] codex-network-proxy runtime::tests::host_blocked_denied_wins_over_allowed"
+      }
+    },
+    {
+      "function": "add_denied_domain_removes_matching_allow_entry",
+      "source_first_line": 1282,
+      "body_pin": {
+        "bytes": 620,
+        "sha256": "5837bee62c788543d1dbd5178ac59560f2e8fd804e26eaded67e57a85a678563",
+        "git_blob": "29bd027a7ba7b907532eb82732479396c0bdcc52"
+      },
+      "body_unchanged": true,
+      "r26_original_execution": {
+        "status": "PASS",
+        "seconds": 0.007,
+        "line": "        PASS [   0.007s] codex-network-proxy runtime::tests::add_denied_domain_removes_matching_allow_entry"
+      }
+    },
+    {
+      "function": "add_denied_domain_forces_block_with_global_wildcard_allowlist",
+      "source_first_line": 1300,
+      "body_pin": {
+        "bytes": 800,
+        "sha256": "b96bbea576438c7b0e5929e2f19808ff6d3646172044d26f377c8645008c0c19",
+        "git_blob": "0c38f714c1b7327338a7b0e6365765c689140394"
+      },
+      "body_unchanged": true,
+      "r26_original_execution": {
+        "status": "PASS",
+        "seconds": 0.006,
+        "line": "        PASS [   0.006s] codex-network-proxy runtime::tests::add_denied_domain_forces_block_with_global_wildcard_allowlist"
+      }
+    },
+    {
+      "function": "host_blocked_rejects_loopback_when_local_binding_disabled",
+      "source_first_line": 1529,
+      "body_pin": {
+        "bytes": 529,
+        "sha256": "3394aedbb518e732ba0495fecfd4d95f382325599bc6437cf70daf84c2556d1c",
+        "git_blob": "6d7f5e14573794c28daa13b2c17a6f8edc8a7d32"
+      },
+      "body_unchanged": true,
+      "r26_original_execution": {
+        "status": "PASS",
+        "seconds": 0.006,
+        "line": "        PASS [   0.006s] codex-network-proxy runtime::tests::host_blocked_rejects_loopback_when_local_binding_disabled"
+      }
+    },
+    {
+      "function": "host_blocked_allows_loopback_when_explicitly_allowlisted_and_local_binding_disabled",
+      "source_first_line": 1543,
+      "body_pin": {
+        "bytes": 342,
+        "sha256": "8907c2314f788ad3a7586194ed1267a631d3d9f5e83c1c60a68af6d70355d00a",
+        "git_blob": "838a48dfd30a24455af99074256e539244aa9aa8"
+      },
+      "body_unchanged": true,
+      "r26_original_execution": {
+        "status": "PASS",
+        "seconds": 0.006,
+        "line": "        PASS [   0.006s] codex-network-proxy runtime::tests::host_blocked_allows_loopback_when_explicitly_allowlisted_and_local_binding_disabled"
+      }
+    },
+    {
+      "function": "host_blocked_allows_private_ip_literal_when_explicitly_allowlisted",
+      "source_first_line": 1553,
+      "body_pin": {
+        "bytes": 323,
+        "sha256": "a3bd27090cd0e881728c54ea32367eef36e0ae491ba543f5792a909518259345",
+        "git_blob": "448c970ca923ab26a4a594f2c7f61d8a2ebd3662"
+      },
+      "body_unchanged": true,
+      "r26_original_execution": {
+        "status": "PASS",
+        "seconds": 0.005,
+        "line": "        PASS [   0.005s] codex-network-proxy runtime::tests::host_blocked_allows_private_ip_literal_when_explicitly_allowlisted"
+      }
+    },
+    {
+      "function": "host_blocked_rejects_scoped_ipv6_literal_when_not_allowlisted",
+      "source_first_line": 1563,
+      "body_pin": {
+        "bytes": 409,
+        "sha256": "fa38c751b873e1163b9da9b42cc9cef6c2178cd4ae745a3c7523e70d196df4ca",
+        "git_blob": "3cfdc8ac3ba69e39711645c0b65aa1600c25eb83"
+      },
+      "body_unchanged": true,
+      "r26_original_execution": {
+        "status": "PASS",
+        "seconds": 0.006,
+        "line": "        PASS [   0.006s] codex-network-proxy runtime::tests::host_blocked_rejects_scoped_ipv6_literal_when_not_allowlisted"
+      }
+    },
+    {
+      "function": "host_blocked_allows_scoped_ipv6_literal_when_explicitly_allowlisted",
+      "source_first_line": 1576,
+      "body_pin": {
+        "bytes": 377,
+        "sha256": "80f98958d51db833d2e35b671884eaae2e262f2bfab2ab65d6d9f67ec1ea6324",
+        "git_blob": "04a606711c532474e82e6b6257e28d8dbf3d8dcf"
+      },
+      "body_unchanged": true,
+      "r26_original_execution": {
+        "status": "PASS",
+        "seconds": 0.005,
+        "line": "        PASS [   0.005s] codex-network-proxy runtime::tests::host_blocked_allows_scoped_ipv6_literal_when_explicitly_allowlisted"
+      }
+    },
+    {
+      "function": "host_blocked_requires_exact_scoped_ipv6_allowlist_match",
+      "source_first_line": 1589,
+      "body_pin": {
+        "bytes": 681,
+        "sha256": "348634b4a3e5b30c8427221d531fefc0a7214e29d582a7d0820f6cfd82a2910e",
+        "git_blob": "3cbfe08003c2a1e5757319cfbf34cfe1c677c66a"
+      },
+      "body_unchanged": true,
+      "r26_original_execution": {
+        "status": "PASS",
+        "seconds": 0.006,
+        "line": "        PASS [   0.006s] codex-network-proxy runtime::tests::host_blocked_requires_exact_scoped_ipv6_allowlist_match"
+      }
+    },
+    {
+      "function": "host_blocked_denies_scoped_ipv6_literal_before_local_binding",
+      "source_first_line": 1612,
+      "body_pin": {
+        "bytes": 594,
+        "sha256": "8b318545d364844468e1468429af0d5cd44b46d28b6780b9261039838d41abdc",
+        "git_blob": "5d1f3dba69b818ce804735171fc29b4dde67a82f"
+      },
+      "body_unchanged": true,
+      "r26_original_execution": {
+        "status": "PASS",
+        "seconds": 0.006,
+        "line": "        PASS [   0.006s] codex-network-proxy runtime::tests::host_blocked_denies_scoped_ipv6_literal_before_local_binding"
+      }
+    },
+    {
+      "function": "host_blocked_requires_exact_scoped_ipv6_denylist_match",
+      "source_first_line": 1628,
+      "body_pin": {
+        "bytes": 679,
+        "sha256": "f36aceec2e9a5eba2ed3dc7eff936923cc141046a9a759963fed558eb539be50",
+        "git_blob": "e353eba84136a2520d7b52e3862eb87d4d535305"
+      },
+      "body_unchanged": true,
+      "r26_original_execution": {
+        "status": "PASS",
+        "seconds": 0.006,
+        "line": "        PASS [   0.006s] codex-network-proxy runtime::tests::host_blocked_requires_exact_scoped_ipv6_denylist_match"
+      }
+    },
+    {
+      "function": "host_blocked_rejects_private_ip_literals_when_local_binding_disabled",
+      "source_first_line": 1651,
+      "body_pin": {
+        "bytes": 362,
+        "sha256": "d1404c605c1c5b1413b1c7baee513962edbc5f70770ca84a8fbe14c28e057cd8",
+        "git_blob": "920988c1d366f24ed231b74be0fca9cea866f291"
+      },
+      "body_unchanged": true,
+      "r26_original_execution": {
+        "status": "PASS",
+        "seconds": 0.006,
+        "line": "        PASS [   0.006s] codex-network-proxy runtime::tests::host_blocked_rejects_private_ip_literals_when_local_binding_disabled"
+      }
+    },
+    {
+      "function": "host_blocked_rejects_loopback_when_allowlist_empty",
+      "source_first_line": 1661,
+      "body_pin": {
+        "bytes": 335,
+        "sha256": "4f88fe47e9ef57e2866eae73c4843190d2cefcd81f87ce05a24abf3f0b0fd488",
+        "git_blob": "0bbd38e2eb38de4db45755c8eb20b5e32e608eff"
+      },
+      "body_unchanged": true,
+      "r26_original_execution": {
+        "status": "PASS",
+        "seconds": 0.004,
+        "line": "        PASS [   0.004s] codex-network-proxy runtime::tests::host_blocked_rejects_loopback_when_allowlist_empty"
+      }
+    },
+    {
+      "function": "host_blocked_rejects_allowlisted_hostname_when_dns_lookup_fails",
+      "source_first_line": 1671,
+      "body_pin": {
+        "bytes": 532,
+        "sha256": "4f885596e53a74c5f370ed9bc4c2f901c82da5f80a32f0fd28dfb236d1bb84df",
+        "git_blob": "3eefb571c00ee6f9593cc37c74544b6d4e85196f"
+      },
+      "body_unchanged": true,
+      "r26_original_execution": {
+        "status": "PASS",
+        "seconds": 0.009,
+        "line": "        PASS [   0.009s] codex-network-proxy runtime::tests::host_blocked_rejects_allowlisted_hostname_when_dns_lookup_fails"
+      }
+    },
+    {
+      "function": "host_resolves_to_non_public_ip_blocks_on_dns_lookup_timeout",
+      "source_first_line": 1686,
+      "body_pin": {
+        "bytes": 412,
+        "sha256": "a811735e9940821389bf7fbfb016886db320740c8ef88393770e71d1d8fea07f",
+        "git_blob": "70f63710ab15bf4fe711fe241f44f49d71559181"
+      },
+      "body_unchanged": true,
+      "r26_original_execution": {
+        "status": "PASS",
+        "seconds": 0.007,
+        "line": "        PASS [   0.007s] codex-network-proxy runtime::tests::host_resolves_to_non_public_ip_blocks_on_dns_lookup_timeout"
+      }
+    },
+    {
+      "function": "host_resolves_to_non_public_ip_blocks_on_dns_lookup_error",
+      "source_first_line": 1701,
+      "body_pin": {
+        "bytes": 514,
+        "sha256": "dabe64d59b17b975fdb3a77eb96215ca484a2cfa55cc13b470ae9bc115d00940",
+        "git_blob": "e586b7baf8e40afdf7556acc8cbe038ce4a071d1"
+      },
+      "body_unchanged": true,
+      "r26_original_execution": {
+        "status": "PASS",
+        "seconds": 0.004,
+        "line": "        PASS [   0.004s] codex-network-proxy runtime::tests::host_resolves_to_non_public_ip_blocks_on_dns_lookup_error"
+      }
+    },
+    {
+      "function": "host_resolves_to_non_public_ip_blocks_private_resolution",
+      "source_first_line": 1719,
+      "body_pin": {
+        "bytes": 360,
+        "sha256": "3f9c1ec31eee60abffdc1a0f87de9c0e8bf74a928c9373e62b15615b7fbfb1bb",
+        "git_blob": "1b669c26487af387e553c32c63bfed76da957c46"
+      },
+      "body_unchanged": true,
+      "r26_original_execution": {
+        "status": "PASS",
+        "seconds": 0.004,
+        "line": "        PASS [   0.004s] codex-network-proxy runtime::tests::host_resolves_to_non_public_ip_blocks_private_resolution"
+      }
+    },
+    {
+      "function": "host_resolves_to_non_public_ip_allows_public_resolution",
+      "source_first_line": 1732,
+      "body_pin": {
+        "bytes": 359,
+        "sha256": "51ca1a54b7cce32e10351bb50108bb1b7af327823e76c9fd6c38459c8755df79",
+        "git_blob": "74a5b6cc76a4b226551a380ec59d26d4c4b3ccf6"
+      },
+      "body_unchanged": true,
+      "r26_original_execution": {
+        "status": "PASS",
+        "seconds": 0.004,
+        "line": "        PASS [   0.004s] codex-network-proxy runtime::tests::host_resolves_to_non_public_ip_allows_public_resolution"
+      }
+    },
+    {
+      "function": "validate_policy_against_constraints_disallows_allow_local_binding_when_managed_disabled",
+      "source_first_line": 1899,
+      "body_pin": {
+        "bytes": 514,
+        "sha256": "42b33eb286855104411501391cb2caf8fa7fc04494574751780559c2c175a51c",
+        "git_blob": "c8ff1e368345a2bd5b81524a4f184309a3ab23eb"
+      },
+      "body_unchanged": true,
+      "r26_original_execution": {
+        "status": "PASS",
+        "seconds": 0.004,
+        "line": "        PASS [   0.004s] codex-network-proxy runtime::tests::validate_policy_against_constraints_disallows_allow_local_binding_when_managed_disabled"
+      }
+    },
+    {
+      "function": "compile_globset_is_case_insensitive",
+      "source_first_line": 1978,
+      "body_pin": {
+        "bytes": 265,
+        "sha256": "138336968fcd03bbc3069758cfda310bab0aaf49ab79426ed1382e668c0a4ddf",
+        "git_blob": "a65789d59d5353b8c452ee19dc64e8f45e9781af"
+      },
+      "body_unchanged": true,
+      "r26_original_execution": {
+        "status": "PASS",
+        "seconds": 0.005,
+        "line": "        PASS [   0.005s] codex-network-proxy runtime::tests::compile_globset_is_case_insensitive"
+      }
+    },
+    {
+      "function": "compile_globset_excludes_apex_for_subdomain_patterns",
+      "source_first_line": 1986,
+      "body_pin": {
+        "bytes": 336,
+        "sha256": "df5c2ca4533803a047c6ad564b225d13ab89aa176465efeb7a64fb197d6805e5",
+        "git_blob": "1683736e965e282249abc08ef5b3fc0af39bcd0b"
+      },
+      "body_unchanged": true,
+      "r26_original_execution": {
+        "status": "PASS",
+        "seconds": 0.006,
+        "line": "        PASS [   0.006s] codex-network-proxy runtime::tests::compile_globset_excludes_apex_for_subdomain_patterns"
+      }
+    },
+    {
+      "function": "compile_globset_includes_apex_for_double_wildcard_patterns",
+      "source_first_line": 1995,
+      "body_pin": {
+        "bytes": 342,
+        "sha256": "4e1be709917c9c9e8edd5655a428af7125b1a7eded8806fd72c59744ced2b572",
+        "git_blob": "d6d09a2e465259bcf629e65910bb1e6d1e85f02f"
+      },
+      "body_unchanged": true,
+      "r26_original_execution": {
+        "status": "PASS",
+        "seconds": 0.005,
+        "line": "        PASS [   0.005s] codex-network-proxy runtime::tests::compile_globset_includes_apex_for_double_wildcard_patterns"
+      }
+    },
+    {
+      "function": "compile_globset_rejects_global_wildcard",
+      "source_first_line": 2004,
+      "body_pin": {
+        "bytes": 166,
+        "sha256": "23efe5703dec41c76c2c70a5b6705bb8cc132f73078067da7c7ff4bdc10eadb6",
+        "git_blob": "7bedb3057a095bdd61eefedf8243c59c782f4ee1"
+      },
+      "body_unchanged": true,
+      "r26_original_execution": {
+        "status": "PASS",
+        "seconds": 0.004,
+        "line": "        PASS [   0.004s] codex-network-proxy runtime::tests::compile_globset_rejects_global_wildcard"
+      }
+    },
+    {
+      "function": "compile_globset_allows_global_wildcard_when_enabled",
+      "source_first_line": 2010,
+      "body_pin": {
+        "bytes": 319,
+        "sha256": "2941450ceddc25d63239d027e7ae709980c4aa2017fe94c434d93817107b3aee",
+        "git_blob": "7ef6506cabfd061ff4e3b4c6ce388a2f476e02e3"
+      },
+      "body_unchanged": true,
+      "r26_original_execution": {
+        "status": "PASS",
+        "seconds": 0.004,
+        "line": "        PASS [   0.004s] codex-network-proxy runtime::tests::compile_globset_allows_global_wildcard_when_enabled"
+      }
+    },
+    {
+      "function": "compile_globset_rejects_bracketed_global_wildcard",
+      "source_first_line": 2019,
+      "body_pin": {
+        "bytes": 178,
+        "sha256": "702fb994af5afab17d513b3beef2cdabc8757a3af2c2a241ba5e92bf3b4eb782",
+        "git_blob": "fd591dd88b5b939d61ad9071dc0792f5706a9a73"
+      },
+      "body_unchanged": true,
+      "r26_original_execution": {
+        "status": "PASS",
+        "seconds": 0.004,
+        "line": "        PASS [   0.004s] codex-network-proxy runtime::tests::compile_globset_rejects_bracketed_global_wildcard"
+      }
+    },
+    {
+      "function": "compile_globset_rejects_double_wildcard_bracketed_global_wildcard",
+      "source_first_line": 2025,
+      "body_pin": {
+        "bytes": 197,
+        "sha256": "bef2e7010092e5ae84c9482a10a4768c163b1ff7cb9c590a99d4aee5d1dea535",
+        "git_blob": "6e96b76c049bcce5fe995afc1ee0fae157fe3198"
+      },
+      "body_unchanged": true,
+      "r26_original_execution": {
+        "status": "PASS",
+        "seconds": 0.004,
+        "line": "        PASS [   0.004s] codex-network-proxy runtime::tests::compile_globset_rejects_double_wildcard_bracketed_global_wildcard"
+      }
+    },
+    {
+      "function": "compile_globset_dedupes_patterns_without_changing_behavior",
+      "source_first_line": 2031,
+      "body_pin": {
+        "bytes": 366,
+        "sha256": "95c2a5e2348ba5d27a7fb36fd94408d3134860ea8764b46756662f0435c6a3e6",
+        "git_blob": "edf71343dd74549dc9f741aa2f1bad5d4af438e9"
+      },
+      "body_unchanged": true,
+      "r26_original_execution": {
+        "status": "PASS",
+        "seconds": 0.005,
+        "line": "        PASS [   0.005s] codex-network-proxy runtime::tests::compile_globset_dedupes_patterns_without_changing_behavior"
+      }
+    },
+    {
+      "function": "compile_globset_rejects_invalid_patterns",
+      "source_first_line": 2040,
+      "body_pin": {
+        "bytes": 167,
+        "sha256": "d493453ca563e3f5347763a85203e455dab5f00085d8100afd46e4081f11bc8f",
+        "git_blob": "cba1a5e5076cd89daac1327b4aa388652b08d720"
+      },
+      "body_unchanged": true,
+      "r26_original_execution": {
+        "status": "PASS",
+        "seconds": 0.004,
+        "line": "        PASS [   0.004s] codex-network-proxy runtime::tests::compile_globset_rejects_invalid_patterns"
+      }
+    }
+  ],
+  "not_all_four_failed": true,
+  "two_passing_fixtures_are_same_precondition_repair": true
+}

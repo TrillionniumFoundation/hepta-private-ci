@@ -1,0 +1,31 @@
+{
+  "schema": "hepta.source52-apply-delta.v1",
+  "source_before_tree": "763c8d2b4089f6e9806c3bbb68fa247bc2f6af36",
+  "source_before_commit": "e28b0f385ee882f842911044958b2810f62f6379",
+  "source_tree": "211f15baff19095e8c98bcea2b0ed99ca2270ade",
+  "source_commit": "1e0910becc37383e6d17ecf861ea844fd07d8862",
+  "patch": {
+    "path": "candidate.patch",
+    "bytes": 2255,
+    "sha256": "9d28130f28b2e1dd9d28f47a4ab8e5141095ea2f718d5454a0c3fadda895a16e",
+    "git_blob": "e8bf5df04c9531ea0b00e22f9b8da800a5f36b05"
+  },
+  "files": [
+    {
+      "path": "codex-rs/network-proxy/src/runtime.rs",
+      "before": {
+        "mode": "100644",
+        "bytes": 75473,
+        "sha256": "3214446d85796e5d1c4a308ba53aab3bf7098fc18cd38cfc6f97a1cbb14d2e4f",
+        "git_blob": "1a449a44381fafa4a5d6a5d0e08753f425f339fc"
+      },
+      "after": {
+        "mode": "100644",
+        "bytes": 76209,
+        "sha256": "1d8523c4eda08408eb952a86d692f1e2cfb2975de934de6f1f325597fe9681c8",
+        "git_blob": "2c0b88642d1c079ee3991e9e1e418bbb01203694"
+      }
+    }
+  ],
+  "identity_status": "REGISTERED_GITDATA_NOT_NATIVE_APPLIED"
+}

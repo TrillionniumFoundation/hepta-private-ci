@@ -1,0 +1,52 @@
+{
+  "schema": "hepta.source53-finalization-three-archive-transfer.v1",
+  "status": "THREE_FULL_ARCHIVES_REASSEMBLED_AND_SHA_VERIFIED",
+  "archives": [
+    {
+      "label": "tested-pre-fix-source",
+      "archive": {
+        "bytes": 1062833,
+        "sha256": "5f4c1a33ab54ef21f789fa947043d49fd28c2df54379cb42012dfb4348298337",
+        "git_blob": "df1610247ba558937eccbcddb380bffa2c7e9a4e"
+      },
+      "transfer_readback": {
+        "path": "native-validation-results/source53-finalization-archives/tested-pre-fix-source/TRANSFER-READBACK.json",
+        "bytes": 61010,
+        "sha256": "8157d8f128077c8f23817c2bf4296c41535ec92db635f80d242b57f740c7966d",
+        "git_blob": "1748ff678557e8b6277e480f40965646d22dcf79"
+      },
+      "members": 198
+    },
+    {
+      "label": "post-fix-source",
+      "archive": {
+        "bytes": 1062826,
+        "sha256": "888cc610aae0d2f3a60f485d50970023edf2c4d179ec4986fce07c60fe7f893f",
+        "git_blob": "271ba4e32aaece93684f69b3e888790fab12e52e"
+      },
+      "transfer_readback": {
+        "path": "native-validation-results/source53-finalization-archives/post-fix-source/TRANSFER-READBACK.json",
+        "bytes": 60884,
+        "sha256": "d72b2c1dff6b79df84ce8cf38d9b73eda115b80135fa510e8cfb97511d23e731",
+        "git_blob": "1e5fc9448bee7bf03be94e9b7113f54fee8af7c4"
+      },
+      "members": 198
+    },
+    {
+      "label": "final-post-format-source",
+      "archive": {
+        "bytes": 1065812,
+        "sha256": "f5ccbb7ad47ae0144fffa57364e9703899c2bbec6dcedb1df7e590b1749245a3",
+        "git_blob": "088c380ed06a060db1441138b7bbde827b3584a4"
+      },
+      "transfer_readback": {
+        "path": "native-validation-results/source53-finalization-archives/final-post-format-source/TRANSFER-READBACK.json",
+        "bytes": 61074,
+        "sha256": "8085fd96e224e3ed85d3ac54c36cb8366d73dbdbff3b8180a9aad8facc3380ec",
+        "git_blob": "b8f172f0942b96590338b37e59d638c97af64d3d"
+      },
+      "members": 198
+    }
+  ],
+  "native_tests_or_metadata_invoked": false
+}

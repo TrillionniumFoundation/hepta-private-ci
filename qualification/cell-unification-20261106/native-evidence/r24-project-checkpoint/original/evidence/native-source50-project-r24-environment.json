@@ -1,0 +1,32 @@
+{
+  "schema": "hepta.source50-project-environment.v1",
+  "source_tree": "ea48acf562499192a25e05ae28926a32632dee62",
+  "source_commit": "1fdd647b0ecb235530e8b88bbea45b3d3762906f",
+  "source_manifest": "native-candidate-r24-source.json",
+  "source_manifest_sha256": "ba7515c75980451e0b2514bce338b0ada8847daeef5ace5deacf45ca02e940c0",
+  "selection": {
+    "RUSTUP_TOOLCHAIN": "1.96.0",
+    "CARGO_BUILD_JOBS": "2",
+    "CARGO_TARGET_DIR": "/home/alex/work/hepta-cell-unified-20261106-a/target",
+    "CARGO_NET_GIT_FETCH_WITH_CLI": "true",
+    "NEXTEST_TEST_THREADS": "2",
+    "NEXTEST_PROFILE": null,
+    "HEPTA_NEXTTEST_FULL_METADATA": null,
+    "CARGO_PROFILE_TEST_DEBUG": "0",
+    "CARGO_PROFILE_DEV_DEBUG": "0",
+    "CARGO_INCREMENTAL": null,
+    "CARGO_BUILD_TARGET": null,
+    "RUSTFLAGS": null,
+    "DOTSLASH_CACHE": "/home/alex/work/hepta-cell-unified-20261106-a/tools/dotslash-cache",
+    "PYTHONOPTIMIZE": null
+  },
+  "approved_prerequisite_env_pin": {
+    "bytes": 663,
+    "sha256": "b4957f392cfe6619f574149ad5c089582f21d993205683c1f569c031ef4dc1eb",
+    "git_blob": "620e1ef5c5c1d10230f7455a19e0e58e2261bc83"
+  },
+  "free_bytes_before": 555704705024,
+  "source_environment_immutable_during_gates": true,
+  "test_deadlines_features_filters_retries_unchanged": true,
+  "sandbox_or_network_protection_environment_overridden": false
+}

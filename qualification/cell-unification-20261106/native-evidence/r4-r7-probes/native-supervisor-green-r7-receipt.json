@@ -1,0 +1,31 @@
+{
+  "command": [
+    "just",
+    "test",
+    "--locked",
+    "-p",
+    "codex-hepta-supervisor",
+    "--retries",
+    "0",
+    "-E",
+    "test(supervisor::tests::restart_recovery::)"
+  ],
+  "kind": "focused-tests",
+  "staged_tree": "7a4727b8ffaccf914ccbca2b2c57bbe90409f5e3",
+  "source_manifest": "native-candidate-r7-source.json",
+  "start_unix": 1793939391.7203796,
+  "end_unix": 1793939413.1952834,
+  "elapsed_seconds": 21.47490382194519,
+  "exit_code": 0,
+  "log_sha256": "47402d00593d360d1707f71e27dfea3764332e812ecff6d0a7c49142715cba67",
+  "summaries": [
+    "     Summary [   0.063s] 4 tests run: 4 passed, 120 skipped"
+  ],
+  "disk_after": {
+    "total": 1966736678912,
+    "used": 1584002605056,
+    "free": 282753822720
+  },
+  "counterexample_before": "native-supervisor-red-r6b-receipt.json",
+  "same_four_regression_tests": true
+}

@@ -1,0 +1,146 @@
+{
+  "schema": "hepta.network-runtime-r26-repair-audit.v1",
+  "status": "FROZEN_ISOLATED_FIXTURE_CANDIDATE_NOT_NATIVE_QUALIFIED",
+  "source": {
+    "schema": "hepta.network-runtime-r26-candidate-source.v1",
+    "source_before_commit": "e28b0f385ee882f842911044958b2810f62f6379",
+    "source_before_tree": "763c8d2b4089f6e9806c3bbb68fa247bc2f6af36",
+    "candidate_commit": null,
+    "candidate_tree": null,
+    "native_applied": false,
+    "rust_executed": false,
+    "files": [
+      {
+        "path": "codex-rs/network-proxy/src/runtime.rs",
+        "owner": "codex-network-proxy",
+        "git_mode": "100644",
+        "before": {
+          "bytes": 75473,
+          "sha256": "3214446d85796e5d1c4a308ba53aab3bf7098fc18cd38cfc6f97a1cbb14d2e4f",
+          "git_blob": "1a449a44381fafa4a5d6a5d0e08753f425f339fc"
+        },
+        "after": {
+          "bytes": 76209,
+          "sha256": "1d8523c4eda08408eb952a86d692f1e2cfb2975de934de6f1f325597fe9681c8",
+          "git_blob": "2c0b88642d1c079ee3991e9e1e418bbb01203694"
+        }
+      }
+    ],
+    "changed_from_source51_paths": [
+      "codex-rs/network-proxy/src/runtime.rs"
+    ],
+    "expected_total_changed_paths_vs_framework": 195,
+    "expected_rust_paths": 181,
+    "expected_other_paths": 14,
+    "source51_original_194_manifest_rows_unchanged": true,
+    "rust_owner_count_unchanged": 26,
+    "ci_selector_count_unchanged": 27,
+    "dependency_inputs_changed": [],
+    "lock_changes": [],
+    "patch": {
+      "bytes": 2255,
+      "sha256": "9d28130f28b2e1dd9d28f47a4ab8e5141095ea2f718d5454a0c3fadda895a16e",
+      "git_blob": "e8bf5df04c9531ea0b00e22f9b8da800a5f36b05"
+    }
+  },
+  "observed": {
+    "full_closed_log": {
+      "bytes": 217900,
+      "sha256": "a7f1e74cfc5f621dc2db1bf9b55da64b31ce91cb0e399fb09617ca202156ef68",
+      "git_blob": "1f8593a506f25258fff5f34e830a93dec16fe8d3",
+      "original_local_path": "/workspace/scratch/08f5efd48967/native-validation-results/r26-failure-closed/native-source51-project-r26-tests.log"
+    },
+    "pre_summary_unique_results": 1564,
+    "passed": 1562,
+    "failed": 2,
+    "timeouts": 0,
+    "reported_skip": 3,
+    "summary_line": "     Summary [  84.109s] 1564 tests run: 1562 passed, 2 failed, 3 skipped",
+    "failure_blocks": [
+      {
+        "name": "runtime::tests::host_blocked_subdomain_wildcards_exclude_apex",
+        "seconds": 5.089,
+        "byte_offset": 211476,
+        "end_byte_offset": 212277,
+        "block_bytes": 801,
+        "block_sha256": "a901943cf23746aa9895740962075ad1a9e4273f44881086218b486514d2abdd"
+      },
+      {
+        "name": "runtime::tests::host_blocked_global_wildcard_allowlist_allows_public_hosts_except_denylist",
+        "seconds": 5.267,
+        "byte_offset": 212277,
+        "end_byte_offset": 213194,
+        "block_bytes": 917,
+        "block_sha256": "0265e674d8ce1a5cba4d6697a2105b685e6dcbf33782d883a1d29f1a74546567"
+      }
+    ],
+    "failure_signature": "Both api.openai.com Allowed assertions actually returned Blocked(NotAllowedLocal).",
+    "other_two_original_results": [
+      {
+        "name": "host_blocked_requires_allowlist_match",
+        "status": "PASS",
+        "seconds": 0.116,
+        "line": "        PASS [   0.116s] codex-network-proxy runtime::tests::host_blocked_requires_allowlist_match"
+      },
+      {
+        "name": "add_allowed_domain_removes_matching_deny_entry",
+        "status": "PASS",
+        "seconds": 0.008,
+        "line": "        PASS [   0.008s] codex-network-proxy runtime::tests::add_allowed_domain_removes_matching_deny_entry"
+      }
+    ]
+  },
+  "causal_inference_from_exact_source_and_observed_return": [
+    "The test helper keeps the default allow_local_binding=false and only enables this in-memory proxy config.",
+    "Explicit deny has priority; an unallowed pattern yields NotAllowed, not NotAllowedLocal.",
+    "api.openai.com is neither a loopback name nor an IP literal under the fixed Host parser. Its observed NotAllowedLocal therefore points to host_resolves_to_non_public_ip returning true before the allowlist decision.",
+    "That helper returns true on resolver error, deadline expiry, or any non-public answer. The original failure blocks do not distinguish these causes and contain no resolver trace.",
+    "The global test reached its second assertion for api.openai.com; its first example.com assertion had already completed. The subdomain test failed at its first api.openai.com assertion."
+  ],
+  "unobserved": [
+    "specific DNS answer",
+    "specific DNS error",
+    "actual DNS timeout event",
+    "syscall or network trace",
+    "candidate native PASS"
+  ],
+  "minimal_change": "Only four individual hostname-pattern/list-update test initial configs explicitly set existing allow_local_binding=true; the shared helper, resolver, production config/defaults, constraints and guard order are unchanged.",
+  "why_not_just_the_two_failures": "The same module has exactly two additional positive named-host policy oracles with the identical default external-DNS precondition. They passed r26 and are explicitly not called failures.",
+  "preservation": {
+    "whole_file_inverse_exact": true,
+    "changed_top_level_functions": [
+      "add_allowed_domain_removes_matching_deny_entry",
+      "host_blocked_global_wildcard_allowlist_allows_public_hosts_except_denylist",
+      "host_blocked_requires_allowlist_match",
+      "host_blocked_subdomain_wildcards_exclude_apex"
+    ],
+    "all_other_top_level_functions_byte_identical": true,
+    "production_and_shared_test_state_helper_prefix_byte_identical": true,
+    "all_test_names_preserved": true,
+    "test_attributes_unchanged": true,
+    "assertion_token_counts_before": {
+      "assert_ne": 1,
+      "assert_eq": 47,
+      "assert": 53
+    },
+    "assertion_token_counts_after": {
+      "assert_ne": 1,
+      "assert_eq": 47,
+      "assert": 53
+    },
+    "requires_allowlist_match_independent_default_config_loop_byte_identical": true,
+    "four_injected_resolver_boundary_tests_byte_identical": true,
+    "preserved_related_test_count": 28,
+    "all_original_timeouts_hosts_ports_and_assertions_preserved": true
+  },
+  "safety_scope": {
+    "production_default_allow_local_binding": false,
+    "new_production_bypass": false,
+    "environment_override": false,
+    "allowlist_denylist_or_address_guard_implementation_changed": false,
+    "shared_network_settings_helper_changed": false,
+    "new_dependency_or_lock_change": false,
+    "native_source_written": false,
+    "tests_or_probe_run": false
+  }
+}

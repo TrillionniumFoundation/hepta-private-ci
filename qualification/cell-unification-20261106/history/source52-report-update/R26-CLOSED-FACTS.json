@@ -1,0 +1,152 @@
+{
+  "schema": "hepta.source52-report-r26-independent-facts.v1",
+  "source_commit": "e28b0f385ee882f842911044958b2810f62f6379",
+  "source_tree": "763c8d2b4089f6e9806c3bbb68fa247bc2f6af36",
+  "job_id": "1a1b1b739ee-fc05-7a70",
+  "state": "TEST_EXECUTION_FAILED_TERMINAL",
+  "counts": {
+    "PASS": 1562,
+    "FAIL": 2,
+    "TIMEOUT": 0
+  },
+  "unique_test_results": 1564,
+  "reported_skipped": 3,
+  "nextest_execution_seconds": 84.109,
+  "test_command_elapsed_seconds": 363.3845314979553,
+  "raw_exit_code": 100,
+  "effective_exit_code": 100,
+  "original_outer_exit_code": 100,
+  "natural_outer_state": "failed",
+  "strict_exit_code": 0,
+  "strict_elapsed_seconds": 412.096182346344,
+  "source_and_dual_lock_postguards_pass": true,
+  "old_r24_three_failures_now_pass": [
+    {
+      "previous_gate": "r24",
+      "previous_status": "FAIL",
+      "status": "PASS",
+      "seconds": 1.424,
+      "binary": "codex-exec-server::capability_discovery",
+      "name": "sandboxed_discovery_batches_roots_without_combining_different_permissions",
+      "line": 1217,
+      "byte_offset": 138251
+    },
+    {
+      "previous_gate": "r24",
+      "previous_status": "FAIL",
+      "status": "PASS",
+      "seconds": 0.1,
+      "binary": "codex-exec-server::file_system_unix",
+      "name": "sandboxed_file_system_helper_finds_bwrap_on_preserved_path",
+      "line": 1350,
+      "byte_offset": 155425
+    },
+    {
+      "previous_gate": "r24",
+      "previous_status": "FAIL",
+      "status": "PASS",
+      "seconds": 0.006,
+      "binary": "codex-network-proxy",
+      "name": "http_proxy::tests::http_connect_accept_defers_brokered_host_mitm_until_protocol_detection",
+      "line": 1667,
+      "byte_offset": 196767
+    }
+  ],
+  "source52_four_fixture_original_r26_results": [
+    {
+      "status": "FAIL",
+      "seconds": 5.089,
+      "binary": "codex-network-proxy",
+      "name": "runtime::tests::host_blocked_subdomain_wildcards_exclude_apex",
+      "line": 1795,
+      "byte_offset": 211476
+    },
+    {
+      "status": "FAIL",
+      "seconds": 5.267,
+      "binary": "codex-network-proxy",
+      "name": "runtime::tests::host_blocked_global_wildcard_allowlist_allows_public_hosts_except_denylist",
+      "line": 1822,
+      "byte_offset": 212277
+    },
+    {
+      "status": "PASS",
+      "seconds": 0.116,
+      "binary": "codex-network-proxy",
+      "name": "runtime::tests::host_blocked_requires_allowlist_match",
+      "line": 1792,
+      "byte_offset": 211144
+    },
+    {
+      "status": "PASS",
+      "seconds": 0.008,
+      "binary": "codex-network-proxy",
+      "name": "runtime::tests::add_allowed_domain_removes_matching_deny_entry",
+      "line": 1760,
+      "byte_offset": 207395
+    }
+  ],
+  "actual_failures": [
+    {
+      "status": "FAIL",
+      "seconds": 5.089,
+      "binary": "codex-network-proxy",
+      "name": "runtime::tests::host_blocked_subdomain_wildcards_exclude_apex",
+      "line": 1795,
+      "byte_offset": 211476
+    },
+    {
+      "status": "FAIL",
+      "seconds": 5.267,
+      "binary": "codex-network-proxy",
+      "name": "runtime::tests::host_blocked_global_wildcard_allowlist_allows_public_hosts_except_denylist",
+      "line": 1822,
+      "byte_offset": 212277
+    }
+  ],
+  "full_log": {
+    "original_local_path": "native-validation-results/r26-failure-closed/native-source51-project-r26-tests.log",
+    "original_native_basename": "native-source51-project-r26-tests.log",
+    "bytes": 217900,
+    "sha256": "a7f1e74cfc5f621dc2db1bf9b55da64b31ce91cb0e399fb09617ca202156ef68",
+    "git_blob": "1f8593a506f25258fff5f34e830a93dec16fe8d3"
+  },
+  "tests_receipt": {
+    "original_local_path": "native-validation-results/r26-failure-closed/native-source51-project-r26-tests-receipt.json",
+    "original_native_basename": "native-source51-project-r26-tests-receipt.json",
+    "bytes": 2312,
+    "sha256": "dd6e5fa8629a57f90774282d70a1a81fe641faaec7ca0e0a89590522bfdf7cf3",
+    "git_blob": "313af0ac2a088dd2b35c8a6973c8239297814002"
+  },
+  "raw_process_result": {
+    "original_local_path": "native-validation-results/r26-failure-closed/native-source51-project-r26-tests-raw-process-result.json",
+    "original_native_basename": "native-source51-project-r26-tests-raw-process-result.json",
+    "bytes": 635,
+    "sha256": "ac2729d6bd5424bc5744baa7625aa64daccd429b90f7e172e2f17c764fb112c2",
+    "git_blob": "cd43196eab2604fb62ff32895786bc672ae2770e"
+  },
+  "tests_postguard": {
+    "original_local_path": "native-validation-results/r26-failure-closed/native-source51-project-r26-tests-source-post-verification.json",
+    "original_native_basename": "native-source51-project-r26-tests-source-post-verification.json",
+    "bytes": 633,
+    "sha256": "f94acb64e0b875228625feac0a9485efbd3bf68d2058447130abcb1e4c15ea4b",
+    "git_blob": "7bee7921a263922dde356745c807f338ef1f6231"
+  },
+  "strict_receipt": {
+    "original_local_path": "native-validation-results/r26-strict-closed/native-source51-project-r26-strict-receipt.json",
+    "original_native_basename": "native-source51-project-r26-strict-receipt.json",
+    "bytes": 1973,
+    "sha256": "b5f0b9bfa65b4087928b4c579b06380a70aaa9b67d624eebb244ab016e5056a7",
+    "git_blob": "77e304047c5ec475590e78d42461deaa9d748c0f"
+  },
+  "outer_terminal": {
+    "original_local_path": "native-validation-results/r26-failure-closed/terminal-process-status.json",
+    "original_native_basename": "terminal-process-status.json",
+    "bytes": 730,
+    "sha256": "c7f2154976a0df45dc721e6fefcfc5089f98c048c3755549464a257d11a1033a",
+    "git_blob": "cd46317153095ebe99011d47a57ebeefb5136386"
+  },
+  "counts_across_gates_added": false,
+  "runtime_dns_answer_or_timeout_measured": false,
+  "no_rust_reexecution": true
+}

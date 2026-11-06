@@ -1,0 +1,7 @@
+{
+  "chunk_id": "1b92c1",
+  "wall_time_seconds": 0.000021162,
+  "exit_code": 1,
+  "original_token_count": 217,
+  "output": "Traceback (most recent call last):\n  File \"/workspace/scratch/08f5efd48967/source53-final-report-preparation/apply_final_editorial_correction.py\", line 127, in <module>\n    main()\n  File \"/workspace/scratch/08f5efd48967/source53-final-report-preparation/apply_final_editorial_correction.py\", line 53, in main\n    replace(\"candidates/README.md\", \"源码来源与53个登记记录\", \"源码来源与受测53个登记记录\", 1)\n  File \"/workspace/scratch/08f5efd48967/source53-final-report-preparation/apply_final_editorial_correction.py\", line 46, in replace\n    require(raw.count(old) == count, \"editorial anchor count changed: \" + name)\n  File \"/workspace/scratch/08f5efd48967/source53-final-report-preparation/apply_final_editorial_correction.py\", line 25, in require\n    raise ValueError(message)\nValueError: editorial anchor count changed: candidates/README.md\n"
+}

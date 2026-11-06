@@ -1,0 +1,14 @@
+{
+  "schema": "hepta.finalizer-local-builder-correction.v1",
+  "original_builder": {
+    "bytes": 28360,
+    "sha256": "99ca921db49cfc50d477ae522829378494beb1f791befd9bb040f3ff97a1ba77"
+  },
+  "corrected_builder": {
+    "bytes": 28247,
+    "sha256": "c94d5ea58f2c441f52c7fabff9cb6da518f9733b001b7a8f6d305d8637dcd20f"
+  },
+  "correction": "Remove redundant message replacement already applied; anchor incomplete-record field by newline to exclude raw-record indentation.",
+  "original_attempt_failed_before_any_template_or_reference_output": true,
+  "native_or_gate_execution": false
+}

@@ -1,0 +1,8 @@
+/usr/bin/python3 - <<'PY'
+import hashlib
+from pathlib import Path
+p=Path("/home/alex/work/hepta-cell-unified-20261106-a/prepare-bazel-9.3.0-v4-version-bound-r2.py")
+b=p.read_bytes()
+assert hashlib.sha256(b).hexdigest() == '35e605ee18ae1b5e899295a5e41885386ab7a6d08984a0d9023d6605c03cb728'
+exec(compile(b,str(p),'exec'),{'__name__':'__main__','__file__':str(p)})
+PY

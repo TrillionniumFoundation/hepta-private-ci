@@ -1,0 +1,7 @@
+{
+  "chunk_id": "361ad6",
+  "wall_time_seconds": 2.7261e-05,
+  "exit_code": 1,
+  "original_token_count": 167,
+  "output": "Traceback (most recent call last):\n  File \"/workspace/scratch/08f5efd48967/source53-finalize-preparation/build_inert_finalizer.py\", line 445, in <module>\n    main()\n  File \"/workspace/scratch/08f5efd48967/source53-finalize-preparation/build_inert_finalizer.py\", line 330, in main\n    prerequisite = change(prerequisite,\n                   ^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/scratch/08f5efd48967/source53-finalize-preparation/build_inert_finalizer.py\", line 35, in change\n    raise RuntimeError(\"unexpected source occurrence: \" + repr(old))\nRuntimeError: unexpected source occurrence: '            \"fresh r31 metadata predates natural successful r28 completion\")'\n"
+}

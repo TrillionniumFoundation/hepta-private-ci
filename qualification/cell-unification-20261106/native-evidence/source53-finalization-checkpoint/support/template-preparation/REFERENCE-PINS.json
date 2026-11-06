@@ -1,0 +1,77 @@
+{
+  "schema": "hepta.source53-finalizer-reference-pins.v1",
+  "files": [
+    {
+      "original_path": "source53-native-gates-preparation/native-run-r30-template-v2.py",
+      "attachment": {
+        "path": "references/native-run-r30-template-v2.py",
+        "bytes": 60715,
+        "sha256": "a4bb18b0f2d2af63625e7ee6629df9f5a42f47c684bd8e4a72125b62b05d2c0b",
+        "git_blob": "d8ea3f26442a040210e542d48103952609b4c5e1"
+      },
+      "classification": "current producer template, inert"
+    },
+    {
+      "original_path": "source53-native-gates-preparation/INPUT-CONTRACT.json",
+      "attachment": {
+        "path": "references/R30-INPUT-CONTRACT.json",
+        "bytes": 4300,
+        "sha256": "0beb525e720c15c5ae0137e7c66b721f8131c23773a02b8f7e90fb1f15386634",
+        "git_blob": "b02d25ae834fb741bf3b7c6389d7e92dd02ce563"
+      },
+      "classification": "producer contract, not execution"
+    },
+    {
+      "original_path": "source53-apply-preparation/derived/native-candidate-r30-source.json",
+      "attachment": {
+        "path": "references/source53-registered-source-manifest.json",
+        "bytes": 56747,
+        "sha256": "9292bd9002716a0bec35ecea294f9dfef3dbb1e9c1d8fe66660e502aecc5cdda",
+        "git_blob": "eea9da2308a920486e1bbfd613745d390cde61de"
+      },
+      "classification": "actual registered source53 manifest; no gate qualification"
+    },
+    {
+      "original_path": "source53-apply-preparation/references/source52-actual-manifest.json",
+      "attachment": {
+        "path": "references/source52-parent-source-manifest.json",
+        "bytes": 55209,
+        "sha256": "3ff99b41bab572666b424fdbf9a508b33be13e6487d9effa7dd6a0e14b4ec898",
+        "git_blob": "f057b526bf2ba492d6bb5810222f69ac0cc3bdd2"
+      },
+      "classification": "historical source52 parent"
+    },
+    {
+      "original_path": "source52-finalize-preparation/input/PRIMARY-SOURCE-PINS.json",
+      "attachment": {
+        "path": "references/unchanged-34-primary-source-pins.json",
+        "bytes": 13098,
+        "sha256": "afc57e362890925d5628947a95dd1f719816996d0b26b2fef101dbcf827e7dd3",
+        "git_blob": "e8c6c477bba521b82c900a4545a6cf56f5591a07"
+      },
+      "classification": "unchanged original formatter and Cargo inputs"
+    },
+    {
+      "original_path": "source52-finalize-preparation/references/formatter-env-original.json",
+      "attachment": {
+        "path": "references/formatter-env-original.json",
+        "bytes": 221,
+        "sha256": "8881726a60b0881a3ebaff02997a6fb0abae955b585821c70a0ed8789f243b28",
+        "git_blob": "4122ff057b2c5e950cdff80ac590073e271252fe"
+      },
+      "classification": "original three approved task-local formatter keys"
+    },
+    {
+      "original_path": "source52-finalize-preparation/references/source51-tool-inventory-original.json",
+      "attachment": {
+        "path": "references/HISTORICAL-source51-tool-inventory.json",
+        "bytes": 8083,
+        "sha256": "8924f181213ef957deb4c6ffa82a6194d29ea5df81fe2b435fd23a5239e0d764",
+        "git_blob": "e85c416a2c0d93b738ba1270c815641daf3166d7"
+      },
+      "classification": "historical reference only; cannot populate source53 inventory bindings"
+    }
+  ],
+  "historical_tool_inventory_claimed_as_current": false,
+  "future_R30_R31_or_tool_records_copied_or_created": false
+}

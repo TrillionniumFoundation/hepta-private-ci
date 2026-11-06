@@ -1,0 +1,10 @@
+{
+  "schema": "hepta.source53-static-verifier-correction.v1",
+  "original_attempt": "Local AST interface assertion treated every complete subscript as a mandatory producer key and failed at assert consumed <= produced. No runner was imported or executed.",
+  "actual_difference": [
+    "ended_unix"
+  ],
+  "correction": "The sole ended_unix read is guarded by if ended_unix in complete. Both producer and consumer correctly allow this optional field to be absent. V2 inspection checks the AST membership guard and all actual required keys.",
+  "producer_consumer_source_changed": false,
+  "native_or_gate_action": false
+}

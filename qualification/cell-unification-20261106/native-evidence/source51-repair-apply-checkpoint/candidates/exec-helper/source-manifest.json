@@ -1,0 +1,33 @@
+{
+  "schema": "hepta.exec-server-bwrap-r24-isolated-candidate.v1",
+  "status": "STATIC_CANDIDATE_NATIVE_VALIDATION_PENDING",
+  "base_commit": "1fdd647b0ecb235530e8b88bbea45b3d3762906f",
+  "base_tree": "ea48acf562499192a25e05ae28926a32632dee62",
+  "files": [
+    {
+      "path": "codex-rs/exec-server/tests/common/fake_bwrap.rs",
+      "before": {
+        "bytes": 1635,
+        "sha256": "ae37954afd591c387652cd8ea036a15f461dbad48946274bbca57be4bd1648de",
+        "git_blob": "cc79362f7a8a3a44b0a93949d18494281511ec7b"
+      },
+      "after": {
+        "bytes": 1817,
+        "sha256": "83d3637f2648b967c70e2368c623fe0b84afe1cdf32860284d897923ad0dc1ca",
+        "git_blob": "e74489437549cf2c61075fd893945cd78e34247c"
+      },
+      "git_mode": "100644"
+    }
+  ],
+  "patch": {
+    "path": "repair.patch",
+    "bytes": 663,
+    "sha256": "0f8ee51664c850a9fd450bcba800d3ffb6866633f1924845b058ffadcc7b1ba8",
+    "git_blob": "8330f69c096dae85afbd9ec10346a5c93acd81d5"
+  },
+  "changed_files": 1,
+  "production_files_changed": 0,
+  "dependency_manifest_changed": false,
+  "rust_executed": false,
+  "native_source_modified": false
+}

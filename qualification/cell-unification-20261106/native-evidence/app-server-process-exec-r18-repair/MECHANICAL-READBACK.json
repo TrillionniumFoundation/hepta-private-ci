@@ -1,0 +1,24 @@
+{
+  "schema": "hepta.scoped-mechanical-readback.v1",
+  "forward_exact": true,
+  "inverse_exact": true,
+  "patch_regenerated_exact": true,
+  "changed_paths": [
+    "codex-rs/app-server/tests/suite/v2/process_exec.rs"
+  ],
+  "original_assertion_macro_count": 15,
+  "candidate_assertion_macro_count": 15,
+  "test_functions_unchanged": [
+    "process_spawn_returns_before_exit_and_emits_exit_notification",
+    "process_spawn_returns_error_when_local_environment_is_disabled",
+    "process_spawn_reports_buffered_output_cap_reached",
+    "process_kill_terminates_running_process"
+  ],
+  "test_function_count": 4,
+  "jsonrpc_response_match_through_file_end_exact": true,
+  "disabled_env_initialize_statement_unchanged": true,
+  "all_non_target_regions_exact_via_inverse": true,
+  "production_and_shared_helper_edits": false,
+  "rust_executed": false,
+  "scope": "字节级正逆回放和原断言保留；不是Rust编译或执行资格。"
+}

@@ -1,0 +1,11 @@
+--- a/.github/workflows/hepta-cell-framework-native.yml
++++ b/.github/workflows/hepta-cell-framework-native.yml
+@@ -48,7 +48,7 @@
+               -p codex-exec-server -p codex-hepta-supervisor
+               -p codex-hepta-memory-extension
+           - owner: core
+-            packages: -p codex-core
++            packages: -p codex-core -p codex-mcp
+     steps:
+       - name: Check out the exact source commit
+         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd

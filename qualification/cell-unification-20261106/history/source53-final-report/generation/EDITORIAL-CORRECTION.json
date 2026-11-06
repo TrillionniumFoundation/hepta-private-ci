@@ -1,0 +1,106 @@
+{
+  "schema": "hepta.final-report-editorial-correction.v1",
+  "state": "FOUR_FILES_LITERAL_CORRECTION_ONLY",
+  "parent_handoff": {
+    "path": "source53-final-report-preparation/final-candidate/HANDOFF-MANIFEST.json",
+    "bytes": 36896,
+    "sha256": "3dc0baeaefa2f22cc7ffbeb99a7a30a5eb3224d275068599d0baa8b1612dc94b",
+    "git_blob": "0d37c8e9d415185dcc1fc26e59e3a8b6ec9f7649"
+  },
+  "authorizing_context": "Root accepted one historical count link-label clarification; independent review identified two GUIDE labels and current-code URLs in both short PR texts.",
+  "changes": [
+    {
+      "path": "candidates/README.md",
+      "before_literal": "源码来源与 53 个登记记录",
+      "after_literal": "源码来源与受测 53 个登记记录",
+      "occurrences": 1,
+      "before": {
+        "bytes": 25716,
+        "sha256": "031d4e3fce99dc38c0ee2f82cc88f670822c3f1a527bf0a2d2bb5e32f736359a",
+        "git_blob": "219ea6e5c01c603e20c2314fa3aedb272924a837"
+      },
+      "after": {
+        "bytes": 25722,
+        "sha256": "214a7bcab9eee4ac1b680162aa04ad55e78bd441e1dd928b1b05be06631f2ba3",
+        "git_blob": "775a8002d558866769e50344619585409ac4f075"
+      }
+    },
+    {
+      "path": "pr-guide-candidates/REVIEW-GUIDE.zh-CN.md",
+      "before_literal": "最终 fix/fmt 及最终发布 SHA 验证仍待真实完成。",
+      "after_literal": "最终 fix/fmt 已实际完成；最终发布 SHA 的 CI 验证仍待实际结果。",
+      "occurrences": 1,
+      "before": {
+        "bytes": 19205,
+        "sha256": "dbdb547c620ee26c718eeeef0148525da2030c841982d6a7500e45f754f5e228",
+        "git_blob": "99d52d62550b4200f7537d4c81fc71f0133080f7"
+      },
+      "after": {
+        "bytes": 19227,
+        "sha256": "1305e10c5b68c84c8f38d7b3b5bd0fdb6534b6386fc448ba617dd4830eb53377",
+        "git_blob": "ea5e54e1bcb1e8747379f0bac27af1b57f24f8f0"
+      }
+    },
+    {
+      "path": "pr-guide-candidates/REVIEW-GUIDE.zh-CN.md",
+      "before_literal": "固定 source53 链接",
+      "after_literal": "固定 source54 链接并保留 tested source53 pins",
+      "occurrences": 1,
+      "before": {
+        "bytes": 19227,
+        "sha256": "1305e10c5b68c84c8f38d7b3b5bd0fdb6534b6386fc448ba617dd4830eb53377",
+        "git_blob": "ea5e54e1bcb1e8747379f0bac27af1b57f24f8f0"
+      },
+      "after": {
+        "bytes": 19257,
+        "sha256": "a6a33aa8332a6d4781eb6cf6fdc1ada28a8c048609c55ace850332d121f9d432",
+        "git_blob": "c70935ad58d426db9cfb3afcbf1ebe69aea6455d"
+      }
+    },
+    {
+      "path": "pr-guide-candidates/PR-BODY.md",
+      "before_literal": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/1e0910becc37383e6d17ecf861ea844fd07d8862/",
+      "after_literal": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/b5209cfdf509e990f10922197b32540bf8c353a7/",
+      "occurrences": 4,
+      "before": {
+        "bytes": 2647,
+        "sha256": "ea999860a249a4d4effd65d78798522b64ce380029fc4ba71d9043f9fec9f87a",
+        "git_blob": "85ee03d59780ea571fc231d35fdda52d23fe6217"
+      },
+      "after": {
+        "bytes": 2647,
+        "sha256": "2799149e53ea9b0a5350ed4c47b474c8ced5b0c6d9934cec262dbc15dbc352ee",
+        "git_blob": "2deddf07b78846280bb3ee21a96ac04a953f9042"
+      }
+    },
+    {
+      "path": "pr-guide-candidates/PR-PARAGRAPHS.zh-CN.md",
+      "before_literal": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/1e0910becc37383e6d17ecf861ea844fd07d8862/",
+      "after_literal": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/b5209cfdf509e990f10922197b32540bf8c353a7/",
+      "occurrences": 4,
+      "before": {
+        "bytes": 2690,
+        "sha256": "322f7e80453515ba83931ae75c8e36cef9660d43eff8692ddf1a2c61b1f96cce",
+        "git_blob": "17e2c744073aa9f226e958abaab2204765f90b5f"
+      },
+      "after": {
+        "bytes": 2690,
+        "sha256": "1d326730aad79902598f4be5391a383cb1641b5543da5c5f2a7e767af97f300f",
+        "git_blob": "e67e6ef03f5274adf73b0e748e98ca0264120ba5"
+      }
+    }
+  ],
+  "substantive_changed_paths": [
+    "candidates/README.md",
+    "pr-guide-candidates/PR-BODY.md",
+    "pr-guide-candidates/PR-PARAGRAPHS.zh-CN.md",
+    "pr-guide-candidates/REVIEW-GUIDE.zh-CN.md"
+  ],
+  "STATUS_and_SOURCE_IDENTITY_bytes_unchanged": true,
+  "README_section2_full_bytes_exact_after_reversing_one_authorized_label": true,
+  "science_taxonomy_Q24_content_and_historical_source52_README_links_unchanged": true,
+  "all_gate_results_source_pins_path_groups_and_warning_values_unchanged": true,
+  "original_v1_preserved": true,
+  "canonical_modified": false,
+  "native_or_Git_commands_executed": false
+}

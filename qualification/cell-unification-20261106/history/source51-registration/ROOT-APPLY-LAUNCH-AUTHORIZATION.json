@@ -1,0 +1,56 @@
+{
+  "schema": "hepta.root-source51-apply-launch-authorization.v1",
+  "authorized": true,
+  "source_commit": "e28b0f385ee882f842911044958b2810f62f6379",
+  "source_tree": "763c8d2b4089f6e9806c3bbb68fa247bc2f6af36",
+  "source_parent_commit": "1fdd647b0ecb235530e8b88bbea45b3d3762906f",
+  "unchanged_template": {
+    "bytes": 28145,
+    "sha256": "743a9f7ff2c4992b91aab39aa22298b6599c169c15089360e7dbcfbff4cf0f8e",
+    "git_blob": "723e428af9a132b08a07164e2117956ece26e27f"
+  },
+  "bound_false": {
+    "bytes": 29385,
+    "sha256": "0f15b826bc6dd5cf1ed6a6f3ad5616f79ef15b4ef1c45456e0187d86348aa749",
+    "git_blob": "68fd062c829ccc412628a2ddf3a07b6baff31f79"
+  },
+  "approved_final": {
+    "bytes": 29384,
+    "sha256": "4e436858cd5b42b83d7d7159d2c5d075842f4008d124086ae800e15d83814ca0",
+    "git_blob": "5e2e42b67cfa58a1a381ccb34041e2c35c3700a2"
+  },
+  "binding_source": {
+    "bytes": 1705,
+    "sha256": "54374df9f016f8a745935f065320736bee57cd95c883ff93c5de60ced41e977b",
+    "git_blob": "04c21a7372221b084a260f2a88e863b1d2473df7"
+  },
+  "eight_literal_bindings_exact": true,
+  "inverse_to_reviewed_template_byte_exact": true,
+  "only_final_delta": "FROZEN = False -> FROZEN = True",
+  "input_archive": {
+    "path": "source51-preparation/source51-apply-input.tar.gz",
+    "bytes": 43449,
+    "sha256": "dc2f53ce98abf1e4d4c7172fd10fbf14815a1e33d26fda817932c60ed85b9357",
+    "git_blob": "09aa5469689cc2d0af5402b506997a3b77f188a4"
+  },
+  "source_manifest": {
+    "path": "source51-preparation/native-candidate-r26-source.json",
+    "bytes": 55418,
+    "sha256": "74b7a35a77019ec90e42ec33dc0e81bbdbaca585541a028d57fffbe77c69a41a",
+    "git_blob": "09ad6990ac2eeec1eb7d21689eef7733a531f75b"
+  },
+  "delta_manifest": {
+    "path": "source51-preparation/source51-delta-manifest.json",
+    "bytes": 1583,
+    "sha256": "b0a7085b6731978cea2614ff9660c2b47e9c0a0ac5228c5b96694c62ba56a74d",
+    "git_blob": "cc51d64769a0d0664f9d1f46ee6e8a1e57307e14"
+  },
+  "idempotency_key": "cell-source51-apply-only-20261106-v1",
+  "host": "pocket4",
+  "outer_timeout_seconds": 120,
+  "scope": "Apply and stage exactly the two reviewed Rust paths, preserving original source/index failure state; no Rust, Bazel, formatter, branch or merge operation.",
+  "source_commit_mapping_not_checkout_claim": true,
+  "r24_failed100_remains_original_result": true,
+  "science": "HOLD",
+  "authority": "DENY_ALL"
+}

@@ -1,0 +1,192 @@
+{
+  "schema": "hepta.root-source53-finalizer-execution-authorization.v1",
+  "authorized": true,
+  "script": {
+    "path": "source53-finalize-binding/native-finalize-source53.py",
+    "bytes": 181139,
+    "sha256": "6f63696d009ee52726a36e96a6abccadc613df62d8bcc0be590644ea40c21dd1",
+    "git_blob": "ece28effa2b94e4ed84447306312e1f8c2ba73a4"
+  },
+  "native_path": "/home/alex/work/hepta-cell-unified-20261106-a/native-finalize-source53.py",
+  "executable": "/usr/bin/python3",
+  "args": [
+    "/home/alex/work/hepta-cell-unified-20261106-a/native-finalize-source53.py"
+  ],
+  "cwd": "/home/alex/work/hepta-cell-unified-20261106-a",
+  "idempotency_key": "cell-source53-finalize-20261106-v1",
+  "outer_timeout_seconds": 9600,
+  "env_keys": [],
+  "sole_native_executor": "native_validation",
+  "source_commit": "f74be175de66a4b351cd239d39d98cd34fe9cc1b",
+  "source_tree": "440d4a8e09af4009e4d9ea067388826308da8803",
+  "source_count": 197,
+  "actual_completed_prerequisite_proofs": [
+    {
+      "path": "source53-finalize-root-review/STATIC-REVIEW.json",
+      "bytes": 4016,
+      "sha256": "039b9ae01384c8357109dc8a6916b79627b87b847812b0df141b3c3e5d4aff38",
+      "git_blob": "21a41e17df23c49753dff580fd55e207e488ea36"
+    },
+    {
+      "path": "source53-finalizer-independent-static-review/INDEPENDENT-REVIEW.json",
+      "bytes": 11021,
+      "sha256": "dc3cb3f64aa6746fc9f64fb5a18528a9a005c25c7a5c8df88c0cbd216e7215f9",
+      "git_blob": "5b817a158665dc76097a39c0b3e909bc168c7fbd"
+    },
+    {
+      "path": "source53-finalize-root-review/ACTUAL-BINDING-READBACK.json",
+      "bytes": 2756,
+      "sha256": "8b88ffd33172624c57f23566602a2bb8de83a8f323637c4a3d7ea04c4b72d8f4",
+      "git_blob": "7ef07128949d6531c8859c6f4ba3787f59b3f839"
+    },
+    {
+      "path": "source53-finalize-root-review/ACTUAL-SCOPE-UPLOAD-READBACK.json",
+      "bytes": 2878,
+      "sha256": "95efc441689e712eba9030c1189b1df41acc88ebb050def1f03b0e0fdd4ff908",
+      "git_blob": "20adeee9ab3a3f56462177ea486bafa6dc5d8ff1"
+    },
+    {
+      "path": "native-validation-results/r31-archive-closed/ROOT-ARCHIVE-READBACK.json",
+      "bytes": 2094,
+      "sha256": "8745a36f9d56a10660b5f68bb869521ccbd3e6b337754d39182044f0cf7e850f",
+      "git_blob": "089aaf1e95a306c836a6f29ba0960a720dea6458"
+    },
+    {
+      "path": "source53-r31-independent-closure/closed-readback-v1/INDEPENDENT-READBACK.json",
+      "bytes": 48110,
+      "sha256": "f541010b965bf92bcf0472f83d88d28b4e545ed1d6835357c0bf989d32a0573c",
+      "git_blob": "698a9a6478608aa2dc1a4c54069da1e6cb646050"
+    },
+    {
+      "path": "source53-r30-root-review/COMPLETE-READBACK.json",
+      "bytes": 6285,
+      "sha256": "a1a2fc505ed0d7c65558b7755392cf74c90608d6a9fed049a3c3548511005444",
+      "git_blob": "cb22eb17967a99fece5f168d681ca9287ef3151c"
+    },
+    {
+      "path": "source53-formatter-inventory-root-review/ACTUAL-INVENTORY-READBACK.json",
+      "bytes": 1142,
+      "sha256": "4b3e86ed3f6bfc28abfd4a09d3b37197d1407c73c0885880bbf136f2204d2608",
+      "git_blob": "160f1ed3320260ef61cc9b9e84d924ef91fc2ece"
+    },
+    {
+      "path": "source53-formatter-inventory-actual-independent-review/INDEPENDENT-READBACK.json",
+      "bytes": 11367,
+      "sha256": "a459118e1b957ddfdaa0f51400720d06428412fde74c5d89702f8251238f7554",
+      "git_blob": "75e5a1f12507aaf02cb95be351a4a3f797ce02a1"
+    }
+  ],
+  "sequence": [
+    [
+      "just",
+      "fix",
+      "--locked",
+      "-p",
+      "codex-app-server",
+      "-p",
+      "codex-app-server-client",
+      "-p",
+      "codex-cli",
+      "-p",
+      "codex-core",
+      "-p",
+      "codex-exec-server",
+      "-p",
+      "codex-external-agent-migration",
+      "-p",
+      "codex-hepta-agent-protocol",
+      "-p",
+      "codex-hepta-agentd",
+      "-p",
+      "codex-hepta-automation",
+      "-p",
+      "codex-hepta-context-compiler",
+      "-p",
+      "codex-hepta-infer-worker-host",
+      "-p",
+      "codex-hepta-intelligence",
+      "-p",
+      "codex-hepta-learning-artifacts",
+      "-p",
+      "codex-hepta-memory",
+      "-p",
+      "codex-hepta-memory-extension",
+      "-p",
+      "codex-hepta-neuron",
+      "-p",
+      "codex-hepta-plasticity",
+      "-p",
+      "codex-hepta-runtime",
+      "-p",
+      "codex-hepta-supervisor",
+      "-p",
+      "codex-linux-sandbox",
+      "-p",
+      "codex-mcp",
+      "-p",
+      "codex-model-provider-info",
+      "-p",
+      "codex-network-proxy",
+      "-p",
+      "codex-shell-escalation",
+      "-p",
+      "codex-utils-pty",
+      "-p",
+      "core_test_support"
+    ],
+    [
+      "just",
+      "fmt"
+    ]
+  ],
+  "scope": {
+    "fix_owner_packages": [
+      "codex-app-server",
+      "codex-app-server-client",
+      "codex-cli",
+      "codex-core",
+      "codex-exec-server",
+      "codex-external-agent-migration",
+      "codex-hepta-agent-protocol",
+      "codex-hepta-agentd",
+      "codex-hepta-automation",
+      "codex-hepta-context-compiler",
+      "codex-hepta-infer-worker-host",
+      "codex-hepta-intelligence",
+      "codex-hepta-learning-artifacts",
+      "codex-hepta-memory",
+      "codex-hepta-memory-extension",
+      "codex-hepta-neuron",
+      "codex-hepta-plasticity",
+      "codex-hepta-runtime",
+      "codex-hepta-supervisor",
+      "codex-linux-sandbox",
+      "codex-mcp",
+      "codex-model-provider-info",
+      "codex-network-proxy",
+      "codex-shell-escalation",
+      "codex-utils-pty",
+      "core_test_support"
+    ],
+    "fix_rust_paths": 183,
+    "format_rust_paths": 183,
+    "format_python_paths": [
+      "scripts/run-nextest.py",
+      "scripts/test_run_nextest_helpers.py"
+    ]
+  },
+  "actual_35_literal_bindings_reviewed": true,
+  "actual_four_scope_inputs_uploaded_verified": true,
+  "actual_R31_complete_20228_PASS_130_reported_skip": true,
+  "current_R30_strict_and_full1345_PASS_2_reported_skip": true,
+  "no_filters_deadline_retry_or_sandbox_changes": true,
+  "no_allow_staged_or_all_flag_added": true,
+  "preserve_raw_returns_and_source_snapshots": true,
+  "nonzero_or_guard_change_stops_before_subsequent_phase": true,
+  "no_automatic_retry_reset_or_requalification": true,
+  "no_local_tests_after_fix_or_fmt": true,
+  "post_format_source_identity_must_be_registered_and_not_inherit_gate_claims": true,
+  "branch_PR_merge_not_part_of_this_native_authorization": true,
+  "science": "HOLD",
+  "authority": "DENY_ALL"
+}

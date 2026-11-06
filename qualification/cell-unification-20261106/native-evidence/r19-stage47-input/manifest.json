@@ -1,0 +1,49 @@
+{
+  "schema": "hepta.stage47.native-input.v1",
+  "source_commit": "0c78b43424ced27d37892a7744de065c1497d5e8",
+  "before_tree": "ffa0a37f4616c5563169c7f0a9305bf6c982d58b",
+  "expected_after_tree": "cc2b01c2f69f43d63f8f5c561abd5e941d645769",
+  "expected_changed_file_count": 181,
+  "files": [
+    {
+      "path": "codex-rs/app-server/tests/suite/v2/process_exec.rs",
+      "before": {
+        "bytes": 10437,
+        "sha256": "421f3f6664bf901c624e18ee4cd4ee4dab710a8607c581f55e39b7925698610d",
+        "git_blob": "af26eb8e4b63b9adf51f07d82c72a72d5c5cf242",
+        "git_mode": "100644"
+      },
+      "after": {
+        "bytes": 10708,
+        "sha256": "3ec4fd5e7dc024df3fd3af10e3b529bea98491d9e104b32e9fcea93077b9e0e7",
+        "git_blob": "91fc35830de83b8fb9ac1da3c8846e14740a7058",
+        "mode": "100644"
+      }
+    },
+    {
+      "path": ".github/workflows/hepta-cell-framework-native.yml",
+      "before": {
+        "bytes": 8848,
+        "sha256": "4a0cbfa961838f492423e6897d24802c1b456278032a0cedc8c33da385653ed0",
+        "git_blob": "29eb48f017280fee3bbc1efc48ac1e9eb204bc32"
+      },
+      "after": {
+        "bytes": 8952,
+        "sha256": "5c1947922fc66c513f96a3c2c221fcfc812b0773263f6fed0ac5e7489be19e32",
+        "git_blob": "59bd4d8e0dfa8001a12578d9b8ad706de16ec029",
+        "mode": "100644"
+      }
+    }
+  ],
+  "combined_patch": {
+    "path": "combined.patch",
+    "bytes": 2011,
+    "sha256": "32bc43746c093c098f0444ef524e7f3fa66cbf09a8bf559b83d1682a8823d626"
+  },
+  "root_publish_manifest_sha256": "4d5c42b92c02f2c5bfd4231a76b5c137a4cbb1a903540f0e3220169d3470c8bb",
+  "root_published_source_sha256": "82ecb1c86609a99f98617a8b17f23492bac4f54933893a45ff5b19db7699087e",
+  "packages": [
+    "codex-app-server"
+  ],
+  "lock_unchanged": true
+}

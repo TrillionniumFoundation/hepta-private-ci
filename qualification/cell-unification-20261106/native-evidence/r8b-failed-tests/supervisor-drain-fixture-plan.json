@@ -1,0 +1,33 @@
+{
+  "schema": "hepta.supervisor-paired-drain-fixture-plan.v1",
+  "state": "PREPARED_NOT_APPLIED_AWAIT_ACTUAL_CI_DEBUG0_PATH_OBSERVATION",
+  "owner_for_actual_edit": "/root",
+  "target": "codex-rs/hepta-supervisor/tests/paired_process_product.rs",
+  "target_original_sha256": "2ea6a3d90b18c21094130de7ef31b4ec3e53ac845009210177c2761fc4a04d82",
+  "protocol_source": {
+    "path": "native-validation-results/r8-blockers/extra/source/codex-rs/hepta-agent-protocol/src/lib.rs",
+    "sha256": "49b6ce215975f118a323ce986ad146cca1a9c7ef5cebabcca7905a657d867438",
+    "git_blob": "eb1d5a2fe57aaffa0b38f0b87efdfa982d524e46",
+    "bytes": 46759
+  },
+  "minimum_change": [
+    "Import existing AgentdMethod and DrainSnapshot types into this fixture only.",
+    "Keep original Health payload fields and source unchanged for AgentdMethod::Health.",
+    "Select AgentdPayload::Drain only when request.method is Drain and request.schema_version equals AGENTD_CONTROL_SCHEMA_VERSION, request.spawn_generation equals the child environment spawn generation, retained lifecycle belongs to the same agent, lifecycle is Draining and current generation is checked_add(spawn_generation, 2).",
+    "After those exact checks, acknowledge admission_closed=true, running_turns=0 and drained=true with that retained Draining lifecycle and fenced=false. This fixture never implements objective/run admission and has no running assistant tasks; it must not manufacture an acknowledgement from merely receiving a Drain method.",
+    "Reject unsupported requests or incorrect request/lifecycle fences explicitly; do not fall back to Health or rewrite durable lifecycle to force a match.",
+    "Reuse the existing AgentdResponse envelope with actual agent ID, child spawn generation and latest retained current generation, request ID and existing newline framing."
+  ],
+  "unchanged": [
+    "production UnixProcessDriver and its strict Drain validation",
+    "real child process creation/adoption/kill",
+    "same two/five pair counts and PID/generation/isolation assertions",
+    "original 60 second watchdog and per-operation test deadlines",
+    "release immutable-copy and full-content digest checks",
+    "existing malformed/wrong-generation/nonempty-running-turn/fenced drain tests"
+  ],
+  "evidence_needed_before_apply": "Authoritative focused/native run with existing CI debug0 alignment should reach the original two-pair restart and show the predicted protocol error; keep its log/source/profile receipt separate from the earlier pre-start timeouts.",
+  "candidate_assertion_policy": "Existing product assertions stay intact. Native owner runs original package strict/tests and default workspace gate; no success claim from this proposal.",
+  "files_edited": [],
+  "rust_execution": false
+}

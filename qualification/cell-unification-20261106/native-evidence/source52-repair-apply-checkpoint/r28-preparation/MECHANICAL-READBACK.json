@@ -1,0 +1,67 @@
+{
+  "schema": "hepta.source52-r28-inert-mechanical.v1",
+  "template": {
+    "bytes": 53959,
+    "sha256": "2b8eb323a6072e37892802bf62d1ed4ddb38d07d4829a562093ac27a68c9edcb"
+  },
+  "base": {
+    "bytes": 46300,
+    "sha256": "f89ecbf2fe8585b739c3ecc5cb5057b762473ba73a7fea9dd6483213d3f8a6a0"
+  },
+  "unknown_bindings": [
+    "EXPECTED_COMMIT",
+    "EXPECTED_TREE",
+    "EXPECTED_CHANGED_COUNT",
+    "SOURCE_MANIFEST_NAME",
+    "SOURCE_MANIFEST_SHA256",
+    "APPLY_COMPLETE_NAME",
+    "APPLY_COMPLETE_SHA256",
+    "APPLY_COMPLETE_BYTES",
+    "APPLY_TERMINAL_NAME",
+    "APPLY_TERMINAL_SHA256",
+    "APPLY_TERMINAL_BYTES",
+    "APPLY_JOB_ID",
+    "DELTA_MANIFEST_NAME",
+    "DELTA_MANIFEST_SHA256",
+    "DELTA_MANIFEST_BYTES"
+  ],
+  "frozen": false,
+  "ast": "PASS",
+  "unchanged_functions": [
+    "announce",
+    "clean_lines",
+    "closed_terminal",
+    "data_pin",
+    "execution_environment",
+    "git",
+    "git_paths",
+    "hex_digest",
+    "load_baseline",
+    "lock_prerequisite",
+    "normalized_files",
+    "r24_failed_prerequisite",
+    "read_fixed",
+    "read_pinned",
+    "require",
+    "review_python",
+    "run_phase",
+    "safe_relative",
+    "sha",
+    "source_file_pin",
+    "write_json"
+  ],
+  "changed_functions": [
+    "apply_prerequisite",
+    "check_bindings",
+    "guard",
+    "inherited_dependency_check",
+    "load_source",
+    "main",
+    "review_tests",
+    "run_frozen"
+  ],
+  "new_functions": [
+    "r26_failed_prerequisite"
+  ],
+  "execution": false
+}

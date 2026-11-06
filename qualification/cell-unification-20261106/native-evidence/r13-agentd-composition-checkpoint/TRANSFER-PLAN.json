@@ -1,0 +1,24 @@
+{
+  "schema": "hepta.native-r13-transfer-plan.v1",
+  "state": "WAITING_FOR_NATIVE_TERMINAL_ARCHIVE",
+  "remote_host": "pocket4",
+  "target_directory": "/workspace/scratch/08f5efd48967/native-validation-results/checkpoint-r13",
+  "source_tree_expected_from_native": "6be3dbb1420c0ac7e0590c6e3c17191a073af9a9",
+  "source_commit_expected_from_native": "d313ba51180a838269677d28b2d91e1777b7b463",
+  "archive_identity": null,
+  "test_terminal_result": null,
+  "rules": [
+    "Wait for native to seal the existing run and provide the one archive; do not create another archive.",
+    "Use file_info and pin expected_version for every bounded binary_read chunk; verify every chunk and full archive SHA256.",
+    "Extract only unique relative regular-file entries into this separate directory; reject traversal, links, special files, and conflicting existing bytes.",
+    "Verify original index/member lengths and SHA256; verify source SHA256 and Git blob IDs with Git modes from the native source manifest, never tar or extracted filesystem permissions.",
+    "Bind commands, tree, environment, lock identity, natural exit, resources and complete raw logs to each original receipt.",
+    "Count unique primary test results and source diagnostics without re-counting footer aggregates; preserve failures and original skips.",
+    "Cross-check r13 closed strict originals previously saved in r13-strict-closed.",
+    "If gzip logs exist, verify original compressed bytes and the decompressed raw log SHA without replacing originals.",
+    "Do not read active test logs, edit source or root documents, rerun Rust, change filters, or copy into formal repository evidence without root ownership."
+  ],
+  "prior_strict_source_tree": "6be3dbb1420c0ac7e0590c6e3c17191a073af9a9",
+  "prior_strict_log_sha256": "706bb2fa5685ee187d9a8a1c05ba1b29c6f9ea79488dd804595c00f8ee265e90",
+  "current_task_actions": "Preparation only; no terminal success or full source verification claimed."
+}

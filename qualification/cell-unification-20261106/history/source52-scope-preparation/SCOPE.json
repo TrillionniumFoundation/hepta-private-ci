@@ -1,0 +1,574 @@
+{
+  "schema": "hepta.source52-owner-scope-preparation.v1",
+  "status": "NOT_EXECUTED_PREPARATION_ONLY",
+  "source_commit": "1e0910becc37383e6d17ecf861ea844fd07d8862",
+  "source_tree": "211f15baff19095e8c98bcea2b0ed99ca2270ade",
+  "scope": {
+    "changed_source_paths": 195,
+    "rust_paths": 181,
+    "other_paths": 14,
+    "source_counts_are_regular_files": true,
+    "owner_package_count": 26,
+    "owner_packages": [
+      "codex-app-server",
+      "codex-app-server-client",
+      "codex-cli",
+      "codex-core",
+      "codex-exec-server",
+      "codex-external-agent-migration",
+      "codex-hepta-agent-protocol",
+      "codex-hepta-agentd",
+      "codex-hepta-automation",
+      "codex-hepta-context-compiler",
+      "codex-hepta-infer-worker-host",
+      "codex-hepta-intelligence",
+      "codex-hepta-learning-artifacts",
+      "codex-hepta-memory",
+      "codex-hepta-memory-extension",
+      "codex-hepta-neuron",
+      "codex-hepta-plasticity",
+      "codex-hepta-runtime",
+      "codex-hepta-supervisor",
+      "codex-linux-sandbox",
+      "codex-mcp",
+      "codex-model-provider-info",
+      "codex-network-proxy",
+      "codex-shell-escalation",
+      "codex-utils-pty",
+      "core_test_support"
+    ],
+    "ci_package_selector_count": 27,
+    "ci_package_selectors": [
+      "codex-hepta-neuron",
+      "codex-hepta-learning-artifacts",
+      "codex-hepta-automation",
+      "codex-hepta-runtime",
+      "codex-hepta-control-plane",
+      "codex-hepta-plasticity",
+      "codex-utils-pty",
+      "codex-hepta-context-compiler",
+      "codex-hepta-intelligence",
+      "codex-hepta-agentd",
+      "codex-hepta-agent-protocol",
+      "codex-hepta-infer-worker-host",
+      "codex-model-provider-info",
+      "codex-shell-escalation",
+      "codex-linux-sandbox",
+      "codex-hepta-memory",
+      "codex-exec-server",
+      "codex-hepta-supervisor",
+      "codex-hepta-memory-extension",
+      "codex-network-proxy",
+      "codex-core",
+      "codex-mcp",
+      "core_test_support",
+      "codex-external-agent-migration",
+      "codex-app-server",
+      "codex-app-server-client",
+      "codex-cli"
+    ],
+    "retained_ci_owner_without_changed_rust_path": [
+      "codex-hepta-control-plane"
+    ],
+    "counts_exclude_evidence_attachments": true,
+    "actual_source_manifest": {
+      "path": "native-evidence/source52-repair-apply-checkpoint/source52-preparation/native-candidate-r28-source.json",
+      "bytes": 55209,
+      "sha256": "3ff99b41bab572666b424fdbf9a508b33be13e6487d9effa7dd6a0e14b4ec898",
+      "git_blob": "f057b526bf2ba492d6bb5810222f69ac0cc3bdd2"
+    },
+    "native_apply_complete": {
+      "path": "native-evidence/source52-repair-apply-checkpoint/native-apply/evidence/native-source52-apply/complete.json",
+      "bytes": 2046,
+      "sha256": "c9ecdc0ba8a34cd9f1a0a9bccb5e4d58034ce21558fe619d7351ca3e8eccfa14",
+      "git_blob": "b34da3e0c7f62603e2e6f08cad1fc06fb570e3c7"
+    },
+    "native_apply_postguard": {
+      "path": "native-evidence/source52-repair-apply-checkpoint/native-apply/evidence/native-source52-apply/post-apply-source-guard.json",
+      "bytes": 12120,
+      "sha256": "2b9d28dd937e436fdb4bb0be9c6090daa5cad87ef9d0f98a2c5c3f430b85dbb2",
+      "git_blob": "01b91f6c509fe159feba5b5a15f3b42499c52178"
+    },
+    "derivation": "All source51 194 manifest rows are unchanged; runtime.rs newly enters the changed manifest under existing codex-network-proxy. Fresh original r29 Cargo metadata has193members=193defaults; longest actual manifest directory prefix maps all181 Rust files to the same26 owners. No Cargo metadata or Rust was run by the report editor.",
+    "prior_package_identity_scope": {
+      "path": "history/source49-r23-checkpoint/STATUS.json",
+      "bytes": 46875,
+      "sha256": "82b7faba60db84719daa30e0f34ac9bb98d5a6a40987b183c564d37eeb3c297b",
+      "git_blob": "fee5819925e32b51051a3950bfc2dcb69b4ce794"
+    },
+    "added_owner_execution_evidence": {
+      "path": "native-evidence/r24-project-checkpoint/INDEPENDENT-READBACK.json",
+      "bytes": 9101,
+      "sha256": "17c0cf8970ed5a9c9032888ab191ffb70ed23ea81729992e3780b99b6e15ba46",
+      "git_blob": "a473a6014a307666312443041ab208a79e6ffabb"
+    },
+    "historical_cargo_metadata": {
+      "original_archive_member": "evidence/native-workspace-r23-metadata.json",
+      "bytes": 937669,
+      "sha256": "99fdbea678582580ebb373c06e4e91cd547f49d83765c22a59a1dd143510a834",
+      "git_blob": "ab7a20655d865adbf7fe783c2eb19318ae2bf72b",
+      "actual_workspace_members": 193,
+      "default_member_set_equal_full_workspace": true,
+      "archive_bound_by": "native-evidence/r23-root-result-readback/ROOT-RESULT-READBACK.json"
+    },
+    "current_cargo_metadata_executed_by_report_editor": false,
+    "workflow": {
+      "path": ".github/workflows/hepta-cell-framework-native.yml",
+      "mode": "100644",
+      "bytes": 9049,
+      "sha256": "4e722139be6383505c9c392a3682ca5a0f98cd9fc24427920e40595c64de9d77",
+      "git_blob": "a3e915c33dd0fcbb9cc977b999b659e77bcdefe0",
+      "immutable_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/1e0910becc37383e6d17ecf861ea844fd07d8862/.github/workflows/hepta-cell-framework-native.yml",
+      "exact_local_snapshot": {
+        "path": "history/source51-scope-preparation/hepta-cell-framework-native.yml",
+        "bytes": 9049,
+        "sha256": "4e722139be6383505c9c392a3682ca5a0f98cd9fc24427920e40595c64de9d77",
+        "git_blob": "a3e915c33dd0fcbb9cc977b999b659e77bcdefe0"
+      }
+    },
+    "final_fix_fmt_executed": false,
+    "fresh_default_workspace_metadata_required_before_r29": false,
+    "fresh_source52_r29_metadata_independently_verified": true,
+    "fresh_metadata": {
+      "path": "history/source52-scope-preparation/fresh/input/native-workspace-r29-metadata.json.gz",
+      "bytes": 38947,
+      "sha256": "c728eb280c432f76e88dc52a661090be5811169de5d2b5372cf066b77ddf3b8d",
+      "git_blob": "7674123efb977318cf455db1ce86de6f101b2e29",
+      "compression": "gzip",
+      "original_uncompressed": {
+        "bytes": 937659,
+        "sha256": "b29d6b0c49c63d6345f50597873e3fa98c79ea0cbfe923ae3dd700b5cc08af8d",
+        "git_blob": "0db6b5ccf051718a85b4aa0e7a57b7d62b393ecb"
+      }
+    },
+    "fresh_scope": {
+      "path": "history/source52-scope-preparation/fresh/input/native-workspace-r29-scope.json",
+      "bytes": 93362,
+      "sha256": "f54377c0848cd407033bfe812cb020130f4c630c05f2fa40eb408bf8d03a6f88",
+      "git_blob": "917c6c175e47064b83afc59eb86438c045aa298a"
+    },
+    "fresh_owner_scope_audit": {
+      "path": "history/source52-scope-preparation/fresh/READ-ONLY-AUDIT.json",
+      "bytes": 11545,
+      "sha256": "76e2c8f8f39d37f2e48f19e4965efc7712bb7be4e41330f54b0a51acf05e94dd",
+      "git_blob": "ecf0c61512b94a30b25cb0c15c78da182931c401"
+    }
+  },
+  "owners": [
+    {
+      "package": "codex-app-server",
+      "package_directory": "codex-rs/app-server",
+      "rust_path_count": 2,
+      "rust_paths": [
+        "codex-rs/app-server/tests/suite/v2/command_exec.rs",
+        "codex-rs/app-server/tests/suite/v2/process_exec.rs"
+      ]
+    },
+    {
+      "package": "codex-app-server-client",
+      "package_directory": "codex-rs/app-server-client",
+      "rust_path_count": 1,
+      "rust_paths": [
+        "codex-rs/app-server-client/src/remote_process_indeterminate_tests.rs"
+      ]
+    },
+    {
+      "package": "codex-cli",
+      "package_directory": "codex-rs/cli",
+      "rust_path_count": 1,
+      "rust_paths": [
+        "codex-rs/cli/tests/exec_server.rs"
+      ]
+    },
+    {
+      "package": "codex-core",
+      "package_directory": "codex-rs/core",
+      "rust_path_count": 35,
+      "rust_paths": [
+        "codex-rs/core/src/client.rs",
+        "codex-rs/core/src/client_provider_policy_tests.rs",
+        "codex-rs/core/src/client_tests.rs",
+        "codex-rs/core/src/hook_mcp_executor.rs",
+        "codex-rs/core/src/session/mod.rs",
+        "codex-rs/core/src/session/tests.rs",
+        "codex-rs/core/src/state_db_bridge_tests.rs",
+        "codex-rs/core/src/tools/runtimes/zsh_fork/unix_escalation.rs",
+        "codex-rs/core/src/turn_metadata_tests.rs",
+        "codex-rs/core/src/unified_exec/mod_tests.rs",
+        "codex-rs/core/src/unified_exec/process.rs",
+        "codex-rs/core/src/unified_exec/process_manager.rs",
+        "codex-rs/core/src/unified_exec/process_manager_tests.rs",
+        "codex-rs/core/src/unified_exec/process_observation_tests.rs",
+        "codex-rs/core/src/unified_exec/process_remote_observation_tests.rs",
+        "codex-rs/core/src/unified_exec/process_tests.rs",
+        "codex-rs/core/tests/suite/additional_context.rs",
+        "codex-rs/core/tests/suite/approvals.rs",
+        "codex-rs/core/tests/suite/client.rs",
+        "codex-rs/core/tests/suite/code_mode.rs",
+        "codex-rs/core/tests/suite/compact.rs",
+        "codex-rs/core/tests/suite/compact_remote.rs",
+        "codex-rs/core/tests/suite/git_enrichment.rs",
+        "codex-rs/core/tests/suite/hooks.rs",
+        "codex-rs/core/tests/suite/mcp_tool_exposure.rs",
+        "codex-rs/core/tests/suite/multi_agent_resume.rs",
+        "codex-rs/core/tests/suite/request_permissions.rs",
+        "codex-rs/core/tests/suite/responses_lite.rs",
+        "codex-rs/core/tests/suite/rmcp_client.rs",
+        "codex-rs/core/tests/suite/skill_approval.rs",
+        "codex-rs/core/tests/suite/token_budget.rs",
+        "codex-rs/core/tests/suite/turn_input_submission.rs",
+        "codex-rs/core/tests/suite/turn_state.rs",
+        "codex-rs/core/tests/suite/unified_exec_process_events.rs",
+        "codex-rs/core/tests/suite/unified_exec_zsh_fork_approvals.rs"
+      ]
+    },
+    {
+      "package": "codex-exec-server",
+      "package_directory": "codex-rs/exec-server",
+      "rust_path_count": 6,
+      "rust_paths": [
+        "codex-rs/exec-server/src/local_process_custody.rs",
+        "codex-rs/exec-server/src/local_process_observation_tests.rs",
+        "codex-rs/exec-server/src/process_sandbox_tests.rs",
+        "codex-rs/exec-server/src/server/handler/tests.rs",
+        "codex-rs/exec-server/tests/common/fake_bwrap.rs",
+        "codex-rs/exec-server/tests/exec_process.rs"
+      ]
+    },
+    {
+      "package": "codex-external-agent-migration",
+      "package_directory": "codex-rs/external-agent-migration",
+      "rust_path_count": 1,
+      "rust_paths": [
+        "codex-rs/external-agent-migration/src/service_tests/plugins/marketplaces.rs"
+      ]
+    },
+    {
+      "package": "codex-hepta-agent-protocol",
+      "package_directory": "codex-rs/hepta-agent-protocol",
+      "rust_path_count": 1,
+      "rust_paths": [
+        "codex-rs/hepta-agent-protocol/src/lib.rs"
+      ]
+    },
+    {
+      "package": "codex-hepta-agentd",
+      "package_directory": "codex-rs/hepta-agentd",
+      "rust_path_count": 60,
+      "rust_paths": [
+        "codex-rs/hepta-agentd/src/authority_host_admin_effect.rs",
+        "codex-rs/hepta-agentd/src/authority_host_admin_issuer_tests.rs",
+        "codex-rs/hepta-agentd/src/authority_host_admin_protocol.rs",
+        "codex-rs/hepta-agentd/src/authority_host_admin_service.rs",
+        "codex-rs/hepta-agentd/src/authority_host_checkpoint_adoption.rs",
+        "codex-rs/hepta-agentd/src/authority_host_checkpoint_material_binding.rs",
+        "codex-rs/hepta-agentd/src/authority_host_checkpoint_material_worker.rs",
+        "codex-rs/hepta-agentd/src/authority_host_service_consumers_root.rs",
+        "codex-rs/hepta-agentd/src/authority_host_service_root_tests.rs",
+        "codex-rs/hepta-agentd/src/authority_host_writer.rs",
+        "codex-rs/hepta-agentd/src/automation_effect_host.rs",
+        "codex-rs/hepta-agentd/src/browser_servo.rs",
+        "codex-rs/hepta-agentd/src/calculator_recovery_selection.rs",
+        "codex-rs/hepta-agentd/src/calculator_recovery_selection_tests.rs",
+        "codex-rs/hepta-agentd/src/circuit_cell.rs",
+        "codex-rs/hepta-agentd/src/cognitive_context.rs",
+        "codex-rs/hepta-agentd/src/cognitive_context_hnmf_tests.rs",
+        "codex-rs/hepta-agentd/src/cognitive_context_tests.rs",
+        "codex-rs/hepta-agentd/src/cognitive_retrieval_learning.rs",
+        "codex-rs/hepta-agentd/src/cognitive_retrieval_learning_tests.rs",
+        "codex-rs/hepta-agentd/src/deployment_authbus_issuer_final_tests.rs",
+        "codex-rs/hepta-agentd/src/deployment_authbus_issuer_followup_tests.rs",
+        "codex-rs/hepta-agentd/src/deployment_frontier_tests.rs",
+        "codex-rs/hepta-agentd/src/deployment_issuer.rs",
+        "codex-rs/hepta-agentd/src/deployment_notes_issuer_deadline_tests.rs",
+        "codex-rs/hepta-agentd/src/deployment_text.rs",
+        "codex-rs/hepta-agentd/src/deployment_text_human.rs",
+        "codex-rs/hepta-agentd/src/deployment_text_unsigned.rs",
+        "codex-rs/hepta-agentd/src/desktop_adapter_prepare.rs",
+        "codex-rs/hepta-agentd/src/desktop_root_composition.rs",
+        "codex-rs/hepta-agentd/src/desktop_thread_observe.rs",
+        "codex-rs/hepta-agentd/src/desktop_thread_recorded.rs",
+        "codex-rs/hepta-agentd/src/desktop_thread_runtime.rs",
+        "codex-rs/hepta-agentd/src/hos2_device_bootstrap_tests.rs",
+        "codex-rs/hepta-agentd/src/intelligence_product.rs",
+        "codex-rs/hepta-agentd/src/intelligence_product_runner.rs",
+        "codex-rs/hepta-agentd/src/learning_iteration_runtime_tests.rs",
+        "codex-rs/hepta-agentd/src/lib.rs",
+        "codex-rs/hepta-agentd/src/notes_bootstrap.rs",
+        "codex-rs/hepta-agentd/src/notes_launch_mode.rs",
+        "codex-rs/hepta-agentd/src/notes_literal_adapter.rs",
+        "codex-rs/hepta-agentd/src/notes_literal_control.rs",
+        "codex-rs/hepta-agentd/src/notes_literal_control_tests.rs",
+        "codex-rs/hepta-agentd/src/notes_literal_receipts.rs",
+        "codex-rs/hepta-agentd/src/notes_literal_receipts_schema_tests.rs",
+        "codex-rs/hepta-agentd/src/notes_objective_composition_tests.rs",
+        "codex-rs/hepta-agentd/src/notes_primary_bootstrap.rs",
+        "codex-rs/hepta-agentd/src/notes_thread_recorded.rs",
+        "codex-rs/hepta-agentd/src/notes_thread_seed_tests.rs",
+        "codex-rs/hepta-agentd/src/plasticity_host.rs",
+        "codex-rs/hepta-agentd/src/plasticity_runtime.rs",
+        "codex-rs/hepta-agentd/src/production_launcher.rs",
+        "codex-rs/hepta-agentd/src/production_root_composition.rs",
+        "codex-rs/hepta-agentd/src/root_desktop_startup_tests.rs",
+        "codex-rs/hepta-agentd/src/state_control.rs",
+        "codex-rs/hepta-agentd/src/terminal_learning_tests.rs",
+        "codex-rs/hepta-agentd/src/text_session_event_pump.rs",
+        "codex-rs/hepta-agentd/src/text_session_events.rs",
+        "codex-rs/hepta-agentd/src/text_session_worker.rs",
+        "codex-rs/hepta-agentd/tests/terminal_cell_owner.rs"
+      ]
+    },
+    {
+      "package": "codex-hepta-automation",
+      "package_directory": "codex-rs/hepta-automation",
+      "rust_path_count": 8,
+      "rust_paths": [
+        "codex-rs/hepta-automation/src/authorized_effect.rs",
+        "codex-rs/hepta-automation/src/circuit_runtime_tests.rs",
+        "codex-rs/hepta-automation/src/circuit_store_tests.rs",
+        "codex-rs/hepta-automation/src/lib.rs",
+        "codex-rs/hepta-automation/src/neural_circuit.rs",
+        "codex-rs/hepta-automation/tests/authorized_effect.rs",
+        "codex-rs/hepta-automation/tests/automation.rs",
+        "codex-rs/hepta-automation/tests/retirement_recovery.rs"
+      ]
+    },
+    {
+      "package": "codex-hepta-context-compiler",
+      "package_directory": "codex-rs/hepta-context-compiler",
+      "rust_path_count": 3,
+      "rust_paths": [
+        "codex-rs/hepta-context-compiler/src/lib.rs",
+        "codex-rs/hepta-context-compiler/src/v2.rs",
+        "codex-rs/hepta-context-compiler/src/v2_tests.rs"
+      ]
+    },
+    {
+      "package": "codex-hepta-infer-worker-host",
+      "package_directory": "codex-rs/hepta-infer-worker-host",
+      "rust_path_count": 2,
+      "rust_paths": [
+        "codex-rs/hepta-infer-worker-host/src/native_app_server.rs",
+        "codex-rs/hepta-infer-worker-host/src/native_failure_tests.rs"
+      ]
+    },
+    {
+      "package": "codex-hepta-intelligence",
+      "package_directory": "codex-rs/hepta-intelligence",
+      "rust_path_count": 2,
+      "rust_paths": [
+        "codex-rs/hepta-intelligence/src/canonical.rs",
+        "codex-rs/hepta-intelligence/src/plasticity_product_tests.rs"
+      ]
+    },
+    {
+      "package": "codex-hepta-learning-artifacts",
+      "package_directory": "codex-rs/hepta-learning-artifacts",
+      "rust_path_count": 2,
+      "rust_paths": [
+        "codex-rs/hepta-learning-artifacts/src/learning_iteration_test_support.rs",
+        "codex-rs/hepta-learning-artifacts/src/learning_iteration_types.rs"
+      ]
+    },
+    {
+      "package": "codex-hepta-memory",
+      "package_directory": "codex-rs/hepta-memory",
+      "rust_path_count": 4,
+      "rust_paths": [
+        "codex-rs/hepta-memory/src/cognitive_intelligence_writer.rs",
+        "codex-rs/hepta-memory/src/desktop_turn_writer_tests.rs",
+        "codex-rs/hepta-memory/src/local_lease_outbox.rs",
+        "codex-rs/hepta-memory/src/production_writer.rs"
+      ]
+    },
+    {
+      "package": "codex-hepta-memory-extension",
+      "package_directory": "codex-rs/ext/hepta-memory",
+      "rust_path_count": 3,
+      "rust_paths": [
+        "codex-rs/ext/hepta-memory/src/cognitive/federation.rs",
+        "codex-rs/ext/hepta-memory/src/cognitive/mod.rs",
+        "codex-rs/ext/hepta-memory/src/cognitive/tests.rs"
+      ]
+    },
+    {
+      "package": "codex-hepta-neuron",
+      "package_directory": "codex-rs/hepta-neuron",
+      "rust_path_count": 15,
+      "rust_paths": [
+        "codex-rs/hepta-neuron/src/cell.rs",
+        "codex-rs/hepta-neuron/src/cell_feature_projection.rs",
+        "codex-rs/hepta-neuron/src/cell_feature_projection_tests.rs",
+        "codex-rs/hepta-neuron/src/cell_inference_tests.rs",
+        "codex-rs/hepta-neuron/src/cell_journal_tests.rs",
+        "codex-rs/hepta-neuron/src/cell_population.rs",
+        "codex-rs/hepta-neuron/src/cell_population_tests.rs",
+        "codex-rs/hepta-neuron/src/cell_registry.rs",
+        "codex-rs/hepta-neuron/src/cell_registry_tests.rs",
+        "codex-rs/hepta-neuron/src/cell_roles.rs",
+        "codex-rs/hepta-neuron/src/cell_roles_tests.rs",
+        "codex-rs/hepta-neuron/src/cell_tests.rs",
+        "codex-rs/hepta-neuron/src/cell_types.rs",
+        "codex-rs/hepta-neuron/src/cell_update.rs",
+        "codex-rs/hepta-neuron/src/lib.rs"
+      ]
+    },
+    {
+      "package": "codex-hepta-plasticity",
+      "package_directory": "codex-rs/hepta-plasticity",
+      "rust_path_count": 10,
+      "rust_paths": [
+        "codex-rs/hepta-plasticity/src/differentiation_demand.rs",
+        "codex-rs/hepta-plasticity/src/differentiation_demand_tests.rs",
+        "codex-rs/hepta-plasticity/src/differentiation_observations.rs",
+        "codex-rs/hepta-plasticity/src/differentiation_plan.rs",
+        "codex-rs/hepta-plasticity/src/differentiation_study.rs",
+        "codex-rs/hepta-plasticity/src/differentiation_study_tests.rs",
+        "codex-rs/hepta-plasticity/src/differentiation_test_support.rs",
+        "codex-rs/hepta-plasticity/src/differentiation_topology.rs",
+        "codex-rs/hepta-plasticity/src/differentiation_types.rs",
+        "codex-rs/hepta-plasticity/src/lib.rs"
+      ]
+    },
+    {
+      "package": "codex-hepta-runtime",
+      "package_directory": "codex-rs/hepta-runtime",
+      "rust_path_count": 2,
+      "rust_paths": [
+        "codex-rs/hepta-runtime/src/cell_lifecycle_journal.rs",
+        "codex-rs/hepta-runtime/src/cell_lifecycle_transition.rs"
+      ]
+    },
+    {
+      "package": "codex-hepta-supervisor",
+      "package_directory": "codex-rs/hepta-supervisor",
+      "rust_path_count": 7,
+      "rust_paths": [
+        "codex-rs/hepta-supervisor/src/recovery.rs",
+        "codex-rs/hepta-supervisor/src/restart_state.rs",
+        "codex-rs/hepta-supervisor/src/runtime.rs",
+        "codex-rs/hepta-supervisor/src/supervisor.rs",
+        "codex-rs/hepta-supervisor/src/supervisor_restart_recovery_tests.rs",
+        "codex-rs/hepta-supervisor/src/supervisor_tests.rs",
+        "codex-rs/hepta-supervisor/tests/paired_process_product.rs"
+      ]
+    },
+    {
+      "package": "codex-linux-sandbox",
+      "package_directory": "codex-rs/linux-sandbox",
+      "rust_path_count": 6,
+      "rust_paths": [
+        "codex-rs/linux-sandbox/src/landlock.rs",
+        "codex-rs/linux-sandbox/src/lib.rs",
+        "codex-rs/linux-sandbox/src/linux_run_main.rs",
+        "codex-rs/linux-sandbox/src/owner_lifetime.rs",
+        "codex-rs/linux-sandbox/src/owner_lifetime_tests.rs",
+        "codex-rs/linux-sandbox/tests/suite/landlock.rs"
+      ]
+    },
+    {
+      "package": "codex-mcp",
+      "package_directory": "codex-rs/codex-mcp",
+      "rust_path_count": 3,
+      "rust_paths": [
+        "codex-rs/codex-mcp/src/binding.rs",
+        "codex-rs/codex-mcp/src/binding_tests.rs",
+        "codex-rs/codex-mcp/src/connection_manager_tests.rs"
+      ]
+    },
+    {
+      "package": "codex-model-provider-info",
+      "package_directory": "codex-rs/model-provider-info",
+      "rust_path_count": 1,
+      "rust_paths": [
+        "codex-rs/model-provider-info/src/test_support.rs"
+      ]
+    },
+    {
+      "package": "codex-network-proxy",
+      "package_directory": "codex-rs/network-proxy",
+      "rust_path_count": 3,
+      "rust_paths": [
+        "codex-rs/network-proxy/src/http_proxy.rs",
+        "codex-rs/network-proxy/src/mitm_tests.rs",
+        "codex-rs/network-proxy/src/runtime.rs"
+      ]
+    },
+    {
+      "package": "codex-shell-escalation",
+      "package_directory": "codex-rs/shell-escalation",
+      "rust_path_count": 1,
+      "rust_paths": [
+        "codex-rs/shell-escalation/src/unix/socket.rs"
+      ]
+    },
+    {
+      "package": "codex-utils-pty",
+      "package_directory": "codex-rs/utils/pty",
+      "rust_path_count": 1,
+      "rust_paths": [
+        "codex-rs/utils/pty/src/unix_io.rs"
+      ]
+    },
+    {
+      "package": "core_test_support",
+      "package_directory": "codex-rs/core/tests/common",
+      "rust_path_count": 1,
+      "rust_paths": [
+        "codex-rs/core/tests/common/streaming_sse.rs"
+      ]
+    }
+  ],
+  "non_rust_paths": [
+    ".github/workflows/hepta-cell-differentiation.yml",
+    ".github/workflows/hepta-cell-framework-native.yml",
+    "codex-rs/exec-server/Cargo.toml",
+    "qualification/cell-differentiation/README.md",
+    "qualification/cell-differentiation/VALIDATION.md",
+    "qualification/cell-differentiation/run_study.py",
+    "qualification/cell-differentiation/study_cost.py",
+    "qualification/cell-differentiation/study_data.py",
+    "qualification/cell-differentiation/study_evidence.py",
+    "qualification/cell-differentiation/study_gate.py",
+    "qualification/cell-differentiation/study_model.py",
+    "qualification/cell-differentiation/test_study.py",
+    "scripts/run-nextest.py",
+    "scripts/test_run_nextest_helpers.py"
+  ],
+  "source51_to_source52_changes_dependency_or_ci_inputs": false,
+  "expected_default_HEAD_formatter_selection": {
+    "rust_files": 181,
+    "python_files": [
+      "scripts/run-nextest.py",
+      "scripts/test_run_nextest_helpers.py"
+    ]
+  },
+  "fresh_r29_metadata_members_and_owners_independently_verified": true,
+  "fresh_final_scope": {
+    "audit": {
+      "path": "history/source52-scope-preparation/fresh/READ-ONLY-AUDIT.json",
+      "bytes": 11545,
+      "sha256": "76e2c8f8f39d37f2e48f19e4965efc7712bb7be4e41330f54b0a51acf05e94dd",
+      "git_blob": "ecf0c61512b94a30b25cb0c15c78da182931c401"
+    },
+    "handoff": {
+      "path": "history/source52-scope-preparation/fresh/HANDOFF-MANIFEST.json",
+      "bytes": 4450,
+      "sha256": "ba617a13950eaa40c777a1dcfc5295833d7466b09a9341bf83095215fb2b3704",
+      "git_blob": "fa31b1eff5e1f60f56f4ae91a372056ad1eb28e4"
+    },
+    "package_args": {
+      "path": "history/source52-scope-preparation/fresh/PACKAGE-ARGS.json",
+      "bytes": 4784,
+      "sha256": "9441aff9fe8267d13f0a9876640272d79feecbe7dbee8b63ae471b7868891f03",
+      "git_blob": "e364a551417992fd6af5c82cf257f86bd4dc4822"
+    },
+    "selection": {
+      "path": "history/source52-scope-preparation/fresh/EXPECTED-SELECTION.json",
+      "bytes": 46933,
+      "sha256": "eb09de9189e968acd6d6da3f6aad5baa269d6b8f93d38aedb8727da0baf53e79",
+      "git_blob": "9e706de0ffc5a7c005f0ad08498f284d381cfca0"
+    }
+  },
+  "fix_fmt_executed": false
+}

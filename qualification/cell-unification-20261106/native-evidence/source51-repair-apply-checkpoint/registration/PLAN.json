@@ -1,0 +1,82 @@
+{
+  "schema": "hepta.source51-two-path-plan.v1",
+  "status": "PREPARATION_ONLY_NOT_CREATED_NOT_APPLIED",
+  "base_commit": "1fdd647b0ecb235530e8b88bbea45b3d3762906f",
+  "base_tree": "ea48acf562499192a25e05ae28926a32632dee62",
+  "expected_tree": "763c8d2b4089f6e9806c3bbb68fa247bc2f6af36",
+  "source_commit": null,
+  "changed_source_paths_from_parent": [
+    {
+      "path": "codex-rs/exec-server/tests/common/fake_bwrap.rs",
+      "mode": "100644",
+      "before": {
+        "bytes": 1635,
+        "sha256": "ae37954afd591c387652cd8ea036a15f461dbad48946274bbca57be4bd1648de",
+        "git_blob": "cc79362f7a8a3a44b0a93949d18494281511ec7b"
+      },
+      "after": {
+        "bytes": 1817,
+        "sha256": "83d3637f2648b967c70e2368c623fe0b84afe1cdf32860284d897923ad0dc1ca",
+        "git_blob": "e74489437549cf2c61075fd893945cd78e34247c"
+      },
+      "source_candidate_directory": "exec-server-bwrap-r24-repair",
+      "original_patch": {
+        "path": "repair.patch",
+        "bytes": 663,
+        "sha256": "0f8ee51664c850a9fd450bcba800d3ffb6866633f1924845b058ffadcc7b1ba8",
+        "git_blob": "8330f69c096dae85afbd9ec10346a5c93acd81d5"
+      }
+    },
+    {
+      "path": "codex-rs/network-proxy/src/http_proxy.rs",
+      "mode": "100644",
+      "before": {
+        "bytes": 69053,
+        "sha256": "7500b8820d7894da45ed4f444aca28573f1e5f9462f94c97ccb19019a0f6b430",
+        "git_blob": "50135c6cd4c426c3ec16d65d448c01a1fb776ddd"
+      },
+      "after": {
+        "bytes": 69092,
+        "sha256": "f8b6cb1adf67ea828efb29f68e10fd97a30e379574c93374c2a88f5364153967",
+        "git_blob": "17220a242091325aa66bd4cdb3419cd3a30b09ed"
+      },
+      "source_candidate_directory": "source51-network-candidate",
+      "original_patch": {
+        "path": "network-fixture.patch",
+        "bytes": 420,
+        "sha256": "24fcba74cab54f242f1249bddf43ebc3be2bd3bbb7f16964dd7f24f334989198",
+        "git_blob": "09235650429cab4b8cc24360eadd9a7eeae1fb85"
+      }
+    }
+  ],
+  "parent_manifest_entries": 194,
+  "candidate_manifest_entries": 194,
+  "rust_source_entries": 180,
+  "combined_patch": {
+    "path": "combined.patch",
+    "bytes": 1083,
+    "sha256": "55181ee269a2f06d83a04d4326d22f0ebe5e08a3ba387e5691e79f987b3d8d29",
+    "git_blob": "3600118628e4f98de2a90e0be43e650790ca9fdb"
+  },
+  "candidate_manifest": {
+    "path": "candidate-source-manifest.json",
+    "bytes": 55167,
+    "sha256": "52448f9b066a9ed4ab73876e1d7b6c88d5b23234ea42d9bc02a87ab32d1da6be",
+    "git_blob": "c32b5e23b7a61f34af8efaae7b0606ef3dc732d9"
+  },
+  "native_execution": false,
+  "root_publication_required": true,
+  "source50_original_gate": {
+    "r24": "FAILED_100",
+    "unique_test_counts": {
+      "PASS": 1561,
+      "FAIL": 3,
+      "TIMEOUT": 0
+    },
+    "reported_skipped": 3,
+    "does_not_qualify_candidate": true
+  },
+  "future_validation": "Root/native must bind the actually published source51 identity and original gates; this plan grants no native or formatter qualification.",
+  "old_r25_snapshot": "Remains inert and blocked by its failed r24 prerequisite; not edited or bypassed here.",
+  "boundary": "No production sandbox policy changes. The helper changes only test program discovery; the network change is one fixture-local direct-policy flag. Original assertions remain in both candidates."
+}

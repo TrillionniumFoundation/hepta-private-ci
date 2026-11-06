@@ -1,0 +1,68 @@
+{
+  "schema": "hepta.root-source52-runtime-fixture-review.v1",
+  "status": "CANDIDATE_STATIC_ACCEPTED_NATIVE_QUALIFICATION_PENDING",
+  "before_sha256": "3214446d85796e5d1c4a308ba53aab3bf7098fc18cd38cfc6f97a1cbb14d2e4f",
+  "after_sha256": "1d8523c4eda08408eb952a86d692f1e2cfb2975de934de6f1f325597fe9681c8",
+  "candidate_git_blob": "2c0b88642d1c079ee3991e9e1e418bbb01203694",
+  "patch_sha256": "9d28130f28b2e1dd9d28f47a4ab8e5141095ea2f718d5454a0c3fadda895a16e",
+  "commands": [
+    {
+      "command": [
+        "git",
+        "apply",
+        "--check",
+        "/workspace/scratch/08f5efd48967/network-runtime-wildcard-r26-repair/repair.patch"
+      ],
+      "cwd": "isolated temporary sandbox",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "apply",
+        "/workspace/scratch/08f5efd48967/network-runtime-wildcard-r26-repair/repair.patch"
+      ],
+      "cwd": "isolated temporary sandbox",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "apply",
+        "--check",
+        "--reverse",
+        "/workspace/scratch/08f5efd48967/network-runtime-wildcard-r26-repair/repair.patch"
+      ],
+      "cwd": "isolated temporary sandbox",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "apply",
+        "--reverse",
+        "/workspace/scratch/08f5efd48967/network-runtime-wildcard-r26-repair/repair.patch"
+      ],
+      "cwd": "isolated temporary sandbox",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  ],
+  "full_before_after_forward_reverse_match": true,
+  "scope": {
+    "source51_rows_unchanged": 194,
+    "new_relative_to_framework_changed_path": "codex-rs/network-proxy/src/runtime.rs",
+    "next_changed_count": 195,
+    "rust_count": 181,
+    "other_count": 14
+  },
+  "source_review": "Only four test-local initial config expressions and their explanatory comments differ. Original test assertions, independent default-config loop, production prefix and dedicated address guards are retained. NotAllowedLocal is observed; the specific resolver outcome is not measured.",
+  "runtime_or_Rust_execution": false
+}

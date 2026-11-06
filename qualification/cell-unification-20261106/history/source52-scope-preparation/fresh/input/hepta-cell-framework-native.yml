@@ -1,0 +1,218 @@
+name: Hepta Cell framework native validation
+
+on:
+  push:
+    branches: [codex/cell-framework-20261105, work/cell-unification-20261106]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-cell-framework-native-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  SOURCE_SHA: ${{ github.sha }}
+  TESTED_SHA: ${{ github.sha }}
+  BASE_SHA: ${{ github.event.before }}
+  HEPTA_CI_LANE: source-head
+  PYTHONDONTWRITEBYTECODE: "1"
+  CARGO_INCREMENTAL: "0"
+  CARGO_BUILD_JOBS: "2"
+  CARGO_PROFILE_TEST_DEBUG: "0"
+  CARGO_PROFILE_DEV_DEBUG: "0"
+
+jobs:
+  native:
+    name: Cell framework (${{ matrix.owner }})
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - owner: mechanisms
+            packages: >-
+              -p codex-hepta-neuron -p codex-hepta-learning-artifacts
+              -p codex-hepta-automation -p codex-hepta-runtime
+              -p codex-hepta-control-plane -p codex-hepta-plasticity
+              -p codex-utils-pty -p codex-hepta-context-compiler
+              -p codex-hepta-intelligence
+          - owner: agentd-composition
+            packages: -p codex-hepta-agentd -p codex-hepta-agent-protocol -p codex-hepta-infer-worker-host
+          - owner: inherited-dependencies
+            packages: >-
+              -p codex-model-provider-info -p codex-shell-escalation
+              -p codex-linux-sandbox -p codex-hepta-memory
+              -p codex-exec-server -p codex-hepta-supervisor
+              -p codex-hepta-memory-extension -p codex-network-proxy
+          - owner: core
+            packages: -p codex-core -p codex-mcp -p core_test_support -p codex-external-agent-migration
+          - owner: app-server
+            packages: -p codex-app-server -p codex-app-server-client -p codex-cli
+    steps:
+      - name: Check out the exact source commit
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 1
+          persist-credentials: false
+      - name: Bind source identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          test -z "$(git status --porcelain)"
+          git diff --check
+          mkdir -p "$RUNNER_TEMP/cell-framework-records"
+      - name: Install native build prerequisites
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential clang cmake protobuf-compiler libssl-dev libcap-dev pkg-config bubblewrap
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+      - uses: facebook/install-dotslash@1e4e7b3e07eaca387acb98f1d4720e0bee8dbb6a
+      - name: Expose DotSlash for existing owner tests
+        run: sudo install -m 0755 "$(command -v dotslash)" /usr/local/bin/dotslash
+      - name: Prepare the original checksum-verified Zsh test resource
+        if: matrix.owner == 'core' || matrix.owner == 'app-server'
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_ci_exec.py --timeout-seconds 300 \
+            --output "$RUNNER_TEMP/cell-framework-records/zsh-resource.json" \
+            -- dotslash -- fetch "$GITHUB_WORKSPACE/codex-rs/app-server/tests/suite/zsh"
+      - name: Resolve repository-verified V8 artifacts
+        env:
+          CODEX_REPO_ROOT: ${{ github.workspace }}
+          PYTHONPATH: scripts
+        run: python3 scripts/hepta_ci_v8.py
+      - name: Record pinned toolchain and locked dependency resolution
+        working-directory: codex-rs
+        run: |
+          set -euo pipefail
+          rustup show active-toolchain
+          rustc --version --verbose
+          cargo --version
+          cargo metadata --locked --format-version=1 > "$RUNNER_TEMP/cell-framework-records/cargo-metadata.json"
+          test -z "$(git status --porcelain)"
+      - name: Validate runner selection and cross-package helper contracts
+        if: matrix.owner == 'core'
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_ci_exec.py --timeout-seconds 300 \
+            --output "$RUNNER_TEMP/cell-framework-records/runner-tests.json" \
+            -- python3 -m unittest discover -s scripts -p 'test_run_nextest*.py' -v
+      - name: Run unchanged owner suites through the repository runner
+        env:
+          PACKAGES: ${{ matrix.packages }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          read -r -a packages <<< "$PACKAGES"
+          python3 scripts/hepta_ci_exec.py --timeout-seconds 4200 --minimum-tests 1 \
+            --output "$RUNNER_TEMP/cell-framework-records/tests.json" \
+            -- just test --locked "${packages[@]}" --retries 0
+      - name: Strict lint of the same owners
+        env:
+          PACKAGES: ${{ matrix.packages }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          read -r -a packages <<< "$PACKAGES"
+          python3 scripts/hepta_ci_exec.py --timeout-seconds 900 \
+            --output "$RUNNER_TEMP/cell-framework-records/clippy.json" \
+            -- just clippy --locked "${packages[@]}" -- -D warnings
+      - name: Check formatting without rewriting the tested source
+        env:
+          PACKAGES: ${{ matrix.packages }}
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          read -r -a packages <<< "$PACKAGES"
+          cargo fmt "${packages[@]}" -- --check
+          git diff --check
+          git diff --exit-code
+      - name: Retain real outputs even when qualification fails
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: cell-framework-${{ matrix.owner }}-${{ github.sha }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/cell-framework-records
+          if-no-files-found: error
+          retention-days: 14
+
+  workspace:
+    name: Complete workspace tests after owner gates
+    needs: native
+    runs-on: ubuntu-24.04
+    timeout-minutes: 180
+    steps:
+      - name: Check out the exact source commit
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 1
+          persist-credentials: false
+      - name: Bind source identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          test -z "$(git status --porcelain)"
+          git diff --check
+          mkdir -p "$RUNNER_TEMP/cell-framework-records"
+      - name: Install native build prerequisites
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential clang cmake protobuf-compiler libssl-dev libcap-dev pkg-config bubblewrap
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+      - uses: facebook/install-dotslash@1e4e7b3e07eaca387acb98f1d4720e0bee8dbb6a
+      - name: Expose DotSlash for existing owner tests
+        run: sudo install -m 0755 "$(command -v dotslash)" /usr/local/bin/dotslash
+      - name: Prepare the original checksum-verified Zsh test resource
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_ci_exec.py --timeout-seconds 300 \
+            --output "$RUNNER_TEMP/cell-framework-records/zsh-resource.json" \
+            -- dotslash -- fetch "$GITHUB_WORKSPACE/codex-rs/app-server/tests/suite/zsh"
+      - name: Resolve repository-verified V8 artifacts
+        env:
+          CODEX_REPO_ROOT: ${{ github.workspace }}
+          PYTHONPATH: scripts
+        run: python3 scripts/hepta_ci_v8.py
+      - name: Record pinned toolchain and locked dependency resolution
+        working-directory: codex-rs
+        run: |
+          set -euo pipefail
+          rustup show active-toolchain
+          rustc --version --verbose
+          cargo --version
+          cargo metadata --locked --format-version=1 > "$RUNNER_TEMP/cell-framework-records/cargo-metadata.json"
+          test -z "$(git status --porcelain)"
+      - name: Run the complete repository suite after core changes
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_ci_exec.py --timeout-seconds 9600 --minimum-tests 1 \
+            --output "$RUNNER_TEMP/cell-framework-records/tests.json" \
+            -- just test --locked --retries 0
+      - name: Confirm the tested source remains unchanged
+        run: |
+          git diff --check
+          git diff --exit-code
+      - name: Retain complete workspace results
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: cell-framework-workspace-${{ github.sha }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/cell-framework-records
+          if-no-files-found: error
+          retention-days: 14

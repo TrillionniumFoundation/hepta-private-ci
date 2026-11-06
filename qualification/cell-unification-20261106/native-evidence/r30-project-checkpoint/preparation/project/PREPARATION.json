@@ -1,0 +1,50 @@
+{
+  "baseline": {
+    "bytes": 555309,
+    "git_blob": "73c89e9f100edae10b9e1dac6200fa25c17918a4",
+    "path": "/workspace/scratch/08f5efd48967/source53-app-server-baseline-preparation/BASELINE-IDS.json",
+    "sha256": "92e7ef41b0c2b08b81bb3ad9542f20ec820d86185f80369b4478cb5bd9c20cf1"
+  },
+  "behavior_repair_claimed": false,
+  "diagnostic_only": true,
+  "frozen": false,
+  "independent_static_review": {
+    "bytes": 5681,
+    "git_blob": "dfd14aacc18ac2e7f2f567c520703fba4c433a12",
+    "path": "source53-r30-independent-static-review/INDEPENDENT-REVIEW.json",
+    "sha256": "bbe67f469e68cbb6ed3786b795b6c128db25ce94aae57f00d75283467f200fcb"
+  },
+  "native_source_modified": false,
+  "root_static_review": {
+    "bytes": 1399,
+    "git_blob": "5b0866b6595badbf33af7078bb8e19a5087ab802",
+    "path": "source53-r30-root-review/STATIC-REVIEW.json",
+    "sha256": "6694ac907e03b79bac83e26f947fa49da0a053db9a6e125c26acebb6354d4c82"
+  },
+  "runner_imported_or_executed": false,
+  "rust_executed": false,
+  "schema": "hepta.source53-r30-inert-preparation.v2",
+  "status": "STATIC_CLEAR_TEMPLATE_INERT",
+  "template": {
+    "bytes": 60715,
+    "git_blob": "d8ea3f26442a040210e542d48103952609b4c5e1",
+    "sha256": "a4bb18b0f2d2af63625e7ee6629df9f5a42f47c684bd8e4a72125b62b05d2c0b"
+  },
+  "unknown_bindings": [
+    "APPLY_COMPLETE_BYTES",
+    "APPLY_COMPLETE_NAME",
+    "APPLY_COMPLETE_SHA256",
+    "APPLY_JOB_ID",
+    "APPLY_TERMINAL_BYTES",
+    "APPLY_TERMINAL_NAME",
+    "APPLY_TERMINAL_SHA256",
+    "DELTA_MANIFEST_BYTES",
+    "DELTA_MANIFEST_NAME",
+    "DELTA_MANIFEST_SHA256",
+    "EXPECTED_CHANGED_COUNT",
+    "EXPECTED_COMMIT",
+    "EXPECTED_TREE",
+    "SOURCE_MANIFEST_NAME",
+    "SOURCE_MANIFEST_SHA256"
+  ]
+}

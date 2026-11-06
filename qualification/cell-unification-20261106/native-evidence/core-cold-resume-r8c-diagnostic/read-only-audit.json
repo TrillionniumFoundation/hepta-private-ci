@@ -1,0 +1,80 @@
+{
+  "schema": "cell-unification.read-only-cause-audit.v1",
+  "test_id": "codex-core::all suite::multi_agent_resume::cold_root_resume_restores_agent_identity_and_role_on_followup",
+  "source_commit": "e0eca9e265c4deeb069ec940c9ec3acbe8cf0f81",
+  "source_tree": "6d88ca9c8964669a408d8549efaeff7b94d68674",
+  "source_pins_verified": [
+    {
+      "path": "codex-rs/core/tests/suite/multi_agent_resume.rs",
+      "git_blob": "5cffeb3a7683c6654bbfe5474296b5458659aeec",
+      "bytes": 24016,
+      "sha256": "9bba749625fae2e012ec0e5f03e1c60a6a93b11e5dc581782358748168665ddc"
+    },
+    {
+      "path": "codex-rs/core/src/thread_manager.rs",
+      "git_blob": "4e19ab877f9ca84df282c7a72328726de3ec7251",
+      "bytes": 116349,
+      "sha256": "d9631505c673632e53d91122f9d1491dcea0ca1d3ac4360f7aa0fa95e5934f89"
+    },
+    {
+      "path": "codex-rs/core/src/agent/control/spawn.rs",
+      "git_blob": "b901073f6d1a3e7159bbe6a5b9ab9dd575b6b106",
+      "bytes": 53544,
+      "sha256": "866185b265c2fb4bc4eec8a471a12fcc4febcf5a596aa442252ab44063bd6f9f"
+    },
+    {
+      "path": "codex-rs/core/src/agent/control/residency.rs",
+      "git_blob": "e0a34bb97a3775b5e2114544d5a029d9d68e1608",
+      "bytes": 8225,
+      "sha256": "09708e8b768bc4dfa4546b9cb23afdd7aa14c9090be23b04eef2a85c287b96d0"
+    }
+  ],
+  "original_observation": {
+    "result_line": 6170,
+    "elapsed_seconds": 0.578,
+    "status": "FAIL",
+    "error": "thread 01a1af54-f935-7391-b3ea-a58435e7a042 not found",
+    "stage_or_thread_role_in_log": null,
+    "log_sha256": "d5838182b45478741d7af4c65dc3ed826b27c0f14d825897c21f0062a292e687"
+  },
+  "findings": [
+    {
+      "path": "codex-rs/core/src/thread_manager.rs",
+      "lines": "2685-2752",
+      "fact": "finalize_thread_spawn inserts CodexThread into the manager registry before returning NewThread."
+    },
+    {
+      "path": "codex-rs/core/src/thread_manager.rs",
+      "lines": "2389-2429",
+      "fact": "The independent startup owner publishes the registered result to the caller and waits for caller acknowledgement; no claimed runtime is intentionally reclaimed as an unreceived result."
+    },
+    {
+      "path": "codex-rs/core/src/agent/control/spawn.rs",
+      "lines": "689-776",
+      "fact": "spawn_agent_internal awaits that registered startup, commits metadata/residency, then sends initial input. Seeing an initial worker request does not normally precede registry registration."
+    },
+    {
+      "path": "codex-rs/core/src/agent/control/residency.rs",
+      "lines": "224-231",
+      "fact": "Residency candidates must be V2 SubAgent session sources; root is not counted by that predicate."
+    },
+    {
+      "path": "codex-rs/core/tests/suite/multi_agent_resume.rs",
+      "lines": "145, 167-424",
+      "fact": "The fixture explicitly sets max_concurrent_threads_per_session=3 and creates worker, grandchild and sibling. This count alone does not establish exhaustion or eviction."
+    },
+    {
+      "path": "codex-rs/core/src/thread_manager.rs",
+      "lines": "1858-1864",
+      "fact": "get_thread maps a missing or internal-source registry entry to the same ThreadNotFound error. The old log does not bind its UUID to a test variable."
+    }
+  ],
+  "conclusion": "No unique root cause is established from the old log and audited static paths. Do not change capacity, lookup semantics, assertions, or add retries based on this evidence.",
+  "next_observation": {
+    "artifact_directory": "core-cold-resume-r8c-diagnostic",
+    "purpose": "Add error stage and target ID at the two direct initial registry lookups and the cold root restart, then use the next already-planned original Core gate.",
+    "not_a_behavior_fix": true,
+    "extra_test_execution_performed": false,
+    "remaining_limit": "Other fallible stages still preserve their existing error behavior. If an uncontextualized error remains, these three stages are excluded rather than silently retried."
+  }
+}

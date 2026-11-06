@@ -1,0 +1,62 @@
+[
+  {
+    "line": 43,
+    "byte_start": 3282,
+    "byte_end": 4131,
+    "bytes": 849,
+    "sha256": "a79fbad0fde1401ccb3993162a587374958d2f39a15f39123355e278715c2b0e",
+    "git_blob": "42de1f1d1e5fe8adad1d0f724e69081ff65e8368",
+    "summary": false,
+    "text": "warning: hiding a lifetime that's elided elsewhere is confusing\n   --> third_party/i18n-config-0.4.8/src/lib.rs:144:9\n    |\n144 |         &self,\n    |         ^^^^^ the lifetime is elided here\n145 |     ) -> Result<Option<(&'_ Crate, &'_ I18nConfig)>, I18nConfigError> {\n    |                          ^^ ^^^^^   ^^ the same lifetime is elided here\n    |                          |  |\n    |                          |  the same lifetime is hidden here\n    |                          the same lifetime is elided here\n    |\n    = help: the same lifetime is referred to in inconsistent ways, making the signature confusing\n    = note: `#[warn(mismatched_lifetime_syntaxes)]` on by default\nhelp: use `'_` for type paths\n    |\n145 |     ) -> Result<Option<(&'_ Crate<'_>, &'_ I18nConfig)>, I18nConfigError> {\n    |                                  ++++\n\n"
+  },
+  {
+    "line": 61,
+    "byte_start": 4131,
+    "byte_end": 5087,
+    "bytes": 956,
+    "sha256": "a9188537b7bf52c0d6a9146a354fb22d620afc24a6542ddc2e4dfcdacd5ad9d8",
+    "git_blob": "6225a549081f442a62752ca9e5cfefa67fc81246",
+    "summary": false,
+    "text": "warning: hiding a lifetime that's elided elsewhere is confusing\n   --> third_party/i18n-config-0.4.8/src/lib.rs:155:26\n    |\n155 |     pub fn active_config(&self) -> Result<Option<(&'_ Crate, &'_ I18nConfig)>, I18nConfigError> {\n    |                          ^^^^^                     ^^ ^^^^^   ^^ the same lifetime is elided here\n    |                          |                         |  |\n    |                          |                         |  the same lifetime is hidden here\n    |                          |                         the same lifetime is elided here\n    |                          the lifetime is elided here\n    |\n    = help: the same lifetime is referred to in inconsistent ways, making the signature confusing\nhelp: use `'_` for type paths\n    |\n155 |     pub fn active_config(&self) -> Result<Option<(&'_ Crate<'_>, &'_ I18nConfig)>, I18nConfigError> {\n    |                                                            ++++\n\n"
+  },
+  {
+    "line": 77,
+    "byte_start": 5087,
+    "byte_end": 5221,
+    "bytes": 134,
+    "sha256": "1059f8218dd2f9ce87ac05ae3001d7a09b3442e19f37bc1dc0dc08ca8df7a044",
+    "git_blob": "aaad2c4fa48bf59147e81381df628029e3a32494",
+    "summary": true,
+    "text": "warning: `i18n-config` (lib) generated 2 warnings (run `cargo clippy --fix --lib -p i18n-config -- --no-deps` to apply 2 suggestions)\n"
+  },
+  {
+    "line": 234,
+    "byte_start": 23662,
+    "byte_end": 24560,
+    "bytes": 898,
+    "sha256": "25b911c6033ffbfe8e6455af431c2adb6e57b483909b292f95556dcdba3e20b9",
+    "git_blob": "601960c4b01ff13805dc308e43d6624f3d7d4ecd",
+    "summary": false,
+    "text": "warning: large size difference between variants\n  --> hepta-agentd/src/notes_thread_status.rs:82:1\n   |\n82 | / pub(super) enum StatusDiscovery {\n83 | |     Found(VerifiedNotesThreadOperation),\n   | |     ----------------------------------- the largest variant contains at least 224 bytes\n84 | |     Unknown(StatusUnknownReason),\n   | |     ---------------------------- the second-largest variant contains at least 1 bytes\n85 | | }\n   | |_^ the entire enum is at least 224 bytes\n   |\n   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#large_enum_variant\n   = note: `#[warn(clippy::large_enum_variant)]` on by default\nhelp: consider boxing the large fields or introducing indirection in some other way to reduce the total size of the enum\n   |\n83 -     Found(VerifiedNotesThreadOperation),\n83 +     Found(Box<VerifiedNotesThreadOperation>),\n   |\n\n"
+  },
+  {
+    "line": 253,
+    "byte_start": 24560,
+    "byte_end": 24616,
+    "bytes": 56,
+    "sha256": "4e41305500e19fd9013c525ee29077e93dfc66ec01b97c94cb5e776808b49c37",
+    "git_blob": "4d93e45a6cff65a00455f6a98f6f83b50b6c5773",
+    "summary": true,
+    "text": "warning: `codex-hepta-agentd` (lib) generated 1 warning\n"
+  },
+  {
+    "line": 255,
+    "byte_start": 24754,
+    "byte_end": 24829,
+    "bytes": 75,
+    "sha256": "61f32036269b6ca4f701ff8a096f1f7c41718ac2c148efc8912d7c6ce125904f",
+    "git_blob": "a318996c6117016a865c263b660ec9003d5ec349",
+    "summary": true,
+    "text": "warning: `codex-hepta-agentd` (lib test) generated 1 warning (1 duplicate)\n"
+  }
+]

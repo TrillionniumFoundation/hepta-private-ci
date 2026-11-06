@@ -1,0 +1,39 @@
+{
+  "schema": "hepta.r28-export-static-self-review.v1",
+  "template": {
+    "bytes": 33547,
+    "sha256": "6e3b27eb70806ce69ac66fc4d6c2b9ca61a76d41d5072063f069a7c2e7780452",
+    "git_blob": "c89350626ba97fc122a22188f89c1e50dd6b4053"
+  },
+  "copied_reader_global_symbols_present": [
+    "ANSI",
+    "PACKAGES",
+    "PYTHON_TEST_COUNT",
+    "clean_lines",
+    "data_pin",
+    "re",
+    "require"
+  ],
+  "original_gate_template_imported": false,
+  "top_level_execution_is_only_main_guard": true,
+  "three_unknown_binding_groups": true,
+  "source_mutating_git_commands_absent": true,
+  "git_command_allowlist": [
+    "write-tree",
+    "rev-parse",
+    "diff",
+    "ls-files",
+    "ls-tree"
+  ],
+  "all_new_outputs_create_only": true,
+  "natural_terminal_and_phase_raw_values_not_rewritten": true,
+  "history_pre_review_v1": {
+    "path": "history/pre-review-v1/export-r28-closed-template.py",
+    "bytes": 33500,
+    "sha256": "adb75a9c36210e775e05544bd42e30b8b8f0e4f082a5750987afcd07b0bbfc86",
+    "git_blob": "932028e9d6a9d77ce906d4c2092c972347ea93d9",
+    "change_to_current": "Added the exact ANSI stripping regex required by the verbatim copied clean_lines reader. No execution was attempted."
+  },
+  "validation_performed": "AST and static source review only",
+  "native_rust_or_archive_execution": false
+}

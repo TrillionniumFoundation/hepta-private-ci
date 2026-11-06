@@ -1,0 +1,22 @@
+        FAIL [  10.643s] codex-app-server::all suite::v2::bedrock_setup::setup_bedrock_profile_and_environment
+  stdout ───
+
+    running 1 test
+    test suite::v2::bedrock_setup::setup_bedrock_profile_and_environment ... FAILED
+
+    failures:
+
+    failures:
+        suite::v2::bedrock_setup::setup_bedrock_profile_and_environment
+
+    test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1020 filtered out; finished in 10.63s
+
+  stderr ───
+    writing message to stdin: Request(JSONRPCRequest { id: Integer(0), method: "initialize", params: Some(Object {"clientInfo": Object {"name": String("codex-app-server-tests"), "title": Null, "version": String("0.1.0")}, "capabilities": Object {"experimentalApi": Bool(true), "processIndeterminate": Bool(true), "requestAttestation": Bool(false), "optOutNotificationMethods": Null}}), trace: None })
+    read message from stdout: Response(JSONRPCResponse { id: Integer(0), result: Object {"userAgent": String("codex-app-server-tests/0.0.0 (Ubuntu 26.4.0; x86_64) unknown (codex-app-server-tests; 0.1.0)"), "codexHome": String("/tmp/.tmp4XieL1"), "platformFamily": String("unix"), "platformOs": String("linux"), "processIndeterminate": Bool(true)} })
+    writing message to stdin: Notification(JSONRPCNotification { method: "initialized", params: None })
+    writing message to stdin: Request(JSONRPCRequest { id: Integer(1), method: "account/bedrock/setup", params: Some(Object {"type": String("profile"), "profile": String(" engineering "), "region": String(" us-west-2 ")}), trace: None })
+    in read_stream_until_response_message(Integer(1))
+    read message from stdout: Notification(JSONRPCNotification { method: "remoteControl/status/changed", params: Some(Object {"status": String("disabled"), "serverName": String("alex-G1628-04"), "installationId": String("5a3213df-1616-4fc4-8d49-9a0e978b959a"), "environmentId": Null}) })
+    Error: deadline has elapsed
+

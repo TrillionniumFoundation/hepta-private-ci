@@ -1,0 +1,133 @@
+--- a/codex-rs/codex-mcp/src/binding.rs
++++ b/codex-rs/codex-mcp/src/binding.rs
+@@ -119,6 +119,17 @@
+         self.calls
+             .get(&(server.to_string(), tool.to_string()))
+             .filter(|call| crate::tool_is_model_visible(call.tool_info()))
++            .cloned()
++    }
++
++    /// Binds a configured hook to a permitted tool, including model-hidden tools.
++    ///
++    /// Hook configuration and governance are checked by the hook owner. This
++    /// uses the same filtered catalog and exact client/revision as model calls;
++    /// it does not add tools to the model-visible catalog or relax `prepare_call`.
++    pub fn prepare_hook_call(&self, server: &str, tool: &str) -> Option<PreparedMcpCall> {
++        self.calls
++            .get(&(server.to_string(), tool.to_string()))
+             .cloned()
+     }
+ 
+--- a/codex-rs/core/src/hook_mcp_executor.rs
++++ b/codex-rs/core/src/hook_mcp_executor.rs
+@@ -46,7 +46,7 @@
+                     call.tool
+                 )
+             })?;
+-            let prepared_call = binding.prepare_call(&call.server, &call.tool).ok_or_else(|| {
++            let prepared_call = binding.prepare_hook_call(&call.server, &call.tool).ok_or_else(|| {
+                 anyhow::anyhow!(
+                     "MCP server `{}` or tool `{}` is not connected and available",
+                     call.server,
+--- a/codex-rs/codex-mcp/src/connection_manager_tests.rs
++++ b/codex-rs/codex-mcp/src/connection_manager_tests.rs
+@@ -1954,9 +1954,14 @@
+             "shared_cached_tool",
+         )],
+     );
++    let mut hidden_tool = create_test_tool(CODEX_APPS_MCP_SERVER_NAME, "client_local_hidden");
++    let mut hidden_meta = rmcp::model::MetaObject::new();
++    hidden_meta.insert("ui".to_string(), serde_json::json!({ "visibility": [] }));
++    hidden_tool.tool.meta = Some(hidden_meta);
+     let mut ready_client = create_test_managed_client(vec![
+         create_test_tool(CODEX_APPS_MCP_SERVER_NAME, "client_local_tool"),
+         create_test_tool(CODEX_APPS_MCP_SERVER_NAME, "client_local_blocked"),
++        hidden_tool,
+     ])
+     .await;
+     let tool_filter = ToolFilter {
+@@ -2029,6 +2034,26 @@
+     );
+     assert!(
+         step.prepare_call(CODEX_APPS_MCP_SERVER_NAME, "client_local_blocked")
++            .is_none()
++    );
++    assert!(
++        step.prepare_call(CODEX_APPS_MCP_SERVER_NAME, "client_local_hidden")
++            .is_none()
++    );
++    assert!(
++        step.prepare_hook_call(CODEX_APPS_MCP_SERVER_NAME, "client_local_hidden")
++            .is_some()
++    );
++    assert!(
++        step.prepare_hook_call(CODEX_APPS_MCP_SERVER_NAME, "client_local_tool")
++            .is_some()
++    );
++    assert!(
++        step.prepare_hook_call(CODEX_APPS_MCP_SERVER_NAME, "shared_cached_tool")
++            .is_none()
++    );
++    assert!(
++        step.prepare_hook_call(CODEX_APPS_MCP_SERVER_NAME, "client_local_blocked")
+             .is_none()
+     );
+ }
+@@ -4553,6 +4578,9 @@
+     config.enabled = false;
+     let removed = reconcile_reusable_server(&reused, config, runtime_context).await;
+     assert!(!removed.servers.contains_key("docs"));
++    let removed = Arc::new(removed);
++    let removed_binding = capture_binding(&removed).await;
++    assert!(removed_binding.prepare_hook_call("docs", "search").is_none());
+     drop(previous);
+     drop(reused);
+ 
+--- a/codex-rs/codex-mcp/src/binding_tests.rs
++++ b/codex-rs/codex-mcp/src/binding_tests.rs
+@@ -4,6 +4,7 @@
+ use std::sync::atomic::AtomicBool;
+ use std::sync::atomic::Ordering;
+ 
++use anyhow::Context;
+ use codex_config::AppToolApproval;
+ use codex_config::Constrained;
+ use codex_config::types::ApprovalsReviewer;
+@@ -373,3 +374,37 @@
+         .expect_err("the test preparation should stop the call");
+     assert!(step.tool_catalog_revision.try_write().is_ok());
+ }
++
++#[tokio::test]
++async fn hook_call_retains_owner_and_rejects_stale_catalog_before_preparation() -> anyhow::Result<()> {
++    let step = test_step(
++        "old",
++        AppToolApproval::Prompt,
++        /*supports_sandbox_state_meta*/ true,
++    )
++    .await;
++    let prepared = step
++        .step
++        .prepare_hook_call(SERVER_NAME, TOOL_NAME)
++        .context("configured hook should retain the permitted original call")?;
++    assert!(Arc::ptr_eq(&prepared.client.client, &step.client));
++    assert_eq!(
++        (prepared.server_environment_id(), prepared.tool_approval_mode()),
++        ("old-environment", AppToolApproval::Prompt)
++    );
++
++    *step.tool_catalog_revision.write().await += 1;
++    let preparation_ran = Arc::new(AtomicBool::new(false));
++    let marker = Arc::clone(&preparation_ran);
++    let error = prepared
++        .call_with_preparation(/*requested_timeout*/ None, || async move {
++            marker.store(true, Ordering::SeqCst);
++            Ok((None, None))
++        })
++        .await
++        .err()
++        .context("a stale hook call must fail before irreversible preparation")?;
++    assert!(format!("{error:#}").contains("catalog changed"));
++    assert!(!preparation_ran.load(Ordering::SeqCst));
++    Ok(())
++}

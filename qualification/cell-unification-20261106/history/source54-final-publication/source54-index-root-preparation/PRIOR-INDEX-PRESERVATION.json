@@ -1,0 +1,20 @@
+{
+  "schema": "hepta.root-exact-v4-index-preservation.v1",
+  "prior_index": {
+    "path": "source54-index-root-preparation/INDEX-v4-original.json",
+    "bytes": 1548794,
+    "sha256": "fe9d15906ac379e33e7d58e0bed4e385592cf79d4b8eaf6e76e2c90beb48dc61",
+    "git_blob": "be2dc30cf40e49a2758d8a57886243a757bc691e"
+  },
+  "retained_gzip": {
+    "path": "native-evidence/history/source54-index/INDEX-v4.json.gz",
+    "bytes": 298273,
+    "sha256": "4680e55f204a00a0d096d735d9933548cf8ae54c55290afd502fd46d62486b23",
+    "git_blob": "cfb89b141b056b9e4ac4e3896fae7f8e83d5239f"
+  },
+  "gzip_mtime_zero": true,
+  "full_roundtrip_equal": true,
+  "old_rows_preserved": 2109,
+  "old_git_only_paths": 50,
+  "unmaterialized_reference_rows": 139
+}

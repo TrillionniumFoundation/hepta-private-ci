@@ -1,0 +1,18 @@
+{
+  "schema": "hepta.source53-finalizer-independent-local-verification-execution.v1",
+  "command": [
+    "python3",
+    "source53-finalizer-independent-static-review/verify_static.py"
+  ],
+  "cwd": "/workspace/scratch/08f5efd48967",
+  "result": {
+    "chunk_id": "44b34c",
+    "wall_time_seconds": 0.524404194,
+    "exit_code": 0,
+    "original_token_count": 47,
+    "output": "{\"path\": \"MECHANICAL-READBACK.json\", \"bytes\": 20234, \"sha256\": \"d73862bf6b92a8b8d6013689c272900273d16705276dc33695744868badd5c6c\", \"git_blob\": \"e30f357bb384c3261f98b134d4ccf74df6b23f2c\"}\n"
+  },
+  "classification": "LOCAL_AST_AND_BYTE_VERIFIER_ONLY",
+  "runner_imported_or_executed": false,
+  "native_rust_metadata_fix_fmt_or_git_executed": false
+}

@@ -1,0 +1,2662 @@
+{
+  "schema": "hepta.r29-bedrock-native-call-map.v1",
+  "source_commit": "1e0910becc37383e6d17ecf861ea844fd07d8862",
+  "source_tree": "211f15baff19095e8c98bcea2b0ed99ca2270ade",
+  "source_manifest": {
+    "bytes": 55209,
+    "sha256": "3ff99b41bab572666b424fdbf9a508b33be13e6487d9effa7dd6a0e14b4ec898"
+  },
+  "started_unix": 1793991119.179896,
+  "source_pre": {
+    "pass": true,
+    "source_tree": "211f15baff19095e8c98bcea2b0ed99ca2270ade",
+    "head": "bef6fa7645df9df12b69fda499e97eed25de6c75",
+    "changed_file_count": 195,
+    "cargo_lock_sha256": "4165307bb6c41d08e6c1c362060f2a958c8200ea43fdab2b8b1e6220ad82b55c",
+    "bazel_lock_sha256": "e80ef06b6f824a19cdcedd6010738b316ccca96b83ad8730fafb52153a2634fb"
+  },
+  "source_post": {
+    "pass": true,
+    "source_tree": "211f15baff19095e8c98bcea2b0ed99ca2270ade",
+    "head": "bef6fa7645df9df12b69fda499e97eed25de6c75",
+    "changed_file_count": 195,
+    "cargo_lock_sha256": "4165307bb6c41d08e6c1c362060f2a958c8200ea43fdab2b8b1e6220ad82b55c",
+    "bazel_lock_sha256": "e80ef06b6f824a19cdcedd6010738b316ccca96b83ad8730fafb52153a2634fb"
+  },
+  "queries": [
+    {
+      "name": "test-transport-definitions",
+      "argv": [
+        "rg",
+        "-n",
+        "--json",
+        "-g",
+        "*.rs",
+        "-g",
+        "Cargo.toml",
+        "-e",
+        "fn (request|read_stream_until_response_message)\\b",
+        "codex-rs/app-server/tests/common"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "matches": [
+        {
+          "path": "codex-rs/app-server/tests/common/test_app_server.rs",
+          "line": 1546,
+          "text": "    pub async fn request<T: DeserializeOwned>(\n"
+        },
+        {
+          "path": "codex-rs/app-server/tests/common/test_app_server.rs",
+          "line": 1648,
+          "text": "    pub async fn read_stream_until_response_message(\n"
+        }
+      ]
+    },
+    {
+      "name": "bedrock-dispatch-and-handler",
+      "argv": [
+        "rg",
+        "-n",
+        "--json",
+        "-g",
+        "*.rs",
+        "-g",
+        "Cargo.toml",
+        "-e",
+        "BedrockSetup|account/bedrock/setup|setup_bedrock",
+        "codex-rs/app-server/src",
+        "codex-rs/app-server-protocol/src"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "matches": [
+        {
+          "path": "codex-rs/app-server/src/message_processor.rs",
+          "line": 1668,
+          "text": "            ClientRequest::BedrockSetup { params, .. } => {\n"
+        },
+        {
+          "path": "codex-rs/app-server-protocol/src/protocol/common.rs",
+          "line": 1232,
+          "text": "    #[experimental(\"account/bedrock/setup\")]\n"
+        },
+        {
+          "path": "codex-rs/app-server-protocol/src/protocol/common.rs",
+          "line": 1233,
+          "text": "    BedrockSetup => \"account/bedrock/setup\" {\n"
+        },
+        {
+          "path": "codex-rs/app-server-protocol/src/protocol/common.rs",
+          "line": 1234,
+          "text": "        params: v2::BedrockSetupParams,\n"
+        },
+        {
+          "path": "codex-rs/app-server-protocol/src/protocol/common.rs",
+          "line": 1236,
+          "text": "        response: v2::BedrockSetupResponse,\n"
+        },
+        {
+          "path": "codex-rs/app-server-protocol/src/protocol/v2/bedrock.rs",
+          "line": 50,
+          "text": "pub enum BedrockSetupParams {\n"
+        },
+        {
+          "path": "codex-rs/app-server-protocol/src/protocol/v2/bedrock.rs",
+          "line": 62,
+          "text": "pub struct BedrockSetupResponse {}\n"
+        },
+        {
+          "path": "codex-rs/app-server/src/request_processors/account_processor/bedrock_setup.rs",
+          "line": 12,
+          "text": "use codex_app_server_protocol::BedrockSetupParams;\n"
+        },
+        {
+          "path": "codex-rs/app-server/src/request_processors/account_processor/bedrock_setup.rs",
+          "line": 13,
+          "text": "use codex_app_server_protocol::BedrockSetupResponse;\n"
+        },
+        {
+          "path": "codex-rs/app-server/src/request_processors/account_processor/bedrock_setup.rs",
+          "line": 70,
+          "text": "        params: BedrockSetupParams,\n"
+        },
+        {
+          "path": "codex-rs/app-server/src/request_processors/account_processor/bedrock_setup.rs",
+          "line": 74,
+          "text": "        if matches!(&params, BedrockSetupParams::Environment { .. })\n"
+        },
+        {
+          "path": "codex-rs/app-server/src/request_processors/account_processor/bedrock_setup.rs",
+          "line": 86,
+          "text": "            BedrockSetupParams::Profile { region, .. }\n"
+        },
+        {
+          "path": "codex-rs/app-server/src/request_processors/account_processor/bedrock_setup.rs",
+          "line": 87,
+          "text": "            | BedrockSetupParams::Environment { region, .. } => region.trim(),\n"
+        },
+        {
+          "path": "codex-rs/app-server/src/request_processors/account_processor/bedrock_setup.rs",
+          "line": 96,
+          "text": "            BedrockSetupParams::Profile { profile, .. } => {\n"
+        },
+        {
+          "path": "codex-rs/app-server/src/request_processors/account_processor/bedrock_setup.rs",
+          "line": 110,
+          "text": "            BedrockSetupParams::Environment { .. } => {\n"
+        },
+        {
+          "path": "codex-rs/app-server/src/request_processors/account_processor/bedrock_setup.rs",
+          "line": 134,
+          "text": "        Ok(Some(BedrockSetupResponse {}.into()))\n"
+        }
+      ]
+    },
+    {
+      "name": "bedrock-auth-credentials",
+      "argv": [
+        "rg",
+        "-n",
+        "--json",
+        "-g",
+        "*.rs",
+        "-g",
+        "Cargo.toml",
+        "-e",
+        "credentials_provider|credential_provider|resolve_.*credentials|from_env\\(|load_from_env|load_defaults|SdkConfig|aws_config::|cloud_config",
+        "codex-rs/app-server/src/request_processors",
+        "codex-rs/aws-auth/src"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "matches": [
+        {
+          "path": "codex-rs/app-server/src/request_processors/config_errors.rs",
+          "line": 3,
+          "text": "fn cloud_config_bundle_load_error(err: &std::io::Error) -> Option<&CloudConfigBundleLoadError> {\n"
+        },
+        {
+          "path": "codex-rs/app-server/src/request_processors/config_errors.rs",
+          "line": 17,
+          "text": "    let data = cloud_config_bundle_load_error(err).map(|cloud_error| {\n"
+        },
+        {
+          "path": "codex-rs/app-server/src/request_processors/thread_processor_tests.rs",
+          "line": 649,
+          "text": "    fn config_load_error_marks_cloud_config_bundle_failures_for_relogin() {\n"
+        },
+        {
+          "path": "codex-rs/app-server/src/request_processors/thread_processor_tests.rs",
+          "line": 676,
+          "text": "    fn config_load_error_leaves_non_cloud_config_bundle_failures_unmarked() {\n"
+        },
+        {
+          "path": "codex-rs/app-server/src/request_processors/thread_processor_tests.rs",
+          "line": 690,
+          "text": "    fn config_load_error_marks_non_auth_cloud_config_bundle_failures_without_relogin() {\n"
+        },
+        {
+          "path": "codex-rs/app-server/src/request_processors/thread_processor_tests.rs",
+          "line": 710,
+          "text": "    fn config_load_error_marks_invalid_cloud_config_bundle_failures_without_relogin() {\n"
+        },
+        {
+          "path": "codex-rs/aws-auth/src/discovery.rs",
+          "line": 1,
+          "text": "use aws_config::default_provider::region::DefaultRegionChain;\n"
+        },
+        {
+          "path": "codex-rs/aws-auth/src/discovery.rs",
+          "line": 2,
+          "text": "use aws_config::profile::ProfileFileCredentialsProvider;\n"
+        },
+        {
+          "path": "codex-rs/aws-auth/src/discovery.rs",
+          "line": 3,
+          "text": "use aws_config::provider_config::ProviderConfig;\n"
+        },
+        {
+          "path": "codex-rs/aws-auth/src/discovery.rs",
+          "line": 20,
+          "text": "    let profiles = aws_config::profile::load(\n"
+        },
+        {
+          "path": "codex-rs/aws-auth/src/discovery.rs",
+          "line": 48,
+          "text": "    profile_credentials_provider(profile, Some(region))\n"
+        },
+        {
+          "path": "codex-rs/aws-auth/src/discovery.rs",
+          "line": 55,
+          "text": "pub(crate) async fn profile_credentials_provider(\n"
+        },
+        {
+          "path": "codex-rs/aws-auth/src/lib.rs",
+          "line": 75,
+          "text": "    ProfileLoad(#[from] aws_config::profile::ProfileFileLoadError),\n"
+        },
+        {
+          "path": "codex-rs/aws-auth/src/lib.rs",
+          "line": 95,
+          "text": "    credentials_provider: SharedCredentialsProvider,\n"
+        },
+        {
+          "path": "codex-rs/aws-auth/src/lib.rs",
+          "line": 112,
+          "text": "        let credentials_provider = config::credentials_provider(&sdk_config)?;\n"
+        },
+        {
+          "path": "codex-rs/aws-auth/src/lib.rs",
+          "line": 116,
+          "text": "            credentials_provider,\n"
+        },
+        {
+          "path": "codex-rs/aws-auth/src/lib.rs",
+          "line": 127,
+          "text": "        context.credentials_provider =\n"
+        },
+        {
+          "path": "codex-rs/aws-auth/src/lib.rs",
+          "line": 143,
+          "text": "        let credentials_provider = SharedCredentialsProvider::new(\n"
+        },
+        {
+          "path": "codex-rs/aws-auth/src/lib.rs",
+          "line": 144,
+          "text": "            discovery::profile_credentials_provider(profile, config.region.as_deref()).await,\n"
+        },
+        {
+          "path": "codex-rs/aws-auth/src/lib.rs",
+          "line": 147,
+          "text": "        context.credentials_provider = credentials_provider;\n"
+        },
+        {
+          "path": "codex-rs/aws-auth/src/lib.rs",
+          "line": 168,
+          "text": "        let credentials = self.credentials_provider.provide_credentials().await?;\n"
+        },
+        {
+          "path": "codex-rs/aws-auth/src/lib.rs",
+          "line": 210,
+          "text": "            credentials_provider: SharedCredentialsProvider::new(Credentials::new(\n"
+        },
+        {
+          "path": "codex-rs/aws-auth/src/lib.rs",
+          "line": 267,
+          "text": "    fn credentials_provider_failures_are_retryable() {\n"
+        },
+        {
+          "path": "codex-rs/aws-auth/src/config.rs",
+          "line": 1,
+          "text": "use aws_config::BehaviorVersion;\n"
+        },
+        {
+          "path": "codex-rs/aws-auth/src/config.rs",
+          "line": 2,
+          "text": "use aws_config::SdkConfig;\n"
+        },
+        {
+          "path": "codex-rs/aws-auth/src/config.rs",
+          "line": 9,
+          "text": "pub(crate) async fn load_sdk_config(config: &AwsAuthConfig) -> Result<SdkConfig, AwsAuthError> {\n"
+        },
+        {
+          "path": "codex-rs/aws-auth/src/config.rs",
+          "line": 14,
+          "text": "    let mut loader = aws_config::defaults(BehaviorVersion::latest());\n"
+        },
+        {
+          "path": "codex-rs/aws-auth/src/config.rs",
+          "line": 25,
+          "text": "pub(crate) fn credentials_provider(\n"
+        },
+        {
+          "path": "codex-rs/aws-auth/src/config.rs",
+          "line": 26,
+          "text": "    sdk_config: &SdkConfig,\n"
+        },
+        {
+          "path": "codex-rs/aws-auth/src/config.rs",
+          "line": 29,
+          "text": "        .credentials_provider()\n"
+        },
+        {
+          "path": "codex-rs/aws-auth/src/config.rs",
+          "line": 33,
+          "text": "pub(crate) fn resolved_region(sdk_config: &SdkConfig) -> Result<String, AwsAuthError> {\n"
+        },
+        {
+          "path": "codex-rs/app-server/src/request_processors/account_processor.rs",
+          "line": 432,
+          "text": "                self.config_manager.clear_cloud_config_bundle_loader();\n"
+        },
+        {
+          "path": "codex-rs/app-server/src/request_processors/account_processor.rs",
+          "line": 528,
+          "text": "            self.config_manager.clear_cloud_config_bundle_loader();\n"
+        },
+        {
+          "path": "codex-rs/app-server/src/request_processors/account_processor.rs",
+          "line": 870,
+          "text": "        self.config_manager.replace_cloud_config_bundle_loader(\n"
+        },
+        {
+          "path": "codex-rs/app-server/src/request_processors/account_processor.rs",
+          "line": 924,
+          "text": "            config_manager.replace_cloud_config_bundle_loader(\n"
+        },
+        {
+          "path": "codex-rs/app-server/src/request_processors/account_processor.rs",
+          "line": 978,
+          "text": "        self.config_manager.clear_cloud_config_bundle_loader();\n"
+        }
+      ]
+    },
+    {
+      "name": "patched-aws-provider-chain",
+      "argv": [
+        "rg",
+        "-n",
+        "--json",
+        "-g",
+        "*.rs",
+        "-g",
+        "Cargo.toml",
+        "-e",
+        "pub (async )?fn (load|credentials_provider|build|configure)|pub async fn resolve|DefaultCredentialsChain|EnvironmentVariableCredentialsProvider|ProfileFileCredentialsProvider|EcsCredentialsProvider|ImdsCredentialsProvider|CredentialProcessProvider|provide_credentials|credential_process|default_provider::credentials",
+        "codex-rs/third_party/aws-config-1.12.0/src"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "matches": [
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/lib.rs",
+          "line": 71,
+          "text": "//! #       pub fn credentials_provider(\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/lib.rs",
+          "line": 74,
+          "text": "//! #       pub fn build(self) -> Builder { self }\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/lib.rs",
+          "line": 127,
+          "text": "pub mod credential_process;\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/lib.rs",
+          "line": 170,
+          "text": "pub async fn load_from_env() -> SdkConfig {\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/lib.rs",
+          "line": 188,
+          "text": "pub async fn load_from_env() -> SdkConfig {\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/lib.rs",
+          "line": 215,
+          "text": "pub async fn load_defaults(version: BehaviorVersion) -> SdkConfig {\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/lib.rs",
+          "line": 260,
+          "text": "    use crate::default_provider::credentials;\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/lib.rs",
+          "line": 536,
+          "text": "        pub fn credentials_provider(\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/lib.rs",
+          "line": 681,
+          "text": "        /// use aws_config::profile::{ProfileFileCredentialsProvider, ProfileFileRegionProvider};\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/lib.rs",
+          "line": 725,
+          "text": "        /// use aws_config::profile::{ProfileFileCredentialsProvider, ProfileFileRegionProvider};\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/lib.rs",
+          "line": 876,
+          "text": "        pub async fn load(self) -> SdkConfig {\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/lib.rs",
+          "line": 993,
+          "text": "                        credentials::DefaultCredentialsChain::builder().configure(conf.clone());\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/lib.rs",
+          "line": 1229,
+          "text": "                    .provide_credentials()\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/lib.rs",
+          "line": 1466,
+          "text": "                .provide_credentials()\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/lib.rs",
+          "line": 1631,
+          "text": "                .provide_credentials()\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/profile.rs",
+          "line": 34,
+          "text": "pub use credentials::ProfileFileCredentialsProvider;\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/environment/mod.rs",
+          "line": 13,
+          "text": "pub use credentials::EnvironmentVariableCredentialsProvider;\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/credential_process.rs",
+          "line": 54,
+          "text": "/// configured using the `credential_process` attribute. For example:\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/credential_process.rs",
+          "line": 58,
+          "text": "/// credential_process = /path/to/my/process --some --arguments\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/credential_process.rs",
+          "line": 61,
+          "text": "pub struct CredentialProcessProvider {\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/credential_process.rs",
+          "line": 66,
+          "text": "impl ProvideCredentials for CredentialProcessProvider {\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/credential_process.rs",
+          "line": 67,
+          "text": "    fn provide_credentials<'a>(&'a self) -> future::ProvideCredentials<'a>\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/credential_process.rs",
+          "line": 75,
+          "text": "impl CredentialProcessProvider {\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/credential_process.rs",
+          "line": 76,
+          "text": "    /// Create new [`CredentialProcessProvider`] with the `command` needed to execute the external process.\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/credential_process.rs",
+          "line": 143,
+          "text": "        parse_credential_process_json_credentials(output, self.profile_account_id.as_ref())\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/credential_process.rs",
+          "line": 180,
+          "text": "    pub(crate) fn build(self) -> CredentialProcessProvider {\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/credential_process.rs",
+          "line": 181,
+          "text": "        CredentialProcessProvider {\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/credential_process.rs",
+          "line": 188,
+          "text": "/// Deserialize a credential_process response from a string\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/credential_process.rs",
+          "line": 195,
+          "text": "pub(crate) fn parse_credential_process_json_credentials(\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/credential_process.rs",
+          "line": 287,
+          "text": "    use crate::credential_process::CredentialProcessProvider;\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/credential_process.rs",
+          "line": 322,
+          "text": "    async fn test_credential_process() {\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/credential_process.rs",
+          "line": 323,
+          "text": "        let provider = CredentialProcessProvider::new(echo_json(\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/credential_process.rs",
+          "line": 326,
+          "text": "        let creds = provider.provide_credentials().await.expect(\"valid creds\");\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/credential_process.rs",
+          "line": 341,
+          "text": "    async fn test_credential_process_no_expiry() {\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/credential_process.rs",
+          "line": 342,
+          "text": "        let provider = CredentialProcessProvider::new(echo_json(\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/credential_process.rs",
+          "line": 345,
+          "text": "        let creds = provider.provide_credentials().await.expect(\"valid creds\");\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/credential_process.rs",
+          "line": 360,
+          "text": "        let provider = CredentialProcessProvider::new(String::from(\"sleep 1\"));\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/credential_process.rs",
+          "line": 361,
+          "text": "        let _creds = timeout(Duration::from_millis(1), provider.provide_credentials())\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/credential_process.rs",
+          "line": 368,
+          "text": "        let provider = CredentialProcessProvider::builder()\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/credential_process.rs",
+          "line": 374,
+          "text": "        let creds = provider.provide_credentials().await.unwrap();\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/credential_process.rs",
+          "line": 380,
+          "text": "        let provider = CredentialProcessProvider::builder()\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/credential_process.rs",
+          "line": 386,
+          "text": "        let creds = provider.provide_credentials().await.unwrap();\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/credential_process.rs",
+          "line": 392,
+          "text": "        let provider = CredentialProcessProvider::builder()\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/credential_process.rs",
+          "line": 398,
+          "text": "        let creds = provider.provide_credentials().await.unwrap();\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/credential_process.rs",
+          "line": 408,
+          "text": "// `credential_process` quoting bug (internal: P491659165). The pre-existing\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/credential_process.rs",
+          "line": 409,
+          "text": "// `credential_process` tests above use the Unix `echo` builtin and are\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/credential_process.rs",
+          "line": 413,
+          "text": "    use crate::credential_process::CredentialProcessProvider;\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/credential_process.rs",
+          "line": 443,
+          "text": "        let provider = CredentialProcessProvider::new(command);\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/credential_process.rs",
+          "line": 446,
+          "text": "            .provide_credentials()\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/credential_process.rs",
+          "line": 460,
+          "text": "        let provider = CredentialProcessProvider::new(command);\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/credential_process.rs",
+          "line": 463,
+          "text": "            .provide_credentials()\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/credential_process.rs",
+          "line": 481,
+          "text": "        let provider = CredentialProcessProvider::new(command);\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/credential_process.rs",
+          "line": 484,
+          "text": "            .provide_credentials()\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/environment/credentials.rs",
+          "line": 19,
+          "text": "/// `EnvironmentVariableCredentialsProvider` uses the following variables:\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/environment/credentials.rs",
+          "line": 25,
+          "text": "pub struct EnvironmentVariableCredentialsProvider {\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/environment/credentials.rs",
+          "line": 29,
+          "text": "impl EnvironmentVariableCredentialsProvider {\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/environment/credentials.rs",
+          "line": 73,
+          "text": "impl EnvironmentVariableCredentialsProvider {\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/environment/credentials.rs",
+          "line": 74,
+          "text": "    /// Create a `EnvironmentVariableCredentialsProvider`\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/environment/credentials.rs",
+          "line": 79,
+          "text": "    /// Create a new `EnvironmentVariableCredentialsProvider` with `Env` overridden\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/environment/credentials.rs",
+          "line": 87,
+          "text": "impl Default for EnvironmentVariableCredentialsProvider {\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/environment/credentials.rs",
+          "line": 95,
+          "text": "impl ProvideCredentials for EnvironmentVariableCredentialsProvider {\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/environment/credentials.rs",
+          "line": 96,
+          "text": "    fn provide_credentials<'a>(&'a self) -> future::ProvideCredentials<'a>\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/environment/credentials.rs",
+          "line": 127,
+          "text": "    use super::EnvironmentVariableCredentialsProvider;\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/environment/credentials.rs",
+          "line": 129,
+          "text": "    fn make_provider(vars: &[(&str, &str)]) -> EnvironmentVariableCredentialsProvider {\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/environment/credentials.rs",
+          "line": 130,
+          "text": "        EnvironmentVariableCredentialsProvider {\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/environment/credentials.rs",
+          "line": 142,
+          "text": "            .provide_credentials()\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/environment/credentials.rs",
+          "line": 160,
+          "text": "            .provide_credentials()\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/environment/credentials.rs",
+          "line": 179,
+          "text": "                .provide_credentials()\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/environment/credentials.rs",
+          "line": 198,
+          "text": "            .provide_credentials()\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/environment/credentials.rs",
+          "line": 217,
+          "text": "            .provide_credentials()\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/environment/credentials.rs",
+          "line": 230,
+          "text": "            .provide_credentials()\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/environment/credentials.rs",
+          "line": 255,
+          "text": "                .provide_credentials()\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/environment/credentials.rs",
+          "line": 273,
+          "text": "            .provide_credentials()\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/environment/credentials.rs",
+          "line": 285,
+          "text": "        let provider = EnvironmentVariableCredentialsProvider::new();\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/environment/credentials.rs",
+          "line": 287,
+          "text": "        let _fut = provider.provide_credentials();\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/sts/assume_role.rs",
+          "line": 64,
+          "text": "/// use aws_config::environment::EnvironmentVariableCredentialsProvider;\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/sts/assume_role.rs",
+          "line": 69,
+          "text": "///   .build_from_provider(EnvironmentVariableCredentialsProvider::new()).await;\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/sts/assume_role.rs",
+          "line": 91,
+          "text": "    pub fn builder(role: impl Into<String>) -> AssumeRoleProviderBuilder {\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/sts/assume_role.rs",
+          "line": 248,
+          "text": "    pub fn configure(mut self, conf: &SdkConfig) -> Self {\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/sts/assume_role.rs",
+          "line": 257,
+          "text": "    pub async fn build(self) -> AssumeRoleProvider {\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/sts/assume_role.rs",
+          "line": 298,
+          "text": "    pub async fn build_from_provider(\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/sts/assume_role.rs",
+          "line": 360,
+          "text": "    fn provide_credentials<'a>(&'a self) -> future::ProvideCredentials<'a>\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/sts/assume_role.rs",
+          "line": 376,
+          "text": "    use aws_credential_types::credential_fn::provide_credentials_fn;\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/sts/assume_role.rs",
+          "line": 413,
+          "text": "            .build_from_provider(provide_credentials_fn(|| async {\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/sts/assume_role.rs",
+          "line": 417,
+          "text": "        let _ = dbg!(provider.provide_credentials().await);\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/sts/assume_role.rs",
+          "line": 434,
+          "text": "            .credentials_provider(SharedCredentialsProvider::new(provide_credentials_fn(\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/sts/assume_role.rs",
+          "line": 444,
+          "text": "            .build_from_provider(provide_credentials_fn(|| async {\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/sts/assume_role.rs",
+          "line": 448,
+          "text": "        let _ = dbg!(provider.provide_credentials().await);\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/sts/assume_role.rs",
+          "line": 479,
+          "text": "        let _ = dbg!(provider.provide_credentials().await);\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/sts/assume_role.rs",
+          "line": 538,
+          "text": "            .build_from_provider(provide_credentials_fn(move || {\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/sts/assume_role.rs",
+          "line": 548,
+          "text": "            .provide_credentials()\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/sts/assume_role.rs",
+          "line": 558,
+          "text": "            .provide_credentials()\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/sts/assume_role.rs",
+          "line": 593,
+          "text": "            .provide_credentials()\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/default_provider/retry_config.rs",
+          "line": 78,
+          "text": "    pub fn configure(mut self, configuration: &ProviderConfig) -> Self {\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/provider_config.rs",
+          "line": 339,
+          "text": "    /// `ProviderConfig` (e.g., [`DefaultCredentialsChain`], `AssumeRoleProvider`,\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/provider_config.rs",
+          "line": 347,
+          "text": "    /// [`DefaultCredentialsChain`]: crate::default_provider::credentials::DefaultCredentialsChain\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/provider_config.rs",
+          "line": 406,
+          "text": "    pub async fn load_default_region(self) -> Self {\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/ecs.rs",
+          "line": 13,
+          "text": "//! This provider is part of the [default credentials chain](crate::default_provider::credentials).\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/ecs.rs",
+          "line": 104,
+          "text": "pub struct EcsCredentialsProvider {\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/ecs.rs",
+          "line": 111,
+          "text": "impl EcsCredentialsProvider {\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/ecs.rs",
+          "line": 112,
+          "text": "    /// Builder for [`EcsCredentialsProvider`]\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/ecs.rs",
+          "line": 113,
+          "text": "    pub fn builder() -> Builder {\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/ecs.rs",
+          "line": 176,
+          "text": "impl ProvideCredentials for EcsCredentialsProvider {\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/ecs.rs",
+          "line": 177,
+          "text": "    fn provide_credentials<'a>(&'a self) -> future::ProvideCredentials<'a>\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/ecs.rs",
+          "line": 308,
+          "text": "/// Builder for [`EcsCredentialsProvider`]\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/ecs.rs",
+          "line": 319,
+          "text": "    pub fn configure(mut self, provider_config: &ProviderConfig) -> Self {\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/ecs.rs",
+          "line": 349,
+          "text": "    /// Create an [`EcsCredentialsProvider`] from this builder\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/ecs.rs",
+          "line": 350,
+          "text": "    pub fn build(self) -> EcsCredentialsProvider {\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/ecs.rs",
+          "line": 361,
+          "text": "        EcsCredentialsProvider {\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/ecs.rs",
+          "line": 548,
+          "text": "    ) -> EcsCredentialsProvider {\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/ecs.rs",
+          "line": 781,
+          "text": "            .provide_credentials()\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/ecs.rs",
+          "line": 816,
+          "text": "            .provide_credentials()\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/ecs.rs",
+          "line": 835,
+          "text": "            .provide_credentials()\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/ecs.rs",
+          "line": 873,
+          "text": "            .provide_credentials()\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/ecs.rs",
+          "line": 921,
+          "text": "            .provide_credentials()\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/ecs.rs",
+          "line": 957,
+          "text": "            .provide_credentials()\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/ecs.rs",
+          "line": 1005,
+          "text": "            .provide_credentials()\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/ecs.rs",
+          "line": 1020,
+          "text": "            .provide_credentials()\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/login.rs",
+          "line": 71,
+          "text": "    pub fn builder(session_arn: impl Into<String>) -> Builder {\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/login.rs",
+          "line": 212,
+          "text": "    fn provide_credentials<'a>(&'a self) -> future::ProvideCredentials<'a>\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/login.rs",
+          "line": 230,
+          "text": "    pub fn configure(mut self, provider_config: &ProviderConfig) -> Self {\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/login.rs",
+          "line": 243,
+          "text": "    pub fn build(self) -> LoginCredentialsProvider {\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/login.rs",
+          "line": 413,
+          "text": "            let result = dbg!(provider.provide_credentials().await);\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/sso/credentials.rs",
+          "line": 52,
+          "text": "    pub fn builder() -> Builder {\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/sso/credentials.rs",
+          "line": 106,
+          "text": "    fn provide_credentials<'a>(&'a self) -> future::ProvideCredentials<'a>\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/sso/credentials.rs",
+          "line": 132,
+          "text": "    pub fn configure(mut self, provider_config: &ProviderConfig) -> Self {\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/sso/credentials.rs",
+          "line": 221,
+          "text": "    pub fn build(self) -> SsoCredentialsProvider {\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/default_provider/token.rs",
+          "line": 59,
+          "text": "    pub fn builder() -> Builder {\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/default_provider/token.rs",
+          "line": 116,
+          "text": "    pub async fn build(self) -> DefaultTokenChain {\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/default_provider/region.rs",
+          "line": 36,
+          "text": "    pub fn builder() -> Builder {\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/default_provider/region.rs",
+          "line": 67,
+          "text": "    pub fn build(self) -> DefaultRegionChain {\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/profile/token.rs",
+          "line": 89,
+          "text": "    pub fn builder() -> Builder {\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/profile/token.rs",
+          "line": 154,
+          "text": "    pub fn build(self) -> ProfileFileTokenProvider {\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/default_provider/timeout_config.rs",
+          "line": 30,
+          "text": "    pub fn configure(self, _configuration: &ProviderConfig) -> Self {\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/meta/credentials/chain.rs",
+          "line": 32,
+          "text": "/// use aws_config::environment::credentials::EnvironmentVariableCredentialsProvider;\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/meta/credentials/chain.rs",
+          "line": 33,
+          "text": "/// use aws_config::profile::ProfileFileCredentialsProvider;\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/meta/credentials/chain.rs",
+          "line": 35,
+          "text": "/// let provider = CredentialsProviderChain::first_try(\"Environment\", EnvironmentVariableCredentialsProvider::new())\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/meta/credentials/chain.rs",
+          "line": 36,
+          "text": "///     .or_else(\"Profile\", ProfileFileCredentialsProvider::builder().build());\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/meta/credentials/chain.rs",
+          "line": 84,
+          "text": "            crate::default_provider::credentials::default_provider().await,\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/meta/credentials/chain.rs",
+          "line": 93,
+          "text": "            crate::default_provider::credentials::default_provider().await,\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/meta/credentials/chain.rs",
+          "line": 101,
+          "text": "            match provider.provide_credentials().instrument(span).await {\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/meta/credentials/chain.rs",
+          "line": 123,
+          "text": "    fn provide_credentials<'a>(&'a self) -> future::ProvideCredentials<'a>\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/meta/credentials/chain.rs",
+          "line": 144,
+          "text": "    use aws_credential_types::credential_fn::provide_credentials_fn;\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/meta/credentials/chain.rs",
+          "line": 157,
+          "text": "        fn provide_credentials<'a>(&'a self) -> future::ProvideCredentials<'a>\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/meta/credentials/chain.rs",
+          "line": 177,
+          "text": "            provide_credentials_fn(|| async {\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/meta/credentials/chain.rs",
+          "line": 186,
+          "text": "        // Let the first call to `provide_credentials` succeed.\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/meta/credentials/chain.rs",
+          "line": 187,
+          "text": "        let expected = chain.provide_credentials().await.unwrap();\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/meta/credentials/chain.rs",
+          "line": 191,
+          "text": "            chain.provide_credentials(),\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/meta/credentials/chain.rs",
+          "line": 195,
+          "text": "            Ok(_) => panic!(\"provide_credentials completed before timeout future\"),\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/meta/credentials/chain.rs",
+          "line": 199,
+          "text": "                    \"provide_credentials timed out and no credentials returned from fallback_on_interrupt\"\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/meta/credentials/chain.rs",
+          "line": 210,
+          "text": "            provide_credentials_fn(|| async {\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/meta/credentials/chain.rs",
+          "line": 219,
+          "text": "        // Let the first call to `provide_credentials` succeed.\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/meta/credentials/chain.rs",
+          "line": 220,
+          "text": "        let expected = chain.provide_credentials().await.unwrap();\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/meta/credentials/chain.rs",
+          "line": 224,
+          "text": "            chain.provide_credentials(),\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/meta/credentials/chain.rs",
+          "line": 228,
+          "text": "            Ok(_) => panic!(\"provide_credentials completed before timeout future\"),\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/meta/credentials/chain.rs",
+          "line": 232,
+          "text": "                    \"provide_credentials timed out and no credentials returned from fallback_on_interrupt\"\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/meta/credentials/chain.rs",
+          "line": 242,
+          "text": "            provide_credentials_fn(|| async { Err(CredentialsError::not_loaded(\"not set\")) }),\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/meta/credentials/chain.rs",
+          "line": 246,
+          "text": "            provide_credentials_fn(|| async {\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/meta/credentials/chain.rs",
+          "line": 252,
+          "text": "            provide_credentials_fn(|| async {\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/meta/credentials/chain.rs",
+          "line": 259,
+          "text": "        let err = chain.provide_credentials().await.expect_err(\"should fail\");\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/meta/credentials/chain.rs",
+          "line": 280,
+          "text": "            provide_credentials_fn(|| async {\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/meta/credentials/chain.rs",
+          "line": 286,
+          "text": "            provide_credentials_fn(|| async { Ok(Credentials::for_tests()) }),\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/meta/credentials/chain.rs",
+          "line": 290,
+          "text": "            .provide_credentials()\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/meta/credentials/chain.rs",
+          "line": 302,
+          "text": "        let err = chain.provide_credentials().await.expect_err(\"should fail\");\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/meta/credentials/chain.rs",
+          "line": 319,
+          "text": "            provide_credentials_fn(|| async { Err(CredentialsError::not_loaded(\"not set\")) }),\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/meta/credentials/chain.rs",
+          "line": 323,
+          "text": "            provide_credentials_fn(|| async {\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/meta/credentials/chain.rs",
+          "line": 328,
+          "text": "        let err = chain.provide_credentials().await.expect_err(\"should fail\");\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/web_identity_token.rs",
+          "line": 26,
+          "text": "//! when using the [`ProfileFileCredentialsProvider`](crate::profile::credentials)._\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/web_identity_token.rs",
+          "line": 49,
+          "text": "//! Web Identity Token providers are part of the [default chain](crate::default_provider::credentials).\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/web_identity_token.rs",
+          "line": 101,
+          "text": "    pub fn builder() -> Builder {\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/web_identity_token.rs",
+          "line": 126,
+          "text": "    fn provide_credentials<'a>(&'a self) -> future::ProvideCredentials<'a>\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/web_identity_token.rs",
+          "line": 199,
+          "text": "    pub fn configure(mut self, provider_config: &ProviderConfig) -> Self {\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/web_identity_token.rs",
+          "line": 244,
+          "text": "    pub fn build(self) -> WebIdentityTokenCredentialsProvider {\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/default_provider/credentials.rs",
+          "line": 14,
+          "text": "use crate::environment::credentials::EnvironmentVariableCredentialsProvider;\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/default_provider/credentials.rs",
+          "line": 24,
+          "text": "    DefaultCredentialsChain::builder().build().await\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/default_provider/credentials.rs",
+          "line": 30,
+          "text": "/// 1. Environment variables: [`EnvironmentVariableCredentialsProvider`]\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/default_provider/credentials.rs",
+          "line": 31,
+          "text": "/// 2. Shared config (`~/.aws/config`, `~/.aws/credentials`): [`SharedConfigCredentialsProvider`](crate::profile::ProfileFileCredentialsProvider)\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/default_provider/credentials.rs",
+          "line": 44,
+          "text": "/// use aws_config::default_provider::credentials::DefaultCredentialsChain;\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/default_provider/credentials.rs",
+          "line": 45,
+          "text": "/// let credentials_provider = DefaultCredentialsChain::builder()\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/default_provider/credentials.rs",
+          "line": 52,
+          "text": "/// use aws_config::default_provider::credentials::DefaultCredentialsChain;\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/default_provider/credentials.rs",
+          "line": 53,
+          "text": "/// let credentials_provider = DefaultCredentialsChain::builder().build();\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/default_provider/credentials.rs",
+          "line": 58,
+          "text": "/// use aws_config::default_provider::credentials::DefaultCredentialsChain;\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/default_provider/credentials.rs",
+          "line": 59,
+          "text": "/// let credentials_provider = DefaultCredentialsChain::builder()\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/default_provider/credentials.rs",
+          "line": 64,
+          "text": "pub struct DefaultCredentialsChain {\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/default_provider/credentials.rs",
+          "line": 68,
+          "text": "impl DefaultCredentialsChain {\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/default_provider/credentials.rs",
+          "line": 69,
+          "text": "    /// Builder for `DefaultCredentialsChain`\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/default_provider/credentials.rs",
+          "line": 70,
+          "text": "    pub fn builder() -> Builder {\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/default_provider/credentials.rs",
+          "line": 76,
+          "text": "            .provide_credentials()\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/default_provider/credentials.rs",
+          "line": 82,
+          "text": "impl ProvideCredentials for DefaultCredentialsChain {\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/default_provider/credentials.rs",
+          "line": 83,
+          "text": "    fn provide_credentials<'a>(&'a self) -> future::ProvideCredentials<'a>\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/default_provider/credentials.rs",
+          "line": 95,
+          "text": "/// Builder for [`DefaultCredentialsChain`].\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/default_provider/credentials.rs",
+          "line": 166,
+          "text": "    pub fn configure(mut self, config: ProviderConfig) -> Self {\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/default_provider/credentials.rs",
+          "line": 172,
+          "text": "    /// Creates a `DefaultCredentialsChain`\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/default_provider/credentials.rs",
+          "line": 177,
+          "text": "    pub async fn build(self) -> DefaultCredentialsChain {\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/default_provider/credentials.rs",
+          "line": 185,
+          "text": "        let env_provider = EnvironmentVariableCredentialsProvider::new_with_env(conf.env());\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/default_provider/credentials.rs",
+          "line": 197,
+          "text": "        DefaultCredentialsChain { provider_chain }\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/default_provider/credentials.rs",
+          "line": 203,
+          "text": "    use crate::default_provider::credentials::DefaultCredentialsChain;\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/default_provider/credentials.rs",
+          "line": 256,
+          "text": "                            crate::default_provider::credentials::Builder::default()\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/default_provider/credentials.rs",
+          "line": 260,
+          "text": "                                .provide_credentials()\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/default_provider/credentials.rs",
+          "line": 347,
+          "text": "        let creds = DefaultCredentialsChain::builder()\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/default_provider/credentials.rs",
+          "line": 352,
+          "text": "            .provide_credentials()\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/default_provider/credentials.rs",
+          "line": 371,
+          "text": "        let provider = DefaultCredentialsChain::builder()\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/default_provider/credentials.rs",
+          "line": 376,
+          "text": "            .provide_credentials()\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/profile/region.rs",
+          "line": 56,
+          "text": "    pub fn configure(mut self, config: &ProviderConfig) -> Self {\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/profile/region.rs",
+          "line": 75,
+          "text": "    pub fn build(self) -> ProfileFileRegionProvider {\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/profile/region.rs",
+          "line": 97,
+          "text": "    pub fn builder() -> Builder {\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/profile/parser.rs",
+          "line": 55,
+          "text": "pub async fn load(\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/sso/token.rs",
+          "line": 71,
+          "text": "    pub fn builder() -> Builder {\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/sso/token.rs",
+          "line": 286,
+          "text": "    pub fn configure(mut self, sdk_config: &SdkConfig) -> Self {\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/sso/token.rs",
+          "line": 344,
+          "text": "    pub async fn build(mut self) -> SsoTokenProvider {\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/imds/region.rs",
+          "line": 43,
+          "text": "    pub fn builder() -> Builder {\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/imds/region.rs",
+          "line": 93,
+          "text": "    pub fn configure(self, provider_config: &ProviderConfig) -> Self {\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/imds/region.rs",
+          "line": 107,
+          "text": "    pub fn build(self) -> ImdsRegionProvider {\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/profile/credentials/exec.rs",
+          "line": 9,
+          "text": "use crate::credential_process::CredentialProcessProvider;\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/profile/credentials/exec.rs",
+          "line": 104,
+          "text": "                        let mut builder = CredentialProcessProvider::builder()\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/profile/credentials/repr.rs",
+          "line": 92,
+          "text": "    /// A profile that specifies a `credential_process`\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/profile/credentials/repr.rs",
+          "line": 95,
+          "text": "    /// credential_process = /opt/bin/awscreds-custom --username helen\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/profile/credentials/repr.rs",
+          "line": 250,
+          "text": "mod credential_process {\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/profile/credentials/repr.rs",
+          "line": 251,
+          "text": "    pub(super) const CREDENTIAL_PROCESS: &str = \"credential_process\";\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/profile/credentials/repr.rs",
+          "line": 270,
+          "text": "            .or_else(|| credential_process_from_profile(profile))\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/profile/credentials/repr.rs",
+          "line": 471,
+          "text": "/// Load credentials from `credential_process`\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/profile/credentials/repr.rs",
+          "line": 476,
+          "text": "/// credential_process = /opt/bin/awscreds-custom --username helen\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/profile/credentials/repr.rs",
+          "line": 478,
+          "text": "fn credential_process_from_profile(\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/profile/credentials/repr.rs",
+          "line": 483,
+          "text": "        .get(credential_process::CREDENTIAL_PROCESS)\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/profile/credentials/repr.rs",
+          "line": 484,
+          "text": "        .map(|credential_process| {\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/profile/credentials/repr.rs",
+          "line": 486,
+          "text": "                command_with_sensitive_args: CommandWithSensitiveArgs::new(credential_process),\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/imds/credentials.rs",
+          "line": 60,
+          "text": "pub struct ImdsCredentialsProvider {\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/imds/credentials.rs",
+          "line": 68,
+          "text": "/// Builder for [`ImdsCredentialsProvider`]\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/imds/credentials.rs",
+          "line": 79,
+          "text": "    pub fn configure(mut self, provider_config: &ProviderConfig) -> Self {\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/imds/credentials.rs",
+          "line": 115,
+          "text": "    /// Create an [`ImdsCredentialsProvider`] from this builder.\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/imds/credentials.rs",
+          "line": 116,
+          "text": "    pub fn build(self) -> ImdsCredentialsProvider {\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/imds/credentials.rs",
+          "line": 122,
+          "text": "        ImdsCredentialsProvider {\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/imds/credentials.rs",
+          "line": 136,
+          "text": "impl ProvideCredentials for ImdsCredentialsProvider {\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/imds/credentials.rs",
+          "line": 137,
+          "text": "    fn provide_credentials<'a>(&'a self) -> future::ProvideCredentials<'a>\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/imds/credentials.rs",
+          "line": 149,
+          "text": "impl ImdsCredentialsProvider {\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/imds/credentials.rs",
+          "line": 150,
+          "text": "    /// Builder for [`ImdsCredentialsProvider`]\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/imds/credentials.rs",
+          "line": 151,
+          "text": "    pub fn builder() -> Builder {\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/imds/credentials.rs",
+          "line": 341,
+          "text": "        let client = ImdsCredentialsProvider::builder()\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/imds/credentials.rs",
+          "line": 345,
+          "text": "        let creds1 = client.provide_credentials().await.expect(\"valid creds\");\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/imds/credentials.rs",
+          "line": 346,
+          "text": "        let creds2 = client.provide_credentials().await.expect(\"valid creds\");\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/imds/credentials.rs",
+          "line": 382,
+          "text": "        let provider = ImdsCredentialsProvider::builder()\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/imds/credentials.rs",
+          "line": 386,
+          "text": "        let creds = provider.provide_credentials().await.expect(\"valid creds\");\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/imds/credentials.rs",
+          "line": 426,
+          "text": "        let provider = ImdsCredentialsProvider::builder()\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/imds/credentials.rs",
+          "line": 430,
+          "text": "        let creds = provider.provide_credentials().await.expect(\"valid creds\");\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/imds/credentials.rs",
+          "line": 447,
+          "text": "        let provider = ImdsCredentialsProvider::builder()\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/imds/credentials.rs",
+          "line": 452,
+          "text": "        let actual = provider.provide_credentials().await;\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/imds/credentials.rs",
+          "line": 465,
+          "text": "        let provider = ImdsCredentialsProvider::builder()\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/imds/credentials.rs",
+          "line": 469,
+          "text": "        let actual = provider.provide_credentials().await;\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/imds/credentials.rs",
+          "line": 488,
+          "text": "        let provider = ImdsCredentialsProvider::builder()\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/imds/credentials.rs",
+          "line": 496,
+          "text": "            provider.provide_credentials(),\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/imds/credentials.rs",
+          "line": 501,
+          "text": "            Ok(_) => panic!(\"provide_credentials completed before timeout future\"),\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/imds/credentials.rs",
+          "line": 505,
+          "text": "                    \"provide_credentials timed out and no credentials returned from fallback_on_interrupt\"\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/imds/credentials.rs",
+          "line": 515,
+          "text": "                // The next three request/response pairs will correspond to the first call to `provide_credentials`.\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/imds/credentials.rs",
+          "line": 529,
+          "text": "                // The following request/response pair corresponds to the second call to `provide_credentials`.\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/imds/credentials.rs",
+          "line": 536,
+          "text": "        let provider = ImdsCredentialsProvider::builder()\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/imds/credentials.rs",
+          "line": 540,
+          "text": "        let creds1 = provider.provide_credentials().await.expect(\"valid creds\");\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/imds/credentials.rs",
+          "line": 543,
+          "text": "        let creds2 = provider.provide_credentials().await.expect(\"valid creds\");\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/imds/credentials.rs",
+          "line": 572,
+          "text": "        let client = ImdsCredentialsProvider::builder()\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/imds/credentials.rs",
+          "line": 576,
+          "text": "        let creds = client.provide_credentials().await.expect(\"valid creds\");\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/profile/credentials.rs",
+          "line": 57,
+          "text": "/// use aws_config::profile::ProfileFileCredentialsProvider;\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/profile/credentials.rs",
+          "line": 58,
+          "text": "/// let provider = ProfileFileCredentialsProvider::builder().build();\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/profile/credentials.rs",
+          "line": 83,
+          "text": "/// use aws_config::profile::ProfileFileCredentialsProvider;\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/profile/credentials.rs",
+          "line": 93,
+          "text": "///   fn provide_credentials<'a>(&'a self) -> future::ProvideCredentials where Self: 'a {\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/profile/credentials.rs",
+          "line": 98,
+          "text": "/// let provider = ProfileFileCredentialsProvider::builder()\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/profile/credentials.rs",
+          "line": 120,
+          "text": "/// credential_process = /opt/bin/awscreds-custom --username helen\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/profile/credentials.rs",
+          "line": 148,
+          "text": "pub struct ProfileFileCredentialsProvider {\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/profile/credentials.rs",
+          "line": 159,
+          "text": "impl ProfileFileCredentialsProvider {\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/profile/credentials.rs",
+          "line": 161,
+          "text": "    pub fn builder() -> Builder {\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/profile/credentials.rs",
+          "line": 205,
+          "text": "        inner_provider.provide_credentials().await.map(|mut creds| {\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/profile/credentials.rs",
+          "line": 214,
+          "text": "impl ProvideCredentials for ProfileFileCredentialsProvider {\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/profile/credentials.rs",
+          "line": 215,
+          "text": "    fn provide_credentials<'a>(&'a self) -> future::ProvideCredentials<'a>\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/profile/credentials.rs",
+          "line": 390,
+          "text": "/// Builder for [`ProfileFileCredentialsProvider`]\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/profile/credentials.rs",
+          "line": 401,
+          "text": "    /// Override the configuration for the [`ProfileFileCredentialsProvider`]\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/profile/credentials.rs",
+          "line": 407,
+          "text": "    /// use aws_config::profile::ProfileFileCredentialsProvider;\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/profile/credentials.rs",
+          "line": 409,
+          "text": "    /// let provider = ProfileFileCredentialsProvider::builder()\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/profile/credentials.rs",
+          "line": 414,
+          "text": "    pub fn configure(mut self, provider_config: &ProviderConfig) -> Self {\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/profile/credentials.rs",
+          "line": 425,
+          "text": "    /// use aws_config::profile::ProfileFileCredentialsProvider;\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/profile/credentials.rs",
+          "line": 435,
+          "text": "    ///   fn provide_credentials<'a>(&'a self) -> future::ProvideCredentials where Self: 'a {\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/profile/credentials.rs",
+          "line": 441,
+          "text": "    /// let provider = ProfileFileCredentialsProvider::builder()\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/profile/credentials.rs",
+          "line": 456,
+          "text": "    /// Override the profile name used by the [`ProfileFileCredentialsProvider`]\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/profile/credentials.rs",
+          "line": 462,
+          "text": "    /// Set the profile file that should be used by the [`ProfileFileCredentialsProvider`]\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/profile/credentials.rs",
+          "line": 469,
+          "text": "    /// Builds a [`ProfileFileCredentialsProvider`]\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/profile/credentials.rs",
+          "line": 470,
+          "text": "    pub fn build(self) -> ProfileFileCredentialsProvider {\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/profile/credentials.rs",
+          "line": 481,
+          "text": "                Arc::new(crate::environment::credentials::EnvironmentVariableCredentialsProvider::new_with_env(\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/profile/credentials.rs",
+          "line": 490,
+          "text": "                    crate::imds::credentials::ImdsCredentialsProvider::builder()\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/profile/credentials.rs",
+          "line": 500,
+          "text": "                    crate::ecs::EcsCredentialsProvider::builder()\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/profile/credentials.rs",
+          "line": 507,
+          "text": "        ProfileFileCredentialsProvider {\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/profile/credentials.rs",
+          "line": 537,
+          "text": "    async fn provide_credentials(&self) -> Result<Credentials, CredentialsError> {\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/profile/credentials.rs",
+          "line": 545,
+          "text": "                .provide_credentials()\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/profile/credentials.rs",
+          "line": 563,
+          "text": "            // `ProviderConfig` (e.g. when `ProfileFileCredentialsProvider` is constructed\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/profile/credentials.rs",
+          "line": 619,
+          "text": "                            .provide_credentials()\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/profile/credentials.rs",
+          "line": 639,
+          "text": "    make_test!(credential_process);\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/profile/credentials.rs",
+          "line": 642,
+          "text": "    make_test!(credential_process_failure);\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/profile/credentials.rs",
+          "line": 645,
+          "text": "    make_test!(credential_process_account_id_fallback);\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/profile/credentials.rs",
+          "line": 647,
+          "text": "    make_test!(credential_process_invalid);\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/profile/credentials.rs",
+          "line": 663,
+          "text": "    /// when building `ProfileFileCredentialsProvider` directly via its builder (bypassing\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/profile/credentials.rs",
+          "line": 715,
+          "text": "        let _ = provider.provide_credentials().await;\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/profile/credentials.rs",
+          "line": 834,
+          "text": "        let first_creds = provider.provide_credentials().await.unwrap();\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/profile/credentials.rs",
+          "line": 859,
+          "text": "            .provide_credentials()\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/profile/credentials.rs",
+          "line": 872,
+          "text": "        let third_creds = provider.provide_credentials().await.unwrap();\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/profile/credentials.rs",
+          "line": 887,
+          "text": "        let creds = provider.provide_credentials().await.unwrap();\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/profile/credentials.rs",
+          "line": 1081,
+          "text": "        let creds = provider.provide_credentials().await.unwrap();\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/profile/credentials.rs",
+          "line": 1101,
+          "text": "        let creds = provider.provide_credentials().await.unwrap();\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/profile/credentials.rs",
+          "line": 1122,
+          "text": "            .provide_credentials()\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/imds/client.rs",
+          "line": 146,
+          "text": "    pub fn builder() -> Builder {\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/imds/client.rs",
+          "line": 365,
+          "text": "    pub fn configure(mut self, provider_config: &ProviderConfig) -> Self {\n"
+        },
+        {
+          "path": "codex-rs/third_party/aws-config-1.12.0/src/imds/client.rs",
+          "line": 450,
+          "text": "    pub fn build(self) -> Client {\n"
+        }
+      ]
+    },
+    {
+      "name": "workspace-aws-patch",
+      "argv": [
+        "rg",
+        "-n",
+        "--json",
+        "-g",
+        "*.rs",
+        "-g",
+        "Cargo.toml",
+        "-e",
+        "aws-config|aws-credential-types|aws-smithy",
+        "codex-rs/Cargo.toml"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "matches": [
+        {
+          "path": "codex-rs/Cargo.toml",
+          "line": 375,
+          "text": "aws-config = \"1\"\n"
+        },
+        {
+          "path": "codex-rs/Cargo.toml",
+          "line": 376,
+          "text": "aws-credential-types = \"1\"\n"
+        },
+        {
+          "path": "codex-rs/Cargo.toml",
+          "line": 680,
+          "text": "aws-config = { path = \"third_party/aws-config-1.12.0\" }\n"
+        }
+      ]
+    }
+  ],
+  "matched_files_and_guidance": [
+    {
+      "path": "AGENTS.md",
+      "bytes": 22519,
+      "sha256": "c3f80e8386eb170b00af1e21de40d770c4941e464915687e728e2d14a7e79480",
+      "git_blob": "faa57cc0db48123e1011f1eb47692cd3bbbcfc3a",
+      "git_mode": "100644",
+      "guidance_nearest_first": [
+        "AGENTS.md"
+      ],
+      "guidance_ancestors_examined": [
+        "AGENTS.md"
+      ]
+    },
+    {
+      "path": "codex-rs/Cargo.toml",
+      "bytes": 23125,
+      "sha256": "de54aafbd8e041cdaec30705fb6c286bd308f2a03de1c598a778f20feaade34b",
+      "git_blob": "7e2ec509988e11cdf92130e385ffdf409bbcc15d",
+      "git_mode": "100644",
+      "guidance_nearest_first": [
+        "AGENTS.md"
+      ],
+      "guidance_ancestors_examined": [
+        "codex-rs/AGENTS.md",
+        "AGENTS.md"
+      ]
+    },
+    {
+      "path": "codex-rs/app-server-protocol/src/protocol/common.rs",
+      "bytes": 173226,
+      "sha256": "85cf5192a820fce5311c630349cb00ab9c436a1814c75c2ee86ad5e8b66e0c79",
+      "git_blob": "c9df61a05122d88a24c7773aac5c4ac31087cbaa",
+      "git_mode": "100644",
+      "guidance_nearest_first": [
+        "AGENTS.md"
+      ],
+      "guidance_ancestors_examined": [
+        "codex-rs/app-server-protocol/src/protocol/AGENTS.md",
+        "codex-rs/app-server-protocol/src/AGENTS.md",
+        "codex-rs/app-server-protocol/AGENTS.md",
+        "codex-rs/AGENTS.md",
+        "AGENTS.md"
+      ]
+    },
+    {
+      "path": "codex-rs/app-server-protocol/src/protocol/v2/bedrock.rs",
+      "bytes": 1997,
+      "sha256": "beacda72dec8ed94dac94a12bb49e4f09ea7cb9480d4539c1d58c19b863a1f0c",
+      "git_blob": "effd6f906a5206f720dc95111b3c2691b5cfeeb8",
+      "git_mode": "100644",
+      "guidance_nearest_first": [
+        "AGENTS.md"
+      ],
+      "guidance_ancestors_examined": [
+        "codex-rs/app-server-protocol/src/protocol/v2/AGENTS.md",
+        "codex-rs/app-server-protocol/src/protocol/AGENTS.md",
+        "codex-rs/app-server-protocol/src/AGENTS.md",
+        "codex-rs/app-server-protocol/AGENTS.md",
+        "codex-rs/AGENTS.md",
+        "AGENTS.md"
+      ]
+    },
+    {
+      "path": "codex-rs/app-server/src/message_processor.rs",
+      "bytes": 74999,
+      "sha256": "44f874db170496fbc7e473c80ea745b4d46c644cf985ab901a09161e361d9a0b",
+      "git_blob": "73094f931d29afec160bd1356655586fda06df5f",
+      "git_mode": "100644",
+      "guidance_nearest_first": [
+        "AGENTS.md"
+      ],
+      "guidance_ancestors_examined": [
+        "codex-rs/app-server/src/AGENTS.md",
+        "codex-rs/app-server/AGENTS.md",
+        "codex-rs/AGENTS.md",
+        "AGENTS.md"
+      ]
+    },
+    {
+      "path": "codex-rs/app-server/src/request_processors/account_processor.rs",
+      "bytes": 56871,
+      "sha256": "28a1eccde11818dbcc30ce2d4f81cd9bfbe94ca74cfd8189a07726453d26fdaa",
+      "git_blob": "d966fd6084a023ea257876b8182ca291363e22f6",
+      "git_mode": "100644",
+      "guidance_nearest_first": [
+        "AGENTS.md"
+      ],
+      "guidance_ancestors_examined": [
+        "codex-rs/app-server/src/request_processors/AGENTS.md",
+        "codex-rs/app-server/src/AGENTS.md",
+        "codex-rs/app-server/AGENTS.md",
+        "codex-rs/AGENTS.md",
+        "AGENTS.md"
+      ]
+    },
+    {
+      "path": "codex-rs/app-server/src/request_processors/account_processor/bedrock_setup.rs",
+      "bytes": 5606,
+      "sha256": "af9ceab5047c7ee06bba84d47684748b38bfbb32e287db4a6fca84b2b45fa6fa",
+      "git_blob": "9e7cb31856c2b938c6a8ba73f8affb36bd4b5e3d",
+      "git_mode": "100644",
+      "guidance_nearest_first": [
+        "AGENTS.md"
+      ],
+      "guidance_ancestors_examined": [
+        "codex-rs/app-server/src/request_processors/account_processor/AGENTS.md",
+        "codex-rs/app-server/src/request_processors/AGENTS.md",
+        "codex-rs/app-server/src/AGENTS.md",
+        "codex-rs/app-server/AGENTS.md",
+        "codex-rs/AGENTS.md",
+        "AGENTS.md"
+      ]
+    },
+    {
+      "path": "codex-rs/app-server/src/request_processors/config_errors.rs",
+      "bytes": 1275,
+      "sha256": "b0c9d06439e9f5b99b5a0d595e326b323a20484d041b739f67ce6cd842dd923f",
+      "git_blob": "7e93b63ede2a555c339c42ea97d7f2331e2872ab",
+      "git_mode": "100644",
+      "guidance_nearest_first": [
+        "AGENTS.md"
+      ],
+      "guidance_ancestors_examined": [
+        "codex-rs/app-server/src/request_processors/AGENTS.md",
+        "codex-rs/app-server/src/AGENTS.md",
+        "codex-rs/app-server/AGENTS.md",
+        "codex-rs/AGENTS.md",
+        "AGENTS.md"
+      ]
+    },
+    {
+      "path": "codex-rs/app-server/src/request_processors/thread_processor_tests.rs",
+      "bytes": 57650,
+      "sha256": "101599083ef103b009aac3338256370cf4218ad277968d549a5a7796ef2dfa28",
+      "git_blob": "d92bf22ab7e5458bacca66f5f3ba745e8d3abaf7",
+      "git_mode": "100644",
+      "guidance_nearest_first": [
+        "AGENTS.md"
+      ],
+      "guidance_ancestors_examined": [
+        "codex-rs/app-server/src/request_processors/AGENTS.md",
+        "codex-rs/app-server/src/AGENTS.md",
+        "codex-rs/app-server/AGENTS.md",
+        "codex-rs/AGENTS.md",
+        "AGENTS.md"
+      ]
+    },
+    {
+      "path": "codex-rs/app-server/tests/common/test_app_server.rs",
+      "bytes": 82221,
+      "sha256": "f6c6c147e961fb995272dac91427638c9b66a5877ef43be036273b06378e003e",
+      "git_blob": "9c51cda731d9b663c6272eef052d9ae53b46a44d",
+      "git_mode": "100644",
+      "guidance_nearest_first": [
+        "AGENTS.md"
+      ],
+      "guidance_ancestors_examined": [
+        "codex-rs/app-server/tests/common/AGENTS.md",
+        "codex-rs/app-server/tests/AGENTS.md",
+        "codex-rs/app-server/AGENTS.md",
+        "codex-rs/AGENTS.md",
+        "AGENTS.md"
+      ]
+    },
+    {
+      "path": "codex-rs/app-server/tests/suite/v2/bedrock_setup.rs",
+      "bytes": 11612,
+      "sha256": "25c5036f352b673af21adfd37930f3f1762359b7422084c6e4eaaa9c1f513d55",
+      "git_blob": "87cfaf3ae45eafbc54dad94a96226f4a807209a5",
+      "git_mode": "100644",
+      "guidance_nearest_first": [
+        "AGENTS.md"
+      ],
+      "guidance_ancestors_examined": [
+        "codex-rs/app-server/tests/suite/v2/AGENTS.md",
+        "codex-rs/app-server/tests/suite/AGENTS.md",
+        "codex-rs/app-server/tests/AGENTS.md",
+        "codex-rs/app-server/AGENTS.md",
+        "codex-rs/AGENTS.md",
+        "AGENTS.md"
+      ]
+    },
+    {
+      "path": "codex-rs/aws-auth/src/config.rs",
+      "bytes": 1154,
+      "sha256": "fb65516db1034cd348f271c20a4ca4d424bee61b2e5f0a11a25b5ae5cb9dd866",
+      "git_blob": "3d62832e0ebb70ccbbd244120b280777fde27fa2",
+      "git_mode": "100644",
+      "guidance_nearest_first": [
+        "AGENTS.md"
+      ],
+      "guidance_ancestors_examined": [
+        "codex-rs/aws-auth/src/AGENTS.md",
+        "codex-rs/aws-auth/AGENTS.md",
+        "codex-rs/AGENTS.md",
+        "AGENTS.md"
+      ]
+    },
+    {
+      "path": "codex-rs/aws-auth/src/discovery.rs",
+      "bytes": 2369,
+      "sha256": "4d64cee4db9b428792469ec6c58054625f8dbc7408a6f685e173086dc8eb6ee6",
+      "git_blob": "10dbff017c6a577914c47a20408c72cfd2f67946",
+      "git_mode": "100644",
+      "guidance_nearest_first": [
+        "AGENTS.md"
+      ],
+      "guidance_ancestors_examined": [
+        "codex-rs/aws-auth/src/AGENTS.md",
+        "codex-rs/aws-auth/AGENTS.md",
+        "codex-rs/AGENTS.md",
+        "AGENTS.md"
+      ]
+    },
+    {
+      "path": "codex-rs/aws-auth/src/lib.rs",
+      "bytes": 11370,
+      "sha256": "950cc8e00c0be63f431725f98f98de2dffa8b21be0610f16831cb311eb32a485",
+      "git_blob": "8f1bc2b5d7e15465012d8b480b41c33fb1ad3987",
+      "git_mode": "100644",
+      "guidance_nearest_first": [
+        "AGENTS.md"
+      ],
+      "guidance_ancestors_examined": [
+        "codex-rs/aws-auth/src/AGENTS.md",
+        "codex-rs/aws-auth/AGENTS.md",
+        "codex-rs/AGENTS.md",
+        "AGENTS.md"
+      ]
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.12.0/src/credential_process.rs",
+      "bytes": 20218,
+      "sha256": "94692add9a128436099968ddda169074d89fe30d4f38d999e02872f001e70656",
+      "git_blob": "4a65d554d3b0e27492b18d05fc9e7d19c195bb48",
+      "git_mode": "100644",
+      "guidance_nearest_first": [
+        "AGENTS.md"
+      ],
+      "guidance_ancestors_examined": [
+        "codex-rs/third_party/aws-config-1.12.0/src/AGENTS.md",
+        "codex-rs/third_party/aws-config-1.12.0/AGENTS.md",
+        "codex-rs/third_party/AGENTS.md",
+        "codex-rs/AGENTS.md",
+        "AGENTS.md"
+      ]
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.12.0/src/default_provider/credentials.rs",
+      "bytes": 14424,
+      "sha256": "f8bd9b3f942b72ab625f2635c6202890161b3cbb2db1cd2e9a4fbce3dfb7e721",
+      "git_blob": "e5943b4c4c50180db56e4ae2db58ba7eec3fc535",
+      "git_mode": "100644",
+      "guidance_nearest_first": [
+        "AGENTS.md"
+      ],
+      "guidance_ancestors_examined": [
+        "codex-rs/third_party/aws-config-1.12.0/src/default_provider/AGENTS.md",
+        "codex-rs/third_party/aws-config-1.12.0/src/AGENTS.md",
+        "codex-rs/third_party/aws-config-1.12.0/AGENTS.md",
+        "codex-rs/third_party/AGENTS.md",
+        "codex-rs/AGENTS.md",
+        "AGENTS.md"
+      ]
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.12.0/src/default_provider/region.rs",
+      "bytes": 2445,
+      "sha256": "ba9d1848f82b99d8622ff5280132a1e241e4cd427db61fe0472cc30b11a4c5c9",
+      "git_blob": "0df70124c4abb07842ccd0860d522b3c9140fbff",
+      "git_mode": "100644",
+      "guidance_nearest_first": [
+        "AGENTS.md"
+      ],
+      "guidance_ancestors_examined": [
+        "codex-rs/third_party/aws-config-1.12.0/src/default_provider/AGENTS.md",
+        "codex-rs/third_party/aws-config-1.12.0/src/AGENTS.md",
+        "codex-rs/third_party/aws-config-1.12.0/AGENTS.md",
+        "codex-rs/third_party/AGENTS.md",
+        "codex-rs/AGENTS.md",
+        "AGENTS.md"
+      ]
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.12.0/src/default_provider/retry_config.rs",
+      "bytes": 13747,
+      "sha256": "9fb6537577689012d3c06ed4a3395935363ad26bdf72270bccc602ca67b5e3d8",
+      "git_blob": "3422db6e3ac10392674e607c3827d4849c430528",
+      "git_mode": "100644",
+      "guidance_nearest_first": [
+        "AGENTS.md"
+      ],
+      "guidance_ancestors_examined": [
+        "codex-rs/third_party/aws-config-1.12.0/src/default_provider/AGENTS.md",
+        "codex-rs/third_party/aws-config-1.12.0/src/AGENTS.md",
+        "codex-rs/third_party/aws-config-1.12.0/AGENTS.md",
+        "codex-rs/third_party/AGENTS.md",
+        "codex-rs/AGENTS.md",
+        "AGENTS.md"
+      ]
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.12.0/src/default_provider/timeout_config.rs",
+      "bytes": 1314,
+      "sha256": "658f2475f9f696f364702431807ec62b74877bffdbe814d50149b3858a66771e",
+      "git_blob": "064b80e2ebca9d9430f36ae3c4212d5fdc7c8095",
+      "git_mode": "100644",
+      "guidance_nearest_first": [
+        "AGENTS.md"
+      ],
+      "guidance_ancestors_examined": [
+        "codex-rs/third_party/aws-config-1.12.0/src/default_provider/AGENTS.md",
+        "codex-rs/third_party/aws-config-1.12.0/src/AGENTS.md",
+        "codex-rs/third_party/aws-config-1.12.0/AGENTS.md",
+        "codex-rs/third_party/AGENTS.md",
+        "codex-rs/AGENTS.md",
+        "AGENTS.md"
+      ]
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.12.0/src/default_provider/token.rs",
+      "bytes": 4244,
+      "sha256": "a2096fa414f8a5bc937a06be365746c0f489139e919dc41ec08adcc8d17bdfbf",
+      "git_blob": "533529ea367f65241775d469871493ee8c48837d",
+      "git_mode": "100644",
+      "guidance_nearest_first": [
+        "AGENTS.md"
+      ],
+      "guidance_ancestors_examined": [
+        "codex-rs/third_party/aws-config-1.12.0/src/default_provider/AGENTS.md",
+        "codex-rs/third_party/aws-config-1.12.0/src/AGENTS.md",
+        "codex-rs/third_party/aws-config-1.12.0/AGENTS.md",
+        "codex-rs/third_party/AGENTS.md",
+        "codex-rs/AGENTS.md",
+        "AGENTS.md"
+      ]
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.12.0/src/ecs.rs",
+      "bytes": 39262,
+      "sha256": "c638833611ac7cf7bf6e6f959572884869f3d5c1d82028e776d4bce65b5d5d83",
+      "git_blob": "970bc479b19b79c6d712fcf418730da73275a6cd",
+      "git_mode": "100644",
+      "guidance_nearest_first": [
+        "AGENTS.md"
+      ],
+      "guidance_ancestors_examined": [
+        "codex-rs/third_party/aws-config-1.12.0/src/AGENTS.md",
+        "codex-rs/third_party/aws-config-1.12.0/AGENTS.md",
+        "codex-rs/third_party/AGENTS.md",
+        "codex-rs/AGENTS.md",
+        "AGENTS.md"
+      ]
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.12.0/src/environment/credentials.rs",
+      "bytes": 9139,
+      "sha256": "66f08d7fe977415cc23f91507bd9a58321c0999ea9c2234e34d9fe56b3ef17bf",
+      "git_blob": "692f64fe9d3e0915b0f1df44abe48ec3aeaa3a3a",
+      "git_mode": "100644",
+      "guidance_nearest_first": [
+        "AGENTS.md"
+      ],
+      "guidance_ancestors_examined": [
+        "codex-rs/third_party/aws-config-1.12.0/src/environment/AGENTS.md",
+        "codex-rs/third_party/aws-config-1.12.0/src/AGENTS.md",
+        "codex-rs/third_party/aws-config-1.12.0/AGENTS.md",
+        "codex-rs/third_party/AGENTS.md",
+        "codex-rs/AGENTS.md",
+        "AGENTS.md"
+      ]
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.12.0/src/environment/mod.rs",
+      "bytes": 2111,
+      "sha256": "4c24ed0dc22a121854dba1f5c6986b762cee511725f4e6b0e8ebe647ee38eb23",
+      "git_blob": "d43dc6588f0db4a37a6e5346d0afa7f2a45117f1",
+      "git_mode": "100644",
+      "guidance_nearest_first": [
+        "AGENTS.md"
+      ],
+      "guidance_ancestors_examined": [
+        "codex-rs/third_party/aws-config-1.12.0/src/environment/AGENTS.md",
+        "codex-rs/third_party/aws-config-1.12.0/src/AGENTS.md",
+        "codex-rs/third_party/aws-config-1.12.0/AGENTS.md",
+        "codex-rs/third_party/AGENTS.md",
+        "codex-rs/AGENTS.md",
+        "AGENTS.md"
+      ]
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.12.0/src/imds/client.rs",
+      "bytes": 49885,
+      "sha256": "7465037e3cf966e66739bf7af3067760a5367eac5dbad977fa0ca7a183acd4bc",
+      "git_blob": "26d4fdac4424bf353b67e12a6f34baa327a52ceb",
+      "git_mode": "100644",
+      "guidance_nearest_first": [
+        "AGENTS.md"
+      ],
+      "guidance_ancestors_examined": [
+        "codex-rs/third_party/aws-config-1.12.0/src/imds/AGENTS.md",
+        "codex-rs/third_party/aws-config-1.12.0/src/AGENTS.md",
+        "codex-rs/third_party/aws-config-1.12.0/AGENTS.md",
+        "codex-rs/third_party/AGENTS.md",
+        "codex-rs/AGENTS.md",
+        "AGENTS.md"
+      ]
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.12.0/src/imds/credentials.rs",
+      "bytes": 26120,
+      "sha256": "0ede95561a7da62216f5084daa6ad413071dff1d7210dbad81dabddc59cffb80",
+      "git_blob": "b308ecd6138e43222426b8aa3697f130c5d79273",
+      "git_mode": "100644",
+      "guidance_nearest_first": [
+        "AGENTS.md"
+      ],
+      "guidance_ancestors_examined": [
+        "codex-rs/third_party/aws-config-1.12.0/src/imds/AGENTS.md",
+        "codex-rs/third_party/aws-config-1.12.0/src/AGENTS.md",
+        "codex-rs/third_party/aws-config-1.12.0/AGENTS.md",
+        "codex-rs/third_party/AGENTS.md",
+        "codex-rs/AGENTS.md",
+        "AGENTS.md"
+      ]
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.12.0/src/imds/region.rs",
+      "bytes": 5887,
+      "sha256": "7462d842f75334551287259edae9899e1d1d7b83cd54b1385e8b3ceacf53d208",
+      "git_blob": "49014f10cd08322fdcbc6099a6efac453a9d074d",
+      "git_mode": "100644",
+      "guidance_nearest_first": [
+        "AGENTS.md"
+      ],
+      "guidance_ancestors_examined": [
+        "codex-rs/third_party/aws-config-1.12.0/src/imds/AGENTS.md",
+        "codex-rs/third_party/aws-config-1.12.0/src/AGENTS.md",
+        "codex-rs/third_party/aws-config-1.12.0/AGENTS.md",
+        "codex-rs/third_party/AGENTS.md",
+        "codex-rs/AGENTS.md",
+        "AGENTS.md"
+      ]
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.12.0/src/lib.rs",
+      "bytes": 72656,
+      "sha256": "d0b35b7deb25ec1c6872b5d2f9096ff9505e731a926f213e9e170544a5fdd0f1",
+      "git_blob": "4fa02ac658c31c404d849052c8cee7c3d3720fae",
+      "git_mode": "100644",
+      "guidance_nearest_first": [
+        "AGENTS.md"
+      ],
+      "guidance_ancestors_examined": [
+        "codex-rs/third_party/aws-config-1.12.0/src/AGENTS.md",
+        "codex-rs/third_party/aws-config-1.12.0/AGENTS.md",
+        "codex-rs/third_party/AGENTS.md",
+        "codex-rs/AGENTS.md",
+        "AGENTS.md"
+      ]
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.12.0/src/login.rs",
+      "bytes": 20873,
+      "sha256": "7346473127dc11ba15cbf68a9117e34b9c798f6af14115e2eeff3443792d59f0",
+      "git_blob": "2818f46e9fe506b544941224682a94b387b12e0d",
+      "git_mode": "100644",
+      "guidance_nearest_first": [
+        "AGENTS.md"
+      ],
+      "guidance_ancestors_examined": [
+        "codex-rs/third_party/aws-config-1.12.0/src/AGENTS.md",
+        "codex-rs/third_party/aws-config-1.12.0/AGENTS.md",
+        "codex-rs/third_party/AGENTS.md",
+        "codex-rs/AGENTS.md",
+        "AGENTS.md"
+      ]
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.12.0/src/meta/credentials/chain.rs",
+      "bytes": 12488,
+      "sha256": "281c1e25e45c742593f0442a7e2dfc5f028a6f3565bc36caec4887ed71847e5b",
+      "git_blob": "81209dfa28fd8c0db4d9ae5563d9e3dc2d237e96",
+      "git_mode": "100644",
+      "guidance_nearest_first": [
+        "AGENTS.md"
+      ],
+      "guidance_ancestors_examined": [
+        "codex-rs/third_party/aws-config-1.12.0/src/meta/credentials/AGENTS.md",
+        "codex-rs/third_party/aws-config-1.12.0/src/meta/AGENTS.md",
+        "codex-rs/third_party/aws-config-1.12.0/src/AGENTS.md",
+        "codex-rs/third_party/aws-config-1.12.0/AGENTS.md",
+        "codex-rs/third_party/AGENTS.md",
+        "codex-rs/AGENTS.md",
+        "AGENTS.md"
+      ]
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.12.0/src/profile.rs",
+      "bytes": 4271,
+      "sha256": "a529c073835c150f0d56d38c01ce6a18e53334ebd84eeb868807f022cd487755",
+      "git_blob": "d3bba7516b58bd4f6691087057f5bdb7a8dd07a0",
+      "git_mode": "100644",
+      "guidance_nearest_first": [
+        "AGENTS.md"
+      ],
+      "guidance_ancestors_examined": [
+        "codex-rs/third_party/aws-config-1.12.0/src/AGENTS.md",
+        "codex-rs/third_party/aws-config-1.12.0/AGENTS.md",
+        "codex-rs/third_party/AGENTS.md",
+        "codex-rs/AGENTS.md",
+        "AGENTS.md"
+      ]
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.12.0/src/profile/credentials.rs",
+      "bytes": 42673,
+      "sha256": "0bbe5917d3b09dc28438481af3a4911b252c44e3037111c6716723a1df16b8dc",
+      "git_blob": "e3afa9a44542c1a506f511f0c45327d3f436138d",
+      "git_mode": "100644",
+      "guidance_nearest_first": [
+        "AGENTS.md"
+      ],
+      "guidance_ancestors_examined": [
+        "codex-rs/third_party/aws-config-1.12.0/src/profile/AGENTS.md",
+        "codex-rs/third_party/aws-config-1.12.0/src/AGENTS.md",
+        "codex-rs/third_party/aws-config-1.12.0/AGENTS.md",
+        "codex-rs/third_party/AGENTS.md",
+        "codex-rs/AGENTS.md",
+        "AGENTS.md"
+      ]
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.12.0/src/profile/credentials/exec.rs",
+      "bytes": 11366,
+      "sha256": "a080c212e76abf197e4d8e9e2d17225f1aa1c36a08ccf889cec0994d3d938d34",
+      "git_blob": "ee722a88aaecaddff521270fe81777a53c2aba27",
+      "git_mode": "100644",
+      "guidance_nearest_first": [
+        "AGENTS.md"
+      ],
+      "guidance_ancestors_examined": [
+        "codex-rs/third_party/aws-config-1.12.0/src/profile/credentials/AGENTS.md",
+        "codex-rs/third_party/aws-config-1.12.0/src/profile/AGENTS.md",
+        "codex-rs/third_party/aws-config-1.12.0/src/AGENTS.md",
+        "codex-rs/third_party/aws-config-1.12.0/AGENTS.md",
+        "codex-rs/third_party/AGENTS.md",
+        "codex-rs/AGENTS.md",
+        "AGENTS.md"
+      ]
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.12.0/src/profile/credentials/repr.rs",
+      "bytes": 26012,
+      "sha256": "847f00e5f41d969c23b15e27d05e485e47524cfde7c022f1e9f78b4ee9adb36d",
+      "git_blob": "1db3da365c56300280403e8451bdfc3deb537096",
+      "git_mode": "100644",
+      "guidance_nearest_first": [
+        "AGENTS.md"
+      ],
+      "guidance_ancestors_examined": [
+        "codex-rs/third_party/aws-config-1.12.0/src/profile/credentials/AGENTS.md",
+        "codex-rs/third_party/aws-config-1.12.0/src/profile/AGENTS.md",
+        "codex-rs/third_party/aws-config-1.12.0/src/AGENTS.md",
+        "codex-rs/third_party/aws-config-1.12.0/AGENTS.md",
+        "codex-rs/third_party/AGENTS.md",
+        "codex-rs/AGENTS.md",
+        "AGENTS.md"
+      ]
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.12.0/src/profile/parser.rs",
+      "bytes": 2227,
+      "sha256": "8def6a8a21188d849b21a0ef6f91abea74ae288445c61bb69dc6ac6e5bf0e081",
+      "git_blob": "1da778a38a9080e459f56c2b7c519849efbcde1d",
+      "git_mode": "100644",
+      "guidance_nearest_first": [
+        "AGENTS.md"
+      ],
+      "guidance_ancestors_examined": [
+        "codex-rs/third_party/aws-config-1.12.0/src/profile/AGENTS.md",
+        "codex-rs/third_party/aws-config-1.12.0/src/AGENTS.md",
+        "codex-rs/third_party/aws-config-1.12.0/AGENTS.md",
+        "codex-rs/third_party/AGENTS.md",
+        "codex-rs/AGENTS.md",
+        "AGENTS.md"
+      ]
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.12.0/src/profile/region.rs",
+      "bytes": 8294,
+      "sha256": "d881290f4fef027abcabeb54b1dc6265cb677b0274ae814d2614940b41c54501",
+      "git_blob": "eb51f38cc5a145c1f5eacb4744f26472ef9532d8",
+      "git_mode": "100644",
+      "guidance_nearest_first": [
+        "AGENTS.md"
+      ],
+      "guidance_ancestors_examined": [
+        "codex-rs/third_party/aws-config-1.12.0/src/profile/AGENTS.md",
+        "codex-rs/third_party/aws-config-1.12.0/src/AGENTS.md",
+        "codex-rs/third_party/aws-config-1.12.0/AGENTS.md",
+        "codex-rs/third_party/AGENTS.md",
+        "codex-rs/AGENTS.md",
+        "AGENTS.md"
+      ]
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.12.0/src/profile/token.rs",
+      "bytes": 8278,
+      "sha256": "5fa8862e80d46610f5c1efb01db039cdf9aa0ce3235771e555205e9c35718df6",
+      "git_blob": "104c0baa9359582889e3ccaf97e1ac2763605cb3",
+      "git_mode": "100644",
+      "guidance_nearest_first": [
+        "AGENTS.md"
+      ],
+      "guidance_ancestors_examined": [
+        "codex-rs/third_party/aws-config-1.12.0/src/profile/AGENTS.md",
+        "codex-rs/third_party/aws-config-1.12.0/src/AGENTS.md",
+        "codex-rs/third_party/aws-config-1.12.0/AGENTS.md",
+        "codex-rs/third_party/AGENTS.md",
+        "codex-rs/AGENTS.md",
+        "AGENTS.md"
+      ]
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.12.0/src/provider_config.rs",
+      "bytes": 19784,
+      "sha256": "cf51476c48d91afba57fd1f7aa9c6816396bee5d43641126781eef227376e6a7",
+      "git_blob": "040486dc47d94cf542842da0b95b5004661d73d7",
+      "git_mode": "100644",
+      "guidance_nearest_first": [
+        "AGENTS.md"
+      ],
+      "guidance_ancestors_examined": [
+        "codex-rs/third_party/aws-config-1.12.0/src/AGENTS.md",
+        "codex-rs/third_party/aws-config-1.12.0/AGENTS.md",
+        "codex-rs/third_party/AGENTS.md",
+        "codex-rs/AGENTS.md",
+        "AGENTS.md"
+      ]
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.12.0/src/sso/credentials.rs",
+      "bytes": 10009,
+      "sha256": "3359bab126a715bf7ffbf7c4780f883209b7a27103861559fc2e5c5dd7e6d5fb",
+      "git_blob": "0cf7eea1d63c8e17517b9b44acf222be79b053b6",
+      "git_mode": "100644",
+      "guidance_nearest_first": [
+        "AGENTS.md"
+      ],
+      "guidance_ancestors_examined": [
+        "codex-rs/third_party/aws-config-1.12.0/src/sso/AGENTS.md",
+        "codex-rs/third_party/aws-config-1.12.0/src/AGENTS.md",
+        "codex-rs/third_party/aws-config-1.12.0/AGENTS.md",
+        "codex-rs/third_party/AGENTS.md",
+        "codex-rs/AGENTS.md",
+        "AGENTS.md"
+      ]
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.12.0/src/sso/token.rs",
+      "bytes": 33647,
+      "sha256": "582fb950782514c5023d04fda796d26e52e332c6fe36c1bee8430793551a6e63",
+      "git_blob": "3ec6fcefcf6977ebfb1b57f1ed4d7b62abec82fc",
+      "git_mode": "100644",
+      "guidance_nearest_first": [
+        "AGENTS.md"
+      ],
+      "guidance_ancestors_examined": [
+        "codex-rs/third_party/aws-config-1.12.0/src/sso/AGENTS.md",
+        "codex-rs/third_party/aws-config-1.12.0/src/AGENTS.md",
+        "codex-rs/third_party/aws-config-1.12.0/AGENTS.md",
+        "codex-rs/third_party/AGENTS.md",
+        "codex-rs/AGENTS.md",
+        "AGENTS.md"
+      ]
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.12.0/src/sts/assume_role.rs",
+      "bytes": 24850,
+      "sha256": "d667968f6d26e9c3a650c6232a8be4f58971db1d3f08acba5df6b9f90e8f5015",
+      "git_blob": "fc7e40a18ac44cee31a02a1368a024325dd0b9cf",
+      "git_mode": "100644",
+      "guidance_nearest_first": [
+        "AGENTS.md"
+      ],
+      "guidance_ancestors_examined": [
+        "codex-rs/third_party/aws-config-1.12.0/src/sts/AGENTS.md",
+        "codex-rs/third_party/aws-config-1.12.0/src/AGENTS.md",
+        "codex-rs/third_party/aws-config-1.12.0/AGENTS.md",
+        "codex-rs/third_party/AGENTS.md",
+        "codex-rs/AGENTS.md",
+        "AGENTS.md"
+      ]
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.12.0/src/web_identity_token.rs",
+      "bytes": 13923,
+      "sha256": "45af936bab61858751bacc83ac53863941ed0c5745aaf3e7e7a09633c414b4cd",
+      "git_blob": "481f5a94292a94e5cd4fba9dab490d36721e7234",
+      "git_mode": "100644",
+      "guidance_nearest_first": [
+        "AGENTS.md"
+      ],
+      "guidance_ancestors_examined": [
+        "codex-rs/third_party/aws-config-1.12.0/src/AGENTS.md",
+        "codex-rs/third_party/aws-config-1.12.0/AGENTS.md",
+        "codex-rs/third_party/AGENTS.md",
+        "codex-rs/AGENTS.md",
+        "AGENTS.md"
+      ]
+    }
+  ],
+  "native_rust_or_formatter_executed": false,
+  "metadata_or_network_probe_executed": false,
+  "source_writes": false
+}

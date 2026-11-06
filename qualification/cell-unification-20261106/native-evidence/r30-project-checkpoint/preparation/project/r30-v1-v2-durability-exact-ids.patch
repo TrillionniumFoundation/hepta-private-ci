@@ -1,0 +1,36 @@
+--- native-run-r30-template.py
++++ native-run-r30-template-v2.py
+@@ -220,6 +220,8 @@
+     path = E / safe_relative(name)
+     with path.open("xb") as output:
+         output.write(raw)
++        output.flush()
++        os.fsync(output.fileno())
+     return {"path": name, **data_pin(raw)}
+ 
+ 
+@@ -783,13 +785,14 @@
+     expected_counts = {"PASS": summary_count("passed"), "FAIL": summary_count("failed"), "TIMEOUT": summary_count("timed out")}
+     reported_skipped = summary_count("skipped")
+     missing = sorted(baseline - set(current))
++    additional = sorted(set(current) - baseline)
+     unsuccessful = sorted(identity for identity in baseline & set(current) if current[identity]["status"] != "PASS")
+     unexpected_packages = sorted({row["binary"].split("::", 1)[0] for row in rows} - set(PACKAGES))
+     passed = (
+         len(rows) == len(current) == int(start[3][1]) == int(summary[3][2])
+         and bool(rows) and counts == expected_counts
+         and counts["FAIL"] == counts["TIMEOUT"] == 0
+-        and not missing and not unsuccessful and not unexpected_packages
++        and not missing and not additional and not unsuccessful and not unexpected_packages
+     )
+     review = {
+         "schema": "hepta.source53-app-server-closed-readback.v1",
+@@ -803,7 +806,7 @@
+         "diagnostic_only": True, "behavior_repair_claimed": False,
+         "baseline_missing": [{"binary": b, "name": n} for b, n in missing],
+         "baseline_not_pass": [{"binary": b, "name": n} for b, n in unsuccessful],
+-        "additional_test_ids": [{"binary": b, "name": n} for b, n in sorted(set(current) - baseline)],
++        "additional_test_ids": [{"binary": b, "name": n} for b, n in additional],
+         "unexpected_packages": unexpected_packages,
+         "per_package": {package: {status: sum(row["binary"].split("::", 1)[0] == package and row["status"] == status for row in rows)
+                                  for status in ("PASS", "FAIL", "TIMEOUT")} for package in PACKAGES},

@@ -1,0 +1,49 @@
+{
+  "schema": "hepta.r30-closed-export-input-contract.v1",
+  "inert": true,
+  "source_commit": "f74be175de66a4b351cd239d39d98cd34fe9cc1b",
+  "source_tree": "440d4a8e09af4009e4d9ea067388826308da8803",
+  "source_count": 197,
+  "diagnostic_only": true,
+  "behavior_repair_claimed": false,
+  "job_id": "1a1b25b399f-fc05-7daa",
+  "unknown_bindings": {
+    "TERMINAL_PIN": "bytes/sha256, optional git_blob, for E/native-source53-project-r30-terminal-process-status.json",
+    "CLOSED_ORIGINAL_PINS": "exact actual existing flat producer filenames to bytes/sha256/optional git_blob; successful set is19, failed set is not fabricated",
+    "CONTROLLER_ORIGINAL_PINS": "E/r30-controller-closed-{launch,terminal-process-status,read-N}.json original raw bytes and pins"
+  },
+  "success_originals": [
+    "native-source53-project-r30-environment.json",
+    "native-source53-project-r30-preconditions.json",
+    "native-source53-project-r30-source-pre-verification.json",
+    "native-source53-project-r30-source-final-verification.json",
+    "native-source53-project-r30-complete.json",
+    "native-source53-project-r30-strict-source-pre-verification.json",
+    "native-source53-project-r30-strict.log",
+    "native-source53-project-r30-strict-resources.txt",
+    "native-source53-project-r30-strict-raw-process-result.json",
+    "native-source53-project-r30-strict-source-post-verification.json",
+    "native-source53-project-r30-strict-receipt.json",
+    "native-source53-project-r30-tests-source-pre-verification.json",
+    "native-source53-project-r30-tests.log",
+    "native-source53-project-r30-tests-resources.txt",
+    "native-source53-project-r30-tests-raw-process-result.json",
+    "native-source53-project-r30-tests-source-post-verification.json",
+    "native-source53-project-r30-tests-receipt.json",
+    "native-source53-project-r30-tests-test-results.json",
+    "native-source53-project-r30-tests-result-review.json"
+  ],
+  "additional_failure_originals_only_if_present": [
+    "native-source53-project-r30-incomplete.json",
+    "native-source53-project-r30-orchestration-error.json"
+  ],
+  "output_archive": "/home/alex/work/hepta-cell-unified-20261106-a/evidence/checkpoint-r30-closed.tar.gz",
+  "output_result": "/home/alex/work/hepta-cell-unified-20261106-a/evidence/checkpoint-r30-export.json",
+  "derived_directory": "/home/alex/work/hepta-cell-unified-20261106-a/evidence/r30-closed-export",
+  "output_create_only": true,
+  "original_full_log_combines_process_stdout_and_stderr": true,
+  "controller_stdout_and_stderr_remain_separate": true,
+  "archive_success_is_not_gate_pass": true,
+  "workspace_qualification_from_this_export": false,
+  "rust_metadata_fix_fmt_apply_or_lock_execution": false
+}

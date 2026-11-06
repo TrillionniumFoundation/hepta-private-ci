@@ -1,0 +1,64 @@
+{
+  "schema": "hepta.root-r29-archive-independent-readback.v1",
+  "archive": {
+    "path": "native-validation-results/r29-archive-closed/checkpoint-r29-closed.tar.gz",
+    "bytes": 3334510,
+    "sha256": "cdfc77e9ac22f1404fc8944a32489e3e38d354ac9ac4c9c3220004d518b188d4",
+    "git_blob": "4147c2510b0f1a462d121eb211d7ac073274fe38"
+  },
+  "members": 315,
+  "index_rows_all_raw_rehashed": 314,
+  "total_member_bytes": 22887968,
+  "index": {
+    "bytes": 86865,
+    "sha256": "7f0b4780ded7233b4840cc0187db4ec496fcd2df868e1e327143182922fd25d0",
+    "git_blob": "7a2a7e7fd9108a2e802be766572a96eb44689e52"
+  },
+  "source_commit": "1e0910becc37383e6d17ecf861ea844fd07d8862",
+  "source_tree": "211f15baff19095e8c98bcea2b0ed99ca2270ade",
+  "source_count": 195,
+  "source195_exact_raw_sha_git_blob_and_Git_mode": true,
+  "all18_originals_and_original_terminal_exact": true,
+  "prior_r28_originals_exact": 27,
+  "fresh_metadata_default_members_equal": 193,
+  "raw_log": {
+    "bytes": 2499408,
+    "sha256": "3a95dcc8f0c486594fe3ff41c50fcaaa363bf00533f3ab7d37330e1c757a8559",
+    "git_blob": "7f719a1cf8f2b29c883edfd121293b6a509d8273"
+  },
+  "raw_unique_count": 20228,
+  "counts": {
+    "PASS": 20227,
+    "FAIL": 1,
+    "TIMEOUT": 0
+  },
+  "reported_skipped": 130,
+  "native_original_and_exported_rows_equal_independent_raw_log_parser": true,
+  "excluded_footer_duplicate_count": 1,
+  "failure_ids": [
+    {
+      "binary": "codex-app-server::all",
+      "name": "suite::v2::bedrock_setup::setup_bedrock_profile_and_environment",
+      "status": "FAIL"
+    }
+  ],
+  "failure_block": {
+    "start_byte_offset": 130233,
+    "end_byte_offset": 132164,
+    "bytes": 1931,
+    "sha256": "8ee31a66c57a0ab48bc30ccfe78cb9a475829bf5a31738863d19be45897b400c",
+    "git_blob": "8b3c36354c4fb1b5d9c693d6e89a78da91e4b8e7"
+  },
+  "controller_stdout_bytes": 3462,
+  "controller_stderr_bytes": 0,
+  "original_workspace_exit": 100,
+  "effective_workspace_exit": 100,
+  "original_outer_exit": 100,
+  "source_before_after_equal": true,
+  "archive_export_is_not_a_new_gate": true,
+  "engineering_default_workspace_gate": "FAIL",
+  "finalizer_qualified": false,
+  "fix_fmt_executed": false,
+  "science": "HOLD",
+  "authority": "DENY_ALL"
+}

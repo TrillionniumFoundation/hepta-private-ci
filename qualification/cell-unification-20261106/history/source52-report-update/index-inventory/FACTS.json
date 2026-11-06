@@ -1,0 +1,110 @@
+{
+  "schema": "hepta.root-source52-index-facts.v1",
+  "source_identity": {
+    "commit": "1e0910becc37383e6d17ecf861ea844fd07d8862",
+    "tree": "211f15baff19095e8c98bcea2b0ed99ca2270ade",
+    "stage": 52,
+    "changed_paths": 195,
+    "rust_paths": 181,
+    "other_paths": 14,
+    "gitdata_identity_not_native_checkout": true
+  },
+  "last_closed_workspace_gate": {
+    "source_commit": "50dd4bedefcd1b8e2e8cd5cf5023c60a86d38d0a",
+    "source_tree": "be34ab1afe622ad3b8f030c8c5018f4f54fbc304",
+    "source_changed_paths": 188,
+    "command": [
+      "just",
+      "test",
+      "--locked",
+      "--retries",
+      "0"
+    ],
+    "exit_code": 100,
+    "outcome": "FAILED",
+    "receipt": {
+      "path": "native-validation-results/checkpoint-r23/evidence/native-workspace-r23-tests-receipt.json",
+      "bytes": 1004,
+      "sha256": "7b630f8f8b642a4ecb174257e7b736b752cb68d8483c84df989ced1176609622"
+    },
+    "source_manifest": {
+      "path": "native-validation-results/checkpoint-r23/evidence/native-candidate-r22-source.json",
+      "bytes": 51695,
+      "sha256": "8cd1ec59c95d6c777d887f3302b257dc5230a7bfa5570fe9df0f0b2ef361aba5"
+    }
+  },
+  "last_closed_complete_project_gate": {
+    "source_commit": "1e0910becc37383e6d17ecf861ea844fd07d8862",
+    "source_tree": "211f15baff19095e8c98bcea2b0ed99ca2270ade",
+    "gate": "r28",
+    "outcome": "PASS",
+    "exit_code": 0,
+    "unique_results": 1564,
+    "counts": {
+      "PASS": 1564,
+      "FAIL": 0,
+      "TIMEOUT": 0
+    },
+    "reported_skipped": 3,
+    "python_pass": 32,
+    "python_reported_skip": 0,
+    "strict_exit_code": 0,
+    "outer_exit_code": 0,
+    "closure": "r28-project-checkpoint/CLOSURE.json"
+  },
+  "prior_source51_r26_result": {
+    "source_commit": "e28b0f385ee882f842911044958b2810f62f6379",
+    "source_tree": "763c8d2b4089f6e9806c3bbb68fa247bc2f6af36",
+    "gate": "r26",
+    "outcome": "FAIL",
+    "exit_code": 100,
+    "counts": {
+      "PASS": 1562,
+      "FAIL": 2,
+      "TIMEOUT": 0
+    },
+    "reported_skipped": 3,
+    "closure": "r26-project-checkpoint/CLOSURE.json"
+  },
+  "candidate_state": "SOURCE52_R28_PROJECT_PASS_R29_DEFAULT_WORKSPACE_STARTED_RESULT_PENDING",
+  "current_workspace_snapshot": {
+    "gate": "r29",
+    "job_id": "1a1b1f83e4b-fc05-7bcd",
+    "command": [
+      "just",
+      "test",
+      "--locked",
+      "--retries",
+      "0"
+    ],
+    "fresh_metadata_exit_code": 0,
+    "workspace_members": 193,
+    "workspace_default_members": 193,
+    "metadata_bytes": 937659,
+    "metadata_sha256": "b29d6b0c49c63d6345f50597873e3fa98c79ea0cbfe923ae3dd700b5cc08af8d",
+    "scope_bytes": 93362,
+    "scope_sha256": "f54377c0848cd407033bfe812cb020130f4c630c05f2fa40eb408bf8d03a6f88",
+    "started_actual": true,
+    "nextest_started": null,
+    "terminal_counts": null,
+    "terminal_exit_code": null,
+    "as_of_fixed_start_evidence_snapshot_not_live_status": true,
+    "origin_readback": {
+      "path": "native-validation-results/r29-start-closed/LOCAL-READBACK.json",
+      "bytes": 6065,
+      "sha256": "5d90588c5f891a9cef13da67fd75562d80cb5218e30ad239e3544eacad645987"
+    }
+  },
+  "snapshot_basis": "Closed source52 r28 project originals and actual r29 launch plus fresh metadata. This frozen snapshot does not include a later r29 terminal result or final fix/fmt.",
+  "source_ledger_snapshot": {
+    "path": "../history/source52-ledger-snapshot/publication-ledger.json",
+    "bytes": 46219,
+    "sha256": "41943796efffee00e11bcd19b9ee12a84249fa4a4f21cbee574a7405bb145c28",
+    "registered_source_records": 52,
+    "registered_binary_paths_at_that_snapshot": 185,
+    "artifact_checkpoints_at_that_snapshot": 5,
+    "not_a_permanent_current_attachment_count": true
+  },
+  "science": "HOLD",
+  "authority": "DENY_ALL"
+}

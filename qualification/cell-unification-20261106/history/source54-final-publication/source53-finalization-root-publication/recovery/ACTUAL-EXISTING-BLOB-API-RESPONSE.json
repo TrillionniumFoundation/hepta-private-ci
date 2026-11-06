@@ -1,0 +1,22 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "Action completed."
+    }
+  ],
+  "structuredContent": {
+    "content": "[package]\nedition.workspace = true\nlicense.workspace = true\nname = \"codex-utils-pty\"\nversion.workspace = true\n\n[lints]\nworkspace = true\n\n[dependencies]\nanyhow = { workspace = true }\nportable-pty = { workspace = true }\ntokio = { workspace = true, features = [\"io-util\", \"macros\", \"net\", \"process\", \"rt-multi-thread\", \"sync\", \"time\"] }\n\n[dev-dependencies]\npretty_assertions = { workspace = true }\n\n[target.'cfg(windows)'.dependencies]\nfiledescriptor = \"0.8.3\"\nlazy_static = { workspace = true }\nlog = { workspace = true }\nshared_library = \"0.1.9\"\nwinapi = { version = \"0.3.9\", features = [\n    \"handleapi\",\n    \"jobapi\",\n    \"jobapi2\",\n    \"libloaderapi\",\n    \"minwinbase\",\n    \"processthreadsapi\",\n    \"synchapi\",\n    \"winbase\",\n    \"wincon\",\n    \"winerror\",\n    \"winnt\",\n] }\n[target.'cfg(unix)'.dependencies]\nlibc = { workspace = true }\n\n[lib]\ndoctest = false\n",
+    "title": "2a27ab72ea290862887abfc857c86efe6fad12c1",
+    "modified_date": null,
+    "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/2a27ab72ea290862887abfc857c86efe6fad12c1",
+    "display_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/2a27ab72ea290862887abfc857c86efe6fad12c1",
+    "display_title": "2a27ab72ea290862887abfc857c86efe6fad12c1",
+    "structuredContent": {
+      "title": "2a27ab72ea290862887abfc857c86efe6fad12c1",
+      "content": "[package]\nedition.workspace = true\nlicense.workspace = true\nname = \"codex-utils-pty\"\nversion.workspace = true\n\n[lints]\nworkspace = true\n\n[dependencies]\nanyhow = { workspace = true }\nportable-pty = { workspace = true }\ntokio = { workspace = true, features = [\"io-util\", \"macros\", \"net\", \"process\", \"rt-multi-thread\", \"sync\", \"time\"] }\n\n[dev-dependencies]\npretty_assertions = { workspace = true }\n\n[target.'cfg(windows)'.dependencies]\nfiledescriptor = \"0.8.3\"\nlazy_static = { workspace = true }\nlog = { workspace = true }\nshared_library = \"0.1.9\"\nwinapi = { version = \"0.3.9\", features = [\n    \"handleapi\",\n    \"jobapi\",\n    \"jobapi2\",\n    \"libloaderapi\",\n    \"minwinbase\",\n    \"processthreadsapi\",\n    \"synchapi\",\n    \"winbase\",\n    \"wincon\",\n    \"winerror\",\n    \"winnt\",\n] }\n[target.'cfg(unix)'.dependencies]\nlibc = { workspace = true }\n\n[lib]\ndoctest = false\n",
+      "display_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/2a27ab72ea290862887abfc857c86efe6fad12c1"
+    }
+  },
+  "isError": false
+}

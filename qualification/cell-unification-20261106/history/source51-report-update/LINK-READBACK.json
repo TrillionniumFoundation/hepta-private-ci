@@ -1,0 +1,1061 @@
+{
+  "schema": "hepta.source51-report-link-readback.v1",
+  "map": {
+    "path": "history/source51-report-update/checkpoint4-actual-leaf-map.json",
+    "bytes": 228219,
+    "sha256": "be37e4960b6bb22a57ddfbae85dfb4d77a680765d6b6f598a3e056e46273f93c",
+    "git_blob": "19cd9c84e1c1d4628f20697906a30ba88d9680b3"
+  },
+  "distinct_referenced_paths": 56,
+  "local_paths": 38,
+  "registered_remote_only_paths": 18,
+  "checked": [
+    {
+      "path": "HISTORICAL_ASSETS.json",
+      "resolution": "REGISTERED_CHECKPOINT464_BLOB_NOT_RAW_BYTES_REHASHED",
+      "git_blob": "8a28345161f70a560f4666ce49cf942c13c7ed95",
+      "references": [
+        "README:assets"
+      ]
+    },
+    {
+      "path": "MATURITY.zh-CN.md",
+      "resolution": "REGISTERED_CHECKPOINT464_BLOB_NOT_RAW_BYTES_REHASHED",
+      "git_blob": "230b48144123a35c6b7a0f2787048bb045627a46",
+      "references": [
+        "README:maturity"
+      ]
+    },
+    {
+      "path": "SOURCE_IDENTITY.json",
+      "resolution": "LOCAL_FILE",
+      "actual_git_blob": "0c17046dd2e668b0be8c5466a5c216d0072c06aa",
+      "references": [
+        "README:identity"
+      ]
+    },
+    {
+      "path": "STATUS.json",
+      "resolution": "LOCAL_FILE",
+      "actual_git_blob": "fee5819925e32b51051a3950bfc2dcb69b4ce794",
+      "references": [
+        "README:status"
+      ]
+    },
+    {
+      "path": "history/published-r19-b14c3288/MANIFEST.json",
+      "resolution": "REGISTERED_CHECKPOINT464_BLOB_NOT_RAW_BYTES_REHASHED",
+      "git_blob": "3ed5f5749167cf3e9435d115879806240d9cc270",
+      "references": [
+        "README:history"
+      ]
+    },
+    {
+      "path": "history/published-r19-b14c3288/SOURCE_IDENTITY.json",
+      "resolution": "REGISTERED_CHECKPOINT464_BLOB_NOT_RAW_BYTES_REHASHED",
+      "git_blob": "a72c9ed65847f0162113a2374a9d233cc2f8893f",
+      "references": [
+        "SOURCE_IDENTITY.prior_complete_checkpoint_mapping.snapshot"
+      ]
+    },
+    {
+      "path": "history/published-r19-b14c3288/STATUS.json",
+      "resolution": "REGISTERED_CHECKPOINT464_BLOB_NOT_RAW_BYTES_REHASHED",
+      "git_blob": "ab06677a7fe90141a4442e4a058e922c814dd85d",
+      "references": [
+        "STATUS.source_compatibility.older_detailed_change_timeline",
+        "STATUS.upstream_ci_history.complete_original_records"
+      ]
+    },
+    {
+      "path": "history/source49-r23-checkpoint/MANIFEST.json",
+      "resolution": "LOCAL_FILE",
+      "actual_git_blob": "9932a5cfb713fa2cd22e689c67607e3e2c864dfa",
+      "references": [
+        "README:history49",
+        "STATUS.report_reconstruction.exact_previous_current_report_snapshot.path",
+        "SOURCE_IDENTITY.report_reconstruction.exact_previous_current_report_snapshot.path"
+      ]
+    },
+    {
+      "path": "history/source49-r23-checkpoint/SOURCE_IDENTITY.json",
+      "resolution": "LOCAL_FILE",
+      "actual_git_blob": "0c17046dd2e668b0be8c5466a5c216d0072c06aa",
+      "references": [
+        "SOURCE_IDENTITY.historical_source50_preparation.prior_exact_report.path"
+      ]
+    },
+    {
+      "path": "history/source49-r23-checkpoint/STATUS.json",
+      "resolution": "LOCAL_FILE",
+      "actual_git_blob": "fee5819925e32b51051a3950bfc2dcb69b4ce794",
+      "references": [
+        "STATUS.current_source.scope.prior_package_identity_scope.path",
+        "STATUS.validation.complete_prior_timeline",
+        "STATUS.current_failures.old_source49_candidate_and_failure_detail",
+        "SOURCE_IDENTITY.source_scope.prior_package_identity_scope.path"
+      ]
+    },
+    {
+      "path": "history/source51-apply-checkpoint/MANIFEST.json",
+      "resolution": "LOCAL_FILE",
+      "actual_git_blob": "0fe1b9e0325095f5452b04c22c4b8dc8b9937fac",
+      "references": [
+        "README:apply51",
+        "STATUS.current_source.native_apply.snapshot_manifest.path",
+        "STATUS.validation.gates.source51_apply.snapshot_manifest.path",
+        "STATUS.next_source_preparation.native_apply.snapshot_manifest.path",
+        "SOURCE_IDENTITY.current_source_native_apply.snapshot_manifest.path"
+      ]
+    },
+    {
+      "path": "history/source51-apply-checkpoint/controller/terminal-process-status.json",
+      "resolution": "LOCAL_FILE",
+      "actual_git_blob": "7ea604acdf470c87e43c118a539747ee765f8696",
+      "references": [
+        "STATUS.current_source.native_apply.terminal.path",
+        "STATUS.validation.gates.source51_apply.terminal.path",
+        "STATUS.next_source_preparation.native_apply.terminal.path",
+        "SOURCE_IDENTITY.checkpoint_bindings[6].terminal.path",
+        "SOURCE_IDENTITY.current_source_native_apply.terminal.path"
+      ]
+    },
+    {
+      "path": "history/source51-apply-checkpoint/original/native-candidate-r26-source.json",
+      "resolution": "LOCAL_FILE",
+      "actual_git_blob": "09ad6990ac2eeec1eb7d21689eef7733a531f75b",
+      "references": [
+        "STATUS.current_source.scope.actual_source_manifest.path",
+        "SOURCE_IDENTITY.source_scope.actual_source_manifest.path"
+      ]
+    },
+    {
+      "path": "history/source51-apply-checkpoint/original/native-source51-apply/complete.json",
+      "resolution": "LOCAL_FILE",
+      "actual_git_blob": "081141875674403f84575bfbb7980c1ec6fb4ab4",
+      "references": [
+        "STATUS.current_source.scope.native_apply_complete.path",
+        "STATUS.current_source.native_apply.complete.path",
+        "STATUS.validation.gates.source51_apply.complete.path",
+        "STATUS.next_source_preparation.native_apply.complete.path",
+        "SOURCE_IDENTITY.source_scope.native_apply_complete.path",
+        "SOURCE_IDENTITY.checkpoint_bindings[6].evidence.path",
+        "SOURCE_IDENTITY.current_source_native_apply.complete.path"
+      ]
+    },
+    {
+      "path": "history/source51-apply-checkpoint/original/native-source51-apply/post-apply-source-guard.json",
+      "resolution": "LOCAL_FILE",
+      "actual_git_blob": "cea11a9b4278aa615291ec8a669c9bebb2afad9e",
+      "references": [
+        "STATUS.current_source.scope.native_apply_postguard.path",
+        "STATUS.current_source.native_apply.source_postguard.path",
+        "STATUS.validation.gates.source51_apply.source_postguard.path",
+        "STATUS.next_source_preparation.native_apply.source_postguard.path",
+        "SOURCE_IDENTITY.source_scope.native_apply_postguard.path",
+        "SOURCE_IDENTITY.current_source_native_apply.source_postguard.path"
+      ]
+    },
+    {
+      "path": "history/source51-ledger-snapshot/MANIFEST.json",
+      "resolution": "LOCAL_FILE",
+      "actual_git_blob": "7951b794c8f937f238b83961944242a3ef4a4639",
+      "references": [
+        "README:ledger51"
+      ]
+    },
+    {
+      "path": "history/source51-ledger-snapshot/publication-ledger.json",
+      "resolution": "LOCAL_FILE",
+      "actual_git_blob": "ee78f0fd2645cecb637f53ec43686389cb68a211",
+      "references": [
+        "SOURCE_IDENTITY.creation_records_exact_from_publication_ledger.path"
+      ]
+    },
+    {
+      "path": "history/source51-r26-launch/LAUNCH-READBACK.json",
+      "resolution": "LOCAL_FILE",
+      "actual_git_blob": "a53bd25ab1424a5601a70325b73ae04666f69d76",
+      "references": [
+        "STATUS.validation.gates.r26.launch_readback.path",
+        "STATUS.next_source_preparation.r26.launch_readback.path",
+        "SOURCE_IDENTITY.pending_native_gates.r26.launch_readback.path"
+      ]
+    },
+    {
+      "path": "history/source51-r26-launch/MANIFEST.json",
+      "resolution": "LOCAL_FILE",
+      "actual_git_blob": "998e5df70f8ca0012309f5e15d699e22c7715c9c",
+      "references": [
+        "README:r26-launch",
+        "STATUS.validation.gates.r26.launch_snapshot.path",
+        "STATUS.next_source_preparation.r26.launch_snapshot.path",
+        "SOURCE_IDENTITY.pending_native_gates.r26.launch_snapshot.path"
+      ]
+    },
+    {
+      "path": "history/source51-r26-python-checkpoint/MANIFEST.json",
+      "resolution": "LOCAL_FILE",
+      "actual_git_blob": "e2507a5f93746d26f0d5a71310b141ac5ebc0be7",
+      "references": [
+        "README:r26-python",
+        "STATUS.validation.gates.r26.closed_python_snapshot.path",
+        "STATUS.next_source_preparation.r26.closed_python_snapshot.path",
+        "SOURCE_IDENTITY.pending_native_gates.r26.closed_python_snapshot.path"
+      ]
+    },
+    {
+      "path": "history/source51-r26-python-checkpoint/native-source51-project-r26-python-runner-raw-process-result.json",
+      "resolution": "LOCAL_FILE",
+      "actual_git_blob": "499c3990d424322f6ca0e425cb3ba2ea85bc7e95",
+      "references": [
+        "STATUS.validation.gates.r26.python_raw_result.path",
+        "STATUS.next_source_preparation.r26.python_raw_result.path",
+        "SOURCE_IDENTITY.pending_native_gates.r26.python_raw_result.path"
+      ]
+    },
+    {
+      "path": "history/source51-r26-python-checkpoint/native-source51-project-r26-python-runner-receipt.json",
+      "resolution": "LOCAL_FILE",
+      "actual_git_blob": "fd519903e3357dd070830303c37aa8d97bf578e7",
+      "references": [
+        "STATUS.validation.gates.r26.python_receipt.path",
+        "STATUS.next_source_preparation.r26.python_receipt.path",
+        "SOURCE_IDENTITY.pending_native_gates.r26.python_receipt.path"
+      ]
+    },
+    {
+      "path": "history/source51-r26-python-checkpoint/native-source51-project-r26-python-runner-result-review.json",
+      "resolution": "LOCAL_FILE",
+      "actual_git_blob": "890ddb6c6f9db06295e241fb4704419a0b099e17",
+      "references": [
+        "STATUS.validation.gates.r26.python_acceptance.path",
+        "STATUS.next_source_preparation.r26.python_acceptance.path",
+        "SOURCE_IDENTITY.pending_native_gates.r26.python_acceptance.path"
+      ]
+    },
+    {
+      "path": "history/source51-r26-python-checkpoint/native-source51-project-r26-python-runner-source-post-verification.json",
+      "resolution": "LOCAL_FILE",
+      "actual_git_blob": "246864c0f3fea5a920b372648b366089507a20ef",
+      "references": [
+        "STATUS.validation.gates.r26.python_postguard.path",
+        "STATUS.next_source_preparation.r26.python_postguard.path",
+        "SOURCE_IDENTITY.pending_native_gates.r26.python_postguard.path"
+      ]
+    },
+    {
+      "path": "history/source51-r26-python-checkpoint/native-source51-project-r26-python-runner.log",
+      "resolution": "LOCAL_FILE",
+      "actual_git_blob": "b45ee02f4b210e68f98d09b5ee7921331dce98ff",
+      "references": [
+        "STATUS.validation.gates.r26.python_log.path",
+        "STATUS.next_source_preparation.r26.python_log.path",
+        "SOURCE_IDENTITY.pending_native_gates.r26.python_log.path"
+      ]
+    },
+    {
+      "path": "history/source51-r26-python-checkpoint/observed-running-process-status.json",
+      "resolution": "LOCAL_FILE",
+      "actual_git_blob": "97a37734d4ee03892ad63b7f8d98ff0b423420cc",
+      "references": [
+        "STATUS.validation.gates.r26.last_running_observation.path",
+        "STATUS.next_source_preparation.r26.last_running_observation.path",
+        "SOURCE_IDENTITY.pending_native_gates.r26.last_running_observation.path"
+      ]
+    },
+    {
+      "path": "history/source51-r26-python-checkpoint/progress-original-stdout.txt",
+      "resolution": "LOCAL_FILE",
+      "actual_git_blob": "c5c45379be3e4c458be768c33b53b14deefd7e79",
+      "references": [
+        "STATUS.validation.gates.r26.strict_start_original_stdout.path",
+        "STATUS.next_source_preparation.r26.strict_start_original_stdout.path",
+        "SOURCE_IDENTITY.pending_native_gates.r26.strict_start_original_stdout.path"
+      ]
+    },
+    {
+      "path": "history/source51-registration/MANIFEST.json",
+      "resolution": "LOCAL_FILE",
+      "actual_git_blob": "a9823b37dc712897228faf26d97c4cd1f639068b",
+      "references": [
+        "README:registration51",
+        "STATUS.next_source_preparation.source_registration_snapshot.path",
+        "SOURCE_IDENTITY.source51_registration_snapshot.path"
+      ]
+    },
+    {
+      "path": "history/source51-registration/launcher-comparison-readback.json",
+      "resolution": "LOCAL_FILE",
+      "actual_git_blob": "166c8723dac23eef6570832ac8f73ade19cc1b1c",
+      "references": [
+        "README:probe51",
+        "STATUS.current_failures.bwrap_fixture.same_argv_probe.evidence.path"
+      ]
+    },
+    {
+      "path": "history/source51-scope-preparation/SCOPE.json",
+      "resolution": "LOCAL_FILE",
+      "actual_git_blob": "c431893654f2613c73c8b66ac9ec09a5fd1c2f4b",
+      "references": [
+        "README:scope51",
+        "STATUS.current_source.scope_preparation.path",
+        "STATUS.final_fix_fmt.scope.prepared_scope.path",
+        "SOURCE_IDENTITY.scope_preparation.path"
+      ]
+    },
+    {
+      "path": "history/source51-scope-preparation/hepta-cell-framework-native.yml",
+      "resolution": "LOCAL_FILE",
+      "actual_git_blob": "a3e915c33dd0fcbb9cc977b999b659e77bcdefe0",
+      "references": [
+        "STATUS.current_source.scope.workflow.exact_local_snapshot.path",
+        "SOURCE_IDENTITY.source_scope.workflow.exact_local_snapshot.path"
+      ]
+    },
+    {
+      "path": "native-evidence/baseline/native-first-receipt.json",
+      "resolution": "REGISTERED_CHECKPOINT464_BLOB_NOT_RAW_BYTES_REHASHED",
+      "git_blob": "2efcaa8cc902a12009d5b108242142684c43eb3b",
+      "references": [
+        "README:baseline",
+        "STATUS.validation.historical_baseline.evidence"
+      ]
+    },
+    {
+      "path": "native-evidence/r20-recovered-checkpoint/RECOVERY-CLOSURE.json",
+      "resolution": "REGISTERED_CHECKPOINT464_BLOB_NOT_RAW_BYTES_REHASHED",
+      "git_blob": "2732b60058c84d6cddb1a1136c623e92841b9674",
+      "references": [
+        "README:r20",
+        "STATUS.validation.gates.r20.evidence.path",
+        "SOURCE_IDENTITY.checkpoint_bindings[0].evidence.path"
+      ]
+    },
+    {
+      "path": "native-evidence/r21-recovered-checkpoint/RECOVERY-CLOSURE.json",
+      "resolution": "REGISTERED_CHECKPOINT464_BLOB_NOT_RAW_BYTES_REHASHED",
+      "git_blob": "43979915d06a6540190d8b512041821957912b0c",
+      "references": [
+        "README:r21",
+        "STATUS.validation.gates.r21.evidence.path",
+        "SOURCE_IDENTITY.checkpoint_bindings[1].evidence.path"
+      ]
+    },
+    {
+      "path": "native-evidence/r22-recovered-checkpoint/RECOVERY-CLOSURE.json",
+      "resolution": "REGISTERED_CHECKPOINT464_BLOB_NOT_RAW_BYTES_REHASHED",
+      "git_blob": "c1af44ae77dc5546c8e4ac4638c847d5298d6028",
+      "references": [
+        "README:r22",
+        "STATUS.validation.gates.r22.evidence.path",
+        "SOURCE_IDENTITY.checkpoint_bindings[2].evidence.path"
+      ]
+    },
+    {
+      "path": "native-evidence/r22-recovered-checkpoint/independent-recovery/r22/INDEPENDENT-READBACK.json",
+      "resolution": "REGISTERED_CHECKPOINT464_BLOB_NOT_RAW_BYTES_REHASHED",
+      "git_blob": "c4bc632fc092e61350975abac011c0e809db07f8",
+      "references": [
+        "SOURCE_IDENTITY.source49_archive_tree_proof.evidence"
+      ]
+    },
+    {
+      "path": "native-evidence/r23-root-result-readback/ROOT-RESULT-READBACK.json",
+      "resolution": "REGISTERED_CHECKPOINT464_BLOB_NOT_RAW_BYTES_REHASHED",
+      "git_blob": "393a48cdb0054b38e52892679ee84fe46a47a7a6",
+      "references": [
+        "STATUS.current_source.scope.historical_cargo_metadata.archive_bound_by",
+        "STATUS.validation.gates.r23.root_complete_result_readback.path",
+        "SOURCE_IDENTITY.source_scope.historical_cargo_metadata.archive_bound_by",
+        "SOURCE_IDENTITY.checkpoint_bindings[3].earlier_root_readback.path"
+      ]
+    },
+    {
+      "path": "native-evidence/r23-workspace-checkpoint/CLOSURE.json",
+      "resolution": "REGISTERED_CHECKPOINT464_BLOB_NOT_RAW_BYTES_REHASHED",
+      "git_blob": "2eb5c02f8e92e01599ebfcc0200300a805e944a7",
+      "references": [
+        "README:r23",
+        "STATUS.validation.gates.r23.formal_closure.path",
+        "SOURCE_IDENTITY.checkpoint_bindings[3].evidence.path"
+      ]
+    },
+    {
+      "path": "native-evidence/r23-workspace-checkpoint/HANDOFF-MANIFEST.json",
+      "resolution": "REGISTERED_CHECKPOINT464_BLOB_NOT_RAW_BYTES_REHASHED",
+      "git_blob": "f7d766ceb056d51ceef6837f3ec906d1f2e45685",
+      "references": [
+        "STATUS.validation.gates.r23.formal_handoff_manifest.path"
+      ]
+    },
+    {
+      "path": "native-evidence/r23-workspace-checkpoint/SOURCE-TO-DESTINATION.json",
+      "resolution": "REGISTERED_CHECKPOINT464_BLOB_NOT_RAW_BYTES_REHASHED",
+      "git_blob": "2fb9ebffc47683876bf66df2d094ad0c93d4f0ba",
+      "references": [
+        "STATUS.validation.gates.r23.source_to_destination_mapping.path"
+      ]
+    },
+    {
+      "path": "native-evidence/r23-workspace-checkpoint/independent-readback/INDEPENDENT-READBACK.json",
+      "resolution": "REGISTERED_CHECKPOINT464_BLOB_NOT_RAW_BYTES_REHASHED",
+      "git_blob": "8c8f9f29d561d8b7655041ece07f439a48001e08",
+      "references": [
+        "STATUS.validation.gates.r23.independent_full_archive_source_tree_and_log_readback.path",
+        "SOURCE_IDENTITY.checkpoint_bindings[3].independent_readback.path",
+        "SOURCE_IDENTITY.source49_archive_tree_proof.additional_r23_full_readback.path"
+      ]
+    },
+    {
+      "path": "native-evidence/r24-project-checkpoint/CLOSURE.json",
+      "resolution": "LOCAL_FILE",
+      "actual_git_blob": "98ae8b8a4ce60eb25d5333c037caa770831f90f2",
+      "references": [
+        "README:r24",
+        "STATUS.validation.gates.r24.formal_closure.path",
+        "SOURCE_IDENTITY.checkpoint_bindings[5].evidence.path",
+        "SOURCE_IDENTITY.historical_source50_preparation.actual_source50_rust_gate.path"
+      ]
+    },
+    {
+      "path": "native-evidence/r24-project-checkpoint/INDEPENDENT-READBACK.json",
+      "resolution": "LOCAL_FILE",
+      "actual_git_blob": "a473a6014a307666312443041ab208a79e6ffabb",
+      "references": [
+        "README:r24-readback",
+        "STATUS.current_source.scope.added_owner_execution_evidence.path",
+        "STATUS.validation.gates.r24.independent_readback.path",
+        "SOURCE_IDENTITY.source_scope.added_owner_execution_evidence.path"
+      ]
+    },
+    {
+      "path": "native-evidence/r24-project-checkpoint/checkpoint-r24-closed.tar.gz",
+      "resolution": "LOCAL_FILE",
+      "actual_git_blob": "b38d2e96c943c68cd0f37d413f01b3b6a424791a",
+      "references": [
+        "STATUS.validation.gates.r24.archive.path"
+      ]
+    },
+    {
+      "path": "native-evidence/r24-project-checkpoint/original/evidence/native-source50-project-r24-python-runner-receipt.json",
+      "resolution": "LOCAL_FILE",
+      "actual_git_blob": "c8f2c9a1c27d0ce80cf5c809cdefdc7ac4b8f7e0",
+      "references": [
+        "STATUS.validation.gates.r24.phases.python-runner.receipt.path"
+      ]
+    },
+    {
+      "path": "native-evidence/r24-project-checkpoint/original/evidence/native-source50-project-r24-strict-receipt.json",
+      "resolution": "LOCAL_FILE",
+      "actual_git_blob": "bfc4280af0aa0c46f264572a912f96d7874ab8ef",
+      "references": [
+        "STATUS.validation.gates.r24.phases.strict.receipt.path"
+      ]
+    },
+    {
+      "path": "native-evidence/r24-project-checkpoint/original/evidence/native-source50-project-r24-tests-receipt.json",
+      "resolution": "LOCAL_FILE",
+      "actual_git_blob": "ea1872fa78fcfd7543b8b6d1b5680fe4880ef58e",
+      "references": [
+        "STATUS.validation.gates.r24.phases.tests.receipt.path"
+      ]
+    },
+    {
+      "path": "native-evidence/r24-project-checkpoint/original/failure-blocks/failure-1.txt",
+      "resolution": "LOCAL_FILE",
+      "actual_git_blob": "d3fd35b918af98ef9630734e9c8e7f51682bb73e",
+      "references": [
+        "STATUS.current_failures.ids[0].block.path"
+      ]
+    },
+    {
+      "path": "native-evidence/r24-project-checkpoint/original/failure-blocks/failure-2.txt",
+      "resolution": "LOCAL_FILE",
+      "actual_git_blob": "6f01559229e2a6a83a49e2f69de884b6a294a311",
+      "references": [
+        "STATUS.current_failures.ids[1].block.path"
+      ]
+    },
+    {
+      "path": "native-evidence/r24-project-checkpoint/original/failure-blocks/failure-3.txt",
+      "resolution": "LOCAL_FILE",
+      "actual_git_blob": "af6badf1cc39163e6813421091448b641a88d607",
+      "references": [
+        "STATUS.current_failures.ids[2].block.path"
+      ]
+    },
+    {
+      "path": "native-evidence/r24-project-checkpoint/readback/R23-FAILURE-TRANSITIONS.json",
+      "resolution": "LOCAL_FILE",
+      "actual_git_blob": "b7b10145fc6cf9c0fa241aab99990f7d89d29112",
+      "references": [
+        "README:transitions",
+        "STATUS.validation.gates.r24.old_r23_nonpassing.crosswalk.path",
+        "STATUS.current_failures.previous_r23_eight_case_transition.path"
+      ]
+    },
+    {
+      "path": "native-evidence/registry-a/native-registry-a-receipt.json",
+      "resolution": "REGISTERED_CHECKPOINT464_BLOB_NOT_RAW_BYTES_REHASHED",
+      "git_blob": "70e94ce025e98a76c084ab0d762058b593536f08",
+      "references": [
+        "README:registry",
+        "STATUS.validation.historical_registry.evidence"
+      ]
+    },
+    {
+      "path": "native-evidence/source50-lock-control-recovery-addendum/INDEPENDENT-READBACK.json",
+      "resolution": "LOCAL_FILE",
+      "actual_git_blob": "9496ef8744f05deed8f3b704d8ec3e52b2e823c2",
+      "references": [
+        "README:lock-control",
+        "STATUS.validation.gates.source50_bazel_lock_update.control_history_addendum.path"
+      ]
+    },
+    {
+      "path": "native-evidence/source50-lock-update-checkpoint/INDEPENDENT-READBACK.json",
+      "resolution": "LOCAL_FILE",
+      "actual_git_blob": "64e2104aa2ab8b95bb0beedf2cc7a18cae0845dc",
+      "references": [
+        "README:lock50",
+        "STATUS.validation.gates.source50_bazel_lock_update.formal_readback.path",
+        "SOURCE_IDENTITY.checkpoint_bindings[4].evidence.path",
+        "SOURCE_IDENTITY.historical_source50_preparation.actual_source50_lock_evidence.path"
+      ]
+    },
+    {
+      "path": "native-evidence/source50-provisional-repair/READBACK.json",
+      "resolution": "REGISTERED_CHECKPOINT464_BLOB_NOT_RAW_BYTES_REHASHED",
+      "git_blob": "22ff4f7a4ce63f113860b8e1ee96798e37a71b05",
+      "references": [
+        "STATUS.next_source_preparation.historical_source50_provisional_plan",
+        "SOURCE_IDENTITY.historical_source50_preparation.provisional_original_evidence"
+      ]
+    },
+    {
+      "path": "study-evidence/README.md",
+      "resolution": "REGISTERED_CHECKPOINT464_BLOB_NOT_RAW_BYTES_REHASHED",
+      "git_blob": "3b55799ea63970dac22e23e7c197ba6b413c289f",
+      "references": [
+        "README:study",
+        "STATUS.science.frozen_reference.evidence",
+        "SOURCE_IDENTITY.scientific_reference_source.evidence"
+      ]
+    }
+  ],
+  "pinned_references": [
+    {
+      "path": "history/source49-r23-checkpoint/MANIFEST.json",
+      "scope": "LOCAL_RAW_BYTES",
+      "location": "STATUS.report_reconstruction.exact_previous_current_report_snapshot"
+    },
+    {
+      "path": "history/source51-apply-checkpoint/original/native-candidate-r26-source.json",
+      "scope": "LOCAL_RAW_BYTES",
+      "location": "STATUS.current_source.scope.actual_source_manifest"
+    },
+    {
+      "path": "history/source51-apply-checkpoint/original/native-source51-apply/complete.json",
+      "scope": "LOCAL_RAW_BYTES",
+      "location": "STATUS.current_source.scope.native_apply_complete"
+    },
+    {
+      "path": "history/source51-apply-checkpoint/original/native-source51-apply/post-apply-source-guard.json",
+      "scope": "LOCAL_RAW_BYTES",
+      "location": "STATUS.current_source.scope.native_apply_postguard"
+    },
+    {
+      "path": "history/source49-r23-checkpoint/STATUS.json",
+      "scope": "LOCAL_RAW_BYTES",
+      "location": "STATUS.current_source.scope.prior_package_identity_scope"
+    },
+    {
+      "path": "native-evidence/r24-project-checkpoint/INDEPENDENT-READBACK.json",
+      "scope": "LOCAL_RAW_BYTES",
+      "location": "STATUS.current_source.scope.added_owner_execution_evidence"
+    },
+    {
+      "path": "history/source51-scope-preparation/hepta-cell-framework-native.yml",
+      "scope": "LOCAL_RAW_BYTES",
+      "location": "STATUS.current_source.scope.workflow.exact_local_snapshot"
+    },
+    {
+      "path": "history/source51-scope-preparation/SCOPE.json",
+      "scope": "LOCAL_RAW_BYTES",
+      "location": "STATUS.current_source.scope_preparation"
+    },
+    {
+      "path": "history/source51-apply-checkpoint/original/native-source51-apply/complete.json",
+      "scope": "LOCAL_RAW_BYTES",
+      "location": "STATUS.current_source.native_apply.complete"
+    },
+    {
+      "path": "history/source51-apply-checkpoint/original/native-source51-apply/post-apply-source-guard.json",
+      "scope": "LOCAL_RAW_BYTES",
+      "location": "STATUS.current_source.native_apply.source_postguard"
+    },
+    {
+      "path": "history/source51-apply-checkpoint/controller/terminal-process-status.json",
+      "scope": "LOCAL_RAW_BYTES",
+      "location": "STATUS.current_source.native_apply.terminal"
+    },
+    {
+      "path": "history/source51-apply-checkpoint/MANIFEST.json",
+      "scope": "LOCAL_RAW_BYTES",
+      "location": "STATUS.current_source.native_apply.snapshot_manifest"
+    },
+    {
+      "path": "native-evidence/r20-recovered-checkpoint/RECOVERY-CLOSURE.json",
+      "scope": "REMOTE_BLOB_ID_ONLY_ORIGINAL_RAW_PIN_NOT_REHASHED",
+      "location": "STATUS.validation.gates.r20.evidence"
+    },
+    {
+      "path": "native-evidence/r21-recovered-checkpoint/RECOVERY-CLOSURE.json",
+      "scope": "REMOTE_BLOB_ID_ONLY_ORIGINAL_RAW_PIN_NOT_REHASHED",
+      "location": "STATUS.validation.gates.r21.evidence"
+    },
+    {
+      "path": "native-evidence/r22-recovered-checkpoint/RECOVERY-CLOSURE.json",
+      "scope": "REMOTE_BLOB_ID_ONLY_ORIGINAL_RAW_PIN_NOT_REHASHED",
+      "location": "STATUS.validation.gates.r22.evidence"
+    },
+    {
+      "path": "native-evidence/r23-root-result-readback/ROOT-RESULT-READBACK.json",
+      "scope": "REMOTE_BLOB_ID_ONLY_ORIGINAL_RAW_PIN_NOT_REHASHED",
+      "location": "STATUS.validation.gates.r23.root_complete_result_readback"
+    },
+    {
+      "path": "native-evidence/r23-workspace-checkpoint/CLOSURE.json",
+      "scope": "REMOTE_BLOB_ID_ONLY_ORIGINAL_RAW_PIN_NOT_REHASHED",
+      "location": "STATUS.validation.gates.r23.formal_closure"
+    },
+    {
+      "path": "native-evidence/r23-workspace-checkpoint/independent-readback/INDEPENDENT-READBACK.json",
+      "scope": "REMOTE_BLOB_ID_ONLY_ORIGINAL_RAW_PIN_NOT_REHASHED",
+      "location": "STATUS.validation.gates.r23.independent_full_archive_source_tree_and_log_readback"
+    },
+    {
+      "path": "native-evidence/r23-workspace-checkpoint/HANDOFF-MANIFEST.json",
+      "scope": "REMOTE_BLOB_ID_ONLY_ORIGINAL_RAW_PIN_NOT_REHASHED",
+      "location": "STATUS.validation.gates.r23.formal_handoff_manifest"
+    },
+    {
+      "path": "native-evidence/r23-workspace-checkpoint/SOURCE-TO-DESTINATION.json",
+      "scope": "REMOTE_BLOB_ID_ONLY_ORIGINAL_RAW_PIN_NOT_REHASHED",
+      "location": "STATUS.validation.gates.r23.source_to_destination_mapping"
+    },
+    {
+      "path": "native-evidence/source50-lock-update-checkpoint/INDEPENDENT-READBACK.json",
+      "scope": "LOCAL_RAW_BYTES",
+      "location": "STATUS.validation.gates.source50_bazel_lock_update.formal_readback"
+    },
+    {
+      "path": "native-evidence/source50-lock-control-recovery-addendum/INDEPENDENT-READBACK.json",
+      "scope": "LOCAL_RAW_BYTES",
+      "location": "STATUS.validation.gates.source50_bazel_lock_update.control_history_addendum"
+    },
+    {
+      "path": "native-evidence/r24-project-checkpoint/original/evidence/native-source50-project-r24-python-runner-receipt.json",
+      "scope": "LOCAL_RAW_BYTES",
+      "location": "STATUS.validation.gates.r24.phases.python-runner.receipt"
+    },
+    {
+      "path": "native-evidence/r24-project-checkpoint/original/evidence/native-source50-project-r24-strict-receipt.json",
+      "scope": "LOCAL_RAW_BYTES",
+      "location": "STATUS.validation.gates.r24.phases.strict.receipt"
+    },
+    {
+      "path": "native-evidence/r24-project-checkpoint/original/evidence/native-source50-project-r24-tests-receipt.json",
+      "scope": "LOCAL_RAW_BYTES",
+      "location": "STATUS.validation.gates.r24.phases.tests.receipt"
+    },
+    {
+      "path": "native-evidence/r24-project-checkpoint/readback/R23-FAILURE-TRANSITIONS.json",
+      "scope": "LOCAL_RAW_BYTES",
+      "location": "STATUS.validation.gates.r24.old_r23_nonpassing.crosswalk"
+    },
+    {
+      "path": "native-evidence/r24-project-checkpoint/CLOSURE.json",
+      "scope": "LOCAL_RAW_BYTES",
+      "location": "STATUS.validation.gates.r24.formal_closure"
+    },
+    {
+      "path": "native-evidence/r24-project-checkpoint/INDEPENDENT-READBACK.json",
+      "scope": "LOCAL_RAW_BYTES",
+      "location": "STATUS.validation.gates.r24.independent_readback"
+    },
+    {
+      "path": "native-evidence/r24-project-checkpoint/checkpoint-r24-closed.tar.gz",
+      "scope": "LOCAL_RAW_BYTES",
+      "location": "STATUS.validation.gates.r24.archive"
+    },
+    {
+      "path": "history/source51-apply-checkpoint/original/native-source51-apply/complete.json",
+      "scope": "LOCAL_RAW_BYTES",
+      "location": "STATUS.validation.gates.source51_apply.complete"
+    },
+    {
+      "path": "history/source51-apply-checkpoint/original/native-source51-apply/post-apply-source-guard.json",
+      "scope": "LOCAL_RAW_BYTES",
+      "location": "STATUS.validation.gates.source51_apply.source_postguard"
+    },
+    {
+      "path": "history/source51-apply-checkpoint/controller/terminal-process-status.json",
+      "scope": "LOCAL_RAW_BYTES",
+      "location": "STATUS.validation.gates.source51_apply.terminal"
+    },
+    {
+      "path": "history/source51-apply-checkpoint/MANIFEST.json",
+      "scope": "LOCAL_RAW_BYTES",
+      "location": "STATUS.validation.gates.source51_apply.snapshot_manifest"
+    },
+    {
+      "path": "history/source51-r26-launch/MANIFEST.json",
+      "scope": "LOCAL_RAW_BYTES",
+      "location": "STATUS.validation.gates.r26.launch_snapshot"
+    },
+    {
+      "path": "history/source51-r26-launch/LAUNCH-READBACK.json",
+      "scope": "LOCAL_RAW_BYTES",
+      "location": "STATUS.validation.gates.r26.launch_readback"
+    },
+    {
+      "path": "history/source51-r26-python-checkpoint/MANIFEST.json",
+      "scope": "LOCAL_RAW_BYTES",
+      "location": "STATUS.validation.gates.r26.closed_python_snapshot"
+    },
+    {
+      "path": "history/source51-r26-python-checkpoint/native-source51-project-r26-python-runner-receipt.json",
+      "scope": "LOCAL_RAW_BYTES",
+      "location": "STATUS.validation.gates.r26.python_receipt"
+    },
+    {
+      "path": "history/source51-r26-python-checkpoint/native-source51-project-r26-python-runner.log",
+      "scope": "LOCAL_RAW_BYTES",
+      "location": "STATUS.validation.gates.r26.python_log"
+    },
+    {
+      "path": "history/source51-r26-python-checkpoint/native-source51-project-r26-python-runner-raw-process-result.json",
+      "scope": "LOCAL_RAW_BYTES",
+      "location": "STATUS.validation.gates.r26.python_raw_result"
+    },
+    {
+      "path": "history/source51-r26-python-checkpoint/native-source51-project-r26-python-runner-result-review.json",
+      "scope": "LOCAL_RAW_BYTES",
+      "location": "STATUS.validation.gates.r26.python_acceptance"
+    },
+    {
+      "path": "history/source51-r26-python-checkpoint/native-source51-project-r26-python-runner-source-post-verification.json",
+      "scope": "LOCAL_RAW_BYTES",
+      "location": "STATUS.validation.gates.r26.python_postguard"
+    },
+    {
+      "path": "history/source51-r26-python-checkpoint/observed-running-process-status.json",
+      "scope": "LOCAL_RAW_BYTES",
+      "location": "STATUS.validation.gates.r26.last_running_observation"
+    },
+    {
+      "path": "history/source51-r26-python-checkpoint/progress-original-stdout.txt",
+      "scope": "LOCAL_RAW_BYTES",
+      "location": "STATUS.validation.gates.r26.strict_start_original_stdout"
+    },
+    {
+      "path": "native-evidence/r24-project-checkpoint/original/failure-blocks/failure-1.txt",
+      "scope": "LOCAL_RAW_BYTES",
+      "location": "STATUS.current_failures.ids[0].block"
+    },
+    {
+      "path": "native-evidence/r24-project-checkpoint/original/failure-blocks/failure-2.txt",
+      "scope": "LOCAL_RAW_BYTES",
+      "location": "STATUS.current_failures.ids[1].block"
+    },
+    {
+      "path": "native-evidence/r24-project-checkpoint/original/failure-blocks/failure-3.txt",
+      "scope": "LOCAL_RAW_BYTES",
+      "location": "STATUS.current_failures.ids[2].block"
+    },
+    {
+      "path": "native-evidence/r24-project-checkpoint/readback/R23-FAILURE-TRANSITIONS.json",
+      "scope": "LOCAL_RAW_BYTES",
+      "location": "STATUS.current_failures.previous_r23_eight_case_transition"
+    },
+    {
+      "path": "history/source51-registration/launcher-comparison-readback.json",
+      "scope": "LOCAL_RAW_BYTES",
+      "location": "STATUS.current_failures.bwrap_fixture.same_argv_probe.evidence"
+    },
+    {
+      "path": "history/source51-scope-preparation/SCOPE.json",
+      "scope": "LOCAL_RAW_BYTES",
+      "location": "STATUS.final_fix_fmt.scope.prepared_scope"
+    },
+    {
+      "path": "history/source51-registration/MANIFEST.json",
+      "scope": "LOCAL_RAW_BYTES",
+      "location": "STATUS.next_source_preparation.source_registration_snapshot"
+    },
+    {
+      "path": "history/source51-apply-checkpoint/original/native-source51-apply/complete.json",
+      "scope": "LOCAL_RAW_BYTES",
+      "location": "STATUS.next_source_preparation.native_apply.complete"
+    },
+    {
+      "path": "history/source51-apply-checkpoint/original/native-source51-apply/post-apply-source-guard.json",
+      "scope": "LOCAL_RAW_BYTES",
+      "location": "STATUS.next_source_preparation.native_apply.source_postguard"
+    },
+    {
+      "path": "history/source51-apply-checkpoint/controller/terminal-process-status.json",
+      "scope": "LOCAL_RAW_BYTES",
+      "location": "STATUS.next_source_preparation.native_apply.terminal"
+    },
+    {
+      "path": "history/source51-apply-checkpoint/MANIFEST.json",
+      "scope": "LOCAL_RAW_BYTES",
+      "location": "STATUS.next_source_preparation.native_apply.snapshot_manifest"
+    },
+    {
+      "path": "history/source51-r26-launch/MANIFEST.json",
+      "scope": "LOCAL_RAW_BYTES",
+      "location": "STATUS.next_source_preparation.r26.launch_snapshot"
+    },
+    {
+      "path": "history/source51-r26-launch/LAUNCH-READBACK.json",
+      "scope": "LOCAL_RAW_BYTES",
+      "location": "STATUS.next_source_preparation.r26.launch_readback"
+    },
+    {
+      "path": "history/source51-r26-python-checkpoint/MANIFEST.json",
+      "scope": "LOCAL_RAW_BYTES",
+      "location": "STATUS.next_source_preparation.r26.closed_python_snapshot"
+    },
+    {
+      "path": "history/source51-r26-python-checkpoint/native-source51-project-r26-python-runner-receipt.json",
+      "scope": "LOCAL_RAW_BYTES",
+      "location": "STATUS.next_source_preparation.r26.python_receipt"
+    },
+    {
+      "path": "history/source51-r26-python-checkpoint/native-source51-project-r26-python-runner.log",
+      "scope": "LOCAL_RAW_BYTES",
+      "location": "STATUS.next_source_preparation.r26.python_log"
+    },
+    {
+      "path": "history/source51-r26-python-checkpoint/native-source51-project-r26-python-runner-raw-process-result.json",
+      "scope": "LOCAL_RAW_BYTES",
+      "location": "STATUS.next_source_preparation.r26.python_raw_result"
+    },
+    {
+      "path": "history/source51-r26-python-checkpoint/native-source51-project-r26-python-runner-result-review.json",
+      "scope": "LOCAL_RAW_BYTES",
+      "location": "STATUS.next_source_preparation.r26.python_acceptance"
+    },
+    {
+      "path": "history/source51-r26-python-checkpoint/native-source51-project-r26-python-runner-source-post-verification.json",
+      "scope": "LOCAL_RAW_BYTES",
+      "location": "STATUS.next_source_preparation.r26.python_postguard"
+    },
+    {
+      "path": "history/source51-r26-python-checkpoint/observed-running-process-status.json",
+      "scope": "LOCAL_RAW_BYTES",
+      "location": "STATUS.next_source_preparation.r26.last_running_observation"
+    },
+    {
+      "path": "history/source51-r26-python-checkpoint/progress-original-stdout.txt",
+      "scope": "LOCAL_RAW_BYTES",
+      "location": "STATUS.next_source_preparation.r26.strict_start_original_stdout"
+    },
+    {
+      "path": "history/source49-r23-checkpoint/MANIFEST.json",
+      "scope": "LOCAL_RAW_BYTES",
+      "location": "SOURCE_IDENTITY.report_reconstruction.exact_previous_current_report_snapshot"
+    },
+    {
+      "path": "history/source51-ledger-snapshot/publication-ledger.json",
+      "scope": "LOCAL_RAW_BYTES",
+      "location": "SOURCE_IDENTITY.creation_records_exact_from_publication_ledger"
+    },
+    {
+      "path": "history/source51-apply-checkpoint/original/native-candidate-r26-source.json",
+      "scope": "LOCAL_RAW_BYTES",
+      "location": "SOURCE_IDENTITY.source_scope.actual_source_manifest"
+    },
+    {
+      "path": "history/source51-apply-checkpoint/original/native-source51-apply/complete.json",
+      "scope": "LOCAL_RAW_BYTES",
+      "location": "SOURCE_IDENTITY.source_scope.native_apply_complete"
+    },
+    {
+      "path": "history/source51-apply-checkpoint/original/native-source51-apply/post-apply-source-guard.json",
+      "scope": "LOCAL_RAW_BYTES",
+      "location": "SOURCE_IDENTITY.source_scope.native_apply_postguard"
+    },
+    {
+      "path": "history/source49-r23-checkpoint/STATUS.json",
+      "scope": "LOCAL_RAW_BYTES",
+      "location": "SOURCE_IDENTITY.source_scope.prior_package_identity_scope"
+    },
+    {
+      "path": "native-evidence/r24-project-checkpoint/INDEPENDENT-READBACK.json",
+      "scope": "LOCAL_RAW_BYTES",
+      "location": "SOURCE_IDENTITY.source_scope.added_owner_execution_evidence"
+    },
+    {
+      "path": "history/source51-scope-preparation/hepta-cell-framework-native.yml",
+      "scope": "LOCAL_RAW_BYTES",
+      "location": "SOURCE_IDENTITY.source_scope.workflow.exact_local_snapshot"
+    },
+    {
+      "path": "native-evidence/r20-recovered-checkpoint/RECOVERY-CLOSURE.json",
+      "scope": "REMOTE_BLOB_ID_ONLY_ORIGINAL_RAW_PIN_NOT_REHASHED",
+      "location": "SOURCE_IDENTITY.checkpoint_bindings[0].evidence"
+    },
+    {
+      "path": "native-evidence/r21-recovered-checkpoint/RECOVERY-CLOSURE.json",
+      "scope": "REMOTE_BLOB_ID_ONLY_ORIGINAL_RAW_PIN_NOT_REHASHED",
+      "location": "SOURCE_IDENTITY.checkpoint_bindings[1].evidence"
+    },
+    {
+      "path": "native-evidence/r22-recovered-checkpoint/RECOVERY-CLOSURE.json",
+      "scope": "REMOTE_BLOB_ID_ONLY_ORIGINAL_RAW_PIN_NOT_REHASHED",
+      "location": "SOURCE_IDENTITY.checkpoint_bindings[2].evidence"
+    },
+    {
+      "path": "native-evidence/r23-workspace-checkpoint/CLOSURE.json",
+      "scope": "REMOTE_BLOB_ID_ONLY_ORIGINAL_RAW_PIN_NOT_REHASHED",
+      "location": "SOURCE_IDENTITY.checkpoint_bindings[3].evidence"
+    },
+    {
+      "path": "native-evidence/r23-root-result-readback/ROOT-RESULT-READBACK.json",
+      "scope": "REMOTE_BLOB_ID_ONLY_ORIGINAL_RAW_PIN_NOT_REHASHED",
+      "location": "SOURCE_IDENTITY.checkpoint_bindings[3].earlier_root_readback"
+    },
+    {
+      "path": "native-evidence/r23-workspace-checkpoint/independent-readback/INDEPENDENT-READBACK.json",
+      "scope": "REMOTE_BLOB_ID_ONLY_ORIGINAL_RAW_PIN_NOT_REHASHED",
+      "location": "SOURCE_IDENTITY.checkpoint_bindings[3].independent_readback"
+    },
+    {
+      "path": "native-evidence/source50-lock-update-checkpoint/INDEPENDENT-READBACK.json",
+      "scope": "LOCAL_RAW_BYTES",
+      "location": "SOURCE_IDENTITY.checkpoint_bindings[4].evidence"
+    },
+    {
+      "path": "native-evidence/r24-project-checkpoint/CLOSURE.json",
+      "scope": "LOCAL_RAW_BYTES",
+      "location": "SOURCE_IDENTITY.checkpoint_bindings[5].evidence"
+    },
+    {
+      "path": "history/source51-apply-checkpoint/original/native-source51-apply/complete.json",
+      "scope": "LOCAL_RAW_BYTES",
+      "location": "SOURCE_IDENTITY.checkpoint_bindings[6].evidence"
+    },
+    {
+      "path": "history/source51-apply-checkpoint/controller/terminal-process-status.json",
+      "scope": "LOCAL_RAW_BYTES",
+      "location": "SOURCE_IDENTITY.checkpoint_bindings[6].terminal"
+    },
+    {
+      "path": "native-evidence/r23-workspace-checkpoint/independent-readback/INDEPENDENT-READBACK.json",
+      "scope": "REMOTE_BLOB_ID_ONLY_ORIGINAL_RAW_PIN_NOT_REHASHED",
+      "location": "SOURCE_IDENTITY.source49_archive_tree_proof.additional_r23_full_readback"
+    },
+    {
+      "path": "history/source51-scope-preparation/SCOPE.json",
+      "scope": "LOCAL_RAW_BYTES",
+      "location": "SOURCE_IDENTITY.scope_preparation"
+    },
+    {
+      "path": "history/source49-r23-checkpoint/SOURCE_IDENTITY.json",
+      "scope": "LOCAL_RAW_BYTES",
+      "location": "SOURCE_IDENTITY.historical_source50_preparation.prior_exact_report"
+    },
+    {
+      "path": "native-evidence/source50-lock-update-checkpoint/INDEPENDENT-READBACK.json",
+      "scope": "LOCAL_RAW_BYTES",
+      "location": "SOURCE_IDENTITY.historical_source50_preparation.actual_source50_lock_evidence"
+    },
+    {
+      "path": "native-evidence/r24-project-checkpoint/CLOSURE.json",
+      "scope": "LOCAL_RAW_BYTES",
+      "location": "SOURCE_IDENTITY.historical_source50_preparation.actual_source50_rust_gate"
+    },
+    {
+      "path": "history/source51-apply-checkpoint/original/native-source51-apply/complete.json",
+      "scope": "LOCAL_RAW_BYTES",
+      "location": "SOURCE_IDENTITY.current_source_native_apply.complete"
+    },
+    {
+      "path": "history/source51-apply-checkpoint/original/native-source51-apply/post-apply-source-guard.json",
+      "scope": "LOCAL_RAW_BYTES",
+      "location": "SOURCE_IDENTITY.current_source_native_apply.source_postguard"
+    },
+    {
+      "path": "history/source51-apply-checkpoint/controller/terminal-process-status.json",
+      "scope": "LOCAL_RAW_BYTES",
+      "location": "SOURCE_IDENTITY.current_source_native_apply.terminal"
+    },
+    {
+      "path": "history/source51-apply-checkpoint/MANIFEST.json",
+      "scope": "LOCAL_RAW_BYTES",
+      "location": "SOURCE_IDENTITY.current_source_native_apply.snapshot_manifest"
+    },
+    {
+      "path": "history/source51-r26-launch/MANIFEST.json",
+      "scope": "LOCAL_RAW_BYTES",
+      "location": "SOURCE_IDENTITY.pending_native_gates.r26.launch_snapshot"
+    },
+    {
+      "path": "history/source51-r26-launch/LAUNCH-READBACK.json",
+      "scope": "LOCAL_RAW_BYTES",
+      "location": "SOURCE_IDENTITY.pending_native_gates.r26.launch_readback"
+    },
+    {
+      "path": "history/source51-r26-python-checkpoint/MANIFEST.json",
+      "scope": "LOCAL_RAW_BYTES",
+      "location": "SOURCE_IDENTITY.pending_native_gates.r26.closed_python_snapshot"
+    },
+    {
+      "path": "history/source51-r26-python-checkpoint/native-source51-project-r26-python-runner-receipt.json",
+      "scope": "LOCAL_RAW_BYTES",
+      "location": "SOURCE_IDENTITY.pending_native_gates.r26.python_receipt"
+    },
+    {
+      "path": "history/source51-r26-python-checkpoint/native-source51-project-r26-python-runner.log",
+      "scope": "LOCAL_RAW_BYTES",
+      "location": "SOURCE_IDENTITY.pending_native_gates.r26.python_log"
+    },
+    {
+      "path": "history/source51-r26-python-checkpoint/native-source51-project-r26-python-runner-raw-process-result.json",
+      "scope": "LOCAL_RAW_BYTES",
+      "location": "SOURCE_IDENTITY.pending_native_gates.r26.python_raw_result"
+    },
+    {
+      "path": "history/source51-r26-python-checkpoint/native-source51-project-r26-python-runner-result-review.json",
+      "scope": "LOCAL_RAW_BYTES",
+      "location": "SOURCE_IDENTITY.pending_native_gates.r26.python_acceptance"
+    },
+    {
+      "path": "history/source51-r26-python-checkpoint/native-source51-project-r26-python-runner-source-post-verification.json",
+      "scope": "LOCAL_RAW_BYTES",
+      "location": "SOURCE_IDENTITY.pending_native_gates.r26.python_postguard"
+    },
+    {
+      "path": "history/source51-r26-python-checkpoint/observed-running-process-status.json",
+      "scope": "LOCAL_RAW_BYTES",
+      "location": "SOURCE_IDENTITY.pending_native_gates.r26.last_running_observation"
+    },
+    {
+      "path": "history/source51-r26-python-checkpoint/progress-original-stdout.txt",
+      "scope": "LOCAL_RAW_BYTES",
+      "location": "SOURCE_IDENTITY.pending_native_gates.r26.strict_start_original_stdout"
+    },
+    {
+      "path": "history/source51-registration/MANIFEST.json",
+      "scope": "LOCAL_RAW_BYTES",
+      "location": "SOURCE_IDENTITY.source51_registration_snapshot"
+    }
+  ],
+  "missing": [],
+  "remote_original_bytes_not_redownloaded": true
+}

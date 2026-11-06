@@ -1,0 +1,121 @@
+{
+  "schema": "hepta.nextest-runtime-helper-candidate.v1",
+  "status": "FROZEN_CANDIDATE_AWAITING_NATIVE_ALL_RUNNER_TESTS",
+  "base_commit": "bef6fa7645df9df12b69fda499e97eed25de6c75",
+  "native_support_source_tree": "6d88ca9c8964669a408d8549efaeff7b94d68674",
+  "workspace_metadata_source_tree": "64ab95198effb0a0de22b0c4a30a1e8d509e2840",
+  "files": [
+    {
+      "path": "scripts/run-nextest.py",
+      "before": {
+        "bytes": 10206,
+        "sha256": "45c4e35d1ff24840d9e1e05331af0b89475bfe1aec3231afc56fecb8cea66127",
+        "git_blob": "1ed63abe84267b320cbfb0123a70aac5507f4595"
+      },
+      "after": {
+        "bytes": 28217,
+        "sha256": "b739132afa4eb9ec649fa9067644fb17ca1139ab513ee40b1da3a677b1d26ffc",
+        "git_blob": "2b6345f197eb293d47e49fcbf6edb26a180c31d1"
+      }
+    },
+    {
+      "path": "scripts/test_run_nextest_helpers.py",
+      "before": null,
+      "after": {
+        "bytes": 20952,
+        "sha256": "eb5f9070c2f38b8bc349cdceb2aaea250b8491811050d2900b42fae2e7d665ce",
+        "git_blob": "b70a02ba6318d31b0202bc95c22a70e47c44fe08"
+      }
+    }
+  ],
+  "patch": {
+    "bytes": 41710,
+    "sha256": "59e88371b7591f7ab87c37e64c7a88e72441cd4533a342bdc88b0fae58cb4ccb",
+    "git_blob": "8033dff2ce043de7933101ceec381a79930fb08f"
+  },
+  "original_validation_file": {
+    "path": "scripts/test_run_nextest.py",
+    "bytes": 12110,
+    "sha256": "ed5c06bb530b195a38aa2838cc25a6a4f45cd1096a4e86075f23315c9ca6c1b0",
+    "git_blob": "cb540339db69ebc7a893129ff19406eb966af029",
+    "unchanged": true
+  },
+  "inverse_audit": {
+    "restores_original_runner_exactly": true,
+    "original_test_file_byte_identical": true,
+    "original_graph_filter_and_metadata_logic_preserved": true,
+    "only_original_body_changes": "four final subprocess.call dispatches now receive helper child environment"
+  },
+  "local_validation": {
+    "command": [
+      "python3",
+      "-m",
+      "unittest",
+      "discover",
+      "-s",
+      "/workspace/scratch/08f5efd48967/nextest-helper-repair/candidate/scripts",
+      "-p",
+      "test_run_nextest*.py",
+      "-v"
+    ],
+    "exit_code": 0,
+    "total_discovered": 31,
+    "passed": 23,
+    "skipped": 8,
+    "skip_reason": "Cargo and cargo-nextest unavailable locally: seven original Rust-backed tests and one new real cross-package fixture not executed",
+    "log_sha256": "264baabcfed1bc86a79d59d57fa8f23f62b4fa6579041586e9bcb62779ee484b",
+    "not_a_native_or_core_gate": true
+  },
+  "test_methods": {
+    "test_run_nextest.py": {
+      "FilterMetadataStrategyTests": [
+        "test_graph_words_inside_matchers_do_not_become_dependencies",
+        "test_graph_expansion_unknown_and_opaque_syntax_keep_full_metadata",
+        "test_filter_flag_forms_multiple_filters_and_test_arguments"
+      ],
+      "ScopedNextestTests": [
+        "test_scoped_test_reaches_real_nextest_and_propagates_feature_failure",
+        "test_pure_test_filter_uses_scoped_metadata_and_no_tests_is_an_error",
+        "test_explicit_manifest_runs_the_selected_workspace_and_preserves_failures",
+        "test_pure_filters_preserve_real_selection_and_feature_failure",
+        "test_dependency_opaque_and_config_filters_keep_normal_metadata",
+        "test_explicit_manifest_preserves_nextest_workspace_selection",
+        "test_reused_metadata_is_forwarded_and_full_path_can_be_forced"
+      ]
+    },
+    "test_run_nextest_helpers.py": {
+      "RuntimeHelperTests": [
+        "test_exact_artifact_path_is_exposed_without_changing_test_arguments",
+        "test_cargo_profile_target_features_and_config_are_forwarded_separately",
+        "test_adding_helper_owner_does_not_expand_bare_or_all_feature_selection",
+        "test_release_does_not_add_test_profile",
+        "test_short_test_threads_are_not_cargo_build_jobs",
+        "test_workspace_and_manifest_selection_respect_excluded_consumers",
+        "test_excluding_helper_tests_keeps_the_consumers_runtime_dependency",
+        "test_cargo_explicit_value_wins_and_invalid_value_blocks_nextest_fallback",
+        "test_underscore_explicit_key_is_preserved_without_inventing_higher_precedence_key",
+        "test_existing_unix_file_without_execute_permission_is_rejected",
+        "test_wrong_package_name_kind_source_or_test_harness_never_supplies_helper",
+        "test_missing_relative_or_nonexistent_artifacts_are_rejected",
+        "test_multiple_target_executables_are_rejected_instead_of_selecting_first",
+        "test_failed_build_and_missing_completion_never_launch_tests",
+        "test_unsupported_source_build_inputs_fail_only_if_new_helpers_are_needed",
+        "test_reused_builds_and_opaque_package_selection_keep_original_pass_through",
+        "test_compiler_errors_and_non_json_diagnostics_are_retained",
+        "test_package_ids_and_version_selectors_bind_the_declared_owner",
+        "test_arguments_after_separator_do_not_change_build_scope",
+        "test_malformed_manifest_and_help_are_left_to_nextest_without_building"
+      ],
+      "RealCrossPackageHelperTests": [
+        "test_missing_metadata_fails_then_scoped_and_workspace_runs_launch_the_real_helper"
+      ]
+    }
+  },
+  "source_mutations_outside_isolated_candidate": false,
+  "native_gates_pending": [
+    "original test_run_nextest.py all 10 cases",
+    "new test_run_nextest_helpers.py all 21 cases, including real cross-package fixture",
+    "source-format gate",
+    "original Core and complete workspace tests"
+  ]
+}

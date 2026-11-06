@@ -1,0 +1,28 @@
+{
+  "schema": "hepta.token-budget-r14-repair-source.v1",
+  "base_commit": "b44d4ca4aa0ef9f894eff29e9975938e066a82f5",
+  "base_tree": "d3d2313b838422818bf9448ce5a1b86d89abdf69",
+  "patch_sha256": "2d8fdd192a0c336acc999895109867bad26e386faa18f9d6636a43dceda5261d",
+  "files": [
+    {
+      "path": "codex-rs/core/src/session/mod.rs",
+      "before_sha256": "269a56946b1083a405e6523a974518c58f88b64d055af6f965c8c39948fce8fd",
+      "after_sha256": "c262bc85649869dcc1eea4096773d577959989c54e264e6f03a341448ac3ad4d",
+      "before_blob": "ae94fa0e68863452764017df404023da22ee2d1c",
+      "after_blob": "f4a925c7deb8d9c939cc2900d160f8f25c352b39",
+      "bytes": 215822,
+      "mode": "100644"
+    },
+    {
+      "path": "codex-rs/core/tests/suite/token_budget.rs",
+      "before_sha256": "242f51079cdb89c411887b0f45866b6baf44afdc60aad2b4f12eb5e63ece3c5a",
+      "after_sha256": "5dad6405e7363d5804ea8e0983a4933fe991dd91deeb8a43cbe0b1f86ca18cb8",
+      "before_blob": "d609d2b0ff08c687abed5098b4b482b78cd79770",
+      "after_blob": "bbc55eac69d9881db111191d9363a430463146ef",
+      "bytes": 62167,
+      "mode": "100644"
+    }
+  ],
+  "whole_file_inverse_exact": true,
+  "native_execution": "NOT_RUN"
+}

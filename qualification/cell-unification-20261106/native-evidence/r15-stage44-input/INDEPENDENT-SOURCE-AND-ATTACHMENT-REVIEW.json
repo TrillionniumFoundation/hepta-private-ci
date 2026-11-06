@@ -1,0 +1,619 @@
+{
+  "schema": "hepta.independent-stage44-root-evidence-review.v1",
+  "reviewer": "/root/historical_assets",
+  "status": "STATIC_AND_CLOSED_STRICT_EVIDENCE_VERIFIED_REFERENCE_ISSUE_RESOLVED",
+  "source_stage": 44,
+  "source_commit": "638997499470f0b7dd33ad18226feacf0198ef3d",
+  "source_tree": "1646e1656cf6365e74accae19a1225fd2ce6d964",
+  "scope": {
+    "reviewed_root_repair_directories": [
+      "core-token-budget-r14-repair",
+      "core-turn-state-r14-fixture",
+      "core-git-enrichment-r14-repair"
+    ],
+    "supporting_review": "r14-root-candidate-independent-review",
+    "stage_input": "r15-stage44-input",
+    "closed_gate": "r15-core-mcp-checkpoint/ROOT-STRICT-READBACK.json",
+    "other_stage44_candidates": "All11 patch and16 source identities/forward-reverse mechanics verified; this does not claim a fresh semantic review of every other candidate."
+  },
+  "resolved_findings": [
+    {
+      "severity": "evidence_reference",
+      "path": "native-evidence/core-git-enrichment-r14-repair/CLOSURE-MAPPING.json",
+      "field": "independent_review",
+      "original_closure_sha256": "ce6e57bc67b29216ac96c2352bc73c6457163c57d61fbc613c6b689da2d1c137",
+      "problem": "The original link targeted the token-budget/turn-state independent review, which does not list the Git enrichment patch.",
+      "fixed_target": "independent-review.json",
+      "fixed_target_sha256": "f91f9feb6900f411b21bfc81747a17b677dee319b86d05e466b0c195901b06de",
+      "fixed_closure_sha256": "8bc54018d376998ed7c0d4d424332654cd06cea9d65c40104023209d6367bbfa",
+      "resolution": "Root corrected the attachment; reviewer reread exact new bytes. No existing artifact modified by reviewer."
+    }
+  ],
+  "open_findings": [],
+  "closure_maps": [
+    {
+      "path": "hepta-cell/qualification/cell-unification-20261106/native-evidence/core-token-budget-r14-repair/CLOSURE-MAPPING.json",
+      "bytes": 2599,
+      "sha256": "0953fe9708774ab69c722fcb8a0792e91a3af2f00bd30278d2d6a0ea2ad9d65d"
+    },
+    {
+      "path": "hepta-cell/qualification/cell-unification-20261106/native-evidence/core-turn-state-r14-fixture/CLOSURE-MAPPING.json",
+      "bytes": 1986,
+      "sha256": "5b1deeb5553c68ca2371537b0392cd58bde11d314174c8185da07b666a5736cb"
+    },
+    {
+      "path": "hepta-cell/qualification/cell-unification-20261106/native-evidence/core-git-enrichment-r14-repair/CLOSURE-MAPPING.json",
+      "bytes": 2369,
+      "sha256": "8bc54018d376998ed7c0d4d424332654cd06cea9d65c40104023209d6367bbfa"
+    },
+    {
+      "path": "hepta-cell/qualification/cell-unification-20261106/native-evidence/r14-root-candidate-independent-review/CLOSURE-MAPPING.json",
+      "bytes": 5967,
+      "sha256": "d248bf6dc09a40547b6586c9b5f68202ed313f7047f142f67e0aeeb9832dd4f4"
+    }
+  ],
+  "closure_source_pin_checks": [
+    {
+      "closure": "core-token-budget-r14-repair",
+      "source_path": "codex-rs/core/src/session/mod.rs",
+      "base_blob": "ae94fa0e68863452764017df404023da22ee2d1c",
+      "hash_and_path_verified": true
+    },
+    {
+      "closure": "core-token-budget-r14-repair",
+      "source_path": "codex-rs/core/tests/suite/token_budget.rs",
+      "base_blob": "d609d2b0ff08c687abed5098b4b482b78cd79770",
+      "hash_and_path_verified": true
+    },
+    {
+      "closure": "core-turn-state-r14-fixture",
+      "source_path": "codex-rs/core/tests/suite/turn_state.rs",
+      "base_blob": "ce306dbe96b47ed0ab48cd86fb8cfab0777e044c",
+      "hash_and_path_verified": true
+    },
+    {
+      "closure": "core-git-enrichment-r14-repair",
+      "source_path": "codex-rs/core/tests/suite/git_enrichment.rs",
+      "base_blob": "206f775fa7b34e7e709ba1d953359ca20fe1937e",
+      "hash_and_path_verified": true
+    },
+    {
+      "closure": "r14-root-candidate-independent-review",
+      "source_path": "codex-rs/core/src/responses_metadata.rs",
+      "base_blob": "93daf9ca0c71a88ab1f5240364a141e9ed0ab2f4",
+      "hash_and_path_verified": true
+    },
+    {
+      "closure": "r14-root-candidate-independent-review",
+      "source_path": "codex-rs/core/src/client.rs",
+      "base_blob": "00cf9e922f85dff6c67f026f53c9d814b2849c1d",
+      "hash_and_path_verified": true
+    },
+    {
+      "closure": "r14-root-candidate-independent-review",
+      "source_path": "codex-rs/core/tests/common/responses.rs",
+      "base_blob": "defa0bffa903d1c9412880fb06322c8e69fabb98",
+      "hash_and_path_verified": true
+    },
+    {
+      "closure": "r14-root-candidate-independent-review",
+      "source_path": "codex-rs/codex-mcp/src/runtime.rs",
+      "base_blob": "0ff4d56a281d00936d0e26fef67ea85315d577e1",
+      "hash_and_path_verified": true
+    },
+    {
+      "closure": "r14-root-candidate-independent-review",
+      "source_path": "codex-rs/rmcp-client/src/bin/test_stdio_server.rs",
+      "base_blob": "5ebd161921b9064444841d631835d4f51f78813e",
+      "hash_and_path_verified": true
+    },
+    {
+      "closure": "r14-root-candidate-independent-review",
+      "source_path": "codex-rs/core/src/tasks/mod.rs",
+      "base_blob": "04332800b862436b2e372c78145bae849e596822",
+      "hash_and_path_verified": true
+    },
+    {
+      "closure": "r14-root-candidate-independent-review",
+      "source_path": "codex-rs/core/src/codex_thread.rs",
+      "base_blob": "589f0b9305aeb8cf257cdb3d7a83c22335f17252",
+      "hash_and_path_verified": true
+    },
+    {
+      "closure": "r14-root-candidate-independent-review",
+      "source_path": "codex-rs/core/tests/common/test_codex.rs",
+      "base_blob": "933e02a8c7fe69609402ce4c1cef0b1adea64d52",
+      "hash_and_path_verified": true
+    }
+  ],
+  "null_closure_fields": [],
+  "stage_input": {
+    "archive": {
+      "path": "hepta-cell/qualification/cell-unification-20261106/native-evidence/r15-stage44-input/stage44-input.tar.gz",
+      "bytes": 20206,
+      "sha256": "e063682c528b87e5236204cbda6fc8ad57e110ce481c5cb37b71789d1de6a492"
+    },
+    "regular_members": 14,
+    "archive_members_unique_safe_regular": true,
+    "manifest_and_combined_and_publish_manifest_match_archive": true,
+    "individual_patch_count": 11,
+    "file_count": 16,
+    "combined_forward_and_reverse_all_files_exact": true,
+    "stage43_changed_manifest_plus_stage44_files_equals_stage44_changed_manifest": true,
+    "stage44_total_changed_paths": 177,
+    "patch_checks": [
+      {
+        "candidate": "core-git-enrichment-r14-repair",
+        "patch_sha256": "fe4eaef83d94788b3b1fd9e3f0972059e6211cab85b6e6db5d1377f74078283f",
+        "paths": [
+          "codex-rs/core/tests/suite/git_enrichment.rs"
+        ],
+        "full_forward_and_reverse_exact": true
+      },
+      {
+        "candidate": "core-turn-state-r14-fixture",
+        "patch_sha256": "bc8867f4515ab8f02fb02ed803dbe84f4b4c9b349b76ed73d2f2c03775bb158a",
+        "paths": [
+          "codex-rs/core/tests/suite/turn_state.rs"
+        ],
+        "full_forward_and_reverse_exact": true
+      },
+      {
+        "candidate": "core-token-budget-r14-repair",
+        "patch_sha256": "2d8fdd192a0c336acc999895109867bad26e386faa18f9d6636a43dceda5261d",
+        "paths": [
+          "codex-rs/core/src/session/mod.rs",
+          "codex-rs/core/tests/suite/token_budget.rs"
+        ],
+        "full_forward_and_reverse_exact": true
+      },
+      {
+        "candidate": "core-hook-binding-r14-repair",
+        "patch_sha256": "863068a1820967e9b5557f2dbe07006eaaa42495363419ce65201c33120852f5",
+        "paths": [
+          "codex-rs/codex-mcp/src/binding.rs",
+          "codex-rs/core/src/hook_mcp_executor.rs",
+          "codex-rs/codex-mcp/src/connection_manager_tests.rs",
+          "codex-rs/codex-mcp/src/binding_tests.rs"
+        ],
+        "full_forward_and_reverse_exact": true
+      },
+      {
+        "candidate": "core-async-hook-r14-fixture",
+        "patch_sha256": "234cb5cea3fd5cd9b0a23e2c7fabd02cc3783865ac1f352df96d6dc3d0140c1d",
+        "paths": [
+          "codex-rs/core/tests/suite/hooks.rs"
+        ],
+        "full_forward_and_reverse_exact": true
+      },
+      {
+        "candidate": "core-recovery-epoch-r14-fixture",
+        "patch_sha256": "752f2dd47c18ce162b156c5fddd70b8c586a7ba05eee78c229445f8d9c9c3b81",
+        "paths": [
+          "codex-rs/core/tests/suite/turn_input_submission.rs"
+        ],
+        "full_forward_and_reverse_exact": true
+      },
+      {
+        "candidate": "core-mcp-recovery-r14-repair",
+        "patch_sha256": "6bbebb10a81f31dc3f007a1d08431422bd5bc0a35eea15bd28d2e6b6c1157dea",
+        "paths": [
+          "codex-rs/core/tests/suite/mcp_tool_exposure.rs"
+        ],
+        "full_forward_and_reverse_exact": true
+      },
+      {
+        "candidate": "core-zsh-fixtures-r14-repair",
+        "patch_sha256": "ee8f42615a3f67d63343a4d41780b3729911dba1e0ef0174b9913ef93cf72cce",
+        "paths": [
+          "codex-rs/core/tests/suite/skill_approval.rs",
+          "codex-rs/core/tests/suite/unified_exec_zsh_fork_approvals.rs"
+        ],
+        "full_forward_and_reverse_exact": true
+      },
+      {
+        "candidate": "core-oauth-finish-r14-repair",
+        "patch_sha256": "c26eacee91fc8ccd2911e9dcdb7bd315e2a070ec779591d81b9e27760bf4356d",
+        "paths": [
+          "codex-rs/core/tests/suite/rmcp_client.rs"
+        ],
+        "full_forward_and_reverse_exact": true
+      },
+      {
+        "candidate": "core-exec-events-r14-repair",
+        "patch_sha256": "e312b0dd838833fe4893cc49eaefdefcd34dccd0555a9bdac5dcf860d48d5fd4",
+        "paths": [
+          "codex-rs/core/tests/suite/unified_exec_process_events.rs"
+        ],
+        "full_forward_and_reverse_exact": true
+      },
+      {
+        "candidate": "core-mcp-ci-r14-repair",
+        "patch_sha256": "502bc102de38dc35bd374cdef4a75f77df80c998b3865323270ceeaeff34c132",
+        "paths": [
+          ".github/workflows/hepta-cell-framework-native.yml"
+        ],
+        "full_forward_and_reverse_exact": true
+      }
+    ],
+    "source_file_checks": [
+      {
+        "path": "codex-rs/core/tests/suite/git_enrichment.rs",
+        "before_source": {
+          "path": "core-git-enrichment-r14-repair/original/codex-rs/core/tests/suite/git_enrichment.rs",
+          "bytes": 18034,
+          "sha256": "112968699ec9402d38aa2d85d30ee4cc7a342f2c84762e63d454d0fb0ca7e414"
+        },
+        "before_effective_stage43_blob": "206f775fa7b34e7e709ba1d953359ca20fe1937e",
+        "after_source": {
+          "path": "core-git-enrichment-r14-repair/source/codex-rs/core/tests/suite/git_enrichment.rs",
+          "bytes": 18756,
+          "sha256": "0b4074be01f03e511ebe9a12e3a6d2b13387417629974a95b0089c1bfc6a1ed3"
+        },
+        "after_matches_native_stage44_manifest": true
+      },
+      {
+        "path": "codex-rs/core/tests/suite/turn_state.rs",
+        "before_source": {
+          "path": "core-turn-state-r14-fixture/original/codex-rs/core/tests/suite/turn_state.rs",
+          "bytes": 9465,
+          "sha256": "12acdc6694a254506a423df2e5fbe111d62e7e943923ce329b074f7ac4a5e7a4"
+        },
+        "before_effective_stage43_blob": "ce306dbe96b47ed0ab48cd86fb8cfab0777e044c",
+        "after_source": {
+          "path": "core-turn-state-r14-fixture/source/codex-rs/core/tests/suite/turn_state.rs",
+          "bytes": 11010,
+          "sha256": "28b0f899966c45a78c1ee62f471757e217a350540f66e9158b7464cf5da280b1"
+        },
+        "after_matches_native_stage44_manifest": true
+      },
+      {
+        "path": "codex-rs/core/src/session/mod.rs",
+        "before_source": {
+          "path": "core-token-budget-r14-repair/original/codex-rs/core/src/session/mod.rs",
+          "bytes": 215715,
+          "sha256": "269a56946b1083a405e6523a974518c58f88b64d055af6f965c8c39948fce8fd"
+        },
+        "before_effective_stage43_blob": "ae94fa0e68863452764017df404023da22ee2d1c",
+        "after_source": {
+          "path": "core-token-budget-r14-repair/source/codex-rs/core/src/session/mod.rs",
+          "bytes": 215822,
+          "sha256": "c262bc85649869dcc1eea4096773d577959989c54e264e6f03a341448ac3ad4d"
+        },
+        "after_matches_native_stage44_manifest": true
+      },
+      {
+        "path": "codex-rs/core/tests/suite/token_budget.rs",
+        "before_source": {
+          "path": "core-token-budget-r14-repair/original/codex-rs/core/tests/suite/token_budget.rs",
+          "bytes": 61843,
+          "sha256": "242f51079cdb89c411887b0f45866b6baf44afdc60aad2b4f12eb5e63ece3c5a"
+        },
+        "before_effective_stage43_blob": "d609d2b0ff08c687abed5098b4b482b78cd79770",
+        "after_source": {
+          "path": "core-token-budget-r14-repair/source/codex-rs/core/tests/suite/token_budget.rs",
+          "bytes": 62167,
+          "sha256": "5dad6405e7363d5804ea8e0983a4933fe991dd91deeb8a43cbe0b1f86ca18cb8"
+        },
+        "after_matches_native_stage44_manifest": true
+      },
+      {
+        "path": "codex-rs/codex-mcp/src/binding.rs",
+        "before_source": {
+          "path": "core-hooks-r14-audit/original/codex-rs/codex-mcp/src/binding.rs",
+          "bytes": 11193,
+          "sha256": "31d899ad1ef2f5712d179a5cf5b9aac1b8712d09a86551f8c05423bfc62ea73c"
+        },
+        "before_effective_stage43_blob": "d7b22a46973240c1a7885eca3057a4880c50d7b8",
+        "after_source": {
+          "path": "core-hook-binding-r14-repair/source/codex-rs/codex-mcp/src/binding.rs",
+          "bytes": 11724,
+          "sha256": "a9a169a06bcad9145f419f1d08e511dc7937a6954f96dffdadbf119e22350665"
+        },
+        "after_matches_native_stage44_manifest": true
+      },
+      {
+        "path": "codex-rs/core/src/hook_mcp_executor.rs",
+        "before_source": {
+          "path": "core-hooks-r14-audit/original/codex-rs/core/src/hook_mcp_executor.rs",
+          "bytes": 2991,
+          "sha256": "941b39aa4fd85736ac205795d1688cd237168d63140573359ed4905308d8b4d7"
+        },
+        "before_effective_stage43_blob": "24ed6179b75b9ee2b67a452f27cc2173789a2f32",
+        "after_source": {
+          "path": "core-hook-binding-r14-repair/source/codex-rs/core/src/hook_mcp_executor.rs",
+          "bytes": 2996,
+          "sha256": "b669b2691abf132545267262052a8ee1324284834b17218fb71e5760bf340557"
+        },
+        "after_matches_native_stage44_manifest": true
+      },
+      {
+        "path": "codex-rs/codex-mcp/src/connection_manager_tests.rs",
+        "before_source": {
+          "path": "core-hooks-r14-audit/original/codex-rs/codex-mcp/src/connection_manager_tests.rs",
+          "bytes": 182775,
+          "sha256": "3b73ec6cc06963c37f91df2fb8b8bb60bcda93b06de83d00064f9496a94b3145"
+        },
+        "before_effective_stage43_blob": "a66ec7c2c8d341dbde9965f6d4f5ae50a06515e1",
+        "after_source": {
+          "path": "core-hook-binding-r14-repair/source/codex-rs/codex-mcp/src/connection_manager_tests.rs",
+          "bytes": 183869,
+          "sha256": "cb1a5df8111cee1657e463b94b38cd55707841e2987b7b2c79854251fe941c0f"
+        },
+        "after_matches_native_stage44_manifest": true
+      },
+      {
+        "path": "codex-rs/codex-mcp/src/binding_tests.rs",
+        "before_source": {
+          "path": "core-hooks-r14-audit/original/codex-rs/codex-mcp/src/binding_tests.rs",
+          "bytes": 11777,
+          "sha256": "eeeef0c79d1c622386b4857ceaeceeff47c7fc54d4eee582fa5c73499c115a68"
+        },
+        "before_effective_stage43_blob": "6e200299fb4a9259c5c396ba9b04980caeecb061",
+        "after_source": {
+          "path": "core-hook-binding-r14-repair/source/codex-rs/codex-mcp/src/binding_tests.rs",
+          "bytes": 13033,
+          "sha256": "99450cdb4a3aebcb2920de59b9c99588d177d2d43350c5afd42b63b35757fa49"
+        },
+        "after_matches_native_stage44_manifest": true
+      },
+      {
+        "path": "codex-rs/core/tests/suite/hooks.rs",
+        "before_source": {
+          "path": "native-validation-results/r14-blockers/original-input/source/codex-rs/core/tests/suite/hooks.rs",
+          "bytes": 178882,
+          "sha256": "1e2ff42aec153e3dec972343890bf4d970ab406e3076e089714613bf401a4bdb"
+        },
+        "before_effective_stage43_blob": "1e88b171479b5085ada9e85b49c5a3c9acc27875",
+        "after_source": {
+          "path": "core-async-hook-r14-fixture/source/codex-rs/core/tests/suite/hooks.rs",
+          "bytes": 179232,
+          "sha256": "027b1d58726b5030178c3bbd4e4c3156ac281e94b2abc59f56b463092b095b31"
+        },
+        "after_matches_native_stage44_manifest": true
+      },
+      {
+        "path": "codex-rs/core/tests/suite/turn_input_submission.rs",
+        "before_source": {
+          "path": "core-recovery-epoch-r14-fixture/original/codex-rs/core/tests/suite/turn_input_submission.rs",
+          "bytes": 20936,
+          "sha256": "3e2e4ae457f30315ad0614c81cfac55050d7a7b79d8ebdaf50af972ae7970773"
+        },
+        "before_effective_stage43_blob": "9f1fc48fbafdf48ba7b97774ceaf6b47c06f9a50",
+        "after_source": {
+          "path": "core-recovery-epoch-r14-fixture/source/codex-rs/core/tests/suite/turn_input_submission.rs",
+          "bytes": 21096,
+          "sha256": "ae71b734d0b46ce5b285afc827d765d0a4a066bbe825ffd0aba467a4d78e1824"
+        },
+        "after_matches_native_stage44_manifest": true
+      },
+      {
+        "path": "codex-rs/core/tests/suite/mcp_tool_exposure.rs",
+        "before_source": {
+          "path": "core-mcp-recovery-r14-repair/original/codex-rs/core/tests/suite/mcp_tool_exposure.rs",
+          "bytes": 47285,
+          "sha256": "02d5aa372f94c8c87974b73381701d119d08f93224cde5debaa52bb842d9a100"
+        },
+        "before_effective_stage43_blob": "deb09b0acee71a1bfa9b596785987200c248fc38",
+        "after_source": {
+          "path": "core-mcp-recovery-r14-repair/source/codex-rs/core/tests/suite/mcp_tool_exposure.rs",
+          "bytes": 47667,
+          "sha256": "94b3a0620bb7015f43978e1a7805a41727914979465e85ec7559b453d491e462"
+        },
+        "after_matches_native_stage44_manifest": true
+      },
+      {
+        "path": "codex-rs/core/tests/suite/skill_approval.rs",
+        "before_source": {
+          "path": "core-zsh-fixtures-r14-repair/original/codex-rs/core/tests/suite/skill_approval.rs",
+          "bytes": 9892,
+          "sha256": "8e977c5bf5bbd94f345886b83e16fcf8a3661a467090bc3ab67ae7604de79952"
+        },
+        "before_effective_stage43_blob": "b62848b6bd3c88e776d5bb0683f24cbacddd787b",
+        "after_source": {
+          "path": "core-zsh-fixtures-r14-repair/source/codex-rs/core/tests/suite/skill_approval.rs",
+          "bytes": 9924,
+          "sha256": "d78696cee410d754f2993e48d3d8bc2c058aa111bd2d74fd78044e481c6a4c27"
+        },
+        "after_matches_native_stage44_manifest": true
+      },
+      {
+        "path": "codex-rs/core/tests/suite/unified_exec_zsh_fork_approvals.rs",
+        "before_source": {
+          "path": "core-zsh-fixtures-r14-repair/original/codex-rs/core/tests/suite/unified_exec_zsh_fork_approvals.rs",
+          "bytes": 31383,
+          "sha256": "79e550c948ce2eb51f0829c619bd73c2dd582c800299cbc78bc86c1feb524cae"
+        },
+        "before_effective_stage43_blob": "218e22809391565142021a9809c1d5ef2adc0f14",
+        "after_source": {
+          "path": "core-zsh-fixtures-r14-repair/source/codex-rs/core/tests/suite/unified_exec_zsh_fork_approvals.rs",
+          "bytes": 31429,
+          "sha256": "35982a2804b74d3f2eb1027bda62e097abe20c546937b25ee251274b7bdbd6ec"
+        },
+        "after_matches_native_stage44_manifest": true
+      },
+      {
+        "path": "codex-rs/core/tests/suite/rmcp_client.rs",
+        "before_source": {
+          "path": "core-oauth-finish-r14-repair/original/codex-rs/core/tests/suite/rmcp_client.rs",
+          "bytes": 146845,
+          "sha256": "78fbb2b9cef8a4dd64dab34123e28524c0964ee11058fef8bb2f4fa1dcff04ee"
+        },
+        "before_effective_stage43_blob": "3897f4396696ba94ce93c7be8f29b3c65a0f5de8",
+        "after_source": {
+          "path": "core-oauth-finish-r14-repair/source/codex-rs/core/tests/suite/rmcp_client.rs",
+          "bytes": 147566,
+          "sha256": "11ba2ce26510c4b3edac11351bd83efb879b466a22c9dc1c241dde63890ecb16"
+        },
+        "after_matches_native_stage44_manifest": true
+      },
+      {
+        "path": "codex-rs/core/tests/suite/unified_exec_process_events.rs",
+        "before_source": {
+          "path": "core-exec-events-r14-repair/original/codex-rs/core/tests/suite/unified_exec_process_events.rs",
+          "bytes": 40402,
+          "sha256": "0a5285472039a89d62d62e50e3ad94e84c64700f4f893bbe3fe3177debe4bb54"
+        },
+        "before_effective_stage43_blob": "a8a2f67bf853481dec244c5ba7939279fe0eb6ce",
+        "after_source": {
+          "path": "core-exec-events-r14-repair/source/codex-rs/core/tests/suite/unified_exec_process_events.rs",
+          "bytes": 41379,
+          "sha256": "f3a58d32dac0ecab83d45bd1460b34babcfb17500ebcffdfb4dbc302ed656b77"
+        },
+        "after_matches_native_stage44_manifest": true
+      },
+      {
+        "path": ".github/workflows/hepta-cell-framework-native.yml",
+        "before_source": {
+          "path": "core-mcp-ci-r14-repair/original/.github/workflows/hepta-cell-framework-native.yml",
+          "bytes": 8814,
+          "sha256": "d2ddf46619bf94df3d20f8ed07244bf79ad2ecc8cfb647615c0753fe57f791de"
+        },
+        "before_effective_stage43_blob": "f1ffc9f3db7c081df051e80d68413b8c725e0909",
+        "after_source": {
+          "path": "core-mcp-ci-r14-repair/source/.github/workflows/hepta-cell-framework-native.yml",
+          "bytes": 8827,
+          "sha256": "9b04365dba53f7bf2b9c5f57bbfb264cddfa63d0509ee1d0401762d52ca46d1c"
+        },
+        "after_matches_native_stage44_manifest": true
+      }
+    ],
+    "base_tree_entry_source": {
+      "retained_github_commit": "bef6fa7645df9df12b69fda499e97eed25de6c75",
+      "complete_original_tree_entries": 12259,
+      "truncated": false,
+      "binding_rule": "Stage43 effective file blob is its recorded r14 changed blob if present, otherwise the original immutable Git tree blob."
+    }
+  },
+  "failure_coverage": {
+    "coverage_map": {
+      "path": "hepta-cell/qualification/cell-unification-20261106/native-evidence/r15-stage44-input/R14-REPAIR-COVERAGE-MAP.json",
+      "bytes": 17982,
+      "sha256": "e86433a54987d902543ca7194328f3a85403f6c12d192cf9a70a029f9bae9a9d"
+    },
+    "closed_r14_log_sha256": "443a58d70c34d76ba9b8141ad7ee32d997a4f16af79e8f5a873770966028952c",
+    "closed_r14_review": {
+      "path": "hepta-cell/qualification/cell-unification-20261106/native-evidence/r14-core-checkpoint/native-core-r14-result-review.json",
+      "bytes": 35985,
+      "sha256": "9b5b3a81d4901d8c6769908e2021235e3ef82e3257d5b0c21bf1c086899f0732"
+    },
+    "unique_ids": 24,
+    "candidate_groups": 10,
+    "missing_ids": [],
+    "duplicate_ids": [],
+    "extra_ids": [],
+    "all24_offsets_and_excerpts_exact": true,
+    "group_counts": {
+      "core-git-enrichment-r14-repair": 3,
+      "core-async-hook-r14-fixture": 1,
+      "core-hook-binding-r14-repair": 1,
+      "core-mcp-recovery-r14-repair": 1,
+      "core-oauth-finish-r14-repair": 1,
+      "core-zsh-fixtures-r14-repair": 2,
+      "core-token-budget-r14-repair": 3,
+      "core-recovery-epoch-r14-fixture": 1,
+      "core-turn-state-r14-fixture": 2,
+      "core-exec-events-r14-repair": 9
+    },
+    "scoped_root_failure_block_counts": {
+      "core-token-budget-r14-repair": 3,
+      "core-turn-state-r14-fixture": 2,
+      "core-git-enrichment-r14-repair": 3
+    },
+    "each_patch_hash_matches_declared_stage44_patch": true,
+    "results_at_coverage_attachment": "All24 are explicitly PENDING_CLOSED_COMPLETE_LOG; mapping is not a success claim."
+  },
+  "assertion_checks": {
+    "codex-rs/core/tests/suite/token_budget.rs": {
+      "before_assertion_macro_count": 105,
+      "after_assertion_macro_count": 105,
+      "all_original_assertions_retained_verbatim_in_order": true
+    },
+    "codex-rs/core/tests/suite/git_enrichment.rs": {
+      "before_assertion_macro_count": 12,
+      "after_assertion_macro_count": 14,
+      "all_original_assertions_retained_verbatim_in_order": true
+    },
+    "codex-rs/core/tests/suite/turn_state.rs": {
+      "before_assertion_macro_count": 18,
+      "after_assertion_macro_count": 21,
+      "documented_changes": [
+        {
+          "from": "assert_eq!(server.handshakes().len(), 1)",
+          "to": "assert_eq!(server.handshakes().len(), 2)",
+          "occurrences": 2
+        }
+      ],
+      "all_other_original_assertions_retained_verbatim_in_order": true
+    }
+  },
+  "semantic_review": {
+    "token_budget": "The production change moves canonical owner threadId from thread_hint arguments into metadata and sends the empty-object arguments required by the original schema. The source-bound existing runtime forwards argument/meta separately; governance, active-tool policy, timeout/wait behavior and .ok() handling remain unchanged. The test helper waits for the exact completed turn finish observer without changing assertions or budgets.",
+    "turn_state": "The two total-handshake expectations deliberately change1→2 and are explicitly disclosed. The one-request prewarm closes; the three-request sampling connection remains open. Exact[1,3], original per-turn state, sandbox and lineage assertions still constrain reuse/reset within sampling. Forced prewarm closure does not itself prove production identity differences; that inference rests on separately pinned permission selection and compatibility projection.",
+    "git_enrichment": "The fixture splits the original ordered event batches into[1,1,1] and[1,1,1,1] and adds exact connection request counts. All12 original assertion macros remain in order. The tests measure fresh Git/workspace metadata rather than socket reuse; the absence of runtime compatibility projection traces remains explicitly documented.",
+    "causal_limits": "Generic timeout logs do not establish an actual NotSubmitted, exact owner schedule, or complete connection-projection trace. The static mechanisms and source bindings are verified separately from native outcome."
+  },
+  "closed_strict": {
+    "readback": {
+      "path": "hepta-cell/qualification/cell-unification-20261106/native-evidence/r15-core-mcp-checkpoint/ROOT-STRICT-READBACK.json",
+      "bytes": 1218,
+      "sha256": "a8e89937229dbafdc280dbd2d5e824bf6e7a09ff9d19d5564145388f17678816"
+    },
+    "receipt": {
+      "path": "hepta-cell/qualification/cell-unification-20261106/native-evidence/r15-core-mcp-checkpoint/native-core-mcp-r15-strict-receipt.json",
+      "bytes": 917,
+      "sha256": "4129fe2f4a14b757d642661b9da5e55bb3633e32cc61a9f7ee4e8574cb9f240a"
+    },
+    "command": [
+      "just",
+      "clippy",
+      "--locked",
+      "-p",
+      "codex-core",
+      "-p",
+      "codex-mcp",
+      "--",
+      "-D",
+      "warnings"
+    ],
+    "exit_code": 0,
+    "elapsed_seconds": 45.16182255744934,
+    "log_raw_sha256": "fa8972cc1cf309346f513dee0ad51e6b7e4f8d4973e240d51564c90080631ab0",
+    "resources_sha256": "05ac0facc7ee7cad8645fc50ecdda6ef852c425a31244dd550ccfaf08d3aacc3",
+    "source_commit": "638997499470f0b7dd33ad18226feacf0198ef3d",
+    "source_tree": "1646e1656cf6365e74accae19a1225fd2ce6d964",
+    "source_paths": 177,
+    "tests_terminal_counts_at_attachment": null,
+    "readback_is_historical_running_snapshot": true,
+    "vendored_warnings_preserved": true
+  },
+  "later_owner_report_not_independently_log_read": {
+    "source": "Root/native coordination message received after strict attachment",
+    "r15_test_exit_code": 100,
+    "tests_run": 4026,
+    "passed": 4023,
+    "failed": 3,
+    "timed_out": 0,
+    "skipped": 9,
+    "core_passed": 3827,
+    "core_failed": 3,
+    "mcp_passed": 196,
+    "mcp_failed": 0,
+    "verification_scope": "Not used to validate the static coverage map or claim full test-log verification; this reviewer has not read r15 test log in this task."
+  },
+  "qualification": {
+    "r15_complete_tests_pass": false,
+    "whole_workspace_pass": false,
+    "seven_role_adoption_qualified": false,
+    "scientific_disposition": "HOLD",
+    "authority": "DENY_ALL"
+  },
+  "execution": {
+    "rust_build": "NOT_RUN",
+    "rust_tests": "NOT_RUN",
+    "formatter": "NOT_RUN",
+    "active_test_log_read": false,
+    "native_source_modified": false,
+    "existing_attachments_modified": false
+  }
+}

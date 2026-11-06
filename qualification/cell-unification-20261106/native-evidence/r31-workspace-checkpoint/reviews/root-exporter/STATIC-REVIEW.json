@@ -1,0 +1,66 @@
+{
+  "schema": "hepta.root-source53-r31-export-static-review.v1",
+  "result": "STATIC_CLEAR_REMAINS_INERT",
+  "template": {
+    "bytes": 77450,
+    "sha256": "0a0b60ec209527b03cf54a7d7566409c9714aca13c4423fc8ef9dd0cc88be910",
+    "git_blob": "034bab9de3433dfb43b0a8498d59c7b5ad8a3082"
+  },
+  "handoff": {
+    "bytes": 6003,
+    "sha256": "988b156eb250303975303ea23b036351e7135c109df53b4da268e3c484b648cc",
+    "git_blob": "feec56d59aa3958b9f1d77110facfd215577128a"
+  },
+  "all_handoff_pins_verified": 23,
+  "exact_R30_functions": [
+    "check_bindings",
+    "check_pin",
+    "clean_lines",
+    "data_pin",
+    "git",
+    "main",
+    "natural_terminal",
+    "recorded_guard",
+    "require",
+    "review_tests",
+    "safe_relative",
+    "sha",
+    "source_guard",
+    "stable_read",
+    "write_new"
+  ],
+  "exact_actual_R31_functions": [
+    "clean_lines",
+    "require",
+    "review_inherited_tests",
+    "review_original_workspace",
+    "review_python",
+    "review_tests",
+    "review_workspace",
+    "sha",
+    "verify_inherited_guard"
+  ],
+  "new_functions_fully_read": [
+    "export_closed",
+    "preserve_prior_project",
+    "preserve_r29_baseline",
+    "review_closed_workspace",
+    "verify_prior_terminal"
+  ],
+  "three_future_maps_unbound": true,
+  "successful_original_set": 18,
+  "failure_original_set": "Actual existing files only; absent/partial accounting stays null",
+  "prior_sources_preserved_separately": {
+    "R30_source53": 19,
+    "R28_source52": 26,
+    "R29_source52": "failed100 exact20228 baseline, no filtering"
+  },
+  "controller_ranges_checked": "Continuous exact text/hex offsets and authoritative seen/stored totals",
+  "source_checked_before_and_after": "197 raw SHA/Git/mode, HEAD, full index tree, dual locks, old195 and two diagnostic leaves",
+  "metadata": "Original actual R31 invocation with metadata order/193; no exporter invocation",
+  "archive": "Create-only deterministic gzip, regular unique safe paths, full member bytes/modes re-read",
+  "archive_success_not_gate_pass": true,
+  "source_MUTATION_Rust_metadata_formatter_or_gate_executed": false,
+  "actual_R31_terminal": null,
+  "actual_export_authorized": false
+}

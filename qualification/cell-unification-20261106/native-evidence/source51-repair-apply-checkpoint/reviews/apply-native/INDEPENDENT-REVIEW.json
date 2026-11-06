@@ -1,0 +1,85 @@
+{
+  "schema": "hepta.source51-apply-native-independent-review.v1",
+  "status": "STATIC_CLEAR_TEMPLATE_REMAINS_INERT",
+  "template": {
+    "path": "/workspace/scratch/08f5efd48967/source51-apply-preparation/native-source51-apply-template.py",
+    "bytes": 28145,
+    "sha256": "743a9f7ff2c4992b91aab39aa22298b6599c169c15089360e7dbcfbff4cf0f8e",
+    "git_blob": "723e428af9a132b08a07164e2117956ece26e27f"
+  },
+  "ast_parse_pass": true,
+  "unknown_bindings": [
+    "EXPECTED_COMMIT",
+    "EXPECTED_TREE",
+    "EXPECTED_CHANGED_COUNT",
+    "INPUT_BYTES",
+    "INPUT_SHA256",
+    "SOURCE51_MANIFEST_PIN",
+    "DELTA_MANIFEST_PIN",
+    "CANDIDATE_PINS"
+  ],
+  "reference_inputs": [
+    {
+      "name": "source50",
+      "path": "native-validation-results/r24-source50-bound-input/native-candidate-r24-source.json",
+      "bytes": 53832,
+      "sha256": "ba7515c75980451e0b2514bce338b0ada8847daeef5ace5deacf45ca02e940c0",
+      "git_blob": "2b6988709adfd80084a846688453ceafd3f4accf"
+    },
+    {
+      "name": "r24 terminal",
+      "path": "native-validation-results/r24-failure-closed/terminal-process-status.json",
+      "bytes": 730,
+      "sha256": "644e58b095e57c8b037cb282aa1da04f50501cb04b7c3f472d18e48272cda14f",
+      "git_blob": "bec33f505f774d6ed6056df873bb2dbf4b751c43"
+    }
+  ],
+  "checks": [
+    {
+      "name": "inert-before-subprocess",
+      "result": "PASS",
+      "details": "FROZEN=False and all eight actual source/input constants None. main calls check_bindings first with non-assert require."
+    },
+    {
+      "name": "exact-bounded-input",
+      "result": "PASS",
+      "details": "Exactly seven regular archive members; independent complete pins and exact two allowed existing Rust paths; no links, duplicate paths, new files, mode changes, build.rs or dependency edits."
+    },
+    {
+      "name": "source50-and-r24-prerequisite",
+      "result": "PASS",
+      "details": "Actual source50 manifest pin and original r24 natural failed100 terminal verified directly from recovered bytes. Full194 raw/Git/mode/tree/dual-lock and noextras before apply."
+    },
+    {
+      "name": "patch-and-mutator-sequence",
+      "result": "PASS",
+      "details": "Pure-byte wholefile forward/inverse replay; git apply --check; full source50 recheck; apply; whole-source prestage check; git add exactly the two declared paths; final full tree/source/locks."
+    },
+    {
+      "name": "raw-command-return",
+      "result": "PASS",
+      "details": "Each child is naturally waited; original rc is create-only/fsynced before log hashes or success checks. No terminate/kill/retry path."
+    },
+    {
+      "name": "failure-and-complete-order",
+      "result": "PASS",
+      "details": "Any postguard/materialization error stops and retains actual source/index/diffs, no automatic restore. Complete written only after final source51 guard, original source manifest publication and exact delta/parent/dual-lock checks."
+    },
+    {
+      "name": "r26-contract",
+      "result": "PASS",
+      "details": "hepta.source51-apply-complete.v1 includes full source/delta/postguard pins; postguard pass/actual_tree/source_commit/count/path/mismatch/dual-lock fields match r26. delta.patch.path is candidate.patch relative to input directory."
+    },
+    {
+      "name": "scope",
+      "result": "PASS",
+      "details": "No Rust, lock regeneration, formatter, workspace gate, refs, network or Git remote operation; no source qualification claimed."
+    }
+  ],
+  "limitations": [
+    "Future actual source51 commit/tree/fullmanifest/candidate/archive constants remain unbound.",
+    "No import or execution of template and no native/Rust operation occurred.",
+    "Actual application and outer terminal still require their original receipts and independent final binding review."
+  ],
+  "reviewer": "native_validation"
+}

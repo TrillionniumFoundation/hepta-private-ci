@@ -1,0 +1,328 @@
+{
+  "schema": "hepta.candidate-audit-closure-mapping.v1",
+  "purpose": "Exact-byte archive and reference closure only; not execution evidence or a new causal review. Frozen originals keep their original pending/active-prefix wording.",
+  "source43": {
+    "commit": "b44d4ca4aa0ef9f894eff29e9975938e066a82f5",
+    "tree": "d3d2313b838422818bf9448ce5a1b86d89abdf69"
+  },
+  "integrated_source44": {
+    "commit": "638997499470f0b7dd33ad18226feacf0198ef3d",
+    "tree": "1646e1656cf6365e74accae19a1225fd2ce6d964",
+    "all_candidate_after_pins_match_retained_native_source_inventory": true
+  },
+  "retained_artifacts": [
+    {
+      "original_path": "core-exec-events-r14-repair/causal-evidence.json",
+      "archived_path": "causal-evidence.json",
+      "bytes": 16613,
+      "sha256": "2293ef65df5969c13239e61f18e128a0715730556e47fab50a11abd5497db921",
+      "copied_bytes_exact": true
+    },
+    {
+      "original_path": "core-exec-events-r14-repair/edit-operations.json",
+      "archived_path": "edit-operations.json",
+      "bytes": 3853,
+      "sha256": "a989a85f5467b45b6c97c17332154e7c409d51ed60add5327d89c385a14632a4",
+      "copied_bytes_exact": true
+    },
+    {
+      "original_path": "core-exec-events-r14-repair/independent-review.json",
+      "archived_path": "independent-review.json",
+      "bytes": 4253,
+      "sha256": "5375890e3a08bf4c74c6d99cf7730bdb2de309085e443797aa1fa469a86f3495",
+      "copied_bytes_exact": true
+    },
+    {
+      "original_path": "core-exec-events-r14-repair/repair-audit.json",
+      "archived_path": "repair-audit.json",
+      "bytes": 2208,
+      "sha256": "41a9945b84dc37c8a2a63bc797c1a8599d3ad28c97158be210f720539bfc6cff",
+      "copied_bytes_exact": true
+    },
+    {
+      "original_path": "core-exec-events-r14-repair/repair.patch",
+      "archived_path": "repair.patch",
+      "bytes": 3510,
+      "sha256": "e312b0dd838833fe4893cc49eaefdefcd34dccd0555a9bdac5dcf860d48d5fd4",
+      "copied_bytes_exact": true
+    },
+    {
+      "original_path": "core-exec-events-r14-repair/root-independent-review.json",
+      "archived_path": "root-independent-review.json",
+      "bytes": 1982,
+      "sha256": "ef5c2c03c857f32869d773a61a24bd8df21dd4e807d50ed6a3c0b615b91f072b",
+      "copied_bytes_exact": true
+    },
+    {
+      "original_path": "core-exec-events-r14-repair/source-manifest.json",
+      "archived_path": "source-manifest.json",
+      "bytes": 1451,
+      "sha256": "66046913f256e6f0a990df786f48ea8688bb0bd86c947c0356ce56e106b8da20",
+      "copied_bytes_exact": true
+    }
+  ],
+  "reference_mappings": [
+    {
+      "artifact": "causal-evidence.json",
+      "pointer": "/closed_failure_review/path",
+      "reference": "native-validation-results/r14-blockers/native-core-r14-result-review.json",
+      "formal_artifacts": [
+        {
+          "path": "../r14-core-checkpoint/native-core-r14-result-review.json",
+          "bytes": 35985,
+          "sha256": "9b5b3a81d4901d8c6769908e2021235e3ef82e3257d5b0c21bf1c086899f0732"
+        }
+      ]
+    },
+    {
+      "artifact": "causal-evidence.json",
+      "pointer": "/original_and_stage42_native_exit_fast_path/0/pin/path",
+      "reference": "core-unified-termination-r8c-repair/original/codex-rs/core/src/unified_exec/process.rs",
+      "source_keys": [
+        "codex-rs/core/src/unified_exec/process.rs@342d7bb7ed3b4038687f34cce451f985af68dd25b6bf31d9436df4cdf7981394"
+      ]
+    },
+    {
+      "artifact": "causal-evidence.json",
+      "pointer": "/original_and_stage42_native_exit_fast_path/1/pin/path",
+      "reference": "core-unified-termination-r8c-repair/source/codex-rs/core/src/unified_exec/process.rs",
+      "source_keys": [
+        "codex-rs/core/src/unified_exec/process.rs@76a7e709326b8fe4c2e0cd59ba335c01ceb7ad32e852e7f3c2fe12b60b052060"
+      ]
+    },
+    {
+      "artifact": "causal-evidence.json",
+      "pointer": "/candidate_source/path",
+      "reference": "core-exec-events-r14-repair/source/codex-rs/core/tests/suite/unified_exec_process_events.rs",
+      "source_keys": [
+        "codex-rs/core/tests/suite/unified_exec_process_events.rs@f3a58d32dac0ecab83d45bd1460b34babcfb17500ebcffdfb4dbc302ed656b77"
+      ]
+    },
+    {
+      "artifact": "root-independent-review.json",
+      "pointer": "/files/0/path",
+      "reference": "codex-rs/core/tests/suite/unified_exec_process_events.rs",
+      "source_keys": [
+        "codex-rs/core/tests/suite/unified_exec_process_events.rs@f3a58d32dac0ecab83d45bd1460b34babcfb17500ebcffdfb4dbc302ed656b77"
+      ]
+    },
+    {
+      "artifact": "root-independent-review.json",
+      "pointer": "/files/0/original_source_local_path",
+      "reference": "core-exec-events-r14-repair/original/codex-rs/core/tests/suite/unified_exec_process_events.rs",
+      "source_keys": [
+        "codex-rs/core/tests/suite/unified_exec_process_events.rs@0a5285472039a89d62d62e50e3ad94e84c64700f4f893bbe3fe3177debe4bb54"
+      ]
+    },
+    {
+      "artifact": "source-manifest.json",
+      "pointer": "/files/0/path",
+      "reference": "codex-rs/core/tests/suite/unified_exec_process_events.rs",
+      "source_keys": [
+        "codex-rs/core/tests/suite/unified_exec_process_events.rs@f3a58d32dac0ecab83d45bd1460b34babcfb17500ebcffdfb4dbc302ed656b77"
+      ]
+    }
+  ],
+  "source_objects": [
+    {
+      "path": "codex-rs/core/src/unified_exec/process.rs",
+      "commit": "e0eca9e265c4deeb069ec940c9ec3acbe8cf0f81",
+      "bytes": 26968,
+      "sha256": "342d7bb7ed3b4038687f34cce451f985af68dd25b6bf31d9436df4cdf7981394",
+      "git_blob": "549d118cfe090af1aea51a47ba0eeb1eb5ff0098",
+      "pin_evidence": "core-unified-termination-r8c-repair/source-manifest.json",
+      "immutable_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/e0eca9e265c4deeb069ec940c9ec3acbe8cf0f81/codex-rs/core/src/unified_exec/process.rs"
+    },
+    {
+      "path": "codex-rs/core/src/unified_exec/process.rs",
+      "commit": "b44d4ca4aa0ef9f894eff29e9975938e066a82f5",
+      "bytes": 29589,
+      "sha256": "76a7e709326b8fe4c2e0cd59ba335c01ceb7ad32e852e7f3c2fe12b60b052060",
+      "git_blob": "b82a8cb16a7c33e7ac54f33445e5622a53675e63",
+      "pin_evidence": "core-unified-termination-r8c-repair/source-manifest.json",
+      "immutable_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/b44d4ca4aa0ef9f894eff29e9975938e066a82f5/codex-rs/core/src/unified_exec/process.rs"
+    },
+    {
+      "path": "codex-rs/core/tests/suite/unified_exec_process_events.rs",
+      "commit": "638997499470f0b7dd33ad18226feacf0198ef3d",
+      "bytes": 41379,
+      "sha256": "f3a58d32dac0ecab83d45bd1460b34babcfb17500ebcffdfb4dbc302ed656b77",
+      "git_blob": "0be5dc7774419edf11f7b3256a9f8ad2025882fa",
+      "pin_evidence": "core-exec-events-r14-repair/source-manifest.json",
+      "immutable_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/638997499470f0b7dd33ad18226feacf0198ef3d/codex-rs/core/tests/suite/unified_exec_process_events.rs"
+    },
+    {
+      "path": "codex-rs/core/tests/suite/unified_exec_process_events.rs",
+      "commit": "b44d4ca4aa0ef9f894eff29e9975938e066a82f5",
+      "bytes": 40402,
+      "sha256": "0a5285472039a89d62d62e50e3ad94e84c64700f4f893bbe3fe3177debe4bb54",
+      "git_blob": "a8a2f67bf853481dec244c5ba7939279fe0eb6ce",
+      "pin_evidence": "core-exec-events-r14-repair/source-manifest.json",
+      "immutable_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/b44d4ca4aa0ef9f894eff29e9975938e066a82f5/codex-rs/core/tests/suite/unified_exec_process_events.rs"
+    }
+  ],
+  "formal_evidence": [
+    {
+      "path": "../r14-core-checkpoint/native-core-r14-result-review.json",
+      "bytes": 35985,
+      "sha256": "9b5b3a81d4901d8c6769908e2021235e3ef82e3257d5b0c21bf1c086899f0732"
+    },
+    {
+      "path": "../r14-core-checkpoint/native-core-r14-tests-receipt.json",
+      "bytes": 855,
+      "sha256": "c532ec738074e4add3165e0f74bd992d127ab75bf9b0736c78012ec91e273c22"
+    },
+    {
+      "path": "../r14-core-checkpoint/native-core-r14-tests.log.gz",
+      "bytes": 85335,
+      "sha256": "400ba9860f303f32173fdf7c51a67aed56701c76319e12a18c0bf68f03c9fe9a"
+    },
+    {
+      "path": "../r14-core-checkpoint/native-candidate-r14-source.json",
+      "bytes": 45387,
+      "sha256": "dffa92b76aa4354dc39bee15d2ad1078e0e72d00bc6b20f78acbe5243394a059"
+    },
+    {
+      "path": "../r14-core-checkpoint/ROOT-RESULT-READBACK.json",
+      "bytes": 7396,
+      "sha256": "5310930bb7d6c1eab285121e9affd96c0d278b54676a467ca0aacbe7a6e9bab6"
+    },
+    {
+      "path": "../r14-core-checkpoint/ROOT-SOURCE-ROUNDTRIP.json",
+      "bytes": 527,
+      "sha256": "b561099ba816f5b07d36d8258628bae8c7081d95bfa32dc43d835ec59313bd9b"
+    },
+    {
+      "path": "../r15-stage44-input/root-published-source.json",
+      "bytes": 8218,
+      "sha256": "2ce4a25a216fe706b2edde8f387fdfa8fe364d3c2203f981c94a8ea3a62b7c09"
+    },
+    {
+      "path": "../r15-stage44-input/R14-REPAIR-COVERAGE-MAP.json",
+      "bytes": 17982,
+      "sha256": "e86433a54987d902543ca7194328f3a85403f6c12d192cf9a70a029f9bae9a9d"
+    },
+    {
+      "path": "../r15-core-mcp-checkpoint/native-candidate-r15-source.json",
+      "bytes": 48734,
+      "sha256": "ee85feeca1c8da886ab3f52ab26fb741bb5d8569880b26985a2b0d7f8533dc2d"
+    },
+    {
+      "path": "../r15-core-mcp-checkpoint/native-core-mcp-r15-strict-receipt.json",
+      "bytes": 917,
+      "sha256": "4129fe2f4a14b757d642661b9da5e55bb3633e32cc61a9f7ee4e8574cb9f240a"
+    }
+  ],
+  "shared_hook_pins": {
+    "path": "../core-hook-binding-r14-repair/hook-shared-source-pins.json",
+    "bytes": 9853,
+    "sha256": "0385e4a104ba74c57dd250e4d0267a71a31361aff6c936567364dab37c776ce4"
+  },
+  "additional_source_pins": {
+    "path": "../core-hook-binding-r14-repair/additional-source-pins.json",
+    "bytes": 1244,
+    "sha256": "b5b306eb4829af7de89ea145e1697077dc7b654545304ad1bf66a25e85bd6845"
+  },
+  "closed_original_failures": [
+    {
+      "name": "suite::unified_exec_process_events::exec_command_consumes_pushed_remote_process_events::test_case_1_complete_event_stream",
+      "status": "FAIL",
+      "elapsed": "5.303s",
+      "log_byte_range": [
+        529996,
+        530957
+      ],
+      "excerpt_sha256": "f4d8675213aaa3366068f147016140a50ac806eff869a62b0f71774f74be3563"
+    },
+    {
+      "name": "suite::unified_exec_process_events::exec_command_consumes_pushed_remote_process_events::test_case_2_direct_sandbox_denial",
+      "status": "FAIL",
+      "elapsed": "5.288s",
+      "log_byte_range": [
+        530957,
+        531919
+      ],
+      "excerpt_sha256": "7f475a06af5c648d9cfd0e283dfe2050209da6e05dfa043ea4428dc6a119518b"
+    },
+    {
+      "name": "suite::unified_exec_process_events::exec_command_consumes_pushed_remote_process_events::test_case_3_legacy_exit_metadata",
+      "status": "FAIL",
+      "elapsed": "5.305s",
+      "log_byte_range": [
+        531919,
+        532878
+      ],
+      "excerpt_sha256": "3b972800024ae7cbab89c2b78eb95a4f48806e81ca92adec5de6416c55b7138e"
+    },
+    {
+      "name": "suite::unified_exec_process_events::exec_command_consumes_pushed_remote_process_events::test_case_4_truncated_event_replay",
+      "status": "FAIL",
+      "elapsed": "5.326s",
+      "log_byte_range": [
+        532878,
+        533843
+      ],
+      "excerpt_sha256": "2939f24ac00c4c4b0e74da6e024d49c9d0a063732a7968b63f26845fa9cf6cfe"
+    },
+    {
+      "name": "suite::unified_exec_process_events::exec_command_consumes_pushed_remote_process_events::test_case_5_managed_network_uses_executor_proxy_launch",
+      "status": "FAIL",
+      "elapsed": "5.316s",
+      "log_byte_range": [
+        533843,
+        534868
+      ],
+      "excerpt_sha256": "77f449de14bcc621e302611b4ae9d87bf16fae32009b9119287291a7436ce693"
+    },
+    {
+      "name": "suite::unified_exec_process_events::exec_command_consumes_pushed_remote_process_events::test_case_6_strict_managed_allowlist_omits_policy_callbacks",
+      "status": "FAIL",
+      "elapsed": "5.323s",
+      "log_byte_range": [
+        534868,
+        535908
+      ],
+      "excerpt_sha256": "636f4ac41a3d3ded36ce41bf68e9a507e99b890ae9dfc08a1871d1eb354cbd35"
+    },
+    {
+      "name": "suite::unified_exec_process_events::exec_command_consumes_pushed_remote_process_events::test_case_7_foreign_windows_managed_network_preserves_approval_registration",
+      "status": "FAIL",
+      "elapsed": "5.274s",
+      "log_byte_range": [
+        535908,
+        536996
+      ],
+      "excerpt_sha256": "078e8270b918467e78b47e1d527646b6ffa6e8fdcea5a5b716420f1b467812c9"
+    },
+    {
+      "name": "suite::unified_exec_process_events::exec_command_consumes_pushed_remote_process_events::test_case_8_foreign_windows_workspace_sandbox",
+      "status": "FAIL",
+      "elapsed": "5.259s",
+      "log_byte_range": [
+        536996,
+        537994
+      ],
+      "excerpt_sha256": "3c9515e47a19b17b45fc99878b27ee31ed0987a5327674acc4b2b3a8dcbaac0f"
+    },
+    {
+      "name": "suite::unified_exec_process_events::exec_command_consumes_pushed_remote_process_events::test_case_9_windows_elevated_powershell_disables_profile",
+      "status": "FAIL",
+      "elapsed": "5.268s",
+      "log_byte_range": [
+        540917,
+        541947
+      ],
+      "excerpt_sha256": "b7ad9d6f12f6e37afa545fb690cb8e59ed6fc63a3bc4f0a1d3acc87ff5a11136"
+    }
+  ],
+  "closed_log_raw_sha256": "443a58d70c34d76ba9b8141ad7ee32d997a4f16af79e8f5a873770966028952c",
+  "qualifications": [
+    "All source URLs are immutable commits; before and after versions are explicitly distinct. Legacy pre-stage42 comparison uses its original retained formal manifest.",
+    "The OAuth native-runtime-refresh-proof.json is native source-content evidence, not a successful OAuth runtime execution.",
+    "The MCP closed-failure-addendum.json supersedes only its earlier individual active-prefix status; the original causal review remains unchanged.",
+    "No whole source/original tree or duplicate full test log is copied. The existing formal gzip/receipt holds the closed full log.",
+    "Strict compilation, source matching and artifact hashes do not establish candidate test PASS. r15 terminal test receipts are separate and are not authored or inferred by this archive task."
+  ],
+  "unresolved_references": [],
+  "rust_or_ci_execution_by_archive_task": false
+}

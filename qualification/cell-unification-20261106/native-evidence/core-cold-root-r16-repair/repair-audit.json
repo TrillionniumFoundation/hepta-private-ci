@@ -1,0 +1,456 @@
+{
+  "schema": "hepta.cold-root-r16-fixture-lifecycle-audit.v1",
+  "status": "FROZEN_ISOLATED_CANDIDATE_STATIC_REVIEW_ONLY_NATIVE_RETEST_PENDING",
+  "scope": "One existing integration test fixture; preserve bounded V2 residency, production persistence/teardown, identity/role/follow-up assertions and all original time budgets.",
+  "base_commit": "96dc9232535fedf735e3099ef1391b69477270d4",
+  "base_tree": "3ebd193f213d640e5330a1be4b983bcc4b06617a",
+  "test_id": "suite::multi_agent_resume::cold_root_resume_restores_agent_identity_and_role_on_followup",
+  "failure": {
+    "original_closed_gate_exit_code": 100,
+    "original_test_elapsed": "0.583s",
+    "original_error": "thread 01a1affd-ada4-7713-929e-c83439e31971 not found",
+    "original_log_sha256": "fe6cafe40e0efbe36a34f284234cfbfea68aaf658b5d65d9d0c3d754fbff813b",
+    "original_log_bytes": 516571,
+    "block_byte_range": [
+      402083,
+      402679
+    ],
+    "complete_block": {
+      "path": "failure-blocks.json",
+      "bytes": 1504,
+      "sha256": "781ce4e70ed8d34d06f9fafbd2e7c6c270f90120b0e401d3ce01218b800a888f",
+      "git_blob": "862600ee29cd24d37588f1aa6c17f5ea7f0a98ec"
+    },
+    "uuid_role_recorded": false,
+    "specific_error_callsite_recorded": false,
+    "eviction_victim_recorded": false
+  },
+  "conclusion": {
+    "class": "fixture_lifecycle_misuse",
+    "source_established": "The fixture sets total V2 max_concurrent_threads_per_session=3. Production reserves one root slot, leaving child residency capacity 2. Worker and grandchild occupy those child slots. Sibling admission can synchronously unload a completed eligible child, remove its live recorder and manager entry, while a previously acquired Arc<CodexThread> remains held by the fixture. The old worker flush was after sibling admission and could therefore use a handle whose recorder had already been revoked. The moved flush restores the required live-owner ordering without changing residency policy.",
+    "causal_strength": "Concrete source-proven lifecycle hazard consistent with the observed bare error, not a runtime trace proving the r16 victim or exact error-producing call.",
+    "not_claimed": [
+      "The original log identifies the worker as the actual eviction victim.",
+      "Every possible ThreadNotFound path is excluded by the bare UUID.",
+      "A source-only review establishes native test success.",
+      "An Arc keeps a registry entry or recorder alive."
+    ],
+    "corrected_initial_hypotheses": "The count of four durable IDs alone was insufficient, and the SubAgent-only residency predicate alone was insufficient. The decisive bound is Config::effective_agent_max_threads(V2).saturating_sub(1): configured 3 means 2 child slots."
+  },
+  "causal_chain": [
+    {
+      "step": 1,
+      "finding": "The original test deliberately uses a total limit of 3. It creates worker, whose model response spawns grandchild, then later admits sibling. It holds worker_thread across this third-child admission.",
+      "sources": [
+        {
+          "path": "codex-rs/core/tests/suite/multi_agent_resume.rs",
+          "lines": [
+            133,
+            164
+          ],
+          "git_blob": "e09a48aceeef1d3b76432cf21002a4d2d624523f",
+          "sha256": "0c6f0f9f0cccef45f677734eca2ace36715165ff6edd864990442ed6536338d7",
+          "source_commit": "96dc9232535fedf735e3099ef1391b69477270d4",
+          "immutable_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/96dc9232535fedf735e3099ef1391b69477270d4/codex-rs/core/tests/suite/multi_agent_resume.rs#L133-L164"
+        },
+        {
+          "path": "codex-rs/core/tests/suite/multi_agent_resume.rs",
+          "lines": [
+            190,
+            217
+          ],
+          "git_blob": "e09a48aceeef1d3b76432cf21002a4d2d624523f",
+          "sha256": "0c6f0f9f0cccef45f677734eca2ace36715165ff6edd864990442ed6536338d7",
+          "source_commit": "96dc9232535fedf735e3099ef1391b69477270d4",
+          "immutable_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/96dc9232535fedf735e3099ef1391b69477270d4/codex-rs/core/tests/suite/multi_agent_resume.rs#L190-L217"
+        },
+        {
+          "path": "codex-rs/core/tests/suite/multi_agent_resume.rs",
+          "lines": [
+            289,
+            378
+          ],
+          "git_blob": "e09a48aceeef1d3b76432cf21002a4d2d624523f",
+          "sha256": "0c6f0f9f0cccef45f677734eca2ace36715165ff6edd864990442ed6536338d7",
+          "source_commit": "96dc9232535fedf735e3099ef1391b69477270d4",
+          "immutable_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/96dc9232535fedf735e3099ef1391b69477270d4/codex-rs/core/tests/suite/multi_agent_resume.rs#L289-L378"
+        }
+      ]
+    },
+    {
+      "step": 2,
+      "finding": "V2 effective child capacity is configured total minus one root reservation. 3.saturating_sub(1)=2.",
+      "sources": [
+        {
+          "path": "codex-rs/core/src/config/mod.rs",
+          "lines": [
+            1536,
+            1547
+          ],
+          "git_blob": "57a071fd89537bf4219c521281e4c42174d5e924",
+          "sha256": "ebbeae65aa387cce085524de709516e2877e6c4ea15738cd26dbe531bf74b65b",
+          "source_commit": "96dc9232535fedf735e3099ef1391b69477270d4",
+          "immutable_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/96dc9232535fedf735e3099ef1391b69477270d4/codex-rs/core/src/config/mod.rs#L1536-L1547"
+        }
+      ]
+    },
+    {
+      "step": 3,
+      "finding": "A V2 SubAgent spawn reserves a residency slot before creating the new thread, and commits the slot only after thread creation. Root is excluded from the SubAgent resident predicate; it was already accounted for in the effective capacity.",
+      "sources": [
+        {
+          "path": "codex-rs/core/src/agent/control/spawn.rs",
+          "lines": [
+            612,
+            630
+          ],
+          "git_blob": "b901073f6d1a3e7159bbe6a5b9ab9dd575b6b106",
+          "sha256": "866185b265c2fb4bc4eec8a471a12fcc4febcf5a596aa442252ab44063bd6f9f",
+          "source_commit": "96dc9232535fedf735e3099ef1391b69477270d4",
+          "immutable_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/96dc9232535fedf735e3099ef1391b69477270d4/codex-rs/core/src/agent/control/spawn.rs#L612-L630"
+        },
+        {
+          "path": "codex-rs/core/src/agent/control/spawn.rs",
+          "lines": [
+            687,
+            707
+          ],
+          "git_blob": "b901073f6d1a3e7159bbe6a5b9ab9dd575b6b106",
+          "sha256": "866185b265c2fb4bc4eec8a471a12fcc4febcf5a596aa442252ab44063bd6f9f",
+          "source_commit": "96dc9232535fedf735e3099ef1391b69477270d4",
+          "immutable_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/96dc9232535fedf735e3099ef1391b69477270d4/codex-rs/core/src/agent/control/spawn.rs#L687-L707"
+        },
+        {
+          "path": "codex-rs/core/src/agent/control/residency.rs",
+          "lines": [
+            49,
+            60
+          ],
+          "git_blob": "e0a34bb97a3775b5e2114544d5a029d9d68e1608",
+          "sha256": "09708e8b768bc4dfa4546b9cb23afdd7aa14c9090be23b04eef2a85c287b96d0",
+          "source_commit": "96dc9232535fedf735e3099ef1391b69477270d4",
+          "immutable_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/96dc9232535fedf735e3099ef1391b69477270d4/codex-rs/core/src/agent/control/residency.rs#L49-L60"
+        },
+        {
+          "path": "codex-rs/core/src/agent/control/residency.rs",
+          "lines": [
+            224,
+            230
+          ],
+          "git_blob": "e0a34bb97a3775b5e2114544d5a029d9d68e1608",
+          "sha256": "09708e8b768bc4dfa4546b9cb23afdd7aa14c9090be23b04eef2a85c287b96d0",
+          "source_commit": "96dc9232535fedf735e3099ef1391b69477270d4",
+          "immutable_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/96dc9232535fedf735e3099ef1391b69477270d4/codex-rs/core/src/agent/control/residency.rs#L224-L230"
+        }
+      ]
+    },
+    {
+      "step": 4,
+      "finding": "At the bound, reservation scans LRU candidates. Only a completed/errored/interrupted, non-shutting-down, fully terminalized idle child with no pending mailbox can be unloaded. It materializes, awaits shutdown_and_wait, preserves environment selections and removes the registry entry before admitting the replacement. Actual candidate choice depends on eligibility and LRU ordering.",
+      "sources": [
+        {
+          "path": "codex-rs/core/src/agent/control/residency.rs",
+          "lines": [
+            87,
+            155
+          ],
+          "git_blob": "e0a34bb97a3775b5e2114544d5a029d9d68e1608",
+          "sha256": "09708e8b768bc4dfa4546b9cb23afdd7aa14c9090be23b04eef2a85c287b96d0",
+          "source_commit": "96dc9232535fedf735e3099ef1391b69477270d4",
+          "immutable_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/96dc9232535fedf735e3099ef1391b69477270d4/codex-rs/core/src/agent/control/residency.rs#L87-L155"
+        },
+        {
+          "path": "codex-rs/core/src/agent/control/residency.rs",
+          "lines": [
+            237,
+            255
+          ],
+          "git_blob": "e0a34bb97a3775b5e2114544d5a029d9d68e1608",
+          "sha256": "09708e8b768bc4dfa4546b9cb23afdd7aa14c9090be23b04eef2a85c287b96d0",
+          "source_commit": "96dc9232535fedf735e3099ef1391b69477270d4",
+          "immutable_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/96dc9232535fedf735e3099ef1391b69477270d4/codex-rs/core/src/agent/control/residency.rs#L237-L255"
+        }
+      ]
+    },
+    {
+      "step": 5,
+      "finding": "Flush passes through CodexThread → Session → LiveThread → LocalThreadStore → the serialized live-writer lookup. Shutdown removes live_recorders; a subsequent flush deliberately returns ThreadStoreError::ThreadNotFound instead of resurrecting a writer.",
+      "sources": [
+        {
+          "path": "codex-rs/core/src/codex_thread.rs",
+          "lines": [
+            375,
+            377
+          ],
+          "git_blob": "589f0b9305aeb8cf257cdb3d7a83c22335f17252",
+          "sha256": "a2b7930a96d8a32ee9747fa9da8e1fc9c8c77af19aefda898466b1799347f02f",
+          "source_commit": "96dc9232535fedf735e3099ef1391b69477270d4",
+          "immutable_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/96dc9232535fedf735e3099ef1391b69477270d4/codex-rs/core/src/codex_thread.rs#L375-L377"
+        },
+        {
+          "path": "codex-rs/core/src/session/mod.rs",
+          "lines": [
+            1354,
+            1366
+          ],
+          "git_blob": "f4a925c7deb8d9c939cc2900d160f8f25c352b39",
+          "sha256": "c262bc85649869dcc1eea4096773d577959989c54e264e6f03a341448ac3ad4d",
+          "source_commit": "96dc9232535fedf735e3099ef1391b69477270d4",
+          "immutable_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/96dc9232535fedf735e3099ef1391b69477270d4/codex-rs/core/src/session/mod.rs#L1354-L1366"
+        },
+        {
+          "path": "codex-rs/thread-store/src/live_thread.rs",
+          "lines": [
+            268,
+            287
+          ],
+          "git_blob": "2f043800f252f1d32e1b22c4496fe42cec78f2be",
+          "sha256": "2898a00fe99ddcb0bcd7ae6db320998eb614ff8170f244893374acccfb1dc7cc",
+          "source_commit": "96dc9232535fedf735e3099ef1391b69477270d4",
+          "immutable_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/96dc9232535fedf735e3099ef1391b69477270d4/codex-rs/thread-store/src/live_thread.rs#L268-L287"
+        },
+        {
+          "path": "codex-rs/thread-store/src/local/mod.rs",
+          "lines": [
+            488,
+            494
+          ],
+          "git_blob": "1cf1c9e7378d49b69c772ac35fbfa2f23d97c275",
+          "sha256": "0e48d9fe025d419e3395da5920f906e5cb5f7b646600f2bf2e2812453844f331",
+          "source_commit": "96dc9232535fedf735e3099ef1391b69477270d4",
+          "immutable_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/96dc9232535fedf735e3099ef1391b69477270d4/codex-rs/thread-store/src/local/mod.rs#L488-L494"
+        },
+        {
+          "path": "codex-rs/thread-store/src/local/live_writer.rs",
+          "lines": [
+            148,
+            198
+          ],
+          "git_blob": "3c48136272acd090451d200dbeb4020d5cf147d2",
+          "sha256": "d5b9ab7710e192ea1f8a3819eaf4afa5371b6f92cabf42d21de787dc69449dbd",
+          "source_commit": "96dc9232535fedf735e3099ef1391b69477270d4",
+          "immutable_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/96dc9232535fedf735e3099ef1391b69477270d4/codex-rs/thread-store/src/local/live_writer.rs#L148-L198"
+        },
+        {
+          "path": "codex-rs/thread-store/src/local/live_writer.rs",
+          "lines": [
+            298,
+            318
+          ],
+          "git_blob": "3c48136272acd090451d200dbeb4020d5cf147d2",
+          "sha256": "d5b9ab7710e192ea1f8a3819eaf4afa5371b6f92cabf42d21de787dc69449dbd",
+          "source_commit": "96dc9232535fedf735e3099ef1391b69477270d4",
+          "immutable_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/96dc9232535fedf735e3099ef1391b69477270d4/codex-rs/thread-store/src/local/live_writer.rs#L298-L318"
+        },
+        {
+          "path": "codex-rs/thread-store/src/error.rs",
+          "lines": [
+            21,
+            27
+          ],
+          "git_blob": "bc5e8ed7c4f9c8692fb19f6d94c623f6bc0f3335",
+          "sha256": "f4fa3ecb68c589eb75d30518d580f97940a970c6fbf2ec3df5cd4dc5ce8d12a7",
+          "source_commit": "96dc9232535fedf735e3099ef1391b69477270d4",
+          "immutable_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/96dc9232535fedf735e3099ef1391b69477270d4/codex-rs/thread-store/src/error.rs#L21-L27"
+        }
+      ]
+    }
+  ],
+  "old_handle_shutdown_after_eviction": {
+    "result": "No additional repair required: the existing SessionIo API supports waiting on the same already-terminated session.",
+    "mechanism": "CodexThread::shutdown_and_wait delegates to its own SessionIo. SessionIo clones the shared loop-termination future, submits Shutdown, accepts InternalAgentDied from a closed submission channel, then awaits that same future and returns Ok. It does not reacquire a manager entry or live recorder. Eviction already awaited that future. The original handler performs persistence shutdown once while that loop is alive; persistence errors become an Error event, not a bare ThreadNotFound return through SessionIo.",
+    "sources": [
+      {
+        "path": "codex-rs/core/src/codex_thread.rs",
+        "lines": [
+          279,
+          280
+        ],
+        "git_blob": "589f0b9305aeb8cf257cdb3d7a83c22335f17252",
+        "sha256": "a2b7930a96d8a32ee9747fa9da8e1fc9c8c77af19aefda898466b1799347f02f",
+        "source_commit": "96dc9232535fedf735e3099ef1391b69477270d4",
+        "immutable_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/96dc9232535fedf735e3099ef1391b69477270d4/codex-rs/core/src/codex_thread.rs#L279-L280"
+      },
+      {
+        "path": "codex-rs/core/src/session/mod.rs",
+        "lines": [
+          826,
+          863
+        ],
+        "git_blob": "f4a925c7deb8d9c939cc2900d160f8f25c352b39",
+        "sha256": "c262bc85649869dcc1eea4096773d577959989c54e264e6f03a341448ac3ad4d",
+        "source_commit": "96dc9232535fedf735e3099ef1391b69477270d4",
+        "immutable_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/96dc9232535fedf735e3099ef1391b69477270d4/codex-rs/core/src/session/mod.rs#L826-L863"
+      },
+      {
+        "path": "codex-rs/core/src/session/mod.rs",
+        "lines": [
+          930,
+          938
+        ],
+        "git_blob": "f4a925c7deb8d9c939cc2900d160f8f25c352b39",
+        "sha256": "c262bc85649869dcc1eea4096773d577959989c54e264e6f03a341448ac3ad4d",
+        "source_commit": "96dc9232535fedf735e3099ef1391b69477270d4",
+        "immutable_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/96dc9232535fedf735e3099ef1391b69477270d4/codex-rs/core/src/session/mod.rs#L930-L938"
+      },
+      {
+        "path": "codex-rs/core/src/session/mod.rs",
+        "lines": [
+          1005,
+          1013
+        ],
+        "git_blob": "f4a925c7deb8d9c939cc2900d160f8f25c352b39",
+        "sha256": "c262bc85649869dcc1eea4096773d577959989c54e264e6f03a341448ac3ad4d",
+        "source_commit": "96dc9232535fedf735e3099ef1391b69477270d4",
+        "immutable_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/96dc9232535fedf735e3099ef1391b69477270d4/codex-rs/core/src/session/mod.rs#L1005-L1013"
+      },
+      {
+        "path": "codex-rs/core/src/session/handlers.rs",
+        "lines": [
+          542,
+          585
+        ],
+        "git_blob": "b17acec0478ca043bff26ec9b44ba7cc54d324ca",
+        "sha256": "e447596dbf5293c3f35a081ab38bbc242a4b02dc2dd8aa63b0d24664eb681251",
+        "source_commit": "96dc9232535fedf735e3099ef1391b69477270d4",
+        "immutable_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/96dc9232535fedf735e3099ef1391b69477270d4/codex-rs/core/src/session/handlers.rs#L542-L585"
+      },
+      {
+        "path": "codex-rs/core/src/agent/control/residency.rs",
+        "lines": [
+          139,
+          155
+        ],
+        "git_blob": "e0a34bb97a3775b5e2114544d5a029d9d68e1608",
+        "sha256": "09708e8b768bc4dfa4546b9cb23afdd7aa14c9090be23b04eef2a85c287b96d0",
+        "source_commit": "96dc9232535fedf735e3099ef1391b69477270d4",
+        "immutable_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/96dc9232535fedf735e3099ef1391b69477270d4/codex-rs/core/src/agent/control/residency.rs#L139-L155"
+      }
+    ],
+    "identity_preserved": "The fixture still shuts down and drops the same Arc. No new lookup, replacement owner, second loop, or detached cleanup is introduced.",
+    "boundary": "This describes the established API path after completed eviction. It does not assert all shutdown failures in unrelated lifecycle states are ignored."
+  },
+  "repair": {
+    "worker_flush": "Move the existing worker flush from after sibling completion to after the original worker TurnComplete and exact role/config assertions, before preparing/admitting sibling.",
+    "why_new_location_is_live": "Only worker and grandchild have been admitted, so the fixture has not yet crossed the effective child limit. No later admission can revoke worker before this flush completes.",
+    "remaining_flushes": "Leave sibling and root flushes at their original pre-restart location. Add ID- and phase-specific context to these two and to the moved worker flush.",
+    "error_contexts": [
+      "worker: root/worker IDs, phase before sibling admission, explicit sibling=not-spawned",
+      "sibling: root/worker/sibling IDs, pre-restart sibling flush",
+      "root: root/worker/sibling IDs, pre-restart root flush"
+    ],
+    "unchanged": [
+      "capacity = 3",
+      "all 17 original assertion macros and bodies",
+      "3 flush calls and 3 shutdown_and_wait calls",
+      "original thread identities, Arc ownership, registry/recorder owner semantics",
+      "original role/config/permission/provider rules",
+      "original cold root restart, queued message and follow-up behavior",
+      "all original durations and event waits",
+      "all original model/mock response expressions outside the relocated flush"
+    ],
+    "operations_added_or_removed": false,
+    "intentional_relative_order_change": "Only the existing worker flush moves across sibling setup/admission and completion; all other original operations keep their relative ordering.",
+    "production_source_modified": false,
+    "permissions_weakened": false,
+    "test_assertions_weakened": false,
+    "timeouts_increased": false,
+    "retry_skip_or_ignore_added": false,
+    "superseded": "The earlier context-only proposal is retained in superseded-context-only/ with SUPERSEDED_UNEXECUTED_DIAGNOSTIC_ONLY status. It was never run and is not the frozen candidate."
+  },
+  "error_attribution_limits": {
+    "old_contexts_retained": "The original stage39 context on initial worker lookup, initial sibling lookup and cold root restart is retained. Their absence from the r16 error narrows those direct boundaries but does not uniquely prove a flush callsite.",
+    "duplicate_error_text": "Both protocol thread-manager errors and thread-store errors can format thread <id> not found. A full source chain is needed; the text alone is not a registry-vs-recorder discriminator.",
+    "other_paths_checked": [
+      "SessionIo submission maps a closed sender to InternalAgentDied.",
+      "The normal turn-settings validation paths map errors to InvalidRequest; no behavior change was made there.",
+      "The live-thread initialization guard and manager delivery claim preserve ownership on successful startup; no evidence required changing those production paths."
+    ],
+    "strongest_verified_claim": "Moving the flush before possible residency teardown removes a specific late-write misuse while retaining every cold-resume assertion and the original capacity stress."
+  },
+  "validation": {
+    "static": {
+      "path": "MECHANICAL-READBACK.json",
+      "bytes": 1337,
+      "sha256": "000a858f1b5f38782629ec10055e4c46e0814e815cc3889a4c5cfb3a1a3c4238",
+      "git_blob": "42d2d921313f2a17c70d3d92bfe21103a8e244d1"
+    },
+    "result": "Exact before/after hashes, all four edit operations, whole-file inverse and regenerated patch verified. The author did not run Rust.",
+    "original_gate": {
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-core",
+        "-p",
+        "codex-mcp",
+        "-p",
+        "core_test_support",
+        "--retries",
+        "0"
+      ],
+      "source_commit": "96dc9232535fedf735e3099ef1391b69477270d4",
+      "source_tree": "3ebd193f213d640e5330a1be4b983bcc4b06617a",
+      "exit_code": 100,
+      "receipt_path": "evidence/native-core-mcp-r16-tests-receipt.json",
+      "receipt_log_and_resource_binding_verified": true
+    },
+    "candidate_native_result": null,
+    "workspace_result": null,
+    "fix_fmt_executed": false,
+    "next_gate": "The native owner applies the root-frozen source46 and runs the original three-package strict/test gate without filters or retries. This audit does not claim that gate has passed."
+  },
+  "artifacts": {
+    "source-manifest.json": {
+      "path": "source-manifest.json",
+      "bytes": 1722,
+      "sha256": "f31899b89fe56f486c620447acde1b18d7271319b5a54adeba015419e0d6d5f1",
+      "git_blob": "f8493b6afecf2e90a6e310491d7c946260272df0"
+    },
+    "repair.patch": {
+      "path": "repair.patch",
+      "bytes": 1628,
+      "sha256": "555c1b3879a5239ebf3d355e3f59dcbeb37e177f34d223a6cc69037a6a786887",
+      "git_blob": "0dd010e086f8f3d7b66f7aea0dd3b541f1da8494"
+    },
+    "edit-operations.json": {
+      "path": "edit-operations.json",
+      "bytes": 1834,
+      "sha256": "6f8e2ef3f29f6a217738a5c7aef8580c9d2338e12c99d4e9b73cba1d7bdf6d99",
+      "git_blob": "fd8c5d5e03ac04ee5edc78064abf91f73cbdd1f8"
+    },
+    "source-input-pins.json": {
+      "path": "source-input-pins.json",
+      "bytes": 15969,
+      "sha256": "7e2c91d87a46115adfcc501afef525b65ce685b4d966f17f89eb4e87f93e4960",
+      "git_blob": "d0f230c0c5878b0efbd434bb8c910ea2bbe99f61"
+    },
+    "evidence-manifest.json": {
+      "path": "evidence-manifest.json",
+      "bytes": 2892,
+      "sha256": "d47dd4650d2a9d8ec1b70879945216264f0b238b4bbb0dad2127bb96878d9f96",
+      "git_blob": "5ea37293a48a4e0191662c83f69977b581ddd82d"
+    },
+    "failure-blocks.json": {
+      "path": "failure-blocks.json",
+      "bytes": 1504,
+      "sha256": "781ce4e70ed8d34d06f9fafbd2e7c6c270f90120b0e401d3ce01218b800a888f",
+      "git_blob": "862600ee29cd24d37588f1aa6c17f5ea7f0a98ec"
+    }
+  },
+  "guidance": {
+    "nearest": [
+      "AGENTS.md"
+    ],
+    "source_guidance_sha256": "c3f80e8386eb170b00af1e21de40d770c4941e464915687e728e2d14a7e79480",
+    "source_guidance_blob": "faa57cc0db48123e1011f1eb47692cd3bbbcfc3a",
+    "repo_backed_artifacts": true
+  },
+  "work_boundaries": {
+    "canonical_source_written_by_author": false,
+    "native_source_written_by_author": false,
+    "rust_or_cargo_commands_run": false,
+    "active_logs_read": false
+  }
+}

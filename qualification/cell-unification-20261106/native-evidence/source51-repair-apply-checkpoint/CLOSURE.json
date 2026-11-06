@@ -1,0 +1,60 @@
+{
+  "schema": "hepta.source51-repair-apply-checkpoint-closure.v1",
+  "state": "SOURCE_REGISTERED_AND_APPLY_PASS_R26_LAUNCH_SNAPSHOT_ONLY",
+  "source_commit": "e28b0f385ee882f842911044958b2810f62f6379",
+  "source_tree": "763c8d2b4089f6e9806c3bbb68fa247bc2f6af36",
+  "source_parent_commit": "1fdd647b0ecb235530e8b88bbea45b3d3762906f",
+  "source_changed_paths": 194,
+  "source_rust_paths": 180,
+  "change_from_source50": [
+    "codex-rs/exec-server/tests/common/fake_bwrap.rs",
+    "codex-rs/network-proxy/src/http_proxy.rs"
+  ],
+  "native_head": "bef6fa7645df9df12b69fda499e97eed25de6c75",
+  "actual_apply": {
+    "job_id": "1a1b1ae7f60-fc05-7a41",
+    "exit_code": 0,
+    "original_git_exit_codes": [
+      0,
+      0,
+      0
+    ],
+    "guards_pass": true
+  },
+  "r26": {
+    "job_id": "1a1b1b739ee-fc05-7a70",
+    "observation": "immutable initial launch only",
+    "python_exit": null,
+    "strict_exit": null,
+    "tests_exit": null,
+    "terminal_counts": null
+  },
+  "r24_engineering_disposition": "FAIL",
+  "r25_executed": false,
+  "final_fix_fmt_executed_in_this_attachment": false,
+  "science": "HOLD",
+  "authority": "DENY_ALL",
+  "originals_rewritten": false,
+  "active_logs_read": false,
+  "independent_readback": {
+    "path": "INDEPENDENT-READBACK.json",
+    "bytes": 11535,
+    "sha256": "f22ccef0cfdc9253b82817844f1ac278aaec6e2f619393c2d20d3808a1e6d165",
+    "git_blob": "9c48e005ea620a43636a3e806600465292d90fa9"
+  },
+  "mapping": {
+    "path": "SOURCE-DESTINATION-MAPPING.json",
+    "bytes": 110205,
+    "sha256": "7ed412cdece82f1f2c32fd032cd9e6db4a3c066e57c2eaeadb4510b0fab82b52",
+    "git_blob": "e4bedea6e4f39ec3639607238de1dd28d1b06847"
+  },
+  "missing_required_artifacts": [],
+  "scope_limits": [
+    "Comparison is a controlled launcher diagnostic, not a full helper or Rust gate.",
+    "194 manifest rows and the two changed payload pairs are independently checked here; native guards attest all194 files. This group does not duplicate all194 source files.",
+    "Source51 GitData commit maps the staged native tree; native HEAD remains bef6fa.",
+    "Source50 unchanged dependency/lock evidence is inherited; no new lock command is claimed.",
+    "Historical preparation fields remain unchanged even after later registration and apply.",
+    "Future r26/r27 and fix/fmt qualifications require separate closed receipts."
+  ]
+}

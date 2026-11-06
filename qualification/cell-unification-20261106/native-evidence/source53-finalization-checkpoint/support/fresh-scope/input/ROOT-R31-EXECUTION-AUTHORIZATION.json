@@ -1,0 +1,57 @@
+{
+  "schema": "hepta.root-source53-default-workspace-r31-authorization.v1",
+  "authorized": "ONE_ORIGINAL_DEFAULT_WORKSPACE_GATE_AFTER_ACTUAL_R30_PASS",
+  "unique_launch_key": "cell-source53-workspace-r31-20261106-v1",
+  "outer_timeout_seconds": 9600,
+  "runner": {
+    "local_path": "source53-r31-binding/native-run-r31.py",
+    "native_path": "/home/alex/work/hepta-cell-unified-20261106-a/native-run-r31.py",
+    "bytes": 128291,
+    "sha256": "2dc7b84b7dad0d6e150817e0dfc4105c4bb4d343103aacef0fb932eab698a6f9"
+  },
+  "root_literal_binding_readback": {
+    "path": "source53-r31-root-review/BINDING-READBACK.json",
+    "bytes": 1252,
+    "sha256": "f7dcc22f44907d299ebbd7af6f943497e827b85583035757253981586da04003"
+  },
+  "source_commit": "f74be175de66a4b351cd239d39d98cd34fe9cc1b",
+  "source_tree": "440d4a8e09af4009e4d9ea067388826308da8803",
+  "native_HEAD": "bef6fa7645df9df12b69fda499e97eed25de6c75",
+  "changed_paths": 197,
+  "actual_prerequisite_R30_job": "1a1b25b399f-fc05-7daa",
+  "actual_prerequisite_R30_counts": {
+    "PASS": 1345,
+    "FAIL": 0,
+    "TIMEOUT": 0
+  },
+  "actual_prerequisite_R30_reported_skipped": 2,
+  "actual_R30_natural_outer_exit": 0,
+  "create_only_upload_and_exact_remote_file_info_required": true,
+  "fresh_current_metadata_command": [
+    "cargo",
+    "metadata",
+    "--locked",
+    "--no-deps",
+    "--format-version",
+    "1"
+  ],
+  "required_fresh_member_and_default_counts": 193,
+  "workspace_command": [
+    "just",
+    "test",
+    "--locked",
+    "--retries",
+    "0"
+  ],
+  "no_package_selector": true,
+  "original20228_IDs_only_used_after_execution_for_exact_acceptance": true,
+  "single_native_Rust_job": true,
+  "no_deadline_assertion_feature_filter_skip_retry_or_protection_environment_changes": true,
+  "raw_return_before_derived_readback_required": true,
+  "original_R29_failed100_kept_as_original_failure": true,
+  "diagnostic_only": true,
+  "behavior_repair_claimed": false,
+  "automatic_retry_or_reset_authorized": false,
+  "fix_fmt_authorized": false,
+  "publication_or_merge_authorized_by_this_record": false
+}

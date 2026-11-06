@@ -1,0 +1,97 @@
+{
+  "schema": "hepta.root-source53-diagnostic-actual-upload-batch.v1",
+  "completed_paths": 184,
+  "total_paths": 238,
+  "staged": [
+    {
+      "repo_path": "qualification/cell-unification-20261106/native-evidence/source53-diagnostic-apply-checkpoint/diagnostic-candidate/README.md",
+      "git_blob": "fed574d92af40fa4dbe65cdb25ecce4e1577956a",
+      "binary": false,
+      "reused": false,
+      "actual_response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "sha": "fed574d92af40fa4dbe65cdb25ecce4e1577956a"
+        },
+        "isError": false
+      }
+    },
+    {
+      "repo_path": "qualification/cell-unification-20261106/native-evidence/source53-diagnostic-apply-checkpoint/diagnostic-candidate/build_candidate.py",
+      "git_blob": "fa6748a6b8bbd02de3a60b0164d37a7034c559a5",
+      "binary": false,
+      "reused": false,
+      "actual_response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "sha": "fa6748a6b8bbd02de3a60b0164d37a7034c559a5"
+        },
+        "isError": false
+      }
+    },
+    {
+      "repo_path": "qualification/cell-unification-20261106/native-evidence/source53-diagnostic-apply-checkpoint/diagnostic-candidate/diagnostic.patch",
+      "git_blob": "c8e503738a5f958a9846b7a5d5fd388978580a64",
+      "binary": false,
+      "reused": true,
+      "origin": "verified_checkpoint6_or_registered_blob_or_prior_batch"
+    },
+    {
+      "repo_path": "qualification/cell-unification-20261106/native-evidence/source53-diagnostic-apply-checkpoint/diagnostic-candidate/edit-operations.json",
+      "git_blob": "8f350e1cfdc41c583f421a4e6852434c3251d56a",
+      "binary": false,
+      "reused": false,
+      "actual_response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "sha": "8f350e1cfdc41c583f421a4e6852434c3251d56a"
+        },
+        "isError": false
+      }
+    },
+    {
+      "repo_path": "qualification/cell-unification-20261106/native-evidence/source53-diagnostic-apply-checkpoint/diagnostic-candidate/original/codex-rs/app-server/src/request_processors/account_processor/bedrock_setup.rs",
+      "git_blob": "9e7cb31856c2b938c6a8ba73f8affb36bd4b5e3d",
+      "binary": false,
+      "reused": true,
+      "origin": "verified_checkpoint6_or_registered_blob_or_prior_batch"
+    },
+    {
+      "repo_path": "qualification/cell-unification-20261106/native-evidence/source53-diagnostic-apply-checkpoint/diagnostic-candidate/original/codex-rs/app-server/tests/suite/v2/bedrock_setup.rs",
+      "git_blob": "87cfaf3ae45eafbc54dad94a96226f4a807209a5",
+      "binary": false,
+      "reused": true,
+      "origin": "verified_checkpoint6_or_registered_blob_or_prior_batch"
+    },
+    {
+      "repo_path": "qualification/cell-unification-20261106/native-evidence/source53-diagnostic-apply-checkpoint/diagnostic-candidate/source/codex-rs/app-server/src/request_processors/account_processor/bedrock_setup.rs",
+      "git_blob": "747ae860d47bc33dfa48c7dcfb944dd6e4dd2865",
+      "binary": false,
+      "reused": true,
+      "origin": "verified_checkpoint6_or_registered_blob_or_prior_batch"
+    },
+    {
+      "repo_path": "qualification/cell-unification-20261106/native-evidence/source53-diagnostic-apply-checkpoint/diagnostic-candidate/source/codex-rs/app-server/tests/suite/v2/bedrock_setup.rs",
+      "git_blob": "daaddd66a0b02a044263da26be6302b2d4ee4584",
+      "binary": false,
+      "reused": true,
+      "origin": "verified_checkpoint6_or_registered_blob_or_prior_batch"
+    }
+  ],
+  "errors": []
+}

@@ -1,0 +1,90 @@
+{
+  "schema": "hepta.source53-finalization-complete.v1",
+  "tested_source_commit": "f74be175de66a4b351cd239d39d98cd34fe9cc1b",
+  "tested_source_tree": "440d4a8e09af4009e4d9ea067388826308da8803",
+  "final_formatted_tree": "42c1dd4e1a751c690c2800dfc3868e771dc9c70b",
+  "final_formatted_commit": null,
+  "tested": {
+    "tree": "440d4a8e09af4009e4d9ea067388826308da8803",
+    "manifest": {
+      "path": "native-source53-finalization/tested-pre-fix-source-manifest.json",
+      "bytes": 77225,
+      "sha256": "c47fc8c42c27d61ead2a9f92790bfdd31548f52e42628e60ae3b62348a05551b",
+      "git_blob": "a1e3040a45f2a24309f37373655984b3bcf471fd"
+    },
+    "archive": {
+      "path": "native-source53-finalization/tested-pre-fix-source.tar.gz",
+      "bytes": 1062833,
+      "sha256": "5f4c1a33ab54ef21f789fa947043d49fd28c2df54379cb42012dfb4348298337",
+      "git_blob": "df1610247ba558937eccbcddb380bffa2c7e9a4e"
+    },
+    "source_paths": 197,
+    "post_fix_or_format_tests_executed": false,
+    "qualification_transferred_to_mutated_tree": false
+  },
+  "after_fix": {
+    "tree": "440d4a8e09af4009e4d9ea067388826308da8803",
+    "manifest": {
+      "path": "native-source53-finalization/post-fix-source-manifest.json",
+      "bytes": 77219,
+      "sha256": "a13d5aab65698b5db8e9fa6847b6430e58ab648b1329628d96cee25802b0d66e",
+      "git_blob": "a18ab9995d7d02db65b1a7ce3d09be8d4d86cdc5"
+    },
+    "archive": {
+      "path": "native-source53-finalization/post-fix-source.tar.gz",
+      "bytes": 1062826,
+      "sha256": "888cc610aae0d2f3a60f485d50970023edf2c4d179ec4986fce07c60fe7f893f",
+      "git_blob": "271ba4e32aaece93684f69b3e888790fab12e52e"
+    },
+    "source_paths": 197,
+    "post_fix_or_format_tests_executed": false,
+    "qualification_transferred_to_mutated_tree": false
+  },
+  "after_format": {
+    "tree": "42c1dd4e1a751c690c2800dfc3868e771dc9c70b",
+    "manifest": {
+      "path": "native-source53-finalization/final-post-format-source-manifest.json",
+      "bytes": 77191,
+      "sha256": "115d594ea9eb13b0b25e7f369e72e18149f572fa22680c70f9b85de04e08bdfc",
+      "git_blob": "1b6a19f90f45efcaec0b525e21703c850fdebc88"
+    },
+    "archive": {
+      "path": "native-source53-finalization/final-post-format-source.tar.gz",
+      "bytes": 1065812,
+      "sha256": "f5ccbb7ad47ae0144fffa57364e9703899c2bbec6dcedb1df7e590b1749245a3",
+      "git_blob": "088c380ed06a060db1441138b7bbde827b3584a4"
+    },
+    "source_paths": 197,
+    "post_fix_or_format_tests_executed": false,
+    "qualification_transferred_to_mutated_tree": false
+  },
+  "fix_receipt": {
+    "path": "native-source53-finalization/fix-receipt.json",
+    "bytes": 3178,
+    "sha256": "a3e5f19440b41ef013184d0e9159bbb464dfb3b5d9a457509dcb666474ce3734",
+    "git_blob": "ff6b77e53cb72fc6a39fc957ec56eb691fc4f7ba"
+  },
+  "format_receipt": {
+    "path": "native-source53-finalization/format-receipt.json",
+    "bytes": 2418,
+    "sha256": "e341a1afe39174e168578bc49cf12f49fbc0e2cc33e79a08c4531ba694cb5875",
+    "git_blob": "0bf8fc47b45f4061391a822f8f548d8a496b4d65"
+  },
+  "tested_to_final_patch": {
+    "path": "native-source53-finalization/tested-to-final.patch",
+    "bytes": 377708,
+    "sha256": "481c4d038d77628bcf1a79d057bc9d7b54be1467e94038130c24c6d2f36b3997",
+    "git_blob": "5d0df54deb314657dc3f980d332e89b41df2ffb0"
+  },
+  "cargo_lock_sha256": "4165307bb6c41d08e6c1c362060f2a958c8200ea43fdab2b8b1e6220ad82b55c",
+  "bazel_lock_sha256": "e80ef06b6f824a19cdcedd6010738b316ccca96b83ad8730fafb52153a2634fb",
+  "original_gate_source_retained_separately_from_final_tree": true,
+  "post_fix_or_format_tests_executed": false,
+  "qualification_transferred_to_mutated_tree": false,
+  "native_HEAD": "bef6fa7645df9df12b69fda499e97eed25de6c75",
+  "remote_refs_changed": false,
+  "publication": "SOURCE_ARTIFACT_ONLY_PENDING_ROOT_REVIEW",
+  "diagnostic_only": true,
+  "behavior_repair_claimed": false,
+  "original_r29_failure_relabelled_as_pass": false
+}

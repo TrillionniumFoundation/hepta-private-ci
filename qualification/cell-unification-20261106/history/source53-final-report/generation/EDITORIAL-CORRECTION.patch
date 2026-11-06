@@ -1,0 +1,57 @@
+--- final-candidate/candidates/README.md
++++ final-candidate-v2/candidates/README.md
+@@ -38,7 +38,7 @@
+ 
+ ## 2. 当前代码具体接通了什么
+ 
+-固定输入为 #4887 `bef6fa7` 的 Cell framework 与 #4890 `caf06e0` 的职责／分化定义。新增输入桥和注册表沿用已有 owner 执行与恢复接口。[源码来源与 53 个登记记录][identity]
++固定输入为 #4887 `bef6fa7` 的 Cell framework 与 #4890 `caf06e0` 的职责／分化定义。新增输入桥和注册表沿用已有 owner 执行与恢复接口。[源码来源与受测 53 个登记记录][identity]
+ 
+ | 实现 | 当前行为 | 资格边界 |
+ | --- | --- | --- |
+--- final-candidate/pr-guide-candidates/PR-BODY.md
++++ final-candidate-v2/pr-guide-candidates/PR-BODY.md
+@@ -1,7 +1,7 @@
+-本变更为现有 Cell framework 补齐版本化功能合约、全局 Q24 输入桥与不可变后端注册，沿用原 owner admission、执行、commit 和 unknown 恢复路径。角色、capability、expert 版本和实例分别计数；登记身份进入操作 digest，角色或后端重命名不能重解释旧回执。主要入口是 [输入桥](https://github.com/TrillionniumFoundation/hepta-private-ci/blob/1e0910becc37383e6d17ecf861ea844fd07d8862/codex-rs/hepta-neuron/src/cell_feature_projection.rs)、[注册表](https://github.com/TrillionniumFoundation/hepta-private-ci/blob/1e0910becc37383e6d17ecf861ea844fd07d8862/codex-rs/hepta-neuron/src/cell_registry.rs) 和 [冻结分化提案](https://github.com/TrillionniumFoundation/hepta-private-ci/blob/1e0910becc37383e6d17ecf861ea844fd07d8862/codex-rs/hepta-plasticity/src/differentiation_study.rs)。
++本变更为现有 Cell framework 补齐版本化功能合约、全局 Q24 输入桥与不可变后端注册，沿用原 owner admission、执行、commit 和 unknown 恢复路径。角色、capability、expert 版本和实例分别计数；登记身份进入操作 digest，角色或后端重命名不能重解释旧回执。主要入口是 [输入桥](https://github.com/TrillionniumFoundation/hepta-private-ci/blob/b5209cfdf509e990f10922197b32540bf8c353a7/codex-rs/hepta-neuron/src/cell_feature_projection.rs)、[注册表](https://github.com/TrillionniumFoundation/hepta-private-ci/blob/b5209cfdf509e990f10922197b32540bf8c353a7/codex-rs/hepta-neuron/src/cell_registry.rs) 和 [冻结分化提案](https://github.com/TrillionniumFoundation/hepta-private-ci/blob/b5209cfdf509e990f10922197b32540bf8c353a7/codex-rs/hepta-plasticity/src/differentiation_study.rs)。
+ 
+ 七类功能职责不等于 HNMF 七类 engram，也不规定恰好七个模型。保留冻结表示＋私有 Head/Adapter、生成模型＋私有 Adapter/解码状态、可训练状态模型三个可替换家族。14 项新增机制回归使用控制夹具；当前桥只接受已定义的 1..512 维全局 Q24 receipt，不能用它宣称完整 FeatureBundle、EG2 768 维兼容或真实模型效能。研究的两个场景均 HOLD，输出权限保持 DENY_ALL。
+ 
+-组合过程中同步修复了真实 Rust owning/API 消费者、持久预算恢复、终止确认和受控工具绑定，并保留对应回归。Linux owner 退出通过持续 pidfd 观察处理，原 namespace/session/权限边界与五秒断连 oracle 不变。原 runner、跨包 helper、fixture 和 CI 接线另列，生产默认、断言、预算与 ignored 均保持；[source52 的唯一新叶](https://github.com/TrillionniumFoundation/hepta-private-ci/blob/1e0910becc37383e6d17ecf861ea844fd07d8862/codex-rs/network-proxy/src/runtime.rs)只将 host-pattern fixture 与环境 DNS 前置分开，专门的地址防护测试仍完整保留。
++组合过程中同步修复了真实 Rust owning/API 消费者、持久预算恢复、终止确认和受控工具绑定，并保留对应回归。Linux owner 退出通过持续 pidfd 观察处理，原 namespace/session/权限边界与五秒断连 oracle 不变。原 runner、跨包 helper、fixture 和 CI 接线另列，生产默认、断言、预算与 ignored 均保持；[source52 的唯一新叶](https://github.com/TrillionniumFoundation/hepta-private-ci/blob/b5209cfdf509e990f10922197b32540bf8c353a7/codex-rs/network-proxy/src/runtime.rs)只将 host-pattern fixture 与环境 DNS 前置分开，专门的地址防护测试仍完整保留。
+ 
+ 已测试源码固定为 `f74be175de66a4b351cd239d39d98cd34fe9cc1b`，197路径／26owner。source53两条Bedrock叶仅加固定阶段诊断，原await、预算及22个断言保持；不主张根因修复。原R30 strict／完整1345项目门和R31原no-p193工作区均自然0；R31为20228PASS／0FAIL／0TIMEOUT，130 reportedskip。实际scoped fix→default fmt后，最终代码登记为 `b5209cfdf509e990f10922197b32540bf8c353a7`；没有格式化后本地测试。最终SHA CI、分支和Draft PR仍待实际发布步骤。科学HOLD、DENY_ALL及所有历史失败不变，分组、双身份与原始回执见REVIEW-GUIDE.zh-CN.md和PATH-GROUPS.json。
+--- final-candidate/pr-guide-candidates/PR-PARAGRAPHS.zh-CN.md
++++ final-candidate-v2/pr-guide-candidates/PR-PARAGRAPHS.zh-CN.md
+@@ -1,9 +1,9 @@
+ # 可用于 stacked Draft PR 的短正文
+ 
+-本变更为现有 Cell framework 补齐版本化功能合约、全局 Q24 输入桥与不可变后端注册，沿用原 owner admission、执行、commit 和 unknown 恢复路径。角色、capability、expert 版本和实例分别计数；登记身份进入操作 digest，角色或后端重命名不能重解释旧回执。主要入口是 [输入桥](https://github.com/TrillionniumFoundation/hepta-private-ci/blob/1e0910becc37383e6d17ecf861ea844fd07d8862/codex-rs/hepta-neuron/src/cell_feature_projection.rs)、[注册表](https://github.com/TrillionniumFoundation/hepta-private-ci/blob/1e0910becc37383e6d17ecf861ea844fd07d8862/codex-rs/hepta-neuron/src/cell_registry.rs) 和 [冻结分化提案](https://github.com/TrillionniumFoundation/hepta-private-ci/blob/1e0910becc37383e6d17ecf861ea844fd07d8862/codex-rs/hepta-plasticity/src/differentiation_study.rs)。
++本变更为现有 Cell framework 补齐版本化功能合约、全局 Q24 输入桥与不可变后端注册，沿用原 owner admission、执行、commit 和 unknown 恢复路径。角色、capability、expert 版本和实例分别计数；登记身份进入操作 digest，角色或后端重命名不能重解释旧回执。主要入口是 [输入桥](https://github.com/TrillionniumFoundation/hepta-private-ci/blob/b5209cfdf509e990f10922197b32540bf8c353a7/codex-rs/hepta-neuron/src/cell_feature_projection.rs)、[注册表](https://github.com/TrillionniumFoundation/hepta-private-ci/blob/b5209cfdf509e990f10922197b32540bf8c353a7/codex-rs/hepta-neuron/src/cell_registry.rs) 和 [冻结分化提案](https://github.com/TrillionniumFoundation/hepta-private-ci/blob/b5209cfdf509e990f10922197b32540bf8c353a7/codex-rs/hepta-plasticity/src/differentiation_study.rs)。
+ 
+ 七类功能职责不等于 HNMF 七类 engram，也不规定恰好七个模型。保留冻结表示＋私有 Head/Adapter、生成模型＋私有 Adapter/解码状态、可训练状态模型三个可替换家族。14 项新增机制回归使用控制夹具；当前桥只接受已定义的 1..512 维全局 Q24 receipt，不能用它宣称完整 FeatureBundle、EG2 768 维兼容或真实模型效能。研究的两个场景均 HOLD，输出权限保持 DENY_ALL。
+ 
+-组合过程中同步修复了真实 Rust owning/API 消费者、持久预算恢复、终止确认和受控工具绑定，并保留对应回归。Linux owner 退出通过持续 pidfd 观察处理，原 namespace/session/权限边界与五秒断连 oracle 不变。原 runner、跨包 helper、fixture 和 CI 接线另列，生产默认、断言、预算与 ignored 均保持；[source52 的唯一新叶](https://github.com/TrillionniumFoundation/hepta-private-ci/blob/1e0910becc37383e6d17ecf861ea844fd07d8862/codex-rs/network-proxy/src/runtime.rs)只将 host-pattern fixture 与环境 DNS 前置分开，专门的地址防护测试仍完整保留。
++组合过程中同步修复了真实 Rust owning/API 消费者、持久预算恢复、终止确认和受控工具绑定，并保留对应回归。Linux owner 退出通过持续 pidfd 观察处理，原 namespace/session/权限边界与五秒断连 oracle 不变。原 runner、跨包 helper、fixture 和 CI 接线另列，生产默认、断言、预算与 ignored 均保持；[source52 的唯一新叶](https://github.com/TrillionniumFoundation/hepta-private-ci/blob/b5209cfdf509e990f10922197b32540bf8c353a7/codex-rs/network-proxy/src/runtime.rs)只将 host-pattern fixture 与环境 DNS 前置分开，专门的地址防护测试仍完整保留。
+ 
+ 已测试源码固定为 `f74be175de66a4b351cd239d39d98cd34fe9cc1b`，197路径／26owner。source53两条Bedrock叶仅加固定阶段诊断，原await、预算及22个断言保持；不主张根因修复。原R30 strict／完整1345项目门和R31原no-p193工作区均自然0；R31为20228PASS／0FAIL／0TIMEOUT，130 reportedskip。实际scoped fix→default fmt后，最终代码登记为 `b5209cfdf509e990f10922197b32540bf8c353a7`；没有格式化后本地测试。最终SHA CI、分支和Draft PR仍待实际发布步骤。科学HOLD、DENY_ALL及所有历史失败不变，分组、双身份与原始回执见REVIEW-GUIDE.zh-CN.md和PATH-GROUPS.json。
+--- final-candidate/pr-guide-candidates/REVIEW-GUIDE.zh-CN.md
++++ final-candidate-v2/pr-guide-candidates/REVIEW-GUIDE.zh-CN.md
+@@ -14,7 +14,7 @@
+ | D：研究与证据 | 9 | 9 个冻结研究源/文档；成熟度、历史资产、研究回执与原生证据另作附件，不算进此源码路径数 |
+ | E：source53 诊断观察 | 2 | app-server：固定九阶段事件与首个 child 窄日志；无行为修复主张，全部原 await／断言／预算保持 |
+ 
+-PATH-GROUPS.json 为每条路径列出 owner、Git blob、raw SHA 和固定 source53 链接；原四组加 E 组互斥覆盖全部 197 路径，原 A–D 分组值保持。以下入口突出行为边界，省略注册对象的逐条历史列表。
++PATH-GROUPS.json 为每条路径列出 owner、Git blob、raw SHA 和固定 source54 链接并保留 tested source53 pins；原四组加 E 组互斥覆盖全部 197 路径，原 A–D 分组值保持。以下入口突出行为边界，省略注册对象的逐条历史列表。
+ 
+ ## A. Cell 共同合约、Q24 与注册
+ 
+@@ -55,7 +55,7 @@
+ | [http_proxy.rs](https://github.com/TrillionniumFoundation/hepta-private-ci/blob/b5209cfdf509e990f10922197b32540bf8c353a7/codex-rs/network-proxy/src/http_proxy.rs)、[mitm_tests.rs](https://github.com/TrillionniumFoundation/hepta-private-ci/blob/b5209cfdf509e990f10922197b32540bf8c353a7/codex-rs/network-proxy/src/mitm_tests.rs)、[runtime.rs（source52 唯一增量）](https://github.com/TrillionniumFoundation/hepta-private-ci/blob/b5209cfdf509e990f10922197b32540bf8c353a7/codex-rs/network-proxy/src/runtime.rs) | codex-network-proxy | 仅在直接 host-pattern/policy 测试状态显式配置既有 allow_local_binding，独立 DNS/localhost/private/scoped、默认拒绝与 deny-priority 测试继续保留；生产默认和 DNS 防护不变。 |
+ | [hepta-cell-framework-native.yml](https://github.com/TrillionniumFoundation/hepta-private-ci/blob/b5209cfdf509e990f10922197b32540bf8c353a7/.github/workflows/hepta-cell-framework-native.yml)、[hepta-cell-differentiation.yml](https://github.com/TrillionniumFoundation/hepta-private-ci/blob/b5209cfdf509e990f10922197b32540bf8c353a7/.github/workflows/hepta-cell-differentiation.yml) | CI | 既有 lane 覆盖 27 个包选择项，包含 26 个被改 Rust owner 及保留的 control-plane；工作流定义、已排队 CI 与最终 SHA 的成功回执分别记录。 |
+ 
+-source50 对测试依赖适用范围的调整已经运行原 Bazel lock recipe，Cargo 与 Bazel 两锁前后字节相同。source51 两叶及 source52 一叶均不改变依赖输入；继承的是那次锁结果，不是新的 source52 锁更新或 Rust 通过。最终 fix/fmt 及最终发布 SHA 验证仍待真实完成。
++source50 对测试依赖适用范围的调整已经运行原 Bazel lock recipe，Cargo 与 Bazel 两锁前后字节相同。source51 两叶及 source52 一叶均不改变依赖输入；继承的是那次锁结果，不是新的 source52 锁更新或 Rust 通过。最终 fix/fmt 已实际完成；最终发布 SHA 的 CI 验证仍待实际结果。
+ 
+ ### source52 的单叶增量
+ 

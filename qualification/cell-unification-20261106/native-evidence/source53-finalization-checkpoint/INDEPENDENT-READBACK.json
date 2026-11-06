@@ -1,0 +1,624 @@
+{
+  "success": true,
+  "raw_output_count": 27,
+  "actual_files": [
+    "complete.json",
+    "final-post-format-source-manifest.json",
+    "final-post-format-source.tar.gz",
+    "fix-only.patch",
+    "fix-post-command-guard.json",
+    "fix-preconditions.json",
+    "fix-raw-process-result.json",
+    "fix-receipt.json",
+    "fix-resources.txt",
+    "fix.log",
+    "format-only.patch",
+    "format-post-command-guard.json",
+    "format-preconditions.json",
+    "format-raw-process-result.json",
+    "format-receipt.json",
+    "format-resources.txt",
+    "format-stage-raw-process-result.json",
+    "format-stage-receipt.json",
+    "format-stage-stderr.txt",
+    "format-stage-stdout.txt",
+    "format.log",
+    "post-fix-source-manifest.json",
+    "post-fix-source.tar.gz",
+    "preconditions.json",
+    "tested-pre-fix-source-manifest.json",
+    "tested-pre-fix-source.tar.gz",
+    "tested-to-final.patch"
+  ],
+  "tested_source_commit": "f74be175de66a4b351cd239d39d98cd34fe9cc1b",
+  "tested_source_tree": "440d4a8e09af4009e4d9ea067388826308da8803",
+  "final_formatted_commit": null,
+  "final_formatted_tree": "42c1dd4e1a751c690c2800dfc3868e771dc9c70b",
+  "fix": {
+    "exit_code": 0,
+    "effective_exit_code": 0,
+    "command": [
+      "just",
+      "fix",
+      "--locked",
+      "-p",
+      "codex-app-server",
+      "-p",
+      "codex-app-server-client",
+      "-p",
+      "codex-cli",
+      "-p",
+      "codex-core",
+      "-p",
+      "codex-exec-server",
+      "-p",
+      "codex-external-agent-migration",
+      "-p",
+      "codex-hepta-agent-protocol",
+      "-p",
+      "codex-hepta-agentd",
+      "-p",
+      "codex-hepta-automation",
+      "-p",
+      "codex-hepta-context-compiler",
+      "-p",
+      "codex-hepta-infer-worker-host",
+      "-p",
+      "codex-hepta-intelligence",
+      "-p",
+      "codex-hepta-learning-artifacts",
+      "-p",
+      "codex-hepta-memory",
+      "-p",
+      "codex-hepta-memory-extension",
+      "-p",
+      "codex-hepta-neuron",
+      "-p",
+      "codex-hepta-plasticity",
+      "-p",
+      "codex-hepta-runtime",
+      "-p",
+      "codex-hepta-supervisor",
+      "-p",
+      "codex-linux-sandbox",
+      "-p",
+      "codex-mcp",
+      "-p",
+      "codex-model-provider-info",
+      "-p",
+      "codex-network-proxy",
+      "-p",
+      "codex-shell-escalation",
+      "-p",
+      "codex-utils-pty",
+      "-p",
+      "core_test_support"
+    ],
+    "elapsed_seconds": 478.47458124160767,
+    "changed_path_count": 0,
+    "changed_paths": [],
+    "before_tree": "440d4a8e09af4009e4d9ea067388826308da8803",
+    "after_tree": "440d4a8e09af4009e4d9ea067388826308da8803",
+    "log": {
+      "path": "native-source53-finalization/fix.log",
+      "bytes": 24890,
+      "sha256": "db5e887d0fbcc0b5cd943c74fb47ca33fc863cc2ac894e96cca3dfe7d372a3c9",
+      "git_blob": "97f44fb67d951ff2de1029cb037aca3ab9643b65"
+    },
+    "resources": {
+      "path": "native-source53-finalization/fix-resources.txt",
+      "bytes": 1405,
+      "sha256": "8e73c18605a83c344bbbee58257cf6bd37252065cbdcec5e5734d256e57c8723",
+      "git_blob": "04276c9e8348f4eeeb5305dc8c7907dab62fbbe0"
+    },
+    "receipt": {
+      "path": "native-source53-finalization/fix-receipt.json",
+      "bytes": 3178,
+      "sha256": "a3e5f19440b41ef013184d0e9159bbb464dfb3b5d9a457509dcb666474ce3734",
+      "git_blob": "ff6b77e53cb72fc6a39fc957ec56eb691fc4f7ba"
+    },
+    "raw_process_result": {
+      "path": "native-source53-finalization/fix-raw-process-result.json",
+      "bytes": 1726,
+      "sha256": "209f3d045f9f955d6665f82a3d836ed1051b5944251093de4dd2fba8d1945e20",
+      "git_blob": "1dd1f72de444f1b1dd2fff4394d7465f340bebde"
+    },
+    "phase_only_patch": {
+      "path": "native-source53-finalization/fix-only.patch",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "warnings": {
+      "warning_headers": [
+        {
+          "line": 43,
+          "byte_offset": 3282,
+          "text": "warning: hiding a lifetime that's elided elsewhere is confusing",
+          "package_summary": false
+        },
+        {
+          "line": 61,
+          "byte_offset": 4131,
+          "text": "warning: hiding a lifetime that's elided elsewhere is confusing",
+          "package_summary": false
+        },
+        {
+          "line": 77,
+          "byte_offset": 5087,
+          "text": "warning: `i18n-config` (lib) generated 2 warnings (run `cargo clippy --fix --lib -p i18n-config -- --no-deps` to apply 2 suggestions)",
+          "package_summary": true
+        },
+        {
+          "line": 234,
+          "byte_offset": 23662,
+          "text": "warning: large size difference between variants",
+          "package_summary": false
+        },
+        {
+          "line": 253,
+          "byte_offset": 24560,
+          "text": "warning: `codex-hepta-agentd` (lib) generated 1 warning",
+          "package_summary": true
+        },
+        {
+          "line": 255,
+          "byte_offset": 24754,
+          "text": "warning: `codex-hepta-agentd` (lib test) generated 1 warning (1 duplicate)",
+          "package_summary": true
+        }
+      ],
+      "warning_header_occurrences": 6,
+      "diagnostic_warning_count": 3,
+      "diagnostic_warnings": [
+        {
+          "line": 43,
+          "byte_offset": 3282,
+          "text": "warning: hiding a lifetime that's elided elsewhere is confusing",
+          "package_summary": false,
+          "byte_end": 4131,
+          "block_sha256": "a79fbad0fde1401ccb3993162a587374958d2f39a15f39123355e278715c2b0e",
+          "block_text": "warning: hiding a lifetime that's elided elsewhere is confusing\n   --> third_party/i18n-config-0.4.8/src/lib.rs:144:9\n    |\n144 |         &self,\n    |         ^^^^^ the lifetime is elided here\n145 |     ) -> Result<Option<(&'_ Crate, &'_ I18nConfig)>, I18nConfigError> {\n    |                          ^^ ^^^^^   ^^ the same lifetime is elided here\n    |                          |  |\n    |                          |  the same lifetime is hidden here\n    |                          the same lifetime is elided here\n    |\n    = help: the same lifetime is referred to in inconsistent ways, making the signature confusing\n    = note: `#[warn(mismatched_lifetime_syntaxes)]` on by default\nhelp: use `'_` for type paths\n    |\n145 |     ) -> Result<Option<(&'_ Crate<'_>, &'_ I18nConfig)>, I18nConfigError> {\n    |                                  ++++\n\n",
+          "source_locations": [
+            "third_party/i18n-config-0.4.8/src/lib.rs:144:9"
+          ]
+        },
+        {
+          "line": 61,
+          "byte_offset": 4131,
+          "text": "warning: hiding a lifetime that's elided elsewhere is confusing",
+          "package_summary": false,
+          "byte_end": 5087,
+          "block_sha256": "a9188537b7bf52c0d6a9146a354fb22d620afc24a6542ddc2e4dfcdacd5ad9d8",
+          "block_text": "warning: hiding a lifetime that's elided elsewhere is confusing\n   --> third_party/i18n-config-0.4.8/src/lib.rs:155:26\n    |\n155 |     pub fn active_config(&self) -> Result<Option<(&'_ Crate, &'_ I18nConfig)>, I18nConfigError> {\n    |                          ^^^^^                     ^^ ^^^^^   ^^ the same lifetime is elided here\n    |                          |                         |  |\n    |                          |                         |  the same lifetime is hidden here\n    |                          |                         the same lifetime is elided here\n    |                          the lifetime is elided here\n    |\n    = help: the same lifetime is referred to in inconsistent ways, making the signature confusing\nhelp: use `'_` for type paths\n    |\n155 |     pub fn active_config(&self) -> Result<Option<(&'_ Crate<'_>, &'_ I18nConfig)>, I18nConfigError> {\n    |                                                            ++++\n\n",
+          "source_locations": [
+            "third_party/i18n-config-0.4.8/src/lib.rs:155:26"
+          ]
+        },
+        {
+          "line": 234,
+          "byte_offset": 23662,
+          "text": "warning: large size difference between variants",
+          "package_summary": false,
+          "byte_end": 24560,
+          "block_sha256": "25b911c6033ffbfe8e6455af431c2adb6e57b483909b292f95556dcdba3e20b9",
+          "block_text": "warning: large size difference between variants\n  --> hepta-agentd/src/notes_thread_status.rs:82:1\n   |\n82 | / pub(super) enum StatusDiscovery {\n83 | |     Found(VerifiedNotesThreadOperation),\n   | |     ----------------------------------- the largest variant contains at least 224 bytes\n84 | |     Unknown(StatusUnknownReason),\n   | |     ---------------------------- the second-largest variant contains at least 1 bytes\n85 | | }\n   | |_^ the entire enum is at least 224 bytes\n   |\n   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#large_enum_variant\n   = note: `#[warn(clippy::large_enum_variant)]` on by default\nhelp: consider boxing the large fields or introducing indirection in some other way to reduce the total size of the enum\n   |\n83 -     Found(VerifiedNotesThreadOperation),\n83 +     Found(Box<VerifiedNotesThreadOperation>),\n   |\n\n",
+          "source_locations": [
+            "hepta-agentd/src/notes_thread_status.rs:82:1"
+          ]
+        }
+      ],
+      "package_summary_count": 3,
+      "large_enum_variant_mentioned": true,
+      "full_original_log_retained": true,
+      "warning_free_claimed": false,
+      "fix_is_original_scoped_command_not_new_strict_D_warnings_gate": true
+    },
+    "original_log_bytes": 24890
+  },
+  "format": {
+    "exit_code": 0,
+    "effective_exit_code": 0,
+    "command": [
+      "just",
+      "fmt"
+    ],
+    "elapsed_seconds": 4.21239447593689,
+    "changed_path_count": 56,
+    "changed_paths": [
+      "codex-rs/codex-mcp/src/binding_tests.rs",
+      "codex-rs/codex-mcp/src/connection_manager_tests.rs",
+      "codex-rs/core/src/session/tests.rs",
+      "codex-rs/core/src/unified_exec/process_remote_observation_tests.rs",
+      "codex-rs/core/tests/common/streaming_sse.rs",
+      "codex-rs/core/tests/suite/compact_remote.rs",
+      "codex-rs/core/tests/suite/git_enrichment.rs",
+      "codex-rs/core/tests/suite/multi_agent_resume.rs",
+      "codex-rs/core/tests/suite/turn_input_submission.rs",
+      "codex-rs/core/tests/suite/turn_state.rs",
+      "codex-rs/exec-server/tests/exec_process.rs",
+      "codex-rs/hepta-agentd/src/authority_host_checkpoint_material_worker.rs",
+      "codex-rs/hepta-agentd/src/calculator_recovery_selection_tests.rs",
+      "codex-rs/hepta-agentd/src/circuit_cell.rs",
+      "codex-rs/hepta-agentd/src/cognitive_context.rs",
+      "codex-rs/hepta-agentd/src/cognitive_retrieval_learning_tests.rs",
+      "codex-rs/hepta-agentd/src/deployment_authbus_issuer_final_tests.rs",
+      "codex-rs/hepta-agentd/src/deployment_authbus_issuer_followup_tests.rs",
+      "codex-rs/hepta-agentd/src/deployment_notes_issuer_deadline_tests.rs",
+      "codex-rs/hepta-agentd/src/deployment_text.rs",
+      "codex-rs/hepta-agentd/src/desktop_thread_recorded.rs",
+      "codex-rs/hepta-agentd/src/intelligence_product_runner.rs",
+      "codex-rs/hepta-agentd/src/learning_iteration_runtime_tests.rs",
+      "codex-rs/hepta-agentd/src/lib.rs",
+      "codex-rs/hepta-agentd/src/notes_thread_recorded.rs",
+      "codex-rs/hepta-agentd/src/terminal_learning_tests.rs",
+      "codex-rs/hepta-automation/src/circuit_runtime_tests.rs",
+      "codex-rs/hepta-automation/src/circuit_store_tests.rs",
+      "codex-rs/hepta-automation/src/lib.rs",
+      "codex-rs/hepta-automation/tests/retirement_recovery.rs",
+      "codex-rs/hepta-infer-worker-host/src/native_app_server.rs",
+      "codex-rs/hepta-intelligence/src/canonical.rs",
+      "codex-rs/hepta-intelligence/src/plasticity_product_tests.rs",
+      "codex-rs/hepta-learning-artifacts/src/learning_iteration_test_support.rs",
+      "codex-rs/hepta-learning-artifacts/src/learning_iteration_types.rs",
+      "codex-rs/hepta-memory/src/desktop_turn_writer_tests.rs",
+      "codex-rs/hepta-neuron/src/cell.rs",
+      "codex-rs/hepta-neuron/src/cell_feature_projection.rs",
+      "codex-rs/hepta-neuron/src/cell_feature_projection_tests.rs",
+      "codex-rs/hepta-neuron/src/cell_inference_tests.rs",
+      "codex-rs/hepta-neuron/src/cell_journal_tests.rs",
+      "codex-rs/hepta-neuron/src/cell_registry.rs",
+      "codex-rs/hepta-neuron/src/cell_registry_tests.rs",
+      "codex-rs/hepta-neuron/src/cell_tests.rs",
+      "codex-rs/hepta-neuron/src/cell_types.rs",
+      "codex-rs/hepta-neuron/src/cell_update.rs",
+      "codex-rs/hepta-neuron/src/lib.rs",
+      "codex-rs/hepta-runtime/src/cell_lifecycle_journal.rs",
+      "codex-rs/hepta-runtime/src/cell_lifecycle_transition.rs",
+      "codex-rs/hepta-supervisor/src/supervisor.rs",
+      "codex-rs/hepta-supervisor/src/supervisor_restart_recovery_tests.rs",
+      "codex-rs/linux-sandbox/src/owner_lifetime.rs",
+      "codex-rs/linux-sandbox/src/owner_lifetime_tests.rs",
+      "codex-rs/utils/pty/src/unix_io.rs",
+      "scripts/run-nextest.py",
+      "scripts/test_run_nextest_helpers.py"
+    ],
+    "before_tree": "440d4a8e09af4009e4d9ea067388826308da8803",
+    "after_tree": "42c1dd4e1a751c690c2800dfc3868e771dc9c70b",
+    "log": {
+      "path": "native-source53-finalization/format.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "resources": {
+      "path": "native-source53-finalization/format-resources.txt",
+      "bytes": 738,
+      "sha256": "d960cef850def9648dcfedd86e7b2ac906361b4a1b1c743bdcd0fc5ac02b9b21",
+      "git_blob": "e3e64869dbed0e251c1f3cb759049a16c9a8375b"
+    },
+    "receipt": {
+      "path": "native-source53-finalization/format-receipt.json",
+      "bytes": 2418,
+      "sha256": "e341a1afe39174e168578bc49cf12f49fbc0e2cc33e79a08c4531ba694cb5875",
+      "git_blob": "0bf8fc47b45f4061391a822f8f548d8a496b4d65"
+    },
+    "raw_process_result": {
+      "path": "native-source53-finalization/format-raw-process-result.json",
+      "bytes": 710,
+      "sha256": "3caeaefd5a61f4fbbcce513959a8ccf4ea0f661e0304c53ee86037321db9b631",
+      "git_blob": "a2f37ee7c2b6fb527124ac325f97d33efb08af8c"
+    },
+    "phase_only_patch": {
+      "path": "native-source53-finalization/format-only.patch",
+      "bytes": 377708,
+      "sha256": "481c4d038d77628bcf1a79d057bc9d7b54be1467e94038130c24c6d2f36b3997",
+      "git_blob": "5d0df54deb314657dc3f980d332e89b41df2ffb0"
+    },
+    "warnings": {
+      "warning_headers": [],
+      "warning_header_occurrences": 0,
+      "diagnostic_warning_count": 0,
+      "diagnostic_warnings": [],
+      "package_summary_count": 0,
+      "large_enum_variant_mentioned": false,
+      "full_original_log_retained": true,
+      "warning_free_claimed": false,
+      "fix_is_original_scoped_command_not_new_strict_D_warnings_gate": true
+    },
+    "original_log_bytes": 0
+  },
+  "post_fix_or_format_tests_executed": false,
+  "qualification_transferred_to_mutated_tree": false,
+  "diagnostic_only": true,
+  "behavior_repair_claimed": false,
+  "state": "ACTUAL_FIX_FORMAT_CLOSED_SUCCESS",
+  "outer_exit_code": 0,
+  "snapshot_references": {
+    "tested-pre-fix-source": {
+      "tree": "440d4a8e09af4009e4d9ea067388826308da8803",
+      "manifest": {
+        "path": "native-source53-finalization/tested-pre-fix-source-manifest.json",
+        "bytes": 77225,
+        "sha256": "c47fc8c42c27d61ead2a9f92790bfdd31548f52e42628e60ae3b62348a05551b",
+        "git_blob": "a1e3040a45f2a24309f37373655984b3bcf471fd"
+      },
+      "archive": {
+        "path": "native-source53-finalization/tested-pre-fix-source.tar.gz",
+        "bytes": 1062833,
+        "sha256": "5f4c1a33ab54ef21f789fa947043d49fd28c2df54379cb42012dfb4348298337",
+        "git_blob": "df1610247ba558937eccbcddb380bffa2c7e9a4e"
+      },
+      "source_paths": 197,
+      "post_fix_or_format_tests_executed": false,
+      "qualification_transferred_to_mutated_tree": false
+    },
+    "post-fix-source": {
+      "tree": "440d4a8e09af4009e4d9ea067388826308da8803",
+      "manifest": {
+        "path": "native-source53-finalization/post-fix-source-manifest.json",
+        "bytes": 77219,
+        "sha256": "a13d5aab65698b5db8e9fa6847b6430e58ab648b1329628d96cee25802b0d66e",
+        "git_blob": "a18ab9995d7d02db65b1a7ce3d09be8d4d86cdc5"
+      },
+      "archive": {
+        "path": "native-source53-finalization/post-fix-source.tar.gz",
+        "bytes": 1062826,
+        "sha256": "888cc610aae0d2f3a60f485d50970023edf2c4d179ec4986fce07c60fe7f893f",
+        "git_blob": "271ba4e32aaece93684f69b3e888790fab12e52e"
+      },
+      "source_paths": 197,
+      "post_fix_or_format_tests_executed": false,
+      "qualification_transferred_to_mutated_tree": false
+    },
+    "final-post-format-source": {
+      "tree": "42c1dd4e1a751c690c2800dfc3868e771dc9c70b",
+      "manifest": {
+        "path": "native-source53-finalization/final-post-format-source-manifest.json",
+        "bytes": 77191,
+        "sha256": "115d594ea9eb13b0b25e7f369e72e18149f572fa22680c70f9b85de04e08bdfc",
+        "git_blob": "1b6a19f90f45efcaec0b525e21703c850fdebc88"
+      },
+      "archive": {
+        "path": "native-source53-finalization/final-post-format-source.tar.gz",
+        "bytes": 1065812,
+        "sha256": "f5ccbb7ad47ae0144fffa57364e9703899c2bbec6dcedb1df7e590b1749245a3",
+        "git_blob": "088c380ed06a060db1441138b7bbde827b3584a4"
+      },
+      "source_paths": 197,
+      "post_fix_or_format_tests_executed": false,
+      "qualification_transferred_to_mutated_tree": false
+    }
+  },
+  "source_snapshot_count": 3,
+  "source_path_count_each": 197,
+  "snapshot_members_each": 198,
+  "complete": {
+    "schema": "hepta.source53-finalization-complete.v1",
+    "tested_source_commit": "f74be175de66a4b351cd239d39d98cd34fe9cc1b",
+    "tested_source_tree": "440d4a8e09af4009e4d9ea067388826308da8803",
+    "final_formatted_tree": "42c1dd4e1a751c690c2800dfc3868e771dc9c70b",
+    "final_formatted_commit": null,
+    "tested": {
+      "tree": "440d4a8e09af4009e4d9ea067388826308da8803",
+      "manifest": {
+        "path": "native-source53-finalization/tested-pre-fix-source-manifest.json",
+        "bytes": 77225,
+        "sha256": "c47fc8c42c27d61ead2a9f92790bfdd31548f52e42628e60ae3b62348a05551b",
+        "git_blob": "a1e3040a45f2a24309f37373655984b3bcf471fd"
+      },
+      "archive": {
+        "path": "native-source53-finalization/tested-pre-fix-source.tar.gz",
+        "bytes": 1062833,
+        "sha256": "5f4c1a33ab54ef21f789fa947043d49fd28c2df54379cb42012dfb4348298337",
+        "git_blob": "df1610247ba558937eccbcddb380bffa2c7e9a4e"
+      },
+      "source_paths": 197,
+      "post_fix_or_format_tests_executed": false,
+      "qualification_transferred_to_mutated_tree": false
+    },
+    "after_fix": {
+      "tree": "440d4a8e09af4009e4d9ea067388826308da8803",
+      "manifest": {
+        "path": "native-source53-finalization/post-fix-source-manifest.json",
+        "bytes": 77219,
+        "sha256": "a13d5aab65698b5db8e9fa6847b6430e58ab648b1329628d96cee25802b0d66e",
+        "git_blob": "a18ab9995d7d02db65b1a7ce3d09be8d4d86cdc5"
+      },
+      "archive": {
+        "path": "native-source53-finalization/post-fix-source.tar.gz",
+        "bytes": 1062826,
+        "sha256": "888cc610aae0d2f3a60f485d50970023edf2c4d179ec4986fce07c60fe7f893f",
+        "git_blob": "271ba4e32aaece93684f69b3e888790fab12e52e"
+      },
+      "source_paths": 197,
+      "post_fix_or_format_tests_executed": false,
+      "qualification_transferred_to_mutated_tree": false
+    },
+    "after_format": {
+      "tree": "42c1dd4e1a751c690c2800dfc3868e771dc9c70b",
+      "manifest": {
+        "path": "native-source53-finalization/final-post-format-source-manifest.json",
+        "bytes": 77191,
+        "sha256": "115d594ea9eb13b0b25e7f369e72e18149f572fa22680c70f9b85de04e08bdfc",
+        "git_blob": "1b6a19f90f45efcaec0b525e21703c850fdebc88"
+      },
+      "archive": {
+        "path": "native-source53-finalization/final-post-format-source.tar.gz",
+        "bytes": 1065812,
+        "sha256": "f5ccbb7ad47ae0144fffa57364e9703899c2bbec6dcedb1df7e590b1749245a3",
+        "git_blob": "088c380ed06a060db1441138b7bbde827b3584a4"
+      },
+      "source_paths": 197,
+      "post_fix_or_format_tests_executed": false,
+      "qualification_transferred_to_mutated_tree": false
+    },
+    "fix_receipt": {
+      "path": "native-source53-finalization/fix-receipt.json",
+      "bytes": 3178,
+      "sha256": "a3e5f19440b41ef013184d0e9159bbb464dfb3b5d9a457509dcb666474ce3734",
+      "git_blob": "ff6b77e53cb72fc6a39fc957ec56eb691fc4f7ba"
+    },
+    "format_receipt": {
+      "path": "native-source53-finalization/format-receipt.json",
+      "bytes": 2418,
+      "sha256": "e341a1afe39174e168578bc49cf12f49fbc0e2cc33e79a08c4531ba694cb5875",
+      "git_blob": "0bf8fc47b45f4061391a822f8f548d8a496b4d65"
+    },
+    "tested_to_final_patch": {
+      "path": "native-source53-finalization/tested-to-final.patch",
+      "bytes": 377708,
+      "sha256": "481c4d038d77628bcf1a79d057bc9d7b54be1467e94038130c24c6d2f36b3997",
+      "git_blob": "5d0df54deb314657dc3f980d332e89b41df2ffb0"
+    },
+    "cargo_lock_sha256": "4165307bb6c41d08e6c1c362060f2a958c8200ea43fdab2b8b1e6220ad82b55c",
+    "bazel_lock_sha256": "e80ef06b6f824a19cdcedd6010738b316ccca96b83ad8730fafb52153a2634fb",
+    "original_gate_source_retained_separately_from_final_tree": true,
+    "post_fix_or_format_tests_executed": false,
+    "qualification_transferred_to_mutated_tree": false,
+    "native_HEAD": "bef6fa7645df9df12b69fda499e97eed25de6c75",
+    "remote_refs_changed": false,
+    "publication": "SOURCE_ARTIFACT_ONLY_PENDING_ROOT_REVIEW",
+    "diagnostic_only": true,
+    "behavior_repair_claimed": false,
+    "original_r29_failure_relabelled_as_pass": false
+  },
+  "phase_delta_paths": {
+    "fix": [],
+    "format": [
+      "codex-rs/codex-mcp/src/binding_tests.rs",
+      "codex-rs/codex-mcp/src/connection_manager_tests.rs",
+      "codex-rs/core/src/session/tests.rs",
+      "codex-rs/core/src/unified_exec/process_remote_observation_tests.rs",
+      "codex-rs/core/tests/common/streaming_sse.rs",
+      "codex-rs/core/tests/suite/compact_remote.rs",
+      "codex-rs/core/tests/suite/git_enrichment.rs",
+      "codex-rs/core/tests/suite/multi_agent_resume.rs",
+      "codex-rs/core/tests/suite/turn_input_submission.rs",
+      "codex-rs/core/tests/suite/turn_state.rs",
+      "codex-rs/exec-server/tests/exec_process.rs",
+      "codex-rs/hepta-agentd/src/authority_host_checkpoint_material_worker.rs",
+      "codex-rs/hepta-agentd/src/calculator_recovery_selection_tests.rs",
+      "codex-rs/hepta-agentd/src/circuit_cell.rs",
+      "codex-rs/hepta-agentd/src/cognitive_context.rs",
+      "codex-rs/hepta-agentd/src/cognitive_retrieval_learning_tests.rs",
+      "codex-rs/hepta-agentd/src/deployment_authbus_issuer_final_tests.rs",
+      "codex-rs/hepta-agentd/src/deployment_authbus_issuer_followup_tests.rs",
+      "codex-rs/hepta-agentd/src/deployment_notes_issuer_deadline_tests.rs",
+      "codex-rs/hepta-agentd/src/deployment_text.rs",
+      "codex-rs/hepta-agentd/src/desktop_thread_recorded.rs",
+      "codex-rs/hepta-agentd/src/intelligence_product_runner.rs",
+      "codex-rs/hepta-agentd/src/learning_iteration_runtime_tests.rs",
+      "codex-rs/hepta-agentd/src/lib.rs",
+      "codex-rs/hepta-agentd/src/notes_thread_recorded.rs",
+      "codex-rs/hepta-agentd/src/terminal_learning_tests.rs",
+      "codex-rs/hepta-automation/src/circuit_runtime_tests.rs",
+      "codex-rs/hepta-automation/src/circuit_store_tests.rs",
+      "codex-rs/hepta-automation/src/lib.rs",
+      "codex-rs/hepta-automation/tests/retirement_recovery.rs",
+      "codex-rs/hepta-infer-worker-host/src/native_app_server.rs",
+      "codex-rs/hepta-intelligence/src/canonical.rs",
+      "codex-rs/hepta-intelligence/src/plasticity_product_tests.rs",
+      "codex-rs/hepta-learning-artifacts/src/learning_iteration_test_support.rs",
+      "codex-rs/hepta-learning-artifacts/src/learning_iteration_types.rs",
+      "codex-rs/hepta-memory/src/desktop_turn_writer_tests.rs",
+      "codex-rs/hepta-neuron/src/cell.rs",
+      "codex-rs/hepta-neuron/src/cell_feature_projection.rs",
+      "codex-rs/hepta-neuron/src/cell_feature_projection_tests.rs",
+      "codex-rs/hepta-neuron/src/cell_inference_tests.rs",
+      "codex-rs/hepta-neuron/src/cell_journal_tests.rs",
+      "codex-rs/hepta-neuron/src/cell_registry.rs",
+      "codex-rs/hepta-neuron/src/cell_registry_tests.rs",
+      "codex-rs/hepta-neuron/src/cell_tests.rs",
+      "codex-rs/hepta-neuron/src/cell_types.rs",
+      "codex-rs/hepta-neuron/src/cell_update.rs",
+      "codex-rs/hepta-neuron/src/lib.rs",
+      "codex-rs/hepta-runtime/src/cell_lifecycle_journal.rs",
+      "codex-rs/hepta-runtime/src/cell_lifecycle_transition.rs",
+      "codex-rs/hepta-supervisor/src/supervisor.rs",
+      "codex-rs/hepta-supervisor/src/supervisor_restart_recovery_tests.rs",
+      "codex-rs/linux-sandbox/src/owner_lifetime.rs",
+      "codex-rs/linux-sandbox/src/owner_lifetime_tests.rs",
+      "codex-rs/utils/pty/src/unix_io.rs",
+      "scripts/run-nextest.py",
+      "scripts/test_run_nextest_helpers.py"
+    ]
+  },
+  "combined_delta_paths": [
+    "codex-rs/codex-mcp/src/binding_tests.rs",
+    "codex-rs/codex-mcp/src/connection_manager_tests.rs",
+    "codex-rs/core/src/session/tests.rs",
+    "codex-rs/core/src/unified_exec/process_remote_observation_tests.rs",
+    "codex-rs/core/tests/common/streaming_sse.rs",
+    "codex-rs/core/tests/suite/compact_remote.rs",
+    "codex-rs/core/tests/suite/git_enrichment.rs",
+    "codex-rs/core/tests/suite/multi_agent_resume.rs",
+    "codex-rs/core/tests/suite/turn_input_submission.rs",
+    "codex-rs/core/tests/suite/turn_state.rs",
+    "codex-rs/exec-server/tests/exec_process.rs",
+    "codex-rs/hepta-agentd/src/authority_host_checkpoint_material_worker.rs",
+    "codex-rs/hepta-agentd/src/calculator_recovery_selection_tests.rs",
+    "codex-rs/hepta-agentd/src/circuit_cell.rs",
+    "codex-rs/hepta-agentd/src/cognitive_context.rs",
+    "codex-rs/hepta-agentd/src/cognitive_retrieval_learning_tests.rs",
+    "codex-rs/hepta-agentd/src/deployment_authbus_issuer_final_tests.rs",
+    "codex-rs/hepta-agentd/src/deployment_authbus_issuer_followup_tests.rs",
+    "codex-rs/hepta-agentd/src/deployment_notes_issuer_deadline_tests.rs",
+    "codex-rs/hepta-agentd/src/deployment_text.rs",
+    "codex-rs/hepta-agentd/src/desktop_thread_recorded.rs",
+    "codex-rs/hepta-agentd/src/intelligence_product_runner.rs",
+    "codex-rs/hepta-agentd/src/learning_iteration_runtime_tests.rs",
+    "codex-rs/hepta-agentd/src/lib.rs",
+    "codex-rs/hepta-agentd/src/notes_thread_recorded.rs",
+    "codex-rs/hepta-agentd/src/terminal_learning_tests.rs",
+    "codex-rs/hepta-automation/src/circuit_runtime_tests.rs",
+    "codex-rs/hepta-automation/src/circuit_store_tests.rs",
+    "codex-rs/hepta-automation/src/lib.rs",
+    "codex-rs/hepta-automation/tests/retirement_recovery.rs",
+    "codex-rs/hepta-infer-worker-host/src/native_app_server.rs",
+    "codex-rs/hepta-intelligence/src/canonical.rs",
+    "codex-rs/hepta-intelligence/src/plasticity_product_tests.rs",
+    "codex-rs/hepta-learning-artifacts/src/learning_iteration_test_support.rs",
+    "codex-rs/hepta-learning-artifacts/src/learning_iteration_types.rs",
+    "codex-rs/hepta-memory/src/desktop_turn_writer_tests.rs",
+    "codex-rs/hepta-neuron/src/cell.rs",
+    "codex-rs/hepta-neuron/src/cell_feature_projection.rs",
+    "codex-rs/hepta-neuron/src/cell_feature_projection_tests.rs",
+    "codex-rs/hepta-neuron/src/cell_inference_tests.rs",
+    "codex-rs/hepta-neuron/src/cell_journal_tests.rs",
+    "codex-rs/hepta-neuron/src/cell_registry.rs",
+    "codex-rs/hepta-neuron/src/cell_registry_tests.rs",
+    "codex-rs/hepta-neuron/src/cell_tests.rs",
+    "codex-rs/hepta-neuron/src/cell_types.rs",
+    "codex-rs/hepta-neuron/src/cell_update.rs",
+    "codex-rs/hepta-neuron/src/lib.rs",
+    "codex-rs/hepta-runtime/src/cell_lifecycle_journal.rs",
+    "codex-rs/hepta-runtime/src/cell_lifecycle_transition.rs",
+    "codex-rs/hepta-supervisor/src/supervisor.rs",
+    "codex-rs/hepta-supervisor/src/supervisor_restart_recovery_tests.rs",
+    "codex-rs/linux-sandbox/src/owner_lifetime.rs",
+    "codex-rs/linux-sandbox/src/owner_lifetime_tests.rs",
+    "codex-rs/utils/pty/src/unix_io.rs",
+    "scripts/run-nextest.py",
+    "scripts/test_run_nextest_helpers.py"
+  ],
+  "readback_scope": {
+    "all_three_archives_raw_sha_git_blob_member_mode_and_manifest_verified": true,
+    "raw_phase_receipts_resources_guards_and_controller_verified": true,
+    "complete_git_tree_reconstruction_performed_by_this_reader": false,
+    "patch_application_performed_by_this_reader": false,
+    "separate_root_and_peer_deep_readbacks_retained_as_support": true
+  },
+  "formatter_selection_path_representation": {
+    "original_python_paths": [
+      "./scripts/run-nextest.py",
+      "./scripts/test_run_nextest_helpers.py"
+    ],
+    "equivalent_git_relative_python_paths": [
+      "scripts/run-nextest.py",
+      "scripts/test_run_nextest_helpers.py"
+    ],
+    "reason": "Original formatter selection retains ./ prefix; Git manifests use canonical repository-relative paths.",
+    "original_scope_file_modified": false
+  }
+}

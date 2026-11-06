@@ -1,0 +1,35 @@
+{
+  "schema": "hepta.source52-r28-independent-static-review.v1",
+  "verdict": "STATIC_CLEAR_PENDING_ACTUAL_BINDINGS_AND_AUTHORIZATION",
+  "reviewed_template": {
+    "path": "source52-native-gates-preparation/native-run-r28-template.py",
+    "bytes": 53959,
+    "sha256": "2b8eb323a6072e37892802bf62d1ed4ddb38d07d4829a562093ac27a68c9edcb",
+    "git_blob": "7404ad7f80e311d9d3978e82ddcfd61c359b10c1"
+  },
+  "mechanical_readback": {
+    "path": "MECHANICAL-READBACK.json",
+    "bytes": 5537,
+    "sha256": "2ba4ceea37b20698f7faaac556ea08d2bbfe5c2d1cd6b9f183458680d8ff34dd",
+    "git_blob": "2dac308725d2aba7e8a5f2fa27594a153deeb3e3"
+  },
+  "findings": [
+    "All 194 source51 changed rows must remain identical in the 195-row source52 manifest; runtime.rs alone is added to the changed-file set, while its original source50/source51 Git leaf is independently checked as an existing 100644 file.",
+    "The source51-to-source52 actual Git diff must contain only runtime.rs. The source50-to-source52 diff must contain exactly the old two reviewed Rust leaves plus runtime.rs; build.rs, mode changes, other paths and either raw-lock change are rejected.",
+    "The original source50 lock result remains attributed to its original commit/tree. No new source52 Bazel invocation or qualification is asserted. Git diff and all old manifest rows jointly constrain dependency-input inheritance.",
+    "The apply52 complete/postguard/delta interfaces match the separately prepared apply executor. Current source/manifest, natural outer0, postguard pins, 194-to-195 count, unchanged dual locks and apply-only scope are required before any gate.",
+    "All four pinned r26 historical failure files match the locally recovered original bytes. Natural outer100, raw100, receipt100, phase_pass=false and the source51 guard remain historical failure evidence, never source52 qualification.",
+    "The pre-binding barrier is outside the main try block and uses explicit require, FROZEN=False and Python optimization rejection. Fifteen actual source/apply bindings remain None. No gate executes from this template as frozen.",
+    "The original Python32, four-package strict and complete four-package tests commands and their cwd AST are unchanged. The 21 common functions, including environment, raw return persistence, natural wait, source guards, Python parser and baseline loader, are byte-identical to the reviewed r26 template.",
+    "The tests parser changes only its schema label. Unique execution rows are bounded by Starting and Summary; repeated footer rows are excluded. All 1564 historical IDs must execute PASS after the full unfiltered command, while reported skips retain their original aggregate-only meaning.",
+    "Failure or source mismatch stops subsequent phases, retains the source, and cannot emit a successful complete. The runner performs no apply/stage/Bazel/fix/fmt or workspace gate; r29 requires separate future closure and authorization."
+  ],
+  "limitations": [
+    "This is static review of the unbound inert template, not execution or final binding approval.",
+    "The future actual source52 commit/tree/manifest and apply complete/terminal/delta originals must still replace all 15 None constants and undergo independent exact binding review.",
+    "The current r26 project result remains FAILED100; no r28, r29 or final fix/fmt pass is claimed."
+  ],
+  "blockers_found": [],
+  "native_commands_run": [],
+  "source_files_changed": []
+}

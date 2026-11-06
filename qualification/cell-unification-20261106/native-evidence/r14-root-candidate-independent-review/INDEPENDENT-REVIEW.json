@@ -1,0 +1,226 @@
+{
+  "schema": "hepta.independent-source-review.v1",
+  "reviewer": "/root/differentiation_study",
+  "status": "STATIC_REVIEW_PASS_NATIVE_TESTS_PENDING",
+  "base_commit": "b44d4ca4aa0ef9f894eff29e9975938e066a82f5",
+  "base_tree": "d3d2313b838422818bf9448ce5a1b86d89abdf69",
+  "reviewed_patches": {
+    "core-token-budget-r14-repair": "2d8fdd192a0c336acc999895109867bad26e386faa18f9d6636a43dceda5261d",
+    "core-turn-state-r14-fixture": "bc8867f4515ab8f02fb02ed803dbe84f4b4c9b349b76ed73d2f2c03775bb158a"
+  },
+  "files": [
+    {
+      "path": "codex-rs/core/src/session/mod.rs",
+      "before": {
+        "bytes": 215715,
+        "sha256": "269a56946b1083a405e6523a974518c58f88b64d055af6f965c8c39948fce8fd",
+        "git_blob": "ae94fa0e68863452764017df404023da22ee2d1c"
+      },
+      "after": {
+        "bytes": 215822,
+        "sha256": "c262bc85649869dcc1eea4096773d577959989c54e264e6f03a341448ac3ad4d",
+        "git_blob": "f4a925c7deb8d9c939cc2900d160f8f25c352b39"
+      }
+    },
+    {
+      "path": "codex-rs/core/tests/suite/token_budget.rs",
+      "before": {
+        "bytes": 61843,
+        "sha256": "242f51079cdb89c411887b0f45866b6baf44afdc60aad2b4f12eb5e63ece3c5a",
+        "git_blob": "d609d2b0ff08c687abed5098b4b482b78cd79770"
+      },
+      "after": {
+        "bytes": 62167,
+        "sha256": "5dad6405e7363d5804ea8e0983a4933fe991dd91deeb8a43cbe0b1f86ca18cb8",
+        "git_blob": "bbc55eac69d9881db111191d9363a430463146ef"
+      }
+    },
+    {
+      "path": "codex-rs/core/tests/suite/turn_state.rs",
+      "before": {
+        "bytes": 9465,
+        "sha256": "12acdc6694a254506a423df2e5fbe111d62e7e943923ce329b074f7ac4a5e7a4",
+        "git_blob": "ce306dbe96b47ed0ab48cd86fb8cfab0777e044c"
+      },
+      "after": {
+        "bytes": 11010,
+        "sha256": "28b0f899966c45a78c1ee62f471757e217a350540f66e9158b7464cf5da280b1",
+        "git_blob": "4e74772dbfdd995733bf73dcf67f889ca4d4a127"
+      }
+    }
+  ],
+  "support_sources_verified_against_exact_base_github_blob": [
+    {
+      "path": "codex-rs/core/src/responses_metadata.rs",
+      "local_path": "core-code-mode-r8c-audit/original/codex-rs/core/src/responses_metadata.rs",
+      "bytes": 27030,
+      "sha256": "112f59cbb5b8744e0deeaa4cdbb177c1dfd901812403a75b6f1d99c3d25735d3",
+      "git_blob": "93daf9ca0c71a88ab1f5240364a141e9ed0ab2f4"
+    },
+    {
+      "path": "codex-rs/core/src/client.rs",
+      "local_path": "native-validation-results/checkpoint-through-r8d/source/codex-rs/core/src/client.rs",
+      "bytes": 162063,
+      "sha256": "60322c97712b9849dea763eb5fa5700a381c7c0e5eded73a5a4171bd51eaba09",
+      "git_blob": "00cf9e922f85dff6c67f026f53c9d814b2849c1d"
+    },
+    {
+      "path": "codex-rs/core/tests/common/responses.rs",
+      "local_path": "native-validation-results/core-fixture-metadata-audit/original/codex-rs/core/tests/common/responses.rs",
+      "bytes": 59259,
+      "sha256": "7616935a3f5244c3640b416133ca56d8fe2614c29500c850f04db7312807fc91",
+      "git_blob": "defa0bffa903d1c9412880fb06322c8e69fabb98"
+    },
+    {
+      "path": "codex-rs/codex-mcp/src/runtime.rs",
+      "local_path": "core-hooks-r14-audit/original/codex-rs/codex-mcp/src/runtime.rs",
+      "bytes": 40360,
+      "sha256": "cf1762c1ca527915de437477642d9421559e2da178f0718ba2da087c9fd7f476",
+      "git_blob": "0ff4d56a281d00936d0e26fef67ea85315d577e1"
+    },
+    {
+      "path": "codex-rs/rmcp-client/src/bin/test_stdio_server.rs",
+      "local_path": "core-hooks-r14-audit/original/codex-rs/rmcp-client/src/bin/test_stdio_server.rs",
+      "bytes": 40654,
+      "sha256": "ea08de179afeb0a8ca089497ed790a108044414e7ca455ab955c0e50191700ba",
+      "git_blob": "5ebd161921b9064444841d631835d4f51f78813e"
+    },
+    {
+      "path": "codex-rs/core/src/tasks/mod.rs",
+      "local_path": "core-recovery-epoch-r14-fixture/original/codex-rs/core/src/tasks/mod.rs",
+      "bytes": 178832,
+      "sha256": "b51df87d911a73b51ac13cf28157f4d3bb3a7192f3aa2621265c849acc157a88",
+      "git_blob": "04332800b862436b2e372c78145bae849e596822"
+    },
+    {
+      "path": "codex-rs/core/src/codex_thread.rs",
+      "local_path": "core-recovery-epoch-r14-fixture/original/codex-rs/core/src/codex_thread.rs",
+      "bytes": 49554,
+      "sha256": "a2b7930a96d8a32ee9747fa9da8e1fc9c8c77af19aefda898466b1799347f02f",
+      "git_blob": "589f0b9305aeb8cf257cdb3d7a83c22335f17252"
+    },
+    {
+      "path": "codex-rs/core/tests/common/test_codex.rs",
+      "local_path": "core-hooks-r14-audit/original/codex-rs/core/tests/common/test_codex.rs",
+      "bytes": 50892,
+      "sha256": "5fccca794ffc2c637dc473dbcc22fdcceccff6631ff8acb970605f0ac536f559",
+      "git_blob": "933e02a8c7fe69609402ce4c1cef0b1adea64d52"
+    }
+  ],
+  "mechanical_checks": {
+    "all_candidate_original_sha256_and_git_blobs_match": true,
+    "all_original_blobs_match_exact_base_github": true,
+    "full_patch_forward_exact": true,
+    "full_patch_inverse_exact": true,
+    "token_budget_all_original_assertion_macros_unchanged": true,
+    "token_budget_test_change_confined_to_private_completion_helper": true,
+    "turn_state_change_confined_to_two_named_test_bodies": true,
+    "websocket_records": [
+      {
+        "function": "websocket_turn_state_persists_within_turn_and_resets_after",
+        "original_batch_counts": [
+          4
+        ],
+        "candidate_batch_counts": [
+          1,
+          3
+        ],
+        "original_payload_token_sequences_preserved": true,
+        "new_warm_batch_only": false,
+        "old_assertion_count": 9,
+        "new_assertion_count": 10,
+        "original_assertions_preserved_except_total_handshakes": true,
+        "sampling_connection_close_after_requests": false
+      },
+      {
+        "function": "websocket_turn_state_is_stable_within_turn",
+        "original_batch_counts": [
+          3
+        ],
+        "candidate_batch_counts": [
+          1,
+          3
+        ],
+        "original_payload_token_sequences_preserved": true,
+        "new_warm_batch_only": true,
+        "old_assertion_count": 3,
+        "new_assertion_count": 5,
+        "original_assertions_preserved_except_total_handshakes": true,
+        "sampling_connection_close_after_requests": false
+      }
+    ]
+  },
+  "token_budget_review": {
+    "decision": "PASS",
+    "metadata": "runtime.latest_call_tool forwards its fourth and fifth arguments as arguments and meta to latest_connections.call_tool. The stdio thread_hint schema is an empty object with additionalProperties=false and its handler reads context.meta['threadId']. Passing {} plus canonical threadId metadata corrects the observed missing-hint path.",
+    "guard_retention": "The HeptaGovernance and active-tool-policy no-call guards, token-budget/context-window gates, environment=None, no-wait/default-timeout arguments, latest connection route, .ok() error handling, content extraction and context rendering remain byte-identical outside the three-line argument move/comment.",
+    "finish_owner": "The private helper waits only after TurnComplete, passes that completed.turn_id to the existing observer and awaits its returned future after all registry locks are released. The observer filters TaskTerminalizationKind::Finish plus exact owner turn ID; it neither claims nor retires owners. The task publishes TurnComplete before persistence, marker release, pending work and finish completion. Both parameterized cases use this helper immediately before the next submit_turn.",
+    "coverage_retained": "All existing compaction lifecycle, request count, window lineage, hidden-tool exposure, developer context and regex assertions remain unchanged. No deadline, feature, policy, production terminalizer, or retry changes.",
+    "limits": "The closed compaction failures contain the generic ten-second event timeout, not a per-owner scheduling trace. The omitted finish observation is a source-proven reachable interleaving; native success remains unmeasured."
+  },
+  "turn_state_review": {
+    "decision": "PASS",
+    "identity": "The original test's metadata assertions distinguish read-only prewarm from danger-full-access sampling; unchanged submit_turn explicitly selects PermissionProfile::Disabled. The exact source compatibility projection removes the prewarm phase and volatile turn lineage but retains sandbox and sandbox_mode, and WebsocketConnectionIdentity compares the serialized projection. The fixture must admit the resulting new connection.",
+    "fixture_liveness": "The original server serially consumes one scripted connection before accepting another. Leaving the prewarm connection waiting for later sampling requests prevents accepting the identity-changing socket. Closing only the one-request prewarm script permits acceptance; the actual three-request sampling script remains open until explicit shutdown.",
+    "within_turn": "The second test's original three response batches remain byte-token identical and all execute on connection index 1. Exact [1,3] plus unchanged [null,ts-1,ts-1] assertions still reject sampling reconnections and later metadata overriding the first state. The added first batch supplies only the otherwise missing generate=false prewarm response.",
+    "across_turns": "The first test retains all four original response batches. Exact [1,3] proves first sampling, tool follow-up and next logical turn share the second physical connection. The original turn-state sequence, request_kind, generate, sandbox_mode and same/different turn-ID assertions remain unchanged after flattening the two connection logs.",
+    "limits": "Closing the prewarm script can itself force reconnection, so [1,3] alone does not prove that production compatibility identity requires it. That requirement is separately supported by the unchanged projection and permission-selection source. These tests retain same-turn and cross-turn sampling connection coverage; they do not independently qualify prewarm reuse under identical permissions."
+  },
+  "closed_failures": [
+    {
+      "name": "suite::token_budget::token_budget_context_injects_plain_thread_hint_text",
+      "status": "FAIL",
+      "elapsed": "0.154s",
+      "log_byte_range": [
+        513171,
+        513923
+      ]
+    },
+    {
+      "name": "suite::token_budget::token_budget_context_uses_new_window_after_compaction::test_case_1_token_budget_only",
+      "status": "FAIL",
+      "elapsed": "10.172s",
+      "log_byte_range": [
+        514168,
+        515051
+      ]
+    },
+    {
+      "name": "suite::token_budget::token_budget_context_uses_new_window_after_compaction::test_case_2_with_client_developer_retention",
+      "status": "FAIL",
+      "elapsed": "10.182s",
+      "log_byte_range": [
+        515051,
+        515991
+      ]
+    },
+    {
+      "name": "suite::turn_state::websocket_turn_state_is_stable_within_turn",
+      "status": "FAIL",
+      "elapsed": "30.094s",
+      "log_byte_range": [
+        522774,
+        523681
+      ]
+    },
+    {
+      "name": "suite::turn_state::websocket_turn_state_persists_within_turn_and_resets_after",
+      "status": "FAIL",
+      "elapsed": "30.091s",
+      "log_byte_range": [
+        524812,
+        525705
+      ]
+    }
+  ],
+  "closed_review_sha256": "9b5b3a81d4901d8c6769908e2021235e3ef82e3257d5b0c21bf1c086899f0732",
+  "raw_log_sha256": "443a58d70c34d76ba9b8141ad7ee32d997a4f16af79e8f5a873770966028952c",
+  "blockers": [],
+  "execution": {
+    "rust_build": "NOT_RUN",
+    "rust_tests": "NOT_RUN",
+    "rustfmt": "NOT_RUN",
+    "native_source_modified": false,
+    "candidate_sources_modified": false
+  }
+}

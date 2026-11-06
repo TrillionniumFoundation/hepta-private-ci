@@ -1,0 +1,35 @@
+{
+  "schema": "hepta.agentd-authority-intelligence-independent-focus-review.v1",
+  "reviewer": "/root/differentiation_study",
+  "native_input_tree": "6d88ca9c8964669a408d8549efaeff7b94d68674",
+  "reviewed_source_manifest": {
+    "sha256": "3279c298945121d316707952f56d2e00b3477ebd301b59cf2644b194dac109ac",
+    "git_blob": "6ed129787a968ee16a14a78c27f9a70af64e2d21",
+    "bytes": 8403
+  },
+  "reviewed_patch": {
+    "sha256": "61fa9e7e2bc9e6e48840e5cde3305fb1984b0845025f33335d61956747789c69",
+    "git_blob": "304932e8046ea5efa12d8a5e80e0261e89428619",
+    "bytes": 11224
+  },
+  "all_nine_before_after_file_pins_and_patch_reconstruction_verified": true,
+  "focus": [
+    "RootAdminResponse two boxed fields, unchanged serde tag/status and corresponding service/effect constructors",
+    "Intelligence prepared producer and Ready-to-Ready ownership forwarding in runner and state"
+  ],
+  "findings": [
+    "Admin constructors wrap exactly the original observation and actual lease after unchanged owner/context/frontier checks. Protocol serde derives, variant tags, field names/order and inner payload fields are unchanged; Box serialization delegates to the original value.",
+    "Both Intelligence Ready carrier types are changed together. prepare_and_admit and state admission forward the same Box after the original snapshot/context/currentness/start-run/attach-context sequence; no replacement prepared value or extra clone is introduced.",
+    "The public Rust payload types are source compatibility changes correctly disclosed by the owner. Source-derived remaining enum size estimates are not claimed as native layout measurements.",
+    "No blocker found in these focused semantic boundaries. Full nine-file hash/patch verification does not imply all nine runtime paths reviewed or native gates passed."
+  ],
+  "unchanged_state_forwarder_source": {
+    "path": "codex-rs/hepta-agentd/src/state.rs",
+    "sha256": "de4a62ae533e7e75f1416de1cc52e75b0aef79be53a4d45ac3d07fd84c150487",
+    "git_blob": "b53847a05cbd3b63081adde58aa20f0580651e8b",
+    "bytes": 35591
+  },
+  "source_changes": false,
+  "rust_execution": false,
+  "native_strict_tests_final_fmt": "PENDING authoritative native results"
+}

@@ -1,0 +1,61 @@
+{
+  "schema": "hepta.r29-export-inert-ast-readback.v1",
+  "template": {
+    "path": "/workspace/scratch/08f5efd48967/r29-export-preparation/export-r29-closed-template.py",
+    "bytes": 42814,
+    "sha256": "7a7a9b77b4dfdf20851a0c97bae3ea34e8218b062bda33e574133e772c554e13",
+    "git_blob": "16cb736f949989bfff9d849bdd5b752d1a671acd"
+  },
+  "source_r28_v2": {
+    "path": "/workspace/scratch/08f5efd48967/r28-export-preparation/export-r28-closed-template-v2.py",
+    "bytes": 33598,
+    "sha256": "4568d25b1d122e209ce59d9f1a4015e65ca77246f23b2ece4f86b07a6398d4d8",
+    "git_blob": "8f2ed4a147bf1b7c69bb69e882fff616725988af"
+  },
+  "source_r29_actual_runner": {
+    "path": "/workspace/scratch/08f5efd48967/native-validation-results/r29-bound-input/native-run-r29.py",
+    "bytes": 82985,
+    "sha256": "26bb2c31806895b19410f290e1f20232ee3be2dbe09321e081857dddefac1fa2",
+    "git_blob": "c67a237136a0fcf28c0c001ea71fd5262f70e888"
+  },
+  "ast_parse": "PASS",
+  "common_export_functions_exact": [
+    "require",
+    "sha",
+    "data_pin",
+    "safe_relative",
+    "check_pin",
+    "check_bindings",
+    "stable_read",
+    "git",
+    "source_guard",
+    "recorded_guard",
+    "natural_terminal",
+    "clean_lines"
+  ],
+  "actual_workspace_parser_exact": true,
+  "unknown_maps": [
+    "TERMINAL_PIN",
+    "CLOSED_ORIGINAL_PINS",
+    "CONTROLLER_ORIGINAL_PINS"
+  ],
+  "FROZEN": false,
+  "script_imported_or_executed": false,
+  "native_read_or_write": false,
+  "rust_or_formatter_executed": false,
+  "only_subprocess_api": "subprocess.check_output in Git read allowlist",
+  "fixed_actual_source": {
+    "commit": "1e0910becc37383e6d17ecf861ea844fd07d8862",
+    "tree": "211f15baff19095e8c98bcea2b0ed99ca2270ade",
+    "job": "1a1b1f83e4b-fc05-7bcd"
+  },
+  "change_scope": [
+    "r29 natural terminal and current-source raw original pins",
+    "actual fresh193 metadata/scope original readback; never rerun metadata",
+    "original no-p raw rc/receipt/resources/guards and complete/incomplete",
+    "actual r29 parser byte reuse; compile failure has null terminal counts",
+    "r28 original26 prerequisites archived by their fixed precondition pins",
+    "current195source/HEAD/dual locks checked before and after",
+    "create-only archive/derived files, full byte readback"
+  ]
+}

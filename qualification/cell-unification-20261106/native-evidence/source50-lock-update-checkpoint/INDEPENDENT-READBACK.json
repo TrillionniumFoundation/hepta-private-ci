@@ -1,0 +1,191 @@
+{
+  "schema": "hepta.source50-lock-formal-independent-readback.v1",
+  "classification": "CLOSED_LOCK_PREREQUISITE_AND_HISTORY_NOT_RUST_QUALIFICATION",
+  "archive": {
+    "bytes": 787385,
+    "sha256": "7dbb64599c8986628e494536e0e0af4895e0d78f36ed8ea89153b94371fbb47c",
+    "git_blob": "34e0677615f627ecbc79b87a35ecebfd6f7b9f58"
+  },
+  "regular_members": 29,
+  "index_rows": 28,
+  "all_archive_raw_size_sha256_gitblob_and_member_sets_verified": true,
+  "transport_permission_bits": 384,
+  "index_modes_are_original_permission_bits_not_git_modes": true,
+  "original_index": {
+    "bytes": 7250,
+    "sha256": "fb9f7bdd090ae1d82489c2eb47cc0ea2b25a26de00f5d8fde65c8510896733ba",
+    "git_blob": "03df12e9039f506c637789f942c02a336d0cf0ca"
+  },
+  "lock": {
+    "original_command": {
+      "schema": "hepta.original-command-raw-result.v1",
+      "command": [
+        "just",
+        "bazel-lock-update"
+      ],
+      "cwd": "/home/alex/work/hepta-cell-unified-20261106-a/source",
+      "source_tree_before_command": "ea48acf562499192a25e05ae28926a32632dee62",
+      "exit_code": 0,
+      "started_unix": 1793978065.6040719,
+      "ended_unix": 1793978070.9393456,
+      "elapsed_seconds": 5.335273742675781
+    },
+    "outer_terminal": {
+      "at_unix_ms": 1793978071897,
+      "audit_recorded": true,
+      "automatic_retry": false,
+      "cancelled": false,
+      "exit_code": 0,
+      "job_id": "1a1b16cb87c-fc05-7898",
+      "launch_nonce": "0b4e1fc8ae60e004863ad449b7d03749",
+      "log_bytes": {
+        "stderr": {
+          "seen": 0,
+          "stored": 0
+        },
+        "stdout": {
+          "seen": 618,
+          "stored": 618
+        }
+      },
+      "log_errors": {
+        "stderr": null,
+        "stdout": null
+      },
+      "log_synced": {
+        "stderr": true,
+        "stdout": true
+      },
+      "log_truncated": {
+        "stderr": false,
+        "stdout": false
+      },
+      "output_complete": true,
+      "output_durable": true,
+      "state": "succeeded",
+      "terminal_publication_confirmed": true,
+      "terminal_publication_protocol": 1,
+      "timed_out": false
+    },
+    "dual_locks": {
+      "MODULE.bazel.lock": {
+        "bytes": 1761877,
+        "sha256": "e80ef06b6f824a19cdcedd6010738b316ccca96b83ad8730fafb52153a2634fb",
+        "git_blob": "b91bee756020f2b6b0e92b1a5c4477e6a180149e",
+        "before_after_byte_identical": true
+      },
+      "codex-rs/Cargo.lock": {
+        "bytes": 417315,
+        "sha256": "4165307bb6c41d08e6c1c362060f2a958c8200ea43fdab2b8b1e6220ad82b55c",
+        "git_blob": "b7e710988d6a3377a7e0a1dc68aef49c68dda36e",
+        "before_after_byte_identical": true
+      }
+    },
+    "generated_lock_patch_empty": true,
+    "raw_generated_source_commit_null_preserved": true,
+    "raw_complete_status_preserved": "LOCK_UPDATE_PASSED_SOURCE_FREEZE_PENDING",
+    "source_rows_compared": 194,
+    "warnings_preserved": [
+      "WARNING: For repository 'platforms', the root module requires module version platforms@1.0.0, but got platforms@1.1.0 in the resolved dependency graph. Please update the version in your MODULE.bazel or set --check_direct_dependencies=off",
+      "WARNING: For repository 'apple_support', the root module requires module version apple_support@2.1.0, but got apple_support@2.5.2 in the resolved dependency graph. Please update the version in your MODULE.bazel or set --check_direct_dependencies=off",
+      "WARNING: For repository 'rules_cc', the root module requires module version rules_cc@0.2.18, but got rules_cc@0.2.20 in the resolved dependency graph. Please update the version in your MODULE.bazel or set --check_direct_dependencies=off",
+      "WARNING: A well-known crate annotation exists for zstd-sys! Apply the following to your MODULE.bazel:",
+      "WARNING: A well-known crate annotation exists for libgit2-sys! Apply the following to your MODULE.bazel:",
+      "WARNING: A well-known crate annotation exists for libssh2-sys! Apply the following to your MODULE.bazel:"
+    ],
+    "original_export_v1": {
+      "exit_code": 1,
+      "job_id": "1a1b173c81a-fc05-78d7",
+      "stderr": {
+        "bytes": 89,
+        "sha256": "a9ac2d01f73684097a907ecfdf15649987af7bc9ba8a734bd5144212a4c92775",
+        "git_blob": "4c66e7c7476c47b1cd45a2e4c6afff7686354032"
+      },
+      "command_not_stdout_preserved": true
+    },
+    "rust_qualification_granted": false,
+    "independent_full_source_tree_reconstruction_performed_here": false
+  },
+  "source_and_tool": {
+    "actual_git_commit": "1fdd647b0ecb235530e8b88bbea45b3d3762906f",
+    "actual_git_tree": "ea48acf562499192a25e05ae28926a32632dee62",
+    "actual_native_manifest194_equals_generated194": true,
+    "raw_commit_response": {
+      "bytes": 1683,
+      "sha256": "1b957b038473659dd020c7ac8d47375a332e83ac987b79709ba78140ed76c582",
+      "git_blob": "78c1edd3858c4150c4fe49ed32f007002016b981"
+    },
+    "native_manifest": {
+      "bytes": 53832,
+      "sha256": "ba7515c75980451e0b2514bce338b0ada8847daeef5ace5deacf45ca02e940c0",
+      "git_blob": "2b6988709adfd80084a846688453ceafd3f4accf"
+    },
+    "tool_history": {
+      "attempt1": "outer124 recorded by original v2; post-timeout observation preserved",
+      "attempt2": {
+        "exit_code": 1,
+        "error": {
+          "type": "TimeoutError",
+          "message": "The read operation timed out"
+        }
+      },
+      "attempt3": {
+        "exit_code": 1,
+        "segment_exits": [
+          0,
+          0,
+          0,
+          1
+        ]
+      },
+      "attempt4": {
+        "exit_code": 0,
+        "outer_exit_code": 0,
+        "binary": {
+          "path": "/home/alex/work/hepta-cell-unified-20261106-a/tools/bazel-9.3.0-preparation-v4/bazel-9.3.0-linux-x86_64",
+          "bytes": 77023347,
+          "sha256": "d302d22ed77ee5658b87857249baa579db84300ecebe0a1e9a357b5b20f80eb8"
+        },
+        "version_probe": {
+          "argv": [
+            "/home/alex/work/hepta-cell-unified-20261106-a/tools/bazel-9.3.0-preparation-v4/bazel-9.3.0-linux-x86_64",
+            "--version"
+          ],
+          "exit_code": 0,
+          "stdout": "bazel 9.3.0\n",
+          "stderr": ""
+        }
+      }
+    },
+    "tool_binary_and_chunks_included": false,
+    "tool_binary_bytes_rehashed_by_this_reader": false,
+    "official_full_hash_and_range_receipts_cross_checked": true,
+    "export_v2_terminal": null
+  },
+  "missing_originals": [
+    {
+      "path": "native-validation-results/source50-lock-update-closed/export-v2-control",
+      "status": "FULL_ORIGINAL_BYTES_NOT_RESTORED_AT_ASSEMBLY",
+      "effect": "No reconstruction or claimed byte verification; actual archive/lock0 and tool attempts original receipts remain included."
+    },
+    {
+      "path": "native-validation-results/r24-bazel-tool-preparation-closed/recovered-control",
+      "status": "FULL_ORIGINAL_BYTES_NOT_RESTORED_AT_ASSEMBLY",
+      "effect": "No reconstruction or claimed byte verification; actual archive/lock0 and tool attempts original receipts remain included."
+    },
+    {
+      "path": "source50-preparation/ROOT-R24-LAUNCH-AUTHORIZATION.json",
+      "previously_observed_bytes": 1100,
+      "previously_observed_sha256": "745751d4ce09bb7034d7ef6bf5b48594dade47bff4549acb22b6286d4ad191bf",
+      "status": "PREVIOUS_PIN_ONLY_FULL_TEXT_NOT_AVAILABLE",
+      "effect": "Not recreated; no gate authorization inferred from this group."
+    }
+  ],
+  "prior_provisional_group": "../source50-provisional-repair/",
+  "prior_provisional_snapshot_mutated": false,
+  "historical_pending_flags_preserved_verbatim": true,
+  "current_r24_result_not_derived_from_this_lock_group": true,
+  "r25_or_workspace_qualification_granted": false,
+  "source_mutated": false,
+  "rust_or_bazel_executed_by_assembler": false
+}

@@ -1,0 +1,17 @@
+{
+  "schema": "hepta.local-derived-readback-correction.v1",
+  "original_script_sha256": "31bbae315bb19e3c0c7f0438ad5e74a6f843a474f6450e24c0444be3b1cf5bf6",
+  "local_exit_code": 1,
+  "exception": "KeyError: source_tree",
+  "failed_before_output_materialization": true,
+  "actual_original_guard_keys": [
+    "expected_tree",
+    "actual_tree",
+    "source_commit",
+    "changed_file_count"
+  ],
+  "correction": "Read exact existing expected_tree and actual_tree and require both, source_commit and195 count; raw originals unchanged",
+  "v2_sha256": "1a88663ebdcb852901a90a7e8ff85de0bbc90746c55beebd4508ea99d50ef831",
+  "rust_rerun": false,
+  "native_writes": false
+}

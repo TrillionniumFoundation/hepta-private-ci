@@ -1,0 +1,22 @@
+{
+  "schema": "hepta.source53-r31-preparation-local-execution.v1",
+  "preparation": {
+    "chunk_id": "05dc12",
+    "wall_time_seconds": 0.057510523,
+    "exit_code": 0,
+    "original_token_count": 356,
+    "output": "{\n  \"created\": [\n    {\n      \"path\": \"references/native-run-r29-actual.py\",\n      \"bytes\": 82985,\n      \"sha256\": \"26bb2c31806895b19410f290e1f20232ee3be2dbe09321e081857dddefac1fa2\",\n      \"git_blob\": \"c67a237136a0fcf28c0c001ea71fd5262f70e888\"\n    },\n    {\n      \"path\": \"references/native-run-r30-template-v2.py\",\n      \"bytes\": 60715,\n      \"sha256\": \"a4bb18b0f2d2af63625e7ee6629df9f5a42f47c684bd8e4a72125b62b05d2c0b\",\n      \"git_blob\": \"d8ea3f26442a040210e542d48103952609b4c5e1\"\n    },\n    {\n      \"path\": \"native-run-r31-template.py\",\n      \"bytes\": 124806,\n      \"sha256\": \"83aa49f02eca55b409d7685f6719765a46de1ccf3bea84f357cd4d352c06fab6\",\n      \"git_blob\": \"bf804fb66bd31e8469d2fcada09dfd8be45b1f25\"\n    },\n    {\n      \"path\": \"r29-r31-template.patch\",\n      \"bytes\": 118039,\n      \"sha256\": \"b680e141b6a2c35242a0de39869e9effdee466de9d52fde2b6bc6154dd8cecee\",\n      \"git_blob\": \"3341e438f490fc1b6958dd11f9fe81f5e679d8bb\"\n    },\n    {\n      \"path\": \"MECHANICAL-READBACK.json\",\n      \"bytes\": 2557,\n      \"sha256\": \"783ce453191612f9c3f334d49d5e34d7608558c468aad4cf1546d7624f631ffc\",\n      \"git_blob\": \"a90c7605ffc013a896fc964c3bf11c1749ebf1a6\"\n    },\n    {\n      \"path\": \"INPUT-PINS.json\",\n      \"bytes\": 2146,\n      \"sha256\": \"785e1d88f5273097fef1bf1d3c3daca70fff10ef9f24719d67d5d4913fa7330f\",\n      \"git_blob\": \"cd8a4311b333330be7f38d1c995966792e510c83\"\n    }\n  ],\n  \"common_functions\": 27,\n  \"unknown_bindings\": 21\n}\n"
+  },
+  "contract_review": {
+    "chunk_id": "f8fd82",
+    "wall_time_seconds": 0.023090459,
+    "exit_code": 0,
+    "original_token_count": 68,
+    "output": "{\"report\": {\"bytes\": 10012, \"sha256\": \"ad4aeb9646285bc73f60cb231c4b69802bc469c2ba2a307c05e07e1c1f66e6b7\", \"git_blob\": \"1ae9d43e9541a7e05ab60f5bad562f20ffd6e13c\"}, \"contract\": \"STATIC_CLEAR\", \"r30_originals\": 19, \"r28_historical_originals\": 26, \"r30_same_functions\": 27}\n"
+  },
+  "statements": {
+    "only_local_text_generation_ast_symtable_and_fixed_original_reads": true,
+    "gate_runner_imported_or_executed": false,
+    "native_rust_git_metadata_formatter_executed": false
+  }
+}

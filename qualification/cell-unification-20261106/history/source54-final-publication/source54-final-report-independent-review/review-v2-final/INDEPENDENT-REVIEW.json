@@ -1,0 +1,116 @@
+{
+  "schema": "hepta.source54-final-report-independent-static-review.v1",
+  "result": "CLEAR",
+  "candidate_root": "source53-final-report-preparation/final-candidate-v2",
+  "handoff_pin": {
+    "bytes": 40784,
+    "sha256": "6c3d30d2e329671e3735abc0b4b3ff4c8f5ba02dd173f96e8aad0f2c138429b8",
+    "git_blob": "d3c6669623c8778c8c65b5e5146c8824ed22cef2"
+  },
+  "candidate_regular_files": 148,
+  "input_pins_checked": 125,
+  "checks": 1802,
+  "mechanical_failures": 0,
+  "findings": [],
+  "protected_README_sections": [
+    {
+      "section": 1,
+      "before": {
+        "bytes": 3031,
+        "sha256": "6dcd3563a4c841abc5129d09061fc6c2c4aca17277293a6bb6ce541758a5d295",
+        "git_blob": "7dffe92630f6442b20eff545b2b2fc68697006e0"
+      },
+      "after": {
+        "bytes": 3031,
+        "sha256": "6dcd3563a4c841abc5129d09061fc6c2c4aca17277293a6bb6ce541758a5d295",
+        "git_blob": "7dffe92630f6442b20eff545b2b2fc68697006e0"
+      },
+      "whole_bytes_equal": true,
+      "authorized_label_inverse_equal": true
+    },
+    {
+      "section": 2,
+      "before": {
+        "bytes": 4167,
+        "sha256": "c7cd5bc08b32ffb68ccfdeeb52c99b59fd77b7481ba163aca344f53296c9ea61",
+        "git_blob": "0a8d0633fd5c091141b0e180dc4319de6968c665"
+      },
+      "after": {
+        "bytes": 4173,
+        "sha256": "7ca0cb041b1f50a053fa91648799b6ec0bb6fbcade68449c108cf8d397f8b10b",
+        "git_blob": "6a446e806ab8f3584cf05c029644ca49a10ca037"
+      },
+      "whole_bytes_equal": false,
+      "authorized_label_inverse_equal": true
+    },
+    {
+      "section": 4,
+      "before": {
+        "bytes": 1433,
+        "sha256": "5880661968cd4554ebd847bb92cd5e2686f8d3a7905a0ef53a48a24b572081c3",
+        "git_blob": "42a83fe8af390bfe88244951e17b36237ff1189a"
+      },
+      "after": {
+        "bytes": 1433,
+        "sha256": "5880661968cd4554ebd847bb92cd5e2686f8d3a7905a0ef53a48a24b572081c3",
+        "git_blob": "42a83fe8af390bfe88244951e17b36237ff1189a"
+      },
+      "whole_bytes_equal": true,
+      "authorized_label_inverse_equal": true
+    }
+  ],
+  "protected_STATUS_fields": [
+    "taxonomy",
+    "source_inputs",
+    "implementation",
+    "science",
+    "historical_assets",
+    "upstream_ci_history",
+    "source_compatibility"
+  ],
+  "source_identities": {
+    "actual_final": {
+      "commit": "b5209cfdf509e990f10922197b32540bf8c353a7",
+      "tree": "42c1dd4e1a751c690c2800dfc3868e771dc9c70b"
+    },
+    "tested": {
+      "commit": "f74be175de66a4b351cd239d39d98cd34fe9cc1b",
+      "tree": "440d4a8e09af4009e4d9ea067388826308da8803"
+    }
+  },
+  "separate_test_counts": {
+    "r30": {
+      "unique_test_results": 1345,
+      "passed": 1345,
+      "failed": 0,
+      "timed_out": 0,
+      "reported_skipped": 2
+    },
+    "r31": {
+      "unique_test_results": 20228,
+      "passed": 20228,
+      "failed": 0,
+      "timed_out": 0,
+      "reported_skipped": 130
+    }
+  },
+  "format_changed_paths": 56,
+  "warnings": {
+    "diagnostic": 3,
+    "summary": 3
+  },
+  "pinned_reference_count": 351,
+  "markdown_reference_count": 105,
+  "boundaries": {
+    "original_reports_modified": false,
+    "canonical_modified": false,
+    "native_or_Rust_executed": false,
+    "formatter_or_metadata_executed": false,
+    "network_fetched": false,
+    "post_format_tests_claimed": false,
+    "science": "HOLD",
+    "authority": "DENY_ALL",
+    "frozen_prior_reader_recomputed": false,
+    "this_review": "Local bytes, JSON values and report semantics only; prior full native/patch/source reviews remain separately pinned."
+  }
+}

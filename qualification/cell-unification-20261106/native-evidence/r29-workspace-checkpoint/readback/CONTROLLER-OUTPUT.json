@@ -1,0 +1,69 @@
+{
+  "original_count": 4,
+  "streams": {
+    "stdout": {
+      "joined": {
+        "bytes": 3462,
+        "sha256": "4d38910f2464b5e29e9d1267a492a1cf4fe7ef974ad0c6ad60a813c93fe21792",
+        "git_blob": "21a9cf7b929ab10bd7704626dcb61a6100318d7a"
+      },
+      "chunks": [
+        {
+          "path": "controller/read-000000.json",
+          "offset": 0,
+          "next_offset": 407,
+          "total_stream_size_at_read": 407,
+          "chunk": {
+            "bytes": 407,
+            "sha256": "df14f1c13d228e15cdf222f15d15f7e39537329d866bbdad085285dbb843e8ea",
+            "git_blob": "ddfd3bd060a325ca2fe1f38d51595f110e7ce439"
+          }
+        },
+        {
+          "path": "controller/read-000407.json",
+          "offset": 407,
+          "next_offset": 3462,
+          "total_stream_size_at_read": 3462,
+          "chunk": {
+            "bytes": 3055,
+            "sha256": "7cd20684de1cb474a59613b48286b5810dac89825ffe601130ef45163b39bfea",
+            "git_blob": "cb56a05315829b9842564aa1c49e888712cb58ae"
+          }
+        }
+      ]
+    },
+    "stderr": {
+      "joined": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+      },
+      "chunks": [
+        {
+          "path": "controller/read-000000.json",
+          "offset": 0,
+          "next_offset": 0,
+          "total_stream_size_at_read": 0,
+          "chunk": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+          }
+        },
+        {
+          "path": "controller/read-000407.json",
+          "offset": 0,
+          "next_offset": 0,
+          "total_stream_size_at_read": 0,
+          "chunk": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+          }
+        }
+      ]
+    }
+  },
+  "all_offsets_text_hex_and_terminal_bytes_verified": true,
+  "reported_size_is_total_stream_not_chunk_length": true
+}

@@ -1,0 +1,106 @@
+{
+  "schema": "hepta.root-r24-full-archive-readback.v1",
+  "status": "VERIFIED_ORIGINAL_RUST_FAILURE",
+  "archive": {
+    "bytes": 1629778,
+    "sha256": "30b71fe512d8e33fdc029942e9987463ff12f98bc3c945d9322176865826f819",
+    "git_blob": "b38d2e96c943c68cd0f37d413f01b3b6a424791a"
+  },
+  "members_verified": 249,
+  "index_rows_verified": 248,
+  "source_rows_verified_all_bytes_and_original_git_mode": 194,
+  "source_commit": "1fdd647b0ecb235530e8b88bbea45b3d3762906f",
+  "source_tree": "ea48acf562499192a25e05ae28926a32632dee62",
+  "archive_transport_modes": [
+    384
+  ],
+  "transport_modes_not_conflated_with_original_git_modes": true,
+  "both_locks_exact": true,
+  "native_checkout_claim": false,
+  "full_original_log": {
+    "bytes": 232861,
+    "sha256": "84a5a9053de8be11ad6c1cc0326f5deb3c84907a7255e7c8911034c52fb2f37d"
+  },
+  "unique_executed": 1564,
+  "counts": {
+    "PASS": 1561,
+    "FAIL": 3,
+    "TIMEOUT": 0
+  },
+  "reported_skipped": 3,
+  "summary_seconds": "64.588",
+  "failures": [
+    {
+      "result": "FAIL",
+      "seconds": "0.101",
+      "binary": "codex-exec-server::capability_discovery",
+      "test": "sandboxed_discovery_batches_roots_without_combining_different_permissions"
+    },
+    {
+      "result": "FAIL",
+      "seconds": "0.079",
+      "binary": "codex-exec-server::file_system_unix",
+      "test": "sandboxed_file_system_helper_finds_bwrap_on_preserved_path"
+    },
+    {
+      "result": "FAIL",
+      "seconds": "5.279",
+      "binary": "codex-network-proxy",
+      "test": "http_proxy::tests::http_connect_accept_defers_brokered_host_mitm_until_protocol_detection"
+    }
+  ],
+  "raw_phase_exits": {
+    "python": 0,
+    "strict": 0,
+    "tests": 100
+  },
+  "outer_terminal": {
+    "at_unix_ms": 1793979986227,
+    "audit_recorded": true,
+    "automatic_retry": false,
+    "cancelled": false,
+    "exit_code": 100,
+    "job_id": "1a1b17f112c-fc05-792a",
+    "launch_nonce": "38fdc8dea1895dc3e4a2cd33da525bf7",
+    "log_bytes": {
+      "stderr": {
+        "seen": 0,
+        "stored": 0
+      },
+      "stdout": {
+        "seen": 8416,
+        "stored": 8416
+      }
+    },
+    "log_errors": {
+      "stderr": null,
+      "stdout": null
+    },
+    "log_synced": {
+      "stderr": true,
+      "stdout": true
+    },
+    "log_truncated": {
+      "stderr": false,
+      "stdout": false
+    },
+    "output_complete": true,
+    "output_durable": true,
+    "state": "failed",
+    "terminal_publication_confirmed": true,
+    "terminal_publication_protocol": 1,
+    "timed_out": false
+  },
+  "qualification": "FAIL; no workspace/fix/fmt eligibility",
+  "baseline_keys_for_next_readback": [
+    "schema",
+    "source_commit",
+    "source_tree",
+    "packages",
+    "test_ids",
+    "count",
+    "identity_key",
+    "intended_use"
+  ],
+  "executed_results_record": "ROOT-EXECUTED-RESULTS.json"
+}
