@@ -119,14 +119,21 @@ mod tests {
             (10, AgentLifecycle::Stopped),
         ] {
             assert!(matches!(
-                payload(&request, /*spawn_generation*/ 7, generation, health(lifecycle)),
+                payload(
+                    &request,
+                    /*spawn_generation*/ 7,
+                    generation,
+                    health(lifecycle)
+                ),
                 AgentdPayload::Error { .. }
             ));
         }
         let mut fenced = health(AgentLifecycle::Draining);
         fenced.fenced = true;
         assert!(matches!(
-            payload(&request, /*spawn_generation*/ 7, /*current_generation*/ 9, fenced),
+            payload(
+                &request, /*spawn_generation*/ 7, /*current_generation*/ 9, fenced
+            ),
             AgentdPayload::Error { .. }
         ));
         let overflow = AgentdRequest::drain(/*request_id*/ 17, u64::MAX);

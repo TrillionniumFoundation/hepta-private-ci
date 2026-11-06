@@ -1208,7 +1208,10 @@ async fn file_system_bounded_authorized_read_rejects_symlink_and_parent_escape(
         FileSystemImplementation::Local => assert_sandbox_denied(&error),
         FileSystemImplementation::Remote => {
             assert_eq!(error.kind(), std::io::ErrorKind::InvalidInput);
-            assert_eq!(error.to_string(), "remote authorized file read was rejected");
+            assert_eq!(
+                error.to_string(),
+                "remote authorized file read was rejected"
+            );
         }
     }
     #[cfg(not(target_os = "macos"))]
@@ -1233,7 +1236,10 @@ async fn file_system_bounded_authorized_read_rejects_symlink_and_parent_escape(
         FileSystemImplementation::Local => assert_normalized_path_rejected(&error),
         FileSystemImplementation::Remote => {
             assert_eq!(error.kind(), std::io::ErrorKind::InvalidInput);
-            assert_eq!(error.to_string(), "remote authorized file read was rejected");
+            assert_eq!(
+                error.to_string(),
+                "remote authorized file read was rejected"
+            );
         }
     }
     #[cfg(not(target_os = "macos"))]
