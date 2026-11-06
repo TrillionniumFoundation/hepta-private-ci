@@ -530,7 +530,17 @@ unsafe fn create_token_with_caps_from(
     }
 
     let mut new_token: HANDLE = 0;
-    let flags = DISABLE_MAX_PRIVILEGE | LUA_TOKEN | WRITE_RESTRICTED;
+    // Capability-only workspace tokens must require BOTH the ordinary token
+    // identity and a capability SID for every access. WRITE_RESTRICTED checks
+    // only the restricting SID set for writes; FILE_DELETE_CHILD is not a
+    // sufficient boundary under inherited broad-identity directory ACEs.
+    let flags = DISABLE_MAX_PRIVILEGE
+        | LUA_TOKEN
+        | if matches!(restricting_identity, RestrictingIdentity::Include) {
+            WRITE_RESTRICTED
+        } else {
+            0
+        };
     let ok = CreateRestrictedToken(
         base_token,
         flags,
