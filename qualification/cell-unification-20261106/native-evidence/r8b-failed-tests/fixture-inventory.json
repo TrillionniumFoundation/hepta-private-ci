@@ -1,0 +1,229 @@
+{
+  "source_tree": "6d88ca9c8964669a408d8549efaeff7b94d68674",
+  "nearest_instructions": [
+    "AGENTS.md"
+  ],
+  "maps": {
+    "exec_fixture_helpers": "32:use codex_network_proxy::RemoteNetworkProxyConfig;\n34:use codex_network_proxy::RemoteNetworkProxyLaunchConfig;\n128:#[serial_test::serial(remote_exec_server)]\n129:async fn shell_snapshot_v2_filters_profile_exports_and_stays_in_memory(\n146:    let (shell_path, profile_name) = match shell_name {\n154:    let profile_path = home.path().join(profile_name);\n155:    let profile_path_entry = home.path().join(\"profile-bin\");\n171:        &profile_path,\n173:            \"printf x >> \\\"$HOME/captures\\\"\\nexport PATH=\\\"$HOME/profile-bin:/usr/bin:/bin\\\"\\nexport PROFILE_ALLOWED=profile\\nexport PROFILE_SECRET=secret\\nexport PROFILE_DENIED=denied\\nprofile_helper() {{ printf helper; }}\\n{shadowed_builtins}{padding}\"\n179:            \"export PATH=\\\"$HOME/profile-bin:/usr/bin:/bin\\\"\\n\",\n189:            profile_path.to_string_lossy().into_owned(),\n194:            \"BASH_ENV\".to_string(),\n195:            profile_path.to_string_lossy().into_owned(),\n204:            \"BASH_ENV\".to_string(),\n214:        (\"profile_helper; \", \"helper\")\n221:        \"{expected_prefix}|profile|missing|missing|{}:{}:/usr/bin:/bin|missing|missing\",\n223:        profile_path_entry.display(),\n246:                    FileSystemSandboxContext::from_permission_profile_with_cwd(\n273:#[serial_test::serial(remote_exec_server)]\n280:        \"printf '%s\\\\n' \\\"$HTTP_PROXY\\\" >> \\\"$HOME/captures\\\"\\ntest \\\"$CODEX_NETWORK_PROXY_ACTIVE\\\" = 1 || exit 41\\nexport PROFILE_ALLOWED=profile\\nprofile_helper() { printf helper; }\\n\",\n296:    let proxy_config = RemoteNetworkProxyConfig::from_effective_config(&NetworkProxyConfig {\n310:                    \"profile_helper; printf '|%s|%s|%s' \\\"$PROFILE_ALLOWED\\\" \\\"$CODEX_NETWORK_PROXY_ACTIVE\\\" \\\"$HTTP_PROXY\\\"\".to_string(),\n329:                    RemoteNetworkProxyLaunchConfig::new(proxy_config.clone()).for_execution(\n339:            .strip_prefix(\"helper|profile|1|\")\n340:            .context(\"snapshot should restore profile functions and live proxy state\")?;\n363:#[serial_test::serial(remote_exec_server)]\n364:async fn shell_snapshot_v2_capture_failure_falls_back_and_retries(\n380:    let (shell_path, profile_name) = match shell_name {\n386:        home.path().join(profile_name),\n404:            \"if command -v profile_helper >/dev/null; then profile_helper; else printf original; fi\".to_string(),\n420:            FileSystemSandboxContext::from_permission_profile_with_cwd(\n448:        home.path().join(profile_name),\n449:        \"printf x >> \\\"$HOME/captures\\\"\\nprofile_helper() { printf recovered; }\\n\",\n501:    let sandbox = FileSystemSandboxContext::from_permission_profile_with_cwd(\n602:    let sandbox = FileSystemSandboxContext::from_permission_profile_with_cwd(\n672:    let sandbox = FileSystemSandboxContext::from_permission_profile_with_cwd(\n727:    let mut sandbox = FileSystemSandboxContext::from_permission_profile_with_cwd(\n1405:#[serial_test::serial(remote_exec_server)]\n1560:#[serial_test::serial(remote_exec_server)]\n1570:#[serial_test::serial(remote_exec_server)]\n1580:#[serial_test::serial(remote_exec_server)]\n1590:#[serial_test::serial(remote_exec_server)]\n1600:#[serial_test::serial(remote_exec_server)]\n1612:#[serial_test::serial(remote_exec_server)]\n1622:#[serial_test::serial(remote_exec_server)]\n1629:#[serial_test::serial(remote_exec_server)]\n1639:#[serial_test::serial(remote_exec_server)]\n1649:#[serial_test::serial(remote_exec_server)]\n1659:#[serial_test::serial(remote_exec_server)]\n1669:#[serial_test::serial(remote_exec_server)]\n",
+    "unix_process_driver": "codex-rs/hepta-supervisor/src/error.rs:11:impl ProcessDriverError {\ncodex-rs/hepta-supervisor/src/error.rs:19:impl From<std::io::Error> for ProcessDriverError {\ncodex-rs/hepta-supervisor/src/error.rs:25:impl From<serde_json::Error> for ProcessDriverError {\ncodex-rs/hepta-supervisor/src/lib.rs:182:pub use unix::UnixProcessDriver;\ncodex-rs/hepta-supervisor/src/recovery.rs:31:impl<D: ProcessDriver> Supervisor<D> {\ncodex-rs/hepta-supervisor/src/precreated.rs:129:impl PrecreatedProcessDriver {\ncodex-rs/hepta-supervisor/src/precreated.rs:151:impl ProcessDriver for PrecreatedProcessDriver {\ncodex-rs/hepta-supervisor/src/release.rs:21:impl<D: ProcessDriver> Supervisor<D> {\ncodex-rs/hepta-supervisor/src/unix_tests.rs:24:use super::UnixProcessDriver;\ncodex-rs/hepta-supervisor/src/unix_tests.rs:63:    let mut process = UnixProcessDriver::new(8)\ncodex-rs/hepta-supervisor/src/unix_tests.rs:151:    let mut process = UnixProcessDriver::new(8)\ncodex-rs/hepta-supervisor/src/unix_tests.rs:184:    let mut driver = UnixProcessDriver::new(1).expect(\"valid driver\");\ncodex-rs/hepta-supervisor/src/control.rs:20:impl<D: ProcessDriver> Supervisor<D> {\ncodex-rs/hepta-supervisor/src/restart_state.rs:24:impl<D: ProcessDriver> Supervisor<D> {\ncodex-rs/hepta-supervisor/src/unix.rs:69:pub struct UnixProcessDriver {\ncodex-rs/hepta-supervisor/src/unix.rs:73:impl UnixProcessDriver {\ncodex-rs/hepta-supervisor/src/unix.rs:212:impl ProcessDriver for UnixProcessDriver {\ncodex-rs/hepta-supervisor/src/supervisor.rs:59:impl<D: ProcessDriver> Supervisor<D> {\ncodex-rs/hepta-supervisor/src/tick.rs:30:impl<D: ProcessDriver> Supervisor<D> {\ncodex-rs/hepta-supervisor/src/daemon.rs:89:use crate::UnixProcessDriver;\ncodex-rs/hepta-supervisor/src/daemon.rs:198:        UnixProcessDriver::new(256).map_err(|error| SupervisorError::Invalid(error.to_string()))?;\ncodex-rs/hepta-supervisor/src/daemon.rs:256:    state: Arc<DaemonState<UnixProcessDriver>>,\ncodex-rs/hepta-supervisor/src/daemon.rs:265:        state: Arc<DaemonState<UnixProcessDriver>>,\ncodex-rs/hepta-supervisor/src/daemon.rs:316:    state: Arc<DaemonState<UnixProcessDriver>>,\ncodex-rs/hepta-supervisor/src/matrix.rs:45:impl<D: ProcessDriver> Supervisor<D> {\ncodex-rs/hepta-supervisor/src/supervisor_tests.rs:325:impl ProcessDriver for FakeDriver {\ncodex-rs/hepta-supervisor/tests/process_deadline_unix.rs:19:use codex_hepta_supervisor::UnixProcessDriver;\ncodex-rs/hepta-supervisor/tests/process_deadline_unix.rs:39:    let mut driver = UnixProcessDriver::new(8).expect(\"unix driver\");\ncodex-rs/hepta-supervisor/tests/restart_budget.rs:112:impl ProcessDriver for FakeDriver {\ncodex-rs/hepta-supervisor/tests/restart_budget_recovery.rs:112:impl ProcessDriver for FakeDriver {\ncodex-rs/hepta-supervisor/tests/signed_intent_recovery.rs:55:impl ProcessDriver for NoProcessDriver {\ncodex-rs/hepta-supervisor/tests/isolated_execution_handoff_unix.rs:19:use codex_hepta_supervisor::UnixProcessDriver;\ncodex-rs/hepta-supervisor/tests/isolated_execution_handoff_unix.rs:82:    let mut driver = UnixProcessDriver::new(8).expect(\"unix driver\");\ncodex-rs/hepta-supervisor/tests/paired_process_product.rs:40:use codex_hepta_supervisor::UnixProcessDriver;\ncodex-rs/hepta-supervisor/tests/paired_process_product.rs:158:        UnixProcessDriver::new(64).map_err(anyhow::Error::msg)?,\ncodex-rs/hepta-supervisor/tests/paired_process_product.rs:203:    supervisor: Option<Supervisor<UnixProcessDriver>>,\ncodex-rs/hepta-supervisor/tests/paired_process_product.rs:250:            UnixProcessDriver::new(64).map_err(anyhow::Error::msg)?,\n",
+    "source_ignore_attributes": "codex-rs/hepta-supervisor/tests/paired_process_product.rs-512-}\ncodex-rs/hepta-supervisor/tests/paired_process_product.rs-513-\ncodex-rs/hepta-supervisor/tests/paired_process_product.rs-514-#[test]\ncodex-rs/hepta-supervisor/tests/paired_process_product.rs:515:#[ignore = \"spawned only as a controlled process fixture\"]\ncodex-rs/hepta-supervisor/tests/paired_process_product.rs-516-fn paired_child_process() {\ncodex-rs/hepta-supervisor/tests/paired_process_product.rs-517-    let result = if std::env::var_os(\"HEPTA_MATRIXD_CONTROL_SOCKET\").is_some() {\ncodex-rs/hepta-supervisor/tests/paired_process_product.rs-518-        run_matrix_child()\ncodex-rs/hepta-supervisor/tests/paired_process_product.rs-519-    } else {\n--\ncodex-rs/hepta-memory/src/local_compact_executor_tests.rs-988-/// OS process, interrupt SQLite syscalls, or exercise agentd supervision.  It\ncodex-rs/hepta-memory/src/local_compact_executor_tests.rs-989-/// proves the narrower deterministic close/reopen/hash-chain/replay boundary.\ncodex-rs/hepta-memory/src/local_compact_executor_tests.rs-990-#[tokio::test]\ncodex-rs/hepta-memory/src/local_compact_executor_tests.rs:991:#[ignore = \"qualification stress: 1000 SQLite operations with deterministic reopen/replay\"]\ncodex-rs/hepta-memory/src/local_compact_executor_tests.rs-992-async fn sqlite_1000_operation_seeded_reopen_replay_stress() {\ncodex-rs/hepta-memory/src/local_compact_executor_tests.rs-993-    const OPERATIONS: usize = 1_000;\ncodex-rs/hepta-memory/src/local_compact_executor_tests.rs-994-    const SEED: u64 = 0x4845_5054_415f_5250;\ncodex-rs/hepta-memory/src/local_compact_executor_tests.rs-995-    const JOURNAL_ID: &str = \"journal:seeded-1000-reopen-replay\";\n--\ncodex-rs/hepta-memory/src/local_compact_executor_tests.rs-1483-/// SQLite syscall, host/VM power-loss durability, supervisor semantics, an\ncodex-rs/hepta-memory/src/local_compact_executor_tests.rs-1484-/// arbitrary fleet, provider effects, or production authority.\ncodex-rs/hepta-memory/src/local_compact_executor_tests.rs-1485-#[test]\ncodex-rs/hepta-memory/src/local_compact_executor_tests.rs:1486:#[ignore = \"qualification stress: 1000 real child-process kill/reopen/replay operations\"]\ncodex-rs/hepta-memory/src/local_compact_executor_tests.rs-1487-fn host_restart_reopen_replay_process_soak() {\ncodex-rs/hepta-memory/src/local_compact_executor_tests.rs-1488-    let operations = process_soak_operations_from_env();\ncodex-rs/hepta-memory/src/local_compact_executor_tests.rs-1489-    assert!(\ncodex-rs/hepta-memory/src/local_compact_executor_tests.rs-1490-        (1..=PROCESS_SOAK_DEFAULT_OPERATIONS).contains(&operations),\n--\ncodex-rs/hepta-memory/src/cognitive_kg_benchmark_tests.rs-114-/// CognitiveStore writes, product retrieval and ordinary reopen. It reports\ncodex-rs/hepta-memory/src/cognitive_kg_benchmark_tests.rs-115-/// measurements rather than inventing a host-independent latency threshold.\ncodex-rs/hepta-memory/src/cognitive_kg_benchmark_tests.rs-116-#[tokio::test(flavor = \"multi_thread\", worker_threads = 2)]\ncodex-rs/hepta-memory/src/cognitive_kg_benchmark_tests.rs:117:#[ignore = \"qualification: knowledge.graph PERF-LIBRARY capacity receipt\"]\ncodex-rs/hepta-memory/src/cognitive_kg_benchmark_tests.rs-118-async fn qualification_knowledge_graph_capacity_receipt() {\ncodex-rs/hepta-memory/src/cognitive_kg_benchmark_tests.rs-119-    let writes = configured_count(\"HEPTA_KG_BENCH_WRITES\", DEFAULT_WRITES, DEFAULT_WRITES);\ncodex-rs/hepta-memory/src/cognitive_kg_benchmark_tests.rs-120-    let query_samples =\ncodex-rs/hepta-memory/src/cognitive_kg_benchmark_tests.rs-121-        configured_count(\"HEPTA_KG_BENCH_QUERY_SAMPLES\", DEFAULT_QUERY_SAMPLES, 100);\n--\ncodex-rs/hepta-memory/src/cognitive_retrieval_observation_tests.rs-443-}\ncodex-rs/hepta-memory/src/cognitive_retrieval_observation_tests.rs-444-\ncodex-rs/hepta-memory/src/cognitive_retrieval_observation_tests.rs-445-#[tokio::test]\ncodex-rs/hepta-memory/src/cognitive_retrieval_observation_tests.rs:446:#[ignore = \"target-host qualification probe; run explicitly with --ignored --nocapture\"]\ncodex-rs/hepta-memory/src/cognitive_retrieval_observation_tests.rs-447-async fn target_host_owner_retrieval_reports_latency_percentiles() {\ncodex-rs/hepta-memory/src/cognitive_retrieval_observation_tests.rs-448-    fn percentile(values: &[u128], numerator: usize, denominator: usize) -> u128 {\ncodex-rs/hepta-memory/src/cognitive_retrieval_observation_tests.rs-449-        assert!(!values.is_empty());\ncodex-rs/hepta-memory/src/cognitive_retrieval_observation_tests.rs-450-        let rank = values\n--\ncodex-rs/hepta-memory/src/objective_sender_crash_tests.rs-58-}\ncodex-rs/hepta-memory/src/objective_sender_crash_tests.rs-59-\ncodex-rs/hepta-memory/src/objective_sender_crash_tests.rs-60-#[test]\ncodex-rs/hepta-memory/src/objective_sender_crash_tests.rs:61:#[ignore = \"subprocess fixture is invoked with a private test root by the parent test\"]\ncodex-rs/hepta-memory/src/objective_sender_crash_tests.rs-62-fn objective_sender_subprocess_fixture() {\ncodex-rs/hepta-memory/src/objective_sender_crash_tests.rs-63-    let root = PathBuf::from(\ncodex-rs/hepta-memory/src/objective_sender_crash_tests.rs-64-        std::env::var_os(\"HEPTA_OBJECTIVE_SENDER_TEST_ROOT\").expect(\"private child root\"),\ncodex-rs/hepta-memory/src/objective_sender_crash_tests.rs-65-    );\n--\ncodex-rs/hepta-memory/tests/root_install_reentry.rs-133-}\ncodex-rs/hepta-memory/tests/root_install_reentry.rs-134-\ncodex-rs/hepta-memory/tests/root_install_reentry.rs-135-#[test]\ncodex-rs/hepta-memory/tests/root_install_reentry.rs:136:#[ignore = \"internal subprocess fixture, selected only by its crash-boundary parent\"]\ncodex-rs/hepta-memory/tests/root_install_reentry.rs-137-fn install_in_subprocess_until_parent_kills() -> Result<()> {\ncodex-rs/hepta-memory/tests/root_install_reentry.rs-138-    let input = PathBuf::from(\ncodex-rs/hepta-memory/tests/root_install_reentry.rs-139-        std::env::var_os(\"HEPTA_INSTALL_CRASH_TEST_INPUT\").ok_or(\"fixture input absent\")?,\ncodex-rs/hepta-memory/tests/root_install_reentry.rs-140-    );\n--\ncodex-rs/hepta-memory/tests/root_install_reentry.rs-199-}\ncodex-rs/hepta-memory/tests/root_install_reentry.rs-200-\ncodex-rs/hepta-memory/tests/root_install_reentry.rs-201-#[tokio::test]\ncodex-rs/hepta-memory/tests/root_install_reentry.rs:202:#[ignore = \"explicit isolated Root physical-install process-loss qualification\"]\ncodex-rs/hepta-memory/tests/root_install_reentry.rs-203-async fn killed_installer_reopens_exact_inode_and_pointer_without_republication() -> Result<()> {\ncodex-rs/hepta-memory/tests/root_install_reentry.rs-204-    let (temp, input) = fixture(/*content*/ None).await?;\ncodex-rs/hepta-memory/tests/root_install_reentry.rs-205-    let layout = input.layout()?;\ncodex-rs/hepta-memory/tests/root_install_reentry.rs-206-    let path = temp.path().join(\"child-input.json\");\n--\ncodex-rs/hepta-memory/tests/root_install_reentry.rs-256-}\ncodex-rs/hepta-memory/tests/root_install_reentry.rs-257-\ncodex-rs/hepta-memory/tests/root_install_reentry.rs-258-#[tokio::test]\ncodex-rs/hepta-memory/tests/root_install_reentry.rs:259:#[ignore = \"explicit isolated Root independent-image identity qualification\"]\ncodex-rs/hepta-memory/tests/root_install_reentry.rs-260-async fn a_different_valid_independent_image_cannot_replace_an_unreleased_installation()\ncodex-rs/hepta-memory/tests/root_install_reentry.rs-261--> Result<()> {\ncodex-rs/hepta-memory/tests/root_install_reentry.rs-262-    let (_original, input) = fixture(/*content*/ None).await?;\ncodex-rs/hepta-memory/tests/root_install_reentry.rs-263-    let (_alternative, different) = fixture(Some(\"a distinct original source event\")).await?;\n--\ncodex-rs/hepta-memory/tests/root_install_reentry.rs-283-}\ncodex-rs/hepta-memory/tests/root_install_reentry.rs-284-\ncodex-rs/hepta-memory/tests/root_install_reentry.rs-285-#[tokio::test]\ncodex-rs/hepta-memory/tests/root_install_reentry.rs:286:#[ignore = \"explicit isolated Root partial-material qualification\"]\ncodex-rs/hepta-memory/tests/root_install_reentry.rs-287-async fn ambiguous_partial_and_aliased_installations_are_preserved_and_refused() -> Result<()> {\ncodex-rs/hepta-memory/tests/root_install_reentry.rs-288-    #[derive(Debug)]\ncodex-rs/hepta-memory/tests/root_install_reentry.rs-289-    enum Damage {\ncodex-rs/hepta-memory/tests/root_install_reentry.rs-290-        Bytes,\n--\ncodex-rs/hepta-memory/src/cognitive_store_tests.rs-352-}\ncodex-rs/hepta-memory/src/cognitive_store_tests.rs-353-\ncodex-rs/hepta-memory/src/cognitive_store_tests.rs-354-#[tokio::test]\ncodex-rs/hepta-memory/src/cognitive_store_tests.rs:355:#[ignore = \"qualification: child-process KG transaction crash probe\"]\ncodex-rs/hepta-memory/src/cognitive_store_tests.rs-356-async fn kg_projection_crash_child() {\ncodex-rs/hepta-memory/src/cognitive_store_tests.rs-357-    let fleet_root = std::env::var_os(KG_CRASH_FLEET_ROOT_ENV)\ncodex-rs/hepta-memory/src/cognitive_store_tests.rs-358-        .map(PathBuf::from)\ncodex-rs/hepta-memory/src/cognitive_store_tests.rs-359-        .expect(\"KG crash child fleet root\");\n--\ncodex-rs/hepta-memory/src/cognitive_store_tests.rs-433-}\ncodex-rs/hepta-memory/src/cognitive_store_tests.rs-434-\ncodex-rs/hepta-memory/src/cognitive_store_tests.rs-435-#[tokio::test(flavor = \"multi_thread\", worker_threads = 2)]\ncodex-rs/hepta-memory/src/cognitive_store_tests.rs:436:#[ignore = \"qualification: child-process KG transaction crash/reopen matrix\"]\ncodex-rs/hepta-memory/src/cognitive_store_tests.rs-437-async fn qualification_kg_projection_crash_windows_restore_exact_predecessor() {\ncodex-rs/hepta-memory/src/cognitive_store_tests.rs-438-    let temp = TempDir::new().expect(\"KG crash qualification temp dir\");\ncodex-rs/hepta-memory/src/cognitive_store_tests.rs-439-    let owner = agent_id(KG_CRASH_OWNER_SUFFIX);\ncodex-rs/hepta-memory/src/cognitive_store_tests.rs-440-    let store = seeded_projection_store(&temp, &owner).await;\n--\ncodex-rs/hepta-memory/src/cognitive_checkpoint_observation_tests.rs-188-    }\ncodex-rs/hepta-memory/src/cognitive_checkpoint_observation_tests.rs-189-\ncodex-rs/hepta-memory/src/cognitive_checkpoint_observation_tests.rs-190-    #[test]\ncodex-rs/hepta-memory/src/cognitive_checkpoint_observation_tests.rs:191:    #[ignore = \"controlled subprocess fixture; invoked by its parent with a private root\"]\ncodex-rs/hepta-memory/src/cognitive_checkpoint_observation_tests.rs-192-    fn protected_checkpoint_observation_subprocess_fixture() {\ncodex-rs/hepta-memory/src/cognitive_checkpoint_observation_tests.rs-193-        let root = PathBuf::from(std::env::var_os(ROOT_ENV).expect(\"private fixture root\"));\ncodex-rs/hepta-memory/src/cognitive_checkpoint_observation_tests.rs-194-        tokio::runtime::Builder::new_current_thread()\ncodex-rs/hepta-memory/src/cognitive_checkpoint_observation_tests.rs-195-            .enable_all()\n--\ncodex-rs/hepta-memory/src/local_lease_outbox_tests.rs-2469-/// child kill is not an interruption inside a SQLite syscall and makes no\ncodex-rs/hepta-memory/src/local_lease_outbox_tests.rs-2470-/// physical host/VM power-loss durability claim.\ncodex-rs/hepta-memory/src/local_lease_outbox_tests.rs-2471-#[test]\ncodex-rs/hepta-memory/src/local_lease_outbox_tests.rs:2472:#[ignore = \"qualification: child-process crash/reopen probe\"]\ncodex-rs/hepta-memory/src/local_lease_outbox_tests.rs-2473-fn qualification_durable_writer_crash_reopen_probe() {\ncodex-rs/hepta-memory/src/local_lease_outbox_tests.rs-2474-    let temp = TempDir::new().expect(\"H4 qualification temp dir\");\ncodex-rs/hepta-memory/src/local_lease_outbox_tests.rs-2475-    let fleet_root = temp.path().join(\"fleet\");\ncodex-rs/hepta-memory/src/local_lease_outbox_tests.rs-2476-    let marker_dir = temp.path().join(\"markers\");\n"
+  },
+  "files": [
+    {
+      "path": "codex-rs/exec-server/src/fs_sandbox.rs",
+      "sha256": "6bd757ade4b4df954c30478fdeecf4de955ee94bc959d88e0b546b8a28228b4e",
+      "git_blob": "ca715ef44ed7c30e4da11149dcc2cf8248c67ab3",
+      "bytes": 28294
+    },
+    {
+      "path": "codex-rs/exec-server/src/process_sandbox.rs",
+      "sha256": "0bfa0326269aafbd3578e17d3f56eb0c19e73653cd89142a288fc1d45677cd04",
+      "git_blob": "0bf5853a1d82df037d406fdffbe31d6bada1b2b4",
+      "bytes": 14720
+    },
+    {
+      "path": "codex-rs/exec-server/src/process_sandbox_tests.rs",
+      "sha256": "acf2825d8370a77c5f72bb5cd881aadb2bbd43f9046cc5c9d51b799e04266b80",
+      "git_blob": "a66387ee0d892b82ba3fcf45662a13ef6b13c4c3",
+      "bytes": 16221
+    },
+    {
+      "path": "codex-rs/exec-server/src/sandboxed_file_open.rs",
+      "sha256": "0b48edcba78a19c6956b368a10c1e4fd194072bc0df8b39f896a90874bee59c7",
+      "git_blob": "93c78706a472d882908e124117cc0a9e94057ca3",
+      "bytes": 7793
+    },
+    {
+      "path": "codex-rs/exec-server/src/sandboxed_file_system.rs",
+      "sha256": "aa4b733f6f1495b62ff8da1c046a0563deb2a7a75f0b72c20377f10fd2e1eead",
+      "git_blob": "61c3c061267bb79b8fc2eef490501190dece8d0a",
+      "bytes": 14585
+    },
+    {
+      "path": "codex-rs/exec-server/src/sandboxed_file_system_path_uri_tests.rs",
+      "sha256": "db05a78fa668c623fe13de2063d67bd76d79765cf22f4bce031e06aea157ddde",
+      "git_blob": "031d89080f21a369010161dec5a5971bdb26aa27",
+      "bytes": 1383
+    },
+    {
+      "path": "codex-rs/exec-server/src/shell_snapshot.rs",
+      "sha256": "c71b7111381ce4b8773ae5a77c23ead8d390dfa096669bc64e983de0196b2b1e",
+      "git_blob": "719e1d5ca849a92ca61fa2f3309257d1546ad854",
+      "bytes": 12063
+    },
+    {
+      "path": "codex-rs/exec-server/src/shell_snapshot_tests.rs",
+      "sha256": "bfdefaf79959a8f68e8f7afb9712db2dab643333ada8845cc273b9785d5274f1",
+      "git_blob": "1f24ef5de8b1ae9b648af676876d95d704833275",
+      "bytes": 6852
+    },
+    {
+      "path": "codex-rs/exec-server/tests/common/mod.rs",
+      "sha256": "a804f8d14a61633cc987a2394077181883f7f8c6a156b7bf6955a2d23913d423",
+      "git_blob": "161728f5127d5a311579603b480bc0351a605880",
+      "bytes": 10201
+    },
+    {
+      "path": "codex-rs/exec-server/tests/exec_process.rs",
+      "sha256": "40a210ce7d533746d95c184844fe3425c9d52aec6911dddf810200549691ce93",
+      "git_blob": "82fc6590f5174599b5b3b9896920d53cf608510f",
+      "bytes": 62025
+    },
+    {
+      "path": "codex-rs/exec-server/tests/support/lib.rs",
+      "sha256": "0e33c76442161e37d1894d6ed86bc6aa287160882f120d2f8b004101ca2b8a83",
+      "git_blob": "52343635649f15834c639cb3920aa3e61f271bd6",
+      "bytes": 408
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/control.rs",
+      "sha256": "77614635783d80778f597439f68400d594b0a1667bfe0f451b232fb8e66a4cef",
+      "git_blob": "97faf9d3ee33b31808aedfa47bf650fd17938e60",
+      "bytes": 8152
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/daemon.rs",
+      "sha256": "aaf780f945bf45b9a0e6442c22fdee06f2c953efcc968d61141efe61b25bce16",
+      "git_blob": "eed817dcac736beded62ad83c2cbb908936370e4",
+      "bytes": 62705
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/driver.rs",
+      "sha256": "64afdaa718df0cdee7a15db9e253b290e65a8b8d6b44a182b9998c6c6597479e",
+      "git_blob": "6ee63d32334248f5d07676b4f191e0bd691372a2",
+      "bytes": 3813
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/error.rs",
+      "sha256": "e44528db48e01f6dac6b4ca74065d5a77858cebc29ea0d717ebc2f5eb482f07a",
+      "git_blob": "65c1977fb7404c8128059efda6a3d51291b6b3a8",
+      "bytes": 2527
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/lib.rs",
+      "sha256": "a1330e48510469d9d639ea300adedd790a4620cebeeaa4dce6e2627da5cc5201",
+      "git_blob": "527609d85561385df0fd50072568db2edc2b7760",
+      "bytes": 7950
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/matrix.rs",
+      "sha256": "021fd2d4cef0a765e651676a7efd06a58dc77f7932d184001d1ade8cf09b3bed",
+      "git_blob": "58f0ac9ef340c5253b56e22a5baef969a941055f",
+      "bytes": 31847
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/precreated.rs",
+      "sha256": "be44814cfa936e76335aa6b58c3ed71ba5e6dc31fde49b42f5d27703bde87486",
+      "git_blob": "73b959a645cf5728f5e50ec642cb4f368eed1116",
+      "bytes": 15869
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/process_deadline.rs",
+      "sha256": "fa2da7fc30dc2f16b124d53e542c0268e44bdcc27f07d47b3d2154c172e46af9",
+      "git_blob": "0e0e767efb9eadaaacbb25c3b45e13da582d6410",
+      "bytes": 8600
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/recovery.rs",
+      "sha256": "ab8a30f222ba25f8848adc73045ae4f915e3c0e6f323866e0819f53f5991bf8f",
+      "git_blob": "81bad8ba5840b72d1bd5fc8ab1e1172bb034b379",
+      "bytes": 15411
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/release.rs",
+      "sha256": "124fbc08bd5baf4f084c8391b50f477a24fcd74b456287bed936661252716566",
+      "git_blob": "8fb9c220b1254bd6d0618896140cee7f9c17c10f",
+      "bytes": 27972
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/restart_state.rs",
+      "sha256": "4603044ce5a553f6c2b25b1ed2870aacc62b67f1ebdad0b0e34ef4830c121b54",
+      "git_blob": "bdb0980e7ecd07d5ff3a68674624908012a12bf2",
+      "bytes": 4924
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/supervisor.rs",
+      "sha256": "c81d25c8cda61ddae93608df9b1064e4402972d3df2acb25546239a77149c85b",
+      "git_blob": "712bcb7da3178c42457e2e27d8ac2a4091830147",
+      "bytes": 51397
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/supervisor_tests.rs",
+      "sha256": "af3beeaa4abffc639e2cc6efc343930468d31ff254af076603b8f644a420d235",
+      "git_blob": "82dd4ab8fea5f67281fba5ac7bc06748e6cd3257",
+      "bytes": 86765
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/tick.rs",
+      "sha256": "41a6deb682fa12fd2c8220dd69df00ae08e3c1cf4823d1bcd673bb0bf4864975",
+      "git_blob": "f33f7ea8141a65a8efbd1ee14fcae49833da6252",
+      "bytes": 13368
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/unix.rs",
+      "sha256": "5b8be63a884a4572167c320197222b7b67b8665d2a8e00a1f595f3693f4bc600",
+      "git_blob": "58e8c701afd759917335ba299ae4431e5ca5adcf",
+      "bytes": 32890
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/unix_drain_tests.rs",
+      "sha256": "471d891bcae0a2ae1b6c8c5c2f423a8af9f6af16b7264b25d4fc2fd19ce05a51",
+      "git_blob": "3c641c8e44b6eb608e673b39a64725bc0181291f",
+      "bytes": 3993
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/unix_tests.rs",
+      "sha256": "d9f4468eb3cc26fd6045e0a61300e00f86cf05cf8841db57116f75706299598d",
+      "git_blob": "eb88a374cf9497fc794bba5b62b7c596a4a2200a",
+      "bytes": 14330
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/tests/isolated_execution_handoff_unix.rs",
+      "sha256": "10c0dbd18cfecc4b3bf6d0ece227ec634b5fd2d380089ac2bc010320a52ca5c8",
+      "git_blob": "c7b32044b17c04f7a973a1cab898b62c4ace80a3",
+      "bytes": 5341
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/tests/paired_process_product.rs",
+      "sha256": "2ea6a3d90b18c21094130de7ef31b4ec3e53ac845009210177c2761fc4a04d82",
+      "git_blob": "520a02e30b25d5a2b20694e5d2e18039b1efb148",
+      "bytes": 24218
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/tests/process_deadline_unix.rs",
+      "sha256": "b8b3fc976ae4c6bb0e76ed9b580f9227a2b84be24ec808da1296955e3837199a",
+      "git_blob": "3c615ec068b36745868a5ff08d82f27af6c1b3be",
+      "bytes": 2663
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/tests/restart_budget.rs",
+      "sha256": "ed450b9eca326a213ff4c4dd1d7a73de6ea608f978a2def070143a5e181b9fe7",
+      "git_blob": "a9c0d98eecfcdc24166b2e3ebd9c7f7438daa28d",
+      "bytes": 10606
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/tests/restart_budget_recovery.rs",
+      "sha256": "8452475fea90ba05eff45e23a2a60390aa6185e33b78c3a22de1470f9361a6b0",
+      "git_blob": "76225720fcf02b8219fcac494b77d4d63f3d3812",
+      "bytes": 13804
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/tests/signed_intent_recovery.rs",
+      "sha256": "c4eef0d5bcf328e4a5e500946aaf9c8854715501797ba8a743d5d6722bb910db",
+      "git_blob": "7f6ca06c0823b50e2ef6c8dc7290145cef265cf9",
+      "bytes": 7257
+    }
+  ],
+  "runner_evidence": [
+    "native-full-workspace-runner-audit.json",
+    "native-full-workspace-scope-audit.json"
+  ],
+  "task_env_whitelist": {
+    "RUSTUP_TOOLCHAIN": "1.96.0",
+    "CARGO_BUILD_JOBS": "2",
+    "CARGO_TARGET_DIR": "/home/alex/work/hepta-cell-unified-20261106-a/target",
+    "NEXTEST_TEST_THREADS": "2",
+    "recipe_sets_NEXTEST_PROFILE": "local",
+    "recipe_sets_RUST_MIN_STACK": "8388608"
+  }
+}

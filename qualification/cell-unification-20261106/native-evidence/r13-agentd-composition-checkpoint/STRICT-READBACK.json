@@ -1,0 +1,79 @@
+{
+  "status": "CLOSED_STRICT_PASS_TESTS_RUNNING_NOT_READ",
+  "files": [
+    {
+      "eof": true,
+      "path": "/home/alex/work/hepta-cell-unified-20261106-a/evidence/native-agentd-composition-r13-strict-receipt.json",
+      "sha256": "1c1c8ec2660e6c55b5aeb85092ed41320ecc720c6e5d104b0bac62ac3b47bbaa",
+      "size": 1062,
+      "version": "66306:50905139:1062:1793947218300185133:1793947218300185133"
+    },
+    {
+      "eof": true,
+      "path": "/home/alex/work/hepta-cell-unified-20261106-a/evidence/native-agentd-composition-r13-strict-resources.txt",
+      "sha256": "60c399181d6c3ce4e7e2d8783534025ebf25ed48ed4599edcfd8d6865ab1db22",
+      "size": 860,
+      "version": "66306:50905022:860:1793947218296791789:1793947218296791789"
+    },
+    {
+      "eof": true,
+      "path": "/home/alex/work/hepta-cell-unified-20261106-a/evidence/native-agentd-composition-r13-strict.log",
+      "sha256": "706bb2fa5685ee187d9a8a1c05ba1b29c6f9ea79488dd804595c00f8ee265e90",
+      "size": 2146,
+      "version": "66306:50875801:2146:1793947218090775248:1793947218090775248"
+    },
+    {
+      "eof": true,
+      "path": "/home/alex/work/hepta-cell-unified-20261106-a/evidence/native-agentd-composition-r13-environment.json",
+      "sha256": "9a1f3879dee5f81c329ec5d453f690196c51179a0c26e3d5fdeb613742adf568",
+      "size": 675,
+      "version": "66306:50904954:675:1793947190778008591:1793947190778008591"
+    },
+    {
+      "eof": true,
+      "path": "/home/alex/work/hepta-cell-unified-20261106-a/evidence/native-candidate-r13-source.json",
+      "sha256": "29349f01ba7bdd54c74057175d3e9364dfb9b7450c53687050db13b0d0058048",
+      "size": 42450,
+      "version": "66306:50904875:42450:1793947190777577409:1793947190777577409"
+    }
+  ],
+  "all_raw_bytes_sha_verified": true,
+  "strict_receipt": {
+    "schema": "hepta.native-gate-receipt.v1",
+    "phase": "strict",
+    "source_tree": "6be3dbb1420c0ac7e0590c6e3c17191a073af9a9",
+    "source_manifest": "native-candidate-r13-source.json",
+    "source_commit": "d313ba51180a838269677d28b2d91e1777b7b463",
+    "command": [
+      "just",
+      "clippy",
+      "--locked",
+      "-p",
+      "codex-hepta-agentd",
+      "-p",
+      "codex-hepta-agent-protocol",
+      "-p",
+      "codex-hepta-infer-worker-host",
+      "--",
+      "-D",
+      "warnings"
+    ],
+    "cwd": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs",
+    "start_unix": 1793947190.7848723,
+    "end_unix": 1793947218.2989724,
+    "elapsed_seconds": 27.514100074768066,
+    "exit_code": 0,
+    "log_sha256": "706bb2fa5685ee187d9a8a1c05ba1b29c6f9ea79488dd804595c00f8ee265e90",
+    "resources_sha256": "60c399181d6c3ce4e7e2d8783534025ebf25ed48ed4599edcfd8d6865ab1db22",
+    "environment_manifest": "native-agentd-composition-r13-environment.json",
+    "packages": [
+      "codex-hepta-agentd",
+      "codex-hepta-agent-protocol",
+      "codex-hepta-infer-worker-host"
+    ],
+    "retries": null
+  },
+  "source_files_declared": 154,
+  "active_test_log_read": false,
+  "full_suite_pass_claimed": false
+}

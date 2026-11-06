@@ -1,0 +1,203 @@
+{
+  "schema": "hepta.agentd-authority-intelligence-box-source.v1",
+  "state": "FROZEN_PENDING_NATIVE_STRICT_TESTS_AND_FINAL_FMT",
+  "native_tree": "6d88ca9c8964669a408d8549efaeff7b94d68674",
+  "base_commit": "bef6fa7645df9df12b69fda499e97eed25de6c75",
+  "nearest_instructions": [
+    "AGENTS.md"
+  ],
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_checkpoint_adoption.rs",
+      "before": {
+        "sha256": "31f4fa2ad1e27b6ff8de980edf12fcd2412268dbd120eaf63a3bc791b68593f4",
+        "git_blob": "eb0cb3b2a38aec6ffecfd0c5b6880b66cd1623f3",
+        "bytes": 9187
+      },
+      "after": {
+        "sha256": "fc26a5ca641b3ec6659ad41ca5efa827772790867fa584852bea22b575089b41",
+        "git_blob": "8aafbdb35ef4205b3da3d831014b6cba9e54af2f",
+        "bytes": 9203
+      },
+      "baseline_unchanged_from_bef": true,
+      "only_declared_transformations": true,
+      "inverse_restores_original_bytes": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_checkpoint_material_worker.rs",
+      "before": {
+        "sha256": "9ad38d09cd86e4a50894940dfb79fc1cac78e7039581bab5ffc7ab2e4b55d04b",
+        "git_blob": "727c7ac9d681fcd8fa80a6e1ac71193a1a3785d3",
+        "bytes": 6860
+      },
+      "after": {
+        "sha256": "eb9b5b0bb774cb717d015fa903fcfddfa41b1a621b3e33b1c95a673ad7c85273",
+        "git_blob": "699703d7a0c1fa09f885f842b787de5c77f5ee57",
+        "bytes": 7160
+      },
+      "baseline_unchanged_from_bef": true,
+      "only_declared_transformations": true,
+      "inverse_restores_original_bytes": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_checkpoint_material_binding.rs",
+      "before": {
+        "sha256": "a0fd7e448a1cf34760c3e137a1894b55d3c85f0f0c71418883747a11a9a97280",
+        "git_blob": "45557dc412e8b3cfc72ef9dff534b3bad9ab0339",
+        "bytes": 4414
+      },
+      "after": {
+        "sha256": "0416bff31198afc9d5e1fa343c450e77bdd12c6666b8af5c79ff1dcf13ce9c74",
+        "git_blob": "0e5f7ae2e0f0dde8cbc04f8874dc963664d0c76a",
+        "bytes": 4430
+      },
+      "baseline_unchanged_from_bef": true,
+      "only_declared_transformations": true,
+      "inverse_restores_original_bytes": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_admin_protocol.rs",
+      "before": {
+        "sha256": "1dd4a33bebdf15467e3dc347869829c076bf6d79582b15cdb7eaadcacab19a10",
+        "git_blob": "c9280dea3a1131c0963576ec9aada82106fd5f04",
+        "bytes": 4192
+      },
+      "after": {
+        "sha256": "fbea880f4f8730d3c81a9a7adc9f4f54400be81530536394435eeefd489cc854",
+        "git_blob": "2fde5da6bae08db988f0305be4abb1e96495e0bc",
+        "bytes": 4202
+      },
+      "baseline_unchanged_from_bef": true,
+      "only_declared_transformations": true,
+      "inverse_restores_original_bytes": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_admin_service.rs",
+      "before": {
+        "sha256": "86ce4834a011df43799afceb30dd61c903c3525f54fe6b4391bd38452949e5eb",
+        "git_blob": "7397f5893f4955aad506b9f1bf0e853f4d5eaedc",
+        "bytes": 9783
+      },
+      "after": {
+        "sha256": "7b832467619cc1cffbbe1fbd0bd70f6d4bb4711e13ac51fe4c2e1b580982e50e",
+        "git_blob": "bb14ef568e7354d0df64d97b8d87c22a4add7ad7",
+        "bytes": 9793
+      },
+      "baseline_unchanged_from_bef": true,
+      "only_declared_transformations": true,
+      "inverse_restores_original_bytes": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_admin_effect.rs",
+      "before": {
+        "sha256": "0efad61b36a9be668a6e58f66eb84ccd2ebdfef89f54943366fe4d889fb6f830",
+        "git_blob": "ecaadf8f3cbc4f7af0abf19901f74cdd01493cdb",
+        "bytes": 5716
+      },
+      "after": {
+        "sha256": "592c7008c07d06f1071d0e159b754b7013ad8f49c9ae794f7977fbd3f0528f11",
+        "git_blob": "e02b8d792936932f98f6902935904f14853dc469",
+        "bytes": 5726
+      },
+      "baseline_unchanged_from_bef": true,
+      "only_declared_transformations": true,
+      "inverse_restores_original_bytes": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/automation_effect_host.rs",
+      "before": {
+        "sha256": "3aac98bce3d3f5c582004ec50cc00b256138316c3b741cb4a56297c40a73b905",
+        "git_blob": "fd516a4a8ca25c0f3bf5a921b51f27c191dd1f15",
+        "bytes": 42530
+      },
+      "after": {
+        "sha256": "ece169c341a173463f3da8bae935b607f5d1c2fb72dabb24ebbad4d75f649688",
+        "git_blob": "94467e2425f3679d028fb51a7cae3de6cdc2d047",
+        "bytes": 42533
+      },
+      "baseline_unchanged_from_bef": false,
+      "only_declared_transformations": true,
+      "inverse_restores_original_bytes": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/intelligence_product.rs",
+      "before": {
+        "sha256": "8cbef22fe134110fb343d37e7081bb2c03aac8257e33909146cc5a1ffc3322a0",
+        "git_blob": "84900183ca03f870f61bba1c1ca3b1ccfd1e56ae",
+        "bytes": 28456
+      },
+      "after": {
+        "sha256": "c6d4326630dfb08b7f7b9c2ae7a6c73c55bab5e1b151f3ecd48b93628591d55a",
+        "git_blob": "1aed5755e7c0ce9c0a1afee35400dc80aa675632",
+        "bytes": 28471
+      },
+      "baseline_unchanged_from_bef": true,
+      "only_declared_transformations": true,
+      "inverse_restores_original_bytes": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/intelligence_product_runner.rs",
+      "before": {
+        "sha256": "4468f1893ce9112f8d21d98afdb5de69acf15b0a02af90a5d7b91306529178c0",
+        "git_blob": "84da64e90b28d7669c67c701597ba530483c98b3",
+        "bytes": 17294
+      },
+      "after": {
+        "sha256": "ecd7be1e98161c8c5220da8cb589a22b9924cd25fd4630d6b5d6822c5e8769d2",
+        "git_blob": "ff99330414a78da11b28dbd21bfb327b0fffba15",
+        "bytes": 17369
+      },
+      "baseline_unchanged_from_bef": false,
+      "only_declared_transformations": true,
+      "inverse_restores_original_bytes": true
+    }
+  ],
+  "changed_lines": {
+    "added": 44,
+    "removed": 34
+  },
+  "patch": {
+    "path": "repair.patch",
+    "sha256": "61fa9e7e2bc9e6e48840e5cde3305fb1984b0845025f33335d61956747789c69",
+    "git_blob": "304932e8046ea5efa12d8a5e80e0261e89428619",
+    "bytes": 11224
+  },
+  "read_only_layout_support": [
+    {
+      "path": "codex-rs/hepta-contracts/src/authority_lease.rs",
+      "sha256": "9f151ac75919c4b901e798b5eb34b74ba2c7a5548e0c72844ec2a02555ea0d10",
+      "git_blob": "924e4552472038934f665f6acf7a95438294893f",
+      "bytes": 61661,
+      "read_only": true
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/final_use.rs",
+      "sha256": "1072c1cc4578f5eda4c99d0077b979b3e5a2949300318da101952a9a65b00edc",
+      "git_blob": "e6e40ac106c6d1c07f8bfc17da1a0c5c763224cd",
+      "bytes": 37625,
+      "read_only": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/deployment_notes_observation.rs",
+      "sha256": "4216757bd72e1ce19144c6202da3ac9f712846082655dd92139e1aee427e68df",
+      "git_blob": "16c29bf729a478fef1a1c2fa8c056a76c97e9454",
+      "bytes": 5981,
+      "read_only": true
+    }
+  ],
+  "cross_owner_change": {
+    "path": "codex-rs/hepta-agentd/src/state_control.rs",
+    "owner": "/root/native_validation",
+    "before_sha256": "129ba6318c1e2536dd27f6bae720ef51b5f119b33f18ecdd479c4653b1dee1e9",
+    "scoped_before": "                    crate::automation_effect_host::AgentdAutomationEffectReconcileOutcome::Observed(\n                        receipt,\n                    ) => crate::AutomationEffectReconcileSnapshot {\n                        state: crate::AutomationEffectReconcileState::Terminal,\n                        effect: Some(effect_snapshot(receipt)?),",
+    "scoped_after": "                    crate::automation_effect_host::AgentdAutomationEffectReconcileOutcome::Observed(\n                        receipt,\n                    ) => crate::AutomationEffectReconcileSnapshot {\n                        state: crate::AutomationEffectReconcileState::Terminal,\n                        effect: Some(effect_snapshot(*receipt)?),",
+    "patch": {
+      "path": "state-control-consumer.patch",
+      "sha256": "d9c3b525b2052e07d99ab98d2ba4b83d0f0ce18da7b0d26fe54c26b402d12194",
+      "git_blob": "2b2b8c8a8ba3d8c62a9607960eb51ae915fea52f",
+      "bytes": 638
+    },
+    "integration_status": "ACKNOWLEDGED_BY_NATIVE_OWNER; NOT_EDITED_BY_THIS_AGENT"
+  },
+  "unchanged_owned_file": "codex-rs/hepta-agentd/src/authority_host_admin_issuer.rs"
+}

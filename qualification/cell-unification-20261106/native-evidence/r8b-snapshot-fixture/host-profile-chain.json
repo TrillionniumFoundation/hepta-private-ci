@@ -1,0 +1,57 @@
+{
+  "schema": "hepta.exec-snapshot-host-profile-chain.v1",
+  "host": "pocket4",
+  "collection": "read_multiple_files, explicit regular canonical paths; no profile or child command executed; each version independently pinned, not an atomic multi-file snapshot",
+  "files": [
+    {
+      "eof": true,
+      "path": "/etc/profile",
+      "sha256": "e11b4fef7ad303d10cfcc733171713a31183e8b44d8600587e5f72c56a675a5a",
+      "size": 641,
+      "text": "# /etc/profile: system-wide .profile file for the Bourne shell (sh(1))\n# and Bourne compatible shells (bash(1), ksh(1), ash(1), ...).\n\nif [ \"${PS1-}\" ]; then\n  if [ \"${BASH-}\" ] && [ \"$BASH\" != \"/bin/sh\" ]; then\n    # The file bash.bashrc already sets the default PS1.\n    # PS1='\\h:\\w\\$ '\n    if [ -f /etc/bash.bashrc ]; then\n      . /etc/bash.bashrc\n    fi\n  else\n    if [ \"$(id -u)\" -eq 0 ]; then\n      PS1='# '\n    else\n      PS1='$ '\n    fi\n  fi\nfi\n\nif [ -d /etc/profile.d ]; then\n  for i in $(run-parts --list --regex '^[a-zA-Z0-9_][a-zA-Z0-9._-]*\\.sh$' /etc/profile.d); do\n    if [ -r $i ]; then\n      . $i\n    fi\n  done\n  unset i\nfi\n",
+      "version": "66306:76546475:641:1787567628000000000:1791083351569659785"
+    },
+    {
+      "eof": true,
+      "path": "/etc/profile.d/im-config_wayland.sh",
+      "sha256": "51541d1eb2d4a4cab0be7272e053cff4e31a1ba7b8367a4908183da5f1566101",
+      "size": 1078,
+      "text": "# to be placed in /etc/profile.d/im-config_wayland.sh\nIMLAUNCH=/usr/bin/im-launch\nIM_CONFIG_ENTRY=\"profile\"\nexport IM_CONFIG_ENTRY\n. /usr/share/im-config/initializer\n# # This sets the IM variables on Wayland only when im-config is installed\n# if false && [ -x \"$IMLAUNCH\" ] && [ \"$XDG_SESSION_TYPE\" = 'wayland' ]; then\n#     # If already tweaked, keep hands off :-)\n#     # If im-config is removed but not purged, keep hands off :-)\n#     if [ -z \"$XMODIFIERS\" ] &&\n#         [ -z \"$GTK_IM_MODULE\" ] &&\n#         [ -z \"$QT_IM_MODULE\" ] &&\n#         [ -z \"$CLUTTER_IM_MODULE\" ] &&\n#         [ -z \"$SDL_IM_MODULE\" ]; then\n#         # if freash, set environments\n#         logger_info \"  Set environment variables (all empty strings)\"\n#         IM_CONFIG_PHASE=1\n#         . /usr/share/im-config/im-config_setting\n#     else\n#         logger_info \"  Skip setting environment variables (non-empty strings)\"\n#     fi\n# else\n#     logger_debug \"  Skip setting environment variables (autostart script disabled)\"\n# fi\n# logger_debug \"  EXIT @profile IM_CONFIG_ENTRY='$IM_CONFIG_ENTRY'\"\n",
+      "version": "66306:76550083:1078:1773904513000000000:1791084057949181814"
+    },
+    {
+      "eof": true,
+      "path": "/usr/share/im-config/initializer",
+      "sha256": "e4efe8ab8f7cfc8d15525b5e30d9562abe64fa9a603599bc806d8cc7d263683c",
+      "size": 4215,
+      "text": "# Common shell routine used by im-config\n# (C) 2026 Osamu Aoki <osamu@debian.org>, GPL-2+\n# vim: set sts=4 sw=4 expandtab:\n#\n#############################################################\n# Common logging functions `\n#############################################################\nIM_CONFIG_DEFAULT=/etc/default/im-config\n# logger_info -- nice to have systemd installed\n# gnu-which doesn't support \"which -s ...\"\nif [ -e /usr/bin/systemd-cat ] ; then\n    LOGGER='/usr/bin/systemd-cat -p 6 -t \"im-config\" echo'\nelif [ -e /usr/bin/logger ] ; then\n    LOGGER='/usr/bin/logger -p local0.info -t \"im-config\" echo'\nelse\n    LOGGER='>&2 echo'\nfi\n\nlogger_info() {\n    eval \"$LOGGER \\\"$1\\\"\"\n}\n\nlogger_debug() {\n    if [ -n \"$IM_CONFIG_VERBOSE\" ]; then\n        eval \"$LOGGER \\\"$1\\\"\"\n    fi\n}\n\n# Reduce risk of random script executions\nset_val () {\n    MATCH=\"^$1=[\\\"']?[-a-zA-Z:_,][-a-zA-Z:_,]*.[\\\"']?\\$\"\n    eval \"$(grep -e \"$MATCH\" $IM_CONFIG_DEFAULT | head -1)\"\n    logger_debug \"Set $(grep -e \"$MATCH\" $IM_CONFIG_DEFAULT | head -1)\"\n}\n\n# parse /etc/default/im-config\nlogger_debug \"Parse $IM_CONFIG_DEFAULT\"\nif [ -r $IM_CONFIG_DEFAULT ]; then\n    set_val IM_CONFIG_DEFAULT_MODE\n    set_val CJKV_DEFAULT_DESKTOP\n    set_val CJKV_LOCALES\n    set_val IM_CONFIG_PREFERRED_RULE\n    set_val DESKTOP_SETUP_IBUS\n    set_val IM_CONFIG_SETMODE\n    set_val IM_CONFIG_VERBOSE\nfi\n# provide fall back values for undefined cases\nif [ -z \"$IM_CONFIG_DEFAULT_MODE\" ]; then\n    IM_CONFIG_DEFAULT_MODE=\"auto\"\nfi\nif [ -z \"$CJKV_DEFAULT_DESKTOP\" ]; then\n    CJKV_DEFAULT_DESKTOP=\"*\"\nfi\nif [ -z \"$CJKV_LOCALE\" ]; then\n    CJKV_LOCALES=\"zh_TW:zh_HK:zh_SG:zh_CN:ja_JP:ko_KR:vi_VN\"\nfi\nif [ -z \"$IM_CONFIG_PREFERRED_RULE\" ]; then\n    IM_CONFIG_PREFERRED_RULE=\"zh_CN,fcitx5:zh_TW,fcitx5:zh_HK,fcitx5:zh_SG,fcitx5\"\nfi\nif [ -z \"$DESKTOP_SETUP_IBUS\" ]; then\n    DESKTOP_SETUP_IBUS=\"GNOME\"\nfi\nif [ -z \"$IM_CONFIG_SETMODE\" ]; then\n    IM_CONFIG_SETMODE=\"\"\nfi\nif [ -z \"$IM_CONFIG_VERBOSE\" ]; then\n    IM_CONFIG_VERBOSE=\"false\"\nfi\n\n# 2026-0317\n# Primary variable to determine DE\n# XDG_CURRENT_DESKTOP -- defined in the Desktop Entry Specification since its version 1.2\n#   Set by set by DesktopNames in some code, multi value capable\n#   See https://specifications.freedesktop.org/menu/latest/onlyshowin-registry.html\n#   budgie-session       GNOME\n#   cinnamon-session     IM_CONFIG_CURRENT_DESKTOP <- DESKTOP_SESSION='cinnamon' (Later: X-Cinamon)\n#   gnome-flashback      GNOME-Flashback:GNOME\n#   gnome-session        GNOME\n#   lxqt-session         LXQt\n#   lxsession            LXDE     (this code mentions Lubuntu migration, and has example with qt/platform=lxqt)\n#   mate-session-manager MATE\n#   plasma-workspace     KDE\n#   xfce4-session        XFCE\n#\n# XDG_SESSION_DESKTOP -- non-standard\n# DESKTOP_SESSION     -- deprecated, backward-compatibility\n#\nlogger_debug \"@ IM_CONFIG_ENTRY='$IM_CONFIG_ENTRY' XDG_SESSION_TYPE ='$XDG_SESSION_TYPE' UID=$(id -u) PID=$$ PPID=$PPID\"\nlogger_debug \"  GTK_IM_MODULE='$GTK_IM_MODULE' QT_IM_MODULE='$QT_IM_MODULE' CLUTTER_IM_MODULE='$CLUTTER_IM_MODULE' SDL_IM_MODULE='$SDL_IM_MODULE' XMODIFIERS='$XMODIFIERS'\"\nif [ -n \"$XDG_CURRENT_DESKTOP\" ]; then\n    IM_CONFIG_CURRENT_DESKTOP=\"$XDG_CURRENT_DESKTOP\"\n    logger_debug \"  Set IM_CONFIG_CURRENT_DESKTOP <- XDG_CURRENT_DESKTOP='$XDG_CURRENT_DESKTOP'\"\nelif [ \"$DESKTOP_SESSION\" = 'lxqt' -o \"$DESKTOP_SESSION\" = 'Lubuntu' ]; then\n    # hack since LXQt sets XDG_CURRENT_DESKTOP late - https://github.com/lxqt/lxqt/issues/1830\n    # Upstream claims that the issue was fixed in lxqt-session 0.17.0. However, Lubuntu 21.10\n    # uses 0.17.1 but it still does not work. So let's keep this hack for now.\n    IM_CONFIG_CURRENT_DESKTOP=\"LXQt\"\n    logger_debug \"  Set IM_CONFIG_CURRENT_DESKTOP <- DESKTOP_SESSION='$DESKTOP_SESSION' (special case for Ubuntu lxqt Lubuntu)\"\nelif [ -n \"$DESKTOP_SESSION\" ]; then\n    #  Since LXDE also sets $XDG_CURRENT_DESKTOP='', let's make generic fall back\n    IM_CONFIG_CURRENT_DESKTOP=\"$DESKTOP_SESSION\"\n    logger_debug \"  Set IM_CONFIG_CURRENT_DESKTOP <- DESKTOP_SESSION='$DESKTOP_SESSION' (generic backword compatibility)\"\nelse\n    IM_CONFIG_CURRENT_DESKTOP=\"UNDEFINED\"\n    logger_debug \"  Set IM_CONFIG_CURRENT_DESKTOP <- 'UNDEFINED'\"\nfi\n\n",
+      "version": "66306:108027927:4215:1773904513000000000:1791083850299309701"
+    },
+    {
+      "eof": true,
+      "path": "/etc/default/im-config",
+      "sha256": "90586c0bdf4a8febbbafacdbc922c5142494b0ca34b77fc4ec2ab5644e981f5a",
+      "size": 1752,
+      "text": "# Default im-config mode (see im-config(8))\n\n# This im-config helps to start best available input method (IM)\n\n# Always start highest priority IM\nIM_CONFIG_DEFAULT_MODE=auto\n# Start or not to start IM dynamically under CJKV/desktop environment\n#IM_CONFIG_DEFAULT_MODE=cjkv\n# Never start IM by im-config (Leave it to desktop system)\n#IM_CONFIG_DEFAULT_MODE=none\n\n# cjkv mode behavior:\n#  case 1:\n#    * desktop is listed in CJKV_DEFAULT_DESKTOP\n#    * locale is under so-called CJKV environments\n#    --> auto mode\n#  case 2:\n#    * desktop is listed in CJKV_DEFAULT_DESKTOP\n#    * locale is *not* under so-called CJKV environments\n#    --> none mode\n#  case 3:\n#    * desktop is *not* listed in CJKV_DEFAULT_DESKTOP\n#    * locale is under any environments\n#    --> auto mode\n#\nCJKV_DEFAULT_DESKTOP=\"*\"\n#CJKV_DEFAULT_DESKTOP=\"KDE:LXQt:XFCE\"\n\n# List of locales for so-called CJKV environments\nCJKV_LOCALES=\"zh_TW:zh_HK:zh_SG:zh_CN:ja_JP:ko_KR:vi_VN\"\n\n# Set locale dependent preferred IM over standard auto mode if not GNOME\nIM_CONFIG_PREFERRED_RULE=\"zh_CN,fcitx5:zh_TW,fcitx5:zh_HK,fcitx5:zh_SG,fcitx5\"\n\n# User and system wide configuration is normally done via im-config program.\n# The above IM_CONFIG_PREFERRED_RULE sets locale dependent preferred IM\n# override rule.  If you wish to use uim over ibus just for ja_JP,\n# add :ja_JP,uim at the end of the above list. (Marked by \"!\" in GUI)\n\n# List of desktop systems which starts ibus if available\n#   Applicable desktops are excluded for applying IM_CONFIG_PREFERRED_RULE\nDESKTOP_SETUP_IBUS=\"GNOME\"\n\n# Trace commands for debug\n# (This may cause problem configuration file generated under console mode)\n#IM_CONFIG_SETMODE=\"-x\"\n\n# Verbose output for debug (uncomment following)\n#IM_CONFIG_VERBOSE=\"true\"\n\n",
+      "version": "66306:76548072:1752:1689881512000000000:1785773332712599286"
+    }
+  ],
+  "source_chain": [
+    "/bin/bash -lc reads /etc/profile",
+    "/etc/profile sources readable .sh files from /etc/profile.d",
+    "im-config_wayland.sh unconditionally sources /usr/share/im-config/initializer",
+    "initializer selects existing /usr/bin/systemd-cat as LOGGER",
+    "/etc/default/im-config leaves IM_CONFIG_VERBOSE unset (the assignment is commented)",
+    "initializer sets empty IM_CONFIG_VERBOSE to the nonempty string false",
+    "logger_debug uses a nonempty-string check, so the final two unconditional debug calls and the UNDEFINED desktop branch each invoke systemd-cat"
+  ],
+  "test_binding": {
+    "original_tree": "6d88ca9c8964669a408d8549efaeff7b94d68674",
+    "fixture": "codex-rs/exec-server/tests/exec_process.rs",
+    "fixture_sha256": "40a210ce7d533746d95c184844fe3425c9d52aec6911dddf810200549691ce93",
+    "environment": "The fixture includes only HOME and PATH, sets a fresh temporary HOME, and supplies no request env overrides. IM_CONFIG_VERBOSE, XDG_CURRENT_DESKTOP and DESKTOP_SESSION are absent from that controlled child environment.",
+    "sandbox": "Only the remote variants of this fallback fixture request workspace_write. Successful captures change the final shell invocation to the existing non-login restoration mode; capture stderr is discarded by the original capture code."
+  },
+  "evidence_boundary": "The three native fallback failures show exactly three stream-fd EPERM lines, with pipe/TTY routing consistent with child stderr. Native read-only inspection confirmed /usr/bin/systemd-cat contains the exact error string. This is a source-and-log causal attribution; no syscall/process trace, shell execution, or network probe was performed for this audit.",
+  "proposed_fixture_boundary": "Use a test-only Bash launcher that execs the same /bin/bash with --noprofile plus every original argument. Keep -lc eligibility, explicit .bashrc capture, all sandbox settings, retry budgets, output assertions and captures=x/xx/xxx assertions. Do not alter host files or production stderr handling."
+}

@@ -1,0 +1,61 @@
+{
+  "schema": "hepta.agentd-r12-eager-concurrency.v1",
+  "source_tree": "a0d24a6cca704bb1bb43c4090a275a38832f7b19",
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/terminal_learning_tests.rs",
+      "before": {
+        "bytes": 14255,
+        "sha256": "81c3960a7d2fc0b9f6197b3c05286afa6e92db88bf822b2660902de7421c7e70",
+        "git_blob": "53bb63fc2a1da9311a43889ec19717be688c9cc7"
+      },
+      "after": {
+        "bytes": 14242,
+        "sha256": "db37bedf21b41250d0e895e67f7ef5bbcb71d7eb8f4ace68f2a17cd9babbc455",
+        "git_blob": "ecefe4284c4ada4a6d92d0a498b8953e393958f1"
+      },
+      "inverse_exact": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/deployment_frontier_tests.rs",
+      "before": {
+        "bytes": 3833,
+        "sha256": "9d7a5b03ef2911cf1a32566f3297f69cf414cf053269bfe7c25faefe34fd339c",
+        "git_blob": "5f56269d21b584a341683774ca1bec725d61cafc"
+      },
+      "after": {
+        "bytes": 3870,
+        "sha256": "e9f4c49af044d52ae3ca5314f41fe34d22507ff89a60bdcb0f2185e0b624a7f4",
+        "git_blob": "a3f55c057cae37acf2266290a04f3a20027b539c"
+      },
+      "inverse_exact": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/tests/terminal_cell_owner.rs",
+      "before": {
+        "bytes": 26064,
+        "sha256": "7ed28a40684fdabae2af45344fa31eee31520612984a6c97c86159686408e63a",
+        "git_blob": "8990c7336abbab8af2d461f51adeb9e9c8a0e0fc"
+      },
+      "after": {
+        "bytes": 26267,
+        "sha256": "f8d9efdad97aa2d2d3c42fd1a7d4c5dd793591f60c0a77cc24b5eea39f5e0b9d",
+        "git_blob": "407549702c264ffd2cba3b630e5d092bc8756398"
+      },
+      "inverse_exact": true
+    }
+  ],
+  "patch": {
+    "bytes": 7412,
+    "sha256": "ead71072eb566c03158078d6255e0d1b92cc018b51a49c6d43e1ab1613e401af",
+    "git_blob": "aca42a01ab5651692353eea01f839be20d103eca"
+  },
+  "semantic_audit": {
+    "frontier": "Same values2..10 spawn before unchanged parent Barrier(9).wait; same Arc clones, store open, CAS inputs, ordered joins and one-success/seven-conflict assertions.",
+    "owner_profile": "Same owners0..agents all spawn before ordered joins; worker body unchanged except indentation. Original ignored qualification annotation retained; no training scheduled.",
+    "shorthand": "Same ledger_root local moved into the same field.",
+    "all_original_assertions_preserved": true,
+    "no_tests_added_or_excluded": true
+  },
+  "native_validation": "PENDING"
+}

@@ -1,0 +1,395 @@
+{
+  "replay_passed": true,
+  "trials": 10,
+  "arms": 60,
+  "scalar_prediction_replays": 30720,
+  "max_absolute_prediction_error": 1.4432899320127035e-15,
+  "cost_events_counted_once": 655,
+  "estimated_float_ops_shared_counted_once": 49090740,
+  "route_decisions_shared_counted_once": 37120,
+  "trials_reviewed": [
+    {
+      "scenario": "helpful_specialization",
+      "seed": 7,
+      "metrics": {
+        "frozen_incumbent": {
+          "test_mse": 5.776092728686457,
+          "old_mse": 0.0026588988938567666
+        },
+        "continued_parent": {
+          "test_mse": 2.9673884753376805,
+          "old_mse": 3.3691693436968664
+        },
+        "expanded_monolith": {
+          "test_mse": 0.017421026626744593,
+          "old_mse": 0.023242653731252363
+        },
+        "fixed_experts": {
+          "test_mse": 0.002767970770034874,
+          "old_mse": 0.0028421314633726223
+        },
+        "random_grouping": {
+          "test_mse": 3.0473561229735058,
+          "old_mse": 3.456456495210521
+        },
+        "demand_specialization": {
+          "test_mse": 0.0026763544852769464,
+          "old_mse": 0.0026588988938567666
+        }
+      },
+      "decision": "HOLD",
+      "reasons": [
+        "insufficient_gain_over:fixed_experts"
+      ],
+      "candidate_old_task_mse_increase": 0.0
+    },
+    {
+      "scenario": "helpful_specialization",
+      "seed": 17,
+      "metrics": {
+        "frozen_incumbent": {
+          "test_mse": 5.353384809527012,
+          "old_mse": 0.0027609830986083475
+        },
+        "continued_parent": {
+          "test_mse": 3.095444550804722,
+          "old_mse": 4.5081183834664875
+        },
+        "expanded_monolith": {
+          "test_mse": 0.03277149548959028,
+          "old_mse": 0.05673311749987042
+        },
+        "fixed_experts": {
+          "test_mse": 0.002312150704617245,
+          "old_mse": 0.0027652648617100435
+        },
+        "random_grouping": {
+          "test_mse": 2.8232513226094014,
+          "old_mse": 3.9460315209474284
+        },
+        "demand_specialization": {
+          "test_mse": 0.0023100098230663967,
+          "old_mse": 0.0027609830986083475
+        }
+      },
+      "decision": "HOLD",
+      "reasons": [
+        "insufficient_gain_over:fixed_experts"
+      ],
+      "candidate_old_task_mse_increase": 0.0
+    },
+    {
+      "scenario": "helpful_specialization",
+      "seed": 29,
+      "metrics": {
+        "frozen_incumbent": {
+          "test_mse": 5.999299518162481,
+          "old_mse": 0.0033122864292652265
+        },
+        "continued_parent": {
+          "test_mse": 3.338020118143876,
+          "old_mse": 4.7817233379108615
+        },
+        "expanded_monolith": {
+          "test_mse": 0.020147712518477554,
+          "old_mse": 0.03537403881930665
+        },
+        "fixed_experts": {
+          "test_mse": 0.0030531478572112954,
+          "old_mse": 0.003430548691760283
+        },
+        "random_grouping": {
+          "test_mse": 3.4492410363046013,
+          "old_mse": 4.762652008989478
+        },
+        "demand_specialization": {
+          "test_mse": 0.002994016725963767,
+          "old_mse": 0.0033122864292652265
+        }
+      },
+      "decision": "HOLD",
+      "reasons": [
+        "insufficient_gain_over:fixed_experts"
+      ],
+      "candidate_old_task_mse_increase": 0.0
+    },
+    {
+      "scenario": "helpful_specialization",
+      "seed": 43,
+      "metrics": {
+        "frozen_incumbent": {
+          "test_mse": 5.580750842655256,
+          "old_mse": 0.0025059400918216045
+        },
+        "continued_parent": {
+          "test_mse": 3.6837865276262267,
+          "old_mse": 4.97030476527465
+        },
+        "expanded_monolith": {
+          "test_mse": 0.017814006496872873,
+          "old_mse": 0.026516606922996056
+        },
+        "fixed_experts": {
+          "test_mse": 0.002498028216594227,
+          "old_mse": 0.002740305311688687
+        },
+        "random_grouping": {
+          "test_mse": 3.5855185103229026,
+          "old_mse": 4.6627233983258085
+        },
+        "demand_specialization": {
+          "test_mse": 0.002380845606660686,
+          "old_mse": 0.0025059400918216045
+        }
+      },
+      "decision": "HOLD",
+      "reasons": [
+        "insufficient_gain_over:fixed_experts"
+      ],
+      "candidate_old_task_mse_increase": 0.0
+    },
+    {
+      "scenario": "helpful_specialization",
+      "seed": 71,
+      "metrics": {
+        "frozen_incumbent": {
+          "test_mse": 7.51394933170668,
+          "old_mse": 0.0027551077308010778
+        },
+        "continued_parent": {
+          "test_mse": 3.4428643692449064,
+          "old_mse": 3.436034359554494
+        },
+        "expanded_monolith": {
+          "test_mse": 0.02395535826040628,
+          "old_mse": 0.033968171808115406
+        },
+        "fixed_experts": {
+          "test_mse": 0.0024431934837220066,
+          "old_mse": 0.0028428723381837833
+        },
+        "random_grouping": {
+          "test_mse": 3.653560918174554,
+          "old_mse": 3.5634801490141252
+        },
+        "demand_specialization": {
+          "test_mse": 0.002399311180030654,
+          "old_mse": 0.0027551077308010778
+        }
+      },
+      "decision": "HOLD",
+      "reasons": [
+        "insufficient_gain_over:fixed_experts"
+      ],
+      "candidate_old_task_mse_increase": 0.0
+    },
+    {
+      "scenario": "redundant_specialization",
+      "seed": 7,
+      "metrics": {
+        "frozen_incumbent": {
+          "test_mse": 0.0026372892747506815,
+          "old_mse": 0.0026588988938567666
+        },
+        "continued_parent": {
+          "test_mse": 0.002768679622258668,
+          "old_mse": 0.0028124722614930766
+        },
+        "expanded_monolith": {
+          "test_mse": 0.002757627319223058,
+          "old_mse": 0.0028190667695474334
+        },
+        "fixed_experts": {
+          "test_mse": 0.0027703492969503884,
+          "old_mse": 0.0028421314633726223
+        },
+        "random_grouping": {
+          "test_mse": 0.0027980723476227474,
+          "old_mse": 0.002896053717607051
+        },
+        "demand_specialization": {
+          "test_mse": 0.0026372892747506815,
+          "old_mse": 0.0026588988938567666
+        }
+      },
+      "decision": "HOLD",
+      "reasons": [
+        "no_persistent_demand",
+        "negative_transfer_not_observed",
+        "insufficient_gain_over:frozen_incumbent",
+        "insufficient_gain_over:continued_parent",
+        "insufficient_gain_over:expanded_monolith",
+        "insufficient_gain_over:fixed_experts",
+        "insufficient_gain_over:random_grouping"
+      ],
+      "candidate_old_task_mse_increase": 0.0
+    },
+    {
+      "scenario": "redundant_specialization",
+      "seed": 17,
+      "metrics": {
+        "frozen_incumbent": {
+          "test_mse": 0.002307176398589898,
+          "old_mse": 0.0027609830986083475
+        },
+        "continued_parent": {
+          "test_mse": 0.0022775423669694045,
+          "old_mse": 0.002658485230784848
+        },
+        "expanded_monolith": {
+          "test_mse": 0.0022925216623399286,
+          "old_mse": 0.002727709420652072
+        },
+        "fixed_experts": {
+          "test_mse": 0.002310837956297851,
+          "old_mse": 0.0027652648617100435
+        },
+        "random_grouping": {
+          "test_mse": 0.0023294195341491256,
+          "old_mse": 0.0026725764413684364
+        },
+        "demand_specialization": {
+          "test_mse": 0.002307176398589898,
+          "old_mse": 0.0027609830986083475
+        }
+      },
+      "decision": "HOLD",
+      "reasons": [
+        "no_persistent_demand",
+        "negative_transfer_not_observed",
+        "insufficient_gain_over:frozen_incumbent",
+        "insufficient_gain_over:continued_parent",
+        "insufficient_gain_over:expanded_monolith",
+        "insufficient_gain_over:fixed_experts",
+        "insufficient_gain_over:random_grouping"
+      ],
+      "candidate_old_task_mse_increase": 0.0
+    },
+    {
+      "scenario": "redundant_specialization",
+      "seed": 29,
+      "metrics": {
+        "frozen_incumbent": {
+          "test_mse": 0.0029526005369447596,
+          "old_mse": 0.0033122864292652265
+        },
+        "continued_parent": {
+          "test_mse": 0.002890336867120084,
+          "old_mse": 0.003239728729720973
+        },
+        "expanded_monolith": {
+          "test_mse": 0.0030235878897872767,
+          "old_mse": 0.003384460798042542
+        },
+        "fixed_experts": {
+          "test_mse": 0.003057398789741598,
+          "old_mse": 0.003430548691760283
+        },
+        "random_grouping": {
+          "test_mse": 0.0029058720333483587,
+          "old_mse": 0.0032940877739911973
+        },
+        "demand_specialization": {
+          "test_mse": 0.0029526005369447596,
+          "old_mse": 0.0033122864292652265
+        }
+      },
+      "decision": "HOLD",
+      "reasons": [
+        "no_persistent_demand",
+        "negative_transfer_not_observed",
+        "insufficient_gain_over:frozen_incumbent",
+        "insufficient_gain_over:continued_parent",
+        "insufficient_gain_over:expanded_monolith",
+        "insufficient_gain_over:fixed_experts",
+        "insufficient_gain_over:random_grouping"
+      ],
+      "candidate_old_task_mse_increase": 0.0
+    },
+    {
+      "scenario": "redundant_specialization",
+      "seed": 43,
+      "metrics": {
+        "frozen_incumbent": {
+          "test_mse": 0.00227832398051322,
+          "old_mse": 0.0025059400918216045
+        },
+        "continued_parent": {
+          "test_mse": 0.0024823278481245223,
+          "old_mse": 0.0027135760515518853
+        },
+        "expanded_monolith": {
+          "test_mse": 0.0024895864602936203,
+          "old_mse": 0.002717193905093064
+        },
+        "fixed_experts": {
+          "test_mse": 0.00249417673699339,
+          "old_mse": 0.002740305311688687
+        },
+        "random_grouping": {
+          "test_mse": 0.002593094769498386,
+          "old_mse": 0.002825414152622097
+        },
+        "demand_specialization": {
+          "test_mse": 0.00227832398051322,
+          "old_mse": 0.0025059400918216045
+        }
+      },
+      "decision": "HOLD",
+      "reasons": [
+        "no_persistent_demand",
+        "negative_transfer_not_observed",
+        "insufficient_gain_over:frozen_incumbent",
+        "insufficient_gain_over:continued_parent",
+        "insufficient_gain_over:expanded_monolith",
+        "insufficient_gain_over:fixed_experts",
+        "insufficient_gain_over:random_grouping"
+      ],
+      "candidate_old_task_mse_increase": 0.0
+    },
+    {
+      "scenario": "redundant_specialization",
+      "seed": 71,
+      "metrics": {
+        "frozen_incumbent": {
+          "test_mse": 0.00252853333832677,
+          "old_mse": 0.0027551077308010778
+        },
+        "continued_parent": {
+          "test_mse": 0.0024096399787622486,
+          "old_mse": 0.0027670922492513818
+        },
+        "expanded_monolith": {
+          "test_mse": 0.0024423678144058865,
+          "old_mse": 0.002840381377726072
+        },
+        "fixed_experts": {
+          "test_mse": 0.002444925937949759,
+          "old_mse": 0.0028428723381837833
+        },
+        "random_grouping": {
+          "test_mse": 0.002475663239968655,
+          "old_mse": 0.00280958885004735
+        },
+        "demand_specialization": {
+          "test_mse": 0.00252853333832677,
+          "old_mse": 0.0027551077308010778
+        }
+      },
+      "decision": "HOLD",
+      "reasons": [
+        "no_persistent_demand",
+        "negative_transfer_not_observed",
+        "insufficient_gain_over:frozen_incumbent",
+        "insufficient_gain_over:continued_parent",
+        "insufficient_gain_over:expanded_monolith",
+        "insufficient_gain_over:fixed_experts",
+        "insufficient_gain_over:random_grouping"
+      ],
+      "candidate_old_task_mse_increase": 0.0
+    }
+  ],
+  "limitations": "Shared NumPy RNG implementation, independent scalar model evaluation and decision reconstruction. No study imports, no training replay, no hardware/energy or lifecycle attestation.",
+  "report_sha256": "26c32dfb400ed591b9ee7fe2a0e47713291f0c7e8e9d2dd3ec2293f242b399bd",
+  "reviewer_sha256": "2dd180110510ff7c6cb2cabae9ff0f7e7869b8cf5c9227a46a711d310d72432b"
+}

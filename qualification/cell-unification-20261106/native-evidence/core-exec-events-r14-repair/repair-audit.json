@@ -1,0 +1,40 @@
+{
+  "source_tree": "d3d2313b838422818bf9448ce5a1b86d89abdf69",
+  "before": {
+    "bytes": 40402,
+    "sha256": "0a5285472039a89d62d62e50e3ad94e84c64700f4f893bbe3fe3177debe4bb54",
+    "git_blob": "a8a2f67bf853481dec244c5ba7939279fe0eb6ce"
+  },
+  "after": {
+    "bytes": 41379,
+    "sha256": "f3a58d32dac0ecab83d45bd1460b34babcfb17500ebcffdfb4dbc302ed656b77",
+    "git_blob": "0be5dc7774419edf11f7b3256a9f8ad2025882fa"
+  },
+  "reasoning": "Both the original source before stage42 and the stage42 production terminate/terminate_confirmed entries finish immediately when observe_current_exit confirms the native numeric exit. This fixture pushes exit/closed or returns the compatibility read but waits exclusively for an extra process/terminate. The channel represents only the fixture completion after original TurnComplete or the original second managed model request; it does not provide a process-exit acknowledgement. Already-ready RPCs are processed first and all original compatibility read-count assertions remain. Patch-only scenarios still return early from their original fs/writeFile paths. No production logic, permission configuration, input events, native exit code, output, or duration is changed.",
+  "edits": [
+    "import_fixture_completion_channel",
+    "pass_fixture_completion_receiver",
+    "finish_fixture_after_observed_output_without_requiring_redundant_terminate_rpc",
+    "create_completion_channel_for_real_output_observer",
+    "move_existing_managed_output_observation_before_fake_server_join",
+    "notify_fixture_after_original_turn_or_managed_output_observation"
+  ],
+  "original_assertion_macro_entries_preserved": 56,
+  "all_edits_outside_original_assertion_macros": true,
+  "original_numeric_duration_expressions_preserved": [
+    "Duration::from_secs(5)",
+    "Duration::from_secs(5)",
+    "Duration::from_secs(5)",
+    "Duration::from_secs(5)",
+    "Duration::from_secs(5)",
+    "Duration::from_secs(5)",
+    "Duration::from_secs(15)",
+    "Duration::from_secs(5)",
+    "Duration::from_secs(5)",
+    "Duration::from_millis(10)"
+  ],
+  "operation_inverse_exact": true,
+  "patch_forward_reverse_exact": true,
+  "production_modified": false,
+  "runtime_claim": "NOT_TESTED"
+}

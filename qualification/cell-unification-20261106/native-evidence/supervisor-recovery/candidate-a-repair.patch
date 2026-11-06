@@ -1,0 +1,354 @@
+--- a/codex-rs/hepta-supervisor/src/runtime.rs
++++ b/codex-rs/hepta-supervisor/src/runtime.rs
+@@ -150,12 +150,6 @@
+     pub restart_pending: bool,
+     pub restart_not_before: Option<Instant>,
+     pub restart_attempt: u32,
+-    pub restart_window_started_at: Option<Instant>,
+-    pub restart_window_started_unix_millis: Option<u64>,
+-    pub restart_retry_at: Option<Instant>,
+-    pub restart_automatic: bool,
+-    pub restart_after_exit: bool,
+-    pub restart_exhausted: bool,
+     pub active_release: Option<AgentRelease>,
+     pub previous_release: Option<AgentRelease>,
+     pub release_change: Option<ReleaseChange>,
+@@ -181,12 +175,6 @@
+             restart_pending: false,
+             restart_not_before: None,
+             restart_attempt: 0,
+-            restart_window_started_at: None,
+-            restart_window_started_unix_millis: None,
+-            restart_retry_at: None,
+-            restart_automatic: false,
+-            restart_after_exit: false,
+-            restart_exhausted: false,
+             active_release: None,
+             previous_release: None,
+             release_change: None,
+--- a/codex-rs/hepta-supervisor/src/restart_state.rs
++++ b/codex-rs/hepta-supervisor/src/restart_state.rs
+@@ -34,34 +34,7 @@
+         self.persist_restart_budget_for_release(agent_id, slot, release_id)
+     }
+ 
+-    pub(crate) fn reset_restart_budget_for_release(
+-        &self,
+-        agent_id: &AgentId,
+-        slot: &mut AgentSlot<D::Process>,
+-        release_id: ReleaseId,
+-    ) -> Result<(), SupervisorError> {
+-        reset_slot_restart_budget(slot);
+-        self.persist_restart_budget_for_release(agent_id, slot, release_id)
+-    }
+-
+-    pub(crate) fn reset_restart_budget(
+-        &self,
+-        agent_id: &AgentId,
+-        slot: &mut AgentSlot<D::Process>,
+-    ) -> Result<(), SupervisorError> {
+-        let release_id = slot
+-            .active_release
+-            .as_ref()
+-            .map(|release| release.release_id().clone())
+-            .ok_or_else(|| {
+-                SupervisorError::Invalid(format!(
+-                    "agent {agent_id} has no active release for restart reset"
+-                ))
+-            })?;
+-        self.reset_restart_budget_for_release(agent_id, slot, release_id)
+-    }
+-
+-    pub(crate) fn restore_restart_budget(
++    pub(crate) fn restore_matrix_restart_budget(
+         &self,
+         agent_id: &AgentId,
+         slot: &mut AgentSlot<D::Process>,
+@@ -82,25 +55,17 @@
+             .as_ref()
+             .map(|release| release.release_id().clone())
+         else {
+-            reset_slot_restart_budget(slot);
++            reset_slot_matrix_restart_budget(slot);
+             return Ok(());
+         };
+         if journal.release_id != release_id {
+-            return self.reset_restart_budget_for_release(agent_id, slot, release_id);
++            reset_slot_matrix_restart_budget(slot);
++            return self.persist_restart_budget_for_release(agent_id, slot, release_id);
+         }
+ 
+         let now_unix_millis = unix_millis_now()?;
+-        let (main_attempts, main_started, main_wall, main_exhausted) =
+-            restore_window(&journal.main, now, now_unix_millis);
+         let (matrix_attempts, matrix_started, matrix_wall, matrix_exhausted) =
+             restore_window(&journal.matrix, now, now_unix_millis);
+-        slot.restart_attempt = main_attempts;
+-        slot.restart_window_started_at = main_started;
+-        slot.restart_window_started_unix_millis = main_wall;
+-        slot.restart_retry_at = None;
+-        slot.restart_automatic = false;
+-        slot.restart_after_exit = false;
+-        slot.restart_exhausted = main_exhausted;
+         slot.matrix.restart_attempt = matrix_attempts;
+         slot.matrix.restart_window_started_at = matrix_started;
+         slot.matrix.restart_window_started_unix_millis = matrix_wall;
+@@ -108,15 +73,11 @@
+         slot.matrix.restart_after_exit = false;
+         slot.matrix.restart_exhausted = matrix_exhausted;
+ 
+-        let normalized_main = DurableRestartWindow {
+-            attempts: main_attempts,
+-            window_started_unix_millis: main_wall,
+-        };
+         let normalized_matrix = DurableRestartWindow {
+             attempts: matrix_attempts,
+             window_started_unix_millis: matrix_wall,
+         };
+-        if normalized_main != journal.main || normalized_matrix != journal.matrix {
++        if normalized_matrix != journal.matrix {
+             self.persist_restart_budget_for_release(agent_id, slot, release_id)?;
+         }
+         Ok(())
+@@ -144,17 +105,7 @@
+     }
+ }
+ 
+-fn reset_slot_restart_budget<P>(slot: &mut AgentSlot<P>) {
+-    slot.restart_pending = false;
+-    clear_restart_budget(
+-        &mut slot.restart_attempt,
+-        &mut slot.restart_window_started_at,
+-    );
+-    slot.restart_window_started_unix_millis = None;
+-    slot.restart_retry_at = None;
+-    slot.restart_automatic = false;
+-    slot.restart_after_exit = false;
+-    slot.restart_exhausted = false;
++fn reset_slot_matrix_restart_budget<P>(slot: &mut AgentSlot<P>) {
+     clear_restart_budget(
+         &mut slot.matrix.restart_attempt,
+         &mut slot.matrix.restart_window_started_at,
+--- a/codex-rs/hepta-supervisor/src/recovery.rs
++++ b/codex-rs/hepta-supervisor/src/recovery.rs
+@@ -206,7 +206,6 @@
+                 )?;
+                 slot.event(generation, SupervisorEventKind::OrphanMissing);
+             }
+-            self.recover_matrix_companion(agent_id, slot, record, now)?;
+             return Ok(());
+         };
+         validate_lease(
+@@ -357,7 +356,6 @@
+                 slot.event(generation, SupervisorEventKind::OrphanRejected);
+             }
+         }
+-        self.recover_matrix_companion(agent_id, slot, record, now)?;
+         Ok(())
+     }
+ }
+--- a/codex-rs/hepta-supervisor/src/supervisor.rs
++++ b/codex-rs/hepta-supervisor/src/supervisor.rs
+@@ -85,7 +85,18 @@
+                 // hide a recovery-required signed intent or restart/release
+                 // fence and incorrectly make the daemon appear ready.
+                 supervisor.restore_release_state(&agent_id, slot, &record)?;
+-                let process_fault = supervisor.recover_slot(&agent_id, slot, &record, now).err();
++                let mut process_fault = supervisor.recover_slot(&agent_id, slot, &record, now).err();
++                // Exact Agent adoption can resolve a release that was not yet
++                // committed to the registry. Restore that release's Matrix
++                // budget before orphan recovery can record another fault.
++                // Hydrate it even when Agent recovery failed; only process
++                // adoption retains the original per-Agent fault behavior.
++                supervisor.restore_matrix_restart_budget(&agent_id, slot, &record, now)?;
++                if process_fault.is_none() {
++                    process_fault = supervisor
++                        .recover_matrix_companion(&agent_id, slot, &record, now)
++                        .err();
++                }
+                 supervisor.recover_restart_budget(&agent_id, slot, now)?;
+                 supervisor.recover_release_transaction(&agent_id, slot, now)?;
+                 supervisor.recover_signed_intent(&agent_id, slot, &record)?;
+--- a/codex-rs/hepta-supervisor/src/supervisor_tests.rs
++++ b/codex-rs/hepta-supervisor/src/supervisor_tests.rs
+@@ -42,6 +42,9 @@
+ use crate::SupervisorEventKind;
+ use crate::TickReport;
+ use crate::driver::SpawnedProcess;
++
++#[path = "supervisor_restart_recovery_tests.rs"]
++mod restart_recovery;
+ 
+ const FIRST_AGENT_ID: &str = "018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12";
+ const SECOND_AGENT_ID: &str = "019153a4-3088-7e03-a56a-9b1964f75dd3";
+--- /dev/null
++++ b/codex-rs/hepta-supervisor/src/supervisor_restart_recovery_tests.rs
+@@ -0,0 +1,168 @@
++use super::*;
++
++use crate::restart_journal::DurableRestartWindow;
++use crate::restart_journal::RESTART_JOURNAL_FILE;
++use crate::restart_journal::RestartBudgetJournal;
++use crate::restart_journal::read_main_restart_budget;
++use crate::restart_journal::read_restart_journal;
++use crate::restart_journal::unix_millis_now;
++use crate::restart_journal::write_restart_journal;
++use crate::restart_policy::RESTART_ATTEMPT_BUDGET;
++
++#[test]
++fn matrix_exhausted_budget_survives_repeated_supervisor_recovery()
++-> Result<(), SupervisorError> {
++    let (fleet, control, mut supervisor, mut now) =
++        ready_paired_supervisor("matrix-budget-recovery")?;
++    for attempt in 1..=RESTART_ATTEMPT_BUDGET {
++        control.set_matrix_exit(&fleet.first);
++        assert_eq!(supervisor.tick(now), TickReport::default());
++        assert_eq!(
++            supervisor.snapshot(&fleet.first).expect("fault snapshot").matrix.restart_attempt,
++            attempt
++        );
++        now += Duration::from_secs(2);
++        assert_eq!(supervisor.tick(now), TickReport::default());
++        control.set_matrix_healthy(&fleet.first);
++        assert_eq!(supervisor.tick(now), TickReport::default());
++    }
++    control.set_matrix_exit(&fleet.first);
++    assert_eq!(supervisor.tick(now), TickReport::default());
++    let exhausted = supervisor.snapshot(&fleet.first).expect("exhausted snapshot");
++    assert!(!exhausted.matrix.active);
++    assert!(exhausted.events.iter().any(|event| {
++        event.kind == SupervisorEventKind::MatrixRestartBudgetExhausted {
++            attempts: RESTART_ATTEMPT_BUDGET,
++        }
++    }));
++    let record = fleet.registry.load()?.agent(&fleet.first).cloned().expect("agent");
++    let durable_before = read_restart_journal(record.layout.run_root())?;
++    let matrix_spawns = control.matrix_spawn_count(&fleet.first);
++    assert_eq!(matrix_spawns, 4);
++    drop(supervisor);
++
++    for _ in 0..2 {
++        let (mut recovered, report) =
++            Supervisor::recover(fleet.registry.clone(), control.driver(), config(), now)?;
++        assert_eq!(report, TickReport::default());
++        assert_eq!(
++            recovered.snapshot(&fleet.first).expect("recovered snapshot").matrix.restart_attempt,
++            RESTART_ATTEMPT_BUDGET
++        );
++        now += Duration::from_secs(2);
++        assert_eq!(recovered.tick(now), TickReport::default());
++        assert_eq!(control.matrix_spawn_count(&fleet.first), matrix_spawns);
++        assert_eq!(control.spawn_count(&fleet.first), 1);
++        assert_eq!(control.matrix_spawn_count(&fleet.second), 1);
++        assert_eq!(read_restart_journal(record.layout.run_root())?, durable_before);
++    }
++    Ok(())
++}
++
++#[test]
++fn matrix_orphan_fault_uses_lease_release_budget_before_writing()
++-> Result<(), SupervisorError> {
++    let (fleet, control, mut supervisor, mut now) =
++        ready_paired_supervisor("matrix-lease-release")?;
++    control.set_matrix_exit(&fleet.first);
++    assert_eq!(supervisor.tick(now), TickReport::default());
++    now += Duration::from_secs(2);
++    assert_eq!(supervisor.tick(now), TickReport::default());
++    control.set_matrix_healthy(&fleet.first);
++    assert_eq!(supervisor.tick(now), TickReport::default());
++
++    let record = fleet.registry.load()?.agent(&fleet.first).cloned().expect("agent");
++    let journal = read_restart_journal(record.layout.run_root())?.expect("Matrix budget");
++    assert_eq!(journal.matrix.attempts, 1);
++    let claim = crate::restart_budget::claim_restart(
++        record.layout.run_root(),
++        config().restart_max_attempts,
++        config().restart_window,
++        config().restart_backoff_base,
++    )
++    .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
++    let main_before = read_main_restart_budget(record.layout.run_root())?;
++    assert!(main_before.as_ref().expect("main budget").pending);
++
++    // Model a crash after exact target-process admission but before the
++    // registry's release revision. The live lease identifies the actual
++    // release; restoring against the stale registry value would erase its
++    // existing Matrix fault window.
++    let stale_release = ReleaseId::parse("matrix-stale-registry-release")?;
++    let source = fleet.write_release_source()?;
++    fleet.registry.install_release_bundle(
++        stale_release.clone(),
++        &source,
++        Vec::new(),
++        Some(&source),
++        Vec::new(),
++    )?;
++    fleet.registry.allow_release(&fleet.first, &stale_release)?;
++    fleet.registry.compare_and_set_release_state(
++        &fleet.first,
++        record.release_state.generation,
++        Some(stale_release),
++        record.release_state.previous.clone(),
++    )?;
++
++    // Leave the dead Matrix lease unobserved so recovery itself adds a fault.
++    control.set_matrix_exit(&fleet.first);
++    drop(supervisor);
++    let (recovered, report) =
++        Supervisor::recover(fleet.registry.clone(), control.driver(), config(), now)?;
++    assert_eq!(report, TickReport::default());
++    let snapshot = recovered.snapshot(&fleet.first).expect("recovered snapshot");
++    assert_eq!(snapshot.active_release.as_deref(), Some(journal.release_id.as_str()));
++    assert_eq!(snapshot.matrix.restart_attempt, 2);
++    assert_eq!(snapshot.restart_attempt, claim.attempt);
++    assert!(!snapshot.restart_pending, "the exact Agent was already adopted");
++    assert_eq!(read_main_restart_budget(record.layout.run_root())?, main_before);
++    assert_eq!(
++        read_restart_journal(record.layout.run_root())?,
++        Some(RestartBudgetJournal::new(
++            journal.agent_id,
++            journal.release_id,
++            DurableRestartWindow::empty(),
++            DurableRestartWindow {
++                attempts: 2,
++                window_started_unix_millis: journal.matrix.window_started_unix_millis,
++            },
++        )?)
++    );
++    assert_eq!(control.spawn_count(&fleet.first), 1);
++    assert_eq!(control.matrix_spawn_count(&fleet.first), 2);
++    Ok(())
++}
++
++#[test]
++fn matrix_budget_identity_is_checked_even_when_agent_recovery_faults()
++-> Result<(), SupervisorError> {
++    let (fleet, control, supervisor, now) =
++        ready_paired_supervisor("matrix-budget-owner")?;
++    let record = fleet.registry.load()?.agent(&fleet.first).cloned().expect("agent");
++    let wrong_owner = RestartBudgetJournal::new(
++        fleet.second.clone(),
++        record.release_state.current.clone().expect("active release"),
++        DurableRestartWindow::empty(),
++        DurableRestartWindow {
++            attempts: 2,
++            window_started_unix_millis: Some(unix_millis_now()?),
++        },
++    )?;
++    write_restart_journal(record.layout.run_root(), &wrong_owner)?;
++    let journal_path = record.layout.run_root().join(RESTART_JOURNAL_FILE);
++    let bytes_before = std::fs::read(&journal_path)?;
++    std::fs::write(record.layout.run_root().join("supervisor-process.json"), b"{")?;
++    drop(supervisor);
++
++    let result = Supervisor::recover(fleet.registry.clone(), control.driver(), config(), now);
++    assert!(matches!(
++        result,
++        Err(SupervisorError::CorruptLease(message))
++            if message.contains("restart budget journal belongs to")
++    ));
++    assert_eq!(std::fs::read(journal_path)?, bytes_before);
++    assert_eq!(control.spawn_count(&fleet.first), 1);
++    assert_eq!(control.matrix_spawn_count(&fleet.first), 1);
++    Ok(())
++}

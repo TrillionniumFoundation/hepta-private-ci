@@ -1,0 +1,18 @@
+{
+  "schema": "hepta.cell-ci-test-prerequisites.v1",
+  "path": ".github/workflows/hepta-cell-framework-native.yml",
+  "before_sha256": "a0b6b3d790d80f9fbefc3b42e24de872a140cd006dbaa91a47579aa29c0e006b",
+  "after_sha256": "d2ddf46619bf94df3d20f8ed07244bf79ad2ecc8cfb647615c0753fe57f791de",
+  "after_git_blob": "f1ffc9f3db7c081df051e80d68413b8c725e0909",
+  "changes": [
+    "Core and complete workspace jobs prepare the original DotSlash Zsh descriptor with its own resource-setup receipt before original tests",
+    "Core lane runs the unchanged original runner regression suite plus new helper tests"
+  ],
+  "unchanged": [
+    "original Rust test argv and filters",
+    "nextest retries0 and original watchdogs",
+    "exact source pin and locked dependencies",
+    "production code and DotSlash descriptor"
+  ],
+  "limit": "Resource preparation is new CI setup; current cached fetch does not prove the cause of old timeouts."
+}

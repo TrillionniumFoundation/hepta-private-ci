@@ -1,0 +1,119 @@
+{
+  "schema": "hepta.supervisor-matrix-restart-recovery-audit.v1",
+  "state": "FROZEN_CANDIDATE_AWAITING_INDEPENDENT_REVIEW_AND_NATIVE_RED_GREEN",
+  "base_commit": "bef6fa7645df9df12b69fda499e97eed25de6c75",
+  "full_native_input_inventory": "../native-validation-results/r4-blockers/inventory.json",
+  "full_native_test_map": "../native-validation-results/r4-blockers/supervisor-tests-map.json",
+  "nearest_instructions": "repository root AGENTS.md; no closer AGENTS confirmed by native full checkout",
+  "source_files": [
+    {
+      "path": "codex-rs/hepta-supervisor/src/runtime.rs",
+      "sha256": "948f2deb3e3ceaa291c487e394627bb211eaedb0edbc0d975cde4e183d5af9c9",
+      "bytes": 6440,
+      "original_sha256": "a901b5802d9c9fad0c0b50406c2489e23a1cca75a2fd86c7106de62cde8da926",
+      "original_git_blob": "cd9d5abc4e40bd1a734fca2222bc4ca441b9f322"
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/restart_state.rs",
+      "sha256": "e8462e34a8a7ed5ed433bf38287efff39a75342f6e79f113744292bbd75d96b0",
+      "bytes": 4273,
+      "original_sha256": "48c02b212a57bc63bc87ece59b7a0e08d38c767267356a7805cbb8555a93898f",
+      "original_git_blob": "1970b9551635ed8079bf852edf4822e06f55c106"
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/recovery.rs",
+      "sha256": "ab8a30f222ba25f8848adc73045ae4f915e3c0e6f323866e0819f53f5991bf8f",
+      "bytes": 15411,
+      "original_sha256": "c5e93d67fbe8aa1e7d5276721247a46354fc8b6f159534e314d210ce8d888e50",
+      "original_git_blob": "529b16dfa8e8ba0d192bedd17b4d6698e0dc3e3c"
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/supervisor.rs",
+      "sha256": "cdce658035f89047d369c43f85294489934df5878c768bfde8d601a05f1f0248",
+      "bytes": 50975,
+      "original_sha256": "98ce7286ce2b9680bfb2838ec14e969c2333d7818c7ed14711263a08003e0b48",
+      "original_git_blob": "f854f1a0c40024a5fe01ea42b5139d8c77bfc778"
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/supervisor_tests.rs",
+      "sha256": "d8696b8d4e7001ae7eca5f3e287ad736b17065cdded4d1cb734f90b8b3ea7c62",
+      "bytes": 86963,
+      "original_sha256": "7d8e4ef5a7c001c8c99ed4d2e72dc8dc3b829f31e4c50ed23b178822e10197a7",
+      "original_git_blob": "21d4980932e09fa3b66e6ffd0024861b8b924de1"
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/supervisor_restart_recovery_tests.rs",
+      "sha256": "f796ba4245fb538ed16837c5935e8f2573853b0d669a81f9b1fafede4b06a03b",
+      "bytes": 7271,
+      "original_sha256": null,
+      "original_git_blob": null
+    }
+  ],
+  "confirmed_obsolete_main_state": {
+    "removed_private_agent_slot_fields": [
+      "restart_window_started_at",
+      "restart_window_started_unix_millis",
+      "restart_retry_at",
+      "restart_automatic",
+      "restart_after_exit",
+      "restart_exhausted"
+    ],
+    "replacement": "restart_budget.rs canonical durable main pending-intent port; AgentSlot restart_pending/restart_not_before/restart_attempt",
+    "production_callers": [
+      "control.rs::restart_slot -> claim_restart",
+      "tick.rs::queue_automatic_restart_before_exit -> claim_restart",
+      "tick.rs -> complete_restart",
+      "recovery.rs::recover_restart_budget -> pending_restart",
+      "supervisor.rs::recover -> recover_restart_budget"
+    ],
+    "reason_for_removal": "Full checkout map shows old fields only initialized and assigned by unused restore/reset helpers. Canonical pending state is used by actual control, tick and recovery."
+  },
+  "confirmed_live_companion_gap": {
+    "writer": "matrix.rs::degrade_matrix -> restart_state.rs::persist_restart_budget -> restart_journal.rs::write_restart_journal",
+    "reader_before": "read_restart_journal only called by unused restore_restart_budget and tests",
+    "risk": "Supervisor recovery starts Matrix attempts at zero; a Missing or rejected Matrix orphan can persist a new fault before the historical window is hydrated.",
+    "release_constraint": "Exact Agent process lease may resolve an active release newer than the registry current field. Hydration must use the resolved active release.",
+    "repair_order": [
+      "restore_release_state",
+      "recover_slot (Agent only; retain any process fault)",
+      "restore_matrix_restart_budget (always; durable failure remains fatal)",
+      "recover_matrix_companion only if Agent recovery succeeded, preserving original process-fault eligibility",
+      "existing canonical recover_restart_budget",
+      "existing release transaction and signed-intent recovery"
+    ]
+  },
+  "preserved": {
+    "restart_journal_codec_bytes": true,
+    "main_pending_port_bytes": true,
+    "release_bound_matrix_policy": true,
+    "clock_rollback_restore_window_logic": true,
+    "owner_identity_check": true,
+    "serialized_schema_and_digest_domains": true,
+    "original_tests_bytes_except_child_module_declaration": true,
+    "lint_policy_and_test_exclusions": true
+  },
+  "behavioral_regressions": [
+    {
+      "test": "matrix_exhausted_budget_survives_repeated_supervisor_recovery",
+      "before_expected": "Restored attempt is 0 rather than 3; an additional Matrix process can spawn.",
+      "after_expected": "Two recoveries preserve exhausted journal and existing Agent/peer/Matrix spawn counts."
+    },
+    {
+      "test": "matrix_orphan_fault_uses_lease_release_budget_before_writing",
+      "before_expected": "Unobserved dead Matrix orphan overwrites prior attempt 1 with a fresh attempt 1.",
+      "after_expected": "Resolve stale registry release from exact lease, increment durable Matrix attempt to 2, preserve entire independent main pending state."
+    },
+    {
+      "test": "matrix_budget_identity_is_checked_even_when_agent_recovery_faults",
+      "before_expected": "Malformed Agent lease causes a per-Agent report, but a well-formed foreign-owner companion journal is not rejected.",
+      "after_expected": "Foreign-owner companion causes fatal CorruptLease even after Agent recovery fault; journal bytes remain untouched."
+    }
+  ],
+  "limitations": [
+    "FakeDriver behavior tests use real fleet, lease and journal I/O; they do not attest real process isolation or external device behavior.",
+    "Candidate execution and strict gates pending.",
+    "No new model efficacy, production adoption, or general restart-system qualification is claimed."
+  ],
+  "patch_sha256": "0cfb5403c74e588d46720692637795f7f314e187f01c556441a997404960d181",
+  "regression_only_patch_sha256": "47893befde07cbfb0d360dc09ad597d0178286981cb7c5cb5b5d7daf0f6cb0bb"
+}

@@ -1,0 +1,160 @@
+--- a/codex-rs/hepta-context-compiler/src/v2.rs
++++ b/codex-rs/hepta-context-compiler/src/v2.rs
+@@ -97,7 +97,6 @@
+     /// Authenticate provider-owned attempt evidence against this exact
+     /// pre-dispatch preparation. The provider witness remains provider-owned;
+     /// context.compiler does not reinterpret it as a raw preparation digest.
+-
+     fn verify_delivery(
+         &self,
+         receipt: &ProviderInvocationReceipt,
+@@ -1833,6 +1832,15 @@
+ }
+ 
+ pub type ContextDeliveryObservationV2 = ContextDeliveryReceiptV2;
++
++/// Caller-local identity and time for observing a provider delivery.
++///
++/// These values do not replace authenticated provider evidence or its recorded time.
++#[derive(Clone, Debug, Eq, PartialEq)]
++pub struct ContextDeliveryObservationMetadataV2 {
++    pub delivery_id: StableId,
++    pub observed_unix_ms: u64,
++}
+ 
+ impl ContextDeliveryReceiptV2 {
+     #[must_use]
+@@ -1997,11 +2005,14 @@
+     attachment: &ContextAttachmentV2,
+     serialization: &SerializedContextV2,
+     profile: &ContextModelProfileV2,
+-    delivery_id: StableId,
++    observation: ContextDeliveryObservationMetadataV2,
+     provider_receipt: &ProviderInvocationReceipt,
+     delivery_verifier: &impl ContextProviderDeliveryVerifierV2,
+-    observed_unix_ms: u64,
+ ) -> Result<ContextDeliveryReceiptV2, ContextCompilerV2Error> {
++    let ContextDeliveryObservationMetadataV2 {
++        delivery_id,
++        observed_unix_ms,
++    } = observation;
+     preparation.validate_for(attachment, serialization, profile)?;
+     provider_receipt
+         .validate()
+--- a/codex-rs/hepta-context-compiler/src/lib.rs
++++ b/codex-rs/hepta-context-compiler/src/lib.rs
+@@ -35,6 +35,7 @@
+ pub use v2::ContextCompilationRequestV2;
+ pub use v2::ContextCompilerV2Error;
+ pub use v2::ContextDeliveryDispositionV2;
++pub use v2::ContextDeliveryObservationMetadataV2;
+ pub use v2::ContextDeliveryObservationV2;
+ pub use v2::ContextDeliveryPreparationV2;
+ pub use v2::ContextDeliveryReceiptV2;
+--- a/codex-rs/hepta-context-compiler/src/v2_tests.rs
++++ b/codex-rs/hepta-context-compiler/src/v2_tests.rs
+@@ -836,10 +836,12 @@
+         &attachment,
+         &serialization,
+         &profile(),
+-        id("delivery:1"),
++        ContextDeliveryObservationMetadataV2 {
++            delivery_id: id("delivery:1"),
++            observed_unix_ms: 25,
++        },
+         &provider,
+         &delivery_verifier(),
+-        25,
+     )
+     .unwrap_or_else(|error| panic!("valid delivery evidence: {error}"));
+ 
+@@ -929,10 +931,12 @@
+         &attachment,
+         &serialization,
+         &profile(),
+-        id("delivery:1"),
++        ContextDeliveryObservationMetadataV2 {
++            delivery_id: id("delivery:1"),
++            observed_unix_ms: 25,
++        },
+         &provider,
+         &verifier,
+-        25,
+     )
+     .unwrap_or_else(|error| panic!("provider-owned witness should verify: {error}"));
+ 
+@@ -996,10 +1000,12 @@
+             &attachment,
+             &serialization,
+             &profile(),
+-            id("delivery:1"),
++            ContextDeliveryObservationMetadataV2 {
++                delivery_id: id("delivery:1"),
++                observed_unix_ms: 25,
++            },
+             &provider,
+             &delivery_verifier(),
+-            25,
+         ),
+         Err(ContextCompilerV2Error::DeliveryMismatch)
+     );
+@@ -1059,10 +1065,12 @@
+             &attachment,
+             &serialization,
+             &profile(),
+-            id("delivery:1"),
++            ContextDeliveryObservationMetadataV2 {
++                delivery_id: id("delivery:1"),
++                observed_unix_ms: 25,
++            },
+             &provider,
+             &delivery_verifier(),
+-            25,
+         ),
+         Err(ContextCompilerV2Error::ProviderEvidenceInvalid(
+             "delivery witness rejected".to_string()
+@@ -1124,10 +1132,12 @@
+             &attachment,
+             &serialization,
+             &profile(),
+-            id("delivery:1"),
++            ContextDeliveryObservationMetadataV2 {
++                delivery_id: id("delivery:1"),
++                observed_unix_ms: 25,
++            },
+             &provider,
+             &delivery_verifier(),
+-            25,
+         ),
+         Err(ContextCompilerV2Error::ProviderModelProfileMismatch)
+     );
+@@ -1192,10 +1202,12 @@
+             &attachment,
+             &serialization,
+             &profile(),
+-            id("delivery:1"),
++            ContextDeliveryObservationMetadataV2 {
++                delivery_id: id("delivery:1"),
++                observed_unix_ms: 25,
++            },
+             &provider,
+             &rejecting,
+-            25,
+         ),
+         Err(ContextCompilerV2Error::ProviderEvidenceInvalid(_))
+     ));
+@@ -1349,10 +1361,12 @@
+         &attachment,
+         &serialization,
+         &profile(),
+-        id("delivery:1"),
++        ContextDeliveryObservationMetadataV2 {
++            delivery_id: id("delivery:1"),
++            observed_unix_ms: 25,
++        },
+         &provider,
+         &delivery_verifier(),
+-        25,
+     )
+     .unwrap_or_else(|error| panic!("valid indeterminate evidence: {error}"));
+     assert_eq!(

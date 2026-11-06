@@ -1,0 +1,35 @@
+{
+  "schema": "hepta.native-gate-receipt.v1",
+  "phase": "strict",
+  "source_tree": "f20c3860c90853e90ab9d5c4d1b772787e0379a7",
+  "source_manifest": "native-candidate-r11-source.json",
+  "source_commit": "051010e12db8162576bb19b9b0596dfe0c2fcf14",
+  "command": [
+    "just",
+    "clippy",
+    "--locked",
+    "-p",
+    "codex-hepta-agentd",
+    "-p",
+    "codex-hepta-agent-protocol",
+    "-p",
+    "codex-hepta-infer-worker-host",
+    "--",
+    "-D",
+    "warnings"
+  ],
+  "cwd": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs",
+  "start_unix": 1793945865.487345,
+  "end_unix": 1793945903.4045777,
+  "elapsed_seconds": 37.91723275184631,
+  "exit_code": 101,
+  "log_sha256": "5bbb9853d1224e594dace263b223c9a93f0b4bfbca6ef511a48b34e33f04d3b0",
+  "resources_sha256": "11596b0dd8dd443fc98ce444cf93d407c0563f4c03e1bfd887586988fc55463a",
+  "environment_manifest": "native-agentd-composition-r11-environment.json",
+  "packages": [
+    "codex-hepta-agentd",
+    "codex-hepta-agent-protocol",
+    "codex-hepta-infer-worker-host"
+  ],
+  "retries": null
+}

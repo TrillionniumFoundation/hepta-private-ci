@@ -1,0 +1,211 @@
+{
+  "output": "qualification/cell-unification-20261106/study-evidence/study.json",
+  "source_digest": "19a6a6261d6d832243f394d73f2cbc80f1d063f127da71e3c08bf636c0a485a9",
+  "plan_digest": "3765b36e70afe73d65ad61d03f1e59ac30cf1d92ebbc9480b063f1276d09f090",
+  "summary": {
+    "helpful_specialization": {
+      "decision": "HOLD",
+      "planned_seeds": [
+        7,
+        17,
+        29,
+        43,
+        71
+      ],
+      "observed_seeds": [
+        7,
+        17,
+        29,
+        43,
+        71
+      ],
+      "all_planned_seeds_required": true,
+      "reasons_by_seed": {
+        "7": [
+          "insufficient_gain_over:fixed_experts"
+        ],
+        "17": [
+          "insufficient_gain_over:fixed_experts"
+        ],
+        "29": [
+          "insufficient_gain_over:fixed_experts"
+        ],
+        "43": [
+          "insufficient_gain_over:fixed_experts"
+        ],
+        "71": [
+          "insufficient_gain_over:fixed_experts"
+        ]
+      },
+      "arms": {
+        "frozen_incumbent": {
+          "test_mse_mean": 6.044695446147577,
+          "test_mse_across_seed_std": 0.8552879897657321,
+          "old_task_mse_mean": 0.0027986432488706038,
+          "requested_test_predictions": 960,
+          "completed_test_predictions": 960,
+          "mean_estimated_float_ops_including_shared": 829312.0
+        },
+        "continued_parent": {
+          "test_mse_mean": 3.305500808231482,
+          "test_mse_across_seed_std": 0.2834915871099583,
+          "old_task_mse_mean": 4.213070037980672,
+          "requested_test_predictions": 960,
+          "completed_test_predictions": 960,
+          "mean_estimated_float_ops_including_shared": 1652352.0
+        },
+        "expanded_monolith": {
+          "test_mse_mean": 0.022421919878418312,
+          "test_mse_across_seed_std": 0.006341903633081901,
+          "old_task_mse_mean": 0.03516691775630818,
+          "requested_test_predictions": 960,
+          "completed_test_predictions": 960,
+          "mean_estimated_float_ops_including_shared": 2185600.0
+        },
+        "fixed_experts": {
+          "test_mse_mean": 0.002614898206435929,
+          "test_mse_across_seed_std": 0.00029592698521628866,
+          "old_task_mse_mean": 0.0029242245333430832,
+          "requested_test_predictions": 960,
+          "completed_test_predictions": 960,
+          "mean_estimated_float_ops_including_shared": 1656192.0
+        },
+        "random_grouping": {
+          "test_mse_mean": 3.3117855820769933,
+          "test_mse_across_seed_std": 0.3602855672181826,
+          "old_task_mse_mean": 4.078268714497472,
+          "requested_test_predictions": 960,
+          "completed_test_predictions": 960,
+          "mean_estimated_float_ops_including_shared": 1656192.0
+        },
+        "demand_specialization": {
+          "test_mse_mean": 0.002552107564199689,
+          "test_mse_across_seed_std": 0.0002837294988299928,
+          "old_task_mse_mean": 0.0027986432488706038,
+          "requested_test_predictions": 960,
+          "completed_test_predictions": 960,
+          "mean_estimated_float_ops_including_shared": 1251346.0
+        }
+      },
+      "uncertainty": "Across-seed standard deviation is descriptive, not a significance or generalization claim.",
+      "production_authority": false
+    },
+    "redundant_specialization": {
+      "decision": "HOLD",
+      "planned_seeds": [
+        7,
+        17,
+        29,
+        43,
+        71
+      ],
+      "observed_seeds": [
+        7,
+        17,
+        29,
+        43,
+        71
+      ],
+      "all_planned_seeds_required": true,
+      "reasons_by_seed": {
+        "7": [
+          "no_persistent_demand",
+          "negative_transfer_not_observed",
+          "insufficient_gain_over:frozen_incumbent",
+          "insufficient_gain_over:continued_parent",
+          "insufficient_gain_over:expanded_monolith",
+          "insufficient_gain_over:fixed_experts",
+          "insufficient_gain_over:random_grouping"
+        ],
+        "17": [
+          "no_persistent_demand",
+          "negative_transfer_not_observed",
+          "insufficient_gain_over:frozen_incumbent",
+          "insufficient_gain_over:continued_parent",
+          "insufficient_gain_over:expanded_monolith",
+          "insufficient_gain_over:fixed_experts",
+          "insufficient_gain_over:random_grouping"
+        ],
+        "29": [
+          "no_persistent_demand",
+          "negative_transfer_not_observed",
+          "insufficient_gain_over:frozen_incumbent",
+          "insufficient_gain_over:continued_parent",
+          "insufficient_gain_over:expanded_monolith",
+          "insufficient_gain_over:fixed_experts",
+          "insufficient_gain_over:random_grouping"
+        ],
+        "43": [
+          "no_persistent_demand",
+          "negative_transfer_not_observed",
+          "insufficient_gain_over:frozen_incumbent",
+          "insufficient_gain_over:continued_parent",
+          "insufficient_gain_over:expanded_monolith",
+          "insufficient_gain_over:fixed_experts",
+          "insufficient_gain_over:random_grouping"
+        ],
+        "71": [
+          "no_persistent_demand",
+          "negative_transfer_not_observed",
+          "insufficient_gain_over:frozen_incumbent",
+          "insufficient_gain_over:continued_parent",
+          "insufficient_gain_over:expanded_monolith",
+          "insufficient_gain_over:fixed_experts",
+          "insufficient_gain_over:random_grouping"
+        ]
+      },
+      "arms": {
+        "frozen_incumbent": {
+          "test_mse_mean": 0.002540784705825066,
+          "test_mse_across_seed_std": 0.00027500635453131067,
+          "old_task_mse_mean": 0.0027986432488706038,
+          "requested_test_predictions": 960,
+          "completed_test_predictions": 960,
+          "mean_estimated_float_ops_including_shared": 829312.0
+        },
+        "continued_parent": {
+          "test_mse_mean": 0.002565705336646986,
+          "test_mse_across_seed_std": 0.0002554066805186813,
+          "old_task_mse_mean": 0.002838270904560433,
+          "requested_test_predictions": 960,
+          "completed_test_predictions": 960,
+          "mean_estimated_float_ops_including_shared": 1652352.0
+        },
+        "expanded_monolith": {
+          "test_mse_mean": 0.0026011382292099533,
+          "test_mse_across_seed_std": 0.00028976222067718225,
+          "old_task_mse_mean": 0.002897762454212235,
+          "requested_test_predictions": 960,
+          "completed_test_predictions": 960,
+          "mean_estimated_float_ops_including_shared": 2185600.0
+        },
+        "fixed_experts": {
+          "test_mse_mean": 0.002615537743586597,
+          "test_mse_across_seed_std": 0.00029828117761681325,
+          "old_task_mse_mean": 0.0029242245333430832,
+          "requested_test_predictions": 960,
+          "completed_test_predictions": 960,
+          "mean_estimated_float_ops_including_shared": 1656192.0
+        },
+        "random_grouping": {
+          "test_mse_mean": 0.0026204243849174544,
+          "test_mse_across_seed_std": 0.0002342144737119241,
+          "old_task_mse_mean": 0.002899544187127225,
+          "requested_test_predictions": 960,
+          "completed_test_predictions": 960,
+          "mean_estimated_float_ops_including_shared": 1656192.0
+        },
+        "demand_specialization": {
+          "test_mse_mean": 0.002540784705825066,
+          "test_mse_across_seed_std": 0.00027500635453131067,
+          "old_task_mse_mean": 0.0027986432488706038,
+          "requested_test_predictions": 960,
+          "completed_test_predictions": 960,
+          "mean_estimated_float_ops_including_shared": 837906.0
+        }
+      },
+      "uncertainty": "Across-seed standard deviation is descriptive, not a significance or generalization claim.",
+      "production_authority": false
+    }
+  }
+}

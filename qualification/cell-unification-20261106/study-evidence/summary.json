@@ -1,0 +1,225 @@
+{
+  "source_commit": "caf06e0d9c78ba2b8e2ab860ec1b37f049e30f1b",
+  "python_source_digest": "19a6a6261d6d832243f394d73f2cbc80f1d063f127da71e3c08bf636c0a485a9",
+  "plan_digest": "3765b36e70afe73d65ad61d03f1e59ac30cf1d92ebbc9480b063f1276d09f090",
+  "report_sha256": "26c32dfb400ed591b9ee7fe2a0e47713291f0c7e8e9d2dd3ec2293f242b399bd",
+  "report_bytes": 6691411,
+  "gzip_sha256": "3a43b6fcc7e8981233bc92d88297aa363e131957f0a4785f8ac8a508bd812145",
+  "gzip_bytes": 1178458,
+  "trials": 10,
+  "arms": 60,
+  "test_predictions": 11520,
+  "failed_arms": 0,
+  "conflicting_fixed_expert_gain": {
+    "mean": 6.27906422362397e-05,
+    "min": 2.1408815508491136e-06,
+    "max": 0.0001171826099335394,
+    "minimum_required_per_seed": 0.0005
+  },
+  "summary": {
+    "helpful_specialization": {
+      "all_planned_seeds_required": true,
+      "arms": {
+        "continued_parent": {
+          "completed_test_predictions": 960,
+          "mean_estimated_float_ops_including_shared": 1652352.0,
+          "old_task_mse_mean": 4.213070037980672,
+          "requested_test_predictions": 960,
+          "test_mse_across_seed_std": 0.2834915871099583,
+          "test_mse_mean": 3.305500808231482
+        },
+        "demand_specialization": {
+          "completed_test_predictions": 960,
+          "mean_estimated_float_ops_including_shared": 1251346.0,
+          "old_task_mse_mean": 0.0027986432488706038,
+          "requested_test_predictions": 960,
+          "test_mse_across_seed_std": 0.0002837294988299928,
+          "test_mse_mean": 0.002552107564199689
+        },
+        "expanded_monolith": {
+          "completed_test_predictions": 960,
+          "mean_estimated_float_ops_including_shared": 2185600.0,
+          "old_task_mse_mean": 0.03516691775630818,
+          "requested_test_predictions": 960,
+          "test_mse_across_seed_std": 0.006341903633081901,
+          "test_mse_mean": 0.022421919878418312
+        },
+        "fixed_experts": {
+          "completed_test_predictions": 960,
+          "mean_estimated_float_ops_including_shared": 1656192.0,
+          "old_task_mse_mean": 0.0029242245333430832,
+          "requested_test_predictions": 960,
+          "test_mse_across_seed_std": 0.00029592698521628866,
+          "test_mse_mean": 0.002614898206435929
+        },
+        "frozen_incumbent": {
+          "completed_test_predictions": 960,
+          "mean_estimated_float_ops_including_shared": 829312.0,
+          "old_task_mse_mean": 0.0027986432488706038,
+          "requested_test_predictions": 960,
+          "test_mse_across_seed_std": 0.8552879897657321,
+          "test_mse_mean": 6.044695446147577
+        },
+        "random_grouping": {
+          "completed_test_predictions": 960,
+          "mean_estimated_float_ops_including_shared": 1656192.0,
+          "old_task_mse_mean": 4.078268714497472,
+          "requested_test_predictions": 960,
+          "test_mse_across_seed_std": 0.3602855672181826,
+          "test_mse_mean": 3.3117855820769933
+        }
+      },
+      "decision": "HOLD",
+      "observed_seeds": [
+        7,
+        17,
+        29,
+        43,
+        71
+      ],
+      "planned_seeds": [
+        7,
+        17,
+        29,
+        43,
+        71
+      ],
+      "production_authority": false,
+      "reasons_by_seed": {
+        "17": [
+          "insufficient_gain_over:fixed_experts"
+        ],
+        "29": [
+          "insufficient_gain_over:fixed_experts"
+        ],
+        "43": [
+          "insufficient_gain_over:fixed_experts"
+        ],
+        "7": [
+          "insufficient_gain_over:fixed_experts"
+        ],
+        "71": [
+          "insufficient_gain_over:fixed_experts"
+        ]
+      },
+      "uncertainty": "Across-seed standard deviation is descriptive, not a significance or generalization claim."
+    },
+    "redundant_specialization": {
+      "all_planned_seeds_required": true,
+      "arms": {
+        "continued_parent": {
+          "completed_test_predictions": 960,
+          "mean_estimated_float_ops_including_shared": 1652352.0,
+          "old_task_mse_mean": 0.002838270904560433,
+          "requested_test_predictions": 960,
+          "test_mse_across_seed_std": 0.0002554066805186813,
+          "test_mse_mean": 0.002565705336646986
+        },
+        "demand_specialization": {
+          "completed_test_predictions": 960,
+          "mean_estimated_float_ops_including_shared": 837906.0,
+          "old_task_mse_mean": 0.0027986432488706038,
+          "requested_test_predictions": 960,
+          "test_mse_across_seed_std": 0.00027500635453131067,
+          "test_mse_mean": 0.002540784705825066
+        },
+        "expanded_monolith": {
+          "completed_test_predictions": 960,
+          "mean_estimated_float_ops_including_shared": 2185600.0,
+          "old_task_mse_mean": 0.002897762454212235,
+          "requested_test_predictions": 960,
+          "test_mse_across_seed_std": 0.00028976222067718225,
+          "test_mse_mean": 0.0026011382292099533
+        },
+        "fixed_experts": {
+          "completed_test_predictions": 960,
+          "mean_estimated_float_ops_including_shared": 1656192.0,
+          "old_task_mse_mean": 0.0029242245333430832,
+          "requested_test_predictions": 960,
+          "test_mse_across_seed_std": 0.00029828117761681325,
+          "test_mse_mean": 0.002615537743586597
+        },
+        "frozen_incumbent": {
+          "completed_test_predictions": 960,
+          "mean_estimated_float_ops_including_shared": 829312.0,
+          "old_task_mse_mean": 0.0027986432488706038,
+          "requested_test_predictions": 960,
+          "test_mse_across_seed_std": 0.00027500635453131067,
+          "test_mse_mean": 0.002540784705825066
+        },
+        "random_grouping": {
+          "completed_test_predictions": 960,
+          "mean_estimated_float_ops_including_shared": 1656192.0,
+          "old_task_mse_mean": 0.002899544187127225,
+          "requested_test_predictions": 960,
+          "test_mse_across_seed_std": 0.0002342144737119241,
+          "test_mse_mean": 0.0026204243849174544
+        }
+      },
+      "decision": "HOLD",
+      "observed_seeds": [
+        7,
+        17,
+        29,
+        43,
+        71
+      ],
+      "planned_seeds": [
+        7,
+        17,
+        29,
+        43,
+        71
+      ],
+      "production_authority": false,
+      "reasons_by_seed": {
+        "17": [
+          "no_persistent_demand",
+          "negative_transfer_not_observed",
+          "insufficient_gain_over:frozen_incumbent",
+          "insufficient_gain_over:continued_parent",
+          "insufficient_gain_over:expanded_monolith",
+          "insufficient_gain_over:fixed_experts",
+          "insufficient_gain_over:random_grouping"
+        ],
+        "29": [
+          "no_persistent_demand",
+          "negative_transfer_not_observed",
+          "insufficient_gain_over:frozen_incumbent",
+          "insufficient_gain_over:continued_parent",
+          "insufficient_gain_over:expanded_monolith",
+          "insufficient_gain_over:fixed_experts",
+          "insufficient_gain_over:random_grouping"
+        ],
+        "43": [
+          "no_persistent_demand",
+          "negative_transfer_not_observed",
+          "insufficient_gain_over:frozen_incumbent",
+          "insufficient_gain_over:continued_parent",
+          "insufficient_gain_over:expanded_monolith",
+          "insufficient_gain_over:fixed_experts",
+          "insufficient_gain_over:random_grouping"
+        ],
+        "7": [
+          "no_persistent_demand",
+          "negative_transfer_not_observed",
+          "insufficient_gain_over:frozen_incumbent",
+          "insufficient_gain_over:continued_parent",
+          "insufficient_gain_over:expanded_monolith",
+          "insufficient_gain_over:fixed_experts",
+          "insufficient_gain_over:random_grouping"
+        ],
+        "71": [
+          "no_persistent_demand",
+          "negative_transfer_not_observed",
+          "insufficient_gain_over:frozen_incumbent",
+          "insufficient_gain_over:continued_parent",
+          "insufficient_gain_over:expanded_monolith",
+          "insufficient_gain_over:fixed_experts",
+          "insufficient_gain_over:random_grouping"
+        ]
+      },
+      "uncertainty": "Across-seed standard deviation is descriptive, not a significance or generalization claim."
+    }
+  }
+}

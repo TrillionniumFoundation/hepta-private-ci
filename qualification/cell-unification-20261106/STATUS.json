@@ -1,0 +1,1784 @@
+{
+  "schema": "hepta.cell-unification-status.v1",
+  "record_state": "DRAFT_PENDING_FINAL_SOURCE",
+  "publication": {
+    "status": "PENDING_ROOT_FINALIZATION",
+    "commit": null,
+    "tree": null,
+    "pull_request": null,
+    "main_merged": false,
+    "pending_fields": [
+      "Resolve the three closed stage44 r15 Core failures and rerun the complete original Core + codex-mcp gate on a newly frozen source. Original r15 MCP196/196 and22 of the prior24 Core failures passed; full two-package gate remains FAIL.",
+      "Complete workspace default tests after project gates",
+      "final fix/fmt and exact source export",
+      "branch/Draft PR and published SHA CI"
+    ],
+    "branch": null
+  },
+  "overall": {
+    "all_blockers_closed": false,
+    "production_adoption_qualified": false,
+    "seven_role_system_qualified": false,
+    "new_bridge_model_efficacy_proven": false,
+    "scientific_disposition": "HOLD",
+    "authority": "DENY_ALL"
+  },
+  "source_inputs": {
+    "framework": {
+      "pull_request": 4887,
+      "commit": "bef6fa7645df9df12b69fda499e97eed25de6c75"
+    },
+    "roles_and_differentiation": {
+      "pull_request": 4890,
+      "commit": "caf06e0d9c78ba2b8e2ab860ec1b37f049e30f1b"
+    },
+    "original_projection_exporter": {
+      "commit": "4b3081c25af86f707a5c0d50c688c959a04af446",
+      "path": "qa/stem-bakeoff/feature_bundle.py",
+      "git_blob_sha1": "7fecc5df60fd662793e5e8c98b532074f566504c"
+    }
+  },
+  "taxonomy": {
+    "functional_roles": "CellFunctionalRoleV1",
+    "memory_organization": "EngramPopulationV1",
+    "one_to_one_conversion_allowed": false,
+    "optimal_number_seven_proven": false,
+    "source_index": "HISTORICAL_ASSETS.json"
+  },
+  "implementation": {
+    "projection": "strict original global Q24 receipt importer with independent owner pins; no tensor/encoder authenticity claim",
+    "registry": "family/capability/expert/definition bound into original native operation and recovery paths",
+    "family_count": 3,
+    "families_are_roles": false,
+    "output_profile": "CellDecisionReceiptV1; proposal only",
+    "new_behavior_tests": 14,
+    "validation_uses_control_fixtures": true,
+    "real_backend_weights_loaded": false,
+    "real_encoder_q24_receipt_roundtrip_qualified": false,
+    "legacy_nonlinear_head_parity_qualified": false,
+    "maximum_native_width": 512,
+    "eg2_768_width_admitted": false,
+    "full_feature_bundle_import_qualified": false
+  },
+  "validation": {
+    "baseline": {
+      "status": "PASS_SCOPED",
+      "tests_run": 200,
+      "passed": 200,
+      "failed": 0,
+      "skipped": 0,
+      "test_packages": [
+        "codex-hepta-neuron",
+        "codex-hepta-plasticity"
+      ],
+      "staged_tree": "50ae18757324959cf8fc7c41389ede13bbc80d44",
+      "source_commit": "52b1a257f1c3cedb93edab6946214085cfa23d38",
+      "source_identity_kind": "published Git object with exact tested tree; ref publication follows final gate",
+      "host": "pocket4",
+      "rust_toolchain": "1.96.0",
+      "command": [
+        "just",
+        "test",
+        "-p",
+        "codex-hepta-neuron",
+        "-p",
+        "codex-hepta-plasticity",
+        "--locked",
+        "--retries",
+        "0"
+      ],
+      "exit_code": 0,
+      "lock_sha256": "4165307bb6c41d08e6c1c362060f2a958c8200ea43fdab2b8b1e6220ad82b55c",
+      "evidence": {
+        "attachment_status": "ATTACHED_HASH_VERIFIED",
+        "destination": "native-evidence/baseline/",
+        "source_manifest": {
+          "path": "native-evidence/baseline/native-first-source.json",
+          "sha256": "4277306ecdf35ccfb8e7a9cbd85f1ca280074182ad83782934a136aa42140341",
+          "bytes": 1128
+        },
+        "receipt": {
+          "path": "native-evidence/baseline/native-first-receipt.json",
+          "sha256": "c1e7d0751b7b2bd40adcf0bcdd752bbf4d16cc5267f7328d7267e463502a7fa2",
+          "bytes": 1269
+        },
+        "log": {
+          "path": "native-evidence/baseline/native-first.log.gz",
+          "decompressed_sha256": "c6a980331bec98e118bf3327dca75713c7231e99c93ba802ea113c6a2ede3688",
+          "sha256": "2e42c474030891e7dcadb00cc46b326d70a3e520efff7d9a1ad840d78ee85c4c",
+          "bytes": 6363,
+          "decompressed_bytes": 27887
+        },
+        "index": "native-evidence/INDEX.json"
+      },
+      "does_not_qualify": [
+        "final_head",
+        "full_workspace",
+        "production_backend",
+        "scientific_net_benefit",
+        "physical_lifecycle"
+      ]
+    },
+    "registry_a": {
+      "status": "PASS_SCOPED",
+      "tests_run": 214,
+      "passed": 214,
+      "failed": 0,
+      "skipped": 0,
+      "test_packages": [
+        "codex-hepta-neuron",
+        "codex-hepta-plasticity"
+      ],
+      "staged_tree": "73bc5da08b54612ff662542c20124e96d3d51908",
+      "source_commit": null,
+      "source_identity_kind": "complete_staged_tree_with_manifest; final publication commit pending",
+      "host": "pocket4",
+      "rust_toolchain": "1.96.0",
+      "command": [
+        "just",
+        "test",
+        "-p",
+        "codex-hepta-neuron",
+        "-p",
+        "codex-hepta-plasticity",
+        "--locked",
+        "--retries",
+        "0"
+      ],
+      "exit_code": 0,
+      "lock_sha256": "4165307bb6c41d08e6c1c362060f2a958c8200ea43fdab2b8b1e6220ad82b55c",
+      "evidence": {
+        "attachment_status": "ATTACHED_HASH_VERIFIED",
+        "destination": "native-evidence/registry-a/",
+        "source_manifest": {
+          "path": "native-evidence/registry-a/native-registry-a-source.json",
+          "sha256": "6eb4c074f0e54d6c4922f1fb42d7ea4af79d4efccf09440284a05ec3da0412c7",
+          "bytes": 1679
+        },
+        "receipt": {
+          "path": "native-evidence/registry-a/native-registry-a-receipt.json",
+          "sha256": "c2346ca76f49c89aedc3a5e3a0a25a26530d149d9e68e4ba3a3d8f06f0522a60",
+          "bytes": 533
+        },
+        "log": {
+          "path": "native-evidence/registry-a/native-registry-a.log.gz",
+          "decompressed_sha256": "d3fe0428c8e8ea1b8d62a5539a1fe378ef6af4627ee52379af10e449e6d49987",
+          "sha256": "3db4989194b794ce067ad5680bde76451069856193dd447c4272c73beca99110",
+          "bytes": 6226,
+          "decompressed_bytes": 28296
+        },
+        "index": "native-evidence/INDEX.json"
+      },
+      "does_not_qualify": [
+        "final_head",
+        "full_workspace",
+        "production_backend",
+        "scientific_net_benefit",
+        "physical_lifecycle"
+      ]
+    },
+    "combined_seven_packages": {
+      "status": "PASS_INTERMEDIATE_SOURCE",
+      "evidence_basis": "Full source manifest, command receipt and gzip log attached; root and independent reviewer verified decoded log SHA and 623/1 summary.",
+      "tests_run": 623,
+      "passed": 623,
+      "failed": 0,
+      "skipped": 1,
+      "new_exclusions_added": false,
+      "skipped_test_identity": "codex-hepta-learning-artifacts owner_host::tests::owner_host_process_fault_worker",
+      "skipped_test_review": "Verified parent matrix PASS and source child invocation with --ignored --exact; this harness worker remains counted as 1 skipped.",
+      "staged_tree": "e634d4d2f7ce4a9bc78d3d1756e3242c5d3eb211",
+      "exit_code": 0,
+      "build_and_test_wall_seconds_reported": 279.195,
+      "test_phase_seconds_reported": 4.817,
+      "source_manifest": "native-evidence/combined/native-combined-a-source.json",
+      "receipt": "native-evidence/combined/native-combined-a-receipt.json",
+      "destination": "native-evidence/combined/",
+      "final_source_qualification": false,
+      "command": [
+        "just",
+        "test",
+        "-p",
+        "codex-hepta-neuron",
+        "-p",
+        "codex-hepta-plasticity",
+        "-p",
+        "codex-hepta-automation",
+        "-p",
+        "codex-hepta-learning-artifacts",
+        "-p",
+        "codex-hepta-runtime",
+        "-p",
+        "codex-hepta-control-plane",
+        "-p",
+        "codex-utils-pty",
+        "--locked",
+        "--retries",
+        "0"
+      ],
+      "test_packages": [
+        "codex-hepta-neuron",
+        "codex-hepta-plasticity",
+        "codex-hepta-automation",
+        "codex-hepta-learning-artifacts",
+        "codex-hepta-runtime",
+        "codex-hepta-control-plane",
+        "codex-utils-pty"
+      ],
+      "skipped_test_reason": "worker is invoked only by owner_host_process_kill_reopen_matrix",
+      "reported_log_sha256": "6d3eb769151e36df50f061deafe4fe06125d3bf0b88889c26d8bb27e859f0c4a",
+      "log": "native-evidence/combined/native-combined-a.log.gz",
+      "skip_explanation": "Ignored subprocess worker invoked with --ignored --exact by owner_host_process_kill_reopen_matrix, which passed (0.482 seconds).",
+      "skip_evidence": "native-evidence/combined/ignored-worker-evidence.txt"
+    },
+    "final_fix_fmt": {
+      "status": "PENDING",
+      "receipt": null,
+      "baseline_fix_fmt_does_not_qualify_final_source": true
+    },
+    "final_github_ci": {
+      "status": "PENDING_FINAL_SOURCE",
+      "commit": null,
+      "runs": []
+    },
+    "python_reference": {
+      "source_commit": "caf06e0d9c78ba2b8e2ab860ec1b37f049e30f1b",
+      "source_digest": "19a6a6261d6d832243f394d73f2cbc80f1d063f127da71e3c08bf636c0a485a9",
+      "plan_digest": "3765b36e70afe73d65ad61d03f1e59ac30cf1d92ebbc9480b063f1276d09f090",
+      "normal_tests": {
+        "run": 24,
+        "passed": 24,
+        "failed": 0
+      },
+      "optimized_tests": {
+        "run": 24,
+        "passed": 24,
+        "failed": 0
+      },
+      "same_cases_two_modes_not_48_unique_tests": true,
+      "full_study_runs": 1,
+      "trials": 10,
+      "arms": 60,
+      "test_predictions_requested": 11520,
+      "test_predictions_completed": 11520,
+      "failed_arms": 0,
+      "scenario_decisions": {
+        "helpful_specialization": "HOLD",
+        "redundant_specialization": "HOLD"
+      },
+      "conflicting_fixed_expert_gain": {
+        "mean": 6.27906422362397e-05,
+        "min": 2.1408815508491136e-06,
+        "max": 0.0001171826099335394,
+        "minimum_required_per_seed": 0.0005
+      },
+      "total_compute_exactly_matched": false,
+      "budget_profile": "128 steps per fit; candidate estimated FP ops <=3x continued-parent total",
+      "source_binding": "study-evidence/source-binding.json",
+      "executions": "study-evidence/executions.json",
+      "report": {
+        "path": "study-evidence/study.json.gz",
+        "sha256": "3a43b6fcc7e8981233bc92d88297aa363e131957f0a4785f8ac8a508bd812145",
+        "bytes": 1178458,
+        "decompressed_sha256": "26c32dfb400ed591b9ee7fe2a0e47713291f0c7e8e9d2dd3ec2293f242b399bd",
+        "decompressed_bytes": 6691411
+      },
+      "does_not_qualify": [
+        "native_policy_parity",
+        "seven_semantic_roles",
+        "production_lifecycle",
+        "equal_total_budget_efficacy",
+        "positive_complete_cost_net_benefit"
+      ]
+    },
+    "independent_readback": {
+      "status": "PASS_SCOPED",
+      "normal_and_optimized": true,
+      "prediction_records": 30720,
+      "max_absolute_prediction_error": 1.4432899320127035e-15,
+      "cost_events_once": 655,
+      "estimated_fp_ops_shared_once": 49090740,
+      "routing_decisions_shared_once": 37120,
+      "receipt": "study-evidence/independent-replay.json",
+      "limitations": "Shared NumPy RNG implementation, independent scalar model evaluation and decision reconstruction. No study imports, no training replay, no hardware/energy or lifecycle attestation."
+    },
+    "strict_lint": {
+      "status": "SCOPED_PASSES_ONLY_FINAL_QUALIFICATION_OPEN",
+      "source_manifest": "native-evidence/nine-r2/native-nine-r2-agentd-source.json",
+      "receipt": "native-evidence/nine-r2/native-nine-r2-strict-receipt.json",
+      "warning_policy": "-D warnings",
+      "agentd_not_implied": true,
+      "additional_scoped_success": "inherited_seven_r10",
+      "latest_agentd_scope": "agentd_r13: original stage41 strict and tests passed; 696 passed and 66 original skipped; no transfer to later source",
+      "latest_core_scope": "core_mcp_r15: stage44 strict passed; complete tests4023 passed/3 failed/0 timeout and9 original skips. Core3827 passed/3 failed; MCP196/196 passed. Every count remains source-bound; full-workspace and final-source qualification remain open."
+    },
+    "agentd": {
+      "status": "PASS_SCOPED_R13_ORIGINAL_STRICT_AND_TESTS",
+      "staged_tree": "6be3dbb1420c0ac7e0590c6e3c17191a073af9a9",
+      "source_commit_with_identical_tree": "d313ba51180a838269677d28b2d91e1777b7b463",
+      "compiler_profile_alignment": {
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "basis": "Existing cell-framework CI settings; applied after preserving original debug-limited r8c/r8d failures"
+      },
+      "source_manifest": "native-evidence/r13-agentd-composition-checkpoint/native-candidate-r13-source.json",
+      "receipt": "native-evidence/r13-agentd-composition-checkpoint/native-agentd-composition-r13-strict-receipt.json",
+      "prior_diagnostic": {
+        "stage": "r8",
+        "primary_errors": 31,
+        "classifications": {
+          "dead_code": 4,
+          "large_enum_variant": 16,
+          "too_many_arguments": 11
+        },
+        "source_tree": "6d88ca9c8964669a408d8549efaeff7b94d68674"
+      },
+      "repair_audits": [
+        "native-evidence/agentd-r8-root-repair/",
+        "native-evidence/agentd-r8-authority-intelligence/",
+        "native-evidence/agentd-r8-cognitive-plasticity/",
+        "native-evidence/agentd-r8-notes/"
+      ],
+      "gates_pass_not_claimed": false,
+      "stage_number": 41,
+      "job_id": "1a1af95b061-fc05-69dc",
+      "latest_closed_gate": "agentd_r13.strict_and_tests",
+      "attachment_status": "CLOSED_ARCHIVE_LOGS_RECEIPTS_LIST_AND_INDEPENDENT_SOURCE_TREE_RECONSTRUCTION_ATTACHED",
+      "later_source_stages_not_in_this_gate": [
+        42,
+        43
+      ],
+      "no_longer_active": true,
+      "tests_terminal_counts": {
+        "tests_run": 696,
+        "passed": 696,
+        "failed": 0,
+        "timed_out": 0,
+        "skipped": 66
+      },
+      "final_source_qualification": false,
+      "test_receipt": "native-evidence/r13-agentd-composition-checkpoint/native-agentd-composition-r13-tests-receipt.json",
+      "source_roundtrip": "native-evidence/r13-agentd-composition-checkpoint/root-source-roundtrip.json",
+      "result_readback": "native-evidence/r13-agentd-composition-checkpoint/ROOT-RESULT-READBACK.json"
+    },
+    "strict_a": {
+      "status": "FAILED_RETAINED",
+      "source_tree": "e634d4d2f7ce4a9bc78d3d1756e3242c5d3eb211",
+      "exit_code": 101,
+      "cause": "Inherited context-compiler empty_line_after_doc_comments and too_many_arguments",
+      "receipt": "native-evidence/strict-a/native-strict-a-receipt.json",
+      "log": "native-evidence/strict-a/native-strict-a.log.gz",
+      "suppressed": false
+    },
+    "strict_b": {
+      "status": "FAILED_RETAINED",
+      "source_tree": "e634d4d2f7ce4a9bc78d3d1756e3242c5d3eb211",
+      "exit_code": 101,
+      "cause": "CellStepEntryV1 and CellUpdateOutcomeV1 large enum variants",
+      "receipt": "native-evidence/strict-b/native-strict-b-receipt.json",
+      "log": "native-evidence/strict-b/native-strict-b.log.gz",
+      "suppressed": false
+    },
+    "strict_c": {
+      "status": "FAILED_RETAINED",
+      "source_tree": "46074d381264f795134332d4e1425dc0d559bd5f",
+      "exit_code": 101,
+      "cause": "AuthorizedEffectRecoveryResult large enum; sync/async authorized-effect APIs and NeuralCircuitCandidateV1::new too many arguments",
+      "receipt": "native-evidence/strict-c/native-strict-c-receipt.json",
+      "log": "native-evidence/strict-c/native-strict-c.log.gz",
+      "suppressed": false
+    },
+    "nine_packages_r2": {
+      "status": "PASS_SCOPED_INDEPENDENTLY_VERIFIED",
+      "passed": 753,
+      "failed": 0,
+      "skipped": 1,
+      "skip_explanation": "Existing owner_host subprocess worker; parent kill/reopen matrix invokes it.",
+      "staged_tree": "40da496d1e1c163f67ed83dcdb23d61bf16836aa",
+      "exit_code": 0,
+      "strict_original_policy": "-D warnings; final command without --keep-going",
+      "strict_exit_code": 0,
+      "test_build_and_run_seconds": 27.123,
+      "test_phase_seconds": 8.345,
+      "reported_test_log_sha256": "25e7d55b4c2fbf6ca2a22562fc683c5609a97f94fb4babd46840d756cf5e85b3",
+      "reported_strict_log_sha256": "a3bf5af3328a36f9d684497fc7212fa57f27cb9387b722c1a3d1a5d18fdbfd85",
+      "final_formatted_source_qualification": false,
+      "source_manifest": "native-evidence/nine-r2/native-nine-r2-agentd-source.json",
+      "test_receipt": "native-evidence/nine-r2/native-nine-r2-tests-receipt.json",
+      "strict_receipt": "native-evidence/nine-r2/native-nine-r2-strict-receipt.json",
+      "test_log": "native-evidence/nine-r2/native-nine-r2-tests.log.gz",
+      "strict_log": "native-evidence/nine-r2/native-nine-r2-strict.log.gz",
+      "source_commit_with_identical_tree": "5778f6b123c3de79d07722173f7f010b31c4fcf6",
+      "source_files_verified": 58,
+      "independent_readback": "native-evidence/nine-r2/evidence-readback.json",
+      "github_tree_roundtrip": "native-evidence/nine-r2/github-source-roundtrip.json"
+    },
+    "protocol_r3": {
+      "status": "PASS_SCOPED_INDEPENDENTLY_VERIFIED",
+      "staged_tree": "634b3a5ce694319af76e5597fffa258a17d2b679",
+      "passed": 14,
+      "failed": 0,
+      "skipped": 0,
+      "strict_exit_code": 0,
+      "source_commit_with_identical_tree": "0a554be7410ba7eb92b39e370f9f7d34d36eaee1",
+      "nine_package_sources_byte_identical_to_40da": true,
+      "source_manifest": "native-evidence/r3/native-agentd-protocol-r3-source.json",
+      "strict_receipt": "native-evidence/r3/native-protocol-r3-strict-receipt.json",
+      "test_receipt": "native-evidence/r3/native-protocol-r3-tests-receipt.json",
+      "strict_log": "native-evidence/r3/native-protocol-r3-strict.log.gz",
+      "test_log": "native-evidence/r3/native-protocol-r3-tests.log.gz",
+      "independent_readback": "native-evidence/r3/VERIFICATION.json"
+    },
+    "agentd_r3": {
+      "status": "FAILED_RETAINED",
+      "staged_tree": "634b3a5ce694319af76e5597fffa258a17d2b679",
+      "diagnostic_only": true,
+      "exit_code": 101,
+      "primary_error_count": 6,
+      "receipt": "native-evidence/r3/native-agentd-r3-strict-diagnostic-receipt.json",
+      "log": "native-evidence/r3/native-agentd-r3-strict-diagnostic.log.gz",
+      "original_strict_or_tests_pass_not_claimed": true
+    },
+    "inherited_dependencies_r5": {
+      "status": "FAILED_STRICT_RETAINED",
+      "staged_tree": "74ef4ad0ed92355ec58a173fc862b9d500c0c104",
+      "packages": [
+        "codex-model-provider-info",
+        "codex-shell-escalation",
+        "codex-linux-sandbox",
+        "codex-hepta-memory"
+      ],
+      "native_tree_matches_created_commit": true,
+      "source_commit_with_identical_tree": "332f6f3d1060ddde633cfcb4ad4fadada27ea624",
+      "exit_code": 101,
+      "tests_executed": false,
+      "receipt": "native-evidence/r4-r7-probes/native-inherited-r5-strict-receipt.json",
+      "log": "native-evidence/r4-r7-probes/native-inherited-r5-strict.log.gz",
+      "cause": "Private core map_response_events too_many_arguments; subsequent exact input grouping audited"
+    },
+    "exec_server_r5": {
+      "status": "NOT_EXECUTED_AFTER_EARLIER_STRICT_FAILURE",
+      "staged_tree": "74ef4ad0ed92355ec58a173fc862b9d500c0c104"
+    },
+    "supervisor_recovery_regressions": {
+      "status": "PASS_SCOPED_INDEPENDENTLY_VERIFIED",
+      "original_production_tree": "e313f4cc49df5c99f32bb7f22a722efd2c3d01bb",
+      "original_behavior": {
+        "run": 4,
+        "passed": 0,
+        "failed_assertions": 4,
+        "exit_code": 100
+      },
+      "repaired_tree": "7a4727b8ffaccf914ccbca2b2c57bbe90409f5e3",
+      "repaired_behavior": {
+        "run": 4,
+        "passed": 4,
+        "failed": 0,
+        "exit_code": 0
+      },
+      "same_named_tests": true,
+      "other_tests_excluded_by_explicit_probe_filter": 120,
+      "original_compile_failure_not_counted_as_behavior_proof": true,
+      "red_receipt": "native-evidence/r4-r7-probes/native-supervisor-red-r6b-receipt.json",
+      "green_receipt": "native-evidence/r4-r7-probes/native-supervisor-green-r7-receipt.json",
+      "readback": "native-evidence/r4-r7-probes/root-readback.json",
+      "independent_red_source_tree_proof": "native-evidence/supervisor-recovery/red-source-roundtrip.json",
+      "scope": "Native production recovery code with controlled ProcessDriver and durable filesystem/registry fixtures; not a complete Supervisor suite or physical-process qualification"
+    },
+    "candidate_r7_strict_diagnostic": {
+      "status": "FAILED_RETAINED_REPORTED_AWAITING_FINAL_EXPORT",
+      "staged_tree": "7a4727b8ffaccf914ccbca2b2c57bbe90409f5e3",
+      "exit_code": 101,
+      "elapsed_seconds": 233.978,
+      "log_sha256": "a43859ed38eb36eeb1deae14d7fdf824101a91e2dfad6cac8b3165df08b3af78",
+      "causes": [
+        "memory-extension obsolete constructor and isolated digest helper",
+        "exec-server test lock held across await and equivalent error assertion idioms",
+        "unused Supervisor test release helper",
+        "core test get().is_none()"
+      ]
+    },
+    "complete_workspace": {
+      "status": "NOT_STARTED_PENDING_PROJECT_GATES_AND_CORE_REVALIDATION",
+      "required_by": "AGENTS.md complete suite after core changes; current full-scope task authorization",
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "--retries",
+        "0"
+      ],
+      "scope_audit": "native-evidence/workspace-default-scope/scope-audit.json",
+      "features": "Cargo defaults",
+      "profile": "local",
+      "test_threads": 2,
+      "added_exclusions": false,
+      "platform": "native Linux target",
+      "does_not_qualify": [
+        "all feature combinations",
+        "other OS targets",
+        "real external model services",
+        "doctests",
+        "benchmarks",
+        "Bazel or Python suites"
+      ]
+    },
+    "candidate_r8_strict_diagnostic": {
+      "status": "FAILED_RETAINED",
+      "diagnostic_only": true,
+      "source_tree": "6d88ca9c8964669a408d8549efaeff7b94d68674",
+      "exit_code": 101,
+      "primary_error_count": 31,
+      "receipt": "native-evidence/r8-diagnostic/native-candidate-r8-strict-diagnostic-receipt.json",
+      "log": "native-evidence/r8-diagnostic/native-candidate-r8-strict-diagnostic.log.gz",
+      "log_sha256": "04424a725bff43ebb69deb2090a509cd6eface05b2a1ff61341b5eb433ca6013"
+    },
+    "inherited_seven_r8b": {
+      "status": "ORIGINAL_STRICT_PASS_TESTS_FAILED_RETAINED",
+      "source_tree": "6d88ca9c8964669a408d8549efaeff7b94d68674",
+      "strict_exit_code": 0,
+      "test_exit_code": 100,
+      "tests_run": 1355,
+      "passed": 1349,
+      "failed": 4,
+      "timed_out": 2,
+      "skipped": 17,
+      "log_sha256": "a68e4640f13a44efab1403a4563c1cffb056b6847d09723484d29ab74be04ec0",
+      "log": "native-evidence/r8b-failed-tests/native-inherited-seven-r8b-tests.log.gz",
+      "independent_closed_log_review": "native-evidence/r8b-failed-tests/independent-closed-log-review.json",
+      "original_skip_identities_available_from_log": false,
+      "new_supervisor_recovery_regressions_passed": 4,
+      "modified_exec_lock_regressions_passed": 2,
+      "final_source_qualification": false
+    },
+    "core_r8c": {
+      "status": "ORIGINAL_STRICT_PASS_TESTS_FAILED_CLOSED_RETAINED",
+      "source_tree": "6d88ca9c8964669a408d8549efaeff7b94d68674",
+      "strict_exit_code": 0,
+      "test_exit_code": 100,
+      "tests_run": 3824,
+      "passed": 3608,
+      "failed": 206,
+      "timed_out": 10,
+      "skipped": 9,
+      "log_sha256": "d5838182b45478741d7af4c65dc3ed826b27c0f14d825897c21f0062a292e687",
+      "classification": "COMPLETE_216_UNIQUE_NONPASSING_TESTS_BY_OBSERVED_SIGNATURE_NOT_ALL_ROOT_CAUSES_RESOLVED",
+      "final_source_qualification": false,
+      "strict_receipt": "native-evidence/r8c-core-failed/native-core-r8c-strict-receipt.json",
+      "test_receipt": "native-evidence/r8c-core-failed/native-core-r8c-tests-receipt.json",
+      "log": "native-evidence/r8c-core-failed/native-core-r8c-tests.log.gz",
+      "classification_file": "native-evidence/r8c-core-failed/core-r8c-failure-classification.json",
+      "classification_sha256": "4eea16522f3673f2fd64c618e07adfcda99157a426b696b63ba2add552ad8bde",
+      "classification_nonpassing_unique": 216,
+      "excluded_duplicate_footer_entries": 216,
+      "explicit_missing_helper_metadata_tests": 108,
+      "explicit_missing_helper_metadata_by_binary": {
+        "codex": 9,
+        "test_stdio_server": 97,
+        "codex-code-mode-host": 2
+      },
+      "additional_host_fallback_ENOENT_tests": 1,
+      "remaining_nonpassing_without_explicit_missing_helper_signature": 107,
+      "signature_group_counts": {
+        "other_state_or_request_assertion": 6,
+        "provider_private_metadata_projection_assertion": 6,
+        "stream_fd_EPERM_output_contamination": 5,
+        "nextest_watchdog_timeout_no_further_cause": 10,
+        "explicit_missing_helper": 108,
+        "other_code_mode_result_or_tool_contract_assertion": 28,
+        "code_mode_result_JSON_parse_error": 8,
+        "code_mode_exec_dispatch_rejected": 6,
+        "expected_second_result_missing_index_panic": 9,
+        "code_mode_host_spawn_ENOENT": 1,
+        "internal_event_or_turn_deadline": 22,
+        "wiremock_expectations_unmet_no_explicit_helper_signature": 7
+      },
+      "original_skipped_ids_available_from_log": false,
+      "classification_complete_is_not_repair_qualification": true,
+      "current_candidate_core_rerun": "NOT_STARTED"
+    },
+    "paired_r8d_original_j1": {
+      "status": "FAILED_CLOSED_RETAINED",
+      "source_tree": "6d88ca9c8964669a408d8549efaeff7b94d68674",
+      "test_threads": 1,
+      "original_timeout_seconds": 60,
+      "tests_run": 2,
+      "passed": 0,
+      "failed": 1,
+      "timed_out": 1,
+      "skipped": 1,
+      "compiler_debug": "limited",
+      "log_sha256": "206dd14059805d873fc05e2b7e0ebf906397472c94088a22eb68cbb8b95a322e",
+      "observed_failure": "Agentd Drain request received a Health response instead of a Drain acknowledgement",
+      "process_sample_limitation": "Sampler followed only thread-group main-thread children and missed test processes; samples empty and no CPU/IO attribution claimed",
+      "automatic_rerun_performed": false,
+      "receipt": "native-evidence/r8d-paired-original/native-paired-r8d-original-j1-receipt.json",
+      "source_manifest": "native-evidence/r8d-paired-original/native-paired-r8d-original-j1-source.json",
+      "log": "native-evidence/r8d-paired-original/native-paired-r8d-original-j1.log.gz",
+      "five_pair_original_timeout_cause_not_proven": true,
+      "later_paired_scope": "inherited_seven_r10: both original paired tests passed after fixture repair under CI-aligned debug=0"
+    },
+    "agentd_r9": {
+      "status": "ORIGINAL_STRICT_FAILED_RETAINED_TESTS_NOT_STARTED",
+      "source_tree": "64ab95198effb0a0de22b0c4a30a1e8d509e2840",
+      "command": [
+        "just",
+        "clippy",
+        "--locked",
+        "-p",
+        "codex-hepta-agentd",
+        "-p",
+        "codex-hepta-agent-protocol",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "strict_exit_code": 101,
+      "elapsed_seconds": 333.8679287433624,
+      "primary_source_error_count": 2,
+      "diagnostics": [
+        {
+          "package": "codex-hepta-infer-worker-host",
+          "path": "codex-rs/hepta-infer-worker-host/src/native_app_server.rs",
+          "span_line": 695,
+          "lint": "clippy::collapsible_if"
+        },
+        {
+          "package": "codex-hepta-infer-worker-host",
+          "path": "codex-rs/hepta-infer-worker-host/src/native_app_server.rs",
+          "span_line": 917,
+          "lint": "clippy::too_many_arguments",
+          "arguments_before": 14
+        }
+      ],
+      "tests_started": false,
+      "test_receipt": null,
+      "source_manifest": "native-evidence/r9-agentd-composition-diagnostic/native-candidate-r9-source.json",
+      "strict_receipt": "native-evidence/r9-agentd-composition-diagnostic/native-agentd-composition-r9-strict-receipt.json",
+      "log": "native-evidence/r9-agentd-composition-diagnostic/native-agentd-composition-r9-strict.log.gz",
+      "log_sha256": "980c5a7a326a91c5784cc90161210437797f99b44082ef3602b56591057212be",
+      "repair_audit": "native-evidence/infer-worker-host-r9-repair/repair-audit.json",
+      "final_source_qualification": false
+    },
+    "inherited_seven_r10": {
+      "status": "PASS_SCOPED_ORIGINAL_STRICT_AND_TESTS",
+      "source_tree": "6ec19f0bae87ffc2dc3c5343c3e5ac390c22a6f0",
+      "strict_command": [
+        "just",
+        "clippy",
+        "--locked",
+        "-p",
+        "codex-model-provider-info",
+        "-p",
+        "codex-shell-escalation",
+        "-p",
+        "codex-linux-sandbox",
+        "-p",
+        "codex-hepta-memory",
+        "-p",
+        "codex-exec-server",
+        "-p",
+        "codex-hepta-supervisor",
+        "-p",
+        "codex-hepta-memory-extension",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "test_command": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-model-provider-info",
+        "-p",
+        "codex-shell-escalation",
+        "-p",
+        "codex-linux-sandbox",
+        "-p",
+        "codex-hepta-memory",
+        "-p",
+        "codex-exec-server",
+        "-p",
+        "codex-hepta-supervisor",
+        "-p",
+        "codex-hepta-memory-extension",
+        "--retries",
+        "0"
+      ],
+      "strict_exit_code": 0,
+      "test_exit_code": 0,
+      "tests_run": 1355,
+      "passed": 1355,
+      "failed": 0,
+      "timed_out": 0,
+      "skipped": 17,
+      "strict_elapsed_seconds": 153.41825604438782,
+      "command_build_plus_test_seconds": 510.078515291214,
+      "test_phase_seconds": 124.813,
+      "source_manifest": "native-evidence/r10-closed-checkpoint/native-candidate-r10-source.json",
+      "strict_receipt": "native-evidence/r10-closed-checkpoint/native-inherited-seven-r10-strict-receipt.json",
+      "test_receipt": "native-evidence/r10-closed-checkpoint/native-inherited-seven-r10-tests-receipt.json",
+      "strict_log": "native-evidence/r10-closed-checkpoint/native-inherited-seven-r10-strict.log.gz",
+      "test_log": "native-evidence/r10-closed-checkpoint/native-inherited-seven-r10-tests.log.gz",
+      "strict_log_sha256": "0b02862a72df8c0acf211ea2f60b63ebf7aed6139d5bc522b7cf6192470e476c",
+      "test_log_sha256": "acb0a4b3f0987b704e793ea354f85ea541982a4f61dfac98ed46a9116b38154a",
+      "environment_manifest": "native-evidence/r10-closed-checkpoint/native-inherited-seven-r10-environment.json",
+      "scope_proof": "native-evidence/r10-closed-checkpoint/native-inherited-seven-r10-scope-proof.json",
+      "independent_readback": "native-evidence/r10-closed-checkpoint/LOCAL-READBACK.json",
+      "source_roundtrip": "native-evidence/r10-closed-checkpoint/root-source-roundtrip.json",
+      "compiler_profile": {
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0"
+      },
+      "test_threads": 2,
+      "original_watchdog_seconds": 60,
+      "no_added_skip_or_filter": true,
+      "paired_tests": [
+        {
+          "test_id": "codex-hepta-supervisor::paired_process_product two_real_pairs_restart_one_without_peer_pid_churn",
+          "status": "PASS",
+          "elapsed_seconds": 9.939
+        },
+        {
+          "test_id": "codex-hepta-supervisor::paired_process_product five_real_pairs_adopt_all_ten_children_and_isolate_one_matrix_crash",
+          "status": "PASS",
+          "elapsed_seconds": 29.067
+        }
+      ],
+      "agentd_or_infer_worker_host_qualified": false,
+      "core_own_tests_executed": false,
+      "original_debug_limited_failures_retained": true,
+      "original_timeout_cause_inferred_from_profile_change": false,
+      "final_source_qualification": false
+    },
+    "runner_r10": {
+      "status": "PASS_SCOPED_ISOLATED_NATIVE_RUNNER_REGRESSIONS",
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "scripts",
+        "-p",
+        "test_run_nextest*.py",
+        "-v"
+      ],
+      "exit_code": 0,
+      "tests_run": 31,
+      "passed": 31,
+      "failed": 0,
+      "skipped": 0,
+      "original_tests": 10,
+      "new_tests": 21,
+      "elapsed_seconds": 3.8206470012664795,
+      "unittest_reported_seconds": 3.724,
+      "source_manifest": "native-evidence/r10-closed-checkpoint/native-runner-r10-source.json",
+      "receipt": "native-evidence/r10-closed-checkpoint/native-runner-r10-tests-receipt.json",
+      "log": "native-evidence/r10-closed-checkpoint/native-runner-r10-tests.log.gz",
+      "log_sha256": "668a9c8931eb37993e71b2b7f1c85198c0b153829447dbd97841f2ea8f92a133",
+      "resources_sha256": "668c1aefb3b19c9a56e14737b3625895521e74d5729b9bf44377ab30053dcc56",
+      "runner_archive_sha256": "8d0c135472c892b115001597e1f6db6596a8ea2bbae877372b51116b91be63ce",
+      "runner_sha256": "b739132afa4eb9ec649fa9067644fb17ca1139ab513ee40b1da3a677b1d26ffc",
+      "original_test_file_unchanged": true,
+      "real_cross_package_helper_fixture_executed": true,
+      "native_checkout_modified_by_this_run": false,
+      "native_source_tree_unchanged": "6ec19f0bae87ffc2dc3c5343c3e5ac390c22a6f0",
+      "core_or_workspace_qualified": false,
+      "final_format_qualified": false,
+      "final_source_qualification": false
+    },
+    "agentd_r11": {
+      "status": "ORIGINAL_STRICT_FAILED_CLOSED_EVIDENCE_VERIFIED",
+      "stage_number": 36,
+      "source_tree": "f20c3860c90853e90ab9d5c4d1b772787e0379a7",
+      "source_commit_with_identical_tree": "051010e12db8162576bb19b9b0596dfe0c2fcf14",
+      "job_id": "1a1af8171a0-fc05-6932",
+      "packages": [
+        "codex-hepta-agentd",
+        "codex-hepta-agent-protocol",
+        "codex-hepta-infer-worker-host"
+      ],
+      "strict_command": [
+        "just",
+        "clippy",
+        "--locked",
+        "-p",
+        "codex-hepta-agentd",
+        "-p",
+        "codex-hepta-agent-protocol",
+        "-p",
+        "codex-hepta-infer-worker-host",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "strict_exit_code": 101,
+      "elapsed_seconds": 37.91723275184631,
+      "primary_source_error_count": 2,
+      "diagnostics": [
+        {
+          "package": "codex-hepta-infer-worker-host",
+          "target": "lib test",
+          "path": "codex-rs/hepta-infer-worker-host/src/native_failure_tests.rs",
+          "span_line": 54,
+          "expect_call_line": 56,
+          "lint": "clippy::expect_used"
+        },
+        {
+          "package": "codex-hepta-infer-worker-host",
+          "target": "lib test",
+          "path": "codex-rs/hepta-infer-worker-host/src/native_failure_tests.rs",
+          "span_line": 69,
+          "expect_call_line": 72,
+          "lint": "clippy::expect_used"
+        }
+      ],
+      "aggregate_error_lines_excluded": true,
+      "tests_started": false,
+      "test_receipt": null,
+      "source_manifest": "native-evidence/r11-agentd-composition-diagnostic/native-candidate-r11-source.json",
+      "strict_receipt": "native-evidence/r11-agentd-composition-diagnostic/native-agentd-composition-r11-strict-receipt.json",
+      "log": "native-evidence/r11-agentd-composition-diagnostic/native-agentd-composition-r11-strict.log.gz",
+      "attachment_status": "CLOSED_ORIGINAL_BYTES_AND_ROOT_GIT_TREE_VERIFIED",
+      "closed_remote_artifacts": {
+        "source_manifest": {
+          "filename": "native-candidate-r11-source.json",
+          "sha256": "2ee1dad6ef7652e0ba2625f44c6a06e09e31393a6da56a55502dd006882befd7",
+          "bytes": 39117
+        },
+        "strict_receipt": {
+          "filename": "native-agentd-composition-r11-strict-receipt.json",
+          "sha256": "8bab090af0cfce5216b59cf458a1c2f36d80717495a17cedd57a4f67c7d2159c",
+          "bytes": 1062
+        },
+        "strict_log": {
+          "filename": "native-agentd-composition-r11-strict.log",
+          "sha256": "5bbb9853d1224e594dace263b223c9a93f0b4bfbca6ef511a48b34e33f04d3b0",
+          "bytes": 5974
+        },
+        "resources": {
+          "filename": "native-agentd-composition-r11-strict-resources.txt",
+          "sha256": "11596b0dd8dd443fc98ce444cf93d407c0563f4c03e1bfd887586988fc55463a"
+        },
+        "environment": {
+          "filename": "native-agentd-composition-r11-environment.json",
+          "sha256": "51d04ac6398b388c8248651f767fc2d983133874266d3e7c2a8c196cf582f4e3"
+        }
+      },
+      "receipt_resources_and_closed_log_independently_read": true,
+      "log_sha256": "5bbb9853d1224e594dace263b223c9a93f0b4bfbca6ef511a48b34e33f04d3b0",
+      "prior_31_errors_not_repeated_is_not_gate_pass": true,
+      "later_stages_not_in_execution_tree": [
+        37,
+        38,
+        39
+      ],
+      "narrow_followup_repair_status": "APPLIED_STAGE40; r12 then failed on 12 Agentd test lints",
+      "final_source_qualification": false,
+      "resources": "native-evidence/r11-agentd-composition-diagnostic/native-agentd-composition-r11-strict-resources.txt",
+      "environment_manifest": "native-evidence/r11-agentd-composition-diagnostic/native-agentd-composition-r11-environment.json",
+      "independent_readback": "native-evidence/r11-agentd-composition-diagnostic/INDEPENDENT-READBACK.json",
+      "root_source_roundtrip": "native-evidence/r11-agentd-composition-diagnostic/root-source-roundtrip.json",
+      "source_files_verified": 142
+    },
+    "core_followup_candidates": {
+      "status": "R15_STAGE44_CORE_MCP_STRICT_PASS_TESTS_RUNNING",
+      "last_actual_core_gate": "core_mcp_r15",
+      "classification_complete": true,
+      "classification_complete_does_not_mean_all_causes_resolved": true,
+      "changes": [
+        {
+          "stage": 31,
+          "kind": "PRIVATE_API_COMPATIBILITY",
+          "description": "infer-worker-host dispatch inputs and equivalent cancellation condition",
+          "commit": "2668c37f81d2bfb111049cf294121ea3c349728a",
+          "tree": "86dec7e8998a63a154fed73e157e07175422f996",
+          "audit": "native-evidence/infer-worker-host-r9-repair/repair-audit.json",
+          "included_in_r11_tree": true,
+          "core_test_qualification": "PENDING",
+          "final_qualification": false
+        },
+        {
+          "stage": 32,
+          "kind": "FIXTURE",
+          "description": "Seven explicit custom-provider/Bedrock fixtures clear mock-only metadata capability",
+          "commit": "c51a975ddb70e8d912867349ee849c552664d51f",
+          "tree": "da652e666b89d26851829e9f663d73ab22a2b030",
+          "audit": "native-evidence/core-provider-r8c-fixture/repair-audit.json",
+          "included_in_r11_tree": true,
+          "core_test_qualification": "PENDING",
+          "final_qualification": false
+        },
+        {
+          "stage": 33,
+          "kind": "FIXTURE",
+          "description": "Two compaction raw loops await the existing normal finish owner without changing original assertions or watchdog",
+          "commit": "1a5ec0cb05a9aadc5190f170e43ed746e6d79979",
+          "tree": "9764170e9ef58d16c7aeeeb1c9b35d09605081e9",
+          "audit": "native-evidence/core-compact-finish-r8c-fixture/repair-audit.json",
+          "included_in_r11_tree": true,
+          "core_test_qualification": "PENDING",
+          "final_qualification": false
+        },
+        {
+          "stage": 34,
+          "kind": "FIXTURE",
+          "description": "SQLite retained-owner fixture supplies preview required by existing list selection",
+          "commit": "add4a6d82b5a043903974af2b54c86506defbf89",
+          "tree": "7292a8c3a6484680c1d4f91bf62b6990e3d98cdb",
+          "audit": "native-evidence/core-sqlite-preview-r8c-fixture/repair.patch",
+          "included_in_r11_tree": true,
+          "core_test_qualification": "PENDING",
+          "final_qualification": false
+        },
+        {
+          "stage": 35,
+          "kind": "PRODUCTION_BEHAVIOR",
+          "description": "Preserve incoming hook metadata while owner sets canonical threadId",
+          "commit": "a53cc750be4380473041575fd56813251c3a522d",
+          "tree": "d99d774fd91ccb3432ba5f10d27c926f609a2beb",
+          "audit": "native-evidence/core-hook-metadata-r8c-repair/independent-review.json",
+          "included_in_r11_tree": true,
+          "core_test_qualification": "MODEL_HIDDEN_HOOK_INTEGRATION_FAILED_R14",
+          "final_qualification": false
+        },
+        {
+          "stage": 36,
+          "kind": "TEST_RUNNER",
+          "description": "Resolve declared cross-package runtime helpers from verified real Cargo artifacts; runner 31 pass does not qualify Core",
+          "commit": "051010e12db8162576bb19b9b0596dfe0c2fcf14",
+          "tree": "f20c3860c90853e90ab9d5c4d1b772787e0379a7",
+          "audit": "native-evidence/nextest-runtime-helper-repair/REVIEW.zh-CN.md",
+          "included_in_r11_tree": true,
+          "core_test_qualification": "PENDING",
+          "final_qualification": false
+        },
+        {
+          "stage": 37,
+          "kind": "FIXTURE",
+          "description": "Keep five WebSocket response batches and sticky metadata assertions across exact [2,1,2] connection groups",
+          "commit": "b886be1d2cba1e6c5ebdfedaa90e79351173eff0",
+          "tree": "6be7e9ddc86d3379cfc2c2358c489ce37e168dfe",
+          "audit": "native-evidence/core-compact-websocket-r8c-fixture/repair-audit.json",
+          "included_in_r11_tree": false,
+          "core_test_qualification": "PENDING",
+          "final_qualification": false
+        },
+        {
+          "stage": 38,
+          "kind": "CI_PREPARATION",
+          "description": "Prepare original DotSlash descriptor and run original runner regressions without deadline/filter/checksum changes",
+          "commit": "e0e244fd1d89685d78444ee05c4467fd4caf684d",
+          "tree": "aab2fe3fa69bdff6d62dfd7d2570771c807c32c6",
+          "audit": "native-evidence/ci-test-prerequisite-repair/static-review.json",
+          "included_in_r11_tree": false,
+          "core_test_qualification": "PENDING",
+          "final_qualification": false
+        },
+        {
+          "stage": 39,
+          "kind": "DIAGNOSTIC_ONLY",
+          "description": "Context at two get_thread calls and restart; no behavioral fix or retry",
+          "commit": "e267843345a8c33f338c040be41ce23c63719ee9",
+          "tree": "076d8a5712001ffe9833edf83d95342cb56e279e",
+          "audit": "native-evidence/core-cold-resume-r8c-diagnostic/read-only-audit.json",
+          "included_in_r11_tree": false,
+          "core_test_qualification": "PENDING",
+          "final_qualification": false
+        },
+        {
+          "stage": 40,
+          "kind": "TEST_HOOK_ERROR_PROPAGATION",
+          "description": "Propagate two infer-worker-host fixture hook errors without expect; original failure injection remains",
+          "commit": "13a740f6751a0dc5033525f15b14b8da7139b5d9",
+          "tree": "a0d24a6cca704bb1bb43c4090a275a38832f7b19",
+          "audit": "native-evidence/infer-worker-host-r11-hook-repair/root-review.json",
+          "included_in_r11_tree": false,
+          "included_in_r13_tree": true,
+          "core_test_qualification": "PENDING",
+          "final_qualification": false
+        },
+        {
+          "stage": 41,
+          "kind": "TEST_FIXTURE_SOURCE_REPAIR",
+          "description": "Twelve lint diagnostics addressed across eleven existing test/fixture files: six clone removals, equivalent if-let, same-type alias, named readback input, eager spawn-before-join collections and field shorthand",
+          "commit": "d313ba51180a838269677d28b2d91e1777b7b463",
+          "tree": "6be3dbb1420c0ac7e0590c6e3c17191a073af9a9",
+          "audits": [
+            "native-evidence/agentd-r12-simple-test-repair/independent-review.json",
+            "native-evidence/agentd-fixture-r12-repair/root-independent-review.json",
+            "native-evidence/agentd-r12-concurrency-repair/root-independent-review.json"
+          ],
+          "included_in_r11_tree": false,
+          "included_in_r13_tree": true,
+          "agentd_strict_qualification": "PASS_R13",
+          "agentd_test_qualification": "PASS_R13_696_ORIGINAL_CASES_66_ORIGINAL_SKIPS",
+          "core_test_qualification": "PENDING",
+          "final_qualification": false
+        },
+        {
+          "stage": 42,
+          "kind": "PRODUCTION_BEHAVIOR_AND_REGRESSIONS",
+          "description": "A shared cooperative termination request/native-exit confirmation budget retains the original owner when unconfirmed; errors and native observations keep their original precedence",
+          "commit": "05fc1158eee025e1a76d45cef27b4caddc69d22b",
+          "tree": "ccb50851347a0c27e5cbe621790daa78b9c98794",
+          "audit": "native-evidence/core-unified-termination-r8c-repair/repair-audit.json",
+          "independent_review": "native-evidence/core-unified-termination-r8c-repair/root-independent-review.json",
+          "changed_source_files": 7,
+          "new_regression_cases": 6,
+          "original_assertions_preserved": 111,
+          "new_owner_policy_seconds": 1,
+          "policy_is_new": true,
+          "policy_is_cooperative_not_hard_preemption": true,
+          "policy_does_not_cover": [
+            "manager store-lock acquisition and post-confirmation cleanup",
+            "preemption of synchronous Local driver or OS calls"
+          ],
+          "included_in_r13_tree": false,
+          "native_application_status": "APPLIED_WITH_STAGE43_IN_R14",
+          "core_test_qualification": "SIX_NEW_REGRESSIONS_AND_ORIGINAL_PERSISTENT_SHELL_PASS_R14_CORE_OVERALL_FAILED",
+          "final_qualification": false,
+          "included_in_r14_tree": true,
+          "core_strict_qualification": "PASS_R14_STAGE43_TREE",
+          "regression_readback": "native-evidence/r14-core-checkpoint/INDEPENDENT-READBACK.json",
+          "unchanged_shell_regression_readback": "native-evidence/r14-core-checkpoint/REGRESSION-CASE-READBACK.json"
+        },
+        {
+          "stage": 43,
+          "kind": "FIXTURE",
+          "description": "Five existing permission/approval fixtures opt out of host login initialization through their existing config closures; original commands and assertions stay exact.",
+          "commit": "b44d4ca4aa0ef9f894eff29e9975938e066a82f5",
+          "tree": "d3d2313b838422818bf9448ce5a1b86d89abdf69",
+          "audit": "native-evidence/core-eperm-r8c-fixture/repair-audit.json",
+          "causal_review": "native-evidence/core-eperm-r8c-fixture/causal-review.json",
+          "independent_review": "native-evidence/core-eperm-r8c-fixture/root-independent-review.json",
+          "changed_source_files": 2,
+          "changed_fixtures": 5,
+          "original_assertions_preserved_in_files": 170,
+          "original_assertions_preserved_in_changed_cases": 30,
+          "production_defaults_changed": false,
+          "global_test_builder_changed": false,
+          "stderr_filtered": false,
+          "original_per_case_syscall_trace_available": false,
+          "causal_evidence_scope": "Original output signatures and pinned host/profile/product source chain; not a captured per-case child environment or syscall trace.",
+          "included_in_r13_tree": false,
+          "included_in_r14_tree": true,
+          "core_strict_qualification": "PASS_R14",
+          "core_test_qualification": "FIVE_ORIGINAL_FIXTURES_PASS_R14_CORE_OVERALL_FAILED",
+          "final_qualification": false,
+          "regression_readback": "native-evidence/r14-core-checkpoint/REGRESSION-CASE-READBACK.json"
+        }
+      ],
+      "zsh_original_timeout_cases": 8,
+      "zsh_cached_fetch_and_original_preflight_currently_pass": true,
+      "zsh_prior_timeout_cause_established": false,
+      "cold_resume_root_cause_established": false,
+      "cold_resume_change_is_diagnostic_only": true,
+      "stage_37_38_39_not_run_in_r11": true,
+      "complete_workspace_not_started": true,
+      "stage42_not_run_in_r13": true,
+      "current_reviewed_candidate": {
+        "stage": 44,
+        "commit": "638997499470f0b7dd33ad18226feacf0198ef3d",
+        "tree": "1646e1656cf6365e74accae19a1225fd2ce6d964",
+        "status": "NATIVE_R15_CORE_MCP_STRICT_PASS_TESTS_RUNNING",
+        "native_manifest_changed_paths": 177
+      },
+      "last_completed_core_test_gate": "core_r14",
+      "stage43_not_run_in_r13": true,
+      "zsh_original_timeout_cases_r14_result": {
+        "passed": 7,
+        "failed": 1,
+        "timed_out": 0,
+        "readback": "native-evidence/r14-core-checkpoint/REGRESSION-CASE-READBACK.json",
+        "prior_timeout_cause_established": false
+      }
+    },
+    "agentd_r12": {
+      "status": "ORIGINAL_STRICT_FAILED_CLOSED_EVIDENCE_VERIFIED",
+      "stage_number": 40,
+      "source_tree": "a0d24a6cca704bb1bb43c4090a275a38832f7b19",
+      "source_commit_with_identical_tree": "13a740f6751a0dc5033525f15b14b8da7139b5d9",
+      "packages": [
+        "codex-hepta-agentd",
+        "codex-hepta-agent-protocol",
+        "codex-hepta-infer-worker-host"
+      ],
+      "strict_command": [
+        "just",
+        "clippy",
+        "--locked",
+        "-p",
+        "codex-hepta-agentd",
+        "-p",
+        "codex-hepta-agent-protocol",
+        "-p",
+        "codex-hepta-infer-worker-host",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "strict_exit_code": 101,
+      "elapsed_seconds": 26.054903268814087,
+      "primary_source_error_count": 12,
+      "diagnostics": [
+        {
+          "log_line": 39,
+          "message": "redundant field names in struct initialization",
+          "path": "codex-rs/hepta-agentd/src/terminal_learning_tests.rs",
+          "source_line": 131,
+          "source_column": 36,
+          "lint": "redundant_field_names",
+          "native_source_sha256": "81c3960a7d2fc0b9f6197b3c05286afa6e92db88bf822b2660902de7421c7e70",
+          "native_git_blob": "53bb63fc2a1da9311a43889ec19717be688c9cc7",
+          "included_in_changed_source_archive": false
+        },
+        {
+          "log_line": 49,
+          "message": "avoid using `collect()` when not needed",
+          "path": "codex-rs/hepta-agentd/tests/terminal_cell_owner.rs",
+          "source_line": 324,
+          "source_column": 17,
+          "lint": "needless_collect",
+          "native_source_sha256": "7ed28a40684fdabae2af45344fa31eee31520612984a6c97c86159686408e63a",
+          "native_git_blob": "8990c7336abbab8af2d461f51adeb9e9c8a0e0fc",
+          "included_in_changed_source_archive": false
+        },
+        {
+          "log_line": 91,
+          "message": "you seem to be trying to use `match` for destructuring a single pattern. Consider using `if let`",
+          "path": "codex-rs/hepta-agentd/src/root_desktop_startup_tests.rs",
+          "source_line": 152,
+          "source_column": 9,
+          "lint": "single_match",
+          "native_source_sha256": "17f6d5b14c720b87afb46d28d97767feb138fa513ff04e0b3ef64eca25cfd617",
+          "native_git_blob": "bf0aeee0d3d1c6e89ca4f73214807ff43d7986aa",
+          "included_in_changed_source_archive": false
+        },
+        {
+          "log_line": 114,
+          "message": "redundant clone",
+          "path": "codex-rs/hepta-agentd/src/authority_host_admin_issuer_tests.rs",
+          "source_line": 73,
+          "source_column": 40,
+          "lint": "redundant_clone",
+          "native_source_sha256": "12efc9975b17c10f05ac31e7cf89699509aca7af21501954c4afc8160dab46d3",
+          "native_git_blob": "9f1f043b9f55ecac764fa9ff6ab50ceb2cfada45",
+          "included_in_changed_source_archive": false
+        },
+        {
+          "log_line": 129,
+          "message": "redundant clone",
+          "path": "codex-rs/hepta-agentd/src/authority_host_admin_issuer_tests.rs",
+          "source_line": 98,
+          "source_column": 31,
+          "lint": "redundant_clone",
+          "native_source_sha256": "12efc9975b17c10f05ac31e7cf89699509aca7af21501954c4afc8160dab46d3",
+          "native_git_blob": "9f1f043b9f55ecac764fa9ff6ab50ceb2cfada45",
+          "included_in_changed_source_archive": false
+        },
+        {
+          "log_line": 142,
+          "message": "this function has too many arguments (8/7)",
+          "path": "codex-rs/hepta-agentd/src/authority_host_service_consumers_root.rs",
+          "source_line": 64,
+          "source_column": 1,
+          "lint": "too_many_arguments",
+          "native_source_sha256": "a0b11d1fa1c188590c34d2f813c374542c7516c780a63a89d02e3da92a2411ef",
+          "native_git_blob": "bfdb2d7b5a03d94b1e07c9d0393fdd9c9ff75747",
+          "included_in_changed_source_archive": false
+        },
+        {
+          "log_line": 158,
+          "message": "avoid using `collect()` when not needed",
+          "path": "codex-rs/hepta-agentd/src/deployment_frontier_tests.rs",
+          "source_line": 45,
+          "source_column": 10,
+          "lint": "needless_collect",
+          "native_source_sha256": "9d7a5b03ef2911cf1a32566f3297f69cf414cf053269bfe7c25faefe34fd339c",
+          "native_git_blob": "5f56269d21b584a341683774ca1bec725d61cafc",
+          "included_in_changed_source_archive": false
+        },
+        {
+          "log_line": 186,
+          "message": "redundant clone",
+          "path": "codex-rs/hepta-agentd/src/deployment_authbus_issuer_followup_tests.rs",
+          "source_line": 16,
+          "source_column": 41,
+          "lint": "redundant_clone",
+          "native_source_sha256": "c1c506d021d08155cbb97a2edd90d31ea18d29d982b709d1c5da48f2124d4df8",
+          "native_git_blob": "c32b358544c705ad024e4a4edabe85a006fdd4ba",
+          "included_in_changed_source_archive": true
+        },
+        {
+          "log_line": 199,
+          "message": "redundant clone",
+          "path": "codex-rs/hepta-agentd/src/deployment_authbus_issuer_followup_tests.rs",
+          "source_line": 72,
+          "source_column": 41,
+          "lint": "redundant_clone",
+          "native_source_sha256": "c1c506d021d08155cbb97a2edd90d31ea18d29d982b709d1c5da48f2124d4df8",
+          "native_git_blob": "c32b358544c705ad024e4a4edabe85a006fdd4ba",
+          "included_in_changed_source_archive": true
+        },
+        {
+          "log_line": 212,
+          "message": "redundant clone",
+          "path": "codex-rs/hepta-agentd/src/deployment_authbus_issuer_final_tests.rs",
+          "source_line": 18,
+          "source_column": 41,
+          "lint": "redundant_clone",
+          "native_source_sha256": "9e0ca15d1be4e72d418b42a96c56540f121460d583f61e147c9830d1e84a1924",
+          "native_git_blob": "08b66ce7c06cd1d035fd119714d763e97e6da62f",
+          "included_in_changed_source_archive": true
+        },
+        {
+          "log_line": 225,
+          "message": "redundant clone",
+          "path": "codex-rs/hepta-agentd/src/deployment_notes_issuer_deadline_tests.rs",
+          "source_line": 16,
+          "source_column": 35,
+          "lint": "redundant_clone",
+          "native_source_sha256": "1e7b219bbf7afc8f257ebc5064483e0a2856faf87d7ba6a849983341cec0e9d6",
+          "native_git_blob": "c794efc293462a56e8b9125cb4e45b02cb026118",
+          "included_in_changed_source_archive": false
+        },
+        {
+          "log_line": 238,
+          "message": "very complex type used. Consider factoring parts into `type` definitions",
+          "path": "codex-rs/hepta-agentd/src/hos2_device_bootstrap_tests.rs",
+          "source_line": 72,
+          "source_column": 40,
+          "lint": "type_complexity",
+          "native_source_sha256": "b08604cdb5303952d3e4f4984085052e997145f74b7c3d596df008fda9673cd3",
+          "native_git_blob": "2654f1c27ee1da2ba9c10067f0a3dd58b7801bd0",
+          "included_in_changed_source_archive": false
+        }
+      ],
+      "aggregate_error_lines_excluded": [
+        {
+          "log_line": 89,
+          "message": "could not compile `codex-hepta-agentd` (test \"terminal_cell_owner\") due to 1 previous error"
+        },
+        {
+          "log_line": 248,
+          "message": "could not compile `codex-hepta-agentd` (lib test) due to 11 previous errors"
+        },
+        {
+          "log_line": 249,
+          "message": "recipe `clippy` failed on line 61 with exit code 101"
+        }
+      ],
+      "tests_started": false,
+      "test_receipt": null,
+      "test_terminal_counts": null,
+      "source_manifest": "native-evidence/r12-agentd-composition-diagnostic/native-candidate-r12-source.json",
+      "strict_receipt": "native-evidence/r12-agentd-composition-diagnostic/native-agentd-composition-r12-strict-receipt.json",
+      "log": "native-evidence/r12-agentd-composition-diagnostic/native-agentd-composition-r12-strict.log.gz",
+      "log_sha256": "bb4dc4d86655634d1e5d55671a843a868fe498ed73388a178f66e2c88a79516b",
+      "resources": "native-evidence/r12-agentd-composition-diagnostic/native-agentd-composition-r12-strict-resources.txt",
+      "environment_manifest": "native-evidence/r12-agentd-composition-diagnostic/native-agentd-composition-r12-environment.json",
+      "independent_readback": "native-evidence/r12-agentd-composition-diagnostic/INDEPENDENT-READBACK.json",
+      "root_source_roundtrip": "native-evidence/r12-agentd-composition-diagnostic/root-source-roundtrip.json",
+      "archive": "native-evidence/r12-agentd-composition-diagnostic/checkpoint-r12-closed.tar.gz",
+      "archive_sha256": "098567847cd068c9e6a6c7ac7002ba19f65ce60ee875353a34b5e91fba27aeb6",
+      "source_files_verified": 145,
+      "regular_archive_members_verified": 153,
+      "attachment_status": "CLOSED_ORIGINAL_BYTES_AND_ROOT_GIT_TREE_VERIFIED",
+      "followup": "Stage41 candidate addresses the original 12 diagnostics in 11 existing test/fixture source files; qualification is recorded separately under r13.",
+      "final_source_qualification": false
+    },
+    "agentd_r13": {
+      "status": "PASS_SCOPED_ORIGINAL_STRICT_AND_TESTS",
+      "stage_number": 41,
+      "source_tree": "6be3dbb1420c0ac7e0590c6e3c17191a073af9a9",
+      "source_commit_with_identical_tree": "d313ba51180a838269677d28b2d91e1777b7b463",
+      "job_id": "1a1af95b061-fc05-69dc",
+      "packages": [
+        "codex-hepta-agentd",
+        "codex-hepta-agent-protocol",
+        "codex-hepta-infer-worker-host"
+      ],
+      "strict_command": [
+        "just",
+        "clippy",
+        "--locked",
+        "-p",
+        "codex-hepta-agentd",
+        "-p",
+        "codex-hepta-agent-protocol",
+        "-p",
+        "codex-hepta-infer-worker-host",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "strict_exit_code": 0,
+      "strict_elapsed_seconds": 27.514100074768066,
+      "strict_receipt": "native-evidence/r13-agentd-composition-checkpoint/native-agentd-composition-r13-strict-receipt.json",
+      "strict_log": "native-evidence/r13-agentd-composition-checkpoint/native-agentd-composition-r13-strict.log.gz",
+      "strict_log_sha256": "706bb2fa5685ee187d9a8a1c05ba1b29c6f9ea79488dd804595c00f8ee265e90",
+      "strict_resources": "native-evidence/r13-agentd-composition-checkpoint/native-agentd-composition-r13-strict-resources.txt",
+      "source_manifest": "native-evidence/r13-agentd-composition-checkpoint/native-candidate-r13-source.json",
+      "environment_manifest": "native-evidence/r13-agentd-composition-checkpoint/native-agentd-composition-r13-environment.json",
+      "strict_independent_readback": "native-evidence/r13-agentd-composition-checkpoint/STRICT-READBACK.json",
+      "source_manifest_declared_changed_files": 154,
+      "native_write_tree_verified": true,
+      "full_source_archive_and_independent_git_tree_reconstruction": "COMPLETE_154_SOURCES_EXACT_6BE3_TREE",
+      "tests_started": true,
+      "test_status": "PASS",
+      "test_exit_code": 0,
+      "tests_run": 696,
+      "passed": 696,
+      "failed": 0,
+      "skipped": 66,
+      "test_receipt": "native-evidence/r13-agentd-composition-checkpoint/native-agentd-composition-r13-tests-receipt.json",
+      "later_source_stages_not_in_execution_tree": [
+        42,
+        43
+      ],
+      "vendored_warnings_retained": "Two preexisting i18n-config lifetime warnings remain in the log; selected-package strict exit0 is not a claim of zero warnings across all workspace/dependency code.",
+      "final_source_qualification": false,
+      "test_command": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-agentd",
+        "-p",
+        "codex-hepta-agent-protocol",
+        "-p",
+        "codex-hepta-infer-worker-host",
+        "--retries",
+        "0"
+      ],
+      "test_command_binding": "Exact command from the original closed receipt; source tree, log and resources cross-checked independently.",
+      "timed_out": 0,
+      "test_log": "native-evidence/r13-agentd-composition-checkpoint/native-agentd-composition-r13-tests.log.gz",
+      "test_log_sha256": "5e86e781d00c0fb235369686e7beaf2f737169ad70de87a9f1750a1270f5fb43",
+      "test_resources": "native-evidence/r13-agentd-composition-checkpoint/native-agentd-composition-r13-tests-resources.txt",
+      "command_build_plus_test_seconds": 503.42641711235046,
+      "test_phase_seconds": 95.082,
+      "source_roundtrip": "native-evidence/r13-agentd-composition-checkpoint/root-source-roundtrip.json",
+      "independent_readback": "native-evidence/r13-agentd-composition-checkpoint/INDEPENDENT-READBACK.json",
+      "root_result_readback": "native-evidence/r13-agentd-composition-checkpoint/ROOT-RESULT-READBACK.json",
+      "archive": "native-evidence/r13-agentd-composition-checkpoint/checkpoint-r13-closed.tar.gz",
+      "archive_sha256": "b81a80bd49529574d68725e757df3e84ca64eff9dc2048528eebb0294a485700",
+      "archive_regular_members": 169,
+      "source_files_independently_verified": 154,
+      "source_git_modes_from_manifest_not_tar": true,
+      "listing": {
+        "json": "native-evidence/r13-agentd-composition-checkpoint/native-agentd-composition-r13-test-list.json",
+        "receipt": "native-evidence/r13-agentd-composition-checkpoint/native-agentd-composition-r13-test-list-receipt.json",
+        "listed_cases": 762,
+        "ignored": 66,
+        "nonignored": 696,
+        "all_nonignored_ids_equal_original_passed_ids": true,
+        "nonignored_filter_mismatches": [],
+        "passed_by_package": {
+          "codex-hepta-agent-protocol": 14,
+          "codex-hepta-agentd": 632,
+          "codex-hepta-infer-worker-host": 50
+        },
+        "listing_executes_tests": false,
+        "scope": "Unique outer nextest binary/test IDs. An ignored helper may be invoked separately by its parent; these counts do not count all subprocess invocations or qualify real privileged/GUI/external-service paths."
+      }
+    },
+    "core_r14": {
+      "status": "ORIGINAL_STRICT_PASS_TESTS_FAILED",
+      "stage_number": 43,
+      "source_tree": "d3d2313b838422818bf9448ce5a1b86d89abdf69",
+      "source_commit_with_identical_tree": "b44d4ca4aa0ef9f894eff29e9975938e066a82f5",
+      "job_id": "1a1afa1f06c-fc05-6a49",
+      "packages": [
+        "codex-core"
+      ],
+      "strict_command": [
+        "just",
+        "clippy",
+        "--locked",
+        "-p",
+        "codex-core",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "strict_exit_code": 0,
+      "strict_elapsed_seconds": 190.0075147151947,
+      "strict_receipt": "native-evidence/r14-core-checkpoint/native-core-r14-strict-receipt.json",
+      "strict_log": "native-evidence/r14-core-checkpoint/native-core-r14-strict.log.gz",
+      "strict_log_sha256": "0cc8b7b14a2f23f283ddb0babfe781ce9e7a605156060bfda3df82d9c9584a16",
+      "strict_resources": "native-evidence/r14-core-checkpoint/native-core-r14-strict-resources.txt",
+      "source_manifest": "native-evidence/r14-core-checkpoint/native-candidate-r14-source.json",
+      "environment_manifest": "native-evidence/r14-core-checkpoint/native-core-r14-environment.json",
+      "source_manifest_declared_changed_files": 163,
+      "native_write_tree_verified": true,
+      "full_source_archive_and_independent_git_tree_reconstruction": "COMPLETE_163_SOURCES_EXACT_D3_TREE",
+      "test_command_started": true,
+      "test_cases_started": true,
+      "test_status": "FAIL",
+      "test_command": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-core",
+        "--retries",
+        "0"
+      ],
+      "planned_test_command": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-core",
+        "--retries",
+        "0"
+      ],
+      "test_command_binding": "Exact original closed receipt command; source tree, full log and resource hashes independently verified.",
+      "test_exit_code": 100,
+      "tests_run": 3830,
+      "passed": 3806,
+      "failed": 24,
+      "timed_out": 0,
+      "skipped": 9,
+      "test_receipt": "native-evidence/r14-core-checkpoint/native-core-r14-tests-receipt.json",
+      "active_test_log_read_for_this_update": false,
+      "six_new_termination_regressions_terminal_result": "PASS_6_OF_6_IN_FAILED_COMPLETE_CORE_GATE",
+      "five_nonlogin_fixture_regressions_terminal_result": "PASS_5_OF_5_IN_FAILED_COMPLETE_CORE_GATE",
+      "final_source_qualification": false,
+      "strict_independent_readback": "native-evidence/r14-core-checkpoint/STRICT-READBACK.json",
+      "closed_test_log_read_for_this_update": true,
+      "strict_only_readback_is_historical_snapshot": true,
+      "test_log": "native-evidence/r14-core-checkpoint/native-core-r14-tests.log.gz",
+      "test_log_sha256": "443a58d70c34d76ba9b8141ad7ee32d997a4f16af79e8f5a873770966028952c",
+      "test_resources": "native-evidence/r14-core-checkpoint/native-core-r14-tests-resources.txt",
+      "command_build_plus_test_seconds": 1305.3494448661804,
+      "test_phase_seconds": 570.123,
+      "test_retries": 0,
+      "source_roundtrip": "native-evidence/r14-core-checkpoint/ROOT-SOURCE-ROUNDTRIP.json",
+      "independent_readback": "native-evidence/r14-core-checkpoint/INDEPENDENT-READBACK.json",
+      "root_result_readback": "native-evidence/r14-core-checkpoint/ROOT-RESULT-READBACK.json",
+      "regression_case_readback": "native-evidence/r14-core-checkpoint/REGRESSION-CASE-READBACK.json",
+      "failure_blocks": "native-evidence/r14-core-checkpoint/native-core-r14-result-review.json",
+      "unique_failure_blocks_verified": 24,
+      "duplicate_failure_footer_rows_excluded": 24,
+      "archive": "native-evidence/r14-core-checkpoint/checkpoint-r14-closed.tar.gz",
+      "archive_sha256": "e5449ef5dd31e08e4daa4a0ae85c3c6e818859a90c5f94235452e4e26a13229a",
+      "archive_regular_members": 179,
+      "source_files_independently_verified": 163,
+      "source_post_test_verification": "native-evidence/r14-core-checkpoint/native-core-r14-source-post-test-verification.json",
+      "process_terminal": "native-evidence/r14-core-checkpoint/native-core-r14-process-terminal.json",
+      "workspace_gate_started": false,
+      "skip_identities_reconstructed": false,
+      "skip_scope": "Nine original-config skips are reported by start and summary; individual reasons are not inferred, and skips are not executed passes.",
+      "source_identity_scope": "Native commands ran in the staged tree; the matching GitData commit binds tree identity and is not a claim that this commit itself was checked out.",
+      "later_isolated_candidates_qualified_by_r14": false
+    },
+    "core_mcp_r15": {
+      "status": "ORIGINAL_STRICT_PASS_TESTS_FAILED",
+      "stage_number": 44,
+      "source_tree": "1646e1656cf6365e74accae19a1225fd2ce6d964",
+      "source_commit_with_identical_tree": "638997499470f0b7dd33ad18226feacf0198ef3d",
+      "job_id": "1a1afd6b583-fc05-6c15",
+      "packages": [
+        "codex-core",
+        "codex-mcp"
+      ],
+      "strict_command": [
+        "just",
+        "clippy",
+        "--locked",
+        "-p",
+        "codex-core",
+        "-p",
+        "codex-mcp",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "strict_exit_code": 0,
+      "strict_elapsed_seconds": 45.16182255744934,
+      "strict_log_sha256": "fa8972cc1cf309346f513dee0ad51e6b7e4f8d4973e240d51564c90080631ab0",
+      "strict_resources_sha256": "05ac0facc7ee7cad8645fc50ecdda6ef852c425a31244dd550ccfaf08d3aacc3",
+      "source_manifest_declared_changed_files": 177,
+      "closed_artifacts_verified": [
+        {
+          "file_name": "native-candidate-r15-source.json",
+          "bytes": 48734,
+          "sha256": "ee85feeca1c8da886ab3f52ab26fb741bb5d8569880b26985a2b0d7f8533dc2d"
+        },
+        {
+          "file_name": "native-core-mcp-r15-environment.json",
+          "bytes": 778,
+          "sha256": "d3527934f3f8705b43476f1b1bcaec443ae8e0ecf4ad4b99b157c48bd876cdfe"
+        },
+        {
+          "file_name": "native-core-mcp-r15-strict-receipt.json",
+          "bytes": 917,
+          "sha256": "4129fe2f4a14b757d642661b9da5e55bb3633e32cc61a9f7ee4e8574cb9f240a"
+        },
+        {
+          "file_name": "native-core-mcp-r15-strict.log",
+          "bytes": 3080,
+          "sha256": "fa8972cc1cf309346f513dee0ad51e6b7e4f8d4973e240d51564c90080631ab0"
+        },
+        {
+          "file_name": "native-core-mcp-r15-strict-resources.txt",
+          "bytes": 807,
+          "sha256": "05ac0facc7ee7cad8645fc50ecdda6ef852c425a31244dd550ccfaf08d3aacc3"
+        }
+      ],
+      "repository_evidence_paths_pending_root": false,
+      "source_manifest": "native-evidence/r15-core-mcp-checkpoint/native-candidate-r15-source.json",
+      "environment_manifest": "native-evidence/r15-core-mcp-checkpoint/native-core-mcp-r15-environment.json",
+      "strict_receipt": "native-evidence/r15-core-mcp-checkpoint/native-core-mcp-r15-strict-receipt.json",
+      "strict_log": "native-evidence/r15-core-mcp-checkpoint/native-core-mcp-r15-strict.log.gz",
+      "strict_resources": "native-evidence/r15-core-mcp-checkpoint/native-core-mcp-r15-strict-resources.txt",
+      "test_command_started": true,
+      "test_cases_started": true,
+      "test_status": "FAIL",
+      "test_command": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-core",
+        "-p",
+        "codex-mcp",
+        "--retries",
+        "0"
+      ],
+      "test_command_binding": "Exact closed original receipt, source177 export, full log and resources hash verified; GitData tree reconstructed independently from original framework base.",
+      "test_exit_code": 100,
+      "tests_run": 4026,
+      "passed": 4023,
+      "failed": 3,
+      "timed_out": 0,
+      "skipped": 9,
+      "test_receipt": "native-evidence/r15-core-mcp-checkpoint/native-core-mcp-r15-tests-receipt.json",
+      "test_log": "native-evidence/r15-core-mcp-checkpoint/native-core-mcp-r15-tests.log.gz",
+      "test_log_sha256": "2e9b11682a84cce7be7e1db72e47eb4be260e8d7ef7a3b1fa916fe59c5a3e39f",
+      "test_resources": "native-evidence/r15-core-mcp-checkpoint/native-core-mcp-r15-tests-resources.txt",
+      "active_test_log_read_for_this_update": false,
+      "closed_strict_log_read_for_this_update": true,
+      "complete_test_gate_terminal": true,
+      "final_source_qualification": false,
+      "workspace_gate_started": false,
+      "last_completed_core_test_gate": "core_mcp_r15",
+      "earlier_failed_gate_retained_unchanged": true,
+      "source_identity_scope": "The closed native manifest and strict receipt bind the staged tree to the identical GitData commit; no claim that the commit itself was checked out, and no complete source-archive revalidation is inferred from these five files.",
+      "scope_of_observation": "Closed original strict and full test logs, all177 source files and all190 archive members independently verified; no partial runtime count promoted to a full result. Full package gate failed with three Core cases; MCP passed196/196.",
+      "warning_scope": "Selected Core + codex-mcp strict command passed; the raw log retains two existing lifetime warnings from unselected vendored i18n-config, so this is not a repository-wide no-warning claim.",
+      "root_strict_readback": "native-evidence/r15-core-mcp-checkpoint/ROOT-STRICT-READBACK.json",
+      "stage44_input_attachment": "native-evidence/r15-stage44-input/",
+      "r14_repair_coverage_map": "native-evidence/r15-stage44-input/R14-REPAIR-COVERAGE-MAP.json",
+      "closed_test_log_read_for_this_update": true,
+      "strict_only_readback_is_historical_snapshot": true,
+      "command_build_plus_test_seconds": 594.9447140693665,
+      "test_phase_seconds": 479.725,
+      "test_retries": 0,
+      "per_package": {
+        "codex-core": {
+          "PASS": 3827,
+          "FAIL": 3
+        },
+        "codex-mcp": {
+          "PASS": 196
+        }
+      },
+      "prior_r14_24_failed_ids": {
+        "PASS": 22,
+        "FAIL": 2,
+        "readback": "native-evidence/r15-core-mcp-checkpoint/ROOT-RESULT-READBACK.json"
+      },
+      "new_hook_owner_regression": "PASS_IN_COMPLETE_MCP_196_OF_196_GATE",
+      "remaining_failure_ids": [
+        {
+          "binary": "codex-core",
+          "name": "session::tests::managed_network_proxy_decider_survives_full_access_start"
+        },
+        {
+          "binary": "codex-core::all",
+          "name": "suite::turn_input_submission::recover_turn_if_idle_preserves_id_and_resumes_plan_mode"
+        },
+        {
+          "binary": "codex-core::all",
+          "name": "suite::unified_exec_zsh_fork_approvals::unified_exec_zsh_fork_parent_approval_preserves_denied_reads"
+        }
+      ],
+      "root_result_readback": "native-evidence/r15-core-mcp-checkpoint/ROOT-RESULT-READBACK.json",
+      "source_roundtrip": "native-evidence/r15-core-mcp-checkpoint/ROOT-SOURCE-ROUNDTRIP.json",
+      "source_post_test_verification": "native-evidence/r15-core-mcp-checkpoint/native-core-mcp-r15-source-post-test-verification.json",
+      "archive": "native-evidence/r15-core-mcp-checkpoint/checkpoint-r15-closed.tar.gz",
+      "archive_sha256": "4f1943f25c0e2ff0f549fe0463d9b5c9f29c24019d896ddf2418b2e8e431e866",
+      "archive_regular_members": 190,
+      "source_files_independently_verified": 177,
+      "failure_blocks": "native-evidence/r15-core-mcp-checkpoint/native-core-mcp-r15-result-review.json",
+      "process_terminal": "native-evidence/r15-core-mcp-checkpoint/native-core-mcp-r15-process-terminal.json",
+      "skip_identities_reconstructed": false,
+      "full_source_archive_and_independent_git_tree_reconstruction": "COMPLETE_177_SOURCES_EXACT_1646_TREE"
+    }
+  },
+  "historical_assets": {
+    "manifest": "HISTORICAL_ASSETS.json",
+    "maturity_report": "MATURITY.zh-CN.md",
+    "count": 6,
+    "asset_ids": [
+      "shared_encoder_private_head",
+      "memory_v13_minilm_residual_adapter",
+      "memory_v14_internal_encoder_lora",
+      "memory_v15_durable_evaluation_and_authority",
+      "joint_generation_v3",
+      "digital_feedback_state_readout"
+    ],
+    "historical_qualification_transferred_to_current_head": false,
+    "retrained_in_this_audit": false
+  },
+  "upstream_ci": [
+    {
+      "source_commit": "bef6fa7645df9df12b69fda499e97eed25de6c75",
+      "run_id": 42069233246,
+      "status": "FAILED_CLIPPY_AFTER_TEST_PASS",
+      "tests_run": 631,
+      "passed": 631,
+      "failed": 0,
+      "skipped": 66,
+      "failure": "codex-utils-pty uses deprecated AsyncFd::new; strict Clippy exit 101",
+      "job_id": 127392153944,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42069233246/job/127392153944",
+      "log": {
+        "path": "upstream-ci/job-127392153944.log.gz",
+        "sha256": "e4d1706da3ecdd6c1e544ad0c2b8f1deee8f63ed9c1dd870a6747c6f70e9744f",
+        "decompressed_sha256": "3060824c2950db5bbdabf29957bf756074c20f86d0d9e1392382b16b12b737bf"
+      },
+      "current_head_qualification": false
+    },
+    {
+      "source_commit": "caf06e0d9c78ba2b8e2ab860ec1b37f049e30f1b",
+      "run_id": 42062983444,
+      "status": "FAILED_FORMAT_CHECK_AFTER_TEST_PASS",
+      "tests_run": 165,
+      "passed": 165,
+      "failed": 0,
+      "skipped": 0,
+      "failure": "cargo fmt check differences; process exit 1",
+      "job_id": 127369396829,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42062983444/job/127369396829",
+      "log": {
+        "path": "upstream-ci/job-127369396829.log.gz",
+        "sha256": "47f35adf8b6d898969b7b5959bc7e58275fe0f3c335152909b829b16df190daf",
+        "decompressed_sha256": "5460abc5e15f884038a56ef9c6c254e417d2071d59031a4a4f270d870cc5c5bb"
+      },
+      "current_head_qualification": false
+    },
+    {
+      "source_commit": "bef6fa7645df9df12b69fda499e97eed25de6c75",
+      "run_id": 42069233246,
+      "status": "FAILED_TEST",
+      "tests_run": 502,
+      "passed": 501,
+      "failed": 1,
+      "skipped": 1,
+      "failure": "v1_store_migrates_atomically_to_dispatch_outcome_schema: Unavailable; both original attempts fail",
+      "job_id": 127392153697,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42069233246/job/127392153697",
+      "log": {
+        "path": "upstream-ci/job-127392153697.log.gz",
+        "sha256": "d645a20d84c4ecb2ff0d6322eb4e67e5f6a7476a8cb0470d4c55e5df2126f640",
+        "decompressed_sha256": "218b8abd65492229f516af0b7f4e92eb9b2da9b72e884b0f0cd4e718ad78db85"
+      },
+      "current_head_qualification": false
+    }
+  ],
+  "adoption_blockers": [
+    {
+      "id": "final-source-qualification",
+      "status": "OPEN",
+      "closure": "Resolve the three closed r15 Core failures on a new frozen source and rerun the original full Core + codex-mcp project gate, then the default full workspace gate. R15 stage44 MCP passed196/196 and22 of the prior24 Core failures passed; all failed gates remain preserved. Complete final fix/fmt, exact source export, branch/Draft PR and CI for the published commit. Every count remains source-specific."
+    },
+    {
+      "id": "actual-backend-source-bridge",
+      "status": "OPEN",
+      "closure": "Actual pinned Encoder FeatureBundle + original Q24 receipt through current source owner into Rust and matching actual Head/backend, with full output and state schema."
+    },
+    {
+      "id": "full-lifecycle-recovery",
+      "status": "OPEN",
+      "closure": "Real owner drain/fence/transfer/install/readback/rollback with every applicable optimizer/RNG/sampler/decoder/transition/runtime component and no replay of unknown dispatch."
+    },
+    {
+      "id": "independent-freshness",
+      "status": "OPEN",
+      "closure": "Resolve full authority DB/key rollback with independent freshness and current source/revocation checks at the actual consumption boundary."
+    },
+    {
+      "id": "retention-calibration-net-benefit",
+      "status": "HOLD",
+      "closure": "Frozen strong retrieval/KV/ridge/fixed-policy/no-change controls, independent task windows, explicit equal-input and resource-budget protocol, all lifecycle costs, useful multi-generation adoption."
+    },
+    {
+      "id": "multimodal-prediction-generation-quality",
+      "status": "OPEN",
+      "closure": "Independent new-source video/AV, action-conditioned prediction, natural semantic scoring and learned streaming coherence; self critic cannot provide sole final acceptance."
+    }
+  ],
+  "source_compatibility": {
+    "rust_call_site_changes": [
+      "CellStepEntryV1 payloads and CellUpdateOutcomeV1::Candidate boxed",
+      "ContextDeliveryObservationMetadataV2 groups local ID and timestamp",
+      "NeuralCircuitRevisionV1 groups revision lineage and immutable digests",
+      "AuthorizedEffectExecution groups effect inputs; recovery Observed payload boxed",
+      "LearningIterationObservationV1::Training candidate boxed; explicit signing/checkpoint encoding unchanged",
+      "CanonicalRunOutcomeV1::Ready envelope boxed and unboxed at sole owning Agentd boundary",
+      "AgentdMethod::AutomationExecuteEffect signed_grant boxed; public request constructor and wire JSON unchanged",
+      "AgentdPlasticityAdmissionContextV1 groups four borrowed admission owners; public propose_agentd_plasticity_v1 call signature changes",
+      "RootAdminResponseV1 large payloads and intelligence Ready/ledger payloads boxed; actual owning consumers updated"
+    ],
+    "in_repository_callers_updated": true,
+    "unknown_external_callers_require_adaptation": true,
+    "wire_schema_changed": false,
+    "digest_domains_changed": false,
+    "authority_policy_weakened": false,
+    "strict_warning_policy_weakened": false,
+    "final_native_validation": "R15_STAGE44_STRICT_PASS_CORE_3827_PASS_3_FAIL_MCP_196_PASS_FINAL_GATES_PENDING",
+    "private_representation_changes": [
+      "Runtime LifecycleEventV1 observation boxed; Serde tags and fields unchanged",
+      "Agentd Notes, deployment and text-worker large event payloads boxed without Serde tag or field changes"
+    ],
+    "internal_api_changes": [
+      "MemoryCorrectionTarget groups CAS memory ID and expected revision; public correction API unchanged",
+      "OutcomeTransitionPolicy groups private outbox transition policy; public apply API unchanged",
+      "Private ResponseEventTelemetry groups adjacent telemetry and trace inputs; all eleven callers and original function body audited unchanged",
+      "Cognitive retrieval/revalidation and Notes/desktop authority helpers use named borrowed input groups with immediate unpacking",
+      "Private Notes receipt _idempotent field retains required idempotent boolean wire name, strict unknown-field rejection and all valid producer values",
+      "Private infer-worker-host dispatch identity and authority groups preserve binding checks and argument evaluation order; stage41 three-package original strict and tests pass in r13; later source qualification remains open",
+      "Test-only ReleaseReadback groups two existing independent oracle values at the sole release helper caller; CapturedRequests is a same-type alias, not a wrapper"
+    ],
+    "pinned_dependency_compatibility": [
+      "Tokio 1.53.3 register on stable owned socket/PTY fd; lifecycle audited",
+      "Landlock 0.4.7 no_new_privs(true) is the exact target of deprecated alias",
+      "Option port validation rewritten by Boolean equivalence"
+    ],
+    "behavioral_repairs": [
+      "Restore Matrix companion budget before orphan recovery writes, preserving canonical main pending state and unresolved release budgets",
+      "Exec snapshot fixture isolates host login profile while preserving explicit capture of the controlled .bashrc",
+      "Proxy fixture uses an existing public literal test address to exercise NotAllowed without ambient DNS; observed failed-run DNS duration was not measured",
+      "Supervisor paired-process fixture returns Drain acknowledgement only for matching persisted Draining state and generation; original driver, Health behavior and assertions retained; both paired tests pass in r10",
+      "Executor hook adapter preserves supplied call metadata and canonical owner threadId; stage44 hidden-hook preparation uses the same frozen allowed calls map without requiring model visibility. Original model-hidden hook integration and new owner/stale-catalog regression pass in r15. MCP196/196 passed, while complete Core retains three failures.",
+      "Stage42 introduces a new one-second cooperative owner-created termination confirmation budget shared by one request and existing watch observation; unconfirmed same owners remain registered. Stage43 integration passed original Core strict in r14; all six new boundaries and the unchanged persistent-shell case passed. Complete Core still failed with 24 cases, and full-workspace/final-source gates remain open. No hard OS-call preemption claim."
+    ],
+    "fixture_and_runner_changes": [
+      "Declared cross-package runtime helper build and exact artifact metadata bridge; isolated native runner suite 31 passed, 0 skipped",
+      "Custom-provider/Bedrock fixtures explicitly clear mock-only internal metadata capability",
+      "SQLite retained-owner fixture supplies original preview selection input",
+      "Compaction fixtures wait for existing normal finish owner; WebSocket fixture preserves original five event batches across [2,1,2] connections",
+      "CI prefetch uses original zsh descriptor and checksums; old eight timeout causes remain unproven",
+      "Cold resume adds only error context at three existing fallible boundaries; diagnostic, not a repair",
+      "Stage41 preserves original assertions and eager spawn-all-before-join ordering while addressing twelve Agentd test/fixture lint diagnostics across eleven files; r13 original strict and tests pass: 696 passed, 66 original skipped",
+      "Stage43 sets allow_login_shell=false only in five existing permission/approval fixtures; original command, grant, approval and exact output assertions remain. Host-profile attribution is source-and-log evidence, not per-case syscall tracing. R14 strict and all five original fixture cases passed, within an overall failed complete Core gate."
+    ]
+  }
+}

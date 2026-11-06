@@ -1,0 +1,41 @@
+{
+  "command": [
+    "just",
+    "clippy",
+    "--locked",
+    "-p",
+    "codex-hepta-neuron",
+    "-p",
+    "codex-hepta-learning-artifacts",
+    "-p",
+    "codex-hepta-automation",
+    "-p",
+    "codex-hepta-runtime",
+    "-p",
+    "codex-hepta-control-plane",
+    "-p",
+    "codex-hepta-plasticity",
+    "-p",
+    "codex-utils-pty",
+    "-p",
+    "codex-hepta-context-compiler",
+    "-p",
+    "codex-hepta-intelligence",
+    "--",
+    "-D",
+    "warnings"
+  ],
+  "kind": "strict",
+  "staged_tree": "40da496d1e1c163f67ed83dcdb23d61bf16836aa",
+  "source_manifest": "native-nine-r2-agentd-source.json",
+  "start_unix": 1793935944.7918935,
+  "end_unix": 1793935945.4521458,
+  "elapsed_seconds": 0.6602523326873779,
+  "exit_code": 0,
+  "log_sha256": "a3bf5af3328a36f9d684497fc7212fa57f27cb9387b722c1a3d1a5d18fdbfd85",
+  "disk_after": {
+    "total": 1966736678912,
+    "used": 1566174343168,
+    "free": 300582084608
+  }
+}

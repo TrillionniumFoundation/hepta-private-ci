@@ -1,0 +1,165 @@
+{
+  "schema": "hepta.infer-worker-host-r9-repair-audit.v1",
+  "source": {
+    "path": "codex-rs/hepta-infer-worker-host/src/native_app_server.rs",
+    "before": {
+      "bytes": 55415,
+      "sha256": "c2f4e7067eba4ece88431c97d6ef6897ae1477fcbefbdce03917d43ff509fe52",
+      "git_blob": "11a3cf83d54cd0cfc3662cc725ff29e28bdd96f9"
+    },
+    "after": {
+      "bytes": 56335,
+      "sha256": "3ec8e8c6aa173dcb94763ab6feb5704e606d473e6bdbc228db0aa235d56eb3d8",
+      "git_blob": "3c19e3c74e424677038f9983a8d5b5c08e34a55b"
+    }
+  },
+  "patch": {
+    "bytes": 3970,
+    "sha256": "17b07ec6490825269752cad09954dfbe2de7ed39f9dac16f2b7def61dcb56f14",
+    "git_blob": "0338a179086bed112f67f0980986825f2863aab0"
+  },
+  "full_inverse_byte_identical": true,
+  "only_three_declared_transformations": true,
+  "private_function_arguments_before": 14,
+  "private_function_arguments_after": 5,
+  "full_checkout_call_sites": 1,
+  "definition_sites": 1,
+  "binding_check_body_after_immediate_unpack": {
+    "bytes": 1603,
+    "sha256": "e195269c840b76bc52570aefb60d32cc6790319e40170b719a89211aa77490b3",
+    "git_blob": "d344a0b6a439cb719696d06347f1a9f33e3339e9"
+  },
+  "binding_check_body_byte_identical": true,
+  "argument_evaluation_order": {
+    "before": [
+      "control",
+      "request_id",
+      "payload_digest",
+      "request_receipt.request_digest",
+      "source_admission_digest",
+      "codex_home_digest",
+      "connection_id",
+      "&started.thread.session_id",
+      "adapter_intent.deadline_ms",
+      "authority_epoch",
+      "revocation_revision",
+      "&revocation_head_digest",
+      "&authority_witness",
+      "&app_server_version"
+    ],
+    "after_flattening_in_source_order": [
+      "control",
+      "request_id",
+      "payload_digest",
+      "request_receipt.request_digest",
+      "source_admission_digest",
+      "codex_home_digest",
+      "connection_id",
+      "&started.thread.session_id",
+      "adapter_intent.deadline_ms",
+      "authority_epoch",
+      "revocation_revision",
+      "&revocation_head_digest",
+      "&authority_witness",
+      "&app_server_version"
+    ],
+    "same": true
+  },
+  "field_consumption": [
+    {
+      "group": "identity",
+      "field": "payload_digest",
+      "caller_expression": "payload_digest",
+      "persisted_record_field": "dispatch.codex_payload_digest"
+    },
+    {
+      "group": "identity",
+      "field": "request_digest",
+      "caller_expression": "request_receipt.request_digest",
+      "persisted_record_field": "dispatch.codex_request_digest"
+    },
+    {
+      "group": "identity",
+      "field": "source_admission_digest",
+      "caller_expression": "source_admission_digest",
+      "persisted_record_field": "dispatch.codex_source_admission_digest"
+    },
+    {
+      "group": "identity",
+      "field": "codex_home_digest",
+      "caller_expression": "codex_home_digest",
+      "persisted_record_field": "dispatch.codex_home_digest"
+    },
+    {
+      "group": "identity",
+      "field": "connection_id",
+      "caller_expression": "connection_id",
+      "persisted_record_field": "dispatch.codex_connection_id"
+    },
+    {
+      "group": "identity",
+      "field": "session_id",
+      "caller_expression": "&started.thread.session_id",
+      "persisted_record_field": "dispatch.codex_session_id"
+    },
+    {
+      "group": "identity",
+      "field": "deadline_ms",
+      "caller_expression": "adapter_intent.deadline_ms",
+      "persisted_record_field": "dispatch.codex_deadline_ms"
+    },
+    {
+      "group": "authority",
+      "field": "authority_epoch",
+      "caller_expression": "authority_epoch",
+      "persisted_record_field": "dispatch.codex_authority_epoch"
+    },
+    {
+      "group": "authority",
+      "field": "revocation_revision",
+      "caller_expression": "revocation_revision",
+      "persisted_record_field": "dispatch.codex_revocation_revision"
+    },
+    {
+      "group": "authority",
+      "field": "revocation_head_digest",
+      "caller_expression": "&revocation_head_digest",
+      "persisted_record_field": "dispatch.codex_revocation_head_sha256"
+    },
+    {
+      "group": "authority",
+      "field": "authority_witness",
+      "caller_expression": "&authority_witness",
+      "persisted_record_field": "dispatch.codex_authority_witness_sha256"
+    }
+  ],
+  "ungrouped_arguments": {
+    "control": "durable owner used to look up the native record",
+    "request_id": "native_record lookup key",
+    "app_server_version": "final exact app_server_version comparison; remains evaluated after both groups"
+  },
+  "authority_order_preserved": [
+    "authorizer claim under original budget",
+    "original NativeDispatch journal write",
+    "original exact persisted binding checks",
+    "original owner dispatch acknowledgement",
+    "physical turn/start only after these gates"
+  ],
+  "cancellation_semantics": {
+    "owner_run_cancel_only_after_both_options_are_Some": true,
+    "same_run_id_clone_revision_and_reason_bound": true,
+    "revision_assignment_only_on_Ok": true,
+    "same_single_await": true,
+    "observation_and_cancel_journals_still_before_cleanup_await": true,
+    "physical_interrupt_and_shutdown_sequence_unchanged": true
+  },
+  "no_assertion_test_condition_deadline_policy_or_lint_allow_changes": true,
+  "new_types_are_private_nonserialized_without_Drop_or_added_allocation": true,
+  "validation_pending": [
+    "independent source review",
+    "original scoped strict and tests for infer-worker-host plus Agentd/protocol",
+    "final fix/fmt"
+  ],
+  "isolated_forward_apply_exact_candidate": true,
+  "isolated_reverse_apply_check": true
+}

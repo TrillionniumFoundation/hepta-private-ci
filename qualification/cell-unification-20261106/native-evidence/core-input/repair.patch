@@ -1,0 +1,178 @@
+--- a/codex-rs/core/src/client.rs
++++ b/codex-rs/core/src/client.rs
+@@ -3095,8 +3095,10 @@
+     map_response_events(
+         upstream_request_id,
+         api_stream,
+-        session_telemetry,
+-        inference_trace_attempt,
++        ResponseEventTelemetry {
++            session_telemetry,
++            inference_trace_attempt,
++        },
+         provider,
+         provider_attempt,
+         redact_provider_errors,
+@@ -3104,11 +3106,15 @@
+     )
+ }
+ 
++struct ResponseEventTelemetry {
++    session_telemetry: SessionTelemetry,
++    inference_trace_attempt: InferenceTraceAttempt,
++}
++
+ fn map_response_events<S>(
+     upstream_request_id: Option<String>,
+     api_stream: S,
+-    session_telemetry: SessionTelemetry,
+-    inference_trace_attempt: InferenceTraceAttempt,
++    telemetry: ResponseEventTelemetry,
+     provider: SharedModelProvider,
+     provider_attempt: Option<ProviderAttemptOwner>,
+     redact_provider_errors: bool,
+@@ -3120,6 +3126,10 @@
+         + Send
+         + 'static,
+ {
++    let ResponseEventTelemetry {
++        session_telemetry,
++        inference_trace_attempt,
++    } = telemetry;
+     let (tx_event, rx_event) =
+         mpsc::channel::<Result<ResponseEvent>>(RESPONSE_STREAM_CHANNEL_CAPACITY);
+     let (tx_last_response, rx_last_response) = oneshot::channel::<LastResponse>();
+--- a/codex-rs/core/src/client_tests.rs
++++ b/codex-rs/core/src/client_tests.rs
+@@ -957,8 +957,10 @@
+     let (mut stream, _) = super::map_response_events(
+         /*upstream_request_id*/ None,
+         api_stream,
+-        test_session_telemetry(),
+-        attempt,
++        super::ResponseEventTelemetry {
++            session_telemetry: test_session_telemetry(),
++            inference_trace_attempt: attempt,
++        },
+         test_model_provider(),
+         /*provider_attempt*/ None,
+         /*redact_provider_errors*/ false,
+@@ -1010,8 +1012,10 @@
+     let (mut stream, _) = super::map_response_events(
+         Some("req-123".to_string()),
+         api_stream,
+-        test_session_telemetry(),
+-        InferenceTraceAttempt::disabled(),
++        super::ResponseEventTelemetry {
++            session_telemetry: test_session_telemetry(),
++            inference_trace_attempt: InferenceTraceAttempt::disabled(),
++        },
+         test_model_provider(),
+         /*provider_attempt*/ None,
+         /*redact_provider_errors*/ false,
+@@ -1146,8 +1150,10 @@
+     let (mut stream, _) = super::map_response_events(
+         /*upstream_request_id*/ None,
+         api_stream,
+-        test_session_telemetry(),
+-        attempt,
++        super::ResponseEventTelemetry {
++            session_telemetry: test_session_telemetry(),
++            inference_trace_attempt: attempt,
++        },
+         provider,
+         /*provider_attempt*/ None,
+         /*redact_provider_errors*/ true,
+@@ -1330,8 +1336,10 @@
+     let (stream, _) = super::map_response_events(
+         /*upstream_request_id*/ None,
+         api_stream,
+-        test_session_telemetry(),
+-        attempt,
++        super::ResponseEventTelemetry {
++            session_telemetry: test_session_telemetry(),
++            inference_trace_attempt: attempt,
++        },
+         test_model_provider(),
+         /*provider_attempt*/ None,
+         /*redact_provider_errors*/ false,
+--- a/codex-rs/core/src/client_provider_policy_tests.rs
++++ b/codex-rs/core/src/client_provider_policy_tests.rs
+@@ -117,8 +117,10 @@
+     let (mut stream, mut last_response) = map_response_events(
+         /*upstream_request_id*/ None,
+         events,
+-        test_telemetry(),
+-        InferenceTraceAttempt::disabled(),
++        super::ResponseEventTelemetry {
++            session_telemetry: test_telemetry(),
++            inference_trace_attempt: InferenceTraceAttempt::disabled(),
++        },
+         test_provider(),
+         Some(owner),
+         /*redact_provider_errors*/ false,
+@@ -169,8 +171,10 @@
+     let (mut stream, last_response) = map_response_events(
+         /*upstream_request_id*/ None,
+         events,
+-        test_telemetry(),
+-        InferenceTraceAttempt::disabled(),
++        super::ResponseEventTelemetry {
++            session_telemetry: test_telemetry(),
++            inference_trace_attempt: InferenceTraceAttempt::disabled(),
++        },
+         test_provider(),
+         Some(owner),
+         /*redact_provider_errors*/ false,
+@@ -206,8 +210,10 @@
+     let (mut stream, _last_response) = map_response_events(
+         /*upstream_request_id*/ None,
+         events,
+-        test_telemetry(),
+-        InferenceTraceAttempt::disabled(),
++        super::ResponseEventTelemetry {
++            session_telemetry: test_telemetry(),
++            inference_trace_attempt: InferenceTraceAttempt::disabled(),
++        },
+         test_provider(),
+         Some(owner),
+         /*redact_provider_errors*/ false,
+@@ -242,8 +248,10 @@
+     let (mut stream, _last_response) = map_response_events(
+         /*upstream_request_id*/ None,
+         events,
+-        test_telemetry(),
+-        InferenceTraceAttempt::disabled(),
++        super::ResponseEventTelemetry {
++            session_telemetry: test_telemetry(),
++            inference_trace_attempt: InferenceTraceAttempt::disabled(),
++        },
+         test_provider(),
+         Some(owner),
+         /*redact_provider_errors*/ false,
+@@ -271,8 +279,10 @@
+     let (mut stream, _last_response) = map_response_events(
+         /*upstream_request_id*/ None,
+         events,
+-        test_telemetry(),
+-        InferenceTraceAttempt::disabled(),
++        super::ResponseEventTelemetry {
++            session_telemetry: test_telemetry(),
++            inference_trace_attempt: InferenceTraceAttempt::disabled(),
++        },
+         test_provider(),
+         Some(owner),
+         /*redact_provider_errors*/ false,
+@@ -306,8 +316,10 @@
+     let (mut stream, _last_response) = map_response_events(
+         /*upstream_request_id*/ None,
+         events,
+-        test_telemetry(),
+-        InferenceTraceAttempt::disabled(),
++        super::ResponseEventTelemetry {
++            session_telemetry: test_telemetry(),
++            inference_trace_attempt: InferenceTraceAttempt::disabled(),
++        },
+         test_provider(),
+         Some(owner),
+         /*redact_provider_errors*/ false,
