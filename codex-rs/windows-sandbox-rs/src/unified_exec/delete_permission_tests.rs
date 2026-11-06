@@ -45,23 +45,13 @@ fn legacy_delete_routes_require_workspace_capability_in_all_four_cells() {
         let host_script = workspace.join("host-matrix.cmd");
         fs::write(&host_script, script).expect("write host script");
         let host_log_path = fixture.path().join("host-output.txt");
-        let host_log = fs::File::create(&host_log_path).expect("create owned host output");
-        let mut child = std::process::Command::new("C:\\Windows\\System32\\cmd.exe")
-            .args(["/d", "/c"]).arg(&host_script).envs(env)
-            .stdout(host_log.try_clone().expect("clone host output")).stderr(host_log)
-            .spawn().expect("spawn ordinary host cmd control");
-        // Keep the host comparison bounded to the same five-second child budget.
-        // SAFETY: Child owns this process handle until kill/wait below completes.
-        let waited = unsafe { WaitForSingleObject(child.as_raw_handle() as _, /*dwmilliseconds*/ 5_000) };
-        if waited != WAIT_OBJECT_0 {
-            let wait_error = (waited == WAIT_FAILED).then(std::io::Error::last_os_error);
-            let killed = child.kill();
-            let reaped = child.wait();
-            panic!("ordinary host cmd did not finish: wait={waited} error={wait_error:?} kill={killed:?} reap={reaped:?}");
-        }
-        let status = child.wait().expect("reap ordinary host cmd");
+        // This host comparison is an ordinary ACL control, not an elevated-privilege control.
+        let acl_control = crate::acl_control_test_support::AclControl::new()
+            .expect("derive nonprivileged ACL control");
+        let status = acl_control.run_cmd(&host_script, &env, &host_log_path)
+            .expect("run gated primary-token ACL control");
         let host_log = fs::read_to_string(&host_log_path).expect("read owned host output");
-        let host_outcomes = host.finish("ordinary-host-cmd-done").expect("host physical readback");
+        let host_outcomes = host.finish("nonprivileged-acl-control-cmd-done").expect("host physical readback");
         eprintln!("delete_matrix host_cmd_status={status} output={host_log:?}");
         assert_eq!(status.code(), Some(0));
         assert_eq!(host_log.lines().filter(|line| line.starts_with("MATRIX_")).collect::<Vec<_>>(),

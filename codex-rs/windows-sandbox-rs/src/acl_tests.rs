@@ -4,8 +4,11 @@ use pretty_assertions::assert_eq;
 use std::fs::File;
 use std::fs::OpenOptions;
 use std::io::Read;
+use std::io::Write;
 use std::os::windows::fs::OpenOptionsExt;
 use std::os::windows::io::AsRawHandle;
+use std::os::windows::io::FromRawHandle;
+use std::os::windows::io::OwnedHandle;
 use windows_sys::Win32::Foundation::ERROR_ACCESS_DENIED;
 use windows_sys::Win32::Foundation::HANDLE;
 use windows_sys::Win32::Security::ACL_REVISION;
@@ -394,11 +397,14 @@ fn existing_native_deny_does_not_require_write_dac() -> Result<()> {
     };
     let sid = LocalSid::from_string("S-1-5-21-201-302-403-504")?;
     let owner_rights = LocalSid::from_string("S-1-3-4")?;
+    let everyone = LocalSid::from_string("S-1-1-0")?;
     unsafe {
         assert!(add_deny_write_ace(&path, sid.as_ptr())?);
         assert!(add_deny_read_ace(&path, sid.as_ptr())?);
         let (current, current_descriptor) = fetch_dacl_handle(&path)?;
-        let entry = EXPLICIT_ACCESS_W {
+        // Owner Rights removes implicit owner access; Everyone also denies
+        // WRITE_DAC otherwise available through enabled groups.
+        let entries = [&owner_rights, &everyone].map(|denied| EXPLICIT_ACCESS_W {
             grfAccessPermissions: WRITE_DAC,
             grfAccessMode: DENY_ACCESS,
             grfInheritance: 0,
@@ -407,13 +413,13 @@ fn existing_native_deny_does_not_require_write_dac() -> Result<()> {
                 MultipleTrusteeOperation: 0,
                 TrusteeForm: TRUSTEE_IS_SID,
                 TrusteeType: TRUSTEE_IS_UNKNOWN,
-                ptstrName: owner_rights.as_ptr().cast(),
+                ptstrName: denied.as_ptr().cast(),
             },
-        };
+        });
         let mut protected = std::ptr::null_mut();
         let code = SetEntriesInAclW(
-            /*ccountofexplicitentries*/ 1,
-            &entry,
+            entries.len() as u32,
+            entries.as_ptr(),
             current,
             &mut protected,
         );
@@ -436,27 +442,97 @@ fn existing_native_deny_does_not_require_write_dac() -> Result<()> {
         LocalFree(current_descriptor as HLOCAL);
         acl_api_result(&path, "seed owner WRITE_DAC denial", code)?;
     }
-    let query = OpenOptions::new().access_mode(READ_CONTROL).open(&path)?;
-    // Use the same rights/flags as a real repair; an unexpected granted handle
-    // is closed before the host-control assertion fails.
-    let write_denied = unsafe {
-        let raw = windows_sys::Win32::Storage::FileSystem::ReOpenFile(
-            query.as_raw_handle() as HANDLE,
-            WRITE_DAC,
-            FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE,
-            FILE_FLAG_BACKUP_SEMANTICS,
-        );
-        if raw == INVALID_HANDLE_VALUE {
-            std::io::Error::last_os_error().raw_os_error()
-        } else {
-            CloseHandle(raw);
-            None
-        }
+    use windows_sys::Win32::Security as security;
+    use windows_sys::Win32::System::Threading;
+    // The fixture must prove actual DACL denial, not rely on an elevated host's
+    // backup/restore privileges. Only this owned token/thread is restricted.
+    let mut previous = 0;
+    // SAFETY: the output pointer is live; a successful owned handle is closed.
+    if unsafe {
+        Threading::OpenThreadToken(
+            Threading::GetCurrentThread(),
+            security::TOKEN_QUERY,
+            /*openasself*/ 1,
+            &mut previous,
+        )
+    } != 0
+    {
+        unsafe { CloseHandle(previous) };
+        return Err(anyhow!(
+            "no-WRITE_DAC control requires an initially unimpersonated thread"
+        ));
+    }
+    let previous_error = std::io::Error::last_os_error();
+    if previous_error.raw_os_error() != Some(windows_sys::Win32::Foundation::ERROR_NO_TOKEN as i32) {
+        return Err(previous_error.into());
+    }
+    // SAFETY: these successful token constructors transfer one owned handle.
+    let base = unsafe {
+        OwnedHandle::from_raw_handle(crate::token::get_current_token_for_restriction()? as _)
     };
+    let mut raw_token = 0;
+    if unsafe {
+        security::CreateRestrictedToken(
+            base.as_raw_handle() as HANDLE,
+            security::DISABLE_MAX_PRIVILEGE,
+            /*disablesidcount*/ 0,
+            std::ptr::null(),
+            /*deleteprivilegecount*/ 0,
+            std::ptr::null(),
+            /*restrictedsidcount*/ 0,
+            std::ptr::null(),
+            &mut raw_token,
+        )
+    } == 0
+    {
+        return Err(std::io::Error::last_os_error().into());
+    }
+    let token = unsafe { OwnedHandle::from_raw_handle(raw_token as _) };
+    struct Revert;
+    impl Drop for Revert {
+        fn drop(&mut self) {
+            // SAFETY: this guard exists only after this thread was impersonated.
+            if unsafe { security::RevertToSelf() } == 0 {
+                std::process::abort();
+            }
+        }
+    }
+    // SAFETY: the token is live; Revert restores the initially bare thread.
+    if unsafe { security::ImpersonateLoggedOnUser(token.as_raw_handle() as HANDLE) } == 0 {
+        return Err(std::io::Error::last_os_error().into());
+    }
+    let impersonation = Revert;
+    let query = OpenOptions::new().access_mode(READ_CONTROL).open(&path)?;
+    // The added repair attributes are available to this token; the following
+    // exact acquisition failure must be at the WRITE_DAC open, not ID querying.
+    let attributes = OpenOptions::new()
+        .access_mode(READ_CONTROL | windows_sys::Win32::Storage::FileSystem::FILE_READ_ATTRIBUTES)
+        .custom_flags(
+            FILE_FLAG_BACKUP_SEMANTICS
+                | windows_sys::Win32::Storage::FileSystem::FILE_FLAG_OPEN_REPARSE_POINT,
+        )
+        .open(&path)?;
+    drop(attributes);
+    // Execute the production acquisition/identity check on this same retained
+    // object. A granted handle is dropped before the original assertion.
+    // SAFETY: the query handle and owned fixture outlive the acquisition.
+    let write_error = unsafe {
+        super::deny::open_deny_repair_handle(&path, query.as_raw_handle() as HANDLE)
+    }
+    .err();
+    let write_denied = write_error.as_ref().and_then(|error| {
+        error
+            .downcast_ref::<std::io::Error>()
+            .and_then(std::io::Error::raw_os_error)
+    });
     assert_eq!(
         write_denied,
         Some(ERROR_ACCESS_DENIED as i32),
         "host control must really lack WRITE_DAC"
+    );
+    assert_eq!(
+        write_error.expect("WRITE_DAC acquisition must fail").to_string(),
+        format!("CreateFileW for deny repair failed for {}", path.display())
     );
     let before = native_dacl_bytes(&path)?;
     let noops = unsafe {
@@ -467,7 +543,83 @@ fn existing_native_deny_does_not_require_write_dac() -> Result<()> {
     };
     assert_eq!(noops, (false, false));
     assert_eq!(native_dacl_bytes(&path)?, before);
+    drop(impersonation);
     drop(restore);
     assert_eq!(std::fs::read_to_string(&path)?, "retained");
+    Ok(())
+}
+
+#[test]
+fn deny_repair_rejects_a_replaced_path_before_mutating_either_object() -> Result<()> {
+    let fixture = tempfile::tempdir()?;
+    let sid = LocalSid::from_string("S-1-5-21-211-312-413-514")?;
+    for directory in [false, true] {
+        let row = tempfile::tempdir_in(fixture.path())?;
+        let path = row.path().join("queried");
+        let retained_path = row.path().join("retained");
+        if directory {
+            std::fs::create_dir(&path)?;
+        } else {
+            std::fs::write(&path, "original")?;
+        }
+        let query = OpenOptions::new()
+            .access_mode(READ_CONTROL)
+            .share_mode(FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE)
+            .custom_flags(FILE_FLAG_BACKUP_SEMANTICS)
+            .open(&path)?;
+        let original_dacl = native_dacl_bytes(&path)?;
+        std::fs::rename(&path, &retained_path)?;
+        if directory {
+            std::fs::create_dir(&path)?;
+        } else {
+            std::fs::write(&path, "replacement")?;
+        }
+        let replacement_dacl = native_dacl_bytes(&path)?;
+        // SAFETY: the query handle still retains the renamed original object;
+        // the valid SID and both owned filesystem objects outlive the call.
+        let result = unsafe {
+            super::deny::add_deny_ace_on_object(
+                &path,
+                query.as_raw_handle() as HANDLE,
+                sid.as_ptr(),
+                DenyAceKind::Write,
+            )
+        };
+        let original_after = native_dacl_bytes(&retained_path)?;
+        let replacement_after = native_dacl_bytes(&path)?;
+        writeln!(
+            std::io::stderr().lock(),
+            "\ndeny_repair_identity: directory={directory} returned_ok={} replacement_changed={} original_changed={}",
+            result.is_ok(),
+            replacement_after != replacement_dacl,
+            original_after != original_dacl
+        )?;
+        assert_eq!(
+            replacement_after,
+            replacement_dacl,
+            "a replacement object must not receive the queried object's deny"
+        );
+        assert_eq!(original_after, original_dacl);
+        let error = result.expect_err("replaced path must be rejected before ACL mutation");
+        assert!(
+            error
+                .to_string()
+                .contains("no longer identifies the retained object")
+        );
+        // The same retained object remains repairable through its current name.
+        // SAFETY: the retained handle and valid SID remain live as above.
+        assert!(unsafe {
+            super::deny::add_deny_ace_on_object(
+                &retained_path,
+                query.as_raw_handle() as HANDLE,
+                sid.as_ptr(),
+                DenyAceKind::Write,
+            )?
+        });
+        if !directory {
+            assert_eq!(std::fs::read_to_string(&retained_path)?, "original");
+            assert_eq!(std::fs::read_to_string(&path)?, "replacement");
+        }
+    }
     Ok(())
 }

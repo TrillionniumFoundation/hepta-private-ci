@@ -346,7 +346,10 @@ impl AclSetupFailureFixture {
         assert_eq!(
             (
                 error.to_string(),
-                error.root_cause().to_string(),
+                error
+                    .root_cause()
+                    .downcast_ref::<std::io::Error>()
+                    .map(|error| (error.kind(), error.raw_os_error())),
                 self.marker.try_exists().expect("inspect process marker"),
             ),
             (
@@ -354,10 +357,10 @@ impl AclSetupFailureFixture {
                     "apply legacy deny-write ACL to {}",
                     self.protected_file.display()
                 ),
-                format!(
-                    "SetNamedSecurityInfoW failed for {}: {ERROR_ACCESS_DENIED}",
-                    self.protected_file.display(),
-                ),
+                Some((
+                    std::io::ErrorKind::PermissionDenied,
+                    Some(ERROR_ACCESS_DENIED as i32),
+                )),
                 false,
             ),
         );
