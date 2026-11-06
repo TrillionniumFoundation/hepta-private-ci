@@ -118,6 +118,23 @@ impl McpBinding {
             .cloned()
     }
 
+    /// Binds a tool explicitly selected by a configured hook, including model-hidden tools.
+    /// The captured catalog already enforces server configuration and tool allow/deny lists.
+    /// Callers must enforce session hook policy; executor hooks must match their owning environment.
+    pub fn prepare_hook_call(
+        &self,
+        server: &str,
+        tool: &str,
+        environment_id: Option<&str>,
+    ) -> Option<PreparedMcpCall> {
+        self.calls
+            .get(&(server.to_string(), tool.to_string()))
+            .filter(|call| {
+                environment_id.is_none_or(|expected| call.server_environment_id() == expected)
+            })
+            .cloned()
+    }
+
     pub fn has_servers(&self) -> bool {
         self.connections.has_servers()
     }
