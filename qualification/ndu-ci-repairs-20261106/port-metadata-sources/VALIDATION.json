@@ -1,0 +1,39 @@
+{
+  "complete_head_generator_and_downstream_jobs": "PENDING",
+  "fixed_amendment_path_packages": 5,
+  "native_commands_reexecuted_locally": false,
+  "native_metadata_original_packages": 1528,
+  "only_reviewed_source_mapping_changes": true,
+  "original_recipe_expected_packages": 54,
+  "original_zip_roundtrip": {
+    "equal": true,
+    "gzip_max_bytes": 439528,
+    "members": 55,
+    "overwrite_rejected": true,
+    "sha256": "769e84dc908333caaee325c84833721c0f364b9ee5da73b7b6ac34beca6b5a87"
+  },
+  "projected_fixture_packages": 56,
+  "python_tests": {
+    "methods": 82,
+    "raw_log": {
+      "bytes": 317286,
+      "git_blob": "fa80e70f2750e63abd61addeff075ed60e593a8e",
+      "sha256": "79eac42025200e7bfa42703f38b3d0972c88b3ac9a6183e502d14ddaf0d60ae7"
+    },
+    "result": "PASS",
+    "skipped": 0
+  },
+  "ruff": {
+    "files": [
+      "scripts/ndu_port_candidate_common.py",
+      "scripts/test_ndu_port_metadata_sources.py",
+      "qualification/ndu-ci-repairs-20261106/port-metadata-sources/restore_original_artifact.py"
+    ],
+    "format_check_exit": 0,
+    "lint_exit": 0,
+    "version": "0.15.13"
+  },
+  "schema": "ndu.port-metadata-source-validation.v1",
+  "source_and_feature_guards_still_run": true,
+  "status": "EXACT_ORIGINAL_METADATA_REPLAY_AND_82_PYTHON_TESTS_PASS_NATIVE_PENDING"
+}

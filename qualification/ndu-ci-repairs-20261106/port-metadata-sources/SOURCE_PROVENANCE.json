@@ -1,0 +1,120 @@
+{
+  "after": {
+    "bytes": 47690,
+    "git_blob": "961b543ee5873cc112887fdb0d6be7c23dacab52",
+    "sha256": "c6f8e3b7a62c0d40bf7b4c448d2be3993bf125719ac5c3112dc3c9e23ef7fc7f"
+  },
+  "before": {
+    "bytes": 47145,
+    "git_blob": "d4fe983d98b466b233838af9877775b2429ab124",
+    "sha256": "13cd7d90e0bf9259bc49d9b885cce143c140495da260a6c1fc2d4db26f12d745"
+  },
+  "changed_functions_only": [
+    "validate_graph",
+    "verify_dependency_graph"
+  ],
+  "fixed_dependency_amendment_sha256": "334d6a0000bb6c14c1f8742e680c799d7e9f768e035ce06a99593bedd0e1d538",
+  "mode": "100644",
+  "original_native_run": {
+    "all_eleven_native_commands_exit_zero": true,
+    "artifact": {
+      "artifact_id": 13508649971,
+      "bytes": 1175348,
+      "git_blob": "3b62db1c70ce4849ad506d7c85e99300b806ee0a",
+      "job_id": 127940253347,
+      "original_filename": "ndu-port-candidate-42232089877-1.zip",
+      "run_id": 42232089877,
+      "sha256": "769e84dc908333caaee325c84833721c0f364b9ee5da73b7b6ac34beca6b5a87"
+    },
+    "error": "Registry source was not selected: aws-smithy-http",
+    "full_producer_status": "failed",
+    "job_id": 127940253347,
+    "metadata": {
+      "bytes": 8277987,
+      "git_blob": "3c5295500285d92a845c466a0ffcdac3fc50e39c",
+      "sha256": "4ca8f9c3f082d26d4cf67f817a6300cbf9f023468824c999411e39b5ca9e8f60"
+    },
+    "run_id": 42232089877,
+    "source_head": "0e63dd2d320262681afeddd8cc45032984b5c8b2",
+    "source_tree": "5def5d3baa082c04bc9cdac9724a85163528c4ea",
+    "unmodified_decoded_job_log": {
+      "bytes": 535365,
+      "git_blob": "7df244ea7f6c2fbe6952825b9a1f60b1792fb058",
+      "sha256": "05b3010ed3f10089753a61f88f1f9051df94dd715845319f3dffdf27a620ebc7"
+    }
+  },
+  "path": "scripts/ndu_port_candidate_common.py",
+  "sealed_historical_records_unchanged": {
+    "experiments/multimodal_output_portfolio/closure_20261028/ci/port-remediation/BUILD_AMENDMENT.v7.3.json": {
+      "bytes": 2820,
+      "git_blob": "c4d1178699b48fd5705bd165282aad9e7c0ccbd2",
+      "sha256": "2ebd2e0ceacf4f22f2c3b28b7397d353c52e95d944ef664e9dcf6cb70b0e6a5e"
+    },
+    "experiments/multimodal_output_portfolio/closure_20261028/ci/port-remediation/DEPENDENCY_AMENDMENT.v7.2.json": {
+      "bytes": 76071,
+      "git_blob": "8c657009900f406421130a9d6ec1b1a975f3a9cd",
+      "sha256": "334d6a0000bb6c14c1f8742e680c799d7e9f768e035ce06a99593bedd0e1d538"
+    },
+    "experiments/multimodal_output_portfolio/closure_20261028/ci/port-remediation/INTEGRATION.v7.json": {
+      "bytes": 9120,
+      "git_blob": "4b60a9f575d04347b462c122ce2672d70b1a26c4",
+      "sha256": "ef1fc0a4cfd8c2621eeb82e413555c1ea1780020a1f74f7c666253b62a5bfde2"
+    },
+    "experiments/multimodal_output_portfolio/closure_20261028/ci/port-remediation/SOURCE_AMENDMENT.v7.1.json": {
+      "bytes": 3256,
+      "git_blob": "9ce5dacdc5fe931438c1f40bdb89564cd62c31bc",
+      "sha256": "f802638dd5d01f3b3d7583986848c1ad6264c3ec478ed055f4e1edebc7a0d40a"
+    },
+    "experiments/multimodal_output_portfolio/closure_v2_20261027/ci/port-remediation/RECIPE.v7.json": {
+      "bytes": 348278,
+      "git_blob": "0c9c640167a9f0745572e683b8a3632a1eba5a32",
+      "sha256": "8c655b7b3c539527e6506869a52d0e98a88ed37e334e9d34d13be83713bce03f"
+    }
+  },
+  "source_head": "5e08c4be87d79bfd7ce4eaa42a9e53a44eae04da",
+  "source_tree": "5d783181bec96e4ab37912187dc94efb3a8a9658",
+  "unmodified_producer_consumer_helpers": [
+    {
+      "bytes": 8903,
+      "changed": false,
+      "git_blob": "6e6e72bcf296f9c78cf7f751fbce866a774091f6",
+      "path": "scripts/ndu_port_aws_upstream.py",
+      "sha256": "bd85181f989d4a4377fb536c403dcd4c14d3918bd0e4913b5c205ccdcd9a53da"
+    },
+    {
+      "bytes": 14775,
+      "changed": false,
+      "git_blob": "445940ea01f5685e748800d8b23b300ba2e80be9",
+      "path": "scripts/ndu_port_candidate.py",
+      "sha256": "6e0436bbf6e889e9f775a40fd6e2140984fad22b4767931e437e584bb9b1cf3c"
+    },
+    {
+      "bytes": 5035,
+      "changed": false,
+      "git_blob": "cd3468cf50ae241aecdf7b254885a94fb8af1e56",
+      "path": "scripts/ndu_port_fixture_layout.py",
+      "sha256": "1acbf3db7b3ebd92287619aeceb0fe97356d7f95cab1e724bb61f6c4dcd8a061"
+    },
+    {
+      "bytes": 4498,
+      "changed": false,
+      "git_blob": "b9340cc5e995112aa46d02a4fbecd656ce5ae792",
+      "path": "scripts/ndu_port_integrated.py",
+      "sha256": "e0313eaf70e29fbdec8118dd934d24e76ca8cbe618ba33844ee024d9ddbb5112"
+    },
+    {
+      "bytes": 4859,
+      "changed": false,
+      "git_blob": "dc12f1a7ad3728d429713c219c3636ecb83dcb1a",
+      "path": "scripts/ndu_port_integration_test_support.py",
+      "sha256": "e141d35b857a4209252d061419b29dc3962710feeb42945075c295f9e0f1e0d6"
+    },
+    {
+      "bytes": 17157,
+      "changed": false,
+      "git_blob": "e01a2976b811b9bf9a7da3d2ab1010bf126b9a7a",
+      "path": "scripts/ndu_port_matrix_fixture.py",
+      "sha256": "e4b9da556b10762c5e5b761f94ea5dccc1c4d2f655082c8afc328a3b68a1c247"
+    }
+  ]
+}

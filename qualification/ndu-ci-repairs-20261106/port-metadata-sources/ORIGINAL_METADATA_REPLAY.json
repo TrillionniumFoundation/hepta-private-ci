@@ -1,0 +1,18 @@
+{
+  "schema": "ndu.port-native-metadata-source-replay.v1",
+  "metadata_packages": 1528,
+  "metadata_nodes": 1528,
+  "metadata_sha256": "4ca8f9c3f082d26d4cf67f817a6300cbf9f023468824c999411e39b5ca9e8f60",
+  "results": {
+    "old": {
+      "status": "rejected",
+      "error_type": "ValueError",
+      "error": "Registry source was not selected: aws-smithy-http"
+    },
+    "candidate": {
+      "status": "accepted"
+    }
+  },
+  "native_commands_rerun_locally": false,
+  "scope": "The exact original 1528-package Cargo JSON and exact recorded lock/source bytes were passed through the complete old and candidate Python graph validators; this does not rerun Cargo, Bazel, or hosted CI."
+}
