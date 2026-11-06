@@ -1206,5 +1206,55 @@ class PhysicalCurrentRetiredAdoptionBoundaryMarkerTests(unittest.TestCase):
             protected = original_protected
 
 
+
+class PhysicalCurrentBackendGenesisBoundaryMarkerTests(unittest.TestCase):
+    def test_backend_genesis_marker_matches_boxed_profile_in_both_manifests(self):
+        manifest = tomllib.loads(
+            (ROOT / "CALLERS.toml").read_text(encoding="utf-8")
+        )
+        boundary = next(
+            row for row in manifest["boundary"]
+            if row["id"] == "root_physical_current_backend_genesis"
+        )
+        source_path = (
+            "codex-rs/hepta-agentd/src/authority_host_checkpoint_material_binding.rs"
+        )
+        source = (ROOT / source_path).read_text(encoding="utf-8")
+        protected = next(
+            row for row in manifest["protected_file"]
+            if row["path"] == source_path
+        )
+        marker = "FreshMaterial::Physical(Box::new(profile))"
+        stale = "FreshMaterial::Physical(profile)"
+
+        def consistent(row, protected_row):
+            return (
+                row["symbol"]
+                == "HostCognitiveCheckpoint::initialize_fresh_with_material"
+                and row["definition_path"] == source_path
+                and marker in row["definition_markers"]
+                and stale not in row["definition_markers"]
+                and marker in source
+                and marker in protected_row["required"]
+                and stale not in protected_row["required"]
+            )
+
+        self.assertTrue(consistent(boundary, protected))
+        wrong_boundary = dict(
+            boundary,
+            definition_markers=[
+                item.replace(marker, stale)
+                for item in boundary["definition_markers"]
+            ],
+        )
+        self.assertFalse(consistent(wrong_boundary, protected))
+
+        wrong_protected = dict(
+            protected,
+            required=[item.replace(marker, stale) for item in protected["required"]],
+        )
+        self.assertFalse(consistent(boundary, wrong_protected))
+
+
 if __name__ == "__main__":
     unittest.main()
