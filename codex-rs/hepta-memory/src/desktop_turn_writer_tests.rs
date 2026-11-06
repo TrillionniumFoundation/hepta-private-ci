@@ -67,9 +67,11 @@ impl AuthorityClock for Clock {
     }
 }
 
+type OperationFixture = (OperationIntentV1, &'static str, String);
+
 fn operations(
     owner: &str,
-) -> Result<[(OperationIntentV1, &'static str, String); 2], Box<dyn std::error::Error>> {
+) -> Result<[OperationFixture; 2], Box<dyn std::error::Error>> {
     let notes = NotesTargetIdentity {
         session_instance: "1".repeat(32),
         task_id: 1,
