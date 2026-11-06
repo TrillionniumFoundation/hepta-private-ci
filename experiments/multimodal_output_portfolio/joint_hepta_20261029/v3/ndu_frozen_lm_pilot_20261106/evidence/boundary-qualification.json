@@ -1,0 +1,12 @@
+{
+  "schema": "ndu.local-pilot-boundary-qualification.v1",
+  "recorded_at_utc": "2026-11-06T11:46:11.026625+00:00",
+  "command": "python -m unittest experiments.multimodal_output_portfolio.joint_hepta_20261029.v3.ndu_frozen_lm_pilot_20261106.test_prompts",
+  "observed_exit_code": 0,
+  "observed_tests": 4,
+  "source_sha256": {
+    "prompts.py": "5611d2e63bf77713c90bfb46ebfba74b59dae5ae8e7420ac655e52c3e6133cf2",
+    "test_prompts.py": "454e212770199a91e4b8f94bb301e13c739a841d62c28074937006f720d27e35"
+  },
+  "scope": "Public prompt and strict data boundary only. Model forward not yet executed."
+}
