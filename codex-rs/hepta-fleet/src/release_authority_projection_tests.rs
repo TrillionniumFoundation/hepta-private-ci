@@ -126,8 +126,9 @@ fn refreshed_protocol_projection_preserves_current_use_and_expired_historical_re
             .release_binding_with_protocol_configuration(&guard, &f.agent, &id)
             .is_err()
     );
-    // Reading already-anchored history is not new authorization. These owner
-    // methods keep their distinct load_locked path and current-policy semantics.
+    // Reading already-anchored history is not new authorization. Historical
+    // readers retain separate fresh commitment and time-floor checks without
+    // current-policy expiry requirements.
     assert_eq!(guard.intent_anchor(&f.agent)?, Some(queued));
     assert_eq!(guard.previous_closed_intent_anchor(&f.agent)?, None);
     assert_eq!(
