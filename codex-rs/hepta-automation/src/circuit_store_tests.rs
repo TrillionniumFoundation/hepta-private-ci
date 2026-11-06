@@ -173,12 +173,18 @@ async fn corrupt_projection_and_removed_event_tail_are_never_recovered_as_succes
 #[tokio::test]
 async fn bounded_circuit_migration_coexists_with_existing_v1_definition() {
     let (_directory, store) = store().await;
-    let v1 = NeuralCircuitCandidateV1::new("legacy-dag", /*version*/ 1, /*predecessor_digest*/ None, "work",
+    let v1 = NeuralCircuitCandidateV1::new("legacy-dag", NeuralCircuitRevisionV1 {
+            version: 1,
+            predecessor_digest: None,
+            route_policy_digest: digest("route"),
+            parameter_bundle_digest: digest("bundle"),
+            resource_profile_digest: digest("resources"),
+        }, "work",
         vec![CircuitNodeV1::new("work", CircuitNodeRoleV1::Decide),
             CircuitNodeV1::new("success", CircuitNodeRoleV1::ExitSuccess),
             CircuitNodeV1::new("failure", CircuitNodeRoleV1::ExitFailure)],
         vec![CircuitEdgeV1::new("work", "success"), CircuitEdgeV1::new("work", "failure")],
-        vec![], digest("route"), digest("bundle"), digest("resources")).expect("V1 candidate");
+        vec![]).expect("V1 candidate");
     let (legacy, _) = v1.compile_taskflow().expect("compile V1");
     store.register_taskflow_definition(&legacy, &fence(/*generation*/ 1), /*registered_at_ms*/ 10)
         .await.expect("V1 register");

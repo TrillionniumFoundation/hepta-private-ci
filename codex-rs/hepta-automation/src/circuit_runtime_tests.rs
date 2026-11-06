@@ -96,12 +96,18 @@ fn profile_rejects_same_round_cycles_zero_delay_and_implicit_schema_conversion()
 
 #[test]
 fn v1_cycle_validation_remains_an_independent_compatibility_gate() {
-    let result = NeuralCircuitCandidateV1::new("legacy-loop", /*version*/ 1, /*predecessor_digest*/ None, "work",
+    let result = NeuralCircuitCandidateV1::new("legacy-loop", NeuralCircuitRevisionV1 {
+            version: 1,
+            predecessor_digest: None,
+            route_policy_digest: digest("route"),
+            parameter_bundle_digest: digest("bundle"),
+            resource_profile_digest: digest("resources"),
+        }, "work",
         vec![CircuitNodeV1::new("work", CircuitNodeRoleV1::Decide),
             CircuitNodeV1::new("success", CircuitNodeRoleV1::ExitSuccess),
             CircuitNodeV1::new("failure", CircuitNodeRoleV1::ExitFailure)],
         vec![CircuitEdgeV1::new("work", "work"), CircuitEdgeV1::new("work", "success"), CircuitEdgeV1::new("work", "failure")],
-        vec![], digest("route"), digest("bundle"), digest("resources"));
+        vec![]);
     assert!(result.is_err());
     definition().validate().expect("explicit V2 feedback profile");
 }

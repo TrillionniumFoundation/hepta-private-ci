@@ -95,6 +95,18 @@ impl CircuitEdgeV1 {
     }
 }
 
+/// Version lineage and immutable policy, parameter, and resource bindings.
+///
+/// The candidate constructor validates these inputs with the circuit topology.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct NeuralCircuitRevisionV1 {
+    pub version: u32,
+    pub predecessor_digest: Option<Sha256Digest>,
+    pub route_policy_digest: Sha256Digest,
+    pub parameter_bundle_digest: Sha256Digest,
+    pub resource_profile_digest: Sha256Digest,
+}
+
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(deny_unknown_fields)]
 pub struct NeuralCircuitCandidateV1 {
@@ -124,16 +136,19 @@ pub struct CircuitCompilationReceiptV1 {
 impl NeuralCircuitCandidateV1 {
     pub fn new(
         circuit_id: impl Into<String>,
-        version: u32,
-        predecessor_digest: Option<Sha256Digest>,
+        revision: NeuralCircuitRevisionV1,
         entry_node: impl Into<String>,
         mut nodes: Vec<CircuitNodeV1>,
         mut edges: Vec<CircuitEdgeV1>,
         mut capability_set: Vec<String>,
-        route_policy_digest: Sha256Digest,
-        parameter_bundle_digest: Sha256Digest,
-        resource_profile_digest: Sha256Digest,
     ) -> Result<Self, TaskFlowError> {
+        let NeuralCircuitRevisionV1 {
+            version,
+            predecessor_digest,
+            route_policy_digest,
+            parameter_bundle_digest,
+            resource_profile_digest,
+        } = revision;
         nodes.sort_by(|left, right| left.node_id.cmp(&right.node_id));
         edges.sort_by(|left, right| {
             left.from
@@ -433,8 +448,13 @@ mod tests {
     fn v1() -> NeuralCircuitCandidateV1 {
         NeuralCircuitCandidateV1::new(
             "retrieval-control",
-            1,
-            None,
+            NeuralCircuitRevisionV1 {
+                version: 1,
+                predecessor_digest: None,
+                route_policy_digest: digest("route-v1"),
+                parameter_bundle_digest: digest("parameters-v1"),
+                resource_profile_digest: digest("resources-v1"),
+            },
             "observe",
             vec![
                 CircuitNodeV1::new("observe", CircuitNodeRoleV1::Observe),
@@ -448,9 +468,6 @@ mod tests {
                 CircuitEdgeV1::new("decide", "failure"),
             ],
             vec![],
-            digest("route-v1"),
-            digest("parameters-v1"),
-            digest("resources-v1"),
         )
         .expect("v1 circuit")
     }
@@ -474,8 +491,13 @@ mod tests {
         let current = v1();
         let successor = NeuralCircuitCandidateV1::new(
             current.circuit_id.clone(),
-            2,
-            Some(current.circuit_digest.clone()),
+            NeuralCircuitRevisionV1 {
+                version: 2,
+                predecessor_digest: Some(current.circuit_digest.clone()),
+                route_policy_digest: digest("route-v2"),
+                parameter_bundle_digest: digest("parameters-v2"),
+                resource_profile_digest: digest("resources-v1"),
+            },
             "observe",
             vec![
                 CircuitNodeV1::new("observe", CircuitNodeRoleV1::Observe),
@@ -492,9 +514,6 @@ mod tests {
                 CircuitEdgeV1::new("decide", "failure"),
             ],
             vec![],
-            digest("route-v2"),
-            digest("parameters-v2"),
-            digest("resources-v1"),
         )
         .expect("successor");
         validate_circuit_successor_v1(&current, &successor).expect("admitted successor");
@@ -506,23 +525,30 @@ mod tests {
         let current = v1();
         let wrong = NeuralCircuitCandidateV1::new(
             current.circuit_id.clone(),
-            2,
-            Some(digest("wrong-predecessor")),
+            NeuralCircuitRevisionV1 {
+                version: 2,
+                predecessor_digest: Some(digest("wrong-predecessor")),
+                route_policy_digest: digest("route-v2"),
+                parameter_bundle_digest: digest("parameters-v2"),
+                resource_profile_digest: digest("resources-v1"),
+            },
             "observe",
             current.nodes.clone(),
             current.edges.clone(),
             vec![],
-            digest("route-v2"),
-            digest("parameters-v2"),
-            digest("resources-v1"),
         )
         .expect("wrong successor shape");
         assert!(validate_circuit_successor_v1(&current, &wrong).is_err());
 
         let widened = NeuralCircuitCandidateV1::new(
             current.circuit_id.clone(),
-            2,
-            Some(current.circuit_digest.clone()),
+            NeuralCircuitRevisionV1 {
+                version: 2,
+                predecessor_digest: Some(current.circuit_digest.clone()),
+                route_policy_digest: digest("route-v2"),
+                parameter_bundle_digest: digest("parameters-v2"),
+                resource_profile_digest: digest("resources-v1"),
+            },
             "observe",
             vec![
                 CircuitNodeV1::new("observe", CircuitNodeRoleV1::Observe),
@@ -537,9 +563,6 @@ mod tests {
                 CircuitEdgeV1::new("effect", "failure"),
             ],
             vec!["network.http".to_string()],
-            digest("route-v2"),
-            digest("parameters-v2"),
-            digest("resources-v1"),
         )
         .expect("widened successor shape");
         assert!(validate_circuit_successor_v1(&current, &widened).is_err());
@@ -549,8 +572,13 @@ mod tests {
     fn circuit_reuses_taskflow_cycle_and_terminal_rejection() {
         let result = NeuralCircuitCandidateV1::new(
             "loop",
-            1,
-            None,
+            NeuralCircuitRevisionV1 {
+                version: 1,
+                predecessor_digest: None,
+                route_policy_digest: digest("route"),
+                parameter_bundle_digest: digest("params"),
+                resource_profile_digest: digest("resources"),
+            },
             "a",
             vec![
                 CircuitNodeV1::new("a", CircuitNodeRoleV1::Decide),
@@ -565,9 +593,6 @@ mod tests {
                 CircuitEdgeV1::new("b", "failure"),
             ],
             vec![],
-            digest("route"),
-            digest("params"),
-            digest("resources"),
         );
         assert!(result.is_err());
     }
