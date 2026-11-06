@@ -3,10 +3,13 @@
 Nextest exposes a package's binaries to its own integration tests. Some workspace
 tests also use another selected package's helper. Build the identical selection
 with Nextest's binaries-only listing, then pass the reported paths to the original
-run command. This is two Cargo build/check invocations; the second can reuse its
-cache, but is not guaranteed to perform no compilation.
+run command. The original double-build path can reuse its cache, but is not
+guaranteed to perform no compilation or artifact replacement.
 
-No package, feature, target, filter, runner or test option is added to the run.
+For the scoped metadata path, a supported command executes the official listed
+binaries without a second Cargo build. Build selectors remain on the original
+listing command; test options remain on the execution command. Unsupported
+options retain the original command and its strict whole-command observations.
 There is no target-directory search, required helper list or executable-format
 assumption. Explicit archive/reuse invocations retain their original behavior,
 without adding cross-package identities that a fresh build did not establish.
@@ -137,6 +140,66 @@ def ownership_metadata_arguments(args):
             index += 1
         index += 1
     return result
+
+
+def listed_execution_arguments(command, binaries):
+    """Separate known build selectors only after an official scoped build.
+
+    No full-graph metadata is invented from the ownership inventory. The caller
+    must already have supplied its current --cargo-metadata; custom Cargo
+    configuration/target runners and unknown options keep the original path.
+    """
+    build_flags = {
+        "--workspace", "--all", "--lib", "--bins", "--examples", "--tests",
+        "--benches", "--all-targets", "--all-features", "--no-default-features",
+        "--release", "-r", "--frozen", "--locked", "--offline", "--cargo-quiet",
+        "--cargo-verbose", "--ignore-rust-version", "--future-incompat-report",
+    }
+    build_values = {"--package", "-p", "--exclude", "--bin", "--example", "--test",
+                    "--bench", "--features", "-F", "--build-jobs", "--cargo-profile", "--target-dir"}
+    run_flags = RUN_FLAGS | {"--ignore-default-filter", "--override-version-check", "--verbose", "-v"}
+    run_values = RUN_VALUES | {"--run-ignored", "--partition", "--platform-filter",
+                               "--filterset", "--filter-expr", "-E", "--profile", "-P", "--color"}
+    execution = command[:3]
+    metadata = []
+    index = 3
+    while index < len(command):
+        arg = command[index]
+        if arg == "--":
+            execution.extend(command[index:])
+            break
+        option, equal, value = arg.partition("=")
+        if option in build_flags:
+            if equal:
+                return None, None, "build flag with a value retains the original parser"
+        elif option in build_values | run_values | {"--cargo-metadata"}:
+            consumed = [arg]
+            if not equal:
+                index += 1
+                if index >= len(command) or command[index] == "--":
+                    return None, None, "missing value retains the original parser"
+                value = command[index]
+                consumed.append(value)
+            if option == "--cargo-metadata":
+                metadata.append(value)
+            if option not in build_values:
+                execution.extend(consumed)
+        elif option in run_flags or (arg.startswith("-j") and len(arg) > 2):
+            execution.append(arg)
+        elif any(arg.startswith(short) and len(arg) > 2 for short in ("-p", "-F")):
+            pass
+        elif any(arg.startswith(short) and len(arg) > 2 for short in ("-E", "-P")):
+            execution.append(arg)
+        elif arg.startswith("-"):
+            return None, None, f"unsupported execution split {arg!r}; original command retained"
+        else:
+            execution.append(arg)
+        index += 1
+    if len(metadata) != 1:
+        return None, None, "one existing scoped cargo metadata input is required"
+    separator = execution.index("--") if "--" in execution else len(execution)
+    execution[separator:separator] = ["--binaries-metadata", str(binaries)]
+    return execution, metadata[0], None
 
 
 def file_observation(path, *, executable=False):
@@ -340,16 +403,51 @@ def run(command, metadata=None):
                            list_command=list_command, platforms=listing["rust-build-meta"].get("platforms"),
                            target_platforms=listing["rust-build-meta"].get("target-platforms"), helpers=helpers,
                            status="RUNNING")
+            execution, cargo_metadata, split_reason = listed_execution_arguments(
+                command, evidence_dir / "binaries.json") if helpers else (None, None, "no cross-package helpers")
+            execution_inputs = []
+            if execution is not None:
+                cargo_raw = Path(cargo_metadata).read_bytes()
+                require(json.loads(cargo_raw) == metadata,
+                        "scoped metadata file no longer matches the supplied inventory")
+                expected_inputs = [{"bytes": len(data), "sha256": hashlib.sha256(data).hexdigest()}
+                                   for data in (raw, cargo_raw)]
+                receipt["execution_input_expected"] = expected_inputs
+                cargo_evidence = evidence_dir / "execution-cargo-metadata.json"
+                cargo_evidence.write_bytes(cargo_raw)
+                saved_cargo = file_observation(cargo_evidence)
+                receipt["execution_cargo_metadata"] = saved_cargo
+                require(all(saved_cargo[key] == expected_inputs[1][key] for key in ("bytes", "sha256")),
+                        "preserved scoped cargo metadata differs from validated bytes")
+                execution_inputs = [file_observation(evidence_dir / "binaries.json"),
+                                    file_observation(cargo_metadata)]
+                receipt["execution_inputs_before"] = execution_inputs
+                require(all(item["bytes"] == expected["bytes"] and item["sha256"] == expected["sha256"]
+                            for item, expected in zip(execution_inputs, expected_inputs)),
+                        "official execution metadata differs from validated bytes")
+            receipt.update(execution_command=execution or command,
+                           execution_mode="official-listed-binaries" if execution is not None else "original-command",
+                           cost="official binaries-only build/check, then listed-binary execution" if execution is not None else receipt["cost"],
+                           execution_split_reason=split_reason,
+                           execution_inputs_before=execution_inputs)
             receipt_path.write_text(json.dumps(receipt, indent=2) + "\n")
             print(f"[hepta-nextest] {len(helpers)} official helpers; receipt: {receipt_path}", file=sys.stderr)
-            status = subprocess.call(command, env=child) if helpers else subprocess.call(command)
+            status = subprocess.call(execution or command, env=child) if helpers else subprocess.call(command)
             receipt["command_exit_code"] = status
             receipt["source_after"] = source_observation(metadata)
             receipt["payloads_after"] = [file_observation(item["executable"]["path"], executable=True) for item in helpers]
             require(receipt["source_after"] == after_build, "source changed during the original run")
             require(receipt["payloads_after"] == [item["executable"] for item in helpers],
                     "reported helper identity/bytes changed during the original run")
-            receipt["status"] = "ORIGINAL_COMMAND_TERMINAL_OBSERVATIONS_MATCH"
+            receipt["execution_inputs_after"] = [file_observation(item["path"]) for item in execution_inputs]
+            require(receipt["execution_inputs_after"] == execution_inputs,
+                    "official execution metadata identity/bytes changed during the run")
+            if execution is not None:
+                receipt["execution_cargo_metadata_after"] = file_observation(saved_cargo["path"])
+                require(receipt["execution_cargo_metadata_after"] == saved_cargo,
+                        "preserved scoped cargo metadata identity/bytes changed during the run")
+            receipt["status"] = ("LISTED_BINARIES_TERMINAL_OBSERVATIONS_MATCH" if execution is not None
+                                 else "ORIGINAL_COMMAND_TERMINAL_OBSERVATIONS_MATCH")
             receipt_path.write_text(json.dumps(receipt, indent=2) + "\n")
             return status
     except (BinaryEnvironmentError, OSError, ValueError, KeyError, subprocess.CalledProcessError) as error:
