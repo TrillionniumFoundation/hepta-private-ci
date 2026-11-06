@@ -1,0 +1,133 @@
+{
+  "schema": "ndu.port-dependency-amendment.validation.v1",
+  "source_head": "5815615f9848959113a2977f86c110dd1ec795e1",
+  "source_tree": "8eb4a717d86272cc74b4218358534c5c34963e2d",
+  "unit": "10_port_dependency_amendment",
+  "fixed_amendment_sha256": "334d6a0000bb6c14c1f8742e680c799d7e9f768e035ce06a99593bedd0e1d538",
+  "unchanged_historical_inputs": [
+    "INTEGRATION.v7.json",
+    "SOURCE_AMENDMENT.v7.1.json",
+    "RECIPE.v7.json"
+  ],
+  "effective_source_files": 319,
+  "existing_changed_files": 3,
+  "added_vendor_files": 284,
+  "vendor_directories": 5,
+  "unaltered_bound_existing_files": 32,
+  "native_proof_files_retained_byte_exact": 4,
+  "local_logs": [
+    {
+      "file": "qualification/ndu-ci-repairs-20261106/port-dependency-amendment/full-port-tests-self-contained.log.gz",
+      "stored": {
+        "bytes": 8665,
+        "sha256": "e8c04a1748d20cf8e3618cbcc1170ab5f9f9d098a01b985e8b6ef8e5363ecff1"
+      },
+      "original": {
+        "bytes": 212794,
+        "sha256": "8b5001213a8dfba6b37aa36da2a8c7d0904ecc348a990fddcb5f056d24ff89ed"
+      },
+      "test_methods": 69,
+      "observed_exit_code": 0
+    },
+    {
+      "file": "qualification/ndu-ci-repairs-20261106/port-dependency-amendment/post-tests-self-contained.log.gz",
+      "stored": {
+        "bytes": 2332,
+        "sha256": "81607c89b44d22a20b3f94dc400843fbbb93a4fe62b820d8afbf0a3fe9a80038"
+      },
+      "original": {
+        "bytes": 35049,
+        "sha256": "b0312dc595188532e2654ddf7093f5447550f4ca92dd06670f52ebb0e9d35773"
+      },
+      "test_methods": 16,
+      "observed_exit_code": 0
+    },
+    {
+      "file": "qualification/ndu-ci-repairs-20261106/port-dependency-amendment/source-boundary-tests-final.log.gz",
+      "stored": {
+        "bytes": 598,
+        "sha256": "577303696f15cb3cb9b557186bf76a3277e8bb0f16cd3132b0189f03afb2b3e2"
+      },
+      "original": {
+        "bytes": 2430,
+        "sha256": "d3cecc3903cf04afbdec187c67a239aa6a0b0fbe55e2c63db6cb87885e23a40b"
+      },
+      "test_methods": 7,
+      "observed_exit_code": 0
+    },
+    {
+      "file": "qualification/ndu-ci-repairs-20261106/port-dependency-amendment/synapse-boundary-tests.log.gz",
+      "stored": {
+        "bytes": 1824,
+        "sha256": "c7e225b7c1dad607a6768cc23d7879e2bfc0ffae9dc9601ad8bdfe67f2de0c76"
+      },
+      "original": {
+        "bytes": 10302,
+        "sha256": "2a6b92506fcad148c18d39c2c781c27dea33797eb71861505340d0cd6ff3cc0e"
+      },
+      "test_methods": 32,
+      "observed_exit_code": 1
+    }
+  ],
+  "commands": [
+    [
+      "python",
+      "-m",
+      "unittest",
+      "discover",
+      "-s",
+      "scripts",
+      "-p",
+      "test_ndu_port*.py",
+      "-v"
+    ],
+    [
+      "python",
+      "-m",
+      "unittest",
+      "discover",
+      "-s",
+      "scripts",
+      "-p",
+      "test_ndu_post_qualification*.py",
+      "-v"
+    ],
+    [
+      "python",
+      "-m",
+      "unittest",
+      "linux_synapse.test_source",
+      "linux_synapse.test_restore",
+      "-v"
+    ],
+    [
+      "python",
+      "-m",
+      "unittest",
+      "discover",
+      "-s",
+      "codex-rs/hepta-matrixd/tests/fixtures/linux_synapse",
+      "-t",
+      "codex-rs/hepta-matrixd/tests/fixtures",
+      "-p",
+      "test_*.py",
+      "-v"
+    ]
+  ],
+  "isolated_standard_library_source_guard_passed": true,
+  "native_commands_executed_locally": false,
+  "workflow_or_isolated_loader_changed": false,
+  "original_generator_native_command_calls_ast_equal": true,
+  "source_loader_artifact_retention_change": "Copy dependency-amendment.json when the already-validated integrated record binds it.",
+  "staging_context_failures_retained": "Earlier full discover attempts lacked unchanged hepta_metadata/hepta_workflow_commands files in the downloaded test tree; those attempts remain in local evidence and are not passes.",
+  "remaining_environment_failure": "The broad Linux boundary suite cannot create AF_UNIX sockets in this executor. Three cleanup subcases raised PermissionError; no skip, fallback or permission change was added.",
+  "qualification": "LOCAL_SOURCE_AND_CONSUMER_GUARDS_PASS; NEW_COMPLETE_HEAD_NATIVE_CI_REQUIRED; AF_UNIX_BOUNDARY_SUBCASES_NOT_QUALIFIED_LOCALLY",
+  "remote_mutation_performed": false,
+  "spelling_evidence": {
+    "file": "SPELLING_VALIDATION.json.gz",
+    "stored_sha256": "bf02fb2287fca18be80a9856ad0c8fe56b848241165aad10cef3ea349371d96d",
+    "original_sha256": "97dfa5146ebb3c84c9a05d1032d96c216e73c9cb9c5437867d4481376e08f892",
+    "roundtrip_byte_exact": true,
+    "reason": "Preserve intentional negative spelling controls without treating them as new prose."
+  }
+}

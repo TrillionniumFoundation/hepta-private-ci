@@ -1,0 +1,80 @@
+{
+  "added_path_facts": [
+    "path+crates/third_party/aws-smithy-http-0.62.6-pin-backport_aws-smithy-http",
+    "path+crates/third_party/aws-smithy-runtime-1.9.5-pin-backport_aws-smithy-runtime",
+    "path+crates/third_party/aws-smithy-types-1.4.7-pin-backport_aws-smithy-types",
+    "path+crates/third_party/hyper-1.8.1-pin-backport_hyper",
+    "path+crates/third_party/loom-0.7.2-pin-backport_loom"
+  ],
+  "all_other_module_fields_identical": true,
+  "crate_checks": [
+    {
+      "development_metadata_omitted_by_pinned_rules_rs_path_representation": 5,
+      "new_key": "path+crates/third_party/aws-smithy-http-0.62.6-pin-backport_aws-smithy-http",
+      "normal_and_build_dependency_and_feature_semantics_preserved_except_pin_removal": true,
+      "old_key": "aws-smithy-http_0.62.6",
+      "path_strip_prefix_empty": true
+    },
+    {
+      "development_metadata_omitted_by_pinned_rules_rs_path_representation": 11,
+      "new_key": "path+crates/third_party/aws-smithy-runtime-1.9.5-pin-backport_aws-smithy-runtime",
+      "normal_and_build_dependency_and_feature_semantics_preserved_except_pin_removal": true,
+      "old_key": "aws-smithy-runtime_1.9.5",
+      "path_strip_prefix_empty": true
+    },
+    {
+      "development_metadata_omitted_by_pinned_rules_rs_path_representation": 11,
+      "new_key": "path+crates/third_party/aws-smithy-types-1.4.7-pin-backport_aws-smithy-types",
+      "normal_and_build_dependency_and_feature_semantics_preserved_except_pin_removal": true,
+      "old_key": "aws-smithy-types_1.4.7",
+      "path_strip_prefix_empty": true
+    },
+    {
+      "development_metadata_omitted_by_pinned_rules_rs_path_representation": 12,
+      "new_key": "path+crates/third_party/hyper-1.8.1-pin-backport_hyper",
+      "normal_and_build_dependency_and_feature_semantics_preserved_except_pin_removal": true,
+      "old_key": "hyper_1.8.1",
+      "path_strip_prefix_empty": true
+    },
+    {
+      "development_metadata_omitted_by_pinned_rules_rs_path_representation": 1,
+      "new_key": "path+crates/third_party/loom-0.7.2-pin-backport_loom",
+      "normal_and_build_dependency_and_feature_semantics_preserved_except_pin_removal": true,
+      "old_key": "loom_0.7.2",
+      "path_strip_prefix_empty": true
+    }
+  ],
+  "external_tooling_registry_facts_retained_byte_identical": {
+    "hyper_1.8.1": "ea4c91b251c48158d603abf77e90b99d0ced024a18fa2b9f4dce6435836d4d09",
+    "pin-utils_0.1.0": "065b7d53d3d5f7cd38c1e54cdd9a0d3181f46b8d3d7653bdf8691909ad354d9e"
+  },
+  "removed_registry_facts": [
+    "aws-smithy-http_0.62.6",
+    "aws-smithy-runtime_1.9.5",
+    "aws-smithy-types_1.4.7",
+    "loom_0.7.2"
+  ],
+  "verified_external_source": {
+    "archive_sha256": "04781205ae648b0c67bf1108e28b8f780445bef40c721564ec525cab63c475d6",
+    "prost_hub_and_shared_registry_sources_verified": true,
+    "source_files": {
+      "MODULE.bazel": {
+        "bytes": 7413,
+        "sha256": "218fffd653f3a892b0f7e17aee1b59925b080f8f4d65b3c536f6ee05a241060e"
+      },
+      "rs/extensions.bzl": {
+        "bytes": 43586,
+        "sha256": "17d29d47b5eac06d60c4557f4f9f7b084474ec5a273b00ec7673a4d73ad8acf8"
+      },
+      "rs/private/cargo_workspace_graph.bzl": {
+        "bytes": 30271,
+        "sha256": "d2e0ed14798e938289af72a3d2269d8a542d8fe81356b2acd16a0c1801e52798"
+      },
+      "rs/private/prost/Cargo.lock": {
+        "bytes": 28869,
+        "sha256": "f3074d51647e0667a4030ae6799787157542e08b872eeff1642b65dfb1c60691"
+      }
+    },
+    "source_json_sha256": "2b52d3d209324bd4aaa4896aa0e8b28d0123856b4ade32ebd7bf24b4fded6f12"
+  }
+}

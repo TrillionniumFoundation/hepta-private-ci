@@ -1,0 +1,1605 @@
+{
+  "changes": {
+    "MODULE.bazel.lock": {
+      "after": {
+        "bytes": 1725804,
+        "sha256": "333b2545bd671a88aeb762afd74c725801138f8f53ddfc30af1e75b5f446deed"
+      },
+      "before": {
+        "bytes": 1722721,
+        "sha256": "fe4bbfb92aac1eba58fb25357bf3182088d29a09b1838144041c94b03f8218cf"
+      },
+      "mode": "100644"
+    },
+    "codex-rs/Cargo.lock": {
+      "after": {
+        "bytes": 419275,
+        "sha256": "70d1590734ce663b956981e5c3e7253c6b712039ca5e11e090487a371fbece7b"
+      },
+      "before": {
+        "bytes": 420227,
+        "sha256": "c335e0649d5d516cadd52d68c1a15ed5c136814d11553ef5c791ea7e5058a478"
+      },
+      "mode": "100644"
+    },
+    "codex-rs/Cargo.toml": {
+      "after": {
+        "bytes": 23028,
+        "sha256": "cefa440b6b696fff0ede20159324a5dce1bfe4eff881477d0e0522887a064bda"
+      },
+      "before": {
+        "bytes": 22366,
+        "sha256": "6b9741f85cd8bd3b5fab5ac163c69a18ea9dde05c967ae5cb85d8af400b7590e"
+      },
+      "mode": "100644"
+    }
+  },
+  "forbidden_product_packages": [
+    "pin-utils"
+  ],
+  "integrated_product": {
+    "head": "d8187cce5e8ed27025edfabb1cfd5c4ec3c95e4d",
+    "pr": 5013,
+    "preserved_cargo_edge": {
+      "dependency": "codex-utils-cargo-bin",
+      "package": "codex-hepta-supervisor"
+    },
+    "tree": "77f9b42f11f0efc4c8a52740020d1aa25ab8872f"
+  },
+  "native_origin": {
+    "artifact_bytes": 2655095,
+    "artifact_id": 13503570141,
+    "artifact_sha256": "7327b21d16c61455cf49aee85cd98c0eadb81686c117c7d9f7d846509f7d6a18",
+    "head": "2f08789097d230f57464ac74d8ee897e345b61b3",
+    "job_id": 127896383834,
+    "run_id": 42219101717,
+    "tree": "fc364fc154668902e190a868d10a84824e9dec39",
+    "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42219101717/artifacts/13503570141"
+  },
+  "operation": "reviewed-pin-utils-backport-and-supervisor-runfiles",
+  "parents": {
+    "experiments/multimodal_output_portfolio/closure_20261028/ci/port-remediation/INTEGRATION.v7.json": {
+      "bytes": 9120,
+      "sha256": "ef1fc0a4cfd8c2621eeb82e413555c1ea1780020a1f74f7c666253b62a5bfde2"
+    },
+    "experiments/multimodal_output_portfolio/closure_20261028/ci/port-remediation/SOURCE_AMENDMENT.v7.1.json": {
+      "bytes": 3256,
+      "sha256": "f802638dd5d01f3b3d7583986848c1ad6264c3ec478ed055f4e1edebc7a0d40a"
+    },
+    "experiments/multimodal_output_portfolio/closure_v2_20261027/ci/port-remediation/RECIPE.v7.json": {
+      "bytes": 348278,
+      "sha256": "8c655b7b3c539527e6506869a52d0e98a88ed37e334e9d34d13be83713bce03f"
+    }
+  },
+  "path_packages": [
+    {
+      "archive_sha256": "826141069295752372f8203c17f28e30c464d22899a43a0c9fd9c458d469c88b",
+      "archive_url": "https://static.crates.io/crates/aws-smithy-http/aws-smithy-http-0.62.6.crate",
+      "manifest_path": "codex-rs/third_party/aws-smithy-http-0.62.6-pin-backport/Cargo.toml",
+      "name": "aws-smithy-http",
+      "version": "0.62.6"
+    },
+    {
+      "archive_sha256": "a392db6c583ea4a912538afb86b7be7c5d8887d91604f50eb55c262ee1b4a5f5",
+      "archive_url": "https://static.crates.io/crates/aws-smithy-runtime/aws-smithy-runtime-1.9.5.crate",
+      "manifest_path": "codex-rs/third_party/aws-smithy-runtime-1.9.5-pin-backport/Cargo.toml",
+      "name": "aws-smithy-runtime",
+      "version": "1.9.5"
+    },
+    {
+      "archive_sha256": "9d73dbfbaa8e4bc57b9045137680b958d274823509a360abfd8e1d514d40c95c",
+      "archive_url": "https://static.crates.io/crates/aws-smithy-types/aws-smithy-types-1.4.7.crate",
+      "manifest_path": "codex-rs/third_party/aws-smithy-types-1.4.7-pin-backport/Cargo.toml",
+      "name": "aws-smithy-types",
+      "version": "1.4.7"
+    },
+    {
+      "archive_sha256": "2ab2d4f250c3d7b1c9fcdff1cece94ea4e2dfbec68614f7b87cb205f24ca9d11",
+      "archive_url": "https://static.crates.io/crates/hyper/hyper-1.8.1.crate",
+      "manifest_path": "codex-rs/third_party/hyper-1.8.1-pin-backport/Cargo.toml",
+      "name": "hyper",
+      "version": "1.8.1"
+    },
+    {
+      "archive_sha256": "419e0dc8046cb947daa77eb95ae174acfbddb7673b4151f56d1eed8e93fbfaca",
+      "archive_url": "https://static.crates.io/crates/loom/loom-0.7.2.crate",
+      "manifest_path": "codex-rs/third_party/loom-0.7.2-pin-backport/Cargo.toml",
+      "name": "loom",
+      "version": "0.7.2"
+    }
+  ],
+  "promotion_allowed": false,
+  "proofs": {
+    "experiments/multimodal_output_portfolio/closure_20261028/ci/port-remediation/pin-utils-backport/NATIVE_ARTIFACT_VALIDATION.json": {
+      "bytes": 5292,
+      "sha256": "3e949634c9b3258164096bff4875fa3c8336294f4dc0d229757f3b9021ecd5ce"
+    },
+    "experiments/multimodal_output_portfolio/closure_20261028/ci/port-remediation/pin-utils-backport/NATIVE_MODULE_LOCK_PROOF.json": {
+      "bytes": 3549,
+      "sha256": "ae9037c5d4be296f6310054e2cf276859aa3d480feaf4481442a1ef7da6820ca"
+    },
+    "experiments/multimodal_output_portfolio/closure_20261028/ci/port-remediation/pin-utils-backport/NATIVE_RESULT.json": {
+      "bytes": 4066,
+      "sha256": "7e974d08e61d5d62960700660a2ca8d081065f5b7fc75a434a0792298a8e892d"
+    },
+    "experiments/multimodal_output_portfolio/closure_20261028/ci/port-remediation/pin-utils-backport/PRODUCT_INTEGRATION_VALIDATION.json": {
+      "bytes": 5132,
+      "sha256": "b3f39e329ff1b94158dfa1810c6af04156c7b68b9495d682d4edd141e0685834"
+    }
+  },
+  "qualification": "This fixed record binds reviewed source and prior native generation. It does not replace the current HEAD's real locked metadata, zero-drift Bazel commands, original cargo-deny, behavioral, platform, or old-store qualification. The external rules_rs rrprd Cargo hub retains its two byte-identical registry facts.",
+  "retained_external_module_registry_facts": {
+    "archive_bytes": 827642,
+    "archive_sha256": "04781205ae648b0c67bf1108e28b8f780445bef40c721564ec525cab63c475d6",
+    "archive_url": "https://github.com/hermeticbuild/rules_rs/releases/download/v0.0.96/rules_rs-v0.0.96.tar.gz",
+    "cargo_lock_path": "rs/private/prost/Cargo.lock",
+    "cargo_lock_sha256": "f3074d51647e0667a4030ae6799787157542e08b872eeff1642b65dfb1c60691",
+    "facts_sha256": {
+      "hyper_1.8.1": "ea4c91b251c48158d603abf77e90b99d0ced024a18fa2b9f4dce6435836d4d09",
+      "pin-utils_0.1.0": "065b7d53d3d5f7cd38c1e54cdd9a0d3181f46b8d3d7653bdf8691909ad354d9e"
+    },
+    "hub": "rrprd",
+    "module": "rules_rs",
+    "normalization_source": "rs/private/cargo_workspace_graph.bzl",
+    "normalization_source_sha256": "d2e0ed14798e938289af72a3d2269d8a542d8fe81356b2acd16a0c1801e52798",
+    "scope": "The rules_rs prost tooling has a separate unchanged Cargo.lock. Its registry facts remain byte-identical while the five Codex crates switch to local paths. Path facts use the pinned rules_rs representation: an empty strip_prefix and normal/build dependency metadata; upstream development dependency source entries remain unchanged.",
+    "source_files": {
+      "MODULE.bazel": {
+        "bytes": 7413,
+        "sha256": "218fffd653f3a892b0f7e17aee1b59925b080f8f4d65b3c536f6ee05a241060e"
+      },
+      "rs/extensions.bzl": {
+        "bytes": 43586,
+        "sha256": "17d29d47b5eac06d60c4557f4f9f7b084474ec5a273b00ec7673a4d73ad8acf8"
+      },
+      "rs/private/cargo_workspace_graph.bzl": {
+        "bytes": 30271,
+        "sha256": "d2e0ed14798e938289af72a3d2269d8a542d8fe81356b2acd16a0c1801e52798"
+      },
+      "rs/private/prost/Cargo.lock": {
+        "bytes": 28869,
+        "sha256": "f3074d51647e0667a4030ae6799787157542e08b872eeff1642b65dfb1c60691"
+      }
+    },
+    "source_json_bytes": 478,
+    "source_json_sha256": "2b52d3d209324bd4aaa4896aa0e8b28d0123856b4ade32ebd7bf24b4fded6f12",
+    "source_json_url": "https://bcr.bazel.build/modules/rules_rs/0.0.96/source.json",
+    "strip_prefix": "rules_rs-0.0.96",
+    "version": "0.0.96"
+  },
+  "schema": "hepta.port-dependency-amendment.v1",
+  "vendor_dirs": {
+    "codex-rs/third_party/aws-smithy-http-0.62.6-pin-backport": {
+      "Cargo.lock": {
+        "bytes": 20071,
+        "sha256": "38bd04c954a5b236d4844ad2d8c778d36bd3e8a3354a0e2e032feaddfc515ff8"
+      },
+      "Cargo.toml": {
+        "bytes": 2451,
+        "sha256": "a9dcec4e6e5c9ad0dbe913efec14142c2d412482dee93d08daaba7c324b91cc7"
+      },
+      "Cargo.toml.orig": {
+        "bytes": 1749,
+        "sha256": "e0c37008148990fa67de3e23cb9c13fad001a7822aa5d223cec47437fc5068cf"
+      },
+      "HEPTA-PATCH-PROVENANCE.json": {
+        "bytes": 2428,
+        "sha256": "24cc7e43e2eed6706e36fda11b62bc7e9fa491fe85b36c8b44a619ae02edd4f6"
+      },
+      "HEPTA-PATCHES.md": {
+        "bytes": 605,
+        "sha256": "ae5d2edb787a0c5971e8ce1fafe5a0873df2ee26d00a57ddb007d536ea356e39"
+      },
+      "LICENSE": {
+        "bytes": 10142,
+        "sha256": "09e8a9bcec8067104652c168685ab0931e7868f9c8284b66f5ae6edae5f1130b"
+      },
+      "README.md": {
+        "bytes": 618,
+        "sha256": "9bc056dbb268f3d24ec4cd7d563bccbc5907fe0fa9cd7c3e6ea40c121965033a"
+      },
+      "additional-ci": {
+        "bytes": 344,
+        "sha256": "fad80444febdf7078544235a8d50cac7c08d230913ac3b96f8e47b7fd9f8010a"
+      },
+      "external-types.toml": {
+        "bytes": 812,
+        "sha256": "64efa8751bcd3cf3ef5db94b75c61e82f23949d6907cec6b9604921aaa745ccc"
+      },
+      "proptest-regressions/label.txt": {
+        "bytes": 653,
+        "sha256": "53863327d5f39da44dcb9e2955ac9043a2c3e7084fea7994d22c307a7d1758c1"
+      },
+      "proptest-regressions/query.txt": {
+        "bytes": 563,
+        "sha256": "2ef7cb7627ba18a8f61788bf8e0501ddf2abdb20791333c123c1383e8ed957e6"
+      },
+      "src/endpoint.rs": {
+        "bytes": 2706,
+        "sha256": "2823cf5ea6a0db3708e06de02ad801767354121b78331384809ec31cf98d2a0c"
+      },
+      "src/endpoint/error.rs": {
+        "bytes": 4102,
+        "sha256": "22361884131ebfdd10aeb90040d047cf0ed43bdb0ebe8dd17e07c1e9990f5e27"
+      },
+      "src/event_stream.rs": {
+        "bytes": 556,
+        "sha256": "9ed5d1488bee79e4d749e7a776d7bb98005a088d28c7c25922380df6137bfd93"
+      },
+      "src/event_stream/receiver.rs": {
+        "bytes": 21935,
+        "sha256": "24d73b57aedb0f797946456f808e608b6ceb5f460a89171eaed5ac2e26bcc63d"
+      },
+      "src/event_stream/sender.rs": {
+        "bytes": 13822,
+        "sha256": "88a6278cb84571bdc5404d857cdc18773fdc3b761bac50e0acfe0c622f1914c0"
+      },
+      "src/futures_stream_adapter.rs": {
+        "bytes": 1963,
+        "sha256": "5c9b33f01a2bd374a1f1efba37c4288a11f95450a285e31df95f972b198f4ae8"
+      },
+      "src/header.rs": {
+        "bytes": 26741,
+        "sha256": "086c34c487cdf52c2444f59faf33553ad233d8edc9035803b1a2bccee12bdee9"
+      },
+      "src/label.rs": {
+        "bytes": 2216,
+        "sha256": "f69eaac1dc0ad14217784e9f29602756b5298d5c7a2b627834f68f8f3eea0739"
+      },
+      "src/lib.rs": {
+        "bytes": 1504,
+        "sha256": "096a09f548b7fe1576ddca42148103a9a4bf98d339fe9b8faa8e74aee790f234"
+      },
+      "src/operation.rs": {
+        "bytes": 463,
+        "sha256": "ab098b17faa41ef1ec8a04521aae76e14f5b4a80098f68b9447c6b76ab35ed53"
+      },
+      "src/query.rs": {
+        "bytes": 2962,
+        "sha256": "6031d2a984eb2c90220a7138f55952667ceb2a611dfbddd566ead636113436c1"
+      },
+      "src/query_writer.rs": {
+        "bytes": 5915,
+        "sha256": "23f8a20b1542a67a8e400400bc1c9521430d79fc4482b3c293194d486f46fe34"
+      },
+      "src/urlencode.rs": {
+        "bytes": 1525,
+        "sha256": "ba7a72c1d32c2d2b62ee965d99cdbbbbddea52f7ee12d49614edc5a7ee31cd39"
+      }
+    },
+    "codex-rs/third_party/aws-smithy-runtime-1.9.5-pin-backport": {
+      "Cargo.lock": {
+        "bytes": 52890,
+        "sha256": "da79b2c3852d68868963cce37f887eac4c614a7bb48715ad4e4a85832cb85ff5"
+      },
+      "Cargo.toml": {
+        "bytes": 4623,
+        "sha256": "b29dddfe95f879c79e56b0cdece69f1fa89c09842616477639a895a9724c2d42"
+      },
+      "Cargo.toml.orig": {
+        "bytes": 3446,
+        "sha256": "17f5c1c1595e699fcce86a5cba6662be804f2f09dd65ade4cafa40475cd0177d"
+      },
+      "HEPTA-PATCH-PROVENANCE.json": {
+        "bytes": 4207,
+        "sha256": "0fa0af8042670d9d60cf30c52865e3c70f20d54b14491f5aace5760e0002593e"
+      },
+      "HEPTA-PATCHES.md": {
+        "bytes": 605,
+        "sha256": "ae5d2edb787a0c5971e8ce1fafe5a0873df2ee26d00a57ddb007d536ea356e39"
+      },
+      "LICENSE": {
+        "bytes": 10142,
+        "sha256": "09e8a9bcec8067104652c168685ab0931e7868f9c8284b66f5ae6edae5f1130b"
+      },
+      "README.md": {
+        "bytes": 352,
+        "sha256": "0c7b69ddc3d0d112f742bbda8768d7a7e4d364d2dc6efad227cf6e440ecd4dc2"
+      },
+      "additional-ci": {
+        "bytes": 529,
+        "sha256": "e90ea6ef78b101e5005f8baa228a72fd6c0f1ae5f48c131ba52578f1a315cd52"
+      },
+      "external-types.toml": {
+        "bytes": 1311,
+        "sha256": "c78feb30ca77b3396a34e6b7165c694f4775ebbffcdd2795b4a22053c7c8895e"
+      },
+      "src/client.rs": {
+        "bytes": 1596,
+        "sha256": "879eebc3dc12e60db98ddd2dd641716a222d6f1515917f75db185e137fbb4841"
+      },
+      "src/client/auth.rs": {
+        "bytes": 179,
+        "sha256": "650d1941fcc4a7e09782a7eeecf0b0db4e35bb933ef104c6e16ecf1fe305d14a"
+      },
+      "src/client/auth/http.rs": {
+        "bytes": 12974,
+        "sha256": "5ffdd76cff76b174e449beecde278216af218b953fc20f28a80c7ff51554a2cd"
+      },
+      "src/client/auth/no_auth.rs": {
+        "bytes": 3337,
+        "sha256": "2771aed66a50593c076e62371d4a72fcf6005c6d6fb5558ff50325bbdcc1694c"
+      },
+      "src/client/config_override.rs": {
+        "bytes": 8922,
+        "sha256": "80f15259cb626e468596d199293188995e9f3143abb1ec952101a09e74ba86a8"
+      },
+      "src/client/defaults.rs": {
+        "bytes": 13864,
+        "sha256": "8baf45a19d92018f5182bb3136524e52e04df5757ffac9e70c22509254e00ee4"
+      },
+      "src/client/dns.rs": {
+        "bytes": 1603,
+        "sha256": "8b78c344dd9853685ad02dcf6220121eb8a9ab6f17cbe08ee3c16114b94f2d45"
+      },
+      "src/client/endpoint.rs": {
+        "bytes": 2469,
+        "sha256": "4bcea284877a0b5622414297375071a8832ad617ed15dcbafbeae5127c88b7ba"
+      },
+      "src/client/http.rs": {
+        "bytes": 4073,
+        "sha256": "acc4b8a6bf93d5828dab28bc4d828c98806de0ec56b2fccb86c23e15b5973c2d"
+      },
+      "src/client/http/body.rs": {
+        "bytes": 181,
+        "sha256": "9f99fd932720157917ca4064e35e653b7828dee2074de2aeb472a737122f9a2f"
+      },
+      "src/client/http/body/content_length_enforcement.rs": {
+        "bytes": 10512,
+        "sha256": "a8a090a397be4632b42ca6e131784e4019dc2943420d297076f06ac11bd71091"
+      },
+      "src/client/http/body/minimum_throughput.rs": {
+        "bytes": 14398,
+        "sha256": "2011c263e8a610734baf04fa292a0b76c2d364f76e26852bc83f13a1b6c78a9e"
+      },
+      "src/client/http/body/minimum_throughput/http_body_0_4_x.rs": {
+        "bytes": 9038,
+        "sha256": "746176b1179b69860083aa50d4dce393a0c4d8824eb97ea61f60334d22b5374e"
+      },
+      "src/client/http/body/minimum_throughput/options.rs": {
+        "bytes": 6472,
+        "sha256": "2d7493ffa49b6a74e1e0156ce13a26c5d96d3073d2030ac63ca414a6971ddb09"
+      },
+      "src/client/http/body/minimum_throughput/throughput.rs": {
+        "bytes": 20293,
+        "sha256": "046e87b0555a02b8e226e5be01747a622939c3e88350ab526691c9bf455c2652"
+      },
+      "src/client/http/connection_poisoning.rs": {
+        "bytes": 4229,
+        "sha256": "bbd735bdab2fb4ed5fcacce3cc1cf33d1ff4301cb839e60b75d1d892fbd4e1f0"
+      },
+      "src/client/identity.rs": {
+        "bytes": 248,
+        "sha256": "b8cb3b8545298a3a0d627dd5963555202a5ce60a7b76a70d34ca3d93cf8c66b2"
+      },
+      "src/client/identity/cache.rs": {
+        "bytes": 2373,
+        "sha256": "e3ed8141c502f4a4259db5681e8a53c5b4583bd6e498a34dee1fa7aea747880b"
+      },
+      "src/client/identity/cache/lazy.rs": {
+        "bytes": 29749,
+        "sha256": "a2358ad449777b9c91f3b1c82498bf80b463c45d6f6d71e3853f15c0817d4a22"
+      },
+      "src/client/identity/no_auth.rs": {
+        "bytes": 1173,
+        "sha256": "f4c04fce808de34918567dd54ca660403b279b00ac06bb76e7027dc437941318"
+      },
+      "src/client/interceptors.rs": {
+        "bytes": 16554,
+        "sha256": "74e20a93687db442409d2ff1282df3860ab33cc36acb689a7db1b062444ff9ee"
+      },
+      "src/client/metrics.rs": {
+        "bytes": 9626,
+        "sha256": "57d63d5f52b35cca915e725820872e6b74ddc62dd9de9f55a7fe6402088f2fc2"
+      },
+      "src/client/orchestrator.rs": {
+        "bytes": 57818,
+        "sha256": "c469e347565ee583bc05c34a24457681699aa78f8654189e46de5b5463152bef"
+      },
+      "src/client/orchestrator/auth.rs": {
+        "bytes": 46042,
+        "sha256": "4e8d00a215fd8a6d25819599e159cb76ebc8239ad5d10760cdfb9f748c298086"
+      },
+      "src/client/orchestrator/endpoints.rs": {
+        "bytes": 6048,
+        "sha256": "7f1d4fc7b4476cfe0d68bd31fa5212e8c390201c440277f9df4d725a89be43e4"
+      },
+      "src/client/orchestrator/http.rs": {
+        "bytes": 1659,
+        "sha256": "0533b536c05744fe7775c71a747499af318f7076e037d78e9fa52470c527694c"
+      },
+      "src/client/orchestrator/operation.rs": {
+        "bytes": 20104,
+        "sha256": "6b5627e90a7cc7790ce6b2083f59ed5aa98cc6cd2e04059b73b5bd8fc7027b6f"
+      },
+      "src/client/retries.rs": {
+        "bytes": 6272,
+        "sha256": "a101a31c1d0925f5397b443f32a81e5efc1882a6e60744fda57dcf5213bb4b1c"
+      },
+      "src/client/retries/classifiers.rs": {
+        "bytes": 10484,
+        "sha256": "b11aa358e30e0a2fb9a7f78a2ee5edc43c3dedec14e9429b4859b25856aef415"
+      },
+      "src/client/retries/client_rate_limiter.rs": {
+        "bytes": 29530,
+        "sha256": "2a3c83987e546ae0a78f61c88de37b905704088f5b9b9f2f50b6db844b7734b6"
+      },
+      "src/client/retries/strategy.rs": {
+        "bytes": 230,
+        "sha256": "7d008fec630714dd970a15a0fe9d93118ef4b4e1da9d4b61fc6f010e0bac4473"
+      },
+      "src/client/retries/strategy/never.rs": {
+        "bytes": 1190,
+        "sha256": "9ac8dc414d80532e2a8bbe4f0db60e23b133c92e8d3b79cc04dfa5e96c0e9511"
+      },
+      "src/client/retries/strategy/standard.rs": {
+        "bytes": 42450,
+        "sha256": "fe71fc80e3b3da512a7f84d0159faac8ecca8dfe230b2121be5147dd3ec75d80"
+      },
+      "src/client/retries/token_bucket.rs": {
+        "bytes": 5990,
+        "sha256": "89325cb3f1f48d9ab7a2c3e81e5b75aba47c271c2d3606e14694ce86585de38d"
+      },
+      "src/client/sdk_feature.rs": {
+        "bytes": 775,
+        "sha256": "716fb1e686a54663c37ed8387eefa4c076f5f5d812cd9e1cea158d291379f3f7"
+      },
+      "src/client/stalled_stream_protection.rs": {
+        "bytes": 5727,
+        "sha256": "100d9e24d0bf0e2eae65e40f93b221a68f476bbc658a16a92f93b80562041bb2"
+      },
+      "src/client/test_util.rs": {
+        "bytes": 253,
+        "sha256": "5e0727fe0cf123aa6624607a7faaeec5b04f36bfaa5c304774f9bf06c53cf576"
+      },
+      "src/client/test_util/deserializer.rs": {
+        "bytes": 1832,
+        "sha256": "ae74452b0d4d55b9acfd9c326f74ab9b2cc4cc70a5fbb215fbf25d6064df9dcb"
+      },
+      "src/client/test_util/serializer.rs": {
+        "bytes": 1950,
+        "sha256": "e92ff7e50a174ccc194e6a43b1949dc8e54299711baa35aa3d9c2ed95f9ee9ee"
+      },
+      "src/client/timeout.rs": {
+        "bytes": 8429,
+        "sha256": "c3483aae98653b0b2b3ff0dbfdd374dc5e256d3fa3f0899d6f5f15a1188e1ec8"
+      },
+      "src/client/waiters.rs": {
+        "bytes": 21009,
+        "sha256": "a78a7da924e3b178b65b9355b232c951c8dc811edea8f8ae6758cae9bb617774"
+      },
+      "src/client/waiters/backoff.rs": {
+        "bytes": 4953,
+        "sha256": "a12ad3b65d298a339e3b0f864c8d980c4d65e97e0754fddbc23ebb45c0ee1c0b"
+      },
+      "src/expiring_cache.rs": {
+        "bytes": 5679,
+        "sha256": "b8160c75325b08b9859fd8909905357ed29f918d5216d4302496bc17d9e78bb8"
+      },
+      "src/lib.rs": {
+        "bytes": 1383,
+        "sha256": "3bbda39fab386e80160391c04c2eb5d53c875b521bbceaca88c0203be42f893d"
+      },
+      "src/static_partition_map.rs": {
+        "bytes": 5179,
+        "sha256": "69aa6852a8f1cc9f38b2595ab267c89b7db2a97e000aac980c6edfb010640dba"
+      },
+      "src/test_util.rs": {
+        "bytes": 227,
+        "sha256": "02a8e71ebf9ce9ac518c259ee8a0b9974f154eedc126aee5e71402c66ddd9e2e"
+      },
+      "src/test_util/assertions.rs": {
+        "bytes": 2003,
+        "sha256": "e77a0c676705944ca07aa2f687e26681287a27aab79f6ea4f665e7ea2c403839"
+      },
+      "src/test_util/capture_test_logs.rs": {
+        "bytes": 3610,
+        "sha256": "b364228f0a3a315ec3ce18618a86b4b4d6d6d74a971cec006bf157d70b5b8096"
+      },
+      "tests/reconnect_on_transient_error.rs": {
+        "bytes": 9407,
+        "sha256": "2cc718b94863a201febb82a801fc929c897612e7c9b8e80f4744e2deda2b8e9e"
+      },
+      "tests/retries.rs": {
+        "bytes": 6522,
+        "sha256": "eec31b46474025acbf5c4a4e83bd64daf5a7b247fb631dc41a618b4d8acbe04a"
+      },
+      "tests/stalled_stream_common.rs": {
+        "bytes": 3381,
+        "sha256": "ed2c24748a4e1143d716725f9029f7b88e17f08446ee33324503e3bf9ea6eded"
+      },
+      "tests/stalled_stream_download.rs": {
+        "bytes": 13703,
+        "sha256": "c1ac9be40d5c312cc2dd0d792333b30a9c49fd8c35185eb5d9241eea2fcad9ce"
+      },
+      "tests/stalled_stream_performance.rs": {
+        "bytes": 4314,
+        "sha256": "123a6d8cf08ac836bf68086354a7bd7f62c86d624bf474f8c0e2d31d287e4414"
+      },
+      "tests/stalled_stream_upload.rs": {
+        "bytes": 17478,
+        "sha256": "2c4888f9fa07626b10749b472d695a890d9b25e5a7d0d3c1f16ba6a5ad36dc7d"
+      }
+    },
+    "codex-rs/third_party/aws-smithy-types-1.4.7-pin-backport": {
+      "Cargo.lock": {
+        "bytes": 36046,
+        "sha256": "e51f3129928d78771653b0fdde1c5cd7fdaa09d627401e80fb015fe3e1a3a504"
+      },
+      "Cargo.toml": {
+        "bytes": 3600,
+        "sha256": "09c5bd8433c42ab3123efb1145193ca60fa931cc07330e2d75a07d3c9fae7cf9"
+      },
+      "Cargo.toml.orig": {
+        "bytes": 2676,
+        "sha256": "a72c54e5d5fa6ac26c83c62d2dfb828e403739a213d55e07e8ff0d6da9375575"
+      },
+      "HEPTA-PATCH-PROVENANCE.json": {
+        "bytes": 2886,
+        "sha256": "b6ecd59ba50e8e9b53e9bc39bb382b8a3ebee52b0fa9c6aad34d7b836b1e0a50"
+      },
+      "HEPTA-PATCHES.md": {
+        "bytes": 605,
+        "sha256": "ae5d2edb787a0c5971e8ce1fafe5a0873df2ee26d00a57ddb007d536ea356e39"
+      },
+      "LICENSE": {
+        "bytes": 10142,
+        "sha256": "09e8a9bcec8067104652c168685ab0931e7868f9c8284b66f5ae6edae5f1130b"
+      },
+      "README.md": {
+        "bytes": 590,
+        "sha256": "153d3bee6c36a0676f98ec54ae1bcae979e7684f37e64225b07b582cc3868147"
+      },
+      "additional-ci": {
+        "bytes": 566,
+        "sha256": "e24d3e2fe3db0704bd8a9233c34fd40e8e66cbe75ac2179c2a51ef571e6de506"
+      },
+      "benches/base64.rs": {
+        "bytes": 8075,
+        "sha256": "f0e607132296358723dddda0a3d792f7ec2dc435d3b9e418c4f9fbcac51d0622"
+      },
+      "external-types.toml": {
+        "bytes": 582,
+        "sha256": "4ab9400801e32b7a213f7413e6648b1d8ac378311a1a709c01f327d9bdb8fa17"
+      },
+      "proptest-regressions/instant/format.txt": {
+        "bytes": 397,
+        "sha256": "dc35f5766c731f5dd5a2fee0ca1cf03dbf8c3c7ca1f6069af70606f71cd8659b"
+      },
+      "src/base64.rs": {
+        "bytes": 1255,
+        "sha256": "74f86ff4e515ba7d4e9c21417e19229ba734ca2e6f4d6b1585ac0f6d5ad44b80"
+      },
+      "src/big_number.rs": {
+        "bytes": 6109,
+        "sha256": "e5541d2c67f93a0fe5c4ccdd3d8e85ecb6a3fc47f353a7c891398c2dc0937c7d"
+      },
+      "src/blob.rs": {
+        "bytes": 5121,
+        "sha256": "bb0f0c2ef1a0255eb662af77f2cdd162287d406e9e9e8ba9bf52c564506566f4"
+      },
+      "src/body.rs": {
+        "bytes": 19665,
+        "sha256": "3c3cb259566dbb0e54a56fb7e75c095daaa51b23dba32417f24661a9f2e2e1dd"
+      },
+      "src/body/http_body_0_4_x.rs": {
+        "bytes": 3760,
+        "sha256": "93efe232f8061e8b3632fabc50f45eeccc92bbf51303d62987f933bb4dc67fe3"
+      },
+      "src/body/http_body_1_x.rs": {
+        "bytes": 13746,
+        "sha256": "4c9b5b060bc24e210c17483b9190d1b5bc8cb10abd004e00989ac001fcfdce5c"
+      },
+      "src/byte_stream.rs": {
+        "bytes": 24042,
+        "sha256": "b74dfcedd604c3e5a40fa42fa97d303f0d6e8e581ff22268e639c24fa93e9191"
+      },
+      "src/byte_stream/bytestream_util.rs": {
+        "bytes": 11266,
+        "sha256": "e6ae5fe895bf29030d4dc7f80c7b1d72465c4f8a385f66a3035073601ba261ea"
+      },
+      "src/byte_stream/bytestream_util/http_body_0_4_x.rs": {
+        "bytes": 13478,
+        "sha256": "d9ad7d870e138370f20a0bb63f160a86e871e21e2487a3c81e5be48fbf48c4a8"
+      },
+      "src/byte_stream/bytestream_util/http_body_1_x.rs": {
+        "bytes": 13235,
+        "sha256": "025278f7e1aa7bcde07140813669e1841a0b639dcfef53b69f09db543e79506b"
+      },
+      "src/byte_stream/error.rs": {
+        "bytes": 2240,
+        "sha256": "24a0694fdb825a75ab983dcd103062ab56ea342ff7c511062ced154bd3c01d95"
+      },
+      "src/byte_stream/http_body_0_4_x.rs": {
+        "bytes": 3217,
+        "sha256": "6a81e1cc29485daddac0280fde74c785a0840ad09e01cc3f4840e7ca10011dd5"
+      },
+      "src/byte_stream/http_body_1_x.rs": {
+        "bytes": 751,
+        "sha256": "1fed88938d1dc114c78fcf61339ebd95d96073ca9edd4968fd056ee7c6bc4159"
+      },
+      "src/checksum_config.rs": {
+        "bytes": 6075,
+        "sha256": "bb6f562a341ccd09b1c830fa251a97fda6a989a67d5c746728170180928f0ed9"
+      },
+      "src/config_bag.rs": {
+        "bytes": 36281,
+        "sha256": "af2dc457067efc25a215e03a39fa2c6c706f89f4a79c8110bd3c54734f5bceb2"
+      },
+      "src/config_bag/storable.rs": {
+        "bytes": 3416,
+        "sha256": "cb3ca89ed435c6023d566b12c2f59fde622f876464b3b333155032aae3926215"
+      },
+      "src/config_bag/typeid_map.rs": {
+        "bytes": 843,
+        "sha256": "315fef582e9bcaa89ff12a02fc010399546e3944b8129955dbba5b1f17e92923"
+      },
+      "src/date_time/de.rs": {
+        "bytes": 4481,
+        "sha256": "e855ea1ea04d806802372c2bcf3aad27e8f365923cb5f930c25bfb587dacbcc7"
+      },
+      "src/date_time/format.rs": {
+        "bytes": 28460,
+        "sha256": "f4887769092e1de9ae6cd26eb556f7be098050ef814a5012e636d6d76e298588"
+      },
+      "src/date_time/mod.rs": {
+        "bytes": 25953,
+        "sha256": "096da5a0166f25744ad273b2902bf471d2b25060b1d3eb8fedcc07bb1ed5a8a0"
+      },
+      "src/date_time/ser.rs": {
+        "bytes": 2802,
+        "sha256": "122a9292698356090fe074607a54c78e95370b2c714e217a6e9434f2fc1afff1"
+      },
+      "src/document.rs": {
+        "bytes": 7954,
+        "sha256": "844c31a40228fb87d9be7d090cacf0afafd5653c3d7e85638e7faef0b8965360"
+      },
+      "src/endpoint.rs": {
+        "bytes": 5094,
+        "sha256": "16867b3dd0ecd0fbb16f50dee73f4d3df61a5b4c9b111595d687d84d6f0bf698"
+      },
+      "src/error.rs": {
+        "bytes": 3347,
+        "sha256": "2d5ba9906540071e973d90f21ece8e303ef4bdeb9f01484314a082b6927b244b"
+      },
+      "src/error/display.rs": {
+        "bytes": 2996,
+        "sha256": "ac056a43241357b971e0cef94341b6299df3fe854f8b8ffb56ea16b077ae22cc"
+      },
+      "src/error/metadata.rs": {
+        "bytes": 4701,
+        "sha256": "0b40d813f5452817a5afee42f7e6f38301b3f233a04aab60b177ba7316db13ea"
+      },
+      "src/error/operation.rs": {
+        "bytes": 5119,
+        "sha256": "2c3fd01ada0bd871655045b2cb016c37ba3b560aa0e2810bb89a81b3fc329423"
+      },
+      "src/event_stream.rs": {
+        "bytes": 6034,
+        "sha256": "e58b3b19dd00bd042b9ac2f9e718439b132438372907bfa688e24a3c0c57d7b5"
+      },
+      "src/lib.rs": {
+        "bytes": 1027,
+        "sha256": "3b905ccc546292c8b02b310deb119f786843b27d384adafdddf09675aaac6626"
+      },
+      "src/number.rs": {
+        "bytes": 17303,
+        "sha256": "3cd9324e8be00e5069598a7fd9934999e0ce94620befed31767cd4fb48a986f1"
+      },
+      "src/primitive.rs": {
+        "bytes": 9252,
+        "sha256": "66e381e891c51a2a5afb490ca0e27b351d60db96910317deb1b301ebc3b03cf4"
+      },
+      "src/retry.rs": {
+        "bytes": 19207,
+        "sha256": "c791580439bc95b0868f11b0d04acf5717c76e7d2110cb9c4c18052509f87554"
+      },
+      "src/str_bytes.rs": {
+        "bytes": 4448,
+        "sha256": "bfc5fece5e1b4b98cb6da43951ad3dd55c5b5e4a0a30e7ddf176b713a61e6d32"
+      },
+      "src/timeout.rs": {
+        "bytes": 19355,
+        "sha256": "f0194a449dd4e91ff0ee1ed263ce01b5f75ed82f07dddbf61da7f73e3bf417f9"
+      },
+      "src/type_erasure.rs": {
+        "bytes": 9439,
+        "sha256": "26167852a7d5e9e0fe4892262a6b1c1e92236c9ab05370744ece287e417d2dc6"
+      },
+      "test_data/date_time_format_test_suite.json": {
+        "bytes": 152448,
+        "sha256": "95adad86782f37c5eff4601cccaeb76b5ef827121ad7b2f7030224d231a746bd"
+      },
+      "test_data/serialize_document.json": {
+        "bytes": 922,
+        "sha256": "3e5747d25667686c9bbb393479ba52baa30577c44192474a3f539420d95865a9"
+      }
+    },
+    "codex-rs/third_party/hyper-1.8.1-pin-backport": {
+      ".cargo_vcs_info.json": {
+        "bytes": 94,
+        "sha256": "7b792b13c2bf78b024969b74930c97b230a03717b2a6117c4889603ab7d0975d"
+      },
+      "Cargo.lock": {
+        "bytes": 17628,
+        "sha256": "23510579b4c539841f8ea95afdd679eb3a2f44f2126284f9f46fac5a12b73e0d"
+      },
+      "Cargo.toml": {
+        "bytes": 4315,
+        "sha256": "03c7d31d3bf0a956ef05bd1ddb9b93460ad9c5c036fecf32a98fae2caaecfcd0"
+      },
+      "Cargo.toml.orig": {
+        "bytes": 5446,
+        "sha256": "cfe609f4922a2e2558bc6c1ed28f8ee89b1a03d0c798ff0956bdf0a4e36378b2"
+      },
+      "HEPTA-PATCH-PROVENANCE.json": {
+        "bytes": 3156,
+        "sha256": "fa2ba190666e2f39e252c9fe63e470b70e48da55f460b87fbc68f5c548a446e8"
+      },
+      "HEPTA-PATCHES.md": {
+        "bytes": 563,
+        "sha256": "092a31bc13b8847dd12077f2633bcd9458a9cede84fd546182171664a1398024"
+      },
+      "LICENSE": {
+        "bytes": 1062,
+        "sha256": "8f2eee700f56dd8b381d92dc5b136befe09f90e186f2c1c8414a70c4c7534550"
+      },
+      "README.md": {
+        "bytes": 1606,
+        "sha256": "9f8d9269b8bfb0cfb17d119c65cebcc33f67310bcec7fbf06b8527def78c1502"
+      },
+      "src/body/incoming.rs": {
+        "bytes": 20912,
+        "sha256": "c472cf4f29f9acaddee1ddcea740a632de9b8d50687227ca9a34b48117786261"
+      },
+      "src/body/length.rs": {
+        "bytes": 4013,
+        "sha256": "fcf245cd9d46d5742c5745db3f643ac2f4e67a5165aed60550689ed0731d4ffc"
+      },
+      "src/body/mod.rs": {
+        "bytes": 1666,
+        "sha256": "6e029d258d08b35a2f825235842da2f4d98fe90a9543851516382f019cfa4b8e"
+      },
+      "src/cfg.rs": {
+        "bytes": 864,
+        "sha256": "de5fee5bba45a982c10e8f09fc24677be5494bf6da0b39a3a132f0f6eb3fe41e"
+      },
+      "src/client/conn/http1.rs": {
+        "bytes": 21966,
+        "sha256": "7f5b1ebf50dd77fef03579f0327c2f12074eeaa688334d6eae6b3267862ab6d4"
+      },
+      "src/client/conn/http2.rs": {
+        "bytes": 22496,
+        "sha256": "4cd27c1e7e80928fb448c84a91fd3cc146e1a7e114f47c8950ec9d4739bfbc55"
+      },
+      "src/client/conn/mod.rs": {
+        "bytes": 843,
+        "sha256": "9a3a11f287ac5f8a2eb2f27af4d66cf201f92dc580f773f9cb5495f32756ee28"
+      },
+      "src/client/dispatch.rs": {
+        "bytes": 15801,
+        "sha256": "dcd5aa38ad58b201b35e7c32991d0b6f744f89f64a664341f9ca73140d1f0a9d"
+      },
+      "src/client/mod.rs": {
+        "bytes": 757,
+        "sha256": "3428a487d81d2a46742493fb07b0b852d0868acf6136c77cc4a5c1aeeda7c311"
+      },
+      "src/client/tests.rs": {
+        "bytes": 8715,
+        "sha256": "de0001609ef0b82d34d6e152b20d19f0b2f79ab6708bc4b3748a40acd3325238"
+      },
+      "src/common/buf.rs": {
+        "bytes": 4014,
+        "sha256": "6ffe7941d14edbdd4d20e18e4c1da225161eb0d89ae807476d7b4282519bac7c"
+      },
+      "src/common/date.rs": {
+        "bytes": 3448,
+        "sha256": "7c75340732170f7d637241527c5ed2a176a4465645a4f27270a3646a0087c120"
+      },
+      "src/common/either.rs": {
+        "bytes": 959,
+        "sha256": "cf162a4087419ea3d83514177da81813e301736bbe5399b58f39c96f214c6429"
+      },
+      "src/common/future.rs": {
+        "bytes": 559,
+        "sha256": "dbeb3a936470ad0fc320780654c6437b9e94c17795ad33a5999879cf8bbe9002"
+      },
+      "src/common/io/compat.rs": {
+        "bytes": 4136,
+        "sha256": "e3e9333b8c1862c61239fef6fc8aae6b39eebcfe85393e8b9906bca8b75326a0"
+      },
+      "src/common/io/mod.rs": {
+        "bytes": 251,
+        "sha256": "1f9002411f8a74be746e86d7a6afa5a7c3bdfe7c75943bed5ac752b802b1594d"
+      },
+      "src/common/io/rewind.rs": {
+        "bytes": 4386,
+        "sha256": "2a3f3d7d1adee88bb36b0e732acb2eca9c2ebd93307ecd860c00d9800b730e29"
+      },
+      "src/common/mod.rs": {
+        "bytes": 795,
+        "sha256": "cf2ef9e25cde0a4052f97ad01a3084b41988983a1e64bd22ac949aea95e029e8"
+      },
+      "src/common/task.rs": {
+        "bytes": 1724,
+        "sha256": "a85877dfc0d233dacf6df0568d135ee7b0abb1f54873cc237bbdf4e14240edf5"
+      },
+      "src/common/time.rs": {
+        "bytes": 2571,
+        "sha256": "c32a8e92836e0bd55a0939bcf3a1eff5f407ec26c15cfc22bcd7ab315095c18a"
+      },
+      "src/common/watch.rs": {
+        "bytes": 1500,
+        "sha256": "0530dbb42bdddfba675c51d98e57fcbd614447ad317036900a0c17c5da51ecb9"
+      },
+      "src/error.rs": {
+        "bytes": 23545,
+        "sha256": "ded435e7d5ea8da4e32e22740cc96e1a9d185dfd93935afb3fc9214a3518dadb"
+      },
+      "src/ext/h1_reason_phrase.rs": {
+        "bytes": 6610,
+        "sha256": "296ecdcb206eaa5b7dd7fa0399fc5e7415aa61da83cce2a27e2d790ba20fbb99"
+      },
+      "src/ext/informational.rs": {
+        "bytes": 2311,
+        "sha256": "83a9b2a9cd7086f2be65d508d4cf0f45a2977fb90f94926d6a3cfbc98bdba073"
+      },
+      "src/ext/mod.rs": {
+        "bytes": 10110,
+        "sha256": "5ecbf5bf290013e82b717e42c018d88e7e3022e753725e613b41b45ec0edcc34"
+      },
+      "src/ffi/body.rs": {
+        "bytes": 11316,
+        "sha256": "614955cfca938025a7b471d9bc91004edfd1ff028b66553ce757b5b0ec040dce"
+      },
+      "src/ffi/client.rs": {
+        "bytes": 10817,
+        "sha256": "f3e7b519d9725b99ddc18a25ab527014c804d5e112fe130ef3dd539eac6e5a09"
+      },
+      "src/ffi/error.rs": {
+        "bytes": 3104,
+        "sha256": "dd269cd749cfe2679ba499e9dc0832469cbf4f8101157fd88d00c0fb526868d8"
+      },
+      "src/ffi/http_types.rs": {
+        "bytes": 24937,
+        "sha256": "a1addfbd00ec8afc03653e04ebaa0f57682cfcc5019bfed90299e87c06a58604"
+      },
+      "src/ffi/io.rs": {
+        "bytes": 6944,
+        "sha256": "94455b259bdb9952f04b5e12c607dbfba560f4aa42e92aa932406021bf6afe3f"
+      },
+      "src/ffi/macros.rs": {
+        "bytes": 1785,
+        "sha256": "6bb6f08224be10c40d98434e2130dea3c9ca3c40b9d11b18f43619624148f080"
+      },
+      "src/ffi/mod.rs": {
+        "bytes": 3243,
+        "sha256": "80639b0ff428ff21ebf1e87c7800558002efc5f51424fe21fba6bf57ca8818e6"
+      },
+      "src/ffi/task.rs": {
+        "bytes": 18974,
+        "sha256": "feb1a51ed32beef6f8c543dbec82617a7ba3e4488a65c5aabe1a3620c9fd2cf1"
+      },
+      "src/headers.rs": {
+        "bytes": 4906,
+        "sha256": "43305ee388d59a3712e78e0c108c788999448600d0f5284e9361afc6f11eb679"
+      },
+      "src/lib.rs": {
+        "bytes": 4427,
+        "sha256": "a3405c478bc3a1b6187e0393745d778441cf416138e082abb047aa0c4c3b3fde"
+      },
+      "src/mock.rs": {
+        "bytes": 6213,
+        "sha256": "8b455312be74af6c4a27b3beba85a9493c86d43097947c5aad8a5e9dc0dcdbb3"
+      },
+      "src/proto/h1/conn.rs": {
+        "bytes": 52709,
+        "sha256": "bcd74686394c958ae2bbadd3d9f48dd6570843f5fe3e1ca76f256fe4f3753be8"
+      },
+      "src/proto/h1/decode.rs": {
+        "bytes": 41353,
+        "sha256": "cea41a3b77ce93d9047839fd7dae49970ea2c7acfa5fc742d9c616bd15becf45"
+      },
+      "src/proto/h1/dispatch.rs": {
+        "bytes": 29812,
+        "sha256": "073a2bf94418e2eb2f000c5ffb7f2a95891c616ea3d025b7ebfaaaf7a8234038"
+      },
+      "src/proto/h1/encode.rs": {
+        "bytes": 19922,
+        "sha256": "0ec088e6d766b4d22515117e39d8766ec1f1c474a4dceaee65d9474f876a06ad"
+      },
+      "src/proto/h1/io.rs": {
+        "bytes": 30995,
+        "sha256": "d83c99b59dc2c672b45eecc83174948ce412589bad63efeff97b4e8972ccb2cd"
+      },
+      "src/proto/h1/mod.rs": {
+        "bytes": 2825,
+        "sha256": "179bbde1399e5d827175f27157b96fb7bd6da9707965ad7df41fa85f24e80588"
+      },
+      "src/proto/h1/role.rs": {
+        "bytes": 106842,
+        "sha256": "210ad28ef2e3c35f2268e3dac979e519c02193b4ba6f895de86442b26b802fad"
+      },
+      "src/proto/h2/client.rs": {
+        "bytes": 23981,
+        "sha256": "5fa59359de28a055ab7e05c79f8046394602aeeb4427c5af48b3acec8e438202"
+      },
+      "src/proto/h2/mod.rs": {
+        "bytes": 8280,
+        "sha256": "180b83f135fe2e96df4b9299a14c09ccd45e7e7f12b5c13386593d77a249034d"
+      },
+      "src/proto/h2/ping.rs": {
+        "bytes": 14871,
+        "sha256": "fadc71622096fe674bf1ae4cf0390fa42fe444c4b696e04d77c79b3445f7b210"
+      },
+      "src/proto/h2/server.rs": {
+        "bytes": 19389,
+        "sha256": "10a9deb6729f4cdca57222234783447c823b6d73669147d0a7d1297caf7f6683"
+      },
+      "src/proto/h2/upgrade.rs": {
+        "bytes": 9719,
+        "sha256": "7d67e58321d279b6342785d98b2f14d2e7b7df5135813a0f32ccacad1104dfe0"
+      },
+      "src/proto/mod.rs": {
+        "bytes": 2074,
+        "sha256": "075880551f7ad6daf9a863d6707d116ff22c37bd18bcfa2d272d185c1853a9c3"
+      },
+      "src/rt/bounds.rs": {
+        "bytes": 4344,
+        "sha256": "82283d912a3a6e505880b32b4fe4591d7c2c71a6341a244558530c8920a0be47"
+      },
+      "src/rt/io.rs": {
+        "bytes": 12624,
+        "sha256": "096573f6f586d70f28bc0e9f084d48b6f7404dbeeb6219f5f6a2dd7ac5985a03"
+      },
+      "src/rt/mod.rs": {
+        "bytes": 1573,
+        "sha256": "db927b56ddc6e4b6aada24032d5f3b382a3e9fa5ade392e0c77e623d661e8aa4"
+      },
+      "src/rt/timer.rs": {
+        "bytes": 3591,
+        "sha256": "712dd726b986c3147c31e02f883babe1e4ad880dd8369996e4fc71bed3724a40"
+      },
+      "src/server/conn/http1.rs": {
+        "bytes": 18930,
+        "sha256": "7378c965101c3e316ed5d471921d2f9ff21e92e950a0456fbde859b283d6052f"
+      },
+      "src/server/conn/http2.rs": {
+        "bytes": 10447,
+        "sha256": "6bebea3f057d7c33fa55522b9923dceb361ebbb416a98262bec1dab847358171"
+      },
+      "src/server/conn/mod.rs": {
+        "bytes": 942,
+        "sha256": "b2393dc0d68c09b560f7c9bcc61ed3bf99fce4d746eda9e1ad158891ee56f2be"
+      },
+      "src/server/mod.rs": {
+        "bytes": 377,
+        "sha256": "ffe7729eba251a89d24d605d889dfdb32020203f337e88de0bacb19317e0ea9c"
+      },
+      "src/service/http.rs": {
+        "bytes": 2076,
+        "sha256": "74b6a556f77bcbf6d2a17e8be3d619c54cc2e73f04bcb66666169d3f40c78a11"
+      },
+      "src/service/mod.rs": {
+        "bytes": 1062,
+        "sha256": "de143e994e0021c1d54a7214f1748712e166d37a6496e783ee589956677ce034"
+      },
+      "src/service/service.rs": {
+        "bytes": 3916,
+        "sha256": "ad742e754791d64715a57c930113598c0b28f0026a58b63d60963c6b9f6f1ac2"
+      },
+      "src/service/util.rs": {
+        "bytes": 1953,
+        "sha256": "7d2fcf8701722456979edf7e8431efee235f838c6f70f66c28ce8e3a36d514b6"
+      },
+      "src/trace.rs": {
+        "bytes": 2551,
+        "sha256": "a766c472433c7569440862e978eceeea78220af170220e9fdc90b71bab731344"
+      },
+      "src/upgrade.rs": {
+        "bytes": 11791,
+        "sha256": "02107e8607fa0bf76530808ed0d8522f76f7b2ccdddeacccb29ad473d3f55d48"
+      }
+    },
+    "codex-rs/third_party/loom-0.7.2-pin-backport": {
+      ".cargo_vcs_info.json": {
+        "bytes": 94,
+        "sha256": "7fc4af6bc525358e08117a514dc6aa286de2385d0418f4ad4547718984505fc5"
+      },
+      ".github/workflows/ci.yml": {
+        "bytes": 2353,
+        "sha256": "a7f6289b00fff418009549b46798563d27decaff522b313e9a89a13779344261"
+      },
+      ".github/workflows/release.yml": {
+        "bytes": 545,
+        "sha256": "de55c46e3239ae5ab3977b70ebb7355d45c6530491e2c561b5f1130f18889b91"
+      },
+      ".gitignore": {
+        "bytes": 18,
+        "sha256": "f9b1ca6ae27d1c18215265024629a8960c31379f206d9ed20f64e0b2dcf79805"
+      },
+      "CHANGELOG.md": {
+        "bytes": 7893,
+        "sha256": "2ad9f432880e61f850f77857aba9b7962dd26ab7ea772fe4b77690e5459afc3c"
+      },
+      "Cargo.toml": {
+        "bytes": 1653,
+        "sha256": "938af91c97ed586d3188aeeb669d5ae8ece24cd3986101c9fe4a36452a2774b5"
+      },
+      "Cargo.toml.orig": {
+        "bytes": 1254,
+        "sha256": "e62000cef5d8af3bd094cf9f6098d54c2ef6f5de0ae846de5730f0ecdeed3fe2"
+      },
+      "HEPTA-PATCH-PROVENANCE.json": {
+        "bytes": 3639,
+        "sha256": "bfcecc4d161f281efa961a0bad2869ca770f3cd6f8e1ba18dbb04fab57926f49"
+      },
+      "HEPTA-PATCHES.md": {
+        "bytes": 567,
+        "sha256": "dbba706061b4ba520d18e5e538bb99f6d75c5e8047241775de05d7dba30365a9"
+      },
+      "LICENSE": {
+        "bytes": 1055,
+        "sha256": "8ce0830173fdac609dfb4ea603fdc002c2f4af0dc9b1a005653f5da9cf534b18"
+      },
+      "README.md": {
+        "bytes": 2936,
+        "sha256": "6c63e027ed64d45ee2a74b3063367403c4bb6c7d80e367b5872738485ef848d2"
+      },
+      "ci/azure-check-docs.yml": {
+        "bytes": 345,
+        "sha256": "d21d0b032beff8b8ecf7b5a058347c92beed103a7df297cb853a8924f427bde1"
+      },
+      "src/alloc.rs": {
+        "bytes": 3349,
+        "sha256": "0edec953b855b8b55223e0be32b111d904bfb9c18f38d579c406c72138d2bc8f"
+      },
+      "src/cell/cell.rs": {
+        "bytes": 2742,
+        "sha256": "50e316d23a2cbc9a973af96b7cfc6f024a99a0442c698e52e8e0988fc1206591"
+      },
+      "src/cell/mod.rs": {
+        "bytes": 183,
+        "sha256": "9893c5866400bb76c580130d729c4ab91336998b9d570cb3582d62b6d0cd3c72"
+      },
+      "src/cell/unsafe_cell.rs": {
+        "bytes": 20209,
+        "sha256": "22f74ea12f84135dd5772b4663907e227745634e51659f980f3577486c438982"
+      },
+      "src/future/atomic_waker.rs": {
+        "bytes": 1723,
+        "sha256": "c0895546e2c8027e4d49b52782ae353fdb6dc48bfa698eed2d40dfb3e99f8dcd"
+      },
+      "src/future/mod.rs": {
+        "bytes": 2017,
+        "sha256": "180def4583935f3d8e2da155313342f13c7e62a05f2095671e8712c033935868"
+      },
+      "src/hint.rs": {
+        "bytes": 1038,
+        "sha256": "e5f624be8273ed2fea30be61eaa7e46f52e7f0cf7a7a371055227d104eab68ef"
+      },
+      "src/lazy_static.rs": {
+        "bytes": 3830,
+        "sha256": "5921398d5c924813c68c36d02c23289716a1f07290fbb852d62b94afd122c8c9"
+      },
+      "src/lib.rs": {
+        "bytes": 20419,
+        "sha256": "cf9b4d311ccea572d0f45fe5f85ae1a488c68e49b98f4a960bb9eb793edcc729"
+      },
+      "src/model.rs": {
+        "bytes": 8529,
+        "sha256": "035840da0ada949d4457032a8437eb1e1d21616e88e81ceee0b36d47e6961593"
+      },
+      "src/rt/access.rs": {
+        "bytes": 1019,
+        "sha256": "48878607ef460af18777c95cccb0eb76bfd129c220896a3c3f53ebba0a2ba90a"
+      },
+      "src/rt/alloc.rs": {
+        "bytes": 2473,
+        "sha256": "04a5bac1601d15205b9092bfa407fa8895db7de80456cc9cf20fafb0ea51b031"
+      },
+      "src/rt/arc.rs": {
+        "bytes": 6460,
+        "sha256": "bc7fc19be8b470943b52b8c0795995e31f0572f909be208d07e9bd6cef73c7f4"
+      },
+      "src/rt/atomic.rs": {
+        "bytes": 29662,
+        "sha256": "bb0bb575cd531c5cce14feef1f155b4d0c80e69a1985c5d42d618cece0081dc6"
+      },
+      "src/rt/cell.rs": {
+        "bytes": 5779,
+        "sha256": "309e782b4e1e1152cba2c69c279d66f82d5440dd67cc755ba6f9dc55bb11e180"
+      },
+      "src/rt/condvar.rs": {
+        "bytes": 2860,
+        "sha256": "0482e73bab0dc2076ef342f4d9589ff3853a105eb5805431112b458442ab31fe"
+      },
+      "src/rt/execution.rs": {
+        "bytes": 8344,
+        "sha256": "6f48720aad4a234b263621f79753a6df88958c185399e7d1a540c2633874abed"
+      },
+      "src/rt/futures.rs": {
+        "bytes": 630,
+        "sha256": "5492e1f5d85a8838dba63afc5598d5c437e3b53b831c7486fee8cfafce6599c1"
+      },
+      "src/rt/lazy_static.rs": {
+        "bytes": 2261,
+        "sha256": "c5552d55e1698c4076be20f3a8256589c470b84b28c8b80f71c33c6c45b6800f"
+      },
+      "src/rt/location.rs": {
+        "bytes": 3682,
+        "sha256": "8bee90127931f7fb2f8ae59eb13fb20aeb03624afbd8a4f0fee0245c54ac9b44"
+      },
+      "src/rt/mod.rs": {
+        "bytes": 5006,
+        "sha256": "f24a480da3a2bda0b9d3f5e7793b16f6ef6282a42417f8b953bdc0c7ccd9cffe"
+      },
+      "src/rt/mpsc.rs": {
+        "bytes": 6693,
+        "sha256": "4214cb79d78773c796a14afc6edf5a38a086fb2bb2951efebfa3897aadb364a2"
+      },
+      "src/rt/mutex.rs": {
+        "bytes": 4644,
+        "sha256": "3eb9628efb4d1de0b99da52f46c5cba319ee372a8322eca55010f9c5b7ac175a"
+      },
+      "src/rt/notify.rs": {
+        "bytes": 4015,
+        "sha256": "5341a065ffdeaa673988001c1334d01a4a07791208431642489360ae213e5fc1"
+      },
+      "src/rt/num.rs": {
+        "bytes": 1053,
+        "sha256": "b96c9b25a61d892f29f2ac4929c4275050ac9283b20115f2592f9bc096a5dcc8"
+      },
+      "src/rt/object.rs": {
+        "bytes": 12530,
+        "sha256": "2908d0f9de5f4a583528860d0dd5fe6676b678f924698f7263a182d735517250"
+      },
+      "src/rt/path.rs": {
+        "bytes": 16569,
+        "sha256": "1ebff85342d3a214ebc9853beddc183bdeaf09ea206620398467df53f741a10b"
+      },
+      "src/rt/rwlock.rs": {
+        "bytes": 8286,
+        "sha256": "c2bb6a232668ea02a18562d78d74d87b50cf968b6ee3cb38b9d9d8f10f93b875"
+      },
+      "src/rt/scheduler.rs": {
+        "bytes": 4503,
+        "sha256": "476febbf4593d79d35d59a1438f4b9f3797e653da0e4fb6fd3280703f0b76a96"
+      },
+      "src/rt/synchronize.rs": {
+        "bytes": 1901,
+        "sha256": "d3d1f858dd94a1f10704bb011caa79b5729e8720a437782f0528ad522d21129b"
+      },
+      "src/rt/thread.rs": {
+        "bytes": 14589,
+        "sha256": "a5160c8ea5ffb8de6cf7810740af5b6664f5bf26edab077c539a774fe5ac166d"
+      },
+      "src/rt/vv.rs": {
+        "bytes": 2302,
+        "sha256": "3f7817b7d55a4b230dfcb781f7f11dedb2d1b231e6a033414bf97756f64814d4"
+      },
+      "src/sync/arc.rs": {
+        "bytes": 8686,
+        "sha256": "5a11e5e2c7df22d3f6ede9bc3675221f225f104f1cd1f047128afc8963566d1f"
+      },
+      "src/sync/atomic/atomic.rs": {
+        "bytes": 2838,
+        "sha256": "0d9db715919c68bab6b5522aaf8c79de56b0244f9adf5c63e047b8ef82627ddd"
+      },
+      "src/sync/atomic/bool.rs": {
+        "bytes": 4129,
+        "sha256": "a2cc2d3b1646f4c6945077a92513c6ac7c6db588614b063bb427341263189314"
+      },
+      "src/sync/atomic/int.rs": {
+        "bytes": 7249,
+        "sha256": "1bea5d2d79b3e0f7969ec2de5c160e6d60a566a84dcfbbbaf3f8f91384e6a041"
+      },
+      "src/sync/atomic/mod.rs": {
+        "bytes": 640,
+        "sha256": "b0ac14ba9e027d63fb660bdfb555d527ffa15f22eccb8ca5ce66cc821987ef02"
+      },
+      "src/sync/atomic/ptr.rs": {
+        "bytes": 3789,
+        "sha256": "70875af2e1047f482606def6b8f831c383d9fd6d642af616f6c44191d6d37f09"
+      },
+      "src/sync/barrier.rs": {
+        "bytes": 711,
+        "sha256": "caf04fe5729973e6a6546a88ea27d6fa698c3a26215c45831ffafb1473ce63da"
+      },
+      "src/sync/condvar.rs": {
+        "bytes": 2141,
+        "sha256": "88ef009fdbfe7aa25c13229378aa21cb471ac6a8365d59072734914a06d9f8f0"
+      },
+      "src/sync/mod.rs": {
+        "bytes": 457,
+        "sha256": "7df5735b9dc3226858a1323b1303183eb9a5ac49a7a6fc10fa1f3593b4055720"
+      },
+      "src/sync/mpsc.rs": {
+        "bytes": 2679,
+        "sha256": "8860d21bd848c57b5ae45debc7dadae2a89209996bd6d9a98f25aab7fe64f73d"
+      },
+      "src/sync/mutex.rs": {
+        "bytes": 3116,
+        "sha256": "354418d5515de85241c46c0ff9f51a62d354dfc3781b8202c0b96ccdf8fed1ee"
+      },
+      "src/sync/notify.rs": {
+        "bytes": 1193,
+        "sha256": "afaf33a3f0d6ff3cfab4c80f1771d7ce1f31db706fe77c76670f85b8ee7f40ad"
+      },
+      "src/sync/rwlock.rs": {
+        "bytes": 5287,
+        "sha256": "9814f2704282cc3e0b961193fed76e4e51b411f69a3fa68dddb9efd622e3e828"
+      },
+      "src/thread.rs": {
+        "bytes": 8803,
+        "sha256": "fc136aba1fdc7e7c713c0781d828631d3450eabd9aefafd12bfb14fa777f7a85"
+      },
+      "tests/arc.rs": {
+        "bytes": 2925,
+        "sha256": "a8dd246ab4ee5129aa80763da20c3323a9802c3186dbfe598341e1cec3b56851"
+      },
+      "tests/atomic.rs": {
+        "bytes": 2824,
+        "sha256": "a3c8b96ca57c231ba7f30451963203e3e2cc798a935aedeebeb90e516ae228bd"
+      },
+      "tests/atomic_int.rs": {
+        "bytes": 3755,
+        "sha256": "24d5c9fec2cf363f9b0806d9eeee255a6477b8003c22ba89777012f0e43c69e7"
+      },
+      "tests/atomic_relaxed.rs": {
+        "bytes": 2109,
+        "sha256": "e32dbeb70c8f701fbfed2d7d643b921e9bd4c87b25b33346cdb41582f8cb8471"
+      },
+      "tests/condvar.rs": {
+        "bytes": 1648,
+        "sha256": "37f2ee7d41d701dc1d5c44d1a459c71652172b2a2645f7bdcd137b4ef06a5c6c"
+      },
+      "tests/deadlock.rs": {
+        "bytes": 839,
+        "sha256": "d126bb98ae14d83f4528fa83b3b053b714456bfe48900ac73c3a55475f30adb6"
+      },
+      "tests/double_panic_in_drop.rs": {
+        "bytes": 323,
+        "sha256": "0bc3c7001d21b62b29c17fdc253fefc02b8f4260a2602cc0406cd8c208b93856"
+      },
+      "tests/fence.rs": {
+        "bytes": 5898,
+        "sha256": "cc99b8dfa82a0848d8987da9b27b56c82a76ff768561f43cd0cb7324844f4c04"
+      },
+      "tests/futures.rs": {
+        "bytes": 2158,
+        "sha256": "813b1d31fbb5d482b7de81343cc61e2cd9bb090c0944b727f9c50e50c9c74433"
+      },
+      "tests/litmus.rs": {
+        "bytes": 1526,
+        "sha256": "814d41e37f1952de89210bf7282159b4ece21850f9b69af93ed420dab73bd7b5"
+      },
+      "tests/mpsc.rs": {
+        "bytes": 1926,
+        "sha256": "7fd8938c9920c4931bddd86768df7320caa394dac6f54a2223c353e2cb592d40"
+      },
+      "tests/mutex.rs": {
+        "bytes": 2109,
+        "sha256": "0c917e7f974585cfdb6f18758c20ddb5a97d90431e047af5c87d148b41713c42"
+      },
+      "tests/rwlock.rs": {
+        "bytes": 3268,
+        "sha256": "073f0ea4e856c0bd3885e10d1c91bb82a09ac024b9c005158fdb55c76ecaa580"
+      },
+      "tests/rwlock_regression1.rs": {
+        "bytes": 746,
+        "sha256": "d325e9cfd5e28a1998517520c443478c3aa4c0c1d3f94f9373091a2cba7c8fc7"
+      },
+      "tests/smoke.rs": {
+        "bytes": 955,
+        "sha256": "49c53d72eec16bbcafea0aaf133d27d104b530aabd98ab6575ae873a211020cf"
+      },
+      "tests/spec.rs": {
+        "bytes": 5410,
+        "sha256": "5822b86f47aacd0bab566a86ae9a8a6271bde6c3cc368f8b78ae047631c54844"
+      },
+      "tests/thread_api.rs": {
+        "bytes": 3921,
+        "sha256": "869ef8236524c3e86322595f12db10dcd28842f80167a1d2d6307689542d7f9c"
+      },
+      "tests/thread_local.rs": {
+        "bytes": 2944,
+        "sha256": "57c3d1b355a7f3b007910918b195488f8976d42f5872cafda03239d5ab5445ca"
+      },
+      "tests/unsafe_cell.rs": {
+        "bytes": 6569,
+        "sha256": "912f6c7ebf6add35c3a7772b1f39ac7d2afca1f91196c52419f61bf3651c3665"
+      },
+      "tests/yield.rs": {
+        "bytes": 559,
+        "sha256": "11d99712e43e2d0c543be19d5ed3ffde9335bdb518594fdf6fdaca2d9845e0f4"
+      }
+    }
+  },
+  "vendor_modes": {
+    "codex-rs/third_party/aws-smithy-http-0.62.6-pin-backport/Cargo.lock": "100644",
+    "codex-rs/third_party/aws-smithy-http-0.62.6-pin-backport/Cargo.toml": "100644",
+    "codex-rs/third_party/aws-smithy-http-0.62.6-pin-backport/Cargo.toml.orig": "100644",
+    "codex-rs/third_party/aws-smithy-http-0.62.6-pin-backport/HEPTA-PATCH-PROVENANCE.json": "100644",
+    "codex-rs/third_party/aws-smithy-http-0.62.6-pin-backport/HEPTA-PATCHES.md": "100644",
+    "codex-rs/third_party/aws-smithy-http-0.62.6-pin-backport/LICENSE": "100644",
+    "codex-rs/third_party/aws-smithy-http-0.62.6-pin-backport/README.md": "100644",
+    "codex-rs/third_party/aws-smithy-http-0.62.6-pin-backport/additional-ci": "100755",
+    "codex-rs/third_party/aws-smithy-http-0.62.6-pin-backport/external-types.toml": "100644",
+    "codex-rs/third_party/aws-smithy-http-0.62.6-pin-backport/proptest-regressions/label.txt": "100644",
+    "codex-rs/third_party/aws-smithy-http-0.62.6-pin-backport/proptest-regressions/query.txt": "100644",
+    "codex-rs/third_party/aws-smithy-http-0.62.6-pin-backport/src/endpoint.rs": "100644",
+    "codex-rs/third_party/aws-smithy-http-0.62.6-pin-backport/src/endpoint/error.rs": "100644",
+    "codex-rs/third_party/aws-smithy-http-0.62.6-pin-backport/src/event_stream.rs": "100644",
+    "codex-rs/third_party/aws-smithy-http-0.62.6-pin-backport/src/event_stream/receiver.rs": "100644",
+    "codex-rs/third_party/aws-smithy-http-0.62.6-pin-backport/src/event_stream/sender.rs": "100644",
+    "codex-rs/third_party/aws-smithy-http-0.62.6-pin-backport/src/futures_stream_adapter.rs": "100644",
+    "codex-rs/third_party/aws-smithy-http-0.62.6-pin-backport/src/header.rs": "100644",
+    "codex-rs/third_party/aws-smithy-http-0.62.6-pin-backport/src/label.rs": "100644",
+    "codex-rs/third_party/aws-smithy-http-0.62.6-pin-backport/src/lib.rs": "100644",
+    "codex-rs/third_party/aws-smithy-http-0.62.6-pin-backport/src/operation.rs": "100644",
+    "codex-rs/third_party/aws-smithy-http-0.62.6-pin-backport/src/query.rs": "100644",
+    "codex-rs/third_party/aws-smithy-http-0.62.6-pin-backport/src/query_writer.rs": "100644",
+    "codex-rs/third_party/aws-smithy-http-0.62.6-pin-backport/src/urlencode.rs": "100644",
+    "codex-rs/third_party/aws-smithy-runtime-1.9.5-pin-backport/Cargo.lock": "100644",
+    "codex-rs/third_party/aws-smithy-runtime-1.9.5-pin-backport/Cargo.toml": "100644",
+    "codex-rs/third_party/aws-smithy-runtime-1.9.5-pin-backport/Cargo.toml.orig": "100644",
+    "codex-rs/third_party/aws-smithy-runtime-1.9.5-pin-backport/HEPTA-PATCH-PROVENANCE.json": "100644",
+    "codex-rs/third_party/aws-smithy-runtime-1.9.5-pin-backport/HEPTA-PATCHES.md": "100644",
+    "codex-rs/third_party/aws-smithy-runtime-1.9.5-pin-backport/LICENSE": "100644",
+    "codex-rs/third_party/aws-smithy-runtime-1.9.5-pin-backport/README.md": "100644",
+    "codex-rs/third_party/aws-smithy-runtime-1.9.5-pin-backport/additional-ci": "100755",
+    "codex-rs/third_party/aws-smithy-runtime-1.9.5-pin-backport/external-types.toml": "100644",
+    "codex-rs/third_party/aws-smithy-runtime-1.9.5-pin-backport/src/client.rs": "100644",
+    "codex-rs/third_party/aws-smithy-runtime-1.9.5-pin-backport/src/client/auth.rs": "100644",
+    "codex-rs/third_party/aws-smithy-runtime-1.9.5-pin-backport/src/client/auth/http.rs": "100644",
+    "codex-rs/third_party/aws-smithy-runtime-1.9.5-pin-backport/src/client/auth/no_auth.rs": "100644",
+    "codex-rs/third_party/aws-smithy-runtime-1.9.5-pin-backport/src/client/config_override.rs": "100644",
+    "codex-rs/third_party/aws-smithy-runtime-1.9.5-pin-backport/src/client/defaults.rs": "100644",
+    "codex-rs/third_party/aws-smithy-runtime-1.9.5-pin-backport/src/client/dns.rs": "100644",
+    "codex-rs/third_party/aws-smithy-runtime-1.9.5-pin-backport/src/client/endpoint.rs": "100644",
+    "codex-rs/third_party/aws-smithy-runtime-1.9.5-pin-backport/src/client/http.rs": "100644",
+    "codex-rs/third_party/aws-smithy-runtime-1.9.5-pin-backport/src/client/http/body.rs": "100644",
+    "codex-rs/third_party/aws-smithy-runtime-1.9.5-pin-backport/src/client/http/body/content_length_enforcement.rs": "100644",
+    "codex-rs/third_party/aws-smithy-runtime-1.9.5-pin-backport/src/client/http/body/minimum_throughput.rs": "100644",
+    "codex-rs/third_party/aws-smithy-runtime-1.9.5-pin-backport/src/client/http/body/minimum_throughput/http_body_0_4_x.rs": "100644",
+    "codex-rs/third_party/aws-smithy-runtime-1.9.5-pin-backport/src/client/http/body/minimum_throughput/options.rs": "100644",
+    "codex-rs/third_party/aws-smithy-runtime-1.9.5-pin-backport/src/client/http/body/minimum_throughput/throughput.rs": "100644",
+    "codex-rs/third_party/aws-smithy-runtime-1.9.5-pin-backport/src/client/http/connection_poisoning.rs": "100644",
+    "codex-rs/third_party/aws-smithy-runtime-1.9.5-pin-backport/src/client/identity.rs": "100644",
+    "codex-rs/third_party/aws-smithy-runtime-1.9.5-pin-backport/src/client/identity/cache.rs": "100644",
+    "codex-rs/third_party/aws-smithy-runtime-1.9.5-pin-backport/src/client/identity/cache/lazy.rs": "100644",
+    "codex-rs/third_party/aws-smithy-runtime-1.9.5-pin-backport/src/client/identity/no_auth.rs": "100644",
+    "codex-rs/third_party/aws-smithy-runtime-1.9.5-pin-backport/src/client/interceptors.rs": "100644",
+    "codex-rs/third_party/aws-smithy-runtime-1.9.5-pin-backport/src/client/metrics.rs": "100644",
+    "codex-rs/third_party/aws-smithy-runtime-1.9.5-pin-backport/src/client/orchestrator.rs": "100644",
+    "codex-rs/third_party/aws-smithy-runtime-1.9.5-pin-backport/src/client/orchestrator/auth.rs": "100644",
+    "codex-rs/third_party/aws-smithy-runtime-1.9.5-pin-backport/src/client/orchestrator/endpoints.rs": "100644",
+    "codex-rs/third_party/aws-smithy-runtime-1.9.5-pin-backport/src/client/orchestrator/http.rs": "100644",
+    "codex-rs/third_party/aws-smithy-runtime-1.9.5-pin-backport/src/client/orchestrator/operation.rs": "100644",
+    "codex-rs/third_party/aws-smithy-runtime-1.9.5-pin-backport/src/client/retries.rs": "100644",
+    "codex-rs/third_party/aws-smithy-runtime-1.9.5-pin-backport/src/client/retries/classifiers.rs": "100644",
+    "codex-rs/third_party/aws-smithy-runtime-1.9.5-pin-backport/src/client/retries/client_rate_limiter.rs": "100644",
+    "codex-rs/third_party/aws-smithy-runtime-1.9.5-pin-backport/src/client/retries/strategy.rs": "100644",
+    "codex-rs/third_party/aws-smithy-runtime-1.9.5-pin-backport/src/client/retries/strategy/never.rs": "100644",
+    "codex-rs/third_party/aws-smithy-runtime-1.9.5-pin-backport/src/client/retries/strategy/standard.rs": "100644",
+    "codex-rs/third_party/aws-smithy-runtime-1.9.5-pin-backport/src/client/retries/token_bucket.rs": "100644",
+    "codex-rs/third_party/aws-smithy-runtime-1.9.5-pin-backport/src/client/sdk_feature.rs": "100644",
+    "codex-rs/third_party/aws-smithy-runtime-1.9.5-pin-backport/src/client/stalled_stream_protection.rs": "100644",
+    "codex-rs/third_party/aws-smithy-runtime-1.9.5-pin-backport/src/client/test_util.rs": "100644",
+    "codex-rs/third_party/aws-smithy-runtime-1.9.5-pin-backport/src/client/test_util/deserializer.rs": "100644",
+    "codex-rs/third_party/aws-smithy-runtime-1.9.5-pin-backport/src/client/test_util/serializer.rs": "100644",
+    "codex-rs/third_party/aws-smithy-runtime-1.9.5-pin-backport/src/client/timeout.rs": "100644",
+    "codex-rs/third_party/aws-smithy-runtime-1.9.5-pin-backport/src/client/waiters.rs": "100644",
+    "codex-rs/third_party/aws-smithy-runtime-1.9.5-pin-backport/src/client/waiters/backoff.rs": "100644",
+    "codex-rs/third_party/aws-smithy-runtime-1.9.5-pin-backport/src/expiring_cache.rs": "100644",
+    "codex-rs/third_party/aws-smithy-runtime-1.9.5-pin-backport/src/lib.rs": "100644",
+    "codex-rs/third_party/aws-smithy-runtime-1.9.5-pin-backport/src/static_partition_map.rs": "100644",
+    "codex-rs/third_party/aws-smithy-runtime-1.9.5-pin-backport/src/test_util.rs": "100644",
+    "codex-rs/third_party/aws-smithy-runtime-1.9.5-pin-backport/src/test_util/assertions.rs": "100644",
+    "codex-rs/third_party/aws-smithy-runtime-1.9.5-pin-backport/src/test_util/capture_test_logs.rs": "100644",
+    "codex-rs/third_party/aws-smithy-runtime-1.9.5-pin-backport/tests/reconnect_on_transient_error.rs": "100644",
+    "codex-rs/third_party/aws-smithy-runtime-1.9.5-pin-backport/tests/retries.rs": "100644",
+    "codex-rs/third_party/aws-smithy-runtime-1.9.5-pin-backport/tests/stalled_stream_common.rs": "100644",
+    "codex-rs/third_party/aws-smithy-runtime-1.9.5-pin-backport/tests/stalled_stream_download.rs": "100644",
+    "codex-rs/third_party/aws-smithy-runtime-1.9.5-pin-backport/tests/stalled_stream_performance.rs": "100644",
+    "codex-rs/third_party/aws-smithy-runtime-1.9.5-pin-backport/tests/stalled_stream_upload.rs": "100644",
+    "codex-rs/third_party/aws-smithy-types-1.4.7-pin-backport/Cargo.lock": "100644",
+    "codex-rs/third_party/aws-smithy-types-1.4.7-pin-backport/Cargo.toml": "100644",
+    "codex-rs/third_party/aws-smithy-types-1.4.7-pin-backport/Cargo.toml.orig": "100644",
+    "codex-rs/third_party/aws-smithy-types-1.4.7-pin-backport/HEPTA-PATCH-PROVENANCE.json": "100644",
+    "codex-rs/third_party/aws-smithy-types-1.4.7-pin-backport/HEPTA-PATCHES.md": "100644",
+    "codex-rs/third_party/aws-smithy-types-1.4.7-pin-backport/LICENSE": "100644",
+    "codex-rs/third_party/aws-smithy-types-1.4.7-pin-backport/README.md": "100644",
+    "codex-rs/third_party/aws-smithy-types-1.4.7-pin-backport/additional-ci": "100755",
+    "codex-rs/third_party/aws-smithy-types-1.4.7-pin-backport/benches/base64.rs": "100644",
+    "codex-rs/third_party/aws-smithy-types-1.4.7-pin-backport/external-types.toml": "100644",
+    "codex-rs/third_party/aws-smithy-types-1.4.7-pin-backport/proptest-regressions/instant/format.txt": "100644",
+    "codex-rs/third_party/aws-smithy-types-1.4.7-pin-backport/src/base64.rs": "100644",
+    "codex-rs/third_party/aws-smithy-types-1.4.7-pin-backport/src/big_number.rs": "100644",
+    "codex-rs/third_party/aws-smithy-types-1.4.7-pin-backport/src/blob.rs": "100644",
+    "codex-rs/third_party/aws-smithy-types-1.4.7-pin-backport/src/body.rs": "100644",
+    "codex-rs/third_party/aws-smithy-types-1.4.7-pin-backport/src/body/http_body_0_4_x.rs": "100644",
+    "codex-rs/third_party/aws-smithy-types-1.4.7-pin-backport/src/body/http_body_1_x.rs": "100644",
+    "codex-rs/third_party/aws-smithy-types-1.4.7-pin-backport/src/byte_stream.rs": "100644",
+    "codex-rs/third_party/aws-smithy-types-1.4.7-pin-backport/src/byte_stream/bytestream_util.rs": "100644",
+    "codex-rs/third_party/aws-smithy-types-1.4.7-pin-backport/src/byte_stream/bytestream_util/http_body_0_4_x.rs": "100644",
+    "codex-rs/third_party/aws-smithy-types-1.4.7-pin-backport/src/byte_stream/bytestream_util/http_body_1_x.rs": "100644",
+    "codex-rs/third_party/aws-smithy-types-1.4.7-pin-backport/src/byte_stream/error.rs": "100644",
+    "codex-rs/third_party/aws-smithy-types-1.4.7-pin-backport/src/byte_stream/http_body_0_4_x.rs": "100644",
+    "codex-rs/third_party/aws-smithy-types-1.4.7-pin-backport/src/byte_stream/http_body_1_x.rs": "100644",
+    "codex-rs/third_party/aws-smithy-types-1.4.7-pin-backport/src/checksum_config.rs": "100644",
+    "codex-rs/third_party/aws-smithy-types-1.4.7-pin-backport/src/config_bag.rs": "100644",
+    "codex-rs/third_party/aws-smithy-types-1.4.7-pin-backport/src/config_bag/storable.rs": "100644",
+    "codex-rs/third_party/aws-smithy-types-1.4.7-pin-backport/src/config_bag/typeid_map.rs": "100644",
+    "codex-rs/third_party/aws-smithy-types-1.4.7-pin-backport/src/date_time/de.rs": "100644",
+    "codex-rs/third_party/aws-smithy-types-1.4.7-pin-backport/src/date_time/format.rs": "100644",
+    "codex-rs/third_party/aws-smithy-types-1.4.7-pin-backport/src/date_time/mod.rs": "100644",
+    "codex-rs/third_party/aws-smithy-types-1.4.7-pin-backport/src/date_time/ser.rs": "100644",
+    "codex-rs/third_party/aws-smithy-types-1.4.7-pin-backport/src/document.rs": "100644",
+    "codex-rs/third_party/aws-smithy-types-1.4.7-pin-backport/src/endpoint.rs": "100644",
+    "codex-rs/third_party/aws-smithy-types-1.4.7-pin-backport/src/error.rs": "100644",
+    "codex-rs/third_party/aws-smithy-types-1.4.7-pin-backport/src/error/display.rs": "100644",
+    "codex-rs/third_party/aws-smithy-types-1.4.7-pin-backport/src/error/metadata.rs": "100644",
+    "codex-rs/third_party/aws-smithy-types-1.4.7-pin-backport/src/error/operation.rs": "100644",
+    "codex-rs/third_party/aws-smithy-types-1.4.7-pin-backport/src/event_stream.rs": "100644",
+    "codex-rs/third_party/aws-smithy-types-1.4.7-pin-backport/src/lib.rs": "100644",
+    "codex-rs/third_party/aws-smithy-types-1.4.7-pin-backport/src/number.rs": "100644",
+    "codex-rs/third_party/aws-smithy-types-1.4.7-pin-backport/src/primitive.rs": "100644",
+    "codex-rs/third_party/aws-smithy-types-1.4.7-pin-backport/src/retry.rs": "100644",
+    "codex-rs/third_party/aws-smithy-types-1.4.7-pin-backport/src/str_bytes.rs": "100644",
+    "codex-rs/third_party/aws-smithy-types-1.4.7-pin-backport/src/timeout.rs": "100644",
+    "codex-rs/third_party/aws-smithy-types-1.4.7-pin-backport/src/type_erasure.rs": "100644",
+    "codex-rs/third_party/aws-smithy-types-1.4.7-pin-backport/test_data/date_time_format_test_suite.json": "100644",
+    "codex-rs/third_party/aws-smithy-types-1.4.7-pin-backport/test_data/serialize_document.json": "100644",
+    "codex-rs/third_party/hyper-1.8.1-pin-backport/.cargo_vcs_info.json": "100644",
+    "codex-rs/third_party/hyper-1.8.1-pin-backport/Cargo.lock": "100644",
+    "codex-rs/third_party/hyper-1.8.1-pin-backport/Cargo.toml": "100644",
+    "codex-rs/third_party/hyper-1.8.1-pin-backport/Cargo.toml.orig": "100644",
+    "codex-rs/third_party/hyper-1.8.1-pin-backport/HEPTA-PATCH-PROVENANCE.json": "100644",
+    "codex-rs/third_party/hyper-1.8.1-pin-backport/HEPTA-PATCHES.md": "100644",
+    "codex-rs/third_party/hyper-1.8.1-pin-backport/LICENSE": "100644",
+    "codex-rs/third_party/hyper-1.8.1-pin-backport/README.md": "100644",
+    "codex-rs/third_party/hyper-1.8.1-pin-backport/src/body/incoming.rs": "100644",
+    "codex-rs/third_party/hyper-1.8.1-pin-backport/src/body/length.rs": "100644",
+    "codex-rs/third_party/hyper-1.8.1-pin-backport/src/body/mod.rs": "100644",
+    "codex-rs/third_party/hyper-1.8.1-pin-backport/src/cfg.rs": "100644",
+    "codex-rs/third_party/hyper-1.8.1-pin-backport/src/client/conn/http1.rs": "100644",
+    "codex-rs/third_party/hyper-1.8.1-pin-backport/src/client/conn/http2.rs": "100644",
+    "codex-rs/third_party/hyper-1.8.1-pin-backport/src/client/conn/mod.rs": "100644",
+    "codex-rs/third_party/hyper-1.8.1-pin-backport/src/client/dispatch.rs": "100644",
+    "codex-rs/third_party/hyper-1.8.1-pin-backport/src/client/mod.rs": "100644",
+    "codex-rs/third_party/hyper-1.8.1-pin-backport/src/client/tests.rs": "100644",
+    "codex-rs/third_party/hyper-1.8.1-pin-backport/src/common/buf.rs": "100644",
+    "codex-rs/third_party/hyper-1.8.1-pin-backport/src/common/date.rs": "100644",
+    "codex-rs/third_party/hyper-1.8.1-pin-backport/src/common/either.rs": "100644",
+    "codex-rs/third_party/hyper-1.8.1-pin-backport/src/common/future.rs": "100644",
+    "codex-rs/third_party/hyper-1.8.1-pin-backport/src/common/io/compat.rs": "100644",
+    "codex-rs/third_party/hyper-1.8.1-pin-backport/src/common/io/mod.rs": "100644",
+    "codex-rs/third_party/hyper-1.8.1-pin-backport/src/common/io/rewind.rs": "100644",
+    "codex-rs/third_party/hyper-1.8.1-pin-backport/src/common/mod.rs": "100644",
+    "codex-rs/third_party/hyper-1.8.1-pin-backport/src/common/task.rs": "100644",
+    "codex-rs/third_party/hyper-1.8.1-pin-backport/src/common/time.rs": "100644",
+    "codex-rs/third_party/hyper-1.8.1-pin-backport/src/common/watch.rs": "100644",
+    "codex-rs/third_party/hyper-1.8.1-pin-backport/src/error.rs": "100644",
+    "codex-rs/third_party/hyper-1.8.1-pin-backport/src/ext/h1_reason_phrase.rs": "100644",
+    "codex-rs/third_party/hyper-1.8.1-pin-backport/src/ext/informational.rs": "100644",
+    "codex-rs/third_party/hyper-1.8.1-pin-backport/src/ext/mod.rs": "100644",
+    "codex-rs/third_party/hyper-1.8.1-pin-backport/src/ffi/body.rs": "100644",
+    "codex-rs/third_party/hyper-1.8.1-pin-backport/src/ffi/client.rs": "100644",
+    "codex-rs/third_party/hyper-1.8.1-pin-backport/src/ffi/error.rs": "100644",
+    "codex-rs/third_party/hyper-1.8.1-pin-backport/src/ffi/http_types.rs": "100644",
+    "codex-rs/third_party/hyper-1.8.1-pin-backport/src/ffi/io.rs": "100644",
+    "codex-rs/third_party/hyper-1.8.1-pin-backport/src/ffi/macros.rs": "100644",
+    "codex-rs/third_party/hyper-1.8.1-pin-backport/src/ffi/mod.rs": "100644",
+    "codex-rs/third_party/hyper-1.8.1-pin-backport/src/ffi/task.rs": "100644",
+    "codex-rs/third_party/hyper-1.8.1-pin-backport/src/headers.rs": "100644",
+    "codex-rs/third_party/hyper-1.8.1-pin-backport/src/lib.rs": "100644",
+    "codex-rs/third_party/hyper-1.8.1-pin-backport/src/mock.rs": "100644",
+    "codex-rs/third_party/hyper-1.8.1-pin-backport/src/proto/h1/conn.rs": "100644",
+    "codex-rs/third_party/hyper-1.8.1-pin-backport/src/proto/h1/decode.rs": "100644",
+    "codex-rs/third_party/hyper-1.8.1-pin-backport/src/proto/h1/dispatch.rs": "100644",
+    "codex-rs/third_party/hyper-1.8.1-pin-backport/src/proto/h1/encode.rs": "100644",
+    "codex-rs/third_party/hyper-1.8.1-pin-backport/src/proto/h1/io.rs": "100644",
+    "codex-rs/third_party/hyper-1.8.1-pin-backport/src/proto/h1/mod.rs": "100644",
+    "codex-rs/third_party/hyper-1.8.1-pin-backport/src/proto/h1/role.rs": "100644",
+    "codex-rs/third_party/hyper-1.8.1-pin-backport/src/proto/h2/client.rs": "100644",
+    "codex-rs/third_party/hyper-1.8.1-pin-backport/src/proto/h2/mod.rs": "100644",
+    "codex-rs/third_party/hyper-1.8.1-pin-backport/src/proto/h2/ping.rs": "100644",
+    "codex-rs/third_party/hyper-1.8.1-pin-backport/src/proto/h2/server.rs": "100644",
+    "codex-rs/third_party/hyper-1.8.1-pin-backport/src/proto/h2/upgrade.rs": "100644",
+    "codex-rs/third_party/hyper-1.8.1-pin-backport/src/proto/mod.rs": "100644",
+    "codex-rs/third_party/hyper-1.8.1-pin-backport/src/rt/bounds.rs": "100644",
+    "codex-rs/third_party/hyper-1.8.1-pin-backport/src/rt/io.rs": "100644",
+    "codex-rs/third_party/hyper-1.8.1-pin-backport/src/rt/mod.rs": "100644",
+    "codex-rs/third_party/hyper-1.8.1-pin-backport/src/rt/timer.rs": "100644",
+    "codex-rs/third_party/hyper-1.8.1-pin-backport/src/server/conn/http1.rs": "100644",
+    "codex-rs/third_party/hyper-1.8.1-pin-backport/src/server/conn/http2.rs": "100644",
+    "codex-rs/third_party/hyper-1.8.1-pin-backport/src/server/conn/mod.rs": "100644",
+    "codex-rs/third_party/hyper-1.8.1-pin-backport/src/server/mod.rs": "100644",
+    "codex-rs/third_party/hyper-1.8.1-pin-backport/src/service/http.rs": "100644",
+    "codex-rs/third_party/hyper-1.8.1-pin-backport/src/service/mod.rs": "100644",
+    "codex-rs/third_party/hyper-1.8.1-pin-backport/src/service/service.rs": "100644",
+    "codex-rs/third_party/hyper-1.8.1-pin-backport/src/service/util.rs": "100644",
+    "codex-rs/third_party/hyper-1.8.1-pin-backport/src/trace.rs": "100644",
+    "codex-rs/third_party/hyper-1.8.1-pin-backport/src/upgrade.rs": "100644",
+    "codex-rs/third_party/loom-0.7.2-pin-backport/.cargo_vcs_info.json": "100644",
+    "codex-rs/third_party/loom-0.7.2-pin-backport/.github/workflows/ci.yml": "100644",
+    "codex-rs/third_party/loom-0.7.2-pin-backport/.github/workflows/release.yml": "100644",
+    "codex-rs/third_party/loom-0.7.2-pin-backport/.gitignore": "100644",
+    "codex-rs/third_party/loom-0.7.2-pin-backport/CHANGELOG.md": "100644",
+    "codex-rs/third_party/loom-0.7.2-pin-backport/Cargo.toml": "100644",
+    "codex-rs/third_party/loom-0.7.2-pin-backport/Cargo.toml.orig": "100644",
+    "codex-rs/third_party/loom-0.7.2-pin-backport/HEPTA-PATCH-PROVENANCE.json": "100644",
+    "codex-rs/third_party/loom-0.7.2-pin-backport/HEPTA-PATCHES.md": "100644",
+    "codex-rs/third_party/loom-0.7.2-pin-backport/LICENSE": "100644",
+    "codex-rs/third_party/loom-0.7.2-pin-backport/README.md": "100644",
+    "codex-rs/third_party/loom-0.7.2-pin-backport/ci/azure-check-docs.yml": "100644",
+    "codex-rs/third_party/loom-0.7.2-pin-backport/src/alloc.rs": "100644",
+    "codex-rs/third_party/loom-0.7.2-pin-backport/src/cell/cell.rs": "100644",
+    "codex-rs/third_party/loom-0.7.2-pin-backport/src/cell/mod.rs": "100644",
+    "codex-rs/third_party/loom-0.7.2-pin-backport/src/cell/unsafe_cell.rs": "100644",
+    "codex-rs/third_party/loom-0.7.2-pin-backport/src/future/atomic_waker.rs": "100644",
+    "codex-rs/third_party/loom-0.7.2-pin-backport/src/future/mod.rs": "100644",
+    "codex-rs/third_party/loom-0.7.2-pin-backport/src/hint.rs": "100644",
+    "codex-rs/third_party/loom-0.7.2-pin-backport/src/lazy_static.rs": "100644",
+    "codex-rs/third_party/loom-0.7.2-pin-backport/src/lib.rs": "100644",
+    "codex-rs/third_party/loom-0.7.2-pin-backport/src/model.rs": "100644",
+    "codex-rs/third_party/loom-0.7.2-pin-backport/src/rt/access.rs": "100644",
+    "codex-rs/third_party/loom-0.7.2-pin-backport/src/rt/alloc.rs": "100644",
+    "codex-rs/third_party/loom-0.7.2-pin-backport/src/rt/arc.rs": "100644",
+    "codex-rs/third_party/loom-0.7.2-pin-backport/src/rt/atomic.rs": "100644",
+    "codex-rs/third_party/loom-0.7.2-pin-backport/src/rt/cell.rs": "100644",
+    "codex-rs/third_party/loom-0.7.2-pin-backport/src/rt/condvar.rs": "100644",
+    "codex-rs/third_party/loom-0.7.2-pin-backport/src/rt/execution.rs": "100644",
+    "codex-rs/third_party/loom-0.7.2-pin-backport/src/rt/futures.rs": "100644",
+    "codex-rs/third_party/loom-0.7.2-pin-backport/src/rt/lazy_static.rs": "100644",
+    "codex-rs/third_party/loom-0.7.2-pin-backport/src/rt/location.rs": "100644",
+    "codex-rs/third_party/loom-0.7.2-pin-backport/src/rt/mod.rs": "100644",
+    "codex-rs/third_party/loom-0.7.2-pin-backport/src/rt/mpsc.rs": "100644",
+    "codex-rs/third_party/loom-0.7.2-pin-backport/src/rt/mutex.rs": "100644",
+    "codex-rs/third_party/loom-0.7.2-pin-backport/src/rt/notify.rs": "100644",
+    "codex-rs/third_party/loom-0.7.2-pin-backport/src/rt/num.rs": "100644",
+    "codex-rs/third_party/loom-0.7.2-pin-backport/src/rt/object.rs": "100644",
+    "codex-rs/third_party/loom-0.7.2-pin-backport/src/rt/path.rs": "100644",
+    "codex-rs/third_party/loom-0.7.2-pin-backport/src/rt/rwlock.rs": "100644",
+    "codex-rs/third_party/loom-0.7.2-pin-backport/src/rt/scheduler.rs": "100644",
+    "codex-rs/third_party/loom-0.7.2-pin-backport/src/rt/synchronize.rs": "100644",
+    "codex-rs/third_party/loom-0.7.2-pin-backport/src/rt/thread.rs": "100644",
+    "codex-rs/third_party/loom-0.7.2-pin-backport/src/rt/vv.rs": "100644",
+    "codex-rs/third_party/loom-0.7.2-pin-backport/src/sync/arc.rs": "100644",
+    "codex-rs/third_party/loom-0.7.2-pin-backport/src/sync/atomic/atomic.rs": "100644",
+    "codex-rs/third_party/loom-0.7.2-pin-backport/src/sync/atomic/bool.rs": "100644",
+    "codex-rs/third_party/loom-0.7.2-pin-backport/src/sync/atomic/int.rs": "100644",
+    "codex-rs/third_party/loom-0.7.2-pin-backport/src/sync/atomic/mod.rs": "100644",
+    "codex-rs/third_party/loom-0.7.2-pin-backport/src/sync/atomic/ptr.rs": "100644",
+    "codex-rs/third_party/loom-0.7.2-pin-backport/src/sync/barrier.rs": "100644",
+    "codex-rs/third_party/loom-0.7.2-pin-backport/src/sync/condvar.rs": "100644",
+    "codex-rs/third_party/loom-0.7.2-pin-backport/src/sync/mod.rs": "100644",
+    "codex-rs/third_party/loom-0.7.2-pin-backport/src/sync/mpsc.rs": "100644",
+    "codex-rs/third_party/loom-0.7.2-pin-backport/src/sync/mutex.rs": "100644",
+    "codex-rs/third_party/loom-0.7.2-pin-backport/src/sync/notify.rs": "100644",
+    "codex-rs/third_party/loom-0.7.2-pin-backport/src/sync/rwlock.rs": "100644",
+    "codex-rs/third_party/loom-0.7.2-pin-backport/src/thread.rs": "100644",
+    "codex-rs/third_party/loom-0.7.2-pin-backport/tests/arc.rs": "100644",
+    "codex-rs/third_party/loom-0.7.2-pin-backport/tests/atomic.rs": "100644",
+    "codex-rs/third_party/loom-0.7.2-pin-backport/tests/atomic_int.rs": "100644",
+    "codex-rs/third_party/loom-0.7.2-pin-backport/tests/atomic_relaxed.rs": "100644",
+    "codex-rs/third_party/loom-0.7.2-pin-backport/tests/condvar.rs": "100644",
+    "codex-rs/third_party/loom-0.7.2-pin-backport/tests/deadlock.rs": "100644",
+    "codex-rs/third_party/loom-0.7.2-pin-backport/tests/double_panic_in_drop.rs": "100644",
+    "codex-rs/third_party/loom-0.7.2-pin-backport/tests/fence.rs": "100644",
+    "codex-rs/third_party/loom-0.7.2-pin-backport/tests/futures.rs": "100644",
+    "codex-rs/third_party/loom-0.7.2-pin-backport/tests/litmus.rs": "100644",
+    "codex-rs/third_party/loom-0.7.2-pin-backport/tests/mpsc.rs": "100644",
+    "codex-rs/third_party/loom-0.7.2-pin-backport/tests/mutex.rs": "100644",
+    "codex-rs/third_party/loom-0.7.2-pin-backport/tests/rwlock.rs": "100644",
+    "codex-rs/third_party/loom-0.7.2-pin-backport/tests/rwlock_regression1.rs": "100644",
+    "codex-rs/third_party/loom-0.7.2-pin-backport/tests/smoke.rs": "100644",
+    "codex-rs/third_party/loom-0.7.2-pin-backport/tests/spec.rs": "100644",
+    "codex-rs/third_party/loom-0.7.2-pin-backport/tests/thread_api.rs": "100644",
+    "codex-rs/third_party/loom-0.7.2-pin-backport/tests/thread_local.rs": "100644",
+    "codex-rs/third_party/loom-0.7.2-pin-backport/tests/unsafe_cell.rs": "100644",
+    "codex-rs/third_party/loom-0.7.2-pin-backport/tests/yield.rs": "100644"
+  }
+}

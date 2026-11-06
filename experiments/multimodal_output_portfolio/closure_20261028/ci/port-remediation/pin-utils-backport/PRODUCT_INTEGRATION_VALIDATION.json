@@ -1,0 +1,101 @@
+{
+  "schema": "ndu-pin-utils-current-graph-integration-v1",
+  "base_head": "319e0b1767ce37391a418cba33d1e23ce4be6317",
+  "base_tree": "f3b57e88566d740ae64b3b76219a032032233aea",
+  "native_artifact_validation": "/workspace/scratch/3f6a885bb83c/round3_ci/pin_utils/runs/42219101717/NATIVE_ARTIFACT_VALIDATION.json",
+  "original_native_patch": {
+    "bytes": 2579973,
+    "sha256": "3be4a2e02fd349989001804af09236074f98af7a4265e4ddc7d48ba13eaa6905",
+    "git_blob": "923c0a7dfbc0e08b1423610cf93d7e08c319011e"
+  },
+  "integrated_patch": {
+    "bytes": 2597193,
+    "sha256": "5a6758dd92790ce13b148054d22cce677af65b140370c482f66ae66d0ef43bd0",
+    "git_blob": "ae838796564b81a61b580a79482cce0d17d90abf"
+  },
+  "source_preimages": {
+    "codex-rs/Cargo.toml": "f7af2898ff4f9cfff98e19eb7e6c78163f6c6d4d",
+    "codex-rs/Cargo.lock": "8bdc400abda3b4ceaa890a595d142cc98cbee441",
+    "MODULE.bazel.lock": "3f9ad840678261729d88a348151b7784e19ccc29"
+  },
+  "vendor_directories_absent_in_current_base": true,
+  "only_difference_from_original_proposal_lock_before_and_after": "codex-hepta-supervisor -> codex-utils-cargo-bin",
+  "current_edge_preserved": true,
+  "older_whole_lock_negative_control": "UNEXPECTED_LOCK_GRAPH_DRIFT",
+  "current_cargo_graph": {
+    "original_packages": 1529,
+    "after_packages": 1528,
+    "only_five_path_source_changes_and_five_removed_edges": [
+      "aws-smithy-http",
+      "aws-smithy-runtime",
+      "aws-smithy-types",
+      "hyper",
+      "loom"
+    ],
+    "all_other_package_fields_and_dependency_IDs_identical": true,
+    "all_top_level_lock_fields_identical": true
+  },
+  "current_module_facts": {
+    "removed_registry_facts": [
+      "aws-smithy-http_0.62.6",
+      "aws-smithy-runtime_1.9.5",
+      "aws-smithy-types_1.4.7",
+      "loom_0.7.2"
+    ],
+    "added_path_facts": [
+      "path+crates/third_party/aws-smithy-http-0.62.6-pin-backport_aws-smithy-http",
+      "path+crates/third_party/aws-smithy-runtime-1.9.5-pin-backport_aws-smithy-runtime",
+      "path+crates/third_party/aws-smithy-types-1.4.7-pin-backport_aws-smithy-types",
+      "path+crates/third_party/hyper-1.8.1-pin-backport_hyper",
+      "path+crates/third_party/loom-0.7.2-pin-backport_loom"
+    ],
+    "external_tooling_registry_facts_retained_byte_identical": {
+      "hyper_1.8.1": "ea4c91b251c48158d603abf77e90b99d0ced024a18fa2b9f4dce6435836d4d09",
+      "pin-utils_0.1.0": "065b7d53d3d5f7cd38c1e54cdd9a0d3181f46b8d3d7653bdf8691909ad354d9e"
+    },
+    "crate_checks": [
+      {
+        "old_key": "aws-smithy-http_0.62.6",
+        "new_key": "path+crates/third_party/aws-smithy-http-0.62.6-pin-backport_aws-smithy-http",
+        "normal_and_build_dependency_and_feature_semantics_preserved_except_pin_removal": true,
+        "development_metadata_omitted_by_pinned_rules_rs_path_representation": 5,
+        "path_strip_prefix_empty": true
+      },
+      {
+        "old_key": "aws-smithy-runtime_1.9.5",
+        "new_key": "path+crates/third_party/aws-smithy-runtime-1.9.5-pin-backport_aws-smithy-runtime",
+        "normal_and_build_dependency_and_feature_semantics_preserved_except_pin_removal": true,
+        "development_metadata_omitted_by_pinned_rules_rs_path_representation": 11,
+        "path_strip_prefix_empty": true
+      },
+      {
+        "old_key": "aws-smithy-types_1.4.7",
+        "new_key": "path+crates/third_party/aws-smithy-types-1.4.7-pin-backport_aws-smithy-types",
+        "normal_and_build_dependency_and_feature_semantics_preserved_except_pin_removal": true,
+        "development_metadata_omitted_by_pinned_rules_rs_path_representation": 11,
+        "path_strip_prefix_empty": true
+      },
+      {
+        "old_key": "hyper_1.8.1",
+        "new_key": "path+crates/third_party/hyper-1.8.1-pin-backport_hyper",
+        "normal_and_build_dependency_and_feature_semantics_preserved_except_pin_removal": true,
+        "development_metadata_omitted_by_pinned_rules_rs_path_representation": 12,
+        "path_strip_prefix_empty": true
+      },
+      {
+        "old_key": "loom_0.7.2",
+        "new_key": "path+crates/third_party/loom-0.7.2-pin-backport_loom",
+        "normal_and_build_dependency_and_feature_semantics_preserved_except_pin_removal": true,
+        "development_metadata_omitted_by_pinned_rules_rs_path_representation": 1,
+        "path_strip_prefix_empty": true
+      }
+    ],
+    "all_other_module_fields_identical": true
+  },
+  "all_vendor_files_equal_validated_native_artifact": 284,
+  "git_apply_exit_code": 0,
+  "git_apply_stderr": "/workspace/scratch/3f6a885bb83c/round3_ci/pin_utils/runs/42219101717/artifact/proposal.patch:62875: new blank line at EOF.\n+\nwarning: 1 line adds whitespace errors.\n",
+  "upstream_whitespace_preserved": "The unmodified official Loom ci/azure-check-docs.yml has a terminal blank line. Git apply reports one whitespace warning with exit 0; its exact upstream bytes remain preserved.",
+  "integrated_native_metadata_or_build": "NOT_YET_RUN",
+  "qualification": "The current graph guard and exact native patch replay pass. The integrated full source head still requires original native/full CI; the proposal run does not qualify this later source head."
+}
