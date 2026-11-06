@@ -229,7 +229,10 @@ impl PairFleet {
             agents.push(agent_id);
         }
         let release_id = ReleaseId::parse("paired-process-fixture-v1")?;
-        let fixture_binary = std::env::current_exe()?;
+        // Bazel may expose this test executable through a symlink. Install
+        // real fixture bytes through the original regular-file release gate.
+        let fixture_binary = temp.path().join("paired-child-process");
+        std::fs::copy(std::env::current_exe()?, &fixture_binary)?;
         let child_args = vec![
             "--exact".to_string(),
             "paired_child_process".to_string(),
