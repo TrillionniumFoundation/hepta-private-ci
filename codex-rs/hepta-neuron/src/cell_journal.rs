@@ -219,6 +219,29 @@ impl<W: AnchorWitnessStore> CellOwnerJournalV1<W> {
         Ok(())
     }
 
+    /// Observe one existing slot without changing journal bytes or granting a
+    /// writer capability. The returned view keeps this owner borrowed.
+    pub fn observe_inventory(
+        &self,
+        scope: &CellScopeV1,
+    ) -> Result<crate::CellOwnerInventoryV1<'_>, CellExecutionError> {
+        self.require_healthy()?;
+        let index = self.partition_index(scope)?;
+        let pending = self.owner.pending_inference(scope)?;
+        let reserved = u64::from(pending.is_some()) * (MAX_FRAME_BYTES as u64 + 36);
+        let (sequence, head) = self.head.map_or((0, Digest32::ZERO), |anchor| {
+            (anchor.sequence, anchor.checkpoint_digest)
+        });
+        let checkpoint = Digest32::of_parts(&[
+            b"hepta.cell.owner-inventory-cut.v1\0", &self.header,
+            &sequence.to_be_bytes(), head.as_array(), &self.length.to_be_bytes(),
+        ]);
+        crate::CellOwnerInventoryV1::decision(
+            &self.specs[index].definition, self.owner.snapshot(scope)?,
+            pending, checkpoint, reserved,
+        )
+    }
+
     fn partition_index(&self, scope: &CellScopeV1) -> Result<usize, CellExecutionError> {
         self.specs
             .iter()
