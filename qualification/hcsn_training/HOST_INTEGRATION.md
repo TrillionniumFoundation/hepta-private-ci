@@ -6,15 +6,49 @@ immutable job/receipt types. Register the driver at the existing
 verifies and consumes `SignedFinalUseGrant`, records the provider attempt, and
 persists observations before changing TaskFlow state.
 
-The production scheduler still needs an explicit HCSN registration, trusted
-configuration, grant issuance, recovery scheduling, and artifact-owner wiring.
-The existing `hepta-taskflow-runtime` binary is not an independent production host.
+The existing production owner is `AgentdAutomationEffectHost`, reached through
+`AgentdConfig::with_automation_effect_host_file`. The new HCSN composition uses
+that owner's SQLite store, current TaskFlow fence, final-use verification,
+revocation refresh, and reconciliation APIs. It does not add a second scheduler.
+The existing `hepta-taskflow-runtime` binary remains an unsupported standalone
+host and exits without dispatching.
+
+## Registration status on this baseline
+
+The HCSN host configuration is schema version 2 with
+`provider: "hcsn_process_v1"`. It requires an explicit `authority_profile`:
+
+| Profile | Admission on this baseline |
+| --- | --- |
+| `engineering_ed25519_v1` | Available only when the Agentd host module is compiled with `cfg(test)`. Ordinary debug and release builds refuse it before creating authority or worker state. |
+| `production_ml_dsa65_v2` | Always refused. The required PQ owner authority, signed revocations, protected clock, and external frontier are not composed into this baseline. |
+
+Production deployment remains unqualified. A real signed-grant/worker engineering
+test is not evidence that the production PQ authority profile is available. The
+production owner composition must be completed on the branch that owns that
+authority protocol; the schema-2 engineering configuration cannot downgrade it.
+
+In the test composition, the host owns the provider scope, final-use scope,
+authority/revocation inputs, canonical directories, executable/source pins, and
+bounded supervision deadline. Only `hcsn.training.start` and
+`hcsn.training.cancel` are registered. The host's public control payload limit
+remains 24 KiB; the lower-level HCSN driver limit is separately 8 MiB.
+
+The host retains the exact signed intent and original UTF-8 request bytes in a
+private `taskflow-requests` directory under the configured supervisor store.
+Retention occurs inside the already-authorized dispatch callback, with
+create-only writes and file/directory synchronization before provider contact.
+The retained directory is revalidated on dispatch and lookup. Exposed,
+redirected, linked, missing, or mismatched retained requests cannot authorize a
+launch. Recovery validates the stored intent and payload against the pending
+SQLite attempt and only queries the same job.
 
 ## Initialize the concrete host
 
 The supplied Python backend serves one private store on one Linux host. Its
-canonical absolute parent directory must already exist. Initialize the store
-once, before accepting jobs:
+canonical absolute parent directory must already exist. Initialization prepares
+the engineering backend; it does not enable production Agentd registration.
+Initialize the store once, before accepting jobs:
 
 ```sh
 /opt/hepta/venv/bin/python -I -B /opt/hepta/release/qualification/hcsn_training/supervisor.py \
@@ -69,7 +103,8 @@ equals `provider_scope`, and its payload digest hashes the exact worker-request
 UTF-8 bytes. The worker request retains its own training `operation_id`.
 Retain those exact bytes with the host's operation record: the TaskFlow dispatch
 ledger stores their digest, and recovery requires the original bytes. JSON
-re-encoding can change that digest. The current request limit is 8 MiB.
+re-encoding can change that digest. The library accepts up to 8 MiB; an Agentd
+control request remains subject to the smaller public wire limit described above.
 
 ```rust
 let binding = start_intent.final_use_binding()?;
@@ -145,6 +180,48 @@ bindings and content through `prepare_hcsn_publication_v1` and its fenced publis
 API. Evaluation, trust decisions, and model adoption remain explicit owner work.
 TaskFlow completion alone never publishes or adopts a candidate.
 
-The [signed TaskFlow integration test](../../codex-rs/hepta-automation/tests/hcsn_taskflow.rs)
-exercises authorization, cold database recovery, and distinct cancellation. The
-[supervisor tests](test_supervisor.py) exercise actual Linux worker processes.
+## Explicit real-worker qualification
+
+The [signed real-worker test](../../codex-rs/hepta-automation/tests/hcsn_signed_worker.rs)
+combines the real `AutomationStore`, persistent synthetic `FinalUseAuthority`,
+`HcsnTaskFlowDriver`, pinned process supervisor, and actual CPU worker. It rejects
+an invalid signature before any job exists, deliberately loses the first real
+provider reply, and re-executes itself in a new native process. That process
+reopens the nonce journal and SQLite, rejects redispatch, queries the original
+job, verifies actual output digests, and reconciles the same logical attempt.
+
+Reconciliation preserves the first `Indeterminate` observation as history. The
+test requires `state = Reconciled`, `final_outcome = Succeeded`, and the terminal
+provider receipt digest, then closes and reopens SQLite again and checks equality
+of the complete owner-visible terminal receipt. It does not replace historical
+uncertainty with a fabricated initial success.
+
+This test is explicitly ignored in ordinary test runs. An explicit invocation
+requires `HEPTA_HCSN_SIGNED_WORKER_ROOT` naming a canonical fresh fixture directory
+containing `request.json` and `supervisor-config.json`, with an initialized empty
+`supervisor-store`. The config contains `python_executable`, `python_sha256`,
+`repository_root`, `supervisor_sha256`, and `durable_root`; the last must equal
+`<fixture-root>/supervisor-store`. Missing fixture input causes a failure, not a
+reported pass. Its durable success output is `signed-taskflow.json`.
+
+```sh
+HEPTA_HCSN_SIGNED_WORKER_ROOT=/absolute/fresh-fixture \
+  just test -p codex-hepta-automation --test hcsn_signed_worker --run-ignored only
+```
+
+`verify_bridge.py --supervised --signed-worker-executable <qualified-test-binary>`
+creates the fixture and performs this dispatch before the existing artifact-owner
+publication, cold continuation, and second-training-block checks. The binary can
+also be invoked directly with `--ignored --exact
+signed_authority_real_worker_cold_recovery --nocapture`; its SHA-256 and source
+build provenance must be retained. A normal ignored-test build is compilation
+evidence only. A failed fixture remains a retained attempt and must not be
+silently overwritten or restarted.
+
+The [existing signed TaskFlow test](../../codex-rs/hepta-automation/tests/hcsn_taskflow.rs)
+uses a supervisor double for authorization, database recovery, and distinct
+cancellation. The [supervisor tests](test_supervisor.py) exercise actual Linux
+worker cancellation separately. The new combined real-worker fixture covers
+signed **Start and recovery**; it does not claim a combined signed cancellation
+and real-process termination result. All of these fixtures use synthetic trust
+or explicit engineering setup and do not grant production adoption authority.

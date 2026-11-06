@@ -183,6 +183,7 @@ fn publish(root: &Path) -> Result<()> {
     let schema_profile = match clock_input["profile"]["integration"]["kind"].as_str() {
         Some("value_kernel") => "fixture-value-kernel-tensor-checkpoint-v1",
         Some("population_grid") => "fixture-population-grid-tensor-checkpoint-v2",
+        Some("population_age") => "fixture-population-age-tensor-checkpoint-v3",
         _ => return Err("unsupported fixture tensor schema profile".into()),
     };
     let (config, key) = config(root);

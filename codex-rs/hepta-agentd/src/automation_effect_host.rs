@@ -49,6 +49,22 @@ use serde::Deserialize;
 use crate::AgentdError;
 use crate::AgentdIdentity;
 
+#[path = "automation_hcsn_host.rs"]
+mod hcsn;
+
+#[derive(Clone, Debug)]
+enum EffectProvider {
+    Http(HttpProviderEffectAdapter),
+    Hcsn(hcsn::HcsnProvider),
+}
+
+#[derive(Deserialize)]
+#[serde(untagged)]
+enum AutomationEffectHostFile {
+    Http(AutomationEffectHostFileV1),
+    Hcsn(hcsn::HcsnHostFileV2),
+}
+
 const AUTOMATION_EFFECT_HOST_SCHEMA_VERSION: u32 = 1;
 const MAX_AUTOMATION_EFFECT_HOST_FILE_BYTES: u64 = 64 * 1024;
 const MAX_AUTOMATION_EFFECT_REVOCATIONS_FILE_BYTES: u64 = 4 * 1024 * 1024;
@@ -70,7 +86,7 @@ pub(crate) struct AgentdAutomationEffectHost {
     authority: FinalUseAuthority,
     revocations_file: PathBuf,
     revocation_frontier: Arc<Mutex<(u64, u64)>>,
-    adapter: HttpProviderEffectAdapter,
+    adapter: EffectProvider,
 }
 
 impl std::fmt::Debug for AgentdAutomationEffectHost {
@@ -110,7 +126,10 @@ struct AutomationEffectHostFileV1 {
 
 impl AgentdAutomationEffectHost {
     pub(crate) fn open(identity: &AgentdIdentity, path: &Path) -> Result<Self, AgentdError> {
-        let config = read_host_file(path)?;
+        let config = match read_host_file(path)? {
+            AutomationEffectHostFile::Http(config) => config,
+            AutomationEffectHostFile::Hcsn(config) => return Self::open_hcsn(identity, config),
+        };
         if config.schema_version != AUTOMATION_EFFECT_HOST_SCHEMA_VERSION {
             return Err(AgentdError::Invalid(
                 "unsupported automation effect host schema".to_string(),
@@ -215,7 +234,7 @@ impl AgentdAutomationEffectHost {
             authority,
             revocations_file: config.final_use_revocations_file,
             revocation_frontier: Arc::new(Mutex::new(frontier)),
-            adapter,
+            adapter: EffectProvider::Http(adapter),
         })
     }
 
@@ -250,8 +269,20 @@ impl AgentdAutomationEffectHost {
         let binding = intent
             .final_use_binding()
             .map_err(|error| AgentdError::Invalid(error.to_string()))?;
+        let adapter = match &self.adapter {
+            EffectProvider::Http(adapter) => adapter.clone(),
+            EffectProvider::Hcsn(provider) => {
+                let mut driver = provider.driver(&intent.operation_id)?;
+                return store.execute_authorized_taskflow_effect(
+                    &self.authority, &mut driver, intent, wire_payload, &fence,
+                    signed_grant, &binding, command_id, now_ms,
+                ).await.map_err(|error| AgentdError::Protocol(format!(
+                    "automation HCSN authorized effect dispatch: {error}"
+                )));
+            }
+        };
         let mut driver = HttpAuthorizedEffectDriver {
-            adapter: self.adapter.clone(),
+            adapter,
             provider_scope: self.provider_scope.clone(),
             destination_id: self.destination_id.clone(),
         };
@@ -324,41 +355,40 @@ impl AgentdAutomationEffectHost {
                 AuthorizedEffectRecoveryResult::Observed(_) => {}
             }
         }
-        let provider_intent = self.provider_intent(&pending)?;
-        match self.adapter.lookup_for_intent(&provider_intent).await {
-            ProviderEffectLookup::Ack(ack) => {
-                let Some(receipt) = terminal_receipt_from_ack(&ack) else {
-                    return Ok(AgentdAutomationEffectReconcileOutcome::Indeterminate);
-                };
-                match store
-                    .recover_authorized_taskflow_effect(
-                        run_id,
-                        step_id,
-                        attempt,
-                        &fence,
-                        AuthorizedEffectRecovery::Observed(receipt),
-                        now_ms,
-                    )
-                    .await
-                    .map_err(|error| {
-                        AgentdError::Protocol(format!(
-                            "reconcile authorized effect terminal observation: {error}"
-                        ))
-                    })? {
-                    AuthorizedEffectRecoveryResult::Observed(receipt) => {
-                        Ok(AgentdAutomationEffectReconcileOutcome::Observed(receipt))
-                    }
-                    AuthorizedEffectRecoveryResult::ProvenAbsent => Err(AgentdError::Protocol(
-                        "status lookup cannot manufacture provider absence".to_string(),
+        let terminal = match &self.adapter {
+            EffectProvider::Http(adapter) => {
+                let provider_intent = self.provider_intent(&pending)?;
+                match adapter.lookup_for_intent(&provider_intent).await {
+                    ProviderEffectLookup::Ack(ack) => terminal_receipt_from_ack(&ack),
+                    ProviderEffectLookup::Conflict { .. } => return Err(AgentdError::Protocol(
+                        "provider reports a same-key payload conflict".to_string(),
                     )),
+                    ProviderEffectLookup::NotFound | ProviderEffectLookup::Unknown => None,
                 }
             }
-            ProviderEffectLookup::Conflict { .. } => Err(AgentdError::Protocol(
-                "provider reports a same-key payload conflict".to_string(),
-            )),
-            ProviderEffectLookup::NotFound | ProviderEffectLookup::Unknown => {
-                Ok(AgentdAutomationEffectReconcileOutcome::Indeterminate)
+            EffectProvider::Hcsn(provider) => match provider.lookup(&pending) {
+                codex_hepta_automation::AuthorizedProviderEffectLookup::Observed(receipt) => Some(receipt),
+                codex_hepta_automation::AuthorizedProviderEffectLookup::Unresolved => None,
+                codex_hepta_automation::AuthorizedProviderEffectLookup::ProvenAbsent { .. } => {
+                    return Err(AgentdError::Protocol("HCSN lookup cannot prove absence".to_string()));
+                }
+            },
+        };
+        let Some(receipt) = terminal else {
+            return Ok(AgentdAutomationEffectReconcileOutcome::Indeterminate);
+        };
+        match store.recover_authorized_taskflow_effect(
+            run_id, step_id, attempt, &fence,
+            AuthorizedEffectRecovery::Observed(receipt), now_ms,
+        ).await.map_err(|error| AgentdError::Protocol(format!(
+            "reconcile authorized effect terminal observation: {error}"
+        )))? {
+            AuthorizedEffectRecoveryResult::Observed(receipt) => {
+                Ok(AgentdAutomationEffectReconcileOutcome::Observed(receipt))
             }
+            AuthorizedEffectRecoveryResult::ProvenAbsent => Err(AgentdError::Protocol(
+                "status lookup cannot manufacture provider absence".to_string(),
+            )),
         }
     }
 
@@ -574,7 +604,7 @@ fn serialized_observation_digest(domain: &[u8], value: &impl serde::Serialize) -
     Sha256Digest::for_bytes(&bytes)
 }
 
-fn read_host_file(path: &Path) -> Result<AutomationEffectHostFileV1, AgentdError> {
+fn read_host_file(path: &Path) -> Result<AutomationEffectHostFile, AgentdError> {
     let bytes = read_protected_file(
         path,
         MAX_AUTOMATION_EFFECT_HOST_FILE_BYTES,
