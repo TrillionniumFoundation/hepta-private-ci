@@ -1,0 +1,89 @@
+{
+  "exact_head_hosted_native": "PENDING",
+  "matrix_entries": [
+    12,
+    2
+  ],
+  "native_compiler_invoked_locally": false,
+  "removing_added_lines_restores_all_original_bytes": true,
+  "shell_stub_cases": [
+    {
+      "case": "coherent",
+      "exit": 0,
+      "sandbox": "false",
+      "smoke_invoked": true
+    },
+    {
+      "case": "cargo_version_mismatch",
+      "exit": 1,
+      "sandbox": "false",
+      "smoke_invoked": false
+    },
+    {
+      "case": "rustc_version_mismatch",
+      "exit": 1,
+      "sandbox": "false",
+      "smoke_invoked": false
+    },
+    {
+      "case": "missing_step_pin",
+      "exit": 1,
+      "sandbox": "false",
+      "smoke_invoked": false
+    },
+    {
+      "case": "compiler_probe_fails",
+      "exit": 29,
+      "sandbox": "false",
+      "smoke_invoked": false
+    },
+    {
+      "case": "actual_smoke_fails",
+      "exit": 37,
+      "sandbox": "false",
+      "smoke_invoked": true
+    },
+    {
+      "case": "coherent",
+      "exit": 0,
+      "sandbox": "true",
+      "smoke_invoked": true
+    },
+    {
+      "case": "cargo_version_mismatch",
+      "exit": 1,
+      "sandbox": "true",
+      "smoke_invoked": false
+    },
+    {
+      "case": "rustc_version_mismatch",
+      "exit": 1,
+      "sandbox": "true",
+      "smoke_invoked": false
+    },
+    {
+      "case": "missing_step_pin",
+      "exit": 1,
+      "sandbox": "true",
+      "smoke_invoked": false
+    },
+    {
+      "case": "compiler_probe_fails",
+      "exit": 29,
+      "sandbox": "true",
+      "smoke_invoked": false
+    },
+    {
+      "case": "actual_smoke_fails",
+      "exit": 37,
+      "sandbox": "true",
+      "smoke_invoked": true
+    }
+  ],
+  "source_added_lines": 10,
+  "source_removed_lines": 0,
+  "status": "SOURCE_AND_SHELL_STUB_CHECKS_PASS_NATIVE_PENDING",
+  "timeouts_or_checks_changed": false,
+  "versions_upgraded": false,
+  "whole_yaml_equal_except_smoke_env_and_probe": true
+}

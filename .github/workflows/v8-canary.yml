@@ -299,6 +299,8 @@ jobs:
         env:
           SANDBOX: ${{ matrix.sandbox }}
           TARGET: ${{ matrix.target }}
+          # Keep dependency-local toolchain files from changing the smoke compiler.
+          RUSTUP_TOOLCHAIN: "1.95.0"
         shell: bash
         run: |
           set -euo pipefail
@@ -327,6 +329,14 @@ jobs:
 
           (
             cd codex-rs
+            # Fail before the V8 build if rustup selects a different compiler
+            # while the smoke-test Cargo binary is 1.95.0 (original E0514 regression).
+            cargo_version="$("${CARGO_1_95}" --version)"
+            rustc_version="$(rustc --version)"
+            if [[ "${cargo_version}" != "cargo 1.95.0 "* || "${rustc_version}" != "rustc 1.95.0 "* ]]; then
+              printf 'Cargo/rustc toolchains differ from pinned 1.95.0: %s / %s\n' "${cargo_version}" "${rustc_version}" >&2
+              exit 1
+            fi
             CARGO_TARGET_DIR="${RUNNER_TEMP}/rusty-v8-cargo-smoke-${TARGET}-${SANDBOX}" \
             RUSTY_V8_ARCHIVE="${GITHUB_WORKSPACE}/${archive}" \
             RUSTY_V8_SRC_BINDING_PATH="${GITHUB_WORKSPACE}/${binding}" \

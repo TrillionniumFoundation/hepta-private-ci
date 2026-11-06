@@ -1,0 +1,80 @@
+{
+  "actual_checkout_commit": "415e08b188dc55b8016bdc679604efdb94388d17",
+  "candidate": {
+    "bytes": 18348,
+    "git_blob": "70fc1c94cba1b8ce716705269edf6a053a88266f",
+    "sha256": "f2dddc4b82156dd40329848a21bbb9e80ad97897bcbe162f264963edba7936f6"
+  },
+  "donor": {
+    "adaptation": "Two comments describe dependency-local override rather than the donor's older workspace override.",
+    "base": "82943251870182af4dff666b30c65eb116b82892",
+    "executable_added_lines_identical": true,
+    "head": "9ffff862abc09dc5ee9d32252ecfac2da66877ca",
+    "postimage": {
+      "bytes": 18023,
+      "git_blob": "b8d22ed31467a60ec6fbd7c514246386f3d3a02f",
+      "sha256": "e03b17c9fc57902ecec583ee427938f1ee788c9b38c6b9ba8efd47cc19fc02ed"
+    },
+    "pr": 4705,
+    "preimage": {
+      "bytes": 17348,
+      "git_blob": "bc0bb7a93bd97d422e6b9d9dd5d5e12294fbd6f1",
+      "sha256": "2516afbaa5538004406c0d92179665aba1b541e68944df53ad71d674ecd89cd4"
+    }
+  },
+  "failure": {
+    "decoded_utf8": {
+      "bytes": 533049,
+      "git_blob": "e32f09ca2e884e85a6ae5d291ecc075c333a3e18",
+      "sha256": "73d3362664e1d09a4053ce4bf0d5b57cfc5a4504635e79bf30fb3e116170de44"
+    },
+    "file": "job-127936579270.log.gz",
+    "gzip": {
+      "bytes": 56628,
+      "git_blob": "c0bf745feff2d589f45c7e5a383492e5fa518f57",
+      "sha256": "41a94a88764c1f93e5810eb394ae0ffc9c4c0f7a5cb3038af8770f8e0a5b6273"
+    },
+    "job": 127936579270,
+    "run": 42229805940,
+    "source_head": "4bdbfa22ed95f144c8dee7f9b0167ed166bb3841"
+  },
+  "rustup_override_documentation": {
+    "git_blob": "5129e751fb9031ce76bdf73e624d0ca571ca50d4",
+    "path": "doc/user-guide/src/overrides.md",
+    "repository": "rust-lang/rustup",
+    "verified_order": [
+      "command-line shorthand",
+      "RUSTUP_TOOLCHAIN",
+      "directory override",
+      "rust-toolchain.toml",
+      "default toolchain"
+    ]
+  },
+  "source": {
+    "bytes": 17689,
+    "git_blob": "8c7826cda87a5cc6a237f11dbb6bc2615a3a53e7",
+    "head": "c066a149edb85ffb3513f60720a2e0461152dbd5",
+    "mode": "100644",
+    "sha256": "68de7472291fcf5f6b6bf0f9097b78be7a8b1986e220f34c4a72af7f0c222bd9",
+    "tree": "ab51b906153e4d848236cff058733d73b3353a7d",
+    "workflow": ".github/workflows/v8-canary.yml"
+  },
+  "upstream_toolchain": {
+    "content": "[toolchain]\nchannel = \"1.91.0\"\ncomponents = [\"rustfmt\", \"clippy\"]\ntargets = [\n    \"x86_64-apple-darwin\",\n    \"aarch64-apple-darwin\",\n    \"x86_64-unknown-linux-gnu\",\n    \"aarch64-unknown-linux-gnu\",\n    \"x86_64-pc-windows-msvc\",\n    \"aarch64-linux-android\",\n    \"x86_64-linux-android\",\n]\n",
+    "display_title": "rust-toolchain.toml",
+    "display_url": "https://github.com/denoland/rusty_v8/blob/v150.4.0/rust-toolchain.toml",
+    "encoding": "utf-8",
+    "path": "rust-toolchain.toml",
+    "ref": "v150.4.0",
+    "repository": "denoland/rusty_v8",
+    "sha": "0924897677c99f17d9249e7bf4ed51f594e4216e"
+  },
+  "workspace_toolchain": {
+    "content": "[toolchain]\nchannel = \"1.96.0\"\ncomponents = [\"clippy\", \"rustfmt\", \"rust-src\"]\n",
+    "display_title": "rust-toolchain.toml",
+    "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/c066a149edb85ffb3513f60720a2e0461152dbd5/codex-rs/rust-toolchain.toml",
+    "encoding": "utf-8",
+    "path": "codex-rs/rust-toolchain.toml",
+    "sha": "917d2492264a35bc9c0feaef41878d8825870866"
+  }
+}
