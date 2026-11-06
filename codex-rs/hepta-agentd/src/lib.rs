@@ -319,6 +319,8 @@ mod neuron_generation_update_live;
 #[cfg(unix)]
 mod neuron_generation_update_bootstrap;
 #[cfg(unix)]
+mod neuron_generation_update_cold;
+#[cfg(unix)]
 mod neuron_generation_current;
 #[cfg(unix)]
 mod neuron_generation_update_selection;
@@ -687,6 +689,10 @@ pub use neuron_generation_update_bootstrap::AgentdGenerationUpdateRuntimeOptions
 pub use neuron_generation_update_bootstrap::AgentdGenerationUpdateRuntimeV1;
 #[cfg(unix)]
 pub use neuron_generation_update_bootstrap::ReadyAgentdGenerationUpdateV1;
+#[cfg(unix)]
+pub use neuron_generation_update_cold::AgentdGenerationUpdatePredecessorFilesV1;
+#[cfg(unix)]
+pub use neuron_generation_update_cold::prepare_agentd_generation_cold_update_v1;
 #[cfg(unix)]
 pub use neuron_generation_current::NeuronGenerationCurrentOwnerV1;
 #[cfg(unix)]

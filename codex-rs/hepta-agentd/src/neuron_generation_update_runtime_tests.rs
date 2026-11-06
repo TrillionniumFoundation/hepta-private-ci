@@ -22,6 +22,8 @@ use crate::recover_agentd_generation_update_v1;
 
 #[path = "neuron_generation_update_runtime_support.rs"]
 mod support;
+#[path = "neuron_generation_update_successive_tests.rs"]
+mod successive;
 
 #[tokio::test]
 async fn normal_runtime_reset_and_journal_reopen_keep_original_receipt() -> anyhow::Result<()> {

@@ -23,6 +23,7 @@ pub(super) struct ArtifactFiles {
     pub(super) owner: Arc<Mutex<LearningArtifactOwnerService>>,
     root: PathBuf,
     key: SigningKey,
+    selector: SigningKey,
     selected: SignedArtifactSelectionV1,
     verifier: ArtifactSelectionVerifierV1,
 }
@@ -119,21 +120,36 @@ impl ArtifactFiles {
             signature: [0; 64],
         };
         selected.signature = selector.sign(&selected.signing_bytes()).to_bytes();
-        Ok(Self { owner: Arc::new(Mutex::new(owner)), root: root.to_path_buf(), key, selected, verifier })
+        Ok(Self { owner: Arc::new(Mutex::new(owner)), root: root.to_path_buf(), key, selector, selected, verifier })
     }
 
     pub(super) fn selection(&self, now: u64) -> anyhow::Result<AgentdSelectedGenerationV1> {
         let owner = self.owner.lock().map_err(|_| anyhow::anyhow!("artifact owner poisoned"))?;
-        let receipt = owner.current_registry_view(now)?.receipt();
-        let registry = self.root.join("registries").join(format!("{}-{}.snapshot", receipt.head_digest, receipt.file_digest));
-        let payload = self.root.join("payloads").join(format!("{}-{}.bin", self.selected.artifact_id, self.selected.content_digest));
-        Ok(AgentdSelectedGenerationV1::load(
-            &owner,
-            self.verifier.clone(),
-            self.selected.clone(),
-            AgentdGenerationSelectionFilesV1 { registry_snapshot: File::open(registry)?, payload: File::open(payload)? },
-            now,
-        )?)
+        load_selection(&owner, &self.root, self.verifier.clone(), self.selected.clone(), now)
+    }
+
+    pub(super) fn publish_next_selection(&self, manifest: &CellBackendManifestV2, name: &str, now: u64) -> anyhow::Result<AgentdSelectedGenerationV1> {
+        let mut owner = self.owner.lock().map_err(|_| anyhow::anyhow!("artifact owner poisoned"))?;
+        let candidate = publish_candidate(&mut owner, manifest, &self.key, name)?;
+        let current = owner.current_registry_view(now)?;
+        let mut selected = self.selected.clone();
+        selected.selection_id = id(&format!("selection-{name}"))?;
+        selected.artifact_id = candidate.artifact_id;
+        selected.registry_head_digest = current.receipt().head_digest;
+        selected.current_witness_digest = current.witness_digest();
+        selected.current_trust_digest = current.trust_digest();
+        selected.artifact_kind = candidate.kind;
+        selected.artifact_generation = candidate.generation;
+        selected.predecessor_id = candidate.predecessor_id;
+        selected.content_digest = candidate.content_digest;
+        selected.objective_digest = candidate.objective_digest;
+        selected.support_digest = candidate.support_digest;
+        selected.compatibility_digest = candidate.compatibility_digest;
+        selected.encoded_size_bytes = candidate.encoded_size_bytes;
+        selected.issued_at = now;
+        selected.expires_at = now + 1_000;
+        selected.signature = self.selector.sign(&selected.signing_bytes()).to_bytes();
+        load_selection(&owner, &self.root, self.verifier.clone(), selected, now)
     }
 
     pub(super) fn advance_current(&self, manifest: &CellBackendManifestV2) -> anyhow::Result<()> {
@@ -158,6 +174,15 @@ impl ArtifactFiles {
         owner.install_withdrawal_frontier(withdrawals)?;
         Ok(())
     }
+}
+
+fn load_selection(owner: &LearningArtifactOwnerService, root: &Path, verifier: ArtifactSelectionVerifierV1, selected: SignedArtifactSelectionV1, now: u64) -> anyhow::Result<AgentdSelectedGenerationV1> {
+    let receipt = owner.current_registry_view(now)?.receipt();
+    let registry = root.join("registries").join(format!("{}-{}.snapshot", receipt.head_digest, receipt.file_digest));
+    let payload = root.join("payloads").join(format!("{}-{}.bin", selected.artifact_id, selected.content_digest));
+    Ok(AgentdSelectedGenerationV1::load(owner, verifier, selected, AgentdGenerationSelectionFilesV1 {
+        registry_snapshot: File::open(registry)?, payload: File::open(payload)?,
+    }, now)?)
 }
 
 fn publish_candidate(owner: &mut LearningArtifactOwnerService, cell: &CellBackendManifestV2, key: &SigningKey, name: &str) -> anyhow::Result<ArtifactManifest> {

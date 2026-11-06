@@ -129,11 +129,15 @@ impl Fixture {
     }
 
     pub(crate) fn target_create(&self) -> anyhow::Result<AgentdGenerationUpdateTargetV1<FileAnchorWitnessStore>> {
-        for name in ["target-journal", "target-witness"] {
+        self.named_target_create("target-journal", "target-witness", self.target_config.clone())
+    }
+
+    pub(crate) fn named_target_create(&self, journal: &str, witness: &str, config: CellGenerationConfigV2) -> anyhow::Result<AgentdGenerationUpdateTargetV1<FileAnchorWitnessStore>> {
+        for name in [journal, witness] {
             OpenOptions::new().create_new(true).read(true).write(true).open(self.directory.path().join(name))?.sync_all()?;
         }
         File::open(self.directory.path())?.sync_all()?;
-        self.target_reopen()
+        Ok(AgentdGenerationUpdateTargetV1 { file: self.file(journal)?, witness: self.witness(witness, &config)?, config, max_records: RECORDS })
     }
 
     pub(crate) fn target_reopen(&self) -> anyhow::Result<AgentdGenerationUpdateTargetV1<FileAnchorWitnessStore>> {
@@ -178,6 +182,10 @@ impl Fixture {
 
     pub(crate) fn advance_artifact_current(&self) -> anyhow::Result<()> {
         self.artifact_files.advance_current(&self.target_config.manifest)
+    }
+
+    pub(crate) fn publish_next_selection(&self, manifest: &CellBackendManifestV2, name: &str) -> anyhow::Result<AgentdSelectedGenerationV1> {
+        self.artifact_files.publish_next_selection(manifest, name, self.clock.now_unix_ms()?)
     }
 
     pub(crate) fn withdraw(&self) -> anyhow::Result<()> { self.artifact_files.withdraw() }
