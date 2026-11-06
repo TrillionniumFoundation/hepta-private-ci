@@ -1,0 +1,58 @@
+{
+  "archive_and_original_part_independently_read": true,
+  "archive_bytes": 100964,
+  "archive_sha256": "47d3c5efa6b9aa4b2f97ef06a606f2931d8065f068311303f8d079c18a7bbaa5",
+  "bulk_H1_H2_H3_started": false,
+  "records": [
+    {
+      "bytes": 65536,
+      "chunk_sha256": "b78f7a3aca805037bdb1f44afe94e2c9c31d252e60bc1c6f4674045cf63a16b2",
+      "offset": 0,
+      "remote_path": "/home/qian-qi/work/hepta-h4-actual-reference-export-20261105-93bfc-01/H4-actual-retained-image-references.tar.xz",
+      "request_path": "w1/h4-reference-export/H4-child-archive-request-0.json",
+      "request_sha256": "1504c6e3134cb0fc2e4d753c7213112d456d357f96495b5da7000d95cf596bc3",
+      "role": "archive",
+      "rpc_path": "w1/h4-reference-export/H4-child-archive-response-0.raw.json",
+      "rpc_sha256": "d89acb72a07cf0e9117af1eba229f5c628da76c2b86e551c31ed53c36f680376",
+      "version": "2050:53273374:100964:1793922176307587269:1793922176351585937"
+    },
+    {
+      "bytes": 35428,
+      "chunk_sha256": "cbde5118dbe8b590883a92c1964ca2efb403d30b853d0bda8da6c4b01e9fe2fe",
+      "offset": 65536,
+      "remote_path": "/home/qian-qi/work/hepta-h4-actual-reference-export-20261105-93bfc-01/H4-actual-retained-image-references.tar.xz",
+      "request_path": "w1/h4-reference-export/H4-child-archive-request-65536.json",
+      "request_sha256": "21d5c0ce813cc364da003b9f753c571095932b6c2beb86880b2572b908602f69",
+      "role": "archive",
+      "rpc_path": "w1/h4-reference-export/H4-child-archive-response-65536.raw.json",
+      "rpc_sha256": "cab61b206e0b95a2729f89d7beefcd0b178284d703d6b2fdb14e608e553c7c55",
+      "version": "2050:53273374:100964:1793922176307587269:1793922176351585937"
+    },
+    {
+      "bytes": 65536,
+      "chunk_sha256": "b78f7a3aca805037bdb1f44afe94e2c9c31d252e60bc1c6f4674045cf63a16b2",
+      "offset": 0,
+      "remote_path": "/home/qian-qi/work/hepta-h4-actual-reference-export-20261105-93bfc-01/H4-actual-retained-image-references.tar.xz.part-0000",
+      "request_path": "w1/h4-reference-export/H4-child-part-request-0.json",
+      "request_sha256": "471d23f4336a79eee9d96aae1fbbae76bc1c10f4efe2f904d4e18f8333fbacd4",
+      "role": "part",
+      "rpc_path": "w1/h4-reference-export/H4-child-part-response-0.raw.json",
+      "rpc_sha256": "a9a564d87bb832f078ea8875ba662cb1de145a56a90d65e0b99ef8d56c8885f8",
+      "version": "2050:53273375:100964:1793922176344225544:1793922176352585907"
+    },
+    {
+      "bytes": 35428,
+      "chunk_sha256": "cbde5118dbe8b590883a92c1964ca2efb403d30b853d0bda8da6c4b01e9fe2fe",
+      "offset": 65536,
+      "remote_path": "/home/qian-qi/work/hepta-h4-actual-reference-export-20261105-93bfc-01/H4-actual-retained-image-references.tar.xz.part-0000",
+      "request_path": "w1/h4-reference-export/H4-child-part-request-65536.json",
+      "request_sha256": "ef2c3ecd2209c2701dc8b573b7ebe347376fc94b118858b4c60f242c8b162f78",
+      "role": "part",
+      "rpc_path": "w1/h4-reference-export/H4-child-part-response-65536.raw.json",
+      "rpc_sha256": "40f716dec74ca3b8f87c3e79fc11c221fa4e37e87161916544174294ad8ca059",
+      "version": "2050:53273375:100964:1793922176344225544:1793922176352585907"
+    }
+  ],
+  "schema": "H4-actual-child-and-part-transfer-index-v1",
+  "status": "ALL_FOUR_ORIGINAL_VERSIONED_RANGES_VERIFIED"
+}

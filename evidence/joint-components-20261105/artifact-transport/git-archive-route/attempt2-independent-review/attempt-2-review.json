@@ -1,0 +1,85 @@
+{
+  "existing_owner_controls": {
+    "failed": 0,
+    "includes": "Original five plus production public initializer, actual Git get-url directions and insteadOf/pushInsteadOf refusal in a local fixture.",
+    "passed": 6,
+    "reviewer_reran": false,
+    "seconds": 0.067
+  },
+  "package": {
+    "attempt2-from-attempt1.patch": {
+      "bytes": 17081,
+      "sha256": "c84b449ec3aa940db17de94df59f0bfed9ff11b23e695ff532fcdf63903c7313"
+    },
+    "bootstrap.py": {
+      "bytes": 55194,
+      "sha256": "abc8b0cbe133789c0b8ca6411802d2f66999a712f3592e793a2ecdc441fc6d07"
+    },
+    "controls.raw.json": {
+      "bytes": 1326,
+      "sha256": "9f51a3a163e4617d11037f03bafcb70d0b81fe30361e3f69ef395b3d45b280d2"
+    },
+    "delivery-manifest.json": {
+      "bytes": 2950,
+      "sha256": "2d8d6e256a18d98e4c8f1b6968146ab08fc59577623d2b04de2f00559d87e334"
+    },
+    "launch-request.json": {
+      "bytes": 55544,
+      "sha256": "4d117cadfafac7ff93b06e3e07ca1ef7ce4828ec8a25d4733475750d2a99fb03"
+    },
+    "run_archive_transport.py": {
+      "bytes": 30677,
+      "sha256": "f5032a5fdc5fa4a88be2aac3d85deae64f8f2a4e77a2e65626a9615ace1e101c"
+    },
+    "transport-bundle.json": {
+      "bytes": 155210,
+      "sha256": "2b1e1c6ccb2bf73795b195d2026cadb24bf95f0aedeff8f2b777749c9f9c1a5d"
+    },
+    "transport-plan.json": {
+      "bytes": 82742,
+      "sha256": "de5bf769089153d2bfd1fae468cf0af7942da442a9856acc120ee611757e5d5b"
+    },
+    "validation-manifest.json": {
+      "bytes": 1669,
+      "sha256": "806a118b113d556b643f300ad17ef84fb74575cc0c62f37d4dcd3d98d4c42dd3"
+    }
+  },
+  "plan_changed_keys": [
+    "auth_policy",
+    "commit_date",
+    "previous_attempt",
+    "script_sha256"
+  ],
+  "prior_actual_failure": {
+    "elapsed_seconds": 4.051636024028994,
+    "job_id": "1a1ae34e63b-fc05-5e2b",
+    "owned_processes_clear": true,
+    "protected_unchanged": true,
+    "push_attempts": 0,
+    "release_sha256": "3bcf9cee804c5e68415a0fb565e47bf1dbe95930fd2aebd00a0db57c58cf83e2",
+    "status": "FAILED",
+    "terminal_sha256": "8d63e5fceaacb2d3c1ec13fb02c149f6522e205ce87b3434059baf24d148b9a8"
+  },
+  "remaining_scope": "No remote success or cloud archive readback is inferred. Root must authorize the exact request; confirmed ref still needs complete independent payload/member verification.",
+  "repair_boundary": [
+    "Only the fresh attempt2 bare config may gain exactly one validated public HTTPS remote.transport.url. Initial and exact postsetup bytes are recorded and later compared.",
+    "The source five configurations, whole source identity, original three archives/162 parts/166 paths/limits/credential bridge and target ref are unchanged.",
+    "No SSH, cookie route, credential write, hook override, URL rewrite or fallback is added; actual Git get-url and --push checks remain.",
+    "Old failure package/output root are untouched; new root/tools/key 02, same target ref01 required absent. This is separately reviewed, not an automatic retry.",
+    "Prior pinned FAILED/push0 and exact release proof are validated before creating the new root.",
+    "One bounded empty-lease push, durable intent and same-ref unknown reconciliation remain unchanged."
+  ],
+  "review_scope": "Local exact-byte, AST delta and existing-result review. No receiver/native/remote/credential/push execution.",
+  "runner_changed_methods": [
+    "Transport.__init__",
+    "Transport.configure_existing_auth",
+    "Transport.initialize_public_remote",
+    "Transport.private_config_identity",
+    "Transport.run",
+    "Transport.validate_origin_routes",
+    "Transport.verify_previous_attempt_settled_without_push",
+    "main"
+  ],
+  "schema": "independent-attempt2-transport-delta-review-v1",
+  "status": "NO_IDENTIFIED_BLOCKER_IN_FROZEN_PUBLIC_URL_REPAIR"
+}

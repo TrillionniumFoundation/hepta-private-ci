@@ -1,0 +1,205 @@
+{
+  "archives": [
+    {
+      "actual_h3_index_metadata_independently_matches": false,
+      "allowed_archive_members": [
+        "H1/elf/060b03442eaad0f40a1c532199d59183ce6b784beb9023ee06fec73105c34d31.elf",
+        "H1/elf/6c4c81a3b2d99aba2bb95aa83433680140a82d936285942ea702c352eb464126.elf",
+        "H1/elf/86a2c65e12fbef81586067783aa478677975e03290bcd62561938645ac1efc7e.elf",
+        "H1/elf/a948cdfa5aeafc03fcfc63459e581ca254129f4d878949236e0bf42df3fe725f.elf",
+        "H1/original-source-map.json",
+        "export-index.json",
+        "export-plan.json",
+        "exporter.py",
+        "owned-release-proof.json"
+      ],
+      "completion_sha256": "034f518dc2bd8fd350d2cb7a322056300051c538382370089104a727f6c1341b",
+      "credential_or_configuration_body_files_in_member_allowlist": false,
+      "export_plan_sha256": "3a8421bb03834cdf1c2e262bb2e72348f398240c41e1752e5b1e82113e915248",
+      "exporter_sha256": "8ba375f315433a4eea9a05b9f1a0fbcffced353eb668cca6cd799b433fa4402b",
+      "four_embedded_metadata_files": {
+        "H1/original-source-map.json": {
+          "bytes": 9817,
+          "sha256": "8c1fe933839ac8bc7d3989c497995d52332f73a9cf8ecc18e15150b66b18d9c2"
+        },
+        "export-plan.json": {
+          "bytes": 21369,
+          "sha256": "3a8421bb03834cdf1c2e262bb2e72348f398240c41e1752e5b1e82113e915248"
+        },
+        "exporter.py": {
+          "bytes": 18885,
+          "sha256": "8ba375f315433a4eea9a05b9f1a0fbcffced353eb668cca6cd799b433fa4402b"
+        },
+        "owned-release-proof.json": {
+          "bytes": 2662,
+          "sha256": "df0fc5340514bfe339a9e6178922930db59087f0128dd62c9971afb741890c60"
+        }
+      },
+      "inspection_scope": "Fixed exporter AST, raw plan/map/release bytes and exact member allowlist. ELF bytes are already approved retained binaries; this is not a generic secret scan or a new native claim.",
+      "metadata_assignment_ast": "metadata_files = {'export-plan.json': plan_raw, 'exporter.py': code_raw, plan['phase'] + '/original-source-map.json': mapping_raw, 'owned-release-proof.json': release_raw}",
+      "phase": "H1",
+      "source_map_keys": [
+        "actual_failed",
+        "actual_passed",
+        "actual_selected_native_cases_run",
+        "capture_limits",
+        "gates",
+        "not_run_followup_gates",
+        "not_run_original_selected_gates",
+        "overall_result",
+        "post_terminal_export_scope",
+        "raw_images_exported",
+        "rebuild_for_evidence_performed",
+        "source_commit",
+        "source_tree",
+        "unique_actual_image_count",
+        "unique_actual_image_total_bytes",
+        "unique_actual_images"
+      ],
+      "source_map_raw_sha256": "8c1fe933839ac8bc7d3989c497995d52332f73a9cf8ecc18e15150b66b18d9c2"
+    },
+    {
+      "actual_h3_index_metadata_independently_matches": false,
+      "allowed_archive_members": [
+        "H2/elf/00a637f55c720b06a655b569930bddaef19fd791467bc4784fe0bfb9e0002a26.elf",
+        "H2/elf/2321aed715fa85f0368bc2e9d6aabd86c3299872f5c01199e04970fb62655f42.elf",
+        "H2/elf/86b21c3bb3abf55d8f1e70493cfb2b3b77982bcc4133ba71fb550ba1dbb047db.elf",
+        "H2/elf/a84dded10d4a054cfc6cbc0ae1d02a4a677249fa2ac34fcfaa6b01a50234d981.elf",
+        "H2/elf/a8bb307bec662845bf2a22cfb756ceb4b3ad0595f5b0e290c8983326a4fb344b.elf",
+        "H2/elf/a948cdfa5aeafc03fcfc63459e581ca254129f4d878949236e0bf42df3fe725f.elf",
+        "H2/elf/ac768b17ffd1b2f8217c46d6adddf13a085a2f0f32ed25a471e1c8bfd59def58.elf",
+        "H2/elf/f16fe89c11c71de377b62783fa5f06f23c8461b7d1b697aaf742dc2830d14295.elf",
+        "H2/original-source-map.json",
+        "H2/partial/b9dc995ee3e6e623056a2563ab8aed3629c003a418b28486ac09db914a0b3f8d.prefix-reference.json",
+        "export-index.json",
+        "export-plan.json",
+        "exporter.py",
+        "owned-release-proof.json"
+      ],
+      "completion_sha256": "d991a50f630e509278c20d5fe9f6ca0e53d1006852d954109d268375978407c1",
+      "credential_or_configuration_body_files_in_member_allowlist": false,
+      "export_plan_sha256": "2a18729275fe2051b3f691fce56542e2d1291193e983330fe82601caf22349b3",
+      "exporter_sha256": "37538f62fd81398262ccde1b9cfa0d1cb0163b115e108b80220ab7af8f929365",
+      "four_embedded_metadata_files": {
+        "H2/original-source-map.json": {
+          "bytes": 75358,
+          "sha256": "720a8a66417113b101f00aeac77cd4268ab6b985b70cb6dbc4796a5f2e8dbadf"
+        },
+        "export-plan.json": {
+          "bytes": 169237,
+          "sha256": "2a18729275fe2051b3f691fce56542e2d1291193e983330fe82601caf22349b3"
+        },
+        "exporter.py": {
+          "bytes": 25293,
+          "sha256": "37538f62fd81398262ccde1b9cfa0d1cb0163b115e108b80220ab7af8f929365"
+        },
+        "owned-release-proof.json": {
+          "bytes": 2662,
+          "sha256": "df0fc5340514bfe339a9e6178922930db59087f0128dd62c9971afb741890c60"
+        }
+      },
+      "inspection_scope": "Fixed exporter AST, raw plan/map/release bytes and exact member allowlist. ELF bytes are already approved retained binaries; this is not a generic secret scan or a new native claim.",
+      "metadata_assignment_ast": "metadata_files = {'export-plan.json': plan_raw, 'exporter.py': code_raw, plan['phase'] + '/original-source-map.json': mapping_raw, 'owned-release-proof.json': release_raw}",
+      "phase": "H2",
+      "source_map_keys": [
+        "complete_image_unique_bytes",
+        "configuration_unchanged",
+        "coordinator_elapsed_seconds",
+        "failed_case",
+        "failed_case_seconds",
+        "failure_raw_sha256",
+        "images",
+        "partial_artifacts",
+        "passed_selected",
+        "passed_selection",
+        "scope",
+        "source_before_after_equal",
+        "source_commit",
+        "source_tree",
+        "status",
+        "terminal_unix_ms",
+        "timed_out_selected",
+        "unexecuted"
+      ],
+      "source_map_raw_sha256": "720a8a66417113b101f00aeac77cd4268ab6b985b70cb6dbc4796a5f2e8dbadf"
+    },
+    {
+      "actual_h3_index_metadata_independently_matches": true,
+      "allowed_archive_members": [
+        "H3/elf/00a637f55c720b06a655b569930bddaef19fd791467bc4784fe0bfb9e0002a26.elf",
+        "H3/elf/1383f1adbe7721e1ff362142f0ce35ef755bece0ae2a188cb28e375a2332b923.elf",
+        "H3/elf/5e23924bee81a156601ba19d849f94a4196bd1ad1831bffc16934937d7c81a07.elf",
+        "H3/elf/86b21c3bb3abf55d8f1e70493cfb2b3b77982bcc4133ba71fb550ba1dbb047db.elf",
+        "H3/elf/a8bb307bec662845bf2a22cfb756ceb4b3ad0595f5b0e290c8983326a4fb344b.elf",
+        "H3/elf/a948cdfa5aeafc03fcfc63459e581ca254129f4d878949236e0bf42df3fe725f.elf",
+        "H3/elf/ac768b17ffd1b2f8217c46d6adddf13a085a2f0f32ed25a471e1c8bfd59def58.elf",
+        "H3/elf/cac734666dbcc1f06e38d1200c550c5c99214336a02bb347f9f5e95dadc28ed0.elf",
+        "H3/elf/cb11dd0627f0b1da56d2a20fe65b30af615da15c77752e5df966167ccc6f2cdc.elf",
+        "H3/elf/e1bf913938dd8459cb839b5b9cf6dd5a91d704c3b0240e29e3d4e5f7932549ba.elf",
+        "H3/elf/f79f693e93b01b910299828e1e7a4b465738392eb93e03a0507866b74721ce5d.elf",
+        "H3/original-source-map.json",
+        "export-index.json",
+        "export-plan.json",
+        "exporter.py",
+        "owned-release-proof.json"
+      ],
+      "completion_sha256": "93d7bf08914054e4bcf05f17eea3cd5ef36fac9bbf0d1e601dda59084e758cd3",
+      "credential_or_configuration_body_files_in_member_allowlist": false,
+      "export_plan_sha256": "7c140e2a83e9df657aff17c66bb1f307bb6b8a22db6cbba04e38841d7b9ef7a0",
+      "exporter_sha256": "9eb404993262589a948a19946819e890ff15875bef1133eab5fe9cee6bb14f53",
+      "four_embedded_metadata_files": {
+        "H3/original-source-map.json": {
+          "bytes": 278536,
+          "sha256": "6a8ecb8b9160284baf91d13b61973e4ee3b64b5a740cde0908ccd7b4c03361b7"
+        },
+        "export-plan.json": {
+          "bytes": 658893,
+          "sha256": "7c140e2a83e9df657aff17c66bb1f307bb6b8a22db6cbba04e38841d7b9ef7a0"
+        },
+        "exporter.py": {
+          "bytes": 18885,
+          "sha256": "9eb404993262589a948a19946819e890ff15875bef1133eab5fe9cee6bb14f53"
+        },
+        "owned-release-proof.json": {
+          "bytes": 2662,
+          "sha256": "06661599f4cd936baa7493ac4f9a1df95def4a0dd391f638145b46f1c032458e"
+        }
+      },
+      "inspection_scope": "Fixed exporter AST, raw plan/map/release bytes and exact member allowlist. ELF bytes are already approved retained binaries; this is not a generic secret scan or a new native claim.",
+      "metadata_assignment_ast": "metadata_files = {'export-plan.json': plan_raw, 'exporter.py': code_raw, plan['phase'] + '/original-source-map.json': mapping_raw, 'owned-release-proof.json': release_raw}",
+      "phase": "H3",
+      "source_map_keys": [
+        "additional_original_test_outcomes",
+        "complete_image_unique_bytes",
+        "complete_retained_alias_count",
+        "configuration_unchanged",
+        "coordinator_elapsed_seconds",
+        "failed_selected",
+        "failure_component",
+        "failure_error",
+        "failure_raw_sha256",
+        "images",
+        "partial_artifact_scope",
+        "partial_artifacts",
+        "passed_selected",
+        "passed_selection",
+        "scope",
+        "source_before_after_equal",
+        "source_commit",
+        "source_tree",
+        "status",
+        "terminal_unix_ms",
+        "timed_out_selected",
+        "unexecuted",
+        "unmatched_live_observations"
+      ],
+      "source_map_raw_sha256": "6a8ecb8b9160284baf91d13b61973e4ee3b64b5a740cde0908ccd7b4c03361b7"
+    }
+  ],
+  "cloud_only": true,
+  "operator_key_files_or_credential_files_added": false,
+  "remote_archive_reexecution_or_recompression": false,
+  "repo_id": "1320694176",
+  "repo_visibility": "public",
+  "schema": "exact-existing-archive-member-scope-audit-v1"
+}

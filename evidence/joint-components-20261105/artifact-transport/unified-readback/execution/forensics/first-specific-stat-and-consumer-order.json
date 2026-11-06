@@ -1,0 +1,145 @@
+{
+  "delivery_keys": [
+    "actual_consumer_invocations",
+    "actual_exit_code",
+    "actual_transport_commit",
+    "actual_transport_tree",
+    "files",
+    "new_native_execution",
+    "new_remote_calls",
+    "original_failure_scopes_retained",
+    "retained_large_bytes_excluded_from_duplicate_small_bundle",
+    "root_directory",
+    "schema",
+    "small_file_bytes",
+    "small_file_count",
+    "status",
+    "verified_large_artifact_index",
+    "verified_output_artifact_count"
+  ],
+  "delivery_large_small_files": [
+    {
+      "entry": {
+        "bytes": 399507456,
+        "path": "output/H1/extracted.partial/H1/elf/86a2c65e12fbef81586067783aa478677975e03290bcd62561938645ac1efc7e.elf",
+        "sha256": "f54e7570cabbf06fefb78811f69468993b1529057af55485ce019f2e18810033"
+      },
+      "section": "files"
+    },
+    {
+      "entry": {
+        "bytes": 504302232,
+        "path": "output/H2/extracted.partial/H2/elf/a8bb307bec662845bf2a22cfb756ceb4b3ad0595f5b0e290c8983326a4fb344b.elf",
+        "sha256": "a8bb307bec662845bf2a22cfb756ceb4b3ad0595f5b0e290c8983326a4fb344b"
+      },
+      "section": "files"
+    },
+    {
+      "entry": {
+        "bytes": 120074176,
+        "path": "output/H2/extracted.partial/H2/elf/f16fe89c11c71de377b62783fa5f06f23c8461b7d1b697aaf742dc2830d14295.elf",
+        "sha256": "f16fe89c11c71de377b62783fa5f06f23c8461b7d1b697aaf742dc2830d14295"
+      },
+      "section": "files"
+    },
+    {
+      "entry": {
+        "bytes": 199753728,
+        "path": "output/H3/.H3-actual-retained-elfs.tar.xz.IOnmZz",
+        "sha256": "e96ffd94964e98e713ad921224a6af80d311917c5eb4d3ac345473f8025b8ba1"
+      },
+      "section": "files"
+    },
+    {
+      "entry": {
+        "bytes": 338690048,
+        "path": "output/H3/extracted/H3/elf/.00a637f55c720b06a655b569930bddaef19fd791467bc4784fe0bfb9e0002a26.elf.uZrNlA",
+        "sha256": "a768306d399ebe7124320c0f803d4c21dd56e44fb4789f51534dfdc86b8b288a"
+      },
+      "section": "files"
+    }
+  ],
+  "extra": {
+    "ctime_ns": 1793926740779245367,
+    "ctime_utc": "2026-11-06T00:59:00.779245+00:00",
+    "device": 27,
+    "gid": 0,
+    "inode": 556841,
+    "mode": 384,
+    "mtime_ns": 1793926726327415196,
+    "mtime_utc": "2026-11-06T00:58:46.327415+00:00",
+    "path": "/workspace/scratch/93bfcfe29fc8/w1/unified-archive-readback-execution-01/output/H3/extracted/H3/elf/.00a637f55c720b06a655b569930bddaef19fd791467bc4784fe0bfb9e0002a26.elf.uZrNlA",
+    "regular": true,
+    "size": 338690048,
+    "uid": 0
+  },
+  "observed_at_utc": "2026-11-06T01:06:38.463350+00:00",
+  "original_consumer_launch": {
+    "argv": [
+      "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+      "-B",
+      "/workspace/scratch/93bfcfe29fc8/w1/unified-archive-readback-v3/verify_archives.py",
+      "--transport-root",
+      "/workspace/scratch/93bfcfe29fc8/actual-archive-git-readback/data",
+      "--expected-index-sha256",
+      "b3e34c0dde31956c8c470372997bdce9b23d624a82c87260aa3630851165e85b",
+      "--expected-index-git-blob",
+      "8aaf8fd787c9e84d4698c606cf8f91f4ecef1d09",
+      "--repository",
+      "TrillionniumFoundation/hepta-private-ci",
+      "--destination-ref",
+      "refs/heads/evidence/actual-elf-transport-20261105-93bfc-01",
+      "--transport-commit",
+      "860dc2d8045f18808b9c5516f86edaef6e830734",
+      "--transport-tree",
+      "ba8da0b1dad8ba8777c0be85bbdc3ae8d1c0cb26",
+      "--fetch-receipts-manifest",
+      "/workspace/scratch/93bfcfe29fc8/actual-archive-git-readback/root-review/combined-fetch-receipts-manifest.json",
+      "--expected-fetch-receipts-sha256",
+      "ca1ba8e4683112bd6efa9959e26ada101099d71c36324c14a79d2a7824b9dc52",
+      "--output",
+      "/workspace/scratch/93bfcfe29fc8/w1/unified-archive-readback-execution-01/output"
+    ],
+    "pid": 5,
+    "request_sha256": "34bdf3b581ef738ee34944c96c8031dc9299c54435d2a48c3bda42a417315aba",
+    "schema": "actual-cloud-consumer-launch-v1",
+    "started_utc": "2026-11-06T00:55:06.173869+00:00"
+  },
+  "original_consumer_terminal": {
+    "automatic_retry": false,
+    "completed_utc": "2026-11-06T00:59:04.738052+00:00",
+    "elapsed_seconds": 238.56383343000198,
+    "exit_code": 0,
+    "native_execution": false,
+    "new_remote_calls": 0,
+    "pid": 5,
+    "request_sha256": "34bdf3b581ef738ee34944c96c8031dc9299c54435d2a48c3bda42a417315aba",
+    "schema": "actual-cloud-consumer-terminal-v1",
+    "started_utc": "2026-11-06T00:55:06.173869+00:00",
+    "streams": {
+      "stderr.log": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout.log": {
+        "bytes": 477,
+        "sha256": "03f2e354c5d5ed5bb89376b10c5736f1b3fec1b14a110272ee5fd9ea09930faf"
+      }
+    }
+  },
+  "original_pid_probe": {
+    "exists_now": false,
+    "pid": 5,
+    "same_process_identity_not_inferred": true
+  },
+  "prior_actual_observation": {
+    "ctime_ns": 1793926740779245367,
+    "device": 27,
+    "inode": 556841,
+    "is_regular": true,
+    "is_symlink": false,
+    "mtime_ns": 1793926726327415196,
+    "size": 338690048
+  },
+  "prior_observed_at_utc": "2026-11-06T01:05:47.881368+00:00"
+}

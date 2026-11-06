@@ -1,0 +1,81 @@
+{
+  "actual_index_bytes": 690778,
+  "actual_index_sha256": "3c4355fbd6293e631092c432557289ee770e34ae818c2ec68a590b7388d0041e",
+  "actual_members": {
+    "H4/original-source-map.json": {
+      "bytes": 525002,
+      "elf_magic": false,
+      "sha256": "a1e42612d6a89337144b00335da2fa690dc7f503b46532ff795f0c92198bdd9c"
+    },
+    "H4/parent-archive-verification.json": {
+      "bytes": 21222,
+      "elf_magic": false,
+      "sha256": "0de9c71fd234dd1c6d0fb4a724295247fea09f3674d337ff6b039ccbe8fe4a92"
+    },
+    "H4/referenced-H3-completion.json": {
+      "bytes": 34491,
+      "elf_magic": false,
+      "sha256": "93d7bf08914054e4bcf05f17eea3cd5ef36fac9bbf0d1e601dda59084e758cd3"
+    },
+    "H4/referenced-H3-index.json": {
+      "bytes": 294654,
+      "elf_magic": false,
+      "sha256": "b023aca6ab2dccf4324dccab2e5319a00ef9b32773e0dc73127efc9af3caa002"
+    },
+    "export-index.json": {
+      "bytes": 690778,
+      "elf_magic": false,
+      "sha256": "3c4355fbd6293e631092c432557289ee770e34ae818c2ec68a590b7388d0041e"
+    },
+    "export-plan.json": {
+      "bytes": 1236214,
+      "elf_magic": false,
+      "sha256": "c917633ed8b22fa7a97455ea06c4a96fecc4a208375899bd3afededebf007619"
+    },
+    "exporter.py": {
+      "bytes": 43223,
+      "elf_magic": false,
+      "sha256": "ce96de09dc981311753d37312c1b254751cce3b40c4f950f603303a523508425"
+    },
+    "owned-release-proof.json": {
+      "bytes": 2706,
+      "elf_magic": false,
+      "sha256": "dcdd164eb680465a440bf9dc4e11ab68c5598d8cb86a4d99320784d0a5b68107"
+    }
+  },
+  "actual_parent_whole_archive_locally_read_here": false,
+  "actual_part_verification": {
+    "complete_bytes": 100964,
+    "concatenated_sha256": "47d3c5efa6b9aa4b2f97ef06a606f2931d8065f068311303f8d079c18a7bbaa5",
+    "parts_actually_read": 1,
+    "scope": "Every named original part actually read; no missing-part inference."
+  },
+  "actual_uncompressed_member_bytes": 2848290,
+  "all_original_map_and_597_observations_preserved": true,
+  "archive_bytes": 100964,
+  "archive_sha256": "47d3c5efa6b9aa4b2f97ef06a606f2931d8065f068311303f8d079c18a7bbaa5",
+  "complete_dependent_consumer_executed": false,
+  "native_qualification_awarded": false,
+  "original_aliases": 32,
+  "originals_deleted_or_replaced": false,
+  "parent_and_all_parent_parts_still_required": {
+    "archive_bytes": 283427280,
+    "archive_sha256": "5365fcf900781044108e9642ae02a110e4ac8d031d9ee516c4f0b0e471e1e773",
+    "completion_sha256": "93d7bf08914054e4bcf05f17eea3cd5ef36fac9bbf0d1e601dda59084e758cd3",
+    "exporter_sha256": "9eb404993262589a948a19946819e890ff15875bef1133eab5fe9cee6bb14f53",
+    "image_bytes": 1674575368,
+    "images": 11,
+    "index_bytes": 294654,
+    "index_sha256": "b023aca6ab2dccf4324dccab2e5319a00ef9b32773e0dc73127efc9af3caa002",
+    "members": 16,
+    "phase": "H3",
+    "plan_sha256": "7c140e2a83e9df657aff17c66bb1f307bb6b8a22db6cbba04e38841d7b9ef7a0",
+    "source_commit": "6db78eca53a5acdda0d96873d3f4cd65863426f0",
+    "source_tree": "e91f5994017fc5d2cfe58d405a20ee6ad9376772"
+  },
+  "pre_dispatch_plan_note": "The unchanged capture_limits.actual_remote_reads_pending field belongs to the original frozen pre-execution plan; actual execution fields and recorded two-read provenance describe the completed archive operation.",
+  "recorded_H4_two_read_provenance_bound_to_each_original_image": true,
+  "remote_parent_verification_receipt_bound": true,
+  "schema": "H4-actual-child-local-byte-verification-v1",
+  "status": "CHILD_ARCHIVE_AND_ORIGINAL_PART_VERIFIED_PARENT_DOWNLOAD_PENDING"
+}

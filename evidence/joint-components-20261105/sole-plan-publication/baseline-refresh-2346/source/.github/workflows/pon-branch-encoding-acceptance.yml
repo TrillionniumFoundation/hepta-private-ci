@@ -1,0 +1,191 @@
+name: PoN branch encoding exact-source acceptance
+on:
+  pull_request:
+    paths:
+      - trillionnium/crates/trnm-protocol/src/pon_wire.rs
+      - trillionnium/crates/trnm-pon-node/src/consensus.rs
+      - trillionnium/crates/trnm-pon-node/src/ingress/public_v3/scalar_cpu.rs
+      - trillionnium/crates/trnm-pon-node/src/account_archive_prototype.rs
+      - trillionnium/crates/trnm-pon-node/src/account_archive_prototype/**
+      - scripts/ci/check_native_constants_roster.py
+      - scripts/ci/test_native_constants_roster.py
+      - .github/workflows/pon-branch-encoding-acceptance.yml
+permissions:
+  contents: read
+jobs:
+  branch:
+    name: branch encoding (${{ matrix.runner }}, ${{ matrix.source }})
+    strategy:
+      fail-fast: false
+      matrix:
+        runner: [ubuntu-24.04, ubuntu-24.04-arm]
+        source: [head, prospective-merge]
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 25
+    env:
+      CARGO_INCREMENTAL: "0"
+      CARGO_BUILD_JOBS: "2"
+      RUST_TEST_THREADS: "1"
+      PYTHONDONTWRITEBYTECODE: "1"
+      EXPECTED_HEAD: ${{ github.event.pull_request.head.sha }}
+      EXPECTED_BASE: ${{ github.event.pull_request.base.sha }}
+      EXPECTED_MERGE: ${{ github.sha }}
+      SOURCE_KIND: ${{ matrix.source }}
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: ${{ matrix.source == 'head' && github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Verify exact unchanged source and actual ordered main merge
+        shell: bash
+        run: |
+          set -euo pipefail
+          out="$RUNNER_TEMP/branch-exact"
+          mkdir -p "$out"
+          echo "OUT=$out" >> "$GITHUB_ENV"
+          echo "CARGO_TARGET_DIR=$RUNNER_TEMP/target-branch-exact" >> "$GITHUB_ENV"
+          args=(--kind "$SOURCE_KIND" --expected-head "$EXPECTED_HEAD")
+          if test "$SOURCE_KIND" = prospective-merge; then
+            args+=(--expected-base "$EXPECTED_BASE" --expected-merge "$EXPECTED_MERGE")
+          fi
+          python3 scripts/ci/verify_ci_source.py "${args[@]}" --output "$out/source.json"
+          test "$(git hash-object trillionnium/crates/trnm-pon-node/src/account_archive_prototype.rs)" = 3ac7b48c55ed48f125dbab3ec2b23c0507ab3c13
+          test "$(git hash-object trillionnium/crates/trnm-pon-node/src/account_archive_prototype/native_primitive_tests.rs)" = 2a4cfe2dd66692cfd27bc99948ee1d509ebb9dbf
+          test "$(git hash-object trillionnium/crates/trnm-pon-node/src/account_archive_prototype/native_store.rs)" = ddc4e1d317ce962e453a1f08db7f608e43a8e152
+          test "$(git hash-object trillionnium/crates/trnm-pon-node/src/account_archive_prototype/native_root_digest.rs)" = 95d0dc21b1154aa89990a7b81f35dccffc5f05c1
+          test "$(git hash-object trillionnium/crates/trnm-pon-node/src/account_archive_prototype/native_root_digest_tests.rs)" = 9202edd5d62220f097ca4f7b87e4cbd2a130f8c4
+          bash scripts/project-preflight.sh --audit
+      - name: Install pinned native compiler and lint tools
+        run: rustup toolchain install 1.95.0 --profile minimal --component rustfmt --component clippy
+      - name: Prepare pinned OpenSSL 3.5.9 PQ provider
+        id: pq_provider
+        shell: bash
+        run: |
+          set -euo pipefail
+          export TRNM_CI_RECEIPT_DIR="$OUT"
+          bash scripts/ci/prepare_pq_provider.sh
+      - name: Check committed formatting without rewriting source
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo +1.95.0 fmt --manifest-path trillionnium/Cargo.toml --all -- --check 2>&1 | tee "$OUT/format.log"
+      - name: Require exact state-root grammar and unchanged complete-state errors
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git hash-object trillionnium/crates/trnm-protocol/src/pon_wire.rs)" = 9333ce92c6ba130dd182538bfd8f69ec289acc83
+          cargo +1.95.0 test --release --locked --manifest-path trillionnium/Cargo.toml -p trnm-protocol --lib pon_wire:: -- --show-output --test-threads=1 2>&1 | tee "$OUT/state-wire.log"
+          grep -E '^test result: ok\. 27 passed; 0 failed; 1 ignored;' "$OUT/state-wire.log"
+          selector=pon_wire::tests::every_header_field_binds_its_wire_bytes_challenge_and_block_identity
+          cargo +1.95.0 test --release --locked --manifest-path trillionnium/Cargo.toml -p trnm-protocol --lib "$selector" -- --exact --show-output --test-threads=1 2>&1 | tee "$OUT/header-binding.log"
+          python3 scripts/ci/check_required_native_test.py "$OUT/header-binding.log" --test "$selector"
+          for name in state_node_single_buffer_matches_original_wire state_empty_constants_match_all_depths_and_parallel_callers state_root_constants_do_not_cache_values_or_failures; do
+            selector="pon_wire::streamed_state_root_tests::$name"
+            cargo +1.95.0 test --release --locked --manifest-path trillionnium/Cargo.toml -p trnm-protocol --lib "$selector" -- --exact --show-output --test-threads=1 2>&1 | tee "$OUT/$name.log"
+            python3 scripts/ci/check_required_native_test.py "$OUT/$name.log" --test "$selector"
+          done
+          selector=pon_wire::streamed_state_root_tests::state_node_and_complete_root_paired_cost_observation
+          cargo +1.95.0 test --release --locked --manifest-path trillionnium/Cargo.toml -p trnm-protocol --lib "$selector" -- --exact --ignored --show-output --test-threads=1 2>&1 | tee "$OUT/state-root-cost.log"
+          python3 scripts/ci/check_required_native_test.py "$OUT/state-root-cost.log" --test "$selector"
+          cargo +1.95.0 clippy --locked --manifest-path trillionnium/Cargo.toml -p trnm-protocol --all-targets --all-features -- -D warnings 2>&1 | tee "$OUT/state-wire-clippy.log"
+      - name: Execute entire retained primitive suite and exact new controls
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo +1.95.0 test --release --locked --manifest-path trillionnium/Cargo.toml -p trnm-pon-node --lib account_archive_prototype::native_primitive_tests -- --show-output --test-threads=1 2>&1 | tee "$OUT/primitive.log"
+          grep -E '^test result: ok\. 11 passed; 0 failed; 3 ignored;' "$OUT/primitive.log"
+          for name in native_branch_single_buffer_matches_original_wire native_branch_single_buffer_preserves_every_lift_depth; do
+            selector="account_archive_prototype::native_primitive_tests::$name"
+            cargo +1.95.0 test --release --locked --manifest-path trillionnium/Cargo.toml -p trnm-pon-node --lib "$selector" -- --exact --show-output --test-threads=1 2>&1 | tee "$OUT/$name.log"
+            python3 scripts/ci/check_required_native_test.py "$OUT/$name.log" --test "$selector"
+          done
+          selector=account_archive_prototype::native_primitive_tests::native_branch_single_buffer_cost_observation
+          cargo +1.95.0 test --release --locked --manifest-path trillionnium/Cargo.toml -p trnm-pon-node --lib "$selector" -- --exact --ignored --show-output --test-threads=1 2>&1 | tee "$OUT/cost.log"
+          python3 scripts/ci/check_required_native_test.py "$OUT/cost.log" --test "$selector"
+      - name: Require shared account crypto and retain both build-profile observations
+        shell: bash
+        run: |
+          set -euo pipefail
+          for profile in test release; do
+            mode=()
+            if test "$profile" = release; then mode=(--release); fi
+            for name in shared_branch_kernel_matches_storage_local_vectors shared_branch_kernel_preserves_complete_account_roots shared_branch_kernel_complete_call_cost; do
+              selector="account_archive_prototype::native_primitive_tests::$name"
+              cargo +1.95.0 test "${mode[@]}" --locked --manifest-path trillionnium/Cargo.toml -p trnm-pon-node --lib "$selector" -- --exact --include-ignored --show-output --test-threads=1 2>&1 | tee "$OUT/$profile-$name.log"
+              python3 scripts/ci/check_required_native_test.py "$OUT/$profile-$name.log" --test "$selector"
+            done
+          done
+      - name: Verify immutable constants without caching stored-state verdicts
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo +1.95.0 test --release --locked --manifest-path trillionnium/Cargo.toml -p trnm-pon-node --lib account_archive_prototype::native_store::tests -- --show-output --test-threads=1 2>&1 | tee "$OUT/native-constants.log"
+          python3 scripts/ci/test_native_constants_roster.py
+          python3 scripts/ci/check_native_constants_roster.py "$OUT/native-constants.log"
+          for name in native_empty_constants_match_wire_and_keep_owned_copy_isolation native_empty_constants_parallel_callers_keep_independent_values; do
+            selector="account_archive_prototype::native_store::tests::$name"
+            cargo +1.95.0 test --release --locked --manifest-path trillionnium/Cargo.toml -p trnm-pon-node --lib "$selector" -- --exact --show-output --test-threads=1 2>&1 | tee "$OUT/$name.log"
+            python3 scripts/ci/check_required_native_test.py "$OUT/$name.log" --test "$selector"
+          done
+          selector=account_archive_prototype::native_store::tests::native_empty_constants_paired_cost_observation
+          cargo +1.95.0 test --release --locked --manifest-path trillionnium/Cargo.toml -p trnm-pon-node --lib "$selector" -- --exact --ignored --show-output --test-threads=1 2>&1 | tee "$OUT/native-constant-cost.log"
+          python3 scripts/ci/check_required_native_test.py "$OUT/native-constant-cost.log" --test "$selector"
+      - name: Preserve complete existing native batch and migration controls
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo +1.95.0 test --release --locked --manifest-path trillionnium/Cargo.toml -p trnm-pon-node --lib account_archive_prototype::native_store::batch_tests -- --show-output --test-threads=1 2>&1 | tee "$OUT/batch.log"
+          grep -E '^test result: ok\. [1-9][0-9]* passed; 0 failed;' "$OUT/batch.log"
+          cargo +1.95.0 test --release --locked --manifest-path trillionnium/Cargo.toml -p trnm-pon-node --lib authenticated_migration -- --show-output --test-threads=1 2>&1 | tee "$OUT/migration.log"
+          grep -E '^test result: ok\. 36 passed; 0 failed; 0 ignored;' "$OUT/migration.log"
+      - name: Require exact work arithmetic and unchanged full-profile public service
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo +1.95.0 test --release --locked --manifest-path trillionnium/Cargo.toml -p trnm-pon-node --lib consensus::tests:: -- --show-output --test-threads=1 2>&1 | tee "$OUT/work-arithmetic.log"
+          grep -E '^test result: ok\. 10 passed; 0 failed; 0 ignored;' "$OUT/work-arithmetic.log"
+          for test in aligned_division_preserves_all_512_shift_and_limb_boundaries aligned_division_matches_original_for_wide_arbitrary_operands aligned_required_work_and_retarget_match_original_arithmetic; do
+            selector="consensus::tests::$test"
+            cargo +1.95.0 test --release --locked --manifest-path trillionnium/Cargo.toml -p trnm-pon-node --lib "$selector" -- --exact --show-output --test-threads=1 2>&1 | tee "$OUT/$test.log"
+            python3 scripts/ci/check_required_native_test.py "$OUT/$test.log" --test "$selector"
+          done
+          cargo +1.95.0 test --locked --manifest-path trillionnium/Cargo.toml -p trnm-pon-node --lib ingress::public_v3::scalar_cpu::request_owned_reserve_tests -- --show-output --test-threads=1 2>&1 | tee "$OUT/owned-cpu.log"
+          grep -E '^test result: ok\. 9 passed; 0 failed; 0 ignored;' "$OUT/owned-cpu.log"
+          for test in owned_quantum_remains_credited_when_request_crosses_its_first_quantum extended_request_cannot_spend_the_other_owned_quantum actual_cpu_extension_uses_its_own_reserve_and_settles_exact_total; do
+            selector="ingress::public_v3::scalar_cpu::request_owned_reserve_tests::$test"
+            cargo +1.95.0 test --locked --manifest-path trillionnium/Cargo.toml -p trnm-pon-node --lib "$selector" -- --exact --show-output --test-threads=1 2>&1 | tee "$OUT/$test.log"
+            python3 scripts/ci/check_required_native_test.py "$OUT/$test.log" --test "$selector"
+          done
+          mkdir "$OUT/network-test-profile"
+          # The mixed-service test writes its complete report before asserting its
+          # honest-service target. Preserve failed phase/attempt evidence in the
+          # same always-uploaded artifact without relaxing the original test.
+          TRNM_PUBLIC_V3_CAMPAIGN_DIR="$OUT/mixed-service-campaign" \
+          TRNM_CI_RECEIPT_DIR="$OUT/network-test-profile" \
+          cargo +1.95.0 test --locked --manifest-path trillionnium/Cargo.toml -p trnm-pon-node --test public_v3_service_campaign -- --show-output --test-threads=1 2>&1 | tee "$OUT/network-test-profile.log"
+          grep -E '^test result: ok\. 2 passed; 0 failed; 0 ignored;' "$OUT/network-test-profile.log"
+      - name: Check complete native target lint without allowances
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo +1.95.0 clippy --locked --manifest-path trillionnium/Cargo.toml -p trnm-pon-node --all-targets --all-features -- -D warnings 2>&1 | tee "$OUT/clippy.log"
+      - name: Recheck exact source and hash native logs
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          args=(--kind "$SOURCE_KIND" --expected-head "$EXPECTED_HEAD")
+          if test "$SOURCE_KIND" = prospective-merge; then
+            args+=(--expected-base "$EXPECTED_BASE" --expected-merge "$EXPECTED_MERGE")
+          fi
+          python3 scripts/ci/verify_ci_source.py "${args[@]}" --output "$OUT/source-after.json"
+          sha256sum "$OUT"/*.log > "$OUT/logs.sha256"
+          printf 'Exact account-branch byte encoding and retained native checks only. Ignored original whole-capacity and long-cost experiments remain separate; original priority/full baseline still required. No work-proof qualification, whole-node speed, Sybil fairness, real model adoption, physical power loss, independent operators or WAN TPS claimed. Full ancestry/state traversal remains.\n' > "$OUT/SCOPE.txt"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: branch-exact-${{ matrix.runner }}-${{ matrix.source }}-${{ github.event.pull_request.head.sha }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/branch-exact
+          if-no-files-found: error
+          retention-days: 30

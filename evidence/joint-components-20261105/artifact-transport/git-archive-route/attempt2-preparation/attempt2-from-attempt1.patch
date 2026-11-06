@@ -1,0 +1,249 @@
+--- attempt1/run_archive_transport.py
++++ attempt2/run_archive_transport.py
+@@ -1,6 +1,7 @@
+ """One explicitly approved orphan-data-ref push. Never run from an unfrozen plan.
+ 
+-Raw Git streams and URLs remain in memory. The transport index, archive hashes,
++Raw Git streams and credential material remain in memory. Only the validated
++public HTTPS URL is persisted in this new bare repository. The transport index, archive hashes,
+ planned commit, exit classifications and exact-ref observations are durable.
+ """
+ from pathlib import Path
+@@ -27,7 +28,7 @@
+ REF = 'refs/heads/evidence/actual-elf-transport-20261105-93bfc-01'
+ COMMIT = '6db78eca53a5acdda0d96873d3f4cd65863426f0'
+ TREE = 'e91f5994017fc5d2cfe58d405a20ee6ad9376772'
+-ROOT = Path('/home/qian-qi/work/hepta-actual-elf-git-transport-20261105-93bfc-01')
++ROOT = Path('/home/qian-qi/work/hepta-actual-elf-git-transport-20261105-93bfc-02')
+ MAX_RAW = 670306272
+ MAX_TEXT = 893742124
+ MAX_PART = 4194304
+@@ -113,12 +114,15 @@
+                        'repository': REPOSITORY, 'ref': REF, 'push_attempts': 0,
+                        'status': 'PREPARING_UNPUBLISHED', 'operations': [],
+                        'full_cloud_byte_readback': False, 'source_or_native_qualification': False,
+-                       'raw_origin_or_credentials_logged_or_saved': False,
++                       'credential_material_logged_or_saved': False,
++                       'validated_public_origin_saved_only_in_new_bare': False,
+                        'native_reexecution': False, 'existing_refs_mutated': False,
+                        'automatic_retry': False}
+         self.repo = ROOT / 'repository.git'
+         self.env = dict(self.base_env)
+         self.git_prefix = ['git', '--git-dir=' + str(self.repo)]
++        self.initial_config_bytes = None
++        self.expected_config_bytes = None
+ 
+     def persist(self, name, obj):
+         path = ROOT / name
+@@ -193,7 +197,7 @@
+         assert origin_matches(origin) and origin == push_origin, 'unvalidated existing origin route'
+         self.env['HEPTA_TRANSPORT_ORIGIN'] = origin
+         self.env['HEPTA_TRANSPORT_ORIGINAL_GIT_CONFIG_ENV'] = json.dumps({k: v for k, v in self.base_env.items() if k.startswith('GIT_CONFIG_')})
+-        self.git_prefix += ['--config-env=remote.transport.url=HEPTA_TRANSPORT_ORIGIN']
++        self.initialize_public_remote(origin)
+         if origin.startswith('https://'):
+             raw = self.local_source_git(['config', '--null', '--get-urlmatch', 'http', origin], allowed=(0, 1))
+             count = int(self.env.get('GIT_CONFIG_COUNT', '0'))
+@@ -231,11 +235,36 @@
+                 assert all(len(row) == 2 and row[1] for row in pairs)
+                 self.report['credential_preflight'] = 'existing_helper_returned_credential_in_memory_only_not_write_authorization'
+                 del pairs, response
+-        # Re-resolve in the isolated repository as well, catching inherited URL
+-        # rewrites and alternate push routing without printing their contents.
++        self.validate_origin_routes(origin)
++
++    def validate_origin_routes(self, origin):
++        # Resolve through actual Git with this repository and final environment.
++        # The public URL is configured only in our new bare repository; all
++        # credentials/HTTP header settings remain process-only.
+         for args in (['remote', 'get-url', 'transport'], ['remote', 'get-url', '--push', 'transport']):
+             observed = self.command('validate-isolated-origin-route', self.git_prefix + args, 10).decode().strip()
+             assert observed == origin and origin_matches(observed)
++
++    def initialize_public_remote(self, origin):
++        assert origin_matches(origin), 'only the approved credential-free public HTTPS URL may be saved'
++        assert self.initial_config_bytes is not None and self.expected_config_bytes is None
++        before, _ = read_source(self.repo / 'config', limit=65536)
++        assert before == self.initial_config_bytes and before.endswith(b'\n')
++        expected = before + b'[remote "transport"]\n\turl = ' + origin.encode('ascii') + b'\n'
++        self.command('initialize-single-public-remote-url', self.git_prefix + [
++            'config', '--file', str(self.repo / 'config'), '--add', 'remote.transport.url', origin], 10)
++        after, _ = read_source(self.repo / 'config', limit=65536)
++        assert after == expected, 'new bare config changed beyond the one approved public remote.url'
++        self.expected_config_bytes = expected
++        self.report['isolated_config_before_sha256'] = self.private_config_identity()
++        self.report['validated_public_origin_saved_only_in_new_bare'] = True
++        self.persist('isolated-config-initialization.json', {
++            'schema': 'single-public-remote-url-initialization-v1',
++            'public_url': origin, 'setting': 'remote.transport.url',
++            'initial_bytes': len(before), 'initial_sha256': digest(before), 'initial_text': before.decode(),
++            'configured_bytes': len(after), 'configured_sha256': digest(after), 'configured_text': after.decode(),
++            'credential_or_http_header_settings_written': False,
++            'original_five_configurations_modified': False})
+ 
+     def require_no_unreviewed_hooks(self):
+         raw = self.command('inspect-effective-hook-configuration',
+@@ -251,10 +280,31 @@
+     def private_config_identity(self):
+         path = self.repo / 'config'
+         raw, record = read_source(path, limit=65536)
+-        # This file is generated by plain git init only. The exact-byte before/
+-        # after comparison detects any persistence of later command/env settings.
+-        assert b'[remote ' not in raw and b'[credential' not in raw and b'[http' not in raw
++        if self.expected_config_bytes is None:
++            assert b'[remote ' not in raw and b'[credential' not in raw and b'[http' not in raw
++            if self.initial_config_bytes is None:
++                self.initial_config_bytes = raw
++            else:
++                assert raw == self.initial_config_bytes
++        else:
++            assert raw == self.expected_config_bytes
+         return record['sha256']
++
++    def verify_previous_attempt_settled_without_push(self):
++        previous = self.plan['previous_attempt']
++        terminal, _ = read_source(Path(previous['terminal_path']), expected_bytes=previous['terminal_bytes'],
++                                  expected_sha=previous['terminal_sha256'], limit=65536)
++        release, _ = read_source(Path(previous['release_path']), expected_bytes=previous['release_bytes'],
++                                 expected_sha=previous['release_sha256'], limit=65536)
++        outcome, proof = json.loads(terminal), json.loads(release)
++        assert outcome['status'] == 'FAILED_NO_AUTOMATIC_RETRY' and outcome['push_attempts'] == 0
++        assert outcome['plan_sha256'] == previous['plan_sha256'] and outcome['protected_unchanged']
++        assert proof['job_id'] == previous['job_id'] and proof['owned_processes_clear'] and not proof['failures']
++        assert proof['original_authoritative_terminal']['state'] == 'failed'
++        assert proof['original_authoritative_terminal']['exit_code'] == 1
++        self.report['previous_attempt'] = {'job_id': previous['job_id'], 'status': 'FAILED', 'push_attempts': 0,
++            'terminal_sha256': digest(terminal), 'release_sha256': digest(release),
++            'new_attempt_requires_separate_root_authorization': True}
+ 
+     def remote_head(self, name):
+         raw = self.command(name, self.git_prefix + ['ls-remote', '--heads', 'transport', REF], 60)
+@@ -281,6 +331,7 @@
+         assert p['limits'] == {'outer_seconds': 1200, 'push_seconds': 900, 'ls_remote_seconds': 60,
+                                'max_parts': MAX_PARTS, 'max_part_raw_bytes': MAX_PART,
+                                'total_raw_bytes': MAX_RAW, 'total_envelope_bytes': MAX_TEXT}
++        self.verify_previous_attempt_settled_without_push()
+         ROOT.mkdir(mode=0o700, exist_ok=False)
+         bridge = Path(__file__).with_name('credential_get_only.py').read_bytes()
+         assert digest(bridge) == p['credential_bridge_sha256']
+@@ -289,7 +340,7 @@
+         self.report['configurations_before'] = self.config_hashes()
+         self.report['source_before'] = self.source_guard()
+         self.command('init-new-isolated-bare', ['git', 'init', '--bare', '--template=', str(self.repo)], 30, env=self.base_env)
+-        self.report['isolated_config_before_sha256'] = self.private_config_identity()
++        self.report['isolated_config_init_sha256'] = self.private_config_identity()
+         self.require_no_unreviewed_hooks()
+         self.configure_existing_auth()
+         self.require_no_unreviewed_hooks()
+@@ -442,7 +493,8 @@
+                 and transport.report.get('source_before') == transport.report['source_after'])
+             if transport.repo.exists():
+                 transport.report['isolated_config_after_sha256'] = transport.private_config_identity()
+-                assert (transport.report.get('isolated_config_before_sha256')
++                assert (transport.report.get('isolated_config_before_sha256',
++                                             transport.report.get('isolated_config_init_sha256'))
+                         == transport.report['isolated_config_after_sha256'])
+             if not transport.report['protected_unchanged']:
+                 passed = False
+--- attempt1/build_transport_package.py
++++ attempt2/build_transport_package.py
+@@ -9,8 +9,8 @@
+ 
+ HERE = Path(__file__).resolve().parent
+ WORK = HERE.parent.parent
+-REMOTE_TOOLS = '/home/qian-qi/work/hepta-actual-elf-git-transport-tools-20261105-93bfc-01'
+-KEY = '93bfc-hepta-h1-h2-h3-orphan-archive-git-transport-01'
++REMOTE_TOOLS = '/home/qian-qi/work/hepta-actual-elf-git-transport-tools-20261105-93bfc-02'
++KEY = '93bfc-hepta-h1-h2-h3-orphan-archive-git-transport-02'
+ CONFIG_ROOT = '/home/qian-qi/work/hepta-audit-ledger-fixture-fix-20261103/.git/'
+ CONFIGS = {
+     CONFIG_ROOT + 'config': '24452f7031356ffbc08ab7fb9657efa5b67fb0b16b2a2ce704ec99d1514267b8',
+@@ -150,7 +150,17 @@
+         'destination_ref': 'refs/heads/evidence/actual-elf-transport-20261105-93bfc-01',
+         'expected_ref_before': None, 'orphan_data_only': True,
+         'route': 'canonical-base64-no-newline-per-original-part',
+-        'commit_date': '2026-11-05T23:59:13+00:00',
++        'commit_date': '2026-11-06T00:21:38+00:00',
++        'previous_attempt': {
++            'job_id': '1a1ae34e63b-fc05-5e2b',
++            'plan_sha256': '5a27e3f47c70b210d5d0a944dd43ef6c270405851f0259e3ee9f4fa9c43e8a3b',
++            'terminal_path': '/home/qian-qi/work/hepta-actual-elf-git-transport-20261105-93bfc-01/transport-terminal.json',
++            'terminal_bytes': 5257, 'terminal_sha256': '8d63e5fceaacb2d3c1ec13fb02c149f6522e205ce87b3434059baf24d148b9a8',
++            'release_path': '/home/qian-qi/work/hepta-archive-git-transport-attempt1-owned-release-20261106-93bfc-01.json',
++            'release_bytes': 2774, 'release_sha256': '3bcf9cee804c5e68415a0fb565e47bf1dbe95930fd2aebd00a0db57c58cf83e2',
++            'original_result_preserved': 'FAILED / exit 1 / local remote-get-url validation / push attempts 0',
++            'automatic_retry': False,
++        },
+         'fixed_source': {'path': '/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/source-h3',
+                          'commit': '6db78eca53a5acdda0d96873d3f4cd65863426f0',
+                          'tree': 'e91f5994017fc5d2cfe58d405a20ee6ad9376772',
+@@ -164,7 +174,7 @@
+                    'max_parts': total_parts, 'max_part_raw_bytes': 4194304,
+                    'total_raw_bytes': total_raw, 'total_envelope_bytes': total_text},
+         'budget_scope': 'A separate post-native archival transport component. No native timeout, test result, capture or learning budget is changed. Bootstrap, hashing, Git packing, one push and readback all consume the outer 1200 seconds.',
+-        'auth_policy': 'HTTPS only: reuse the existing HTTPS source origin and its existing HTTP settings/get-only helper. SSH, other protocols, credential writes/logging, new accounts, interactive auth, redirected destinations and hook suppression are rejected. Public ls-remote is not write/auth proof.',
++        'auth_policy': 'HTTPS only: reuse the existing HTTPS source origin and its existing HTTP settings/get-only helper. Initialize only the new isolated bare remote.transport.url with the validated public URL. HTTP headers and credentials remain process-only. SSH, other protocols, new accounts, interactive auth, redirected destinations and hook suppression are rejected. Public ls-remote is not write/auth proof.',
+         'uncertain_push_policy': 'Persist fsynced push-intent before the single empty-lease push. One exact-ref reconciliation only; never automatically retry. A ref confirmation still requires full independent cloud byte readback.',
+         'archives': archives, 'expected_transport_paths': sorted(paths),
+         'transport_tree_blob_count': 166,
+@@ -232,6 +242,14 @@
+ parts are direct children of that same root. Cloud completion filenames differ.
+ The script reads/hash-checks original archives and parts, creates a new isolated
+ bare repository, hashes the exact 166-path tree and creates one parentless commit.
++The previous separately authorized attempt failed before any remote Git call or
++push: command-scope URL settings did not establish a configured Git remote. Its
++actual FAILED result and push-count-zero record remain unchanged. This attempt
++requires its exact terminal and owned-release proofs before creating its new root.
++The sole correction initializes `remote.transport.url` with the validated public
++HTTPS URL in this new bare config only. Init bytes and the exact one-setting delta
++are retained, and the resulting config stays byte-identical through completion.
++The original five Git configurations are never edited.
+ It fsyncs `prepared-data-commit.json` and `push-intent.json` before one empty-lease
+ push. Failure/unknown gets only the same-ref readback, never another push/account.
+ Public read reachability does not prove credentials or permission to push.
+@@ -255,7 +273,8 @@
+     records = []
+     for name in ['run_archive_transport.py','credential_get_only.py','test_transport_controls.py',
+                  'build_transport_package.py','repository-readonly.raw.json','metadata-allowlist-audit.json',
+-                 'transport-plan.json','transport-bundle.json','bootstrap.py','launch-request.json','README.md']:
++                 'transport-plan.json','transport-bundle.json','bootstrap.py','launch-request.json','README.md',
++                 'controls.raw.json','controls.log']:
+         raw = (HERE / name).read_bytes()
+         records.append({'path': name, 'bytes': len(raw), 'sha256': sha(raw)})
+     result = write('delivery-manifest.json', {'schema': 'unexecuted-archive-transport-delivery-v1',
+--- attempt1/test_transport_controls.py
++++ attempt2/test_transport_controls.py
+@@ -118,6 +118,33 @@
+             with self.assertRaises(OSError):
+                 transport.read_source(link)
+ 
++    def test_real_git_public_remote_initialization_and_rewrite_rejection(self):
++        origin = 'https://github.com/TrillionniumFoundation/hepta-private-ci.git'
++        with tempfile.TemporaryDirectory() as directory:
++            root = Path(directory).resolve()
++            item = transport.Transport({})
++            item.repo = root / 'repository.git'
++            item.git_prefix = ['git', '--git-dir=' + str(item.repo)]
++            item.env = dict(os.environ, GIT_CONFIG_NOSYSTEM='1', GIT_CONFIG_GLOBAL='/dev/null')
++            item.command('fixture-init-only', ['git', 'init', '--bare', '--template=', str(item.repo)], 5)
++            initial_sha = item.private_config_identity()
++            before = (item.repo / 'config').read_bytes()
++            with mock.patch.object(transport, 'ROOT', root):
++                item.initialize_public_remote(origin)
++            configured = (item.repo / 'config').read_bytes()
++            self.assertEqual(configured, before + b'[remote "transport"]\n\turl = ' + origin.encode() + b'\n')
++            self.assertNotEqual(initial_sha, item.private_config_identity())
++            item.validate_origin_routes(origin)
++            prefix = list(item.git_prefix)
++            for kind in ('insteadOf', 'pushInsteadOf'):
++                item.git_prefix = prefix + ['-c', 'url.https://other.example/.' + kind + '=https://github.com/']
++                with self.assertRaises(AssertionError):
++                    item.validate_origin_routes(origin)
++            self.assertEqual((item.repo / 'config').read_bytes(), configured)
++            self.assertEqual(item.private_config_identity(), hashlib.sha256(configured).hexdigest())
++            self.assertFalse(item.report['credential_material_logged_or_saved'])
++            self.assertTrue(item.report['validated_public_origin_saved_only_in_new_bare'])
++
+ 
+ if __name__ == '__main__':
+     unittest.main(verbosity=2)

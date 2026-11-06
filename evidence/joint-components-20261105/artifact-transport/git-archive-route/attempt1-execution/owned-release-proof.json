@@ -1,0 +1,66 @@
+{
+  "cargo_or_cost_or_compression_started": false,
+  "exact_cgroups": [
+    {
+      "actual_files": [],
+      "exists": false,
+      "owned_pids": [],
+      "path": "/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/app.slice/hepta-runtime-job-1a1ae34e63b-fc05-5e2b.service"
+    }
+  ],
+  "expected_original_invocation": null,
+  "expected_unit": "hepta-runtime-job-1a1ae34e63b-fc05-5e2b.service",
+  "failures": [],
+  "job_id": "1a1ae34e63b-fc05-5e2b",
+  "mutations_performed": false,
+  "observed_utc": "2026-11-06T00:18:47Z",
+  "original_authoritative_terminal": {
+    "at_unix_ms": 1793924076001,
+    "exit_code": 1,
+    "state": "failed",
+    "timed_out": false
+  },
+  "original_launch_nonce": "ba506901e6d5d82a232b9e8c65fff143",
+  "original_pid_and_invocation_observed_before_terminal": false,
+  "original_pid_scope": "First authoritative status was already terminal; no original PID or InvocationID is invented. This proof requires the exact unique unit to be removed and its entire known/reported cgroup to be absent or empty.",
+  "original_root_processes": [],
+  "owned_processes_clear": true,
+  "processes_killed": false,
+  "schema": "hepta-archive-git-transport-exact-owned-unit-release-observation-v1",
+  "scope": "Only the exact previously observed runtime unit, its reported and known user cgroup paths, nested cgroup.procs. Original PID/InvocationID were not observed before terminal and are not guessed. A removed unit's default Result does not replace the authoritative transport terminal; this release grants no new native evidence.",
+  "systemctl": {
+    "command": [
+      "systemctl",
+      "--user",
+      "show",
+      "hepta-runtime-job-1a1ae34e63b-fc05-5e2b.service",
+      "--no-pager",
+      "--property=Id,LoadState,ActiveState,SubState,ControlGroup,MainPID,ExecMainPID,ExecMainCode,ExecMainStatus,Result,InvocationID"
+    ],
+    "elapsed_ns": 14433897,
+    "exit_code": 0,
+    "fields": {
+      "ActiveState": "inactive",
+      "ControlGroup": "",
+      "ExecMainCode": "0",
+      "ExecMainPID": "0",
+      "ExecMainStatus": "0",
+      "Id": "hepta-runtime-job-1a1ae34e63b-fc05-5e2b.service",
+      "InvocationID": "",
+      "LoadState": "not-found",
+      "MainPID": "0",
+      "Result": "success",
+      "SubState": "dead"
+    },
+    "stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "text": ""
+    },
+    "stdout": {
+      "bytes": 205,
+      "sha256": "54d121dfdf86d4a0186093f4e991c8f76a76d7bc07eb3614bab7544a3476659a",
+      "text": "MainPID=0\nResult=success\nExecMainPID=0\nExecMainCode=0\nExecMainStatus=0\nControlGroup=\nId=hepta-runtime-job-1a1ae34e63b-fc05-5e2b.service\nLoadState=not-found\nActiveState=inactive\nSubState=dead\nInvocationID=\n"
+    }
+  }
+}

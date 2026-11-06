@@ -1,0 +1,58 @@
+{
+  "controls": [
+    {
+      "elapsed_seconds": 1.8296891710051568,
+      "exit_code": 0,
+      "name": "actual_saved_4mib_part",
+      "original_rpc_sha256": "83dd9c92111ee27f957dcb0c4c85b2a0dc3a0c52ea04903289586c79ffb45dfe",
+      "output": "/workspace/scratch/93bfcfe29fc8/w1/git-blob-receiver-v1/scoped-controls/receipts/actual_saved_4mib_part",
+      "pty_log_sha256": "d0abb5b61fa01d87b45e4f7495d53df9be5412c29bf357bfff17804d49254496",
+      "raw_reopened_equal": true,
+      "sent_rpc_bytes": 5592515
+    },
+    {
+      "elapsed_seconds": 0.0666727960051503,
+      "exit_code": 0,
+      "name": "plain_json_payload_and_escape",
+      "original_rpc_sha256": "bcdeb5bfddfb57542c84cf20c42ff34846f705f8644a5d67c2dbe7090543565c",
+      "output": "/workspace/scratch/93bfcfe29fc8/w1/git-blob-receiver-v1/scoped-controls/receipts/plain_json_payload_and_escape",
+      "pty_log_sha256": "3319b8e52142cf922ae26c13519064e4d68f05d3c83b7558c6abbef79b589526",
+      "raw_reopened_equal": true,
+      "sent_rpc_bytes": 226
+    },
+    {
+      "elapsed_seconds": 0.058985304000088945,
+      "exit_code": 1,
+      "name": "wrong_payload_hash_preserves_raw",
+      "original_rpc_sha256": "bcdeb5bfddfb57542c84cf20c42ff34846f705f8644a5d67c2dbe7090543565c",
+      "output": "/workspace/scratch/93bfcfe29fc8/w1/git-blob-receiver-v1/scoped-controls/receipts/wrong_payload_hash_preserves_raw",
+      "pty_log_sha256": "14377d64f49da89bfcc4b7b9be359094fe3e97f9309a56c4ff6f3086fa87212a",
+      "raw_reopened_equal": true,
+      "sent_rpc_bytes": 226
+    },
+    {
+      "elapsed_seconds": 0.07043921899457928,
+      "exit_code": 1,
+      "name": "existing_payload_rejected_and_raw_preserved",
+      "original_rpc_sha256": "bcdeb5bfddfb57542c84cf20c42ff34846f705f8644a5d67c2dbe7090543565c",
+      "output": "/workspace/scratch/93bfcfe29fc8/w1/git-blob-receiver-v1/scoped-controls/receipts/existing_payload_rejected_and_raw_preserved",
+      "pty_log_sha256": "a64da28e25d5c4de0e79d982351117810aadbb098ff1088c332791d15de4d68e",
+      "raw_reopened_equal": true,
+      "sent_rpc_bytes": 226
+    }
+  ],
+  "native_executions": 0,
+  "old_downloaders_touched": false,
+  "original_saved_actual_rpc": {
+    "bytes": 5592515,
+    "path": "/workspace/scratch/93bfcfe29fc8/transport-route-probe/large-text-fetch-blob.raw.json",
+    "sha256": "83dd9c92111ee27f957dcb0c4c85b2a0dc3a0c52ea04903289586c79ffb45dfe",
+    "unchanged": true
+  },
+  "receiver_bytes": 14518,
+  "receiver_sha256": "a2addbedb8bb0d6b16581f88ae3891de99882d8780680a40b857061c412a09c9",
+  "remote_calls": 0,
+  "schema": "scoped-github-receiver-controls-v1",
+  "scope": "Four local PTY controls for new output/error behavior only. The first replays an existing actual tool response; other RPCs and zero commit/tree labels are local fixtures. No new remote/Git read or actual archive membership credit.",
+  "status": "PASS"
+}

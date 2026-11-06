@@ -1,0 +1,17 @@
+{
+  "complete_raw_capture": true,
+  "declared_rpc_bytes": 226,
+  "error": "actual transport bytes/SHA/Git blob differ",
+  "error_type": "ValueError",
+  "expected_metadata_sha256": "3b7d109ad361f1762f370047a69c8e87bb25582e53dadd3623f348e48a6cdab3",
+  "metadata_path": "/workspace/scratch/93bfcfe29fc8/w1/git-blob-receiver-v1/scoped-controls/wrong_payload_hash_preserves_raw.metadata.json",
+  "metadata_sha256": "3b7d109ad361f1762f370047a69c8e87bb25582e53dadd3623f348e48a6cdab3",
+  "native_execution": false,
+  "network_calls": 0,
+  "payload_may_have_been_published": false,
+  "publication_scope": "No multi-file atomicity claim. Any published files without a successful receipt are incomplete.",
+  "raw_capture": "/workspace/scratch/93bfcfe29fc8/w1/git-blob-receiver-v1/scoped-controls/receipts/wrong_payload_hash_preserves_raw/rpc-original.raw.json",
+  "received_rpc_bytes": 226,
+  "schema": "failed-github-blob-receiver-v1",
+  "status": "FAILED_NO_COMPLETION_CREDIT"
+}

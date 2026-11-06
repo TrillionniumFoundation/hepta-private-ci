@@ -1,0 +1,22 @@
+## Why
+
+Joint release decisions need exact source, execution, binary and cost evidence. Earlier local attempts and compilation success did not establish the complete original sequence or the eight release conditions.
+
+## This checkpoint
+
+Immutable evidence commit: `4d5f73ce204385e836129e7fd8ab1ff95ca07b6b`.
+
+- H4 on unchanged Hepta `6db78eca53a5acdda0d96873d3f4cd65863426f0` / tree `e91f5994017fc5d2cfe58d405a20ee6ad9376772`, bound to Chain C4 `8df4b21d893906570d48f5beafabb3b31e0aefbc`, actually completed the original source-head/x64 desktop sequence. Authoritative job `1a1ade2970f-fc05-5b5c` succeeded at 23:05:10.435 UTC, with no timeout or retry; coordinator time was 1236.849 seconds within 5400.
+- All 74 selected cases, 6 compatibility, 10 provider, 50 FinalUse and 161 full-library executions passed. These are 301 executions of 276 distinct target/name pairs. The 135/32 source controls, 13 capture controls, original scoped fix and final format also passed under their original limits.
+- All 301 primary FD records match actual case results. The 294 live observations comprise 293 direct matches and one exactly attributed auxiliary FinalUse child with no added test credit. The ordinary Agentd recovery recorded one POST/application/nonce and two lookups for the same stable operation; its controlled pre-fencing/SIGKILL boundary remains explicit.
+- Root and independent review preserve complete raw logs, unchanged tracked source/configurations, actual before/after bytecode, all 597 image observations and exact owned-process release. H1/H2/H3 failures remain unchanged.
+- Frozen H4 reference-archive preparation requires actual twice-read verification of eleven H4 retained images and complete verification of its exact H3 byte parent. Preparation alone earns no archive or download credit. Complete H1–H4 byte closure is tracked separately.
+- The existing repository is currently public. The name does not guarantee privacy, and a public `ls-remote` result does not prove authenticated identity. Corrected metadata and the bounded, actual-byte transport probes are retained.
+
+## Validation and limits
+
+The complete frozen evidence subtree contains 2354 files / 105609923 bytes and was checked against its Git tree before the ref update. Only the joint evidence subtree changes; all other root and evidence entries are unchanged.
+
+All eight whole joint gates remain **HOLD**. This local sequence does not qualify the hosted base-merge/ARM matrix, original public-service gate, every generic effect sink, independent root custody/full-host recovery, authentic model adoption, learning quality, paid storage growth or independently administered WAN run.
+
+No new learning trial/reset, source H3/H4 PR, protected merge or activation is performed. The original workflows are preserved. C4 cost findings, including invalid-input verification amplification, retain their measured phase boundaries and are not a global cheapest-work or public-service proof.

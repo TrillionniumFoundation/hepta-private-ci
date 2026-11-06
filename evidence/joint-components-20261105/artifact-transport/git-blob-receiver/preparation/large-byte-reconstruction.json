@@ -1,0 +1,38 @@
+{
+  "all_actual_original_bytes_independently_compared": true,
+  "original_files_verified": 37,
+  "original_manifest_sha256": "c23df860347573a70feecf59f5276601608abdad4eb68c90333ada38c8422421",
+  "referenced_source_bytes": 4194304,
+  "referenced_source_commit": "4d5f73ce204385e836129e7fd8ab1ff95ca07b6b",
+  "referenced_source_path": "evidence/joint-components-20261105/chain-native-C4/complete-raw/parts/C4-strategy-receipts.tar.xz.part-0000",
+  "referenced_source_repository": "TrillionniumFoundation/hepta-private-ci",
+  "referenced_source_sha256": "53082f715a215a5de2231330c0f2cdd5d3d47178d129414915d06355da8291d3",
+  "references": [
+    {
+      "actual_byte_equality_verified": true,
+      "bytes": 5592408,
+      "large_local_replay_bytes": true,
+      "path": "scoped-controls/data/archives/H2/parts/control-original-part.b64",
+      "reconstruction": "canonical base64 without newline of referenced original C4 part",
+      "sha256": "476f7a207fa424bae5b4062a831df47b328e6c5716da464014d2a9a5f2104df8"
+    },
+    {
+      "actual_byte_equality_verified": true,
+      "bytes": 4194304,
+      "large_local_replay_bytes": true,
+      "path": "scoped-controls/receipts/actual_saved_4mib_part/actual-part.bin",
+      "reconstruction": "verbatim referenced original C4 part",
+      "sha256": "53082f715a215a5de2231330c0f2cdd5d3d47178d129414915d06355da8291d3"
+    },
+    {
+      "actual_byte_equality_verified": true,
+      "bytes": 5592515,
+      "large_local_replay_bytes": true,
+      "path": "scoped-controls/receipts/actual_saved_4mib_part/rpc-original.raw.json",
+      "reconstruction": "saved rpc-prefix.bin + canonical base64 of referenced original C4 part + saved rpc-suffix.bin",
+      "sha256": "83dd9c92111ee27f957dcb0c4c85b2a0dc3a0c52ea04903289586c79ffb45dfe"
+    }
+  ],
+  "schema": "lossless-receiver-control-shared-byte-references-v1",
+  "scope": "Local receiver controls replay an existing C4 part. The H2 directory is only a control fixture and supplies no H2 archive or Git membership credit."
+}

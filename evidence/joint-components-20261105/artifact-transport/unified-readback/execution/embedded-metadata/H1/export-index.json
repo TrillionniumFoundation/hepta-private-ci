@@ -1,0 +1,241 @@
+{
+  "alias_paths_are_original_mapping_only": true,
+  "archive_scope": "Only the selected retained bytes; no new build, execution, capture, or missing-case attribution.",
+  "capture_limits": "Only observed nextest test processes are bound to actual opened ELF descriptors. Three selected cases were not individually observed; the readback does not assign a specific cause to the observation gaps. A single declared test binary and matching other captures do not retroactively assign those missing processes. These four images are not the entire ordinary service/interpreter/runtime closure.",
+  "embedded_metadata_files": {
+    "H1/original-source-map.json": {
+      "bytes": 9817,
+      "sha256": "8c1fe933839ac8bc7d3989c497995d52332f73a9cf8ecc18e15150b66b18d9c2"
+    },
+    "export-plan.json": {
+      "bytes": 21369,
+      "sha256": "3a8421bb03834cdf1c2e262bb2e72348f398240c41e1752e5b1e82113e915248"
+    },
+    "exporter.py": {
+      "bytes": 18885,
+      "sha256": "8ba375f315433a4eea9a05b9f1a0fbcffced353eb668cca6cd799b433fa4402b"
+    },
+    "owned-release-proof.json": {
+      "bytes": 2662,
+      "sha256": "df0fc5340514bfe339a9e6178922930db59087f0128dd62c9971afb741890c60"
+    }
+  },
+  "exporter_sha256": "8ba375f315433a4eea9a05b9f1a0fbcffced353eb668cca6cd799b433fa4402b",
+  "files": [
+    {
+      "aliases": [
+        "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/evidence/joint-h1-native-attempt-1/executed-binaries-dispatcher/86a2c65e12fbef81586067783aa478677975e03290bcd62561938645ac1efc7e.elf",
+        "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/evidence/joint-h1-native-attempt-1/executed-binaries-recovery-signed/86a2c65e12fbef81586067783aa478677975e03290bcd62561938645ac1efc7e.elf",
+        "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/evidence/joint-h1-native-attempt-1/executed-binaries-effect-pq-owner/86a2c65e12fbef81586067783aa478677975e03290bcd62561938645ac1efc7e.elf"
+      ],
+      "bytes": 504265656,
+      "captured_records": 34,
+      "first_read_metadata": {
+        "bytes": 504265656,
+        "ctime_ns": 1793905370845094735,
+        "device": 2050,
+        "gid": 1000,
+        "inode": 59825343,
+        "mode": 384,
+        "mtime_ns": 1793905370733098040,
+        "nlink": 1,
+        "uid": 1000
+      },
+      "gates": [
+        "dispatcher",
+        "recovery-signed",
+        "effect-pq-owner"
+      ],
+      "name": "H1/elf/86a2c65e12fbef81586067783aa478677975e03290bcd62561938645ac1efc7e.elf",
+      "original_actual_paths": [
+        "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/codex_hepta_agentd-13943d509610e217"
+      ],
+      "other_aliases_reopened_by_this_export": false,
+      "role": "previously_captured_test_elf",
+      "second_read_metadata": {
+        "bytes": 504265656,
+        "ctime_ns": 1793905370845094735,
+        "device": 2050,
+        "gid": 1000,
+        "inode": 59825343,
+        "mode": 384,
+        "mtime_ns": 1793905370733098040,
+        "nlink": 1,
+        "uid": 1000
+      },
+      "second_read_sha256": "86a2c65e12fbef81586067783aa478677975e03290bcd62561938645ac1efc7e",
+      "selection_rule": "First exact retained path in the frozen original map; no fallback to target or to another alias.",
+      "sha256": "86a2c65e12fbef81586067783aa478677975e03290bcd62561938645ac1efc7e",
+      "source_path": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/evidence/joint-h1-native-attempt-1/executed-binaries-dispatcher/86a2c65e12fbef81586067783aa478677975e03290bcd62561938645ac1efc7e.elf"
+    },
+    {
+      "aliases": [
+        "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/evidence/joint-h1-native-attempt-1/executed-binaries-product/060b03442eaad0f40a1c532199d59183ce6b784beb9023ee06fec73105c34d31.elf"
+      ],
+      "bytes": 120073792,
+      "captured_records": 3,
+      "first_read_metadata": {
+        "bytes": 120073792,
+        "ctime_ns": 1793905425295488544,
+        "device": 2050,
+        "gid": 1000,
+        "inode": 59825455,
+        "mode": 384,
+        "mtime_ns": 1793905424941498983,
+        "nlink": 1,
+        "uid": 1000
+      },
+      "gates": [
+        "product"
+      ],
+      "name": "H1/elf/060b03442eaad0f40a1c532199d59183ce6b784beb9023ee06fec73105c34d31.elf",
+      "original_actual_paths": [
+        "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/authbus_text_product-c365e5b605b48783"
+      ],
+      "other_aliases_reopened_by_this_export": false,
+      "role": "previously_captured_test_elf",
+      "second_read_metadata": {
+        "bytes": 120073792,
+        "ctime_ns": 1793905425295488544,
+        "device": 2050,
+        "gid": 1000,
+        "inode": 59825455,
+        "mode": 384,
+        "mtime_ns": 1793905424941498983,
+        "nlink": 1,
+        "uid": 1000
+      },
+      "second_read_sha256": "060b03442eaad0f40a1c532199d59183ce6b784beb9023ee06fec73105c34d31",
+      "selection_rule": "First exact retained path in the frozen original map; no fallback to target or to another alias.",
+      "sha256": "060b03442eaad0f40a1c532199d59183ce6b784beb9023ee06fec73105c34d31",
+      "source_path": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/evidence/joint-h1-native-attempt-1/executed-binaries-product/060b03442eaad0f40a1c532199d59183ce6b784beb9023ee06fec73105c34d31.elf"
+    },
+    {
+      "aliases": [
+        "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/evidence/joint-h1-native-attempt-1/executed-binaries-recovery-owner/a948cdfa5aeafc03fcfc63459e581ca254129f4d878949236e0bf42df3fe725f.elf",
+        "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/evidence/joint-h1-native-attempt-1/executed-binaries-qualification-growth/a948cdfa5aeafc03fcfc63459e581ca254129f4d878949236e0bf42df3fe725f.elf"
+      ],
+      "bytes": 53291680,
+      "captured_records": 23,
+      "first_read_metadata": {
+        "bytes": 53291680,
+        "ctime_ns": 1793905620266742821,
+        "device": 2050,
+        "gid": 1000,
+        "inode": 59826545,
+        "mode": 384,
+        "mtime_ns": 1793905620147746325,
+        "nlink": 1,
+        "uid": 1000
+      },
+      "gates": [
+        "recovery-owner",
+        "qualification-growth"
+      ],
+      "name": "H1/elf/a948cdfa5aeafc03fcfc63459e581ca254129f4d878949236e0bf42df3fe725f.elf",
+      "original_actual_paths": [
+        "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/codex_hepta_evidence-0f5076227f347d3a"
+      ],
+      "other_aliases_reopened_by_this_export": false,
+      "role": "previously_captured_test_elf",
+      "second_read_metadata": {
+        "bytes": 53291680,
+        "ctime_ns": 1793905620266742821,
+        "device": 2050,
+        "gid": 1000,
+        "inode": 59826545,
+        "mode": 384,
+        "mtime_ns": 1793905620147746325,
+        "nlink": 1,
+        "uid": 1000
+      },
+      "second_read_sha256": "a948cdfa5aeafc03fcfc63459e581ca254129f4d878949236e0bf42df3fe725f",
+      "selection_rule": "First exact retained path in the frozen original map; no fallback to target or to another alias.",
+      "sha256": "a948cdfa5aeafc03fcfc63459e581ca254129f4d878949236e0bf42df3fe725f",
+      "source_path": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/evidence/joint-h1-native-attempt-1/executed-binaries-recovery-owner/a948cdfa5aeafc03fcfc63459e581ca254129f4d878949236e0bf42df3fe725f.elf"
+    },
+    {
+      "aliases": [
+        "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/evidence/joint-h1-native-attempt-1/executed-binaries-recovery-product/6c4c81a3b2d99aba2bb95aa83433680140a82d936285942ea702c352eb464126.elf"
+      ],
+      "bytes": 96989456,
+      "captured_records": 4,
+      "first_read_metadata": {
+        "bytes": 96989456,
+        "ctime_ns": 1793905667818606691,
+        "device": 2050,
+        "gid": 1000,
+        "inode": 59955992,
+        "mode": 384,
+        "mtime_ns": 1793905667635347975,
+        "nlink": 1,
+        "uid": 1000
+      },
+      "gates": [
+        "recovery-product"
+      ],
+      "name": "H1/elf/6c4c81a3b2d99aba2bb95aa83433680140a82d936285942ea702c352eb464126.elf",
+      "original_actual_paths": [
+        "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/kernel_evidence_product-c434ef3dca0b18f7"
+      ],
+      "other_aliases_reopened_by_this_export": false,
+      "role": "previously_captured_test_elf",
+      "second_read_metadata": {
+        "bytes": 96989456,
+        "ctime_ns": 1793905667818606691,
+        "device": 2050,
+        "gid": 1000,
+        "inode": 59955992,
+        "mode": 384,
+        "mtime_ns": 1793905667635347975,
+        "nlink": 1,
+        "uid": 1000
+      },
+      "second_read_sha256": "6c4c81a3b2d99aba2bb95aa83433680140a82d936285942ea702c352eb464126",
+      "selection_rule": "First exact retained path in the frozen original map; no fallback to target or to another alias.",
+      "sha256": "6c4c81a3b2d99aba2bb95aa83433680140a82d936285942ea702c352eb464126",
+      "source_path": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/evidence/joint-h1-native-attempt-1/executed-binaries-recovery-product/6c4c81a3b2d99aba2bb95aa83433680140a82d936285942ea702c352eb464126.elf"
+    }
+  ],
+  "native_reexecution": false,
+  "original_run_outcome": {
+    "actual_failed": 2,
+    "actual_passed": 65,
+    "actual_process_capture_records": 64,
+    "actual_selected_native_cases_run": 67,
+    "not_run_followup_gates": [
+      "original-six-effect-controls",
+      "provider-effect-existing-and-pq",
+      "final-use-profile-controls",
+      "full-evidence-library",
+      "fix",
+      "format"
+    ],
+    "not_run_original_selected_gates": [
+      "effect-pq-contract",
+      "effect-pq-product"
+    ],
+    "result": "FAILED",
+    "three_individually_unobserved_cases": [
+      {
+        "gate": "recovery-owner",
+        "selected_case": "recovery_invocation_schema_tests::recovery_invocation_schema_refuses_non_rowid_or_composite_sequences"
+      },
+      {
+        "gate": "recovery-signed",
+        "selected_case": "evidence_frontier::tests::recovery_frontier_cannot_be_omitted_at_the_ordinary_agentd_run_entry"
+      },
+      {
+        "gate": "recovery-signed",
+        "selected_case": "evidence_frontier::tests::recovery_frontier_enforces_root_scope_epoch_revocation_and_generation_floor"
+      }
+    ]
+  },
+  "phase": "H1",
+  "plan_sha256": "3a8421bb03834cdf1c2e262bb2e72348f398240c41e1752e5b1e82113e915248",
+  "schema": "hepta-actual-retained-elf-archive-index-v1",
+  "selected_elf_sources_actually_read_twice": true,
+  "source_commit": "9f785cb201ba12ab0ae0f0d341c0f7912cc65efc",
+  "source_tree": "24804b21d0306b617e12fa3f5b9454a12ed4ad41",
+  "total_actual_elf_bytes": 774620584
+}

@@ -1,0 +1,40 @@
+{
+  "decision": "AUTHORIZE_ONE_EXACT_PREVIOUSLY_REVIEWED_REQUEST",
+  "destination_ref": "refs/heads/evidence/actual-elf-transport-20261105-93bfc-01",
+  "destination_repository": "TrillionniumFoundation/hepta-private-ci",
+  "existing_session_public_evidence_delivery_scope": true,
+  "host": "desktop",
+  "idempotency_key": "93bfc-hepta-h1-h2-h3-orphan-archive-git-transport-01",
+  "independent_review_files_verified": 26,
+  "independent_review_manifest_sha256": "cef896e82a65cb9b75e09d83dc127c57645a872c2abc0206d31f17e1f6e0c653",
+  "new_native_or_learning_trial": false,
+  "outer_seconds": 1200,
+  "plan_sha256": "5a27e3f47c70b210d5d0a944dd43ef6c270405851f0259e3ee9f4fa9c43e8a3b",
+  "preceding_H4_owned_release_sha256": "55defb131f12e3509222543d21e8bed0d77d6001fa307106a01e804fc2c56b8e",
+  "prior_bulk_state": {
+    "pq_recovery/h1-actual-elf-download": {
+      "in_flight": 0,
+      "sha256": "8eaff30fd26d7658376b14e32a42f17afc72150e706cc883cd09ecfcb42b416c",
+      "status": "PAUSED"
+    },
+    "w1/h2-actual-elf-download": {
+      "in_flight": 0,
+      "sha256": "18dedb660ce32ea745fec937df81b23246a42871ca7d2d086809503f0f441ec8",
+      "status": "PAUSED"
+    },
+    "w1/h3-actual-elf-download": {
+      "in_flight": 0,
+      "sha256": "74002a256c3123fe1dd5518a9192a288c2e44da03bf83253096f461668aae501",
+      "status": "PAUSED"
+    }
+  },
+  "push_seconds": 900,
+  "repository_id": "1320694176",
+  "repository_visibility": "public",
+  "request_sha256": "15e215b7c44aecda1d4f038a7ae5b5f257bb20b00cdd7cf6f39ed09ff87165e4",
+  "root_package_review_sha256": "6673ecccb0cbc05c5f0c2f5b318eac183f4f5f6999e4812389482359a43396f2",
+  "root_verdict": "Final HTTPS-only code and exact package independently reviewed. One new orphan data ref; 166 allowlisted files. Actual full readback still required.",
+  "schema": "root-one-archival-git-launch-decision-v1",
+  "unknown_launch_policy": "Reconcile the same durable key; never launch a new key.",
+  "unknown_push_policy": "Read the same exact ref and planned commit; never auto-repush."
+}

@@ -1,0 +1,705 @@
+{
+  "W1_fresh_service_manifest": {
+    "failures": [
+      "from_zero_signed_business_reports_confirmation_in_original_pressure_window_against_same_packet_baseline: CONFIRMATION_TARGET",
+      "fresh_challenge::fresh_challenge_signed_confirmation_keeps_original_pressure_budget: FRESH_NATIVE_PROCESS_REQUIRED"
+    ],
+    "manifest_sha256": "abf012e2d9dd13a97b62be3332f3cf77aa9a825cf6a3248b1ff03e0addf2518c",
+    "original_runs": [
+      {
+        "failure": "CONFIRMATION_TARGET",
+        "failure_diagnostic": {
+          "acceptance_authority": false,
+          "finite_target_met": false,
+          "last_history_replay": {
+            "history_call_index": 3,
+            "phase": "from-zero-pressure",
+            "replay_accepted": false,
+            "replay_error": "PUBLIC_REQUEST_DEADLINE"
+          },
+          "native_returncode": 0,
+          "schema": "trnm-w1-fresh-failure-diagnostic-v1"
+        },
+        "log_sha256": "bbb76e7f8f81e48870144a6609ecfe7a0c651b6bf4d943fe2012e5d15c07db72",
+        "name": "from_zero_signed_business_reports_confirmation_in_original_pressure_window_against_same_packet_baseline",
+        "passed": false,
+        "process": {
+          "command": [
+            "/home/runner/work/_temp/target-w1-fresh/release/deps/public_v3_from_zero-dfe85dd72d659d81",
+            "from_zero_signed_business_reports_confirmation_in_original_pressure_window_against_same_packet_baseline",
+            "--exact",
+            "--nocapture",
+            "--test-threads=1"
+          ],
+          "cwd": "/home/runner/work/Trillionnium-Chain/Trillionnium-Chain",
+          "elapsed_ns": 15293959827,
+          "executed": true,
+          "exit_code": 0,
+          "expected_source": "8df4b21d893906570d48f5beafabb3b31e0aefbc",
+          "log": "original.log",
+          "process_exit_code": 0,
+          "source_after_verified": true,
+          "source_before_verified": true,
+          "source_verified": true,
+          "timed_out": false
+        },
+        "report_path": "original/report.json"
+      },
+      {
+        "failure": "FRESH_NATIVE_PROCESS_REQUIRED",
+        "failure_diagnostic": {
+          "acceptance_authority": false,
+          "finite_target_met": false,
+          "last_history_replay": {
+            "history_call_index": 2,
+            "phase": "from-zero-pressure",
+            "replay_accepted": false,
+            "replay_error": "PUBLIC_REQUEST_DEADLINE"
+          },
+          "native_returncode": 101,
+          "schema": "trnm-w1-fresh-failure-diagnostic-v1"
+        },
+        "log_sha256": "4dca9e0487408031e05f6eee1ab19b005ec7379a59501d0ce44974e7c6d3d0e1",
+        "name": "fresh_challenge::fresh_challenge_signed_confirmation_keeps_original_pressure_budget",
+        "passed": false,
+        "process": {
+          "command": [
+            "/home/runner/work/_temp/target-w1-fresh/release/deps/public_v3_from_zero-dfe85dd72d659d81",
+            "fresh_challenge::fresh_challenge_signed_confirmation_keeps_original_pressure_budget",
+            "--exact",
+            "--nocapture",
+            "--test-threads=1",
+            "--ignored"
+          ],
+          "cwd": "/home/runner/work/Trillionnium-Chain/Trillionnium-Chain",
+          "elapsed_ns": 15397803578,
+          "executed": true,
+          "exit_code": 101,
+          "expected_source": "8df4b21d893906570d48f5beafabb3b31e0aefbc",
+          "log": "fresh.log",
+          "process_exit_code": 101,
+          "source_after_verified": true,
+          "source_before_verified": true,
+          "source_verified": true,
+          "timed_out": false
+        },
+        "report_path": "fresh/report.json"
+      }
+    ],
+    "passed": false,
+    "scope": "Independently reviewed separately; native original exit zero does not satisfy finite business confirmation."
+  },
+  "all_eight_whole_gates": "HOLD",
+  "artifact_integrity": [
+    {
+      "actual_artifact_list_rpc": {
+        "path": "C4-W1-artifacts.raw.json",
+        "sha256": "7251bdfe5c79d3e5089f896e58f0d39333b44239e1d05ac08905fb1f33ddd1ea"
+      },
+      "all_zip_members_read_to_eof_and_crc_checked": true,
+      "artifact_id": 13462092257,
+      "artifact_name": "w1-fresh-service-head-8df4b21d893906570d48f5beafabb3b31e0aefbc-1",
+      "excluded_member_policy": "SQLite databases/WAL/SHM, empty lock files, dev key bodies, and the history packet directory are inventoried and retained in the original downloaded ZIPs; not included in the selected-member tar. No claim that the complete original ZIP is republished in this evidence commit.",
+      "key": "W1-fresh-service-head",
+      "member_bytes": 34539170,
+      "member_count": 57,
+      "original_zip": {
+        "bytes": 5641053,
+        "filename": "C4-W1-fresh-service-head-original.zip",
+        "sha256": "d1a8cf22fe723486d932a88c8401e3bbcc04c62ba5fc634732b012d763dcfa18"
+      },
+      "schema": "actual-hosted-artifact-complete-member-sha256-inventory-v1",
+      "selected_member_bytes": 30000802,
+      "selected_member_count": 37,
+      "workflow_run": {
+        "head_branch": "fix/chain-joint-v12-c4-20261105-93bfc-frozen",
+        "head_repository_id": 1323087357,
+        "head_sha": "8df4b21d893906570d48f5beafabb3b31e0aefbc",
+        "id": 42076755695,
+        "repository_id": 1323087357
+      }
+    },
+    {
+      "actual_artifact_list_rpc": {
+        "path": "C4-priority-artifacts.raw.json",
+        "sha256": "7c5abbdf5d3c71edd0a4a9fe33b75460544e1a806900f5c8d60882a4d15039f0"
+      },
+      "all_zip_members_read_to_eof_and_crc_checked": true,
+      "artifact_id": 13462094914,
+      "artifact_name": "priority-ubuntu-24.04-head-service-model-8df4b21d893906570d48f5beafabb3b31e0aefbc-1",
+      "excluded_member_policy": "SQLite databases/WAL/SHM, empty lock files, dev key bodies, and the history packet directory are inventoried and retained in the original downloaded ZIPs; not included in the selected-member tar. No claim that the complete original ZIP is republished in this evidence commit.",
+      "key": "priority-service-head",
+      "member_bytes": 79379842,
+      "member_count": 282,
+      "original_zip": {
+        "bytes": 7844527,
+        "filename": "C4-priority-service-head-original.zip",
+        "sha256": "205ac9a547b00694bb346fa8a6d06696380b1a856006ea735cf33dc61ef91c11"
+      },
+      "schema": "actual-hosted-artifact-complete-member-sha256-inventory-v1",
+      "selected_member_bytes": 70538962,
+      "selected_member_count": 216,
+      "workflow_run": {
+        "head_branch": "fix/chain-joint-v12-c4-20261105-93bfc-frozen",
+        "head_repository_id": 1323087357,
+        "head_sha": "8df4b21d893906570d48f5beafabb3b31e0aefbc",
+        "id": 42076755687,
+        "repository_id": 1323087357
+      }
+    },
+    {
+      "actual_artifact_list_rpc": {
+        "path": "C4-priority-artifacts.raw.json",
+        "sha256": "7c5abbdf5d3c71edd0a4a9fe33b75460544e1a806900f5c8d60882a4d15039f0"
+      },
+      "all_zip_members_read_to_eof_and_crc_checked": true,
+      "artifact_id": 13464309534,
+      "artifact_name": "priority-ubuntu-24.04-head-history-8df4b21d893906570d48f5beafabb3b31e0aefbc-1",
+      "excluded_member_policy": "SQLite databases/WAL/SHM, empty lock files, dev key bodies, and the history packet directory are inventoried and retained in the original downloaded ZIPs; not included in the selected-member tar. No claim that the complete original ZIP is republished in this evidence commit.",
+      "key": "history-head",
+      "member_bytes": 629055576,
+      "member_count": 4140,
+      "original_zip": {
+        "bytes": 59332814,
+        "filename": "C4-history-head-original.zip",
+        "sha256": "8935262acdf69f7e77559f7f9f3f02b0b74ba75c19a01e12c06bd353902356b7"
+      },
+      "schema": "actual-hosted-artifact-complete-member-sha256-inventory-v1",
+      "selected_member_bytes": 160064,
+      "selected_member_count": 31,
+      "workflow_run": {
+        "head_branch": "fix/chain-joint-v12-c4-20261105-93bfc-frozen",
+        "head_repository_id": 1323087357,
+        "head_sha": "8df4b21d893906570d48f5beafabb3b31e0aefbc",
+        "id": 42076755687,
+        "repository_id": 1323087357
+      }
+    },
+    {
+      "actual_artifact_list_rpc": {
+        "path": "C4-native-artifacts.raw.json",
+        "sha256": "5e59357c41ed6112112855d1959a9073f47f2d1e91f90752fad316a1c8eae691"
+      },
+      "all_zip_members_read_to_eof_and_crc_checked": true,
+      "artifact_id": 13462216107,
+      "artifact_name": "pon-native-campaign-x64-head-release-8df4b21d893906570d48f5beafabb3b31e0aefbc-1",
+      "excluded_member_policy": "SQLite databases/WAL/SHM, empty lock files, dev key bodies, and the history packet directory are inventoried and retained in the original downloaded ZIPs; not included in the selected-member tar. No claim that the complete original ZIP is republished in this evidence commit.",
+      "key": "native-campaign-head",
+      "member_bytes": 359955963,
+      "member_count": 1766,
+      "original_zip": {
+        "bytes": 60063699,
+        "filename": "C4-native-campaign-head-original.zip",
+        "sha256": "7431c4d3efc4708b30dfaccdd2a843ceb3d1770e1b9bb6a2bd731144e30ac9fa"
+      },
+      "schema": "actual-hosted-artifact-complete-member-sha256-inventory-v1",
+      "selected_member_bytes": 287907323,
+      "selected_member_count": 1724,
+      "workflow_run": {
+        "head_branch": "fix/chain-joint-v12-c4-20261105-93bfc-frozen",
+        "head_repository_id": 1323087357,
+        "head_sha": "8df4b21d893906570d48f5beafabb3b31e0aefbc",
+        "id": 42076755705,
+        "repository_id": 1323087357
+      }
+    }
+  ],
+  "checks_snapshot": {
+    "conclusion_counts": {
+      "None": 5,
+      "cancelled": 2,
+      "failure": 28,
+      "skipped": 1,
+      "success": 66
+    },
+    "returned_pages": 2,
+    "status_counts": {
+      "completed": 97,
+      "in_progress": 4,
+      "queued": 1
+    },
+    "total_reported": 102,
+    "unique_checks": 102
+  },
+  "history": {
+    "failures": [
+      "ValueError:HISTORY_NATIVE_PROCESS_REQUIRED",
+      "ValueError:required-native-test: expected one passed, zero failed/ignored/measured",
+      "ValueError:HISTORY_NATIVE_COMPLETION_REQUIRED"
+    ],
+    "manifest_sha256": "9740bbe8b7fcf085a06bcca58ea861718ff5ad165cd3f1ce1bbf53f73ee52c50",
+    "note": "4105 retained packet files do not establish successful full sync/reopen/corrupt-index refusal. Actual history binary is not in this artifact; its manifest records before/after identity.",
+    "observed_test_log_seconds": 3085.27,
+    "passed": false,
+    "process": {
+      "cleanup_errors": [],
+      "command": [
+        "/usr/bin/time",
+        "-v",
+        "-o",
+        "/home/runner/work/_temp/priority-observations/history-native/history-resources.txt",
+        "/home/runner/work/_temp/target-priority/release/deps/ancestry_long_sync-7ca233ae9903a116",
+        "actual_v3_long_chain_public_full_sync_reopen_and_corrupt_index_refusal",
+        "--exact",
+        "--ignored",
+        "--show-output"
+      ],
+      "exit_code": 101,
+      "failure": null,
+      "pid": 5070,
+      "started": true
+    },
+    "resource_log_elapsed": "51:25.26",
+    "summary": {
+      "error": "IO: Connection refused (os error 111)",
+      "hardness_accepted": false,
+      "independent_accepted": false,
+      "passed": false,
+      "production_activation": false,
+      "public_network_ready": false,
+      "schema": "native-ancestry-long-sync-observation-v1"
+    }
+  },
+  "local_review_preparation_history": [
+    "Initial local review stopped before ZIP member processing because the first artifact index uses bytes/sha256 instead of the later actual_bytes/actual_sha256 aliases. Original stderr preserved; corrected to the common original schema. No CI or source execution repeated."
+  ],
+  "new_ci_rerun_cancel_or_gate_change": false,
+  "new_learning_trial_or_ledger_reset": false,
+  "original_three_campaigns": {
+    "failure": "ORIGINAL_THREE_RUN_CAMPAIGN_FAILED",
+    "original_inputs": {
+      "attacker_processes": [
+        0,
+        24,
+        24
+      ],
+      "business_blocks": 21,
+      "modes": [
+        "baseline",
+        "from-zero",
+        "late-product"
+      ],
+      "phase_seconds": 30,
+      "seed_blocks": 4,
+      "seed_transfers": 1024
+    },
+    "public_phase_placement": {
+      "attacker_processes_remain_in_original_controller_domain": true,
+      "fixed_parent": "/sys/fs/cgroup/trnmponpublic.slice",
+      "original_3x3_workload_and_depletion_predicates_changed": false,
+      "profile": "fixed-public-phase-external-actors-v1",
+      "receiver_and_verifier_cpu_max": "25000 100000",
+      "receiver_and_verifier_memory_max": "2147483648"
+    },
+    "results_sha256": "a6c1afd3a307eb8d4e28def00f42c316905211a34708fcf91896a5e617f65ccf",
+    "runs": [
+      {
+        "elapsed_seconds": 112.469952244,
+        "finite_experiment_criteria_met": false,
+        "native_exit": 101,
+        "number": 1,
+        "outer_timeout_seconds": 600,
+        "phase_startup_errors": [],
+        "phases": [
+          {
+            "all_signed_rounds_confirmed_in_window": false,
+            "attacker_processes_ready": 0,
+            "attacker_processes_requested": 0,
+            "duration_seconds": 30,
+            "finite_phase_criteria_met": false,
+            "full_work_accepted": 12,
+            "full_work_failed": 0,
+            "genuine_budget_depletion_observed": false,
+            "mode": "baseline",
+            "receiver_client_state_equal": false
+          },
+          {
+            "all_signed_rounds_confirmed_in_window": false,
+            "attacker_processes_ready": 24,
+            "attacker_processes_requested": 24,
+            "duration_seconds": 30,
+            "finite_phase_criteria_met": false,
+            "full_work_accepted": 7,
+            "full_work_failed": 1346,
+            "genuine_budget_depletion_observed": false,
+            "mode": "from-zero",
+            "receiver_client_state_equal": false
+          },
+          {
+            "all_signed_rounds_confirmed_in_window": false,
+            "attacker_processes_ready": 24,
+            "attacker_processes_requested": 24,
+            "duration_seconds": 30,
+            "finite_phase_criteria_met": false,
+            "full_work_accepted": 7,
+            "full_work_failed": 1239,
+            "genuine_budget_depletion_observed": false,
+            "mode": "late-product",
+            "receiver_client_state_equal": false
+          }
+        ],
+        "report_validation_failure": null
+      },
+      {
+        "elapsed_seconds": 112.235325948,
+        "finite_experiment_criteria_met": false,
+        "native_exit": 101,
+        "number": 2,
+        "outer_timeout_seconds": 600,
+        "phase_startup_errors": [],
+        "phases": [
+          {
+            "all_signed_rounds_confirmed_in_window": false,
+            "attacker_processes_ready": 0,
+            "attacker_processes_requested": 0,
+            "duration_seconds": 30,
+            "finite_phase_criteria_met": false,
+            "full_work_accepted": 11,
+            "full_work_failed": 1,
+            "genuine_budget_depletion_observed": false,
+            "mode": "baseline",
+            "receiver_client_state_equal": false
+          },
+          {
+            "all_signed_rounds_confirmed_in_window": false,
+            "attacker_processes_ready": 24,
+            "attacker_processes_requested": 24,
+            "duration_seconds": 30,
+            "finite_phase_criteria_met": false,
+            "full_work_accepted": 7,
+            "full_work_failed": 1368,
+            "genuine_budget_depletion_observed": false,
+            "mode": "from-zero",
+            "receiver_client_state_equal": false
+          },
+          {
+            "all_signed_rounds_confirmed_in_window": false,
+            "attacker_processes_ready": 24,
+            "attacker_processes_requested": 24,
+            "duration_seconds": 30,
+            "finite_phase_criteria_met": false,
+            "full_work_accepted": 7,
+            "full_work_failed": 1242,
+            "genuine_budget_depletion_observed": false,
+            "mode": "late-product",
+            "receiver_client_state_equal": false
+          }
+        ],
+        "report_validation_failure": null
+      },
+      {
+        "elapsed_seconds": 112.162514069,
+        "finite_experiment_criteria_met": false,
+        "native_exit": 101,
+        "number": 3,
+        "outer_timeout_seconds": 600,
+        "phase_startup_errors": [],
+        "phases": [
+          {
+            "all_signed_rounds_confirmed_in_window": false,
+            "attacker_processes_ready": 0,
+            "attacker_processes_requested": 0,
+            "duration_seconds": 30,
+            "finite_phase_criteria_met": false,
+            "full_work_accepted": 13,
+            "full_work_failed": 0,
+            "genuine_budget_depletion_observed": false,
+            "mode": "baseline",
+            "receiver_client_state_equal": false
+          },
+          {
+            "all_signed_rounds_confirmed_in_window": false,
+            "attacker_processes_ready": 24,
+            "attacker_processes_requested": 24,
+            "duration_seconds": 30,
+            "finite_phase_criteria_met": false,
+            "full_work_accepted": 7,
+            "full_work_failed": 1351,
+            "genuine_budget_depletion_observed": false,
+            "mode": "from-zero",
+            "receiver_client_state_equal": false
+          },
+          {
+            "all_signed_rounds_confirmed_in_window": false,
+            "attacker_processes_ready": 24,
+            "attacker_processes_requested": 24,
+            "duration_seconds": 30,
+            "finite_phase_criteria_met": false,
+            "full_work_accepted": 7,
+            "full_work_failed": 1237,
+            "genuine_budget_depletion_observed": false,
+            "mode": "late-product",
+            "receiver_client_state_equal": false
+          }
+        ],
+        "report_validation_failure": null
+      }
+    ]
+  },
+  "priority_original_five": {
+    "all_named_tests_passed": true,
+    "execution_finished": false,
+    "failures": [
+      "CONFIRMATION_TARGET"
+    ],
+    "format_passed": true,
+    "manifest_sha256": "a09deeefe486d613940c24ac63af07afa6c58386e6f5b8d194bc09fe2162c896",
+    "original_gate_validated": false,
+    "original_gate_validation_error": "CONFIRMATION_TARGET",
+    "passed": false,
+    "phases": [
+      {
+        "business": {
+          "observed_success_latency_ns": 2288198676,
+          "reported_finite_business_target_met": true,
+          "reported_independently_confirmed_in_window": 1,
+          "required_signed_transactions": 1,
+          "unconfirmed": 0,
+          "unconfirmed_latency_lower_bound_ns": null,
+          "unknown": 0
+        },
+        "history_response": {
+          "attempts": 7,
+          "failed_or_late": 0,
+          "successful_in_original_window": 7
+        },
+        "independent_page_replay": {
+          "accepted_in_original_window": 7,
+          "attempts": 7,
+          "failed_or_late": 0
+        },
+        "mode": "attack-free-baseline",
+        "signed_submit_ack": {
+          "attempts": 7,
+          "failed_or_late": 0,
+          "successful_in_original_window": 7
+        },
+        "window_ns": 4000000000,
+        "workers": 0
+      },
+      {
+        "business": {
+          "observed_success_latency_ns": null,
+          "reported_finite_business_target_met": false,
+          "reported_independently_confirmed_in_window": 0,
+          "required_signed_transactions": 1,
+          "unconfirmed": 1,
+          "unconfirmed_latency_lower_bound_ns": 3935344319,
+          "unknown": 0
+        },
+        "history_response": {
+          "attempts": 4,
+          "failed_or_late": 0,
+          "successful_in_original_window": 4
+        },
+        "independent_page_replay": {
+          "accepted_in_original_window": 3,
+          "attempts": 4,
+          "failed_or_late": 1
+        },
+        "mode": "from-zero-pressure",
+        "signed_submit_ack": {
+          "attempts": 7,
+          "failed_or_late": 0,
+          "successful_in_original_window": 7
+        },
+        "window_ns": 4000000000,
+        "workers": 16
+      }
+    ],
+    "runs": [
+      {
+        "exit_code": 0,
+        "name": "caller_cpu_clock_keeps_missing_overflow_and_wrong_owner_distinct",
+        "timed_out": false,
+        "wall_ns": 5407895
+      },
+      {
+        "exit_code": 0,
+        "name": "from_zero_search_preserves_misses_exhaustion_and_full_replay_rejection",
+        "timed_out": false,
+        "wall_ns": 5266300
+      },
+      {
+        "exit_code": 0,
+        "name": "four_from_zero_w1_traces_keep_native_state_and_chainwork_unchanged",
+        "timed_out": false,
+        "wall_ns": 86225921
+      },
+      {
+        "exit_code": 0,
+        "name": "from_zero_service_shares_cpu_with_honest_work_and_reopened_owner",
+        "timed_out": false,
+        "wall_ns": 9417395597
+      },
+      {
+        "exit_code": 0,
+        "name": "from_zero_signed_business_reports_confirmation_in_original_pressure_window_against_same_packet_baseline",
+        "timed_out": false,
+        "wall_ns": 8585716293
+      }
+    ]
+  },
+  "schema": "root-actual-C4-hosted-failure-review-v1",
+  "scope": [
+    "Genuine hosted jobs replace the earlier queued-only observation for C4; the older desktop missing-host-identity observation remains true only of that desktop execution.",
+    "Frozen-source same-host/loopback observations are not independent WAN/operator qualification.",
+    "A native test exit, artifact upload, invariant check, completed work packet or ACK is not by itself the finite confirmed business target.",
+    "All original ZIP bytes are locally preserved with provider digests. Selected members are republished losslessly; excluded originals remain available in the original provider artifacts and local ZIPs."
+  ],
+  "source": {
+    "commit": "8df4b21d893906570d48f5beafabb3b31e0aefbc",
+    "tree": "6f5aaa2af0432e27e24b6bd2ad18013ab4423d14"
+  },
+  "whole_public_liveness_gate": "HOLD_ACTUAL_ORIGINAL_HOSTED_GATES_FAILED",
+  "workflow_snapshot": {
+    "runs": [
+      {
+        "conclusion": null,
+        "head_sha": "8df4b21d893906570d48f5beafabb3b31e0aefbc",
+        "html_url": "https://github.com/TrillionniumFoundation/Trillionnium-Chain/actions/runs/42076756033",
+        "id": 42076756033,
+        "name": "trnm-required-baseline",
+        "status": "queued"
+      },
+      {
+        "conclusion": "success",
+        "head_sha": "8df4b21d893906570d48f5beafabb3b31e0aefbc",
+        "html_url": "https://github.com/TrillionniumFoundation/Trillionnium-Chain/actions/runs/42076755701",
+        "id": 42076755701,
+        "name": "CodeQL exact-source analysis export",
+        "status": "completed"
+      },
+      {
+        "conclusion": "success",
+        "head_sha": "8df4b21d893906570d48f5beafabb3b31e0aefbc",
+        "html_url": "https://github.com/TrillionniumFoundation/Trillionnium-Chain/actions/runs/42076755691",
+        "id": 42076755691,
+        "name": "PoN parent-bound model evidence",
+        "status": "completed"
+      },
+      {
+        "conclusion": "failure",
+        "head_sha": "8df4b21d893906570d48f5beafabb3b31e0aefbc",
+        "html_url": "https://github.com/TrillionniumFoundation/Trillionnium-Chain/actions/runs/42076755870",
+        "id": 42076755870,
+        "name": "PoN fixed Host ROOT F0 diagnostic",
+        "status": "completed"
+      },
+      {
+        "conclusion": "failure",
+        "head_sha": "8df4b21d893906570d48f5beafabb3b31e0aefbc",
+        "html_url": "https://github.com/TrillionniumFoundation/Trillionnium-Chain/actions/runs/42076755705",
+        "id": 42076755705,
+        "name": "PoN original native campaign",
+        "status": "completed"
+      },
+      {
+        "conclusion": "success",
+        "head_sha": "8df4b21d893906570d48f5beafabb3b31e0aefbc",
+        "html_url": "https://github.com/TrillionniumFoundation/Trillionnium-Chain/actions/runs/42076755683",
+        "id": 42076755683,
+        "name": "Release finality reference and native baseline",
+        "status": "completed"
+      },
+      {
+        "conclusion": "success",
+        "head_sha": "8df4b21d893906570d48f5beafabb3b31e0aefbc",
+        "html_url": "https://github.com/TrillionniumFoundation/Trillionnium-Chain/actions/runs/42076755792",
+        "id": 42076755792,
+        "name": "PoN baseline diagnostic readback",
+        "status": "completed"
+      },
+      {
+        "conclusion": "success",
+        "head_sha": "8df4b21d893906570d48f5beafabb3b31e0aefbc",
+        "html_url": "https://github.com/TrillionniumFoundation/Trillionnium-Chain/actions/runs/42076755806",
+        "id": 42076755806,
+        "name": "PoN W1 transparent candidate observations",
+        "status": "completed"
+      },
+      {
+        "conclusion": "success",
+        "head_sha": "8df4b21d893906570d48f5beafabb3b31e0aefbc",
+        "html_url": "https://github.com/TrillionniumFoundation/Trillionnium-Chain/actions/runs/42076755667",
+        "id": 42076755667,
+        "name": "PoN isolated cloud build inputs",
+        "status": "completed"
+      },
+      {
+        "conclusion": "success",
+        "head_sha": "8df4b21d893906570d48f5beafabb3b31e0aefbc",
+        "html_url": "https://github.com/TrillionniumFoundation/Trillionnium-Chain/actions/runs/42076755699",
+        "id": 42076755699,
+        "name": "PoN original large-state CPU acceptance",
+        "status": "completed"
+      },
+      {
+        "conclusion": "success",
+        "head_sha": "8df4b21d893906570d48f5beafabb3b31e0aefbc",
+        "html_url": "https://github.com/TrillionniumFoundation/Trillionnium-Chain/actions/runs/42076755681",
+        "id": 42076755681,
+        "name": "PoN branch encoding exact-source acceptance",
+        "status": "completed"
+      },
+      {
+        "conclusion": "failure",
+        "head_sha": "8df4b21d893906570d48f5beafabb3b31e0aefbc",
+        "html_url": "https://github.com/TrillionniumFoundation/Trillionnium-Chain/actions/runs/42076755626",
+        "id": 42076755626,
+        "name": "PoN recent batch exact-source acceptance",
+        "status": "completed"
+      },
+      {
+        "conclusion": "failure",
+        "head_sha": "8df4b21d893906570d48f5beafabb3b31e0aefbc",
+        "html_url": "https://github.com/TrillionniumFoundation/Trillionnium-Chain/actions/runs/42076755673",
+        "id": 42076755673,
+        "name": "PoN original workspace test-profile CPU acceptance",
+        "status": "completed"
+      },
+      {
+        "conclusion": "failure",
+        "head_sha": "8df4b21d893906570d48f5beafabb3b31e0aefbc",
+        "html_url": "https://github.com/TrillionniumFoundation/Trillionnium-Chain/actions/runs/42076755656",
+        "id": 42076755656,
+        "name": "PoN owned process cleanup",
+        "status": "completed"
+      },
+      {
+        "conclusion": null,
+        "head_sha": "8df4b21d893906570d48f5beafabb3b31e0aefbc",
+        "html_url": "https://github.com/TrillionniumFoundation/Trillionnium-Chain/actions/runs/42076755687",
+        "id": 42076755687,
+        "name": "PoN priority acceptance",
+        "status": "in_progress"
+      },
+      {
+        "conclusion": "failure",
+        "head_sha": "8df4b21d893906570d48f5beafabb3b31e0aefbc",
+        "html_url": "https://github.com/TrillionniumFoundation/Trillionnium-Chain/actions/runs/42076755636",
+        "id": 42076755636,
+        "name": "PoN PQ network and rollback witness",
+        "status": "completed"
+      },
+      {
+        "conclusion": "failure",
+        "head_sha": "8df4b21d893906570d48f5beafabb3b31e0aefbc",
+        "html_url": "https://github.com/TrillionniumFoundation/Trillionnium-Chain/actions/runs/42076755695",
+        "id": 42076755695,
+        "name": "PoN W1 work security observations",
+        "status": "completed"
+      },
+      {
+        "conclusion": "success",
+        "head_sha": "8df4b21d893906570d48f5beafabb3b31e0aefbc",
+        "html_url": "https://github.com/TrillionniumFoundation/Trillionnium-Chain/actions/runs/42076751241",
+        "id": 42076751241,
+        "name": "PR #724",
+        "status": "completed"
+      }
+    ],
+    "scope": "Actual finite API observations at different read times; not a synchronized or final all-jobs verdict.",
+    "total_count": 18
+  }
+}

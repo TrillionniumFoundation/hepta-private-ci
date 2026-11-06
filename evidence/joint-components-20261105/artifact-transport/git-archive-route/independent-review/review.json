@@ -1,0 +1,273 @@
+{
+  "archives": [
+    {
+      "archive_sha256": "7a374c980126ed29507e55f182705486c33889c73e58c285d83e7d1ff5618296",
+      "completion_sha256": "034f518dc2bd8fd350d2cb7a322056300051c538382370089104a727f6c1341b",
+      "envelope_bytes": 174329236,
+      "metadata_member_count": 9,
+      "native_outcome": "FAILED",
+      "parts": 32,
+      "phase": "H1",
+      "raw_bytes": 130746864
+    },
+    {
+      "archive_sha256": "f75c5d36596b84261ebc10705cd73de8abbe68eb87897413fcdb7e0cc92631a7",
+      "completion_sha256": "d991a50f630e509278c20d5fe9f6ca0e53d1006852d954109d268375978407c1",
+      "envelope_bytes": 341509668,
+      "metadata_member_count": 14,
+      "native_outcome": "FAILED",
+      "parts": 62,
+      "phase": "H2",
+      "raw_bytes": 256132128
+    },
+    {
+      "archive_sha256": "5365fcf900781044108e9642ae02a110e4ac8d031d9ee516c4f0b0e471e1e773",
+      "completion_sha256": "93d7bf08914054e4bcf05f17eea3cd5ef36fac9bbf0d1e601dda59084e758cd3",
+      "envelope_bytes": 377903220,
+      "metadata_member_count": 16,
+      "native_outcome": "FAILED",
+      "parts": 68,
+      "phase": "H3",
+      "raw_bytes": 283427280
+    }
+  ],
+  "bundle_members": [
+    "credential_get_only.py",
+    "run_archive_transport.py",
+    "transport-plan.json"
+  ],
+  "closed_findings": [
+    "Wrong remote completion/part-root assumptions corrected to original completion.json and direct original part names.",
+    "No hook bypass: any configured hooksPath including whitespace or existing hook causes refusal.",
+    "HTTPS-only final runner removes SSH execution branch and rejects SSH before protocol/network/auth fallback.",
+    "Plan/self/bundle/request byte pins and non-assert optimization refusal are present."
+  ],
+  "exact_original_parts": 162,
+  "exact_transport_paths": 166,
+  "final_bindings": {
+    "bootstrap.py": {
+      "bytes": 53058,
+      "sha256": "f76140845a185224525773fdbe267070150f16414ea56d74e11c3fbdca9c1dff"
+    },
+    "controls.log": {
+      "bytes": 1007,
+      "sha256": "563f0ac5b2d4b9958761244db7a29e924a71edcd506633a57da9c20ea059baa1"
+    },
+    "controls.raw.json": {
+      "bytes": 1145,
+      "sha256": "0dfab0fce28f50de23af19aaa96f3901d184d879be3000a3ce67990f95f1ce93"
+    },
+    "credential_get_only.py": {
+      "bytes": 2853,
+      "sha256": "d1aea46d21622d92c9065ebba414725a31aa56c61984cff09f5bd8cd467c61d1"
+    },
+    "delivery-manifest.json": {
+      "bytes": 2651,
+      "sha256": "0e43be0873f25ad71cb641eb8cad17aab971b29650a8e656904ada3d5b4696a2"
+    },
+    "launch-request.json": {
+      "bytes": 53408,
+      "sha256": "15e215b7c44aecda1d4f038a7ae5b5f257bb20b00cdd7cf6f39ed09ff87165e4"
+    },
+    "run_archive_transport.py": {
+      "bytes": 27135,
+      "sha256": "1676fdc30a8bbd60c51fd087eebdf6c9e44de83405a5d70e0c55029911e34626"
+    },
+    "transport-bundle.json": {
+      "bytes": 149326,
+      "sha256": "a02ebeafac42d2e286150c7da163f34fd04b9df9593bec8af62de75fb1169481"
+    },
+    "transport-plan.json": {
+      "bytes": 81873,
+      "sha256": "5a27e3f47c70b210d5d0a944dd43ef6c270405851f0259e3ee9f4fa9c43e8a3b"
+    },
+    "validation-manifest.json": {
+      "bytes": 1425,
+      "sha256": "52dca82e612e870dbf7eb1fa9b4ca203b32bd7fb915a3346b149f5b2731c07e0"
+    }
+  },
+  "input_files": [
+    {
+      "bytes": 27135,
+      "path": "inputs/model_storage/git-archive-transport-571c/run_archive_transport.py",
+      "sha256": "1676fdc30a8bbd60c51fd087eebdf6c9e44de83405a5d70e0c55029911e34626",
+      "source_path": "model_storage/git-archive-transport-571c/run_archive_transport.py"
+    },
+    {
+      "bytes": 2853,
+      "path": "inputs/model_storage/git-archive-transport-571c/credential_get_only.py",
+      "sha256": "d1aea46d21622d92c9065ebba414725a31aa56c61984cff09f5bd8cd467c61d1",
+      "source_path": "model_storage/git-archive-transport-571c/credential_get_only.py"
+    },
+    {
+      "bytes": 7093,
+      "path": "inputs/model_storage/git-archive-transport-571c/test_transport_controls.py",
+      "sha256": "29a8a60a468807b712f7a408c729ebf8303c0ad65034482caa25b72d26f57629",
+      "source_path": "model_storage/git-archive-transport-571c/test_transport_controls.py"
+    },
+    {
+      "bytes": 17324,
+      "path": "inputs/model_storage/git-archive-transport-571c/build_transport_package.py",
+      "sha256": "b0c435fc7e846d20e5a293800919cffef862d16dd5adca747d10c632c1bc1b7b",
+      "source_path": "model_storage/git-archive-transport-571c/build_transport_package.py"
+    },
+    {
+      "bytes": 1368,
+      "path": "inputs/model_storage/git-archive-transport-571c/repository-readonly.raw.json",
+      "sha256": "cefb3d88e59f4a5cf3d63422748da7ba5d6c81b968c921cde657198f6f77342b",
+      "source_path": "model_storage/git-archive-transport-571c/repository-readonly.raw.json"
+    },
+    {
+      "bytes": 9731,
+      "path": "inputs/model_storage/git-archive-transport-571c/metadata-allowlist-audit.json",
+      "sha256": "6d1711aea4cc8884d1e70dca220c20acbf346e59a86f56b732e305c8479f468f",
+      "source_path": "model_storage/git-archive-transport-571c/metadata-allowlist-audit.json"
+    },
+    {
+      "bytes": 81873,
+      "path": "inputs/model_storage/git-archive-transport-571c/transport-plan.json",
+      "sha256": "5a27e3f47c70b210d5d0a944dd43ef6c270405851f0259e3ee9f4fa9c43e8a3b",
+      "source_path": "model_storage/git-archive-transport-571c/transport-plan.json"
+    },
+    {
+      "bytes": 149326,
+      "path": "inputs/model_storage/git-archive-transport-571c/transport-bundle.json",
+      "sha256": "a02ebeafac42d2e286150c7da163f34fd04b9df9593bec8af62de75fb1169481",
+      "source_path": "model_storage/git-archive-transport-571c/transport-bundle.json"
+    },
+    {
+      "bytes": 53058,
+      "path": "inputs/model_storage/git-archive-transport-571c/bootstrap.py",
+      "sha256": "f76140845a185224525773fdbe267070150f16414ea56d74e11c3fbdca9c1dff",
+      "source_path": "model_storage/git-archive-transport-571c/bootstrap.py"
+    },
+    {
+      "bytes": 53408,
+      "path": "inputs/model_storage/git-archive-transport-571c/launch-request.json",
+      "sha256": "15e215b7c44aecda1d4f038a7ae5b5f257bb20b00cdd7cf6f39ed09ff87165e4",
+      "source_path": "model_storage/git-archive-transport-571c/launch-request.json"
+    },
+    {
+      "bytes": 2647,
+      "path": "inputs/model_storage/git-archive-transport-571c/README.md",
+      "sha256": "53e7ce1fcad81825fc001d768a6c2c62bfc27ab48fc987246318cc06c88d3e36",
+      "source_path": "model_storage/git-archive-transport-571c/README.md"
+    },
+    {
+      "bytes": 2651,
+      "path": "inputs/model_storage/git-archive-transport-571c/delivery-manifest.json",
+      "sha256": "0e43be0873f25ad71cb641eb8cad17aab971b29650a8e656904ada3d5b4696a2",
+      "source_path": "model_storage/git-archive-transport-571c/delivery-manifest.json"
+    },
+    {
+      "bytes": 1425,
+      "path": "inputs/model_storage/git-archive-transport-571c/validation-manifest.json",
+      "sha256": "52dca82e612e870dbf7eb1fa9b4ca203b32bd7fb915a3346b149f5b2731c07e0",
+      "source_path": "model_storage/git-archive-transport-571c/validation-manifest.json"
+    },
+    {
+      "bytes": 1145,
+      "path": "inputs/model_storage/git-archive-transport-571c/controls.raw.json",
+      "sha256": "0dfab0fce28f50de23af19aaa96f3901d184d879be3000a3ce67990f95f1ce93",
+      "source_path": "model_storage/git-archive-transport-571c/controls.raw.json"
+    },
+    {
+      "bytes": 1007,
+      "path": "inputs/model_storage/git-archive-transport-571c/controls.log",
+      "sha256": "563f0ac5b2d4b9958761244db7a29e924a71edcd506633a57da9c20ea059baa1",
+      "source_path": "model_storage/git-archive-transport-571c/controls.log"
+    },
+    {
+      "bytes": 21354,
+      "path": "inputs/pq_recovery/nextest103-runner-review/H1runner/scripts/hepta_ci_exec.py",
+      "sha256": "e55f5ca1200b2c9fc5af4158c42f460e71f3815166a962a5b892acfe9477b1d1",
+      "source_path": "pq_recovery/nextest103-runner-review/H1runner/scripts/hepta_ci_exec.py"
+    },
+    {
+      "bytes": 10148,
+      "path": "inputs/w1/h1-elf-export/H1-export-completion.json",
+      "sha256": "034f518dc2bd8fd350d2cb7a322056300051c538382370089104a727f6c1341b",
+      "source_path": "w1/h1-elf-export/H1-export-completion.json"
+    },
+    {
+      "bytes": 21369,
+      "path": "inputs/w1/h1-elf-export/H1-export-plan.json",
+      "sha256": "3a8421bb03834cdf1c2e262bb2e72348f398240c41e1752e5b1e82113e915248",
+      "source_path": "w1/h1-elf-export/H1-export-plan.json"
+    },
+    {
+      "bytes": 18885,
+      "path": "inputs/w1/h1-elf-export/export_retained_elfs.py",
+      "sha256": "8ba375f315433a4eea9a05b9f1a0fbcffced353eb668cca6cd799b433fa4402b",
+      "source_path": "w1/h1-elf-export/export_retained_elfs.py"
+    },
+    {
+      "bytes": 16590,
+      "path": "inputs/w1/h2-elf-export/H2-export-completion.json",
+      "sha256": "d991a50f630e509278c20d5fe9f6ca0e53d1006852d954109d268375978407c1",
+      "source_path": "w1/h2-elf-export/H2-export-completion.json"
+    },
+    {
+      "bytes": 169237,
+      "path": "inputs/w1/h2-elf-export/H2-export-plan.json",
+      "sha256": "2a18729275fe2051b3f691fce56542e2d1291193e983330fe82601caf22349b3",
+      "source_path": "w1/h2-elf-export/H2-export-plan.json"
+    },
+    {
+      "bytes": 25293,
+      "path": "inputs/w1/h2-elf-export/export_h2_retained_images.py",
+      "sha256": "37538f62fd81398262ccde1b9cfa0d1cb0163b115e108b80220ab7af8f929365",
+      "source_path": "w1/h2-elf-export/export_h2_retained_images.py"
+    },
+    {
+      "bytes": 34491,
+      "path": "inputs/w1/h3-elf-export/H3-export-completion.json",
+      "sha256": "93d7bf08914054e4bcf05f17eea3cd5ef36fac9bbf0d1e601dda59084e758cd3",
+      "source_path": "w1/h3-elf-export/H3-export-completion.json"
+    },
+    {
+      "bytes": 658893,
+      "path": "inputs/w1/h3-elf-export/H3-export-plan.json",
+      "sha256": "7c140e2a83e9df657aff17c66bb1f307bb6b8a22db6cbba04e38841d7b9ef7a0",
+      "source_path": "w1/h3-elf-export/H3-export-plan.json"
+    },
+    {
+      "bytes": 18885,
+      "path": "inputs/w1/h3-elf-export/export_h3_retained_images.py",
+      "sha256": "9eb404993262589a948a19946819e890ff15875bef1133eab5fe9cee6bb14f53",
+      "source_path": "w1/h3-elf-export/export_h3_retained_images.py"
+    }
+  ],
+  "limitations": [
+    "No actual source origin or credential has been exercised by this reviewer. An SSH origin or unavailable existing HTTPS credential must stop, not change protocol/account.",
+    "A confirmed ref is not cloud byte readback or complete archive/member consumer verification.",
+    "Native H1/H2/H3 failures and capture limits remain verbatim; no original qualification is upgraded.",
+    "Snapshot hash guards do not prove absence of every transient filesystem mutation or hostile privileged writer.",
+    "Package is a separate 1200-second archival transport bound; original native resources, gates and budgets unchanged."
+  ],
+  "maximum_actual_envelope_bytes": 5592408,
+  "mechanisms_reviewed": [
+    "Get-only original credential bridge; store/erase never forwarded; headers and credentials memory-only; raw Git streams not persisted.",
+    "No embedded URL userinfo, query/fragment, different repository/host, redirect, cookie route or isolated rewritten push destination.",
+    "New dedicated bare with empty template, exact 166 mode100644 blob tree and parentless commit; no candidate ref or CI source.",
+    "One empty-lease CAS push only, fsynced prepared commit and intent, exact same-ref readback, unknown outcome no automatic retry.",
+    "Original source full raw-byte identity plus five exact Git config hashes before/before push/after; isolated bare config remains original init bytes."
+  ],
+  "owner_original_cloud_controls": {
+    "failed": 0,
+    "passed": 5,
+    "rerun_by_reviewer": false,
+    "seconds": 0.027
+  },
+  "public_repository": {
+    "id": "1320694176",
+    "name": "TrillionniumFoundation/hepta-private-ci",
+    "read_is_not_write_authorization": true,
+    "visibility": "public"
+  },
+  "schema": "independent-archive-transport-package-review-v1",
+  "scope": "Cloud-only static and exact-byte binding review; no remote/auth/network/push/utility rerun/native execution. Root separately owns dispatch authorization.",
+  "status": "NO_IDENTIFIED_BLOCKER_FOR_EXACT_HTTPS_ONLY_PACKAGE",
+  "total_base64_bytes": 893742124,
+  "total_original_part_bytes": 670306272
+}

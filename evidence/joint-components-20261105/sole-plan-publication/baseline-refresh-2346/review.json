@@ -1,0 +1,260 @@
+{
+  "schema": "chain-sole-plan-exact-ref-refresh-2346-v1",
+  "source": {
+    "repository": "TrillionniumFoundation/Trillionnium-Chain",
+    "head_ref": "fix/chain-six-axis-performance-20261103",
+    "commit": "a5b5127883393da33c8619cc5f2b8e333a2dcf1b",
+    "tree": "d0239cbf24633278db0d5622796b62bf92bc223b",
+    "parents": [
+      "b58e36c5aa74343a0fe05e5b37f988c875c26acb"
+    ],
+    "observed_initial_and_final_head_equal": true,
+    "observed_times": {
+      "initial": {
+        "current_time": "2026-11-05 23:46:27 UTC"
+      },
+      "final": {
+        "current_time": "2026-11-05 23:48:42 UTC"
+      }
+    }
+  },
+  "delta": {
+    "base": "d6b9835fa91a2a4b58c77cc60daf809b5e771d56",
+    "commits": 3,
+    "files": 23,
+    "paths": [
+      {
+        "path": ".github/workflows/pon-branch-encoding-acceptance.yml",
+        "status": "modified",
+        "git_blob": "ef548bd61a94d33162436731975fb71493362af6",
+        "additions": 1,
+        "deletions": 1
+      },
+      {
+        "path": "config/pon/pq-cross-branch-corpus-v1.json",
+        "status": "modified",
+        "git_blob": "ebfb2256a77818b34e0cd2de9e7abc3e0fdd82d1",
+        "additions": 9,
+        "deletions": 7
+      },
+      {
+        "path": "evidence/owner-journal-held-read-20261105/README.md",
+        "status": "added",
+        "git_blob": "a7498bc6254de970f8cb92aa0646f50a688c1ef8",
+        "additions": 55,
+        "deletions": 0
+      },
+      {
+        "path": "evidence/owner-journal-held-read-20261105/owner-held-after.txt.gz",
+        "status": "added",
+        "git_blob": "f1a7c690b507dc47970695cf22c3a85e8d1c07a9",
+        "additions": 0,
+        "deletions": 0
+      },
+      {
+        "path": "evidence/owner-journal-held-read-20261105/owner-held-before.txt.gz",
+        "status": "added",
+        "git_blob": "ca650be84c104a98a3c4b6f1862ca7651785f5bb",
+        "additions": 0,
+        "deletions": 0
+      },
+      {
+        "path": "evidence/owner-journal-held-read-20261105/owner-held-clippy-final.txt.gz",
+        "status": "added",
+        "git_blob": "1848f4fc3e7a5bf80ca1a1c9364a0cff829863e0",
+        "additions": 0,
+        "deletions": 0
+      },
+      {
+        "path": "evidence/owner-journal-held-read-20261105/owner-held-clippy-initial.txt.gz",
+        "status": "added",
+        "git_blob": "00a296c664e715a69e37e313520da99c3657c498",
+        "additions": 0,
+        "deletions": 0
+      },
+      {
+        "path": "evidence/owner-journal-held-read-20261105/owner-held-final-source.sha256",
+        "status": "added",
+        "git_blob": "1d262deaffe47e3d29089998bcfff894fe293329",
+        "additions": 3,
+        "deletions": 0
+      },
+      {
+        "path": "evidence/owner-journal-held-read-20261105/owner-held-native.txt.gz",
+        "status": "added",
+        "git_blob": "b9f8140ba9c9b3a5bba8d0ab24efef36c7c46760",
+        "additions": 0,
+        "deletions": 0
+      },
+      {
+        "path": "evidence/owner-journal-held-read-20261105/owner-held-policy-tests.txt.gz",
+        "status": "added",
+        "git_blob": "7846fa101b36e7d37264f2690c652b412d0a1b8c",
+        "additions": 0,
+        "deletions": 0
+      },
+      {
+        "path": "evidence/owner-journal-held-read-20261105/scanner-after.txt.gz",
+        "status": "added",
+        "git_blob": "0c48ec99d22c283cbfa796bd909ee8e386a63b3c",
+        "additions": 0,
+        "deletions": 0
+      },
+      {
+        "path": "evidence/owner-journal-held-read-20261105/scanner-before.txt.gz",
+        "status": "added",
+        "git_blob": "17b14b7c1d9b45fcd4fd326d6fb30e68cc93982f",
+        "additions": 0,
+        "deletions": 0
+      },
+      {
+        "path": "evidence/pon-native-apply-rejected-20261105/README.md",
+        "status": "added",
+        "git_blob": "a728281dabd74ba839900435a65b346b578f0363",
+        "additions": 34,
+        "deletions": 0
+      },
+      {
+        "path": "evidence/pon-native-apply-rejected-20261105/raw-observations.zip",
+        "status": "added",
+        "git_blob": "eb72a6a18073b461e87e4367cabab1d76e720d3a",
+        "additions": 0,
+        "deletions": 0
+      },
+      {
+        "path": "evidence/pon-native-apply-rejected-20261105/verification.json",
+        "status": "added",
+        "git_blob": "8c4358556302dc0001b0072668a79ec9f43dfc6c",
+        "additions": 191,
+        "deletions": 0
+      },
+      {
+        "path": "scripts/ci/pq_authority_surface_scan.py",
+        "status": "modified",
+        "git_blob": "feb87d0e5d0b056b7586d9fff584a7188487eefc",
+        "additions": 33,
+        "deletions": 9
+      },
+      {
+        "path": "scripts/ci/test_pq_authority_surface_scan.py",
+        "status": "modified",
+        "git_blob": "f9883291a2a844e7347d9cfd26d7c2f46288851b",
+        "additions": 72,
+        "deletions": 1
+      },
+      {
+        "path": "trillionnium/crates/trnm-pon-node/Cargo.toml",
+        "status": "modified",
+        "git_blob": "69c086b2ed1c0c7c15d902d3bbd4b3232cc1f726",
+        "additions": 5,
+        "deletions": 0
+      },
+      {
+        "path": "trillionnium/crates/trnm-pon-node/examples/support/distributed_source_inventory.rs",
+        "status": "modified",
+        "git_blob": "b1844b31df4a30bdc638f0568571a222f47ea044",
+        "additions": 14,
+        "deletions": 0
+      },
+      {
+        "path": "trillionnium/crates/trnm-pon-node/src/account_archive_prototype/native_apply_reader_tests.rs",
+        "status": "added",
+        "git_blob": "41170864c459821a598b428fa8affea5417a6832",
+        "additions": 1446,
+        "deletions": 0
+      },
+      {
+        "path": "trillionnium/crates/trnm-pon-node/src/account_archive_prototype/native_store.rs",
+        "status": "modified",
+        "git_blob": "ddc4e1d317ce962e453a1f08db7f608e43a8e152",
+        "additions": 4,
+        "deletions": 0
+      },
+      {
+        "path": "trillionnium/crates/trnm-pon-node/src/operator_task_policy.rs",
+        "status": "modified",
+        "git_blob": "972f63c3c4af922979e57c51302c85fc794a2a8c",
+        "additions": 11,
+        "deletions": 1
+      },
+      {
+        "path": "trillionnium/crates/trnm-pon-node/src/operator_task_policy_file_tests.rs",
+        "status": "added",
+        "git_blob": "6d8c88cbfeaea432e0a78e31e28b3c57acd4985c",
+        "additions": 83,
+        "deletions": 0
+      }
+    ],
+    "scope": "Only trigger/input continuity reviewed. Repository delta also includes held-descriptor scanner/operator file changes and native apply test-only code with rusqlite trace dev feature; no outcome or performance credit is inferred."
+  },
+  "prior_trigger_continuity": {
+    "catalog_paths": 49,
+    "unchanged_paths": 48,
+    "unchanged_entry_and_model_control_paths": 30,
+    "unchanged_workflows": 18,
+    "changed_workflows": [
+      ".github/workflows/pon-branch-encoding-acceptance.yml"
+    ],
+    "changed_workflow": {
+      "actual": {
+        "path": "pq_recovery/chain-sole-plan-refresh-2346/source/.github/workflows/pon-branch-encoding-acceptance.yml",
+        "bytes": 14592,
+        "sha256": "31b25eaa1b77216d5c5d2b425e781d7b6fbec3ac9891b906d704f82fb50e1b21",
+        "git_blob": "ef548bd61a94d33162436731975fb71493362af6"
+      },
+      "entire_byte_difference": "Exactly one native_store Git blob pin replacement; all other bytes identical.",
+      "old_pin": "06828d9204db6418e3da7f50ced582540bd6132d",
+      "new_pin": "ddc4e1d317ce962e453a1f08db7f608e43a8e152",
+      "trigger_resources_budgets_commands_other_than_the_pin_unchanged": true,
+      "canonical_doc_path_still_not_in_pull_request_paths": true
+    },
+    "unfiltered_original_pr_workflows_still_eligible": [
+      "codeql-analysis-export.yml",
+      "pon-original-large-state-cpu.yml",
+      "pon-original-workspace-large-state-cpu.yml",
+      "pon-priority-acceptance.yml",
+      "trnm-required-baseline.yml"
+    ],
+    "learning_boundary": "The previous exact 49-path trigger/entry assessment continues for this source with the one rechecked pin-only workflow delta. Five original unfiltered CI workflows can run, including deterministic model-mechanism fixtures. The scoped hosted SmolLM owner remains push/exact-branch and intent-path gated; no zero-CI, zero-model-logic, external-webhook or new-learning qualification is inferred.",
+    "no_full_trigger_reaudit": "Fresh listing binds 19 workflow Git blobs; 18 unchanged. All 49 retained source files locally rehashed; exact full 23-file Git comparison shows only the one workflow intersects the catalog."
+  },
+  "sole_plan_exact": {
+    "path": "pq_recovery/chain-sole-plan-refresh-2346/source/docs/development/TRNM_AI_NATIVE_BLOCKCHAIN_DEVELOPMENT_PLAN.md",
+    "bytes": 552675,
+    "sha256": "063df6d6047e08addb40d92c01bf85c2ff1386788369bfd7ba1d22e0a421198b",
+    "git_blob": "3787d8321ee9f4eb5a0fe5794dcad3f997afecb1"
+  },
+  "sole_plan_unchanged": true,
+  "publication_conditions": {
+    "base_ref": "fix/chain-six-axis-performance-20261103",
+    "head_lease": "a5b5127883393da33c8619cc5f2b8e333a2dcf1b",
+    "required_entire_stacked_compare": [
+      "docs/development/TRNM_AI_NATIVE_BLOCKCHAIN_DEVELOPMENT_PLAN.md"
+    ],
+    "do_not_target_main": true,
+    "append_to_exact_current_bytes": true,
+    "refresh_and_reconcile_if_head_advances": true
+  },
+  "read_only_actions": {
+    "github_reads_only": true,
+    "created_commit": false,
+    "created_pr": false,
+    "workflow_dispatch": false,
+    "native_run": false,
+    "learning_or_ledger_mutation": false,
+    "desktop_or_bulk_reads": false
+  },
+  "prior_review": {
+    "path": "pq_recovery/chain-sole-plan-refresh-20261105/review.json",
+    "bytes": 10590,
+    "sha256": "e69da3361e6d2eb6de664429d5298329d07e21bb9eeb5b746190b553027682c5",
+    "git_blob": "181833186419e438b33c814599406bab25e125f4"
+  },
+  "prior_trigger_review": {
+    "path": "pq_recovery/chain-sole-plan-trigger-review/review.json",
+    "bytes": 16586,
+    "sha256": "97fa5b926f0dd934264f1416b9a198ff29c1035004551b6dffdf47897ea96342",
+    "git_blob": "e1f10795bbd77e165a8c00af614bd84aaccd4b9d"
+  },
+  "source_encoding": "Fresh GitHub fetch returned normalized UTF-8 source text; its encoded bytes were independently checked against the unchanged exact Git blob and prior retained raw source."
+}

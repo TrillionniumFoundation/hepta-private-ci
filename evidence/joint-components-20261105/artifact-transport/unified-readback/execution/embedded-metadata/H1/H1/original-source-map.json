@@ -1,0 +1,228 @@
+{
+  "source_commit": "9f785cb201ba12ab0ae0f0d341c0f7912cc65efc",
+  "source_tree": "24804b21d0306b617e12fa3f5b9454a12ed4ad41",
+  "overall_result": "FAILED",
+  "actual_selected_native_cases_run": 67,
+  "actual_passed": 65,
+  "actual_failed": 2,
+  "not_run_original_selected_gates": [
+    "effect-pq-contract",
+    "effect-pq-product"
+  ],
+  "not_run_followup_gates": [
+    "original-six-effect-controls",
+    "provider-effect-existing-and-pq",
+    "final-use-profile-controls",
+    "full-evidence-library",
+    "fix",
+    "format"
+  ],
+  "unique_actual_image_count": 4,
+  "unique_actual_image_total_bytes": 774620584,
+  "unique_actual_images": [
+    {
+      "sha256": "86a2c65e12fbef81586067783aa478677975e03290bcd62561938645ac1efc7e",
+      "bytes": 504265656,
+      "gates": [
+        "dispatcher",
+        "recovery-signed",
+        "effect-pq-owner"
+      ],
+      "retained_paths": [
+        "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/evidence/joint-h1-native-attempt-1/executed-binaries-dispatcher/86a2c65e12fbef81586067783aa478677975e03290bcd62561938645ac1efc7e.elf",
+        "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/evidence/joint-h1-native-attempt-1/executed-binaries-recovery-signed/86a2c65e12fbef81586067783aa478677975e03290bcd62561938645ac1efc7e.elf",
+        "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/evidence/joint-h1-native-attempt-1/executed-binaries-effect-pq-owner/86a2c65e12fbef81586067783aa478677975e03290bcd62561938645ac1efc7e.elf"
+      ],
+      "actual_paths": [
+        "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/codex_hepta_agentd-13943d509610e217"
+      ],
+      "captured_records": 34
+    },
+    {
+      "sha256": "060b03442eaad0f40a1c532199d59183ce6b784beb9023ee06fec73105c34d31",
+      "bytes": 120073792,
+      "gates": [
+        "product"
+      ],
+      "retained_paths": [
+        "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/evidence/joint-h1-native-attempt-1/executed-binaries-product/060b03442eaad0f40a1c532199d59183ce6b784beb9023ee06fec73105c34d31.elf"
+      ],
+      "actual_paths": [
+        "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/authbus_text_product-c365e5b605b48783"
+      ],
+      "captured_records": 3
+    },
+    {
+      "sha256": "a948cdfa5aeafc03fcfc63459e581ca254129f4d878949236e0bf42df3fe725f",
+      "bytes": 53291680,
+      "gates": [
+        "recovery-owner",
+        "qualification-growth"
+      ],
+      "retained_paths": [
+        "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/evidence/joint-h1-native-attempt-1/executed-binaries-recovery-owner/a948cdfa5aeafc03fcfc63459e581ca254129f4d878949236e0bf42df3fe725f.elf",
+        "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/evidence/joint-h1-native-attempt-1/executed-binaries-qualification-growth/a948cdfa5aeafc03fcfc63459e581ca254129f4d878949236e0bf42df3fe725f.elf"
+      ],
+      "actual_paths": [
+        "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/codex_hepta_evidence-0f5076227f347d3a"
+      ],
+      "captured_records": 23
+    },
+    {
+      "sha256": "6c4c81a3b2d99aba2bb95aa83433680140a82d936285942ea702c352eb464126",
+      "bytes": 96989456,
+      "gates": [
+        "recovery-product"
+      ],
+      "retained_paths": [
+        "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/evidence/joint-h1-native-attempt-1/executed-binaries-recovery-product/6c4c81a3b2d99aba2bb95aa83433680140a82d936285942ea702c352eb464126.elf"
+      ],
+      "actual_paths": [
+        "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/kernel_evidence_product-c434ef3dca0b18f7"
+      ],
+      "captured_records": 4
+    }
+  ],
+  "gates": [
+    {
+      "gate": "dispatcher",
+      "receipt_status": "passed",
+      "passed": 14,
+      "failed": 0,
+      "elapsed_seconds": 297.29044430702925,
+      "receipt_sha256": "a524ed880bb9234157dc66469743246cfb49c537908a8fc6db81a17f29cea84f",
+      "log_file": "dispatcher.json.a37c7f7ed57e46b68698abece15a7ad8.log",
+      "log_sha256": "19600c1fda5e76e71ef577605b42e97f6ea32997493b96c66f7bb74ab3cfeb24",
+      "captured_process_records": 14,
+      "observed_selected_names": 14,
+      "selected_names_not_observed_by_proc_capture": [],
+      "capture_errors": [],
+      "runner_declared_binary_counts": [
+        1
+      ],
+      "capture_gap_case_elapsed_seconds": {}
+    },
+    {
+      "gate": "product",
+      "receipt_status": "passed",
+      "passed": 3,
+      "failed": 0,
+      "elapsed_seconds": 30.92200724896975,
+      "receipt_sha256": "205d8db64b5b4872e5d85bd6fc2ec6b3800528ec6fcb0fe6924f8152506483d5",
+      "log_file": "product.json.c7b9f66daeea436e80894f981b0b62a3.log",
+      "log_sha256": "ae27e73d95afcff0d7317eb341c4d939b6c224f6d71fcd1dd86401b6a99c171e",
+      "captured_process_records": 3,
+      "observed_selected_names": 3,
+      "selected_names_not_observed_by_proc_capture": [],
+      "capture_errors": [],
+      "runner_declared_binary_counts": [
+        1
+      ],
+      "capture_gap_case_elapsed_seconds": {}
+    },
+    {
+      "gate": "recovery-owner",
+      "receipt_status": "passed",
+      "passed": 22,
+      "failed": 0,
+      "elapsed_seconds": 202.99520587793086,
+      "receipt_sha256": "5a0c096c8ae9d9048ed52fd3c3f3e0ebe4e37b5cab5d04a8910e8c1721465f19",
+      "log_file": "recovery-owner.json.53071f1015a74ea38030a02206bf523b.log",
+      "log_sha256": "f187a0ef2fce9179d9cb226add5db53bd3c3d437d1a4bdf3b259ed4663c4a012",
+      "captured_process_records": 21,
+      "observed_selected_names": 21,
+      "selected_names_not_observed_by_proc_capture": [
+        "recovery_invocation_schema_tests::recovery_invocation_schema_refuses_non_rowid_or_composite_sequences"
+      ],
+      "capture_errors": [],
+      "runner_declared_binary_counts": [
+        1
+      ],
+      "capture_gap_case_elapsed_seconds": {
+        "recovery_invocation_schema_tests::recovery_invocation_schema_refuses_non_rowid_or_composite_sequences": 0.031
+      }
+    },
+    {
+      "gate": "recovery-signed",
+      "receipt_status": "passed",
+      "passed": 11,
+      "failed": 0,
+      "elapsed_seconds": 13.007519361912273,
+      "receipt_sha256": "b379e7681b1d8e12a96e6725645aec62306d8636c0ea2182a7baff8eb33a4f55",
+      "log_file": "recovery-signed.json.7e531596e1034d7ca1ff03ddcebbcffd.log",
+      "log_sha256": "98f51158c53a7f07003a4183d48e35a541966070343e73798327ee3d16360477",
+      "captured_process_records": 9,
+      "observed_selected_names": 9,
+      "selected_names_not_observed_by_proc_capture": [
+        "evidence_frontier::tests::recovery_frontier_cannot_be_omitted_at_the_ordinary_agentd_run_entry",
+        "evidence_frontier::tests::recovery_frontier_enforces_root_scope_epoch_revocation_and_generation_floor"
+      ],
+      "capture_errors": [],
+      "runner_declared_binary_counts": [
+        1
+      ],
+      "capture_gap_case_elapsed_seconds": {
+        "evidence_frontier::tests::recovery_frontier_cannot_be_omitted_at_the_ordinary_agentd_run_entry": 0.088,
+        "evidence_frontier::tests::recovery_frontier_enforces_root_scope_epoch_revocation_and_generation_floor": 0.622
+      }
+    },
+    {
+      "gate": "recovery-product",
+      "receipt_status": "passed",
+      "passed": 4,
+      "failed": 0,
+      "elapsed_seconds": 20.362680550082587,
+      "receipt_sha256": "ca5c29f3b58c37b0d4dc57e9318adde061d8a1258a122168b3589c2c340cde50",
+      "log_file": "recovery-product.json.29c26eeae9374f368ba32d0ffcea221e.log",
+      "log_sha256": "14bce2d0ae3cebbcac74a9a7874ce194abea2c28db4666794d8ca750cbad8e86",
+      "captured_process_records": 4,
+      "observed_selected_names": 4,
+      "selected_names_not_observed_by_proc_capture": [],
+      "capture_errors": [],
+      "runner_declared_binary_counts": [
+        1
+      ],
+      "capture_gap_case_elapsed_seconds": {}
+    },
+    {
+      "gate": "qualification-growth",
+      "receipt_status": "passed",
+      "passed": 2,
+      "failed": 0,
+      "elapsed_seconds": 53.48417658894323,
+      "receipt_sha256": "8d822b8639270b11ff80ab8b5ad6b5fe4a2dba663f90221d2a1df74250b58717",
+      "log_file": "qualification-growth.json.519b5e0f54dc45a18f02d33c4d1e93fd.log",
+      "log_sha256": "819735ed3a1e6a21b30c6da1e769d1f05c699ad16f7fbc41a6c6af09bde4a5c4",
+      "captured_process_records": 2,
+      "observed_selected_names": 2,
+      "selected_names_not_observed_by_proc_capture": [],
+      "capture_errors": [],
+      "runner_declared_binary_counts": [
+        1
+      ],
+      "capture_gap_case_elapsed_seconds": {}
+    },
+    {
+      "gate": "effect-pq-owner",
+      "receipt_status": "failed",
+      "passed": 9,
+      "failed": 2,
+      "elapsed_seconds": 47.23800226603635,
+      "receipt_sha256": "a7cbad67e646de936b66750c257e2fa414e220fd669b7782dbe2fc5efb248f14",
+      "log_file": "effect-pq-owner.json.df451d7e91554c9db29443ad9e242b8c.log",
+      "log_sha256": "ea7479a4d1d000df6d3b3d275a2837fac4e4fa809e024f10af728dfbe81b2178",
+      "captured_process_records": 11,
+      "observed_selected_names": 11,
+      "selected_names_not_observed_by_proc_capture": [],
+      "capture_errors": [],
+      "runner_declared_binary_counts": [
+        1
+      ],
+      "capture_gap_case_elapsed_seconds": {}
+    }
+  ],
+  "capture_limits": "Only observed nextest test processes are bound to actual opened ELF descriptors. Three selected cases were not individually observed; the readback does not assign a specific cause to the observation gaps. A single declared test binary and matching other captures do not retroactively assign those missing processes. These four images are not the entire ordinary service/interpreter/runtime closure.",
+  "raw_images_exported": false,
+  "rebuild_for_evidence_performed": false,
+  "post_terminal_export_scope": "Small existing receipts/logs/captures only; no recomputation of native gates."
+}

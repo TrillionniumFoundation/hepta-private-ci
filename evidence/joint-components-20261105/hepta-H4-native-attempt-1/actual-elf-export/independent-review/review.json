@@ -1,0 +1,101 @@
+{
+  "actual_child": {
+    "bytes": 100964,
+    "regular_members": {
+      "H4/original-source-map.json": {
+        "bytes": 525002,
+        "sha256": "a1e42612d6a89337144b00335da2fa690dc7f503b46532ff795f0c92198bdd9c"
+      },
+      "H4/parent-archive-verification.json": {
+        "bytes": 21222,
+        "sha256": "0de9c71fd234dd1c6d0fb4a724295247fea09f3674d337ff6b039ccbe8fe4a92"
+      },
+      "H4/referenced-H3-completion.json": {
+        "bytes": 34491,
+        "sha256": "93d7bf08914054e4bcf05f17eea3cd5ef36fac9bbf0d1e601dda59084e758cd3"
+      },
+      "H4/referenced-H3-index.json": {
+        "bytes": 294654,
+        "sha256": "b023aca6ab2dccf4324dccab2e5319a00ef9b32773e0dc73127efc9af3caa002"
+      },
+      "export-index.json": {
+        "bytes": 690778,
+        "sha256": "3c4355fbd6293e631092c432557289ee770e34ae818c2ec68a590b7388d0041e"
+      },
+      "export-plan.json": {
+        "bytes": 1236214,
+        "sha256": "c917633ed8b22fa7a97455ea06c4a96fecc4a208375899bd3afededebf007619"
+      },
+      "exporter.py": {
+        "bytes": 43223,
+        "sha256": "ce96de09dc981311753d37312c1b254751cce3b40c4f950f603303a523508425"
+      },
+      "owned-release-proof.json": {
+        "bytes": 2706,
+        "sha256": "dcdd164eb680465a440bf9dc4e11ab68c5598d8cb86a4d99320784d0a5b68107"
+      }
+    },
+    "sha256": "47d3c5efa6b9aa4b2f97ef06a606f2931d8065f068311303f8d079c18a7bbaa5"
+  },
+  "actual_source_read_passes_per_selected_path": 2,
+  "actual_terminal": {
+    "at_unix_ms": 1793922176412,
+    "audit_recorded": true,
+    "automatic_retry": false,
+    "cancelled": false,
+    "exit_code": 0,
+    "job_id": "1a1ae17645d-fc05-5d51",
+    "launch_nonce": "bdea0e9a997cb6dd53b6b48611987b39",
+    "log_bytes": {
+      "stderr": {
+        "seen": 0,
+        "stored": 0
+      },
+      "stdout": {
+        "seen": 23217,
+        "stored": 23217
+      }
+    },
+    "log_errors": {
+      "stderr": null,
+      "stdout": null
+    },
+    "log_synced": {
+      "stderr": true,
+      "stdout": true
+    },
+    "log_truncated": {
+      "stderr": false,
+      "stdout": false
+    },
+    "output_complete": true,
+    "output_durable": true,
+    "state": "succeeded",
+    "terminal_publication_confirmed": true,
+    "terminal_publication_protocol": 1,
+    "timed_out": false
+  },
+  "bulk_pause_state_modified": false,
+  "full_dependent_consumer_executed": false,
+  "historical_H3_native_result": "FAILED",
+  "original_observations_preserved": 597,
+  "original_versioned_range_responses_verified": 4,
+  "other_aliases_reopened": false,
+  "owner_delivery_sha256": "160b839fbbf3593d86256d9ff9a1304719f16494fd6429240e8222c00e848654",
+  "owner_original_bytes_verified": 6201199,
+  "owner_original_files_verified": 62,
+  "parent_desktop_full_read_record_verified": true,
+  "parent_whole_archive_locally_read_by_this_review": false,
+  "release_scope": "Exact unique runtime unit removed and known cgroup absent; original PID/Invocation not observed and not invented.",
+  "retained_aliases_preserved": 32,
+  "review_scope": "Local original-byte and record review only. No remote calls, native, exporter, capture, utility rerun or complete-parent consumer execution.",
+  "schema": "independent-H4-actual-reference-archive-review-v1",
+  "selected_image_bytes": 1674575368,
+  "selected_images": 11,
+  "separate_original_part_matches": true,
+  "status": "ACTUAL_CHILD_ARCHIVE_AND_RECORDS_VERIFIED_PARENT_CONSUMER_PENDING",
+  "version_pins": {
+    "archive": "2050:53273374:100964:1793922176307587269:1793922176351585937",
+    "part": "2050:53273375:100964:1793922176344225544:1793922176352585907"
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "schema": "root-actual-consumer-and-independent-physical-audit-review-v1",
+  "consumer_exit_code": 0,
+  "consumer_duration_seconds": 238.56383343,
+  "consumer_completion_sha256": "5c2f35e1180aa50e9fdacf58459d8d16533e8a16eba80833d4bc2fec9a4d4a79",
+  "declared_original_bytes_and_H4_views_verified": true,
+  "original_archive_members": 39,
+  "H4_logical_views": 11,
+  "root_verified_whitelist_files": 49,
+  "root_verified_whitelist_bytes": 3035027,
+  "independent_small_package_members": 18,
+  "independent_small_package_sha256": "d9b825d0d9e994a48250c96d58e25df7d26b8cbe526fd197367f91383c0d7443",
+  "strict_physical_directory_audit": "FAILED",
+  "unknown_extra_files": 5,
+  "unknown_extra_bytes": 1562327640,
+  "actual_content_relationships": {
+    "complete_equal": 2,
+    "exact_prefix": 3
+  },
+  "creator_identified": false,
+  "unknown_originals_preserved_in_place": true,
+  "consumer_rerun": false,
+  "native_reexecution": false,
+  "overall": "HOLD_UNKNOWN_OUTPUT_PROVENANCE",
+  "all_eight_whole_gates": "HOLD",
+  "scope": "The consumer success and declared original byte checks do not override the later strict physical-output failure. Root independently reopened the explicit original small deliveries and the complete independent proof package; the independent reviewer performed the subsequent same-FD large-file comparisons. No unknown GB file was copied/deleted or assigned native credit."
+}

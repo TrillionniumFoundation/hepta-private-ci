@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Frozen one-blob Git readback metadata",
+  "type": "object",
+  "required": ["schema", "kind", "repository", "immutable_commit", "immutable_tree", "transport_path", "transport_bytes", "transport_sha256", "transport_git_blob_sha", "request"],
+  "properties": {
+    "schema": {"const": "github-blob-readback-metadata-v1"},
+    "kind": {"enum": ["base64-original-part", "json-utf8"]},
+    "repository": {"type": "string", "pattern": "^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$"},
+    "immutable_commit": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+    "immutable_tree": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+    "transport_path": {"type": "string", "minLength": 1},
+    "transport_bytes": {"type": "integer", "minimum": 1, "maximum": 5592408},
+    "transport_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "transport_git_blob_sha": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+    "request": {
+      "type": "object", "additionalProperties": false,
+      "required": ["repository_full_name", "blob_sha"],
+      "properties": {
+        "repository_full_name": {"type": "string"},
+        "blob_sha": {"type": "string", "pattern": "^[0-9a-f]{40}$"}
+      }
+    },
+    "original_bytes": {"type": "integer", "minimum": 1, "maximum": 4194304},
+    "original_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"kind": {"const": "base64-original-part"}}},
+      "then": {"required": ["original_bytes", "original_sha256"], "properties": {"transport_path": {"pattern": "\\.b64$"}}},
+      "else": {"properties": {"transport_bytes": {"maximum": 1048576}, "transport_path": {"pattern": "\\.json$"}}}
+    }
+  ],
+  "$comment": "The executable additionally enforces safe canonical relative paths, request repository/blob equality with metadata, exact base64 length, complete payload/Git hashes, destination no-overwrite, and reopened raw reconstruction. This schema is documentation, not a substitute for those checks. Declared commit/tree provenance is separately verified by the caller."
+}

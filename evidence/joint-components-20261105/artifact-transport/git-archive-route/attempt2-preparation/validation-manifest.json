@@ -1,0 +1,48 @@
+{
+  "bundle_members_verified": 3,
+  "cloud_controls": {
+    "description": "Original five controls plus actual Git public-URL initialization and insteadOf/pushInsteadOf rejection. No credential, Git network/ref write or desktop operation.",
+    "failed": 0,
+    "passed": 6,
+    "seconds_from_raw": 0.067
+  },
+  "credential_material_used": false,
+  "exact_request_matches_bootstrap": true,
+  "files": {
+    "attempt2-from-attempt1.patch": {
+      "bytes": 17081,
+      "sha256": "c84b449ec3aa940db17de94df59f0bfed9ff11b23e695ff532fcdf63903c7313"
+    },
+    "controls.log": {
+      "bytes": 1188,
+      "sha256": "f08b7dc6bb8c7cade0de195a18a32cd1cb1274f21c8cbd9ebe158606d33c2209"
+    },
+    "controls.raw.json": {
+      "bytes": 1326,
+      "sha256": "9f51a3a163e4617d11037f03bafcb70d0b81fe30361e3f69ef395b3d45b280d2"
+    },
+    "credential_get_only.py": {
+      "bytes": 2853,
+      "sha256": "d1aea46d21622d92c9065ebba414725a31aa56c61984cff09f5bd8cd467c61d1"
+    },
+    "delivery-manifest.json": {
+      "bytes": 2950,
+      "sha256": "2d8d6e256a18d98e4c8f1b6968146ab08fc59577623d2b04de2f00559d87e334"
+    },
+    "run_archive_transport.py": {
+      "bytes": 30677,
+      "sha256": "f5032a5fdc5fa4a88be2aac3d85deae64f8f2a4e77a2e65626a9615ace1e101c"
+    },
+    "test_transport_controls.py": {
+      "bytes": 8922,
+      "sha256": "491f7f2466a7fcd594eff34f51ce039494050e45d5556cbaeb6d80c602c01029"
+    }
+  },
+  "https_only": true,
+  "members_verified": 13,
+  "native_credit": false,
+  "original_archives_paths_limits_source_five_configs_unchanged": true,
+  "remote_execution": false,
+  "schema": "cloud-package-and-bounded-controls-verification-v2",
+  "status": "PASS"
+}
