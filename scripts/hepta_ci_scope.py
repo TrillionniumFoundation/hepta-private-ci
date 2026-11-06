@@ -71,6 +71,14 @@ FILE_GROUPS = {
     },
 }
 
+# This process-level fixture must compile against the default product ledger.
+# Cargo dev-dependency features and Bazel's production integration dependency
+# differ, so a local Cargo-only scope is insufficient for this regression.
+BAZEL_SENSITIVE_TESTS = frozenset(
+    {"codex-rs/hepta-agentd/tests/plasticity_process_e2e.rs"}
+)
+
+
 CANONICAL_DOC_GROUPS = {
     "docs/modules/MODULES.json": {"lifecycle"},
     "docs/architecture/ARCHITECTURE.json": set(GROUPS),
@@ -133,6 +141,13 @@ def select(paths: Iterable[str], *, force_full: bool = False) -> dict[str, bool]
 
         if path in FILE_GROUPS:
             selected.update(FILE_GROUPS[path])
+            continue
+
+        if path in BAZEL_SENSITIVE_TESTS:
+            # Exercise the Bazel product dependency boundary as well as native
+            # owner tests; this fixture has a known Cargo/Bazel feature split.
+            selected.update(GROUPS)
+            full_repo = True
             continue
 
         if len(parts) > 2 and parts[0] == "codex-rs":
