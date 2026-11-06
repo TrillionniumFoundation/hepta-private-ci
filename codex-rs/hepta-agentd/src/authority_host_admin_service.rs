@@ -163,14 +163,14 @@ impl HostAuthorityService {
                     ));
                 }
                 Ok(RootAdminResponse::Observed {
-                    observation: RootAdminObservation {
+                    observation: Box::new(RootAdminObservation {
                         instance: instance.clone(),
                         writer: lease,
                         writer_revocation: revoked,
                         lease_frontier: after,
                         final_use_head: head,
                         physical_current,
-                    },
+                    }),
                 })
             }
             RootAdminAction::RevokeWriter {

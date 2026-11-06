@@ -50,13 +50,14 @@ pub(super) fn notify_observed_usage(observed_tokens: u64) {
     if observed_tokens != 17 {
         return;
     }
-    if let Some(hooks) = JOURNAL_HOOK.get()
-        && let Some(hook) = hooks
-            .lock()
-            .expect("native failure usage hook")
-            .usage
-            .take()
-    {
+    let Some(hooks) = JOURNAL_HOOK.get() else {
+        return;
+    };
+    let hook = match hooks.lock() {
+        Ok(mut hooks) => hooks.usage.take(),
+        Err(error) => panic!("native failure usage hook: {error}"),
+    };
+    if let Some(hook) = hook {
         let _ = hook.send(());
     }
 }
@@ -66,12 +67,13 @@ pub(super) async fn pause_after_observation_journal(request_id: &str) {
     if request_id != REQUEST_ID {
         return;
     }
-    let hook = JOURNAL_HOOK
+    let hook = match JOURNAL_HOOK
         .get_or_init(|| Mutex::new(FailureHooks::default()))
         .lock()
-        .expect("native failure journal hook")
-        .journal
-        .take();
+    {
+        Ok(mut hooks) => hooks.journal.take(),
+        Err(error) => panic!("native failure journal hook: {error}"),
+    };
     if let Some(hook) = hook {
         let _ = hook.send(());
         std::future::pending::<()>().await;

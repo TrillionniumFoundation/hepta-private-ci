@@ -23,7 +23,7 @@ pub struct AgentdTextEvent {
 }
 
 pub enum AgentdTextObservation {
-    Notification(AgentdTextEvent),
+    Notification(Box<AgentdTextEvent>),
     Approval(TextApprovalObservation),
 }
 
@@ -183,7 +183,7 @@ impl TextEventReader {
                 };
                 requests.interrupt_turn(turn_id.clone()).await?;
             }
-            return Ok(Some(AgentdTextObservation::Notification(event)));
+            return Ok(Some(AgentdTextObservation::Notification(Box::new(event))));
         }
     }
 

@@ -96,7 +96,7 @@ impl AgentdDesktopThreadToolRuntime {
                 "source_domain":"original_protected_sender_reference",
                 "instruction":"No exact original result was verified; read only, never repeat the effect."}))
             }
-            RecordedDesktopLookup::Found(original) => self.observe_recorded(original).await,
+            RecordedDesktopLookup::Found(original) => self.observe_recorded(*original).await,
         }
     }
 }

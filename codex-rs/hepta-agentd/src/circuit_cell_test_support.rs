@@ -135,10 +135,14 @@ pub(crate) fn input(run: &str) -> CellStepInputV1 {
         monotonic_micros: 10,
         deadline_micros: 100,
         observation: b"input".to_vec(),
-        candidates: definition().candidates.iter().map(|c| CellCandidateMaskV1 {
-            candidate_id: c.candidate_id.clone(),
-            allowed: true,
-        }).collect(),
+        candidates: definition()
+            .candidates
+            .iter()
+            .map(|c| CellCandidateMaskV1 {
+                candidate_id: c.candidate_id.clone(),
+                allowed: true,
+            })
+            .collect(),
     }
 }
 
@@ -186,7 +190,9 @@ impl NeuronInferenceControlPort for Model {
         self.calls.fetch_add(1, Ordering::SeqCst);
         let receipt = feature_receipt(request, self.latency);
         self.receipt = Some(receipt.clone());
-        if self.lose_response { return Err(NeuronModelError::Indeterminate); }
+        if self.lose_response {
+            return Err(NeuronModelError::Indeterminate);
+        }
         Ok(receipt)
     }
 }
@@ -231,4 +237,3 @@ pub(crate) fn feature_receipt(
         },
     ))
 }
-

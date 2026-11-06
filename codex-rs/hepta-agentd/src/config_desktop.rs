@@ -7,7 +7,10 @@ impl AgentdConfig {
         config: crate::AgentdDesktopObjectiveConfig,
     ) -> Result<Self, AgentdError> {
         config.validate()?;
-        if self.notes_objective.is_some() || self.desktop_objective.is_some() {
+        if self.notes_objective.is_some()
+            || self.desktop_objective.is_some()
+            || self.neuron_generation_bootstrap.is_some()
+        {
             return Err(AgentdError::Invalid(
                 "finite Objective profile already configured".into(),
             ));

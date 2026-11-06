@@ -32,6 +32,18 @@ pub enum TextIssuerOperation {
     Lookup,
 }
 
+pub(crate) struct RegisteredTextWriter<'a> {
+    pub(crate) registration: &'a HostAuthorityWriterRegistration,
+    pub(crate) leases: &'a AuthorityLeaseVerifier,
+    pub(crate) proof: &'a crate::HostSignedWriterAuthorizationV1,
+}
+
+struct TextIssueAuthority<'a> {
+    lease: Option<&'a AuthorityLease>,
+    human: Option<&'a TextHumanBinding>,
+    parent: Option<Result<&'a AuthorityLease, AuthorityLeaseError>>,
+}
+
 #[derive(Clone, Deserialize, Serialize, PartialEq, Eq)]
 #[serde(deny_unknown_fields)]
 pub(super) struct RetainedTextSignature {
@@ -142,10 +154,13 @@ impl DeploymentFinalUseIssuer {
         request_id: &str,
         body: AuthBusTextBody,
         operation: TextIssuerOperation,
-        registration: &HostAuthorityWriterRegistration,
-        leases: &AuthorityLeaseVerifier,
-        proof: &crate::HostSignedWriterAuthorizationV1,
+        writer: RegisteredTextWriter<'_>,
     ) -> io::Result<AuthBusTextIngress> {
+        let RegisteredTextWriter {
+            registration,
+            leases,
+            proof,
+        } = writer;
         if self.lease.is_none()
             || registration.registered_agent_id != identity.agent_id
             || registration.spawn_generation != identity.spawn_generation
@@ -161,9 +176,11 @@ impl DeploymentFinalUseIssuer {
                 request_id,
                 body,
                 operation,
-                Some(&registration.authority_lease),
-                None,
-                Some(parent),
+                TextIssueAuthority {
+                    lease: Some(&registration.authority_lease),
+                    human: None,
+                    parent: Some(parent),
+                },
             )
         })
     }
@@ -177,7 +194,17 @@ impl DeploymentFinalUseIssuer {
         lease: Option<&AuthorityLease>,
         human: Option<&TextHumanBinding>,
     ) -> io::Result<AuthBusTextIngress> {
-        self.text_until_checked(identity, request_id, body, operation, lease, human, None)
+        self.text_until_checked(
+            identity,
+            request_id,
+            body,
+            operation,
+            TextIssueAuthority {
+                lease,
+                human,
+                parent: None,
+            },
+        )
     }
 
     fn text_until_checked(
@@ -186,10 +213,13 @@ impl DeploymentFinalUseIssuer {
         request_id: &str,
         mut body: AuthBusTextBody,
         operation: TextIssuerOperation,
-        lease: Option<&AuthorityLease>,
-        human: Option<&TextHumanBinding>,
-        parent: Option<Result<&AuthorityLease, AuthorityLeaseError>>,
+        authority: TextIssueAuthority<'_>,
     ) -> io::Result<AuthBusTextIngress> {
+        let TextIssueAuthority {
+            lease,
+            human,
+            parent,
+        } = authority;
         if request_id.is_empty()
             || request_id.len() > 192
             || !request_id
@@ -262,7 +292,11 @@ impl DeploymentFinalUseIssuer {
         let parent = match parent {
             Some(parent) => Some(parent.map_err(root::lease_error)?),
             None if self.lease.is_none() => None,
-            None => return Err(io::Error::other("live original issuer required for new text")),
+            None => {
+                return Err(io::Error::other(
+                    "live original issuer required for new text",
+                ));
+            }
         };
         if let Some(parent) = parent {
             Self::validate_issuer_lease_time(parent, state.head.authority_epoch, now)?;

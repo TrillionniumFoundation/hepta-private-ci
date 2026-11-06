@@ -959,9 +959,11 @@ async fn dropped_response_stream_traces_cancelled_partial_output() -> anyhow::Re
         api_stream,
         test_session_telemetry(),
         attempt,
-        test_model_provider(),
-        /*provider_attempt*/ None,
-        /*redact_provider_errors*/ false,
+        super::ResponseProviderContext {
+            provider: test_model_provider(),
+            provider_attempt: None,
+            redact_provider_errors: false,
+        },
         /*encoded_request_observer*/ None,
     );
 
@@ -1012,9 +1014,11 @@ async fn response_stream_records_last_model_feedback_ids() {
         api_stream,
         test_session_telemetry(),
         InferenceTraceAttempt::disabled(),
-        test_model_provider(),
-        /*provider_attempt*/ None,
-        /*redact_provider_errors*/ false,
+        super::ResponseProviderContext {
+            provider: test_model_provider(),
+            provider_attempt: None,
+            redact_provider_errors: false,
+        },
         /*encoded_request_observer*/ None,
     );
 
@@ -1148,9 +1152,11 @@ async fn ephemeral_unauthorized_and_stream_errors_are_redacted() -> anyhow::Resu
         api_stream,
         test_session_telemetry(),
         attempt,
-        provider,
-        /*provider_attempt*/ None,
-        /*redact_provider_errors*/ true,
+        super::ResponseProviderContext {
+            provider,
+            provider_attempt: None,
+            redact_provider_errors: true,
+        },
         /*encoded_request_observer*/ None,
     );
     let error = stream
@@ -1332,9 +1338,11 @@ async fn dropped_backpressured_response_stream_traces_cancelled_partial_output()
         api_stream,
         test_session_telemetry(),
         attempt,
-        test_model_provider(),
-        /*provider_attempt*/ None,
-        /*redact_provider_errors*/ false,
+        super::ResponseProviderContext {
+            provider: test_model_provider(),
+            provider_attempt: None,
+            redact_provider_errors: false,
+        },
         /*encoded_request_observer*/ None,
     );
 

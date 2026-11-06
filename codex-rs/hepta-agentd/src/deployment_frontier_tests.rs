@@ -32,17 +32,17 @@ fn independent_handles_have_exactly_one_cas_winner() {
     let store = store(&root);
     store.provision("owner", &1).unwrap();
     let barrier = Arc::new(Barrier::new(9));
-    let handles: Vec<_> = (2..10)
-        .map(|value| {
-            let path = root.path().join("external-frontier");
-            let barrier = Arc::clone(&barrier);
-            std::thread::spawn(move || {
-                let store = DeploymentFrontierStore::<u64>::open(&path).unwrap();
-                barrier.wait();
-                store.compare_and_set("owner", &1, &value)
-            })
-        })
-        .collect();
+    let mut handles = Vec::with_capacity(8);
+    // All contenders must exist before the parent enters the shared barrier.
+    for value in 2..10 {
+        let path = root.path().join("external-frontier");
+        let barrier = Arc::clone(&barrier);
+        handles.push(std::thread::spawn(move || {
+            let store = DeploymentFrontierStore::<u64>::open(&path).unwrap();
+            barrier.wait();
+            store.compare_and_set("owner", &1, &value)
+        }));
+    }
     barrier.wait();
     let outcomes: Vec<_> = handles.into_iter().map(|h| h.join().unwrap()).collect();
     assert_eq!(outcomes.iter().filter(|result| result.is_ok()).count(), 1);

@@ -83,43 +83,73 @@ pub enum TerminalLearningErrorV1 {
     Owner(String),
 }
 impl fmt::Display for TerminalLearningErrorV1 {
-    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result { write!(formatter, "{self:?}") }
+    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(formatter, "{self:?}")
+    }
 }
 impl Error for TerminalLearningErrorV1 {}
 
 impl TerminalLearningRequestV1 {
-    pub(crate) fn job_digest(&self, agent: &AgentId, producer: &StableId) -> Result<Digest32, TerminalLearningErrorV1> {
+    pub(crate) fn job_digest(
+        &self,
+        agent: &AgentId,
+        producer: &StableId,
+    ) -> Result<Digest32, TerminalLearningErrorV1> {
         let b = &self.budget;
         if !(1..=4096).contains(&b.maximum_ledger_records)
             || !(1..=b.maximum_ledger_records).contains(&b.maximum_dataset_records)
             || !(1..=60_000).contains(&b.maximum_wall_milliseconds)
             || !(1..=1_048_576).contains(&b.maximum_artifact_bytes)
             || self.deadline_unix_seconds == 0
-            || self.expected_dataset_digest.is_zero() || self.expected_source_support_digest.is_zero()
+            || self.expected_dataset_digest.is_zero()
+            || self.expected_source_support_digest.is_zero()
             || self.profile.producer_id != *producer
             || self.profile.objective_digest != self.dataset_plan.objective_digest
-            || self.profile.action_ids.is_empty() || self.profile.action_ids.len() > 128
+            || self.profile.action_ids.is_empty()
+            || self.profile.action_ids.len() > 128
             || self.profile.minimum_samples_per_action == 0
             || self.profile.minimum_samples_per_action > 4096
-        { return Err(TerminalLearningErrorV1::InvalidRequest); }
+        {
+            return Err(TerminalLearningErrorV1::InvalidRequest);
+        }
         let mut bytes = b"hepta.agentd.terminal-learning-job.v1\0".to_vec();
         for value in [
-            agent.as_str(), self.operation_id.as_str(), self.source_policy_id.as_str(),
-            self.dataset_plan.snapshot_id.as_str(), self.profile.artifact_id.as_str(),
-            self.profile.producer_id.as_str(), self.profile.sensor_id.as_str(),
-        ] { push(&mut bytes, value.as_bytes()); }
+            agent.as_str(),
+            self.operation_id.as_str(),
+            self.source_policy_id.as_str(),
+            self.dataset_plan.snapshot_id.as_str(),
+            self.profile.artifact_id.as_str(),
+            self.profile.producer_id.as_str(),
+            self.profile.sensor_id.as_str(),
+        ] {
+            push(&mut bytes, value.as_bytes());
+        }
         for value in [
-            self.expected_source_support_digest, self.expected_dataset_digest,
-            self.dataset_plan.objective_digest, self.dataset_plan.inclusion_policy_digest,
-            self.profile.objective_digest, self.profile.run_snapshot_digest, self.profile.unit_profile_digest,
-        ] { bytes.extend_from_slice(value.as_array()); }
+            self.expected_source_support_digest,
+            self.expected_dataset_digest,
+            self.dataset_plan.objective_digest,
+            self.dataset_plan.inclusion_policy_digest,
+            self.profile.objective_digest,
+            self.profile.run_snapshot_digest,
+            self.profile.unit_profile_digest,
+        ] {
+            bytes.extend_from_slice(value.as_array());
+        }
         for value in [
-            self.profile.generation.get(), self.profile.minimum_samples_per_action as u64,
-            u64::from(b.maximum_ledger_records), u64::from(b.maximum_dataset_records),
-            b.maximum_wall_milliseconds, b.maximum_artifact_bytes, self.deadline_unix_seconds,
+            self.profile.generation.get(),
+            self.profile.minimum_samples_per_action as u64,
+            u64::from(b.maximum_ledger_records),
+            u64::from(b.maximum_dataset_records),
+            b.maximum_wall_milliseconds,
+            b.maximum_artifact_bytes,
+            self.deadline_unix_seconds,
             self.profile.action_ids.len() as u64,
-        ] { bytes.extend_from_slice(&value.to_be_bytes()); }
-        for action in &self.profile.action_ids { push(&mut bytes, action.as_str().as_bytes()); }
+        ] {
+            bytes.extend_from_slice(&value.to_be_bytes());
+        }
+        for action in &self.profile.action_ids {
+            push(&mut bytes, action.as_str().as_bytes());
+        }
         push(&mut bytes, &self.dataset_evidence.signing_bytes());
         bytes.extend_from_slice(&self.dataset_evidence.signature);
         Ok(Digest32::of_bytes(&bytes))

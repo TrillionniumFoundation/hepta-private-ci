@@ -45,9 +45,11 @@ impl RegisteredWriter {
             namespace,
             request_id,
             body,
-            &self.registration,
-            &self.leases,
-            &self.proof,
+            crate::deployment_issuer::RegisteredTextWriter {
+                registration: &self.registration,
+                leases: &self.leases,
+                proof: &self.proof,
+            },
         )
     }
 
@@ -81,9 +83,11 @@ impl RegisteredWriter {
             request_id,
             body,
             operation,
-            &self.registration,
-            &self.leases,
-            &self.proof,
+            crate::deployment_issuer::RegisteredTextWriter {
+                registration: &self.registration,
+                leases: &self.leases,
+                proof: &self.proof,
+            },
         )
     }
 

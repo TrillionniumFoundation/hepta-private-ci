@@ -371,9 +371,11 @@ async fn notes_objective_session_registration_returns_observer_for_the_same_priv
                     &config,
                     &host,
                     parent,
-                    final_use,
-                    issuer.clone(),
-                    operations.verifier.clone(),
+                    crate::notes_bootstrap::PrimaryNotesAuthority {
+                        final_use,
+                        grants: issuer.clone(),
+                        verifier: operations.verifier.clone(),
+                    },
                     Duration::from_millis(20),
                     /*expected*/ None,
                 )

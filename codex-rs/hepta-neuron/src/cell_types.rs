@@ -160,8 +160,8 @@ pub struct CellInferenceAdmissionV1 {
 
 #[derive(Debug)]
 pub enum CellStepEntryV1 {
-    Ready(PreparedCellStepV1),
-    Replayed(CellDecisionReceiptV1),
+    Ready(Box<PreparedCellStepV1>),
+    Replayed(Box<CellDecisionReceiptV1>),
 }
 
 #[derive(Debug)]
@@ -197,16 +197,26 @@ impl CellStateProposalV1 {
     /// usage is preserved; both builtin owners call this before publication.
     pub fn settle_at(mut self, now_micros: u64) -> Result<Self, CellExecutionError> {
         if now_micros < self.tick.monotonic_micros
-            || now_micros < self.decided_at_micros || now_micros < self.settled_at_micros
+            || now_micros < self.decided_at_micros
+            || now_micros < self.settled_at_micros
         {
             return Err(CellExecutionError::DeadlineExceeded);
         }
         if now_micros >= self.deadline_micros {
-            if !self.receipt.policy.iter().any(|p| p.candidate_id == self.abstain_candidate && p.allowed) {
+            if !self
+                .receipt
+                .policy
+                .iter()
+                .any(|p| p.candidate_id == self.abstain_candidate && p.allowed)
+            {
                 return Err(CellExecutionError::InvalidInput);
             }
             for entry in &mut self.receipt.policy {
-                entry.probability_ppm = if entry.candidate_id == self.abstain_candidate { 1_000_000 } else { 0 };
+                entry.probability_ppm = if entry.candidate_id == self.abstain_candidate {
+                    1_000_000
+                } else {
+                    0
+                };
             }
             self.receipt.selected_candidate = self.abstain_candidate.clone();
             self.receipt.deadline_exceeded = true;
@@ -240,7 +250,10 @@ pub trait CellStateOwnerV1 {
     /// Atomically save the full original request before any dispatch. A durable
     /// owner must witness this boundary before returning success. Re-admission,
     /// including an identical pending request, must never authorize dispatch.
-    fn admit_inference(&mut self, admission: CellInferenceAdmissionV1) -> Result<(), CellExecutionError>;
+    fn admit_inference(
+        &mut self,
+        admission: CellInferenceAdmissionV1,
+    ) -> Result<(), CellExecutionError>;
 
     fn pending_inference(
         &self,

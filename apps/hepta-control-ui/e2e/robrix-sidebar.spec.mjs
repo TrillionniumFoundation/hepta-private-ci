@@ -105,9 +105,19 @@ test('Compact sidebar creates once and preserves both conversations',async({page
   await page.mouse.click(point.x,point.y);await expect.poll(()=>current()?.active).toBe(room);
   await expect.poll(()=>current()?.navigationOpen).toBe(false);await waitRoomDraw(observed.after.geometryFrame);await settle();
  }
+ async function pasteText(value){
+  // Exercise the real clipboard/paste event rather than Playwright insertText,
+  // which does not set Makepad's hidden textarea paste marker.
+  await page.context().grantPermissions(['clipboard-read','clipboard-write']);
+  await page.evaluate(async text=>{
+   if(!navigator.clipboard?.writeText)throw new Error('Clipboard API unavailable');
+   await navigator.clipboard.writeText(text);
+  },value);
+  await page.keyboard.press('Control+V');
+ }
  async function editorText(expected,{write=false}={}){
   await clickControl('editor');
-  if(write)await page.keyboard.insertText(expected);
+  if(write)await pasteText(expected);
   await expect(page.locator('textarea.cx_webgl_textinput')).toHaveValue(expected);
   await expect.poll(()=>current()?.draftBytes).toBe(Buffer.byteLength(expected));
  }

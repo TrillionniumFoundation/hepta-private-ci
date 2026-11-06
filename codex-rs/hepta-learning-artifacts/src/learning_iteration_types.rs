@@ -58,10 +58,16 @@ pub enum LearningIterationStageV1 {
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
-pub enum LearningEvaluationDispositionV1 { Qualified, NoUpdate }
+pub enum LearningEvaluationDispositionV1 {
+    Qualified,
+    NoUpdate,
+}
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
-pub enum LearningProposalDispositionV1 { UpdateCandidates, NoAdmissibleUpdate }
+pub enum LearningProposalDispositionV1 {
+    UpdateCandidates,
+    NoAdmissibleUpdate,
+}
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum LearningIterationObservationV1 {
@@ -77,7 +83,7 @@ pub enum LearningIterationObservationV1 {
         bytes: u64,
     },
     Training {
-        candidate: CellCompatibilityBundleV1,
+        candidate: Box<CellCompatibilityBundleV1>,
         steps: u64,
         milliseconds: u64,
         artifact_bytes: u64,
@@ -130,7 +136,11 @@ pub struct LearningIterationSnapshotV1 {
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
-pub enum LearningIterationDispositionV1 { InProgress, NoUpdate, UsedByNextTask }
+pub enum LearningIterationDispositionV1 {
+    InProgress,
+    NoUpdate,
+    UsedByNextTask,
+}
 
 impl LearningIterationObservationV1 {
     pub const fn stage(&self) -> LearningIterationStageV1 {

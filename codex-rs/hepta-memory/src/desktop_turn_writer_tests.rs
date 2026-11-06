@@ -21,6 +21,7 @@ use std::sync::atomic::AtomicUsize;
 use std::sync::atomic::Ordering;
 
 const RUN: &str = "desktop.thread.fixture-shared-original-turn";
+type FixtureOperation = (OperationIntentV1, &'static str, String);
 
 struct App {
     destination: String,
@@ -67,9 +68,7 @@ impl AuthorityClock for Clock {
     }
 }
 
-fn operations(
-    owner: &str,
-) -> Result<[(OperationIntentV1, &'static str, String); 2], Box<dyn std::error::Error>> {
+fn operations(owner: &str) -> Result<[FixtureOperation; 2], Box<dyn std::error::Error>> {
     let notes = NotesTargetIdentity {
         session_instance: "1".repeat(32),
         task_id: 1,

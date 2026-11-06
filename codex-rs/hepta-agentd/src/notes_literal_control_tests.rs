@@ -106,7 +106,7 @@ async fn notes_literal_control_wrong_peer_sends_zero_bytes_and_never_rearms_orig
         Err(ObjectiveSenderError::SendPermissionUnavailable)
     ));
     assert!(
-        AgentdNotesPreparedObjective::Retained(original)
+        AgentdNotesPreparedObjective::Retained(Box::new(original))
             .submit_once(Duration::from_secs(1))
             .await
             .is_err()

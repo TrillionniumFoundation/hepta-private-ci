@@ -57,6 +57,9 @@ impl<'de> Deserialize<'de> for AgentdCalculatorRecoverySelector {
 }
 
 impl AgentdCalculatorRecoverySelector {
+    // Production startup consumes the typed selector directly. Legacy-field
+    // combinations are only constructed by the compatibility fixtures.
+    #[cfg(test)]
     pub(crate) fn from_fields(
         operation_id: Option<&str>,
         selector: Option<&Self>,

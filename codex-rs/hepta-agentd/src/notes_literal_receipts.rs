@@ -104,7 +104,9 @@ enum SubmissionStatus {
         publication_digest: String,
         chain_digest: String,
         disposition: String,
-        idempotent: bool,
+        // Require the wire field and its type without using it as authority.
+        #[serde(rename = "idempotent")]
+        _idempotent: bool,
         response_generation: u64,
     },
     Conflict {
@@ -303,7 +305,7 @@ pub(crate) fn project(
                         publication_digest,
                         chain_digest,
                         disposition,
-                        idempotent: _,
+                        _idempotent: _,
                         response_generation,
                     } => {
                         response(response_generation)?;

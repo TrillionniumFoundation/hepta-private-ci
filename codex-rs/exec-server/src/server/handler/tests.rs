@@ -135,8 +135,7 @@ async fn legacy_client_cannot_start_a_process_without_exit_observation() {
     let error = handler
         .exec(exec_params("must-not-spawn"))
         .await
-        .err()
-        .expect("start must refuse");
+        .expect_err("start must refuse");
     assert_eq!(
         error.message,
         "process/start requires negotiated exit observation support"
@@ -178,8 +177,7 @@ async fn legacy_resume_refuses_before_attaching_to_original_session() {
             process_exit_observation: false,
         })
         .await
-        .err()
-        .expect("legacy resume refusal");
+        .expect_err("legacy resume refusal");
     assert_eq!(
         error.message,
         "session resumption requires process exit observation support"

@@ -53,7 +53,7 @@ pub struct CellUpdateCandidateV1 {
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum CellUpdateOutcomeV1 {
     NoUpdate,
-    Candidate(CellUpdateCandidateV1),
+    Candidate(Box<CellUpdateCandidateV1>),
 }
 
 /// The learning owner consumes admitted immutable datasets and training budgets.
@@ -131,7 +131,10 @@ pub fn propose_cell_update(
             || candidate.candidate_artifact_digest.is_zero()
             || candidate.changed_parameters.is_empty()
             || candidate.changed_parameters.len() > request.trainable_parameters.len()
-            || candidate.changed_parameters.iter().any(|id| !allowed.contains(id) || !changed.insert(id))
+            || candidate
+                .changed_parameters
+                .iter()
+                .any(|id| !allowed.contains(id) || !changed.insert(id))
             || candidate.executed_steps == 0
             || candidate.executed_steps > request.budget.maximum_steps
             || candidate.elapsed_micros > request.budget.maximum_elapsed_micros

@@ -242,9 +242,11 @@ pub async fn attach_root_notes_operation_host_with_startup(
         config,
         &host,
         notes_bootstrap,
-        notes,
-        operation_grants,
-        verifier,
+        crate::notes_bootstrap::PrimaryNotesAuthority {
+            final_use: notes,
+            grants: operation_grants,
+            verifier,
+        },
         reconcile_interval,
         release.as_ref().map(|release| &release.target),
     )
