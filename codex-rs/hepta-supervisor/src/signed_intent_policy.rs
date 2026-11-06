@@ -60,7 +60,11 @@ impl SignedIntentPqAuthority {
         &self,
         intent: &SignedSupervisorIntent,
     ) -> Result<(), SignedIntentError> {
-        self.validated_verifier(intent).map(drop)
+        self.validate_window()?;
+        let policy_sha256 =
+            H7H89ProductionGrantVerifier::validate_pq_policy_shape(self.policy_json.as_bytes())
+                .map_err(|error| SignedIntentError::Invalid(error.to_string()))?;
+        self.validate_binding(intent, Some(&policy_sha256))
     }
 
     // Keep the exact verifier whose policy and retained-message bindings were
@@ -70,6 +74,15 @@ impl SignedIntentPqAuthority {
         &self,
         intent: &SignedSupervisorIntent,
     ) -> Result<H7H89ProductionGrantVerifier, SignedIntentError> {
+        self.validate_window()?;
+        let verifier =
+            H7H89ProductionGrantVerifier::from_pq_policy_bytes(self.policy_json.as_bytes())
+                .map_err(|error| SignedIntentError::Invalid(error.to_string()))?;
+        self.validate_binding(intent, verifier.policy_sha256())?;
+        Ok(verifier)
+    }
+
+    fn validate_window(&self) -> Result<(), SignedIntentError> {
         if Sha256Digest::parse(self.binding.policy_sha256.as_str()).is_err()
             || self.issued_at_unix_seconds == 0
             || self.expires_at_unix_seconds <= self.issued_at_unix_seconds
@@ -80,13 +93,18 @@ impl SignedIntentPqAuthority {
                 "signed intent PQ authority is malformed".to_string(),
             ));
         }
-        let verifier =
-            H7H89ProductionGrantVerifier::from_pq_policy_bytes(self.policy_json.as_bytes())
-                .map_err(|error| SignedIntentError::Invalid(error.to_string()))?;
+        Ok(())
+    }
+
+    fn validate_binding(
+        &self,
+        intent: &SignedSupervisorIntent,
+        policy_sha256: Option<&Sha256Digest>,
+    ) -> Result<(), SignedIntentError> {
         self.grant
             .validate_shape(&self.h7_envelope)
             .map_err(|error| SignedIntentError::Invalid(error.to_string()))?;
-        if verifier.policy_sha256() != Some(&self.binding.policy_sha256)
+        if policy_sha256 != Some(&self.binding.policy_sha256)
             || self.grant.pq_authority.as_ref() != Some(&self.binding)
             || self.grant.grant_sha256 != intent.grant_sha256
             || self.grant.agent_id != intent.agent_id
@@ -111,13 +129,17 @@ impl SignedIntentPqAuthority {
                 "retained PQ proof differs from its admitted intent".to_string(),
             ));
         }
-        Ok(verifier)
+        Ok(())
     }
 }
 
 #[cfg(test)]
 #[path = "signed_intent_policy_tests.rs"]
 mod tests;
+
+#[cfg(test)]
+#[path = "signed_intent_shape_tests.rs"]
+mod shape_tests;
 
 impl SignedSupervisorIntent {
     pub(crate) fn bind_authority(
