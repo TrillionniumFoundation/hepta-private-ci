@@ -11,6 +11,10 @@ mod lanes;
 mod journal;
 
 #[cfg(target_os = "linux")]
+#[path = "worker_registration_qualification/lifecycle.rs"]
+mod lifecycle;
+
+#[cfg(target_os = "linux")]
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     use codex_hepta_agentd::receive_root_production_handoff;
     use codex_hepta_agentd::receive_worker_root_registration;
@@ -34,6 +38,10 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         std::io::stdin().read_exact(&mut stop)?;
         assert_eq!(stop, [1]);
         return Ok(());
+    }
+    if mode == "root-lifecycle-write" {
+        drop(stdout);
+        return lifecycle::run(&agent, generation);
     }
     // SAFETY: this explicit fixture is launched by Root with one inherited
     // anonymous socket at 198. It adopts it once; no path or numeric PID is

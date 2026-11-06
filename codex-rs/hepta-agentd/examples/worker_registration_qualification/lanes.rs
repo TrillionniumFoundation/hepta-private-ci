@@ -17,6 +17,35 @@ pub(super) fn run(mode: &str, socket: UnixDatagram, agent: &AgentId, generation:
     let unacknowledged = socket.try_clone()?;
     let registration = receive_worker_root_registration(socket, agent, generation, Duration::from_secs(5))?;
     let message = match mode {
+        "lanes-lifecycle-gate" => {
+            let executor = tokio::runtime::Builder::new_current_thread().enable_all().build()?;
+            let mut lanes = executor.block_on(registration.receive_worker_lanes(Duration::from_secs(5)))?;
+            let bootstrap = lanes.bootstrap_observation().clone();
+            let observation = lanes.read_observation()?;
+            let proof = lanes.read_original_writer_proof()?;
+            let ready = serde_json::json!({"kind":"worker_ready_for_lifecycle_gate",
+                "bootstrap":bootstrap, "observation":observation, "writer_proof":proof,
+                "effect_authorization_available":false});
+            write_message(&ready)?;
+            let mut command = [0];
+            std::io::stdin().read_exact(&mut command)?;
+            assert_eq!(command, [2]);
+            let first = lanes.load_frontier();
+            let first_error = first.as_ref().err().map(ToString::to_string);
+            write_message(&serde_json::json!({"kind":"worker_lifecycle_gate_first_load",
+                "accepted":first.is_ok(), "frontier":first.ok(), "error":first_error,
+                "effect_authorization_available":false}))?;
+            std::io::stdin().read_exact(&mut command)?;
+            assert_eq!(command, [3]);
+            let later = lanes.load_frontier();
+            let observation = lanes.read_observation();
+            let report = serde_json::json!({"kind":"worker_lifecycle_gate_after_transition",
+                "load_refused":later.is_err(), "observation_refused":observation.is_err(),
+                "effect_authorization_available":false});
+            drop(lanes);
+            executor.shutdown_timeout(Duration::from_secs(1));
+            report
+        }
         "lanes-roundtrip" => {
             let executor = tokio::runtime::Builder::new_current_thread().enable_all().build()?;
             let mut lanes = executor.block_on(registration.receive_worker_lanes(Duration::from_secs(5)))?;
@@ -40,6 +69,55 @@ pub(super) fn run(mode: &str, socket: UnixDatagram, agent: &AgentId, generation:
             serde_json::json!({"kind":"three_original_lanes", "bootstrap":bootstrap, "observation":observation,
                 "original_proof":proof, "initial_frontier":initial, "next_frontier":next,
                 "after_exact_conflict":after_conflict, "effect_owner_created":false})
+        }
+        "lanes-root-head-revoked" => {
+            let executor = tokio::runtime::Builder::new_current_thread().enable_all().build()?;
+            let mut lanes = executor.block_on(registration.receive_worker_lanes(Duration::from_secs(5)))?;
+            let bootstrap = lanes.bootstrap_observation().clone();
+            let before = lanes.read_observation()?;
+            let original_proof = lanes.read_original_writer_proof()?;
+            let initial = lanes.load_frontier()?;
+            assert!(!bootstrap.effect_authorization_available && !before.effect_authorization_available);
+            let ready = serde_json::json!({"kind":"worker_floor_ready_before_original_revoke",
+                "bootstrap":&bootstrap, "observation":&before, "writer_proof":&original_proof,
+                "frontier":initial, "effect_authorization_available":false});
+            let bytes = serde_json::to_vec(&ready)?;
+            assert!(bytes.len() <= 64 * 1024);
+            {
+                let mut output = std::io::stdout().lock();
+                output.write_all(&(bytes.len() as u32).to_be_bytes())?;
+                output.write_all(&bytes)?;
+                output.flush()?;
+            }
+            let mut advance = [0];
+            std::io::stdin().read_exact(&mut advance)?;
+            assert_eq!(advance, [2]);
+            // The original Root must still serve its new observation and the
+            // exact same live writer proof. No alternative issuer is selected.
+            let current = lanes.read_observation()?;
+            let current_proof = lanes.read_original_writer_proof()?;
+            assert_eq!(current_proof, original_proof);
+            assert!(!current.effect_authorization_available);
+            let first_load = lanes.load_frontier();
+            let retry_load = lanes.load_frontier();
+            let later_observation = lanes.read_observation();
+            let first_error = first_load.as_ref().err().map(|error| format!("{error:?}"));
+            let retry_error = retry_load.as_ref().err().map(|error| format!("{error:?}"));
+            let later_error = later_observation.as_ref().err().map(|error| error.to_string());
+            // Report the real original behavior, including accepted stale
+            // values on the unfixed source. The parent owns the regression
+            // assertion; this Child does not synthesize a refused outcome.
+            let report = serde_json::json!({"kind":"worker_floor_current_head_result",
+                "current_observation":current, "current_writer_proof":current_proof,
+                "initial_load_refused":first_load.is_err(), "initial_load_frontier":first_load.ok(),
+                "initial_load_error":first_error,
+                "retry_load_refused":retry_load.is_err(), "retry_load_frontier":retry_load.ok(),
+                "retry_load_error":retry_error,
+                "later_observation_refused":later_observation.is_err(),
+                "later_observation_error":later_error, "effect_authorization_available":false});
+            drop(lanes);
+            executor.shutdown_timeout(Duration::from_secs(1));
+            report
         }
         "lanes-second-offer-no-ack" => {
             let (mut sealed, _root) = receive_root_production_handoff(unacknowledged, Duration::from_secs(5))?;
@@ -81,5 +159,15 @@ pub(super) fn run(mode: &str, socket: UnixDatagram, agent: &AgentId, generation:
     let mut stop = [0];
     std::io::stdin().read_exact(&mut stop)?;
     assert_eq!(stop, [1]);
+    Ok(())
+}
+
+fn write_message(message: &serde_json::Value) -> Result<(), Box<dyn std::error::Error>> {
+    let bytes = serde_json::to_vec(message)?;
+    assert!(bytes.len() <= 64 * 1024);
+    let mut output = std::io::stdout().lock();
+    output.write_all(&(bytes.len() as u32).to_be_bytes())?;
+    output.write_all(&bytes)?;
+    output.flush()?;
     Ok(())
 }

@@ -31,6 +31,10 @@ mod lanes;
 #[path = "authority_host_worker_journal.rs"]
 mod journal;
 
+#[cfg(test)]
+#[path = "worker_root_generation_pause.rs"]
+mod generation_pause;
+
 /// Actual Root retains the original session, exact Child borrow, pidfds,
 /// sealed record and one private channel. Dropping it closes this handoff.
 /// Its public surface exposes observations only, never an activation or grant.

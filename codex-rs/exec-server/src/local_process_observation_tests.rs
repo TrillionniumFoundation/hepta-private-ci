@@ -53,11 +53,29 @@ async fn blocked_stdin_reservation_wakes_for_retained_outcome() {
             first_poll.is_pending(),
             "the original full input channel must block reserve"
         );
-        let processes = backend.inner.processes.lock().await;
-        let Some(ProcessEntry::Running(running)) = processes.get(&process.process_id) else {
-            panic!("fixture process must be running");
-        };
-        let custody = Arc::clone(&running.custody);
+        let inner = Arc::clone(&backend.inner);
+        let process_id = process.process_id.clone();
+        let (acquired_tx, acquired_rx) = oneshot::channel();
+        let (read_tx, read_rx) = oneshot::channel();
+        let (accepted_tx, accepted_rx) = oneshot::channel();
+        let (release_tx, release_rx) = oneshot::channel();
+        // Keep the real publication lock on a synchronous owner while this
+        // async test observes and cancels the original publisher.
+        let lock_owner = tokio::task::spawn_blocking(move || {
+            let processes = inner.processes.blocking_lock();
+            let Some(ProcessEntry::Running(running)) = processes.get(&process_id) else {
+                panic!("fixture process must be running");
+            };
+            assert!(acquired_tx.send(Arc::clone(&running.custody)).is_ok());
+            read_rx.blocking_recv().expect("read accepted writes under the original map lock");
+            let accepted = running
+                .accepted_stdin_write_ids
+                .blocking_lock()
+                .contains("blocked-write");
+            accepted_tx.send(accepted).expect("return the original accepted-write predicate");
+            release_rx.blocking_recv().expect("release the original map lock");
+        });
+        let custody = acquired_rx.await.expect("original map lock acquired");
         if let Some(code) = native_exit {
             process.exit(code);
         } else {
@@ -96,14 +114,10 @@ async fn blocked_stdin_reservation_wakes_for_retained_outcome() {
             writer_rx.try_recv(),
             Err(mpsc::error::TryRecvError::Empty)
         ));
-        assert!(
-            !running
-                .accepted_stdin_write_ids
-                .lock()
-                .await
-                .contains("blocked-write")
-        );
-        drop(processes);
+        read_tx.send(()).expect("request the original accepted-write predicate");
+        assert!(!accepted_rx.await.expect("original accepted-write predicate"));
+        release_tx.send(()).expect("release the original map lock");
+        lock_owner.await.expect("original map-lock owner completed");
         backend.shutdown().await;
     }
 }
@@ -112,17 +126,24 @@ async fn blocked_stdin_reservation_wakes_for_retained_outcome() {
 async fn actual_exit_fact_survives_cancelled_map_publication() {
     let backend = LocalProcess::default();
     let mut process = spawn_test_process(&backend, "cancelled-exit-publication").await;
-    let mut processes = backend.inner.processes.lock().await;
-    let Some(ProcessEntry::Running(running)) = processes.get_mut(&process.process_id) else {
-        panic!("fixture process must be running");
-    };
-    running.pipe_stdin = true;
-    running
-        .accepted_stdin_write_ids
-        .lock()
-        .await
-        .remember("already-accepted".to_string());
-    let custody = Arc::clone(&running.custody);
+    let inner = Arc::clone(&backend.inner);
+    let process_id = process.process_id.clone();
+    let (acquired_tx, acquired_rx) = oneshot::channel();
+    let (release_tx, release_rx) = oneshot::channel();
+    let lock_owner = tokio::task::spawn_blocking(move || {
+        let mut processes = inner.processes.blocking_lock();
+        let Some(ProcessEntry::Running(running)) = processes.get_mut(&process_id) else {
+            panic!("fixture process must be running");
+        };
+        running.pipe_stdin = true;
+        running
+            .accepted_stdin_write_ids
+            .blocking_lock()
+            .remember("already-accepted".to_string());
+        assert!(acquired_tx.send(Arc::clone(&running.custody)).is_ok());
+        release_rx.blocking_recv().expect("release the original map lock");
+    });
+    let custody = acquired_rx.await.expect("original map lock acquired");
     process.exit(47);
     timeout(Duration::from_secs(1), async {
         while custody.observed_exit_code().is_none() {
@@ -141,7 +162,8 @@ async fn actual_exit_fact_survives_cancelled_map_publication() {
     .await
     .expect("original exit publication observation budget");
     assert_eq!(custody.observed_exit_code(), Some(47));
-    drop(processes);
+    release_tx.send(()).expect("release the original map lock");
+    lock_owner.await.expect("original map-lock owner completed");
     let read = backend
         .exec_read(ReadParams {
             process_id: process.process_id.clone(),
