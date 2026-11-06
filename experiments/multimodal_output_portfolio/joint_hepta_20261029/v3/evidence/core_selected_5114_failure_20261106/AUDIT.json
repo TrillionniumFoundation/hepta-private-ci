@@ -1,0 +1,273 @@
+{
+  "scope": "Read-only audit of retained original GitHub log and artifact; no native replay.",
+  "source": {
+    "head": "9847916393fbd4b67f961a2398229ede0bbd0b91",
+    "tree": "8e7689e974ee5e299d4fb6b2b60e064fcebb2c4e",
+    "parent": "a79f86079cc2873f72f13075deca631190a6f10c"
+  },
+  "run_id": 42275718905,
+  "job_id": 128091426260,
+  "artifact_id": 13533454938,
+  "job_conclusion": "failure",
+  "stages": [
+    {
+      "line": 245,
+      "timestamp": "2026-11-06T19:12:27.7337889Z",
+      "stage": "preflight",
+      "status": "START",
+      "code": "BEGIN",
+      "exit_code": null
+    },
+    {
+      "line": 246,
+      "timestamp": "2026-11-06T19:12:28.3485205Z",
+      "stage": "preflight",
+      "status": "PASS",
+      "code": "OK",
+      "exit_code": null
+    },
+    {
+      "line": 668,
+      "timestamp": "2026-11-06T19:12:41.8395303Z",
+      "stage": "ready",
+      "status": "START",
+      "code": "BEGIN",
+      "exit_code": null
+    },
+    {
+      "line": 669,
+      "timestamp": "2026-11-06T19:12:41.9239954Z",
+      "stage": "ready",
+      "status": "PASS",
+      "code": "OK",
+      "exit_code": null
+    },
+    {
+      "line": 691,
+      "timestamp": "2026-11-06T19:12:42.2305096Z",
+      "stage": "python",
+      "status": "START",
+      "code": "BEGIN",
+      "exit_code": null
+    },
+    {
+      "line": 692,
+      "timestamp": "2026-11-06T19:12:42.2327999Z",
+      "stage": "python",
+      "status": "PASS",
+      "code": "OK",
+      "exit_code": 0
+    },
+    {
+      "line": 693,
+      "timestamp": "2026-11-06T19:12:42.2328694Z",
+      "stage": "rustc",
+      "status": "START",
+      "code": "BEGIN",
+      "exit_code": null
+    },
+    {
+      "line": 694,
+      "timestamp": "2026-11-06T19:12:43.6621854Z",
+      "stage": "rustc",
+      "status": "PASS",
+      "code": "OK",
+      "exit_code": 0
+    },
+    {
+      "line": 695,
+      "timestamp": "2026-11-06T19:12:43.6622295Z",
+      "stage": "cargo",
+      "status": "START",
+      "code": "BEGIN",
+      "exit_code": null
+    },
+    {
+      "line": 696,
+      "timestamp": "2026-11-06T19:12:43.6890446Z",
+      "stage": "cargo",
+      "status": "PASS",
+      "code": "OK",
+      "exit_code": 0
+    },
+    {
+      "line": 697,
+      "timestamp": "2026-11-06T19:12:43.6891103Z",
+      "stage": "just",
+      "status": "START",
+      "code": "BEGIN",
+      "exit_code": null
+    },
+    {
+      "line": 698,
+      "timestamp": "2026-11-06T19:12:43.6903463Z",
+      "stage": "just",
+      "status": "PASS",
+      "code": "OK",
+      "exit_code": 0
+    },
+    {
+      "line": 699,
+      "timestamp": "2026-11-06T19:12:43.6904033Z",
+      "stage": "nextest",
+      "status": "START",
+      "code": "BEGIN",
+      "exit_code": null
+    },
+    {
+      "line": 700,
+      "timestamp": "2026-11-06T19:12:43.7231745Z",
+      "stage": "nextest",
+      "status": "PASS",
+      "code": "OK",
+      "exit_code": 0
+    },
+    {
+      "line": 701,
+      "timestamp": "2026-11-06T19:12:43.7232272Z",
+      "stage": "list",
+      "status": "START",
+      "code": "BEGIN",
+      "exit_code": null
+    },
+    {
+      "line": 702,
+      "timestamp": "2026-11-06T19:27:33.9319129Z",
+      "stage": "list",
+      "status": "PASS",
+      "code": "OK",
+      "exit_code": 0
+    },
+    {
+      "line": 703,
+      "timestamp": "2026-11-06T19:27:33.9320084Z",
+      "stage": "run",
+      "status": "START",
+      "code": "BEGIN",
+      "exit_code": null
+    },
+    {
+      "line": 704,
+      "timestamp": "2026-11-06T19:27:37.8300747Z",
+      "stage": "run",
+      "status": "FAIL",
+      "code": "NONZERO_EXIT",
+      "exit_code": 100
+    },
+    {
+      "line": 705,
+      "timestamp": "2026-11-06T19:27:37.8302184Z",
+      "stage": "source_after",
+      "status": "START",
+      "code": "BEGIN",
+      "exit_code": null
+    },
+    {
+      "line": 706,
+      "timestamp": "2026-11-06T19:27:37.9103148Z",
+      "stage": "source_after",
+      "status": "PASS",
+      "code": "OK",
+      "exit_code": null
+    },
+    {
+      "line": 730,
+      "timestamp": "2026-11-06T19:27:38.1349510Z",
+      "stage": "collect",
+      "status": "START",
+      "code": "BEGIN",
+      "exit_code": null
+    },
+    {
+      "line": 731,
+      "timestamp": "2026-11-06T19:27:38.2065892Z",
+      "stage": "collect",
+      "status": "FAIL",
+      "code": "EVIDENCE_REJECTED",
+      "exit_code": null
+    }
+  ],
+  "exact_product_case_results_available": false,
+  "qualified_passes_from_this_run": 0,
+  "actual_case_execution_count": null,
+  "junit_in_retained_artifact": false,
+  "junit_identity_in_original_files": false,
+  "artifact_is_rejection_manifest_only": true,
+  "scanner_rejections": {
+    "logs/list.stderr.log": {
+      "identity": {
+        "bytes": 113059,
+        "sha256": "beb07d7c18c728c3b6f10e8a704100cdeaf8ca3078c0d11e38c67b02d69f8b11",
+        "git_blob": "96cfd66caf4485bd6e770b4019ea972c50b02bb0"
+      },
+      "rejection_code": "URI_UNRECOGNIZED_FRAGMENT"
+    },
+    "logs/run.stderr.log": {
+      "identity": {
+        "bytes": 34328,
+        "sha256": "ac2259de8d34c0caf48a5275f010b94c334e3a4d2acf92f60058e4d401a0360e",
+        "git_blob": "6a9727bca92a7188594292de6d0cc2587d71db58"
+      },
+      "rejection_code": "URI_UNRECOGNIZED_FRAGMENT"
+    }
+  },
+  "original_source_receipts_have_equal_reported_identity": true,
+  "unavailable_raw_source_receipts_independently_revalidated": false,
+  "case_results": [
+    {
+      "case": "suite::network_approval::background_network_approval_uses_active_turn_after_original_turn_completes",
+      "status": "UNDETERMINED",
+      "actual_attempts": null
+    },
+    {
+      "case": "suite::network_approval::guardian_receives_exact_trigger_for_single_network_request",
+      "status": "UNDETERMINED",
+      "actual_attempts": null
+    },
+    {
+      "case": "suite::retry_after::capture_tests::registration_anchor_drops_with_capture",
+      "status": "UNDETERMINED",
+      "actual_attempts": null
+    },
+    {
+      "case": "suite::retry_after::capture_tests::retry_capture_registration_is_thread_local",
+      "status": "UNDETERMINED",
+      "actual_attempts": null
+    },
+    {
+      "case": "suite::retry_after::compact_v2_rate_limit_message_without_retry_after_uses_server_advised_delay",
+      "status": "UNDETERMINED",
+      "actual_attempts": null
+    },
+    {
+      "case": "suite::retry_after::responses_http_overload_without_retry_after_exhausts_request_retries",
+      "status": "UNDETERMINED",
+      "actual_attempts": null
+    },
+    {
+      "case": "suite::terminal_event_cleanup::public_completion_survives_cancel_and_waits_for_real_idle_cleanup",
+      "status": "UNDETERMINED",
+      "actual_attempts": null
+    }
+  ],
+  "external_frozen_references": {
+    "round3_core_ci/native_selected_proposal/units/22b2_selected_native_executor_bound/candidate/.github/scripts/hepta-core-selected-spec.json": {
+      "bytes": 3415,
+      "sha256": "af9c3911ca3400810672a65ce2b60a2622b1c4857e3aa7c57e4998afb6bb8bdf",
+      "git_blob": "bda2010c4742ebaf1f08f8061b9c6374d6f50f06"
+    },
+    "round3_core_ci/native_selected_proposal/inputs/published_22b2_commit_api.json": {
+      "bytes": 1543,
+      "sha256": "ec2632611e8fb31931d5278b3189910a24dafb8c174d59ca617aebdf00e4fcf9",
+      "git_blob": "32bc75f7dc82c6afc43d0c840431f3a76d59236b"
+    }
+  },
+  "limits": [
+    "List exit zero and the later run stage establish a successful build/list phase, not per-case runtime success.",
+    "Run exit 100 does not identify a failed case or establish how many selected cases executed.",
+    "The manifest gives rejected stream identities but no URI contents; the rejecting URI is undetermined.",
+    "Absence of a collected JUnit file does not establish whether nextest generated one elsewhere.",
+    "No rejected bytes were recovered, encoded, re-uploaded, or used to relax the scanner.",
+    "The frozen 219-file Core 21/22 checkpoint remains unchanged and records its earlier pending state."
+  ]
+}

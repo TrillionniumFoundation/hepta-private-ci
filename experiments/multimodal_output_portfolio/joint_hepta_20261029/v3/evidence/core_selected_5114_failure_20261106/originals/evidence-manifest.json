@@ -1,0 +1,120 @@
+{
+  "validated": false,
+  "validation_failure": null,
+  "raw_logs_rewritten": false,
+  "raw_logs_uploaded": false,
+  "scanner_rejections": {
+    "logs/list.stderr.log": {
+      "identity": {
+        "bytes": 113059,
+        "sha256": "beb07d7c18c728c3b6f10e8a704100cdeaf8ca3078c0d11e38c67b02d69f8b11",
+        "git_blob": "96cfd66caf4485bd6e770b4019ea972c50b02bb0"
+      },
+      "rejection_code": "URI_UNRECOGNIZED_FRAGMENT"
+    },
+    "logs/run.stderr.log": {
+      "identity": {
+        "bytes": 34328,
+        "sha256": "ac2259de8d34c0caf48a5275f010b94c334e3a4d2acf92f60058e4d401a0360e",
+        "git_blob": "6a9727bca92a7188594292de6d0cc2587d71db58"
+      },
+      "rejection_code": "URI_UNRECOGNIZED_FRAGMENT"
+    }
+  },
+  "original_files": {
+    "logs/cargo.stderr.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "logs/cargo.stdout.log": {
+      "bytes": 36,
+      "sha256": "b6ef6807dd96d18b833474ad68e7a23a29e562a29c67afa71a59fb9a73df0068",
+      "git_blob": "fb70db83bf0766d865826728657e48541633faf4"
+    },
+    "logs/just.stderr.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "logs/just.stdout.log": {
+      "bytes": 12,
+      "sha256": "4e91345369534015fde1a3e2fed862ad938bcfda47b993eb02536f7b3f095b87",
+      "git_blob": "ed47f0841ee2955f1cbf9b1647695870567c694b"
+    },
+    "logs/list.stderr.log": {
+      "bytes": 113059,
+      "sha256": "beb07d7c18c728c3b6f10e8a704100cdeaf8ca3078c0d11e38c67b02d69f8b11",
+      "git_blob": "96cfd66caf4485bd6e770b4019ea972c50b02bb0"
+    },
+    "logs/list.stdout.log": {
+      "bytes": 227733,
+      "sha256": "0eb9614dccf888517b068f5c3d21ebd1a74dbfb5c783f1e8f852173ee08b1193",
+      "git_blob": "3212568d2daf1bf6b285f7078830ea3dcacd4af5"
+    },
+    "logs/nextest.stderr.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "logs/nextest.stdout.log": {
+      "bytes": 171,
+      "sha256": "13fae229b3f8485e0d02d80bf3c77e6cd38a2a2f1227d3e70a880cfb49365f61",
+      "git_blob": "8e25d8fd0cdbcc81a28a32166ce57e303afc5edb"
+    },
+    "logs/python.stderr.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "logs/python.stdout.log": {
+      "bytes": 15,
+      "sha256": "9dcfe8b0cd3c0e7dc319ce79c66bba0bef6c1928973103b72d03f57bf32bb412",
+      "git_blob": "70835103667d8c485037a6326ee4a438224fb07e"
+    },
+    "logs/run.stderr.log": {
+      "bytes": 34328,
+      "sha256": "ac2259de8d34c0caf48a5275f010b94c334e3a4d2acf92f60058e4d401a0360e",
+      "git_blob": "6a9727bca92a7188594292de6d0cc2587d71db58"
+    },
+    "logs/run.stdout.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "logs/rustc.stderr.log": {
+      "bytes": 211,
+      "sha256": "b903fc31acfaacfdcb5ad4b335552e95eee4199ec9f1e9b81f43e39b51f503a5",
+      "git_blob": "ade695fce93c9f6c140754fdec48cc44702de55e"
+    },
+    "logs/rustc.stdout.log": {
+      "bytes": 196,
+      "sha256": "f64c55ed9f210d80a9b248206104a47175faf5ec94a093e4ad132549209089fc",
+      "git_blob": "4b0852244672d9611e81367e960345736b255b8c"
+    },
+    "readiness.json": {
+      "bytes": 148,
+      "sha256": "a73c80e5f0c1c201aa08eadb5970d072829ded3c050aef4a9f334e26bd7cd53c",
+      "git_blob": "06824ef6aae3dae3b9922fdfc2bdb20d0b2bc36d"
+    },
+    "result.json": {
+      "bytes": 3785,
+      "sha256": "3456c2e17513255b1f847a4f04277da1cf2660d593c56437f836cd9983b795a9",
+      "git_blob": "080d82c88eaa77209cf4e112e5bb567054f9e4fb"
+    },
+    "source-after.json": {
+      "bytes": 2505,
+      "sha256": "6cbd974eb0db9bba87348325408890142e98742848fc11a950772ac9f80e39f6",
+      "git_blob": "2693d91829d9ad815125068d35bcc2e5a62822d8"
+    },
+    "source-before.json": {
+      "bytes": 2505,
+      "sha256": "6cbd974eb0db9bba87348325408890142e98742848fc11a950772ac9f80e39f6",
+      "git_blob": "2693d91829d9ad815125068d35bcc2e5a62822d8"
+    }
+  },
+  "raw_rejected_bytes_encoded_or_uploaded": false,
+  "final_passed_cases": null,
+  "total_native_attempts": null,
+  "cases_with_retries": null
+}

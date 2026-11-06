@@ -1,0 +1,814 @@
+﻿2026-11-06T19:12:01.5963342Z Current runner version: '2.338.2'
+2026-11-06T19:12:01.5988536Z ##[group]Runner Image Provisioner
+2026-11-06T19:12:01.5989447Z Hosted Compute Agent
+2026-11-06T19:12:01.5990089Z Version: 20261028.624
+2026-11-06T19:12:01.5990679Z Commit: 54898b74c23fde5556c9b3c3a2290865feef0dfe
+2026-11-06T19:12:01.5991437Z Build Date: 2026-10-28T21:51:42Z
+2026-11-06T19:12:01.5992136Z Worker ID: {848fc880-9111-44b9-bfee-cc3dc27001c7}
+2026-11-06T19:12:01.5992819Z Region: centralus
+2026-11-06T19:12:01.5993368Z Cloud: Azure
+2026-11-06T19:12:01.5993888Z ##[endgroup]
+2026-11-06T19:12:01.5995186Z ##[group]Operating System
+2026-11-06T19:12:01.5995848Z Ubuntu
+2026-11-06T19:12:01.5996406Z 24.04.5
+2026-11-06T19:12:01.5996959Z LTS
+2026-11-06T19:12:01.5997467Z ##[endgroup]
+2026-11-06T19:12:01.5998011Z ##[group]Runner Image
+2026-11-06T19:12:01.5998951Z Image: ubuntu-24.04
+2026-11-06T19:12:01.5999496Z Version: 20261101.360.1
+2026-11-06T19:12:01.6000764Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20261101.360/images/ubuntu/Ubuntu2404-Readme.md
+2026-11-06T19:12:01.6002210Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20261101.360
+2026-11-06T19:12:01.6003160Z ##[endgroup]
+2026-11-06T19:12:01.6004178Z ##[group]GITHUB_TOKEN Permissions
+2026-11-06T19:12:01.6006283Z Contents: read
+2026-11-06T19:12:01.6006810Z Metadata: read
+2026-11-06T19:12:01.6007365Z ##[endgroup]
+2026-11-06T19:12:01.6009751Z Secret source: Actions
+2026-11-06T19:12:01.6010682Z Cache mode: write
+2026-11-06T19:12:01.6011367Z Prepare workflow directory
+2026-11-06T19:12:01.6539125Z Prepare all required actions
+2026-11-06T19:12:01.6597304Z Getting action download info
+2026-11-06T19:12:01.9834337Z Download action repository 'actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd' (SHA:de0fac2e4500dabe0009e67214ff5f5447ce83dd)
+2026-11-06T19:12:02.1048710Z Download action repository 'actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405' (SHA:a309ff8b426b58ec0e2a45f0f869d46889d02405)
+2026-11-06T19:12:02.2630270Z Download action repository 'dtolnay/rust-toolchain@d86e0fa8f147d6539442c26a61ebba8becc19489' (SHA:d86e0fa8f147d6539442c26a61ebba8becc19489)
+2026-11-06T19:12:02.4468968Z Download action repository 'taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532' (SHA:44c6d64aa62cd779e873306675c7a58e86d6d532)
+2026-11-06T19:12:02.7725183Z Download action repository 'actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02' (SHA:ea165f8d65b6e75b540449e92b4886f43607fa02)
+2026-11-06T19:12:03.1184265Z Complete job name: core-selected
+2026-11-06T19:12:03.2105106Z ##[group]Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+2026-11-06T19:12:03.2107024Z with:
+2026-11-06T19:12:03.2108020Z   ref: 9847916393fbd4b67f961a2398229ede0bbd0b91
+2026-11-06T19:12:03.2109590Z   persist-credentials: false
+2026-11-06T19:12:03.2110763Z   fetch-depth: 3
+2026-11-06T19:12:03.2111919Z   repository: TrillionniumFoundation/hepta-private-ci
+2026-11-06T19:12:03.2121106Z   token: ***
+2026-11-06T19:12:03.2122062Z   ssh-strict: true
+2026-11-06T19:12:03.2123048Z   ssh-user: git
+2026-11-06T19:12:03.2124027Z   clean: true
+2026-11-06T19:12:03.2124991Z   sparse-checkout-cone-mode: true
+2026-11-06T19:12:03.2126151Z   fetch-tags: false
+2026-11-06T19:12:03.2127123Z   show-progress: true
+2026-11-06T19:12:03.2128296Z   lfs: false
+2026-11-06T19:12:03.2129241Z   submodules: false
+2026-11-06T19:12:03.2130214Z   set-safe-directory: true
+2026-11-06T19:12:03.2131549Z env:
+2026-11-06T19:12:03.2132633Z   CANDIDATE_SHA: 9847916393fbd4b67f961a2398229ede0bbd0b91
+2026-11-06T19:12:03.2134214Z   PYTHONDONTWRITEBYTECODE: 1
+2026-11-06T19:12:03.2135351Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-06T19:12:03.2136469Z ##[endgroup]
+2026-11-06T19:12:03.4716070Z Syncing repository: TrillionniumFoundation/hepta-private-ci
+2026-11-06T19:12:03.4720844Z ##[group]Getting Git version info
+2026-11-06T19:12:03.4723168Z Working directory is '/home/runner/work/hepta-private-ci/hepta-private-ci'
+2026-11-06T19:12:03.4726536Z [command]/usr/bin/git version
+2026-11-06T19:12:03.4787392Z git version 2.56.0
+2026-11-06T19:12:03.4815410Z ##[endgroup]
+2026-11-06T19:12:03.4831914Z Temporarily overriding HOME='/home/runner/work/_temp/759e3be1-6cfe-4643-8a06-1ac30f8ebcab' before making global git config changes
+2026-11-06T19:12:03.4834961Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-06T19:12:03.4838403Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-06T19:12:03.4889042Z Deleting the contents of '/home/runner/work/hepta-private-ci/hepta-private-ci'
+2026-11-06T19:12:03.4895967Z ##[group]Initializing the repository
+2026-11-06T19:12:03.4901552Z [command]/usr/bin/git init /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-06T19:12:03.5021046Z hint: Using 'master' as the name for the initial branch. This default branch name
+2026-11-06T19:12:03.5024531Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2026-11-06T19:12:03.5027774Z hint: to use in all of your new repositories, which will suppress this warning,
+2026-11-06T19:12:03.5030910Z hint: call:
+2026-11-06T19:12:03.5032694Z hint:
+2026-11-06T19:12:03.5034565Z hint: 	git config --global init.defaultBranch <name>
+2026-11-06T19:12:03.5036628Z hint:
+2026-11-06T19:12:03.5038678Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2026-11-06T19:12:03.5042258Z hint: 'development'. The just-created branch can be renamed via this command:
+2026-11-06T19:12:03.5044813Z hint:
+2026-11-06T19:12:03.5046652Z hint: 	git branch -m <name>
+2026-11-06T19:12:03.5049491Z hint:
+2026-11-06T19:12:03.5052391Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2026-11-06T19:12:03.5056329Z Initialized empty Git repository in /home/runner/work/hepta-private-ci/hepta-private-ci/.git/
+2026-11-06T19:12:03.5063625Z [command]/usr/bin/git remote add origin https://github.com/TrillionniumFoundation/hepta-private-ci
+2026-11-06T19:12:03.5095817Z ##[endgroup]
+2026-11-06T19:12:03.5098991Z ##[group]Disabling automatic garbage collection
+2026-11-06T19:12:03.5101088Z [command]/usr/bin/git config --local gc.auto 0
+2026-11-06T19:12:03.5135591Z ##[endgroup]
+2026-11-06T19:12:03.5137947Z ##[group]Setting up auth
+2026-11-06T19:12:03.5140018Z Removing SSH command configuration
+2026-11-06T19:12:03.5145685Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-06T19:12:03.5184925Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-06T19:12:03.5541580Z Removing HTTP extra header
+2026-11-06T19:12:03.5551268Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-06T19:12:03.5587021Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-06T19:12:03.5803471Z Removing includeIf entries pointing to credentials config files
+2026-11-06T19:12:03.5810291Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-06T19:12:03.5845891Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-06T19:12:03.6052954Z [command]/usr/bin/git config --file /home/runner/work/_temp/git-credentials-e55f142f-4059-478b-9929-f3564e0488d1.config http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-11-06T19:12:03.6095770Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/.git.path /home/runner/work/_temp/git-credentials-e55f142f-4059-478b-9929-f3564e0488d1.config
+2026-11-06T19:12:03.6131780Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/.git/worktrees/*.path /home/runner/work/_temp/git-credentials-e55f142f-4059-478b-9929-f3564e0488d1.config
+2026-11-06T19:12:03.6173842Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/.git.path /github/runner_temp/git-credentials-e55f142f-4059-478b-9929-f3564e0488d1.config
+2026-11-06T19:12:03.6214609Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/.git/worktrees/*.path /github/runner_temp/git-credentials-e55f142f-4059-478b-9929-f3564e0488d1.config
+2026-11-06T19:12:03.6247301Z ##[endgroup]
+2026-11-06T19:12:03.6249356Z ##[group]Fetching the repository
+2026-11-06T19:12:03.6258953Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=3 origin 9847916393fbd4b67f961a2398229ede0bbd0b91
+2026-11-06T19:12:15.4835800Z From https://github.com/TrillionniumFoundation/hepta-private-ci
+2026-11-06T19:12:15.4837089Z  * branch              9847916393fbd4b67f961a2398229ede0bbd0b91 -> FETCH_HEAD
+2026-11-06T19:12:15.4847847Z [command]/usr/bin/git rev-parse --verify --quiet 9847916393fbd4b67f961a2398229ede0bbd0b91^{object}
+2026-11-06T19:12:15.4877521Z 9847916393fbd4b67f961a2398229ede0bbd0b91
+2026-11-06T19:12:15.4889846Z ##[endgroup]
+2026-11-06T19:12:15.4890868Z ##[group]Determining the checkout info
+2026-11-06T19:12:15.4891673Z ##[endgroup]
+2026-11-06T19:12:15.4892154Z [command]/usr/bin/git sparse-checkout disable
+2026-11-06T19:12:15.4975296Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+2026-11-06T19:12:15.5009198Z ##[group]Checking out the ref
+2026-11-06T19:12:15.5013431Z [command]/usr/bin/git checkout --progress --force 9847916393fbd4b67f961a2398229ede0bbd0b91
+2026-11-06T19:12:17.5220747Z Updating files:  84% (12557/14920)
+2026-11-06T19:12:17.6369654Z Updating files:  84% (12666/14920)
+2026-11-06T19:12:17.6787314Z Updating files:  85% (12682/14920)
+2026-11-06T19:12:17.7008358Z Updating files:  86% (12832/14920)
+2026-11-06T19:12:17.7217175Z Updating files:  87% (12981/14920)
+2026-11-06T19:12:17.7319121Z Updating files:  88% (13130/14920)
+2026-11-06T19:12:17.7493581Z Updating files:  89% (13279/14920)
+2026-11-06T19:12:17.7731037Z Updating files:  90% (13428/14920)
+2026-11-06T19:12:17.7813438Z Updating files:  91% (13578/14920)
+2026-11-06T19:12:17.7939107Z Updating files:  92% (13727/14920)
+2026-11-06T19:12:17.8271369Z Updating files:  93% (13876/14920)
+2026-11-06T19:12:17.8522991Z Updating files:  94% (14025/14920)
+2026-11-06T19:12:17.8616020Z Updating files:  95% (14174/14920)
+2026-11-06T19:12:17.8724371Z Updating files:  96% (14324/14920)
+2026-11-06T19:12:17.8849593Z Updating files:  97% (14473/14920)
+2026-11-06T19:12:17.8928987Z Updating files:  98% (14622/14920)
+2026-11-06T19:12:17.9009034Z Updating files:  99% (14771/14920)
+2026-11-06T19:12:17.9165454Z Updating files: 100% (14920/14920)
+2026-11-06T19:12:17.9166106Z Updating files: 100% (14920/14920), done.
+2026-11-06T19:12:17.9166933Z Note: switching to '9847916393fbd4b67f961a2398229ede0bbd0b91'.
+2026-11-06T19:12:17.9167250Z 
+2026-11-06T19:12:17.9167520Z You are in 'detached HEAD' state. You can look around, make experimental
+2026-11-06T19:12:17.9168481Z changes and commit them, and you can discard any commits you make in this
+2026-11-06T19:12:17.9169015Z state without impacting any branches by switching back to a branch.
+2026-11-06T19:12:17.9169289Z 
+2026-11-06T19:12:17.9169540Z If you want to create a new branch to retain commits you create, you may
+2026-11-06T19:12:17.9170045Z do so (now or later) by using -c with the switch command. Example:
+2026-11-06T19:12:17.9170361Z 
+2026-11-06T19:12:17.9170531Z   git switch -c <new-branch-name>
+2026-11-06T19:12:17.9170784Z 
+2026-11-06T19:12:17.9170970Z Or undo this operation with:
+2026-11-06T19:12:17.9171150Z 
+2026-11-06T19:12:17.9171303Z   git switch -
+2026-11-06T19:12:17.9171452Z 
+2026-11-06T19:12:17.9171714Z Turn off this advice by setting config variable advice.detachedHead to false
+2026-11-06T19:12:17.9172030Z 
+2026-11-06T19:12:17.9172307Z HEAD is now at 98479163 test(core): use runner context at valid native workflow steps
+2026-11-06T19:12:17.9223331Z ##[endgroup]
+2026-11-06T19:12:17.9270776Z [command]/usr/bin/git log -1 --format=%H
+2026-11-06T19:12:17.9299084Z 9847916393fbd4b67f961a2398229ede0bbd0b91
+2026-11-06T19:12:17.9308236Z ##[group]Removing auth
+2026-11-06T19:12:17.9308808Z Removing SSH command configuration
+2026-11-06T19:12:17.9313330Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-06T19:12:17.9347041Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-06T19:12:17.9568814Z Removing HTTP extra header
+2026-11-06T19:12:17.9573740Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-06T19:12:17.9605645Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-06T19:12:17.9822860Z Removing includeIf entries pointing to credentials config files
+2026-11-06T19:12:17.9826639Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-06T19:12:17.9856219Z includeif.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/.git.path
+2026-11-06T19:12:17.9858368Z includeif.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/.git/worktrees/*.path
+2026-11-06T19:12:17.9859179Z includeif.gitdir:/github/workspace/.git.path
+2026-11-06T19:12:17.9859897Z includeif.gitdir:/github/workspace/.git/worktrees/*.path
+2026-11-06T19:12:17.9867422Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/.git.path
+2026-11-06T19:12:17.9890309Z /home/runner/work/_temp/git-credentials-e55f142f-4059-478b-9929-f3564e0488d1.config
+2026-11-06T19:12:17.9901545Z [command]/usr/bin/git config --local --unset includeif.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/.git.path /home/runner/work/_temp/git-credentials-e55f142f-4059-478b-9929-f3564e0488d1.config
+2026-11-06T19:12:17.9937926Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/.git/worktrees/*.path
+2026-11-06T19:12:17.9960157Z /home/runner/work/_temp/git-credentials-e55f142f-4059-478b-9929-f3564e0488d1.config
+2026-11-06T19:12:17.9976394Z [command]/usr/bin/git config --local --unset includeif.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/.git/worktrees/*.path /home/runner/work/_temp/git-credentials-e55f142f-4059-478b-9929-f3564e0488d1.config
+2026-11-06T19:12:18.0013551Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/github/workspace/.git.path
+2026-11-06T19:12:18.0035203Z /github/runner_temp/git-credentials-e55f142f-4059-478b-9929-f3564e0488d1.config
+2026-11-06T19:12:18.0042612Z [command]/usr/bin/git config --local --unset includeif.gitdir:/github/workspace/.git.path /github/runner_temp/git-credentials-e55f142f-4059-478b-9929-f3564e0488d1.config
+2026-11-06T19:12:18.0080278Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/github/workspace/.git/worktrees/*.path
+2026-11-06T19:12:18.0101939Z /github/runner_temp/git-credentials-e55f142f-4059-478b-9929-f3564e0488d1.config
+2026-11-06T19:12:18.0109457Z [command]/usr/bin/git config --local --unset includeif.gitdir:/github/workspace/.git/worktrees/*.path /github/runner_temp/git-credentials-e55f142f-4059-478b-9929-f3564e0488d1.config
+2026-11-06T19:12:18.0144930Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-06T19:12:18.0361768Z Removing credentials config '/home/runner/work/_temp/git-credentials-e55f142f-4059-478b-9929-f3564e0488d1.config'
+2026-11-06T19:12:18.0375209Z ##[endgroup]
+2026-11-06T19:12:18.0644012Z ##[group]Run actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+2026-11-06T19:12:18.0644487Z with:
+2026-11-06T19:12:18.0644839Z   python-version: 3.12.10
+2026-11-06T19:12:18.0645181Z   check-latest: false
+2026-11-06T19:12:18.0648026Z   token: ***
+2026-11-06T19:12:18.0648660Z   update-environment: true
+2026-11-06T19:12:18.0648989Z   allow-prereleases: false
+2026-11-06T19:12:18.0649341Z   freethreaded: false
+2026-11-06T19:12:18.0649639Z env:
+2026-11-06T19:12:18.0649993Z   CANDIDATE_SHA: 9847916393fbd4b67f961a2398229ede0bbd0b91
+2026-11-06T19:12:18.0650426Z   PYTHONDONTWRITEBYTECODE: 1
+2026-11-06T19:12:18.0650762Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-06T19:12:18.0651147Z ##[endgroup]
+2026-11-06T19:12:18.2055924Z ##[group]Installed versions
+2026-11-06T19:12:18.2090590Z Version 3.12.10 was not found in the local cache
+2026-11-06T19:12:19.1012565Z Version 3.12.10 is available for downloading
+2026-11-06T19:12:19.1014015Z Download from "https://github.com/actions/python-versions/releases/download/3.12.10-14343898437/python-3.12.10-linux-24.04-x64.tar.gz"
+2026-11-06T19:12:19.8065942Z Extract downloaded archive
+2026-11-06T19:12:19.8190840Z [command]/usr/bin/tar xz --warning=no-unknown-keyword --overwrite -C /home/runner/work/_temp/0554a30d-15f2-42ff-9498-250f645b307e -f /home/runner/work/_temp/047a1937-b07d-4d1f-aaec-0c0ec96ad71c
+2026-11-06T19:12:22.1074022Z Execute installation script
+2026-11-06T19:12:22.1175916Z Check if Python hostedtoolcache folder exist...
+2026-11-06T19:12:22.1181798Z Create Python 3.12.10 folder
+2026-11-06T19:12:22.1187475Z Copy Python binaries to hostedtoolcache folder
+2026-11-06T19:12:22.5803477Z Create additional symlinks (Required for the UsePythonVersion Azure Pipelines task and the setup-python GitHub Action)
+2026-11-06T19:12:22.5840452Z Upgrading pip...
+2026-11-06T19:12:24.7378770Z Looking in links: /tmp/tmpfnpuee12
+2026-11-06T19:12:24.7381961Z Requirement already satisfied: pip in /opt/hostedtoolcache/Python/3.12.10/x64/lib/python3.12/site-packages (25.0.1)
+2026-11-06T19:12:26.3566050Z Collecting pip
+2026-11-06T19:12:26.4373970Z Downloading pip-26.3-py3-none-any.whl.metadata (4.6 kB)
+2026-11-06T19:12:26.4591244Z Downloading pip-26.3-py3-none-any.whl (2.0 MB)
+2026-11-06T19:12:26.5502479Z ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 2.0/2.0 MB 34.5 MB/s eta 0:00:00
+2026-11-06T19:12:26.5503014Z 
+2026-11-06T19:12:26.5683316Z Installing collected packages: pip
+2026-11-06T19:12:26.5684626Z Attempting uninstall: pip
+2026-11-06T19:12:26.5701881Z Found existing installation: pip 25.0.1
+2026-11-06T19:12:26.5938873Z Uninstalling pip-25.0.1:
+2026-11-06T19:12:26.5985719Z Successfully uninstalled pip-25.0.1
+2026-11-06T19:12:27.4396231Z Successfully installed pip-26.3
+2026-11-06T19:12:27.5026286Z Create complete file
+2026-11-06T19:12:27.5062004Z Successfully set up CPython (3.12.10)
+2026-11-06T19:12:27.5064028Z ##[endgroup]
+2026-11-06T19:12:27.5245447Z ##[group]Run python -B .github/scripts/hepta_core_selected.py preflight
+2026-11-06T19:12:27.5246116Z [36;1mpython -B .github/scripts/hepta_core_selected.py preflight[0m
+2026-11-06T19:12:27.5267596Z shell: /usr/bin/bash -e {0}
+2026-11-06T19:12:27.5268351Z env:
+2026-11-06T19:12:27.5268834Z   CANDIDATE_SHA: 9847916393fbd4b67f961a2398229ede0bbd0b91
+2026-11-06T19:12:27.5269348Z   PYTHONDONTWRITEBYTECODE: 1
+2026-11-06T19:12:27.5269743Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-06T19:12:27.5270153Z   pythonLocation: /opt/hostedtoolcache/Python/3.12.10/x64
+2026-11-06T19:12:27.5270673Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.12.10/x64/lib/pkgconfig
+2026-11-06T19:12:27.5271275Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.10/x64
+2026-11-06T19:12:27.5271753Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.10/x64
+2026-11-06T19:12:27.5272218Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.10/x64
+2026-11-06T19:12:27.5272802Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.12.10/x64/lib
+2026-11-06T19:12:27.5273224Z   PROBE_RUNNER_CLASS: github-hosted
+2026-11-06T19:12:27.5273571Z   PROBE_RUNNER_OS: Linux
+2026-11-06T19:12:27.5274078Z   PROBE_RUNNER_ARCH: X64
+2026-11-06T19:12:27.5277690Z   EVIDENCE_GITHUB_TOKEN: ***
+2026-11-06T19:12:27.5278024Z ##[endgroup]
+2026-11-06T19:12:27.7337889Z CORE_SELECTED_DIAGNOSTIC preflight START BEGIN EXIT=null
+2026-11-06T19:12:28.3485205Z CORE_SELECTED_DIAGNOSTIC preflight PASS OK EXIT=null
+2026-11-06T19:12:28.3779372Z ##[group]Run dtolnay/rust-toolchain@d86e0fa8f147d6539442c26a61ebba8becc19489
+2026-11-06T19:12:28.3779899Z with:
+2026-11-06T19:12:28.3780284Z   components: rustfmt
+2026-11-06T19:12:28.3780601Z env:
+2026-11-06T19:12:28.3780944Z   CANDIDATE_SHA: 9847916393fbd4b67f961a2398229ede0bbd0b91
+2026-11-06T19:12:28.3781443Z   PYTHONDONTWRITEBYTECODE: 1
+2026-11-06T19:12:28.3781812Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-06T19:12:28.3782249Z   pythonLocation: /opt/hostedtoolcache/Python/3.12.10/x64
+2026-11-06T19:12:28.3782788Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.12.10/x64/lib/pkgconfig
+2026-11-06T19:12:28.3783311Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.10/x64
+2026-11-06T19:12:28.3783879Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.10/x64
+2026-11-06T19:12:28.3784354Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.10/x64
+2026-11-06T19:12:28.3784840Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.12.10/x64/lib
+2026-11-06T19:12:28.3785397Z ##[endgroup]
+2026-11-06T19:12:28.3861611Z ##[start-action display=Parse toolchain version;id=__dtolnay_rust-toolchain.parse]
+2026-11-06T19:12:28.3916705Z ##[group]Run if [[ -z $toolchain ]]; then
+2026-11-06T19:12:28.3917176Z [36;1mif [[ -z $toolchain ]]; then[0m
+2026-11-06T19:12:28.3917763Z [36;1m  # GitHub does not enforce `required: true` inputs itself. https://github.com/actions/runner/issues/1070[0m
+2026-11-06T19:12:28.3918533Z [36;1m  echo "'toolchain' is a required input" >&2[0m
+2026-11-06T19:12:28.3918909Z [36;1m  exit 1[0m
+2026-11-06T19:12:28.3919382Z [36;1melif [[ $toolchain =~ ^stable' '[0-9]+' '(year|month|week|day)s?' 'ago$ ]]; then[0m
+2026-11-06T19:12:28.3919845Z [36;1m  if [[ Linux == macOS ]]; then[0m
+2026-11-06T19:12:28.3920427Z [36;1m    echo "toolchain=1.$((($(date -v-$(sed 's/stable \([0-9]*\) \(.\).*/\1\2/' <<< $toolchain) +%s)/60/60/24-16569)/7/6))" >> $GITHUB_OUTPUT[0m
+2026-11-06T19:12:28.3920968Z [36;1m  else[0m
+2026-11-06T19:12:28.3921469Z [36;1m    echo "toolchain=1.$((($(date --date "${toolchain#stable }" +%s)/60/60/24-16569)/7/6))" >> $GITHUB_OUTPUT[0m
+2026-11-06T19:12:28.3921996Z [36;1m  fi[0m
+2026-11-06T19:12:28.3922365Z [36;1melif [[ $toolchain =~ ^stable' 'minus' '[0-9]+' 'releases?$ ]]; then[0m
+2026-11-06T19:12:28.3922966Z [36;1m  echo "toolchain=1.$((($(date +%s)/60/60/24-16569)/7/6-${toolchain//[^0-9]/}))" >> $GITHUB_OUTPUT[0m
+2026-11-06T19:12:28.3923459Z [36;1melif [[ $toolchain =~ ^1\.[0-9]+$ ]]; then[0m
+2026-11-06T19:12:28.3924016Z [36;1m  echo "toolchain=1.$((i=${toolchain#1.}, c=($(date +%s)/60/60/24-16569)/7/6, i+9*i*(10*i<=c)+90*i*(100*i<=c)))" >> $GITHUB_OUTPUT[0m
+2026-11-06T19:12:28.3924562Z [36;1melse[0m
+2026-11-06T19:12:28.3924848Z [36;1m  delimiter=EOF[0m
+2026-11-06T19:12:28.3925234Z [36;1m  while [[ $toolchain == *$delimiter* ]]; do delimiter+=_; done[0m
+2026-11-06T19:12:28.3925786Z [36;1m  printf 'toolchain<<%s\n%s\n%s\n' "$delimiter" "$toolchain" "$delimiter" >> $GITHUB_OUTPUT[0m
+2026-11-06T19:12:28.3926298Z [36;1mfi[0m
+2026-11-06T19:12:28.3942338Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-11-06T19:12:28.3942839Z env:
+2026-11-06T19:12:28.3943173Z   CANDIDATE_SHA: 9847916393fbd4b67f961a2398229ede0bbd0b91
+2026-11-06T19:12:28.3943555Z   PYTHONDONTWRITEBYTECODE: 1
+2026-11-06T19:12:28.3943939Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-06T19:12:28.3944329Z   pythonLocation: /opt/hostedtoolcache/Python/3.12.10/x64
+2026-11-06T19:12:28.3944889Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.12.10/x64/lib/pkgconfig
+2026-11-06T19:12:28.3945368Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.10/x64
+2026-11-06T19:12:28.3945789Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.10/x64
+2026-11-06T19:12:28.3946260Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.10/x64
+2026-11-06T19:12:28.3946695Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.12.10/x64/lib
+2026-11-06T19:12:28.3947084Z   toolchain: 1.96.0
+2026-11-06T19:12:28.3947406Z ##[endgroup]
+2026-11-06T19:12:28.4002666Z ##[end-action id=__dtolnay_rust-toolchain.parse;outcome=success;conclusion=success;duration_ms=13]
+2026-11-06T19:12:28.4005541Z ##[start-action display=Set $CARGO_HOME;id=__dtolnay_rust-toolchain.__run]
+2026-11-06T19:12:28.4031819Z ##[group]Run echo CARGO_HOME=${CARGO_HOME:-"$HOME/.cargo"} >> $GITHUB_ENV
+2026-11-06T19:12:28.4032425Z [36;1mecho CARGO_HOME=${CARGO_HOME:-"$HOME/.cargo"} >> $GITHUB_ENV[0m
+2026-11-06T19:12:28.4046648Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-11-06T19:12:28.4047065Z env:
+2026-11-06T19:12:28.4047875Z   CANDIDATE_SHA: 9847916393fbd4b67f961a2398229ede0bbd0b91
+2026-11-06T19:12:28.4048520Z   PYTHONDONTWRITEBYTECODE: 1
+2026-11-06T19:12:28.4048992Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-06T19:12:28.4049442Z   pythonLocation: /opt/hostedtoolcache/Python/3.12.10/x64
+2026-11-06T19:12:28.4049926Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.12.10/x64/lib/pkgconfig
+2026-11-06T19:12:28.4050490Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.10/x64
+2026-11-06T19:12:28.4050973Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.10/x64
+2026-11-06T19:12:28.4051407Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.10/x64
+2026-11-06T19:12:28.4051888Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.12.10/x64/lib
+2026-11-06T19:12:28.4052282Z ##[endgroup]
+2026-11-06T19:12:28.4097409Z ##[end-action id=__dtolnay_rust-toolchain.__run;outcome=success;conclusion=success;duration_ms=9]
+2026-11-06T19:12:28.4100415Z ##[start-action display=Install rustup if needed;id=__dtolnay_rust-toolchain.__run_2]
+2026-11-06T19:12:28.4130590Z ##[group]Run if ! command -v rustup &>/dev/null; then
+2026-11-06T19:12:28.4131060Z [36;1mif ! command -v rustup &>/dev/null; then[0m
+2026-11-06T19:12:28.4131957Z [36;1m  curl --proto '=https' --tlsv1.2 --retry 10 --retry-connrefused --location --silent --show-error --fail https://sh.rustup.rs | sh -s -- --default-toolchain none -y[0m
+2026-11-06T19:12:28.4132705Z [36;1m  echo "$CARGO_HOME/bin" >> $GITHUB_PATH[0m
+2026-11-06T19:12:28.4133071Z [36;1mfi[0m
+2026-11-06T19:12:28.4145662Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-11-06T19:12:28.4146123Z env:
+2026-11-06T19:12:28.4146496Z   CANDIDATE_SHA: 9847916393fbd4b67f961a2398229ede0bbd0b91
+2026-11-06T19:12:28.4146958Z   PYTHONDONTWRITEBYTECODE: 1
+2026-11-06T19:12:28.4147289Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-06T19:12:28.4147668Z   pythonLocation: /opt/hostedtoolcache/Python/3.12.10/x64
+2026-11-06T19:12:28.4148620Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.12.10/x64/lib/pkgconfig
+2026-11-06T19:12:28.4149136Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.10/x64
+2026-11-06T19:12:28.4149601Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.10/x64
+2026-11-06T19:12:28.4150054Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.10/x64
+2026-11-06T19:12:28.4150498Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.12.10/x64/lib
+2026-11-06T19:12:28.4150982Z   CARGO_HOME: /home/runner/.cargo
+2026-11-06T19:12:28.4151313Z ##[endgroup]
+2026-11-06T19:12:28.4194263Z ##[end-action id=__dtolnay_rust-toolchain.__run_2;outcome=success;conclusion=success;duration_ms=9]
+2026-11-06T19:12:28.4197013Z ##[start-action display=Install rustup if needed on windows;id=__dtolnay_rust-toolchain.__run_3]
+2026-11-06T19:12:28.4204257Z ##[end-action id=__dtolnay_rust-toolchain.__run_3;outcome=skipped;conclusion=skipped;duration_ms=0]
+2026-11-06T19:12:28.4218440Z ##[start-action display=rustup toolchain install 1.96.0;id=__dtolnay_rust-toolchain.__run_4]
+2026-11-06T19:12:28.4242675Z ##[group]Run set -f  # split targets and components on commas and whitespace, without glob expansion
+2026-11-06T19:12:28.4243853Z [36;1mset -f  # split targets and components on commas and whitespace, without glob expansion[0m
+2026-11-06T19:12:28.4244389Z [36;1mflags=()[0m
+2026-11-06T19:12:28.4244767Z [36;1mfor t in ${targets//,/ }; do flags+=(--target "$t"); done[0m
+2026-11-06T19:12:28.4245214Z [36;1mfor c in ${components//,/ }; do flags+=(--component "$c"); done[0m
+2026-11-06T19:12:28.4246045Z [36;1mif [[ $toolchain == nightly && -n $components ]]; then flags+=(--allow-downgrade); fi[0m
+2026-11-06T19:12:28.4246560Z [36;1mlog=$(mktemp)[0m
+2026-11-06T19:12:28.4246937Z [36;1mtrap 'rm -f "$log"' EXIT[0m
+2026-11-06T19:12:28.4247279Z [36;1mfor attempt in 1 2 3 4 5; do[0m
+2026-11-06T19:12:28.4247854Z [36;1m  if rustup toolchain install "$toolchain" "${flags[@]}" --profile minimal --no-self-update --force-non-host 2>&1 | tee "$log"; then[0m
+2026-11-06T19:12:28.4248694Z [36;1m    break[0m
+2026-11-06T19:12:28.4248984Z [36;1m  else[0m
+2026-11-06T19:12:28.4249302Z [36;1m    status=$?[0m
+2026-11-06T19:12:28.4249610Z [36;1m  fi[0m
+2026-11-06T19:12:28.4250002Z [36;1m  if [[ $attempt == 5 ]] || ! grep -Fq 'checksum failed for ' "$log" \[0m
+2026-11-06T19:12:28.4250610Z [36;1m      || ! grep -Fq 'this is likely due to an ongoing update of the official release server' "$log"; then[0m
+2026-11-06T19:12:28.4251241Z [36;1m    exit "$status"[0m
+2026-11-06T19:12:28.4251726Z [36;1m  fi[0m
+2026-11-06T19:12:28.4252236Z [36;1m  echo "Retrying rustup toolchain install in 30 seconds (retry $attempt of 4)" >&2[0m
+2026-11-06T19:12:28.4252706Z [36;1m  sleep 30[0m
+2026-11-06T19:12:28.4253033Z [36;1mdone[0m
+2026-11-06T19:12:28.4266474Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-11-06T19:12:28.4266900Z env:
+2026-11-06T19:12:28.4267313Z   CANDIDATE_SHA: 9847916393fbd4b67f961a2398229ede0bbd0b91
+2026-11-06T19:12:28.4267712Z   PYTHONDONTWRITEBYTECODE: 1
+2026-11-06T19:12:28.4268196Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-06T19:12:28.4268645Z   pythonLocation: /opt/hostedtoolcache/Python/3.12.10/x64
+2026-11-06T19:12:28.4269116Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.12.10/x64/lib/pkgconfig
+2026-11-06T19:12:28.4269607Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.10/x64
+2026-11-06T19:12:28.4270043Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.10/x64
+2026-11-06T19:12:28.4270512Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.10/x64
+2026-11-06T19:12:28.4271006Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.12.10/x64/lib
+2026-11-06T19:12:28.4271412Z   CARGO_HOME: /home/runner/.cargo
+2026-11-06T19:12:28.4271751Z   toolchain: 1.96.0
+2026-11-06T19:12:28.4272044Z   targets: 
+2026-11-06T19:12:28.4272309Z   components: rustfmt
+2026-11-06T19:12:28.4272671Z   RUSTUP_PERMIT_COPY_RENAME: 1
+2026-11-06T19:12:28.4272985Z ##[endgroup]
+2026-11-06T19:12:28.4422312Z info: syncing channel updates for 1.96.0-x86_64-unknown-linux-gnu
+2026-11-06T19:12:28.7083342Z info: latest update on 2026-05-28 for version 1.96.0 (ac68faa20 2026-05-25)
+2026-11-06T19:12:28.7085375Z info: downloading 4 components
+2026-11-06T19:12:38.2310806Z 
+2026-11-06T19:12:38.2385309Z   1.96.0-x86_64-unknown-linux-gnu installed - rustc 1.96.0 (ac68faa20 2026-05-25)
+2026-11-06T19:12:38.2385705Z 
+2026-11-06T19:12:38.2794281Z ##[end-action id=__dtolnay_rust-toolchain.__run_4;outcome=success;conclusion=success;duration_ms=9857]
+2026-11-06T19:12:38.2801632Z ##[start-action display=rustup default 1.96.0;id=__dtolnay_rust-toolchain.__run_5]
+2026-11-06T19:12:38.3090821Z ##[group]Run rustup default "$toolchain" --force-non-host
+2026-11-06T19:12:38.3091611Z [36;1mrustup default "$toolchain" --force-non-host[0m
+2026-11-06T19:12:38.3106918Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-11-06T19:12:38.3107365Z env:
+2026-11-06T19:12:38.3107709Z   CANDIDATE_SHA: 9847916393fbd4b67f961a2398229ede0bbd0b91
+2026-11-06T19:12:38.3108360Z   PYTHONDONTWRITEBYTECODE: 1
+2026-11-06T19:12:38.3108741Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-06T19:12:38.3110378Z   pythonLocation: /opt/hostedtoolcache/Python/3.12.10/x64
+2026-11-06T19:12:38.3110937Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.12.10/x64/lib/pkgconfig
+2026-11-06T19:12:38.3111401Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.10/x64
+2026-11-06T19:12:38.3111924Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.10/x64
+2026-11-06T19:12:38.3112393Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.10/x64
+2026-11-06T19:12:38.3113265Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.12.10/x64/lib
+2026-11-06T19:12:38.3113670Z   CARGO_HOME: /home/runner/.cargo
+2026-11-06T19:12:38.3113988Z   toolchain: 1.96.0
+2026-11-06T19:12:38.3114342Z ##[endgroup]
+2026-11-06T19:12:38.3201151Z info: using existing install for 1.96.0-x86_64-unknown-linux-gnu
+2026-11-06T19:12:38.3834466Z info: default toolchain set to 1.96.0-x86_64-unknown-linux-gnu
+2026-11-06T19:12:38.3849443Z 
+2026-11-06T19:12:38.3913389Z   1.96.0-x86_64-unknown-linux-gnu unchanged - rustc 1.96.0 (ac68faa20 2026-05-25)
+2026-11-06T19:12:38.3914244Z 
+2026-11-06T19:12:38.3930412Z ##[end-action id=__dtolnay_rust-toolchain.__run_5;outcome=success;conclusion=success;duration_ms=112]
+2026-11-06T19:12:38.3934955Z ##[start-action display=Create cachekey;id=__dtolnay_rust-toolchain.rustc-version]
+2026-11-06T19:12:38.3968734Z ##[group]Run DATE=$(rustc +"$toolchain" --version --verbose | sed -ne 's/^commit-date: \(20[0-9][0-9]\)-\([01][0-9]\)-\([0-3][0-9]\)$/\1\2\3/p')
+2026-11-06T19:12:38.3969904Z [36;1mDATE=$(rustc +"$toolchain" --version --verbose | sed -ne 's/^commit-date: \(20[0-9][0-9]\)-\([01][0-9]\)-\([0-3][0-9]\)$/\1\2\3/p')[0m
+2026-11-06T19:12:38.3971028Z [36;1mHASH=$(rustc +"$toolchain" --version --verbose | sed -ne 's/^commit-hash: //p')[0m
+2026-11-06T19:12:38.3971995Z [36;1mecho "cachekey=$(echo $DATE$HASH | head -c12)" >> $GITHUB_OUTPUT[0m
+2026-11-06T19:12:38.3987886Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-11-06T19:12:38.3988621Z env:
+2026-11-06T19:12:38.3988975Z   CANDIDATE_SHA: 9847916393fbd4b67f961a2398229ede0bbd0b91
+2026-11-06T19:12:38.3989510Z   PYTHONDONTWRITEBYTECODE: 1
+2026-11-06T19:12:38.3989861Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-06T19:12:38.3990289Z   pythonLocation: /opt/hostedtoolcache/Python/3.12.10/x64
+2026-11-06T19:12:38.3990773Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.12.10/x64/lib/pkgconfig
+2026-11-06T19:12:38.3991295Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.10/x64
+2026-11-06T19:12:38.3991808Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.10/x64
+2026-11-06T19:12:38.3992288Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.10/x64
+2026-11-06T19:12:38.3992751Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.12.10/x64/lib
+2026-11-06T19:12:38.3993224Z   CARGO_HOME: /home/runner/.cargo
+2026-11-06T19:12:38.3993566Z   toolchain: 1.96.0
+2026-11-06T19:12:38.3993898Z ##[endgroup]
+2026-11-06T19:12:38.4322942Z ##[end-action id=__dtolnay_rust-toolchain.rustc-version;outcome=success;conclusion=success;duration_ms=38]
+2026-11-06T19:12:38.4326028Z ##[start-action display=Disable incremental compilation;id=__dtolnay_rust-toolchain.__run_6]
+2026-11-06T19:12:38.4377844Z ##[group]Run if [ -z "${CARGO_INCREMENTAL+set}" ]; then
+2026-11-06T19:12:38.4378547Z [36;1mif [ -z "${CARGO_INCREMENTAL+set}" ]; then[0m
+2026-11-06T19:12:38.4378948Z [36;1m  echo CARGO_INCREMENTAL=0 >> $GITHUB_ENV[0m
+2026-11-06T19:12:38.4379886Z [36;1mfi[0m
+2026-11-06T19:12:38.4394933Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-11-06T19:12:38.4395383Z env:
+2026-11-06T19:12:38.4395740Z   CANDIDATE_SHA: 9847916393fbd4b67f961a2398229ede0bbd0b91
+2026-11-06T19:12:38.4396281Z   PYTHONDONTWRITEBYTECODE: 1
+2026-11-06T19:12:38.4396634Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-06T19:12:38.4397065Z   pythonLocation: /opt/hostedtoolcache/Python/3.12.10/x64
+2026-11-06T19:12:38.4397549Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.12.10/x64/lib/pkgconfig
+2026-11-06T19:12:38.4398023Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.10/x64
+2026-11-06T19:12:38.4398955Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.10/x64
+2026-11-06T19:12:38.4400156Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.10/x64
+2026-11-06T19:12:38.4400770Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.12.10/x64/lib
+2026-11-06T19:12:38.4401252Z   CARGO_HOME: /home/runner/.cargo
+2026-11-06T19:12:38.4401571Z ##[endgroup]
+2026-11-06T19:12:38.4451480Z ##[end-action id=__dtolnay_rust-toolchain.__run_6;outcome=success;conclusion=success;duration_ms=12]
+2026-11-06T19:12:38.4454620Z ##[start-action display=Enable colors in Cargo output;id=__dtolnay_rust-toolchain.__run_7]
+2026-11-06T19:12:38.4486725Z ##[group]Run if [ -z "${CARGO_TERM_COLOR+set}" ]; then
+2026-11-06T19:12:38.4487179Z [36;1mif [ -z "${CARGO_TERM_COLOR+set}" ]; then[0m
+2026-11-06T19:12:38.4487630Z [36;1m  echo CARGO_TERM_COLOR=always >> $GITHUB_ENV[0m
+2026-11-06T19:12:38.4488234Z [36;1mfi[0m
+2026-11-06T19:12:38.4501751Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-11-06T19:12:38.4502173Z env:
+2026-11-06T19:12:38.4502547Z   CANDIDATE_SHA: 9847916393fbd4b67f961a2398229ede0bbd0b91
+2026-11-06T19:12:38.4502989Z   PYTHONDONTWRITEBYTECODE: 1
+2026-11-06T19:12:38.4503330Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-06T19:12:38.4503744Z   pythonLocation: /opt/hostedtoolcache/Python/3.12.10/x64
+2026-11-06T19:12:38.4504268Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.12.10/x64/lib/pkgconfig
+2026-11-06T19:12:38.4504809Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.10/x64
+2026-11-06T19:12:38.4505329Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.10/x64
+2026-11-06T19:12:38.4505778Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.10/x64
+2026-11-06T19:12:38.4506247Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.12.10/x64/lib
+2026-11-06T19:12:38.4506650Z   CARGO_HOME: /home/runner/.cargo
+2026-11-06T19:12:38.4506979Z   CARGO_INCREMENTAL: 0
+2026-11-06T19:12:38.4507385Z ##[endgroup]
+2026-11-06T19:12:38.4580860Z ##[end-action id=__dtolnay_rust-toolchain.__run_7;outcome=success;conclusion=success;duration_ms=12]
+2026-11-06T19:12:38.4584830Z ##[start-action display=Enable Cargo sparse registry;id=__dtolnay_rust-toolchain.__run_8]
+2026-11-06T19:12:38.4619192Z ##[group]Run # implemented in 1.66, stabilized in 1.68, made default in 1.70
+2026-11-06T19:12:38.4620014Z [36;1m# implemented in 1.66, stabilized in 1.68, made default in 1.70[0m
+2026-11-06T19:12:38.4621156Z [36;1mif [ -z "${CARGO_REGISTRIES_CRATES_IO_PROTOCOL+set}" -o -f "/home/runner/work/_temp"/.implicit_cargo_registries_crates_io_protocol ]; then[0m
+2026-11-06T19:12:38.4622351Z [36;1m  if rustc +"$toolchain" --version --verbose | grep -q '^release: 1\.6[89]\.'; then[0m
+2026-11-06T19:12:38.4623439Z [36;1m    touch "/home/runner/work/_temp"/.implicit_cargo_registries_crates_io_protocol || true[0m
+2026-11-06T19:12:38.4624043Z [36;1m    echo CARGO_REGISTRIES_CRATES_IO_PROTOCOL=sparse >> $GITHUB_ENV[0m
+2026-11-06T19:12:38.4624622Z [36;1m  elif rustc +"$toolchain" --version --verbose | grep -q '^release: 1\.6[67]\.'; then[0m
+2026-11-06T19:12:38.4625224Z [36;1m    touch "/home/runner/work/_temp"/.implicit_cargo_registries_crates_io_protocol || true[0m
+2026-11-06T19:12:38.4625810Z [36;1m    echo CARGO_REGISTRIES_CRATES_IO_PROTOCOL=git >> $GITHUB_ENV[0m
+2026-11-06T19:12:38.4626230Z [36;1m  fi[0m
+2026-11-06T19:12:38.4626542Z [36;1mfi[0m
+2026-11-06T19:12:38.4641300Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-11-06T19:12:38.4642060Z env:
+2026-11-06T19:12:38.4642501Z   CANDIDATE_SHA: 9847916393fbd4b67f961a2398229ede0bbd0b91
+2026-11-06T19:12:38.4642948Z   PYTHONDONTWRITEBYTECODE: 1
+2026-11-06T19:12:38.4643378Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-06T19:12:38.4643795Z   pythonLocation: /opt/hostedtoolcache/Python/3.12.10/x64
+2026-11-06T19:12:38.4644315Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.12.10/x64/lib/pkgconfig
+2026-11-06T19:12:38.4644816Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.10/x64
+2026-11-06T19:12:38.4645276Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.10/x64
+2026-11-06T19:12:38.4645808Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.10/x64
+2026-11-06T19:12:38.4646400Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.12.10/x64/lib
+2026-11-06T19:12:38.4646846Z   CARGO_HOME: /home/runner/.cargo
+2026-11-06T19:12:38.4647272Z   CARGO_INCREMENTAL: 0
+2026-11-06T19:12:38.4647595Z   CARGO_TERM_COLOR: always
+2026-11-06T19:12:38.4647939Z   toolchain: 1.96.0
+2026-11-06T19:12:38.4648560Z ##[endgroup]
+2026-11-06T19:12:38.4961410Z ##[end-action id=__dtolnay_rust-toolchain.__run_8;outcome=success;conclusion=success;duration_ms=37]
+2026-11-06T19:12:38.4965547Z ##[start-action display=Work around spurious network errors in curl 8.0;id=__dtolnay_rust-toolchain.__run_9]
+2026-11-06T19:12:38.4989632Z ##[group]Run # https://rust-lang.zulipchat.com/#narrow/stream/246057-t-cargo/topic/timeout.20investigation
+2026-11-06T19:12:38.4990436Z [36;1m# https://rust-lang.zulipchat.com/#narrow/stream/246057-t-cargo/topic/timeout.20investigation[0m
+2026-11-06T19:12:38.4991063Z [36;1mif rustc +"$toolchain" --version --verbose | grep -q '^release: 1\.7[01]\.'; then[0m
+2026-11-06T19:12:38.4991640Z [36;1m  echo CARGO_HTTP_MULTIPLEXING=false >> $GITHUB_ENV[0m
+2026-11-06T19:12:38.4992019Z [36;1mfi[0m
+2026-11-06T19:12:38.5005616Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-11-06T19:12:38.5006111Z env:
+2026-11-06T19:12:38.5006471Z   CANDIDATE_SHA: 9847916393fbd4b67f961a2398229ede0bbd0b91
+2026-11-06T19:12:38.5006872Z   PYTHONDONTWRITEBYTECODE: 1
+2026-11-06T19:12:38.5007261Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-06T19:12:38.5007740Z   pythonLocation: /opt/hostedtoolcache/Python/3.12.10/x64
+2026-11-06T19:12:38.5008455Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.12.10/x64/lib/pkgconfig
+2026-11-06T19:12:38.5009010Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.10/x64
+2026-11-06T19:12:38.5009968Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.10/x64
+2026-11-06T19:12:38.5010468Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.10/x64
+2026-11-06T19:12:38.5010907Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.12.10/x64/lib
+2026-11-06T19:12:38.5011326Z   CARGO_HOME: /home/runner/.cargo
+2026-11-06T19:12:38.5011688Z   CARGO_INCREMENTAL: 0
+2026-11-06T19:12:38.5011992Z   CARGO_TERM_COLOR: always
+2026-11-06T19:12:38.5012306Z   toolchain: 1.96.0
+2026-11-06T19:12:38.5012612Z ##[endgroup]
+2026-11-06T19:12:38.5193359Z ##[end-action id=__dtolnay_rust-toolchain.__run_9;outcome=success;conclusion=success;duration_ms=22]
+2026-11-06T19:12:38.5198358Z ##[start-action display=rustc +1.96.0 --version --verbose;id=__dtolnay_rust-toolchain.__run_10]
+2026-11-06T19:12:38.5226434Z ##[group]Run rustc +"$toolchain" --version --verbose
+2026-11-06T19:12:38.5226891Z [36;1mrustc +"$toolchain" --version --verbose[0m
+2026-11-06T19:12:38.5242731Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-11-06T19:12:38.5243141Z env:
+2026-11-06T19:12:38.5243616Z   CANDIDATE_SHA: 9847916393fbd4b67f961a2398229ede0bbd0b91
+2026-11-06T19:12:38.5244042Z   PYTHONDONTWRITEBYTECODE: 1
+2026-11-06T19:12:38.5244432Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-06T19:12:38.5244869Z   pythonLocation: /opt/hostedtoolcache/Python/3.12.10/x64
+2026-11-06T19:12:38.5245338Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.12.10/x64/lib/pkgconfig
+2026-11-06T19:12:38.5245869Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.10/x64
+2026-11-06T19:12:38.5246324Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.10/x64
+2026-11-06T19:12:38.5246848Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.10/x64
+2026-11-06T19:12:38.5247327Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.12.10/x64/lib
+2026-11-06T19:12:38.5247730Z   CARGO_HOME: /home/runner/.cargo
+2026-11-06T19:12:38.5248530Z   CARGO_INCREMENTAL: 0
+2026-11-06T19:12:38.5248900Z   CARGO_TERM_COLOR: always
+2026-11-06T19:12:38.5249268Z   toolchain: 1.96.0
+2026-11-06T19:12:38.5249577Z ##[endgroup]
+2026-11-06T19:12:38.5416817Z rustc 1.96.0 (ac68faa20 2026-05-25)
+2026-11-06T19:12:38.5417261Z binary: rustc
+2026-11-06T19:12:38.5417639Z commit-hash: ac68faa20c58cbccd01ee7208bf3b6e93a7d7f96
+2026-11-06T19:12:38.5418231Z commit-date: 2026-05-25
+2026-11-06T19:12:38.5418686Z host: x86_64-unknown-linux-gnu
+2026-11-06T19:12:38.5419116Z release: 1.96.0
+2026-11-06T19:12:38.5419494Z LLVM version: 22.1.2
+2026-11-06T19:12:38.5435304Z ##[end-action id=__dtolnay_rust-toolchain.__run_10;outcome=success;conclusion=success;duration_ms=23]
+2026-11-06T19:12:38.5551091Z ##[group]Run taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+2026-11-06T19:12:38.5551886Z with:
+2026-11-06T19:12:38.5552258Z   tool: just@1.51.0,nextest@0.9.103
+2026-11-06T19:12:38.5552788Z   checksum: true
+2026-11-06T19:12:38.5553104Z   fallback: cargo-binstall
+2026-11-06T19:12:38.5553438Z env:
+2026-11-06T19:12:38.5553823Z   CANDIDATE_SHA: 9847916393fbd4b67f961a2398229ede0bbd0b91
+2026-11-06T19:12:38.5554253Z   PYTHONDONTWRITEBYTECODE: 1
+2026-11-06T19:12:38.5717053Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-06T19:12:38.5717596Z   pythonLocation: /opt/hostedtoolcache/Python/3.12.10/x64
+2026-11-06T19:12:38.5717995Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.12.10/x64/lib/pkgconfig
+2026-11-06T19:12:38.5718623Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.10/x64
+2026-11-06T19:12:38.5719157Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.10/x64
+2026-11-06T19:12:38.5719497Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.10/x64
+2026-11-06T19:12:38.5720102Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.12.10/x64/lib
+2026-11-06T19:12:38.5720529Z   CARGO_HOME: /home/runner/.cargo
+2026-11-06T19:12:38.5720909Z   CARGO_INCREMENTAL: 0
+2026-11-06T19:12:38.5721221Z   CARGO_TERM_COLOR: always
+2026-11-06T19:12:38.5721517Z ##[endgroup]
+2026-11-06T19:12:38.5726155Z ##[start-action display=Run set -eu;id=__taiki-e_install-action.__run]
+2026-11-06T19:12:38.5756263Z ##[group]Run set -eu
+2026-11-06T19:12:38.5756577Z [36;1mset -eu[0m
+2026-11-06T19:12:38.5756811Z [36;1mif ! command -v bash >/dev/null; then[0m
+2026-11-06T19:12:38.5757138Z [36;1m  if grep -Eq '^ID=alpine' /etc/os-release; then[0m
+2026-11-06T19:12:38.5757551Z [36;1m    printf '::group::Install packages required for install-action (bash)\n'[0m
+2026-11-06T19:12:38.5757949Z [36;1m    # NB: sync with apk_install in main.sh[0m
+2026-11-06T19:12:38.5758499Z [36;1m    if command -v sudo >/dev/null; then[0m
+2026-11-06T19:12:38.5758919Z [36;1m      sudo apk --no-cache add bash[0m
+2026-11-06T19:12:38.5759440Z [36;1m    elif command -v doas >/dev/null; then[0m
+2026-11-06T19:12:38.5759831Z [36;1m      doas apk --no-cache add bash[0m
+2026-11-06T19:12:38.5760172Z [36;1m    else[0m
+2026-11-06T19:12:38.5760503Z [36;1m      apk --no-cache add bash[0m
+2026-11-06T19:12:38.5760884Z [36;1m    fi[0m
+2026-11-06T19:12:38.5761181Z [36;1m    printf '::endgroup::\n'[0m
+2026-11-06T19:12:38.5761497Z [36;1m  else[0m
+2026-11-06T19:12:38.5761837Z [36;1m    printf '::error::install-action requires bash\n'[0m
+2026-11-06T19:12:38.5762251Z [36;1m    exit 1[0m
+2026-11-06T19:12:38.5762518Z [36;1m  fi[0m
+2026-11-06T19:12:38.5762791Z [36;1mfi[0m
+2026-11-06T19:12:38.5914841Z shell: /usr/bin/sh -e {0}
+2026-11-06T19:12:38.5915142Z env:
+2026-11-06T19:12:38.5915415Z   CANDIDATE_SHA: 9847916393fbd4b67f961a2398229ede0bbd0b91
+2026-11-06T19:12:38.5915768Z   PYTHONDONTWRITEBYTECODE: 1
+2026-11-06T19:12:38.5916023Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-06T19:12:38.5916360Z   pythonLocation: /opt/hostedtoolcache/Python/3.12.10/x64
+2026-11-06T19:12:38.5916763Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.12.10/x64/lib/pkgconfig
+2026-11-06T19:12:38.5917170Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.10/x64
+2026-11-06T19:12:38.5917527Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.10/x64
+2026-11-06T19:12:38.5917875Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.10/x64
+2026-11-06T19:12:38.5918437Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.12.10/x64/lib
+2026-11-06T19:12:38.5918777Z   CARGO_HOME: /home/runner/.cargo
+2026-11-06T19:12:38.5919023Z   CARGO_INCREMENTAL: 0
+2026-11-06T19:12:38.5919252Z   CARGO_TERM_COLOR: always
+2026-11-06T19:12:38.5919481Z ##[endgroup]
+2026-11-06T19:12:38.6004996Z ##[end-action id=__taiki-e_install-action.__run;outcome=success;conclusion=success;duration_ms=27]
+2026-11-06T19:12:38.6009422Z ##[start-action display=Run bash --noprofile --norc "${GITHUB_ACTION_PATH:?}/main.sh";id=__taiki-e_install-action.__run_2]
+2026-11-06T19:12:38.6317292Z ##[group]Run bash --noprofile --norc "${GITHUB_ACTION_PATH:?}/main.sh"
+2026-11-06T19:12:38.6317774Z [36;1mbash --noprofile --norc "${GITHUB_ACTION_PATH:?}/main.sh"[0m
+2026-11-06T19:12:38.6332479Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-11-06T19:12:38.6332800Z env:
+2026-11-06T19:12:38.6333168Z   CANDIDATE_SHA: 9847916393fbd4b67f961a2398229ede0bbd0b91
+2026-11-06T19:12:38.6333492Z   PYTHONDONTWRITEBYTECODE: 1
+2026-11-06T19:12:38.6333757Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-06T19:12:38.6334070Z   pythonLocation: /opt/hostedtoolcache/Python/3.12.10/x64
+2026-11-06T19:12:38.6334469Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.12.10/x64/lib/pkgconfig
+2026-11-06T19:12:38.6334863Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.10/x64
+2026-11-06T19:12:38.6335217Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.10/x64
+2026-11-06T19:12:38.6335568Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.10/x64
+2026-11-06T19:12:38.6335923Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.12.10/x64/lib
+2026-11-06T19:12:38.6336252Z   CARGO_HOME: /home/runner/.cargo
+2026-11-06T19:12:38.6336509Z   CARGO_INCREMENTAL: 0
+2026-11-06T19:12:38.6336738Z   CARGO_TERM_COLOR: always
+2026-11-06T19:12:38.6336983Z   INPUT_TOOL: just@1.51.0,nextest@0.9.103
+2026-11-06T19:12:38.6337247Z   INPUT_CHECKSUM: true
+2026-11-06T19:12:38.6337477Z   INPUT_FALLBACK: cargo-binstall
+2026-11-06T19:12:38.6340728Z   DEFAULT_GITHUB_TOKEN: ***
+2026-11-06T19:12:38.6341123Z   ACTION_USER_AGENT: taiki-e/install-action (44c6d64aa62cd779e873306675c7a58e86d6d532)
+2026-11-06T19:12:38.6341510Z ##[endgroup]
+2026-11-06T19:12:38.6712198Z info: host platform: x86_64_linux
+2026-11-06T19:12:38.6812668Z ##[warning]just@1.51.0 for 'x86_64_linux' is not supported; fallback to cargo-binstall
+2026-11-06T19:12:38.7090452Z info: installing cargo-nextest@0.9.103
+2026-11-06T19:12:38.7275690Z info: downloading https://github.com/nextest-rs/nextest/releases/download/cargo-nextest-0.9.103/cargo-nextest-0.9.103-x86_64-unknown-linux-gnu.tar.gz
+2026-11-06T19:12:39.1552623Z info: verifying sha256 checksum for cargo-nextest-0.9.103-x86_64-unknown-linux-gnu.tar.gz
+2026-11-06T19:12:39.3553765Z info: cargo-nextest installed at /home/runner/.cargo/bin/cargo-nextest
+2026-11-06T19:12:39.3556426Z + cargo-nextest nextest --version
+2026-11-06T19:12:39.3574653Z cargo-nextest 0.9.103 (d2e7b879f 2025-08-25)
+2026-11-06T19:12:39.3575085Z release: 0.9.103
+2026-11-06T19:12:39.3575451Z commit-hash: d2e7b879fb79975e8b47a8e3ce569b651e6381c0
+2026-11-06T19:12:39.3576043Z commit-date: 2025-08-25
+2026-11-06T19:12:39.3576291Z host: x86_64-unknown-linux-gnu
+2026-11-06T19:12:39.3577103Z 
+2026-11-06T19:12:39.3579760Z info: install-action does not support just@1.51.0; fallback to cargo-binstall
+2026-11-06T19:12:39.3623203Z info: installing cargo-binstall@latest (1.15.11)
+2026-11-06T19:12:39.3942311Z info: downloading https://github.com/cargo-bins/cargo-binstall/releases/download/v1.15.11/cargo-binstall-x86_64-unknown-linux-musl.tgz
+2026-11-06T19:12:39.7807303Z info: verifying sha256 checksum for cargo-binstall-x86_64-unknown-linux-musl.tgz
+2026-11-06T19:12:39.9237574Z info: cargo-binstall installed at /home/runner/.cargo/bin/cargo-binstall
+2026-11-06T19:12:39.9240857Z + cargo-binstall binstall -V
+2026-11-06T19:12:39.9252305Z 1.15.11
+2026-11-06T19:12:39.9348591Z  INFO resolve: Resolving package: 'just@=1.51.0'
+2026-11-06T19:12:41.6255576Z  WARN The package just v1.51.0 (x86_64-unknown-linux-musl) has been downloaded from github.com
+2026-11-06T19:12:41.6256123Z  INFO This will install the following binaries:
+2026-11-06T19:12:41.6256477Z  INFO   - just => /home/runner/.cargo/bin/just
+2026-11-06T19:12:41.6256926Z  INFO Installing binaries...
+2026-11-06T19:12:41.6270538Z  INFO Done in 1.700444144s
+2026-11-06T19:12:41.6288824Z ##[end-action id=__taiki-e_install-action.__run_2;outcome=success;conclusion=success;duration_ms=3027]
+2026-11-06T19:12:41.6342188Z ##[group]Run python -B .github/scripts/hepta_core_selected.py ready
+2026-11-06T19:12:41.6342650Z [36;1mpython -B .github/scripts/hepta_core_selected.py ready[0m
+2026-11-06T19:12:41.6356505Z shell: /usr/bin/bash -e {0}
+2026-11-06T19:12:41.6356759Z env:
+2026-11-06T19:12:41.6357245Z   CANDIDATE_SHA: 9847916393fbd4b67f961a2398229ede0bbd0b91
+2026-11-06T19:12:41.6357598Z   PYTHONDONTWRITEBYTECODE: 1
+2026-11-06T19:12:41.6357858Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-06T19:12:41.6358775Z   pythonLocation: /opt/hostedtoolcache/Python/3.12.10/x64
+2026-11-06T19:12:41.6359194Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.12.10/x64/lib/pkgconfig
+2026-11-06T19:12:41.6359600Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.10/x64
+2026-11-06T19:12:41.6359967Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.10/x64
+2026-11-06T19:12:41.6360334Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.10/x64
+2026-11-06T19:12:41.6360731Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.12.10/x64/lib
+2026-11-06T19:12:41.6361060Z   CARGO_HOME: /home/runner/.cargo
+2026-11-06T19:12:41.6361308Z   CARGO_INCREMENTAL: 0
+2026-11-06T19:12:41.6361530Z   CARGO_TERM_COLOR: always
+2026-11-06T19:12:41.6361772Z   PROBE_RUNNER_CLASS: github-hosted
+2026-11-06T19:12:41.6362024Z   PROBE_RUNNER_OS: Linux
+2026-11-06T19:12:41.6362255Z   PROBE_RUNNER_ARCH: X64
+2026-11-06T19:12:41.6362587Z   PROBE_PRIVATE_DIR: /home/runner/work/_temp/hepta-core-selected.pxmqyqk0
+2026-11-06T19:12:41.6365297Z   EVIDENCE_GITHUB_TOKEN: ***
+2026-11-06T19:12:41.6365528Z ##[endgroup]
+2026-11-06T19:12:41.8395303Z CORE_SELECTED_DIAGNOSTIC ready START BEGIN EXIT=null
+2026-11-06T19:12:41.9239954Z CORE_SELECTED_DIAGNOSTIC ready PASS OK EXIT=null
+2026-11-06T19:12:41.9357120Z ##[group]Run python -B .github/scripts/hepta_core_selected.py run
+2026-11-06T19:12:41.9357567Z [36;1mpython -B .github/scripts/hepta_core_selected.py run[0m
+2026-11-06T19:12:41.9371291Z shell: /usr/bin/bash -e {0}
+2026-11-06T19:12:41.9371539Z env:
+2026-11-06T19:12:41.9371795Z   CANDIDATE_SHA: 9847916393fbd4b67f961a2398229ede0bbd0b91
+2026-11-06T19:12:41.9372154Z   PYTHONDONTWRITEBYTECODE: 1
+2026-11-06T19:12:41.9372421Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-06T19:12:41.9372731Z   pythonLocation: /opt/hostedtoolcache/Python/3.12.10/x64
+2026-11-06T19:12:41.9373133Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.12.10/x64/lib/pkgconfig
+2026-11-06T19:12:41.9374065Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.10/x64
+2026-11-06T19:12:41.9374426Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.10/x64
+2026-11-06T19:12:41.9374780Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.10/x64
+2026-11-06T19:12:41.9375182Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.12.10/x64/lib
+2026-11-06T19:12:41.9375495Z   CARGO_HOME: /home/runner/.cargo
+2026-11-06T19:12:41.9375738Z   CARGO_INCREMENTAL: 0
+2026-11-06T19:12:41.9375958Z   CARGO_TERM_COLOR: always
+2026-11-06T19:12:41.9376192Z   PROBE_RUNNER_CLASS: github-hosted
+2026-11-06T19:12:41.9376437Z   PROBE_RUNNER_OS: Linux
+2026-11-06T19:12:41.9376652Z   PROBE_RUNNER_ARCH: X64
+2026-11-06T19:12:41.9376964Z   PROBE_PRIVATE_DIR: /home/runner/work/_temp/hepta-core-selected.pxmqyqk0
+2026-11-06T19:12:41.9377304Z ##[endgroup]
+2026-11-06T19:12:42.2305096Z CORE_SELECTED_DIAGNOSTIC python START BEGIN EXIT=null
+2026-11-06T19:12:42.2327999Z CORE_SELECTED_DIAGNOSTIC python PASS OK EXIT=0
+2026-11-06T19:12:42.2328694Z CORE_SELECTED_DIAGNOSTIC rustc START BEGIN EXIT=null
+2026-11-06T19:12:43.6621854Z CORE_SELECTED_DIAGNOSTIC rustc PASS OK EXIT=0
+2026-11-06T19:12:43.6622295Z CORE_SELECTED_DIAGNOSTIC cargo START BEGIN EXIT=null
+2026-11-06T19:12:43.6890446Z CORE_SELECTED_DIAGNOSTIC cargo PASS OK EXIT=0
+2026-11-06T19:12:43.6891103Z CORE_SELECTED_DIAGNOSTIC just START BEGIN EXIT=null
+2026-11-06T19:12:43.6903463Z CORE_SELECTED_DIAGNOSTIC just PASS OK EXIT=0
+2026-11-06T19:12:43.6904033Z CORE_SELECTED_DIAGNOSTIC nextest START BEGIN EXIT=null
+2026-11-06T19:12:43.7231745Z CORE_SELECTED_DIAGNOSTIC nextest PASS OK EXIT=0
+2026-11-06T19:12:43.7232272Z CORE_SELECTED_DIAGNOSTIC list START BEGIN EXIT=null
+2026-11-06T19:27:33.9319129Z CORE_SELECTED_DIAGNOSTIC list PASS OK EXIT=0
+2026-11-06T19:27:33.9320084Z CORE_SELECTED_DIAGNOSTIC run START BEGIN EXIT=null
+2026-11-06T19:27:37.8300747Z CORE_SELECTED_DIAGNOSTIC run FAIL NONZERO_EXIT EXIT=100
+2026-11-06T19:27:37.8302184Z CORE_SELECTED_DIAGNOSTIC source_after START BEGIN EXIT=null
+2026-11-06T19:27:37.9103148Z CORE_SELECTED_DIAGNOSTIC source_after PASS OK EXIT=null
+2026-11-06T19:27:37.9201661Z ##[error]Process completed with exit code 1.
+2026-11-06T19:27:37.9241206Z ##[group]Run python -B .github/scripts/hepta_core_selected.py collect
+2026-11-06T19:27:37.9241670Z [36;1mpython -B .github/scripts/hepta_core_selected.py collect[0m
+2026-11-06T19:27:37.9255123Z shell: /usr/bin/bash -e {0}
+2026-11-06T19:27:37.9255364Z env:
+2026-11-06T19:27:37.9255610Z   CANDIDATE_SHA: 9847916393fbd4b67f961a2398229ede0bbd0b91
+2026-11-06T19:27:37.9255960Z   PYTHONDONTWRITEBYTECODE: 1
+2026-11-06T19:27:37.9256211Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-06T19:27:37.9256514Z   pythonLocation: /opt/hostedtoolcache/Python/3.12.10/x64
+2026-11-06T19:27:37.9256894Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.12.10/x64/lib/pkgconfig
+2026-11-06T19:27:37.9257329Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.10/x64
+2026-11-06T19:27:37.9257695Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.10/x64
+2026-11-06T19:27:37.9258177Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.10/x64
+2026-11-06T19:27:37.9258664Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.12.10/x64/lib
+2026-11-06T19:27:37.9258978Z   CARGO_HOME: /home/runner/.cargo
+2026-11-06T19:27:37.9259222Z   CARGO_INCREMENTAL: 0
+2026-11-06T19:27:37.9259433Z   CARGO_TERM_COLOR: always
+2026-11-06T19:27:37.9259667Z   PROBE_RUNNER_CLASS: github-hosted
+2026-11-06T19:27:37.9259911Z   PROBE_RUNNER_OS: Linux
+2026-11-06T19:27:37.9260127Z   PROBE_RUNNER_ARCH: X64
+2026-11-06T19:27:37.9260435Z   PROBE_PRIVATE_DIR: /home/runner/work/_temp/hepta-core-selected.pxmqyqk0
+2026-11-06T19:27:37.9263175Z   EVIDENCE_GITHUB_TOKEN: ***
+2026-11-06T19:27:37.9263407Z ##[endgroup]
+2026-11-06T19:27:38.1349510Z CORE_SELECTED_DIAGNOSTIC collect START BEGIN EXIT=null
+2026-11-06T19:27:38.2065892Z CORE_SELECTED_DIAGNOSTIC collect FAIL EVIDENCE_REJECTED EXIT=null
+2026-11-06T19:27:38.2207311Z ##[group]Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+2026-11-06T19:27:38.2207741Z with:
+2026-11-06T19:27:38.2207977Z   name: core-selected-42275718905-1
+2026-11-06T19:27:38.2208687Z   path: /home/runner/work/_temp/hepta-core-selected.pxmqyqk0/public
+2026-11-06T19:27:38.2209064Z   if-no-files-found: error
+2026-11-06T19:27:38.2209310Z   retention-days: 7
+2026-11-06T19:27:38.2209533Z   compression-level: 6
+2026-11-06T19:27:38.2209755Z   overwrite: false
+2026-11-06T19:27:38.2209979Z   include-hidden-files: false
+2026-11-06T19:27:38.2210216Z env:
+2026-11-06T19:27:38.2210468Z   CANDIDATE_SHA: 9847916393fbd4b67f961a2398229ede0bbd0b91
+2026-11-06T19:27:38.2210795Z   PYTHONDONTWRITEBYTECODE: 1
+2026-11-06T19:27:38.2211058Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-06T19:27:38.2211387Z   pythonLocation: /opt/hostedtoolcache/Python/3.12.10/x64
+2026-11-06T19:27:38.2211804Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.12.10/x64/lib/pkgconfig
+2026-11-06T19:27:38.2212260Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.10/x64
+2026-11-06T19:27:38.2212655Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.10/x64
+2026-11-06T19:27:38.2213031Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.10/x64
+2026-11-06T19:27:38.2213410Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.12.10/x64/lib
+2026-11-06T19:27:38.2213756Z   CARGO_HOME: /home/runner/.cargo
+2026-11-06T19:27:38.2214018Z   CARGO_INCREMENTAL: 0
+2026-11-06T19:27:38.2214255Z   CARGO_TERM_COLOR: always
+2026-11-06T19:27:38.2214491Z ##[endgroup]
+2026-11-06T19:27:38.3937783Z (node:20095) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-11-06T19:27:38.3939315Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-11-06T19:27:38.4040821Z With the provided path, there will be 1 file uploaded
+2026-11-06T19:27:38.4041973Z Artifact name is valid!
+2026-11-06T19:27:38.4042335Z Root directory input is valid!
+2026-11-06T19:27:38.7098313Z Beginning upload of artifact content to blob storage
+2026-11-06T19:27:38.7282996Z (node:20095) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+2026-11-06T19:27:38.8542137Z Uploaded bytes 1498
+2026-11-06T19:27:38.8920425Z Finished uploading artifact content to blob storage!
+2026-11-06T19:27:38.8921156Z SHA256 digest of uploaded artifact zip is 63a69674b2c243af5dbf88655039f5ad0d61a47995492b1e0dcf70aec7f64440
+2026-11-06T19:27:38.8922738Z Finalizing artifact upload
+2026-11-06T19:27:39.3313855Z Artifact core-selected-42275718905-1.zip successfully finalized. Artifact ID 13533454938
+2026-11-06T19:27:39.3315059Z Artifact core-selected-42275718905-1 has been successfully uploaded! Final size is 1498 bytes. Artifact ID is 13533454938
+2026-11-06T19:27:39.3321225Z Artifact download URL: https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42275718905/artifacts/13533454938
+2026-11-06T19:27:39.3434784Z ##[group]Run test "$PREFLIGHT_RESULT" = success
+2026-11-06T19:27:39.3435163Z [36;1mtest "$PREFLIGHT_RESULT" = success[0m
+2026-11-06T19:27:39.3435455Z [36;1mtest "$READINESS_RESULT" = success[0m
+2026-11-06T19:27:39.3435737Z [36;1mtest "$NATIVE_RESULT" = success[0m
+2026-11-06T19:27:39.3436021Z [36;1mtest "$COLLECTION_RESULT" = success[0m
+2026-11-06T19:27:39.3436314Z [36;1mtest "$UPLOAD_RESULT" = success[0m
+2026-11-06T19:27:39.3436581Z [36;1mtest "$VALIDATED_RESULT" = true[0m
+2026-11-06T19:27:39.3451374Z shell: /usr/bin/bash -e {0}
+2026-11-06T19:27:39.3451689Z env:
+2026-11-06T19:27:39.3451966Z   CANDIDATE_SHA: 9847916393fbd4b67f961a2398229ede0bbd0b91
+2026-11-06T19:27:39.3452305Z   PYTHONDONTWRITEBYTECODE: 1
+2026-11-06T19:27:39.3452569Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-06T19:27:39.3452905Z   pythonLocation: /opt/hostedtoolcache/Python/3.12.10/x64
+2026-11-06T19:27:39.3453327Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.12.10/x64/lib/pkgconfig
+2026-11-06T19:27:39.3453801Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.10/x64
+2026-11-06T19:27:39.3454176Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.10/x64
+2026-11-06T19:27:39.3454536Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.10/x64
+2026-11-06T19:27:39.3454944Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.12.10/x64/lib
+2026-11-06T19:27:39.3455272Z   CARGO_HOME: /home/runner/.cargo
+2026-11-06T19:27:39.3455528Z   CARGO_INCREMENTAL: 0
+2026-11-06T19:27:39.3455769Z   CARGO_TERM_COLOR: always
+2026-11-06T19:27:39.3456009Z   PREFLIGHT_RESULT: success
+2026-11-06T19:27:39.3456237Z   READINESS_RESULT: success
+2026-11-06T19:27:39.3456463Z   NATIVE_RESULT: failure
+2026-11-06T19:27:39.3456692Z   COLLECTION_RESULT: success
+2026-11-06T19:27:39.3456922Z   UPLOAD_RESULT: success
+2026-11-06T19:27:39.3457151Z   VALIDATED_RESULT: false
+2026-11-06T19:27:39.3457375Z ##[endgroup]
+2026-11-06T19:27:39.3496455Z ##[error]Process completed with exit code 1.
+2026-11-06T19:27:39.3590360Z Post job cleanup.
+2026-11-06T19:27:39.4449345Z [command]/usr/bin/git version
+2026-11-06T19:27:39.4482507Z git version 2.56.0
+2026-11-06T19:27:39.4527234Z Temporarily overriding HOME='/home/runner/work/_temp/cc4e679e-df40-47c5-a35a-fe7fec50d5b9' before making global git config changes
+2026-11-06T19:27:39.4528421Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-06T19:27:39.4534319Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-06T19:27:39.4570605Z Removing SSH command configuration
+2026-11-06T19:27:39.4578864Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-06T19:27:39.4616648Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-06T19:27:39.4859554Z Removing HTTP extra header
+2026-11-06T19:27:39.4865194Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-06T19:27:39.4897025Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-06T19:27:39.5145243Z Removing includeIf entries pointing to credentials config files
+2026-11-06T19:27:39.5153607Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-06T19:27:39.5196340Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-06T19:27:39.5571287Z Cleaning up orphan processes
+2026-11-06T19:27:39.5873947Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
