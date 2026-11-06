@@ -1,0 +1,92 @@
+{
+  "scope": "One actual optimized-Python restoration, original bytes/modes comparison, prior/input bundle hash checks",
+  "argv": [
+    "python",
+    "-O",
+    "/workspace/scratch/3f6a885bb83c/round3_core_evidence_supplement_21_22_v1/restore.py",
+    "/workspace/scratch/3f6a885bb83c/round3_core_evidence_supplement_21_22_v1",
+    "/workspace/scratch/3f6a885bb83c/round3_core_evidence_supplement_21_22_v1_verification/restored"
+  ],
+  "exit_code": 0,
+  "stdout_sha256": "d22b001ae9716dfb517a0d3f75c50dbaaa9d9e3dde9f0637c332f3fccd4a8b89",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "reader_exactly_previous_except_two_seals": true,
+  "summary": {
+    "kind": "actual_read_only_raw_shard_restoration",
+    "index_sha256": "2ec0e16919c4d82a7ea4c8becee736db08ff32e0872da5cf5c35fd70a034b0a7",
+    "archive_sha256": "a337a2354c966d258f259b0de933317db442f6d3c200932fd9d6112fa3721f10",
+    "restored_files": 219,
+    "restored_bytes": 6563911,
+    "exact_unique_regular_member_set": true,
+    "all_file_bytes_and_safe_regular_modes_match": true,
+    "bundle_files_written": 0,
+    "native_tests_executed": false
+  },
+  "all_original_files_bytes_and_safe_modes_equal": true,
+  "input_bundle_before": {
+    "INDEX.json": {
+      "sha256": "2ec0e16919c4d82a7ea4c8becee736db08ff32e0872da5cf5c35fd70a034b0a7",
+      "bytes": 80053,
+      "mode": "0o100644"
+    },
+    "README.md": {
+      "sha256": "07ba31b277498218b57d52d10844570b5a3555ebeabf8a252cdc590471afb5d0",
+      "bytes": 4098,
+      "mode": "0o100644"
+    },
+    "TRANSPORT.json": {
+      "sha256": "60d9d146e9206bfd80418d74c8975d0829ffbd777042aec13a48a7bfad6fa5cf",
+      "bytes": 1049,
+      "mode": "0o100644"
+    },
+    "core-supplement-06-14.tar.xz.transport-000.gz": {
+      "sha256": "c0088126995bb36635ac54eeaa2b822a9ac3203587a533e6edc206137b76c5f1",
+      "bytes": 440058,
+      "mode": "0o100644"
+    },
+    "core-supplement-06-14.tar.xz.transport-001.gz": {
+      "sha256": "1bd1db6f49212074df31ace3977f2ad2547e9c64b318cf5c1f202f9b7f78ebfd",
+      "bytes": 163906,
+      "mode": "0o100644"
+    },
+    "restore.py": {
+      "sha256": "5b3ef29f9d2f274d4575b08c056231581899b3086aa755715b74058e77209c12",
+      "bytes": 8203,
+      "mode": "0o100644"
+    }
+  },
+  "input_bundle_after": {
+    "INDEX.json": {
+      "sha256": "2ec0e16919c4d82a7ea4c8becee736db08ff32e0872da5cf5c35fd70a034b0a7",
+      "bytes": 80053,
+      "mode": "0o100644"
+    },
+    "README.md": {
+      "sha256": "07ba31b277498218b57d52d10844570b5a3555ebeabf8a252cdc590471afb5d0",
+      "bytes": 4098,
+      "mode": "0o100644"
+    },
+    "TRANSPORT.json": {
+      "sha256": "60d9d146e9206bfd80418d74c8975d0829ffbd777042aec13a48a7bfad6fa5cf",
+      "bytes": 1049,
+      "mode": "0o100644"
+    },
+    "core-supplement-06-14.tar.xz.transport-000.gz": {
+      "sha256": "c0088126995bb36635ac54eeaa2b822a9ac3203587a533e6edc206137b76c5f1",
+      "bytes": 440058,
+      "mode": "0o100644"
+    },
+    "core-supplement-06-14.tar.xz.transport-001.gz": {
+      "sha256": "1bd1db6f49212074df31ace3977f2ad2547e9c64b318cf5c1f202f9b7f78ebfd",
+      "bytes": 163906,
+      "mode": "0o100644"
+    },
+    "restore.py": {
+      "sha256": "5b3ef29f9d2f274d4575b08c056231581899b3086aa755715b74058e77209c12",
+      "bytes": 8203,
+      "mode": "0o100644"
+    }
+  },
+  "previous_bundle_unchanged": true,
+  "native_or_model_execution": false
+}

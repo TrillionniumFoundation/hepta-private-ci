@@ -1,0 +1,1561 @@
+{
+  "kind": "Immutable Core21/22 source and entry-validation checkpoint",
+  "source_files": 219,
+  "source_bytes": 6563911,
+  "archive": {
+    "format": "tar.xz",
+    "bytes": 603868,
+    "sha256": "a337a2354c966d258f259b0de933317db442f6d3c200932fd9d6112fa3721f10"
+  },
+  "included_units": [
+    "21_single_guardian_failure_context",
+    "22_selected_native_side_proposal_history"
+  ],
+  "files": [
+    {
+      "path": "round3_core_ci/21_single_guardian_failure_context/REVIEW.md",
+      "source_path": "round3_core_ci/21_single_guardian_failure_context/REVIEW.md",
+      "bytes": 3391,
+      "sha256": "85728da7b5ed607fde8086da7f893cd78d19ecdcff1adc33485c08dd49a9c811",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/21_single_guardian_failure_context/boundary_checks.json",
+      "source_path": "round3_core_ci/21_single_guardian_failure_context/boundary_checks.json",
+      "bytes": 1035,
+      "sha256": "d8d8fd8c7aba61b70ed94f6e5f15f071a02c28fbd0fb188bd195d9ec949151fc",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/21_single_guardian_failure_context/candidate/codex-rs/core/tests/suite/network_approval.rs",
+      "source_path": "round3_core_ci/21_single_guardian_failure_context/candidate/codex-rs/core/tests/suite/network_approval.rs",
+      "bytes": 102012,
+      "sha256": "608229491bfe1e33819b50657039787a45874aae752ce3d9a082e1d9a1694aa1",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/21_single_guardian_failure_context/codespell.json",
+      "source_path": "round3_core_ci/21_single_guardian_failure_context/codespell.json",
+      "bytes": 679,
+      "sha256": "ed1dba306322ed29eb726e3dbecb79ee8df2fb72e3ae1f40bcae3b9760a13d17",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/21_single_guardian_failure_context/failure_evidence.json",
+      "source_path": "round3_core_ci/21_single_guardian_failure_context/failure_evidence.json",
+      "bytes": 6876,
+      "sha256": "192aa6912994c0cd9cf9e2d610f6023d580be78922ab9c07d2b2865d57974a93",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/21_single_guardian_failure_context/manifest.json",
+      "source_path": "round3_core_ci/21_single_guardian_failure_context/manifest.json",
+      "bytes": 3012,
+      "sha256": "5cc859c3fdc75196379132a408f22f3295a1e519264fedd79895ca0582e1a0d0",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/21_single_guardian_failure_context/original/codex-rs/core/tests/suite/network_approval.rs",
+      "source_path": "round3_core_ci/21_single_guardian_failure_context/original/codex-rs/core/tests/suite/network_approval.rs",
+      "bytes": 100794,
+      "sha256": "a0bf40ded0ed13363476cf73440c395e2fd13ac7b24399e966af7948cec08bd9",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/21_single_guardian_failure_context/pretty_assertions_macro_excerpt.rs.txt",
+      "source_path": "round3_core_ci/21_single_guardian_failure_context/pretty_assertions_macro_excerpt.rs.txt",
+      "bytes": 883,
+      "sha256": "e3d5d6fabdd102089aa61524d400bf996e542ea4faa1011a403ff862287d12d5",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/21_single_guardian_failure_context/repair.patch",
+      "source_path": "round3_core_ci/21_single_guardian_failure_context/repair.patch",
+      "bytes": 1586,
+      "sha256": "6f0ea31e8a0fc66c65bb0032f86548d8aaa0cbdc334acfb91c19819c19c6d054",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/21_single_guardian_failure_context/source_binding.json",
+      "source_path": "round3_core_ci/21_single_guardian_failure_context/source_binding.json",
+      "bytes": 496,
+      "sha256": "ee790680e4ba4c246739c107f0bbbc8e3fa8394236239bfb662a6d620be8b694",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/audit_native_core21.py",
+      "source_path": "round3_core_ci/audit_native_core21.py",
+      "bytes": 5972,
+      "sha256": "ab4b9c4578d6e58a78f089979c272455ba08b493c0b55dc635a047ff5c8e040c",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/build_evidence_supplement_21_22.py",
+      "source_path": "round3_core_ci/build_evidence_supplement_21_22.py",
+      "bytes": 14438,
+      "sha256": "bc28b4603af0afb5edf81ed7d368bd20e5f313a0cb8635da73dd964116c5135b",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/evidence/native1326_a3_published_commit_api.json",
+      "source_path": "round3_core_ci/evidence/native1326_a3_published_commit_api.json",
+      "bytes": 1546,
+      "sha256": "08ce075da69fe5c6c809934cd07ff02bc553d838b0edceaa604ed3b369bd18c8",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/evidence/native1326_a3b3_bound_static_addendum_v1.json",
+      "source_path": "round3_core_ci/evidence/native1326_a3b3_bound_static_addendum_v1.json",
+      "bytes": 1777,
+      "sha256": "b69bb44217c4af11726b445e95b9c09ee357908266399ec3f8c9f34ccbdbf12d",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/evidence/native1326_observability_a3b3_static_review_v1.json",
+      "source_path": "round3_core_ci/evidence/native1326_observability_a3b3_static_review_v1.json",
+      "bytes": 3524,
+      "sha256": "3588341df952baaad8185dcac40133f6bdad010a1e31f93d0d2a6789e5f59ccd",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/evidence/native_core21_compile_skip_audit_v1.json",
+      "source_path": "round3_core_ci/evidence/native_core21_compile_skip_audit_v1.json",
+      "bytes": 4022,
+      "sha256": "b590eeb84fedad6ff8abd052a4859a263d8ff27e6a23ed8f4bc6b10027549fb7",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/evidence/supplement_21_22_capture_v1.json",
+      "source_path": "round3_core_ci/evidence/supplement_21_22_capture_v1.json",
+      "bytes": 6639,
+      "sha256": "0aebac2f5d45f80fbc52869f1d2638a66660cb536f45d62593dd33950602f016",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/evidence/supplement_21_22_publication_state_v1.json",
+      "source_path": "round3_core_ci/evidence/supplement_21_22_publication_state_v1.json",
+      "bytes": 3263,
+      "sha256": "19ef7147934cfe43e113c105709c93c207add09e71af0311f7887ab4ab70e076",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/evidence_supplement_21_22_input_plan_v1.json",
+      "source_path": "round3_core_ci/evidence_supplement_21_22_input_plan_v1.json",
+      "bytes": 47981,
+      "sha256": "70b0da6b1750994ef65f99ca0019449cd7870de425a70657f0dd2758295e10e6",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/native_selected_proposal/actionlint_1_7_7/ARCHIVE_ATTEMPT_1.json",
+      "source_path": "round3_core_ci/native_selected_proposal/actionlint_1_7_7/ARCHIVE_ATTEMPT_1.json",
+      "bytes": 149,
+      "sha256": "0298a9116c5570fe30bb7080977c8dba9ffb724e7e7d93914823cdf09b68cf7a",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/native_selected_proposal/actionlint_1_7_7/DOWNLOAD_ATTEMPT_2.json",
+      "source_path": "round3_core_ci/native_selected_proposal/actionlint_1_7_7/DOWNLOAD_ATTEMPT_2.json",
+      "bytes": 74,
+      "sha256": "f24044321c22d03703918db71c6f411a26e80cfdec5ddcd60969e7dfef09c02e",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/native_selected_proposal/actionlint_1_7_7/DOWNLOAD_INTERRUPTION.json",
+      "source_path": "round3_core_ci/native_selected_proposal/actionlint_1_7_7/DOWNLOAD_INTERRUPTION.json",
+      "bytes": 307,
+      "sha256": "285c92d09435f0e3a3a10a4533e7aa23e829cede8ea04cb4e6d4d8270d2cc013",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/native_selected_proposal/actionlint_1_7_7/PROVIDER.json",
+      "source_path": "round3_core_ci/native_selected_proposal/actionlint_1_7_7/PROVIDER.json",
+      "bytes": 827,
+      "sha256": "91e4f71f1d41d51c9676c27e87608088d120a8eb8914804ede2e1666caa8f63b",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/native_selected_proposal/actionlint_1_7_7/actionlint_1.7.7_checksums.txt",
+      "source_path": "round3_core_ci/native_selected_proposal/actionlint_1_7_7/actionlint_1.7.7_checksums.txt",
+      "bytes": 1119,
+      "sha256": "ac22e6577b8d133c7cd779682e65712ef722e719a297633699a4da05e9f351e0",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/native_selected_proposal/actionlint_1_7_7/version.stderr.log",
+      "source_path": "round3_core_ci/native_selected_proposal/actionlint_1_7_7/version.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/native_selected_proposal/actionlint_1_7_7/version.stdout.log",
+      "source_path": "round3_core_ci/native_selected_proposal/actionlint_1_7_7/version.stdout.log",
+      "bytes": 94,
+      "sha256": "f6d2718d09c84c4d0237eb0e6f16775b0a4374a8b67976ef0541b850d3d224ed",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/native_selected_proposal/inputs/base_selected_tree_api.json",
+      "source_path": "round3_core_ci/native_selected_proposal/inputs/base_selected_tree_api.json",
+      "bytes": 6209,
+      "sha256": "51ea21696aa0d183e93c8e5f5cc6759f7c65066b8f0788b3f18c204023fbbd7e",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/native_selected_proposal/inputs/junit.md",
+      "source_path": "round3_core_ci/native_selected_proposal/inputs/junit.md",
+      "bytes": 2627,
+      "sha256": "e3501438cf1db5c8f6e4718ca6b596c5a9418b476f05577a9eae76c94f037c2d",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/native_selected_proposal/inputs/junit.rs",
+      "source_path": "round3_core_ci/native_selected_proposal/inputs/junit.rs",
+      "bytes": 29544,
+      "sha256": "2ddb3b470cff1f5499b4500d3454edf657b13484e7f27eeef391b997bff334ca",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/native_selected_proposal/inputs/nextest-official-source-bindings.json",
+      "source_path": "round3_core_ci/native_selected_proposal/inputs/nextest-official-source-bindings.json",
+      "bytes": 1253,
+      "sha256": "4c71c2292d0c890b1a8c58fd70f48968b67dbd0cea3cbc68cbdd902199d6a1a0",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/native_selected_proposal/inputs/nextest-tests-junit.xml",
+      "source_path": "round3_core_ci/native_selected_proposal/inputs/nextest-tests-junit.xml",
+      "bytes": 5578,
+      "sha256": "6b58c73a753a03b4e3d261bb6362c29f25eb8df7e6424de3340c24e7928c450e",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/native_selected_proposal/inputs/nextest_metadata_test_list.rs",
+      "source_path": "round3_core_ci/native_selected_proposal/inputs/nextest_metadata_test_list.rs",
+      "bytes": 29916,
+      "sha256": "b34ebe95c7cefc07ff8e48a3a5363cf8fe632eaa372d02d768adee349bee9a76",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/native_selected_proposal/inputs/parent_commit_api.json",
+      "source_path": "round3_core_ci/native_selected_proposal/inputs/parent_commit_api.json",
+      "bytes": 1546,
+      "sha256": "2367be5038cadf513084080118ed35a4bb1db2994ae0d8b83f8fbffed38ec8c7",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/native_selected_proposal/inputs/published_22a2_commit_api.json",
+      "source_path": "round3_core_ci/native_selected_proposal/inputs/published_22a2_commit_api.json",
+      "bytes": 1550,
+      "sha256": "53b49a2a61357eece1ebe44a0db24a540d76dca2de2bac035be3ac15407da0d1",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/native_selected_proposal/inputs/published_22a2_compare_api.json",
+      "source_path": "round3_core_ci/native_selected_proposal/inputs/published_22a2_compare_api.json",
+      "bytes": 1795,
+      "sha256": "c5759b842dc773b1764d2a4035fbd0fb176824e09fb01e52503a2638c3fc2e8c",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/native_selected_proposal/inputs/published_22a2_github_tree_api.json",
+      "source_path": "round3_core_ci/native_selected_proposal/inputs/published_22a2_github_tree_api.json",
+      "bytes": 60529,
+      "sha256": "54ad5ce176978aa1f33a3ab5de9f3485bfe400edb8913c5113ad3921759a6c5f",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/native_selected_proposal/inputs/published_22a2_root_tree_api.json",
+      "source_path": "round3_core_ci/native_selected_proposal/inputs/published_22a2_root_tree_api.json",
+      "bytes": 16032,
+      "sha256": "30a26e3c630abde627007d376c690a3f1812fa5eaa027ca2b3586649cb170915",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/native_selected_proposal/inputs/published_22a3_commit_api.json",
+      "source_path": "round3_core_ci/native_selected_proposal/inputs/published_22a3_commit_api.json",
+      "bytes": 1543,
+      "sha256": "b72dcf885f10d9f5757b9014598e34853e0997fdead7179c4f28f77b31a4139f",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/native_selected_proposal/inputs/published_22a3_compare_api.json",
+      "source_path": "round3_core_ci/native_selected_proposal/inputs/published_22a3_compare_api.json",
+      "bytes": 1795,
+      "sha256": "3f0a7dd8819ffda1d858e7c2090a28ee24230be648b13808b45c519cef1cfe5e",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/native_selected_proposal/inputs/published_22a3_github_tree_api.json",
+      "source_path": "round3_core_ci/native_selected_proposal/inputs/published_22a3_github_tree_api.json",
+      "bytes": 60529,
+      "sha256": "22d0e4d206057f84b8f0d8e039d1254be89553213a94fb469f0e3423fa5d2363",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/native_selected_proposal/inputs/published_22a3_root_tree_api.json",
+      "source_path": "round3_core_ci/native_selected_proposal/inputs/published_22a3_root_tree_api.json",
+      "bytes": 16032,
+      "sha256": "8f77ca85561f951739aa28820ae2901329f4b041ac075b1d2eaffc8cca78953c",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/native_selected_proposal/inputs/published_22b2_commit_api.json",
+      "source_path": "round3_core_ci/native_selected_proposal/inputs/published_22b2_commit_api.json",
+      "bytes": 1543,
+      "sha256": "ec2632611e8fb31931d5278b3189910a24dafb8c174d59ca617aebdf00e4fcf9",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/native_selected_proposal/inputs/published_22b2_initial_runs_api.json",
+      "source_path": "round3_core_ci/native_selected_proposal/inputs/published_22b2_initial_runs_api.json",
+      "bytes": 1760,
+      "sha256": "e5fbfa4814bc0b0e8354fa88a702adfcebc42e3e6c2bc4d2eaf26f0f1c9befd7",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/native_selected_proposal/inputs/published_22b_commit_api.json",
+      "source_path": "round3_core_ci/native_selected_proposal/inputs/published_22b_commit_api.json",
+      "bytes": 1550,
+      "sha256": "1bda6bb2f5c8881526b19589b7f44cd9cc1a9d2e34181c59a028b1b0ce05175a",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/native_selected_proposal/inputs/published_22b_runs_api_second_snapshot.json",
+      "source_path": "round3_core_ci/native_selected_proposal/inputs/published_22b_runs_api_second_snapshot.json",
+      "bytes": 1304,
+      "sha256": "567fff5029ed9c2acb7cb2142cc20949193807fbe35448f4c24517d6dfbad89e",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/native_selected_proposal/inputs/python-provider-selection.json",
+      "source_path": "round3_core_ci/native_selected_proposal/inputs/python-provider-selection.json",
+      "bytes": 655,
+      "sha256": "7e0629ca2c7da8803419df916ce3dc8816c96dfe2835b280845652d1a4d276fd",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/native_selected_proposal/inputs/python-versions-manifest.json",
+      "source_path": "round3_core_ci/native_selected_proposal/inputs/python-versions-manifest.json",
+      "bytes": 832577,
+      "sha256": "78a935e3b2a9ebaa22d420a0c7cf789fa81747aa94a615cf4ed6924ae9dc3377",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/native_selected_proposal/inputs/selected_5114_initial_jobs_api.json",
+      "source_path": "round3_core_ci/native_selected_proposal/inputs/selected_5114_initial_jobs_api.json",
+      "bytes": 214,
+      "sha256": "b6f985603b56975f4bf6448deaafd4bfe1e505a2101e4cf3820b0962303d6898",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/native_selected_proposal/review1/FORMAT.json",
+      "source_path": "round3_core_ci/native_selected_proposal/review1/FORMAT.json",
+      "bytes": 3491,
+      "sha256": "c4756a85199bb5a85444f0b934e10844c64dc7f3ad59fb1fb346ac03a976de49",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/native_selected_proposal/review1/FROZEN_HISTORY.json",
+      "source_path": "round3_core_ci/native_selected_proposal/review1/FROZEN_HISTORY.json",
+      "bytes": 1427,
+      "sha256": "87c2ea46ebe585eada1aa65aa32b631b2a12cea66a6b354944680d6205483169",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/native_selected_proposal/review1/OFFLINE_INITIAL_FAILURE.json",
+      "source_path": "round3_core_ci/native_selected_proposal/review1/OFFLINE_INITIAL_FAILURE.json",
+      "bytes": 1230,
+      "sha256": "0efb2d3553da7ad32dc144805d9b955ff9f3b9af5cae14e5137e156563fce7ed",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/native_selected_proposal/review1/candidate/.github/scripts/hepta-core-selected-spec.json",
+      "source_path": "round3_core_ci/native_selected_proposal/review1/candidate/.github/scripts/hepta-core-selected-spec.json",
+      "bytes": 3223,
+      "sha256": "6d654416c1678574acb623b51b6623ba62cbaad816b0e6d38c9e70d1ea343d66",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/native_selected_proposal/review1/candidate/.github/scripts/hepta_core_selected.py",
+      "source_path": "round3_core_ci/native_selected_proposal/review1/candidate/.github/scripts/hepta_core_selected.py",
+      "bytes": 11198,
+      "sha256": "c71b69d4cb547a2e82605b8d5559f5856bc43a855895a051ea31ca869dfc6e26",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/native_selected_proposal/review1/candidate/.github/scripts/hepta_core_selected_evidence.py",
+      "source_path": "round3_core_ci/native_selected_proposal/review1/candidate/.github/scripts/hepta_core_selected_evidence.py",
+      "bytes": 10792,
+      "sha256": "f8fadb11ef3ed3147ac4d4a5dde4382830f5c0414c3ea77f7cb78d79b1cf7691",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/native_selected_proposal/review1/candidate/.github/scripts/hepta_core_selected_guard.py",
+      "source_path": "round3_core_ci/native_selected_proposal/review1/candidate/.github/scripts/hepta_core_selected_guard.py",
+      "bytes": 6507,
+      "sha256": "25d4e94c182ba357e7c63c8c98c380efe70fe113fbba6f8eacb5d89839f973f6",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/native_selected_proposal/review1/candidate/.github/workflows/hepta-core-selected-proposal.yml",
+      "source_path": "round3_core_ci/native_selected_proposal/review1/candidate/.github/workflows/hepta-core-selected-proposal.yml",
+      "bytes": 3591,
+      "sha256": "737a6282427dd98f9282ecda0512445f3d18a3ce337cedc282589422121cc76d",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/native_selected_proposal/review1/offline_checker_v1.py",
+      "source_path": "round3_core_ci/native_selected_proposal/review1/offline_checker_v1.py",
+      "bytes": 17241,
+      "sha256": "005b97fad4a8c9e138f5e17998151553be853f9fbb8a69837d09f9e20cbc68e5",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/native_selected_proposal/review2/FORMAT.json",
+      "source_path": "round3_core_ci/native_selected_proposal/review2/FORMAT.json",
+      "bytes": 3236,
+      "sha256": "b6b019c2d54c599f8c741fd3f8c2d01b76582cea0d7bf25e255f51277bd1584a",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/native_selected_proposal/review2/FROZEN_HISTORY.json",
+      "source_path": "round3_core_ci/native_selected_proposal/review2/FROZEN_HISTORY.json",
+      "bytes": 1571,
+      "sha256": "7cc3e154a804460ab8577f6548682bf5bfe60a142bc4217625a9c9116aabe598",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/native_selected_proposal/review2/OFFLINE_VERIFICATION.json",
+      "source_path": "round3_core_ci/native_selected_proposal/review2/OFFLINE_VERIFICATION.json",
+      "bytes": 6056,
+      "sha256": "14839de03179ad2772655e5a33c96dbe987854afb2c8c50b0c909ed3bf0c4d01",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/native_selected_proposal/review2/candidate/.github/scripts/hepta-core-selected-spec.json",
+      "source_path": "round3_core_ci/native_selected_proposal/review2/candidate/.github/scripts/hepta-core-selected-spec.json",
+      "bytes": 3333,
+      "sha256": "a2f68c31a468cb6423df87c2d72604d57cf99d6b71a1a67cb1d9ccc1bfff6ba8",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/native_selected_proposal/review2/candidate/.github/scripts/hepta_core_selected.py",
+      "source_path": "round3_core_ci/native_selected_proposal/review2/candidate/.github/scripts/hepta_core_selected.py",
+      "bytes": 7933,
+      "sha256": "c1291fd5d17f3411603761969601118b019c8f08e453c345ec4169760d788c44",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/native_selected_proposal/review2/candidate/.github/scripts/hepta_core_selected_contract.py",
+      "source_path": "round3_core_ci/native_selected_proposal/review2/candidate/.github/scripts/hepta_core_selected_contract.py",
+      "bytes": 6649,
+      "sha256": "b3f1db41634bf161e50ca8b06194b59071625efce539404405f8a67f409b7066",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/native_selected_proposal/review2/candidate/.github/scripts/hepta_core_selected_evidence.py",
+      "source_path": "round3_core_ci/native_selected_proposal/review2/candidate/.github/scripts/hepta_core_selected_evidence.py",
+      "bytes": 11215,
+      "sha256": "b086f5b81eeedaf0e122cf5c6bfc89f53276438a460eb6dc87e04684b9208808",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/native_selected_proposal/review2/candidate/.github/scripts/hepta_core_selected_guard.py",
+      "source_path": "round3_core_ci/native_selected_proposal/review2/candidate/.github/scripts/hepta_core_selected_guard.py",
+      "bytes": 6507,
+      "sha256": "25d4e94c182ba357e7c63c8c98c380efe70fe113fbba6f8eacb5d89839f973f6",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/native_selected_proposal/review2/candidate/.github/workflows/hepta-core-selected-proposal.yml",
+      "source_path": "round3_core_ci/native_selected_proposal/review2/candidate/.github/workflows/hepta-core-selected-proposal.yml",
+      "bytes": 4123,
+      "sha256": "005f116a46ea6a4f3919367424814ae1014116ae97e35aab49bb45c3d8c4edec",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/native_selected_proposal/review2/offline_checker_v2.py",
+      "source_path": "round3_core_ci/native_selected_proposal/review2/offline_checker_v2.py",
+      "bytes": 18728,
+      "sha256": "8b6c292f4ce2e6238e4d4dd8b23d4c345df07b59aa2d6eaf8943190a9b26e5ed",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/native_selected_proposal/review3/BOUNDARY.json",
+      "source_path": "round3_core_ci/native_selected_proposal/review3/BOUNDARY.json",
+      "bytes": 425,
+      "sha256": "5f6d2829ec8ae47eeceeaa2025a77815fb0af05775ad30ef48df33ecfe486171",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/native_selected_proposal/review3/CLI_PARSER.json",
+      "source_path": "round3_core_ci/native_selected_proposal/review3/CLI_PARSER.json",
+      "bytes": 3826,
+      "sha256": "28380da4dd8d618ec8d4001e09b9219a2a12606f51baef7dc0ec4841354be725",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/native_selected_proposal/review3/CODESPELL.json",
+      "source_path": "round3_core_ci/native_selected_proposal/review3/CODESPELL.json",
+      "bytes": 650,
+      "sha256": "9f6469fd36f6453c615e6953c0a8506b365ef7e13b2294cb72e0f05f55882853",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/native_selected_proposal/review3/FORMAT.json",
+      "source_path": "round3_core_ci/native_selected_proposal/review3/FORMAT.json",
+      "bytes": 3955,
+      "sha256": "31bd90c7b42549adb663827050cd570faed3c1997e2b148803b89d30d196c25a",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/native_selected_proposal/review3/FROZEN_HISTORY.json",
+      "source_path": "round3_core_ci/native_selected_proposal/review3/FROZEN_HISTORY.json",
+      "bytes": 1523,
+      "sha256": "05e0d8595051136d8475fb0429769daf33e8203660277dead53c26a0a4e847c3",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/native_selected_proposal/review3/OFFLINE_VERIFICATION.json",
+      "source_path": "round3_core_ci/native_selected_proposal/review3/OFFLINE_VERIFICATION.json",
+      "bytes": 7871,
+      "sha256": "d8345d8f1b0a43fb70caadcdb1a0be4b6b3674f8f0b961a61f540d14e161b856",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/native_selected_proposal/review3/REVIEW.md",
+      "source_path": "round3_core_ci/native_selected_proposal/review3/REVIEW.md",
+      "bytes": 7785,
+      "sha256": "ff53c64ddd1f5fffaf94fd1750258e6abed65f149e7863fa8d173d68e36bae83",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/native_selected_proposal/review3/candidate/.github/scripts/hepta-core-selected-spec.json",
+      "source_path": "round3_core_ci/native_selected_proposal/review3/candidate/.github/scripts/hepta-core-selected-spec.json",
+      "bytes": 3333,
+      "sha256": "a2f68c31a468cb6423df87c2d72604d57cf99d6b71a1a67cb1d9ccc1bfff6ba8",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/native_selected_proposal/review3/candidate/.github/scripts/hepta_core_selected.py",
+      "source_path": "round3_core_ci/native_selected_proposal/review3/candidate/.github/scripts/hepta_core_selected.py",
+      "bytes": 8062,
+      "sha256": "c86f89090faeec1ce9f9222a82eeb0e71d869759bc34e7cf0e524e535d0ad40b",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/native_selected_proposal/review3/candidate/.github/scripts/hepta_core_selected_contract.py",
+      "source_path": "round3_core_ci/native_selected_proposal/review3/candidate/.github/scripts/hepta_core_selected_contract.py",
+      "bytes": 6911,
+      "sha256": "75b277ad077b3ed826fab1fd361d79ac0ff89a35665d2d352fb37b3a60cc4ac4",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/native_selected_proposal/review3/candidate/.github/scripts/hepta_core_selected_evidence.py",
+      "source_path": "round3_core_ci/native_selected_proposal/review3/candidate/.github/scripts/hepta_core_selected_evidence.py",
+      "bytes": 11215,
+      "sha256": "b086f5b81eeedaf0e122cf5c6bfc89f53276438a460eb6dc87e04684b9208808",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/native_selected_proposal/review3/candidate/.github/scripts/hepta_core_selected_guard.py",
+      "source_path": "round3_core_ci/native_selected_proposal/review3/candidate/.github/scripts/hepta_core_selected_guard.py",
+      "bytes": 6507,
+      "sha256": "25d4e94c182ba357e7c63c8c98c380efe70fe113fbba6f8eacb5d89839f973f6",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/native_selected_proposal/review3/candidate/.github/workflows/hepta-core-selected-proposal.yml",
+      "source_path": "round3_core_ci/native_selected_proposal/review3/candidate/.github/workflows/hepta-core-selected-proposal.yml",
+      "bytes": 4123,
+      "sha256": "005f116a46ea6a4f3919367424814ae1014116ae97e35aab49bb45c3d8c4edec",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/native_selected_proposal/review3/cli_parser/list.stderr.log",
+      "source_path": "round3_core_ci/native_selected_proposal/review3/cli_parser/list.stderr.log",
+      "bytes": 310,
+      "sha256": "f8aedff45f0ff82107a47d9c713dc7aed183ea421d97a596bbd5af2b70ddbb3c",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/native_selected_proposal/review3/cli_parser/list.stdout.log",
+      "source_path": "round3_core_ci/native_selected_proposal/review3/cli_parser/list.stdout.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/native_selected_proposal/review3/cli_parser/run.stderr.log",
+      "source_path": "round3_core_ci/native_selected_proposal/review3/cli_parser/run.stderr.log",
+      "bytes": 310,
+      "sha256": "f8aedff45f0ff82107a47d9c713dc7aed183ea421d97a596bbd5af2b70ddbb3c",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/native_selected_proposal/review3/cli_parser/run.stdout.log",
+      "source_path": "round3_core_ci/native_selected_proposal/review3/cli_parser/run.stdout.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/native_selected_proposal/review3/codespell.stderr.log",
+      "source_path": "round3_core_ci/native_selected_proposal/review3/codespell.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/native_selected_proposal/review3/codespell.stdout.log",
+      "source_path": "round3_core_ci/native_selected_proposal/review3/codespell.stdout.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/native_selected_proposal/review3/offline_checker_v3.py",
+      "source_path": "round3_core_ci/native_selected_proposal/review3/offline_checker_v3.py",
+      "bytes": 19467,
+      "sha256": "e56eb0c8a50e2efa84fb654b202d3c5ae5e99982b6d455cc005453d6d21ab41e",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/native_selected_proposal/review4/BOUNDARY.json",
+      "source_path": "round3_core_ci/native_selected_proposal/review4/BOUNDARY.json",
+      "bytes": 425,
+      "sha256": "58b017cbf06db12ed3daba45dcddca05f89a60c5d01da4585548ab5743390fdb",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/native_selected_proposal/review4/CLI_REUSE.json",
+      "source_path": "round3_core_ci/native_selected_proposal/review4/CLI_REUSE.json",
+      "bytes": 505,
+      "sha256": "90416b277f9ae54df6217e2c7e4906363589ff35c08db9bdfc925ca0dba84eb9",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/native_selected_proposal/review4/CODESPELL.json",
+      "source_path": "round3_core_ci/native_selected_proposal/review4/CODESPELL.json",
+      "bytes": 650,
+      "sha256": "b4641da3beefa6f6cbdbaa7ef816990b91e4a0936affcded661f709bd084fda2",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/native_selected_proposal/review4/FORMAT.json",
+      "source_path": "round3_core_ci/native_selected_proposal/review4/FORMAT.json",
+      "bytes": 3955,
+      "sha256": "db240f871c24a5a7235737e429a768b0d20381ea96ce5e431db1d685feec0b93",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/native_selected_proposal/review4/OFFLINE_VERIFICATION.json",
+      "source_path": "round3_core_ci/native_selected_proposal/review4/OFFLINE_VERIFICATION.json",
+      "bytes": 8216,
+      "sha256": "3b8f4a5f7be0aa15896f21796c8f4d414fd1cdb03e6a680131975337e0ec2698",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/native_selected_proposal/review4/REVIEW.md",
+      "source_path": "round3_core_ci/native_selected_proposal/review4/REVIEW.md",
+      "bytes": 8509,
+      "sha256": "dc41314d24f52cfec445803cfa5dedbf08c6af886c10449740313945d033aa22",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/native_selected_proposal/review4/candidate/.github/scripts/hepta-core-selected-spec.json",
+      "source_path": "round3_core_ci/native_selected_proposal/review4/candidate/.github/scripts/hepta-core-selected-spec.json",
+      "bytes": 3333,
+      "sha256": "a2f68c31a468cb6423df87c2d72604d57cf99d6b71a1a67cb1d9ccc1bfff6ba8",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/native_selected_proposal/review4/candidate/.github/scripts/hepta_core_selected.py",
+      "source_path": "round3_core_ci/native_selected_proposal/review4/candidate/.github/scripts/hepta_core_selected.py",
+      "bytes": 9578,
+      "sha256": "5d97bb9b3e4e190a2f00eacba4a3131a75d62cbac708018b7d1fa99f4870234b",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/native_selected_proposal/review4/candidate/.github/scripts/hepta_core_selected_contract.py",
+      "source_path": "round3_core_ci/native_selected_proposal/review4/candidate/.github/scripts/hepta_core_selected_contract.py",
+      "bytes": 6089,
+      "sha256": "a3a07a66cc78939f16b120df550dc2100432338177047e8a3e4b4bd654cdff66",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/native_selected_proposal/review4/candidate/.github/scripts/hepta_core_selected_evidence.py",
+      "source_path": "round3_core_ci/native_selected_proposal/review4/candidate/.github/scripts/hepta_core_selected_evidence.py",
+      "bytes": 11269,
+      "sha256": "2a1ad727ee20cf2f24ca54eefedc9aa70e220e8052330c112a09aa4033d6453b",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/native_selected_proposal/review4/candidate/.github/scripts/hepta_core_selected_guard.py",
+      "source_path": "round3_core_ci/native_selected_proposal/review4/candidate/.github/scripts/hepta_core_selected_guard.py",
+      "bytes": 6507,
+      "sha256": "25d4e94c182ba357e7c63c8c98c380efe70fe113fbba6f8eacb5d89839f973f6",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/native_selected_proposal/review4/candidate/.github/workflows/hepta-core-selected-proposal.yml",
+      "source_path": "round3_core_ci/native_selected_proposal/review4/candidate/.github/workflows/hepta-core-selected-proposal.yml",
+      "bytes": 4123,
+      "sha256": "005f116a46ea6a4f3919367424814ae1014116ae97e35aab49bb45c3d8c4edec",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/native_selected_proposal/review4/codespell.stderr.log",
+      "source_path": "round3_core_ci/native_selected_proposal/review4/codespell.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/native_selected_proposal/review4/codespell.stdout.log",
+      "source_path": "round3_core_ci/native_selected_proposal/review4/codespell.stdout.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/native_selected_proposal/review4/manifest.json",
+      "source_path": "round3_core_ci/native_selected_proposal/review4/manifest.json",
+      "bytes": 2992,
+      "sha256": "747b7cf59b9356f0817e7fc0240810e1eb193e1416d83bb6b51aa77c095a87f2",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/native_selected_proposal/review4/offline_checker_v4.py",
+      "source_path": "round3_core_ci/native_selected_proposal/review4/offline_checker_v4.py",
+      "bytes": 20988,
+      "sha256": "e3e9db51002b00e1b6f9c63d7ca127da401748c00c59c8f9883285c1c6514494",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/native_selected_proposal/review5/BOUNDARY.json",
+      "source_path": "round3_core_ci/native_selected_proposal/review5/BOUNDARY.json",
+      "bytes": 498,
+      "sha256": "2d736d97b4ee171339e0407feaecca9cf64f9aedc164d7cc5b53548c69104789",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/native_selected_proposal/review5/CLI_REUSE.json",
+      "source_path": "round3_core_ci/native_selected_proposal/review5/CLI_REUSE.json",
+      "bytes": 447,
+      "sha256": "b55f518d131d878de2b579898b15a7d3f78f06a00cb71304d9e44b744a37b323",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/native_selected_proposal/review5/CODESPELL.json",
+      "source_path": "round3_core_ci/native_selected_proposal/review5/CODESPELL.json",
+      "bytes": 448,
+      "sha256": "1a218207d787c7891af829fd59f02651bf0069dac8de746019db1fe4076bd0f7",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/native_selected_proposal/review5/FORMAT.json",
+      "source_path": "round3_core_ci/native_selected_proposal/review5/FORMAT.json",
+      "bytes": 3205,
+      "sha256": "2ee3070af0a3d1c3f37e9896062f20d372750e8d4669ba9b4300391cef784b64",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/native_selected_proposal/review5/OFFLINE_VERIFICATION.json",
+      "source_path": "round3_core_ci/native_selected_proposal/review5/OFFLINE_VERIFICATION.json",
+      "bytes": 8514,
+      "sha256": "45e1ed4c0bb3352c60a8a84b5726e19b8102abec41ef29de53f433fa089243d2",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/native_selected_proposal/review5/READING_NOTE.json",
+      "source_path": "round3_core_ci/native_selected_proposal/review5/READING_NOTE.json",
+      "bytes": 584,
+      "sha256": "c33335f1e9ca622fbfb6b3429b87dfbdc0a1096f2d57bb335b99b8da9a6407ce",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/native_selected_proposal/review5/REVIEW.md",
+      "source_path": "round3_core_ci/native_selected_proposal/review5/REVIEW.md",
+      "bytes": 8899,
+      "sha256": "248d13ef750b0fb1060cb14984f453260e0088d760ed536ffed5cb301247ac1b",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/native_selected_proposal/review5/candidate/.github/scripts/hepta-core-selected-spec.json",
+      "source_path": "round3_core_ci/native_selected_proposal/review5/candidate/.github/scripts/hepta-core-selected-spec.json",
+      "bytes": 3333,
+      "sha256": "a2f68c31a468cb6423df87c2d72604d57cf99d6b71a1a67cb1d9ccc1bfff6ba8",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/native_selected_proposal/review5/candidate/.github/scripts/hepta_core_selected.py",
+      "source_path": "round3_core_ci/native_selected_proposal/review5/candidate/.github/scripts/hepta_core_selected.py",
+      "bytes": 9578,
+      "sha256": "5d97bb9b3e4e190a2f00eacba4a3131a75d62cbac708018b7d1fa99f4870234b",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/native_selected_proposal/review5/candidate/.github/scripts/hepta_core_selected_contract.py",
+      "source_path": "round3_core_ci/native_selected_proposal/review5/candidate/.github/scripts/hepta_core_selected_contract.py",
+      "bytes": 6171,
+      "sha256": "790e9d27afe31ab8519b0ce40d0724459b1dc4371b9cd6de54fcf47ec206d7c1",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/native_selected_proposal/review5/candidate/.github/scripts/hepta_core_selected_evidence.py",
+      "source_path": "round3_core_ci/native_selected_proposal/review5/candidate/.github/scripts/hepta_core_selected_evidence.py",
+      "bytes": 11269,
+      "sha256": "2a1ad727ee20cf2f24ca54eefedc9aa70e220e8052330c112a09aa4033d6453b",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/native_selected_proposal/review5/candidate/.github/scripts/hepta_core_selected_guard.py",
+      "source_path": "round3_core_ci/native_selected_proposal/review5/candidate/.github/scripts/hepta_core_selected_guard.py",
+      "bytes": 6507,
+      "sha256": "25d4e94c182ba357e7c63c8c98c380efe70fe113fbba6f8eacb5d89839f973f6",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/native_selected_proposal/review5/candidate/.github/workflows/hepta-core-selected-proposal.yml",
+      "source_path": "round3_core_ci/native_selected_proposal/review5/candidate/.github/workflows/hepta-core-selected-proposal.yml",
+      "bytes": 4123,
+      "sha256": "005f116a46ea6a4f3919367424814ae1014116ae97e35aab49bb45c3d8c4edec",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/native_selected_proposal/review5/from_review4.patch",
+      "source_path": "round3_core_ci/native_selected_proposal/review5/from_review4.patch",
+      "bytes": 649,
+      "sha256": "cbd08f03dcda6c83c6f64b938983a0a18360ff9b92ed0925d1b5b37a76c91d90",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/native_selected_proposal/review5/manifest.json",
+      "source_path": "round3_core_ci/native_selected_proposal/review5/manifest.json",
+      "bytes": 2971,
+      "sha256": "3afcfa2433c55c33a85b7397575145392f2111ee994a4780d5ea972e46ba0e11",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/native_selected_proposal/review6_runner_context/ACTIONLINT.json",
+      "source_path": "round3_core_ci/native_selected_proposal/review6_runner_context/ACTIONLINT.json",
+      "bytes": 2135,
+      "sha256": "3e92158b4bc03c1b3a689784dbf1e626b9e0eb6bccac60ad633c66a69bc5cf11",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/native_selected_proposal/review6_runner_context/BOUNDARY.json",
+      "source_path": "round3_core_ci/native_selected_proposal/review6_runner_context/BOUNDARY.json",
+      "bytes": 2562,
+      "sha256": "7d53e06056ac9058f2a060bdede775907d8e0cf27fc01dc649a917b4f4d1563b",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/native_selected_proposal/review6_runner_context/FORMAT.json",
+      "source_path": "round3_core_ci/native_selected_proposal/review6_runner_context/FORMAT.json",
+      "bytes": 1609,
+      "sha256": "ca77ef6cc7706c9af410dc0abe92f69910b2bc1a7cf6f988e5e6395d1cf8cb8e",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/native_selected_proposal/review6_runner_context/REVIEW.md",
+      "source_path": "round3_core_ci/native_selected_proposal/review6_runner_context/REVIEW.md",
+      "bytes": 2488,
+      "sha256": "3c19cd298583860a55d04014c6e31a2d9184a390940477061ee0eb6e01f0a515",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/native_selected_proposal/review6_runner_context/actionlint_corrected.stderr.log",
+      "source_path": "round3_core_ci/native_selected_proposal/review6_runner_context/actionlint_corrected.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/native_selected_proposal/review6_runner_context/actionlint_corrected.stdout.log",
+      "source_path": "round3_core_ci/native_selected_proposal/review6_runner_context/actionlint_corrected.stdout.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/native_selected_proposal/review6_runner_context/actionlint_old.stderr.log",
+      "source_path": "round3_core_ci/native_selected_proposal/review6_runner_context/actionlint_old.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/native_selected_proposal/review6_runner_context/actionlint_old.stdout.log",
+      "source_path": "round3_core_ci/native_selected_proposal/review6_runner_context/actionlint_old.stdout.log",
+      "bytes": 1298,
+      "sha256": "6e79fe0bfb09056e074a1e413dbfb88e0323641b27af829cc3081ce5b3283c42",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/native_selected_proposal/review6_runner_context/candidate/.github/scripts/hepta-core-selected-spec.json",
+      "source_path": "round3_core_ci/native_selected_proposal/review6_runner_context/candidate/.github/scripts/hepta-core-selected-spec.json",
+      "bytes": 3339,
+      "sha256": "b7f1b70f3ac95981d9bb576ac2abcf9b48a6e51ed36403902da25358f79c890a",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/native_selected_proposal/review6_runner_context/candidate/.github/scripts/hepta_core_selected.py",
+      "source_path": "round3_core_ci/native_selected_proposal/review6_runner_context/candidate/.github/scripts/hepta_core_selected.py",
+      "bytes": 9578,
+      "sha256": "5d97bb9b3e4e190a2f00eacba4a3131a75d62cbac708018b7d1fa99f4870234b",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/native_selected_proposal/review6_runner_context/candidate/.github/scripts/hepta_core_selected_contract.py",
+      "source_path": "round3_core_ci/native_selected_proposal/review6_runner_context/candidate/.github/scripts/hepta_core_selected_contract.py",
+      "bytes": 6171,
+      "sha256": "790e9d27afe31ab8519b0ce40d0724459b1dc4371b9cd6de54fcf47ec206d7c1",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/native_selected_proposal/review6_runner_context/candidate/.github/scripts/hepta_core_selected_evidence.py",
+      "source_path": "round3_core_ci/native_selected_proposal/review6_runner_context/candidate/.github/scripts/hepta_core_selected_evidence.py",
+      "bytes": 11269,
+      "sha256": "2a1ad727ee20cf2f24ca54eefedc9aa70e220e8052330c112a09aa4033d6453b",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/native_selected_proposal/review6_runner_context/candidate/.github/scripts/hepta_core_selected_guard.py",
+      "source_path": "round3_core_ci/native_selected_proposal/review6_runner_context/candidate/.github/scripts/hepta_core_selected_guard.py",
+      "bytes": 6507,
+      "sha256": "25d4e94c182ba357e7c63c8c98c380efe70fe113fbba6f8eacb5d89839f973f6",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/native_selected_proposal/review6_runner_context/candidate/.github/workflows/hepta-core-selected-proposal.yml",
+      "source_path": "round3_core_ci/native_selected_proposal/review6_runner_context/candidate/.github/workflows/hepta-core-selected-proposal.yml",
+      "bytes": 4582,
+      "sha256": "a2cb2a1d377b86046e955d76d31dd050e20e694eb1c888297100e6639dab100e",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/native_selected_proposal/review6_runner_context/format_0.stderr.log",
+      "source_path": "round3_core_ci/native_selected_proposal/review6_runner_context/format_0.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/native_selected_proposal/review6_runner_context/format_0.stdout.log",
+      "source_path": "round3_core_ci/native_selected_proposal/review6_runner_context/format_0.stdout.log",
+      "bytes": 66,
+      "sha256": "17aa973d3f004560237d9a95171210b0671deff23d61628eecf7322ff5938f20",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/native_selected_proposal/review6_runner_context/format_1.stderr.log",
+      "source_path": "round3_core_ci/native_selected_proposal/review6_runner_context/format_1.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/native_selected_proposal/review6_runner_context/format_1.stdout.log",
+      "source_path": "round3_core_ci/native_selected_proposal/review6_runner_context/format_1.stdout.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/native_selected_proposal/review6_runner_context/from_review5.patch",
+      "source_path": "round3_core_ci/native_selected_proposal/review6_runner_context/from_review5.patch",
+      "bytes": 3491,
+      "sha256": "287684ddc1765a3f49d959480f4803731bd4f42b911bdcd1516af15b2a5f8235",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/native_selected_proposal/review6_runner_context/manifest.json",
+      "source_path": "round3_core_ci/native_selected_proposal/review6_runner_context/manifest.json",
+      "bytes": 2871,
+      "sha256": "3ed9f69dd4dbf58f54b4bc787ac72541f81241e42ce81069c56d42dfcb302e0a",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/native_selected_proposal/units/22a2_selected_native_inputs/candidate/.github/scripts/hepta-core-selected-spec.json",
+      "source_path": "round3_core_ci/native_selected_proposal/units/22a2_selected_native_inputs/candidate/.github/scripts/hepta-core-selected-spec.json",
+      "bytes": 3333,
+      "sha256": "a2f68c31a468cb6423df87c2d72604d57cf99d6b71a1a67cb1d9ccc1bfff6ba8",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/native_selected_proposal/units/22a2_selected_native_inputs/candidate/.github/scripts/hepta_core_selected_contract.py",
+      "source_path": "round3_core_ci/native_selected_proposal/units/22a2_selected_native_inputs/candidate/.github/scripts/hepta_core_selected_contract.py",
+      "bytes": 6171,
+      "sha256": "790e9d27afe31ab8519b0ce40d0724459b1dc4371b9cd6de54fcf47ec206d7c1",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/native_selected_proposal/units/22a2_selected_native_inputs/candidate/.github/scripts/hepta_core_selected_evidence.py",
+      "source_path": "round3_core_ci/native_selected_proposal/units/22a2_selected_native_inputs/candidate/.github/scripts/hepta_core_selected_evidence.py",
+      "bytes": 11269,
+      "sha256": "2a1ad727ee20cf2f24ca54eefedc9aa70e220e8052330c112a09aa4033d6453b",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/native_selected_proposal/units/22a2_selected_native_inputs/candidate/.github/scripts/hepta_core_selected_guard.py",
+      "source_path": "round3_core_ci/native_selected_proposal/units/22a2_selected_native_inputs/candidate/.github/scripts/hepta_core_selected_guard.py",
+      "bytes": 6507,
+      "sha256": "25d4e94c182ba357e7c63c8c98c380efe70fe113fbba6f8eacb5d89839f973f6",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/native_selected_proposal/units/22a2_selected_native_inputs/manifest.json",
+      "source_path": "round3_core_ci/native_selected_proposal/units/22a2_selected_native_inputs/manifest.json",
+      "bytes": 3351,
+      "sha256": "393a3d56d2643c5f83fa0aab9bd89295ec27c7089fc9679e4c0eae08596c2132",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/native_selected_proposal/units/22a2_selected_native_inputs/repair.patch",
+      "source_path": "round3_core_ci/native_selected_proposal/units/22a2_selected_native_inputs/repair.patch",
+      "bytes": 28876,
+      "sha256": "22e8277471d4f47bc4b250240ca7e481b9eec6f79068b362e9f04d6551705ec9",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/native_selected_proposal/units/22a3_selected_native_inputs/candidate/.github/scripts/hepta-core-selected-spec.json",
+      "source_path": "round3_core_ci/native_selected_proposal/units/22a3_selected_native_inputs/candidate/.github/scripts/hepta-core-selected-spec.json",
+      "bytes": 3339,
+      "sha256": "b7f1b70f3ac95981d9bb576ac2abcf9b48a6e51ed36403902da25358f79c890a",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/native_selected_proposal/units/22a3_selected_native_inputs/candidate/.github/scripts/hepta_core_selected_contract.py",
+      "source_path": "round3_core_ci/native_selected_proposal/units/22a3_selected_native_inputs/candidate/.github/scripts/hepta_core_selected_contract.py",
+      "bytes": 6171,
+      "sha256": "790e9d27afe31ab8519b0ce40d0724459b1dc4371b9cd6de54fcf47ec206d7c1",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/native_selected_proposal/units/22a3_selected_native_inputs/candidate/.github/scripts/hepta_core_selected_evidence.py",
+      "source_path": "round3_core_ci/native_selected_proposal/units/22a3_selected_native_inputs/candidate/.github/scripts/hepta_core_selected_evidence.py",
+      "bytes": 11269,
+      "sha256": "2a1ad727ee20cf2f24ca54eefedc9aa70e220e8052330c112a09aa4033d6453b",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/native_selected_proposal/units/22a3_selected_native_inputs/candidate/.github/scripts/hepta_core_selected_guard.py",
+      "source_path": "round3_core_ci/native_selected_proposal/units/22a3_selected_native_inputs/candidate/.github/scripts/hepta_core_selected_guard.py",
+      "bytes": 6507,
+      "sha256": "25d4e94c182ba357e7c63c8c98c380efe70fe113fbba6f8eacb5d89839f973f6",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/native_selected_proposal/units/22a3_selected_native_inputs/manifest.json",
+      "source_path": "round3_core_ci/native_selected_proposal/units/22a3_selected_native_inputs/manifest.json",
+      "bytes": 3320,
+      "sha256": "63b43fcc00f2076850f32adbbdedbc88f9976914943acd7b5a8e508f38b82196",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/native_selected_proposal/units/22a3_selected_native_inputs/repair.patch",
+      "source_path": "round3_core_ci/native_selected_proposal/units/22a3_selected_native_inputs/repair.patch",
+      "bytes": 28882,
+      "sha256": "edede97ef9a13367785be37838467740f3ec00fdf114e64681e38ccfb696f9f3",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/native_selected_proposal/units/22a_selected_native_inputs/candidate/.github/scripts/hepta-core-selected-spec.json",
+      "source_path": "round3_core_ci/native_selected_proposal/units/22a_selected_native_inputs/candidate/.github/scripts/hepta-core-selected-spec.json",
+      "bytes": 3333,
+      "sha256": "a2f68c31a468cb6423df87c2d72604d57cf99d6b71a1a67cb1d9ccc1bfff6ba8",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/native_selected_proposal/units/22a_selected_native_inputs/candidate/.github/scripts/hepta_core_selected_contract.py",
+      "source_path": "round3_core_ci/native_selected_proposal/units/22a_selected_native_inputs/candidate/.github/scripts/hepta_core_selected_contract.py",
+      "bytes": 6089,
+      "sha256": "a3a07a66cc78939f16b120df550dc2100432338177047e8a3e4b4bd654cdff66",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/native_selected_proposal/units/22a_selected_native_inputs/candidate/.github/scripts/hepta_core_selected_evidence.py",
+      "source_path": "round3_core_ci/native_selected_proposal/units/22a_selected_native_inputs/candidate/.github/scripts/hepta_core_selected_evidence.py",
+      "bytes": 11269,
+      "sha256": "2a1ad727ee20cf2f24ca54eefedc9aa70e220e8052330c112a09aa4033d6453b",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/native_selected_proposal/units/22a_selected_native_inputs/candidate/.github/scripts/hepta_core_selected_guard.py",
+      "source_path": "round3_core_ci/native_selected_proposal/units/22a_selected_native_inputs/candidate/.github/scripts/hepta_core_selected_guard.py",
+      "bytes": 6507,
+      "sha256": "25d4e94c182ba357e7c63c8c98c380efe70fe113fbba6f8eacb5d89839f973f6",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/native_selected_proposal/units/22a_selected_native_inputs/manifest.json",
+      "source_path": "round3_core_ci/native_selected_proposal/units/22a_selected_native_inputs/manifest.json",
+      "bytes": 3204,
+      "sha256": "1d76069241d43a9e36bcafb5420b31c61a06f88247566d6fab6f865d6f8586ce",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/native_selected_proposal/units/22a_selected_native_inputs/repair.patch",
+      "source_path": "round3_core_ci/native_selected_proposal/units/22a_selected_native_inputs/repair.patch",
+      "bytes": 28791,
+      "sha256": "f0c11a266aad0c8567e2f4b8dc373da7ac4e7c566e9ea492134969c312a631a4",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/native_selected_proposal/units/22b2_selected_native_executor_bound/BINDING_CHECKS.json",
+      "source_path": "round3_core_ci/native_selected_proposal/units/22b2_selected_native_executor_bound/BINDING_CHECKS.json",
+      "bytes": 3856,
+      "sha256": "4438f0f927e19146274b4a8060cebea606b49c36f40e4faa01ad34163c2fb6d1",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/native_selected_proposal/units/22b2_selected_native_executor_bound/BINDING_FORMAT.json",
+      "source_path": "round3_core_ci/native_selected_proposal/units/22b2_selected_native_executor_bound/BINDING_FORMAT.json",
+      "bytes": 1357,
+      "sha256": "62fcc56c39c3a783111a68a0ca8a17338677b03f689b9b6a4d01b49bddb96a71",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/native_selected_proposal/units/22b2_selected_native_executor_bound/README.md",
+      "source_path": "round3_core_ci/native_selected_proposal/units/22b2_selected_native_executor_bound/README.md",
+      "bytes": 657,
+      "sha256": "2520eadda2675703114c1db4942dab13fb543f51740639e8ed139d1f2e53833e",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/native_selected_proposal/units/22b2_selected_native_executor_bound/binding.patch",
+      "source_path": "round3_core_ci/native_selected_proposal/units/22b2_selected_native_executor_bound/binding.patch",
+      "bytes": 832,
+      "sha256": "0380181575bd02db54b9cecfb7bc3870e6fe0e89cd0ff25f14e1678a4e5d1a2e",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/native_selected_proposal/units/22b2_selected_native_executor_bound/binding_format_0.stderr.log",
+      "source_path": "round3_core_ci/native_selected_proposal/units/22b2_selected_native_executor_bound/binding_format_0.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/native_selected_proposal/units/22b2_selected_native_executor_bound/binding_format_0.stdout.log",
+      "source_path": "round3_core_ci/native_selected_proposal/units/22b2_selected_native_executor_bound/binding_format_0.stdout.log",
+      "bytes": 66,
+      "sha256": "17aa973d3f004560237d9a95171210b0671deff23d61628eecf7322ff5938f20",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/native_selected_proposal/units/22b2_selected_native_executor_bound/binding_format_1.stderr.log",
+      "source_path": "round3_core_ci/native_selected_proposal/units/22b2_selected_native_executor_bound/binding_format_1.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/native_selected_proposal/units/22b2_selected_native_executor_bound/binding_format_1.stdout.log",
+      "source_path": "round3_core_ci/native_selected_proposal/units/22b2_selected_native_executor_bound/binding_format_1.stdout.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/native_selected_proposal/units/22b2_selected_native_executor_bound/candidate/.github/scripts/hepta-core-selected-spec.json",
+      "source_path": "round3_core_ci/native_selected_proposal/units/22b2_selected_native_executor_bound/candidate/.github/scripts/hepta-core-selected-spec.json",
+      "bytes": 3415,
+      "sha256": "af9c3911ca3400810672a65ce2b60a2622b1c4857e3aa7c57e4998afb6bb8bdf",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/native_selected_proposal/units/22b2_selected_native_executor_bound/candidate/.github/scripts/hepta_core_selected.py",
+      "source_path": "round3_core_ci/native_selected_proposal/units/22b2_selected_native_executor_bound/candidate/.github/scripts/hepta_core_selected.py",
+      "bytes": 9578,
+      "sha256": "5d97bb9b3e4e190a2f00eacba4a3131a75d62cbac708018b7d1fa99f4870234b",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/native_selected_proposal/units/22b2_selected_native_executor_bound/candidate/.github/workflows/hepta-core-selected-proposal.yml",
+      "source_path": "round3_core_ci/native_selected_proposal/units/22b2_selected_native_executor_bound/candidate/.github/workflows/hepta-core-selected-proposal.yml",
+      "bytes": 4582,
+      "sha256": "a2cb2a1d377b86046e955d76d31dd050e20e694eb1c888297100e6639dab100e",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/native_selected_proposal/units/22b2_selected_native_executor_bound/manifest.json",
+      "source_path": "round3_core_ci/native_selected_proposal/units/22b2_selected_native_executor_bound/manifest.json",
+      "bytes": 3481,
+      "sha256": "e4ec749589c5e8d39a6abc2d59426a27a2a6cd94572868e816c77e92c6e98e4a",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/native_selected_proposal/units/22b2_selected_native_executor_bound/preimage/.github/scripts/hepta-core-selected-spec.json",
+      "source_path": "round3_core_ci/native_selected_proposal/units/22b2_selected_native_executor_bound/preimage/.github/scripts/hepta-core-selected-spec.json",
+      "bytes": 3339,
+      "sha256": "b7f1b70f3ac95981d9bb576ac2abcf9b48a6e51ed36403902da25358f79c890a",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/native_selected_proposal/units/22b2_selected_native_executor_bound/repair.patch",
+      "source_path": "round3_core_ci/native_selected_proposal/units/22b2_selected_native_executor_bound/repair.patch",
+      "bytes": 15792,
+      "sha256": "376960f3b2fcf8120b65a02565dd9d6024438ee0e5fac20a0b5fc383c1f90957",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/native_selected_proposal/units/22b2_selected_native_executor_unbound/candidate/.github/scripts/hepta_core_selected.py",
+      "source_path": "round3_core_ci/native_selected_proposal/units/22b2_selected_native_executor_unbound/candidate/.github/scripts/hepta_core_selected.py",
+      "bytes": 9578,
+      "sha256": "5d97bb9b3e4e190a2f00eacba4a3131a75d62cbac708018b7d1fa99f4870234b",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/native_selected_proposal/units/22b2_selected_native_executor_unbound/candidate/.github/workflows/hepta-core-selected-proposal.yml",
+      "source_path": "round3_core_ci/native_selected_proposal/units/22b2_selected_native_executor_unbound/candidate/.github/workflows/hepta-core-selected-proposal.yml",
+      "bytes": 4582,
+      "sha256": "a2cb2a1d377b86046e955d76d31dd050e20e694eb1c888297100e6639dab100e",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/native_selected_proposal/units/22b2_selected_native_executor_unbound/manifest.json",
+      "source_path": "round3_core_ci/native_selected_proposal/units/22b2_selected_native_executor_unbound/manifest.json",
+      "bytes": 2206,
+      "sha256": "0bba118f2739c5c1534ba667002ab3d148ee67546412f3f1f0f4f1c2521ee163",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/native_selected_proposal/units/22b2_selected_native_executor_unbound/repair.patch",
+      "source_path": "round3_core_ci/native_selected_proposal/units/22b2_selected_native_executor_unbound/repair.patch",
+      "bytes": 14960,
+      "sha256": "57cd62763be0ef62c27d7faa221bf2c23eb0efa1dbb45d1f098b2307f53b1261",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/native_selected_proposal/units/22b_selected_native_executor_bound/BINDING_CHECKS.json",
+      "source_path": "round3_core_ci/native_selected_proposal/units/22b_selected_native_executor_bound/BINDING_CHECKS.json",
+      "bytes": 3409,
+      "sha256": "d455ca7427eecaf169652466fb200f169a2c7a1b64ec1febaffa7d6c5ea7df38",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/native_selected_proposal/units/22b_selected_native_executor_bound/BINDING_FORMAT.json",
+      "source_path": "round3_core_ci/native_selected_proposal/units/22b_selected_native_executor_bound/BINDING_FORMAT.json",
+      "bytes": 1397,
+      "sha256": "f46e0c6406133a8326094d0a79f980cd3313074b8b3669f1ef84898f1bb47698",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/native_selected_proposal/units/22b_selected_native_executor_bound/README.md",
+      "source_path": "round3_core_ci/native_selected_proposal/units/22b_selected_native_executor_bound/README.md",
+      "bytes": 1294,
+      "sha256": "7a0e037480582961b1e4e94c53eec9ff107a805f7bce9d6a5caecf90ca906482",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/native_selected_proposal/units/22b_selected_native_executor_bound/binding.patch",
+      "source_path": "round3_core_ci/native_selected_proposal/units/22b_selected_native_executor_bound/binding.patch",
+      "bytes": 826,
+      "sha256": "e97c080da7fea6344a527cace3944f6f045fbe41fff838360439a9099fd18930",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/native_selected_proposal/units/22b_selected_native_executor_bound/binding_check_0.stderr.log",
+      "source_path": "round3_core_ci/native_selected_proposal/units/22b_selected_native_executor_bound/binding_check_0.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/native_selected_proposal/units/22b_selected_native_executor_bound/binding_check_0.stdout.log",
+      "source_path": "round3_core_ci/native_selected_proposal/units/22b_selected_native_executor_bound/binding_check_0.stdout.log",
+      "bytes": 66,
+      "sha256": "17aa973d3f004560237d9a95171210b0671deff23d61628eecf7322ff5938f20",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/native_selected_proposal/units/22b_selected_native_executor_bound/binding_check_1.stderr.log",
+      "source_path": "round3_core_ci/native_selected_proposal/units/22b_selected_native_executor_bound/binding_check_1.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/native_selected_proposal/units/22b_selected_native_executor_bound/binding_check_1.stdout.log",
+      "source_path": "round3_core_ci/native_selected_proposal/units/22b_selected_native_executor_bound/binding_check_1.stdout.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/native_selected_proposal/units/22b_selected_native_executor_bound/candidate/.github/scripts/hepta-core-selected-spec.json",
+      "source_path": "round3_core_ci/native_selected_proposal/units/22b_selected_native_executor_bound/candidate/.github/scripts/hepta-core-selected-spec.json",
+      "bytes": 3409,
+      "sha256": "20bebb9b0e1c10016691a5d0f833c1a35490a41e21c51e620f01f4b66d1a8c6b",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/native_selected_proposal/units/22b_selected_native_executor_bound/candidate/.github/scripts/hepta_core_selected.py",
+      "source_path": "round3_core_ci/native_selected_proposal/units/22b_selected_native_executor_bound/candidate/.github/scripts/hepta_core_selected.py",
+      "bytes": 9578,
+      "sha256": "5d97bb9b3e4e190a2f00eacba4a3131a75d62cbac708018b7d1fa99f4870234b",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/native_selected_proposal/units/22b_selected_native_executor_bound/candidate/.github/workflows/hepta-core-selected-proposal.yml",
+      "source_path": "round3_core_ci/native_selected_proposal/units/22b_selected_native_executor_bound/candidate/.github/workflows/hepta-core-selected-proposal.yml",
+      "bytes": 4123,
+      "sha256": "005f116a46ea6a4f3919367424814ae1014116ae97e35aab49bb45c3d8c4edec",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/native_selected_proposal/units/22b_selected_native_executor_bound/manifest.json",
+      "source_path": "round3_core_ci/native_selected_proposal/units/22b_selected_native_executor_bound/manifest.json",
+      "bytes": 3416,
+      "sha256": "850c2eda02ae7f32e7fa4149d3789ccda190190b1e9597e81b4713351c1906a7",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/native_selected_proposal/units/22b_selected_native_executor_bound/preimage/.github/scripts/hepta-core-selected-spec.json",
+      "source_path": "round3_core_ci/native_selected_proposal/units/22b_selected_native_executor_bound/preimage/.github/scripts/hepta-core-selected-spec.json",
+      "bytes": 3333,
+      "sha256": "a2f68c31a468cb6423df87c2d72604d57cf99d6b71a1a67cb1d9ccc1bfff6ba8",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/native_selected_proposal/units/22b_selected_native_executor_bound/repair.patch",
+      "source_path": "round3_core_ci/native_selected_proposal/units/22b_selected_native_executor_bound/repair.patch",
+      "bytes": 15318,
+      "sha256": "3bbce882244238c193043c0687e3ba646dae28272f3910af6b302bd8a44bf256",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/native_selected_proposal/units/22b_selected_native_executor_unbound/candidate/.github/scripts/hepta_core_selected.py",
+      "source_path": "round3_core_ci/native_selected_proposal/units/22b_selected_native_executor_unbound/candidate/.github/scripts/hepta_core_selected.py",
+      "bytes": 9578,
+      "sha256": "5d97bb9b3e4e190a2f00eacba4a3131a75d62cbac708018b7d1fa99f4870234b",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/native_selected_proposal/units/22b_selected_native_executor_unbound/candidate/.github/workflows/hepta-core-selected-proposal.yml",
+      "source_path": "round3_core_ci/native_selected_proposal/units/22b_selected_native_executor_unbound/candidate/.github/workflows/hepta-core-selected-proposal.yml",
+      "bytes": 4123,
+      "sha256": "005f116a46ea6a4f3919367424814ae1014116ae97e35aab49bb45c3d8c4edec",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/native_selected_proposal/units/22b_selected_native_executor_unbound/manifest.json",
+      "source_path": "round3_core_ci/native_selected_proposal/units/22b_selected_native_executor_unbound/manifest.json",
+      "bytes": 2089,
+      "sha256": "5a8353657375282b648c930bf8507e32a749817668f3b5a0469663167e57bf07",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/native_selected_proposal/units/22b_selected_native_executor_unbound/repair.patch",
+      "source_path": "round3_core_ci/native_selected_proposal/units/22b_selected_native_executor_unbound/repair.patch",
+      "bytes": 14492,
+      "sha256": "5be0ed9cc2422fc9b90ee9bf994e381ffb45d225d97b82f70bd9d1a3b99fccb2",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/native_selected_proposal/verify_offline.py",
+      "source_path": "round3_core_ci/native_selected_proposal/verify_offline.py",
+      "bytes": 17241,
+      "sha256": "005b97fad4a8c9e138f5e17998151553be853f9fbb8a69837d09f9e20cbc68e5",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/native_selected_proposal/verify_offline_v2.py",
+      "source_path": "round3_core_ci/native_selected_proposal/verify_offline_v2.py",
+      "bytes": 18728,
+      "sha256": "8b6c292f4ce2e6238e4d4dd8b23d4c345df07b59aa2d6eaf8943190a9b26e5ed",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/native_selected_proposal/verify_offline_v3.py",
+      "source_path": "round3_core_ci/native_selected_proposal/verify_offline_v3.py",
+      "bytes": 19467,
+      "sha256": "e56eb0c8a50e2efa84fb654b202d3c5ae5e99982b6d455cc005453d6d21ab41e",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/native_selected_proposal/verify_offline_v4.py",
+      "source_path": "round3_core_ci/native_selected_proposal/verify_offline_v4.py",
+      "bytes": 20988,
+      "sha256": "e3e9db51002b00e1b6f9c63d7ca127da401748c00c59c8f9883285c1c6514494",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/native_selected_proposal/verify_offline_v5.py",
+      "source_path": "round3_core_ci/native_selected_proposal/verify_offline_v5.py",
+      "bytes": 21326,
+      "sha256": "24523bcd2cd669d8cd6bdebe66829338959b543c01f34d12b5fc351ea4d69f08",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/evidence/supplement_21_22_inputs/round3_local_qualification/core_5095_plus21/FORMAT.json",
+      "source_path": "round3_local_qualification/core_5095_plus21/FORMAT.json",
+      "bytes": 426,
+      "sha256": "07d9d32a8a9122ec9808622dd70fe5e428d5fe95d1faaefa2f41d466a4ddf905",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/evidence/supplement_21_22_inputs/round3_local_qualification/core_5095_plus21/RESULT.json",
+      "source_path": "round3_local_qualification/core_5095_plus21/RESULT.json",
+      "bytes": 1242,
+      "sha256": "d53551d7a9a95531d13e9f2eb233a7d7d5a813357a262baa53d55ea354b5aa7d",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/evidence/supplement_21_22_inputs/round3_local_qualification/core_5095_plus21/START.json",
+      "source_path": "round3_local_qualification/core_5095_plus21/START.json",
+      "bytes": 924,
+      "sha256": "1ce1dae8816a4bbdd365b5045b0afdc5d88f6fb0d9cfe203e8ce3b8faee84cca",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/evidence/supplement_21_22_inputs/round3_local_qualification/core_5095_plus21/source.index",
+      "source_path": "round3_local_qualification/core_5095_plus21/source.index",
+      "bytes": 2134573,
+      "sha256": "7ad4887acfad56d901904db0391f748dfa866860978aed1704a076bc0b51bb32",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/evidence/supplement_21_22_inputs/round3_local_qualification/core_5095_plus21/stderr.log",
+      "source_path": "round3_local_qualification/core_5095_plus21/stderr.log",
+      "bytes": 456,
+      "sha256": "13a36da934b0b31af2f042585e9f572fd16f18abfecb613f7741d78b84f6f899",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/evidence/supplement_21_22_inputs/round3_local_qualification/core_5095_plus21/stdout.log",
+      "source_path": "round3_local_qualification/core_5095_plus21/stdout.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/evidence/supplement_21_22_inputs/round3_local_qualification/core_5095_plus21_execute/RESULT.json",
+      "source_path": "round3_local_qualification/core_5095_plus21_execute/RESULT.json",
+      "bytes": 1514,
+      "sha256": "1d8312cfbfea63dce7cc38127c7e6b2a69a47e3a948ecce2b99f62ce2b17877d",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/evidence/supplement_21_22_inputs/round3_local_qualification/core_5095_plus21_execute/ROOT_REVIEW.json",
+      "source_path": "round3_local_qualification/core_5095_plus21_execute/ROOT_REVIEW.json",
+      "bytes": 1670,
+      "sha256": "42230b75738a297b09b44a484514da627e92d1d986c0b87c806e35e9e1c3a0b6",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/evidence/supplement_21_22_inputs/round3_local_qualification/core_5095_plus21_execute/START.json",
+      "source_path": "round3_local_qualification/core_5095_plus21_execute/START.json",
+      "bytes": 1194,
+      "sha256": "e7f81c3fe88386281a3ec9df9dc175c40082d5c07dbeb801ef212db680014150",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/evidence/supplement_21_22_inputs/round3_local_qualification/core_5095_plus21_execute/source.index",
+      "source_path": "round3_local_qualification/core_5095_plus21_execute/source.index",
+      "bytes": 2134573,
+      "sha256": "7ad4887acfad56d901904db0391f748dfa866860978aed1704a076bc0b51bb32",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/evidence/supplement_21_22_inputs/round3_local_qualification/core_5095_plus21_execute/stderr.log",
+      "source_path": "round3_local_qualification/core_5095_plus21_execute/stderr.log",
+      "bytes": 18538,
+      "sha256": "0c37077fbb6f46a2970c1e160f5d147c0d6ea8b701303af4c5a757a30b3c09f6",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/evidence/supplement_21_22_inputs/round3_local_qualification/core_5095_plus21_execute/stdout.log",
+      "source_path": "round3_local_qualification/core_5095_plus21_execute/stdout.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/evidence/supplement_21_22_inputs/round3_local_qualification/core_context_22a3/ROOT_REVIEW.json",
+      "source_path": "round3_local_qualification/core_context_22a3/ROOT_REVIEW.json",
+      "bytes": 4308,
+      "sha256": "f41e3de6addfcc491da0615fc1e71e54011d8bc94c61b2676c2656a4b45d271d",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/evidence/supplement_21_22_inputs/round3_local_qualification/core_selected_22b/ROOT_REVIEW.json",
+      "source_path": "round3_local_qualification/core_selected_22b/ROOT_REVIEW.json",
+      "bytes": 4175,
+      "sha256": "1d941d4a3a0ae8a6beb451ccfffcf4d300abe557d382acc9ffbbf8e3435bbd32",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/evidence/supplement_21_22_inputs/round3_local_qualification/core_selected_22b2/DESCRIPTION_CORRECTION.json",
+      "source_path": "round3_local_qualification/core_selected_22b2/DESCRIPTION_CORRECTION.json",
+      "bytes": 281,
+      "sha256": "4739af240351c2873139574ee9bcf5e7d586dd27edd6a2dd093daafccbbc2e4c",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/evidence/supplement_21_22_inputs/round3_local_qualification/core_selected_22b2/ROOT_REVIEW.json",
+      "source_path": "round3_local_qualification/core_selected_22b2/ROOT_REVIEW.json",
+      "bytes": 4048,
+      "sha256": "4e8e54e910355754d6d1d91088041c558bfa60eebdf4030bc0bccd59950547d4",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/evidence/supplement_21_22_inputs/round3_local_qualification/side_inputs_1838/ROOT_REVIEW.json",
+      "source_path": "round3_local_qualification/side_inputs_1838/ROOT_REVIEW.json",
+      "bytes": 4878,
+      "sha256": "1ed2101c3913552be4c5c73067ba5dc2be0369ef4d23052ad8d4a5b58c29f51c",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/evidence/supplement_21_22_inputs/round3_local_qualification/side_inputs_1838/SOURCE_REVIEW.json",
+      "source_path": "round3_local_qualification/side_inputs_1838/SOURCE_REVIEW.json",
+      "bytes": 1813,
+      "sha256": "e0330194e78d7c6091fcc4ce30b20c462f251915806d92c1342ec72fda7e76d6",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/evidence/supplement_21_22_inputs/round3_local_qualification/side_inputs_1838/status.txt",
+      "source_path": "round3_local_qualification/side_inputs_1838/status.txt",
+      "bytes": 711,
+      "sha256": "187e18f6295353246312ca9faf56106ff3480722b91029b725a53d877237681d",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/evidence/supplement_21_22_inputs/round3_local_qualification/side_inputs_1838/stderr.log",
+      "source_path": "round3_local_qualification/side_inputs_1838/stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/evidence/supplement_21_22_inputs/round3_local_qualification/side_inputs_1838/stdout.log",
+      "source_path": "round3_local_qualification/side_inputs_1838/stdout.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/evidence/supplement_21_22_inputs/round3_native/independent_reviews/core_selected_observability_review4.json",
+      "source_path": "round3_native/independent_reviews/core_selected_observability_review4.json",
+      "bytes": 2715,
+      "sha256": "b43e02ca053b6a1e8d84086f754538b68e87d63a669df2eae17b80542ef843a8",
+      "mode": "0o100644"
+    }
+  ],
+  "parts": [
+    {
+      "path": "core-supplement-21-22.tar.xz.part-000",
+      "bytes": 440000,
+      "sha256": "4383dfba1010220a0aea7b6f7b107541930206ab12c14125856c1f8c13ffe580"
+    },
+    {
+      "path": "core-supplement-21-22.tar.xz.part-001",
+      "bytes": 163868,
+      "sha256": "460f78b86bbcaceb8b7c88b0146ce4e6653b852f2af1cb9ea27916a36f3255e5"
+    }
+  ]
+}
