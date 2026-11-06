@@ -61,3 +61,10 @@
   "actual_diagnostic": "RECIPE.v2.json:6545 statics ==> statistics",
   "exact_added_line": "      \"src/tests/derive/trace/statics.rs\": {",
       "vendor_file": "codex-rs/third_party/starlark-0.14.2/src/tests/derive/trace/statics.rs",
+
+# Exact technical expressions retained in sealed NDU source and protocol evidence.
+# The regex matches cache/caching; the Rust identifier counts decoder entries.
+         (r"unhashable|need\s+not\s+be\s+hashable|not\s+(?:need|require).*hashable", r"cach(?:e|ing)\s+is\s+disabled")),
+        "cach(?:e|ing)\\s+is\\s+disabled"
+            let nd = r.count(8)?;
+            for _ in 0..nd {
