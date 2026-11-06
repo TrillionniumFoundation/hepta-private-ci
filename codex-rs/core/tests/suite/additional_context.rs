@@ -33,9 +33,18 @@ async fn additional_context_is_model_visible_but_not_a_user_message_item() -> Re
     )
     .await;
     let test = test_codex()
-        .with_config(|config| config.include_environment_context = false)
+        .with_config(|config| {
+            config.include_environment_context = false;
+            config.model_provider.mock_internal_chat_metadata = None;
+        })
         .build(&server)
         .await?;
+    assert!(
+        !test
+            .config
+            .model_provider
+            .accepts_internal_chat_message_metadata_for_request(&format!("{}/v1", server.uri()),)
+    );
 
     test.codex
         .start_or_steer_turn(
