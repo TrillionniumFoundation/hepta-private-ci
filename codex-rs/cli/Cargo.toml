@@ -4,11 +4,21 @@ version.workspace = true
 edition.workspace = true
 license.workspace = true
 build = "build.rs"
+# Only the explicit wrappers below are executables. The shared src/main.rs
+# must not become an implicit codex-cli binary: it lacks the wrappers'
+# recursion limit and fails the Windows Bazel release build.
+autobins = false
 default-run = "codex"
 
 [[bin]]
 name = "codex"
-path = "src/main.rs"
+path = "src/codex.rs"
+
+# Preserve the package-named binary for existing callers without compiling
+# the unwrapped shared src/main.rs as a separate executable.
+[[bin]]
+name = "codex-cli"
+path = "src/codex.rs"
 
 [[bin]]
 name = "hepta"

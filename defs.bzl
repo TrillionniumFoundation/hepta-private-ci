@@ -184,6 +184,7 @@ def codex_rust_crate(
         crate_name,
         crate_features = [],
         crate_srcs = None,
+        binary_crate_root_overrides = {},
         crate_edition = None,
         proc_macro = False,
         build_script_enabled = True,
@@ -304,7 +305,19 @@ def codex_rust_crate(
         manifest_relpath = manifest_relpath[len("codex-rs/"):]
     manifest_path = manifest_relpath + "/Cargo.toml"
 
-    binaries = DEP_DATA.get(native.package_name())["binaries"]
+    binaries = dict(DEP_DATA.get(native.package_name())["binaries"])
+
+    # Cargo manifests are the authority for binary roots, but the Bazel
+    # @crates metadata can retain an older root after a source-layout change.
+    # An explicit narrow override must name an existing registered binary
+    # and a crate-local Rust path; never silently fall back to src/main.rs.
+    for binary, crate_root in binary_crate_root_overrides.items():
+        if binary not in binaries:
+            fail("Bazel binary-root override does not name a registered binary: " + binary)
+        is_local_source = crate_root.startswith("src/") and crate_root.endswith(".rs")
+        if not is_local_source or ".." in crate_root:
+            fail("Bazel binary-root override escapes crate source: " + crate_root)
+        binaries[binary] = crate_root
 
     lib_srcs = crate_srcs or native.glob(["src/**/*.rs"], exclude = binaries.values(), allow_empty = True)
 
