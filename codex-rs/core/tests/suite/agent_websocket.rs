@@ -3,6 +3,7 @@ use codex_core::TurnInputRequest;
 use codex_features::Feature;
 use codex_protocol::config_types::ServiceTier;
 use codex_protocol::openai_models::ToolMode;
+use codex_protocol::protocol::AskForApproval;
 use codex_protocol::protocol::EventMsg;
 use codex_protocol::protocol::ThreadSettingsOverrides;
 use codex_protocol::user_input::UserInput;
@@ -46,7 +47,11 @@ async fn websocket_model_switch_to_responses_lite_omits_top_level_tools() -> Res
         .with_model("gpt-5.2");
     let test = builder.build_with_websocket_server(&server).await?;
 
-    test.submit_turn("non-lite turn").await?;
+    test.submit_turn_with_permission_profile(
+        "non-lite turn",
+        test.config.permissions.permission_profile().clone(),
+    )
+    .await?;
     test.codex
         .start_or_steer_turn(
             TurnInputRequest::user_input(vec![UserInput::Text {
@@ -388,8 +393,14 @@ async fn websocket_v2_first_turn_uses_updated_fast_tier_after_startup_prewarm() 
     assert_eq!(warmup["generate"].as_bool(), Some(false));
     assert_eq!(warmup.get("service_tier"), None);
 
-    test.submit_turn_with_service_tier("hello", Some(ServiceTier::Fast.request_value()))
-        .await?;
+    test.submit_turn_with_permission_profile_context(
+        "hello",
+        AskForApproval::Never,
+        test.config.permissions.permission_profile().clone(),
+        Some(Some(ServiceTier::Fast.request_value().to_string())),
+        /*environments*/ None,
+    )
+    .await?;
 
     assert_eq!(server.handshakes().len(), 1);
     let connection = server.single_connection();

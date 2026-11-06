@@ -1054,7 +1054,7 @@ impl TestCodex {
         .await
     }
 
-    async fn submit_turn_with_permission_profile_context(
+    pub async fn submit_turn_with_permission_profile_context(
         &self,
         prompt: &str,
         approval_policy: AskForApproval,
