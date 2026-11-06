@@ -79,10 +79,6 @@ jobs:
           version: "0.11.3"
       - name: Check formatting (run `just fmt` to fix)
         run: just fmt-check
-      - name: Emit Ruff formatter diff for the scope regression test (temporary diagnostic only)
-        if: always()
-        run: |
-          uv run --frozen --project scripts ruff format --diff scripts/tests/test_hepta_ci_scope.py || true
 
       - name: Prettier (run `pnpm run format:fix` to fix)
         run: pnpm run format
