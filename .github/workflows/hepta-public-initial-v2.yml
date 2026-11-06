@@ -38,8 +38,8 @@ jobs:
       HEPTA_CI_LANE: source-head
       HEPTA_PAIRED_EXECUTION_PROFILE: hepta-integrated-chain-execution-v11
       CHAIN_SHA: cfa57cd04751427451302b5c10539b3984d7f8db
-      HEPTA_RUNTIME_CHAIN_SHA: cad4c18fe146b7d742ac7fa8872044cd4136c22b
-      HEPTA_RUNTIME_EXECUTION_PROFILE: hepta-integrated-chain-execution-v12
+      HEPTA_RUNTIME_CHAIN_SHA: 5bb29d6ae39fa0c71f9151f3dce31fa1a3ab1800
+      HEPTA_RUNTIME_EXECUTION_PROFILE: hepta-integrated-chain-execution-v13
       HEPTA_PUBLIC_INITIAL_HISTORICAL_CHAIN: ${{ github.workspace }}/chain
       RESEARCH_CHAIN_SHA: cfa57cd04751427451302b5c10539b3984d7f8db
       OBSERVATION_CHAIN_SHA: cfa57cd04751427451302b5c10539b3984d7f8db
@@ -299,6 +299,9 @@ jobs:
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-public-initial-v2/runtime-forward-v2-controls.json" --timeout-seconds 60 --minimum-tests 12 -- python3 scripts/test_hepta_neural_forward_v2.py -v
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-public-initial-v2/runtime-source-role-controls.json" --timeout-seconds 60 --minimum-tests 12 -- python3 scripts/test_hepta_smollm_runtime_roles_v1.py -v
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-public-initial-v2/runtime-evidence-role-controls.json" --timeout-seconds 60 --minimum-tests 16 -- python3 scripts/test_hepta_neural_runtime_evidence_v1.py -v
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-public-initial-v2/runtime-source-v13-controls.json" --timeout-seconds 60 --minimum-tests 7 -- python3 scripts/test_hepta_smollm_execution_source_v13.py -v
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-public-initial-v2/runtime-forward-v3-controls.json" --timeout-seconds 60 --minimum-tests 9 -- python3 scripts/test_hepta_neural_forward_v13.py -v
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-public-initial-v2/runtime-profile-v13-controls.json" --timeout-seconds 60 --minimum-tests 7 -- python3 scripts/test_hepta_neural_runtime_profiles_v13.py -v
       - name: Install the exact CPU wheel closure in a new environment
         id: cold_runtime
         if: ${{ success() && steps.model_target.outputs.available == 'true' }}
