@@ -1,0 +1,34 @@
+{
+  "observed_at_utc": "2026-11-06T17:57:11.476603+00:00",
+  "scope": "Three new root restoration receipts only; each complete bundle was separately checked in its frozen publication manifest.",
+  "prior_attempt": {
+    "argv": [
+      "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+      "-m",
+      "codespell_lib",
+      "--ignore-words",
+      ".codespellignore",
+      "--skip",
+      "./.git",
+      "/workspace/scratch/3f6a885bb83c/round3_local_qualification/checkpoint_review_1754"
+    ],
+    "exit_code": 1,
+    "stderr": "No module named codespell_lib",
+    "cause": "Pinned module search path not supplied to primary runtime"
+  },
+  "argv": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+    "-m",
+    "codespell_lib",
+    "--ignore-words",
+    ".codespellignore",
+    "--skip",
+    "./.git",
+    "/workspace/scratch/3f6a885bb83c/round3_local_qualification/checkpoint_review_1754"
+  ],
+  "module_search_path": "/workspace/scratch/3f6a885bb83c/tooling/codespell-2.4.3",
+  "exit_code": 0,
+  "stdout": "",
+  "stderr": "",
+  "repository_configuration_unchanged": true
+}
