@@ -1,0 +1,53 @@
+{
+  "id": "ndu-pure-information-gate-20261106",
+  "status": "ANALYTIC_GATE_EVALUATED_BEFORE_RANDOM_SAMPLING",
+  "purpose": "Qualify the pure-information lookahead mechanism and decision-relevant statistic; reject a manufactured superiority claim over the identical classical baseline.",
+  "terminal_reward": "Exactly 1{answer=H}; no reward for readiness, queries or internal state.",
+  "family": {
+    "hidden_prior_h1": "1/2",
+    "initial_state": "locked",
+    "maximum_queries": 2,
+    "prepare_success_probability": "r in [0,1], independent of H",
+    "probe_accuracy_when_ready": "p in [1/2,1], symmetric binary channel with known orientation",
+    "probe_when_locked": "fair coin independent of H",
+    "durations": "Known positive deterministic integer durations; actual consumed duration enters price and deadline.",
+    "cancellation": "Fee paid at launch; timeout at cap leaves state unchanged and reveals no future label or state."
+  },
+  "designed_example": {
+    "prepare_fee": "2/25",
+    "probe_fee": "3/25",
+    "time_price": "1/100",
+    "prepare_duration": 1,
+    "probe_duration": 1,
+    "deadline": 2,
+    "readiness_probability": "1",
+    "accuracies": ["57/100", "87/100"],
+    "optimal_threshold": "18/25"
+  },
+  "method_inputs": "Known contract plus purchased complete-chain (S,S*B) observations only; no evaluator law or deployment hidden label.",
+  "mandatory_comparators": [
+    "No-data prior STOP",
+    "Known-law receding one-step VOI, explicitly diagnostic",
+    "Known-law full-history two-query DP, explicitly diagnostic",
+    "Same-data same-structure maximum-likelihood model plus exact DP, with the same confidence/stopping/accounting contract"
+  ],
+  "stochastic_superiority_confirmation": {
+    "status": "CANCELLED_BEFORE_SAMPLING_BY_ANALYTIC_EQUIVALENCE",
+    "reason": "The direct statistic and same-structure MLE plus DP execute the same policy on every observed count path. Under identical sampling/checkpoints/accounting there is no algorithmic gain to confirm.",
+    "new_calibration_samples": 0,
+    "new_confirmation_samples": 0,
+    "random_generators_used": false,
+    "post_outcome_seed_search_permitted": false
+  },
+  "deterministic_qualification": {
+    "exact_arithmetic": "fractions.Fraction",
+    "known_law_contract_pairs": 36,
+    "complete_count_triples": "All 0<=b<=s<=n for n=1,...,16; these are algebraic fixtures, not collected observations.",
+    "confidence_fixtures": "Explicit constructed counts only; no observed statistical coverage claim.",
+    "source_binding": "The receipt binds mechanism.py, verify_mechanism.py and this protocol."
+  },
+  "prior_experiment": "The original 144-cell source freeze, primary endpoint, data and NO_GO decision remain unchanged.",
+  "actual_provider_calls": 0,
+  "scientific_confirmation": "NOT_ESTABLISHED",
+  "new_rl_originality": "NOT_ESTABLISHED"
+}

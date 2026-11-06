@@ -1,0 +1,579 @@
+{
+  "actual_calibration_samples_collected": 0,
+  "actual_confirmation_samples_collected": 0,
+  "at_utc": "2026-11-06T11:40:53.670954+00:00",
+  "bands_from_constructed_counts": {
+    "negative": {
+      "decision": "stop",
+      "estimate": "-3/20",
+      "radius": 0.015929805107461024,
+      "reason": "finite_checkpoint_band"
+    },
+    "positive": {
+      "decision": "prepare",
+      "estimate": "3/20",
+      "radius": 0.015929805107461024,
+      "reason": "finite_checkpoint_band"
+    },
+    "unresolved": {
+      "decision": "unresolved",
+      "estimate": "7/25",
+      "radius": 1.5929805107461024,
+      "reason": "finite_checkpoint_band"
+    }
+  },
+  "cases": [
+    {
+      "contract": "normal",
+      "dp_action": [
+        "prepare",
+        1
+      ],
+      "dp_value": "13/20",
+      "law": "profitable",
+      "margin": "3/20",
+      "myopic_action": [
+        "stop",
+        0
+      ],
+      "myopic_value": "1/2"
+    },
+    {
+      "contract": "normal",
+      "dp_action": [
+        "stop",
+        0
+      ],
+      "dp_value": "1/2",
+      "law": "unprofitable",
+      "margin": "-3/20",
+      "myopic_action": [
+        "stop",
+        0
+      ],
+      "myopic_value": "1/2"
+    },
+    {
+      "contract": "normal",
+      "dp_action": [
+        "prepare",
+        1
+      ],
+      "dp_value": "53/100",
+      "law": "partial_success",
+      "margin": "3/100",
+      "myopic_action": [
+        "stop",
+        0
+      ],
+      "myopic_value": "1/2"
+    },
+    {
+      "contract": "normal",
+      "dp_action": [
+        "stop",
+        0
+      ],
+      "dp_value": "1/2",
+      "law": "never_ready",
+      "margin": "-9/100",
+      "myopic_action": [
+        "stop",
+        0
+      ],
+      "myopic_value": "1/2"
+    },
+    {
+      "contract": "normal",
+      "dp_action": [
+        "prepare",
+        1
+      ],
+      "dp_value": "39/50",
+      "law": "perfect",
+      "margin": "7/25",
+      "myopic_action": [
+        "stop",
+        0
+      ],
+      "myopic_value": "1/2"
+    },
+    {
+      "contract": "normal",
+      "dp_action": [
+        "stop",
+        0
+      ],
+      "dp_value": "1/2",
+      "law": "boundary",
+      "margin": "0",
+      "myopic_action": [
+        "stop",
+        0
+      ],
+      "myopic_value": "1/2"
+    },
+    {
+      "contract": "too_short",
+      "dp_action": [
+        "stop",
+        0
+      ],
+      "dp_value": "1/2",
+      "law": "profitable",
+      "margin": "3/20",
+      "myopic_action": [
+        "stop",
+        0
+      ],
+      "myopic_value": "1/2"
+    },
+    {
+      "contract": "too_short",
+      "dp_action": [
+        "stop",
+        0
+      ],
+      "dp_value": "1/2",
+      "law": "unprofitable",
+      "margin": "-3/20",
+      "myopic_action": [
+        "stop",
+        0
+      ],
+      "myopic_value": "1/2"
+    },
+    {
+      "contract": "too_short",
+      "dp_action": [
+        "stop",
+        0
+      ],
+      "dp_value": "1/2",
+      "law": "partial_success",
+      "margin": "3/100",
+      "myopic_action": [
+        "stop",
+        0
+      ],
+      "myopic_value": "1/2"
+    },
+    {
+      "contract": "too_short",
+      "dp_action": [
+        "stop",
+        0
+      ],
+      "dp_value": "1/2",
+      "law": "never_ready",
+      "margin": "-9/100",
+      "myopic_action": [
+        "stop",
+        0
+      ],
+      "myopic_value": "1/2"
+    },
+    {
+      "contract": "too_short",
+      "dp_action": [
+        "stop",
+        0
+      ],
+      "dp_value": "1/2",
+      "law": "perfect",
+      "margin": "7/25",
+      "myopic_action": [
+        "stop",
+        0
+      ],
+      "myopic_value": "1/2"
+    },
+    {
+      "contract": "too_short",
+      "dp_action": [
+        "stop",
+        0
+      ],
+      "dp_value": "1/2",
+      "law": "boundary",
+      "margin": "0",
+      "myopic_action": [
+        "stop",
+        0
+      ],
+      "myopic_value": "1/2"
+    },
+    {
+      "contract": "costly",
+      "dp_action": [
+        "stop",
+        0
+      ],
+      "dp_value": "1/2",
+      "law": "profitable",
+      "margin": "-23/100",
+      "myopic_action": [
+        "stop",
+        0
+      ],
+      "myopic_value": "1/2"
+    },
+    {
+      "contract": "costly",
+      "dp_action": [
+        "stop",
+        0
+      ],
+      "dp_value": "1/2",
+      "law": "unprofitable",
+      "margin": "-53/100",
+      "myopic_action": [
+        "stop",
+        0
+      ],
+      "myopic_value": "1/2"
+    },
+    {
+      "contract": "costly",
+      "dp_action": [
+        "stop",
+        0
+      ],
+      "dp_value": "1/2",
+      "law": "partial_success",
+      "margin": "-4/25",
+      "myopic_action": [
+        "stop",
+        0
+      ],
+      "myopic_value": "1/2"
+    },
+    {
+      "contract": "costly",
+      "dp_action": [
+        "stop",
+        0
+      ],
+      "dp_value": "1/2",
+      "law": "never_ready",
+      "margin": "-9/100",
+      "myopic_action": [
+        "stop",
+        0
+      ],
+      "myopic_value": "1/2"
+    },
+    {
+      "contract": "costly",
+      "dp_action": [
+        "stop",
+        0
+      ],
+      "dp_value": "1/2",
+      "law": "perfect",
+      "margin": "-1/10",
+      "myopic_action": [
+        "stop",
+        0
+      ],
+      "myopic_value": "1/2"
+    },
+    {
+      "contract": "costly",
+      "dp_action": [
+        "stop",
+        0
+      ],
+      "dp_value": "1/2",
+      "law": "boundary",
+      "margin": "-19/50",
+      "myopic_action": [
+        "stop",
+        0
+      ],
+      "myopic_value": "1/2"
+    },
+    {
+      "contract": "clock_penalty",
+      "dp_action": [
+        "stop",
+        0
+      ],
+      "dp_value": "1/2",
+      "law": "profitable",
+      "margin": "-3/100",
+      "myopic_action": [
+        "stop",
+        0
+      ],
+      "myopic_value": "1/2"
+    },
+    {
+      "contract": "clock_penalty",
+      "dp_action": [
+        "stop",
+        0
+      ],
+      "dp_value": "1/2",
+      "law": "unprofitable",
+      "margin": "-33/100",
+      "myopic_action": [
+        "stop",
+        0
+      ],
+      "myopic_value": "1/2"
+    },
+    {
+      "contract": "clock_penalty",
+      "dp_action": [
+        "stop",
+        0
+      ],
+      "dp_value": "1/2",
+      "law": "partial_success",
+      "margin": "-21/200",
+      "myopic_action": [
+        "stop",
+        0
+      ],
+      "myopic_value": "1/2"
+    },
+    {
+      "contract": "clock_penalty",
+      "dp_action": [
+        "stop",
+        0
+      ],
+      "dp_value": "1/2",
+      "law": "never_ready",
+      "margin": "-9/50",
+      "myopic_action": [
+        "stop",
+        0
+      ],
+      "myopic_value": "1/2"
+    },
+    {
+      "contract": "clock_penalty",
+      "dp_action": [
+        "prepare",
+        1
+      ],
+      "dp_value": "3/5",
+      "law": "perfect",
+      "margin": "1/10",
+      "myopic_action": [
+        "stop",
+        0
+      ],
+      "myopic_value": "1/2"
+    },
+    {
+      "contract": "clock_penalty",
+      "dp_action": [
+        "stop",
+        0
+      ],
+      "dp_value": "1/2",
+      "law": "boundary",
+      "margin": "-9/50",
+      "myopic_action": [
+        "stop",
+        0
+      ],
+      "myopic_value": "1/2"
+    },
+    {
+      "contract": "unequal_durations",
+      "dp_action": [
+        "prepare",
+        2
+      ],
+      "dp_value": "31/50",
+      "law": "profitable",
+      "margin": "3/25",
+      "myopic_action": [
+        "stop",
+        0
+      ],
+      "myopic_value": "1/2"
+    },
+    {
+      "contract": "unequal_durations",
+      "dp_action": [
+        "stop",
+        0
+      ],
+      "dp_value": "1/2",
+      "law": "unprofitable",
+      "margin": "-9/50",
+      "myopic_action": [
+        "stop",
+        0
+      ],
+      "myopic_value": "1/2"
+    },
+    {
+      "contract": "unequal_durations",
+      "dp_action": [
+        "prepare",
+        2
+      ],
+      "dp_value": "51/100",
+      "law": "partial_success",
+      "margin": "1/100",
+      "myopic_action": [
+        "stop",
+        0
+      ],
+      "myopic_value": "1/2"
+    },
+    {
+      "contract": "unequal_durations",
+      "dp_action": [
+        "stop",
+        0
+      ],
+      "dp_value": "1/2",
+      "law": "never_ready",
+      "margin": "-1/10",
+      "myopic_action": [
+        "stop",
+        0
+      ],
+      "myopic_value": "1/2"
+    },
+    {
+      "contract": "unequal_durations",
+      "dp_action": [
+        "prepare",
+        2
+      ],
+      "dp_value": "3/4",
+      "law": "perfect",
+      "margin": "1/4",
+      "myopic_action": [
+        "stop",
+        0
+      ],
+      "myopic_value": "1/2"
+    },
+    {
+      "contract": "unequal_durations",
+      "dp_action": [
+        "stop",
+        0
+      ],
+      "dp_value": "1/2",
+      "law": "boundary",
+      "margin": "-3/100",
+      "myopic_action": [
+        "stop",
+        0
+      ],
+      "myopic_value": "1/2"
+    },
+    {
+      "contract": "censored",
+      "dp_action": [
+        "stop",
+        0
+      ],
+      "dp_value": "1/2",
+      "law": "profitable",
+      "margin": "3/25",
+      "myopic_action": [
+        "stop",
+        0
+      ],
+      "myopic_value": "1/2"
+    },
+    {
+      "contract": "censored",
+      "dp_action": [
+        "stop",
+        0
+      ],
+      "dp_value": "1/2",
+      "law": "unprofitable",
+      "margin": "-9/50",
+      "myopic_action": [
+        "stop",
+        0
+      ],
+      "myopic_value": "1/2"
+    },
+    {
+      "contract": "censored",
+      "dp_action": [
+        "stop",
+        0
+      ],
+      "dp_value": "1/2",
+      "law": "partial_success",
+      "margin": "1/100",
+      "myopic_action": [
+        "stop",
+        0
+      ],
+      "myopic_value": "1/2"
+    },
+    {
+      "contract": "censored",
+      "dp_action": [
+        "stop",
+        0
+      ],
+      "dp_value": "1/2",
+      "law": "never_ready",
+      "margin": "-1/10",
+      "myopic_action": [
+        "stop",
+        0
+      ],
+      "myopic_value": "1/2"
+    },
+    {
+      "contract": "censored",
+      "dp_action": [
+        "stop",
+        0
+      ],
+      "dp_value": "1/2",
+      "law": "perfect",
+      "margin": "1/4",
+      "myopic_action": [
+        "stop",
+        0
+      ],
+      "myopic_value": "1/2"
+    },
+    {
+      "contract": "censored",
+      "dp_action": [
+        "stop",
+        0
+      ],
+      "dp_value": "1/2",
+      "law": "boundary",
+      "margin": "-3/100",
+      "myopic_action": [
+        "stop",
+        0
+      ],
+      "myopic_value": "1/2"
+    }
+  ],
+  "equivalence_count_triples": 968,
+  "exact_dp_contract_law_pairs": 36,
+  "random_generators_used": false,
+  "real_llm_calls": 0,
+  "schema": "ndu.pure-information-mechanism.v1",
+  "scope": "Designed exact rational examples and exhaustive integer count identities; not independent confirmation, real time execution, new RL superiority or external proof review.",
+  "source_sha256": {
+    "mechanism.py": "eacfcc30983a2c9bf6c8c3d76092e120599145dd70e42946db5f968920993942",
+    "protocol.json": "bb8664d3096bb8d2c7f6b1a3f9013b899e0ec99081597c5220caba2ac50b5c26",
+    "verify_mechanism.py": "6dbf19517c1a6beecb0bc6272ce1bf37f9a6f6f6402c4d4ec9e3ea3b42d96050"
+  },
+  "status": "PASS_EXACT_DESIGNED_MECHANISMS"
+}
