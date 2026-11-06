@@ -1,0 +1,108 @@
+{
+  "all_319_previous_effective_files_retained": true,
+  "all_four_old_parent_records_unchanged": true,
+  "effective_source_files": 320,
+  "exact_i18n_local_files": 14,
+  "exact_pin_backport_local_files": 284,
+  "full_boundary_suite": "32 methods ran; 3 existing AF_UNIX cleanup subcases were denied by this local environment. Raw failures retained; hosted rerun required.",
+  "native_compilation_or_resolver_executed_locally": false,
+  "new_effective_source_file": "codex-rs/third_party/i18n-config-0.4.8/BUILD.bazel",
+  "old_2040_vendor_remote_leaves_unchanged_since_4976": true,
+  "other_8_vendors_in_local_vendor_function_probe": "Controlled inventory return values; remote tree equality is independently recorded. This is not native full-vendor verification.",
+  "port_test_methods": 75,
+  "post_qualification_test_methods": 16,
+  "required_next": "New complete-head NDU producer must pass real Cargo metadata and Bazel lock regeneration without drift, followed by unchanged consumers and full applicable CI.",
+  "ruff_checks": [
+    {
+      "command": [
+        "ruff",
+        "format",
+        "--check",
+        "codex-rs/hepta-matrixd/tests/fixtures/linux_synapse/source.py",
+        "scripts/ndu_port_candidate_common.py",
+        "scripts/ndu_port_integrated.py",
+        "scripts/test_ndu_port_build_amendment.py",
+        "scripts/test_ndu_port_dependency_amendment.py"
+      ],
+      "exit_code": 0,
+      "stderr": "",
+      "stdout": "5 files already formatted\n"
+    },
+    {
+      "command": [
+        "ruff",
+        "check",
+        "codex-rs/hepta-matrixd/tests/fixtures/linux_synapse/source.py",
+        "scripts/ndu_port_candidate_common.py",
+        "scripts/ndu_port_integrated.py",
+        "scripts/test_ndu_port_build_amendment.py",
+        "scripts/test_ndu_port_dependency_amendment.py"
+      ],
+      "exit_code": 0,
+      "stderr": "",
+      "stdout": "All checks passed!\n"
+    }
+  ],
+  "ruff_version": "0.15.13",
+  "schema": "ndu.port-build-amendment-validation.v1",
+  "source_and_restore_boundary_test_methods": 7,
+  "source_commit": "4bdbfa22ed95f144c8dee7f9b0167ed166bb3841",
+  "source_tree": "298c5139d010bf5f24822937246c78446cb0a9f4",
+  "status": "SOURCE_AND_PYTHON_GUARDS_PASS_NATIVE_PRODUCER_PENDING",
+  "test_logs": [
+    {
+      "decoded_log": {
+        "bytes": 481402,
+        "git_blob": "5f255e56552528a2ba1f732082434cfad631fbaf",
+        "sha256": "65cafbe7e245cbad60b30e61b16653c31613d5e49de18da2a009a369a0653369"
+      },
+      "path": "fixture-initial-gitignore-failure.log.gz",
+      "status": "FAILED: exact previously tracked vendor Cargo.lock required force-add in the temporary fixture"
+    },
+    {
+      "decoded_log": {
+        "bytes": 290393,
+        "git_blob": "9caec2f9c2f3418a344d4d5217a2396abb0549c4",
+        "sha256": "aa12ec0778f78ed1777dc0fd63839b9568fec531b433ff0021278d06a4e3a71a"
+      },
+      "path": "fixture-second-diagnostics-failure.log.gz",
+      "status": "FAILED: test output paths were reused; missing-parent error now occurs earlier"
+    },
+    {
+      "decoded_log": {
+        "bytes": 331056,
+        "git_blob": "6c69a7e579979e8e37e8c176399369633aed523b",
+        "sha256": "8605863c5ab98306f1657868b3565c32af697fa79919bd31f55f4e90c00112f7"
+      },
+      "path": "port-tests.log.gz",
+      "status": "PASS: 75 tests, zero skips"
+    },
+    {
+      "decoded_log": {
+        "bytes": 35049,
+        "git_blob": "c22ce3233e5bea985fde13f65e0092874bcc804b",
+        "sha256": "afb96064fc922ef7edc7b5d4c92f99d2b3e27280ad80ed72b969d697db4c48b2"
+      },
+      "path": "post-qualification-tests.log.gz",
+      "status": "PASS: 16 tests, zero skips"
+    },
+    {
+      "decoded_log": {
+        "bytes": 10320,
+        "git_blob": "884a7ab6d422d2e32a9b48b82b4a41a83c0a4dbc",
+        "sha256": "e832fe019bae42c7325fd0ca0561b306b3b1443f71d2f8886d3303fe5c868e6a"
+      },
+      "path": "synapse-boundary-tests.log.gz",
+      "status": "FAILED: 32 methods, 3 AF_UNIX bind PermissionError subcases in one unchanged cleanup test"
+    },
+    {
+      "decoded_log": {
+        "bytes": 2430,
+        "git_blob": "eab42ab152f1b44480a38b3c31f86dd511fa2317",
+        "sha256": "38f81b0513adc5fbdf5a9b9af31511f7498e0d6a049c4e7f64e5700ddcdc42e1"
+      },
+      "path": "synapse-source-restore-tests.log.gz",
+      "status": "PASS: 7 tests, zero skips"
+    }
+  ]
+}

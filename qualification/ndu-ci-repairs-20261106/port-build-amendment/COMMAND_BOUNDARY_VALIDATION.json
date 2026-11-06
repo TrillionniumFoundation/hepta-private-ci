@@ -1,0 +1,34 @@
+{
+  "added_common_function": "load_build_amendment",
+  "all_other_common_function_asts_equal": true,
+  "changed_existing_common_function_ast": [
+    "verify_vendor",
+    "verify_integrated_source",
+    "load_candidate"
+  ],
+  "fixed_build_seal": "2ebd2e0ceacf4f22f2c3b28b7397d353c52e95d944ef664e9dcf6cb70b0e6a5e",
+  "fixed_dependency_seal": "334d6a0000bb6c14c1f8742e680c799d7e9f768e035ce06a99593bedd0e1d538",
+  "generator_ast_equal_after_only_new_import_and_record_copy_removed": true,
+  "historical_parent_records_unchanged": {
+    "experiments/multimodal_output_portfolio/closure_20261028/ci/port-remediation/DEPENDENCY_AMENDMENT.v7.2.json": {
+      "bytes": 76071,
+      "sha256": "334d6a0000bb6c14c1f8742e680c799d7e9f768e035ce06a99593bedd0e1d538"
+    },
+    "experiments/multimodal_output_portfolio/closure_20261028/ci/port-remediation/INTEGRATION.v7.json": {
+      "bytes": 9120,
+      "sha256": "ef1fc0a4cfd8c2621eeb82e413555c1ea1780020a1f74f7c666253b62a5bfde2"
+    },
+    "experiments/multimodal_output_portfolio/closure_20261028/ci/port-remediation/SOURCE_AMENDMENT.v7.1.json": {
+      "bytes": 3256,
+      "sha256": "f802638dd5d01f3b3d7583986848c1ad6264c3ec478ed055f4e1edebc7a0d40a"
+    },
+    "experiments/multimodal_output_portfolio/closure_v2_20261027/ci/port-remediation/RECIPE.v7.json": {
+      "bytes": 348278,
+      "sha256": "8c655b7b3c539527e6506869a52d0e98a88ed37e334e9d34d13be83713bce03f"
+    }
+  },
+  "native_commands_executed_locally": false,
+  "schema": "ndu.port-build-command-boundary.v1",
+  "status": "PASS",
+  "synapse_ast_equal_after_only_new_provenance_copy_removed": true
+}

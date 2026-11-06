@@ -1,0 +1,103 @@
+{
+  "artifact": {
+    "bytes": 560441,
+    "git_blob": "013028c63c0ea9ab57340711b78fa522dcd57335",
+    "sha256": "7acba3eb8414c7d5879c782e6306025832c3e2a17b9652b7b2a1b2ead3e98878"
+  },
+  "artifact_id": 13506606460,
+  "artifact_parts_in_order": [
+    {
+      "bytes": 450000,
+      "git_blob": "dd6cf013614c610329a9e876bdfb39f48b76fc48",
+      "path": "producer-artifact.zip.part-00",
+      "sha256": "19019ec74e13f0f6341be106c0b50aa930f68acdb5e20760abac07e1b3d1e66e"
+    },
+    {
+      "bytes": 110441,
+      "git_blob": "89e2a3ff300fb4d0e1d598fbd67596c52c33251f",
+      "path": "producer-artifact.zip.part-01",
+      "sha256": "4b54e140f206536aa20640f753c7fe0a5b57f50d44272d1dc80345e3930a163d"
+    }
+  ],
+  "artifact_zip_crc_passed": true,
+  "cargo_or_bazel_started": false,
+  "completed_commands": [
+    {
+      "argv_prefix": [
+        "git",
+        "rev-parse"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv_prefix": [
+        "git",
+        "status"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv_prefix": [
+        "git",
+        "diff"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv_prefix": [
+        "git",
+        "ls-tree"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv_prefix": [
+        "git",
+        "rev-parse"
+      ],
+      "exit_code": 0
+    }
+  ],
+  "error": "Vendor inventory differs, including extra files: codex-rs/third_party/i18n-config-0.4.8",
+  "job_id": 127924479955,
+  "lossless_decoded_logs": {
+    "producer-job-127924479955.log.gz": {
+      "decoded_utf8": {
+        "bytes": 415441,
+        "git_blob": "992ba233f52ab8b6f506f3274e7f10cd8f0329c0",
+        "sha256": "e948ce09365e6c62232039db36f6a653425a4de9c9e80e015315bba1a62d09b3"
+      },
+      "gzip": {
+        "bytes": 41063,
+        "git_blob": "5a1d5336138cd1345776d8ae0653d94f1dfd2603",
+        "sha256": "84211acaf81ea8e554dcedf06d5a8b7ff66ed1eab00658c85d737a584f94b784"
+      }
+    },
+    "repo-check-job-127925247300.log.gz": {
+      "decoded_utf8": {
+        "bytes": 121732,
+        "git_blob": "96dec81679ed185836ab940298d9f4b5a008ea99",
+        "sha256": "ec3694591c1b47f165caa9f054c00b9bfaa9b438fb6078643bf94963a24d3fa5"
+      },
+      "gzip": {
+        "bytes": 21331,
+        "git_blob": "80f287405cc3790af0e18dede7161dac712691e8",
+        "sha256": "240fe0f8b2ef4267a71df44b846c9d7071579b4f77585c1c9a193dae1672ae69"
+      }
+    }
+  },
+  "repo_check_failure": {
+    "command": "uv run --frozen --project scripts ruff format --check scripts .github",
+    "files": [
+      "scripts/ndu_port_candidate_common.py",
+      "scripts/test_ndu_port_dependency_amendment.py"
+    ],
+    "job_id": 127925247300,
+    "run_id": 42227464829
+  },
+  "run_id": 42227464856,
+  "schema": "ndu.port-build-original-failure.v1",
+  "source_commit": "55a534060a4b5e24abbe772e7f0135e9d4f56ace",
+  "source_tree": "351138a1f6127b0fadeecfd26108a713ab400f08",
+  "status": "failed"
+}
