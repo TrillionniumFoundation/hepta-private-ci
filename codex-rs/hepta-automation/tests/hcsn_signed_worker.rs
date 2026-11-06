@@ -6,6 +6,8 @@
     reason = "explicit signed real-worker qualification"
 )]
 
+#[path = "support/hcsn_signed_cancel.rs"]
+mod cancel;
 #[path = "support/hcsn_signed_recovery.rs"]
 mod recovery;
 #[path = "support/hcsn_signed_worker.rs"]
@@ -114,6 +116,24 @@ fn real_driver(config: &HcsnProcessSupervisorConfig) -> HcsnTaskFlowDriver<HcsnP
 #[tokio::test]
 #[ignore = "requires HEPTA_HCSN_SIGNED_WORKER_ROOT from verify_bridge --signed-worker-executable; invokes real CPU worker"]
 async fn signed_authority_real_worker_cold_recovery() {
+    let (root, config, config_bytes, payload) = inputs();
+    match std::env::var(PHASE_ENV).as_deref() {
+        Ok("recover") => recovery::recover(&root, &config, &config_bytes, &payload).await,
+        Err(std::env::VarError::NotPresent) => {
+            dispatch(&root, &config, &config_bytes, &payload).await
+        }
+        other => panic!("unexpected qualification phase: {other:?}"),
+    }
+}
+
+#[tokio::test]
+#[ignore = "requires a fresh CPU fixture from verify_cancel; cancels a real running worker"]
+async fn signed_authority_real_worker_cancel_cold_recovery() {
+    let (root, config, config_bytes, payload) = inputs();
+    cancel::run(&root, &config, &config_bytes, &payload).await;
+}
+
+fn inputs() -> (PathBuf, HcsnProcessSupervisorConfig, Vec<u8>, Vec<u8>) {
     let root = PathBuf::from(
         std::env::var_os(ROOT_ENV)
             .expect("explicit qualification requires HEPTA_HCSN_SIGNED_WORKER_ROOT"),
@@ -134,13 +154,7 @@ async fn signed_authority_real_worker_cold_recovery() {
         deadline: Duration::from_secs(10),
     };
     let payload = fs::read(root.join("request.json")).expect("exact worker request");
-    match std::env::var(PHASE_ENV).as_deref() {
-        Ok("recover") => recovery::recover(&root, &config, &config_bytes, &payload).await,
-        Err(std::env::VarError::NotPresent) => {
-            dispatch(&root, &config, &config_bytes, &payload).await
-        }
-        other => panic!("unexpected qualification phase: {other:?}"),
-    }
+    (root, config, config_bytes, payload)
 }
 
 async fn dispatch(

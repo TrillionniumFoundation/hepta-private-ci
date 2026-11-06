@@ -103,13 +103,21 @@ impl Fixture {
     }
 
     pub fn sign(&self, effect: &AuthorizedEffectIntent) -> SignedFinalUseGrant {
+        self.sign_named(effect, "synthetic-real-worker-grant")
+    }
+
+    pub fn sign_named(
+        &self,
+        effect: &AuthorizedEffectIntent,
+        grant_id: &str,
+    ) -> SignedFinalUseGrant {
         let now = now_ms();
         let grant = FinalUseGrant {
             schema_version: 1,
             signer_id: "synthetic-security-owner".to_string(),
             authority_epoch: 9,
-            grant_id: "synthetic-real-worker-grant".to_string(),
-            nonce: Sha256::digest(b"synthetic-real-worker-grant").into(),
+            grant_id: grant_id.to_string(),
+            nonce: Sha256::digest(grant_id.as_bytes()).into(),
             binding: effect.final_use_binding().expect("binding"),
             not_before_unix_ms: now.saturating_sub(1_000),
             expires_at_unix_ms: now + 120_000,
@@ -123,9 +131,24 @@ impl Fixture {
     }
 
     pub async fn prepare(&self, store: &AutomationStore, payload: &[u8]) -> AuthorizedEffectIntent {
+        self.prepare_action(
+            store,
+            payload,
+            "hcsn-signed-worker-run",
+            HcsnTaskFlowActionV1::Start,
+        )
+        .await
+    }
+
+    pub async fn prepare_action(
+        &self,
+        store: &AutomationStore,
+        payload: &[u8],
+        run_id: &str,
+        action: HcsnTaskFlowActionV1,
+    ) -> AuthorizedEffectIntent {
         let now = now_ms();
-        let run_id = "hcsn-signed-worker-run";
-        let operation = HcsnTaskFlowActionV1::Start.operation_id();
+        let operation = action.operation_id();
         let definition = TaskFlowDefinition::new(
             run_id,
             1,
@@ -166,7 +189,7 @@ impl Fixture {
             .apply_taskflow_command(
                 &TaskFlowCommand::new(
                     run_id,
-                    "training-start",
+                    format!("{run_id}-start"),
                     self.owner.clone(),
                     claimed.revision,
                     TaskFlowTransition::Start,
@@ -199,7 +222,7 @@ impl Fixture {
                 &self.owner,
                 &digest,
                 &effect.payload_digest,
-                "training-prepare",
+                &format!("{run_id}-prepare"),
                 now,
             )
             .await
@@ -212,7 +235,7 @@ impl Fixture {
                 &self.owner,
                 &digest,
                 &effect.payload_digest,
-                "training-claim",
+                &format!("{run_id}-claim"),
                 now,
             )
             .await
