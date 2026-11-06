@@ -251,6 +251,8 @@ fn session_telemetry_for_request(
 
 pub(crate) mod test_transport;
 mod transport;
+mod websocket_auth;
+use websocket_auth::WebsocketAuthSnapshot;
 #[cfg(test)]
 mod transport_tests;
 use test_transport::FirstPartyTestTransport;
@@ -390,6 +392,7 @@ struct WebsocketConnectionIdentity {
     headers: ApiHeaderMap,
     beta_features_header: Option<String>,
     compatibility_projection_json: Vec<u8>,
+    auth_headers: ApiHeaderMap,
 }
 
 impl WebsocketConnectionIdentity {
@@ -397,6 +400,7 @@ impl WebsocketConnectionIdentity {
         provider: &ApiProvider,
         beta_features_header: Option<&str>,
         responses_metadata: &CodexResponsesMetadata,
+        auth_headers: &ApiHeaderMap,
     ) -> std::result::Result<Self, ApiError> {
         let compatibility_projection_json =
             serde_json::to_vec(&responses_metadata.turn_recovery_compatibility_projection())
@@ -417,6 +421,7 @@ impl WebsocketConnectionIdentity {
             headers: provider.headers.clone(),
             beta_features_header: beta_features_header.map(str::to_string),
             compatibility_projection_json,
+            auth_headers: auth_headers.clone(),
         })
     }
 }
@@ -429,6 +434,7 @@ impl std::fmt::Debug for WebsocketConnectionIdentity {
             .field("base_url", &"[redacted]")
             .field("query_param_count", &self.query_params.len())
             .field("header_count", &self.headers.len())
+            .field("auth_header_count", &self.auth_headers.len())
             .field(
                 "beta_features_present",
                 &self.beta_features_header.is_some(),
@@ -1462,10 +1468,14 @@ impl ModelClient {
         auth_context: AuthRequestTelemetryContext,
         request_route_telemetry: RequestRouteTelemetry,
     ) -> std::result::Result<ConnectedWebsocket, ApiError> {
+        // Capture once before identity binding. The same frozen provider is
+        // applied last when the API constructs the actual handshake headers.
+        let api_auth = Arc::new(WebsocketAuthSnapshot::capture(api_auth.as_ref()));
         let identity = WebsocketConnectionIdentity::from_provider(
             &api_provider,
             self.state.beta_features_header.as_deref(),
             responses_metadata,
+            api_auth.headers(),
         )?;
         let headers = self.build_websocket_headers(responses_metadata).await;
         let websocket_telemetry = ModelClientSession::build_websocket_telemetry(
@@ -1819,10 +1829,14 @@ impl ModelClientSession {
             auth_context,
             request_route_telemetry,
         } = params;
+        // Resolve header-only auth once even when considering socket reuse.
+        // A reconnect receives this frozen provider, never the mutable source.
+        let api_auth = Arc::new(WebsocketAuthSnapshot::capture(api_auth.as_ref()));
         let desired_identity = WebsocketConnectionIdentity::from_provider(
             &api_provider,
             self.client.state.beta_features_header.as_deref(),
             responses_metadata,
+            api_auth.headers(),
         )?;
         let needs_new = match self.websocket_session.connection.as_ref() {
             Some(conn) => conn.identity != desired_identity || conn.connection.is_closed().await,
