@@ -31,6 +31,11 @@ use crate::release_qualification::QualificationResult;
 
 pub(crate) const OWNER: &str = "hepta.fleet.release.qualification";
 pub(crate) const NOW: u64 = 1_800_000_000;
+// These faults still execute and acknowledge the real CAS. They change its
+// subsequent fresh observation; none of these fixtures bypass PQ signing.
+pub(crate) const AFTER_CAS_LOAD_UNAVAILABLE: u8 = 4;
+const NEXT_LOAD_UNAVAILABLE: u8 = 5;
+pub(crate) const AFTER_CAS_FRONTIER_DRIFT: u8 = 6;
 
 pub(crate) struct TrustService {
     pub config: UnixPqTrustEndpointConfig,
@@ -129,7 +134,19 @@ impl TrustService {
                         }
                     }
                     PqTrustOperationV2::ReleaseFrontierLoad { owner_id } if owner_id == OWNER => {
-                        PqTrustOutcomeV2::ReleaseFrontier { value: current }
+                        if mode
+                            .compare_exchange(
+                                NEXT_LOAD_UNAVAILABLE,
+                                /*new*/ 0,
+                                Ordering::AcqRel,
+                                Ordering::Acquire,
+                            )
+                            .is_ok()
+                        {
+                            PqTrustOutcomeV2::Unavailable
+                        } else {
+                            PqTrustOutcomeV2::ReleaseFrontier { value: current }
+                        }
                     }
                     PqTrustOperationV2::ReleaseFrontierCompareAndSet {
                         owner_id,
@@ -166,6 +183,17 @@ impl TrustService {
                             PqTrustOutcomeV2::Conflict
                         } else {
                             write_frontier(&path, next)?;
+                            if behavior == AFTER_CAS_LOAD_UNAVAILABLE {
+                                mode.store(NEXT_LOAD_UNAVAILABLE, Ordering::Release);
+                            }
+                            if behavior == AFTER_CAS_FRONTIER_DRIFT {
+                                let mut future = *next;
+                                future.generation = future
+                                    .generation
+                                    .checked_add(1)
+                                    .ok_or("fixture future generation overflow")?;
+                                write_frontier(&path, &future)?;
+                            }
                             if behavior == 1 {
                                 continue;
                             }

@@ -372,7 +372,7 @@ impl Journal {
     }
 }
 
-fn retain_anchor(
+pub(crate) fn retain_anchor(
     current: &mut BTreeMap<AgentId, ReleaseIntentAnchorV1>,
     previous_closed: &mut BTreeMap<AgentId, ReleaseIntentAnchorV1>,
     consumed: &mut BTreeSet<(AgentId, [u8; 32])>,

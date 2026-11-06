@@ -282,6 +282,19 @@ impl ReleaseAuthority {
         checkpoint: [u8; 32],
         before_cas: impl FnOnce() -> Result<(), FleetRegistryError>,
     ) -> Result<(), FleetRegistryError> {
+        self.commit_checked_publication(expected, journal, checkpoint, before_cas)
+            .map(|_| ())
+    }
+
+    // Only the held intent path consumes this exact publication evidence.
+    // Existing mutation callers retain their original unit-return contract.
+    pub(super) fn commit_checked_publication(
+        &self,
+        expected: Option<ReleaseFrontierV1>,
+        journal: &Journal,
+        checkpoint: [u8; 32],
+        before_cas: impl FnOnce() -> Result<(), FleetRegistryError>,
+    ) -> Result<(ReleaseFrontierV1, Vec<u8>), FleetRegistryError> {
         let bytes = record_bytes(journal)?;
         if bytes.len() > MAX_AUTHORITY_BYTES {
             return Err(invalid("release security history exceeds its byte bound"));
@@ -315,6 +328,6 @@ impl ReleaseAuthority {
             self.fenced.store(true, Ordering::Release);
             return Err(FleetRegistryError::ReleaseAuthorityRecoveryRequired);
         }
-        Ok(())
+        Ok((next, bytes))
     }
 }
