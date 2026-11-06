@@ -299,3 +299,6 @@ fn workspace_capabilities_deny_writes_and_deletes_under_broad_identity_aces() ->
     }
     Ok(())
 }
+
+#[path = "token_mic_probe_tests.rs"]
+mod mic_probe;
