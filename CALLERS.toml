@@ -536,6 +536,7 @@ caller_markers = ["with_verified_effect"]
 [[boundary]]
 id = "final_use_pq_open_state"
 symbol = "FinalUseAuthority::open_pq_state_dir_with_issuer_keys"
+receiver_type = "FinalUseAuthority"
 definition_path = "codex-rs/hepta-contracts/src/final_use_pq.rs"
 definition_markers = ["pub fn open_pq_state_dir_with_issuer_keys", "pin_pq_keys", "clock.now_unix_ms()", "frontier_store.load", "AntiRollbackViolation"]
 product_callers = ["codex-rs/hepta-agentd/src/pq_final_use.rs"]
@@ -544,6 +545,7 @@ caller_markers = ["FinalUseAuthority::open_pq_state_dir_with_issuer_keys", "Fina
 [[boundary]]
 id = "final_use_pq_approval_trust"
 symbol = "FinalUseApprovalVerifier::new_pq_with_keys"
+receiver_type = "FinalUseApprovalVerifier"
 definition_path = "codex-rs/hepta-contracts/src/final_use_control_pq.rs"
 definition_markers = ["impl FinalUseApprovalVerifier", "pub fn new_pq_with_keys", "control_keys(keys)?", "FinalUseAuthenticationProfile::MlDsa65V2"]
 product_callers = []
@@ -552,6 +554,7 @@ caller_markers = []
 [[boundary]]
 id = "final_use_pq_revocation_feed_trust"
 symbol = "FinalUseRevocationFeedVerifier::new_pq_with_keys"
+receiver_type = "FinalUseRevocationFeedVerifier"
 definition_path = "codex-rs/hepta-contracts/src/final_use_control_pq.rs"
 definition_markers = ["impl FinalUseRevocationFeedVerifier", "pub fn new_pq_with_keys", "control_keys(keys)?", "FinalUseAuthenticationProfile::MlDsa65V2"]
 product_callers = ["codex-rs/hepta-agentd/src/pq_final_use.rs"]
@@ -560,7 +563,7 @@ caller_markers = ["FinalUseRevocationFeedVerifier::new_pq_with_keys", "self.revo
 [[boundary]]
 id = "final_use_pq_revocation_feed_confirm"
 symbol = "FinalUseRevocationFeedVerifier::apply_or_confirm_current"
-call_pattern = '\.\s*apply_or_confirm_current\s*\('
+receiver_type = "FinalUseRevocationFeedVerifier"
 definition_path = "codex-rs/hepta-contracts/src/final_use_control_pq.rs"
 definition_markers = ["pub fn apply_or_confirm_current", "self.profile != authority.authentication_profile()", "self.verify_signed(signed, now_unix_ms)?", "update_revocations"]
 product_callers = ["codex-rs/hepta-agentd/src/pq_final_use.rs"]
@@ -569,6 +572,7 @@ caller_markers = ["apply_or_confirm_current", "FinalUseAuthenticationProfile::Ml
 [[boundary]]
 id = "final_use_pq_revocation_convergence_trust"
 symbol = "FinalUseRevocationConvergenceVerifier::new_pq"
+receiver_type = "FinalUseRevocationConvergenceVerifier"
 definition_path = "codex-rs/hepta-contracts/src/final_use_control_pq.rs"
 definition_markers = ["impl FinalUseRevocationConvergenceVerifier", "pub fn new_pq(", "control_keys(node.keys)?", "pinned.is_empty()", "FinalUseAuthenticationProfile::MlDsa65V2"]
 product_callers = []
