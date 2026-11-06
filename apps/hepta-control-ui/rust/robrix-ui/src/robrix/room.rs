@@ -319,6 +319,20 @@ impl Widget for RoomScreen {
             return;
         };
         let input = self.view.text_input(cx, ids!(message_input));
+        // Firefox's DOM trace records composition events. This fixture-only
+        // receipt adds the Rust TextInput/workspace boundary without recording
+        // draft contents: it distinguishes a missing TextInput commit from a
+        // ComposerTransaction refusal while preedit is still active.
+        #[cfg(feature = "ui-fixtures")]
+        if matches!(event, Event::TextInput(_)) {
+            log!(
+                "HEPTA_FIXTURE_COMPOSER_INPUT input_bytes={} input_composing={} draft_bytes={} workspace_composing={}",
+                input.text().len(),
+                input.is_composing(),
+                workspace.draft().text.len(),
+                workspace.composing
+            );
+        }
         let follow_latest = workspace
             .timeline()
             .is_none_or(|timeline| timeline.scroll.at_end);
@@ -426,8 +440,24 @@ impl Widget for RoomScreen {
                 list.scroll_to_end(cx);
             }
             if let Some(text) = input.changed(actions) {
+                #[cfg(feature = "ui-fixtures")]
+                let (fixture_text_bytes, fixture_input_composing, fixture_draft_before, fixture_workspace_composing) = (
+                    text.len(),
+                    input.is_composing(),
+                    workspace.draft().text.len(),
+                    workspace.composing,
+                );
                 self.composer_transaction
                     .edit(cx, &input, workspace, source, text);
+                #[cfg(feature = "ui-fixtures")]
+                log!(
+                    "HEPTA_FIXTURE_COMPOSER_CHANGED text_bytes={} input_composing={} draft_before={} draft_after={} workspace_composing={}",
+                    fixture_text_bytes,
+                    fixture_input_composing,
+                    fixture_draft_before,
+                    workspace.draft().text.len(),
+                    fixture_workspace_composing
+                );
                 self.view.redraw(cx);
             }
             let returned = input.returned(actions).is_some() && !input.is_composing();
