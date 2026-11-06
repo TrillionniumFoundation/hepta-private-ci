@@ -4,13 +4,17 @@
 use super::*;
 use codex_hepta_memory::ProductionAuthorityVerifier;
 
+pub(crate) struct PrimaryNotesAuthority {
+    pub(crate) final_use: FinalUseAuthority,
+    pub(crate) grants: Arc<dyn AgentdFinalUseGrantProvider>,
+    pub(crate) verifier: Arc<dyn ProductionAuthorityVerifier>,
+}
+
 pub(crate) async fn primary_notes_runtime(
     config: &AgentdConfig,
     recovered_host: &AgentdProductionWriterHost,
     bootstrap: UnixDatagram,
-    final_use: FinalUseAuthority,
-    grants: Arc<dyn AgentdFinalUseGrantProvider>,
-    verifier: Arc<dyn ProductionAuthorityVerifier>,
+    authority: PrimaryNotesAuthority,
     reconcile_interval: Duration,
     expected: Option<&NotesTargetIdentity>,
 ) -> Result<
@@ -24,9 +28,7 @@ pub(crate) async fn primary_notes_runtime(
         config,
         recovered_host,
         bootstrap,
-        final_use,
-        grants,
-        verifier,
+        authority,
         reconcile_interval,
         expected,
         None,
@@ -38,9 +40,7 @@ pub(crate) async fn primary_notes_runtime_before(
     config: &AgentdConfig,
     recovered_host: &AgentdProductionWriterHost,
     bootstrap: UnixDatagram,
-    final_use: FinalUseAuthority,
-    grants: Arc<dyn AgentdFinalUseGrantProvider>,
-    verifier: Arc<dyn ProductionAuthorityVerifier>,
+    authority: PrimaryNotesAuthority,
     reconcile_interval: Duration,
     expected: Option<&NotesTargetIdentity>,
     end: crate::calculator_deadline::Deadline,
@@ -55,9 +55,7 @@ pub(crate) async fn primary_notes_runtime_before(
         config,
         recovered_host,
         bootstrap,
-        final_use,
-        grants,
-        verifier,
+        authority,
         reconcile_interval,
         expected,
         Some(end.capped(Duration::from_secs(2))?),
@@ -69,9 +67,7 @@ async fn primary_notes_runtime_bounded(
     config: &AgentdConfig,
     recovered_host: &AgentdProductionWriterHost,
     bootstrap: UnixDatagram,
-    final_use: FinalUseAuthority,
-    grants: Arc<dyn AgentdFinalUseGrantProvider>,
-    verifier: Arc<dyn ProductionAuthorityVerifier>,
+    authority: PrimaryNotesAuthority,
     reconcile_interval: Duration,
     expected: Option<&NotesTargetIdentity>,
     total: Option<crate::calculator_deadline::Deadline>,
@@ -83,6 +79,11 @@ async fn primary_notes_runtime_bounded(
     AgentdError,
 > {
     let deadline = Instant::now() + Duration::from_secs(2);
+    let PrimaryNotesAuthority {
+        final_use,
+        grants,
+        verifier,
+    } = authority;
     let writer = recovered_host.writer();
     if recovered_host.destination_count() != 0
         || writer.owner_agent_id() != &config.identity().agent_id

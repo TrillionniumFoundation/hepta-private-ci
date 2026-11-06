@@ -243,7 +243,7 @@ fn cancel_and_drain_survive_reopen_and_retain_actual_worker_cost() {
     let mut owner = fixture.owner(model.clone());
     let req = request(&owner);
     assert_eq!(
-        owner.step(req.clone(), || 11),
+        owner.step(req, || 11),
         Err(CellGenerationErrorV2::Unavailable)
     );
     checked(owner.cancel_pending());

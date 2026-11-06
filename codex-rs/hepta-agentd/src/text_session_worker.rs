@@ -129,7 +129,7 @@ pub enum TextWorkerEvent {
         message_id: String,
         status: AuthBusTextStatus,
     },
-    Notification(AgentdTextEvent),
+    Notification(Box<AgentdTextEvent>),
     Reconciled {
         connection_id: u64,
         view: TextReconciliation,

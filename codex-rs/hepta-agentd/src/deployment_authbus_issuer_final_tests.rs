@@ -15,7 +15,7 @@ fn fixture(parent_expiry: u64) -> WriterFixture {
             destination_id: "canonical-final-signature-issuer".into(),
             ..f.registration.authority_lease.binding.clone()
         },
-        ..f.registration.authority_lease.clone()
+        ..f.registration.authority_lease
     };
     f.leases.put_lease(parent.clone(), 0).unwrap();
     f.base.issuer.lease = Some(
@@ -60,9 +60,11 @@ fn text(
             request,
             body,
             operation,
-            &f.registration,
-            &f.leases.verifier(),
-            &f.proof,
+            crate::deployment_issuer::RegisteredTextWriter {
+                registration: &f.registration,
+                leases: &f.leases.verifier(),
+                proof: &f.proof,
+            },
         );
     }
     // Original typed human fixture only; no physical login is claimed.
@@ -115,7 +117,8 @@ fn sign(f: &WriterFixture, route: u8, request: &str) -> io::Result<u64> {
         Ok(signed.expires_at_ms)
     } else {
         let signed = text(f, route == 2, request, TextIssuerOperation::Sign)?;
-        let claims = crate::authbus_text_claims(&f.base.config.identity().agent_id, &signed).unwrap();
+        let claims =
+            crate::authbus_text_claims(&f.base.config.identity().agent_id, &signed).unwrap();
         VerifyingKey::from_bytes(&f.base.issuer.trust_key()?.verifying_key)
             .unwrap()
             .verify_strict(
@@ -136,7 +139,9 @@ fn registered_objective_text_and_human_signatures_cap_parent_and_refuse_new_use_
         assert_eq!(sign(&f, route, "deadline:1").unwrap(), 12_000);
         f.base.clock.now.store(12_000, Ordering::SeqCst);
         assert!(f.base.issuer.with_live_lease(|_| Ok(())).is_err());
-        f.registration.with_live(&f.leases.verifier(), |_| Ok(())).unwrap();
+        f.registration
+            .with_live(&f.leases.verifier(), |_| Ok(()))
+            .unwrap();
         let before = serde_json::to_value(f.base.issuer.store.load(STATE_OWNER).unwrap()).unwrap();
         assert!(sign(&f, route, "deadline:2").is_err());
         assert_eq!(
@@ -164,7 +169,10 @@ fn original_five_clock_samples_keep_post_io_expiry_consumed_and_text_history_exa
         let before = serde_json::to_value(f.base.issuer.store.load(STATE_OWNER).unwrap()).unwrap();
         let retained = text(&f, route == 2, "late:1", TextIssuerOperation::Lookup).unwrap();
         assert_eq!((retained.sequence, retained.expires_at_ms), (2, 14_900));
-        assert_eq!(text(&f, route == 2, "late:1", TextIssuerOperation::Sign).unwrap(), retained);
+        assert_eq!(
+            text(&f, route == 2, "late:1", TextIssuerOperation::Sign).unwrap(),
+            retained
+        );
         assert!(text(&f, route == 2, "late:2", TextIssuerOperation::Sign).is_err());
         assert_eq!(
             serde_json::to_value(f.base.issuer.store.load(STATE_OWNER).unwrap()).unwrap(),
@@ -178,7 +186,10 @@ fn protected_objective_compatibility_entry_cannot_bypass_original_writer_registr
     let f = WriterFixture::new();
     let before = f.base.sequence();
     assert!(
-        f.base.issuer.sign_objective(f.base.config.identity(), f.base.body()).is_err(),
+        f.base
+            .issuer
+            .sign_objective(f.base.config.identity(), f.base.body())
+            .is_err(),
         "A protected issuer must require its original registered Objective entry"
     );
     assert_eq!(f.base.sequence(), before);

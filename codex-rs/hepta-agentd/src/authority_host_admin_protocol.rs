@@ -78,7 +78,7 @@ pub enum RootAdminConsumerSynchronization {
 #[serde(tag = "status", rename_all = "snake_case")]
 pub enum RootAdminResponse {
     Observed {
-        observation: RootAdminObservation,
+        observation: Box<RootAdminObservation>,
     },
     IssuedNotesGrantObserved {
         instance: RootAdminInstance,

@@ -664,6 +664,7 @@ pub use notes_ui_endpoint::AgentdNotesUiPeer;
 pub use objective_runtime::authbus_objective_claims;
 pub use plasticity_host::AgentdPlasticityAdmissionInputV1;
 pub use plasticity_host::AgentdPlasticityAnchorStoreV1;
+pub use plasticity_host::AgentdPlasticityEvidenceSourcesV1;
 pub use plasticity_host::AgentdPlasticityHostErrorV1;
 pub use plasticity_host::PlasticityOwnerEvidenceErrorV1;
 pub use plasticity_host::PlasticityOwnerEvidenceKindV1;

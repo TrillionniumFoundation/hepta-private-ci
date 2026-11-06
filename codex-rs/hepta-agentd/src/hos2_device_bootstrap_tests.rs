@@ -6,8 +6,10 @@ use pretty_assertions::assert_eq;
 use std::sync::Arc;
 use std::sync::Mutex;
 
+type RecordedRequests = Arc<Mutex<Vec<Vec<u8>>>>;
+
 struct AbiTransport {
-    requests: Arc<Mutex<Vec<Vec<u8>>>>,
+    requests: RecordedRequests,
     local_space: [u8; 16],
 }
 
@@ -69,7 +71,7 @@ fn page(version: u64, role: u64) -> Vec<u8> {
     bytes
 }
 
-fn transport(local_space: [u8; 16]) -> (Box<dyn ControlTransport>, Arc<Mutex<Vec<Vec<u8>>>>) {
+fn transport(local_space: [u8; 16]) -> (Box<dyn ControlTransport>, RecordedRequests) {
     let requests = Arc::new(Mutex::new(Vec::new()));
     (
         Box::new(AbiTransport {
