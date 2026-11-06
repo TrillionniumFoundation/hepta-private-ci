@@ -653,7 +653,10 @@ mod tests {
         assert_eq!(error.to_string(), READ_EXCEEDED);
 
         for (code, message) in [
-            (-32603, "authorized file read exceeds bound: /private/secret"),
+            (
+                -32603,
+                "authorized file read exceeds bound: /private/secret",
+            ),
             (-1, "authorized file read exceeds bound"),
             (-32603, "/private/secret internal failure"),
         ] {
