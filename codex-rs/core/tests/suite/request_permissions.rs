@@ -1279,6 +1279,7 @@ async fn request_permissions_grants_apply_to_later_exec_command_calls() -> Resul
     let permission_profile_for_config = workspace_write_excluding_tmp();
 
     let mut builder = test_codex().with_config(move |config| {
+        config.permissions.allow_login_shell = false;
         config.permissions.approval_policy = Constrained::allow_any(approval_policy);
         config
             .permissions
@@ -1406,6 +1407,7 @@ async fn request_permissions_preapprove_explicit_exec_permissions_outside_on_req
     let permission_profile_for_config = workspace_write_excluding_tmp();
 
     let mut builder = test_codex().with_config(move |config| {
+        config.permissions.allow_login_shell = false;
         config.permissions.approval_policy = Constrained::allow_any(approval_policy);
         config
             .permissions
@@ -1528,6 +1530,7 @@ async fn request_permissions_grants_apply_to_later_exec_command_calls_without_in
     let permission_profile_for_config = workspace_write_excluding_tmp();
 
     let mut builder = test_codex().with_config(move |config| {
+        config.permissions.allow_login_shell = false;
         config.permissions.approval_policy = Constrained::allow_any(approval_policy);
         config
             .permissions
@@ -1643,6 +1646,7 @@ async fn partial_request_permissions_grants_do_not_preapprove_new_permissions() 
     let permission_profile_for_config = workspace_write_excluding_tmp();
 
     let mut builder = test_codex().with_config(move |config| {
+        config.permissions.allow_login_shell = false;
         config.permissions.approval_policy = Constrained::allow_any(approval_policy);
         config
             .permissions
