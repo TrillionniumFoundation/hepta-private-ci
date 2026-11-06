@@ -1,0 +1,46 @@
+{
+  "status": "PASS",
+  "scope": "proof-reference checks only; no candidate performance evidence",
+  "decimal": {
+    "decimal_precision": 110,
+    "refinement_flat": "0.18994274652086123768411831324516046308011002434495343970080824732809936023025374733483146035956314807649021710",
+    "refinement_local_reset": "0.14155479237924320324337632877496803416029176788797422414263469817635508557823407296658519230592142530214625338",
+    "safe_stop": "0.16",
+    "constant_gamma_reparameterization_error": "0E-110",
+    "random_duration_flattened": "0.14211891529383298094128903912308460029327418483895627634983247114228607832153131673014995546259456097391128794",
+    "random_duration_transported": "0.14211891529383298094128903912308460029327418483895627634983247114228607832153131673014995546259456097391128794",
+    "random_duration_fixed_eta": "0.10960305777131540339253750545570822306282473600255827007071059532347976752098731805393300867531209085619588572",
+    "random_duration_transport_error": "0E-110",
+    "headroom_requires_changed_risk_parameter": true
+  },
+  "likelihood": {
+    "deadline": 5,
+    "delta": "1/5",
+    "true_model_ever_excluded_probabilities": [
+      "127/2000",
+      "127/2000"
+    ],
+    "terminal_probability_mass": [
+      "1",
+      "1"
+    ],
+    "statistics": {
+      "nodes": 78,
+      "adaptive_design_joint": 1,
+      "conditional_martingale_checks": 76,
+      "censored_edges": 1,
+      "adaptive_design_fast": 37,
+      "leaves": 40
+    }
+  },
+  "global_vs_rectangular_counterexample": {
+    "global_fixed_theta_minimum_expectation": "1/2",
+    "adaptive_rectangular_adversary_value": "0"
+  },
+  "one_step_voc_counterexample": {
+    "first_update_actionable_gain": "0",
+    "two_updates_cost": "1/25",
+    "two_updates_actionable_gain": "1/10",
+    "two_updates_net_gain": "3/50"
+  }
+}
