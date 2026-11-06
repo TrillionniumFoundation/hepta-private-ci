@@ -7,10 +7,14 @@ semantic score, new dataset, trained provider or confirmatory fit is claimed.
 import copy
 import json
 from pathlib import Path
+import sys
 import tempfile
 from types import SimpleNamespace
 import unittest
 from unittest.mock import patch
+
+if sys.platform != "linux":
+    raise unittest.SkipTest("the development trainer qualification is explicitly Linux-only")
 
 try:
     import torch
