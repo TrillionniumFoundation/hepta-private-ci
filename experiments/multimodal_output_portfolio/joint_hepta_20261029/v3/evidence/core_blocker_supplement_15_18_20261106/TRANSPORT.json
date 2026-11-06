@@ -1,0 +1,26 @@
+{
+  "schema": "core.evidence.gzip-transport.v1",
+  "representation": "one-bounded-gzip-member-per-transport-segment",
+  "index_sha256": "dab2fa50ce0c17c7962f27abd4ca1a9a46207e85140d468fcec13e910e6c84a8",
+  "original_archive_sha256": "fed67b036899086fce4b9fd851405f5347c653158c4b31b199b3da8d2acc0e8e",
+  "original_archive_bytes": 803764,
+  "original_part_count": 2,
+  "segment_limit": 440000,
+  "container_limit": 450000,
+  "parts": [
+    {
+      "path": "core-supplement-06-14.tar.xz.transport-000.gz",
+      "bytes": 440153,
+      "sha256": "70187511ab7da399f0fb5276091fb19c91b58cc24cf640e06771eac7cf7cace8",
+      "segment_bytes": 440000,
+      "segment_sha256": "dbd525c175fc9cf692a8246edcf90250612bfb46baee9fed2e9f5067c42c4104"
+    },
+    {
+      "path": "core-supplement-06-14.tar.xz.transport-001.gz",
+      "bytes": 363897,
+      "sha256": "cb86138ad4f8bdb3e480734c3668cdd0783da1c11dfacbb85458108f2f163dd3",
+      "segment_bytes": 363764,
+      "segment_sha256": "619a2e8d4859811413b93863f60612fc36a600f913bd3fb8397d467a19640808"
+    }
+  ]
+}

@@ -1,0 +1,58 @@
+{
+  "scope": "Complete six-file packet including every binary transport container, with unchanged CI CLI options and repository ignore file",
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+    "-m",
+    "codespell_lib",
+    "--ignore-words",
+    ".codespellignore",
+    "--skip",
+    "./.git",
+    "/workspace/scratch/3f6a885bb83c/round3_core_evidence_supplement_15_18_v1"
+  ],
+  "cwd": "/workspace/scratch/3f6a885bb83c/hepta-complete-5083",
+  "ignore_file_sha256": "9c6cd9dd86c6300ff67edbe64b2e18ed089714151e5c166382c8ea99931bc275",
+  "packet_files": [
+    {
+      "path": "INDEX.json",
+      "bytes": 48791,
+      "sha256": "dab2fa50ce0c17c7962f27abd4ca1a9a46207e85140d468fcec13e910e6c84a8",
+      "mode": "0o100644"
+    },
+    {
+      "path": "README.md",
+      "bytes": 5113,
+      "sha256": "2cc1b55f20f9fafd8df8cea2c1383f6ec0f642a1f89248785ed5c3246998a1ca",
+      "mode": "0o100644"
+    },
+    {
+      "path": "TRANSPORT.json",
+      "bytes": 1049,
+      "sha256": "30696499d44db34317379b20bf82229ae0d8165a9d2b24c4f4e895fb1e8a4e86",
+      "mode": "0o100644"
+    },
+    {
+      "path": "core-supplement-06-14.tar.xz.transport-000.gz",
+      "bytes": 440153,
+      "sha256": "70187511ab7da399f0fb5276091fb19c91b58cc24cf640e06771eac7cf7cace8",
+      "mode": "0o100644"
+    },
+    {
+      "path": "core-supplement-06-14.tar.xz.transport-001.gz",
+      "bytes": 363897,
+      "sha256": "cb86138ad4f8bdb3e480734c3668cdd0783da1c11dfacbb85458108f2f163dd3",
+      "mode": "0o100644"
+    },
+    {
+      "path": "restore.py",
+      "bytes": 8203,
+      "sha256": "44a2f2a5b37f5ae002b741d033211a7768b1803279ecaf0c38a9074aa8598927",
+      "mode": "0o100644"
+    }
+  ],
+  "packet_file_count": 6,
+  "exit_code": 0,
+  "stdout": "",
+  "stderr": "",
+  "input_bundle_still_unchanged": true
+}

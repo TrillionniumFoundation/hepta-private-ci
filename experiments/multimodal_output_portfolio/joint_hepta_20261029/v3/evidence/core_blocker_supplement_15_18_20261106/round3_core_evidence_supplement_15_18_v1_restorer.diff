@@ -1,0 +1,13 @@
+--- reviewed-06-14-v2/restore.py
++++ new-15-18-v1/restore.py
+@@ -10,8 +10,8 @@
+ import tarfile
+ import zlib
+ 
+-INDEX_SHA256 = 'cb5fbd9dc5b56cb475224376364e4d3b9471ecb024cc814a9339451cda98d0c1'
+-TRANSPORT_SHA256 = '04f45c7310090d0803c81cca9a21d96a8f371d9410e78cf469e50d560710be19'
++INDEX_SHA256 = 'dab2fa50ce0c17c7962f27abd4ca1a9a46207e85140d468fcec13e910e6c84a8'
++TRANSPORT_SHA256 = '30696499d44db34317379b20bf82229ae0d8165a9d2b24c4f4e895fb1e8a4e86'
+ 
+ 
+ def require(condition, message):
