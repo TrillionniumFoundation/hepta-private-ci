@@ -583,9 +583,7 @@ enum PersistSessionIoStage {
     TemporaryCreate,
     TemporaryWrite,
     TemporarySync,
-    PublishRename,
-    ParentOpen,
-    ParentSync,
+    PublishSyncedFile,
 }
 
 fn session_persist_io_error(stage: PersistSessionIoStage, error: std::io::Error) -> MatrixSdkError {
@@ -649,13 +647,9 @@ fn persist_session(path: &std::path::Path, session: &MatrixSession) -> Result<()
             session_persist_io_error(PersistSessionIoStage::TemporarySync, error)
         })?;
         drop(output);
-        std::fs::rename(&temporary, path).map_err(|error| {
-            session_persist_io_error(PersistSessionIoStage::PublishRename, error)
+        codex_utils_path::publish_synced_file(&temporary, path).map_err(|error| {
+            session_persist_io_error(PersistSessionIoStage::PublishSyncedFile, error)
         })?;
-        std::fs::File::open(parent)
-            .map_err(|error| session_persist_io_error(PersistSessionIoStage::ParentOpen, error))?
-            .sync_all()
-            .map_err(|error| session_persist_io_error(PersistSessionIoStage::ParentSync, error))?;
         Ok(())
     })();
     if result.is_err() {
