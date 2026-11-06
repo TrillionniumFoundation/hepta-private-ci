@@ -203,7 +203,17 @@ async fn executor_stop_hook_rejects_mismatched_environment() -> Result<()> {
                     attached_selection,
                     TurnEnvironmentSelection {
                         environment_id: mismatched_environment_id.to_string(),
-                        config: EnvironmentConfigState::FromThread,
+                        config: EnvironmentConfigState::Ready(EnvironmentConfig {
+                            allow_login_shell: false,
+                            permission_profile: PermissionProfileSnapshot::legacy(
+                                fixture.test.config.permissions.permission_profile().clone(),
+                            ),
+                            shell_environment_policy: Default::default(),
+                            exec_policy: None,
+                            mcp_policy: None,
+                            network_policy: None,
+                            selected_capability_roots: Vec::new(),
+                        }),
                         ..selection.clone()
                     },
                 ],
