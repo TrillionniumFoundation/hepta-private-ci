@@ -1,0 +1,236 @@
+{
+  "schema_version": 1,
+  "scope": "offline read-only audit of retained CI evidence; no training or supervisor dispatched",
+  "head": "bbe995c43e4eed4bb9c217b52447ba5a32ebb6ca",
+  "tree": "e74509e6a2a49bd004b79854b3a6dbc2fe581be0",
+  "run_id": 42240138316,
+  "job_id": 127967939575,
+  "artifact_id": 13518974518,
+  "artifact_sha256": "5bc59442d5cde79ba32c44622e21d4af0fa18b98050596bf1e7d3f8e42a73962",
+  "cancellation": [
+    {
+      "backend": "value_kernel",
+      "status": "passed",
+      "worker": {
+        "host_id": "26055c97a1de53eab20079009a9c6573d5512481ae13abbed3ea7361eeced3a3",
+        "incarnation": "8126bee3953109906bfd1a66b44ca53751f88d6a4b8d8374b55f50ba1b624986",
+        "process_id": 16429
+      },
+      "workload": {
+        "schema_version": 1,
+        "backend": "value_kernel",
+        "logical_cells": 2,
+        "spatial_bins": null,
+        "graph_digest": "a3d7d66e6a55795c5231eb60fb9fea6bffae9f2b628c8f07018c45973a0ee208",
+        "temporal_profile_digest": "bb1ab0765d0eb8699b83adf94c7af171ffcdc59d4aeb435ca0e6388797a7af28",
+        "batch": 2,
+        "coarse_intervals": 32,
+        "event_steps_per_sample": 32,
+        "working_elements": 1666,
+        "maximum_elements": 1048576,
+        "maximum_optimizer_steps": 64,
+        "request_bytes": 17923,
+        "maximum_host_wire_bytes": 24576,
+        "scope": "real bounded process-cancellation workload; not the 32-bin numerical-quality fixture"
+      },
+      "preflight_optimizer_steps": 1,
+      "requested_cancellation_steps": 64,
+      "actual_optimizer_entry_proven": false,
+      "lost_replies_injected": true,
+      "parent_pid": 16423,
+      "cold_native_pid": 16432,
+      "retained_file_hashes_verified": 43,
+      "terminal_state": "cancelled",
+      "terminal_reason": "cancelled_worker_stopped",
+      "termination_confirmed": true,
+      "historical_observations_preserved": true,
+      "mutating_replay_contacts": 0,
+      "final_outcomes": [
+        "failed",
+        "succeeded"
+      ],
+      "candidate_output_absent": true,
+      "cpu_seconds_to_observed_termination": 0.7866569999999999,
+      "wall_seconds_to_observed_termination": 0.8270478309999589,
+      "preflight_wall_seconds": 1.138487633000068,
+      "source_hashes_match_exact_published_checkout": true
+    },
+    {
+      "backend": "population_grid",
+      "status": "passed",
+      "worker": {
+        "host_id": "26055c97a1de53eab20079009a9c6573d5512481ae13abbed3ea7361eeced3a3",
+        "incarnation": "5eb9879bfa041a9c41ad29eb64edb87c21e3b2107eb3a8c8e445452a5abeffb9",
+        "process_id": 16453
+      },
+      "workload": {
+        "schema_version": 1,
+        "backend": "population_grid",
+        "logical_cells": 2,
+        "spatial_bins": 8,
+        "graph_digest": "c24d60c0685549705a6e3bcc5013156e092b26fc77797977fa34224d4b84587c",
+        "temporal_profile_digest": "3b973334d6ae99c9a8e0dda38ccb95d390561809bcd1430042854fd6641329c3",
+        "batch": 1,
+        "coarse_intervals": 12,
+        "event_steps_per_sample": 96,
+        "working_elements": 800077,
+        "maximum_elements": 1048576,
+        "maximum_optimizer_steps": 64,
+        "request_bytes": 7294,
+        "maximum_host_wire_bytes": 24576,
+        "scope": "real bounded process-cancellation workload; not the 32-bin numerical-quality fixture"
+      },
+      "preflight_optimizer_steps": 1,
+      "requested_cancellation_steps": 64,
+      "actual_optimizer_entry_proven": false,
+      "lost_replies_injected": true,
+      "parent_pid": 16447,
+      "cold_native_pid": 16456,
+      "retained_file_hashes_verified": 43,
+      "terminal_state": "cancelled",
+      "terminal_reason": "cancelled_worker_stopped",
+      "termination_confirmed": true,
+      "historical_observations_preserved": true,
+      "mutating_replay_contacts": 0,
+      "final_outcomes": [
+        "failed",
+        "succeeded"
+      ],
+      "candidate_output_absent": true,
+      "cpu_seconds_to_observed_termination": 0.78257,
+      "wall_seconds_to_observed_termination": 0.8110343429999602,
+      "preflight_wall_seconds": 0.6256088789999694,
+      "source_hashes_match_exact_published_checkout": true
+    },
+    {
+      "backend": "population_age",
+      "status": "passed",
+      "worker": {
+        "host_id": "26055c97a1de53eab20079009a9c6573d5512481ae13abbed3ea7361eeced3a3",
+        "incarnation": "d621784102bab6859e8c08bb857aa02dc5ad3ba44da3ba202dea06d878bd3e73",
+        "process_id": 16477
+      },
+      "workload": {
+        "schema_version": 1,
+        "backend": "population_age",
+        "logical_cells": 2,
+        "spatial_bins": 8,
+        "graph_digest": "106dff09f07c289300945b470736c0c8403d131b9cb7773008ecb8e009f76d86",
+        "temporal_profile_digest": "596ea8fad7844062b311960f5cac775ceb16d2ae816ebbe67c6bc181ba44f79b",
+        "batch": 1,
+        "coarse_intervals": 14,
+        "event_steps_per_sample": 79,
+        "working_elements": 1046923,
+        "maximum_elements": 1048576,
+        "maximum_optimizer_steps": 64,
+        "request_bytes": 8193,
+        "maximum_host_wire_bytes": 24576,
+        "scope": "real bounded process-cancellation workload; not the 32-bin numerical-quality fixture"
+      },
+      "preflight_optimizer_steps": 1,
+      "requested_cancellation_steps": 64,
+      "actual_optimizer_entry_proven": false,
+      "lost_replies_injected": true,
+      "parent_pid": 16471,
+      "cold_native_pid": 16481,
+      "retained_file_hashes_verified": 43,
+      "terminal_state": "cancelled",
+      "terminal_reason": "cancelled_worker_stopped",
+      "termination_confirmed": true,
+      "historical_observations_preserved": true,
+      "mutating_replay_contacts": 0,
+      "final_outcomes": [
+        "failed",
+        "succeeded"
+      ],
+      "candidate_output_absent": true,
+      "cpu_seconds_to_observed_termination": 0.781531,
+      "wall_seconds_to_observed_termination": 0.8110390340000322,
+      "preflight_wall_seconds": 0.38915422599995964,
+      "source_hashes_match_exact_published_checkout": true
+    }
+  ],
+  "bridges": [
+    {
+      "backend": "value_kernel",
+      "status": "passed",
+      "logical_cells": 2,
+      "gradient_cells": 2,
+      "trainable_parameters": 172,
+      "gradient_parameters": 172,
+      "first_block_optimizer_steps": 1,
+      "second_block_optimizer_steps": 2,
+      "second_block_full_state_weights_and_prediction_exact": true,
+      "second_block_starts_detached": true,
+      "candidate_only": true,
+      "runtime_tuple": {
+        "python": "3.12.3",
+        "torch": "2.8.0+cpu",
+        "numpy": "2.3.5",
+        "scipy": "1.17.0",
+        "dtype": "torch.float64",
+        "device": "cpu"
+      }
+    },
+    {
+      "backend": "population_grid",
+      "status": "passed",
+      "logical_cells": 2,
+      "gradient_cells": 2,
+      "trainable_parameters": 8,
+      "gradient_parameters": 8,
+      "first_block_optimizer_steps": 1,
+      "second_block_optimizer_steps": 2,
+      "second_block_full_state_weights_and_prediction_exact": true,
+      "second_block_starts_detached": true,
+      "candidate_only": true,
+      "runtime_tuple": {
+        "python": "3.12.3",
+        "torch": "2.8.0+cpu",
+        "numpy": "2.3.5",
+        "scipy": "1.17.0",
+        "dtype": "torch.float64",
+        "device": "cpu"
+      }
+    },
+    {
+      "backend": "population_age",
+      "status": "passed",
+      "logical_cells": 2,
+      "gradient_cells": 2,
+      "trainable_parameters": 8,
+      "gradient_parameters": 8,
+      "first_block_optimizer_steps": 1,
+      "second_block_optimizer_steps": 2,
+      "second_block_full_state_weights_and_prediction_exact": true,
+      "second_block_starts_detached": true,
+      "candidate_only": true,
+      "runtime_tuple": {
+        "python": "3.12.3",
+        "torch": "2.8.0+cpu",
+        "numpy": "2.3.5",
+        "scipy": "1.17.0",
+        "dtype": "torch.float64",
+        "device": "cpu"
+      }
+    }
+  ],
+  "tests": {
+    "python_passed": 69,
+    "python_skipped": 0,
+    "python_seconds": 41.386,
+    "numerical_artifact_contracts_passed": 392,
+    "numerical_artifact_contracts_skipped": 1,
+    "numerical_artifact_contracts_skip_identity": "codex-hepta-learning-artifacts owner_host::tests::owner_host_process_fault_worker",
+    "skip_identity_evidence": "only ignore declaration in these three source packages; source says worker is invoked only by owner_host_process_kill_reopen_matrix, whose PASS is in rust-tests.log",
+    "automation_passed": 120,
+    "automation_skipped": 2,
+    "automation_skips": [
+      "signed_authority_real_worker_cold_recovery",
+      "signed_authority_real_worker_cancel_cold_recovery"
+    ],
+    "automation_skip_handling": "both ignored integration entrypoints were run by exact-name external wrappers for all three backends"
+  },
+  "tracked_source_unchanged": true,
+  "source_artifact_entries": 672
+}

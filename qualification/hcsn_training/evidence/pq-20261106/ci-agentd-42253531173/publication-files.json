@@ -1,0 +1,93 @@
+{
+  "bare_python_file_count": 0,
+  "excluded_stage_paths": [
+    {
+      "path": "/workspace/scratch/7b4b0c316c52/hcsn-evidence-stage/ci-agentd-42253531173/original-extracted",
+      "reason": "All original bytes retained in complete and filtered ZIPs; no extraction or original ZIP deleted."
+    },
+    {
+      "path": "/workspace/scratch/7b4b0c316c52/hcsn-evidence-stage/ci-agentd-42253531173/audit-agentd-artifact.py",
+      "reason": "Exact bytes retained only inside offline-audit-tools.tgz to keep recursive source inventory unchanged."
+    }
+  ],
+  "file_count": 11,
+  "files": [
+    {
+      "bytes": 7296,
+      "git_path": "qualification/hcsn_training/evidence/pq-20261106/ci-agentd-42253531173/agentd-ci-summary.json",
+      "path": "/workspace/scratch/7b4b0c316c52/hcsn-evidence-stage/ci-agentd-42253531173/agentd-ci-summary.json",
+      "sha256": "fd0992076e0c3c496e15de72e85dbc5a16b90a4639499c5101b2d36e6a089259"
+    },
+    {
+      "bytes": 432185,
+      "git_path": "qualification/hcsn_training/evidence/pq-20261106/ci-agentd-42253531173/agentd-complete.zip",
+      "path": "/workspace/scratch/7b4b0c316c52/hcsn-evidence-stage/ci-agentd-42253531173/agentd-complete.zip",
+      "sha256": "9f339af4602f67ee578dd45e6be0619fa55557d5cf6acf0c62b6f1c4d4441c7e"
+    },
+    {
+      "bytes": 828,
+      "git_path": "qualification/hcsn_training/evidence/pq-20261106/ci-agentd-42253531173/artifact-github-metadata.json",
+      "path": "/workspace/scratch/7b4b0c316c52/hcsn-evidence-stage/ci-agentd-42253531173/artifact-github-metadata.json",
+      "sha256": "09d389924bb4332da44a048246193dd7eb5e566b396cf5a2b4fca9ff46171134"
+    },
+    {
+      "bytes": 587,
+      "git_path": "qualification/hcsn_training/evidence/pq-20261106/ci-agentd-42253531173/artifact-identity.json",
+      "path": "/workspace/scratch/7b4b0c316c52/hcsn-evidence-stage/ci-agentd-42253531173/artifact-identity.json",
+      "sha256": "afa8fdecb337b4dd23a7f91eb034cb6df59906dd0d096eb9a69df84215fcd6ae"
+    },
+    {
+      "bytes": 1191,
+      "git_path": "qualification/hcsn_training/evidence/pq-20261106/ci-agentd-42253531173/job-evidence-files.json",
+      "path": "/workspace/scratch/7b4b0c316c52/hcsn-evidence-stage/ci-agentd-42253531173/job-evidence-files.json",
+      "sha256": "652080cf79e55f9ef3bf8c7cd262858a74cb5c7192c2606b2d5da23e51f704ce"
+    },
+    {
+      "bytes": 152979,
+      "git_path": "qualification/hcsn_training/evidence/pq-20261106/ci-agentd-42253531173/job-evidence-raw.tgz",
+      "path": "/workspace/scratch/7b4b0c316c52/hcsn-evidence-stage/ci-agentd-42253531173/job-evidence-raw.tgz",
+      "sha256": "6869a7e6c3cb460a098f96ffe6e6cf6cd3237e9bbf4c110c4b2146c69fe29ac5"
+    },
+    {
+      "bytes": 731,
+      "git_path": "qualification/hcsn_training/evidence/pq-20261106/ci-agentd-42253531173/offline-audit-tools-files.json",
+      "path": "/workspace/scratch/7b4b0c316c52/hcsn-evidence-stage/ci-agentd-42253531173/offline-audit-tools-files.json",
+      "sha256": "bd9463f3b6459d486e71ff9b8218d9ad8047ea43813838da51fd272cea4fc1bf"
+    },
+    {
+      "bytes": 6680,
+      "git_path": "qualification/hcsn_training/evidence/pq-20261106/ci-agentd-42253531173/offline-audit-tools.tgz",
+      "path": "/workspace/scratch/7b4b0c316c52/hcsn-evidence-stage/ci-agentd-42253531173/offline-audit-tools.tgz",
+      "sha256": "e9cf56990a9304df5e963c6e9704c55417e555756417228d54b7fba4574a6d3f"
+    },
+    {
+      "bytes": 13261,
+      "git_path": "qualification/hcsn_training/evidence/pq-20261106/ci-agentd-42253531173/pq-host-audit.json",
+      "path": "/workspace/scratch/7b4b0c316c52/hcsn-evidence-stage/ci-agentd-42253531173/pq-host-audit.json",
+      "sha256": "45a09c94b7cf8f3be134636abc07fd7e4529656106852fd60a692cf03598be07"
+    },
+    {
+      "bytes": 434685,
+      "git_path": "qualification/hcsn_training/evidence/pq-20261106/ci-agentd-42253531173/pq-host-raw-filtered.zip",
+      "path": "/workspace/scratch/7b4b0c316c52/hcsn-evidence-stage/ci-agentd-42253531173/pq-host-raw-filtered.zip",
+      "sha256": "7ab4adce82adda78cc8b64754f827444b45dce64178fa4c3b2d39354d1c6d119"
+    },
+    {
+      "bytes": 42309,
+      "git_path": "qualification/hcsn_training/evidence/pq-20261106/ci-agentd-42253531173/pq-host-raw-inventory.json",
+      "path": "/workspace/scratch/7b4b0c316c52/hcsn-evidence-stage/ci-agentd-42253531173/pq-host-raw-inventory.json",
+      "sha256": "8a33627ae1e90f440c40beeec07170a4f0324cd0f781c65a809073a89c0f9708"
+    }
+  ],
+  "job_id": 128014547600,
+  "loose_job_files_archive_members": "job-evidence-raw.tgz",
+  "manifest_self_entry_omitted_to_avoid_hash_cycle": true,
+  "original_zip_included_because_no_compiled_binaries_are_present": true,
+  "run_id": 42253531173,
+  "schema": "hcsn.final-agentd-publication-files.v1",
+  "source_sha": "a20ea6a862e501d8a4993195c7da1ac52ca9a7be",
+  "source_tree": "b8e8b66b957aaf1e5e1cd9db8bb479137cf9fceb",
+  "suggested_manifest_git_path": "qualification/hcsn_training/evidence/pq-20261106/ci-agentd-42253531173/publication-files.json",
+  "total_bytes": 1092732,
+  "uploaded": false
+}

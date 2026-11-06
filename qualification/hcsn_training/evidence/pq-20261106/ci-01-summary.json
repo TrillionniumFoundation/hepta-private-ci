@@ -1,0 +1,852 @@
+{
+  "agentd_and_pq": {
+    "audit": "pq-host-audit.json",
+    "backends": [
+      {
+        "backend": "value_kernel",
+        "cancellation_workload": {
+          "backend": "value_kernel",
+          "batch": 2,
+          "coarse_intervals": 32,
+          "event_steps_per_sample": 32,
+          "graph_digest": "a3d7d66e6a55795c5231eb60fb9fea6bffae9f2b628c8f07018c45973a0ee208",
+          "logical_cells": 2,
+          "maximum_elements": 1048576,
+          "maximum_host_wire_bytes": 24576,
+          "maximum_optimizer_steps": 64,
+          "request_bytes": 17915,
+          "schema_version": 1,
+          "scope": "real bounded process-cancellation workload; not the 32-bin numerical-quality fixture",
+          "spatial_bins": null,
+          "temporal_profile_digest": "bb1ab0765d0eb8699b83adf94c7af171ffcdc59d4aeb435ca0e6388797a7af28",
+          "working_elements": 1666
+        },
+        "clock_requests": 38,
+        "cold_native_pid": 24588,
+        "consumed_nonces_verified_from_raw_claim_frames": 2,
+        "external_frontier_recomputed": true,
+        "final_outcomes": [
+          "failed",
+          "succeeded"
+        ],
+        "frontier_requests": 22,
+        "initial_observations": [
+          "indeterminate",
+          "indeterminate"
+        ],
+        "missing_expired_feed_terminal_readback_recorded": true,
+        "parent_pid": 24576,
+        "raw_terminal_bound_to_cold_receipts": true,
+        "result_sha256": "ba94ec7f6dc135d101bd48447e2005fc1822fc0267592fa9ba65f6c2190cc368",
+        "retained_files_verified": 53,
+        "retained_manifest_sha256": "d6a16ab013b021657b1ef812c3febf13cdc39f80efe02bee67331ccf0da06c0f",
+        "scope": "retained native CI evidence audited offline; no new worker or signature execution",
+        "source_files_verified_against_exact_git": 54,
+        "sqlite_receipts_match_exactly": true,
+        "sqlite_sha256": "28c4b21ee63f799989d5a69501a693826905a4702c8d5425195386ae343a552d",
+        "status": "passed",
+        "terminal_reason": "cancelled_worker_stopped",
+        "terminal_sha256": "eaaa1182fc4438087b412b2f16b09514d18f9ededb34e632ff10cc4065514dcb",
+        "test_executable_sha256": "541fefe529d8010c5ace043f40b3070fb7649a7994442d8939f158981fb7d517",
+        "worker": {
+          "host_id": "26055c97a1de53eab20079009a9c6573d5512481ae13abbed3ea7361eeced3a3",
+          "incarnation": "734cb743e8b9218fb5ea7d645ba710501f179c69ff6f0cd0d8582aa40a7e56c9",
+          "process_id": 24585
+        }
+      },
+      {
+        "backend": "population_grid",
+        "cancellation_workload": {
+          "backend": "population_grid",
+          "batch": 1,
+          "coarse_intervals": 12,
+          "event_steps_per_sample": 96,
+          "graph_digest": "c24d60c0685549705a6e3bcc5013156e092b26fc77797977fa34224d4b84587c",
+          "logical_cells": 2,
+          "maximum_elements": 1048576,
+          "maximum_host_wire_bytes": 24576,
+          "maximum_optimizer_steps": 64,
+          "request_bytes": 7286,
+          "schema_version": 1,
+          "scope": "real bounded process-cancellation workload; not the 32-bin numerical-quality fixture",
+          "spatial_bins": 8,
+          "temporal_profile_digest": "3b973334d6ae99c9a8e0dda38ccb95d390561809bcd1430042854fd6641329c3",
+          "working_elements": 800077
+        },
+        "clock_requests": 38,
+        "cold_native_pid": 24616,
+        "consumed_nonces_verified_from_raw_claim_frames": 2,
+        "external_frontier_recomputed": true,
+        "final_outcomes": [
+          "failed",
+          "succeeded"
+        ],
+        "frontier_requests": 22,
+        "initial_observations": [
+          "indeterminate",
+          "indeterminate"
+        ],
+        "missing_expired_feed_terminal_readback_recorded": true,
+        "parent_pid": 24603,
+        "raw_terminal_bound_to_cold_receipts": true,
+        "result_sha256": "c79794bacf460ac0e31cd4defa6f6294391bdcf1b9624df86948d4d114a92b9d",
+        "retained_files_verified": 53,
+        "retained_manifest_sha256": "308fb2fb76c4d374e3a5067196314bccbc2db2a66209d0113f85566cc4f5ed4b",
+        "scope": "retained native CI evidence audited offline; no new worker or signature execution",
+        "source_files_verified_against_exact_git": 54,
+        "sqlite_receipts_match_exactly": true,
+        "sqlite_sha256": "f83a1eaafedb35836e0c42de07550a953298d1a3d9a19437d7fa6396190b7f56",
+        "status": "passed",
+        "terminal_reason": "cancelled_worker_stopped",
+        "terminal_sha256": "ec84a27e784bf02b72848b0970a80d4345fd1440fcdc9c087cc05dccf23d4917",
+        "test_executable_sha256": "541fefe529d8010c5ace043f40b3070fb7649a7994442d8939f158981fb7d517",
+        "worker": {
+          "host_id": "26055c97a1de53eab20079009a9c6573d5512481ae13abbed3ea7361eeced3a3",
+          "incarnation": "34d6eb87713feae10f42a71844282f9092865c00bb1268d2f900202fde8b3899",
+          "process_id": 24613
+        }
+      },
+      {
+        "backend": "population_age",
+        "cancellation_workload": {
+          "backend": "population_age",
+          "batch": 1,
+          "coarse_intervals": 14,
+          "event_steps_per_sample": 79,
+          "graph_digest": "106dff09f07c289300945b470736c0c8403d131b9cb7773008ecb8e009f76d86",
+          "logical_cells": 2,
+          "maximum_elements": 1048576,
+          "maximum_host_wire_bytes": 24576,
+          "maximum_optimizer_steps": 64,
+          "request_bytes": 8185,
+          "schema_version": 1,
+          "scope": "real bounded process-cancellation workload; not the 32-bin numerical-quality fixture",
+          "spatial_bins": 8,
+          "temporal_profile_digest": "596ea8fad7844062b311960f5cac775ceb16d2ae816ebbe67c6bc181ba44f79b",
+          "working_elements": 1046923
+        },
+        "clock_requests": 38,
+        "cold_native_pid": 24641,
+        "consumed_nonces_verified_from_raw_claim_frames": 2,
+        "external_frontier_recomputed": true,
+        "final_outcomes": [
+          "failed",
+          "succeeded"
+        ],
+        "frontier_requests": 22,
+        "initial_observations": [
+          "indeterminate",
+          "indeterminate"
+        ],
+        "missing_expired_feed_terminal_readback_recorded": true,
+        "parent_pid": 24629,
+        "raw_terminal_bound_to_cold_receipts": true,
+        "result_sha256": "22957f81656cdca33c1dea55d0f12a1acaae959c78226e14871a51f4db669891",
+        "retained_files_verified": 53,
+        "retained_manifest_sha256": "e19c268447609f546f46d64e9077bcf0d0238375cf115d6484d6f7b6986643e6",
+        "scope": "retained native CI evidence audited offline; no new worker or signature execution",
+        "source_files_verified_against_exact_git": 54,
+        "sqlite_receipts_match_exactly": true,
+        "sqlite_sha256": "38349307a386a4742956cd3a429a9a382841523a8c3d4568533393de9d61dc33",
+        "status": "passed",
+        "terminal_reason": "cancelled_worker_stopped",
+        "terminal_sha256": "a87ed5f6a95783aa33622377393b99b272879a4dba0d91d479f7135d85439328",
+        "test_executable_sha256": "541fefe529d8010c5ace043f40b3070fb7649a7994442d8939f158981fb7d517",
+        "worker": {
+          "host_id": "26055c97a1de53eab20079009a9c6573d5512481ae13abbed3ea7361eeced3a3",
+          "incarnation": "ba4929e3065c579226d43e033ebe50793e3bcd813e6f2c7d59796f4b5af070d7",
+          "process_id": 24638
+        }
+      }
+    ],
+    "conclusion": "success",
+    "host_tests": {
+      "failed": 0,
+      "passed": 23,
+      "skipped_by_filter_or_ignore": 169,
+      "test_names": [
+        "automation_effect_host::hcsn::tests::private_directory_validation_rejects_permission_changes_and_symlink_redirection",
+        "automation_effect_host::hcsn::tests::production_profile_is_refused_before_any_classical_authority_or_worker_state",
+        "automation_effect_host::hcsn::tests::profile_cannot_be_omitted_or_inferred_from_classical_key_fields",
+        "automation_effect_host::hcsn::tests::retained_request_read_rejects_linked_or_exposed_bytes",
+        "automation_effect_host::hcsn::tests::unregistered_operation_is_rejected_before_supervisor_pin_io",
+        "automation_effect_host::hcsn_pq::tests::authenticated_old_head_cannot_bind_a_newer_final_use_claim",
+        "automation_effect_host::hcsn_pq::tests::explicit_pq_host_binds_deployment_and_rejects_downgrade_before_trust_contact",
+        "automation_effect_host::hcsn_pq::tests::pq_hcsn_rechecks_clock_frontier_and_signed_feed_after_token_entry_before_spawn",
+        "automation_effect_host::hcsn_pq::tests::pq_host_contacts_pinned_peer_and_reads_settled_terminal_without_feed",
+        "automation_effect_host::hcsn_pq::tests::pq_host_rejects_expired_feed_and_changed_supervisor_pins_before_dispatch",
+        "automation_effect_host::hcsn_pq::tests::pq_host_rejects_tampered_feed_and_grant_before_provider_and_nonce_use",
+        "automation_effect_host::hcsn_pq::tests::source_tests::source_drift_after_claim_blocks_native_dispatch_and_status_contact",
+        "automation_effect_host::hcsn_pq::tests::source_tests::source_drift_refuses_host_open_before_external_trust_or_nonce_state",
+        "automation_effect_host::hcsn_source::tests::exact_source_inventory_rejects_helper_drift_and_root_package_injection",
+        "automation_effect_host::hcsn_source::tests::manifest_decode_and_source_reads_enforce_bounds",
+        "automation_effect_host::hcsn_source::tests::source_aliases_are_rejected_even_when_their_bytes_match",
+        "automation_effect_host::recovery_tests::local_terminal_recovery_preserves_uncertain_history_without_provider_lookup",
+        "automation_effect_host::tests::host_dispatches_exact_wire_payload_once",
+        "pq_final_use::tests::final_contact_rechecks_external_nonce_progress_after_active_effect_entry",
+        "pq_final_use::tests::final_contact_refuses_unavailable_frontier_without_replacing_local_state",
+        "pq_final_use::tests::recovery_contact_refuses_feed_that_expires_during_frontier_observation",
+        "protected_file::tests::private_fifo_without_a_writer_is_rejected_before_any_blocking_read",
+        "protected_file::tests::private_regular_file_is_bounded_and_rejects_unsafe_identity"
+      ]
+    },
+    "job_id": 127967938963,
+    "ordinary_library_build": "passed; ordinary-build-check.log has finished dev profile",
+    "python_source_files_verified": 54,
+    "scoped_clippy": "passed; clippy.log has finished dev profile; warnings retained",
+    "source_pins_verified": 11,
+    "test_executable_bytes_in_artifact": false,
+    "test_executable_scope": "Native CI build and execution linkage only; offline audit cannot rehash absent executable bytes.",
+    "test_executable_sha256": "541fefe529d8010c5ace043f40b3070fb7649a7994442d8939f158981fb7d517",
+    "tracked_source_unchanged": true
+  },
+  "arm_architecture": {
+    "actual_commands": [
+      {
+        "command": [
+          "cargo",
+          "test",
+          "--locked",
+          "--manifest-path",
+          "codex-rs/Cargo.toml",
+          "-p",
+          "codex-hepta-contracts",
+          "--test",
+          "final_use_linearization"
+        ],
+        "exit_code": 0,
+        "failed": 0,
+        "log": "architecture-source-head/final-use.json.f4ac40dd18d74bc18014b4dd763a4ac1.log",
+        "log_bytes": 2193,
+        "log_sha256": "0e6dde6b4d8114625bb54eedfb577c757dd5b8ac0943cddbd6b2ec858e6f0c05",
+        "passed": 1,
+        "record": "architecture-source-head/final-use.json",
+        "record_sha256": "ae4331e3ee450c08247ccd2cfc455bd65d8c5108d48d9bf8a21a61f42ce83ea8",
+        "selected_log_lines": [
+          "test unix::callback_reentrant_revocation_is_ordered_after_final_entry_without_deadlock ... ok"
+        ]
+      },
+      {
+        "command": [
+          "cargo",
+          "test",
+          "--locked",
+          "--manifest-path",
+          "codex-rs/Cargo.toml",
+          "-p",
+          "codex-hepta-agentd",
+          "browser_servo"
+        ],
+        "exit_code": 0,
+        "failed": 0,
+        "log": "architecture-source-head/browser.json.54138351d066427a81a00ea0dfc100fd.log",
+        "log_bytes": 46872,
+        "log_sha256": "c1317adc1c22b6d37d713a2516a36a4739479e9285f342beb7843f1528de50aa",
+        "passed": 3,
+        "record": "architecture-source-head/browser.json",
+        "record_sha256": "6ad8a7271fb0eacfa95afcc6939984c404727fe434addafb0bc1c62aa712ed9c",
+        "selected_log_lines": [
+          "   Compiling codex-hepta-agentd v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/hepta-agentd)",
+          "test browser_servo::tests::non_effect_calls_never_enter_final_use_authority ... ok",
+          "test browser_servo::tests::challenge_request_digest_must_match_signed_final_use_binding ... ok",
+          "test browser_servo::tests::final_use_fence_covers_exactly_the_browser_local_dispatch_boundary ... ok"
+        ]
+      },
+      {
+        "command": [
+          "cargo",
+          "test",
+          "--locked",
+          "--manifest-path",
+          "codex-rs/Cargo.toml",
+          "-p",
+          "codex-hepta-agentd",
+          "new_generation_candidate_changes_behavior_and_explicit_predecessor_reload_restores_it"
+        ],
+        "exit_code": 0,
+        "failed": 0,
+        "log": "architecture-source-head/selected-ranker.json.b5e71834ab584f849091d692bee798a1.log",
+        "log_bytes": 12598,
+        "log_sha256": "cac46762b2d34cce733d2da44386e5d5bc816f84ca7aba1a1c207dad3753e291",
+        "passed": 1,
+        "record": "architecture-source-head/selected-ranker.json",
+        "record_sha256": "85f5d60ee1a1624e62ded986f1658cb4ec01df506a8f04fc1368ec2bcf3ce9b3",
+        "selected_log_lines": [
+          "test cognitive_ranker::tests::new_generation_candidate_changes_behavior_and_explicit_predecessor_reload_restores_it ... ok"
+        ]
+      },
+      {
+        "command": [
+          "just",
+          "test",
+          "--locked",
+          "-p",
+          "codex-hepta-agentd",
+          "--lib",
+          "-E",
+          "test(runtime_tasks::tests)"
+        ],
+        "exit_code": 0,
+        "failed": 0,
+        "log": "architecture-source-head/runtime-tasks.json.9ebc8678c8384a28bd0e836e67be603b.log",
+        "log_bytes": 65910,
+        "log_sha256": "8d91a221354f050612f81a2ef10a1d47e408912b47f36561c6a8025bdce3ac6c",
+        "passed": 11,
+        "record": "architecture-source-head/runtime-tasks.json",
+        "record_sha256": "e61943e305c2644bd45c8fa7b180b2b9933be892a0040957ecec69157d3d85ac",
+        "selected_log_lines": [
+          "   Compiling codex-hepta-agentd v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/hepta-agentd)",
+          "     Summary [   0.064s] 11 tests run: 11 passed, 181 skipped"
+        ]
+      },
+      {
+        "command": [
+          "cargo",
+          "test",
+          "--locked",
+          "--manifest-path",
+          "codex-rs/Cargo.toml",
+          "-p",
+          "codex-hepta-agentd",
+          "--test",
+          "optional_module_restart",
+          "forty_first_service",
+          "--",
+          "--nocapture"
+        ],
+        "exit_code": 0,
+        "failed": 0,
+        "log": "architecture-source-head/optional-process-restart.json.7baf2d289e24405bbee469942e2c2549.log",
+        "log_bytes": 8510,
+        "log_sha256": "1cd6360417e8272d88ec162ae5cca3f49767bed9f4e600a2cfb34e82768b65c4",
+        "passed": 1,
+        "record": "architecture-source-head/optional-process-restart.json",
+        "record_sha256": "a2b77f4d16019f8f7d7a2de90cb9cdb83095bc696c7b93e881755848fb3328ef",
+        "selected_log_lines": [
+          "test forty_first_service_survives_faults_replacement_retirement_and_real_process_restart ... ok"
+        ]
+      }
+    ],
+    "audit": "architecture-source-head-audit.json",
+    "base_merge_is_additional_native_execution": false,
+    "base_merge_job_id": 127967936878,
+    "conclusion": "success",
+    "job_id": 127967937316,
+    "platform": "ubuntu-24.04-arm",
+    "run_id": 42240137866,
+    "scope": "Five actual source-head command records with passing test summaries. Identical-tree base-merge reuse and queued Architecture required aggregation are not additional native execution."
+  },
+  "broader_ci_snapshot": {
+    "cargo_deny": {
+      "failure_reason": "unknown from retained accessible evidence",
+      "job_id": 127995822924,
+      "observed_status": "failed",
+      "record": "ci-01-inventory-repair/cargo-deny-ui-readability.json",
+      "run_id": 42240138319
+    },
+    "decoded_tool_response_not_original_download_bytes": true,
+    "individually_inspected_failures": [
+      {
+        "job_id": 127995822797,
+        "observed_failure": "Checkout cannot create long evidence registry snapshot paths: Filename too long.",
+        "record": "broader-ci-01/windows-checkout-job-127995822797.json",
+        "run_id": 42240138319,
+        "scope": "This job only; no claim about every Windows sibling."
+      },
+      {
+        "job_id": 127972849494,
+        "observed_failure": "V8 Cargo smoke reports E0514: fslock compiled by an incompatible rustc version.",
+        "record": "broader-ci-01/v8-arm-cache-job-127972849494.json",
+        "run_id": 42240137997,
+        "scope": "Compiler artifact compatibility failure observed in this job; no extrapolation to the other V8 smoke jobs."
+      },
+      {
+        "job_id": 127972849934,
+        "observed_failure": "Rust 1.95.0 toolchain metadata download fails during DNS address lookup for static.rust-lang.org.",
+        "record": "broader-ci-01/v8-macos-toolchain-job-127972849934.json",
+        "run_id": 42240137997,
+        "scope": "Toolchain setup failed before the intended Cargo smoke in this job."
+      }
+    ],
+    "other_failures": "Remaining failed sibling jobs in the point-in-time snapshot are not individually attributed here. Cargo-deny cause remains unknown.",
+    "path": "ci-01-broader-snapshot.json",
+    "scope": "Point-in-time retained observations, not a complete terminal conclusion for every workflow."
+  },
+  "claim_boundaries": {
+    "agentd_daemon_booted": false,
+    "authbus_ingress_exercised": false,
+    "autograd_graph_persisted_across_serialization": false,
+    "cancellation_graph_scope": "Two logical cells; both population cancellation fixtures explicitly use 8 bins and bounded 64-step/1048576-element/24576-byte budgets. This is not the default 32-bin numerical fixture.",
+    "cancellation_one_step_preflight_scope": "Separate admitted run, not proof of optimizer entry in the cancelled process.",
+    "cancelled_worker_optimizer_entry_proven": false,
+    "candidate_only": true,
+    "desktop_cuda_touched": false,
+    "full_numeric_state_restored": true,
+    "gradient_semantics": "Task-loss autograd gradient updates; NDU, credit receipts, eligibility, value and local plasticity keep distinct semantics.",
+    "ignored_tests_counted_as_passes": false,
+    "independent_production_key_custody_proven": false,
+    "new_tests_builds_or_training_executed_by_this_summary": false,
+    "offline_live_process_observation_repeated": false,
+    "offline_signature_reverification": false,
+    "overlapping_suites_summed": false,
+    "physical_time_scope": "Approved positive integer microsecond intervals, bounded by profile, event and resource limits. Spatial discretization, frozen within-step coefficients and right-endpoint deposition remain approximations.",
+    "production_deployed": false,
+    "runtime_and_source_atomic_custody_proven": false,
+    "source_manifest_scope": "Signed bounded exact source snapshot checked at open and before contact; host-owned immutable deployment/runtime is still required.",
+    "subsequent_block_starts_detached": true
+  },
+  "controls_raw_archive": {
+    "archive": "ci-01-controls-raw.tgz",
+    "bytes": 95774,
+    "inventory": "ci-01-controls-files.json",
+    "members": 13,
+    "reference_resolution": "ci-01-inventory-repair/ and broader-ci-01/ references resolve to member paths inside this archive. All original input files remain in staging.",
+    "sha256": "bcef1cae98d72c7e4e641d2433f24ff1f549774845074c32c400d34682c14c4d"
+  },
+  "created_at_utc": "2026-11-06T16:37:35.313846+00:00",
+  "dedicated": {
+    "artifacts_metadata": "ci-01-artifacts.json",
+    "attempt": 1,
+    "conclusion": "success",
+    "jobs_metadata": "ci-01-jobs-final.json",
+    "run_id": 42240138316,
+    "run_metadata": "ci-01-run-final.json"
+  },
+  "latest_source_after_inventory_repair": {
+    "changes": "Exactly one JSON inventory file; three method classifications and one exact existing signed-wrapper caller.",
+    "hosted_results_reused_as_new_head_results": false,
+    "new_dedicated_run_id": 42253531173,
+    "new_hosted_status_scope": "Pending/queued in ci-02-runs-initial.json; no final-head acceptance asserted here.",
+    "sha": "a20ea6a862e501d8a4993195c7da1ac52ca9a7be",
+    "tree": "b8e8b66b957aaf1e5e1cd9db8bb479137cf9fceb"
+  },
+  "original_failure_and_repair": {
+    "attribution": "Introduced by missing independent JSON inventory entries; caller verifier itself passed, but 2 of 17 independent B4 tests failed.",
+    "attribution_record": "ci-01-inventory-repair/attribution.json",
+    "failed_inventory_caller": "codex-rs/hepta-contracts/src/final_use_control_pq.rs",
+    "failed_inventory_methods": [
+      "authentication_profile",
+      "shares_owner",
+      "check_unclaimed_grant"
+    ],
+    "failed_step": "Verify Hepta privileged caller closed set",
+    "independent_cross_review": "ci-01-independent-inventory-review.json",
+    "job_id": 127995822824,
+    "later_suites_not_reached": [
+      "qa/fault-matrix",
+      "qa/performance",
+      "qa/vertical-slice"
+    ],
+    "original_conclusion": "failure",
+    "raw_failure": "ci-01-inventory-repair/job-127995822824.log",
+    "repair_review": "ci-01-inventory-repair/inventory-repair-review.json",
+    "retained_local_repair_tests": 17,
+    "retained_local_repair_tests_exit_code": 0,
+    "retested_by_this_summary": false,
+    "run_id": 42240138319
+  },
+  "prior_local_attempts": {
+    "already_retained_in_evidence_head": "b267c2f0370218aa221ca43ae9b2b5da63f66759",
+    "inventory": "local-validation.json",
+    "raw_archive": "local-raw.tgz",
+    "scope": "Earlier EPERM failures, exit-137 empty logs, cancellation failures and preflight-only outcomes stay preserved with their actual or unknown source identity. They are not rewritten as hosted bbe results."
+  },
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "retention": {
+    "agentd_artifact": {
+      "artifact_id": 13519856345,
+      "created_at": "2026-11-06T16:14:51Z",
+      "expires_at": "2027-02-04T15:07:47Z",
+      "head_sha": "bbe995c43e4eed4bb9c217b52447ba5a32ebb6ca",
+      "job_id": 127967938963,
+      "name": "hcsn-agentd-bbe995c43e4eed4bb9c217b52447ba5a32ebb6ca-1",
+      "repository": "TrillionniumFoundation/hepta-private-ci",
+      "run_attempt": 1,
+      "run_id": 42240138316,
+      "sha256": "e173d74a2f6815917f1385542349a42e76a42ef77f3d4e2ae2c4c153d030dd69",
+      "size_in_bytes": 432095,
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/13519856345"
+    },
+    "agentd_excluded_compiled_binaries": [],
+    "agentd_filtered_archive": {
+      "path": "pq-host-raw-filtered.zip",
+      "sha256": "715cd26b57c46bf91a97c4b972854233bfacf6399043f822f676cb49145bfe36",
+      "size": 434639
+    },
+    "agentd_original_regular_files": 185,
+    "arm_artifact": {
+      "complete_local_zip": "/workspace/scratch/7b4b0c316c52/hcsn-ci-review/architecture-source-head-bbe995c.zip",
+      "created_at": "2026-11-06T16:13:05Z",
+      "id": 13520550437,
+      "name": "hepta-architecture-42240137866-1-source-head",
+      "retained_zip": "architecture-source-head-raw.zip",
+      "sha256": "c51e448103e61cb429e6d90a8904f286ff59cd1bae55d41b570df383cdffe9cc",
+      "size": 95298,
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/13520550437"
+    },
+    "arm_five_records_and_logs_rehashed": true,
+    "compiled_binary_filter_rule": "Exclude only three confirmed ELF native-fixture executables with matching native-build receipt digests from the source Git package. Keep all other original members byte-identical, including model/checkpoint bytes, SQLite/WAL when present, authority claims, handoff bytes, JSON and logs. Agentd excludes zero files; ARM retains the complete original ZIP. Non-native binary data and Python bytecode are not blanket-excluded.",
+    "complete_original_source_zip_in_git": false,
+    "filtered_source_package_is_complete_original_artifact": false,
+    "new_archive_readbacks": [
+      {
+        "each_member_size_and_sha256_read_back": true,
+        "path": "ci-source-42240138316/source-raw-filtered.zip",
+        "regular_files": 669
+      },
+      {
+        "each_member_size_and_sha256_read_back": true,
+        "path": "pq-host-raw-filtered.zip",
+        "regular_files": 185
+      }
+    ],
+    "original_archives_still_retained": [
+      {
+        "bytes": 7284429,
+        "path": "/workspace/scratch/7b4b0c316c52/hcsn-evidence-stage/ci-source-42240138316/source-artifact-13518974518.zip",
+        "sha256": "5bc59442d5cde79ba32c44622e21d4af0fa18b98050596bf1e7d3f8e42a73962"
+      },
+      {
+        "bytes": 432095,
+        "path": "/workspace/scratch/7b4b0c316c52/hcsn-ci-review/agentd-bbe995c-complete.zip",
+        "sha256": "e173d74a2f6815917f1385542349a42e76a42ef77f3d4e2ae2c4c153d030dd69"
+      },
+      {
+        "bytes": 95298,
+        "path": "/workspace/scratch/7b4b0c316c52/hcsn-ci-review/architecture-source-head-bbe995c.zip",
+        "sha256": "c51e448103e61cb429e6d90a8904f286ff59cd1bae55d41b570df383cdffe9cc"
+      }
+    ],
+    "original_zip_or_extraction_deleted": false,
+    "source_artifact": {
+      "artifact_created_at": "2026-11-06T16:07:53Z",
+      "artifact_expires_at": "2027-02-04T15:07:47Z",
+      "artifact_id": 13518974518,
+      "artifact_name": "hcsn-training-bridge-bbe995c43e4eed4bb9c217b52447ba5a32ebb6ca-1",
+      "excluded_native_executables": [
+        {
+          "bytes": 7417936,
+          "confirmation": "ELF executable bytes and exact matching native-build.json executable_sha256",
+          "elf_class_bits": 64,
+          "elf_machine": 62,
+          "elf_type": 3,
+          "matching_build_receipt": "_temp/hcsn-training-bridge/bridge-a/native-build.json",
+          "path": "_temp/hcsn-training-bridge/bridge-a/native-fixture",
+          "reason_not_in_git_package": "compiled native executable; original bytes remain in the complete original ZIP and scratch extraction",
+          "sha256": "2bc6719d2bf04e1e70c64e30f2a51493a26657edd1becf1ae60f97a447f0ff93",
+          "zip_crc32": "7a61a8cd",
+          "zip_unix_mode": "0o100755"
+        },
+        {
+          "bytes": 7417936,
+          "confirmation": "ELF executable bytes and exact matching native-build.json executable_sha256",
+          "elf_class_bits": 64,
+          "elf_machine": 62,
+          "elf_type": 3,
+          "matching_build_receipt": "_temp/hcsn-training-bridge/bridge-b/native-build.json",
+          "path": "_temp/hcsn-training-bridge/bridge-b/native-fixture",
+          "reason_not_in_git_package": "compiled native executable; original bytes remain in the complete original ZIP and scratch extraction",
+          "sha256": "2bc6719d2bf04e1e70c64e30f2a51493a26657edd1becf1ae60f97a447f0ff93",
+          "zip_crc32": "7a61a8cd",
+          "zip_unix_mode": "0o100755"
+        },
+        {
+          "bytes": 7417936,
+          "confirmation": "ELF executable bytes and exact matching native-build.json executable_sha256",
+          "elf_class_bits": 64,
+          "elf_machine": 62,
+          "elf_type": 3,
+          "matching_build_receipt": "_temp/hcsn-training-bridge/bridge-b-age/native-build.json",
+          "path": "_temp/hcsn-training-bridge/bridge-b-age/native-fixture",
+          "reason_not_in_git_package": "compiled native executable; original bytes remain in the complete original ZIP and scratch extraction",
+          "sha256": "2bc6719d2bf04e1e70c64e30f2a51493a26657edd1becf1ae60f97a447f0ff93",
+          "zip_crc32": "7a61a8cd",
+          "zip_unix_mode": "0o100755"
+        }
+      ],
+      "filtered_git_package": {
+        "all_included_files_byte_identical_to_original": true,
+        "bytes": 969135,
+        "complete_original_artifact": false,
+        "path": "/workspace/scratch/7b4b0c316c52/hcsn-evidence-stage/ci-source-42240138316/source-raw-filtered.zip",
+        "regular_files": 669,
+        "sha256": "7146ee59cf560ab989057f6d69cfbcee74eed5b4d3e1f5030815cbe417c19ae0",
+        "uncompressed_regular_bytes": 5161449
+      },
+      "head": "bbe995c43e4eed4bb9c217b52447ba5a32ebb6ca",
+      "job_id": 127967939575,
+      "original_zip": {
+        "bytes": 7284429,
+        "path": "/workspace/scratch/7b4b0c316c52/hcsn-evidence-stage/ci-source-42240138316/source-artifact-13518974518.zip",
+        "regular_files": 672,
+        "sha256": "5bc59442d5cde79ba32c44622e21d4af0fa18b98050596bf1e7d3f8e42a73962",
+        "uncompressed_regular_bytes": 27415257
+      },
+      "repository": "TrillionniumFoundation/hepta-private-ci",
+      "retained_extension_counts": {
+        "": 21,
+        ".bin": 20,
+        ".checkpoint": 30,
+        ".claims": 6,
+        ".head": 6,
+        ".json": 312,
+        ".jsonl": 9,
+        ".lock": 27,
+        ".log": 17,
+        ".pt": 45,
+        ".py": 4,
+        ".pyc": 1,
+        ".snapshot": 6,
+        ".sqlite3": 6,
+        ".stderr": 72,
+        ".stdout": 72,
+        ".toml": 6,
+        ".txt": 3,
+        ".witness": 6
+      },
+      "retention_boundary": "Only the three independently identified compiled native executables are excluded from the Git package. Every other original artifact member, including checkpoints, SQLite/WAL, handoff bytes, JSON, logs and failure records, is retained byte-for-byte. Original ZIP and full extraction remain in scratch; this filtered package is not the complete original artifact.",
+      "run_id": 42240138316,
+      "schema_version": 1,
+      "scratch_extraction": "/workspace/scratch/7b4b0c316c52/hcsn-evidence-stage/ci-source-42240138316/original-extracted",
+      "tree": "e74509e6a2a49bd004b79854b3a6dbc2fe581be0"
+    }
+  },
+  "schema": "hcsn.first-round-ci-evidence-summary.v1",
+  "source_and_owner": {
+    "audit": "ci-source-42240138316/artifact-review.json",
+    "bridges": [
+      {
+        "backend": "value_kernel",
+        "candidate_only": true,
+        "first_block_optimizer_steps": 1,
+        "gradient_cells": 2,
+        "gradient_parameters": 172,
+        "logical_cells": 2,
+        "runtime_tuple": {
+          "device": "cpu",
+          "dtype": "torch.float64",
+          "numpy": "2.3.5",
+          "python": "3.12.3",
+          "scipy": "1.17.0",
+          "torch": "2.8.0+cpu"
+        },
+        "second_block_full_state_weights_and_prediction_exact": true,
+        "second_block_optimizer_steps": 2,
+        "second_block_starts_detached": true,
+        "status": "passed",
+        "trainable_parameters": 172
+      },
+      {
+        "backend": "population_grid",
+        "candidate_only": true,
+        "first_block_optimizer_steps": 1,
+        "gradient_cells": 2,
+        "gradient_parameters": 8,
+        "logical_cells": 2,
+        "runtime_tuple": {
+          "device": "cpu",
+          "dtype": "torch.float64",
+          "numpy": "2.3.5",
+          "python": "3.12.3",
+          "scipy": "1.17.0",
+          "torch": "2.8.0+cpu"
+        },
+        "second_block_full_state_weights_and_prediction_exact": true,
+        "second_block_optimizer_steps": 2,
+        "second_block_starts_detached": true,
+        "status": "passed",
+        "trainable_parameters": 8
+      },
+      {
+        "backend": "population_age",
+        "candidate_only": true,
+        "first_block_optimizer_steps": 1,
+        "gradient_cells": 2,
+        "gradient_parameters": 8,
+        "logical_cells": 2,
+        "runtime_tuple": {
+          "device": "cpu",
+          "dtype": "torch.float64",
+          "numpy": "2.3.5",
+          "python": "3.12.3",
+          "scipy": "1.17.0",
+          "torch": "2.8.0+cpu"
+        },
+        "second_block_full_state_weights_and_prediction_exact": true,
+        "second_block_optimizer_steps": 2,
+        "second_block_starts_detached": true,
+        "status": "passed",
+        "trainable_parameters": 8
+      }
+    ],
+    "cancellation": [
+      {
+        "actual_optimizer_entry_proven": false,
+        "backend": "value_kernel",
+        "candidate_output_absent": true,
+        "cold_native_pid": 16432,
+        "cpu_seconds_to_observed_termination": 0.7866569999999999,
+        "final_outcomes": [
+          "failed",
+          "succeeded"
+        ],
+        "historical_observations_preserved": true,
+        "lost_replies_injected": true,
+        "mutating_replay_contacts": 0,
+        "parent_pid": 16423,
+        "preflight_optimizer_steps": 1,
+        "preflight_wall_seconds": 1.138487633000068,
+        "requested_cancellation_steps": 64,
+        "retained_file_hashes_verified": 43,
+        "source_hashes_match_exact_published_checkout": true,
+        "status": "passed",
+        "terminal_reason": "cancelled_worker_stopped",
+        "terminal_state": "cancelled",
+        "termination_confirmed": true,
+        "wall_seconds_to_observed_termination": 0.8270478309999589,
+        "worker": {
+          "host_id": "26055c97a1de53eab20079009a9c6573d5512481ae13abbed3ea7361eeced3a3",
+          "incarnation": "8126bee3953109906bfd1a66b44ca53751f88d6a4b8d8374b55f50ba1b624986",
+          "process_id": 16429
+        },
+        "workload": {
+          "backend": "value_kernel",
+          "batch": 2,
+          "coarse_intervals": 32,
+          "event_steps_per_sample": 32,
+          "graph_digest": "a3d7d66e6a55795c5231eb60fb9fea6bffae9f2b628c8f07018c45973a0ee208",
+          "logical_cells": 2,
+          "maximum_elements": 1048576,
+          "maximum_host_wire_bytes": 24576,
+          "maximum_optimizer_steps": 64,
+          "request_bytes": 17923,
+          "schema_version": 1,
+          "scope": "real bounded process-cancellation workload; not the 32-bin numerical-quality fixture",
+          "spatial_bins": null,
+          "temporal_profile_digest": "bb1ab0765d0eb8699b83adf94c7af171ffcdc59d4aeb435ca0e6388797a7af28",
+          "working_elements": 1666
+        }
+      },
+      {
+        "actual_optimizer_entry_proven": false,
+        "backend": "population_grid",
+        "candidate_output_absent": true,
+        "cold_native_pid": 16456,
+        "cpu_seconds_to_observed_termination": 0.78257,
+        "final_outcomes": [
+          "failed",
+          "succeeded"
+        ],
+        "historical_observations_preserved": true,
+        "lost_replies_injected": true,
+        "mutating_replay_contacts": 0,
+        "parent_pid": 16447,
+        "preflight_optimizer_steps": 1,
+        "preflight_wall_seconds": 0.6256088789999694,
+        "requested_cancellation_steps": 64,
+        "retained_file_hashes_verified": 43,
+        "source_hashes_match_exact_published_checkout": true,
+        "status": "passed",
+        "terminal_reason": "cancelled_worker_stopped",
+        "terminal_state": "cancelled",
+        "termination_confirmed": true,
+        "wall_seconds_to_observed_termination": 0.8110343429999602,
+        "worker": {
+          "host_id": "26055c97a1de53eab20079009a9c6573d5512481ae13abbed3ea7361eeced3a3",
+          "incarnation": "5eb9879bfa041a9c41ad29eb64edb87c21e3b2107eb3a8c8e445452a5abeffb9",
+          "process_id": 16453
+        },
+        "workload": {
+          "backend": "population_grid",
+          "batch": 1,
+          "coarse_intervals": 12,
+          "event_steps_per_sample": 96,
+          "graph_digest": "c24d60c0685549705a6e3bcc5013156e092b26fc77797977fa34224d4b84587c",
+          "logical_cells": 2,
+          "maximum_elements": 1048576,
+          "maximum_host_wire_bytes": 24576,
+          "maximum_optimizer_steps": 64,
+          "request_bytes": 7294,
+          "schema_version": 1,
+          "scope": "real bounded process-cancellation workload; not the 32-bin numerical-quality fixture",
+          "spatial_bins": 8,
+          "temporal_profile_digest": "3b973334d6ae99c9a8e0dda38ccb95d390561809bcd1430042854fd6641329c3",
+          "working_elements": 800077
+        }
+      },
+      {
+        "actual_optimizer_entry_proven": false,
+        "backend": "population_age",
+        "candidate_output_absent": true,
+        "cold_native_pid": 16481,
+        "cpu_seconds_to_observed_termination": 0.781531,
+        "final_outcomes": [
+          "failed",
+          "succeeded"
+        ],
+        "historical_observations_preserved": true,
+        "lost_replies_injected": true,
+        "mutating_replay_contacts": 0,
+        "parent_pid": 16471,
+        "preflight_optimizer_steps": 1,
+        "preflight_wall_seconds": 0.38915422599995964,
+        "requested_cancellation_steps": 64,
+        "retained_file_hashes_verified": 43,
+        "source_hashes_match_exact_published_checkout": true,
+        "status": "passed",
+        "terminal_reason": "cancelled_worker_stopped",
+        "terminal_state": "cancelled",
+        "termination_confirmed": true,
+        "wall_seconds_to_observed_termination": 0.8110390340000322,
+        "worker": {
+          "host_id": "26055c97a1de53eab20079009a9c6573d5512481ae13abbed3ea7361eeced3a3",
+          "incarnation": "d621784102bab6859e8c08bb857aa02dc5ad3ba44da3ba202dea06d878bd3e73",
+          "process_id": 16477
+        },
+        "workload": {
+          "backend": "population_age",
+          "batch": 1,
+          "coarse_intervals": 14,
+          "event_steps_per_sample": 79,
+          "graph_digest": "106dff09f07c289300945b470736c0c8403d131b9cb7773008ecb8e009f76d86",
+          "logical_cells": 2,
+          "maximum_elements": 1048576,
+          "maximum_host_wire_bytes": 24576,
+          "maximum_optimizer_steps": 64,
+          "request_bytes": 8193,
+          "schema_version": 1,
+          "scope": "real bounded process-cancellation workload; not the 32-bin numerical-quality fixture",
+          "spatial_bins": 8,
+          "temporal_profile_digest": "596ea8fad7844062b311960f5cac775ceb16d2ae816ebbe67c6bc181ba44f79b",
+          "working_elements": 1046923
+        }
+      }
+    ],
+    "conclusion": "success",
+    "job_id": 127967939575,
+    "tests": {
+      "automation_passed": 120,
+      "automation_skip_handling": "both ignored integration entrypoints were run by exact-name external wrappers for all three backends",
+      "automation_skipped": 2,
+      "automation_skips": [
+        "signed_authority_real_worker_cold_recovery",
+        "signed_authority_real_worker_cancel_cold_recovery"
+      ],
+      "numerical_artifact_contracts_passed": 392,
+      "numerical_artifact_contracts_skip_identity": "codex-hepta-learning-artifacts owner_host::tests::owner_host_process_fault_worker",
+      "numerical_artifact_contracts_skipped": 1,
+      "python_passed": 69,
+      "python_seconds": 41.386,
+      "python_skipped": 0,
+      "skip_identity_evidence": "only ignore declaration in these three source packages; source says worker is invoked only by owner_host_process_kill_reopen_matrix, whose PASS is in rust-tests.log"
+    },
+    "tracked_source_unchanged": true
+  },
+  "source_pr": 5067,
+  "status": "first_round_HCSN_dedicated_passed_broader_gates_not_all_passed_final_head_pending",
+  "tested_source": {
+    "base_sha": "44e539313e0c54badb4b9b687425dd87ecba6e67",
+    "sha": "bbe995c43e4eed4bb9c217b52447ba5a32ebb6ca",
+    "tree": "e74509e6a2a49bd004b79854b3a6dbc2fe581be0"
+  }
+}

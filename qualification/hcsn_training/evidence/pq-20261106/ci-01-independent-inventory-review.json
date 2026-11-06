@@ -1,0 +1,76 @@
+{
+  "CALLERS_toml_unchanged": true,
+  "candidate_before": {
+    "sha": "bbe995c43e4eed4bb9c217b52447ba5a32ebb6ca",
+    "tree": "e74509e6a2a49bd004b79854b3a6dbc2fe581be0"
+  },
+  "checker_and_test_source_unchanged": true,
+  "classification_decisions": [
+    {
+      "classification": "nonPrivilegedMethods",
+      "item": "FinalUseAuthority.authentication_profile",
+      "reason": "Returns the stored authentication enum; no authority mutation or capability."
+    },
+    {
+      "classification": "nonPrivilegedMethods",
+      "item": "FinalUseAuthority.shares_owner",
+      "reason": "Arc::ptr_eq of opaque owner handles; no grant, nonce, callback or provider contact."
+    },
+    {
+      "classification": "nonPrivilegedMethods",
+      "item": "FinalUseAuthority.check_unclaimed_grant",
+      "limits": "May query the configured clock. It does not itself reload the external frontier, so it is not proof of final dispatch eligibility.",
+      "reason": "Verifies grant schema, signature and exact binding, then local nonfailed owner, clock/revocation, nonce reuse and capacity. Returns Result<()> without inserting/reserving nonce, issuing VerifiedUseToken, persisting state or invoking an effect. Actual claim and final entry remain required."
+    },
+    {
+      "classification": "exact allowed caller for final_use_revocation_update",
+      "item": "codex-rs/hepta-contracts/src/final_use_control_pq.rs",
+      "reason": "The existing wrapper checks authority/profile equality and authenticated bounded-lifetime feed with epoch-bounded trust keys before forwarding a changed head to monotonic update_revocations. Same-head confirmation does not write state; active dispatch protection remains. This exact path already existed in CALLERS.toml at the tested head."
+    }
+  ],
+  "exactly_four_list_additions_verified": true,
+  "formatting_record": {
+    "exit_code": 0,
+    "result": "ci-01-inventory-repair/inventory-repair-format-result.json",
+    "scope": "just fmt --base bbe; JSON matched no formatter group; no tests rerun afterward."
+  },
+  "inventory_sha256_after": "0402f9abcc8ea35f6541e1673611bae09da4bb85e5ba25c827d4efc12ee77500",
+  "inventory_sha256_before": "a4d9c9e685771ec6d249573b7d09d364f38ccd7ff9c843a51b0db5c5d65cb84a",
+  "only_changed_repository_file": "qa/b4-no-bypass/KERNEL_AUTHORITY_BOUNDARIES.json",
+  "original_review": {
+    "assessment": "Supported by source inspection; live-owner readiness means the local owner nonfailed check, not external frontier reauthentication.",
+    "path": "ci-01-inventory-repair/inventory-repair-review.json",
+    "sha256": "095f99311a141ed4f5d94b4fe1d92aff2c5da16de856e073ddc1689a4c97b290"
+  },
+  "prior_inventory_values_preserved": true,
+  "remaining_gate": "New hosted CI belongs to a20ea6a and is pending in the retained initial snapshot; it is not relabeled from bbe runtime results.",
+  "repair_candidate": {
+    "sha": "a20ea6a862e501d8a4993195c7da1ac52ca9a7be",
+    "tree": "b8e8b66b957aaf1e5e1cd9db8bb479137cf9fceb"
+  },
+  "retained_targeted_validation": {
+    "exit_code": 0,
+    "log": "ci-01-inventory-repair/b4-no-bypass-after.log",
+    "result": "ci-01-inventory-repair/b4-no-bypass-after-result.json",
+    "scope": "Existing recorded local run on bbe with this one JSON change; not rerun by this reviewer.",
+    "tests_run": 17
+  },
+  "review_method": "Read-only source inspection, exact JSON reconstruction and retained-evidence hashes; no tests/builds/formatting rerun.",
+  "reviewed_functions": [
+    "FinalUseAuthority::shares_owner",
+    "FinalUseAuthority::authentication_profile",
+    "FinalUseAuthority::check_unclaimed_grant",
+    "FinalUseAuthority::grant_signing_input",
+    "FinalUseAuthority::claim",
+    "FinalUseAuthority::update_revocations",
+    "FinalUseRevocationFeedVerifier::apply_or_confirm_current",
+    "FinalUseRevocationFeedVerifier::verify_signed",
+    "verify_key_ring",
+    "Inner::ensure_live_state",
+    "Inner::ensure_current_effect_state"
+  ],
+  "reviewer": "pq_authority_review",
+  "runtime_source_unchanged": true,
+  "schema": "hcsn.inventory-repair-independent-cross-review.v1",
+  "security_conclusion": "No runtime privilege expansion or wildcard/test exemption. One exact independent audit caller entry is added to describe the pre-existing authenticated PQ wrapper; existing privileged methods remain privileged."
+}

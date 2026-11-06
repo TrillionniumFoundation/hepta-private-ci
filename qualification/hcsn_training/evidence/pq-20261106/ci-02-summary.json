@@ -1,0 +1,642 @@
+{
+  "schema": "hcsn.final-dedicated-acceptance.v1",
+  "generated_at_utc": "2026-11-06T18:06:27.125018+00:00",
+  "status": "final_source_dedicated_acceptance_passed_broader_ci_not_all_green",
+  "source": {
+    "pr": 5067,
+    "sha": "a20ea6a862e501d8a4993195c7da1ac52ca9a7be",
+    "tree": "b8e8b66b957aaf1e5e1cd9db8bb479137cf9fceb",
+    "base_sha": "44e539313e0c54badb4b9b687425dd87ecba6e67",
+    "review_commits": 23
+  },
+  "evidence_pr": 5088,
+  "dedicated": {
+    "run_id": 42253531173,
+    "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42253531173",
+    "attempt": 1,
+    "status": "completed",
+    "conclusion": "success",
+    "jobs": [
+      {
+        "id": 128014547080,
+        "name": "source-and-owner",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 128014547600,
+        "name": "agentd-registration",
+        "status": "completed",
+        "conclusion": "success"
+      }
+    ],
+    "run_record": "ci-02-run-final.json",
+    "jobs_record": "ci-02-jobs-final.json",
+    "artifacts_record": "ci-02-artifacts-final.json"
+  },
+  "source_and_owner": {
+    "audit": "ci-source-42253531173/artifact-review.json",
+    "tests": {
+      "python_passed": 69,
+      "python_skipped": 0,
+      "python_seconds": 40.203,
+      "python_modules_passed": {
+        "qualification.hcsn_training.test_joint_graph": 8,
+        "qualification.hcsn_training.test_population_graph": 8,
+        "qualification.hcsn_training.test_training_state": 8,
+        "qualification.hcsn_training.test_native_build": 5,
+        "qualification.hcsn_training.test_supervisor": 11,
+        "qualification.hcsn_training.test_supervisor_imports": 8,
+        "qualification.hcsn_training.test_population_age_graph": 8,
+        "qualification.hcsn_training.test_population_generator": 5,
+        "qualification.hcsn_training.test_population_spatial": 5,
+        "qualification.hcsn_training.test_resumed_derivatives": 3
+      },
+      "numerical_artifact_contracts_passed": 392,
+      "numerical_artifact_contracts_skipped": 1,
+      "automation_passed": 120,
+      "automation_skipped": 2
+    },
+    "bridges": [
+      {
+        "backend": "value_kernel",
+        "status": "passed",
+        "logical_cells": 2,
+        "gradient_cells": 2,
+        "trainable_parameters": 172,
+        "gradient_parameters": 172,
+        "first_block_optimizer_steps": 1,
+        "second_block_optimizer_steps": 2,
+        "second_block_full_state_weights_and_prediction_exact": true,
+        "second_block_starts_detached": true,
+        "candidate_only": true,
+        "runtime_tuple": {
+          "python": "3.12.3",
+          "torch": "2.8.0+cpu",
+          "numpy": "2.3.5",
+          "scipy": "1.17.0",
+          "dtype": "torch.float64",
+          "device": "cpu"
+        }
+      },
+      {
+        "backend": "population_grid",
+        "status": "passed",
+        "logical_cells": 2,
+        "gradient_cells": 2,
+        "trainable_parameters": 8,
+        "gradient_parameters": 8,
+        "first_block_optimizer_steps": 1,
+        "second_block_optimizer_steps": 2,
+        "second_block_full_state_weights_and_prediction_exact": true,
+        "second_block_starts_detached": true,
+        "candidate_only": true,
+        "runtime_tuple": {
+          "python": "3.12.3",
+          "torch": "2.8.0+cpu",
+          "numpy": "2.3.5",
+          "scipy": "1.17.0",
+          "dtype": "torch.float64",
+          "device": "cpu"
+        }
+      },
+      {
+        "backend": "population_age",
+        "status": "passed",
+        "logical_cells": 2,
+        "gradient_cells": 2,
+        "trainable_parameters": 8,
+        "gradient_parameters": 8,
+        "first_block_optimizer_steps": 1,
+        "second_block_optimizer_steps": 2,
+        "second_block_full_state_weights_and_prediction_exact": true,
+        "second_block_starts_detached": true,
+        "candidate_only": true,
+        "runtime_tuple": {
+          "python": "3.12.3",
+          "torch": "2.8.0+cpu",
+          "numpy": "2.3.5",
+          "scipy": "1.17.0",
+          "dtype": "torch.float64",
+          "device": "cpu"
+        }
+      }
+    ],
+    "classical_cancellation": [
+      {
+        "backend": "value_kernel",
+        "status": "passed",
+        "worker": {
+          "host_id": "26055c97a1de53eab20079009a9c6573d5512481ae13abbed3ea7361eeced3a3",
+          "incarnation": "0bb9059ab43eb42c3658bbc63a1d3a9a93fe645a3282e1ccc315e0812b30feb4",
+          "process_id": 16403
+        },
+        "workload": {
+          "schema_version": 1,
+          "backend": "value_kernel",
+          "logical_cells": 2,
+          "spatial_bins": null,
+          "graph_digest": "a3d7d66e6a55795c5231eb60fb9fea6bffae9f2b628c8f07018c45973a0ee208",
+          "temporal_profile_digest": "bb1ab0765d0eb8699b83adf94c7af171ffcdc59d4aeb435ca0e6388797a7af28",
+          "batch": 2,
+          "coarse_intervals": 32,
+          "event_steps_per_sample": 32,
+          "working_elements": 1666,
+          "maximum_elements": 1048576,
+          "maximum_optimizer_steps": 64,
+          "request_bytes": 17923,
+          "maximum_host_wire_bytes": 24576,
+          "scope": "real bounded process-cancellation workload; not the 32-bin numerical-quality fixture"
+        },
+        "preflight_optimizer_steps": 1,
+        "actual_optimizer_entry_proven": false,
+        "requested_cancellation_steps": 64,
+        "lost_replies_injected": true,
+        "parent_pid": 16397,
+        "cold_native_pid": 16406,
+        "retained_file_hashes_verified": 43,
+        "terminal_state": "cancelled",
+        "terminal_reason": "cancelled_worker_stopped",
+        "termination_confirmed": true,
+        "historical_observations_preserved": true,
+        "mutating_replay_contacts": 0,
+        "final_outcomes": [
+          "failed",
+          "succeeded"
+        ],
+        "candidate_output_absent": true,
+        "preflight_wall_seconds": 1.1318213189999824,
+        "cpu_seconds_to_observed_termination": 0.7790699999999999,
+        "wall_seconds_to_observed_termination": 0.8078986699999859,
+        "source_hashes_match_exact_published_checkout": true
+      },
+      {
+        "backend": "population_grid",
+        "status": "passed",
+        "worker": {
+          "host_id": "26055c97a1de53eab20079009a9c6573d5512481ae13abbed3ea7361eeced3a3",
+          "incarnation": "e85f7f5c2ffa6c49fd01deb9a3a8785692526282ed443bd0b7dd17928ba3ab50",
+          "process_id": 16429
+        },
+        "workload": {
+          "schema_version": 1,
+          "backend": "population_grid",
+          "logical_cells": 2,
+          "spatial_bins": 8,
+          "graph_digest": "c24d60c0685549705a6e3bcc5013156e092b26fc77797977fa34224d4b84587c",
+          "temporal_profile_digest": "3b973334d6ae99c9a8e0dda38ccb95d390561809bcd1430042854fd6641329c3",
+          "batch": 1,
+          "coarse_intervals": 12,
+          "event_steps_per_sample": 96,
+          "working_elements": 800077,
+          "maximum_elements": 1048576,
+          "maximum_optimizer_steps": 64,
+          "request_bytes": 7294,
+          "maximum_host_wire_bytes": 24576,
+          "scope": "real bounded process-cancellation workload; not the 32-bin numerical-quality fixture"
+        },
+        "preflight_optimizer_steps": 1,
+        "actual_optimizer_entry_proven": false,
+        "requested_cancellation_steps": 64,
+        "lost_replies_injected": true,
+        "parent_pid": 16423,
+        "cold_native_pid": 16432,
+        "retained_file_hashes_verified": 43,
+        "terminal_state": "cancelled",
+        "terminal_reason": "cancelled_worker_stopped",
+        "termination_confirmed": true,
+        "historical_observations_preserved": true,
+        "mutating_replay_contacts": 0,
+        "final_outcomes": [
+          "failed",
+          "succeeded"
+        ],
+        "candidate_output_absent": true,
+        "preflight_wall_seconds": 0.6569686789999878,
+        "cpu_seconds_to_observed_termination": 0.7794709999999999,
+        "wall_seconds_to_observed_termination": 0.8081749689999924,
+        "source_hashes_match_exact_published_checkout": true
+      },
+      {
+        "backend": "population_age",
+        "status": "passed",
+        "worker": {
+          "host_id": "26055c97a1de53eab20079009a9c6573d5512481ae13abbed3ea7361eeced3a3",
+          "incarnation": "ce55dd71ec182e5d4e825b926740d99c0154a9c601c1eca429ac19026199d3a1",
+          "process_id": 16453
+        },
+        "workload": {
+          "schema_version": 1,
+          "backend": "population_age",
+          "logical_cells": 2,
+          "spatial_bins": 8,
+          "graph_digest": "106dff09f07c289300945b470736c0c8403d131b9cb7773008ecb8e009f76d86",
+          "temporal_profile_digest": "596ea8fad7844062b311960f5cac775ceb16d2ae816ebbe67c6bc181ba44f79b",
+          "batch": 1,
+          "coarse_intervals": 14,
+          "event_steps_per_sample": 79,
+          "working_elements": 1046923,
+          "maximum_elements": 1048576,
+          "maximum_optimizer_steps": 64,
+          "request_bytes": 8193,
+          "maximum_host_wire_bytes": 24576,
+          "scope": "real bounded process-cancellation workload; not the 32-bin numerical-quality fixture"
+        },
+        "preflight_optimizer_steps": 1,
+        "actual_optimizer_entry_proven": false,
+        "requested_cancellation_steps": 64,
+        "lost_replies_injected": true,
+        "parent_pid": 16447,
+        "cold_native_pid": 16456,
+        "retained_file_hashes_verified": 43,
+        "terminal_state": "cancelled",
+        "terminal_reason": "cancelled_worker_stopped",
+        "termination_confirmed": true,
+        "historical_observations_preserved": true,
+        "mutating_replay_contacts": 0,
+        "final_outcomes": [
+          "failed",
+          "succeeded"
+        ],
+        "candidate_output_absent": true,
+        "preflight_wall_seconds": 0.39467490899994573,
+        "cpu_seconds_to_observed_termination": 0.781836,
+        "wall_seconds_to_observed_termination": 0.8085684800000195,
+        "source_hashes_match_exact_published_checkout": true
+      }
+    ],
+    "source_file_hashes_verified": 139,
+    "tracked_source_unchanged": true,
+    "retention": "ci-source-42253531173/source-raw-provenance.json",
+    "publish_index": "ci-source-42253531173/source-evidence-index.json"
+  },
+  "agentd_and_pq": {
+    "audit": "ci-agentd-42253531173/pq-host-audit.json",
+    "tests": {
+      "failed": 0,
+      "passed": 23,
+      "skipped_by_filter_or_ignore": 169,
+      "test_names": [
+        "automation_effect_host::hcsn::tests::private_directory_validation_rejects_permission_changes_and_symlink_redirection",
+        "automation_effect_host::hcsn::tests::production_profile_is_refused_before_any_classical_authority_or_worker_state",
+        "automation_effect_host::hcsn::tests::profile_cannot_be_omitted_or_inferred_from_classical_key_fields",
+        "automation_effect_host::hcsn::tests::retained_request_read_rejects_linked_or_exposed_bytes",
+        "automation_effect_host::hcsn::tests::unregistered_operation_is_rejected_before_supervisor_pin_io",
+        "automation_effect_host::hcsn_pq::tests::authenticated_old_head_cannot_bind_a_newer_final_use_claim",
+        "automation_effect_host::hcsn_pq::tests::explicit_pq_host_binds_deployment_and_rejects_downgrade_before_trust_contact",
+        "automation_effect_host::hcsn_pq::tests::pq_hcsn_rechecks_clock_frontier_and_signed_feed_after_token_entry_before_spawn",
+        "automation_effect_host::hcsn_pq::tests::pq_host_contacts_pinned_peer_and_reads_settled_terminal_without_feed",
+        "automation_effect_host::hcsn_pq::tests::pq_host_rejects_expired_feed_and_changed_supervisor_pins_before_dispatch",
+        "automation_effect_host::hcsn_pq::tests::pq_host_rejects_tampered_feed_and_grant_before_provider_and_nonce_use",
+        "automation_effect_host::hcsn_pq::tests::source_tests::source_drift_after_claim_blocks_native_dispatch_and_status_contact",
+        "automation_effect_host::hcsn_pq::tests::source_tests::source_drift_refuses_host_open_before_external_trust_or_nonce_state",
+        "automation_effect_host::hcsn_source::tests::exact_source_inventory_rejects_helper_drift_and_root_package_injection",
+        "automation_effect_host::hcsn_source::tests::manifest_decode_and_source_reads_enforce_bounds",
+        "automation_effect_host::hcsn_source::tests::source_aliases_are_rejected_even_when_their_bytes_match",
+        "automation_effect_host::recovery_tests::local_terminal_recovery_preserves_uncertain_history_without_provider_lookup",
+        "automation_effect_host::tests::host_dispatches_exact_wire_payload_once",
+        "pq_final_use::tests::final_contact_rechecks_external_nonce_progress_after_active_effect_entry",
+        "pq_final_use::tests::final_contact_refuses_unavailable_frontier_without_replacing_local_state",
+        "pq_final_use::tests::recovery_contact_refuses_feed_that_expires_during_frontier_observation",
+        "protected_file::tests::private_fifo_without_a_writer_is_rejected_before_any_blocking_read",
+        "protected_file::tests::private_regular_file_is_bounded_and_rejects_unsafe_identity"
+      ]
+    },
+    "ordinary_library_build": "passed; ordinary-build-check.log has finished dev profile",
+    "scoped_clippy": "passed; clippy.log has finished dev profile; warnings retained",
+    "backends": [
+      {
+        "backend": "value_kernel",
+        "cancellation_workload": {
+          "backend": "value_kernel",
+          "batch": 2,
+          "coarse_intervals": 32,
+          "event_steps_per_sample": 32,
+          "graph_digest": "a3d7d66e6a55795c5231eb60fb9fea6bffae9f2b628c8f07018c45973a0ee208",
+          "logical_cells": 2,
+          "maximum_elements": 1048576,
+          "maximum_host_wire_bytes": 24576,
+          "maximum_optimizer_steps": 64,
+          "request_bytes": 17915,
+          "schema_version": 1,
+          "scope": "real bounded process-cancellation workload; not the 32-bin numerical-quality fixture",
+          "spatial_bins": null,
+          "temporal_profile_digest": "bb1ab0765d0eb8699b83adf94c7af171ffcdc59d4aeb435ca0e6388797a7af28",
+          "working_elements": 1666
+        },
+        "clock_requests": 38,
+        "cold_native_pid": 24538,
+        "consumed_nonces_verified_from_raw_claim_frames": 2,
+        "external_frontier_recomputed": true,
+        "final_outcomes": [
+          "failed",
+          "succeeded"
+        ],
+        "frontier_requests": 22,
+        "initial_observations": [
+          "indeterminate",
+          "indeterminate"
+        ],
+        "missing_expired_feed_terminal_readback_recorded": true,
+        "parent_pid": 24527,
+        "raw_terminal_bound_to_cold_receipts": true,
+        "result_sha256": "eaec30f48dc745648639fccd067852d31b242bcf81ee9fae2e3edf7028fef05e",
+        "retained_files_verified": 53,
+        "retained_manifest_sha256": "c9de01b9c294170874a51f14ba39caf08f01af2ff3e732f06f659fec2375b188",
+        "scope": "retained native CI evidence audited offline; no new worker or signature execution",
+        "source_files_verified_against_exact_git": 54,
+        "sqlite_receipts_match_exactly": true,
+        "sqlite_sha256": "5341255bf0b71961e318b94b4da2dae70272cf1054d3dcc9360a22ccf553037d",
+        "status": "passed",
+        "terminal_reason": "cancelled_worker_stopped",
+        "terminal_sha256": "cb31005282c6a8c2925e6753b8172140c30a0a6f204a67c27c4ec7352f768440",
+        "test_executable_sha256": "541fefe529d8010c5ace043f40b3070fb7649a7994442d8939f158981fb7d517",
+        "worker": {
+          "host_id": "26055c97a1de53eab20079009a9c6573d5512481ae13abbed3ea7361eeced3a3",
+          "incarnation": "c78d4bfb408216223ba4123b48e4cb704b9dbcef50feaf5c5c14c5e1c8fbd0f8",
+          "process_id": 24535
+        }
+      },
+      {
+        "backend": "population_grid",
+        "cancellation_workload": {
+          "backend": "population_grid",
+          "batch": 1,
+          "coarse_intervals": 12,
+          "event_steps_per_sample": 96,
+          "graph_digest": "c24d60c0685549705a6e3bcc5013156e092b26fc77797977fa34224d4b84587c",
+          "logical_cells": 2,
+          "maximum_elements": 1048576,
+          "maximum_host_wire_bytes": 24576,
+          "maximum_optimizer_steps": 64,
+          "request_bytes": 7286,
+          "schema_version": 1,
+          "scope": "real bounded process-cancellation workload; not the 32-bin numerical-quality fixture",
+          "spatial_bins": 8,
+          "temporal_profile_digest": "3b973334d6ae99c9a8e0dda38ccb95d390561809bcd1430042854fd6641329c3",
+          "working_elements": 800077
+        },
+        "clock_requests": 38,
+        "cold_native_pid": 24562,
+        "consumed_nonces_verified_from_raw_claim_frames": 2,
+        "external_frontier_recomputed": true,
+        "final_outcomes": [
+          "failed",
+          "succeeded"
+        ],
+        "frontier_requests": 22,
+        "initial_observations": [
+          "indeterminate",
+          "indeterminate"
+        ],
+        "missing_expired_feed_terminal_readback_recorded": true,
+        "parent_pid": 24551,
+        "raw_terminal_bound_to_cold_receipts": true,
+        "result_sha256": "ac8b53aa0ec6c1a93390880ebb7243f4890ede719ee844b56d6c5b140a48b846",
+        "retained_files_verified": 53,
+        "retained_manifest_sha256": "44b8a41faa7d0caa0c31e8b1a522a1378f1ff9e86016c72ec5040ec20518d37a",
+        "scope": "retained native CI evidence audited offline; no new worker or signature execution",
+        "source_files_verified_against_exact_git": 54,
+        "sqlite_receipts_match_exactly": true,
+        "sqlite_sha256": "4b0631eeee62202e249cb25df5c75974b62f818fe27467745fb40f8cc8eaf96d",
+        "status": "passed",
+        "terminal_reason": "cancelled_worker_stopped",
+        "terminal_sha256": "e15785f89288963b01c6869f106c4abc552a066c2e9cdbd76827139206388b31",
+        "test_executable_sha256": "541fefe529d8010c5ace043f40b3070fb7649a7994442d8939f158981fb7d517",
+        "worker": {
+          "host_id": "26055c97a1de53eab20079009a9c6573d5512481ae13abbed3ea7361eeced3a3",
+          "incarnation": "1df54666cc5dff3fa73eeeea8d9fb00b7144dbde4de455326bcdeb02f2b84fc8",
+          "process_id": 24559
+        }
+      },
+      {
+        "backend": "population_age",
+        "cancellation_workload": {
+          "backend": "population_age",
+          "batch": 1,
+          "coarse_intervals": 14,
+          "event_steps_per_sample": 79,
+          "graph_digest": "106dff09f07c289300945b470736c0c8403d131b9cb7773008ecb8e009f76d86",
+          "logical_cells": 2,
+          "maximum_elements": 1048576,
+          "maximum_host_wire_bytes": 24576,
+          "maximum_optimizer_steps": 64,
+          "request_bytes": 8185,
+          "schema_version": 1,
+          "scope": "real bounded process-cancellation workload; not the 32-bin numerical-quality fixture",
+          "spatial_bins": 8,
+          "temporal_profile_digest": "596ea8fad7844062b311960f5cac775ceb16d2ae816ebbe67c6bc181ba44f79b",
+          "working_elements": 1046923
+        },
+        "clock_requests": 38,
+        "cold_native_pid": 24589,
+        "consumed_nonces_verified_from_raw_claim_frames": 2,
+        "external_frontier_recomputed": true,
+        "final_outcomes": [
+          "failed",
+          "succeeded"
+        ],
+        "frontier_requests": 22,
+        "initial_observations": [
+          "indeterminate",
+          "indeterminate"
+        ],
+        "missing_expired_feed_terminal_readback_recorded": true,
+        "parent_pid": 24578,
+        "raw_terminal_bound_to_cold_receipts": true,
+        "result_sha256": "8b1a8bef61bfb5f8857c5a4d68ee811f90a399da38937ee293d54beb7eb118a0",
+        "retained_files_verified": 53,
+        "retained_manifest_sha256": "056c8f83aa2f2e9c4ec73a5d5e7e4f10739ea9434ccac2e723ac1125129c5ded",
+        "scope": "retained native CI evidence audited offline; no new worker or signature execution",
+        "source_files_verified_against_exact_git": 54,
+        "sqlite_receipts_match_exactly": true,
+        "sqlite_sha256": "dc98bd44f58b428355c39a999748a7e40f459a27ebdca2970cb364177c2f7f20",
+        "status": "passed",
+        "terminal_reason": "cancelled_worker_stopped",
+        "terminal_sha256": "c9cb30ca36f0b842e35346c9676157122e1033e59a6b269b0a5003074cd6a045",
+        "test_executable_sha256": "541fefe529d8010c5ace043f40b3070fb7649a7994442d8939f158981fb7d517",
+        "worker": {
+          "host_id": "26055c97a1de53eab20079009a9c6573d5512481ae13abbed3ea7361eeced3a3",
+          "incarnation": "185131821b713240ae4826ced4177c2f472477d1a0488fa800250dab99a56628",
+          "process_id": 24586
+        }
+      }
+    ],
+    "source_pins_verified": 11,
+    "python_source_files_verified": 54,
+    "tracked_source_unchanged": true,
+    "publish_index": "ci-agentd-42253531173/publication-files.json"
+  },
+  "ignored_test_handling": {
+    "numerical_artifact_contracts": "One owner_host_process_fault_worker helper is ignored as a direct test; the enclosing owner_host_process_kill_reopen_matrix passed.",
+    "automation": "Two ignored integration entrypoints are invoked by exact-name wrappers across all three backends.",
+    "agentd_pq": "One ignored PQ acceptance entrypoint is invoked separately for A, grid B and age B; these are three backend executions, not three distinct ignored tests.",
+    "filtered_or_ignored_counts_added_to_pass_counts": false,
+    "overlapping_suites_summed": false
+  },
+  "independent_no_bypass_gate": {
+    "assessment": "ci-final-blocking-assessment.json",
+    "final_inventory_sha256": "0402f9abcc8ea35f6541e1673611bae09da4bb85e5ba25c827d4efc12ee77500",
+    "exact_four_item_inventory_only_repair": true,
+    "retained_local_tests_passed": 17,
+    "local_test_scope": "Recorded local run on bbe plus the one exact inventory change later committed as a20; no tests run by this report generator.",
+    "hosted_final_source_execution": false,
+    "hosted_final_source_result": "not started at 2026-11-06 17:59:45 UTC"
+  },
+  "broader_ci": {
+    "all_green": false,
+    "snapshot": "ci-02-broader-snapshot.json",
+    "blocking": {
+      "run_id": 42253531351,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42253531351",
+      "status": "pending",
+      "conclusion": null,
+      "exposed_jobs": 0,
+      "repo_checks": "not started in this hosted run",
+      "cargo_deny": "not started in this hosted run",
+      "hosted_no_bypass_pass_claim": false,
+      "internal_scheduling_cause": "unknown",
+      "created_at": "2026-11-06T16:33:44Z",
+      "updated_at": "2026-11-06T16:33:45Z",
+      "hosted_no_bypass_executed": false
+    },
+    "old_cargo_deny_cause": "unknown",
+    "old_cargo_deny_static_assessment": "ci-01-cargo-deny-assessment.json",
+    "new_v8_failures": "Four failed jobs recorded; exact new logs and assessment retained separately.",
+    "new_v8_assessment": "ci-final-v8-assessment.json"
+  },
+  "history": {
+    "first_dedicated_passed_source": "bbe995c43e4eed4bb9c217b52447ba5a32ebb6ca",
+    "first_run": 42240138316,
+    "first_summary": "ci-01-summary.json",
+    "local_observations": "local-validation.json",
+    "local_archive": "local-raw.tgz",
+    "earlier_failures_and_unknown_historical_source_identities_preserved": true,
+    "old_evidence_relabelled_as_new_execution": false
+  },
+  "raw_retention": {
+    "source_original_artifact_files": 672,
+    "source_filtered_files": 669,
+    "source_compiled_executable_exclusions": 3,
+    "source_filtered_package_is_complete_original_artifact": false,
+    "agentd_original_files": 185,
+    "agentd_compiled_executable_exclusions": 0,
+    "agentd_complete_original_zip_retained_in_git": true,
+    "only_offline_helpers_archived_to_avoid_new_loose_python_sources": true,
+    "root_independent_rechecks": {
+      "git_source_hashes": 139,
+      "pq_source_pins": 11,
+      "pq_original_vs_filtered_member_bytes": 185
+    }
+  },
+  "claim_limits": {
+    "admitted_physical_time": "positive integer microseconds; profile, event and resource budgets apply",
+    "numerical_approximations": [
+      "spatial discretization",
+      "within-step frozen coefficients",
+      "right-endpoint deposition"
+    ],
+    "full_numerical_state_restored": true,
+    "next_block_starts_detached": true,
+    "autograd_graph_preserved_across_serialization": false,
+    "cancellation_optimizer_entry_proven": false,
+    "one_step_preflight_is_separate_execution": true,
+    "pq_same_ignored_entrypoint_invoked_for_three_backends": true,
+    "pq_lost_replies_injected": false,
+    "classical_lost_replies_injected": true,
+    "candidate_only": true,
+    "production_deployed": false,
+    "model_adopted": false,
+    "agentd_daemon_booted": false,
+    "authbus_ingress_exercised": false,
+    "authbus_signature_algorithm_unchanged": "Ed25519",
+    "independent_production_key_custody_proven": false,
+    "atomic_source_and_runtime_custody_proven": false,
+    "signatures_reverified_offline": false,
+    "live_ci_proc_reobserved_offline": false,
+    "offline_audit_runs_numeric_code": false,
+    "ndu_credit_eligibility_value_or_plasticity_used_as_parameter_gradient": false,
+    "desktop_cuda_campaign_touched": false,
+    "all_repository_ci_green": false
+  },
+  "closed_caller_preservation_review": {
+    "scope": "Read-only exact Git object comparison; no checker or runtime execution",
+    "base": "44e539313e0c54badb4b9b687425dd87ecba6e67",
+    "head": "a20ea6a862e501d8a4993195c7da1ac52ca9a7be",
+    "path": "CALLERS.toml",
+    "base_sha256": "7bba635f2f8ca65f828cc58f65e7110cc1a88a39d68eedfebf32c783abeeaa00",
+    "head_sha256": "12ac5680b5dd3ac5d869ae2cf0be000c9f7637b108b11eace118299ab73b005a",
+    "baseline_boundary_count": 45,
+    "final_boundary_count": 51,
+    "all_baseline_ids_preserved": true,
+    "all_existing_product_caller_entries_preserved": true,
+    "baseline_definitions_and_caller_sets_byte_identical": false,
+    "changed_baseline_boundaries": [
+      {
+        "id": "final_use_claim_raw",
+        "changed_fields": {
+          "definition_markers": {
+            "before": [
+              "pub fn claim(",
+              "verify_strict",
+              "used_nonces"
+            ],
+            "after": [
+              "pub fn claim(",
+              "self.grant_signing_input(signed, expected)?",
+              "candidate.key.verify(&input, &signed.signature)",
+              "used_nonces"
+            ]
+          }
+        }
+      },
+      {
+        "id": "final_use_revocation_update",
+        "changed_fields": {
+          "product_callers": {
+            "before": [
+              "codex-rs/hepta-agentd/src/automation_effect_host.rs",
+              "codex-rs/hepta-contracts/src/final_use_control.rs",
+              "codex-rs/hepta-infer-worker-host/src/final_use_authorizer.rs"
+            ],
+            "after": [
+              "codex-rs/hepta-agentd/src/automation_effect_host.rs",
+              "codex-rs/hepta-contracts/src/final_use_control.rs",
+              "codex-rs/hepta-contracts/src/final_use_control_pq.rs",
+              "codex-rs/hepta-infer-worker-host/src/final_use_authorizer.rs"
+            ]
+          }
+        }
+      },
+      {
+        "id": "final_use_approval_verify",
+        "changed_fields": {
+          "definition_markers": {
+            "before": [
+              "pub struct FinalUseApprovalVerifier",
+              "pub fn verify(",
+              "verify_strict"
+            ],
+            "after": [
+              "pub struct FinalUseApprovalVerifier",
+              "pub fn verify(",
+              "verify_key_ring(",
+              "candidate.key.verify(input, signature)"
+            ]
+          }
+        }
+      }
+    ],
+    "added_boundary_ids": [
+      "agentd_pq_final_use_open",
+      "final_use_pq_approval_trust",
+      "final_use_pq_open_state",
+      "final_use_pq_revocation_convergence_trust",
+      "final_use_pq_revocation_feed_confirm",
+      "final_use_pq_revocation_feed_trust"
+    ],
+    "checker_path": "scripts/verify_hepta_callers.py",
+    "checker_byte_identical": true,
+    "correction": "Earlier blanket wording that all 45 baseline definitions/caller sets were unchanged was too broad. All IDs and existing caller entries are preserved, with the three exact field changes shown here. Earlier raw records are retained as historical observations."
+  }
+}
