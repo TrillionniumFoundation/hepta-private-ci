@@ -731,7 +731,7 @@ caller_markers = [
   "parent: Some(parent)",
   "Some(request.human)",
 ]
-call_pattern = '(?:\\.\\s*|DeploymentFinalUseIssuer\\s*::\\s*)text_until_checked\\s*\\('
+call_pattern = '(?:\.\s*|DeploymentFinalUseIssuer\s*::\s*)text_until_checked\s*\('
 
 [[boundary]]
 id = "root_retained_human_text_lookup"
