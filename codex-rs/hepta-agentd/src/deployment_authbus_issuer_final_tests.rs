@@ -60,9 +60,11 @@ fn text(
             request,
             body,
             operation,
-            &f.registration,
-            &f.leases.verifier(),
-            &f.proof,
+            crate::deployment_issuer::RegisteredTextWriterAuthority {
+                registration: &f.registration,
+                leases: &f.leases.verifier(),
+                proof: &f.proof,
+            },
         );
     }
     // Original typed human fixture only; no physical login is claimed.

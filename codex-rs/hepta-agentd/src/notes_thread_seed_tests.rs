@@ -91,7 +91,7 @@ fn persisted_seed_metadata_requires_exact_original_identity_and_catalog() {
     changed_seed.model_provider = "another-provider".into();
     let mode = crate::notes_launch_mode::NotesLaunchMode::OriginalThreadToolV1 {
         route,
-        seed: changed_seed,
+        seed: Box::new(changed_seed),
     };
     assert!(
         mode.validate_model_tuple(tuple).is_err(),

@@ -139,9 +139,11 @@ fn text_independent_issuer_revocation_refuses_new_canonical_signature() {
             request_id,
             original_text_body(&f),
             operation,
-            &f.registration,
-            &f.leases.verifier(),
-            &f.proof,
+            crate::deployment_issuer::RegisteredTextWriterAuthority {
+                registration: &f.registration,
+                leases: &f.leases.verifier(),
+                proof: &f.proof,
+            },
         )
     };
     let signed = text("followup-text:1", TextIssuerOperation::Sign).unwrap();

@@ -104,7 +104,11 @@ enum SubmissionStatus {
         publication_digest: String,
         chain_digest: String,
         disposition: String,
-        idempotent: bool,
+        // Required transport metadata remains strictly typed on the wire.
+        // Fresh and replayed admissions project the same known publication;
+        // this read-only projection cannot grant another sending permission.
+        #[serde(rename = "idempotent")]
+        _idempotent: bool,
         response_generation: u64,
     },
     Conflict {
@@ -303,7 +307,7 @@ pub(crate) fn project(
                         publication_digest,
                         chain_digest,
                         disposition,
-                        idempotent: _,
+                        _idempotent: _,
                         response_generation,
                     } => {
                         response(response_generation)?;
@@ -472,3 +476,7 @@ fn digest(value: &str) -> bool {
             .all(|byte| matches!(byte, b'0'..=b'9' | b'a'..=b'f'))
         && value.bytes().any(|byte| byte != b'0')
 }
+
+#[cfg(test)]
+#[path = "notes_literal_receipts_schema_tests.rs"]
+mod schema_tests;

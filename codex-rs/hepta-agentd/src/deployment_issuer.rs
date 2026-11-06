@@ -38,6 +38,7 @@ mod authbus;
 
 #[path = "deployment_text.rs"]
 mod text;
+pub(crate) use text::RegisteredTextWriterAuthority;
 pub(crate) use text::RootHumanTextRequest;
 pub(crate) use text::TextHumanBinding;
 pub use text::TextIssuerOperation;

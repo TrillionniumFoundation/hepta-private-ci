@@ -17,6 +17,18 @@ mod human;
 pub(crate) use human::RootHumanTextRequest;
 pub(crate) use human::TextHumanBinding;
 
+pub(crate) struct RegisteredTextWriterAuthority<'a> {
+    pub(crate) registration: &'a HostAuthorityWriterRegistration,
+    pub(crate) leases: &'a AuthorityLeaseVerifier,
+    pub(crate) proof: &'a crate::HostSignedWriterAuthorizationV1,
+}
+
+struct TextSigningAuthority<'a> {
+    lease: Option<&'a AuthorityLease>,
+    human: Option<&'a TextHumanBinding>,
+    parent: Option<Result<&'a AuthorityLease, AuthorityLeaseError>>,
+}
+
 #[path = "deployment_text_retirement.rs"]
 mod retirement;
 pub(crate) use retirement::VerifiedTextRetirement;
@@ -142,10 +154,13 @@ impl DeploymentFinalUseIssuer {
         request_id: &str,
         body: AuthBusTextBody,
         operation: TextIssuerOperation,
-        registration: &HostAuthorityWriterRegistration,
-        leases: &AuthorityLeaseVerifier,
-        proof: &crate::HostSignedWriterAuthorizationV1,
+        authority: RegisteredTextWriterAuthority<'_>,
     ) -> io::Result<AuthBusTextIngress> {
+        let RegisteredTextWriterAuthority {
+            registration,
+            leases,
+            proof,
+        } = authority;
         if self.lease.is_none()
             || registration.registered_agent_id != identity.agent_id
             || registration.spawn_generation != identity.spawn_generation
@@ -161,9 +176,11 @@ impl DeploymentFinalUseIssuer {
                 request_id,
                 body,
                 operation,
-                Some(&registration.authority_lease),
-                None,
-                Some(parent),
+                TextSigningAuthority {
+                    lease: Some(&registration.authority_lease),
+                    human: None,
+                    parent: Some(parent),
+                },
             )
         })
     }
@@ -177,7 +194,17 @@ impl DeploymentFinalUseIssuer {
         lease: Option<&AuthorityLease>,
         human: Option<&TextHumanBinding>,
     ) -> io::Result<AuthBusTextIngress> {
-        self.text_until_checked(identity, request_id, body, operation, lease, human, None)
+        self.text_until_checked(
+            identity,
+            request_id,
+            body,
+            operation,
+            TextSigningAuthority {
+                lease,
+                human,
+                parent: None,
+            },
+        )
     }
 
     fn text_until_checked(
@@ -186,10 +213,13 @@ impl DeploymentFinalUseIssuer {
         request_id: &str,
         mut body: AuthBusTextBody,
         operation: TextIssuerOperation,
-        lease: Option<&AuthorityLease>,
-        human: Option<&TextHumanBinding>,
-        parent: Option<Result<&AuthorityLease, AuthorityLeaseError>>,
+        authority: TextSigningAuthority<'_>,
     ) -> io::Result<AuthBusTextIngress> {
+        let TextSigningAuthority {
+            lease,
+            human,
+            parent,
+        } = authority;
         if request_id.is_empty()
             || request_id.len() > 192
             || !request_id

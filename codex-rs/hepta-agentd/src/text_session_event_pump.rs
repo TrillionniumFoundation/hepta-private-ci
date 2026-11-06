@@ -83,7 +83,7 @@ impl AgentdTextEvents {
     pub async fn next(&mut self) -> Result<Option<AgentdTextEvent>, TextSessionError> {
         loop {
             match self.next_observation().await? {
-                Some(AgentdTextObservation::Notification(event)) => return Ok(Some(event)),
+                Some(AgentdTextObservation::Notification(event)) => return Ok(Some(*event)),
                 Some(AgentdTextObservation::Approval(_)) => {}
                 None => return Ok(None),
             }
