@@ -69,6 +69,8 @@ RULES = tuple(
         r"genesis/(?:parent-material|derivation|experiment-plan)\.json",
         r"n/(?:ordinary-initial-context-result|r/ordinary-reopen-result|p/loop-observations)\.json",
         r"n/(?:p/ordinary-[0-3]|r/(?:first|second)|ordinary-effects)/(?:ordinary-session-result|ordinary-runtime-stop|ordinary-failure)\.json",
+        r"n/(?:ordinary-selected-initial|public-reopen-session-0)/session/host-process\.log",
+        r"n/(?:ordinary-selected-initial|public-reopen-session-0)/session/session/worker/(?:process\.log|supervisor\.json|cost-events\.jsonl)",
         r"n/p/round-[123]\.(?:(?:launch|exit)\.json|(?:stdout|stderr)\.log)",
         r"descendant-diagnostics/campaign\.json",
         ROUND
