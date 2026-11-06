@@ -52,7 +52,7 @@ async fn owner_observation_rpc_retains_unknown_work_cost_and_delivery_across_reo
     };
     checked(handle.record_cost(planning.clone()).await);
     let planned = checked(handle.observe_generation().await);
-    assert_eq!(planned.cost().entries(), &[planning.clone()]);
+    assert_eq!(planned.cost().entries(), std::slice::from_ref(&planning));
     assert_eq!(planned.snapshot(), initial.snapshot());
     assert_ne!(planned.owner_checkpoint(), initial.owner_checkpoint());
     checked(handle.record_cost(planning.clone()).await);

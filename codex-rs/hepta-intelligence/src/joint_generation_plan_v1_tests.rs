@@ -263,7 +263,7 @@ fn frozen_sampler_and_policy_drift_cannot_build_joint_requests() {
             .is_err()
         );
     }
-    let mut changed = plan.profile.clone();
+    let mut changed = plan.profile;
     changed.utility.normalization_manifest_digest = Digest32::of_bytes(b"new units");
     assert!(
         JointGenerationEpisodePlanV1::new(
