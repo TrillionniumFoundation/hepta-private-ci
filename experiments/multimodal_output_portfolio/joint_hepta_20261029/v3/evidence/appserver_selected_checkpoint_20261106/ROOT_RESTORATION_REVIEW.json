@@ -1,0 +1,76 @@
+{
+  "observed_at_utc": "2026-11-06T23:09:43.286875+00:00",
+  "packet": "appserver_selected_checkpoint_20261106",
+  "publication": {
+    "bytes": 3966,
+    "sha256": "3d51a8fc222365bfa1cb0d874b5647dbff24ae1925fc49025108528b10094dcd"
+  },
+  "index_sha256": "51bf2dab51c287f04ab01583d2f114296d3df40aa531e8820ee1d1f47b77e804",
+  "reader": {
+    "bytes": 6899,
+    "sha256": "c29adc3ce6d4cdecd32f91ef75a886d5e78dbd09ee1d1b62633cee878427f371"
+  },
+  "reader_parent": {
+    "bytes": 6899,
+    "sha256": "af61744d776034fb41dac291fbca63d30082c6ec15df821824b49df4678c8d3d"
+  },
+  "reader_only_fixed_seal_changes": 1,
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+    "-O",
+    "-B",
+    "/workspace/scratch/3f6a885bb83c/round3_native/appserver_selected_evidence_20261106/restore.py",
+    "/workspace/scratch/3f6a885bb83c/round3_root_restore_app173_2313"
+  ],
+  "exit_code": 0,
+  "files": 173,
+  "raw_bytes": 1181256,
+  "exact_member_roster_bytes_originals_and_modes": true,
+  "original_permission_counts": {
+    "0644": 156,
+    "0600": 17
+  },
+  "restored_permissions": "0644 regular files",
+  "bundle_before_and_after_unchanged": true,
+  "bundle_identities": {
+    "round3_native/appserver_selected_evidence_20261106/CODESPELL.json": {
+      "bytes": 297,
+      "sha256": "23af724bd433624533fc265be8771ad2338fa7133758204c1a6a4b72cdf0a67e"
+    },
+    "round3_native/appserver_selected_evidence_20261106/INDEX.json": {
+      "bytes": 52170,
+      "sha256": "51bf2dab51c287f04ab01583d2f114296d3df40aa531e8820ee1d1f47b77e804"
+    },
+    "round3_native/appserver_selected_evidence_20261106/READER_CHECK.json": {
+      "bytes": 1120,
+      "sha256": "82cab242a4dca3d299a5b34fc095f04c88c342e54965cbacd835080b4834b496"
+    },
+    "round3_native/appserver_selected_evidence_20261106/README.md": {
+      "bytes": 1405,
+      "sha256": "a0d023075a0aa4948bf68a4e8aa5d9553996c651d7ba50ac36d2aa241a97afd5"
+    },
+    "round3_native/appserver_selected_evidence_20261106/ROUNDTRIP.json": {
+      "bytes": 1339,
+      "sha256": "7e031a665d851364e59734253d10ed2ce57a72d78e6645557cfdc645c42241b0"
+    },
+    "round3_native/appserver_selected_evidence_20261106/native-evidence.tar.xz.part000.gz": {
+      "bytes": 118338,
+      "sha256": "83339613eca2c6edba9690d0b10415436d253be4fd69ba355687a3316aac15e9"
+    },
+    "round3_native/appserver_selected_evidence_20261106/restore.py": {
+      "bytes": 6899,
+      "sha256": "c29adc3ce6d4cdecd32f91ef75a886d5e78dbd09ee1d1b62633cee878427f371"
+    }
+  },
+  "destination": "/workspace/scratch/3f6a885bb83c/round3_root_restore_app173_2313",
+  "archived_sources_executed": false,
+  "native_tests_or_scanner_or_models_executed": false,
+  "qualification": "EXACT_SELECTED_BYTES_ROUNDTRIP; FIVE_ACCEPTED_JUNIT_PASSES; COMPLETE_NATIVE_EVIDENCE_FALSE",
+  "limits": [
+    "Private unscanned full job console job_128170658312.log and signed download-private.json; neither is copied or encoded.",
+    "The three original scanner-rejected streams; they were not uploaded by the original job and have never been obtained or reconstructed.",
+    "Git-recoverable full Rust base/candidate trees for unit31; exact source identities, minimal patch and reviews are retained.",
+    "Duplicate format/patch workspaces, Python bytecode, tool installers/binaries, compilation and registry caches, unrelated MIC/Core work."
+  ],
+  "initial_inspection_note": "A read-only lookup for a guessed upload-group name returned ValueError before any write. The actual manifest and reader schemas were inspected before this restoration."
+}
