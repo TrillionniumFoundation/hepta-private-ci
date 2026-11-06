@@ -2,6 +2,9 @@
 //! external CAS. They never create a second recovery root or launch permission.
 
 use codex_hepta_contracts::AgentId;
+use sha2::Digest;
+use sha2::Sha256;
+use std::sync::atomic::Ordering;
 use trnm_release_bundle::pq_release::PqReleaseRoleV1;
 
 use super::CurrentPublication;
@@ -30,11 +33,8 @@ impl ReleaseAuthority {
         admission: &CurrentPublication,
         agent: &AgentId,
     ) -> Result<Option<ReleaseIntentAnchorV1>, FleetRegistryError> {
-        let (state, _now) = self.load_locked(&admission._lock)?;
-        if state.frontier != admission.frontier {
-            return Err(FleetRegistryError::ReleaseAuthorityRollback);
-        }
-        Ok(state.intent_anchors.get(agent).cloned())
+        self.recheck_history_snapshot(admission)?;
+        Ok(admission.state.intent_anchors.get(agent).cloned())
     }
 
     pub fn previous_closed_intent_held(
@@ -42,11 +42,38 @@ impl ReleaseAuthority {
         admission: &CurrentPublication,
         agent: &AgentId,
     ) -> Result<Option<ReleaseIntentAnchorV1>, FleetRegistryError> {
-        let (state, _now) = self.load_locked(&admission._lock)?;
-        if state.frontier != admission.frontier {
+        self.recheck_history_snapshot(admission)?;
+        Ok(admission.state.previous_closed_intents.get(agent).cloned())
+    }
+
+    /// The guard owns this already-verified state under the same File lock.
+    /// Every history read still authenticates the fresh complete frontier and
+    /// hashes all bounded journal bytes before checking the trusted time floor.
+    /// History is not current authorization: old policy/window expiry does not
+    /// erase a committed fact, and these getters never grant an effect.
+    fn recheck_history_snapshot(
+        &self,
+        admission: &CurrentPublication,
+    ) -> Result<(), FleetRegistryError> {
+        if self.fenced.load(Ordering::Acquire) {
+            return Err(FleetRegistryError::ReleaseAuthorityRecoveryRequired);
+        }
+        let external = self
+            .frontier
+            .load(&self.config.owner_id)
+            .map_err(|error| invalid(format!("release frontier unavailable: {error}")))?
+            .ok_or(FleetRegistryError::ReleaseAuthorityRollback)?;
+        let bytes = self.files.journal()?;
+        if external != admission.frontier
+            || external.initial_root_sha256 != self.config.initial_root_sha256
+            || external.state_sha256 != <[u8; 32]>::from(Sha256::digest(&bytes))
+        {
             return Err(FleetRegistryError::ReleaseAuthorityRollback);
         }
-        Ok(state.previous_closed_intents.get(agent).cloned())
+        if self.now()? < admission.state.time_floor {
+            return Err(invalid("release clock regressed behind committed history"));
+        }
+        Ok(())
     }
 
     pub fn anchor_protocol_intent(
