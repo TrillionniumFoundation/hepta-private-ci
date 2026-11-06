@@ -1,0 +1,155 @@
+{
+  "packet": "recovery5116_attempt1",
+  "suggested_repository_directory": "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/evidence/recovery5116_attempt1_checkpoint_20261106",
+  "snapshot_utc": "2026-11-06 19:43:51 UTC",
+  "index": {
+    "bytes": 8167,
+    "sha256": "0c76f9afe12c4ecf97e68288decdc37380eb5cbc5fcc9428024753ab1ecdabc3",
+    "git_blob": "7d4d04630afcd4d9a8e267a18d1645ecd51fbd94"
+  },
+  "source_file_count": 17,
+  "raw_source_bytes": 3704029,
+  "archive_bytes": 3727360,
+  "compressed_bytes": 285372,
+  "restore_exit_code": 0,
+  "restore_stdout": {
+    "bytes": 427,
+    "sha256": "c8098051fd7eeb557d6e1626e7e27db286447657c323038d7b35072330802e09",
+    "git_blob": "3a3a4ce96f856918be45106b27e5dd93701cb975"
+  },
+  "restore_stderr": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+  },
+  "all_restored_bytes_complete_roster_and_inert_modes_match": true,
+  "reader_template": {
+    "source_file": "/workspace/scratch/3f6a885bb83c/round3_native/restore_checkpoint_template.py",
+    "bytes": 6626,
+    "sha256": "00bf4373739122934a281273de36cc9e4cce84199aa985926419225cad94303b",
+    "git_blob": "27e463e7b9e73a98b3a35e05d4d7414a2ed7b4a0",
+    "only_replacement": "fixed INDEX SHA-256"
+  },
+  "codespell": {
+    "version": "2.4.3",
+    "command": [
+      "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+      "-m",
+      "codespell_lib",
+      "--ignore-words",
+      ".codespellignore",
+      "--skip",
+      "./.git"
+    ],
+    "exit_code": 0,
+    "stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "configuration": {
+      ".codespellrc": {
+        "bytes": 471,
+        "sha256": "80805b9340dbdd76645a25929f56c96606e187db8e9d16b75a4a47dcdd248c04",
+        "git_blob": "663be376c7381108af0a41eafc3dd08f27125d96"
+      },
+      ".codespellignore": {
+        "bytes": 69,
+        "sha256": "9c6cd9dd86c6300ff67edbe64b2e18ed089714151e5c166382c8ea99931bc275",
+        "git_blob": "0da447f000de188776a33e770c2d2d77b37f97ee"
+      },
+      ".codespell-exclude-lines": {
+        "bytes": 20003,
+        "sha256": "5e2119d75aa7cfa61e87b9c3d98863d0b5d6672eeaccc7411695e91e2366d52b",
+        "git_blob": "490e840301fdfae10d6e40c44a566ff16f82e324"
+      }
+    },
+    "new_exclusion_added": false
+  },
+  "files": [
+    {
+      "path": "INDEX.json",
+      "source_file": "/workspace/scratch/3f6a885bb83c/round3_ci/recovery5116_attempt1_checkpoint_20261106/INDEX.json",
+      "mode": "100644",
+      "bytes": 8167,
+      "sha256": "0c76f9afe12c4ecf97e68288decdc37380eb5cbc5fcc9428024753ab1ecdabc3",
+      "git_blob": "7d4d04630afcd4d9a8e267a18d1645ecd51fbd94"
+    },
+    {
+      "path": "README.md",
+      "source_file": "/workspace/scratch/3f6a885bb83c/round3_ci/recovery5116_attempt1_checkpoint_20261106/README.md",
+      "mode": "100644",
+      "bytes": 2383,
+      "sha256": "82bab1835cc8cf18f81a517ae533ca8c2699baf8784b77f715a27e0a23f8332e",
+      "git_blob": "024b7b9c305945741f20a301d1d7b86b143208ac"
+    },
+    {
+      "path": "native-evidence.tar.xz.part000.gz",
+      "source_file": "/workspace/scratch/3f6a885bb83c/round3_ci/recovery5116_attempt1_checkpoint_20261106/native-evidence.tar.xz.part000.gz",
+      "mode": "100644",
+      "bytes": 285480,
+      "sha256": "6affef5aefbb33179090cac6a9e93080cb801f5a622f2807d75df8d020a4d42f",
+      "git_blob": "7a771a091a912a56cb2553d8543b2597e733e31d"
+    },
+    {
+      "path": "restore.py",
+      "source_file": "/workspace/scratch/3f6a885bb83c/round3_ci/recovery5116_attempt1_checkpoint_20261106/restore.py",
+      "mode": "100644",
+      "bytes": 6656,
+      "sha256": "12599c77d90e30955b2c7ea4195d6c95f2389bbe8d3b22c4420f813b6896a7a3",
+      "git_blob": "56e42537bbe8b7db399ca55aa04c8be5b82d2d57"
+    }
+  ],
+  "qualification_scope": {
+    "schema": "hepta.fixed-recovery-attempt-audit.v1",
+    "pull_request": 5116,
+    "run_id": 42280081679,
+    "job_id": 128106496652,
+    "attempt": 1,
+    "result": "failure",
+    "fixed_source": {
+      "head": "7eea44fd62d75579e85c49666ffe44303bfddde9",
+      "tree": "07f129414cf4058d66bdac5e582c517f5b428119",
+      "parent": "f191a1d87ca34ae378fc9c6ae87cc6096f5165d2",
+      "parent_tree": "748a6807f02ccb77785f344e86b883b38340ba5e"
+    },
+    "manifest_artifact_id": 13534519226,
+    "manifest_archive": {
+      "bytes": 693,
+      "sha256": "fdfebaa9f2546fd737004b23f639fc3a319377e46976fd89070fe42503290c3f"
+    },
+    "all_archive_members_crc_verified": 1,
+    "all_archive_members": [
+      "RECOVERY.json"
+    ],
+    "recovery_receipt": {
+      "bytes": 1061,
+      "sha256": "a94e6b3ed3467a09e936d2a291f8967b86310770ba42e85589f3a4ab7fa848fd"
+    },
+    "console": {
+      "bytes": 1453062,
+      "sha256": "531770a3876e16649b10a863d5798a97c7219ed8027c7c5391bfa9e59453d105"
+    },
+    "observed_boundary": {
+      "exact_source_guard_passed": true,
+      "archive_phase_error_type": "TimeoutError",
+      "inner_download_subphase_known": false,
+      "original_archive_hash_completed": false,
+      "original_zip_directory_retained": false,
+      "projection_parts": 0,
+      "original_arm_build_stderr_recovered": false,
+      "qualification_or_promotion": false
+    },
+    "one_retry_rationale": "A real archive-stage network TimeoutError after the exact source guard. Preserve attempt one outside Actions first, then at most one identical job retry; no timeout, input identity, collector, policy or workflow edit. No assurance about platform retention of prior attempts is claimed.",
+    "upload_name_conclusion": "The fixed upload-artifact 4.6.2 lock uses official @actions/artifact 2.3.2 whose API documentation explicitly permits repeated names from reruns; ordinary within-attempt conflict guidance is not proof that rerunning must return HTTP 409.",
+    "original_collector_has_credential_scanner": false,
+    "current_run_or_product_qualification_claimed": false
+  },
+  "publication_ready": true,
+  "old_packets_modified": false
+}
