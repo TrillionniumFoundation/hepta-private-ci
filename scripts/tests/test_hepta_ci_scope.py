@@ -26,7 +26,6 @@ class ScopeTests(unittest.TestCase):
             with self.subTest(path=unknown):
                 self.assertTrue(select([unknown])["full_repo"])
 
-
     def test_plasticity_process_fixture_requires_full_repo_bazel_validation(self):
         scope = select(
             ["codex-rs/hepta-agentd/tests/plasticity_process_e2e.rs"]
@@ -34,7 +33,6 @@ class ScopeTests(unittest.TestCase):
         self.assertTrue(all(scope[key] for key in GROUPS))
         self.assertTrue(scope["native"])
         self.assertTrue(scope["full_repo"])
-
 
     def test_readme_and_ordinary_prose_do_not_prepare_native_dependencies(self):
         self.assertFalse(
