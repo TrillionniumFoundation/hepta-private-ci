@@ -50,7 +50,7 @@ jobs:
           - owner: core
             packages: -p codex-core -p codex-mcp -p core_test_support
           - owner: app-server
-            packages: -p codex-app-server
+            packages: -p codex-app-server -p codex-app-server-client
     steps:
       - name: Check out the exact source commit
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
