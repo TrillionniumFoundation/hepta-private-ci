@@ -5,7 +5,7 @@ including unselected drafts and failure costs. This is a synchronous CPU pilot;
 the deadline is checked on return, not a preemptive execution guarantee.
 """
 
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 import hashlib
 import json
 import math
@@ -65,7 +65,7 @@ class FixedSchedule:
 
 
 def run(request, backend, controller, output, *, seed=17, horizon=10,
-        deadline_seconds=600.0, cpu_tariff=0.0, wall_tariff=0.0):
+        deadline_seconds=600.0, cpu_tariff=0.0, wall_tariff=0.0, recorder=None):
     """Execute actual provider operations, preserving buffered immutable bytes.
 
     Zero default tariffs mean no declared conversion into utility, not free
@@ -79,12 +79,15 @@ def run(request, backend, controller, output, *, seed=17, horizon=10,
         raise ValueError("Invalid horizon, seed, deadline or tariffs")
     if not request.source_id or not 1 <= len(request.instruction) <= 4096:
         raise ValueError("Bounded public instruction and source identity required")
+    if recorder is not None:
+        recorder.claim(request)
     out = Path(output)
     out.mkdir(parents=True, exist_ok=False)
     started = previous = (time.process_time(), time.perf_counter())
     events, artifacts, history = [], [], []
     plan, version, critique = request.instruction, 0, ""
     text_value = image_path = last_image = None
+    controller_view = None
     status, error, selected, action = "incomplete", None, [], "preflight"
 
     def record(name, outcome, detail=None):
@@ -108,7 +111,22 @@ def run(request, backend, controller, output, *, seed=17, horizon=10,
         artifacts.append(item)
         return item
 
+    def capture(phase, **detail):
+        if recorder is not None:
+            recorder.observe(phase, {
+                "instruction": request.instruction, "plan": plan, "plan_version": version,
+                "text": text_value, "image_path": image_path, "last_image": last_image,
+                "critique": critique, "history": history, "action": action,
+                "episode_status_so_far": status, "episode_error_so_far": error,
+            }, events, artifacts, selected, detail)
+
     try:
+        if recorder is not None:
+            recorder.start(request, out, {
+                "seed": seed, "horizon": horizon, "deadline_seconds": deadline_seconds,
+                "cpu_tariff": cpu_tariff, "wall_tariff": wall_tariff,
+                "observer_admission": "fresh-after-capture-v1",
+            }, __file__, started)
         if digest_file(request.image_path) != request.image_sha256:
             raise ValueError("Input bytes do not match the frozen request")
         from PIL import Image
@@ -129,14 +147,34 @@ def run(request, backend, controller, output, *, seed=17, horizon=10,
             view = View(request.instruction, plan, version, text_value, image_path,
                         critique, tuple(history), horizon - step,
                         deadline_seconds - (time.perf_counter() - started[1]))
+            if recorder is not None:
+                controller_view = None
+            capture("before_controller", step=step, view=vars(view))
+            if recorder is not None:
+                remaining = deadline_seconds - (time.perf_counter() - started[1])
+                if remaining <= 0:
+                    status = "timeout"
+                    record("deadline", status, {"check": "after_before_controller_capture"})
+                    break
+                view = replace(view, remaining_seconds=remaining)
+                controller_view = vars(view).copy()
             chosen = controller.choose(view)
             record(action, "ok", {"choice": chosen})
+            if recorder is None:
+                capture("choice", step=step, chosen=chosen)
+            else:
+                capture("choice", step=step, chosen=chosen, controller_view=controller_view)
             if chosen not in ACTIONS:
                 raise ValueError("Controller selected an unknown action")
             action = chosen
             if time.perf_counter() - started[1] >= deadline_seconds:
                 status = "timeout"
                 record("deadline", status, {"check": "after_controller"})
+                break
+            capture("before_action", step=step)
+            if recorder is not None and time.perf_counter() - started[1] >= deadline_seconds:
+                status = "timeout"
+                record("deadline", status, {"check": "after_before_action_capture"})
                 break
             detail = None
             if action == "stop":
@@ -207,6 +245,7 @@ def run(request, backend, controller, output, *, seed=17, horizon=10,
             backend.synchronize()
             record(action, "ok", detail)
             history.append((action, "ok"))
+            capture("after_action", step=step)
             if time.perf_counter() - started[1] > deadline_seconds:
                 status, selected = "timeout", []
                 record("deadline", status, {"check": "after_action"})
@@ -219,6 +258,10 @@ def run(request, backend, controller, output, *, seed=17, horizon=10,
         error = {"type": type(exc).__name__, "message": str(exc)}
         record(action, status, error)
         selected = []
+        if recorder is not None and action == "controller":
+            capture("failure", controller_view=controller_view)
+        else:
+            capture("failure")
     # Preserve provider identity after lazy loads and any partially written files.
     inventory = []
     try:
@@ -235,6 +278,7 @@ def run(request, backend, controller, output, *, seed=17, horizon=10,
     if status not in ("failed", "cancelled", "timeout") and time.perf_counter() - started[1] > deadline_seconds:
         status, selected = "timeout", []
         record("deadline", status, {"check": "after_finalization"})
+    capture("episode_end")
     report = {"schema": "hepta.dual-generation.development.v1", "status": status,
               "error": error, "seed": seed, "horizon": horizon,
               "source_id": request.source_id, "events": events, "artifacts": artifacts,
@@ -256,4 +300,6 @@ def run(request, backend, controller, output, *, seed=17, horizon=10,
                {"cpu_seconds": time.process_time() - before[0],
                 "wall_seconds": time.perf_counter() - before[1],
                 "scope": "report construction and last event journal write are outer overhead"})
+    if recorder is not None:
+        recorder.finish(report, out)
     return report
