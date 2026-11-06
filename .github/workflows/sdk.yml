@@ -21,6 +21,19 @@ jobs:
         run: |
           set -euo pipefail
 
+          # Build a minimal glibc test image with the real zstd CLI required
+          # by provenance-archive tests. Build-time package installation runs
+          # before repository code; the test container remains unprivileged.
+          image_context="$(mktemp -d)"
+          trap 'rm -rf "${image_context}"' EXIT
+          cat > "${image_context}/Dockerfile" <<'DOCKERFILE'
+          FROM python:3.12-slim
+          RUN apt-get update \
+              && apt-get install -y --no-install-recommends zstd \
+              && rm -rf /var/lib/apt/lists/*
+          DOCKERFILE
+          docker build --pull --tag "codex-python-sdk-ci:${GITHUB_SHA}" "${image_context}"
+
           # Run inside a glibc Linux image so dependency resolution exercises
           # the pinned manylinux runtime wheel that users install.
           docker run --rm \
@@ -29,8 +42,9 @@ jobs:
             -e UV_LINK_MODE=copy \
             -v "${GITHUB_WORKSPACE}:${GITHUB_WORKSPACE}" \
             -w "${GITHUB_WORKSPACE}/sdk/python" \
-            python:3.12-slim \
+            "codex-python-sdk-ci:${GITHUB_SHA}" \
             sh -euxc '
+              zstd --version
               python -m venv /tmp/uv
               /tmp/uv/bin/python -m pip install uv==0.11.3
               /tmp/uv/bin/uv sync --group dev --frozen
