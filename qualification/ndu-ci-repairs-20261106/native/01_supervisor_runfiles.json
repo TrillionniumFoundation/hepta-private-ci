@@ -1,0 +1,58 @@
+{
+  "unit": "01_supervisor_runfiles",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "base_commit": "7f1bb73b49e5fcc0f1bd46845c3acbfb78767a7a",
+  "failed_run_id": 42160192456,
+  "failed_linux_job_id": 127712940876,
+  "source_donor": {
+    "pr": 4718,
+    "head": "68efa4101917d40ab551610e44bf7f26663bd963"
+  },
+  "reason": "The complete tracked corpus is absent from Bazel runtime data and was read via the source-tree CARGO_MANIFEST_DIR.",
+  "files": [
+    {
+      "path": "codex-rs/hepta-supervisor/BUILD.bazel",
+      "base_blob_sha": "7e0bfea1cb7526fcbb282a52b63b59f80a695817",
+      "candidate_blob_sha": "b9ad95d989d193699b8cc43ee1ec9bb182905ca0",
+      "candidate_sha256": "4b3f4fc83bd81e7aba44f942941dc485a76bd1d2900d55d6e539b5f4f5f92fe2",
+      "additions": 2,
+      "deletions": 0
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/Cargo.toml",
+      "base_blob_sha": "3ed96436070a4e0d5a06aca8f247c25f28a798f1",
+      "candidate_blob_sha": "3a5c9f790aca3e0ee660d69d6d8f592b28e76abc",
+      "candidate_sha256": "16c8f5bb4a0f8681198c35a14970f918a716f48d89d305d0dade7d0496df0a5c",
+      "additions": 1,
+      "deletions": 0
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/tests/robrix_control_projection.rs",
+      "base_blob_sha": "01dfc5694bf9750464233eb7e0ace3b89827e08d",
+      "candidate_blob_sha": "260b692aecb85bed9117be38db8027e8e5f553b5",
+      "candidate_sha256": "661af82634cf02037bb6ea932f73a8b3252f6cb11ad6e3037f187d589ec85cc5",
+      "additions": 6,
+      "deletions": 3
+    },
+    {
+      "path": "codex-rs/Cargo.lock",
+      "base_blob_sha": "ccb051d9092fc07d30bb41d850eb79cf17d23592",
+      "candidate_blob_sha": "8bdc400abda3b4ceaa890a595d142cc98cbee441",
+      "candidate_sha256": "fd86e6ce1fbf4ba6528ec69716b4f44c1782c6e4ad68ce3e3831f61d6574d686",
+      "additions": 1,
+      "deletions": 0
+    }
+  ],
+  "authored_changed_lines": 13,
+  "static_checks": [
+    "All three source postimages exactly match final donor blobs.",
+    "Cargo.lock changes only the codex-hepta-supervisor dependency edge; all packages, versions, sources and checksums remain equal.",
+    "The complete artifact comparison and directory-wide corpus assertions remain unchanged."
+  ],
+  "required_native_targets": [
+    "//codex-rs/hepta-supervisor:hepta-supervisor-robrix_control_projection-test"
+  ],
+  "current_candidate_native_execution": "NOT_RUN_NO_RUST_BAZEL_JUST_TOOLCHAIN",
+  "current_candidate_qualified": false,
+  "publication_owner": "root"
+}
