@@ -106,7 +106,7 @@ impl GenerationPopulationPolicy {
     }
 }
 
-fn generation_error(error: CellOwnerPopulationErrorV2) -> CellGenerationErrorV2 {
+pub(crate) fn generation_error(error: CellOwnerPopulationErrorV2) -> CellGenerationErrorV2 {
     match error {
         CellOwnerPopulationErrorV2::Generation(error) => error,
         CellOwnerPopulationErrorV2::Population(CellPopulationErrorV1::CapacityExceeded(_)) => {

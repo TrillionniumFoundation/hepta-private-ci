@@ -20,12 +20,12 @@ V2 generation 使用共同 scope/状态槽观察，但保持各自实际执行�
 
 | 方向 | 当前可执行实现 | 尚未成立的结论 |
 | --- | --- | --- |
-| 身份和准入 | 从实际 V1/V2 owner 生成封闭观察；Agentd 校验真实 artifact bundle 后绑定角色、任务准入与活跃/容量检查 | 全部产品调用方已登记、角色标签证明行为质量 |
+| 身份和准入 | 从实际 V1/V2 owner 生成封闭观察；Agentd 校验真实 artifact bundle 后绑定角色、任务准入与活跃/容量检查 | 产品 host 自动接线与跨 owner 调度登记、角色标签证明行为质量 |
 | 学习闭包 | V13 完整内容验证、原 SourceOwner 当前选择/来源事务、固定模型、新进程下一任务预测 | 独立效果评价已通过、Joint 与 V13 资格合并、生产采用 |
 | 共享计算 | 显式 resident Joint profile；共享 immutable model/public/初始编码；每 Cell 独立 state/prefix/commit | Joint microbatch、连续 tensor 新内核、吞吐或能耗改善倍数 |
 | 长期容量 | 同 owner 的新 checkpoint 段、原段保留、容量/恢复/队列年龄观察、结果读回 reconciliation | 无界长期运行、独立 witness/receipt/cost 上限解除、无证明终结 Unknown |
 | 迁移回退 | drained 后参数版本转换；同 witness 切换；升级后的确认写入在向前回退中保留 | 所有 schema/runtime/source 升级、真实生产 artifact verifier 已接入 |
-| 完整成本 | 补模型取得/迁移 stage；14 阶段完整性及所有 Unknown 检查；同条件跨来源比较并保留来源 | 真实全周期 CPU/能量均已测得、分化或动态规划已证明更省 |
+| 完整成本 | 补模型取得/迁移 stage；14 阶段完整性及所有 Unknown 检查；同条件跨来源比较并保留来源 | 训练/评价/模型取得等 owner 的成本汇集、真实全周期 CPU/能量计量、效率收益证明 |
 
 ### 真实 owner 人口统计与 Agentd 准入
 
@@ -40,6 +40,14 @@ agent/run 的人口统计 namespace 使用长度前缀，避免字符串连接�
 state/output schemas 及 encoder/head 核对。绑定后的既有 `step`/`step_checked` 在任何模型联系前
 执行角色和人口统计检查；`step_with_population` 将其他当前 owner 的观察送入同一准入路径。
 host 原有 scheduler 必须串行化这些观察和准入；目标 owner 的过期观察会被重新比对并拒绝。
+这些绑定/聚合入口当前由测试显式调用；产品 host 自动取得 artifact 声明、登记角色和提交
+跨 owner 完整观察集合的接线尚未实现。未绑定的兼容调用路径不会自动获得七角色准入。
+
+现有异步 bootstrap 可通过 `with_population` 在服务挂接前完成同一 owner 的绑定；
+handle 的 `population_observation` 读取当前封闭观察，`step_with_population` 将有界 peer
+集合送入原 `Admission / Dispatch / Settlement` 检查。host 必须把调度互斥覆盖到观察收集和
+异步准入完成；队列不能替其他 owner 证明观察仍然新鲜。这沿用 #4929 的显式 host bootstrap，
+没有新增默认 artifact、角色或另一套服务。
 
 未知工作、取消但尚未 reconciliation 的工作、未确认输出继续占活跃容量。已提交精确 replay
 和已派发 pending 的读回保持原优先级，不会因新增人口统计产生重复模型调用。
@@ -78,6 +86,14 @@ inclusive envelope 尚为 Unknown 时拒绝宣称完整周期。
 资源只累加 exclusive 项，inclusive envelope 不再重复相加。并行工作总时长和外部实测
 elapsed 分开比较。差值为 candidate−baseline；负值只表示该量较少，不证明质量相同或授权采用。
 比较合同本身仍由原计量/评价 owner 负责，非零 digest 不替代真实计量证据。
+本次实现完整性比较和拒绝规则；真实训练、评价及模型取得 owner 的成本汇集尚未接入。
+实际推理账本的未知指标仍会使完整周期比较被拒绝。测试构造的完整账本不能替代这项集成。
+
+异步 handle 的 `record_cost` 现在把一条 `CellCostEntryV2` 交给同一个 journal 持久化。
+原 owner 核对任务/来源身份、精确重放、冲突和已有 exclusive 项的 envelope 引用；句柄在
+入队前限制 envelope 成员数量。此端口允许真实 host 录入已经测得的部分成本，保留失败尝试
+和 `None`。训练 receipt 到具体 Cell 任务账本的映射、评价/取得模型的计量及共享资源分摊
+仍需原 owner 提供；训练预算或 artifact 声明大小不会自动转换成实际费用。
 
 ## 验证与审阅
 

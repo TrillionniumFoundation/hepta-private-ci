@@ -23,6 +23,7 @@ use codex_hepta_types::StableId;
 #[path = "neuron_generation_population.rs"]
 mod population;
 use population::GenerationPopulationPolicy;
+pub(crate) use population::generation_error as population_generation_error;
 
 pub struct AgentdNeuronGenerationOwnerV2<W: AnchorWitnessStore, P: CellGenerationControlPortV2> {
     journal: CellGenerationJournalV2<W>,
@@ -104,10 +105,20 @@ impl<W: AnchorWitnessStore, P: CellGenerationControlPortV2> AgentdNeuronGenerati
         other_owners: &[CellOwnerPopulationObservationV2],
         clock: impl FnMut() -> u64,
     ) -> Result<CellGenerationReceiptV2, CellGenerationErrorV2> {
+        self.step_with_population_checked(request, other_owners, clock, |_| Ok(()))
+    }
+
+    pub(crate) fn step_with_population_checked(
+        &mut self,
+        request: CellGenerationRequestV2,
+        other_owners: &[CellOwnerPopulationObservationV2],
+        clock: impl FnMut() -> u64,
+        check: impl FnMut(GenerationOwnerBoundary) -> Result<(), CellGenerationErrorV2>,
+    ) -> Result<CellGenerationReceiptV2, CellGenerationErrorV2> {
         if self.population.is_none() {
             return Err(CellGenerationErrorV2::InvalidBinding);
         }
-        self.step_checked_population(request, clock, |_| Ok(()), other_owners)
+        self.step_checked_population(request, clock, check, other_owners)
     }
 
     pub(crate) fn step_checked(

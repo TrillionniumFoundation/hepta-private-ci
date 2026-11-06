@@ -4,6 +4,8 @@
 use std::sync::Arc;
 
 use codex_hepta_neuron::AnchorWitnessStore;
+use codex_hepta_neuron::CellCostAccountingV2;
+use codex_hepta_neuron::CellCostEntryV2;
 use codex_hepta_neuron::CellGenerationControlPortV2;
 use codex_hepta_neuron::CellGenerationErrorV2;
 use codex_hepta_neuron::CellGenerationJournalV2;
@@ -11,6 +13,7 @@ use codex_hepta_neuron::CellGenerationReceiptV2;
 use codex_hepta_neuron::CellGenerationRequestV2;
 use codex_hepta_neuron::CellGenerationScopeV2;
 use codex_hepta_neuron::CellOutputChunkV2;
+use codex_hepta_neuron::CellOwnerPopulationObservationV2;
 use codex_hepta_neuron::CellRuntimeSnapshotV2;
 use codex_hepta_neuron::CellTaskCostV2;
 use codex_hepta_types::Generation;
@@ -26,6 +29,9 @@ use crate::neuron_generation_service::BoundGenerationOwner;
 use crate::neuron_generation_service::GenerationRuntimeOwner;
 use crate::state::neuron_generation::NeuronGenerationProjection;
 
+#[path = "neuron_generation_runtime_population.rs"]
+mod population;
+
 pub(crate) type Response<T> = oneshot::Sender<Result<T, CellGenerationErrorV2>>;
 
 pub(crate) struct OutputAcknowledgement {
@@ -37,6 +43,11 @@ pub(crate) struct OutputAcknowledgement {
 pub(crate) enum GenerationCommand {
     Step {
         request: Box<CellGenerationRequestV2>,
+        response: Response<CellGenerationReceiptV2>,
+    },
+    StepWithPopulation {
+        request: Box<CellGenerationRequestV2>,
+        other_owners: Box<[CellOwnerPopulationObservationV2]>,
         response: Response<CellGenerationReceiptV2>,
     },
     Reconcile {
@@ -51,6 +62,11 @@ pub(crate) enum GenerationCommand {
     PendingRequest(Response<Option<CellGenerationRequestV2>>),
     PendingOutput(Response<Option<CellOutputChunkV2>>),
     TaskCost(Response<CellTaskCostV2>),
+    RecordCost {
+        entry: Box<CellCostEntryV2>,
+        response: Response<()>,
+    },
+    PopulationObservation(Response<Option<CellOwnerPopulationObservationV2>>),
     Acknowledge {
         delivery: Box<OutputAcknowledgement>,
         response: Response<()>,
@@ -76,18 +92,7 @@ impl NeuronGenerationRuntimeHandleV2 {
         &self,
         request: CellGenerationRequestV2,
     ) -> Result<CellGenerationReceiptV2, CellGenerationErrorV2> {
-        request.digest()?;
-        if request.predecessor.scope != self.scope
-            || request.predecessor.manifest_digest != self.manifest_digest
-        {
-            return Err(CellGenerationErrorV2::InvalidBinding);
-        }
-        if request.input.len() > self.max_input_bytes
-            || request.predecessor.state.len() > self.max_state_bytes
-            || request.predecessor.prefix.len() > self.max_prefix_bytes
-        {
-            return Err(CellGenerationErrorV2::Capacity);
-        }
+        self.validate_request(&request)?;
         self.call(|response| GenerationCommand::Step {
             request: Box::new(request),
             response,
@@ -128,6 +133,24 @@ impl NeuronGenerationRuntimeHandleV2 {
         self.call(GenerationCommand::TaskCost).await
     }
 
+    /// Append one measured observation under this owner's existing task/source
+    /// identity. The journal validates exact replay, conflicts and references
+    /// to earlier exclusive charges; this port does not authenticate meters.
+    pub async fn record_cost(&self, entry: CellCostEntryV2) -> Result<(), CellGenerationErrorV2> {
+        if let CellCostAccountingV2::InclusiveEnvelope {
+            exclusive_event_ids,
+        } = &entry.accounting
+            && exclusive_event_ids.len() > 256
+        {
+            return Err(CellGenerationErrorV2::Capacity);
+        }
+        self.call(|response| GenerationCommand::RecordCost {
+            entry: Box::new(entry),
+            response,
+        })
+        .await
+    }
+
     /// Record the transport's exact acknowledgement for already committed
     /// bytes. Calling this method does not itself deliver or publish output.
     pub async fn acknowledge(
@@ -163,6 +186,25 @@ impl NeuronGenerationRuntimeHandleV2 {
 
     pub async fn resume(&self) -> Result<(), CellGenerationErrorV2> {
         self.call(GenerationCommand::Resume).await
+    }
+
+    fn validate_request(
+        &self,
+        request: &CellGenerationRequestV2,
+    ) -> Result<(), CellGenerationErrorV2> {
+        request.digest()?;
+        if request.predecessor.scope != self.scope
+            || request.predecessor.manifest_digest != self.manifest_digest
+        {
+            return Err(CellGenerationErrorV2::InvalidBinding);
+        }
+        if request.input.len() > self.max_input_bytes
+            || request.predecessor.state.len() > self.max_state_bytes
+            || request.predecessor.prefix.len() > self.max_prefix_bytes
+        {
+            return Err(CellGenerationErrorV2::Capacity);
+        }
+        Ok(())
     }
 
     async fn call<T>(

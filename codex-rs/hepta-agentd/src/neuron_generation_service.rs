@@ -4,12 +4,18 @@
 
 use std::sync::Arc;
 
+use codex_hepta_learning_artifacts::CellCompatibilityBundleV1;
 use codex_hepta_neuron::AnchorWitnessStore;
+use codex_hepta_neuron::CellCapabilityContractV1;
+use codex_hepta_neuron::CellFunctionalRoleV1;
 use codex_hepta_neuron::CellGenerationControlPortV2;
 use codex_hepta_neuron::CellGenerationErrorV2;
 use codex_hepta_neuron::CellGenerationRequestV2;
 use codex_hepta_neuron::CellOutputChunkV2;
+use codex_hepta_neuron::CellOwnerPopulationErrorV2;
+use codex_hepta_neuron::CellPopulationLimitsV1;
 use codex_hepta_types::Digest32;
+use codex_hepta_types::StableId;
 use tokio_util::sync::CancellationToken;
 
 use crate::AgentdError;
@@ -18,6 +24,7 @@ use crate::AgentdState;
 use crate::NeuronGenerationRuntimeBootstrapV2;
 use crate::RuntimeTasks;
 use crate::neuron_generation::GenerationOwnerBoundary;
+use crate::neuron_generation::population_generation_error;
 use crate::neuron_generation_runtime::GenerationCommand;
 use crate::neuron_generation_runtime::OutputAcknowledgement;
 use crate::neuron_generation_runtime::Response;
@@ -28,6 +35,14 @@ pub(crate) const NEURON_GENERATION_SERVICE: &str = "neuron-generation";
 /// Private type erasure keeps AgentdConfig concrete while accepting only an
 /// exclusive native journal plus the typed inference-control adapter.
 pub(crate) trait GenerationRuntimeOwner: Send {
+    fn bind_population(
+        &mut self,
+        owner_id: StableId,
+        capability: CellCapabilityContractV1,
+        artifact: &CellCompatibilityBundleV1,
+        task_role: CellFunctionalRoleV1,
+        limits: CellPopulationLimitsV1,
+    ) -> Result<(), CellOwnerPopulationErrorV2>;
     fn process(
         &mut self,
         command: GenerationCommand,
@@ -49,21 +64,46 @@ where
     P: CellGenerationControlPortV2 + Send,
     C: FnMut() -> u64 + Send,
 {
+    fn bind_population(
+        &mut self,
+        owner_id: StableId,
+        capability: CellCapabilityContractV1,
+        artifact: &CellCompatibilityBundleV1,
+        task_role: CellFunctionalRoleV1,
+        limits: CellPopulationLimitsV1,
+    ) -> Result<(), CellOwnerPopulationErrorV2> {
+        self.owner
+            .bind_population(owner_id, capability, artifact, task_role, limits)
+    }
+
     fn process(
         &mut self,
         command: GenerationCommand,
         state: &AgentdState,
     ) -> Result<(), AgentdError> {
         state.require_neuron_generation_recovery()?;
+        let check = |boundary| match boundary {
+            GenerationOwnerBoundary::Admission | GenerationOwnerBoundary::Dispatch => {
+                require_admission(state)
+            }
+            GenerationOwnerBoundary::Settlement => require_recovery(state),
+        };
         match command {
             GenerationCommand::Step { request, response } => {
-                let result =
-                    self.owner
-                        .step_checked(*request, &mut self.clock, |boundary| match boundary {
-                            GenerationOwnerBoundary::Admission
-                            | GenerationOwnerBoundary::Dispatch => require_admission(state),
-                            GenerationOwnerBoundary::Settlement => require_recovery(state),
-                        });
+                let result = self.owner.step_checked(*request, &mut self.clock, check);
+                respond(state, response, result)
+            }
+            GenerationCommand::StepWithPopulation {
+                request,
+                other_owners,
+                response,
+            } => {
+                let result = self.owner.step_with_population_checked(
+                    *request,
+                    &other_owners,
+                    &mut self.clock,
+                    check,
+                );
                 respond(state, response, result)
             }
             GenerationCommand::Reconcile { expected, response } => {
@@ -102,6 +142,18 @@ where
             GenerationCommand::TaskCost(response) => {
                 respond(state, response, self.owner.journal().task_cost().cloned())
             }
+            GenerationCommand::RecordCost { entry, response } => {
+                let result = require_recovery(state)
+                    .and_then(|()| self.owner.journal_mut().record_cost(*entry));
+                respond(state, response, result)
+            }
+            GenerationCommand::PopulationObservation(response) => respond(
+                state,
+                response,
+                self.owner
+                    .population_observation()
+                    .map_err(population_generation_error),
+            ),
             GenerationCommand::Acknowledge { delivery, response } => {
                 let OutputAcknowledgement {
                     chunk,
