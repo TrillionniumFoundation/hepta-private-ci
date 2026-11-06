@@ -3097,11 +3097,20 @@ fn map_response_stream(
         api_stream,
         session_telemetry,
         inference_trace_attempt,
-        provider,
-        provider_attempt,
-        redact_provider_errors,
+        ResponseProviderContext {
+            provider,
+            provider_attempt,
+            redact_provider_errors,
+        },
         encoded_request_observer,
     )
+}
+
+/// Provider policy and attempt ownership for one mapped response stream.
+struct ResponseProviderContext {
+    provider: SharedModelProvider,
+    provider_attempt: Option<ProviderAttemptOwner>,
+    redact_provider_errors: bool,
 }
 
 fn map_response_events<S>(
@@ -3109,9 +3118,7 @@ fn map_response_events<S>(
     api_stream: S,
     session_telemetry: SessionTelemetry,
     inference_trace_attempt: InferenceTraceAttempt,
-    provider: SharedModelProvider,
-    provider_attempt: Option<ProviderAttemptOwner>,
-    redact_provider_errors: bool,
+    provider_context: ResponseProviderContext,
     encoded_request_observer: Option<Arc<dyn codex_api::EncodedRequestBodyObserver>>,
 ) -> (ResponseStream, oneshot::Receiver<LastResponse>)
 where
@@ -3120,6 +3127,11 @@ where
         + Send
         + 'static,
 {
+    let ResponseProviderContext {
+        provider,
+        provider_attempt,
+        redact_provider_errors,
+    } = provider_context;
     let (tx_event, rx_event) =
         mpsc::channel::<Result<ResponseEvent>>(RESPONSE_STREAM_CHANNEL_CAPACITY);
     let (tx_last_response, rx_last_response) = oneshot::channel::<LastResponse>();

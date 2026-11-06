@@ -29,7 +29,7 @@ jobs:
   native:
     name: Cell framework (${{ matrix.owner }})
     runs-on: ubuntu-24.04
-    timeout-minutes: 90
+    timeout-minutes: 240
     strategy:
       fail-fast: false
       matrix:
@@ -42,7 +42,11 @@ jobs:
               -p codex-hepta-context-compiler -p codex-utils-pty
               -p codex-hepta-intelligence
           - owner: agentd-composition
-            packages: -p codex-hepta-agentd
+            packages: >-
+              -p codex-hepta-agentd -p codex-core
+              -p codex-model-provider-info -p codex-exec-server
+              -p codex-hepta-agent-protocol -p codex-hepta-memory
+              -p codex-hepta-infer-worker-host
     steps:
       - name: Check out the exact source commit
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
@@ -58,6 +62,8 @@ jobs:
           test -z "$(git status --porcelain)"
           git diff --check
           mkdir -p "$RUNNER_TEMP/cell-framework-records"
+          git show --no-patch --format=fuller > "$RUNNER_TEMP/cell-framework-records/source-identity.txt"
+          git rev-parse HEAD^{tree} > "$RUNNER_TEMP/cell-framework-records/source-tree.txt"
       - name: Install native build prerequisites
         run: |
           sudo apt-get update
@@ -82,26 +88,77 @@ jobs:
           cargo --version
           cargo metadata --locked --format-version=1 > "$RUNNER_TEMP/cell-framework-records/cargo-metadata.json"
           test -z "$(git status --porcelain)"
-      - name: Run unchanged owner suites through the repository runner
+      - name: Strict lint of the changed owners and dependencies
         env:
           PACKAGES: ${{ matrix.packages }}
         shell: bash
         run: |
           set -euo pipefail
           read -r -a packages <<< "$PACKAGES"
-          python3 scripts/hepta_ci_exec.py --timeout-seconds 4200 --minimum-tests 1 \
-            --output "$RUNNER_TEMP/cell-framework-records/tests.json" \
-            -- just test --locked "${packages[@]}"
-      - name: Strict lint of the same owners
-        env:
-          PACKAGES: ${{ matrix.packages }}
-        shell: bash
-        run: |
-          set -euo pipefail
-          read -r -a packages <<< "$PACKAGES"
-          python3 scripts/hepta_ci_exec.py --timeout-seconds 900 \
+          python3 scripts/hepta_ci_exec.py --timeout-seconds 1800 \
             --output "$RUNNER_TEMP/cell-framework-records/clippy.json" \
             -- just clippy --locked "${packages[@]}" -- -D warnings
+      - name: Build real same-source test helpers from Cargo metadata
+        if: matrix.owner == 'agentd-composition'
+        run: |
+          python3 scripts/hepta_ci_exec.py --timeout-seconds 2700 \
+            --output "$RUNNER_TEMP/cell-framework-records/helper-build.json" \
+            -- python3 scripts/hepta_cell_test_helpers.py \
+            --output-dir "$RUNNER_TEMP/cell-framework-records/helpers" \
+            --github-env "$GITHUB_ENV"
+      - name: Run scoped suites through the repository runner
+        env:
+          PACKAGES: ${{ matrix.packages }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          read -r -a packages <<< "$PACKAGES"
+          records="$RUNNER_TEMP/cell-framework-records"
+          junit="codex-rs/target/nextest/local/junit.xml"
+          if [[ -f "$junit" ]]; then
+            mv "$junit" "$records/scoped-prior-junit-excluded.xml"
+          fi
+          set +e
+          python3 scripts/hepta_ci_exec.py --timeout-seconds 4200 --minimum-tests 1 \
+            --output "$records/scoped-tests.json" \
+            -- just test --locked "${packages[@]}"
+          result=$?
+          set -e
+          if [[ -f "$junit" ]]; then
+            cp "$junit" "$records/junit-scoped.xml"
+            sha256sum "$records/junit-scoped.xml" > "$records/junit-scoped.sha256"
+          fi
+          exit "$result"
+      - name: Run the complete default workspace after the Core suite
+        if: matrix.owner == 'agentd-composition'
+        shell: bash
+        run: |
+          set -euo pipefail
+          records="$RUNNER_TEMP/cell-framework-records"
+          junit="codex-rs/target/nextest/local/junit.xml"
+          if [[ -f "$junit" ]]; then
+            mv "$junit" "$records/workspace-prior-junit-excluded.xml"
+          fi
+          set +e
+          python3 scripts/hepta_ci_exec.py --timeout-seconds 4200 --minimum-tests 1 \
+            --output "$records/workspace-tests.json" \
+            -- just test --locked
+          result=$?
+          set -e
+          if [[ -f "$junit" ]]; then
+            cp "$junit" "$records/junit-workspace.xml"
+            sha256sum "$records/junit-workspace.xml" > "$records/junit-workspace.sha256"
+          fi
+          exit "$result"
+      - name: Retain final source state
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD > "$RUNNER_TEMP/cell-framework-records/source-after.txt"
+          git status --porcelain > "$RUNNER_TEMP/cell-framework-records/source-status-after.txt"
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          test -z "$(git status --porcelain)"
       - name: Retain real outputs even when qualification fails
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
