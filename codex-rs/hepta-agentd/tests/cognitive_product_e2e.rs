@@ -351,6 +351,9 @@ async fn real_agentd_remember_recall_correct_and_forget_revalidate_physical_send
     ensure!(remembered["source"]["revision"] == 1);
     let remember_projection = assert_projection_receipt(&remembered, 1, 3, 2, 1, 2, 1)?;
 
+    let retained_recovery = fleet
+        .retain_live_recovery_frontier(&agent, /*expected_provider_invocation_rows*/ 4)
+        .await?;
     product.shutdown().await?;
     fleet.supervisor.kill(&agent.agent_id)?;
     wait_inactive(&mut fleet, &agent.agent_id).await?;
@@ -396,6 +399,7 @@ async fn real_agentd_remember_recall_correct_and_forget_revalidate_physical_send
         "physical remember output did not bind the persisted physical and canonical KG receipt digests"
     );
 
+    retained_recovery.publish()?;
     let previous_generation = agent_generation(&fleet, &agent.agent_id)?;
     fleet.supervisor.restart(&agent.agent_id, Instant::now())?;
     let (restarted_control, restarted_health) =

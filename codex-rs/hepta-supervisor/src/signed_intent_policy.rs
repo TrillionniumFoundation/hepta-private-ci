@@ -37,7 +37,7 @@ impl SignedIntentPqAuthority {
 
     fn verify_at(&self, intent: &SignedSupervisorIntent, now: u64) -> Result<(), SupervisorError> {
         let verifier = self
-            .validated_verifier_for(intent)
+            .validated_verifier(intent)
             .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
         let agent = codex_hepta_contracts::AgentId::parse(intent.agent_id.clone())
             .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
@@ -60,12 +60,13 @@ impl SignedIntentPqAuthority {
         &self,
         intent: &SignedSupervisorIntent,
     ) -> Result<(), SignedIntentError> {
-        self.validated_verifier_for(intent).map(drop)
+        self.validated_verifier(intent).map(|_| ())
     }
 
-    // Return only this call's prepared public keys after all original binding
-    // checks. Historical verification still checks every signature below.
-    fn validated_verifier_for(
+    // The shape/binding check already constructs the verifier for these exact
+    // policy bytes. Its caller can use the same prepared keys to verify the
+    // actual signatures and supplied time, without parsing the policy twice.
+    fn validated_verifier(
         &self,
         intent: &SignedSupervisorIntent,
     ) -> Result<H7H89ProductionGrantVerifier, SignedIntentError> {
@@ -305,3 +306,7 @@ pub(crate) fn terminal_owner_matches(
         _ => false,
     }
 }
+
+#[cfg(test)]
+#[path = "signed_intent_policy_tests.rs"]
+mod tests;

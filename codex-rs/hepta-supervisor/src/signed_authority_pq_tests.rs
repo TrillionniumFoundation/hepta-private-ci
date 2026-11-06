@@ -159,6 +159,35 @@ fn policy_requires_three_explicit_distinct_canonical_pq_roles() {
 }
 
 #[test]
+fn prepared_policy_still_rejects_invalid_pins_in_every_role() {
+    let fixture = fixture_at(/*issued*/ 100, /*expires*/ 500);
+    let original: ProductionAuthorityPolicyV1 = serde_json::from_slice(&fixture.policy).unwrap();
+    #[derive(Debug)]
+    enum Role {
+        Grant,
+        Artifact,
+        Recovery,
+    }
+    for role in [Role::Grant, Role::Artifact, Role::Recovery] {
+        let mut changed = original.clone();
+        let identity = match role {
+            Role::Grant => &mut changed.grant,
+            Role::Artifact => &mut changed.artifact,
+            Role::Recovery => &mut changed.recovery,
+        };
+        identity.public_key_id[0] ^= 1;
+        let bytes = serde_json::to_vec(&changed).unwrap();
+        assert!(policy::decode_policy(&bytes).is_err(), "{role:?}");
+        assert!(
+            H7H89ProductionGrantVerifier::from_pq_policy_bytes(&bytes).is_err(),
+            "{role:?}"
+        );
+    }
+    let verifier = H7H89ProductionGrantVerifier::from_pq_policy_bytes(&fixture.policy).unwrap();
+    assert_eq!(verifier.policy_bytes(), Some(fixture.policy.as_slice()));
+}
+
+#[test]
 fn pq_grant_binds_full_message_and_refuses_legacy_or_recomputed_digest() {
     let fixture = fixture_at(/*issued*/ 100, /*expires*/ 500);
     let grant = signed(&fixture);

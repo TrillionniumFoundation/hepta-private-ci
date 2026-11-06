@@ -191,7 +191,18 @@ impl RunningDaemon {
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn ordinary_pq_daemon_recovers_and_pages_all_32_real_unknown_records_after_cold_reopen()
 -> QualificationResult<()> {
+    // A bounded diagnostic for this exact 32-record test. Only monotonic time,
+    // fixed phase names and counts are recorded; no keys or authority payloads.
+    let observed_start = Instant::now();
+    let observe_phase = |phase: &str, completed: usize| {
+        eprintln!(
+            "HEPTA_PQ_DAEMON_PHASE elapsed_us={} phase={phase} completed={completed}",
+            observed_start.elapsed().as_micros()
+        );
+    };
+    observe_phase("fixture-start", /*completed*/ 0);
     let (mut publisher, mut fleet) = pq_fleet()?;
+    observe_phase("fixture-ready", /*completed*/ 0);
     let source = ReleaseId::parse("paged-source")?;
     let mut targets = Vec::new();
     for index in 0..crate::MAX_UNKNOWN_EFFECT_DISPOSITIONS {
@@ -202,14 +213,17 @@ async fn ordinary_pq_daemon_recovers_and_pages_all_32_real_unknown_records_after
     // One real signed publication authorizes all distinct target releases.
     // The 31 real owner recoveries and final daemon recovery below remain
     // sequential; publication-history growth is covered by the Fleet tests.
+    observe_phase("install-releases-start", /*completed*/ 0);
     publisher.install_releases(
         &fleet.registry,
         &release_ids,
         &fleet.write_release_source()?,
         Vec::new(),
     )?;
-    for id in &release_ids {
+    observe_phase("install-releases-ready", release_ids.len());
+    for (index, id) in release_ids.iter().enumerate() {
         fleet.registry.allow_release(&fleet.first, id)?;
+        observe_phase("allow-release-ready", index + 1);
     }
     // Model a durable startup aborted before any process entry. The public
     // lifecycle owner assigns both generations; grants read the resulting
@@ -236,9 +250,11 @@ async fn ordinary_pq_daemon_recovers_and_pages_all_32_real_unknown_records_after
         Some(source.clone()),
         None,
     )?;
+    observe_phase("lifecycle-ready", release_ids.len());
     let now = publisher.current_unix_seconds();
     let authority = fixture_at(now, now + 500);
     publisher.publish_protocol_configuration(&fleet.registry, &authority.policy, now + 3600)?;
+    observe_phase("protocol-publication-ready", release_ids.len());
     let binding = fleet
         .registry
         .resolve_release_binding(&fleet.first, &source)?;
@@ -247,6 +263,7 @@ async fn ordinary_pq_daemon_recovers_and_pages_all_32_real_unknown_records_after
     // Each retained disposition crosses the real Supervisor/PQ recovery owner
     // and external CAS. This is not a vector of signature-sized placeholder DTOs.
     for (index, target) in targets.iter().enumerate().take(31) {
+        observe_phase("round-prepare-start", index);
         prepare(
             &publisher,
             &fleet,
@@ -255,12 +272,14 @@ async fn ordinary_pq_daemon_recovers_and_pages_all_32_real_unknown_records_after
             index,
             previous.as_ref(),
         )?;
+        observe_phase("round-prepare-ready", index);
         let (mut supervisor, report) = Supervisor::recover(
             fleet.registry.clone(),
             control.driver(),
             config(),
             Instant::now(),
         )?;
+        observe_phase("round-recover-ready", index);
         assert!(report.faults.is_empty());
         assert!(supervisor.production_recovery_required(&fleet.first)?);
         let current = record(&fleet)?;
@@ -275,6 +294,7 @@ async fn ordinary_pq_daemon_recovers_and_pages_all_32_real_unknown_records_after
             now,
             now + 120,
         )?;
+        observe_phase("round-decision-ready", index);
         supervisor.resolve_production_recovery(
             &fleet.first,
             &decision,
@@ -282,12 +302,15 @@ async fn ordinary_pq_daemon_recovers_and_pages_all_32_real_unknown_records_after
             /*authority_epoch*/ 47,
             /*untrusted caller time*/ 0,
         )?;
+        observe_phase("round-resolve-ready", index);
         let closed = read_intent(current.layout.run_root())?.expect("durable Unknown");
         assert_eq!(closed.unknown_effects.len(), index + 1);
         assert!(!supervisor.production_recovery_required(&fleet.first)?);
         previous = Some(closed);
+        observe_phase("round-complete", index + 1);
     }
     assert_eq!(control.spawn_count(&fleet.first), 0);
+    observe_phase("last-prepare-start", /*completed*/ 31);
     prepare(
         &publisher,
         &fleet,
@@ -296,13 +319,16 @@ async fn ordinary_pq_daemon_recovers_and_pages_all_32_real_unknown_records_after
         /*index*/ 31,
         previous.as_ref(),
     )?;
+    observe_phase("last-prepare-ready", /*completed*/ 31);
     let initial_record = record(&fleet)?;
     let root = fleet.registry.layout().fleet_root().clone();
     // Close every actual owner before the ordinary daemon opens its exclusive
     // registry. No FakeDriver process identity ever reaches UnixProcessDriver.
     let state_only = FleetRegistry::open_existing(root)?;
     drop(std::mem::replace(&mut fleet.registry, state_only));
+    observe_phase("daemon-start", /*completed*/ 31);
     let daemon = RunningDaemon::start(&fleet, &publisher, &authority).await?;
+    observe_phase("daemon-ready", /*completed*/ 31);
     assert!(!daemon.client.health().await?.ready);
     let selected = daemon.client.snapshot(fleet.first.clone()).await?;
     assert!(!selected.active && selected.process_id.is_none());
@@ -351,10 +377,12 @@ async fn ordinary_pq_daemon_recovers_and_pages_all_32_real_unknown_records_after
 
     // The real client performs one mutation then only bounded read pages,
     // retaining its original absolute two-second observation deadline.
+    observe_phase("daemon-resolve-start", /*completed*/ 31);
     let resolved = daemon
         .client
         .resolve_production_recovery(selected.control_fence.clone(), decision.clone())
         .await?;
+    observe_phase("daemon-resolve-ready", /*completed*/ 32);
     assert_eq!(resolved.unknown_effects.len(), 32);
     assert_eq!(resolved.unknown_effects, expected.unknown_effects);
     assert_eq!(resolved.intent_sha256, expected.intent_sha256);
@@ -388,6 +416,7 @@ async fn ordinary_pq_daemon_recovers_and_pages_all_32_real_unknown_records_after
         read_intent(current.layout.run_root())?,
         Some(expected.clone())
     );
+    observe_phase("retained-signatures-start", /*completed*/ 0);
     for unknown in &resolved.unknown_effects {
         let signed = &unknown.decision;
         assert_eq!(signed.schema_version, 3);
@@ -408,6 +437,7 @@ async fn ordinary_pq_daemon_recovers_and_pages_all_32_real_unknown_records_after
         )?;
     }
 
+    observe_phase("retained-signatures-ready", resolved.unknown_effects.len());
     let mut cursor = None;
     let mut stale_cursor: Option<ProductionMutationCursorV1> = None;
     let mut assembler: Option<ProductionMutationPageAssembler> = None;
@@ -424,6 +454,7 @@ async fn ordinary_pq_daemon_recovers_and_pages_all_32_real_unknown_records_after
         };
         page_count += 1;
         assert_eq!(page.unknown_effects.len(), 4);
+        observe_phase("explicit-page-ready", page_count);
         cursor = page.next_cursor.clone();
         if page_count == 1 {
             stale_cursor = cursor.clone();
@@ -460,9 +491,13 @@ async fn ordinary_pq_daemon_recovers_and_pages_all_32_real_unknown_records_after
     );
     assert_eq!(publisher.cas_attempts(), before_cas + 1);
     assert_eq!(publisher.frontier()?, published_frontier);
+    observe_phase("daemon-shutdown-start", /*completed*/ 32);
     daemon.shutdown().await?;
+    observe_phase("daemon-shutdown-ready", /*completed*/ 32);
 
+    observe_phase("cold-daemon-start", /*completed*/ 32);
     let cold = RunningDaemon::start(&fleet, &publisher, &authority).await?;
+    observe_phase("cold-daemon-ready", /*completed*/ 32);
     assert!(cold.client.health().await?.ready);
     let snapshot = cold.client.snapshot(fleet.first.clone()).await?;
     assert!(!snapshot.active && snapshot.process_id.is_none());
@@ -479,6 +514,7 @@ async fn ordinary_pq_daemon_recovers_and_pages_all_32_real_unknown_records_after
         .production_mutation_status(fleet.first.clone())
         .await?
         .expect("cold history");
+    observe_phase("cold-history-ready", /*completed*/ 32);
     assert_eq!(recovered.unknown_effects, resolved.unknown_effects);
     assert_eq!(recovered.intent_sha256, resolved.intent_sha256);
     assert_eq!(
@@ -508,5 +544,6 @@ async fn ordinary_pq_daemon_recovers_and_pages_all_32_real_unknown_records_after
     assert_eq!(publisher.frontier()?, published_frontier);
     assert_eq!(publisher.cas_attempts(), before_cas + 1);
     cold.shutdown().await?;
+    observe_phase("complete", /*completed*/ 32);
     Ok(())
 }
