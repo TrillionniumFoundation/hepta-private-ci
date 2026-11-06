@@ -1,0 +1,44 @@
+{
+  "completed_phases": [
+    "bootstrap"
+  ],
+  "cost_scope": "new run includes every attempted subprocess and each orchestration invocation; unknowns are not zero",
+  "distinct_worker_pids": [
+    7
+  ],
+  "engineering_passed": false,
+  "failed_invocation": null,
+  "formal_future_adoption_qualified": false,
+  "limitations": [
+    "authored Cedar engineering task, not observed future traffic",
+    "parent never trained on the superseded Cedar label",
+    "final skills revision changes provenance only; labels unchanged",
+    "nine-arm formal gate not invoked or weakened",
+    "no benefit/cost superiority or full-cost admission established"
+  ],
+  "measured_cost": {
+    "all_child_cpu_seconds": 1.90442,
+    "billed_usd": null,
+    "energy_joules": null,
+    "full_retained_byte_seconds": null,
+    "historical_acquisition": null,
+    "host_network_bytes": null,
+    "p99_seconds": null,
+    "parent_cpu_system_seconds": 0.006846,
+    "parent_cpu_user_seconds": 0.081189,
+    "peak_worker_rss_bytes": 212811776,
+    "retained_new_run_bytes_at_snapshot": 1084235,
+    "unmeasured_worker_rss_phases": [],
+    "worker_cpu_system_seconds": 0.389372,
+    "worker_cpu_user_seconds": 1.511714,
+    "worker_wall_seconds": 1.9684699390018068
+  },
+  "natural_future_source_groups": 0,
+  "protocol_sha256": "84bd11616fe532ad4539837a2ccd4bf53e8c5b0659d2fe910241a847be7c939a",
+  "schema": "hepta.cell-learning.engineering.result.v1",
+  "scientific_benefit_claimed": false,
+  "training_attempts": 0,
+  "worker_instance_ids": [
+    "ddc4e65364fc43049371596e311e3ca6"
+  ]
+}

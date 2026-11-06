@@ -105,7 +105,10 @@ pub fn evaluate_differentiation_study_v1(
     }
     if candidate.training_task_ids.is_empty()
         || candidate.training_task_ids.len() > MAX_TASKS
-        || observation.arms.iter().any(|arm| arm.outcomes.len() > MAX_TASKS)
+        || observation
+            .arms
+            .iter()
+            .any(|arm| arm.outcomes.len() > MAX_TASKS)
         || observation.migration.outcomes.len() > MAX_TASKS
     {
         return Err(DifferentiationErrorV1::Bounds);
@@ -171,7 +174,9 @@ pub fn evaluate_differentiation_study_v1(
     let mut over_budget = false;
     let mut total_cost = 0_u64;
     for kind in ARMS {
-        let arm = arms.get(&kind).ok_or(DifferentiationErrorV1::MissingComparator)?;
+        let arm = arms
+            .get(&kind)
+            .ok_or(DifferentiationErrorV1::MissingComparator)?;
         if arm.parent_artifact_digest != request.parent.artifact_digest
             || (kind == DifferentiationArmV1::UnchangedParent
                 && arm.artifact_digest != request.parent.artifact_digest)
