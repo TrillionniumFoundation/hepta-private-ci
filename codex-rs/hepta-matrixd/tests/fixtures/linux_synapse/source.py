@@ -97,7 +97,9 @@ def replay_candidate_tree(commands, producer_dir, candidate, source_sha, output)
             label="replay-exact-producer-patch",
             environment=environment,
         )
-    elif mode != "integrated" or patch.read_bytes() != b"" or candidate["changed_paths"]:
+    elif (
+        mode != "integrated" or patch.read_bytes() != b"" or candidate["changed_paths"]
+    ):
         raise ValueError("Integrated replay requires a declared exactly empty delta")
     _, expected_path = commands.run(
         "git", ["write-tree"], label="producer-patch-tree", environment=environment
@@ -311,6 +313,8 @@ def prepare_source(
             producer_names.append("source-amendment.json")
         if "dependency_amendment" in candidate["integration"]:
             producer_names.append("dependency-amendment.json")
+        if "build_amendment" in candidate["integration"]:
+            producer_names.append("build-amendment.json")
     for name in producer_names:
         copy_file(producer_dir / name, provenance / name)
     seal = {

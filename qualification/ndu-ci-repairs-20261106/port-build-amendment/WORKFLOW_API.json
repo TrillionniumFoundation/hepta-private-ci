@@ -1,0 +1,507 @@
+{
+  "jobs": {
+    "jobs": [
+      {
+        "conclusion": "success",
+        "id": 127924479528,
+        "logs_url": null,
+        "name": "produce-independent-matrix-018-fixture",
+        "run_id": 42227464856,
+        "status": "completed",
+        "steps": [
+          {
+            "conclusion": "success",
+            "name": "Set up job",
+            "number": 1,
+            "status": "completed"
+          },
+          {
+            "conclusion": "success",
+            "name": "Check out the new driver and reviewed fixture patch",
+            "number": 2,
+            "status": "completed"
+          },
+          {
+            "conclusion": "success",
+            "name": "Independently check out the fixed original source and 0.18 lock",
+            "number": 3,
+            "status": "completed"
+          },
+          {
+            "conclusion": "success",
+            "name": "Run ./driver/.github/actions/setup-ci",
+            "number": 4,
+            "status": "completed"
+          },
+          {
+            "conclusion": "success",
+            "name": "Install Linux build prerequisites",
+            "number": 5,
+            "status": "completed"
+          },
+          {
+            "conclusion": "success",
+            "name": "Install explicit original compiler",
+            "number": 6,
+            "status": "completed"
+          },
+          {
+            "conclusion": "success",
+            "name": "Install normal CI nextest version",
+            "number": 7,
+            "status": "completed"
+          },
+          {
+            "conclusion": "success",
+            "name": "Produce and seal actual old-version state using only the fixture patch",
+            "number": 8,
+            "status": "completed"
+          },
+          {
+            "conclusion": "success",
+            "name": "Retain original source, lock, executable, database files and failures",
+            "number": 9,
+            "status": "completed"
+          },
+          {
+            "conclusion": "success",
+            "name": "Post Independently check out the fixed original source and 0.18 lock",
+            "number": 17,
+            "status": "completed"
+          },
+          {
+            "conclusion": "success",
+            "name": "Post Check out the new driver and reviewed fixture patch",
+            "number": 18,
+            "status": "completed"
+          },
+          {
+            "conclusion": "success",
+            "name": "Complete job",
+            "number": 19,
+            "status": "completed"
+          }
+        ]
+      },
+      {
+        "conclusion": "failure",
+        "id": 127924479955,
+        "logs_url": null,
+        "name": "generate-reviewable-candidate",
+        "run_id": 42227464856,
+        "status": "completed",
+        "steps": [
+          {
+            "conclusion": "success",
+            "name": "Set up job",
+            "number": 1,
+            "status": "completed"
+          },
+          {
+            "conclusion": "success",
+            "name": "Check out the exact reviewed new source",
+            "number": 2,
+            "status": "completed"
+          },
+          {
+            "conclusion": "success",
+            "name": "Test source binding, phase evidence and failure preservation",
+            "number": 3,
+            "status": "completed"
+          },
+          {
+            "conclusion": "success",
+            "name": "Test Linux source and artifact boundaries before candidate generation",
+            "number": 4,
+            "status": "completed"
+          },
+          {
+            "conclusion": "success",
+            "name": "Test post-qualification fix evidence and source separation",
+            "number": 5,
+            "status": "completed"
+          },
+          {
+            "conclusion": "success",
+            "name": "Prepare pinned Bazel tooling",
+            "number": 6,
+            "status": "completed"
+          },
+          {
+            "conclusion": "success",
+            "name": "Install explicit candidate compiler",
+            "number": 7,
+            "status": "completed"
+          },
+          {
+            "conclusion": "failure",
+            "name": "Verify integrated source and zero-drift Cargo and Bazel locks",
+            "number": 8,
+            "status": "completed"
+          },
+          {
+            "conclusion": "success",
+            "name": "Retain complete or partial producer evidence",
+            "number": 9,
+            "status": "completed"
+          },
+          {
+            "conclusion": "success",
+            "name": "Post Prepare pinned Bazel tooling",
+            "number": 17,
+            "status": "completed"
+          },
+          {
+            "conclusion": "success",
+            "name": "Post Check out the exact reviewed new source",
+            "number": 18,
+            "status": "completed"
+          },
+          {
+            "conclusion": "success",
+            "name": "Complete job",
+            "number": 19,
+            "status": "completed"
+          }
+        ]
+      },
+      {
+        "conclusion": "skipped",
+        "id": 127924980417,
+        "logs_url": null,
+        "name": "native-arm64-synapse",
+        "run_id": 42227464856,
+        "status": "completed",
+        "steps": null
+      },
+      {
+        "conclusion": "skipped",
+        "id": 127924980479,
+        "logs_url": null,
+        "name": "independent-full-upstream-aws",
+        "run_id": 42227464856,
+        "status": "completed",
+        "steps": null
+      },
+      {
+        "conclusion": "skipped",
+        "id": 127924980992,
+        "logs_url": null,
+        "name": "linux-bazel-libraries",
+        "run_id": 42227464856,
+        "status": "completed",
+        "steps": null
+      },
+      {
+        "conclusion": "skipped",
+        "id": 127924981004,
+        "logs_url": null,
+        "name": "full-scope-candidate-cargo-deny",
+        "run_id": 42227464856,
+        "status": "completed",
+        "steps": null
+      },
+      {
+        "conclusion": "skipped",
+        "id": 127924981728,
+        "logs_url": null,
+        "name": "targeted-workspace-tests",
+        "run_id": 42227464856,
+        "status": "completed",
+        "steps": null
+      },
+      {
+        "conclusion": "skipped",
+        "id": 127926905037,
+        "logs_url": null,
+        "name": "matrix-workspace-and-old-fixture",
+        "run_id": 42227464856,
+        "status": "completed",
+        "steps": null
+      }
+    ]
+  },
+  "run": {
+    "actor": {
+      "avatar_url": "https://avatars.githubusercontent.com/u/273673612?v=4",
+      "events_url": "https://api.github.com/users/Tomasrgbsf/events{/privacy}",
+      "followers_url": "https://api.github.com/users/Tomasrgbsf/followers",
+      "following_url": "https://api.github.com/users/Tomasrgbsf/following{/other_user}",
+      "gists_url": "https://api.github.com/users/Tomasrgbsf/gists{/gist_id}",
+      "gravatar_id": "",
+      "html_url": "https://github.com/Tomasrgbsf",
+      "id": 273673612,
+      "login": "Tomasrgbsf",
+      "node_id": "U_kgDOEE_tjA",
+      "organizations_url": "https://api.github.com/users/Tomasrgbsf/orgs",
+      "received_events_url": "https://api.github.com/users/Tomasrgbsf/received_events",
+      "repos_url": "https://api.github.com/users/Tomasrgbsf/repos",
+      "site_admin": false,
+      "starred_url": "https://api.github.com/users/Tomasrgbsf/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/Tomasrgbsf/subscriptions",
+      "type": "User",
+      "url": "https://api.github.com/users/Tomasrgbsf",
+      "user_view_type": "public"
+    },
+    "artifacts_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/42227464856/artifacts",
+    "cancel_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/42227464856/cancel",
+    "check_suite_id": 114416510095,
+    "check_suite_node_id": "CS_kwDOTrgxoM8AAAAao8Fkjw",
+    "check_suite_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/check-suites/114416510095",
+    "conclusion": "failure",
+    "created_at": "2026-11-06T13:40:58Z",
+    "display_title": "fix(ci): bind integrated port provenance to reviewed dependency backports",
+    "event": "pull_request",
+    "head_branch": "research/ndu-port-dependency-source-amendment-20261106",
+    "head_commit": {
+      "author": {
+        "email": "273673612+Tomasrgbsf@users.noreply.github.com",
+        "name": "Tomasrgbsf"
+      },
+      "committer": {
+        "email": "273673612+Tomasrgbsf@users.noreply.github.com",
+        "name": "Tomasrgbsf"
+      },
+      "id": "55a534060a4b5e24abbe772e7f0135e9d4f56ace",
+      "message": "fix(ci): bind integrated port provenance to reviewed dependency backports\n\nSigned-off-by: Tomasrgbsf <273673612+Tomasrgbsf@users.noreply.github.com>",
+      "timestamp": "2026-11-06T13:40:52Z",
+      "tree_id": "351138a1f6127b0fadeecfd26108a713ab400f08"
+    },
+    "head_repository": {
+      "archive_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/{archive_format}{/ref}",
+      "assignees_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/assignees{/user}",
+      "blobs_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs{/sha}",
+      "branches_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/branches{/branch}",
+      "collaborators_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/collaborators{/collaborator}",
+      "comments_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/comments{/number}",
+      "commits_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/commits{/sha}",
+      "compare_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/compare/{base}...{head}",
+      "contents_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/contents/{+path}",
+      "contributors_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/contributors",
+      "deployments_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/deployments",
+      "description": "Private verification-only mirror for Hepta hosted CI",
+      "downloads_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/downloads",
+      "events_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/events",
+      "fork": false,
+      "forks_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/forks",
+      "full_name": "TrillionniumFoundation/hepta-private-ci",
+      "git_commits_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits{/sha}",
+      "git_refs_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/refs{/sha}",
+      "git_tags_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/tags{/sha}",
+      "hooks_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/hooks",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci",
+      "id": 1320694176,
+      "issue_comment_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/issues/comments{/number}",
+      "issue_events_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/issues/events{/number}",
+      "issues_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/issues{/number}",
+      "keys_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/keys{/key_id}",
+      "labels_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/labels{/name}",
+      "languages_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/languages",
+      "merges_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/merges",
+      "milestones_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/milestones{/number}",
+      "name": "hepta-private-ci",
+      "node_id": "R_kgDOTrgxoA",
+      "notifications_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/notifications{?since,all,participating}",
+      "owner": {
+        "avatar_url": "https://avatars.githubusercontent.com/u/262513357?v=4",
+        "events_url": "https://api.github.com/users/TrillionniumFoundation/events{/privacy}",
+        "followers_url": "https://api.github.com/users/TrillionniumFoundation/followers",
+        "following_url": "https://api.github.com/users/TrillionniumFoundation/following{/other_user}",
+        "gists_url": "https://api.github.com/users/TrillionniumFoundation/gists{/gist_id}",
+        "gravatar_id": "",
+        "html_url": "https://github.com/TrillionniumFoundation",
+        "id": 262513357,
+        "login": "TrillionniumFoundation",
+        "node_id": "O_kgDOD6WizQ",
+        "organizations_url": "https://api.github.com/users/TrillionniumFoundation/orgs",
+        "received_events_url": "https://api.github.com/users/TrillionniumFoundation/received_events",
+        "repos_url": "https://api.github.com/users/TrillionniumFoundation/repos",
+        "site_admin": false,
+        "starred_url": "https://api.github.com/users/TrillionniumFoundation/starred{/owner}{/repo}",
+        "subscriptions_url": "https://api.github.com/users/TrillionniumFoundation/subscriptions",
+        "type": "Organization",
+        "url": "https://api.github.com/users/TrillionniumFoundation",
+        "user_view_type": "public"
+      },
+      "private": false,
+      "pulls_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/pulls{/number}",
+      "releases_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/releases{/id}",
+      "stargazers_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/stargazers",
+      "statuses_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/statuses/{sha}",
+      "subscribers_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/subscribers",
+      "subscription_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/subscription",
+      "tags_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/tags",
+      "teams_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/teams",
+      "trees_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/trees{/sha}",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci"
+    },
+    "head_sha": "55a534060a4b5e24abbe772e7f0135e9d4f56ace",
+    "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42227464856",
+    "id": 42227464856,
+    "jobs_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/42227464856/jobs",
+    "logs_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/42227464856/logs",
+    "name": "NDU dependency port candidate",
+    "node_id": "WFR_kwLOTrgxoM8AAAAJ1PP6mA",
+    "path": ".github/workflows/ndu-port-candidate.yml",
+    "previous_attempt_url": null,
+    "pull_requests": [
+      {
+        "base": {
+          "ref": "research/ndu-required-cognitive-owner-20261106",
+          "repo": {
+            "id": 1320694176,
+            "name": "hepta-private-ci",
+            "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci"
+          },
+          "sha": "d6b38104c3f8f80cff1e3232b926470fd90ce712"
+        },
+        "head": {
+          "ref": "research/ndu-port-dependency-source-amendment-20261106",
+          "repo": {
+            "id": 1320694176,
+            "name": "hepta-private-ci",
+            "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci"
+          },
+          "sha": "55a534060a4b5e24abbe772e7f0135e9d4f56ace"
+        },
+        "id": 5188703673,
+        "number": 5028,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/pulls/5028"
+      }
+    ],
+    "referenced_workflows": [],
+    "repository": {
+      "archive_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/{archive_format}{/ref}",
+      "assignees_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/assignees{/user}",
+      "blobs_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs{/sha}",
+      "branches_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/branches{/branch}",
+      "collaborators_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/collaborators{/collaborator}",
+      "comments_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/comments{/number}",
+      "commits_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/commits{/sha}",
+      "compare_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/compare/{base}...{head}",
+      "contents_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/contents/{+path}",
+      "contributors_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/contributors",
+      "deployments_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/deployments",
+      "description": "Private verification-only mirror for Hepta hosted CI",
+      "downloads_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/downloads",
+      "events_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/events",
+      "fork": false,
+      "forks_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/forks",
+      "full_name": "TrillionniumFoundation/hepta-private-ci",
+      "git_commits_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits{/sha}",
+      "git_refs_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/refs{/sha}",
+      "git_tags_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/tags{/sha}",
+      "hooks_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/hooks",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci",
+      "id": 1320694176,
+      "issue_comment_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/issues/comments{/number}",
+      "issue_events_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/issues/events{/number}",
+      "issues_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/issues{/number}",
+      "keys_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/keys{/key_id}",
+      "labels_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/labels{/name}",
+      "languages_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/languages",
+      "merges_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/merges",
+      "milestones_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/milestones{/number}",
+      "name": "hepta-private-ci",
+      "node_id": "R_kgDOTrgxoA",
+      "notifications_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/notifications{?since,all,participating}",
+      "owner": {
+        "avatar_url": "https://avatars.githubusercontent.com/u/262513357?v=4",
+        "events_url": "https://api.github.com/users/TrillionniumFoundation/events{/privacy}",
+        "followers_url": "https://api.github.com/users/TrillionniumFoundation/followers",
+        "following_url": "https://api.github.com/users/TrillionniumFoundation/following{/other_user}",
+        "gists_url": "https://api.github.com/users/TrillionniumFoundation/gists{/gist_id}",
+        "gravatar_id": "",
+        "html_url": "https://github.com/TrillionniumFoundation",
+        "id": 262513357,
+        "login": "TrillionniumFoundation",
+        "node_id": "O_kgDOD6WizQ",
+        "organizations_url": "https://api.github.com/users/TrillionniumFoundation/orgs",
+        "received_events_url": "https://api.github.com/users/TrillionniumFoundation/received_events",
+        "repos_url": "https://api.github.com/users/TrillionniumFoundation/repos",
+        "site_admin": false,
+        "starred_url": "https://api.github.com/users/TrillionniumFoundation/starred{/owner}{/repo}",
+        "subscriptions_url": "https://api.github.com/users/TrillionniumFoundation/subscriptions",
+        "type": "Organization",
+        "url": "https://api.github.com/users/TrillionniumFoundation",
+        "user_view_type": "public"
+      },
+      "private": false,
+      "pulls_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/pulls{/number}",
+      "releases_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/releases{/id}",
+      "stargazers_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/stargazers",
+      "statuses_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/statuses/{sha}",
+      "subscribers_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/subscribers",
+      "subscription_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/subscription",
+      "tags_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/tags",
+      "teams_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/teams",
+      "trees_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/trees{/sha}",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci"
+    },
+    "rerun_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/42227464856/rerun",
+    "run_attempt": 1,
+    "run_number": 23,
+    "run_started_at": "2026-11-06T13:40:58Z",
+    "status": "completed",
+    "triggering_actor": {
+      "avatar_url": "https://avatars.githubusercontent.com/u/273673612?v=4",
+      "events_url": "https://api.github.com/users/Tomasrgbsf/events{/privacy}",
+      "followers_url": "https://api.github.com/users/Tomasrgbsf/followers",
+      "following_url": "https://api.github.com/users/Tomasrgbsf/following{/other_user}",
+      "gists_url": "https://api.github.com/users/Tomasrgbsf/gists{/gist_id}",
+      "gravatar_id": "",
+      "html_url": "https://github.com/Tomasrgbsf",
+      "id": 273673612,
+      "login": "Tomasrgbsf",
+      "node_id": "U_kgDOEE_tjA",
+      "organizations_url": "https://api.github.com/users/Tomasrgbsf/orgs",
+      "received_events_url": "https://api.github.com/users/Tomasrgbsf/received_events",
+      "repos_url": "https://api.github.com/users/Tomasrgbsf/repos",
+      "site_admin": false,
+      "starred_url": "https://api.github.com/users/Tomasrgbsf/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/Tomasrgbsf/subscriptions",
+      "type": "User",
+      "url": "https://api.github.com/users/Tomasrgbsf",
+      "user_view_type": "public"
+    },
+    "updated_at": "2026-11-06T13:46:15Z",
+    "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/42227464856",
+    "workflow_id": 398176374,
+    "workflow_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/workflows/398176374"
+  },
+  "source_commit": {
+    "author": {
+      "date": "2026-11-06T13:40:52Z",
+      "email": "273673612+Tomasrgbsf@users.noreply.github.com",
+      "name": "Tomasrgbsf"
+    },
+    "committer": {
+      "date": "2026-11-06T13:40:52Z",
+      "email": "273673612+Tomasrgbsf@users.noreply.github.com",
+      "name": "Tomasrgbsf"
+    },
+    "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/55a534060a4b5e24abbe772e7f0135e9d4f56ace",
+    "message": "fix(ci): bind integrated port provenance to reviewed dependency backports\n\nSigned-off-by: Tomasrgbsf <273673612+Tomasrgbsf@users.noreply.github.com>",
+    "node_id": "C_kwDOTrgxoNoAKDU1YTUzNDA2MGE0YjVlMjRhYmJlNzcyZTdmMDEzNWU5ZDRmNTZhY2U",
+    "parents": [
+      {
+        "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/d6b38104c3f8f80cff1e3232b926470fd90ce712",
+        "sha": "d6b38104c3f8f80cff1e3232b926470fd90ce712",
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/d6b38104c3f8f80cff1e3232b926470fd90ce712"
+      }
+    ],
+    "sha": "55a534060a4b5e24abbe772e7f0135e9d4f56ace",
+    "tree": {
+      "sha": "351138a1f6127b0fadeecfd26108a713ab400f08",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/trees/351138a1f6127b0fadeecfd26108a713ab400f08"
+    },
+    "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/55a534060a4b5e24abbe772e7f0135e9d4f56ace",
+    "verification": {
+      "payload": null,
+      "reason": "unsigned",
+      "signature": null,
+      "verified": false,
+      "verified_at": null
+    }
+  }
+}
