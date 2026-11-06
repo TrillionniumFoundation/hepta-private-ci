@@ -284,7 +284,7 @@ impl ReleaseAuthority {
             checkpoint_sha256: admission.state.frontier.checkpoint_sha256,
             state_sha256: load::hash(&bytes),
         };
-        let _ = journal.rebuild(&self.config, next_frontier)?;
+        let _ = journal.rebuild(&self.config, next_frontier, &self.initial_root_material)?;
         let attempt = record_bytes(&PendingUpdate {
             schema_version: 1,
             expected: Some(admission.state.frontier),

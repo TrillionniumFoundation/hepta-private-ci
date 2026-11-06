@@ -1,11 +1,13 @@
 use std::collections::BTreeMap;
 use std::collections::BTreeSet;
+use std::sync::OnceLock;
 
 use codex_hepta_contracts::AgentId;
 use codex_hepta_contracts::ReleaseFrontierV1;
 use serde::Deserialize;
 use serde::Serialize;
 use trnm_release_bundle::pq_release::MAX_RECOVERY_EVENTS_V1;
+use trnm_release_bundle::pq_release::PqInitialRootKeyMaterialV1;
 use trnm_release_bundle::pq_release::PqReleaseAuthorityV1;
 use trnm_release_bundle::pq_release::PqReleaseEventV1;
 use trnm_release_bundle::pq_release::PqReleaseRoleV1;
@@ -120,6 +122,7 @@ impl Journal {
         self,
         config: &FleetReleaseTrustConfig,
         frontier: ReleaseFrontierV1,
+        initial_root_material: &OnceLock<PqInitialRootKeyMaterialV1>,
     ) -> Result<LoadedState, FleetRegistryError> {
         if self.schema_version != 1
             || self.profile != JOURNAL_PROFILE
@@ -145,10 +148,25 @@ impl Journal {
             _ => return Err(invalid("invalid retained release frontier predecessor")),
         }
         let root = PqReleaseRootV1::try_from(&self.initial_root)?;
-        let mut authority = PqReleaseAuthorityV1::bootstrap_pinned(
+        if initial_root_material.get().is_none() {
+            let material = PqInitialRootKeyMaterialV1::prepare_pinned(
+                root.clone(),
+                config.initial_root_sha256,
+                self.initialized_at,
+            )
+            .map_err(|error| invalid(format!("M15 recovery root rejected: {error}")))?;
+            // Concurrent preparation may have installed the same owner's
+            // material first. The selected material is always checked below.
+            let _ = initial_root_material.set(material);
+        }
+        let material = initial_root_material
+            .get()
+            .ok_or_else(|| invalid("initial root preparation was not retained"))?;
+        let mut authority = PqReleaseAuthorityV1::bootstrap_pinned_with_material(
             root,
             config.initial_root_sha256,
             self.initialized_at,
+            material,
         )
         .map_err(|error| invalid(format!("M15 recovery root rejected: {error}")))?;
         let mut native = Vec::new();
