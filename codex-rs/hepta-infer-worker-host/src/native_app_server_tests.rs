@@ -406,9 +406,15 @@ fn cognitive_final_use_revalidation_follows_durable_dispatch_and_precedes_turn_s
     let revalidation = source
         .find("owner.revalidate_cognitive_context(snapshot).await")
         .expect("final-use cognitive revalidation");
+    // TurnStart is now intentionally behind a typed, entered-use-only
+    // helper. Check the real call site and the helper's physical request.
     let turn_start = source
-        .find("client.request_typed::<TurnStartResponse>(ClientRequest::TurnStart")
-        .expect("physical turn start");
+        .find("send_authorized_turn_start(&mut client, entered_use, turn_params)")
+        .expect("entered-use physical turn-start dispatch");
+    assert!(
+        source.contains(".request_typed_observed(ClientRequest::TurnStart {"),
+        "entered-use helper must issue the actual physical TurnStart"
+    );
     let durable_stop = source
         .find("control.abort_native_before_effect(")
         .expect("durable pre-turn stop");

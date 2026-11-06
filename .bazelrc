@@ -182,6 +182,11 @@ common:ci-linux --platforms=//:rbe
 # On mac, we can run all the build actions remotely but test actions locally.
 common:ci-macos --config=ci-bazel
 common:ci-macos --build_metadata=TAG_os=macos
+# Bazel 9.0.0 can race asynchronous cache uploads against late-discovered
+# action inputs and crash inside ActionInputMap.getIndex (bazelbuild/bazel#30693).
+# Upload synchronously on macOS CI, without skipping targets or disabling
+# remote caching, RBE, signature gates, or real test execution.
+common:ci-macos --noremote_cache_async
 common:ci-macos --strategy=TestRunner=darwin-sandbox,local
 
 # On Windows, use Linux remote execution for build actions but keep test actions

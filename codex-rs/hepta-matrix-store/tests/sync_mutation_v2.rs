@@ -1,6 +1,7 @@
 use std::error::Error;
 use std::fs;
 use std::path::Path;
+use std::time::Duration;
 
 use codex_hepta_contracts::AgentId;
 use codex_hepta_matrix_protocol::MatrixSyncBatchV2;
@@ -28,10 +29,13 @@ use codex_hepta_matrix_store::RoomBindingDraft;
 use codex_hepta_matrix_store::RoomThreadBindingDraft;
 use codex_hepta_paths::HeptaAgentLayout;
 use codex_hepta_paths::HeptaFleetRoot;
-use codex_state::SqliteConfig;
-use codex_utils_absolute_path::AbsolutePathBuf;
 use pretty_assertions::assert_eq;
+use sqlx::ConnectOptions;
 use sqlx::SqlitePool;
+use sqlx::sqlite::SqliteConnectOptions;
+use sqlx::sqlite::SqliteJournalMode;
+use sqlx::sqlite::SqlitePoolOptions;
+use sqlx::sqlite::SqliteSynchronous;
 use tempfile::TempDir;
 
 type TestResult<T = ()> = Result<T, Box<dyn Error>>;
@@ -79,6 +83,10 @@ async fn store_and_room(temp: &TempDir, room_id: &MatrixRoomId) -> TestResult<Ma
     Ok(store)
 }
 
+#[expect(
+    clippy::disallowed_methods,
+    reason = "This test deliberately opens an isolated hostile SQLite fixture after the production owner is closed"
+)]
 async fn open_hostile_fixture_pool(path: &Path) -> TestResult<SqlitePool> {
     // These tests own the temporary database and deliberately inject hostile
     // rows/schema after closing its owner. This is not a recovery backend;
@@ -87,9 +95,18 @@ async fn open_hostile_fixture_pool(path: &Path) -> TestResult<SqlitePool> {
     let parent = path
         .parent()
         .ok_or_else(|| std::io::Error::other("fixture parent missing"))?;
-    let parent = AbsolutePathBuf::try_from(parent.to_path_buf())?;
-    Ok(SqliteConfig::new_for_testing(parent)
-        .open_durable_evidence_pool(path)
+    assert!(parent.is_dir());
+    let options = SqliteConnectOptions::new()
+        .filename(path)
+        .create_if_missing(false)
+        .journal_mode(SqliteJournalMode::Wal)
+        .synchronous(SqliteSynchronous::Full)
+        .foreign_keys(true)
+        .busy_timeout(Duration::from_secs(5))
+        .disable_statement_logging();
+    Ok(SqlitePoolOptions::new()
+        .max_connections(5)
+        .connect_with(options)
         .await?)
 }
 
