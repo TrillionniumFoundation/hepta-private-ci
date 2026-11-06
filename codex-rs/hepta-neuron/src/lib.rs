@@ -72,6 +72,7 @@ pub use cell_generation_types::CellEvolutionBindingV2;
 pub use cell_generation_types::CellGenerationControlPortV2;
 pub use cell_generation_types::CellGenerationDispositionV2;
 pub use cell_generation_types::CellGenerationErrorV2;
+pub use cell_generation_types::CellGenerationIntentV2;
 pub use cell_generation_types::CellGenerationProposalV2;
 pub use cell_generation_types::CellGenerationReceiptV2;
 pub use cell_generation_types::CellGenerationRequestV2;

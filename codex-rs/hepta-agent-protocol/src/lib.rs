@@ -5,6 +5,7 @@
 mod authbus;
 mod capabilities;
 mod evidence;
+mod generation;
 mod objective_history;
 pub use authbus::AuthBusObjectiveBody;
 pub use authbus::AuthBusObjectiveIngress;
@@ -29,6 +30,19 @@ pub use evidence::KernelEvidenceResult;
 pub use evidence::KernelEvidenceVerifyV1;
 pub use evidence::MAX_KERNEL_EVIDENCE_ENVELOPE_BYTES;
 pub use evidence::MAX_KERNEL_EVIDENCE_REQUIRED_ROLES;
+pub use generation::AGENTD_GENERATION_CONTROL_CAPABILITY;
+pub use generation::GenerationControlRequestV1;
+pub use generation::GenerationControlResponseV1;
+pub use generation::GenerationCostSummaryV1;
+pub use generation::GenerationCostTotalV1;
+pub use generation::GenerationDispositionV1;
+pub use generation::GenerationOutputReferenceV1;
+pub use generation::GenerationPendingV1;
+pub use generation::GenerationReceiptV1;
+pub use generation::GenerationStatusV1;
+pub use generation::GenerationStepV1;
+pub use generation::MAX_GENERATION_CONTROL_INPUT_BYTES;
+pub use generation::MAX_GENERATION_OUTPUT_PAGE_BYTES;
 pub use objective_history::ObjectiveAdmissionOutcome;
 pub use objective_history::ObjectiveAdmissionPublication;
 pub use objective_history::ObjectiveAdmissionQuery;
@@ -579,6 +593,9 @@ impl AgentdRequest {
 #[serde(tag = "type", rename_all = "snake_case", deny_unknown_fields)]
 pub enum AgentdMethod {
     Capabilities,
+    Generation {
+        request: Box<GenerationControlRequestV1>,
+    },
     Health,
     Lifecycle,
     Readiness,
@@ -748,6 +765,7 @@ pub struct AgentdResponse {
 #[serde(tag = "type", rename_all = "snake_case", deny_unknown_fields)]
 pub enum AgentdPayload {
     Capabilities(AgentdCapabilitySet),
+    Generation(GenerationControlResponseV1),
     Health(HealthSnapshot),
     Lifecycle(LifecycleSnapshot),
     Readiness(ReadinessSnapshot),

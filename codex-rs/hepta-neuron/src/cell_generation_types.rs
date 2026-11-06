@@ -101,6 +101,19 @@ pub struct CellGenerationRequestV2 {
     pub deadline_micros: u64,
 }
 
+/// Bounded intent retained from the original durable request. It supports
+/// content-exact retries without transmitting full predecessor state/prefix.
+/// Host admission time remains in the original request and its digest.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct CellGenerationIntentV2 {
+    pub operation_id: String,
+    pub task_digest: [u8; 32],
+    pub source_frontier: [u8; 32],
+    pub predecessor_digest: [u8; 32],
+    pub input_digest: [u8; 32],
+    pub deadline_micros: u64,
+}
+
 #[derive(Clone, Copy, Debug, Eq, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
 pub enum CellGenerationDispositionV2 {
@@ -279,6 +292,17 @@ impl CellRuntimeSnapshotV2 {
 }
 
 impl CellGenerationRequestV2 {
+    pub fn intent(&self) -> Result<CellGenerationIntentV2, CellGenerationErrorV2> {
+        Ok(CellGenerationIntentV2 {
+            operation_id: self.operation_id.clone(),
+            task_digest: self.task_digest,
+            source_frontier: self.source_frontier,
+            predecessor_digest: self.predecessor.digest()?,
+            input_digest: Digest32::of_bytes(&self.input).into_array(),
+            deadline_micros: self.deadline_micros,
+        })
+    }
+
     pub fn digest(&self) -> Result<[u8; 32], CellGenerationErrorV2> {
         StableId::new(&self.operation_id).map_err(|_| CellGenerationErrorV2::InvalidBinding)?;
         self.predecessor.digest()?;

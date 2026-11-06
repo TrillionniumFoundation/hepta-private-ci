@@ -55,6 +55,7 @@ pub(crate) struct GenerationState {
     pub(crate) draining: bool,
     pub(crate) outbox: Option<CellOutputChunkV2>,
     pub(crate) receipts: Vec<CellGenerationReceiptV2>,
+    pub(crate) intents: Vec<CellGenerationIntentV2>,
     pub(crate) acknowledgements: Vec<[u8; 32]>,
     pub(crate) cost: CellTaskCostV2,
     pub(crate) last_observed_micros: u64,
@@ -86,6 +87,7 @@ impl GenerationState {
             draining: false,
             outbox: None,
             receipts: Vec::new(),
+            intents: Vec::new(),
             acknowledgements: Vec::new(),
             cost,
             last_observed_micros: 0,
@@ -331,6 +333,7 @@ impl GenerationState {
             self.snapshot.stopped = disposition == CellGenerationDispositionV2::Stopped;
         }
         self.snapshot.revision += 1;
+        self.intents.push(request.intent()?);
         self.receipts.push(CellGenerationReceiptV2 {
             operation_id: request.operation_id,
             request_digest: proposal.request_digest,
