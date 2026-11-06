@@ -5,12 +5,11 @@ import json
 import os
 from pathlib import Path
 import re
-import stat
-import struct
 import subprocess
 import sys
 
 from hepta_ci_exec import git, observed_test_counts
+from hepta_windows_pe_identity import MACHINES, pe_identity, pe_machine
 
 
 CASES = tuple(
@@ -35,7 +34,6 @@ COMMAND = [
     "1",
     "--no-capture",
 ]
-MACHINES = {"x86_64-pc-windows-msvc": 0x8664, "aarch64-pc-windows-msvc": 0xAA64}
 
 
 def require(condition, message):
@@ -85,85 +83,6 @@ def selected_suite(registry):
         "suite_id": suite_id,
         "path": suite["binary-path"],
         "required_test_names": list(CASES),
-    }
-
-
-def pe_machine(stream, size):
-    header = stream.read(64)
-    require(
-        len(header) == 64 and header[:2] == b"MZ",
-        "test file has no DOS executable header",
-    )
-    offset = struct.unpack_from("<I", header, 60)[0]
-    require(64 <= offset <= size - 26, "PE header extent is invalid")
-    stream.seek(offset)
-    header = stream.read(26)
-    require(
-        header[:4] == b"PE\0\0" and header[24:26] == b"\x0b\x02",
-        "test file is not PE32+",
-    )
-    return struct.unpack_from("<H", header, 4)[0]
-
-
-def pe_identity(path, target):
-    path = Path(path)
-    require(
-        path.is_absolute() and path.suffix.lower() == ".exe",
-        "registry must name an absolute Windows executable",
-    )
-    before = path.lstat()
-    require(
-        stat.S_ISREG(before.st_mode) and not before.st_file_attributes & 0x400,
-        "refuse reparse or nonregular executable",
-    )
-    resolved = path.resolve(strict=True)
-    require(
-        resolved.is_relative_to(
-            Path(os.environ["CARGO_TARGET_DIR"]).resolve(strict=True)
-        ),
-        "executable is outside the actual Cargo target",
-    )
-    fields = (
-        "st_dev",
-        "st_ino",
-        "st_size",
-        "st_mtime_ns",
-        "st_ctime_ns",
-        "st_mode",
-        "st_nlink",
-    )
-    expected = [getattr(before, field) for field in fields]
-    require(before.st_ino != 0, "Windows file identity is unavailable")
-    digest = hashlib.sha256()
-    with path.open("rb") as stream:
-        require(
-            [getattr(os.fstat(stream.fileno()), field) for field in fields] == expected,
-            "executable changed at open",
-        )
-        machine = pe_machine(stream, before.st_size)
-        require(machine == MACHINES[target], "PE machine differs from native runner")
-        stream.seek(0)
-        remaining = before.st_size
-        while remaining:
-            block = stream.read(min(65536, remaining))
-            require(bool(block), "executable shrank while hashing")
-            digest.update(block)
-            remaining -= len(block)
-        require(not stream.read(1), "executable grew while hashing")
-        require(
-            [getattr(os.fstat(stream.fileno()), field) for field in fields] == expected,
-            "executable changed during hashing",
-        )
-    require(
-        [getattr(path.lstat(), field) for field in fields] == expected,
-        "executable path changed during hashing",
-    )
-    return {
-        "path": str(resolved),
-        "format": "PE32+",
-        "machine": machine,
-        "sha256": digest.hexdigest(),
-        **dict(zip(fields, expected)),
     }
 
 
@@ -341,7 +260,9 @@ def main():
     directory.mkdir(parents=True, exist_ok=True)
     original = Path(os.environ["RUNNER_TEMP"]) / "windows-delete-boundary"
     report = {
-        "schema": "hepta-windows-prepared-owner-receipt-v1",
+        "schema": "hepta-windows-prepared-owner-receipt-v2",
+        "python_version": sys.version,
+        "python_executable": sys.executable,
         "phase": phase,
         "status": "failed",
         "required_test_names": list(CASES),

@@ -14,6 +14,7 @@ import unittest
 from unittest import mock
 
 import hepta_windows_prepared_owner_receipt as owner
+import hepta_windows_pe_identity as native_pe
 import test_hepta_windows_boundary_receipts as original
 
 
@@ -247,6 +248,192 @@ class PreparedOwnerReceiptTests(unittest.TestCase):
                     self.assertRaises(ValueError),
                 ):
                     owner.pe_machine(io.BytesIO(invalid), len(invalid))
+
+
+class NativeHandleStructureTests(unittest.TestCase):
+    """Synthetic handles exercise reader refusal paths, not Win32 execution."""
+
+    def fixture(self, machine=0x8664):
+        raw = bytearray(128)
+        raw[:2] = b"MZ"
+        struct.pack_into("<I", raw, 60, 64)
+        raw[64:68] = b"PE\0\0"
+        struct.pack_into("<H", raw, 68, machine)
+        raw[88:90] = b"\x0b\x02"
+        record = {
+            "path": "C:\\target\\deps\\test.exe",
+            "volume_serial": 123,
+            "file_id_128": "01" * 16,
+            "file_type": 1,
+            "attributes": 0x20,
+            "reparse_tag": 0,
+            "size": len(raw),
+            "allocation_size": 4096,
+            "links": 2,
+            "delete_pending": False,
+            "directory": False,
+            "creation_time_100ns": 10,
+            "last_write_time_100ns": 20,
+            "change_time_100ns": 30,
+        }
+        records = [copy.deepcopy(record) for _ in range(4)]
+
+        class Files:
+            def __init__(self):
+                self.opened = []
+                self.observed_streams = []
+
+            def open(self, path):
+                stream = io.BytesIO(raw)
+                self.opened.append(stream)
+                return stream
+
+            def snapshot(self, stream):
+                self.observed_streams.append(stream)
+                return records[len(self.observed_streams) - 1]
+
+        return raw, records, Files()
+
+    def observe(self, files, target="x86_64-pc-windows-msvc"):
+        return native_pe.observe_pe(
+            "C:\\target\\deps\\test.exe", target, "C:\\target", files
+        )
+
+    def test_same_held_handle_hashes_both_native_machine_shapes_and_reopens_name(self):
+        for target, machine in native_pe.MACHINES.items():
+            raw, records, files = self.fixture(machine)
+            with self.subTest(target=target):
+                result = self.observe(files, target)
+                self.assertEqual(result["sha256"], hashlib.sha256(raw).hexdigest())
+                self.assertEqual(result["file_id_128"], records[0]["file_id_128"])
+                self.assertEqual(
+                    files.observed_streams,
+                    [
+                        files.opened[0],
+                        files.opened[0],
+                        files.opened[1],
+                        files.opened[0],
+                    ],
+                )
+                self.assertTrue(all(stream.closed for stream in files.opened))
+
+    def test_file_identity_size_time_attributes_or_links_drift_is_refused(self):
+        fields = {
+            "volume_serial": 456,
+            "file_id_128": "02" * 16,
+            "size": 127,
+            "allocation_size": 8192,
+            "links": 3,
+            "attributes": 0x21,
+            "creation_time_100ns": 11,
+            "last_write_time_100ns": 21,
+            "change_time_100ns": 31,
+        }
+        for index in (1, 2, 3):
+            for field, value in fields.items():
+                _, records, files = self.fixture()
+                records[index][field] = value
+                with (
+                    self.subTest(index=index, field=field),
+                    self.assertRaises(ValueError),
+                ):
+                    self.observe(files)
+                self.assertTrue(all(stream.closed for stream in files.opened))
+
+    def test_missing_identity_reparse_delete_pending_and_nondisk_refuse(self):
+        fields = {
+            "volume_serial": 0,
+            "file_id_128": "00" * 16,
+            "file_type": 3,
+            "attributes": 0x400,
+            "reparse_tag": 0xA000000C,
+            "directory": True,
+            "delete_pending": True,
+            "links": 0,
+        }
+        for index in (0, 2):
+            for field, value in fields.items():
+                _, records, files = self.fixture()
+                records[index][field] = value
+                with (
+                    self.subTest(index=index, field=field),
+                    self.assertRaises(ValueError),
+                ):
+                    self.observe(files)
+
+    def test_opened_path_outside_target_and_same_prefix_sibling_refuse(self):
+        for path in (
+            "C:\\elsewhere\\test.exe",
+            "C:\\target-other\\test.exe",
+            "C:\\target\\..\\test.exe",
+        ):
+            _, records, files = self.fixture()
+            records[0]["path"] = path
+            with self.subTest(path=path), self.assertRaises(ValueError):
+                self.observe(files)
+        self.assertEqual(
+            native_pe.windows_path("\\\\?\\C:\\target\\test.exe"),
+            native_pe.windows_path("c:/target/test.exe"),
+        )
+        self.assertEqual(
+            native_pe.windows_path("\\\\?\\UNC\\server\\share\\test.exe"),
+            native_pe.windows_path("\\\\server\\share\\test.exe"),
+        )
+
+    def test_header_hash_and_identity_use_same_stream_and_refuse_wrong_machine(self):
+        raw, _, files = self.fixture(0xAA64)
+        with self.assertRaises(ValueError):
+            self.observe(files)
+        raw, _, files = self.fixture()
+        raw[64:68] = b"nope"
+        with self.assertRaises(ValueError):
+            self.observe(files)
+
+    def test_truncated_or_growing_stream_refuses_without_metadata_change(self):
+        for amount in (-1, 1):
+            raw, _, files = self.fixture()
+            if amount < 0:
+                raw.pop()
+            else:
+                raw.append(0)
+            with self.subTest(amount=amount), self.assertRaises(ValueError):
+                self.observe(files)
+
+    def test_windows_structure_layouts_keep_full_file_id_and_native_timestamps(self):
+        import ctypes
+
+        self.assertEqual(
+            [
+                ctypes.sizeof(kind)
+                for kind in (
+                    native_pe.FileIdInfo,
+                    native_pe.FileBasicInfo,
+                    native_pe.FileStandardInfo,
+                    native_pe.FileAttributeTagInfo,
+                )
+            ],
+            [24, 40, 24, 8],
+        )
+        self.assertEqual(native_pe.FileIdInfo.identifier.offset, 8)
+        self.assertEqual(native_pe.FileBasicInfo.changed.offset, 24)
+
+    def test_unavailable_backend_or_native_identity_query_refuses_without_fallback(
+        self,
+    ):
+        with (
+            mock.patch.object(native_pe.os, "name", "posix"),
+            self.assertRaises(ValueError),
+        ):
+            native_pe.Win32Files()
+        files = native_pe.Win32Files.__new__(native_pe.Win32Files)
+        files.api = mock.Mock()
+        files.msvcrt = mock.Mock()
+        files.api.GetFileInformationByHandleEx.side_effect = OSError(
+            "synthetic identity unavailable"
+        )
+        with self.assertRaises(OSError):
+            files.snapshot(mock.Mock())
+        files.api.GetFinalPathNameByHandleW.assert_not_called()
 
 
 if __name__ == "__main__":
