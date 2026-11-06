@@ -1,0 +1,32 @@
+{
+  "observed_at_utc": "2026-11-06T19:06:37.456866+00:00",
+  "argv": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+    "-O",
+    "-B",
+    "/workspace/scratch/3f6a885bb83c/round3_core_evidence_supplement_21_22_v1/restore.py",
+    "/workspace/scratch/3f6a885bb83c/round3_core_evidence_supplement_21_22_v1",
+    "/workspace/scratch/3f6a885bb83c/round3_root_restore_core21_22"
+  ],
+  "exit_code": 0,
+  "bundle_files": {
+    "core-supplement-06-14.tar.xz.transport-001.gz": "1bd1db6f49212074df31ace3977f2ad2547e9c64b318cf5c1f202f9b7f78ebfd",
+    "TRANSPORT.json": "60d9d146e9206bfd80418d74c8975d0829ffbd777042aec13a48a7bfad6fa5cf",
+    "INDEX.json": "2ec0e16919c4d82a7ea4c8becee736db08ff32e0872da5cf5c35fd70a034b0a7",
+    "restore.py": "5b3ef29f9d2f274d4575b08c056231581899b3086aa755715b74058e77209c12",
+    "core-supplement-06-14.tar.xz.transport-000.gz": "c0088126995bb36635ac54eeaa2b822a9ac3203587a533e6edc206137b76c5f1",
+    "README.md": "07ba31b277498218b57d52d10844570b5a3555ebeabf8a252cdc590471afb5d0"
+  },
+  "source_files": 219,
+  "source_bytes": 6563911,
+  "regular_modes": {
+    "0o100644": 219
+  },
+  "reader_only_two_seals_changed": true,
+  "all_restored_bytes_equal_original_source_bytes": true,
+  "exact_member_set_and_source_modes": true,
+  "input_and_prior_bundle_unchanged": true,
+  "previous_packet_source_path_overlap": 0,
+  "native_tests_or_embedded_commands_executed": false,
+  "interpretation": "Core21 contains one framework ok with an explicit original network-macro skip and zero qualified behavioral passes. The seven selected Core22 cases have no native result in this frozen packet; a later job result requires an additive record."
+}

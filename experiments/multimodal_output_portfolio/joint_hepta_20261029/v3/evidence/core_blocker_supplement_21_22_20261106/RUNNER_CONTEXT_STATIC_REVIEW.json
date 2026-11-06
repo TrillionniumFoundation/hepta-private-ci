@@ -1,0 +1,42 @@
+{
+  "schema": "core-selected-runner-context-static-review-v1",
+  "reviewer": "mechanism_advance internal peer",
+  "scope": "Read-only static source review; no model, actionlint or native execution by this reviewer",
+  "files": {
+    "scripts/hepta_core_selected.py": {
+      "unchanged": true,
+      "sha256": "5d97bb9b3e4e190a2f00eacba4a3131a75d62cbac708018b7d1fa99f4870234b"
+    },
+    "scripts/hepta_core_selected_guard.py": {
+      "unchanged": true,
+      "sha256": "25d4e94c182ba357e7c63c8c98c380efe70fe113fbba6f8eacb5d89839f973f6"
+    },
+    "scripts/hepta_core_selected_evidence.py": {
+      "unchanged": true,
+      "sha256": "2a1ad727ee20cf2f24ca54eefedc9aa70e220e8052330c112a09aa4033d6453b"
+    },
+    "scripts/hepta_core_selected_contract.py": {
+      "unchanged": true,
+      "sha256": "790e9d27afe31ab8519b0ce40d0724459b1dc4371b9cd6de54fcf47ec206d7c1"
+    }
+  },
+  "workflow_sha256": "a2cb2a1d377b86046e955d76d31dd050e20e694eb1c888297100e6639dab100e",
+  "findings": {
+    "runner_identity_env_now_at_four_calling_steps": [
+      "preflight",
+      "ready",
+      "native",
+      "collect"
+    ],
+    "preflight_and_ready": "main source_guard consumes all three runner variables",
+    "native": "execute calls source_guard before commands and again after native capture",
+    "collect": "validated collector repeats source_guard against source-after receipt",
+    "credential_binding_unchanged": "EVIDENCE_GITHUB_TOKEN remains the same github.token in preflight/ready/collect; native adds no explicit token; no ambient environment filtering added",
+    "python_bytes_unchanged": true,
+    "new_static_blocker_found": false
+  },
+  "limits": [
+    "Official actionlint old/new validation belongs to author/root; not independently run here",
+    "No workflow or native success inferred from static review"
+  ]
+}

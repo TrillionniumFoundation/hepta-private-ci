@@ -1,0 +1,26 @@
+{
+  "schema": "core.evidence.gzip-transport.v1",
+  "representation": "one-bounded-gzip-member-per-transport-segment",
+  "index_sha256": "2ec0e16919c4d82a7ea4c8becee736db08ff32e0872da5cf5c35fd70a034b0a7",
+  "original_archive_sha256": "a337a2354c966d258f259b0de933317db442f6d3c200932fd9d6112fa3721f10",
+  "original_archive_bytes": 603868,
+  "original_part_count": 2,
+  "segment_limit": 440000,
+  "container_limit": 450000,
+  "parts": [
+    {
+      "path": "core-supplement-06-14.tar.xz.transport-000.gz",
+      "bytes": 440058,
+      "sha256": "c0088126995bb36635ac54eeaa2b822a9ac3203587a533e6edc206137b76c5f1",
+      "segment_bytes": 440000,
+      "segment_sha256": "4383dfba1010220a0aea7b6f7b107541930206ab12c14125856c1f8c13ffe580"
+    },
+    {
+      "path": "core-supplement-06-14.tar.xz.transport-001.gz",
+      "bytes": 163906,
+      "sha256": "1bd1db6f49212074df31ace3977f2ad2547e9c64b318cf5c1f202f9b7f78ebfd",
+      "segment_bytes": 163868,
+      "segment_sha256": "460f78b86bbcaceb8b7c88b0146ce4e6653b852f2af1cb9ea27916a36f3255e5"
+    }
+  ]
+}
