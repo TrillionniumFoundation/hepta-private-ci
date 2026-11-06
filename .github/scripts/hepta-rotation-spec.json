@@ -1,0 +1,38 @@
+{
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "base_head": "d5fa3a357638a50a930a97c05134c544c82a1d23",
+  "base_tree": "551958464e50e4dccd35d49e7c8a35e343c18535",
+  "base_ref": "research/ndu-core-evidence-supplement-15-18-20261106",
+  "proposal_ref": "research/ndu-credential-rotation-proposal-v3-20261106",
+  "added_paths": [
+    ".github/workflows/hepta-credential-rotation-proposal.yml",
+    ".github/scripts/hepta_rotation_probe.py",
+    ".github/scripts/hepta_rotation_guard.py",
+    ".github/scripts/hepta_rotation_evidence.py",
+    ".github/scripts/hepta-rotation-spec.json",
+    "codex-rs/windows-sandbox-rs/diagnostics/credential_rotation_probe_tests.rs"
+  ],
+  "baseline_blobs": {
+    "AGENTS.md": "faa57cc0db48123e1011f1eb47692cd3bbbcfc3a",
+    "codex-rs/.config/nextest.toml": "f0430497b34b5335929e24b9e19745f467362641",
+    "codex-rs/windows-sandbox-rs/Cargo.toml": "3886cbd222c32a8b0544c2cc0f01c545d7048bc9",
+    "codex-rs/windows-sandbox-rs/src/elevated/mod.rs": "3c8084bb623452c61bfcbf5e4467417d2263d03d",
+    "codex-rs/windows-sandbox-rs/src/elevated/runner_client.rs": "90ad2dbc93ea7673fa4e4711877371dab6eec117",
+    "justfile": "a215a76cf407ace9715bca39c20497014e7dd4dc",
+    "scripts/just-shell.py": "bb2db6ebc4312a301ee39d2793fde16289d046d8",
+    "scripts/run-nextest.py": "1ed63abe84267b320cbfb0123a70aac5507f4595"
+  },
+  "runner_path": "codex-rs/windows-sandbox-rs/src/elevated/runner_client.rs",
+  "probe_path": "codex-rs/windows-sandbox-rs/diagnostics/credential_rotation_probe_tests.rs",
+  "probe_sha256": "7bfc3caa829449f8115217357121f65072008f839ff3d22c1eddb06911720ecc",
+  "case": "elevated::runner_client::credential_race_tests::concurrent_account_rotation_invalidates_both_bounded_logon_attempts",
+  "inputs_head": null,
+  "inputs_tree": null,
+  "inputs_ref": "research/ndu-credential-rotation-inputs-v3-20261106",
+  "inputs_paths": [
+    ".github/scripts/hepta_rotation_guard.py",
+    ".github/scripts/hepta_rotation_evidence.py",
+    ".github/scripts/hepta-rotation-spec.json",
+    "codex-rs/windows-sandbox-rs/diagnostics/credential_rotation_probe_tests.rs"
+  ]
+}
