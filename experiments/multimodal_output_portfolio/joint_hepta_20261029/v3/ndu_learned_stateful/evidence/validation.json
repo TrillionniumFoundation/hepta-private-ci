@@ -1,0 +1,27 @@
+{
+  "audit_source_sha256": "b83f38e087c3bbb93b4c74bf8a34f4dcc5fb16d54409761622c0081247f6be16",
+  "cases": 144,
+  "confirmation_mean_max_error": 3.197442310920451e-14,
+  "frozen_sources_and_manifest_match": true,
+  "independent_optimum_max_error": 1.1102230246251565e-16,
+  "independent_policy_max_error": 1.1102230246251565e-16,
+  "ledger_max_error": 1.5265566588595902e-16,
+  "negative_vs_myopic": 1,
+  "negative_vs_stop": 2,
+  "observed_tv_bound_failures": 0,
+  "paired_utility_shape": [
+    144,
+    6,
+    4096
+  ],
+  "posterior_arithmetic_sensitivity": {
+    "alternate_numpy_dot_true_value_max_difference": 0.0004781700000000555,
+    "cause": "Changing floating-point posterior arithmetic can change a terminal decision at a fitted tie; accepted policy uses frozen scalar arithmetic",
+    "frozen_experiment_changed": false
+  },
+  "results_sha256": "5e3c479a257da5776219227690cdaeef03ee7fb33ee3b0a8c8f69040f1f9d221",
+  "scope": "Internal independent numerical implementation and hash audit; not external peer review or real-LLM validation",
+  "status": "passed",
+  "tests_output": "----------------------------------------------------------------------\nRan 10 tests in 0.053s\n\nOK\n",
+  "tests_returncode": 0
+}
