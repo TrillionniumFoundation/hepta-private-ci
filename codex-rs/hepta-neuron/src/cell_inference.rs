@@ -31,13 +31,17 @@ pub(crate) fn admission_for_step(
     prepared: &PreparedCellStepV1,
     now_micros: u64,
 ) -> Result<CellInferenceAdmissionV1, CellExecutionError> {
-    if now_micros < prepared.input.monotonic_micros || now_micros >= prepared.input.deadline_micros {
+    if now_micros < prepared.input.monotonic_micros || now_micros >= prepared.input.deadline_micros
+    {
         return Err(CellExecutionError::DeadlineExceeded);
     }
     Ok(CellInferenceAdmissionV1 {
         snapshot: prepared.snapshot.clone(),
         operation_id: prepared.input.operation_id.clone(),
-        semantic_request_digest: semantic_request_digest(prepared.definition.semantic_digest()?, &prepared.input),
+        semantic_request_digest: semantic_request_digest(
+            prepared.definition.semantic_digest()?,
+            &prepared.input,
+        ),
         model_request: prepared.model_request.clone(),
         deadline_micros: prepared.input.deadline_micros,
         admitted_at_micros: now_micros,
@@ -61,7 +65,11 @@ pub fn infer_cell(
         .map_err(CellExecutionError::Backend)?;
     validate_model_output(&prepared.definition.runtime, &output)
         .map_err(|_| CellExecutionError::ModelBindingMismatch)?;
-    Ok(InferredCellStepV1 { prepared, output, not_before_micros: now_micros })
+    Ok(InferredCellStepV1 {
+        prepared,
+        output,
+        not_before_micros: now_micros,
+    })
 }
 
 /// Recover only the admitted request. The original raw input must still be
@@ -76,7 +84,8 @@ pub fn recover_cell_inference(
     readback: &mut impl CellInferenceReadbackPortV1,
     now_micros: u64,
 ) -> Result<InferredCellStepV1, CellExecutionError> {
-    let pending = owner.pending_inference(&input.scope)?
+    let pending = owner
+        .pending_inference(&input.scope)?
         .ok_or(CellExecutionError::InferenceNotAdmitted)?;
     if now_micros < pending.admitted_at_micros {
         return Err(CellExecutionError::DeadlineExceeded);
@@ -89,14 +98,21 @@ pub fn recover_cell_inference(
         return Err(CellExecutionError::CommitConflict);
     }
     let prepared = prepare_from_snapshot(
-        definition, pending.snapshot, encoder, input, now_micros,
+        definition,
+        pending.snapshot,
+        encoder,
+        input,
+        now_micros,
         CellPreparationModeV1::AdmittedRecovery,
     )?;
-    if prepared.model_request != pending.model_request || prepared.input.deadline_micros != pending.deadline_micros {
+    if prepared.model_request != pending.model_request
+        || prepared.input.deadline_micros != pending.deadline_micros
+    {
         return Err(CellExecutionError::OperationConflict);
     }
     let request = feature_request(&prepared.model_request);
-    let receipt = readback.read_feature(&request)
+    let receipt = readback
+        .read_feature(&request)
         .map_err(CellExecutionError::Backend)?
         .ok_or(CellExecutionError::InferencePending)?;
     let mut receipt_port = ReceiptPort(receipt);
@@ -105,7 +121,11 @@ pub fn recover_cell_inference(
         .map_err(CellExecutionError::Backend)?;
     validate_model_output(&prepared.definition.runtime, &output)
         .map_err(|_| CellExecutionError::ModelBindingMismatch)?;
-    Ok(InferredCellStepV1 { prepared, output, not_before_micros: now_micros })
+    Ok(InferredCellStepV1 {
+        prepared,
+        output,
+        not_before_micros: now_micros,
+    })
 }
 
 pub(crate) struct ReceiptPort(pub(crate) NeuronFeatureReceiptV1);
