@@ -1,9 +1,12 @@
 # NDU CI blocker evidence checkpoint
 
 This package preserves 129 evidence files, totaling 22,325,273 original bytes.
-The deterministic archive is 9,546,496 bytes, split into 22 ordered parts of at
-most 450,000 bytes. Every original file, part, and the combined archive has a
-recorded SHA-256. The existing 512,000-byte repository blob policy is unchanged.
+The deterministic archive is 9,546,496 bytes, split into 22 original ordered
+segments of at most 450,000 bytes. Each segment now travels inside its own
+independent gzip container, at most 450,158 bytes including the container.
+The original index, segment hashes, combined archive hash and all 129 evidence
+file identities are unchanged. TRANSPORT.json records the exact outer containers.
+The existing 512,000-byte repository blob policy is unchanged.
 
 The combined archive SHA-256 is
 `ae9647dc661b979b2412467c7a9a977fd0f76558ba117b83995f49d6c79c455a`.
@@ -19,8 +22,8 @@ parent already exists:
 python3 restore_evidence.py /absolute/path/to/new-evidence-directory
 ```
 
-The program verifies the pinned index, every part, the combined archive and
-every extracted file. It refuses existing destinations, unexpected or duplicate
+The program verifies the pinned index and transport record, each outer container,
+each decompressed segment, the combined archive and every extracted file. It refuses existing destinations, unexpected or duplicate
 members, links, noncanonical paths, and mismatched bytes. Material is restored
 as inert data; no archived script or native command runs automatically.
 `ROUNDTRIP_VALIDATION.json` records a complete actual restore, verification of
@@ -81,3 +84,9 @@ Executor installers, model weights, build caches, the 131 MB independent old
 fixture executable archive, signed download URLs, and duplicate reconstructed
 vendor trees are excluded. The archive is a repository evidence checkpoint,
 not an environment image.
+
+## Binary transport repair
+
+PR #5040's actual codespell job 127932493398 treated one bare compressed-stream middle segment as text and reported 34 random-byte findings. The same original command and codespell 2.4.3 reproduce that failure locally. A segment is now represented as an independently valid gzip file; no spell-check option, allowlist or source exclusion changes. A normal prose typo still fails the original check.
+
+The original INDEX.json and ROUNDTRIP_VALIDATION.json remain unchanged historical records. TRANSPORT_VALIDATION.json records the new complete restore and failure controls. The updated reader pins TRANSPORT.json separately, accepts exactly one bounded gzip member per original segment, rejects extra data or members, and then applies the original complete archive/member validation before publishing a destination. The original raw segments are reconstructed byte for byte; no scientific measurement or source evidence was rewritten.

@@ -1,0 +1,106 @@
+{
+  "all_original_file_bytes_sha256_equal": true,
+  "container_codespell": {
+    "command": [
+      "-m",
+      "codespell_lib",
+      "--ignore-words",
+      ".codespellignore",
+      "--skip",
+      "./.git"
+    ],
+    "exit_code": 0,
+    "stderr": "",
+    "stdout": "",
+    "version": "2.4.3"
+  },
+  "exact_new_head_ci": "PENDING",
+  "gzip_max_bytes": 450158,
+  "negative_controls": [
+    {
+      "case": "existing_destination",
+      "error": "ValueError: Refusing to overwrite an existing destination",
+      "exit_code": 1
+    },
+    {
+      "case": "corrupt_outer_container",
+      "error": "ValueError: Evidence container differs from its identity",
+      "exit_code": 1
+    },
+    {
+      "case": "symlink_outer_container",
+      "error": "ValueError: Missing regular evidence container",
+      "exit_code": 1
+    },
+    {
+      "case": "changed_transport_record",
+      "error": "ValueError: Evidence transport differs from its fixed review seal",
+      "exit_code": 1
+    },
+    {
+      "case": "changed_original_index",
+      "error": "ValueError: Evidence index differs from the pinned package",
+      "exit_code": 1
+    },
+    {
+      "case": "extra_gzip_member",
+      "error": "ValueError: Evidence container is not exactly one bounded gzip member",
+      "exit_code": 1
+    },
+    {
+      "case": "trailing_bytes",
+      "error": "ValueError: Evidence container is not exactly one bounded gzip member",
+      "exit_code": 1
+    },
+    {
+      "case": "expanded_segment_exceeds_original_bound",
+      "error": "ValueError: Evidence container is not exactly one bounded gzip member",
+      "exit_code": 1
+    }
+  ],
+  "ordinary_prose_negative_control": {
+    "correction": "the",
+    "exit_code": 65,
+    "misspelled_token_utf8_hex": "746568",
+    "raw_log": "ordinary-prose-negative.log.gz"
+  },
+  "original_artifact_zip_count": 5,
+  "original_blob_limit": 512000,
+  "original_ci_failure": {
+    "decoded_log": {
+      "bytes": 35059,
+      "git_blob": "9a5d4b69e7bd8821c7cd1c02568147c7e4756b9e",
+      "sha256": "0165be77300cfc5af4fd9431e52323d71703960040d20514183aa8c8be1c7bff"
+    },
+    "job": 127932493398,
+    "run": 42229805749
+  },
+  "original_codespell_reproduction": {
+    "exit_code": 65,
+    "findings": 34,
+    "log": "original-transport-spelling.log.gz"
+  },
+  "original_files_restored": 129,
+  "raw_max_bytes": 450000,
+  "raw_segments": 22,
+  "restore_stdout": {
+    "bytes": 22325273,
+    "destination": "/workspace/scratch/3f6a885bb83c/round3_ci/transport_restored_validation",
+    "files": 129,
+    "index_sha256": "2c5910ea845b0b54362370ea325791d6ce799f8f974c0c22807bb5cefe1ad6c1",
+    "status": "restored"
+  },
+  "schema": "ndu.ci-evidence.binary-transport-validation.v1",
+  "scientific_record_or_native_artifact_bytes_changed": false,
+  "source_commit": "0e63dd2d320262681afeddd8cc45032984b5c8b2",
+  "source_tree": "5def5d3baa082c04bc9cdac9724a85163528c4ea",
+  "status": "LOSSLESS_RESTORE_AND_ORIGINAL_SPELLING_CHECK_PASS",
+  "transport_sha256": "42d3ff6917301749f484f18d25c193f91608bb6904767ed1feca1088654025c4",
+  "unchanged_archive": {
+    "bytes": 9546496,
+    "format": "deterministic-tar-gzip",
+    "sha256": "ae9647dc661b979b2412467c7a9a977fd0f76558ba117b83995f49d6c79c455a"
+  },
+  "unchanged_index_sha256": "2c5910ea845b0b54362370ea325791d6ce799f8f974c0c22807bb5cefe1ad6c1",
+  "workflow_spelling_options_or_exclusions_changed": false
+}
