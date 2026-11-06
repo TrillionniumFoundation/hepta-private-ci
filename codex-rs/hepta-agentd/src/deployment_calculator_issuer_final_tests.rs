@@ -17,17 +17,11 @@ fn calculator_original_signature_is_capped_by_its_shorter_independent_parent() {
         ..original
     };
     registry.put_lease(parent.clone(), 1).unwrap();
-    issuer.lease = Some(
-        root::ProtectedLease::new(registry.verifier(), parent.lease_id, 2).unwrap(),
-    );
-    let admission = RootCalculatorGrantAdmission::open(
-        &issuer,
-        registry,
-        writer.clone(),
-        &target,
-        1_000,
-    )
-    .unwrap();
+    issuer.lease =
+        Some(root::ProtectedLease::new(registry.verifier(), parent.lease_id, 2).unwrap());
+    let admission =
+        RootCalculatorGrantAdmission::open(&issuer, registry, writer.clone(), &target, 1_000)
+            .unwrap();
     let signed = admission
         .issue(
             &issuer,
