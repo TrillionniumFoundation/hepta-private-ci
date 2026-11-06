@@ -1,0 +1,25 @@
+{
+  "status": "failed_exception",
+  "passed": false,
+  "error": "RuntimeError: intentional post-comparison cleanup failure",
+  "registration_sha256": "68f05c9e930291db45dcd0abeb0600f71c45712e72cd9c4dae104de81a2c2f68",
+  "wall_seconds": 1.2621075810020557,
+  "parent_cpu_seconds": 2.135910744,
+  "sum_helper_process_wall_seconds": 0,
+  "sum_helper_process_cpu_seconds": 0,
+  "cpu_scope": "Parent measurement starts after stdlib imports. Child CPU includes full spawned helper lifetime; nested wall is not additive.",
+  "energy": null,
+  "helper_launch_attempts": 0,
+  "physical_helper_attempts": 0,
+  "new_training_updates": 0,
+  "scope": "Actual proposal helper differential; ordinary Agentd owner/ACK/cancel qualification is recorded separately.",
+  "excluded": [
+    "Actor, critic and emission-head raw floating vectors are not exported by the proposal ABI",
+    "Splitmix sampler",
+    "Natural-task quality",
+    "Frozen LM and learned text-prefix execution",
+    "Optimizer resume",
+    "Adoption benefit",
+    "Complete historical cost"
+  ]
+}
