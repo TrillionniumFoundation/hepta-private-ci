@@ -1,0 +1,225 @@
+{
+  "packet": "producer_sdk5136",
+  "suggested_repository_directory": "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/evidence/producer_sdk5136_checkpoint_20261106",
+  "snapshot_utc": "2026-11-06 21:24:01 UTC",
+  "index": {
+    "bytes": 22421,
+    "sha256": "8fb5cd74c78382abcd01cf14da5623d068c9c18000a53fd82ddd85b36a2fded9",
+    "git_blob": "3d1b5cb12cd66804a5ef3a9d4fc59aa11fad679d"
+  },
+  "source_file_count": 51,
+  "raw_source_bytes": 13204304,
+  "archive_bytes": 13260800,
+  "compressed_bytes": 4137996,
+  "restore_exit_code": 0,
+  "restore_stdout": {
+    "bytes": 423,
+    "sha256": "e72b1ffe4dc00ae59063315ad2c6441efdec88cb2d39b21e2ecba7b78e277be0",
+    "git_blob": "d2fdce0b19295a72c9414e19b3cac6ebbd51f39f"
+  },
+  "restore_stderr": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+  },
+  "all_restored_bytes_complete_roster_and_inert_modes_match": true,
+  "reader_template": {
+    "source_file": "/workspace/scratch/3f6a885bb83c/round3_native/restore_checkpoint_template.py",
+    "bytes": 6626,
+    "sha256": "00bf4373739122934a281273de36cc9e4cce84199aa985926419225cad94303b",
+    "git_blob": "27e463e7b9e73a98b3a35e05d4d7414a2ed7b4a0",
+    "only_replacement": "fixed INDEX SHA-256"
+  },
+  "codespell": {
+    "version": "2.4.3",
+    "command": [
+      "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+      "-m",
+      "codespell_lib",
+      "--ignore-words",
+      ".codespellignore",
+      "--skip",
+      "./.git"
+    ],
+    "exit_code": 0,
+    "stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "configuration": {
+      ".codespellrc": {
+        "bytes": 471,
+        "sha256": "80805b9340dbdd76645a25929f56c96606e187db8e9d16b75a4a47dcdd248c04",
+        "git_blob": "663be376c7381108af0a41eafc3dd08f27125d96"
+      },
+      ".codespellignore": {
+        "bytes": 69,
+        "sha256": "9c6cd9dd86c6300ff67edbe64b2e18ed089714151e5c166382c8ea99931bc275",
+        "git_blob": "0da447f000de188776a33e770c2d2d77b37f97ee"
+      },
+      ".codespell-exclude-lines": {
+        "bytes": 20003,
+        "sha256": "5e2119d75aa7cfa61e87b9c3d98863d0b5d6672eeaccc7411695e91e2366d52b",
+        "git_blob": "490e840301fdfae10d6e40c44a566ff16f82e324"
+      }
+    },
+    "new_exclusion_added": false
+  },
+  "files": [
+    {
+      "path": "INDEX.json",
+      "source_file": "/workspace/scratch/3f6a885bb83c/round3_ci/producer_sdk5136_checkpoint_20261106/INDEX.json",
+      "mode": "100644",
+      "bytes": 22421,
+      "sha256": "8fb5cd74c78382abcd01cf14da5623d068c9c18000a53fd82ddd85b36a2fded9",
+      "git_blob": "3d1b5cb12cd66804a5ef3a9d4fc59aa11fad679d"
+    },
+    {
+      "path": "README.md",
+      "source_file": "/workspace/scratch/3f6a885bb83c/round3_ci/producer_sdk5136_checkpoint_20261106/README.md",
+      "mode": "100644",
+      "bytes": 2052,
+      "sha256": "1a1977f3bbc022b17878405af1b2054ab35a106a727e16393afa2d84a456527d",
+      "git_blob": "76bc18a8f6a766ea1a51f6950957bd962a525b04"
+    },
+    {
+      "path": "native-evidence.tar.xz.part000.gz",
+      "source_file": "/workspace/scratch/3f6a885bb83c/round3_ci/producer_sdk5136_checkpoint_20261106/native-evidence.tar.xz.part000.gz",
+      "mode": "100644",
+      "bytes": 439867,
+      "sha256": "56574cc7c724f08060a3424ab8b84b99eb34b84ccd835134b0b33cb1f0fccaee",
+      "git_blob": "16f9c12c689053bb6e70eba26b7ba4f87d4f7255"
+    },
+    {
+      "path": "native-evidence.tar.xz.part001.gz",
+      "source_file": "/workspace/scratch/3f6a885bb83c/round3_ci/producer_sdk5136_checkpoint_20261106/native-evidence.tar.xz.part001.gz",
+      "mode": "100644",
+      "bytes": 440153,
+      "sha256": "823d11ab948b60b2d8abc7c17d24c38ec6fa778f63dd263ccffb987208a3ba79",
+      "git_blob": "0dfd4bcba0a737b5030165a8fa004748111fae22"
+    },
+    {
+      "path": "native-evidence.tar.xz.part002.gz",
+      "source_file": "/workspace/scratch/3f6a885bb83c/round3_ci/producer_sdk5136_checkpoint_20261106/native-evidence.tar.xz.part002.gz",
+      "mode": "100644",
+      "bytes": 440060,
+      "sha256": "0c2a61af1a3c5364d9212aa83cdcd6efdf3a0f1b20adf91ca5c5097a8e797d05",
+      "git_blob": "fc386f4112c77258d0bcd065bcab985770329ff2"
+    },
+    {
+      "path": "native-evidence.tar.xz.part003.gz",
+      "source_file": "/workspace/scratch/3f6a885bb83c/round3_ci/producer_sdk5136_checkpoint_20261106/native-evidence.tar.xz.part003.gz",
+      "mode": "100644",
+      "bytes": 439711,
+      "sha256": "fa2b4cdea7ddd950d38645429aa79b9b5ff2358810639bc1bf99f7257ab0ebc8",
+      "git_blob": "f5834f33b212dc473a80f51a9beb92dec9560757"
+    },
+    {
+      "path": "native-evidence.tar.xz.part004.gz",
+      "source_file": "/workspace/scratch/3f6a885bb83c/round3_ci/producer_sdk5136_checkpoint_20261106/native-evidence.tar.xz.part004.gz",
+      "mode": "100644",
+      "bytes": 440153,
+      "sha256": "fd79f5da997a25b1b6441e92c7978d25fb951e81ba8b856c636177c38d26a00b",
+      "git_blob": "b1041c3f52dc221c6d039d1d0d85cf885069b758"
+    },
+    {
+      "path": "native-evidence.tar.xz.part005.gz",
+      "source_file": "/workspace/scratch/3f6a885bb83c/round3_ci/producer_sdk5136_checkpoint_20261106/native-evidence.tar.xz.part005.gz",
+      "mode": "100644",
+      "bytes": 440144,
+      "sha256": "0783d2cea0313f2837a551cd1ce8cd774ca3e3d455944e8c68505129bd91de8b",
+      "git_blob": "9047a44e13bc102c3d681e23666ae6d942ab3038"
+    },
+    {
+      "path": "native-evidence.tar.xz.part006.gz",
+      "source_file": "/workspace/scratch/3f6a885bb83c/round3_ci/producer_sdk5136_checkpoint_20261106/native-evidence.tar.xz.part006.gz",
+      "mode": "100644",
+      "bytes": 440153,
+      "sha256": "a15c5e53deb1d705daa3ec9e563123dfded0532314a12c21598fbdc08f186648",
+      "git_blob": "0412682e42a42b4936ebd458e26f2d2af86bcfa8"
+    },
+    {
+      "path": "native-evidence.tar.xz.part007.gz",
+      "source_file": "/workspace/scratch/3f6a885bb83c/round3_ci/producer_sdk5136_checkpoint_20261106/native-evidence.tar.xz.part007.gz",
+      "mode": "100644",
+      "bytes": 440084,
+      "sha256": "29216b80b627b5688386624af78e645a42629ce1a5dfeb62d78890d4d1710cea",
+      "git_blob": "ba8040af1a15709b024b5bd7c3fddbd4b35da52e"
+    },
+    {
+      "path": "native-evidence.tar.xz.part008.gz",
+      "source_file": "/workspace/scratch/3f6a885bb83c/round3_ci/producer_sdk5136_checkpoint_20261106/native-evidence.tar.xz.part008.gz",
+      "mode": "100644",
+      "bytes": 439626,
+      "sha256": "55f83256259adb9c75dda720604e838294cfb8f58ea82e81650fd5e902e5263d",
+      "git_blob": "b184325c795626fee89ca63cc3e32f6bdf469d6b"
+    },
+    {
+      "path": "native-evidence.tar.xz.part009.gz",
+      "source_file": "/workspace/scratch/3f6a885bb83c/round3_ci/producer_sdk5136_checkpoint_20261106/native-evidence.tar.xz.part009.gz",
+      "mode": "100644",
+      "bytes": 178061,
+      "sha256": "a5c190e75808fe6f21d96680918ce954c8e478475c4f1ad1c88ff0d5ee8a2555",
+      "git_blob": "ae490161fde83a1e3a0dd4dfa2110a11a4152c5e"
+    },
+    {
+      "path": "restore.py",
+      "source_file": "/workspace/scratch/3f6a885bb83c/round3_ci/producer_sdk5136_checkpoint_20261106/restore.py",
+      "mode": "100644",
+      "bytes": 6656,
+      "sha256": "eeb2efdc26081471c36c176c50a87040a241ac049569d3e273b1b1b4c6ff3d19",
+      "git_blob": "29292123c6014cf03ff439ebdfdae7f4aa7ea812"
+    }
+  ],
+  "qualification_scope": {
+    "source_head": "57788335544ac48ad5a96d94c51719d25079eeab",
+    "source_tree": "0f7ea37cb66d0d73cf661f12cd5cb134213359d6",
+    "run_id": 42291370279,
+    "job_id": 128145353053,
+    "artifact_id": 13539573541,
+    "producer_success": true,
+    "zip_members": 358,
+    "integrated_source_files": 324,
+    "native_committed_entries": 360,
+    "required_native_commands": 21,
+    "native_boundary_test_groups": [
+      107,
+      32,
+      16
+    ],
+    "cargo_and_bazel_lock_drift_bytes": 0,
+    "independent_complete_metadata_replay": {
+      "before_source": "7c8c11d1feee3b48edcc43151dfdb698360e2255",
+      "before_artifact_id": 13534909684,
+      "after_artifact_id": 13539573541,
+      "all_original_zip_and_member_bytes_retained": true,
+      "fixed_guard_sha256": "211d6cd1c3476ce1be62905da58b7f5e50e274cb9ba7dcac3f225165bbcc7e14",
+      "all_three_unchanged_guards_passed": true,
+      "package_identities_including_workspace": 1528,
+      "added_dependency_edges": [
+        "matrix-sdk -> codex-utils-path",
+        "codex-utils-path -> windows-sys 0.52.0"
+      ],
+      "all_other_fields_and_features_unchanged": true,
+      "recovered_private_5129_metadata": false
+    },
+    "original_sdk_proposal_artifact_retained": 13538176421,
+    "independent_root_review_sha256": "92921520e533b3fb38575c5d452a16bae05f736a8deaf8aa4e7e0d5d3ab51a79",
+    "archive_retention_scope": "The complete producer 5119, producer 5136 and original SDK proposal ZIPs are retained. No downloaded URL, private metadata outside those original ZIPs, compilation cache or separately expanded producer tree is included. The before/after complete metadata comparison reads original ZIP members directly.",
+    "qualification_limits": [
+      "This qualifies the integrated producer and the specifically recorded complete-graph comparison.",
+      "No native Windows, ARM business, Matrix reopen, whole workspace or aggregate gate is established by this producer packet.",
+      "The prior proposal-private metadata restriction remains; the new comparison uses independently published integrated producer metadata.",
+      "An optional recursive tree API request failed. Native exact committed-tree outputs and fixed source records were audited; no unreturned whole-repository leaf count is claimed.",
+      "The first decoded log export added one newline. That local export and the correction note are retained; current log bytes exactly match the original raw API content."
+    ]
+  },
+  "publication_ready": true,
+  "old_packets_modified": false
+}

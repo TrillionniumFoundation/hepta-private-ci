@@ -1,0 +1,95 @@
+{
+  "observed_at_utc": "2026-11-06T22:14:05.408846+00:00",
+  "packet": "producer5136",
+  "publication": {
+    "bytes": 10217,
+    "sha256": "1756f0478336235610587dcced5fef2f540dde01aa33303a39b67a545df5ac49"
+  },
+  "index_sha256": "8fb5cd74c78382abcd01cf14da5623d068c9c18000a53fd82ddd85b36a2fded9",
+  "reader": {
+    "bytes": 6656,
+    "sha256": "eeb2efdc26081471c36c176c50a87040a241ac049569d3e273b1b1b4c6ff3d19"
+  },
+  "reader_parent": {
+    "bytes": 6626,
+    "sha256": "00bf4373739122934a281273de36cc9e4cce84199aa985926419225cad94303b"
+  },
+  "reader_only_fixed_seal_changes": 1,
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+    "-O",
+    "-B",
+    "/workspace/scratch/3f6a885bb83c/round3_ci/producer_sdk5136_checkpoint_20261106/restore.py",
+    "/workspace/scratch/3f6a885bb83c/round3_root_restore_producer5136_2218"
+  ],
+  "exit_code": 0,
+  "files": 51,
+  "raw_bytes": 13204304,
+  "exact_member_roster_bytes_originals_and_modes": true,
+  "bundle_before_and_after_unchanged": true,
+  "prior_Core_source_path_intersections": {},
+  "destination": "/workspace/scratch/3f6a885bb83c/round3_root_restore_producer5136_2218",
+  "bundle_identities": {
+    "round3_ci/producer_sdk5136_checkpoint_20261106/INDEX.json": {
+      "bytes": 22421,
+      "sha256": "8fb5cd74c78382abcd01cf14da5623d068c9c18000a53fd82ddd85b36a2fded9"
+    },
+    "round3_ci/producer_sdk5136_checkpoint_20261106/README.md": {
+      "bytes": 2052,
+      "sha256": "1a1977f3bbc022b17878405af1b2054ab35a106a727e16393afa2d84a456527d"
+    },
+    "round3_ci/producer_sdk5136_checkpoint_20261106/native-evidence.tar.xz.part000.gz": {
+      "bytes": 439867,
+      "sha256": "56574cc7c724f08060a3424ab8b84b99eb34b84ccd835134b0b33cb1f0fccaee"
+    },
+    "round3_ci/producer_sdk5136_checkpoint_20261106/native-evidence.tar.xz.part001.gz": {
+      "bytes": 440153,
+      "sha256": "823d11ab948b60b2d8abc7c17d24c38ec6fa778f63dd263ccffb987208a3ba79"
+    },
+    "round3_ci/producer_sdk5136_checkpoint_20261106/native-evidence.tar.xz.part002.gz": {
+      "bytes": 440060,
+      "sha256": "0c2a61af1a3c5364d9212aa83cdcd6efdf3a0f1b20adf91ca5c5097a8e797d05"
+    },
+    "round3_ci/producer_sdk5136_checkpoint_20261106/native-evidence.tar.xz.part003.gz": {
+      "bytes": 439711,
+      "sha256": "fa2b4cdea7ddd950d38645429aa79b9b5ff2358810639bc1bf99f7257ab0ebc8"
+    },
+    "round3_ci/producer_sdk5136_checkpoint_20261106/native-evidence.tar.xz.part004.gz": {
+      "bytes": 440153,
+      "sha256": "fd79f5da997a25b1b6441e92c7978d25fb951e81ba8b856c636177c38d26a00b"
+    },
+    "round3_ci/producer_sdk5136_checkpoint_20261106/native-evidence.tar.xz.part005.gz": {
+      "bytes": 440144,
+      "sha256": "0783d2cea0313f2837a551cd1ce8cd774ca3e3d455944e8c68505129bd91de8b"
+    },
+    "round3_ci/producer_sdk5136_checkpoint_20261106/native-evidence.tar.xz.part006.gz": {
+      "bytes": 440153,
+      "sha256": "a15c5e53deb1d705daa3ec9e563123dfded0532314a12c21598fbdc08f186648"
+    },
+    "round3_ci/producer_sdk5136_checkpoint_20261106/native-evidence.tar.xz.part007.gz": {
+      "bytes": 440084,
+      "sha256": "29216b80b627b5688386624af78e645a42629ce1a5dfeb62d78890d4d1710cea"
+    },
+    "round3_ci/producer_sdk5136_checkpoint_20261106/native-evidence.tar.xz.part008.gz": {
+      "bytes": 439626,
+      "sha256": "55f83256259adb9c75dda720604e838294cfb8f58ea82e81650fd5e902e5263d"
+    },
+    "round3_ci/producer_sdk5136_checkpoint_20261106/native-evidence.tar.xz.part009.gz": {
+      "bytes": 178061,
+      "sha256": "a5c190e75808fe6f21d96680918ce954c8e478475c4f1ad1c88ff0d5ee8a2555"
+    },
+    "round3_ci/producer_sdk5136_checkpoint_20261106/restore.py": {
+      "bytes": 6656,
+      "sha256": "eeb2efdc26081471c36c176c50a87040a241ac049569d3e273b1b1b4c6ff3d19"
+    }
+  },
+  "native_tests_or_scanner_or_models_executed": false,
+  "archived_sources_executed": false,
+  "limits": [
+    "This qualifies the integrated producer and the specifically recorded complete-graph comparison.",
+    "No native Windows, ARM business, Matrix reopen, whole workspace or aggregate gate is established by this producer packet.",
+    "The prior proposal-private metadata restriction remains; the new comparison uses independently published integrated producer metadata.",
+    "An optional recursive tree API request failed. Native exact committed-tree outputs and fixed source records were audited; no unreturned whole-repository leaf count is claimed.",
+    "The first decoded log export added one newline. That local export and the correction note are retained; current log bytes exactly match the original raw API content."
+  ]
+}
