@@ -1,0 +1,72 @@
+{
+  "schema": "credential-public-fixed-name-read-only-review-v1",
+  "scope": "Only explicitly public fixed names; no ambient environment read, variable values, lengths, counts, fingerprints, or unknown names output",
+  "run_id": 42273092737,
+  "job_id": 128082418775,
+  "image_ref_from_original_log": "win25-vs2026/20261103.298",
+  "official_public_constant_source": {
+    "source_url": "https://api.github.com/repos/microsoft/artifacts-credprovider/git/blobs/47ab1605cd1b6856bb2e3b0ff62eae170486261e",
+    "api_blob": "47ab1605cd1b6856bb2e3b0ff62eae170486261e",
+    "ref_requested": "master",
+    "blob_url": "https://api.github.com/repos/microsoft/artifacts-credprovider/git/blobs/47ab1605cd1b6856bb2e3b0ff62eae170486261e",
+    "public_names": [
+      "ARTIFACTS_CREDENTIALPROVIDER_SESSIONTOKENCACHE_ENABLED",
+      "NUGET_CREDENTIALPROVIDER_SESSIONTOKENCACHE_ENABLED",
+      "ARTIFACTS_CREDENTIALPROVIDER_MSAL_FILECACHE_ENABLED",
+      "NUGET_CREDENTIALPROVIDER_MSAL_FILECACHE_ENABLED"
+    ],
+    "scope": "Public source constants only; does not identify any failed-job environment variable",
+    "requested_file_url": "https://github.com/microsoft/artifacts-credprovider/blob/master/CredentialProvider.Microsoft/Util/EnvUtil.cs",
+    "local_bytes_match_api_blob": true
+  },
+  "known_names_only_log_match": [
+    {
+      "public_fixed_name": "ARTIFACTS_CREDENTIALPROVIDER_SESSIONTOKENCACHE_ENABLED",
+      "name_appears_in_original_log": false
+    },
+    {
+      "public_fixed_name": "NUGET_CREDENTIALPROVIDER_SESSIONTOKENCACHE_ENABLED",
+      "name_appears_in_original_log": false
+    },
+    {
+      "public_fixed_name": "ARTIFACTS_CREDENTIALPROVIDER_MSAL_FILECACHE_ENABLED",
+      "name_appears_in_original_log": false
+    },
+    {
+      "public_fixed_name": "NUGET_CREDENTIALPROVIDER_MSAL_FILECACHE_ENABLED",
+      "name_appears_in_original_log": false
+    }
+  ],
+  "image_source_files": [
+    {
+      "path": "images/windows/scripts/build/Configure-BaseImage.ps1",
+      "git_blob": "eac8685c9abc99b46d2a94d62a4622b92cb1639d",
+      "scope": "No reviewed fixed cache-switch constant established as an exported variable here"
+    },
+    {
+      "path": "images/windows/scripts/build/Configure-SystemEnvironment.ps1",
+      "git_blob": "f0859593b948af68ab19d277cf2207e6ee53b1bf",
+      "scope": "No reviewed fixed cache-switch constant established as an exported variable here"
+    },
+    {
+      "path": "images/windows/scripts/build/Configure-User.ps1",
+      "git_blob": "9965e7e0754295beb5495ce751bd709a8a2a42c4",
+      "scope": "No reviewed fixed cache-switch constant established as an exported variable here"
+    },
+    {
+      "path": "images/windows/scripts/build/Install-DotnetSDK.ps1",
+      "git_blob": "8a09887a97e751225f285ddf0b9c50ad6cab1907",
+      "scope": "No reviewed fixed cache-switch constant established as an exported variable here"
+    },
+    {
+      "path": "images/windows/scripts/build/Install-Rust.ps1",
+      "git_blob": "5545c29a9573bb55187ba46f48ceeb90e8e1cb6e",
+      "scope": "No reviewed fixed cache-switch constant established as an exported variable here"
+    }
+  ],
+  "actual_offender": "UNKNOWN",
+  "root_cause_attribution": "No actual offender is recorded by the approved finite diagnostic. Public cache switches are possible inputs to the broad name classifier, not an attribution to this job.",
+  "scanner_changed": false,
+  "environment_changed": false,
+  "new_workflow_requested": false
+}

@@ -1,0 +1,337 @@
+{
+  "archive_bytes": 276480,
+  "archive_sha256": "84eb0539af55f05f18833ca27b9debbdf7cf859c345b7c440b906922c12b0196",
+  "compressed_bytes": 41056,
+  "compressed_sha256": "1beed0a4ff8f12ae3b2a102acf6e17a53845b4e4db7d73e41d61146c1319cff9",
+  "container": "Independent binary gzip members around segments of one tar.xz.",
+  "created_at_utc": "2026-11-06T19:14:49.934949+00:00",
+  "excluded": [
+    "All original GHA job logs, including the third-run raw log not accepted by the original upload gate",
+    "Full source base/candidate copies recoverable from immutable Git objects; patches and exact manifests retained",
+    "All other scientific, SDK, Core and dependency work except explicitly listed shared root-review receipts",
+    "Tool binaries, caches, private transfer files and signed URLs"
+  ],
+  "files": [
+    {
+      "bytes": 1777,
+      "path": "round3_core_ci/evidence/native1326_a3b3_bound_static_addendum_v1.json",
+      "sha256": "b69bb44217c4af11726b445e95b9c09ee357908266399ec3f8c9f34ccbdbf12d",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "bytes": 3524,
+      "path": "round3_core_ci/evidence/native1326_observability_a3b3_static_review_v1.json",
+      "sha256": "3588341df952baaad8185dcac40133f6bdad010a1e31f93d0d2a6789e5f59ccd",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "bytes": 1853,
+      "path": "round3_local_qualification/credential_checkpoint_root_review.json",
+      "sha256": "922e771b47f8da66395a2774dd4d13824b3ef2c7c09768c8711a76d481141191",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "bytes": 4019,
+      "path": "round3_local_qualification/credential_proposal_27b3/ROOT_REVIEW.json",
+      "sha256": "ddfdf8d1dfd46722ee793ba3ffb82f3460d88634788c2f7f0089c4d01111d023",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "bytes": 4878,
+      "path": "round3_local_qualification/side_inputs_1838/ROOT_REVIEW.json",
+      "sha256": "1ed2101c3913552be4c5c73067ba5dc2be0369ef4d23052ad8d4a5b58c29f51c",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "bytes": 4110,
+      "path": "round3_native/CREDENTIAL_CHECKPOINT_PUBLICATION_MANIFEST.json",
+      "sha256": "532ac210ad5de7b39743b9f8772af5d24a14ba7cf92acf0d8e0174f216565f27",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "bytes": 11788,
+      "path": "round3_native/build_checkpoint.py",
+      "sha256": "dd026a185eb5d810bdedbb45169330088e9c30e394ba45696ce2f1647ce951ed",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "bytes": 10517,
+      "path": "round3_native/build_credential_observability_checkpoint.py",
+      "sha256": "d069a0b879660e11f6536e528b1a1e1cc221febdf7c09b11b3abc6b4e07953cd",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "bytes": 3408,
+      "path": "round3_native/credential_observability_checkpoint_inputs/HISTORY.md",
+      "sha256": "54748f0760ace458c3da6e922a15b114f2c144643a4f8f5d3c94cdd22a65a754",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "bytes": 1189,
+      "path": "round3_native/credential_observability_checkpoint_inputs/INITIAL_FORMAT_FAILURE.json",
+      "sha256": "e2c61b979a492bcb06dc5c8d080953c8005330bf6bc9be9166b40f9f65acb6c9",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "bytes": 10600,
+      "path": "round3_native/credential_observability_checkpoint_inputs/SELECTED_FILES.json",
+      "sha256": "3952624104a7a2c195bf952a105e3f838bf55d9604d597b0f688d8d348453033",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "bytes": 6899,
+      "path": "round3_native/credential_observability_checkpoint_inputs/formatted_restore.py",
+      "sha256": "e543423883b3732c2c904c80029165e642ad033c764e62499f19fc8731993624",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "bytes": 4194,
+      "path": "round3_native/credential_observability_checkpoint_inputs/reader_format.patch",
+      "sha256": "d1537f911d699d24ff66cfd8fa9a3726eefd36d4175fa0126ac317af418cd1e0",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "bytes": 6656,
+      "path": "round3_native/credential_observability_checkpoint_inputs/reviewed_restore.py",
+      "sha256": "4dbadaeafbfcf3936aa75df21fdb096f39a8bc58c2a3467ece8c09d3dde64c5e",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "bytes": 3271,
+      "path": "round3_native/windows_credentials_proposal/PUBLISHED_27A3_READBACK.json",
+      "sha256": "94f6aff62119cdab53e884d5be7477c0c1d62bed65a0253288d2d076ca948ce3",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "bytes": 509,
+      "path": "round3_native/windows_credentials_proposal/observability_v1/BINDING_INITIAL_TOOLING_FAILURE.json",
+      "sha256": "e53b9c991165df038082a235bf8fe80d4bef80b0851174be8bc927f1ba799ce4",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "bytes": 990,
+      "path": "round3_native/windows_credentials_proposal/observability_v1/FORMATTING.json",
+      "sha256": "00cc5f925ab15c30ffd684bb0b7eca6c9617f0db4fcc8139319164a7a92cfd59",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "bytes": 3390,
+      "path": "round3_native/windows_credentials_proposal/observability_v1/IMPLEMENTATION.md",
+      "sha256": "42ecef11de2e145f93682905db2a071d5cf2217a46d0473f493df6ea46391a6d",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "bytes": 2818,
+      "path": "round3_native/windows_credentials_proposal/observability_v1/OBSERVABILITY_CHECKS.json",
+      "sha256": "426239369ae0b97db8c8c9fafdf876d1f34b6d9e54b304b791d1c201e449fd04",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "bytes": 4332,
+      "path": "round3_native/windows_credentials_proposal/observability_v1/PROPOSED_SCHEMA.json",
+      "sha256": "3fea259b282097a3348af29af7a3956f42f220f6bbb9cd856219b298a1d7638c",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "bytes": 4708,
+      "path": "round3_native/windows_credentials_proposal/observability_v1/README.md",
+      "sha256": "c3699076ccd89f3008a3997c8f38e893836fb32ba7c82ca88e1f729b23a70b59",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "bytes": 1795,
+      "path": "round3_native/windows_credentials_proposal/observability_v1/SCANNER_DIAGNOSIS.json",
+      "sha256": "2a3725a316a2e57d2c2c06ee7a5adda861f70603151719d9f8bc992c0a2a002b",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "bytes": 5453,
+      "path": "round3_native/windows_credentials_proposal/observability_v1/SOURCE_CHECKS.json",
+      "sha256": "37f8438b6277df93c6e7e5ecc601b62c2f26551a2498a738a89cb780a34bfa9b",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "bytes": 7936,
+      "path": "round3_native/windows_credentials_proposal/observability_v1/verify_observability.py",
+      "sha256": "25025086d5166d31031a5e6721031ee618f9634c8471342486b57446c0bf2c3a",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "bytes": 2845,
+      "path": "round3_native/windows_credentials_proposal/second_run/SECOND_RUN_STATUS.json",
+      "sha256": "d5c145bd5eadb34c25d831793a7ba123b3dd0be3c3b100858150a30127270266",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "bytes": 3519,
+      "path": "round3_native/windows_credentials_proposal/third_run/FIXED_DIAGNOSTICS.json",
+      "sha256": "3e14eddbb131ebeaa935c959cf44bef1cef47b286da159b61c9c45f52a5b3c50",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "bytes": 1121,
+      "path": "round3_native/windows_credentials_proposal/third_run/LOCAL_OBSERVATION_FAILURES.json",
+      "sha256": "961976df45d359e4ae184765cac0eab760372f99eba98b3ee1ec304302e4e314",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "bytes": 411,
+      "path": "round3_native/windows_credentials_proposal/third_run/RAW_LOG_IDENTITY.json",
+      "sha256": "dfd3f3f7293737b6f6462807cfe8d5b2850b36a471a09a4b9d089c94731d1946",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "bytes": 703,
+      "path": "round3_native/windows_credentials_proposal/third_run/SOURCE_READBACK.json",
+      "sha256": "b1b29a310c19a9c00efdd311447c5771a2661606a3483b963b616b8200eb12f3",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "bytes": 2684,
+      "path": "round3_native/windows_credentials_proposal/third_run/THIRD_RUN_STATUS.json",
+      "sha256": "b1d4f8c6431ad016fa10aabba13a69fdc31d6a07b27a3de8540a0fda86d05f16",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "bytes": 22,
+      "path": "round3_native/windows_credentials_proposal/third_run/artifacts.json",
+      "sha256": "fb09a9699b26ad536855bb4263ff01baa31a107d9af48b348e96cb4a9eb2b8d9",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "bytes": 2748,
+      "path": "round3_native/windows_credentials_proposal/third_run/completed_jobs.json",
+      "sha256": "2aa03bb63b6b4bd8d2eef531be84d258792b29c387bed394c9a786d3d6f30925",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "bytes": 2329,
+      "path": "round3_native/windows_credentials_proposal/third_run/initial_jobs.json",
+      "sha256": "36c7cedcf8acd811657d792465edc497d59445bfc25d3ec14a7e09edacc5a3b2",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "bytes": 1760,
+      "path": "round3_native/windows_credentials_proposal/third_run/initial_runs.json",
+      "sha256": "68b9bbe9cf28a2b0e56725878713b6648f84d985f19e3c6d0f5249af2aec62f2",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "bytes": 1046,
+      "path": "round3_native/windows_credentials_proposal/units/27a3_observable_inputs/from_frozen_predecessor.patch",
+      "sha256": "d5e3c558d92e50b710333ae9ec9b734d8cf90d9026072160c8f85ebc52d83b04",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "bytes": 5771,
+      "path": "round3_native/windows_credentials_proposal/units/27a3_observable_inputs/manifest.json",
+      "sha256": "3f8d17ec9e387e0ff921fb7ae93641b0ac2d1976e14effedda96bd532ac30dde",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "bytes": 29752,
+      "path": "round3_native/windows_credentials_proposal/units/27a3_observable_inputs/repair.patch",
+      "sha256": "eb6be1d694abb99679e445899053f13b765ea5ad0af149681be64978e2cc8ff6",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "bytes": 911,
+      "path": "round3_native/windows_credentials_proposal/units/27b3_observable_executor_bound/BINDING_CHECKS.json",
+      "sha256": "701488e127bd1e7a1a06a5c8d613cd9272a9b9bf4f8c20dd6cda62fcf29453f4",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "bytes": 737,
+      "path": "round3_native/windows_credentials_proposal/units/27b3_observable_executor_bound/binding.patch",
+      "sha256": "d9dc8cf4fd2c586b3af796dc1d6818abffa96011f0bf22b6e9c69e66a5cbca55",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "bytes": 5240,
+      "path": "round3_native/windows_credentials_proposal/units/27b3_observable_executor_bound/manifest.json",
+      "sha256": "d9eb1e8c521f1fc73d92e10993289b83b929b07c21943ab48c2514d40aa5c8c7",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "bytes": 20869,
+      "path": "round3_native/windows_credentials_proposal/units/27b3_observable_executor_bound/repair.patch",
+      "sha256": "75848cd106321720c0d7b5794bdcaa34c6f17fc115173c629cee164cb9742187",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "bytes": 13218,
+      "path": "round3_native/windows_credentials_proposal/units/27b3_observable_executor_unbound/from_frozen_predecessor.patch",
+      "sha256": "c15b75704bf9a0e79b7527208efff1bc460aa08aeaf1bfba7c56af60d06254c5",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "bytes": 4403,
+      "path": "round3_native/windows_credentials_proposal/units/27b3_observable_executor_unbound/manifest.json",
+      "sha256": "77253a56ade3a025e58ad49a7883e58142db32e2c0bb3a960395e050d03a6279",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "bytes": 20132,
+      "path": "round3_native/windows_credentials_proposal/units/27b3_observable_executor_unbound/repair.patch",
+      "sha256": "c902baff0288efdfdd90ff482ce530757cdff7657d8c3f06c6d03ba2976c41f1",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    }
+  ],
+  "format": "native-blocker-evidence-v1",
+  "lossless_boundary": "Exact selected members only; excluded raw job log cannot be reconstructed from this packet.",
+  "parts": [
+    {
+      "bytes": 41089,
+      "name": "native-evidence.tar.xz.part000.gz",
+      "segment_bytes": 41056,
+      "segment_sha256": "1beed0a4ff8f12ae3b2a102acf6e17a53845b4e4db7d73e41d61146c1319cff9",
+      "sha256": "79bf13de81abdc5ef4e5ed0177b629bcff513183e91f821c2ee41f801c66df17"
+    }
+  ],
+  "scope": "A3/B3 observability, root and peer reviews, and third-run first-gate refusal; earlier account state remains unknown.",
+  "source_restore": "Inert regular files only, restored permissions 0644; original modes are evidence."
+}

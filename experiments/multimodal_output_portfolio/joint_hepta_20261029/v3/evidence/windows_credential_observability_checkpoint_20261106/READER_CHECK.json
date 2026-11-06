@@ -1,0 +1,33 @@
+{
+  "checks": [
+    {
+      "argv": [
+        "/workspace/scratch/3f6a885bb83c/round3_ci/ruff_tooling/ruff",
+        "format",
+        "--check",
+        "--config",
+        "/workspace/scratch/3f6a885bb83c/round3_ci/ruff_tooling/pyproject.toml",
+        "/workspace/scratch/3f6a885bb83c/round3_native/credential_observability_evidence_20261106/restore.py"
+      ],
+      "exit_code": 0,
+      "stderr": "",
+      "stdout": "1 file already formatted\n"
+    },
+    {
+      "argv": [
+        "/workspace/scratch/3f6a885bb83c/round3_ci/ruff_tooling/ruff",
+        "check",
+        "--config",
+        "/workspace/scratch/3f6a885bb83c/round3_ci/ruff_tooling/pyproject.toml",
+        "/workspace/scratch/3f6a885bb83c/round3_native/credential_observability_evidence_20261106/restore.py"
+      ],
+      "exit_code": 0,
+      "stderr": "",
+      "stdout": "All checks passed!\n"
+    }
+  ],
+  "formatted_template_AST_matches_reviewed_original": true,
+  "only_index_seal_changed_from_formatted_template": true,
+  "original_format_failure_receipt": "round3_native/credential_observability_checkpoint_inputs/INITIAL_FORMAT_FAILURE.json",
+  "original_reader_sha256": "e543423883b3732c2c904c80029165e642ad033c764e62499f19fc8731993624"
+}
