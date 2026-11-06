@@ -1,0 +1,35 @@
+{
+  "unit": "02_operator_host_execution",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "base_commit": "7f1bb73b49e5fcc0f1bd46845c3acbfb78767a7a",
+  "failed_run_id": 42160192456,
+  "failed_linux_job_id": 127712940876,
+  "source_donor": {
+    "pr": 4761,
+    "head": "ddd71584533d4fb318aea1c2a6fe74038a60eb7c"
+  },
+  "reason": "Ten original trust tests fail to launch real ssh-keygen inside the remote executor; retain the complete Rust harness and run it through the existing host wrapper.",
+  "files": [
+    {
+      "path": "codex-rs/hepta-operator-acceptance/BUILD.bazel",
+      "base_blob_sha": "1783fc06c81fd55d8332311e0eab2fd0b932708f",
+      "candidate_blob_sha": "99e6b520513b5be085f0bc453de41250bdaf0518",
+      "candidate_sha256": "63292c13d4dccfee7313f2b59b5eeb22744acf9ebe14b2d96589176c182fe205",
+      "additions": 15,
+      "deletions": 1
+    }
+  ],
+  "authored_changed_lines": 16,
+  "static_checks": [
+    "Final donor wrapper transplanted; donor's unrelated Windows path-utils dependency deliberately excluded.",
+    "Existing library, original test crate, rustc flags and dependency lists preserved.",
+    "Original public test label retained; manual inner binary is executed by that public wrapper.",
+    "Current defs.bzl contains the target-configured workspace_root_test wrapper and working-directory option."
+  ],
+  "required_native_targets": [
+    "//codex-rs/hepta-operator-acceptance:hepta-operator-acceptance-tests"
+  ],
+  "current_candidate_native_execution": "NOT_RUN_NO_RUST_BAZEL_JUST_TOOLCHAIN",
+  "current_candidate_qualified": false,
+  "publication_owner": "root"
+}
