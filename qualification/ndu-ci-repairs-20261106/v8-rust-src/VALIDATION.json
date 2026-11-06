@@ -1,0 +1,31 @@
+{
+  "exact_donor_file": true,
+  "native_build_and_smoke_actually_executed": false,
+  "needed_next": "Actual V8 build and Cargo smoke on the final integrated source, plus unchanged applicable CI gates.",
+  "removing_single_step_restores_entire_yaml_object": true,
+  "removing_single_step_restores_original_bytes": true,
+  "rustup_component_install_actually_executed": false,
+  "same_toolchain_pin": "e081816240890017053eacbb1bdf337761dc5582",
+  "schema": "ndu.v8-rust-src-preinstall-validation.v1",
+  "serial_install_before_parallel_cargo": true,
+  "shell_stub_results": [
+    {
+      "later_command_reached": true,
+      "observed_exit": 0,
+      "stub_status": 0
+    },
+    {
+      "later_command_reached": false,
+      "observed_exit": 29,
+      "stub_status": 29
+    }
+  ],
+  "source_commit": "55a534060a4b5e24abbe772e7f0135e9d4f56ace",
+  "source_lines_added": 8,
+  "source_lines_removed": 0,
+  "source_tree": "351138a1f6127b0fadeecfd26108a713ab400f08",
+  "status": "EXACT_DONOR_SOURCE_AND_SHELL_FAILURE_PROPAGATION_PASS_NATIVE_PENDING",
+  "unchanged_main_matrix_entries": 12,
+  "unchanged_windows_source_matrix_entries": 2,
+  "workflow": ".github/workflows/v8-canary.yml"
+}
