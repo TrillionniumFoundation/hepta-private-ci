@@ -1,0 +1,140 @@
+{
+  "schema": "hcsn-desktop-campaign-v2-observation",
+  "observation_utc": "2026-11-06T13:14:56.887Z",
+  "observation_kind": "third_registered_cuda_full_budget_terminal",
+  "research_commit": "f355cfe2ae96b2bc9a5409f8eeb857894f1b0c5b",
+  "expected_pins": {
+    "manifest_sha256": "dafb594b4d6af2ade6915b7767369f1c5c69c7b4a06232cae75855cf6be6f531",
+    "archive_sha256": "a9d5d39155b0d93a89c246c69cb82960b5b9308b6150dd1809486e10791791f5",
+    "source_map_sha256": "415f6a2f2d7a89ad0585f29bea0d91928898a11ec8a672de39ce6e22f04d39e9",
+    "original_full_config_sha256": "7fa3d05b8c04a918043afdfa1c266a17beccb814351258d0555a753baf13777a",
+    "current_manifest_rehash": "not_performed_in_this_observation"
+  },
+  "campaign": {
+    "host": "desktop",
+    "job_id": "1a1acdd69f2-fc05-5757",
+    "process_state": "running",
+    "stage": "full",
+    "stage_started_utc": "2026-11-06T08:08:57.361720+00:00",
+    "progress_sha256": "bbaa785b1e2fd9ceb6b00d0ff9016049851f32de3a8bebdb3d89567daf8814ca",
+    "progress_updated_utc": "2026-11-06T13:14:41.494936+00:00",
+    "progress_relative": "campaigns/full-v2/progress.json",
+    "completed_cuda_runs": 3,
+    "requested_cuda_runs": 170,
+    "registered_indexes": {
+      "completed": 3,
+      "failed": 0,
+      "unavailable": 0
+    },
+    "global_qualification": "open",
+    "no_automatic_training_retries": true,
+    "disk_free_bytes": 30657863680,
+    "control_filesystem_free_bytes": 39364947968,
+    "runtime_ready_receipt_sha256": {
+      "TORCH_READY.json": "65ece28b081216105038d28368ec7240a74ff848bf524c8b5c67023cf3101df2",
+      "MAMBA_READY.json": "1abd4f6c472ad2baf279f66d921e6ab5a3f9c6275899a863f9ac65e0d2b70a76"
+    }
+  },
+  "config": {
+    "execution_config_sha256": "43fb7b280bb80643c0bcdbfceae6788b37dd1d45fad682805ec6045088b31611",
+    "admission_sha256": "97e0cbc2eba58e72a898152e648c319113b8eb4c2f6610fad5095e5f582e8751",
+    "task_count": 2,
+    "model_count": 17,
+    "seeds": [
+      0,
+      1,
+      2,
+      3,
+      4
+    ],
+    "train_steps": 400,
+    "batch_size": 64,
+    "length": 64,
+    "hidden_size": 64,
+    "precision": "float32",
+    "population_checkpoint_steps": 1,
+    "cuda_memory_fraction": 0.5,
+    "data_seed": 271828,
+    "train_count": 4096,
+    "validation_count": 512,
+    "test_count": 1024,
+    "split_sha256": [
+      "967e91b0779e87b62f396e812dc25ebf395f8107104edea154a2ee1b06a440fb",
+      "922aed89819c90a27a75d264979e77afa27c207da2fa45d61830ecaa595a55d9",
+      "536bc7546964eec2744a6b6af5dd63a9a1648724cbce4f95e13e2ecd28667a7c"
+    ],
+    "selected_policy": 1,
+    "applies_to_all_b_runs": 20
+  },
+  "completed_identity": {
+    "task": "delayed_recall",
+    "model": "hx_dual",
+    "seed": 2,
+    "status": "completed",
+    "started_utc": "2026-11-06T11:18:52.974821+00:00",
+    "finished_utc": "2026-11-06T12:54:43.468552+00:00",
+    "steps_completed": 400,
+    "training_examples_seen": 25600,
+    "training_tokens_seen": 1638400,
+    "trainable_parameters": 5633,
+    "index_relative": "campaigns/full-v2/full.runs/2a647ab8790915ddf94024208bf3d9a56616ad525bf8f34f3a4319c686bdd8e0.json",
+    "index_sha256": "efb12a92cf26c948d77b44ff85815d2b20000ff75c6e76f8cd42149d58830da4",
+    "terminal_relative": "campaigns/full-v2/full.runs/2a647ab8790915ddf94024208bf3d9a56616ad525bf8f34f3a4319c686bdd8e0.attempts/30c93edbfa9c4da0b9f54f6fecc25477.json",
+    "terminal_sha256": "bdb892346509888a41b4e0d33cf264a92ae16d6675e86820a037f60ea5d7bb73",
+    "checkpoint_relative": "campaigns/full-v2/2a647ab8790915ddf94024208bf3d9a56616ad525bf8f34f3a4319c686bdd8e0.attempts/30c93edbfa9c4da0b9f54f6fecc25477.pt",
+    "checkpoint_sha256": "90599dcfa44bc98357c4f57dfff77de5a4e55816e52ccd591cfdf65e588483a3",
+    "checkpoint_file_size_bytes": 29803,
+    "checkpoint_hash_matches_receipt": true,
+    "test_mse": 0.22985419631004333,
+    "best_validation_mse": 0.21057339012622833,
+    "initial_training_mse": 0.39402469992637634,
+    "final_training_mse": 0.303672194480896,
+    "training_wall_seconds_including_validation": 5248.2311052859295,
+    "training_examples_per_second": 4.877833976140288,
+    "peak_gpu_allocated_bytes": 780990464,
+    "peak_gpu_reserved_bytes": 801112064,
+    "peak_gpu_measurement_status": "measured",
+    "inference_examples_per_second": 15.00653354181918,
+    "latency_p50_ms": 4183.300845033955,
+    "latency_p95_ms": 5277.115848648827,
+    "terminal_cuda_synchronized": true,
+    "physical_energy_joules": null,
+    "energy_missing_reason": "RAPL inaccessible: PermissionError; RAPL inaccessible: PermissionError; NVML unavailable: NVMLError_NotSupported: Not Supported"
+  },
+  "preceding_terminal_receipts": {
+    "seeds_0_and_1": "already preserved by commits fe941be66a9fce146e0cde679105f054409f736f and 09d58f93d93149c117b469e01e1454d207c40f4a",
+    "same_model": "hx_dual",
+    "same_task": "delayed_recall"
+  },
+  "next_started_identity": {
+    "task": "delayed_recall",
+    "model": "hx_dual",
+    "seed": 3,
+    "started_utc": "2026-11-06T12:54:43.492104+00:00",
+    "started_receipt_sha256": "8cfbf16c09f919aea8f56e9c7da0b1c51842aa082570ada3e1b5be949e0d4e4f",
+    "terminal_qualification": "not_claimed"
+  },
+  "other_qualifications": {
+    "B_full_budget_audit": "0/20",
+    "A_B_Mamba2_full_comparison": "open",
+    "historical_B_adverse_smoke": "retained",
+    "strict_baseline": "95/95, zero skipped",
+    "strict_candidate": "109/109, zero skipped",
+    "CPU_CUDA_remat_parity": "16/16 each",
+    "physical_energy": "unsupported, null",
+    "scientific_superiority": "not_claimed",
+    "exact_source_cpu_ci": {
+      "run_id": 42078258351,
+      "job_id": 127424159520,
+      "status": "completed",
+      "conclusion": "success"
+    },
+    "trusted_main_gpu_probe": {
+      "run_id": 39526325715,
+      "status": "queued",
+      "conclusion": null
+    }
+  },
+  "limits": "One additional fully measured identity does not close the 170-run, B audit, full comparisons or superiority; no complete full.json while stage is running. No second campaign or training retry.",
+  "privacy": "Relative task paths and hashes only; no personal home directories, credentials, signed URLs or binary outputs copied."
+}
