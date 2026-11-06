@@ -57,25 +57,35 @@ impl fmt::Display for LockedFileCasErrorV1 {
 impl StdError for LockedFileCasErrorV1 {}
 
 pub struct LockedFileFinalHoldoutCasStoreV1 {
-    file: File,
+    file: FileLock,
     binding: Digest32,
     state: Option<FinalHoldoutCasRecordV1>,
     length: u64,
     poisoned: bool,
 }
 
+struct FileLock(File);
+
+impl Drop for FileLock {
+    fn drop(&mut self) {
+        // Closing this file alone may leave its lock held by a duplicated or
+        // inherited descriptor. Release it when the owning store leaves scope.
+        let _ = self.0.unlock();
+    }
+}
+
 impl LockedFileFinalHoldoutCasStoreV1 {
-    pub fn create(mut file: File, binding: Digest32) -> Result<Self, LockedFileCasErrorV1> {
-        acquire(&file, binding)?;
-        if file.metadata().map_err(io_error)?.len() != 0 {
+    pub fn create(file: File, binding: Digest32) -> Result<Self, LockedFileCasErrorV1> {
+        let mut file = acquire(file, binding)?;
+        if file.0.metadata().map_err(io_error)?.len() != 0 {
             return Err(LockedFileCasErrorV1::AlreadyInitialized);
         }
         let mut header = MAGIC.to_vec();
         header.extend_from_slice(binding.as_array());
         header.extend_from_slice(Digest32::of_bytes(&header).as_array());
-        file.seek(SeekFrom::Start(0)).map_err(io_error)?;
-        file.write_all(&header)
-            .and_then(|()| file.sync_all())
+        file.0.seek(SeekFrom::Start(0)).map_err(io_error)?;
+        file.0.write_all(&header)
+            .and_then(|()| file.0.sync_all())
             .map_err(|_| LockedFileCasErrorV1::Indeterminate)?;
         Ok(Self {
             file,
@@ -87,18 +97,18 @@ impl LockedFileFinalHoldoutCasStoreV1 {
     }
 
     pub fn recover(
-        mut file: File,
+        file: File,
         binding: Digest32,
         minimum: Option<FinalHoldoutCasAnchorV1>,
     ) -> Result<Self, LockedFileCasErrorV1> {
-        acquire(&file, binding)?;
-        let length = file.metadata().map_err(io_error)?.len();
+        let mut file = acquire(file, binding)?;
+        let length = file.0.metadata().map_err(io_error)?.len();
         if length > MAX_BYTES {
             return Err(LockedFileCasErrorV1::Capacity);
         }
-        file.seek(SeekFrom::Start(0)).map_err(io_error)?;
+        file.0.seek(SeekFrom::Start(0)).map_err(io_error)?;
         let mut bytes = Vec::new();
-        (&mut file)
+        (&mut file.0)
             .take(MAX_BYTES + 1)
             .read_to_end(&mut bytes)
             .map_err(io_error)?;
@@ -148,7 +158,7 @@ impl LockedFileFinalHoldoutCasStoreV1 {
             }
         }
         validate_minimum(state.as_ref(), minimum, minimum_witnessed)?;
-        file.sync_all()
+        file.0.sync_all()
             .map_err(|_| LockedFileCasErrorV1::Indeterminate)?;
         Ok(Self {
             file,
@@ -178,6 +188,7 @@ impl FinalHoldoutCasStoreV1 for LockedFileFinalHoldoutCasStoreV1 {
         }
         if self
             .file
+            .0
             .metadata()
             .map_err(|_| FinalHoldoutCasStoreError::Indeterminate)?
             .len()
@@ -203,6 +214,7 @@ impl FinalHoldoutCasStoreV1 for LockedFileFinalHoldoutCasStoreV1 {
         }
         if self
             .file
+            .0
             .metadata()
             .map_err(|_| FinalHoldoutCasStoreError::Indeterminate)?
             .len()
@@ -237,9 +249,10 @@ impl FinalHoldoutCasStoreV1 for LockedFileFinalHoldoutCasStoreV1 {
         frame.extend_from_slice(Digest32::of_bytes(&payload).as_array());
         let write = self
             .file
+            .0
             .seek(SeekFrom::Start(self.length))
-            .and_then(|_| self.file.write_all(&frame))
-            .and_then(|()| self.file.sync_all());
+            .and_then(|_| self.file.0.write_all(&frame))
+            .and_then(|()| self.file.0.sync_all());
         if write.is_err() {
             self.poisoned = true;
             return Err(FinalHoldoutCasStoreError::Indeterminate);
@@ -426,7 +439,7 @@ fn record_anchor(record: &FinalHoldoutCasRecordV1) -> FinalHoldoutCasAnchorV1 {
     }
 }
 
-fn acquire(file: &File, binding: Digest32) -> Result<(), LockedFileCasErrorV1> {
+fn acquire(file: File, binding: Digest32) -> Result<FileLock, LockedFileCasErrorV1> {
     if binding.is_zero() {
         return Err(LockedFileCasErrorV1::Binding);
     }
@@ -436,7 +449,8 @@ fn acquire(file: &File, binding: Digest32) -> Result<(), LockedFileCasErrorV1> {
     file.try_lock().map_err(|error| match error {
         TryLockError::WouldBlock => LockedFileCasErrorV1::Busy,
         TryLockError::Error(error) => LockedFileCasErrorV1::Io(error.kind()),
-    })
+    })?;
+    Ok(FileLock(file))
 }
 
 fn io_error(error: io::Error) -> LockedFileCasErrorV1 {
