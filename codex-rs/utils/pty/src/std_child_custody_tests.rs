@@ -182,11 +182,35 @@ fn explicit_cleanup_reaps_the_actual_child_after_it_moves_out_of_the_owned_group
     wait_for(|| child.gone());
 }
 
+#[cfg(target_os = "macos")]
+#[test]
+fn solo_exited_leader_is_reaped_and_keeps_its_actual_exit_status() {
+    let unrelated_root = FixtureRoot::new();
+    let mut unrelated = StdChildCustody::spawn(&mut fixture_command("hold", &unrelated_root.0))
+        .expect("spawn an unrelated owner");
+    let unrelated_identity = descendant(&unrelated_root.0);
+    let root = FixtureRoot::new();
+    let mut owned = StdChildCustody::spawn(&mut fixture_command("solo-exit", &root.0))
+        .expect("spawn the actual solo child");
+    wait_for(|| owned.peek_exit().expect("observe actual exit without reaping"));
+    let terminal = owned.try_wait().expect("reap the retained solo zombie")
+        .expect("the actual child has exited");
+    assert_eq!(terminal.code(), Some(7));
+    assert_eq!(owned.try_wait().expect("repeat the actual status"), Some(terminal));
+    assert_eq!(owned.kill_and_wait().expect("repeated cleanup returns cached status"), terminal);
+    assert!(!unrelated_identity.gone());
+    assert_eq!(unrelated.try_wait().expect("unrelated owner remains live"), None);
+    unrelated.kill_and_wait().expect("clean up the unrelated owner");
+    wait_for(|| unrelated_identity.gone());
+}
+
 #[test]
 #[ignore = "native child fixture, invoked only through the owning test executable"]
 fn native_child_fixture() {
     let root = PathBuf::from(std::env::var_os(ROOT).expect("owning parent supplies fixture root"));
     match std::env::var(ROLE).expect("owning parent supplies fixture role").as_str() {
+        #[cfg(target_os = "macos")]
+        "solo-exit" => std::process::exit(7),
         "hold" => {
             std::fs::write(root.join("ready.pending"), std::process::id().to_string())
                 .expect("publish actual fixture pid");
