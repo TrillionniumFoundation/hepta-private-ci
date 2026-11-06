@@ -16,6 +16,9 @@ use std::path::PathBuf;
 mod lanes_fixture;
 use lanes_fixture::LaneFixture;
 
+#[path = "worker_root_generation_gate_root_tests.rs"]
+mod generation_gate;
+
 fn child(original: &Fixture, mode: &str) -> (QualificationChild, UnixDatagram) {
     let (root, socket) = UnixDatagram::pair().unwrap();
     (QualificationChild::spawn(mode, &original.identity.agent_id, original.identity.spawn_generation, Some(socket), ChildIdentity::Worker), root)
