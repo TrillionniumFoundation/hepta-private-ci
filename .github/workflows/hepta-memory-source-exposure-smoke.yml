@@ -1,0 +1,70 @@
+name: MemoryCell source exposure fixture and parity preflight
+on:
+  push:
+    branches: ["codex/memory-cell-evidence-20261008"]
+    paths:
+      - "scripts/memory_cell/source_probe_exposure.py"
+      - "scripts/memory_cell/test_source_write_probe_exposure.py"
+      - "scripts/memory_cell/test_source_write_likelihood_exposure.py"
+      - "scripts/memory_cell/test_source_margin_sparse_admission.py"
+      - ".github/workflows/hepta-memory-source-exposure-smoke.yml"
+permissions:
+  contents: read
+concurrency:
+  group: memory-source-exposure-${{ github.sha }}
+  cancel-in-progress: false
+jobs:
+  fail-closed-pinned-cpu:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      PYTHONPATH: scripts/memory_cell
+      PYTHONDONTWRITEBYTECODE: "1"
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Pinned CPU Torch import runtime, without pretrained weights
+        run: |
+          set -euo pipefail
+          python3 -m venv /tmp/source-exposure-python
+          /tmp/source-exposure-python/bin/pip install --no-input \
+            torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          /tmp/source-exposure-python/bin/pip freeze > /tmp/source-exposure-environment.txt
+      - name: Exact historical source exposure and no-model parity regressions
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/source-exposure-audit
+          git rev-parse HEAD > /tmp/source-exposure-audit/tested-commit.txt
+          git rev-parse HEAD^{tree} > /tmp/source-exposure-audit/tested-tree.txt
+          python3 -m compileall -q \
+            scripts/memory_cell/source_probe_exposure.py \
+            scripts/memory_cell/test_source_write_probe_exposure.py \
+            scripts/memory_cell/test_source_write_likelihood_exposure.py \
+            scripts/memory_cell/test_source_margin_sparse_admission.py
+          /tmp/source-exposure-python/bin/python -m unittest -v \
+            test_source_write_probe_exposure \
+            test_source_write_likelihood_exposure \
+            test_source_margin_sparse_admission \
+            2>&1 | tee /tmp/source-exposure-audit/test-results.log
+      - name: Retain exact tested source and failure log
+        if: always()
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/source-exposure-audit/source
+          if [ -f /tmp/source-exposure-environment.txt ]; then
+            cp /tmp/source-exposure-environment.txt /tmp/source-exposure-audit/environment.txt
+          fi
+          cp scripts/memory_cell/source_probe_exposure.py /tmp/source-exposure-audit/source/
+          cp scripts/memory_cell/test_source_write_probe_exposure.py /tmp/source-exposure-audit/source/
+          cp scripts/memory_cell/test_source_write_likelihood_exposure.py /tmp/source-exposure-audit/source/
+          cp scripts/memory_cell/test_source_margin_sparse_admission.py /tmp/source-exposure-audit/source/
+          cp .github/workflows/hepta-memory-source-exposure-smoke.yml /tmp/source-exposure-audit/source/
+          (cd /tmp/source-exposure-audit && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-source-exposure-no-model
+          path: /tmp/source-exposure-audit
+          if-no-files-found: error

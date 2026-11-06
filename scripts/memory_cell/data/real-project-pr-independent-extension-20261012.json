@@ -1,0 +1,458 @@
+{
+  "schema": "hepta.memorycell.public-pr-independent-extension.v1",
+  "source_cut_utc": "2026-10-12T16:05:00Z",
+  "previous_corpus_sha256": "ef2a46ce037db4a91affddd2498eb8e089771ae5734bc13c56cb8a97b840a463",
+  "policy": {
+    "selection": "six expressly precommitted bounded public PR heads from six additional projects, source-only and not statistically randomized",
+    "timestamp_semantics": "Git object/metadata upper bound, not independent historical capture or future observation",
+    "source_objects": "original exact Git commits, trees and changed-file blob IDs; decoded bytes remain to be separately verified"
+  },
+  "partitions": {
+    "python/cpython": "evaluation",
+    "pandas-dev/pandas": "train",
+    "scikit-learn/scikit-learn": "evaluation",
+    "tokio-rs/tokio": "train",
+    "prometheus/prometheus": "selection",
+    "denoland/deno": "evaluation"
+  },
+  "task_types": [
+    "change_intent",
+    "verification_gap"
+  ],
+  "no_gold_answers": true,
+  "no_model_outputs": true,
+  "source_bytes_not_yet_verified": true,
+  "independent_source_families_certified": false,
+  "independent_review_certified": false,
+  "effective_independent_n": null,
+  "semantic_citation_precision": null,
+  "production_accepted": false,
+  "cases": [
+    {
+      "repo": "python/cpython",
+      "partition": "evaluation",
+      "pull_number": 159216,
+      "pull_url": "https://github.com/python/cpython/pull/159216",
+      "created_at": "2026-10-12T04:46:48Z",
+      "updated_at": "2026-10-12T15:37:55Z",
+      "state_at_capture": "open",
+      "head_sha": "670facc0f4450c97e988f7bf942a671bf5bb0d3e",
+      "head_committed_at": "2026-10-12T15:32:25Z",
+      "tree_sha": "3498c4ecc0d54a81bfba2111817e12b699f12d87",
+      "parents": [
+        "5a22a62b96a68c2dd31784c5e3427ad7b365388a"
+      ],
+      "commits": [
+        {
+          "sha": "670facc0f4450c97e988f7bf942a671bf5bb0d3e",
+          "committed_at": "2026-10-12T15:32:25Z"
+        }
+      ],
+      "files": [
+        {
+          "path": "Doc/library/http.client.rst",
+          "blob_sha": "ab557f1805e1049b655a91e3c25b016458a71f41",
+          "status": "modified",
+          "additions": 2,
+          "deletions": 1,
+          "changes": 3
+        },
+        {
+          "path": "Lib/http/client.py",
+          "blob_sha": "f13eb6d91b77f6fa69fa02e974d610d3652d99b1",
+          "status": "modified",
+          "additions": 1,
+          "deletions": 1,
+          "changes": 2
+        },
+        {
+          "path": "Lib/test/test_httplib.py",
+          "blob_sha": "5fd4e8fca30fcf5c8ece4a7324d93159a00af38a",
+          "status": "modified",
+          "additions": 17,
+          "deletions": 0,
+          "changes": 17
+        },
+        {
+          "path": "Misc/NEWS.d/next/Library/2026-10-12-00-00-00.gh-issue-159044.Tr8kXv.rst",
+          "blob_sha": "ef51dc8eca1066c81aecaa50ad698ff0c8c2a777",
+          "status": "added",
+          "additions": 4,
+          "deletions": 0,
+          "changes": 4
+        }
+      ]
+    },
+    {
+      "repo": "pandas-dev/pandas",
+      "partition": "train",
+      "pull_number": 71038,
+      "pull_url": "https://github.com/pandas-dev/pandas/pull/71038",
+      "created_at": "2026-10-11T08:25:36Z",
+      "updated_at": "2026-10-12T15:20:46Z",
+      "state_at_capture": "open",
+      "head_sha": "00ca9b3b9a0f8a7e533deac90716a9144b3bcfbf",
+      "head_committed_at": "2026-10-11T08:23:33Z",
+      "tree_sha": "fdc44c613b65ef8952b3b561301eba2f13ad6b86",
+      "parents": [
+        "aa02819a2ba2d82873f87198ad1cfff58394d863"
+      ],
+      "commits": [
+        {
+          "sha": "00ca9b3b9a0f8a7e533deac90716a9144b3bcfbf",
+          "committed_at": "2026-10-11T08:23:33Z"
+        }
+      ],
+      "files": [
+        {
+          "path": "doc/source/user_guide/basics.rst",
+          "blob_sha": "f998a244196f850b10ff18dba2401729ed1ac8b2",
+          "status": "modified",
+          "additions": 12,
+          "deletions": 0,
+          "changes": 12
+        }
+      ]
+    },
+    {
+      "repo": "scikit-learn/scikit-learn",
+      "partition": "evaluation",
+      "pull_number": 35053,
+      "pull_url": "https://github.com/scikit-learn/scikit-learn/pull/35053",
+      "created_at": "2026-09-29T16:20:07Z",
+      "updated_at": "2026-10-12T14:49:15Z",
+      "state_at_capture": "open",
+      "head_sha": "3e27944f8278ae88cc9a5374ce571511f5a42be8",
+      "head_committed_at": "2026-09-30T14:54:12Z",
+      "tree_sha": "9593e1b2f1b2eb1cdd1b3ebd7aeee73d40a29c55",
+      "parents": [
+        "2f861e715d55b9e91535f5067a9dc6b1d5c3dc58"
+      ],
+      "commits": [
+        {
+          "sha": "953da33b6cca035ec44d49aac0c36b31a98e508e",
+          "committed_at": "2026-09-21T09:56:56Z"
+        },
+        {
+          "sha": "79b8831df8606e9633f14b2fa1044aeb5d781999",
+          "committed_at": "2026-09-23T11:25:03Z"
+        },
+        {
+          "sha": "d60b5907b74962c127b384744749956497075186",
+          "committed_at": "2026-09-29T15:55:49Z"
+        },
+        {
+          "sha": "f26033cbdb9ab1f03060561dbb23fc6bfdfa4541",
+          "committed_at": "2026-09-29T17:20:02Z"
+        },
+        {
+          "sha": "acd2daed2956cbb5ec723435706b69671061fc1f",
+          "committed_at": "2026-09-29T17:20:43Z"
+        },
+        {
+          "sha": "2f861e715d55b9e91535f5067a9dc6b1d5c3dc58",
+          "committed_at": "2026-09-29T17:45:56Z"
+        },
+        {
+          "sha": "3e27944f8278ae88cc9a5374ce571511f5a42be8",
+          "committed_at": "2026-09-30T14:54:12Z"
+        }
+      ],
+      "files": [
+        {
+          "path": "sklearn/base.py",
+          "blob_sha": "0ee0555c846b886b6d49436973cfd84000653e6a",
+          "status": "modified",
+          "additions": 4,
+          "deletions": 1,
+          "changes": 5
+        },
+        {
+          "path": "sklearn/linear_model/_base.py",
+          "blob_sha": "a727a4d114957bbbdff3d15dcff0b359f6003f01",
+          "status": "modified",
+          "additions": 10,
+          "deletions": 10,
+          "changes": 20
+        },
+        {
+          "path": "sklearn/linear_model/_logistic.py",
+          "blob_sha": "7713c52ab54d0d4e5dfef67588608b9bbfe81e2e",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 3,
+          "changes": 3
+        },
+        {
+          "path": "sklearn/linear_model/tests/test_base.py",
+          "blob_sha": "3c24ac19c1f38ea90f03985b240f7512d7f20d0c",
+          "status": "modified",
+          "additions": 19,
+          "deletions": 4,
+          "changes": 23
+        },
+        {
+          "path": "sklearn/linear_model/tests/test_logistic.py",
+          "blob_sha": "d8eecf5f08e5292fa48467481fb1761a491c7d03",
+          "status": "modified",
+          "additions": 9,
+          "deletions": 5,
+          "changes": 14
+        },
+        {
+          "path": "sklearn/utils/_array_api.py",
+          "blob_sha": "505636307efa84e83b891fcbbc3dbac072b32017",
+          "status": "modified",
+          "additions": 172,
+          "deletions": 29,
+          "changes": 201
+        },
+        {
+          "path": "sklearn/utils/_test_common/instance_generator.py",
+          "blob_sha": "e184689f03dc6c16669de221aa86acee8470bf19",
+          "status": "modified",
+          "additions": 40,
+          "deletions": 28,
+          "changes": 68
+        },
+        {
+          "path": "sklearn/utils/estimator_checks.py",
+          "blob_sha": "d0d6a12b936d828e999beb3e7ac3e5ac06f60e48",
+          "status": "modified",
+          "additions": 73,
+          "deletions": 43,
+          "changes": 116
+        },
+        {
+          "path": "sklearn/utils/tests/test_array_api.py",
+          "blob_sha": "814d05d5a9dc9868a8fcca7cd41ae3193652f936",
+          "status": "modified",
+          "additions": 179,
+          "deletions": 0,
+          "changes": 179
+        },
+        {
+          "path": "sklearn/utils/tests/test_estimator_checks.py",
+          "blob_sha": "9b5feed7069f8d090b6d2459077bdd426af1fe92",
+          "status": "modified",
+          "additions": 1,
+          "deletions": 1,
+          "changes": 2
+        }
+      ]
+    },
+    {
+      "repo": "tokio-rs/tokio",
+      "partition": "train",
+      "pull_number": 8630,
+      "pull_url": "https://github.com/tokio-rs/tokio/pull/8630",
+      "created_at": "2026-10-12T14:00:48Z",
+      "updated_at": "2026-10-12T15:04:59Z",
+      "state_at_capture": "open",
+      "head_sha": "b0b3a24a033d8cfe2742a81de49c2fb06d89fba2",
+      "head_committed_at": "2026-10-12T14:26:14Z",
+      "tree_sha": "0b02c3c7c950373f96377b8f9d305ac7831ba20a",
+      "parents": [
+        "e279adbfcd8831412c3f19edf2e16d28345f0f95"
+      ],
+      "commits": [
+        {
+          "sha": "b0b3a24a033d8cfe2742a81de49c2fb06d89fba2",
+          "committed_at": "2026-10-12T14:26:14Z"
+        }
+      ],
+      "files": [
+        {
+          "path": "tokio-util/src/codec/length_delimited.rs",
+          "blob_sha": "c25c32ee8c38519d101447b08792c8ad24ec0d2b",
+          "status": "modified",
+          "additions": 39,
+          "deletions": 14,
+          "changes": 53
+        },
+        {
+          "path": "tokio-util/src/udp/frame.rs",
+          "blob_sha": "7fdb238b04f17bc19eff9391bddd898e696cfaa4",
+          "status": "modified",
+          "additions": 22,
+          "deletions": 13,
+          "changes": 35
+        },
+        {
+          "path": "tokio-util/tests/length_delimited.rs",
+          "blob_sha": "41f79024cd9c9f445fd2d8b0c023c87e4d54231d",
+          "status": "modified",
+          "additions": 34,
+          "deletions": 0,
+          "changes": 34
+        },
+        {
+          "path": "tokio-util/tests/udp.rs",
+          "blob_sha": "e67341b6f95824868ad6384c2344e4cc1bad300f",
+          "status": "modified",
+          "additions": 28,
+          "deletions": 0,
+          "changes": 28
+        }
+      ]
+    },
+    {
+      "repo": "prometheus/prometheus",
+      "partition": "selection",
+      "pull_number": 19991,
+      "pull_url": "https://github.com/prometheus/prometheus/pull/19991",
+      "created_at": "2026-10-11T10:14:53Z",
+      "updated_at": "2026-10-12T13:19:18Z",
+      "state_at_capture": "open",
+      "head_sha": "888caa67e1b492af783d43b385faa02ccc71f370",
+      "head_committed_at": "2026-10-12T12:34:39Z",
+      "tree_sha": "a19590e1ebef5e78112c38a11f1389d8f3dfaff4",
+      "parents": [
+        "fd4847802c65256cb16e34f5e5c0e52a4b584cb6"
+      ],
+      "commits": [
+        {
+          "sha": "888caa67e1b492af783d43b385faa02ccc71f370",
+          "committed_at": "2026-10-12T12:34:39Z"
+        }
+      ],
+      "files": [
+        {
+          "path": "storage/generic.go",
+          "blob_sha": "7f441969e51f27cfdc2977973c70b3b689ccd6d2",
+          "status": "modified",
+          "additions": 54,
+          "deletions": 31,
+          "changes": 85
+        },
+        {
+          "path": "storage/generic_test.go",
+          "blob_sha": "a89c8b1b386c49c8c1574f7f4da8ba65d8627843",
+          "status": "modified",
+          "additions": 108,
+          "deletions": 22,
+          "changes": 130
+        },
+        {
+          "path": "storage/interface.go",
+          "blob_sha": "14c0c94e55a459d21c1e3ee1e370f6cfad36162c",
+          "status": "modified",
+          "additions": 2,
+          "deletions": 0,
+          "changes": 2
+        },
+        {
+          "path": "tsdb/querier.go",
+          "blob_sha": "8d4abd86cadac723c32b7166314000f69f4cdc07",
+          "status": "modified",
+          "additions": 11,
+          "deletions": 4,
+          "changes": 15
+        },
+        {
+          "path": "tsdb/querier_test.go",
+          "blob_sha": "d4efdc13a74e2fee94e5ab9a80d09647c33118d3",
+          "status": "modified",
+          "additions": 2,
+          "deletions": 3,
+          "changes": 5
+        },
+        {
+          "path": "web/api/v1/search.go",
+          "blob_sha": "32422beea7f73e982ec18483759d4244416d2e38",
+          "status": "modified",
+          "additions": 36,
+          "deletions": 3,
+          "changes": 39
+        },
+        {
+          "path": "web/api/v1/search_test.go",
+          "blob_sha": "578ed858f707933679ae8c2d391d85b4b1f1cc47",
+          "status": "modified",
+          "additions": 74,
+          "deletions": 34,
+          "changes": 108
+        }
+      ]
+    },
+    {
+      "repo": "denoland/deno",
+      "partition": "evaluation",
+      "pull_number": 37014,
+      "pull_url": "https://github.com/denoland/deno/pull/37014",
+      "created_at": "2026-10-12T08:50:54Z",
+      "updated_at": "2026-10-12T11:57:22Z",
+      "state_at_capture": "open",
+      "head_sha": "707fd96fabc462d710b129e54dbbbb71b51fcd5e",
+      "head_committed_at": "2026-10-12T11:57:14Z",
+      "tree_sha": "5568faeb6fb11a6eadb70e7b07638a4ab1ddaee5",
+      "parents": [
+        "63c84fba234f4bcaa3bb5cd681f5972eff518b10"
+      ],
+      "commits": [
+        {
+          "sha": "c8ab8a6c1f56a1d1857287cefce352d133e4f0d6",
+          "committed_at": "2026-10-12T06:09:30Z"
+        },
+        {
+          "sha": "63c84fba234f4bcaa3bb5cd681f5972eff518b10",
+          "committed_at": "2026-10-12T10:56:41Z"
+        },
+        {
+          "sha": "707fd96fabc462d710b129e54dbbbb71b51fcd5e",
+          "committed_at": "2026-10-12T11:57:14Z"
+        }
+      ],
+      "files": [
+        {
+          "path": "libs/cache_dir/Cargo.toml",
+          "blob_sha": "cb0f8693b5007e14cc6e5ef7910b88b39a9862b4",
+          "status": "modified",
+          "additions": 1,
+          "deletions": 1,
+          "changes": 2
+        },
+        {
+          "path": "libs/cache_dir/cache.rs",
+          "blob_sha": "3fb2e101ff944de726588894beae5094bfa8d461",
+          "status": "modified",
+          "additions": 121,
+          "deletions": 0,
+          "changes": 121
+        },
+        {
+          "path": "libs/cache_dir/file_fetcher/mod.rs",
+          "blob_sha": "57c0f07b514b5210ed8067e6188003e24517d2c2",
+          "status": "modified",
+          "additions": 2,
+          "deletions": 1,
+          "changes": 3
+        },
+        {
+          "path": "libs/cache_dir/global/mod.rs",
+          "blob_sha": "d427d652b3a9cc9a78634e75ab127d99173ee70c",
+          "status": "modified",
+          "additions": 6,
+          "deletions": 1,
+          "changes": 7
+        },
+        {
+          "path": "tests/specs/cache/latin1_lock_integrity/__test__.jsonc",
+          "blob_sha": "74080b6aab04be643a2bebddf51b2a69da1275d4",
+          "status": "added",
+          "additions": 17,
+          "deletions": 0,
+          "changes": 17
+        },
+        {
+          "path": "tests/testdata/encoding/iso-8859-1.ts",
+          "blob_sha": "a772b57bdd5aa26fbedd07cb057b9006239e784e",
+          "status": "added",
+          "additions": 1,
+          "deletions": 0,
+          "changes": 1
+        }
+      ]
+    }
+  ]
+}

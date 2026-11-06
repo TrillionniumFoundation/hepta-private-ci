@@ -1,0 +1,76 @@
+{
+  "schema": "hepta.memory.candidate-score-replay-published-summary.v1",
+  "generation_commit": "cc05b9572eba0e57938341be733cef8dbbec0777",
+  "source_archive_sha256": "31c6f191ecf62095779f7c9a5dd6c5b2f89c6ae408fe9c26f74e017a2d62c47a",
+  "original_model_weights_sha256": "5af571cbf074e6d21a03528d2330792e532ca608f24ac70a143f6b369968ab8c",
+  "preexecution_plan_sha256": "e38fb602d4b5fc3cb5374cdd086e900b7b0b811b1ee8e88e10c293292b7be761",
+  "complete_original_score_journal_sha256": "15051eddc59a3bcd99c29b6065fea7ade4271f62b1484aae0a07752150a09d06",
+  "original_score_journal_uncompressed_bytes": 66462,
+  "lossless_xz_archive_sha256": "2ee30312b1d49e8aa64374d083bcedce6a43e76aa84c113d7b2388108ddf6683",
+  "lossless_xz_archive_bytes": 6304,
+  "local_result_sha256": "c6ddcd800613d0b6953d3011e7f33c46834ac65d637197e19c331b89cdf680d9",
+  "independent_process_replay_sha256": "0a4613e1644dfec80ba9d6716193bdb6bc7c7952818ab4224cf2b18b689f1f5d",
+  "actual_reader_condition_inferences": 48,
+  "scored_candidate_hypotheses": 156,
+  "all_gold_answers_in_full_scope_candidate_space": true,
+  "strong_RAG_tool_permission_parity_certified": false,
+  "original_prompt_unchanged": true,
+  "model_updated": false,
+  "training_steps": 0,
+  "program_task_execution_success_evaluated": false,
+  "human_semantic_sufficiency_verified": false,
+  "independent_source_families": 0,
+  "full_lifecycle_cost_known": false,
+  "production_accepted": false,
+  "conditions": {
+    "empty": {
+      "planned": 8,
+      "top1_candidate_rank_correct": 0,
+      "oracle_gold_in_candidate_space": 8,
+      "scored_candidate_hypotheses": 26,
+      "prompt_tokens": 1581,
+      "measured_inference_seconds": 14.922107252000103
+    },
+    "hybrid": {
+      "planned": 8,
+      "top1_candidate_rank_correct": 5,
+      "oracle_gold_in_candidate_space": 8,
+      "scored_candidate_hypotheses": 26,
+      "prompt_tokens": 5967,
+      "measured_inference_seconds": 28.451807554999846
+    },
+    "entity_time": {
+      "planned": 8,
+      "top1_candidate_rank_correct": 8,
+      "oracle_gold_in_candidate_space": 8,
+      "scored_candidate_hypotheses": 26,
+      "prompt_tokens": 3555,
+      "measured_inference_seconds": 19.33712453199996
+    },
+    "organized": {
+      "planned": 8,
+      "top1_candidate_rank_correct": 8,
+      "oracle_gold_in_candidate_space": 8,
+      "scored_candidate_hypotheses": 26,
+      "prompt_tokens": 3278,
+      "measured_inference_seconds": 19.15741202199979
+    },
+    "program_support": {
+      "planned": 8,
+      "top1_candidate_rank_correct": 8,
+      "oracle_gold_in_candidate_space": 8,
+      "scored_candidate_hypotheses": 26,
+      "prompt_tokens": 3278,
+      "measured_inference_seconds": 19.054143405000218
+    },
+    "without_prerequisite": {
+      "planned": 8,
+      "top1_candidate_rank_correct": 4,
+      "oracle_gold_in_candidate_space": 8,
+      "scored_candidate_hypotheses": 26,
+      "prompt_tokens": 2142,
+      "measured_inference_seconds": 16.25471970000001
+    }
+  },
+  "explanation": "Target labels opened only after 48 score rows were fsynced. Candidate values were obtained from full original source scopes, including material not delivered in individual arms; this is an answer-space oracle, not deployable reader success or memory gain. Full raw 48-row scores are supplied in the conversation evidence attachment and are NOT claimed to be uploaded by this summary."
+}

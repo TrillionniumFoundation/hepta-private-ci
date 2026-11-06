@@ -1,0 +1,97 @@
+name: MemoryCell eight-file AST-safe Ruff recovery
+on:
+  push:
+    branches: ["codex/memory-cell-evidence-20261008"]
+    paths: [".github/workflows/hepta-memory-eight-format-repair.yml"]
+permissions:
+  contents: write
+  actions: read
+concurrency:
+  group: memorycell-eight-ast-format
+  cancel-in-progress: false
+jobs:
+  checked-format:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: true
+      - uses: ./.github/actions/setup-ci
+      - name: Latest-head exact Ruff and frozen source-regression validation
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/hepta-eight-format
+          python3 -m pip install --user uv==0.8.22
+          export PATH="$HOME/.local/bin:$PATH"
+          branch=codex/memory-cell-evidence-20261008
+          base=78fdb0cf8537e3a84fc6e0a849707559c80881e8
+          git fetch --no-tags origin "$base"
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          for attempt in 1 2 3 4; do
+            git fetch --no-tags origin "refs/heads/$branch"
+            source_sha=$(git rev-parse FETCH_HEAD)
+            git checkout --detach "$source_sha"
+            git reset --hard "$source_sha"
+            printf '%s\n' "$source_sha" > /tmp/hepta-eight-format/source-sha.txt
+            python3 - <<'PY'
+          import ast, json, pathlib, subprocess
+          names = [
+              "locomo_frozen_reader_pair.py",
+              "locomo_neighbor_retrieval.py",
+              "locomo_reader_paired_cost.py",
+              "stem_cross_cohort_gate.py",
+              "test_locomo_frozen_reader_pair.py",
+              "test_locomo_neighbor_retrieval.py",
+              "test_locomo_reader_paired_cost.py",
+              "test_stem_cross_cohort_gate.py",
+          ]
+          paths = [pathlib.Path("scripts/memory_cell") / name for name in names]
+          old = {}
+          for path in paths:
+              if path.is_symlink() or not path.is_file() or not 0 < path.stat().st_size < 256000:
+                  raise ValueError("nonregular/unbounded formatting input: " + str(path))
+              old[str(path)] = ast.dump(ast.parse(path.read_text(encoding="utf-8")))
+          subprocess.run(["uv", "run", "--frozen", "--project", "scripts", "ruff", "format", *map(str, paths)], check=True)
+          for name, before in old.items():
+              after = ast.dump(ast.parse(pathlib.Path(name).read_text(encoding="utf-8")))
+              if before != after:
+                  raise ValueError("Ruff changed Python AST: " + name)
+          changed = set(subprocess.check_output(["git", "diff", "--name-only"], text=True).splitlines())
+          if changed - set(old):
+              raise ValueError("Ruff modified unapproved paths: " + repr(sorted(changed - set(old))))
+          pathlib.Path("/tmp/hepta-eight-format/changed.json").write_text(json.dumps(sorted(changed)))
+          PY
+            git diff --check
+            just fmt --check --base "$base" 2>&1 | tee /tmp/hepta-eight-format/format-check.log
+            PYTHONPATH=scripts/memory_cell python3 -m unittest -v test_locomo_frozen_reader_pair test_locomo_neighbor_retrieval test_locomo_reader_paired_cost test_stem_cross_cohort_gate 2>&1 | tee /tmp/hepta-eight-format/tests.log
+            git add -u -- scripts/memory_cell
+            git diff --cached --check
+            if git diff --cached --quiet; then
+              echo "Already Ruff-clean" | tee /tmp/hepta-eight-format/result.txt
+              exit 0
+            fi
+            git commit -m 'style(memory-cell): AST-identical eight-file LoCoMo and nonpromotion Ruff repair'
+            if git push origin "HEAD:refs/heads/$branch"; then
+              git rev-parse HEAD > /tmp/hepta-eight-format/commit.txt
+              echo "Forward-only formatting published" | tee /tmp/hepta-eight-format/result.txt
+              exit 0
+            fi
+            echo "Concurrent commit advanced branch; revalidating" >&2
+          done
+          exit 1
+      - name: Retain source and checks for independent review
+        if: always()
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/hepta-eight-format
+          git rev-parse HEAD > /tmp/hepta-eight-format/checked-head.txt
+          (cd /tmp/hepta-eight-format && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-eight-file-ast-format
+          path: /tmp/hepta-eight-format
+          if-no-files-found: error

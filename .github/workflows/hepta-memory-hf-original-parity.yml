@@ -1,0 +1,107 @@
+name: MemoryCell pinned original Hugging Face parity
+on:
+  pull_request:
+    paths:
+      - "scripts/memory_cell/hf_original_parity.py"
+      - "scripts/memory_cell/test_hf_original_parity.py"
+      - "scripts/memory_cell/offline_smol_reader.py"
+      - "scripts/memory_cell/prompt_representation_probe.py"
+      - ".github/workflows/hepta-memory-hf-original-parity.yml"
+permissions:
+  actions: read
+  contents: read
+concurrency:
+  group: memory-hf-parity-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: false
+jobs:
+  original-hf-parity:
+    if: github.event.pull_request.number == 1452 && github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-24.04
+    timeout-minutes: 55
+    env:
+      PYTHONPATH: scripts/memory_cell
+      HF_HUB_OFFLINE: "1"
+      TRANSFORMERS_OFFLINE: "1"
+      HF_HUB_DISABLE_IMPLICIT_TOKEN: "1"
+      HF_HUB_DISABLE_TELEMETRY: "1"
+      TOKENIZERS_PARALLELISM: "false"
+      OMP_NUM_THREADS: "2"
+      MKL_NUM_THREADS: "2"
+      TESTED_HEAD: ${{ github.event.pull_request.head.sha }}
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: "3.12"
+      - name: Install pinned CPU and HF reference runtime
+        run: |
+          set -euo pipefail
+          python -m venv "$RUNNER_TEMP/hf-parity-venv"
+          source "$RUNNER_TEMP/hf-parity-venv/bin/activate"
+          python -m pip install --no-cache-dir torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          python -m pip install --no-cache-dir \
+            transformers==4.49.0 tokenizers==0.21.1 safetensors==0.6.2 \
+            huggingface-hub==0.35.3 Jinja2==3.1.6 regex==2026.9.29 \
+            numpy==1.26.4
+          mkdir -p "$RUNNER_TEMP/hf-parity-report"
+          python -m pip freeze > "$RUNNER_TEMP/hf-parity-report/environment.txt"
+          git rev-parse HEAD > "$RUNNER_TEMP/hf-parity-report/source-head.txt"
+          sha256sum scripts/memory_cell/hf_original_parity.py \
+            scripts/memory_cell/offline_smol_reader.py \
+            scripts/memory_cell/prompt_representation_probe.py \
+            scripts/memory_cell/test_hf_original_parity.py \
+            > "$RUNNER_TEMP/hf-parity-report/source-SHA256SUMS"
+      - name: Reject unsafe inputs and incomplete 64-request matrices
+        run: |
+          set -euo pipefail
+          source "$RUNNER_TEMP/hf-parity-venv/bin/activate"
+          python -m unittest discover -s scripts/memory_cell -p 'test_hf_original_parity.py' -v \
+            2>&1 | tee "$RUNNER_TEMP/hf-parity-report/unit-tests.log"
+      - name: Download original exact source and original model artifacts
+        run: |
+          set -euo pipefail
+          gh api -H 'Accept: application/vnd.github+json' \
+            /repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11586991191/zip \
+            > "$RUNNER_TEMP/original-smol-archive.zip"
+          gh api -H 'Accept: application/vnd.github+json' \
+            /repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11827287296/zip \
+            > "$RUNNER_TEMP/original-event-archive.zip"
+      - name: Verify exact original archive bytes and safely stage reader
+        run: |
+          set -euo pipefail
+          source "$RUNNER_TEMP/hf-parity-venv/bin/activate"
+          python scripts/memory_cell/hf_original_parity.py stage \
+            "$RUNNER_TEMP/original-smol-archive.zip" \
+            "$RUNNER_TEMP/original-reader" \
+            | tee "$RUNNER_TEMP/hf-parity-report/model-stage.json"
+      - name: Actual official HF fast tokenizer, logits and greedy comparison
+        run: |
+          set -euo pipefail
+          source "$RUNNER_TEMP/hf-parity-venv/bin/activate"
+          python scripts/memory_cell/hf_original_parity.py audit \
+            "$RUNNER_TEMP/original-event-archive.zip" \
+            "$RUNNER_TEMP/original-reader" \
+            "$RUNNER_TEMP/hf-parity-execution" \
+            --tested-commit "$TESTED_HEAD"
+          cp "$RUNNER_TEMP/hf-parity-execution/hf-parity.json" \
+            "$RUNNER_TEMP/hf-parity-report/hf-parity.json"
+      - name: Retain negative evidence but NEVER upload model/source private bytes
+        if: always()
+        run: |
+          mkdir -p "$RUNNER_TEMP/hf-parity-report"
+          if [ -f "$RUNNER_TEMP/hf-parity-execution/hf-parity.json" ]; then
+            cp "$RUNNER_TEMP/hf-parity-execution/hf-parity.json" \
+              "$RUNNER_TEMP/hf-parity-report/hf-parity.json"
+          fi
+          (cd "$RUNNER_TEMP/hf-parity-report" && \
+            find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 -r sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-hf-original-parity
+          path: ${{ runner.temp }}/hf-parity-report
+          if-no-files-found: error

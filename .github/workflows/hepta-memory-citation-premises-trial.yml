@@ -1,0 +1,165 @@
+name: MemoryCell frozen Reader premise-citation contrast
+on:
+  push:
+    branches:
+      - "codex/memory-cell-evidence-20261008"
+    paths:
+      - ".github/workflows/hepta-memory-citation-premises-trial.yml"
+      - "scripts/memory_cell/event_citation_prompt_trial.py"
+      - "scripts/memory_cell/test_event_citation_prompt_trial.py"
+      - "scripts/memory_cell/test_event_citation_host_contract.py"
+      - "scripts/memory_cell/strong_rag_host_gate.py"
+      - "scripts/memory_cell/test_strong_rag_host_gate.py"
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: hepta-memory-citation-premises-${{ github.sha }}
+  cancel-in-progress: false
+jobs:
+  prompt-contracts:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 15
+    env:
+      PYTHONPATH: scripts/memory_cell
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Fail fast on incomplete controls, answer repair or impossible labels
+        run: |
+          set -euo pipefail
+          python3 -m py_compile scripts/memory_cell/event_citation_prompt_trial.py scripts/memory_cell/test_event_citation_prompt_trial.py
+          python3 -m unittest discover -s scripts/memory_cell -p 'test_event_citation_prompt_trial.py' -v
+          python3 -m unittest discover -s scripts/memory_cell -p 'test_source_write_effects.py' -v
+          python3 -m unittest discover -s scripts/memory_cell -p 'test_strong_rag_host_gate.py' -v
+          python3 -m unittest discover -s scripts/memory_cell -p 'test_event_citation_host_contract.py' -v
+      - name: Keep repository formatting strict
+        run: |
+          set -euo pipefail
+          # scripts/pyproject.toml uses the seven-day exclude-newer syntax;
+          # use an exact, compatible uv rather than muting the fmt gate.
+          python3 -m pip install --user uv==0.12.13
+          export PATH="$HOME/.local/bin:$PATH"
+          uv run --frozen --project scripts ruff format --check scripts/memory_cell/event_citation_prompt_trial.py scripts/memory_cell/test_event_citation_prompt_trial.py
+  actual-frozen-reader:
+    needs: prompt-contracts
+    # This BF16/eager Qwen CPU path must meet the *actual VM* hardware gate.
+    # Previous model-free host scouting found eligible BF16 on Ubuntu 22.04,
+    # but the OS label alone is NEVER treated as CPU or latency qualification.
+    runs-on: ubuntu-22.04
+    timeout-minutes: 330
+    env:
+      PYTHONPATH: scripts/memory_cell
+      HF_HUB_DISABLE_IMPLICIT_TOKEN: "1"
+      TOKENIZERS_PARALLELISM: "false"
+      OMP_NUM_THREADS: "2"
+      MKL_NUM_THREADS: "2"
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Preserve original Python 3.12 environment on BF16-scouted runner
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+        with:
+          python-version: "3.12"
+      - name: Check actual x86_64 BF16 hardware before downloads
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/premise-result
+          python3 scripts/memory_cell/strong_rag_host_gate.py --output /tmp/premise-result/host-qualification.json
+      - name: Restore the original pinned source/candidate/task archive
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/premise-input /tmp/premise-result
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11669174727/zip > /tmp/premise-input.zip
+          python3 - <<'PY'
+          from pathlib import Path, PurePosixPath
+          import hashlib
+          import stat
+          import zipfile
+          archive = Path('/tmp/premise-input.zip')
+          data = archive.read_bytes()
+          assert 0 < len(data) < 64 * 1024 * 1024
+          assert hashlib.sha256(data).hexdigest() == '23e9d44b8d2dbe756c7c33031e18853c83326458a37925d4d368881145bf142b'
+          with zipfile.ZipFile(archive) as z:
+              entries = z.infolist()
+              assert 0 < len(entries) <= 512
+              assert sum(e.file_size for e in entries) <= 64 * 1024 * 1024
+              seen = set()
+              for entry in entries:
+                  name = entry.filename
+                  path = PurePosixPath(name)
+                  assert name not in seen and not path.is_absolute() and '..' not in path.parts
+                  assert '\\' not in name and not stat.S_ISLNK(entry.external_attr >> 16)
+                  seen.add(name)
+                  if entry.is_dir():
+                      continue
+                  dest = Path('/tmp/premise-input') / path
+                  dest.parent.mkdir(parents=True, exist_ok=True)
+                  dest.write_bytes(z.read(entry))
+          PY
+      - name: Verify exact original eight tasks before model download
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          from event_reader_experiment import preflight
+          plan, originals = preflight(
+              Path('/tmp/premise-input/plan'),
+              Path('/tmp/premise-input/observations'),
+              '9840a25487af444914dca24c818d98ff798ebc1610ea8dfdd827187c31ad1897',
+          )
+          assert len(plan['cases']) == 8 and len(originals) >= 8
+          print('original plan, scopes, frozen candidate pools: verified')
+          PY
+      - name: Match the original locked CPU training/research environment
+        run: |
+          set -euo pipefail
+          python3 -m venv /tmp/premise-python
+          /tmp/premise-python/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          /tmp/premise-python/bin/pip install -r /tmp/premise-input/environment.txt
+          /tmp/premise-python/bin/pip freeze > /tmp/premise-result/environment.txt
+          diff -u /tmp/premise-input/environment.txt /tmp/premise-result/environment.txt
+          /tmp/premise-python/bin/python -m unittest discover -s scripts/memory_cell -p 'test_event_citation_prompt_trial.py' -v 2>&1 | tee /tmp/premise-result/tests.log
+      - name: Stage exactly the pinned Qwen research Reader, no alternate model
+        run: |
+          set -euo pipefail
+          /tmp/premise-python/bin/python scripts/memory_cell/reader_reference.py stage qwen-3b /tmp/premise-model
+          cp /tmp/premise-model/stage.json /tmp/premise-model/inventory.json /tmp/premise-model/publisher.json /tmp/premise-result/
+          sha256sum /tmp/premise-model/stage.json > /tmp/premise-result/stage-pin.txt
+      - name: Generate 8 x 4 x 2 actually matched answers, then score
+        env:
+          HF_HUB_OFFLINE: "1"
+          TRANSFORMERS_OFFLINE: "1"
+        run: |
+          set -euo pipefail
+          export HEPTA_MEMORY_TESTED_COMMIT="$GITHUB_SHA"
+          /usr/bin/time -v -o /tmp/premise-result/resource.txt \
+            /tmp/premise-python/bin/python scripts/memory_cell/event_citation_prompt_trial.py \
+            /tmp/premise-input/plan /tmp/premise-input/observations \
+            /tmp/premise-model /tmp/premise-result/evaluation \
+            --plan-sha 9840a25487af444914dca24c818d98ff798ebc1610ea8dfdd827187c31ad1897 \
+            --stage-sha "$(cut -d ' ' -f1 /tmp/premise-result/stage-pin.txt)" \
+            2>&1 | tee /tmp/premise-result/experiment.log
+      - name: Preserve original raw answers, costs, failures and source hashes
+        if: always()
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/premise-result/source
+          cp scripts/memory_cell/event_citation_prompt_trial.py scripts/memory_cell/test_event_citation_prompt_trial.py /tmp/premise-result/source/
+          cp scripts/memory_cell/test_event_citation_host_contract.py scripts/memory_cell/strong_rag_host_gate.py scripts/memory_cell/test_strong_rag_host_gate.py /tmp/premise-result/source/
+          git rev-parse HEAD > /tmp/premise-result/tested-commit.txt
+          find /tmp/premise-result -name '*.safetensors' -type f -delete
+          (cd /tmp/premise-result && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-frozen-citation-premises-paired
+          path: /tmp/premise-result
+          if-no-files-found: error

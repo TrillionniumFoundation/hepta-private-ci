@@ -1,0 +1,136 @@
+{
+  "actual_calibration_calls": 40,
+  "actual_evaluation_calls": 72,
+  "all_actual_generations_and_replay_complete": true,
+  "by_arm": {
+    "empty": {
+      "correct": 0,
+      "correct_with_complete_declared_citations": 0,
+      "correct_with_event_path": 0,
+      "output_tokens": 60,
+      "planned": 8,
+      "prompt_tokens": 1630,
+      "seconds": 36.139
+    },
+    "entity_time": {
+      "correct": 8,
+      "correct_with_complete_declared_citations": 4,
+      "correct_with_event_path": 4,
+      "output_tokens": 105,
+      "planned": 8,
+      "prompt_tokens": 5752,
+      "seconds": 79.196
+    },
+    "hybrid_k4": {
+      "correct": 3,
+      "correct_with_complete_declared_citations": 1,
+      "correct_with_event_path": 1,
+      "output_tokens": 104,
+      "planned": 8,
+      "prompt_tokens": 10806,
+      "seconds": 136.044
+    },
+    "hybrid_k4_reversed": {
+      "correct": 3,
+      "correct_with_complete_declared_citations": 1,
+      "correct_with_event_path": 1,
+      "output_tokens": 105,
+      "planned": 8,
+      "prompt_tokens": 10806,
+      "seconds": 135.831
+    },
+    "hybrid_k6": {
+      "correct": 2,
+      "correct_with_complete_declared_citations": 0,
+      "correct_with_event_path": 0,
+      "output_tokens": 103,
+      "planned": 8,
+      "prompt_tokens": 15463,
+      "seconds": 194.104
+    },
+    "organized": {
+      "correct": 8,
+      "correct_with_complete_declared_citations": 4,
+      "correct_with_event_path": 4,
+      "output_tokens": 105,
+      "planned": 8,
+      "prompt_tokens": 5179,
+      "seconds": 73.517
+    },
+    "program_support": {
+      "correct": 8,
+      "correct_with_complete_declared_citations": 4,
+      "correct_with_event_path": 4,
+      "output_tokens": 105,
+      "planned": 8,
+      "prompt_tokens": 5179,
+      "seconds": 73.115
+    },
+    "selected_k": {
+      "correct": 5,
+      "correct_with_complete_declared_citations": 3,
+      "correct_with_event_path": 3,
+      "output_tokens": 101,
+      "planned": 8,
+      "prompt_tokens": 3961,
+      "seconds": 62.51
+    },
+    "single_hop": {
+      "correct": 4,
+      "correct_with_complete_declared_citations": 4,
+      "correct_with_event_path": 4,
+      "output_tokens": 90,
+      "planned": 8,
+      "prompt_tokens": 4575,
+      "seconds": 66.037
+    }
+  },
+  "calibrated_k_stable_under_loo": false,
+  "calibration_leave_one_question_out_unstable": true,
+  "frozen_calibrated_k": 1,
+  "generating_commit": "6304b451268c73f3d1a605985226b102df841bbf",
+  "graph_task_accuracy_superiority_on_this_development_set": false,
+  "human_certified_citation_semantics": false,
+  "independent_future_source_families": 0,
+  "model_artifact_id": 11743043427,
+  "model_identity": "f9aa334d3a02cabececea367c283caf66ef9875132907ebc34dac1c8d3a7f225",
+  "model_zip_sha256": "7a99db30fb5b1202fcd43073d22589b84315046dd34044277cc46351f1cbece8",
+  "organized_correct_with_full_public_path": 4,
+  "organized_extra_correct_over_complete_path": 0,
+  "organized_saved_input_tokens_vs_complete_path": 573,
+  "paired_effects": {
+    "calibrated_topk_vs_fixed_four": {
+      "difference_eighths": 2,
+      "losses": 0,
+      "ties": 6,
+      "wins": 2
+    },
+    "complete_path_vs_single_hop": {
+      "difference_eighths": 4,
+      "losses": 0,
+      "ties": 4,
+      "wins": 4
+    },
+    "organized_vs_calibrated_topk": {
+      "difference_eighths": 3,
+      "losses": 0,
+      "ties": 5,
+      "wins": 3
+    },
+    "organized_vs_complete_path": {
+      "difference_eighths": 0,
+      "losses": 0,
+      "ties": 8,
+      "wins": 0
+    }
+  },
+  "parametric_memory_training_qualified": false,
+  "planned_real_model_calls": 112,
+  "production_accepted": false,
+  "research_next_action": "Evaluate frozen-reader evidence selection and complete citation paths on independent source-family tasks; retest k calibration stability before considering parameter-memory learning.",
+  "research_source_run_id": 38224780900,
+  "schema": "hepta.memory-cell.strong-rag-completed-disposition.v1",
+  "separate_replay_artifact_id": 11748040166,
+  "separate_replay_zip_sha256": "2445895a7d51e3173837471aa462cebede29eb3ec89653af3bd17e73b6114071",
+  "statistical_superiority_established": false
+}

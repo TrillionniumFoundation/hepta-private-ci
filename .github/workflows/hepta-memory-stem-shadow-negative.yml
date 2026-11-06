@@ -1,0 +1,65 @@
+name: MemoryCell pinned shadow scale negative gate
+on:
+  push:
+    branches: ["codex/memory-cell-evidence-20261008"]
+    paths:
+      - "scripts/memory_cell/stem_shadow_negative_gate.py"
+      - "scripts/memory_cell/test_stem_shadow_negative_gate.py"
+      - ".github/workflows/hepta-memory-stem-shadow-negative.yml"
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: memory-stem-shadow-negative-${{ github.sha }}
+  cancel-in-progress: false
+jobs:
+  original-shadow-negative-audit:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      PYTHONPATH: scripts/memory_cell
+      PYTHONDONTWRITEBYTECODE: "1"
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Complete synthetic no-leakage and failure-injection suite
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/stem-shadow-negative
+          git rev-parse HEAD > /tmp/stem-shadow-negative/auditing-commit.txt
+          git rev-parse HEAD^{tree} > /tmp/stem-shadow-negative/auditing-tree.txt
+          python3 -m compileall -q scripts/memory_cell/stem_shadow_negative_gate.py scripts/memory_cell/test_stem_shadow_negative_gate.py
+          python3 -m unittest -v test_stem_shadow_negative_gate 2>&1 | tee /tmp/stem-shadow-negative/tests.log
+      - name: Download original frozen model experiment receipts only
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11700958394/zip > /tmp/pinned-stem-shadow-953c65d9.zip
+          echo "3fe286f84d7f719ebe9ee300d3772aec1842dafb5c97ab9dfdb792eb4daaf43c  /tmp/pinned-stem-shadow-953c65d9.zip" | sha256sum --check --status
+      - name: Enforce complete 480-row original shadow negative verdict
+        run: |
+          set -euo pipefail
+          python3 scripts/memory_cell/stem_shadow_negative_gate.py \
+            --archive /tmp/pinned-stem-shadow-953c65d9.zip \
+            --output /tmp/stem-shadow-negative/audit.json \
+            2>&1 | tee /tmp/stem-shadow-negative/audit.log
+      - name: Retain verifier source and every failure
+        if: always()
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/stem-shadow-negative/source
+          cp scripts/memory_cell/stem_shadow_negative_gate.py /tmp/stem-shadow-negative/source/
+          cp scripts/memory_cell/test_stem_shadow_negative_gate.py /tmp/stem-shadow-negative/source/
+          cp scripts/memory_cell/stem_audit_archive.py /tmp/stem-shadow-negative/source/
+          cp .github/workflows/hepta-memory-stem-shadow-negative.yml /tmp/stem-shadow-negative/source/
+          (cd /tmp/stem-shadow-negative && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-stem-shadow-negative-gate
+          path: /tmp/stem-shadow-negative
+          if-no-files-found: error

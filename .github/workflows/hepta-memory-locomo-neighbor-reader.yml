@@ -1,0 +1,166 @@
+name: MemoryCell LoCoMo neighbor versus lexical k8 actual frozen Reader
+on:
+  push:
+    branches: [codex/memory-cell-evidence-20261008]
+    paths:
+      - scripts/memory_cell/locomo_neighbor_reader_pair.py
+      - scripts/memory_cell/test_locomo_neighbor_reader_pair.py
+      - .github/workflows/hepta-memory-locomo-neighbor-reader.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: memory-locomo-neighbor-reader-${{ github.sha }}
+  cancel-in-progress: false
+jobs:
+  source-only:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      PYTHONPATH: scripts/memory_cell
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Test all new and inherited source-only protocols
+        run: |
+          set -euo pipefail
+          python3 -m unittest discover -s scripts/memory_cell -p 'test_locomo_neighbor_reader_pair.py' -v
+          python3 -m unittest discover -s scripts/memory_cell -p 'test_locomo_neighbor_retrieval.py' -v
+          python3 -m pip install --user uv==0.8.22
+          if ! python3 -m uv run --frozen --project scripts ruff format --check scripts/memory_cell/locomo_neighbor_reader_pair.py scripts/memory_cell/test_locomo_neighbor_reader_pair.py; then
+            python3 -m uv run --frozen --project scripts ruff format --diff scripts/memory_cell/locomo_neighbor_reader_pair.py scripts/memory_cell/test_locomo_neighbor_reader_pair.py || true
+            exit 1
+          fi
+      - name: Freeze all source-only decisions before staging any QA label
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/neighbor-public /tmp/neighbor-plan
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11728164433/zip > /tmp/neighbor-public/locomo-public-38206328621.zip
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11729394703/zip > /tmp/neighbor-public/locomo-frozen-decisions-38206328621.zip
+          printf '%s  %s\n' \
+            '51e18514c68f31220f4dcd072914f6e015aa9733b6c5b4a4d4e3b14dac25ec37' /tmp/neighbor-public/locomo-public-38206328621.zip \
+            '3fb1c3272314d31b42ece1c74aa0250e2ecb06c6060cb011071d4654fef6f097' /tmp/neighbor-public/locomo-frozen-decisions-38206328621.zip | sha256sum -c -
+          python3 scripts/memory_cell/locomo_neighbor_reader_pair.py plan /tmp/neighbor-public /tmp/neighbor-plan/record
+          git rev-parse HEAD > /tmp/neighbor-plan/source-commit.txt
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: neighbor-source-only
+          path: /tmp/neighbor-plan
+          if-no-files-found: error
+
+  reader:
+    needs: source-only
+    runs-on: ubuntu-24.04
+    timeout-minutes: 330
+    env:
+      PYTHONPATH: scripts/memory_cell
+      GH_TOKEN: ${{ github.token }}
+      HF_HUB_DISABLE_IMPLICIT_TOKEN: "1"
+      HF_HUB_DISABLE_XET: "1"
+      TOKENIZERS_PARALLELISM: "false"
+      OMP_NUM_THREADS: "2"
+      MKL_NUM_THREADS: "2"
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+        with:
+          python-version: "3.12"
+      - name: Require accelerated BF16 hardware before downloading Qwen
+        run: |
+          mkdir -p /tmp/neighbor-read
+          python3 scripts/memory_cell/strong_rag_host_gate.py --output /tmp/neighbor-read/host.json
+      - name: Only stage source and frozen neighbor decisions, never QA gold
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/neighbor-public /tmp/neighbor-plan
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11728164433/zip > /tmp/neighbor-public/locomo-public-38206328621.zip
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11729394703/zip > /tmp/neighbor-public/locomo-frozen-decisions-38206328621.zip
+          gh run download "$GITHUB_RUN_ID" -n neighbor-source-only -D /tmp/neighbor-plan
+          test "$(cat /tmp/neighbor-plan/source-commit.txt)" = "$GITHUB_SHA"
+      - name: Lock Qwen2.5-3B research environment and model
+        run: |
+          set -euo pipefail
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11669174727/zip > /tmp/neighbor-env.zip
+          python3 - <<'PY'
+          import hashlib
+          from pathlib import Path
+          from zipfile import ZipFile
+          p = Path("/tmp/neighbor-env.zip")
+          assert hashlib.sha256(p.read_bytes()).hexdigest() == "23e9d44b8d2dbe756c7c33031e18853c83326458a37925d4d368881145bf142b"
+          with ZipFile(p) as archive:
+              Path("/tmp/neighbor-env.txt").write_bytes(archive.read("environment.txt"))
+          PY
+          python3 -m venv /tmp/neighbor-python
+          /tmp/neighbor-python/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          /tmp/neighbor-python/bin/pip install -r /tmp/neighbor-env.txt
+          /tmp/neighbor-python/bin/pip freeze > /tmp/neighbor-read/environment.txt
+          diff -u /tmp/neighbor-env.txt /tmp/neighbor-read/environment.txt
+          /tmp/neighbor-python/bin/python scripts/memory_cell/reader_reference.py stage qwen-3b /tmp/neighbor-model
+          cp /tmp/neighbor-model/{stage,inventory,publisher}.json /tmp/neighbor-read/
+      - name: Actually generate 16 unmodified Qwen answers with neighbor evidence
+        env:
+          HF_HUB_OFFLINE: "1"
+          TRANSFORMERS_OFFLINE: "1"
+        run: |
+          set -euo pipefail
+          /usr/bin/time -v -o /tmp/neighbor-read/resource.log /tmp/neighbor-python/bin/python scripts/memory_cell/locomo_neighbor_reader_pair.py generate /tmp/neighbor-public /tmp/neighbor-plan/record /tmp/neighbor-model /tmp/neighbor-read/run
+      - name: Retain all raw answers, failures, provenance and exact source
+        if: always()
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/neighbor-read/source
+          cp scripts/memory_cell/locomo_neighbor_reader_pair.py scripts/memory_cell/locomo_neighbor_retrieval.py /tmp/neighbor-read/source/
+          git rev-parse HEAD > /tmp/neighbor-read/tested-commit.txt
+          (cd /tmp/neighbor-read && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: neighbor-actual-qwen
+          path: /tmp/neighbor-read
+          if-no-files-found: error
+
+  score:
+    needs: reader
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      PYTHONPATH: scripts/memory_cell
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Verify raw 16 responses and original 32 before opening gold
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/neighbor-public /tmp/neighbor-plan /tmp/neighbor-read /tmp/neighbor-score
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11728164433/zip > /tmp/neighbor-public/locomo-public-38206328621.zip
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11729394703/zip > /tmp/neighbor-public/locomo-frozen-decisions-38206328621.zip
+          gh run download "$GITHUB_RUN_ID" -n neighbor-source-only -D /tmp/neighbor-plan
+          gh run download "$GITHUB_RUN_ID" -n neighbor-actual-qwen -D /tmp/neighbor-read
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11763718022/zip > /tmp/original-qwen.zip
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11766482516/zip > /tmp/original-qwen-score.zip
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11728856834/zip > /tmp/evaluation-targets.zip
+          python3 scripts/memory_cell/locomo_neighbor_reader_pair.py score /tmp/neighbor-public /tmp/neighbor-plan/record /tmp/neighbor-read/run /tmp/evaluation-targets.zip /tmp/original-qwen.zip /tmp/original-qwen-score.zip /tmp/neighbor-score/result --expected-commit "$GITHUB_SHA"
+      - name: Retain exact scorer code and all failed stage receipts
+        if: always()
+        run: |
+          set -euo pipefail
+          cp scripts/memory_cell/locomo_neighbor_reader_pair.py /tmp/neighbor-score/
+          git rev-parse HEAD > /tmp/neighbor-score/tested-commit.txt
+          (cd /tmp/neighbor-score && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: neighbor-qwen-paired-effect
+          path: /tmp/neighbor-score
+          if-no-files-found: error

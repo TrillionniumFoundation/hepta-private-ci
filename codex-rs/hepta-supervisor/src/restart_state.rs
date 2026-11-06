@@ -13,7 +13,6 @@ use crate::restart_journal::read_restart_journal;
 use crate::restart_journal::restore_window;
 use crate::restart_journal::unix_millis_now;
 use crate::restart_journal::write_restart_journal;
-use crate::restart_policy::clear_restart_budget;
 use crate::runtime::AgentSlot;
 
 impl<D: ProcessDriver> Supervisor<D> {
@@ -34,34 +33,10 @@ impl<D: ProcessDriver> Supervisor<D> {
         self.persist_restart_budget_for_release(agent_id, slot, release_id)
     }
 
-    pub(crate) fn reset_restart_budget_for_release(
-        &self,
-        agent_id: &AgentId,
-        slot: &mut AgentSlot<D::Process>,
-        release_id: ReleaseId,
-    ) -> Result<(), SupervisorError> {
-        reset_slot_restart_budget(slot);
-        self.persist_restart_budget_for_release(agent_id, slot, release_id)
-    }
-
-    pub(crate) fn reset_restart_budget(
-        &self,
-        agent_id: &AgentId,
-        slot: &mut AgentSlot<D::Process>,
-    ) -> Result<(), SupervisorError> {
-        let release_id = slot
-            .active_release
-            .as_ref()
-            .map(|release| release.release_id().clone())
-            .ok_or_else(|| {
-                SupervisorError::Invalid(format!(
-                    "agent {agent_id} has no active release for restart reset"
-                ))
-            })?;
-        self.reset_restart_budget_for_release(agent_id, slot, release_id)
-    }
-
-    pub(crate) fn restore_restart_budget(
+    /// Restore only the Matrix companion projection. Main-process claims are
+    /// owned by the canonical restart-budget record and must survive this
+    /// recovery pass untouched.
+    pub(crate) fn restore_matrix_restart_budget(
         &self,
         agent_id: &AgentId,
         slot: &mut AgentSlot<D::Process>,
@@ -82,41 +57,44 @@ impl<D: ProcessDriver> Supervisor<D> {
             .as_ref()
             .map(|release| release.release_id().clone())
         else {
-            reset_slot_restart_budget(slot);
+            // Keep the durable history when the selected release is revoked
+            // or unavailable; do not erase it during recovery.
             return Ok(());
         };
         if journal.release_id != release_id {
-            return self.reset_restart_budget_for_release(agent_id, slot, release_id);
+            // A different release gets a fresh Matrix projection while the
+            // canonical main-process budget remains unchanged.
+            return self.persist_restart_budget_for_release(agent_id, slot, release_id);
         }
 
-        let now_unix_millis = unix_millis_now()?;
-        let (main_attempts, main_started, main_wall, main_exhausted) =
-            restore_window(&journal.main, now, now_unix_millis);
-        let (matrix_attempts, matrix_started, matrix_wall, matrix_exhausted) =
-            restore_window(&journal.matrix, now, now_unix_millis);
-        slot.restart_attempt = main_attempts;
-        slot.restart_window_started_at = main_started;
-        slot.restart_window_started_unix_millis = main_wall;
-        slot.restart_retry_at = None;
-        slot.restart_automatic = false;
-        slot.restart_after_exit = false;
-        slot.restart_exhausted = main_exhausted;
-        slot.matrix.restart_attempt = matrix_attempts;
-        slot.matrix.restart_window_started_at = matrix_started;
-        slot.matrix.restart_window_started_unix_millis = matrix_wall;
-        slot.matrix.retry_at = None;
+        let (attempts, started, wall, exhausted) =
+            restore_window(&journal.matrix, now, unix_millis_now()?);
+        slot.matrix.restart_attempt = attempts;
+        slot.matrix.restart_window_started_at = started;
+        slot.matrix.restart_window_started_unix_millis = wall;
+        // The companion journal has no retry deadline. Preserve a conservative
+        // backoff before allowing another Matrix start after recovery.
+        slot.matrix.retry_at = if attempts > 0 && !exhausted {
+            Some(crate::runtime::deadline(
+                now,
+                crate::restart_policy::restart_delay(attempts),
+            )?)
+        } else {
+            None
+        };
         slot.matrix.restart_after_exit = false;
-        slot.matrix.restart_exhausted = matrix_exhausted;
+        slot.matrix.restart_exhausted = exhausted;
+        if exhausted {
+            slot.matrix.degraded = true;
+            slot.matrix.last_error =
+                Some("Matrix restart budget exhausted during recovery".to_string());
+        }
 
-        let normalized_main = DurableRestartWindow {
-            attempts: main_attempts,
-            window_started_unix_millis: main_wall,
+        let normalized = DurableRestartWindow {
+            attempts,
+            window_started_unix_millis: wall,
         };
-        let normalized_matrix = DurableRestartWindow {
-            attempts: matrix_attempts,
-            window_started_unix_millis: matrix_wall,
-        };
-        if normalized_main != journal.main || normalized_matrix != journal.matrix {
+        if normalized != journal.matrix {
             self.persist_restart_budget_for_release(agent_id, slot, release_id)?;
         }
         Ok(())
@@ -142,25 +120,4 @@ impl<D: ProcessDriver> Supervisor<D> {
         )?;
         write_restart_journal(record.layout.run_root(), &journal)
     }
-}
-
-fn reset_slot_restart_budget<P>(slot: &mut AgentSlot<P>) {
-    slot.restart_pending = false;
-    clear_restart_budget(
-        &mut slot.restart_attempt,
-        &mut slot.restart_window_started_at,
-    );
-    slot.restart_window_started_unix_millis = None;
-    slot.restart_retry_at = None;
-    slot.restart_automatic = false;
-    slot.restart_after_exit = false;
-    slot.restart_exhausted = false;
-    clear_restart_budget(
-        &mut slot.matrix.restart_attempt,
-        &mut slot.matrix.restart_window_started_at,
-    );
-    slot.matrix.restart_window_started_unix_millis = None;
-    slot.matrix.retry_at = None;
-    slot.matrix.restart_after_exit = false;
-    slot.matrix.restart_exhausted = false;
 }

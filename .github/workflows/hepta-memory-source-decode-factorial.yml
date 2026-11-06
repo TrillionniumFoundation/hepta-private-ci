@@ -1,0 +1,66 @@
+name: MemoryCell source decoder attribution
+on:
+  push:
+    branches:
+      - "codex/memory-cell-evidence-20261008"
+    paths:
+      - "scripts/memory_cell/source_decode_factorial.py"
+      - "scripts/memory_cell/test_source_decode_factorial.py"
+      - ".github/workflows/hepta-memory-source-decode-factorial.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  decoder-contracts:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      PYTHONPATH: scripts/memory_cell
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: ./.github/actions/setup-ci
+      - name: Python decoding factorial contracts
+        run: |
+          set -euo pipefail
+          mkdir /tmp/source-decode-validation
+          python3 -m unittest discover -s scripts/memory_cell -p 'test_source_decode_factorial.py' -v 2>&1 | tee /tmp/source-decode-validation/tests.log
+      - name: Preserve scoped formatter and repository formatter separately
+        env:
+          BASE: 78fdb0cf8537e3a84fc6e0a849707559c80881e8
+        run: |
+          set -euo pipefail
+          python3 -m pip install uv==0.8.22
+          # Read-only exact Ruff diff retained on failure, never autoformat
+          # or weaken either the scoped or repository-wide check.
+          uv run --frozen --project scripts ruff format --diff scripts/memory_cell/source_decode_factorial.py scripts/memory_cell/test_source_decode_factorial.py > /tmp/source-decode-validation/scoped-format.patch 2>&1 || true
+          cat /tmp/source-decode-validation/scoped-format.patch
+          uv run --frozen --project scripts ruff format --check scripts/memory_cell/source_decode_factorial.py scripts/memory_cell/test_source_decode_factorial.py 2>&1 | tee /tmp/source-decode-validation/scoped-format.log
+          git fetch --no-tags --depth=1 origin "$BASE"
+          # Preserve the exact repository-pinned Ruff patch for the six
+          # unrelated concurrent files still blocking just fmt --check.
+          uv run --frozen --project scripts ruff format --diff \
+            scripts/memory_cell/source_value_binding_audit.py \
+            scripts/memory_cell/stem_native_nonpromotion.py \
+            scripts/memory_cell/strong_rag_fourrun_audit.py \
+            scripts/memory_cell/test_source_value_binding_audit.py \
+            scripts/memory_cell/test_stem_native_nonpromotion.py \
+            scripts/memory_cell/test_strong_rag_fourrun_audit.py \
+            > /tmp/source-decode-validation/repository-python.patch 2>&1 || true
+          cat /tmp/source-decode-validation/repository-python.patch
+          just fmt --check --base "$BASE" 2>&1 | tee /tmp/source-decode-validation/repository-format.log
+      - name: Keep exact tested source and failure diagnostics
+        if: always()
+        run: |
+          set -euo pipefail
+          cp scripts/memory_cell/source_decode_factorial.py scripts/memory_cell/test_source_decode_factorial.py /tmp/source-decode-validation/
+          git rev-parse HEAD > /tmp/source-decode-validation/tested-sha.txt
+          (cd /tmp/source-decode-validation && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-source-decoder-attribution
+          path: /tmp/source-decode-validation
+          if-no-files-found: error

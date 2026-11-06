@@ -1,0 +1,65 @@
+name: MemoryCell frozen public project family extension
+on:
+  push:
+    branches:
+      - "codex/memory-cell-evidence-20261008"
+    paths:
+      - "scripts/memory_cell/data/real-project-pr-independent-extension-20261012.json"
+      - "scripts/memory_cell/project_pr_family_extension.py"
+      - "scripts/memory_cell/test_project_pr_family_extension.py"
+      - ".github/workflows/hepta-memory-project-family-extension.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  original-source-precommit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      PYTHONPATH: scripts/memory_cell
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - uses: ./.github/actions/setup-ci
+      - name: Run exact frozen source-only regressions
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/memory-project-family
+          python3 -m unittest discover -s scripts/memory_cell \
+            -p 'test_project_pr_family_extension.py' -v \
+            2>&1 | tee /tmp/memory-project-family/tests.log
+      - name: Check Python formatting without weakening the PR-wide gate
+        run: |
+          set -euo pipefail
+          python3 -m pip install uv==0.8.22
+          uv run --frozen --project scripts ruff format --check \
+            scripts/memory_cell/project_pr_family_extension.py \
+            scripts/memory_cell/test_project_pr_family_extension.py \
+            2>&1 | tee /tmp/memory-project-family/format.log
+      - name: Emit unsigned source-only review worklist
+        run: |
+          set -euo pipefail
+          manifest=scripts/memory_cell/data/real-project-pr-independent-extension-20261012.json
+          previous=scripts/memory_cell/data/real-project-pr-source-cut-20261012.json
+          sha256sum "$manifest" > /tmp/memory-project-family/manifest.sha256
+          python3 scripts/memory_cell/project_pr_family_extension.py \
+            "$manifest" "$previous" /tmp/memory-project-family/unsigned-worklist.json \
+            --source-sha256 "$(sha256sum "$manifest" | cut -d ' ' -f1)" \
+            2>&1 | tee /tmp/memory-project-family/audit.json
+          git rev-parse HEAD > /tmp/memory-project-family/tested-commit.txt
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+      - name: Preserve source-only successes and failures
+        if: always()
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD > /tmp/memory-project-family/tested-commit.txt
+          (cd /tmp/memory-project-family && \
+            find . -type f ! -name SHA256SUMS -print0 | sort -z | \
+            xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-public-project-family-extension
+          path: /tmp/memory-project-family
+          if-no-files-found: error

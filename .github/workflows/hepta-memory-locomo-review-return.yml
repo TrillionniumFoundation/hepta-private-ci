@@ -1,0 +1,82 @@
+name: MemoryCell source-first LoCoMo review-return preflight
+on:
+  push:
+    branches:
+      - "codex/memory-cell-evidence-20261008"
+    paths:
+      - "scripts/memory_cell/locomo_review_reconciliation.py"
+      - "scripts/memory_cell/test_locomo_review_reconciliation.py"
+      - ".github/workflows/hepta-memory-locomo-review-return.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  original-unreviewed-return:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      PYTHONPATH: scripts/memory_cell
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Enforce unchanged Python style
+        run: |
+          set -euo pipefail
+          python3 -m pip install uv==0.8.22
+          uv run --frozen --project scripts ruff format --check \
+            scripts/memory_cell/locomo_review_reconciliation.py \
+            scripts/memory_cell/test_locomo_review_reconciliation.py
+      - name: Execute all focused source and reviewer-return regressions
+        run: |
+          set -euo pipefail
+          mkdir /tmp/locomo-review-return
+          python3 -m unittest discover -s scripts/memory_cell -p 'test_locomo_sufficiency_worklist.py' -v 2>&1 | tee /tmp/locomo-review-return/worklist-tests.log
+          python3 -m unittest discover -s scripts/memory_cell -p 'test_locomo_review_reconciliation.py' -v 2>&1 | tee /tmp/locomo-review-return/return-tests.log
+      - name: Rebuild original published unreviewed worklists without QA gold
+        run: |
+          set -euo pipefail
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11728164433/zip > /tmp/locomo-review-return/public.zip
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11729394703/zip > /tmp/locomo-review-return/decisions.zip
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11763718022/zip > /tmp/locomo-review-return/reader.zip
+          python3 scripts/memory_cell/locomo_sufficiency_worklist.py \
+            /tmp/locomo-review-return/public.zip \
+            /tmp/locomo-review-return/decisions.zip \
+            /tmp/locomo-review-return/reader.zip \
+            /tmp/locomo-review-return/packet
+      - name: Reject imaginary judgments or 100 percent citation precision
+        run: |
+          set -euo pipefail
+          python3 scripts/memory_cell/locomo_review_reconciliation.py template \
+            /tmp/locomo-review-return/packet /tmp/locomo-review-return/unsigned
+          python3 scripts/memory_cell/locomo_review_reconciliation.py audit \
+            /tmp/locomo-review-return/packet \
+            /tmp/locomo-review-return/unsigned/source-return.json \
+            /tmp/locomo-review-return/unsigned/answer-return.json \
+            /tmp/locomo-review-return/UNREVIEWED.json
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          d=json.loads(Path("/tmp/locomo-review-return/UNREVIEWED.json").read_text())
+          assert d["questions"]==16 and not d["production_accepted"]
+          assert d["independently_verified_semantic_precision"] is None
+          assert all(v["sufficiency_reviewed"] == v["answer_reviewed"] == v["citations_reviewed"] == 0 for v in d["arms"].values())
+          PY
+      - name: Preserve source, original review and any failures
+        if: always()
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/locomo-review-return/source
+          cp scripts/memory_cell/locomo_review_reconciliation.py scripts/memory_cell/test_locomo_review_reconciliation.py /tmp/locomo-review-return/source/
+          git rev-parse HEAD > /tmp/locomo-review-return/source/commit.txt
+          rm -f /tmp/locomo-review-return/public.zip /tmp/locomo-review-return/decisions.zip /tmp/locomo-review-return/reader.zip
+          (cd /tmp/locomo-review-return && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: locomo-review-returns-unreviewed
+          path: /tmp/locomo-review-return
+          if-no-files-found: error

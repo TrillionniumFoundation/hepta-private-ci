@@ -1,0 +1,156 @@
+name: MemoryCell matched LoCoMo frozen Reader answer format
+on:
+  push:
+    branches:
+      - codex/memory-cell-evidence-20261008
+    paths:
+      - scripts/memory_cell/locomo_publisher_format_trial.py
+      - scripts/memory_cell/test_locomo_publisher_format_trial.py
+      - .github/workflows/hepta-memory-locomo-publisher-format.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: memory-locomo-format-${{ github.sha }}
+  cancel-in-progress: false
+jobs:
+  protocol:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      PYTHONPATH: scripts/memory_cell
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Check strict-format pre-registration and paired scoring contracts
+        run: |
+          set -euo pipefail
+          python3 -m unittest discover -s scripts/memory_cell -p 'test_locomo_publisher_format_trial.py' -v
+          python3 -m unittest discover -s scripts/memory_cell -p 'test_locomo_publisher_support_reader.py' -v
+          python3 -m pip install uv==0.8.22
+          if ! uv run --frozen --project scripts ruff format --check \
+            scripts/memory_cell/locomo_publisher_format_trial.py \
+            scripts/memory_cell/test_locomo_publisher_format_trial.py; then
+            uv run --frozen --project scripts ruff format --diff \
+              scripts/memory_cell/locomo_publisher_format_trial.py \
+              scripts/memory_cell/test_locomo_publisher_format_trial.py || true
+            exit 1
+          fi
+  reader:
+    needs: protocol
+    runs-on: ubuntu-22.04
+    timeout-minutes: 90
+    env:
+      PYTHONPATH: scripts/memory_cell
+      GH_TOKEN: ${{ github.token }}
+      HF_HUB_DISABLE_IMPLICIT_TOKEN: "1"
+      HF_HUB_DISABLE_XET: "1"
+      TOKENIZERS_PARALLELISM: "false"
+      OMP_NUM_THREADS: "2"
+      MKL_NUM_THREADS: "2"
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+        with:
+          python-version: "3.12"
+      - name: Check host, stage original SOURCE ZIPs and original privileged plan
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/fmt-source /tmp/fmt-result
+          python3 scripts/memory_cell/strong_rag_host_gate.py --output /tmp/fmt-result/host.json
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11728164433/zip > /tmp/fmt-source/locomo-public-38206328621.zip
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11729394703/zip > /tmp/fmt-source/locomo-frozen-decisions-38206328621.zip
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11792575178/zip > /tmp/fmt-plan.zip
+          printf '%s  %s\n' \
+            51e18514c68f31220f4dcd072914f6e015aa9733b6c5b4a4d4e3b14dac25ec37 /tmp/fmt-source/locomo-public-38206328621.zip \
+            3fb1c3272314d31b42ece1c74aa0250e2ecb06c6060cb011071d4654fef6f097 /tmp/fmt-source/locomo-frozen-decisions-38206328621.zip \
+            66bc69310096b0226e90a8503df9d8d29645766066bbcf6acda7fd32241fb2b0 /tmp/fmt-plan.zip | sha256sum -c -
+      - name: Reconstruct exact Qwen/PyTorch/PEFT environment
+        run: |
+          set -euo pipefail
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11669174727/zip > /tmp/fmt-env.zip
+          python3 - <<'PY'
+          import hashlib, zipfile
+          from pathlib import Path
+          payload=Path('/tmp/fmt-env.zip').read_bytes()
+          assert hashlib.sha256(payload).hexdigest()=='23e9d44b8d2dbe756c7c33031e18853c83326458a37925d4d368881145bf142b'
+          with zipfile.ZipFile('/tmp/fmt-env.zip') as z:
+              Path('/tmp/fmt-env.txt').write_bytes(z.read('environment.txt'))
+          PY
+          python3 -m venv /tmp/fmt-python
+          /tmp/fmt-python/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          /tmp/fmt-python/bin/pip install -r /tmp/fmt-env.txt
+          /tmp/fmt-python/bin/pip freeze > /tmp/fmt-result/environment.txt
+          diff -u /tmp/fmt-env.txt /tmp/fmt-result/environment.txt
+      - name: Stage unchanged publisher-pinned Qwen2.5-3B-Instruct
+        run: |
+          set -euo pipefail
+          /tmp/fmt-python/bin/python scripts/memory_cell/reader_reference.py stage qwen-3b /tmp/fmt-model
+          cp /tmp/fmt-model/{publisher,inventory,stage}.json /tmp/fmt-result/
+      - name: Generate sixteen new source-identical strict-format answers
+        env:
+          HF_HUB_OFFLINE: "1"
+          TRANSFORMERS_OFFLINE: "1"
+        run: |
+          set -euo pipefail
+          /usr/bin/time -v -o /tmp/fmt-result/resource.log \
+            /tmp/fmt-python/bin/python scripts/memory_cell/locomo_publisher_format_trial.py \
+              generate /tmp/fmt-source /tmp/fmt-model /tmp/fmt-plan.zip /tmp/fmt-result/run
+      - name: Preserve unchanged answers, failed attempts, exact generating source
+        if: always()
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/fmt-result/source
+          cp scripts/memory_cell/locomo_publisher_format_trial.py scripts/memory_cell/test_locomo_publisher_format_trial.py /tmp/fmt-result/source/
+          git rev-parse HEAD > /tmp/fmt-result/tested-commit.txt
+          (cd /tmp/fmt-result && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: locomo-publisher-strict-format-original-answers
+          path: /tmp/fmt-result
+          if-no-files-found: error
+  score:
+    needs: reader
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      PYTHONPATH: scripts/memory_cell
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Stage old control and PRIVATE scoring ZIP only after real model call
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/fmt-source /tmp/fmt-target /tmp/fmt-new /tmp/fmt-score
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11728164433/zip > /tmp/fmt-source/locomo-public-38206328621.zip
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11729394703/zip > /tmp/fmt-source/locomo-frozen-decisions-38206328621.zip
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11728856834/zip > /tmp/fmt-target/locomo-evaluation-targets-38206328621.zip
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11792575178/zip > /tmp/fmt-plan.zip
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11792880133/zip > /tmp/fmt-original.zip
+          gh run download "$GITHUB_RUN_ID" -n locomo-publisher-strict-format-original-answers -D /tmp/fmt-new
+          python3 scripts/memory_cell/locomo_publisher_format_trial.py score \
+            /tmp/fmt-source /tmp/fmt-target /tmp/fmt-plan.zip /tmp/fmt-new/run \
+            /tmp/fmt-original.zip /tmp/fmt-score/result --expected-commit "$GITHUB_SHA"
+      - name: Archive original postrun scorer and full diagnostic
+        if: always()
+        run: |
+          mkdir -p /tmp/fmt-score
+          cp scripts/memory_cell/locomo_publisher_format_trial.py /tmp/fmt-score/
+          git rev-parse HEAD > /tmp/fmt-score/score-commit.txt
+          (cd /tmp/fmt-score && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: locomo-publisher-strict-format-diagnostic
+          path: /tmp/fmt-score
+          if-no-files-found: warn

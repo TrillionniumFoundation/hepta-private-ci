@@ -1,0 +1,166 @@
+{
+  "schema": "hepta.memory.reader-representation-observed-delivery.v1",
+  "date_utc": "2026-10-15",
+  "preexecution_lock_commit": "85cb4c70d2dd19e00ba43745bc8dd1bec322bf12",
+  "parent_stable_source_commit": "6ca91edbff69386e3f222fe9bf6f739465556a6c",
+  "source_sha256": {
+    "scripts/memory_cell/prompt_representation_probe.py": "84952869d55069d0830add604883750929efd22e1f93bcf34dbc01b40890bcd5",
+    "scripts/memory_cell/reference_operator_parity.py": "7c6e0045f9f251ae6e865501e21d7d23d4638e6733bd2c02ba562f50f81f1be0",
+    "scripts/memory_cell/verify_prompt_representation_trial.py": "19e702385fed0e767f81ce8cd058734738675a798144e878a42b9e41263a8679"
+  },
+  "frozen_model": {
+    "parameter_count": 134515008,
+    "source_weights_sha256": "5af571cbf074e6d21a03528d2330792e532ca608f24ac70a143f6b369968ab8c",
+    "model_updated": false,
+    "profile": "hepta.offline-original-smol135-fp32.v1"
+  },
+  "dataset": {
+    "input_archive_sha256": "31c6f191ecf62095779f7c9a5dd6c5b2f89c6ae408fe9c26f74e017a2d62c47a",
+    "original_plan_sha256": "9840a25487af444914dca24c818d98ff798ebc1610ea8dfdd827187c31ad1897",
+    "previously_exposed_development_questions": 8,
+    "evidence_arms": 4,
+    "reader_representations": 2
+  },
+  "actual_model_execution": {
+    "planned": 64,
+    "succeeded": 64,
+    "failed": 0,
+    "input_tokens_total": 27488,
+    "generated_tokens_total": 1530,
+    "execution_wall_seconds": 170.05442824299917,
+    "host": "isolated_analysis_not_user_dot",
+    "reused_original_retrieval": true,
+    "new_retrieval_calls": 0,
+    "new_training_steps": 0
+  },
+  "observed_conditions": {
+    "verbatim/empty": {
+      "planned": 8,
+      "succeeded": 8,
+      "strict_task_success": 0,
+      "target_identifier_mentioned": 0,
+      "complete_program_declared_support_cited": 0,
+      "prompt_tokens": 1973,
+      "generated_tokens": 86,
+      "conditional_wall_seconds_rounded": 9.508
+    },
+    "verbatim/hybrid": {
+      "planned": 8,
+      "succeeded": 8,
+      "strict_task_success": 0,
+      "target_identifier_mentioned": 0,
+      "complete_program_declared_support_cited": 0,
+      "prompt_tokens": 6359,
+      "generated_tokens": 340,
+      "conditional_wall_seconds_rounded": 42.349
+    },
+    "verbatim/organized": {
+      "planned": 8,
+      "succeeded": 8,
+      "strict_task_success": 0,
+      "target_identifier_mentioned": 0,
+      "complete_program_declared_support_cited": 2,
+      "prompt_tokens": 3670,
+      "generated_tokens": 302,
+      "conditional_wall_seconds_rounded": 28.035
+    },
+    "verbatim/without_prerequisite": {
+      "planned": 8,
+      "succeeded": 8,
+      "strict_task_success": 0,
+      "target_identifier_mentioned": 2,
+      "complete_program_declared_support_cited": 0,
+      "prompt_tokens": 2534,
+      "generated_tokens": 121,
+      "conditional_wall_seconds_rounded": 13.063
+    },
+    "normalized/empty": {
+      "planned": 8,
+      "succeeded": 8,
+      "strict_task_success": 0,
+      "target_identifier_mentioned": 0,
+      "complete_program_declared_support_cited": 0,
+      "prompt_tokens": 1973,
+      "generated_tokens": 86,
+      "conditional_wall_seconds_rounded": 8.79
+    },
+    "normalized/hybrid": {
+      "planned": 8,
+      "succeeded": 8,
+      "strict_task_success": 0,
+      "target_identifier_mentioned": 2,
+      "complete_program_declared_support_cited": 0,
+      "prompt_tokens": 5303,
+      "generated_tokens": 294,
+      "conditional_wall_seconds_rounded": 34.306
+    },
+    "normalized/organized": {
+      "planned": 8,
+      "succeeded": 8,
+      "strict_task_success": 0,
+      "target_identifier_mentioned": 3,
+      "complete_program_declared_support_cited": 1,
+      "prompt_tokens": 3274,
+      "generated_tokens": 200,
+      "conditional_wall_seconds_rounded": 19.778
+    },
+    "normalized/without_prerequisite": {
+      "planned": 8,
+      "succeeded": 8,
+      "strict_task_success": 0,
+      "target_identifier_mentioned": 2,
+      "complete_program_declared_support_cited": 0,
+      "prompt_tokens": 2402,
+      "generated_tokens": 101,
+      "conditional_wall_seconds_rounded": 11.581
+    }
+  },
+  "actual_raw_journal": {
+    "sha256": "a26133473451003c8708f1fa3e3ea40e975b7febcd45039870e19d1d067a461c",
+    "uncompressed_bytes": 381796,
+    "xz_sha256": "f2e2de8a120e720a362846f9053a16b1b4177d3b87e02d8b9ab8bb3a4ecd84d4",
+    "xz_bytes": 10260,
+    "git_blob_sha256_not_equivalent": "3815938db70b6682d4fe585bfaf038f60facdce9"
+  },
+  "source_receipts": {
+    "preregistered_sha256": "7475dbe4122e6b72a5104d91723e50781f89fab4e54480c1d4c71dc96629b111",
+    "scored_answers_sha256": "f9b539c67278a3476352bcde9d98cdd65fe1a7df9c6a86f33e5c1836a0853b4d",
+    "result_report_sha256": "3f9bc89a0d6034b3e4c5c46a1f3880cba29dd83075286871385efbfe908ef94f"
+  },
+  "separate_process_replay": {
+    "verified_requests_and_original_answers": 64,
+    "reexecuted_authored_program_checks": 16,
+    "additional_model_calls": 0,
+    "report_sha256": "172bd608f8192578eaf4cff04343a62b7c76bf9d0960745340e340fb6c300a1c",
+    "human_evaluator": false
+  },
+  "reference_operator_check": {
+    "independent_eager_sdpa_prefixes": 6,
+    "independent_eager_sdpa_continuations": 6,
+    "agreements": 12,
+    "comparisons": 12,
+    "max_logit_abs_error": 0.00003910064697265625,
+    "predeclared_tolerance": 0.002,
+    "actual_huggingface_runtime_used": false,
+    "hf_tokenizer_runtime_used": false,
+    "full_hf_parity_certified": false
+  },
+  "costs": {
+    "extraction_and_indexing": "previously frozen, not remeasured in this run",
+    "maintenance": null,
+    "revocation": null,
+    "recovery": null,
+    "complete_lifecycle": null
+  },
+  "status": {
+    "hypothesis_only": true,
+    "model_capacity_effect_attributed": false,
+    "parameter_learning_gain_established": false,
+    "independent_source_families": 0,
+    "independent_human_sufficiency_review": false,
+    "complete_semantic_citation_quality": null,
+    "production_accepted": false,
+    "ci_passed_at_creation": false
+  },
+  "interpretation": "All eight conditions execute but 0/8 strict task success each; do not promote or train more before official runtime/tokenizer comparison and independent held-out reader/task validation."
+}

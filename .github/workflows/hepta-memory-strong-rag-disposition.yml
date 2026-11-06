@@ -1,0 +1,54 @@
+name: MemoryCell completed 112-call strong-RAG read-only disposition
+on:
+  push:
+    branches:
+      - codex/memory-cell-evidence-20261008
+    paths:
+      - "scripts/memory_cell/strong_rag_promotion_receipt.py"
+      - "scripts/memory_cell/test_strong_rag_promotion_receipt.py"
+      - "scripts/memory_cell/data/observed-strong-rag-disposition-38224780900.json"
+      - "codex-rs/hepta-intelligence-eval/MEMORY_CELL_STRONG_RAG_COMPLETED_DISPOSITION.md"
+      - ".github/workflows/hepta-memory-strong-rag-disposition.yml"
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: memorycell-strong-rag-disposition-${{ github.sha }}
+  cancel-in-progress: false
+jobs:
+  replay-completed-result:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/codex/memory-cell-evidence-20261008'
+    runs-on: ubuntu-22.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Restore two completed original research artifacts, no model weights
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/strong-rag-disposition"
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11743043427/zip > "$RUNNER_TEMP/strong-rag-disposition/model.zip"
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11748040166/zip > "$RUNNER_TEMP/strong-rag-disposition/replay.zip"
+      - name: Re-run complete pinned disposition tests and exact saved receipt comparison
+        env:
+          HEPTA_STRONG_RAG_MODEL_ZIP: ${{ runner.temp }}/strong-rag-disposition/model.zip
+          HEPTA_STRONG_RAG_REPLAY_ZIP: ${{ runner.temp }}/strong-rag-disposition/replay.zip
+          PYTHONPATH: scripts/memory_cell
+        run: |
+          set -euo pipefail
+          python3 -m unittest discover -s scripts/memory_cell -p 'test_strong_rag_promotion_receipt.py' -v 2>&1 | tee "$RUNNER_TEMP/strong-rag-disposition/tests.log"
+          python3 scripts/memory_cell/strong_rag_promotion_receipt.py "$HEPTA_STRONG_RAG_MODEL_ZIP" "$HEPTA_STRONG_RAG_REPLAY_ZIP" --out "$RUNNER_TEMP/strong-rag-disposition/observed.json" 2>&1 | tee "$RUNNER_TEMP/strong-rag-disposition/replay.log"
+          diff -u scripts/memory_cell/data/observed-strong-rag-disposition-38224780900.json "$RUNNER_TEMP/strong-rag-disposition/observed.json"
+          git rev-parse HEAD > "$RUNNER_TEMP/strong-rag-disposition/auditor-source-commit.txt"
+          sha256sum "$HEPTA_STRONG_RAG_MODEL_ZIP" "$HEPTA_STRONG_RAG_REPLAY_ZIP" > "$RUNNER_TEMP/strong-rag-disposition/artifact-shas.txt"
+      - name: Preserve read-only receipt and all failures
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: memory-strong-rag-112call-disposition-${{ github.sha }}
+          path: ${{ runner.temp }}/strong-rag-disposition
+          if-no-files-found: warn

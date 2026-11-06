@@ -1,0 +1,220 @@
+{
+  "schema": "hepta.memory-cell.actual-strong-rag-independent-source-audit.v1",
+  "original_source_sha": "23e9d44b8d2dbe756c7c33031e18853c83326458a37925d4d368881145bf142b",
+  "generating_commit": "3b03ea7dee4b270bdf328251f7a404571c9d1013",
+  "workflow_run_id": 38389920977,
+  "artifact_sha256": {
+    "original": "23e9d44b8d2dbe756c7c33031e18853c83326458a37925d4d368881145bf142b",
+    "generator": "de7087dbd3ee367475ef279d01dbeeeea46ee991b11399324289300df10c40bf",
+    "checkpoint": "26ff349eef1e78367577be7dc59308166bb73ea13d5f63070ecdfd6fbc093f24",
+    "replay": "442c7171cb2c522988e6e6c52b12201d1b59104702229dc256ca91b7bf6559c1"
+  },
+  "sha256_manifest_counts": {
+    "original": 35,
+    "generator": 43,
+    "checkpoint": 20,
+    "replay": 8
+  },
+  "reader_identity": "f9aa334d3a02cabececea367c283caf66ef9875132907ebc34dac1c8d3a7f225",
+  "selected_calibration_k": 1,
+  "calibration_stable_under_loo": false,
+  "phases": {
+    "calibration": {
+      "attempts": 40,
+      "arms": {
+        "k1": {
+          "planned": 8,
+          "generated": 8,
+          "correct": 4,
+          "full_program_citation": 2,
+          "covered": 4,
+          "input_tokens": 4045,
+          "output_tokens": 100,
+          "reader_seconds": 105.71220758899977,
+          "procedures_replayed": 2
+        },
+        "k2": {
+          "planned": 8,
+          "generated": 8,
+          "correct": 4,
+          "full_program_citation": 2,
+          "covered": 4,
+          "input_tokens": 6328,
+          "output_tokens": 105,
+          "reader_seconds": 159.10291664300007,
+          "procedures_replayed": 2
+        },
+        "k3": {
+          "planned": 8,
+          "generated": 8,
+          "correct": 4,
+          "full_program_citation": 2,
+          "covered": 8,
+          "input_tokens": 8698,
+          "output_tokens": 113,
+          "reader_seconds": 215.12297663199996,
+          "procedures_replayed": 2
+        },
+        "k4": {
+          "planned": 8,
+          "generated": 8,
+          "correct": 4,
+          "full_program_citation": 2,
+          "covered": 8,
+          "input_tokens": 10970,
+          "output_tokens": 108,
+          "reader_seconds": 267.26009266600005,
+          "procedures_replayed": 2
+        },
+        "k6": {
+          "planned": 8,
+          "generated": 8,
+          "correct": 2,
+          "full_program_citation": 0,
+          "covered": 8,
+          "input_tokens": 15708,
+          "output_tokens": 107,
+          "reader_seconds": 395.33341623500013,
+          "procedures_replayed": 2
+        }
+      }
+    },
+    "evaluation": {
+      "attempts": 72,
+      "arms": {
+        "selected_k": {
+          "planned": 8,
+          "generated": 8,
+          "correct": 5,
+          "full_program_citation": 3,
+          "covered": 3,
+          "input_tokens": 3961,
+          "output_tokens": 101,
+          "reader_seconds": 107.16104828400012,
+          "procedures_replayed": 2
+        },
+        "hybrid_k4": {
+          "planned": 8,
+          "generated": 8,
+          "correct": 3,
+          "full_program_citation": 1,
+          "covered": 8,
+          "input_tokens": 10806,
+          "output_tokens": 104,
+          "reader_seconds": 259.6124117940001,
+          "procedures_replayed": 2
+        },
+        "hybrid_k6": {
+          "planned": 8,
+          "generated": 8,
+          "correct": 2,
+          "full_program_citation": 0,
+          "covered": 8,
+          "input_tokens": 15463,
+          "output_tokens": 103,
+          "reader_seconds": 387.8242212559999,
+          "procedures_replayed": 2
+        },
+        "hybrid_k4_reversed": {
+          "planned": 8,
+          "generated": 8,
+          "correct": 3,
+          "full_program_citation": 1,
+          "covered": 8,
+          "input_tokens": 10806,
+          "output_tokens": 105,
+          "reader_seconds": 258.7426578439995,
+          "procedures_replayed": 2
+        },
+        "single_hop": {
+          "planned": 8,
+          "generated": 8,
+          "correct": 4,
+          "full_program_citation": 4,
+          "covered": 4,
+          "input_tokens": 4575,
+          "output_tokens": 90,
+          "reader_seconds": 116.14709978600035,
+          "procedures_replayed": 2
+        },
+        "entity_time": {
+          "planned": 8,
+          "generated": 8,
+          "correct": 8,
+          "full_program_citation": 4,
+          "covered": 8,
+          "input_tokens": 5752,
+          "output_tokens": 105,
+          "reader_seconds": 141.30150555800037,
+          "procedures_replayed": 2
+        },
+        "organized": {
+          "planned": 8,
+          "generated": 8,
+          "correct": 8,
+          "full_program_citation": 4,
+          "covered": 8,
+          "input_tokens": 5179,
+          "output_tokens": 105,
+          "reader_seconds": 130.7164323780005,
+          "procedures_replayed": 2
+        },
+        "program_support": {
+          "planned": 8,
+          "generated": 8,
+          "correct": 8,
+          "full_program_citation": 4,
+          "covered": 8,
+          "input_tokens": 5179,
+          "output_tokens": 105,
+          "reader_seconds": 130.3335290040004,
+          "procedures_replayed": 2
+        },
+        "empty": {
+          "planned": 8,
+          "generated": 8,
+          "correct": 0,
+          "full_program_citation": 0,
+          "covered": 0,
+          "input_tokens": 1630,
+          "output_tokens": 60,
+          "reader_seconds": 59.08365962200037,
+          "procedures_replayed": 2
+        }
+      }
+    }
+  },
+  "deployment_or_semantic_acceptance": false,
+  "paired_contrasts": {
+    "entity_time_minus_single_hop": {
+      "wins": 4,
+      "losses": 0,
+      "ties": 4,
+      "delta": 0.5
+    },
+    "organized_minus_entity_time": {
+      "wins": 0,
+      "losses": 0,
+      "ties": 8,
+      "delta": 0.0
+    },
+    "organized_minus_selected": {
+      "wins": 3,
+      "losses": 0,
+      "ties": 5,
+      "delta": 0.375
+    },
+    "selected_minus_hybrid4": {
+      "wins": 2,
+      "losses": 0,
+      "ties": 6,
+      "delta": 0.25
+    }
+  },
+  "program_worker_replays": 28,
+  "all_112_model_answer_records_verified": true,
+  "replayed_procedure_stdout_and_exit_status": true,
+  "reader_or_parametric_model_retrained": false,
+  "independent_semantic_citation_judge": false,
+  "production_accepted": false
+}

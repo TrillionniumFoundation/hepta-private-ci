@@ -1,0 +1,58 @@
+name: MemoryCell source-value binding objective mechanics
+on:
+  push:
+    branches:
+      - "codex/memory-cell-evidence-20261008"
+    paths:
+      - "scripts/memory_cell/source_binding_margin.py"
+      - "scripts/memory_cell/test_source_binding*.py"
+      - "scripts/memory_cell/experience_memory.py"
+      - "scripts/memory_cell/experience_write_trial.py"
+      - ".github/workflows/hepta-memory-source-binding-margin.yml"
+permissions:
+  contents: read
+concurrency:
+  group: memory-source-binding-margin-${{ github.sha }}
+  cancel-in-progress: false
+jobs:
+  focused-qwen-contracts:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      PYTHONPATH: scripts/memory_cell
+      PYTHONDONTWRITEBYTECODE: "1"
+      OMP_NUM_THREADS: "2"
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Pin the existing research torch, Qwen and adapter implementation
+        run: |
+          set -euo pipefail
+          python3 -m venv /tmp/memory-binding
+          /tmp/memory-binding/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          /tmp/memory-binding/bin/pip install transformers==4.57.1 peft==0.17.1 accelerate==1.10.1 ruff==0.15.13
+      - name: Actual gradients and pinned Qwen2/PEFT random-weight contract
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/memory-binding-proof
+          /tmp/memory-binding/bin/python -m unittest discover -s scripts/memory_cell -p 'test_source_binding*.py' -v 2>&1 | tee /tmp/memory-binding-proof/source-tests.log
+          /tmp/memory-binding/bin/python -m unittest discover -s scripts/memory_cell -p 'test_source_completion_qwen.py' -v 2>&1 | tee /tmp/memory-binding-proof/qwen-tests.log
+          /tmp/memory-binding/bin/python -m compileall -q scripts/memory_cell/source_binding_margin.py scripts/memory_cell/test_source_binding_margin.py scripts/memory_cell/test_source_binding_hf.py scripts/memory_cell/test_source_binding_writer.py
+          /tmp/memory-binding/bin/ruff format --check scripts/memory_cell/source_binding_margin.py scripts/memory_cell/test_source_binding_margin.py scripts/memory_cell/test_source_binding_hf.py scripts/memory_cell/test_source_binding_writer.py scripts/memory_cell/experience_memory.py scripts/memory_cell/experience_write_trial.py
+          /tmp/memory-binding/bin/pip freeze > /tmp/memory-binding-proof/environment.txt
+          git rev-parse HEAD > /tmp/memory-binding-proof/source.txt
+          sha256sum scripts/memory_cell/source_binding_margin.py scripts/memory_cell/test_source_binding_margin.py scripts/memory_cell/test_source_binding_hf.py scripts/memory_cell/test_source_binding_writer.py scripts/memory_cell/experience_memory.py > /tmp/memory-binding-proof/inputs.sha256
+      - name: Preserve original results including failures
+        if: always()
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/memory-binding-proof
+          git rev-parse HEAD > /tmp/memory-binding-proof/source.txt
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-source-binding-research-contract
+          path: /tmp/memory-binding-proof
+          if-no-files-found: error

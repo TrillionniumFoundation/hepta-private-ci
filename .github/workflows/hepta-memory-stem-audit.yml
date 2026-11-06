@@ -1,0 +1,74 @@
+name: MemoryCell independent stem artifact accounting
+on:
+  push:
+    branches: ["codex/memory-cell-evidence-20261008"]
+    paths:
+      - "scripts/memory_cell/stem_audit*.py"
+      - "scripts/memory_cell/test_stem_audit*.py"
+      - ".github/workflows/hepta-memory-stem-audit.yml"
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: memory-stem-audit-${{ github.sha }}
+  cancel-in-progress: false
+jobs:
+  original-artifact-audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      OMP_NUM_THREADS: "2"
+      MKL_NUM_THREADS: "2"
+      TOKENIZERS_PARALLELISM: "false"
+      HF_HUB_DISABLE_IMPLICIT_TOKEN: "1"
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Audit-only regressions without model dependencies
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/stem-audit
+          git rev-parse HEAD > /tmp/stem-audit/auditing-commit.txt
+          git rev-parse HEAD^{tree} > /tmp/stem-audit/auditing-tree.txt
+          python3 -m unittest discover -s scripts/memory_cell -p 'test_stem_audit*.py' -v 2>&1 | tee /tmp/stem-audit/auditor-tests.log
+      - name: Download original completed-run artifact without executing it
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11688435110/zip > /tmp/stem-original-e9c8f9c.zip
+          printf '%s  %s\n' 3e09533c535f6b847f9ec58d4f56055d3a2c6adb2eee68705873584a72aca909 /tmp/stem-original-e9c8f9c.zip | sha256sum -c -
+      - name: Reconcile every original answer failure and direct reuse link
+        run: |
+          set -euo pipefail
+          python3 scripts/memory_cell/stem_audit.py /tmp/stem-original-e9c8f9c.zip \
+            --sha256 3e09533c535f6b847f9ec58d4f56055d3a2c6adb2eee68705873584a72aca909 \
+            --source e9c8f9c9cfc8df8887290db707598897cbc26ede \
+            --tree 197ea54ba9e2f11524d303825cdad17fc4e89933 \
+            --output /tmp/stem-audit/original-artifact-audit.json 2>&1 | tee /tmp/stem-audit/audit.log
+      - name: Full unchanged-source Python regressions and scoped static checks
+        run: |
+          set -euo pipefail
+          python3 -m venv /tmp/stem-audit-python
+          /tmp/stem-audit-python/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          /tmp/stem-audit-python/bin/pip install -r scripts/memory_cell/requirements.txt ruff==0.15.8
+          /tmp/stem-audit-python/bin/pip freeze > /tmp/stem-audit/environment.txt
+          /tmp/stem-audit-python/bin/python -m unittest discover -s scripts/memory_cell -p 'test_*.py' -v 2>&1 | tee /tmp/stem-audit/full-tests.log
+          /tmp/stem-audit-python/bin/ruff check --select F,E9 scripts/memory_cell/stem_audit*.py scripts/memory_cell/test_stem_audit*.py 2>&1 | tee /tmp/stem-audit/lint.log
+          /tmp/stem-audit-python/bin/ruff format --diff scripts/memory_cell/stem_audit*.py scripts/memory_cell/test_stem_audit*.py > /tmp/stem-audit/format.patch || true
+      - name: Retain auditor source and all failures
+        if: always()
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/stem-audit/source
+          cp scripts/memory_cell/stem_audit*.py scripts/memory_cell/test_stem_audit*.py /tmp/stem-audit/source/
+          cp .github/workflows/hepta-memory-stem-audit.yml /tmp/stem-audit/source/
+          (cd /tmp/stem-audit && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-stem-independent-audit
+          path: /tmp/stem-audit
+          if-no-files-found: error

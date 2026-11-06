@@ -1,0 +1,182 @@
+name: MemoryCell complete native benchmark
+on:
+  pull_request:
+    types: [labeled]
+  workflow_dispatch:
+    inputs:
+      shards:
+        description: "Bounded shards per fold (1..16); all native questions remain in the plan"
+        type: number
+        default: 4
+        required: true
+permissions:
+  contents: read
+concurrency:
+  group: memory-cell-complete-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  preregister:
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.pull_request.number == 1452 &&
+       github.event.pull_request.head.repo.full_name == github.repository &&
+       github.head_ref == 'codex/memory-cell-evidence-20261008' &&
+       github.event.label.name == 'memory-cell-full-native')
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    outputs:
+      matrix: ${{ steps.plan.outputs.matrix }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Install pinned worker environment
+        run: |
+          python3 -m venv /tmp/mcell-python
+          /tmp/mcell-python/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          /tmp/mcell-python/bin/pip install -r scripts/memory_cell/requirements.txt
+      - name: Stage immutable public inputs and freeze complete coverage before training
+        id: plan
+        env:
+          SHARDS: ${{ inputs.shards || 4 }}
+          HEPTA_MEMORY_TESTED_COMMIT: ${{ github.event.pull_request.head.sha || github.sha }}
+          HF_HUB_DISABLE_IMPLICIT_TOKEN: "1"
+          HF_HUB_DISABLE_XET: "1"
+          PYTHONPATH: scripts/memory_cell
+        run: |
+          set -euo pipefail
+          /tmp/mcell-python/bin/python - <<'PY'
+          import json, os
+          from pathlib import Path
+          from prepare import prepare
+          from benchmark_collect import preregister
+          shards = int(os.environ['SHARDS'])
+          if not 1 <= shards <= 16:
+              raise ValueError('shard bound')
+          prepare(Path('/tmp/memory-inputs'), 'native')
+          plans = Path('/tmp/memory-plans')
+          plans.mkdir()
+          matrix = []
+          for kind, folds in [('locomo', 5), ('longmemeval', 1)]:
+              preregister(Path('/tmp/memory-inputs'), plans / f'{kind}.json', kind, folds=folds, shards=shards, limit=None)
+              matrix.extend(dict(kind=kind, fold=f, folds=folds, shard=s, shards=shards) for f in range(folds) for s in range(shards))
+          with open(os.environ['GITHUB_OUTPUT'], 'a') as stream:
+              stream.write('matrix=' + json.dumps({'include': matrix}) + '\n')
+          PY
+          tar -C /tmp -czf /tmp/memory-inputs.tar.gz memory-inputs
+          sha256sum /tmp/memory-inputs.tar.gz > /tmp/memory-plans/input-archive.sha256
+          git rev-parse HEAD > /tmp/memory-plans/tested-commit.txt
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: memory-native-staged-inputs
+          path: /tmp/memory-inputs.tar.gz
+          if-no-files-found: error
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: memory-native-preregistered-plans
+          path: /tmp/memory-plans
+          if-no-files-found: error
+  native-shard:
+    needs: preregister
+    runs-on: ubuntu-latest
+    timeout-minutes: 360
+    strategy:
+      fail-fast: false
+      max-parallel: 2
+      matrix: ${{ fromJSON(needs.preregister.outputs.matrix) }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: memory-native-staged-inputs
+          path: /tmp
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: memory-native-preregistered-plans
+          path: /tmp/plans
+      - name: Install pinned environment and check transferred input bytes
+        run: |
+          set -euo pipefail
+          sha256sum -c /tmp/plans/input-archive.sha256
+          tar -C /tmp -xzf /tmp/memory-inputs.tar.gz
+          python3 -m venv /tmp/mcell-python
+          /tmp/mcell-python/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          /tmp/mcell-python/bin/pip install -r scripts/memory_cell/requirements.txt
+      - name: Execute every assigned question using only offline staged models
+        env:
+          HF_HUB_OFFLINE: "1"
+          TRANSFORMERS_OFFLINE: "1"
+          TOKENIZERS_PARALLELISM: "false"
+          HF_HUB_DISABLE_IMPLICIT_TOKEN: "1"
+          HEPTA_MEMORY_TESTED_COMMIT: ${{ github.event.pull_request.head.sha || github.sha }}
+          BENCHMARK: ${{ matrix.kind }}
+          FOLD: ${{ matrix.fold }}
+          FOLDS: ${{ matrix.folds }}
+          SHARD: ${{ matrix.shard }}
+          SHARDS: ${{ matrix.shards }}
+        run: |
+          set -euo pipefail
+          /usr/bin/time -v -o /tmp/memory-resource.txt /tmp/mcell-python/bin/python scripts/memory_cell/run_native.py \
+            /tmp/memory-inputs /tmp/native-record "$BENCHMARK" \
+            --fold "$FOLD" --folds "$FOLDS" --shard "$SHARD" --shards "$SHARDS" --all-questions
+      - name: Retain failure as well as success evidence
+        if: always()
+        run: |
+          mkdir -p /tmp/native-record
+          if test -f /tmp/memory-resource.txt; then cp /tmp/memory-resource.txt /tmp/native-record/; fi
+          git rev-parse HEAD > /tmp/native-record/tested-commit.txt
+          find /tmp/native-record -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > /tmp/native-record/SHA256SUMS
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: native-record-${{ matrix.kind }}-${{ matrix.fold }}-${{ matrix.shard }}
+          path: /tmp/native-record
+          if-no-files-found: error
+  independent-coverage-collector:
+    needs: [preregister, native-shard]
+    if: always() && !cancelled() && needs.preregister.result == 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: memory-native-preregistered-plans
+          path: /tmp/plans
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          pattern: native-record-locomo-*
+          path: /tmp/receipts/locomo
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        if: always()
+        with:
+          pattern: native-record-longmemeval-*
+          path: /tmp/receipts/longmemeval
+      - name: Reject absent queries, missing arms, duplicate shards or mixed identities
+        if: always()
+        run: |
+          set -euo pipefail
+          python3 -m venv /tmp/mcell-python
+          /tmp/mcell-python/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          /tmp/mcell-python/bin/pip install -r scripts/memory_cell/requirements.txt
+          mkdir -p /tmp/coverage-result
+          status=0
+          for kind in locomo longmemeval; do
+            /tmp/mcell-python/bin/python scripts/memory_cell/benchmark_collect.py collect \
+              "/tmp/plans/$kind.json" "/tmp/receipts/$kind" "/tmp/coverage-result/$kind.json" \
+              >"/tmp/coverage-result/$kind.log" 2>&1 || status=1
+          done
+          exit "$status"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-native-complete-coverage-result
+          path: /tmp/coverage-result
+          if-no-files-found: error

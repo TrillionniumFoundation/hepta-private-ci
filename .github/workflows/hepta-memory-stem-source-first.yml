@@ -1,0 +1,74 @@
+name: MemoryCell pairwise source-first reviewer packet
+on:
+  push:
+    branches: ["codex/memory-cell-evidence-20261008"]
+    paths:
+      - "scripts/memory_cell/stem_pairwise_source_first.py"
+      - "scripts/memory_cell/test_stem_pairwise_source_first.py"
+      - ".github/workflows/hepta-memory-stem-source-first.yml"
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: memory-stem-source-first-${{ github.sha }}
+  cancel-in-progress: false
+jobs:
+  source-first-packet:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      PYTHONPATH: scripts/memory_cell
+      PYTHONDONTWRITEBYTECODE: "1"
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Syntax, complete-census and adversarial reviewer-packet tests
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/stem-source-first-owner
+          git rev-parse HEAD > /tmp/stem-source-first-owner/auditor-commit.txt
+          git rev-parse HEAD^{tree} > /tmp/stem-source-first-owner/auditor-tree.txt
+          python3 -m py_compile scripts/memory_cell/stem_pairwise_source_first.py scripts/memory_cell/test_stem_pairwise_source_first.py
+          python3 -m unittest -v test_stem_pairwise_source_first 2>&1 | tee /tmp/stem-source-first-owner/tests.log
+      - name: Download SHA-pinned already completed Reader artifact
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11780340178/zip > /tmp/stem-pinned-38322463886.zip
+          printf '%s  %s\n' 213db6fdc9d219988cba19d1c5cc81dbb7f2f1505fd917f03b26f6cc2346382e /tmp/stem-pinned-38322463886.zip | sha256sum -c -
+      - name: Reconcile all 576 plus 192 plus 32 records before any source review
+        run: |
+          set -euo pipefail
+          python3 scripts/memory_cell/stem_pairwise_source_first.py \
+            --artifact /tmp/stem-pinned-38322463886.zip \
+            --reviewer-out /tmp/stem-source-first-reviewer \
+            --owner-out /tmp/stem-source-first-owner/mapping \
+            2>&1 | tee /tmp/stem-source-first-owner/export.log
+      - name: Preserve source and exact owner audit, even if generation fails
+        if: always()
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/stem-source-first-owner/source
+          cp scripts/memory_cell/stem_pairwise_source_first.py /tmp/stem-source-first-owner/source/
+          cp scripts/memory_cell/test_stem_pairwise_source_first.py /tmp/stem-source-first-owner/source/
+          cp scripts/memory_cell/stem_audit_archive.py /tmp/stem-source-first-owner/source/
+          cp scripts/memory_cell/stem_cell_time.py /tmp/stem-source-first-owner/source/
+          cp .github/workflows/hepta-memory-stem-source-first.yml /tmp/stem-source-first-owner/source/
+          (cd /tmp/stem-source-first-owner && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - name: Upload reviewer-only source-first questions, without owner mapping
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-stem-source-first-reviewer
+          path: /tmp/stem-source-first-reviewer
+          if-no-files-found: ignore
+      - name: Upload owner-side audit and failures separately
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-stem-source-first-owner
+          path: /tmp/stem-source-first-owner
+          if-no-files-found: error

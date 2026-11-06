@@ -1,0 +1,68 @@
+name: MemoryCell exact non-UTF8 Git blob provenance
+on:
+  pull_request:
+    paths:
+      - "scripts/memory_cell/deno_binary_git_source_gate.py"
+      - "scripts/memory_cell/test_deno_binary_git_source_gate.py"
+      - ".github/workflows/hepta-memory-deno-binary-source.yml"
+permissions:
+  contents: read
+concurrency:
+  group: memory-deno-original-binary-${{ github.event.pull_request.head.ref || github.ref }}
+  cancel-in-progress: false
+jobs:
+  verify-original-latin1-blob:
+    if: github.event.pull_request.number == 1452 && github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      PYTHONPATH: scripts/memory_cell
+      GH_TOKEN: ${{ github.token }}
+      TESTED_HEAD: ${{ github.event.pull_request.head.sha }}
+      HF_HUB_OFFLINE: "1"
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - name: Check exact test source and binary evidence regressions
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$TESTED_HEAD"
+          mkdir -p "$RUNNER_TEMP/binary-provenance"
+          python3 -m unittest discover -s scripts/memory_cell \
+            -p 'test_deno_binary_git_source_gate.py' -v 2>&1 \
+            | tee "$RUNNER_TEMP/binary-provenance/tests.log"
+          git rev-parse HEAD > "$RUNNER_TEMP/binary-provenance/tested-head.txt"
+          sha256sum scripts/memory_cell/deno_binary_git_source_gate.py \
+            scripts/memory_cell/test_deno_binary_git_source_gate.py \
+            scripts/memory_cell/data/real-project-pr-independent-extension-20261012.json \
+            > "$RUNNER_TEMP/binary-provenance/source-SHA256SUMS"
+      - name: Fetch original exact Git bytes, never transform Latin1 to UTF8
+        run: |
+          set -euo pipefail
+          python3 scripts/memory_cell/deno_binary_git_source_gate.py \
+            scripts/memory_cell/data/real-project-pr-independent-extension-20261012.json \
+            "$RUNNER_TEMP/binary-provenance/deno-original-binary.json"
+          python3 - <<'PY'
+          import json,os
+          from pathlib import Path
+          r=json.loads((Path(os.environ['RUNNER_TEMP'])/'binary-provenance/deno-original-binary.json').read_text())
+          assert r['head_tree_path_binding_verified'] is True
+          assert r['canonical_original_git_blob_hash_recomputed'] is True
+          assert r['model_inference_calls']==0
+          assert r['source_bytes_reuploaded'] is False
+          assert r['production_accepted'] is False
+          PY
+      - name: Retain sanitized original-source proof, even on failure
+        if: always()
+        run: |
+          set -euo pipefail
+          (cd "$RUNNER_TEMP/binary-provenance" && \
+            find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 -r sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-ten-project-remaining-binary-proof
+          path: ${{ runner.temp }}/binary-provenance
+          if-no-files-found: error

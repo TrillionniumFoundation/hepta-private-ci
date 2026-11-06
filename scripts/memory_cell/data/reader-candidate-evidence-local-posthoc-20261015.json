@@ -1,0 +1,69 @@
+{
+  "schema": "hepta.memory.evidence-only-posthoc-published-v1",
+  "original_generating_commit": "cc05b9572eba0e57938341be733cef8dbbec0777",
+  "source_journal_sha256": "15051eddc59a3bcd99c29b6065fea7ade4271f62b1484aae0a07752150a09d06",
+  "new_model_calls": 0,
+  "posthoc": true,
+  "prior_test_exposure": true,
+  "zero_training": true,
+  "program_execution_completed": false,
+  "independent_human_sufficiency": false,
+  "production_accepted": false,
+  "interpretation": "The organized and authored-support 8/8 cases are ALL one-option lookups after evidence-only filtering: zero nontrivial choice wins. Hybrid contains eight multiple-option situations and only five scored top1 correct. Four missing-prerequisite cases retain a correct terminal value despite missing provenance and must NOT qualify as causal answers. No MemoryCell or learned reader advantage is established.",
+  "conditions": {
+    "empty": {
+      "n": 8,
+      "abstained": 8,
+      "singleton": 0,
+      "multiple_options": 0,
+      "strictly_correct": 0,
+      "nontrivial_choice_correct": 0,
+      "visible_gold": 0
+    },
+    "hybrid": {
+      "n": 8,
+      "abstained": 0,
+      "singleton": 0,
+      "multiple_options": 8,
+      "strictly_correct": 5,
+      "nontrivial_choice_correct": 5,
+      "visible_gold": 8
+    },
+    "entity_time": {
+      "n": 8,
+      "abstained": 0,
+      "singleton": 6,
+      "multiple_options": 2,
+      "strictly_correct": 8,
+      "nontrivial_choice_correct": 2,
+      "visible_gold": 8
+    },
+    "organized": {
+      "n": 8,
+      "abstained": 0,
+      "singleton": 8,
+      "multiple_options": 0,
+      "strictly_correct": 8,
+      "nontrivial_choice_correct": 0,
+      "visible_gold": 8
+    },
+    "program_support": {
+      "n": 8,
+      "abstained": 0,
+      "singleton": 8,
+      "multiple_options": 0,
+      "strictly_correct": 8,
+      "nontrivial_choice_correct": 0,
+      "visible_gold": 8
+    },
+    "without_prerequisite": {
+      "n": 8,
+      "abstained": 4,
+      "singleton": 4,
+      "multiple_options": 0,
+      "strictly_correct": 4,
+      "nontrivial_choice_correct": 0,
+      "visible_gold": 4
+    }
+  }
+}

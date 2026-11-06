@@ -1,0 +1,111 @@
+name: MemoryCell six-project immutable original byte acquisition
+on:
+  push:
+    branches:
+      - codex/memory-cell-evidence-20261008
+    paths:
+      - scripts/memory_cell/project_pr_extension_source_bytes.py
+      - scripts/memory_cell/test_project_pr_extension_source_bytes.py
+      - scripts/memory_cell/data/real-project-pr-independent-extension-20261012.json
+      - .github/workflows/hepta-memory-project-extension-source-bytes.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: memorycell-project-extension-original-${{ github.sha }}
+  cancel-in-progress: false
+jobs:
+  exact-git-source:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    env:
+      PYTHONPATH: scripts/memory_cell
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Regress byte-exact Git SHA and binary-safe source bounds
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/project-extension-source
+          python3 -m unittest discover -s scripts/memory_cell \
+            -p 'test_project_pr_extension_source_bytes.py' -v \
+            2>&1 | tee /tmp/project-extension-source/tests.log
+          python3 -m py_compile scripts/memory_cell/project_pr_extension_source_bytes.py
+      - name: Fetch exactly 6 original Git trees, 14 commits and 32 raw blobs
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          python3 scripts/memory_cell/project_pr_extension_source_bytes.py acquire \
+            scripts/memory_cell/data/real-project-pr-independent-extension-20261012.json \
+            scripts/memory_cell/data/real-project-pr-source-cut-20261012.json \
+            /tmp/project-extension-source/original \
+            2>&1 | tee /tmp/project-extension-source/acquire.log
+          test -s /tmp/project-extension-source/original/READY.json
+      - name: Reopen all original binary bytes with no network or targets
+        run: |
+          set -euo pipefail
+          python3 scripts/memory_cell/project_pr_extension_source_bytes.py reopen \
+            scripts/memory_cell/data/real-project-pr-independent-extension-20261012.json \
+            scripts/memory_cell/data/real-project-pr-source-cut-20261012.json \
+            /tmp/project-extension-source/original \
+            2>&1 | tee /tmp/project-extension-source/reopen.log
+      - name: Preserve exact source and complete successes or failures
+        if: always()
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/project-extension-source/implementations
+          cp scripts/memory_cell/project_pr_extension_source_bytes.py \
+             scripts/memory_cell/test_project_pr_extension_source_bytes.py \
+             /tmp/project-extension-source/implementations/
+          git rev-parse HEAD > /tmp/project-extension-source/tested-commit.txt
+          (cd /tmp/project-extension-source && \
+            find . -type f ! -name SHA256SUMS -print0 | sort -z | \
+            xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-six-project-original-git-bytes
+          path: /tmp/project-extension-source
+          if-no-files-found: error
+  independent-reopen:
+    needs: exact-git-source
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      PYTHONPATH: scripts/memory_cell
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: memory-six-project-original-git-bytes
+          path: /tmp/independent-project-source
+      - name: Authenticate complete original source manifest and reopen independently
+        run: |
+          set -euo pipefail
+          cd /tmp/independent-project-source
+          sha256sum -c SHA256SUMS
+          test "$(cat tested-commit.txt)" = "$GITHUB_SHA"
+          cd "$GITHUB_WORKSPACE"
+          mkdir -p /tmp/project-extension-independent
+          python3 scripts/memory_cell/project_pr_extension_source_bytes.py reopen \
+            scripts/memory_cell/data/real-project-pr-independent-extension-20261012.json \
+            scripts/memory_cell/data/real-project-pr-source-cut-20261012.json \
+            /tmp/independent-project-source/original \
+            2>&1 | tee /tmp/project-extension-independent/reopen.log
+          git rev-parse HEAD > /tmp/project-extension-independent/reopened-source-commit.txt
+          (cd /tmp/project-extension-independent && \
+            find . -type f ! -name SHA256SUMS -print0 | sort -z | \
+            xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-six-project-independent-reopen
+          path: /tmp/project-extension-independent
+          if-no-files-found: warn

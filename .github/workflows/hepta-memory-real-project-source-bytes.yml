@@ -1,0 +1,202 @@
+name: MemoryCell real-project immutable code bytes
+on:
+  push:
+    branches:
+      - codex/memory-cell-evidence-20261008
+    paths:
+      - scripts/memory_cell/project_pr_source_materialize.py
+      - scripts/memory_cell/test_project_pr_source_materialize.py
+      - scripts/memory_cell/project_pr_review_packet.py
+      - scripts/memory_cell/project_pr_merge_concordance.py
+      - scripts/memory_cell/test_project_pr_merge_concordance.py
+      - scripts/memory_cell/project_pr_parent_context.py
+      - scripts/memory_cell/project_pr_commit_ancestry.py
+      - scripts/memory_cell/test_project_pr_commit_ancestry.py
+      - scripts/memory_cell/project_pr_parent_review_packet.py
+      - scripts/memory_cell/test_project_pr_parent_review_packet.py
+      - scripts/memory_cell/test_project_pr_parent_context.py
+      - scripts/memory_cell/test_project_pr_review_packet.py
+      - scripts/memory_cell/project_pr_source_precommit.py
+      - scripts/memory_cell/data/real-project-pr-source-cut-20261012.json
+      - .github/workflows/hepta-memory-real-project-source-bytes.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  immutable-sources:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Run model-free integrity regression suite
+        env:
+          PYTHONPATH: scripts/memory_cell
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/hepta-project-source-bytes
+          python3 -m unittest discover -s scripts/memory_cell -p 'test_project_pr_source_materialize.py' -v 2>&1 | tee /tmp/hepta-project-source-bytes/tests.log
+          python3 -m unittest discover -s scripts/memory_cell -p 'test_project_pr_source_precommit.py' -v 2>&1 | tee /tmp/hepta-project-source-bytes/precommit-tests.log
+          python3 -m unittest discover -s scripts/memory_cell -p 'test_project_pr_review_packet.py' -v 2>&1 | tee /tmp/hepta-project-source-bytes/packet-tests.log
+          python3 -m py_compile scripts/memory_cell/project_pr_source_materialize.py
+          python3 -m unittest discover -s scripts/memory_cell -p 'test_project_pr_parent_context.py' -v 2>&1 | tee /tmp/hepta-project-source-bytes/parent-tests.log
+          python3 -m py_compile scripts/memory_cell/project_pr_parent_context.py
+          python3 -m unittest discover -s scripts/memory_cell -p 'test_project_pr_commit_ancestry.py' -v 2>&1 | tee /tmp/hepta-project-source-bytes/ancestry-tests.log
+          python3 -m py_compile scripts/memory_cell/project_pr_commit_ancestry.py
+          python3 -m unittest discover -s scripts/memory_cell -p 'test_project_pr_merge_concordance.py' -v 2>&1 | tee /tmp/hepta-project-source-bytes/merge-tests.log
+          python3 -m unittest discover -s scripts/memory_cell -p test_project_pr_parent_review_packet.py -v 2>&1 | tee /tmp/hepta-project-source-bytes/parent-packet-tests.log
+      - name: Check exact new source formatting, not a bypass of repository gates
+        run: |
+          set -euo pipefail
+          python3 -m pip install --user uv==0.8.22
+          uv run --frozen --project scripts ruff format --check \
+            scripts/memory_cell/project_pr_source_materialize.py \
+            scripts/memory_cell/test_project_pr_source_materialize.py \
+            scripts/memory_cell/project_pr_review_packet.py \
+            scripts/memory_cell/test_project_pr_review_packet.py \
+            scripts/memory_cell/project_pr_parent_context.py \
+            scripts/memory_cell/test_project_pr_parent_context.py \
+            scripts/memory_cell/project_pr_parent_review_packet.py \
+            scripts/memory_cell/test_project_pr_parent_review_packet.py \
+            scripts/memory_cell/project_pr_merge_concordance.py \
+            scripts/memory_cell/test_project_pr_merge_concordance.py \
+            scripts/memory_cell/project_pr_commit_ancestry.py \
+            scripts/memory_cell/test_project_pr_commit_ancestry.py \
+            2>&1 | tee /tmp/hepta-project-source-bytes/format.log
+      - name: Fetch exact precommitted Git blobs into a bounded read-only corpus
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          python3 scripts/memory_cell/project_pr_source_materialize.py \
+            scripts/memory_cell/data/real-project-pr-source-cut-20261012.json \
+            /tmp/hepta-project-source-bytes/original \
+            --source-sha256 ef2a46ce037db4a91affddd2498eb8e089771ae5734bc13c56cb8a97b840a463 \
+            2>&1 | tee /tmp/hepta-project-source-bytes/acquire.log
+          test -f /tmp/hepta-project-source-bytes/original/READY.json
+      - name: Reopen all 80 original Git byte bindings from disk in a separate process
+        env:
+          PYTHONPATH: scripts/memory_cell
+        run: |
+          set -euo pipefail
+          python3 scripts/memory_cell/project_pr_source_materialize.py \
+            scripts/memory_cell/data/real-project-pr-source-cut-20261012.json \
+            /tmp/hepta-project-source-bytes/original \
+            --source-sha256 ef2a46ce037db4a91affddd2498eb8e089771ae5734bc13c56cb8a97b840a463 \
+            --reopen-only 2>&1 | tee /tmp/hepta-project-source-bytes/reopen.log
+      - name: Verify all registered immutable Git commits and reachable ancestor edges
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          python3 scripts/memory_cell/project_pr_commit_ancestry.py \
+            scripts/memory_cell/data/real-project-pr-source-cut-20261012.json \
+            /tmp/hepta-project-source-bytes/original \
+            /tmp/hepta-project-source-bytes/registered-ancestry \
+            --source-sha256 ef2a46ce037db4a91affddd2498eb8e089771ae5734bc13c56cb8a97b840a463 \
+            2>&1 | tee /tmp/hepta-project-source-bytes/ancestry-collect.log
+          test -f /tmp/hepta-project-source-bytes/registered-ancestry/READY.json
+      - name: Independently re-evaluate saved registered ancestor edges without network
+        run: |
+          set -euo pipefail
+          python3 scripts/memory_cell/project_pr_commit_ancestry.py \
+            scripts/memory_cell/data/real-project-pr-source-cut-20261012.json \
+            /tmp/hepta-project-source-bytes/original \
+            /tmp/hepta-project-source-bytes/registered-ancestry \
+            --source-sha256 ef2a46ce037db4a91affddd2498eb8e089771ae5734bc13c56cb8a97b840a463 \
+            --reopen-only 2>&1 | tee /tmp/hepta-project-source-bytes/ancestry-reopen.log
+      - name: Bind all sixteen answer-blind human review questions to verified Git blobs
+        env:
+          PYTHONPATH: scripts/memory_cell
+        run: |
+          set -euo pipefail
+          python3 scripts/memory_cell/project_pr_review_packet.py \
+            scripts/memory_cell/data/real-project-pr-source-cut-20261012.json \
+            /tmp/hepta-project-source-bytes/original \
+            /tmp/hepta-project-source-bytes/unsigned-review-packet.json \
+            --source-sha256 ef2a46ce037db4a91affddd2498eb8e089771ae5734bc13c56cb8a97b840a463 \
+            2>&1 | tee /tmp/hepta-project-source-bytes/packet.log
+      - name: Obtain separately bounded, SHA-pinned first-parent code context
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          python3 scripts/memory_cell/project_pr_parent_context.py \
+            scripts/memory_cell/data/real-project-pr-source-cut-20261012.json \
+            /tmp/hepta-project-source-bytes/original \
+            /tmp/hepta-project-source-bytes/first-parent \
+            --source-sha256 ef2a46ce037db4a91affddd2498eb8e089771ae5734bc13c56cb8a97b840a463 \
+            2>&1 | tee /tmp/hepta-project-source-bytes/parent-collect.log
+          test -f /tmp/hepta-project-source-bytes/first-parent/READY.json
+      - name: Independently reopen all first-parent bytes and unresolved cases
+        run: |
+          set -euo pipefail
+          python3 scripts/memory_cell/project_pr_parent_context.py \
+            scripts/memory_cell/data/real-project-pr-source-cut-20261012.json \
+            /tmp/hepta-project-source-bytes/original \
+            /tmp/hepta-project-source-bytes/first-parent \
+            --source-sha256 ef2a46ce037db4a91affddd2498eb8e089771ae5734bc13c56cb8a97b840a463 \
+            --reopen-only 2>&1 | tee /tmp/hepta-project-source-bytes/parent-reopen.log
+      - name: Bind first-parent source bytes to all sixteen unsigned review questions
+        env:
+          PYTHONPATH: scripts/memory_cell
+        run: |
+          set -euo pipefail
+          python3 scripts/memory_cell/project_pr_parent_review_packet.py \
+            scripts/memory_cell/data/real-project-pr-source-cut-20261012.json \
+            /tmp/hepta-project-source-bytes/original \
+            /tmp/hepta-project-source-bytes/first-parent \
+            /tmp/hepta-project-source-bytes/unsigned-first-parent-review.json \
+            --source-sha256 ef2a46ce037db4a91affddd2498eb8e089771ae5734bc13c56cb8a97b840a463 \
+            2>&1 | tee /tmp/hepta-project-source-bytes/parent-packet.log
+      - name: Admit only identical SHA-addressed bytes from BOTH merge parents
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          python3 scripts/memory_cell/project_pr_merge_concordance.py \
+            scripts/memory_cell/data/real-project-pr-source-cut-20261012.json \
+            /tmp/hepta-project-source-bytes/original \
+            /tmp/hepta-project-source-bytes/first-parent \
+            /tmp/hepta-project-source-bytes/merge-concordance \
+            --source-sha256 ef2a46ce037db4a91affddd2498eb8e089771ae5734bc13c56cb8a97b840a463 \
+            2>&1 | tee /tmp/hepta-project-source-bytes/merge-collect.log
+          test -f /tmp/hepta-project-source-bytes/merge-concordance/READY.json
+      - name: Independently reopen exact previous Git bytes without network
+        run: |
+          set -euo pipefail
+          python3 scripts/memory_cell/project_pr_merge_concordance.py \
+            scripts/memory_cell/data/real-project-pr-source-cut-20261012.json \
+            /tmp/hepta-project-source-bytes/original \
+            /tmp/hepta-project-source-bytes/first-parent \
+            /tmp/hepta-project-source-bytes/merge-concordance \
+            --source-sha256 ef2a46ce037db4a91affddd2498eb8e089771ae5734bc13c56cb8a97b840a463 \
+            --reopen-only 2>&1 | tee /tmp/hepta-project-source-bytes/merge-reopen.log
+      - name: Seal tested source and byte-level receipts
+        if: always()
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/hepta-project-source-bytes/research-source
+          cp scripts/memory_cell/project_pr_source_materialize.py \
+             scripts/memory_cell/test_project_pr_source_materialize.py \
+             scripts/memory_cell/project_pr_review_packet.py \
+             scripts/memory_cell/test_project_pr_review_packet.py \
+             scripts/memory_cell/project_pr_parent_context.py \
+             scripts/memory_cell/test_project_pr_parent_context.py \
+             scripts/memory_cell/project_pr_parent_review_packet.py \
+             scripts/memory_cell/test_project_pr_parent_review_packet.py \
+             scripts/memory_cell/project_pr_merge_concordance.py \
+             scripts/memory_cell/test_project_pr_merge_concordance.py \
+             scripts/memory_cell/project_pr_commit_ancestry.py \
+             scripts/memory_cell/test_project_pr_commit_ancestry.py \
+             /tmp/hepta-project-source-bytes/research-source/
+          git rev-parse HEAD > /tmp/hepta-project-source-bytes/tested-commit.txt
+          (cd /tmp/hepta-project-source-bytes && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-real-project-immutable-code-bytes
+          path: /tmp/hepta-project-source-bytes
+          if-no-files-found: error

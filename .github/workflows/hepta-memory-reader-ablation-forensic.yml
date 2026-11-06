@@ -1,0 +1,50 @@
+name: MemoryCell original reader capacity and ablation forensic
+on:
+  pull_request:
+    paths:
+      - "scripts/memory_cell/audit_reader_ablation_replay.py"
+      - "scripts/memory_cell/data/memory-reader-ablation-forensic-20261017.json"
+      - ".github/workflows/hepta-memory-reader-ablation-forensic.yml"
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: memory-original-reader-ablation-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: false
+jobs:
+  replay:
+    if: github.event.pull_request.number == 1452 && github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - name: Fetch original pinned archives (no HF downloads, no generation)
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir /tmp/original-reader-forensic
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11669174727/zip > /tmp/original-reader-forensic/sources.zip
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11674486085/zip > /tmp/original-reader-forensic/smol.zip
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11674741321/zip > /tmp/original-reader-forensic/qwen.zip
+      - name: Check original ZIP SHA, all inner members, raw responses and literal confound
+        run: |
+          set -euo pipefail
+          python3 scripts/memory_cell/audit_reader_ablation_replay.py \
+            /tmp/original-reader-forensic/sources.zip \
+            /tmp/original-reader-forensic/smol.zip \
+            /tmp/original-reader-forensic/qwen.zip \
+            scripts/memory_cell/data/memory-reader-ablation-forensic-20261017.json \
+            | tee /tmp/original-reader-forensic/verified.json
+          git rev-parse HEAD > /tmp/original-reader-forensic/checkout-head.txt
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-original-reader-ablation-forensic
+          path: |
+            /tmp/original-reader-forensic/verified.json
+            /tmp/original-reader-forensic/checkout-head.txt
+          if-no-files-found: warn

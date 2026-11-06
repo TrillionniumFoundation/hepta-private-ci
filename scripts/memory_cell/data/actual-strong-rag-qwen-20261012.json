@@ -1,0 +1,159 @@
+{
+  "schema": "hepta.memory-cell.actual-strong-rag-qwen-evidence.v1",
+  "provenance": {
+    "generating_commit": "6304b451268c73f3d1a605985226b102df841bbf",
+    "workflow_run_id": 38224780900,
+    "reader_artifact_id": 11743043427,
+    "reader_zip_sha256": "7a99db30fb5b1202fcd43073d22589b84315046dd34044277cc46351f1cbece8",
+    "calibration_checkpoint_artifact_id": 11742491576,
+    "original_input_artifact_id": 11669174727,
+    "original_input_zip_sha256": "23e9d44b8d2dbe756c7c33031e18853c83326458a37925d4d368881145bf142b",
+    "historical_test_plan_sha256": "9840a25487af444914dca24c818d98ff798ebc1610ea8dfdd827187c31ad1897",
+    "reader_identity": "f9aa334d3a02cabececea367c283caf66ef9875132907ebc34dac1c8d3a7f225",
+    "model": "Qwen/Qwen2.5-3B-Instruct",
+    "model_revision": "82f42baa094a9600e39ccd80d34058aeeb3abbc1"
+  },
+  "calibration": {
+    "planned": 40,
+    "succeeded": 40,
+    "k_values": [
+      1,
+      2,
+      3,
+      4,
+      6
+    ],
+    "strict_successes_by_k": {
+      "1": 4,
+      "2": 4,
+      "3": 4,
+      "4": 4,
+      "6": 2
+    },
+    "selected_k": 1,
+    "leave_one_out_selected_k_counts": {
+      "1": 7,
+      "2": 1
+    },
+    "stable_under_one_case_removal": false
+  },
+  "evaluation": {
+    "questions": 8,
+    "planned": 72,
+    "succeeded": 72,
+    "arms": {
+      "selected_k": {
+        "strict_correct": 5,
+        "planned": 8,
+        "succeeded": 8,
+        "full_prompt_input_tokens": 3961,
+        "reader_seconds": 62.509692,
+        "correct_with_all_program_declared_citations": 3
+      },
+      "hybrid_k4": {
+        "strict_correct": 3,
+        "planned": 8,
+        "succeeded": 8,
+        "full_prompt_input_tokens": 10806,
+        "reader_seconds": 136.044427,
+        "correct_with_all_program_declared_citations": 1
+      },
+      "hybrid_k6": {
+        "strict_correct": 2,
+        "planned": 8,
+        "succeeded": 8,
+        "full_prompt_input_tokens": 15463,
+        "reader_seconds": 194.103931,
+        "correct_with_all_program_declared_citations": 0
+      },
+      "hybrid_k4_reversed": {
+        "strict_correct": 3,
+        "planned": 8,
+        "succeeded": 8,
+        "full_prompt_input_tokens": 10806,
+        "reader_seconds": 135.831386,
+        "correct_with_all_program_declared_citations": 1
+      },
+      "single_hop": {
+        "strict_correct": 4,
+        "planned": 8,
+        "succeeded": 8,
+        "full_prompt_input_tokens": 4575,
+        "reader_seconds": 66.037419,
+        "correct_with_all_program_declared_citations": 4
+      },
+      "entity_time": {
+        "strict_correct": 8,
+        "planned": 8,
+        "succeeded": 8,
+        "full_prompt_input_tokens": 5752,
+        "reader_seconds": 79.195799,
+        "correct_with_all_program_declared_citations": 4
+      },
+      "organized": {
+        "strict_correct": 8,
+        "planned": 8,
+        "succeeded": 8,
+        "full_prompt_input_tokens": 5179,
+        "reader_seconds": 73.516894,
+        "correct_with_all_program_declared_citations": 4
+      },
+      "program_support": {
+        "strict_correct": 8,
+        "planned": 8,
+        "succeeded": 8,
+        "full_prompt_input_tokens": 5179,
+        "reader_seconds": 73.114975,
+        "correct_with_all_program_declared_citations": 4
+      },
+      "empty": {
+        "strict_correct": 0,
+        "planned": 8,
+        "succeeded": 8,
+        "full_prompt_input_tokens": 1630,
+        "reader_seconds": 36.138932,
+        "correct_with_all_program_declared_citations": 0
+      }
+    },
+    "paired": {
+      "entity_time_minus_single_hop": {
+        "wins": 4,
+        "losses": 0,
+        "ties": 4
+      },
+      "organized_minus_entity_time": {
+        "wins": 0,
+        "losses": 0,
+        "ties": 8
+      },
+      "organized_minus_hybrid_k4": {
+        "wins": 5,
+        "losses": 0,
+        "ties": 3
+      },
+      "selected_k_minus_hybrid_k4": {
+        "wins": 2,
+        "losses": 0,
+        "ties": 6
+      }
+    },
+    "same_ordered_source_repeat_pairs": 39,
+    "same_prompt_answer_disagreements": 0,
+    "raw_answers_sha256": "536cae1bf9807bc9caf9ef42d0a4d541152bfbc5ab798146550fdc7d7901b5e9",
+    "calibration_raw_answers_sha256": "1b5c774d97656fbbbba9ae668df6e93ea4ca5c75f588bbd0a7424a0fa2be3fc3"
+  },
+  "checks": {
+    "reader_artifact_manifest_members_verified": 43,
+    "original_input_manifest_members_verified": 35,
+    "raw_answers_replayed_and_scored": 112,
+    "local_source_compatible_replay_passed": true,
+    "local_mutation_rejection_tests_passed": 2,
+    "github_independent_replay_success_at_observation": false,
+    "independent_human_semantic_adjudication": false,
+    "independent_future_source_families": 0,
+    "statistical_superiority_established": false,
+    "parametric_memory_gain_established": false,
+    "production_accepted": false
+  },
+  "scope": "Authored, previously exposed eight-question development tasks; no new independent future sampling; local replay used exact archived scorer/source/probe plus minimal ABI-equivalent non-model dependency shims."
+}

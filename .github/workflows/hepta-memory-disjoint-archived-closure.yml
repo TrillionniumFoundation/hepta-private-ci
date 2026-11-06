@@ -1,0 +1,116 @@
+name: MemoryCell disjoint original-answer archived closure
+on:
+  push:
+    branches:
+      - codex/memory-cell-evidence-20261008
+    paths:
+      - "scripts/memory_cell/disjoint_archive_recovery.py"
+      - "scripts/memory_cell/test_disjoint_archive_recovery.py"
+      - "scripts/memory_cell/data/disjoint-archived-shards-38423223376.json"
+      - ".github/workflows/hepta-memory-disjoint-archived-closure.yml"
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: memorycell-disjoint-archived-closure-${{ github.sha }}
+  cancel-in-progress: false
+env:
+  PYTHONPATH: scripts/memory_cell
+  HEPTA_MEMORY_TESTED_COMMIT: bc76ac57ba972bf105c71ddd997cd215cec5df2e
+  FROZEN_PLAN_SHA: "9840a25487af444914dca24c818d98ff798ebc1610ea8dfdd827187c31ad1897"
+  PINS: scripts/memory_cell/data/disjoint-archived-shards-38423223376.json
+jobs:
+  archive-replay:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Prove archive admission and command-line routing before reading tasks
+        run: |
+          set -euo pipefail
+          python3 -m compileall -q scripts/memory_cell/disjoint_archive_recovery.py scripts/memory_cell/strong_rag_shards.py
+          python3 -m unittest discover -s scripts/memory_cell -p test_disjoint_archive_recovery.py -v
+          python3 -m unittest discover -s scripts/memory_cell -p test_strong_rag_shards.py -v
+      - name: Match the failed original run, 32 successful generation jobs, and pre-pinned ZIPs
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/archived-receipt /tmp/archived-zips
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/runs/38423223376 > /tmp/archived-receipt/original-run.json
+          gh api 'repos/TrillionniumFoundation/hepta-private-ci/actions/runs/38423223376/jobs?per_page=100' > /tmp/archived-receipt/original-jobs.json
+          gh api 'repos/TrillionniumFoundation/hepta-private-ci/actions/runs/38423223376/artifacts?per_page=100' > /tmp/archived-receipt/original-artifacts.json
+          python3 scripts/memory_cell/disjoint_archive_recovery.py plan "$PINS" /tmp/archived-receipt/original-run.json /tmp/archived-receipt/original-jobs.json /tmp/archived-receipt/original-artifacts.json /tmp/archived-receipt/admission.json /tmp/archived-receipt/downloads.tsv
+          while IFS=$'\t' read -r name id; do
+            gh api "repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/$id/zip" > "/tmp/archived-zips/$name.zip"
+          done < /tmp/archived-receipt/downloads.tsv
+          python3 scripts/memory_cell/disjoint_archive_recovery.py unpack "$PINS" /tmp/archived-zips /tmp/archived
+          python3 scripts/memory_cell/strong_rag_sharded_ci.py verify /tmp/archived/original
+          python3 scripts/memory_cell/strong_rag_sharded_ci.py verify /tmp/archived/joined
+      - name: Rebuild 72 original evaluation answers using frozen 40-answer k, not inference
+        run: |
+          set -euo pipefail
+          cp -a /tmp/archived/joined /tmp/archived-release
+          rm /tmp/archived-release/SHA256SUMS
+          cp -a /tmp/archived/evaluation /tmp/archived-release/shards/evaluation
+          cp /tmp/archived-release/calibration/{stage.json,inventory.json,publisher.json} /tmp/archived-release/
+          python3 scripts/memory_cell/strong_rag_shards.py evaluation-collect /tmp/archived/original/plan /tmp/archived/original/observations /tmp/archived-release/prep /tmp/archived-release/calibration /tmp/archived-release/shards/evaluation /tmp/archived-release/evaluation --plan-sha "$FROZEN_PLAN_SHA" --policy-sha "$(sha256sum /tmp/archived-release/calibration/frozen-policy.json | cut -d ' ' -f1)" 2>&1 | tee /tmp/archived-receipt/collect.log
+          (cd /tmp/archived-release && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+          python3 scripts/memory_cell/strong_rag_sharded_ci.py verify /tmp/archived-release
+          python3 scripts/memory_cell/strong_rag_shards.py verify-release /tmp/archived-release /tmp/archived/original > /tmp/archived-receipt/shard-audit.json
+          python3 scripts/memory_cell/strong_rag_receipt.py /tmp/archived-release /tmp/archived/original --generating-commit "$HEPTA_MEMORY_TESTED_COMMIT" --output /tmp/archived-receipt/reader-audit.json
+          printf '%s\n' "$GITHUB_SHA" > /tmp/archived-receipt/replay-verifier-source.txt
+          printf '%s\n' "$HEPTA_MEMORY_TESTED_COMMIT" > /tmp/archived-receipt/original-generator-source.txt
+          (cd /tmp/archived-receipt && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-disjoint-archived-admission
+          path: /tmp/archived-receipt
+          if-no-files-found: warn
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: success()
+        with:
+          name: memory-disjoint-archived-release
+          path: /tmp/archived-release
+          if-no-files-found: error
+
+  independent-replay:
+    needs: archive-replay
+    runs-on: ubuntu-22.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: memory-disjoint-archived-release
+          path: /tmp/archived-release
+      - name: Independently fetch and open exact original corpus
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/independent
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11827287296/zip > /tmp/independent/original.zip
+          python3 scripts/memory_cell/disjoint_archive_recovery.py unpack-one "$PINS" rag-sharded-original /tmp/independent/original.zip /tmp/independent/original
+          python3 scripts/memory_cell/strong_rag_sharded_ci.py verify /tmp/independent/original
+          python3 scripts/memory_cell/strong_rag_sharded_ci.py verify /tmp/archived-release
+      - name: Independently replay original evidence paths, scores, and 32 sealed shards
+        run: |
+          set -euo pipefail
+          python3 scripts/memory_cell/strong_rag_shards.py verify-release /tmp/archived-release /tmp/independent/original > /tmp/independent/shard-audit.json
+          python3 scripts/memory_cell/strong_rag_receipt.py /tmp/archived-release /tmp/independent/original --generating-commit "$HEPTA_MEMORY_TESTED_COMMIT" --output /tmp/independent/reader-audit.json
+          printf '%s\n' "$GITHUB_SHA" > /tmp/independent/replay-verifier-source.txt
+          (cd /tmp/independent && find . -type f ! -name SHA256SUMS ! -name original.zip -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-disjoint-archived-independent-replay
+          path: /tmp/independent
+          if-no-files-found: warn

@@ -1,0 +1,83 @@
+name: MemoryCell four-run Qwen frozen-reader source replay
+on:
+  push:
+    branches:
+      - codex/memory-cell-evidence-20261008
+    paths:
+      - "scripts/memory_cell/strong_rag_fourrun_audit.py"
+      - "scripts/memory_cell/test_strong_rag_fourrun_audit.py"
+      - "scripts/memory_cell/data/strong-rag-four-run-replication-20261012.json"
+      - "codex-rs/hepta-intelligence-eval/MEMORY_CELL_STRONG_RAG_FOUR_RUN_REPLICATION_20261012.md"
+      - ".github/workflows/hepta-memory-strong-rag-four-run-audit.yml"
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: memorycell-four-run-replay-${{ github.sha }}
+  cancel-in-progress: false
+jobs:
+  original-answer-cross-replay:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    env:
+      PYTHONPATH: scripts/memory_cell
+      HEPTA_MEMORY_FOURRUN_ARCHIVES: /tmp/memorycell-four-run-input
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Restore eight already sealed model output ZIPs without model weights
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p "$HEPTA_MEMORY_FOURRUN_ARCHIVES" /tmp/memorycell-four-run-output
+          for item in \
+            "11720146105:A-full.zip" \
+            "11719787110:A-replay.zip" \
+            "11717450320:B-full.zip" \
+            "11716508827:B-replay.zip" \
+            "11696514149:C-full.zip" \
+            "11696898778:C-replay.zip" \
+            "11722740803:D-full.zip" \
+            "11722876985:D-replay.zip"; do
+            id="${item%%:*}"
+            name="${item#*:}"
+            gh api "repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/$id/zip" \
+              > "$HEPTA_MEMORY_FOURRUN_ARCHIVES/$name"
+          done
+      - name: Validate all original manifests and read-only tamper tests
+        run: |
+          set -euo pipefail
+          python3 -m py_compile scripts/memory_cell/strong_rag_fourrun_audit.py \
+            scripts/memory_cell/test_strong_rag_fourrun_audit.py
+          python3 -m unittest discover -s scripts/memory_cell \
+            -p 'test_strong_rag_fourrun_audit.py' -v \
+            2>&1 | tee /tmp/memorycell-four-run-output/tests.log
+      - name: Recompute 448 original answers and identical-prompt output drift
+        run: |
+          set -euo pipefail
+          python3 scripts/memory_cell/strong_rag_fourrun_audit.py \
+            "$HEPTA_MEMORY_FOURRUN_ARCHIVES/A-full.zip" \
+            "$HEPTA_MEMORY_FOURRUN_ARCHIVES/A-replay.zip" \
+            "$HEPTA_MEMORY_FOURRUN_ARCHIVES/B-full.zip" \
+            "$HEPTA_MEMORY_FOURRUN_ARCHIVES/B-replay.zip" \
+            "$HEPTA_MEMORY_FOURRUN_ARCHIVES/C-full.zip" \
+            "$HEPTA_MEMORY_FOURRUN_ARCHIVES/C-replay.zip" \
+            "$HEPTA_MEMORY_FOURRUN_ARCHIVES/D-full.zip" \
+            "$HEPTA_MEMORY_FOURRUN_ARCHIVES/D-replay.zip" \
+            --output /tmp/memorycell-four-run-output/replayed-report.json \
+            2>&1 | tee /tmp/memorycell-four-run-output/replay.log
+          cmp scripts/memory_cell/data/strong-rag-four-run-replication-20261012.json \
+            /tmp/memorycell-four-run-output/replayed-report.json
+          git rev-parse HEAD > /tmp/memorycell-four-run-output/auditor-commit.txt
+          (cd /tmp/memorycell-four-run-output && \
+            find . -type f ! -name SHA256SUMS -print0 | sort -z | \
+            xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-strong-rag-four-run-cross-replay
+          path: /tmp/memorycell-four-run-output
+          if-no-files-found: warn

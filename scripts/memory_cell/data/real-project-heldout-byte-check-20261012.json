@@ -1,0 +1,412 @@
+{
+  "schema": "hepta.memorycell.heldout-frozen-blob-byte-audit.v1",
+  "status": "all-48-evaluation-git-blob-hashes-verified-not-full-ready",
+  "research_only": true,
+  "source_cut_utc": "2026-10-12T09:45:00Z",
+  "original_source_manifest_sha256": "ef2a46ce037db4a91affddd2498eb8e089771ae5734bc13c56cb8a97b840a463",
+  "original_source_manifest_git_blob_sha1": "656f221b3571aa187ab1c2fb106462ec3032d90c",
+  "method": "Read immutable GitHub /git/blobs/<sha> source contents from precommitted objects. Recompute canonical git SHA-1 over byte-exact UTF-8 content with the Git 'blob <length>\\0' header. Compare every file against its original declared blob object SHA and preserve frozen PR order. No source code was executed. SHA-addressed content verifies blob bytes, not the root-tree path binding or historical review discussion.",
+  "source_population": {
+    "frozen_projects": 4,
+    "frozen_pr_histories": 8,
+    "frozen_file_bindings": 80,
+    "evaluation_projects": 2,
+    "evaluation_pr_histories": 4,
+    "evaluation_file_bindings": 48
+  },
+  "observed": {
+    "verified_project_histories": 4,
+    "verified_file_bindings": 48,
+    "verified_bytes": 4960699,
+    "failed_git_blob_hash_checks": 0
+  },
+  "cases": [
+    {
+      "project": "numpy/numpy",
+      "pull_number": 32523,
+      "head_commit_sha1": "b9a2bf9f6ad801fa97eeaaf2a8a15aee405a951b",
+      "verified_file_bindings": 26,
+      "verified_bytes": 1369264,
+      "files": [
+        {
+          "path": "doc/release/upcoming_changes/31943.change.rst",
+          "declared_git_blob_sha1": "f928e72ec38683c751de54c02ee78befa798b87d",
+          "recomputed_git_blob_sha1": "f928e72ec38683c751de54c02ee78befa798b87d",
+          "byte_length": 380,
+          "verified": true
+        },
+        {
+          "path": "numpy/_core/defchararray.py",
+          "declared_git_blob_sha1": "14af28ce5afd8eec4b25eca2d1350b3cc0717285",
+          "recomputed_git_blob_sha1": "14af28ce5afd8eec4b25eca2d1350b3cc0717285",
+          "byte_length": 38130,
+          "verified": true
+        },
+        {
+          "path": "numpy/_core/fromnumeric.py",
+          "declared_git_blob_sha1": "97418294a6278ed48d6a07c9ed5d92ded199f16b",
+          "recomputed_git_blob_sha1": "97418294a6278ed48d6a07c9ed5d92ded199f16b",
+          "byte_length": 150166,
+          "verified": true
+        },
+        {
+          "path": "numpy/_core/function_base.py",
+          "declared_git_blob_sha1": "a6e711934a9fc75a07699fc2a99100f24e88f848",
+          "recomputed_git_blob_sha1": "a6e711934a9fc75a07699fc2a99100f24e88f848",
+          "byte_length": 20760,
+          "verified": true
+        },
+        {
+          "path": "numpy/_core/numeric.py",
+          "declared_git_blob_sha1": "805cee604f271d9c2eaadeaa6639f81bff1fb98e",
+          "recomputed_git_blob_sha1": "805cee604f271d9c2eaadeaa6639f81bff1fb98e",
+          "byte_length": 79829,
+          "verified": true
+        },
+        {
+          "path": "numpy/_core/overrides.py",
+          "declared_git_blob_sha1": "2d56011b60e176b2398e4e2c25a95e6b3f1428ad",
+          "recomputed_git_blob_sha1": "2d56011b60e176b2398e4e2c25a95e6b3f1428ad",
+          "byte_length": 18876,
+          "verified": true
+        },
+        {
+          "path": "numpy/_core/overrides.pyi",
+          "declared_git_blob_sha1": "1f1fcf4a3ea9aafb5b14f96853326596ffe9254c",
+          "recomputed_git_blob_sha1": "1f1fcf4a3ea9aafb5b14f96853326596ffe9254c",
+          "byte_length": 1940,
+          "verified": true
+        },
+        {
+          "path": "numpy/_core/shape_base.py",
+          "declared_git_blob_sha1": "d3e975704583d33b651e8118e0f63346b1aef548",
+          "recomputed_git_blob_sha1": "d3e975704583d33b651e8118e0f63346b1aef548",
+          "byte_length": 32542,
+          "verified": true
+        },
+        {
+          "path": "numpy/_core/src/multiarray/arrayfunction_override.c",
+          "declared_git_blob_sha1": "ece890e4a8251c91aae68ff14d833c6743d6b583",
+          "recomputed_git_blob_sha1": "ece890e4a8251c91aae68ff14d833c6743d6b583",
+          "byte_length": 45218,
+          "verified": true
+        },
+        {
+          "path": "numpy/_core/strings.py",
+          "declared_git_blob_sha1": "3ad54a2a21958ebaccdbc82d3c32723fc2cd8f59",
+          "recomputed_git_blob_sha1": "3ad54a2a21958ebaccdbc82d3c32723fc2cd8f59",
+          "byte_length": 50178,
+          "verified": true
+        },
+        {
+          "path": "numpy/_core/tests/test_overrides.py",
+          "declared_git_blob_sha1": "26bbf9664ee644b7f7251ac3789a29154d065aa4",
+          "recomputed_git_blob_sha1": "26bbf9664ee644b7f7251ac3789a29154d065aa4",
+          "byte_length": 51177,
+          "verified": true
+        },
+        {
+          "path": "numpy/fft/_pocketfft.py",
+          "declared_git_blob_sha1": "adaeccf0706af5c9bacad77b851d8f3e0e539030",
+          "recomputed_git_blob_sha1": "adaeccf0706af5c9bacad77b851d8f3e0e539030",
+          "byte_length": 62390,
+          "verified": true
+        },
+        {
+          "path": "numpy/lib/_arraysetops_impl.py",
+          "declared_git_blob_sha1": "02e36b7533d9acabf618f8d7431f59433093a601",
+          "recomputed_git_blob_sha1": "02e36b7533d9acabf618f8d7431f59433093a601",
+          "byte_length": 36383,
+          "verified": true
+        },
+        {
+          "path": "numpy/lib/_arraysetops_impl.pyi",
+          "declared_git_blob_sha1": "2472505a12839ccf3757e4843a2b371eaaa6ede6",
+          "recomputed_git_blob_sha1": "2472505a12839ccf3757e4843a2b371eaaa6ede6",
+          "byte_length": 30263,
+          "verified": true
+        },
+        {
+          "path": "numpy/lib/_function_base_impl.py",
+          "declared_git_blob_sha1": "9b1b452f2e572d4718f32c8e63076ec1f88e3473",
+          "recomputed_git_blob_sha1": "9b1b452f2e572d4718f32c8e63076ec1f88e3473",
+          "byte_length": 194182,
+          "verified": true
+        },
+        {
+          "path": "numpy/lib/_histograms_impl.py",
+          "declared_git_blob_sha1": "26eef1477f5a8a15d49235cd167d537bbd01777f",
+          "recomputed_git_blob_sha1": "26eef1477f5a8a15d49235cd167d537bbd01777f",
+          "byte_length": 38203,
+          "verified": true
+        },
+        {
+          "path": "numpy/lib/_index_tricks_impl.py",
+          "declared_git_blob_sha1": "ffe8a6207c3a4d3262fd6700a52d660326207046",
+          "recomputed_git_blob_sha1": "ffe8a6207c3a4d3262fd6700a52d660326207046",
+          "byte_length": 31440,
+          "verified": true
+        },
+        {
+          "path": "numpy/lib/_nanfunctions_impl.py",
+          "declared_git_blob_sha1": "94f8e451a0740c1bab81ecadbac9df5975b1b523",
+          "recomputed_git_blob_sha1": "94f8e451a0740c1bab81ecadbac9df5975b1b523",
+          "byte_length": 69743,
+          "verified": true
+        },
+        {
+          "path": "numpy/lib/_npyio_impl.py",
+          "declared_git_blob_sha1": "78f3bce80fc73c8f6f2dce28a4390b1c295f2576",
+          "recomputed_git_blob_sha1": "78f3bce80fc73c8f6f2dce28a4390b1c295f2576",
+          "byte_length": 95994,
+          "verified": true
+        },
+        {
+          "path": "numpy/lib/_polynomial_impl.py",
+          "declared_git_blob_sha1": "77a3701a9c3dd6715c486369a57cf565269d8f50",
+          "recomputed_git_blob_sha1": "77a3701a9c3dd6715c486369a57cf565269d8f50",
+          "byte_length": 43772,
+          "verified": true
+        },
+        {
+          "path": "numpy/lib/_scimath_impl.py",
+          "declared_git_blob_sha1": "106a5b8229c017e50354d33cf11dcc4ae14f5658",
+          "recomputed_git_blob_sha1": "106a5b8229c017e50354d33cf11dcc4ae14f5658",
+          "byte_length": 15452,
+          "verified": true
+        },
+        {
+          "path": "numpy/lib/_shape_base_impl.py",
+          "declared_git_blob_sha1": "e45d2e2e3b66597d6560e62600b9ff3f02444490",
+          "recomputed_git_blob_sha1": "e45d2e2e3b66597d6560e62600b9ff3f02444490",
+          "byte_length": 37152,
+          "verified": true
+        },
+        {
+          "path": "numpy/lib/_twodim_base_impl.py",
+          "declared_git_blob_sha1": "d5a111683177b5511ff269901f09664046bf7b82",
+          "recomputed_git_blob_sha1": "d5a111683177b5511ff269901f09664046bf7b82",
+          "byte_length": 34849,
+          "verified": true
+        },
+        {
+          "path": "numpy/lib/_type_check_impl.py",
+          "declared_git_blob_sha1": "ec2f8521478f7dbda485a35e203f2ae219699860",
+          "recomputed_git_blob_sha1": "ec2f8521478f7dbda485a35e203f2ae219699860",
+          "byte_length": 20291,
+          "verified": true
+        },
+        {
+          "path": "numpy/lib/recfunctions.py",
+          "declared_git_blob_sha1": "125c0af4276d65d89247aefbce527588bfe37719",
+          "recomputed_git_blob_sha1": "125c0af4276d65d89247aefbce527588bfe37719",
+          "byte_length": 57918,
+          "verified": true
+        },
+        {
+          "path": "numpy/linalg/_linalg.py",
+          "declared_git_blob_sha1": "b4578d41c3a596ec7636bdbdf9c45547e1d796a8",
+          "recomputed_git_blob_sha1": "b4578d41c3a596ec7636bdbdf9c45547e1d796a8",
+          "byte_length": 112036,
+          "verified": true
+        }
+      ]
+    },
+    {
+      "project": "numpy/numpy",
+      "pull_number": 32910,
+      "head_commit_sha1": "8807f4af3d58b4a6c883e8f3e66764696ee4bd46",
+      "verified_file_bindings": 3,
+      "verified_bytes": 112168,
+      "files": [
+        {
+          "path": "benchmarks/benchmarks/bench_itemselection.py",
+          "declared_git_blob_sha1": "5e20089db80c7a2ff08a5ad2afd96633baf4ebae",
+          "recomputed_git_blob_sha1": "5e20089db80c7a2ff08a5ad2afd96633baf4ebae",
+          "byte_length": 2219,
+          "verified": true
+        },
+        {
+          "path": "doc/release/upcoming_changes/32910.performance.rst",
+          "declared_git_blob_sha1": "01aa0eb8296cbbae95d014fdc43722b617981794",
+          "recomputed_git_blob_sha1": "01aa0eb8296cbbae95d014fdc43722b617981794",
+          "byte_length": 64,
+          "verified": true
+        },
+        {
+          "path": "numpy/_core/src/multiarray/item_selection.c",
+          "declared_git_blob_sha1": "f34132b940bfab549ca073a0208469f361f21158",
+          "recomputed_git_blob_sha1": "f34132b940bfab549ca073a0208469f361f21158",
+          "byte_length": 109885,
+          "verified": true
+        }
+      ]
+    },
+    {
+      "project": "astral-sh/ruff",
+      "pull_number": 29127,
+      "head_commit_sha1": "48eaf622313547d621c6bdafe4cad91f84070144",
+      "verified_file_bindings": 14,
+      "verified_bytes": 2671196,
+      "files": [
+        {
+          "path": "crates/ty_python_semantic/resources/mdtest/generics/legacy/classes.md",
+          "declared_git_blob_sha1": "18b33b734f3f277afe38e9992c2e06e17d9a8bc7",
+          "recomputed_git_blob_sha1": "18b33b734f3f277afe38e9992c2e06e17d9a8bc7",
+          "byte_length": 88723,
+          "verified": true
+        },
+        {
+          "path": "crates/ty_python_semantic/src/types.rs",
+          "declared_git_blob_sha1": "ffe01511ad6458f30df7eee4215efe8410eb0d3d",
+          "recomputed_git_blob_sha1": "ffe01511ad6458f30df7eee4215efe8410eb0d3d",
+          "byte_length": 527393,
+          "verified": true
+        },
+        {
+          "path": "crates/ty_python_semantic/src/types/class/static_literal.rs",
+          "declared_git_blob_sha1": "4a4c0f9d036653538c5256da3f210d0b49916916",
+          "recomputed_git_blob_sha1": "4a4c0f9d036653538c5256da3f210d0b49916916",
+          "byte_length": 159331,
+          "verified": true
+        },
+        {
+          "path": "crates/ty_python_semantic/src/types/display.rs",
+          "declared_git_blob_sha1": "92abc98673191d5bd3ce1e3319255a7d4449fbac",
+          "recomputed_git_blob_sha1": "92abc98673191d5bd3ce1e3319255a7d4449fbac",
+          "byte_length": 165156,
+          "verified": true
+        },
+        {
+          "path": "crates/ty_python_semantic/src/types/function.rs",
+          "declared_git_blob_sha1": "eb4d9b347ab18e830fc65f6594b8aa2ffe263b9e",
+          "recomputed_git_blob_sha1": "eb4d9b347ab18e830fc65f6594b8aa2ffe263b9e",
+          "byte_length": 88673,
+          "verified": true
+        },
+        {
+          "path": "crates/ty_python_semantic/src/types/generics.rs",
+          "declared_git_blob_sha1": "32be385760fa86a71f9f976a62959e836cb40191",
+          "recomputed_git_blob_sha1": "32be385760fa86a71f9f976a62959e836cb40191",
+          "byte_length": 249291,
+          "verified": true
+        },
+        {
+          "path": "crates/ty_python_semantic/src/types/infer/builder.rs",
+          "declared_git_blob_sha1": "ddd0d5aab95becfee6a9ea4a80e92ac0385bacfb",
+          "recomputed_git_blob_sha1": "ddd0d5aab95becfee6a9ea4a80e92ac0385bacfb",
+          "byte_length": 548826,
+          "verified": true
+        },
+        {
+          "path": "crates/ty_python_semantic/src/types/infer/builder/post_inference/static_class.rs",
+          "declared_git_blob_sha1": "268bba47a668c5d7a5bd8d81ffb455f0dd20e033",
+          "recomputed_git_blob_sha1": "268bba47a668c5d7a5bd8d81ffb455f0dd20e033",
+          "byte_length": 66850,
+          "verified": true
+        },
+        {
+          "path": "crates/ty_python_semantic/src/types/infer/builder/subscript.rs",
+          "declared_git_blob_sha1": "4d79b88dec994db5618c7059e0a1e8640d2aa512",
+          "recomputed_git_blob_sha1": "4d79b88dec994db5618c7059e0a1e8640d2aa512",
+          "byte_length": 121735,
+          "verified": true
+        },
+        {
+          "path": "crates/ty_python_semantic/src/types/infer/builder/type_expression.rs",
+          "declared_git_blob_sha1": "ea78570840d5f1ac72651bd5cf2d2cdeaf1b1658",
+          "recomputed_git_blob_sha1": "ea78570840d5f1ac72651bd5cf2d2cdeaf1b1658",
+          "byte_length": 160408,
+          "verified": true
+        },
+        {
+          "path": "crates/ty_python_semantic/src/types/known_instance.rs",
+          "declared_git_blob_sha1": "f342d0d261f84a76272154dddf48f3aa114cba6f",
+          "recomputed_git_blob_sha1": "f342d0d261f84a76272154dddf48f3aa114cba6f",
+          "byte_length": 43169,
+          "verified": true
+        },
+        {
+          "path": "crates/ty_python_semantic/src/types/protocol_class.rs",
+          "declared_git_blob_sha1": "c575a2265d0d4c75c98052d50334988a0516ec5c",
+          "recomputed_git_blob_sha1": "c575a2265d0d4c75c98052d50334988a0516ec5c",
+          "byte_length": 131319,
+          "verified": true
+        },
+        {
+          "path": "crates/ty_python_semantic/src/types/signatures.rs",
+          "declared_git_blob_sha1": "b1d2b01e9ab457e28c5d72722591cd81ff286bbf",
+          "recomputed_git_blob_sha1": "b1d2b01e9ab457e28c5d72722591cd81ff286bbf",
+          "byte_length": 283699,
+          "verified": true
+        },
+        {
+          "path": "crates/ty_python_semantic/src/types/type_alias.rs",
+          "declared_git_blob_sha1": "76ed801e2a775351f49a7eb1ad219b6e0f911741",
+          "recomputed_git_blob_sha1": "76ed801e2a775351f49a7eb1ad219b6e0f911741",
+          "byte_length": 36623,
+          "verified": true
+        }
+      ]
+    },
+    {
+      "project": "astral-sh/ruff",
+      "pull_number": 28828,
+      "head_commit_sha1": "800e6a634af3c02b9ea2603475845457c1a06ce9",
+      "verified_file_bindings": 5,
+      "verified_bytes": 808071,
+      "files": [
+        {
+          "path": "crates/ty_python_semantic/resources/mdtest/generics/legacy/paramspec.md",
+          "declared_git_blob_sha1": "215a3462f71eb6598067f77b989b24d5cb594609",
+          "recomputed_git_blob_sha1": "215a3462f71eb6598067f77b989b24d5cb594609",
+          "byte_length": 57234,
+          "verified": true
+        },
+        {
+          "path": "crates/ty_python_semantic/resources/mdtest/generics/pep695/functions.md",
+          "declared_git_blob_sha1": "31c83ee0f52d16dc91adbeddf2ed2ed6b0bd8c09",
+          "recomputed_git_blob_sha1": "31c83ee0f52d16dc91adbeddf2ed2ed6b0bd8c09",
+          "byte_length": 123424,
+          "verified": true
+        },
+        {
+          "path": "crates/ty_python_semantic/resources/mdtest/generics/pep695/paramspec.md",
+          "declared_git_blob_sha1": "e66007898a08e3fd59d5000d26c20d3868da48ac",
+          "recomputed_git_blob_sha1": "e66007898a08e3fd59d5000d26c20d3868da48ac",
+          "byte_length": 88649,
+          "verified": true
+        },
+        {
+          "path": "crates/ty_python_semantic/src/types/generics.rs",
+          "declared_git_blob_sha1": "1236f3493d148a9e31f8e63eb6d460829350bfd4",
+          "recomputed_git_blob_sha1": "1236f3493d148a9e31f8e63eb6d460829350bfd4",
+          "byte_length": 253612,
+          "verified": true
+        },
+        {
+          "path": "crates/ty_python_semantic/src/types/signatures.rs",
+          "declared_git_blob_sha1": "eb87e6de18ada18ac7e81ed357a5c545426837e2",
+          "recomputed_git_blob_sha1": "eb87e6de18ada18ac7e81ed357a5c545426837e2",
+          "byte_length": 285152,
+          "verified": true
+        }
+      ]
+    }
+  ],
+  "not_yet_verified": {
+    "additional_evaluation_file_bindings": 0,
+    "other_source_partition_file_bindings": 32,
+    "head_tree_path_membership": true,
+    "first_parent_before_bytes": true,
+    "independent_review": true
+  },
+  "full_immutable_source_ready": false,
+  "independent_source_family_certified": false,
+  "independent_semantic_judge": false,
+  "training_or_model_inference_executed": false,
+  "review_labels_available": false,
+  "answer_task_accuracy": null,
+  "semantic_citation_precision": null,
+  "production_accepted": false
+}

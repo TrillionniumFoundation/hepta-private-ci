@@ -1,0 +1,124 @@
+{
+  "schema": "hepta.memory.matched-structured-rag-negative.v1",
+  "date_utc": "2026-10-16",
+  "source_artifact": {
+    "repo": "TrillionniumFoundation/hepta-private-ci",
+    "workflow_run": 38867878986,
+    "artifact_id": 12038816070,
+    "artifact_name": "memory-source-local-causal-complete",
+    "zip_sha256": "861e84719f26f48d1d1156bb39273ce706ae83cde47bafcd7f400c037edd871d",
+    "generating_commit": "45a7f7e14625f27d8397f8e18f9ff7b908443753",
+    "original_input_zip_sha256": "31c6f191ecf62095779f7c9a5dd6c5b2f89c6ae408fe9c26f74e017a2d62c47a",
+    "journal_sha256": "8a3c2c186be79cd5e65077017906c731ce1a6f30da937ef9a6894f5c61058cf2",
+    "preregistered_sha256": "d2d1cf11e6cdbc608d511a1c2be50855ec12460380d43f5c2e3a4edf246f299f",
+    "scored_answers_sha256": "d9eda620c8987626f35a4873a5534137450b793142d1f0910f8da27ae863c132"
+  },
+  "audit": {
+    "read_only_same_reader": true,
+    "old_development_questions": 8,
+    "old_evidence_conditions": 6,
+    "observed_rows": 48,
+    "source_replay_cases": 48,
+    "original_authored_worker_verifications": 12,
+    "local_adversarial_tests_passed": 10,
+    "ci_artifact_tests_passed_locally": 10,
+    "audit_script_sha256": "e24104d69b9222283232dbde19a9a6edcfa4505184e9e48c7da111c3f0c31a32",
+    "audit_tests_sha256": "775e9a4842768d15af6555f0d97c7c1e55c4d7164f47c9668279e6ee30a74318",
+    "auditor_source_in_repository": false,
+    "source_and_tests_in_chat_artifact": true
+  },
+  "per_arm": {
+    "empty": {
+      "tasks": 8,
+      "strict_success": 0,
+      "complete_program_declared_citations": 0,
+      "abstained": 8,
+      "selected_source_ids_across_eight_tasks": 0
+    },
+    "hybrid": {
+      "tasks": 8,
+      "strict_success": 8,
+      "complete_program_declared_citations": 8,
+      "abstained": 0,
+      "selected_source_ids_across_eight_tasks": 32
+    },
+    "entity_time": {
+      "tasks": 8,
+      "strict_success": 8,
+      "complete_program_declared_citations": 8,
+      "abstained": 0,
+      "selected_source_ids_across_eight_tasks": 14
+    },
+    "organized": {
+      "tasks": 8,
+      "strict_success": 8,
+      "complete_program_declared_citations": 8,
+      "abstained": 0,
+      "selected_source_ids_across_eight_tasks": 12
+    },
+    "program_support": {
+      "tasks": 8,
+      "strict_success": 8,
+      "complete_program_declared_citations": 8,
+      "abstained": 0,
+      "selected_source_ids_across_eight_tasks": 12
+    },
+    "without_prerequisite": {
+      "tasks": 8,
+      "strict_success": 0,
+      "complete_program_declared_citations": 0,
+      "abstained": 8,
+      "selected_source_ids_across_eight_tasks": 4
+    }
+  },
+  "paired_contrasts": {
+    "organized_vs_hybrid": {
+      "baseline": "hybrid",
+      "reader": "hepta.memory.local-causal-reader.v1",
+      "same_reader_and_same_eight_query_digests": true,
+      "paired_tasks": 8,
+      "strict_wins": 0,
+      "strict_losses": 0,
+      "citation_wins": 0,
+      "citation_losses": 0,
+      "net_success_delta": 0,
+      "observed_success_rate_delta": 0,
+      "statistical_significance_established": false,
+      "independent_task_gain_established": false,
+      "selected_source_id_reduction": 20
+    },
+    "entity_time_vs_hybrid": {
+      "baseline": "hybrid",
+      "reader": "hepta.memory.local-causal-reader.v1",
+      "same_reader_and_same_eight_query_digests": true,
+      "paired_tasks": 8,
+      "strict_wins": 0,
+      "strict_losses": 0,
+      "citation_wins": 0,
+      "citation_losses": 0,
+      "net_success_delta": 0,
+      "observed_success_rate_delta": 0,
+      "statistical_significance_established": false,
+      "independent_task_gain_established": false,
+      "selected_source_id_reduction": 18
+    }
+  },
+  "limitations": {
+    "all_questions_previously_exposed": true,
+    "source_families_independently_certified": 0,
+    "prospective_future_windows": 0,
+    "strong_rag_actual_project_agent_execution_comparable": false,
+    "independent_human_sufficiency_certified": false,
+    "model_training_calls": 0,
+    "model_inference_calls": 0,
+    "decoder_is_deterministic_symbolic_not_llm": true,
+    "program_support_is_authored_oracle": true,
+    "total_lifecycle_cost": null,
+    "maintenance_revocation_recovery_cost": null,
+    "source_count_does_not_equal_token_cost": true,
+    "production_accepted": false,
+    "parameter_memory_gain_established": false,
+    "nonparametric_organization_task_gain_over_strong_hybrid": false
+  },
+  "decision": "Reject claims of task-success or citation gain for organized vs matched hybrid on these eight exposed tasks. Preserve optional source-count efficiency as unproven lifecycle hypothesis. Require independent held-out project tasks, same permissions and reader, independent review and complete cost before promotion."
+}

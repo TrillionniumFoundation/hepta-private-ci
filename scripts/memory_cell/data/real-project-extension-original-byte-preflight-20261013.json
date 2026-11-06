@@ -1,0 +1,504 @@
+{
+  "schema": "hepta.memorycell.external-six-project-direct-source-preflight.v1",
+  "source_manifest_git_blob_sha1": "5c7ba1b6dd4cafb445794346afb21687816f726e",
+  "source_cut_utc": "2026-10-12T16:05:00Z",
+  "previous_four_project_corpus_sha256": "ef2a46ce037db4a91affddd2498eb8e089771ae5734bc13c56cb8a97b840a463",
+  "verified_commit_objects": 14,
+  "verified_head_tree_parent_bindings": 6,
+  "expected_original_file_bindings": 32,
+  "independently_rehashed_utf8_source_files": 31,
+  "direct_rehashed_original_utf8_bytes": 1558437,
+  "pending_non_utf8_original_byte_files": 1,
+  "by_project": {
+    "denoland/deno": {
+      "verified_original_utf8_files": 5,
+      "bytes": 68976
+    },
+    "pandas-dev/pandas": {
+      "verified_original_utf8_files": 1,
+      "bytes": 80309
+    },
+    "prometheus/prometheus": {
+      "verified_original_utf8_files": 7,
+      "bytes": 368755
+    },
+    "python/cpython": {
+      "verified_original_utf8_files": 4,
+      "bytes": 196275
+    },
+    "scikit-learn/scikit-learn": {
+      "verified_original_utf8_files": 10,
+      "bytes": 767705
+    },
+    "tokio-rs/tokio": {
+      "verified_original_utf8_files": 4,
+      "bytes": 76417
+    }
+  },
+  "verification_method": "Immutable public GitHub original HEAD + original path; source API blob SHA equal preregistered hash; separately recalculated canonical git blob SHA1 from decoded exact UTF-8 source bytes; 14 immutable commit identities, HEAD trees, parents, timestamp cutoff",
+  "limitations": [
+    "The connected GitHub original-file view accepts UTF-8 only; a Latin-1 Git blob cannot be proven byte-exact through this interface",
+    "This is source-byte verification, not historical PR-diff, source sufficiency, blinded reviewer, outcome labels, Reader results, or production authentication"
+  ],
+  "frozen_source_byte_acquisition_complete": false,
+  "independent_review_certified": false,
+  "parametric_memory_training_qualified": false,
+  "production_accepted": false,
+  "source_records": [
+    {
+      "repo": "denoland/deno",
+      "partition": "evaluation",
+      "pull": 37014,
+      "commit": "707fd96fabc462d710b129e54dbbbb71b51fcd5e",
+      "path": "libs/cache_dir/cache.rs",
+      "git_blob_sha1": "3fb2e101ff944de726588894beae5094bfa8d461",
+      "utf8_bytes": 13995
+    },
+    {
+      "repo": "denoland/deno",
+      "partition": "evaluation",
+      "pull": 37014,
+      "commit": "707fd96fabc462d710b129e54dbbbb71b51fcd5e",
+      "path": "libs/cache_dir/Cargo.toml",
+      "git_blob_sha1": "cb0f8693b5007e14cc6e5ef7910b88b39a9862b4",
+      "utf8_bytes": 1514
+    },
+    {
+      "repo": "denoland/deno",
+      "partition": "evaluation",
+      "pull": 37014,
+      "commit": "707fd96fabc462d710b129e54dbbbb71b51fcd5e",
+      "path": "libs/cache_dir/file_fetcher/mod.rs",
+      "git_blob_sha1": "57c0f07b514b5210ed8067e6188003e24517d2c2",
+      "utf8_bytes": 45929
+    },
+    {
+      "repo": "denoland/deno",
+      "partition": "evaluation",
+      "pull": 37014,
+      "commit": "707fd96fabc462d710b129e54dbbbb71b51fcd5e",
+      "path": "libs/cache_dir/global/mod.rs",
+      "git_blob_sha1": "d427d652b3a9cc9a78634e75ab127d99173ee70c",
+      "utf8_bytes": 7103
+    },
+    {
+      "repo": "denoland/deno",
+      "partition": "evaluation",
+      "pull": 37014,
+      "commit": "707fd96fabc462d710b129e54dbbbb71b51fcd5e",
+      "path": "tests/specs/cache/latin1_lock_integrity/__test__.jsonc",
+      "git_blob_sha1": "74080b6aab04be643a2bebddf51b2a69da1275d4",
+      "utf8_bytes": 435
+    },
+    {
+      "repo": "pandas-dev/pandas",
+      "partition": "train",
+      "pull": 71038,
+      "commit": "00ca9b3b9a0f8a7e533deac90716a9144b3bcfbf",
+      "path": "doc/source/user_guide/basics.rst",
+      "git_blob_sha1": "f998a244196f850b10ff18dba2401729ed1ac8b2",
+      "utf8_bytes": 80309
+    },
+    {
+      "repo": "prometheus/prometheus",
+      "partition": "selection",
+      "pull": 19991,
+      "commit": "888caa67e1b492af783d43b385faa02ccc71f370",
+      "path": "storage/generic_test.go",
+      "git_blob_sha1": "a89c8b1b386c49c8c1574f7f4da8ba65d8627843",
+      "utf8_bytes": 13833
+    },
+    {
+      "repo": "prometheus/prometheus",
+      "partition": "selection",
+      "pull": 19991,
+      "commit": "888caa67e1b492af783d43b385faa02ccc71f370",
+      "path": "storage/generic.go",
+      "git_blob_sha1": "7f441969e51f27cfdc2977973c70b3b689ccd6d2",
+      "utf8_bytes": 28747
+    },
+    {
+      "repo": "prometheus/prometheus",
+      "partition": "selection",
+      "pull": 19991,
+      "commit": "888caa67e1b492af783d43b385faa02ccc71f370",
+      "path": "storage/interface.go",
+      "git_blob_sha1": "14c0c94e55a459d21c1e3ee1e370f6cfad36162c",
+      "utf8_bytes": 30475
+    },
+    {
+      "repo": "prometheus/prometheus",
+      "partition": "selection",
+      "pull": 19991,
+      "commit": "888caa67e1b492af783d43b385faa02ccc71f370",
+      "path": "tsdb/querier_test.go",
+      "git_blob_sha1": "d4efdc13a74e2fee94e5ab9a80d09647c33118d3",
+      "utf8_bytes": 154470
+    },
+    {
+      "repo": "prometheus/prometheus",
+      "partition": "selection",
+      "pull": 19991,
+      "commit": "888caa67e1b492af783d43b385faa02ccc71f370",
+      "path": "tsdb/querier.go",
+      "git_blob_sha1": "8d4abd86cadac723c32b7166314000f69f4cdc07",
+      "utf8_bytes": 42223
+    },
+    {
+      "repo": "prometheus/prometheus",
+      "partition": "selection",
+      "pull": 19991,
+      "commit": "888caa67e1b492af783d43b385faa02ccc71f370",
+      "path": "web/api/v1/search_test.go",
+      "git_blob_sha1": "578ed858f707933679ae8c2d391d85b4b1f1cc47",
+      "utf8_bytes": 65828
+    },
+    {
+      "repo": "prometheus/prometheus",
+      "partition": "selection",
+      "pull": 19991,
+      "commit": "888caa67e1b492af783d43b385faa02ccc71f370",
+      "path": "web/api/v1/search.go",
+      "git_blob_sha1": "32422beea7f73e982ec18483759d4244416d2e38",
+      "utf8_bytes": 33179
+    },
+    {
+      "repo": "python/cpython",
+      "partition": "evaluation",
+      "pull": 159216,
+      "commit": "670facc0f4450c97e988f7bf942a671bf5bb0d3e",
+      "path": "Doc/library/http.client.rst",
+      "git_blob_sha1": "ab557f1805e1049b655a91e3c25b016458a71f41",
+      "utf8_bytes": 23952
+    },
+    {
+      "repo": "python/cpython",
+      "partition": "evaluation",
+      "pull": 159216,
+      "commit": "670facc0f4450c97e988f7bf942a671bf5bb0d3e",
+      "path": "Lib/http/client.py",
+      "git_blob_sha1": "f13eb6d91b77f6fa69fa02e974d610d3652d99b1",
+      "utf8_bytes": 60691
+    },
+    {
+      "repo": "python/cpython",
+      "partition": "evaluation",
+      "pull": 159216,
+      "commit": "670facc0f4450c97e988f7bf942a671bf5bb0d3e",
+      "path": "Lib/test/test_httplib.py",
+      "git_blob_sha1": "5fd4e8fca30fcf5c8ece4a7324d93159a00af38a",
+      "utf8_bytes": 111357
+    },
+    {
+      "repo": "python/cpython",
+      "partition": "evaluation",
+      "pull": 159216,
+      "commit": "670facc0f4450c97e988f7bf942a671bf5bb0d3e",
+      "path": "Misc/NEWS.d/next/Library/2026-10-12-00-00-00.gh-issue-159044.Tr8kXv.rst",
+      "git_blob_sha1": "ef51dc8eca1066c81aecaa50ad698ff0c8c2a777",
+      "utf8_bytes": 275
+    },
+    {
+      "repo": "scikit-learn/scikit-learn",
+      "partition": "evaluation",
+      "pull": 35053,
+      "commit": "3e27944f8278ae88cc9a5374ce571511f5a42be8",
+      "path": "sklearn/base.py",
+      "git_blob_sha1": "0ee0555c846b886b6d49436973cfd84000653e6a",
+      "utf8_bytes": 49348
+    },
+    {
+      "repo": "scikit-learn/scikit-learn",
+      "partition": "evaluation",
+      "pull": 35053,
+      "commit": "3e27944f8278ae88cc9a5374ce571511f5a42be8",
+      "path": "sklearn/linear_model/_base.py",
+      "git_blob_sha1": "a727a4d114957bbbdff3d15dcff0b359f6003f01",
+      "utf8_bytes": 30961
+    },
+    {
+      "repo": "scikit-learn/scikit-learn",
+      "partition": "evaluation",
+      "pull": 35053,
+      "commit": "3e27944f8278ae88cc9a5374ce571511f5a42be8",
+      "path": "sklearn/linear_model/_logistic.py",
+      "git_blob_sha1": "7713c52ab54d0d4e5dfef67588608b9bbfe81e2e",
+      "utf8_bytes": 104504
+    },
+    {
+      "repo": "scikit-learn/scikit-learn",
+      "partition": "evaluation",
+      "pull": 35053,
+      "commit": "3e27944f8278ae88cc9a5374ce571511f5a42be8",
+      "path": "sklearn/linear_model/tests/test_base.py",
+      "git_blob_sha1": "3c24ac19c1f38ea90f03985b240f7512d7f20d0c",
+      "utf8_bytes": 31796
+    },
+    {
+      "repo": "scikit-learn/scikit-learn",
+      "partition": "evaluation",
+      "pull": 35053,
+      "commit": "3e27944f8278ae88cc9a5374ce571511f5a42be8",
+      "path": "sklearn/linear_model/tests/test_logistic.py",
+      "git_blob_sha1": "d8eecf5f08e5292fa48467481fb1761a491c7d03",
+      "utf8_bytes": 117990
+    },
+    {
+      "repo": "scikit-learn/scikit-learn",
+      "partition": "evaluation",
+      "pull": 35053,
+      "commit": "3e27944f8278ae88cc9a5374ce571511f5a42be8",
+      "path": "sklearn/utils/_array_api.py",
+      "git_blob_sha1": "505636307efa84e83b891fcbbc3dbac072b32017",
+      "utf8_bytes": 53931
+    },
+    {
+      "repo": "scikit-learn/scikit-learn",
+      "partition": "evaluation",
+      "pull": 35053,
+      "commit": "3e27944f8278ae88cc9a5374ce571511f5a42be8",
+      "path": "sklearn/utils/_test_common/instance_generator.py",
+      "git_blob_sha1": "e184689f03dc6c16669de221aa86acee8470bf19",
+      "utf8_bytes": 56194
+    },
+    {
+      "repo": "scikit-learn/scikit-learn",
+      "partition": "evaluation",
+      "pull": 35053,
+      "commit": "3e27944f8278ae88cc9a5374ce571511f5a42be8",
+      "path": "sklearn/utils/estimator_checks.py",
+      "git_blob_sha1": "d0d6a12b936d828e999beb3e7ac3e5ac06f60e48",
+      "utf8_bytes": 211743
+    },
+    {
+      "repo": "scikit-learn/scikit-learn",
+      "partition": "evaluation",
+      "pull": 35053,
+      "commit": "3e27944f8278ae88cc9a5374ce571511f5a42be8",
+      "path": "sklearn/utils/tests/test_array_api.py",
+      "git_blob_sha1": "814d05d5a9dc9868a8fcca7cd41ae3193652f936",
+      "utf8_bytes": 48064
+    },
+    {
+      "repo": "scikit-learn/scikit-learn",
+      "partition": "evaluation",
+      "pull": 35053,
+      "commit": "3e27944f8278ae88cc9a5374ce571511f5a42be8",
+      "path": "sklearn/utils/tests/test_estimator_checks.py",
+      "git_blob_sha1": "9b5feed7069f8d090b6d2459077bdd426af1fe92",
+      "utf8_bytes": 63174
+    },
+    {
+      "repo": "tokio-rs/tokio",
+      "partition": "train",
+      "pull": 8630,
+      "commit": "b0b3a24a033d8cfe2742a81de49c2fb06d89fba2",
+      "path": "tokio-util/src/codec/length_delimited.rs",
+      "git_blob_sha1": "c25c32ee8c38519d101447b08792c8ad24ec0d2b",
+      "utf8_bytes": 36740
+    },
+    {
+      "repo": "tokio-rs/tokio",
+      "partition": "train",
+      "pull": 8630,
+      "commit": "b0b3a24a033d8cfe2742a81de49c2fb06d89fba2",
+      "path": "tokio-util/src/udp/frame.rs",
+      "git_blob_sha1": "7fdb238b04f17bc19eff9391bddd898e696cfaa4",
+      "utf8_bytes": 8476
+    },
+    {
+      "repo": "tokio-rs/tokio",
+      "partition": "train",
+      "pull": 8630,
+      "commit": "b0b3a24a033d8cfe2742a81de49c2fb06d89fba2",
+      "path": "tokio-util/tests/length_delimited.rs",
+      "git_blob_sha1": "41f79024cd9c9f445fd2d8b0c023c87e4d54231d",
+      "utf8_bytes": 25956
+    },
+    {
+      "repo": "tokio-rs/tokio",
+      "partition": "train",
+      "pull": 8630,
+      "commit": "b0b3a24a033d8cfe2742a81de49c2fb06d89fba2",
+      "path": "tokio-util/tests/udp.rs",
+      "git_blob_sha1": "e67341b6f95824868ad6384c2344e4cc1bad300f",
+      "utf8_bytes": 5245
+    }
+  ],
+  "pending_original_raw_blobs": [
+    {
+      "repo": "denoland/deno",
+      "partition": "evaluation",
+      "pull": 37014,
+      "commit": "707fd96fabc462d710b129e54dbbbb71b51fcd5e",
+      "path": "tests/testdata/encoding/iso-8859-1.ts",
+      "expected_git_blob_sha1": "a772b57bdd5aa26fbedd07cb057b9006239e784e",
+      "reported_api_sha1": "a772b57bdd5aa26fbedd07cb057b9006239e784e",
+      "decoded_text_reencoded_sha1": "bac0daae72e81c292f8e8d3fc5c19b8dabb5e049",
+      "requires_binary_blob_retrieval": true
+    }
+  ],
+  "source_commits": [
+    {
+      "repo": "denoland/deno",
+      "sha": "63c84fba234f4bcaa3bb5cd681f5972eff518b10",
+      "tree_sha": "fd6b1fb6e270f785439fcae3923b9e2e9f644f51",
+      "parents": [
+        "c8ab8a6c1f56a1d1857287cefce352d133e4f0d6"
+      ],
+      "authored_at": "2026-10-12T10:56:41Z",
+      "committed_at": "2026-10-12T10:56:41Z",
+      "verified_head": false
+    },
+    {
+      "repo": "denoland/deno",
+      "sha": "707fd96fabc462d710b129e54dbbbb71b51fcd5e",
+      "tree_sha": "5568faeb6fb11a6eadb70e7b07638a4ab1ddaee5",
+      "parents": [
+        "63c84fba234f4bcaa3bb5cd681f5972eff518b10"
+      ],
+      "authored_at": "2026-10-12T11:57:14Z",
+      "committed_at": "2026-10-12T11:57:14Z",
+      "verified_head": true
+    },
+    {
+      "repo": "denoland/deno",
+      "sha": "c8ab8a6c1f56a1d1857287cefce352d133e4f0d6",
+      "tree_sha": "b0c45dcb17a52a3af66fa2284944c7057525fd39",
+      "parents": [
+        "a18ce33715e30cd2b0d99c7e322ef11a65490e4d"
+      ],
+      "authored_at": "2026-10-12T06:09:30Z",
+      "committed_at": "2026-10-12T06:09:30Z",
+      "verified_head": false
+    },
+    {
+      "repo": "pandas-dev/pandas",
+      "sha": "00ca9b3b9a0f8a7e533deac90716a9144b3bcfbf",
+      "tree_sha": "fdc44c613b65ef8952b3b561301eba2f13ad6b86",
+      "parents": [
+        "aa02819a2ba2d82873f87198ad1cfff58394d863"
+      ],
+      "authored_at": "2026-10-11T08:23:33Z",
+      "committed_at": "2026-10-11T08:23:33Z",
+      "verified_head": true
+    },
+    {
+      "repo": "prometheus/prometheus",
+      "sha": "888caa67e1b492af783d43b385faa02ccc71f370",
+      "tree_sha": "a19590e1ebef5e78112c38a11f1389d8f3dfaff4",
+      "parents": [
+        "fd4847802c65256cb16e34f5e5c0e52a4b584cb6"
+      ],
+      "authored_at": "2026-10-10T18:10:16Z",
+      "committed_at": "2026-10-12T12:34:39Z",
+      "verified_head": true
+    },
+    {
+      "repo": "python/cpython",
+      "sha": "670facc0f4450c97e988f7bf942a671bf5bb0d3e",
+      "tree_sha": "3498c4ecc0d54a81bfba2111817e12b699f12d87",
+      "parents": [
+        "5a22a62b96a68c2dd31784c5e3427ad7b365388a"
+      ],
+      "authored_at": "2026-10-12T04:14:20Z",
+      "committed_at": "2026-10-12T15:32:25Z",
+      "verified_head": true
+    },
+    {
+      "repo": "scikit-learn/scikit-learn",
+      "sha": "2f861e715d55b9e91535f5067a9dc6b1d5c3dc58",
+      "tree_sha": "ab9140e0fb8906644dc238b53af43c4b903d611a",
+      "parents": [
+        "acd2daed2956cbb5ec723435706b69671061fc1f",
+        "c9021ac077341eef99fe4c1756597f52d3b2a870"
+      ],
+      "authored_at": "2026-09-29T17:45:56Z",
+      "committed_at": "2026-09-29T17:45:56Z",
+      "verified_head": false
+    },
+    {
+      "repo": "scikit-learn/scikit-learn",
+      "sha": "3e27944f8278ae88cc9a5374ce571511f5a42be8",
+      "tree_sha": "9593e1b2f1b2eb1cdd1b3ebd7aeee73d40a29c55",
+      "parents": [
+        "2f861e715d55b9e91535f5067a9dc6b1d5c3dc58"
+      ],
+      "authored_at": "2026-09-30T14:54:12Z",
+      "committed_at": "2026-09-30T14:54:12Z",
+      "verified_head": true
+    },
+    {
+      "repo": "scikit-learn/scikit-learn",
+      "sha": "79b8831df8606e9633f14b2fa1044aeb5d781999",
+      "tree_sha": "f1138f68fbc58e7a516c94811e9fcd7611632c8d",
+      "parents": [
+        "953da33b6cca035ec44d49aac0c36b31a98e508e"
+      ],
+      "authored_at": "2026-09-23T11:25:03Z",
+      "committed_at": "2026-09-23T11:25:03Z",
+      "verified_head": false
+    },
+    {
+      "repo": "scikit-learn/scikit-learn",
+      "sha": "953da33b6cca035ec44d49aac0c36b31a98e508e",
+      "tree_sha": "f81604123c50e67c4add58ff761cad525531d360",
+      "parents": [
+        "914346f574cddd99904513dec5a5d655b954dc91"
+      ],
+      "authored_at": "2026-09-21T09:56:56Z",
+      "committed_at": "2026-09-21T09:56:56Z",
+      "verified_head": false
+    },
+    {
+      "repo": "scikit-learn/scikit-learn",
+      "sha": "acd2daed2956cbb5ec723435706b69671061fc1f",
+      "tree_sha": "f767b7e452276c05e528512fd9953d9ccfeba9dd",
+      "parents": [
+        "f26033cbdb9ab1f03060561dbb23fc6bfdfa4541"
+      ],
+      "authored_at": "2026-09-29T17:20:43Z",
+      "committed_at": "2026-09-29T17:20:43Z",
+      "verified_head": false
+    },
+    {
+      "repo": "scikit-learn/scikit-learn",
+      "sha": "d60b5907b74962c127b384744749956497075186",
+      "tree_sha": "78214992a6ed6c6d46c65a0a8d03ee015ae39696",
+      "parents": [
+        "79b8831df8606e9633f14b2fa1044aeb5d781999"
+      ],
+      "authored_at": "2026-09-29T15:55:49Z",
+      "committed_at": "2026-09-29T15:55:49Z",
+      "verified_head": false
+    },
+    {
+      "repo": "scikit-learn/scikit-learn",
+      "sha": "f26033cbdb9ab1f03060561dbb23fc6bfdfa4541",
+      "tree_sha": "8a706e3273ee0623f33373d33298c4f2f61b7022",
+      "parents": [
+        "d60b5907b74962c127b384744749956497075186"
+      ],
+      "authored_at": "2026-09-29T17:20:02Z",
+      "committed_at": "2026-09-29T17:20:02Z",
+      "verified_head": false
+    },
+    {
+      "repo": "tokio-rs/tokio",
+      "sha": "b0b3a24a033d8cfe2742a81de49c2fb06d89fba2",
+      "tree_sha": "0b02c3c7c950373f96377b8f9d305ac7831ba20a",
+      "parents": [
+        "e279adbfcd8831412c3f19edf2e16d28345f0f95"
+      ],
+      "authored_at": "2026-10-12T13:57:05Z",
+      "committed_at": "2026-10-12T14:26:14Z",
+      "verified_head": true
+    }
+  ],
+  "source_fragment_blob_shas": {
+    "A": "8936c0dafdfa43aa7d31d11a60c74b0f980a3f6d",
+    "B": "2805c8b4cc499d11fb898629edb8992432f84bf1",
+    "C": "93fb8a21b1d2010b830248b802aab970d761c516",
+    "commits": "adef9da4079a63619ff2277cd28ec8e0bed55dc8"
+  }
+}

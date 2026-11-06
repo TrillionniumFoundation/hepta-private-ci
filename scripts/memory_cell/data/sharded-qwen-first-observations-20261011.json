@@ -1,0 +1,61 @@
+{
+  "schema": "hepta.memory-strong-rag.partial-shard-observation.v1",
+  "generating_source_commit": "eba9af092cca1c2875552ffaea2219678143a73c",
+  "frozen_reader_identity": "f9aa334d3a02cabececea367c283caf66ef9875132907ebc34dac1c8d3a7f225",
+  "observed_answer_count": 4,
+  "planned_calibration_answer_count": 40,
+  "missing_calibration_answer_count": 36,
+  "observed_case_count": 2,
+  "total_input_tokens": 4344,
+  "total_generated_tokens": 56,
+  "total_reader_seconds": 43.558,
+  "source_archive_pins": {
+    "qwen-shard-calibration-2-1.zip": "873c73ce27e30997a3b3c8028acbef307fdfc7c49eec91ef30174c71ebc54a42",
+    "qwen-shard-calibration-3-1.zip": "f5c9a41f4f6c448426ff5de4dcbebf1befa2331c977c9dbf491d6e2688ad3611",
+    "qwen-sharded-calibration-public-eba9af.zip": "0b4f4b0ccf9473d8ff2c83817a4c45fa83b6cd828fc911cdd42433b757858ef1"
+  },
+  "observed_original_rows": [
+    {
+      "case_index": 2,
+      "case_id": "controlled_bc770867",
+      "arm": "k2",
+      "input_tokens": 782,
+      "generated_tokens": 15,
+      "model_seconds": 9.33,
+      "source_ids_sha256": "1107d9b98d25743dcbf1fb6f1c7e65b52a5198bafeb6225d610230d81fb7b223"
+    },
+    {
+      "case_index": 2,
+      "case_id": "controlled_bc770867",
+      "arm": "k4",
+      "input_tokens": 1356,
+      "generated_tokens": 11,
+      "model_seconds": 11.48,
+      "source_ids_sha256": "7523622b05950d244416f0dbbd092228e0ce74d06d503324c86c92d08a666d87"
+    },
+    {
+      "case_index": 3,
+      "case_id": "controlled_0e5c8248",
+      "arm": "k2",
+      "input_tokens": 806,
+      "generated_tokens": 15,
+      "model_seconds": 9.645,
+      "source_ids_sha256": "277388527e76039d75d843efaea49e70be0c26db20c9c82ea44e50d3344bd554"
+    },
+    {
+      "case_index": 3,
+      "case_id": "controlled_0e5c8248",
+      "arm": "k4",
+      "input_tokens": 1400,
+      "generated_tokens": 15,
+      "model_seconds": 13.103,
+      "source_ids_sha256": "352dbe0681af70936a74b18454733d13b8f32d84f06f5ad05193940cdd626070"
+    }
+  ],
+  "reader_success_not_task_success": true,
+  "best_k_not_yet_calibrated": true,
+  "evaluation_not_started": true,
+  "no_calibration_labels_read": true,
+  "semantic_citation_judgement": null,
+  "production_accepted": false
+}

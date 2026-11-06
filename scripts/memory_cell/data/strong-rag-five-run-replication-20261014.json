@@ -1,0 +1,567 @@
+{
+  "schema": "hepta.memory-strong-rag.five-original-runs.v1",
+  "source_pins": {
+    "A": [
+      38148514657,
+      "8250698244417eb14994518af05fa6f79e783066",
+      "7c991f0996fc24c650efb28f6266da51ed1655b78585e11b78dbc424707b7b7f",
+      "7e390bddfb1c59e0bb82999b01747a180eb1ec1f84d9f863a536dd036ec483f1",
+      267,
+      1
+    ],
+    "B": [
+      38146546731,
+      "eba9af092cca1c2875552ffaea2219678143a73c",
+      "b4cf1346ce4c5b1625cdc57845bcca33fcf82f84340433b602d76258c10c1138",
+      "4c64e9c01bef56d0f311e633af53c7a246102e7083a272122286fb7ff66085a3",
+      267,
+      1
+    ],
+    "C": [
+      38114667490,
+      "c24fad24b65984a6255a8854c6714c141911ff79",
+      "2d71f40e553e7d28cad9d8e16803f52b7a99e771b5bf54f55c89bc9468702107",
+      "fe710be3f987e34ec3cda48be37509e20a01b48db090907c98ce33cfff198225",
+      38,
+      8
+    ],
+    "D": [
+      38161049090,
+      "e0e413d670be8982b9986a119696c6ca164ca518",
+      "d59560882e217d8772e4044ec33b8cdb10f5297f19b0a6e03e53266407c839a0",
+      "9a4dfb20f0ab5bb6de6ed577e7787d3faa8c02f5a842198a5b1b1eafced2ea53",
+      300,
+      1
+    ],
+    "E": [
+      38389920977,
+      "3b03ea7dee4b270bdf328251f7a404571c9d1013",
+      "de7087dbd3ee367475ef279d01dbeeeea46ee991b11399324289300df10c40bf",
+      "442c7171cb2c522988e6e6c52b12201d1b59104702229dc256ca91b7bf6559c1",
+      43,
+      8
+    ]
+  },
+  "reader_inventory_digest": "f9aa334d3a02cabececea367c283caf66ef9875132907ebc34dac1c8d3a7f225",
+  "original_development_plan_sha256": "9840a25487af444914dca24c818d98ff798ebc1610ea8dfdd827187c31ad1897",
+  "distinct_original_source_commits": 5,
+  "model_generations_per_source": 112,
+  "actual_original_generations": 560,
+  "unique_development_questions": 8,
+  "independent_new_source_families": 0,
+  "unchanged_prompt_input_census": {
+    "calibration": 40,
+    "evaluation": 72
+  },
+  "output_variations": {
+    "calibration": 4,
+    "evaluation": 9
+  },
+  "variable_outputs": {
+    "calibration": [
+      {
+        "question_id": "controlled_2310bd63",
+        "arm": "k3",
+        "answers": {
+          "A": "site_49a64717[E1]",
+          "B": "site_49a64717[E1]",
+          "C": "site_49a64717 [E1]",
+          "D": "site_49a64717 [E1]",
+          "E": "site_49a64717 [E1]"
+        }
+      },
+      {
+        "question_id": "controlled_4446bde9",
+        "arm": "k2",
+        "answers": {
+          "A": "mode_05747e55[E1]",
+          "B": "mode_05747e55 [E1]",
+          "C": "mode_05747e55[E1]",
+          "D": "mode_05747e55 [E1]",
+          "E": "mode_05747e55[E1]"
+        }
+      },
+      {
+        "question_id": "controlled_bc770867",
+        "arm": "k3",
+        "answers": {
+          "A": "site_0d31723e [E1]",
+          "B": "site_0d31723e",
+          "C": "site_0d31723e [E1]",
+          "D": "site_0d31723e [E1]",
+          "E": "site_0d31723e [E1]"
+        }
+      },
+      {
+        "question_id": "controlled_bc770867",
+        "arm": "k4",
+        "answers": {
+          "A": "site_0d31723e [E1]",
+          "B": "site_0d31723e",
+          "C": "site_0d31723e [E1]",
+          "D": "site_0d31723e [E1]",
+          "E": "site_0d31723e [E1]"
+        }
+      }
+    ],
+    "evaluation": [
+      {
+        "question_id": "controlled_52a0bb15",
+        "arm": "hybrid_k6",
+        "answers": {
+          "A": "mode_cf75c59e [E1]",
+          "B": "mode_cf75c59e[E1]",
+          "C": "mode_cf75c59e[E1]",
+          "D": "mode_cf75c59e [E1]",
+          "E": "mode_cf75c59e[E1]"
+        }
+      },
+      {
+        "question_id": "controlled_7fadc16e",
+        "arm": "empty",
+        "answers": {
+          "A": "I do not have enough evidence.",
+          "B": "I do not have enough evidence",
+          "C": "I do not have enough evidence.",
+          "D": "I do not have enough evidence.",
+          "E": "I do not have enough evidence."
+        }
+      },
+      {
+        "question_id": "controlled_bcb9165b",
+        "arm": "empty",
+        "answers": {
+          "A": "I do not have enough evidence.",
+          "B": "I do not have enough evidence",
+          "C": "I do not have enough evidence",
+          "D": "I do not have enough evidence",
+          "E": "I do not have enough evidence"
+        }
+      },
+      {
+        "question_id": "controlled_c71dcd6f",
+        "arm": "empty",
+        "answers": {
+          "A": "I do not have enough evidence.",
+          "B": "I do not have enough evidence",
+          "C": "I do not have enough evidence.",
+          "D": "I do not have enough evidence.",
+          "E": "I do not have enough evidence."
+        }
+      },
+      {
+        "question_id": "controlled_cbfd4ba5",
+        "arm": "empty",
+        "answers": {
+          "A": "I do not have enough evidence",
+          "B": "I do not have enough evidence.",
+          "C": "I do not have enough evidence",
+          "D": "I do not have enough evidence.",
+          "E": "I do not have enough evidence"
+        }
+      },
+      {
+        "question_id": "controlled_cbfd4ba5",
+        "arm": "hybrid_k4_reversed",
+        "answers": {
+          "A": "site_73c4e597 [E1]",
+          "B": "site_73c4e597 [E1]",
+          "C": "site_73c4e597",
+          "D": "site_73c4e597",
+          "E": "site_73c4e597"
+        }
+      },
+      {
+        "question_id": "controlled_cbfd4ba5",
+        "arm": "hybrid_k6",
+        "answers": {
+          "A": "site_2749e2c9 [E2]",
+          "B": "site_2749e2c9 [E2]",
+          "C": "[site_2749e2c9]",
+          "D": "[site_2749e2c9]",
+          "E": "[site_2749e2c9]"
+        }
+      },
+      {
+        "question_id": "controlled_f0609607",
+        "arm": "hybrid_k4_reversed",
+        "answers": {
+          "A": "site_5846ffe7",
+          "B": "site_639dab67 [E4]",
+          "C": "site_639dab67 [E4]",
+          "D": "site_5846ffe7",
+          "E": "site_639dab67 [E4]"
+        }
+      },
+      {
+        "question_id": "controlled_faedc8b9",
+        "arm": "hybrid_k6",
+        "answers": {
+          "A": "site_849f0372[E2]",
+          "B": "site_849f0372[E2]",
+          "C": "[site_849f0372]",
+          "D": "[site_849f0372]",
+          "E": "[site_849f0372]"
+        }
+      }
+    ]
+  },
+  "task_outcome_flips": {
+    "calibration": [],
+    "evaluation": [
+      {
+        "question_id": "controlled_cbfd4ba5",
+        "arm": "hybrid_k6",
+        "outcomes": {
+          "A": true,
+          "B": true,
+          "C": false,
+          "D": false,
+          "E": false
+        }
+      },
+      {
+        "question_id": "controlled_f0609607",
+        "arm": "hybrid_k4_reversed",
+        "outcomes": {
+          "A": false,
+          "B": true,
+          "C": true,
+          "D": false,
+          "E": true
+        }
+      }
+    ]
+  },
+  "new_variants_only_in_fifth_run": {
+    "calibration": [],
+    "evaluation": []
+  },
+  "pairwise_different_outputs": {
+    "A_vs_B": {
+      "calibration": 3,
+      "evaluation": 6
+    },
+    "A_vs_C": {
+      "calibration": 1,
+      "evaluation": 6
+    },
+    "A_vs_D": {
+      "calibration": 2,
+      "evaluation": 5
+    },
+    "A_vs_E": {
+      "calibration": 1,
+      "evaluation": 6
+    },
+    "B_vs_C": {
+      "calibration": 4,
+      "evaluation": 6
+    },
+    "B_vs_D": {
+      "calibration": 3,
+      "evaluation": 7
+    },
+    "B_vs_E": {
+      "calibration": 4,
+      "evaluation": 6
+    },
+    "C_vs_D": {
+      "calibration": 1,
+      "evaluation": 3
+    },
+    "C_vs_E": {
+      "calibration": 0,
+      "evaluation": 0
+    },
+    "D_vs_E": {
+      "calibration": 1,
+      "evaluation": 3
+    }
+  },
+  "per_arm": {
+    "selected_k": {
+      "A": {
+        "correct": 5,
+        "full_declared_citation_chain": 3,
+        "input_tokens": 3961
+      },
+      "B": {
+        "correct": 5,
+        "full_declared_citation_chain": 3,
+        "input_tokens": 3961
+      },
+      "C": {
+        "correct": 5,
+        "full_declared_citation_chain": 3,
+        "input_tokens": 3961
+      },
+      "D": {
+        "correct": 5,
+        "full_declared_citation_chain": 3,
+        "input_tokens": 3961
+      },
+      "E": {
+        "correct": 5,
+        "full_declared_citation_chain": 3,
+        "input_tokens": 3961
+      }
+    },
+    "hybrid_k4": {
+      "A": {
+        "correct": 3,
+        "full_declared_citation_chain": 1,
+        "input_tokens": 10806
+      },
+      "B": {
+        "correct": 3,
+        "full_declared_citation_chain": 1,
+        "input_tokens": 10806
+      },
+      "C": {
+        "correct": 3,
+        "full_declared_citation_chain": 1,
+        "input_tokens": 10806
+      },
+      "D": {
+        "correct": 3,
+        "full_declared_citation_chain": 1,
+        "input_tokens": 10806
+      },
+      "E": {
+        "correct": 3,
+        "full_declared_citation_chain": 1,
+        "input_tokens": 10806
+      }
+    },
+    "hybrid_k6": {
+      "A": {
+        "correct": 3,
+        "full_declared_citation_chain": 1,
+        "input_tokens": 15463
+      },
+      "B": {
+        "correct": 3,
+        "full_declared_citation_chain": 1,
+        "input_tokens": 15463
+      },
+      "C": {
+        "correct": 2,
+        "full_declared_citation_chain": 0,
+        "input_tokens": 15463
+      },
+      "D": {
+        "correct": 2,
+        "full_declared_citation_chain": 0,
+        "input_tokens": 15463
+      },
+      "E": {
+        "correct": 2,
+        "full_declared_citation_chain": 0,
+        "input_tokens": 15463
+      }
+    },
+    "hybrid_k4_reversed": {
+      "A": {
+        "correct": 2,
+        "full_declared_citation_chain": 0,
+        "input_tokens": 10806
+      },
+      "B": {
+        "correct": 3,
+        "full_declared_citation_chain": 1,
+        "input_tokens": 10806
+      },
+      "C": {
+        "correct": 3,
+        "full_declared_citation_chain": 1,
+        "input_tokens": 10806
+      },
+      "D": {
+        "correct": 2,
+        "full_declared_citation_chain": 0,
+        "input_tokens": 10806
+      },
+      "E": {
+        "correct": 3,
+        "full_declared_citation_chain": 1,
+        "input_tokens": 10806
+      }
+    },
+    "single_hop": {
+      "A": {
+        "correct": 4,
+        "full_declared_citation_chain": 4,
+        "input_tokens": 4575
+      },
+      "B": {
+        "correct": 4,
+        "full_declared_citation_chain": 4,
+        "input_tokens": 4575
+      },
+      "C": {
+        "correct": 4,
+        "full_declared_citation_chain": 4,
+        "input_tokens": 4575
+      },
+      "D": {
+        "correct": 4,
+        "full_declared_citation_chain": 4,
+        "input_tokens": 4575
+      },
+      "E": {
+        "correct": 4,
+        "full_declared_citation_chain": 4,
+        "input_tokens": 4575
+      }
+    },
+    "entity_time": {
+      "A": {
+        "correct": 8,
+        "full_declared_citation_chain": 4,
+        "input_tokens": 5752
+      },
+      "B": {
+        "correct": 8,
+        "full_declared_citation_chain": 4,
+        "input_tokens": 5752
+      },
+      "C": {
+        "correct": 8,
+        "full_declared_citation_chain": 4,
+        "input_tokens": 5752
+      },
+      "D": {
+        "correct": 8,
+        "full_declared_citation_chain": 4,
+        "input_tokens": 5752
+      },
+      "E": {
+        "correct": 8,
+        "full_declared_citation_chain": 4,
+        "input_tokens": 5752
+      }
+    },
+    "organized": {
+      "A": {
+        "correct": 8,
+        "full_declared_citation_chain": 4,
+        "input_tokens": 5179
+      },
+      "B": {
+        "correct": 8,
+        "full_declared_citation_chain": 4,
+        "input_tokens": 5179
+      },
+      "C": {
+        "correct": 8,
+        "full_declared_citation_chain": 4,
+        "input_tokens": 5179
+      },
+      "D": {
+        "correct": 8,
+        "full_declared_citation_chain": 4,
+        "input_tokens": 5179
+      },
+      "E": {
+        "correct": 8,
+        "full_declared_citation_chain": 4,
+        "input_tokens": 5179
+      }
+    },
+    "program_support": {
+      "A": {
+        "correct": 8,
+        "full_declared_citation_chain": 4,
+        "input_tokens": 5179
+      },
+      "B": {
+        "correct": 8,
+        "full_declared_citation_chain": 4,
+        "input_tokens": 5179
+      },
+      "C": {
+        "correct": 8,
+        "full_declared_citation_chain": 4,
+        "input_tokens": 5179
+      },
+      "D": {
+        "correct": 8,
+        "full_declared_citation_chain": 4,
+        "input_tokens": 5179
+      },
+      "E": {
+        "correct": 8,
+        "full_declared_citation_chain": 4,
+        "input_tokens": 5179
+      }
+    },
+    "empty": {
+      "A": {
+        "correct": 0,
+        "full_declared_citation_chain": 0,
+        "input_tokens": 1630
+      },
+      "B": {
+        "correct": 0,
+        "full_declared_citation_chain": 0,
+        "input_tokens": 1630
+      },
+      "C": {
+        "correct": 0,
+        "full_declared_citation_chain": 0,
+        "input_tokens": 1630
+      },
+      "D": {
+        "correct": 0,
+        "full_declared_citation_chain": 0,
+        "input_tokens": 1630
+      },
+      "E": {
+        "correct": 0,
+        "full_declared_citation_chain": 0,
+        "input_tokens": 1630
+      }
+    }
+  },
+  "within_source_differences": {
+    "A": {
+      "organized_minus_fullpath_correct": 0,
+      "organized_minus_fullpath_full_citation": 0,
+      "fullpath_minus_singlehop_correct": 4
+    },
+    "B": {
+      "organized_minus_fullpath_correct": 0,
+      "organized_minus_fullpath_full_citation": 0,
+      "fullpath_minus_singlehop_correct": 4
+    },
+    "C": {
+      "organized_minus_fullpath_correct": 0,
+      "organized_minus_fullpath_full_citation": 0,
+      "fullpath_minus_singlehop_correct": 4
+    },
+    "D": {
+      "organized_minus_fullpath_correct": 0,
+      "organized_minus_fullpath_full_citation": 0,
+      "fullpath_minus_singlehop_correct": 4
+    },
+    "E": {
+      "organized_minus_fullpath_correct": 0,
+      "organized_minus_fullpath_full_citation": 0,
+      "fullpath_minus_singlehop_correct": 4
+    }
+  },
+  "calibration_selection_per_source": {
+    "A": 1,
+    "B": 1,
+    "C": 1,
+    "D": 1,
+    "E": 1
+  },
+  "independent_semantic_citation_adjudication": false,
+  "repeated_authored_questions_are_independent": false,
+  "actual_production_lifecycle_cost_observed": false,
+  "parameter_memory_superiority_established": false,
+  "production_accepted": false,
+  "decision": "NO-GO: five repetitions of the same authored source questions show no organized-over-full-path task or complete-citation gain; external source-family validation and semantic citation review remain required"
+}

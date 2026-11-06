@@ -1,0 +1,176 @@
+name: MemoryCell immutable same-reader Hybrid null gate
+on:
+  pull_request:
+    paths:
+      - "scripts/memory_cell/matched_structured_rag_gate.py"
+      - "scripts/memory_cell/test_matched_structured_rag_gate.py"
+      - ".github/workflows/hepta-memory-matched-structured-rag.yml"
+      - "scripts/memory_cell/ten_project_source_closure.py"
+      - "scripts/memory_cell/test_ten_project_source_closure.py"
+      - "scripts/memory_cell/deno_lossy_projection_proof.py"
+      - "scripts/memory_cell/test_deno_lossy_projection_proof.py"
+      - "scripts/memory_cell/deno_binary_git_source_gate.py"
+      - "scripts/memory_cell/test_deno_binary_git_source_gate.py"
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: memory-matched-null-${{ github.event.pull_request.head.ref || github.ref }}
+  cancel-in-progress: false
+jobs:
+  source-bound-hybrid-null:
+    if: github.event.pull_request.number == 1452 && github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      PYTHONPATH: scripts/memory_cell
+      GH_TOKEN: ${{ github.token }}
+      TESTED_SHA: ${{ github.event.pull_request.head.sha }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - name: Download immutable completed original source-local trial
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$TESTED_SHA"
+          gh api -H 'Accept: application/vnd.github+json' \
+            /repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/12038816070/zip \
+            > "$RUNNER_TEMP/matched-original-ci.zip"
+          mkdir -p "$RUNNER_TEMP/paired-null-receipts"
+          git rev-parse HEAD > "$RUNNER_TEMP/paired-null-receipts/tested-head.txt"
+          sha256sum scripts/memory_cell/matched_structured_rag_gate.py \
+            scripts/memory_cell/test_matched_structured_rag_gate.py \
+            > "$RUNNER_TEMP/paired-null-receipts/source-hashes.txt"
+      - name: Verify source/answer/reader identity and tampering controls
+        env:
+          HEPTA_MATCHED_RAG_ARCHIVE: ${{ runner.temp }}/matched-original-ci.zip
+        run: |
+          set -euo pipefail
+          python3 -m unittest discover -s scripts/memory_cell \
+            -p 'test_matched_structured_rag_gate.py' -v 2>&1 \
+            | tee "$RUNNER_TEMP/paired-null-receipts/tests.log"
+      - name: Recompute full paired original hybrid and organized contrasts
+        run: |
+          set -euo pipefail
+          python3 scripts/memory_cell/matched_structured_rag_gate.py \
+            "$RUNNER_TEMP/matched-original-ci.zip" \
+            "$RUNNER_TEMP/paired-null-receipts/report.json"
+          python3 - <<'PY'
+          import json,os
+          from pathlib import Path
+          path=Path(os.environ['RUNNER_TEMP'])/'paired-null-receipts/report.json'
+          r=json.loads(path.read_text())
+          assert r['observed_tasks']==48 and r['new_model_calls']==0
+          assert all(r['contrasts'][arm]['net_task_success_delta']==0 for arm in ('organized','entity_time'))
+          assert r['production_accepted'] is False
+          assert r['task_memory_gain_qualified'] is False
+          PY
+      - name: Export sanitized independent audit only; no raw source/answers
+        if: always()
+        run: |
+          set -euo pipefail
+          (cd "$RUNNER_TEMP/paired-null-receipts" && \
+            find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 -r sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-same-reader-hybrid-null-verified
+          path: ${{ runner.temp }}/paired-null-receipts
+          if-no-files-found: error
+
+  exact-ten-project-source-bytes:
+    if: github.event.pull_request.number == 1452 && github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    permissions:
+      contents: read
+    env:
+      PYTHONPATH: scripts/memory_cell
+      GH_TOKEN: ${{ github.token }}
+      TESTED_HEAD: ${{ github.event.pull_request.head.sha }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - name: Prove original-source contracts without uploading source bytes
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/ten-project-source-audit"
+          test "$(git rev-parse HEAD)" = "$TESTED_HEAD"
+          python3 -m unittest discover -s scripts/memory_cell -p 'test_deno_binary_git_source_gate.py' -v \
+            2>&1 | tee "$RUNNER_TEMP/ten-project-source-audit/binary-tests.log"
+          python3 -m unittest discover -s scripts/memory_cell -p 'test_ten_project_source_closure.py' -v \
+            2>&1 | tee "$RUNNER_TEMP/ten-project-source-audit/closure-tests.log"
+          python3 -m unittest discover -s scripts/memory_cell -p 'test_deno_lossy_projection_proof.py' -v \
+            2>&1 | tee "$RUNNER_TEMP/ten-project-source-audit/single-byte-tests.log"
+          git rev-parse HEAD > "$RUNNER_TEMP/ten-project-source-audit/source-head.txt"
+          sha256sum \
+            scripts/memory_cell/deno_binary_git_source_gate.py \
+            scripts/memory_cell/test_deno_binary_git_source_gate.py \
+            scripts/memory_cell/ten_project_source_closure.py \
+            scripts/memory_cell/test_ten_project_source_closure.py \
+            scripts/memory_cell/deno_lossy_projection_proof.py \
+            scripts/memory_cell/test_deno_lossy_projection_proof.py \
+            scripts/memory_cell/data/real-project-all80-original-source-byte-proof-20261012.json \
+            scripts/memory_cell/data/real-project-extension-original-byte-preflight-20261013.json \
+            scripts/memory_cell/data/real-project-pr-independent-extension-20261012.json \
+            > "$RUNNER_TEMP/ten-project-source-audit/source-SHA256SUMS"
+      - name: Independently prove unique lost byte against original frozen Git SHA
+        run: |
+          set -euo pipefail
+          python3 scripts/memory_cell/deno_lossy_projection_proof.py \
+            "$RUNNER_TEMP/ten-project-source-audit/deno-single-byte-reconstruction.json"
+      - name: Recover binary Deno Git object from immutable historical tree
+        run: |
+          set -euo pipefail
+          python3 scripts/memory_cell/deno_binary_git_source_gate.py \
+            scripts/memory_cell/data/real-project-pr-independent-extension-20261012.json \
+            "$RUNNER_TEMP/ten-project-source-audit/deno-original-binary.json"
+      - name: Reconcile 80 plus 31 plus 1 original source byte receipts
+        run: |
+          set -euo pipefail
+          python3 scripts/memory_cell/ten_project_source_closure.py \
+            scripts/memory_cell/data/real-project-all80-original-source-byte-proof-20261012.json \
+            scripts/memory_cell/data/real-project-extension-original-byte-preflight-20261013.json \
+            "$RUNNER_TEMP/ten-project-source-audit/deno-original-binary.json" \
+            "$RUNNER_TEMP/ten-project-source-audit/ten-project-reconciliation.json"
+          python3 - <<'PY'
+          import json,os
+          from pathlib import Path
+          report=json.loads(
+            (Path(os.environ['RUNNER_TEMP'])/'ten-project-source-audit/ten-project-reconciliation.json').read_text()
+          )
+          assert report['exact_original_file_bindings'] == 112
+          assert report['total_verified_original_blob_bytes'] == 8061564
+          assert len(report['ten_distinct_named_repositories']) == 10
+          assert report['cuts_do_not_form_a_joint_blinded_study'] is True
+          assert report['human_labels_available'] is False
+          assert report['real_project_task_outcomes_measured'] is False
+          assert report['learned_memory_gain_established'] is False
+          original=json.loads(
+            (Path(os.environ['RUNNER_TEMP'])/'ten-project-source-audit/deno-original-binary.json').read_text()
+          )
+          reconstructed=json.loads(
+            (Path(os.environ['RUNNER_TEMP'])/'ten-project-source-audit/deno-single-byte-reconstruction.json').read_text()
+          )
+          assert reconstructed['sha1_recomputed_from_exhaustive_candidate']==original['original_blob_sha1']
+          assert reconstructed['original_byte_count']==original['verified_binary_bytes']==23
+          assert reconstructed['actual_binary_github_api_response_received'] is False
+          assert original['canonical_original_git_blob_hash_recomputed'] is True
+          assert report['production_accepted'] is False
+          PY
+      - name: Retain negative evidence and tested source identity
+        if: always()
+        run: |
+          set -euo pipefail
+          (cd "$RUNNER_TEMP/ten-project-source-audit" && \
+            find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 -r sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-ten-project-source-closure
+          path: ${{ runner.temp }}/ten-project-source-audit
+          if-no-files-found: error

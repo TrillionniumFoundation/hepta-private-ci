@@ -1,0 +1,132 @@
+name: MemoryCell pinned one-window transfer source ceiling
+on:
+  push:
+    branches: ["codex/memory-cell-evidence-20261008"]
+    paths:
+      - "scripts/memory_cell/stem_transfer_multisession_audit.py"
+      - "scripts/memory_cell/test_stem_transfer_multisession_audit.py"
+      - "scripts/memory_cell/data/stem-one-window-source-ceiling-20261013.json"
+      - ".github/workflows/hepta-memory-stem-transfer-ceiling.yml"
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: memory-stem-transfer-source-${{ github.sha }}
+  cancel-in-progress: false
+jobs:
+  exact-original-source-audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      PYTHONPATH: scripts/memory_cell
+      PYTHONDONTWRITEBYTECODE: "1"
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Strict synthetic one-window source contracts
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/stem-transfer-ceiling/source
+          git rev-parse HEAD > /tmp/stem-transfer-ceiling/checked-commit.txt
+          git rev-parse HEAD^{tree} > /tmp/stem-transfer-ceiling/checked-tree.txt
+          python3 -m compileall -q scripts/memory_cell/stem_transfer_multisession_audit.py scripts/memory_cell/test_stem_transfer_multisession_audit.py
+          python3 -m unittest -v test_stem_transfer_multisession_audit 2>&1 | tee /tmp/stem-transfer-ceiling/tests.log
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: memory-native-staged-inputs
+          run-id: 37862780268
+          github-token: ${{ github.token }}
+          path: /tmp
+      - name: Extract just the exact externally pinned native corpus
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import hashlib
+          import shutil
+          import tarfile
+          from pathlib import Path
+          path = Path("/tmp/memory-inputs.tar.gz")
+          if not path.is_file() or path.stat().st_size > 512 * 1024**2:
+              raise ValueError("bounded pinned native staging archive required")
+          with tarfile.open(path, "r:gz") as archive:
+              matches = [m for m in archive if m.name == "memory-inputs/longmemeval.json"]
+              if len(matches) != 1 or not matches[0].isfile() or not 0 < matches[0].size <= 512 * 1024**2:
+                  raise ValueError("unique regular native LongMemEval corpus required")
+              with archive.extractfile(matches[0]) as source, open("/tmp/stem-pinned-longmemeval.json", "xb") as dest:
+                  shutil.copyfileobj(source, dest, 1024 * 1024)
+          if Path("/tmp/stem-pinned-longmemeval.json").stat().st_size != matches[0].size:
+              raise ValueError("truncated native source")
+          with open("/tmp/stem-pinned-longmemeval.json", "rb") as source:
+              sha = hashlib.file_digest(source, "sha256").hexdigest()
+          if sha != "d6f21ea9d60a0d56f34a05b609c79c88a451d2ae03597821ea3d5a9678c3a442":
+              raise ValueError("native question/source byte pin mismatch")
+          print("Exact native source SHA256:", sha)
+          PY
+      - name: Fetch two previously executed models, with byte-pinned results
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11688435110/zip > /tmp/stem-original-e9c8f9c.zip
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11687561401/zip > /tmp/stem-earlier-306c2c8.zip
+          printf '%s  %s\n' \
+            3e09533c535f6b847f9ec58d4f56055d3a2c6adb2eee68705873584a72aca909 /tmp/stem-original-e9c8f9c.zip \
+            2f15aa0a6c4900b2cf19cc03051f2727c58c9c04c1d993eda6486e019d0d0014 /tmp/stem-earlier-306c2c8.zip | sha256sum -c -
+      - name: Independently recompute actual eight-question transfer ceiling
+        run: |
+          set -euo pipefail
+          python3 scripts/memory_cell/stem_transfer_multisession_audit.py \
+            --native-longmemeval /tmp/stem-pinned-longmemeval.json \
+            --original /tmp/stem-original-e9c8f9c.zip \
+            --historically-complete /tmp/stem-earlier-306c2c8.zip \
+            --output /tmp/stem-transfer-ceiling/verified-original-vs-earlier.json \
+            2>&1 | tee /tmp/stem-transfer-ceiling/audit.log
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          expected = json.loads(Path("scripts/memory_cell/data/stem-one-window-source-ceiling-20261013.json").read_text())
+          actual = json.loads(Path("/tmp/stem-transfer-ceiling/verified-original-vs-earlier.json").read_text())
+          mapping = [
+              ("answerable_questions", "answerable_questions"),
+              ("unanswerable_questions", "native_unanswerable_questions"),
+              ("answerable_with_multiple_annotated_sessions", "answerable_with_multiple_annotated_support_sessions"),
+              ("answerable_with_native_support_selected", "answerable_with_selected_annotated_source"),
+              ("supporting_document_selected_but_multiple_sessions_required", "selected_annotated_source_but_multi_session_annotation"),
+              ("supporting_document_selected_with_full_answer_literal_in_excerpt", "chosen_window_contains_exact_target_answer_literal"),
+              ("original_reader_successes", "original_frozen_reader_completed_calls"),
+          ]
+          for index, key in enumerate(("original", "historically_complete")):
+              item = actual[key]
+              pin = expected["experiments"][index]
+              if (item["experiment_commit"] != pin["source_commit"]
+                      or item["original_zip_sha256"] != pin["zip_sha256"]
+                      or item["verified_zip_member_count"] != pin["sha256_member_count"]
+                      or item["native_longmemeval_sha256"] != expected["corpus"]["sha256"]):
+                  raise ValueError("model execution or native corpus identity differs from prepublished receipt")
+              if item["unique_registered_transfer_questions"] != expected["original_registered_transfer_questions"]:
+                  raise ValueError("eight-question count drift")
+              for actual_name, expected_name in mapping:
+                  if item[actual_name] != expected[expected_name]:
+                      raise ValueError("native structural result differs from prior observed source-only bounds")
+              if item["production_accepted"] is not False:
+                  raise ValueError("research evidence cannot enable production")
+          print("Both original native source ceilings verified against exact external hashes.")
+          PY
+      - name: Preserve complete audit provenance, failures and source
+        if: always()
+        run: |
+          set -euo pipefail
+          cp scripts/memory_cell/stem_transfer_multisession_audit.py /tmp/stem-transfer-ceiling/source/
+          cp scripts/memory_cell/test_stem_transfer_multisession_audit.py /tmp/stem-transfer-ceiling/source/
+          cp scripts/memory_cell/data/stem-one-window-source-ceiling-20261013.json /tmp/stem-transfer-ceiling/source/
+          cp .github/workflows/hepta-memory-stem-transfer-ceiling.yml /tmp/stem-transfer-ceiling/source/
+          cp scripts/memory_cell/stem_audit_archive.py scripts/memory_cell/stem_archive_contrast.py /tmp/stem-transfer-ceiling/source/
+          (cd /tmp/stem-transfer-ceiling && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-stem-pinned-transfer-ceiling
+          path: /tmp/stem-transfer-ceiling
+          if-no-files-found: error

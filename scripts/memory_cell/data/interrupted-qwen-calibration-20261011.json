@@ -1,0 +1,51 @@
+{
+  "schema": "hepta.memory-strong-rag.interrupted-calibration-audit.v1",
+  "source_commit": "02c12b4aff0d589d10e5ed25d22b05d794ca96a0",
+  "archive_sha256": "129351221d56c9668c57e33f8dec79a6443c0252675752085538375b12ca25a8",
+  "original_answers_sha256": "c644cd7ef62c06a2489ab9d9a67c0933ad489a2a8626de73000d27e45df9db71",
+  "manifest_file_count": 25,
+  "model_identity": "f9aa334d3a02cabececea367c283caf66ef9875132907ebc34dac1c8d3a7f225",
+  "calibration_questions_planned": 8,
+  "original_reader_calls_planned": 40,
+  "observed_calls": 4,
+  "missing_calls": 36,
+  "observed_question_ids": [
+    "controlled_4b61ce33"
+  ],
+  "observed_arms": [
+    "k1",
+    "k2",
+    "k3",
+    "k4"
+  ],
+  "input_tokens": 3737,
+  "model_seconds": 7067.934,
+  "per_arm": {
+    "k1": {
+      "input_tokens": 504,
+      "generated_tokens": 7,
+      "model_seconds": 923.308
+    },
+    "k2": {
+      "input_tokens": 787,
+      "generated_tokens": 6,
+      "model_seconds": 1457.513
+    },
+    "k3": {
+      "input_tokens": 1076,
+      "generated_tokens": 14,
+      "model_seconds": 2045.598
+    },
+    "k4": {
+      "input_tokens": 1370,
+      "generated_tokens": 13,
+      "model_seconds": 2641.516
+    }
+  },
+  "selected_k": null,
+  "calibration_complete": false,
+  "evaluation_started": false,
+  "label_correctness_scored": false,
+  "independent_semantic_review": false,
+  "production_accepted": false
+}

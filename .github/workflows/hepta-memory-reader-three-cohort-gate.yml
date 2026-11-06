@@ -1,0 +1,85 @@
+name: MemoryCell three-cohort original Qwen read-only no-go
+on:
+  push:
+    branches:
+      - codex/memory-cell-evidence-20261008
+    paths:
+      - "scripts/memory_cell/reader_three_cohort_gate.py"
+      - "scripts/memory_cell/test_reader_three_cohort_gate.py"
+      - "scripts/memory_cell/event_citation_delivery_gap.py"
+      - "scripts/memory_cell/test_event_citation_delivery_gap.py"
+      - ".github/workflows/hepta-memory-reader-three-cohort-gate.yml"
+      - "codex-rs/hepta-intelligence-eval/MEMORY_CELL_READER_THREE_COHORT_20261013.md"
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: memorycell-three-cohort-${{ github.sha }}
+  cancel-in-progress: false
+jobs:
+  original-readonly-replay:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 25
+    env:
+      PYTHONPATH: scripts/memory_cell
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Recheck no-promotion rules without model weights
+        run: |
+          set -euo pipefail
+          python3 -m py_compile scripts/memory_cell/reader_three_cohort_gate.py scripts/memory_cell/test_reader_three_cohort_gate.py
+          python3 -m unittest discover -s scripts/memory_cell -p 'test_reader_three_cohort_gate.py' -v
+          python3 -m py_compile scripts/memory_cell/event_citation_delivery_gap.py scripts/memory_cell/test_event_citation_delivery_gap.py
+          python3 -m unittest discover -s scripts/memory_cell -p 'test_event_citation_delivery_gap.py' -v
+      - name: Restore ten immutable, original model and scorer archives
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/three-cohort-originals /tmp/three-cohort-receipt
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11743043427/zip > /tmp/three-cohort-originals/event_model.zip
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11748040166/zip > /tmp/three-cohort-originals/event_replay.zip
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11728164433/zip > /tmp/three-cohort-originals/locomo_public.zip
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11729394703/zip > /tmp/three-cohort-originals/locomo_retrieval.zip
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11728856834/zip > /tmp/three-cohort-originals/locomo_targets.zip
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11763718022/zip > /tmp/three-cohort-originals/locomo_model.zip
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11766482516/zip > /tmp/three-cohort-originals/locomo_score.zip
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11792575178/zip > /tmp/three-cohort-originals/publisher_plan.zip
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11792880133/zip > /tmp/three-cohort-originals/publisher_model.zip
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11792297662/zip > /tmp/three-cohort-originals/publisher_score.zip
+      - name: Independently reconcile real 160 calls without pooling accuracy or granting learning
+        run: |
+          set -euo pipefail
+          python3 scripts/memory_cell/reader_three_cohort_gate.py \
+            /tmp/three-cohort-originals/event_model.zip \
+            /tmp/three-cohort-originals/event_replay.zip \
+            /tmp/three-cohort-originals/locomo_public.zip \
+            /tmp/three-cohort-originals/locomo_retrieval.zip \
+            /tmp/three-cohort-originals/locomo_targets.zip \
+            /tmp/three-cohort-originals/locomo_model.zip \
+            /tmp/three-cohort-originals/locomo_score.zip \
+            /tmp/three-cohort-originals/publisher_plan.zip \
+            /tmp/three-cohort-originals/publisher_model.zip \
+            /tmp/three-cohort-originals/publisher_score.zip \
+            --output /tmp/three-cohort-receipt/reconciled.json \
+            2>&1 | tee /tmp/three-cohort-receipt/audit.log
+          # Reuse the exact original 72-call Qwen archive just restored above.
+          # The new read-only classifier never alters Reader outputs or scores.
+          python3 scripts/memory_cell/event_citation_delivery_gap.py \
+            --original-model-zip /tmp/three-cohort-originals/event_model.zip \
+            --output /tmp/three-cohort-receipt/event-citation-delivery-gap.json \
+            2>&1 | tee /tmp/three-cohort-receipt/event-citation-gap.log
+          mkdir -p /tmp/three-cohort-receipt/auditor-source
+          cp scripts/memory_cell/event_citation_delivery_gap.py scripts/memory_cell/test_event_citation_delivery_gap.py /tmp/three-cohort-receipt/auditor-source/
+          cp .github/workflows/hepta-memory-reader-three-cohort-gate.yml /tmp/three-cohort-receipt/auditor-source/
+          git rev-parse HEAD > /tmp/three-cohort-receipt/auditor-source-commit.txt
+          sha256sum /tmp/three-cohort-originals/*.zip > /tmp/three-cohort-receipt/archive-sha256.txt
+          (cd /tmp/three-cohort-receipt && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memorycell-original-160-call-three-cohort-no-go
+          path: /tmp/three-cohort-receipt
+          if-no-files-found: warn

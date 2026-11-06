@@ -1,0 +1,277 @@
+"""Read-only five-run cross-host replication over actual Qwen original journals.
+
+Every source commit, outer ZIP, original journal, and completed read-only replay
+is pinned. Repeated authored cases are NOT independent future observations.
+This has no model generation, parameter training, trust issuer, or production gate.
+"""
+
+from __future__ import annotations
+
+import argparse
+from collections import defaultdict
+from itertools import combinations
+import hashlib
+import json
+import math
+from pathlib import Path, PurePosixPath
+import re
+import stat
+import zipfile
+
+SCHEMA = "hepta.memory-strong-rag.five-original-runs.v1"
+PLAN_SHA = "9840a25487af444914dca24c818d98ff798ebc1610ea8dfdd827187c31ad1897"
+READER = "f9aa334d3a02cabececea367c283caf66ef9875132907ebc34dac1c8d3a7f225"
+PINS = {
+    "A": (38148514657, "8250698244417eb14994518af05fa6f79e783066", "7c991f0996fc24c650efb28f6266da51ed1655b78585e11b78dbc424707b7b7f", "7e390bddfb1c59e0bb82999b01747a180eb1ec1f84d9f863a536dd036ec483f1", 267, 1),
+    "B": (38146546731, "eba9af092cca1c2875552ffaea2219678143a73c", "b4cf1346ce4c5b1625cdc57845bcca33fcf82f84340433b602d76258c10c1138", "4c64e9c01bef56d0f311e633af53c7a246102e7083a272122286fb7ff66085a3", 267, 1),
+    "C": (38114667490, "c24fad24b65984a6255a8854c6714c141911ff79", "2d71f40e553e7d28cad9d8e16803f52b7a99e771b5bf54f55c89bc9468702107", "fe710be3f987e34ec3cda48be37509e20a01b48db090907c98ce33cfff198225", 38, 8),
+    "D": (38161049090, "e0e413d670be8982b9986a119696c6ca164ca518", "d59560882e217d8772e4044ec33b8cdb10f5297f19b0a6e03e53266407c839a0", "9a4dfb20f0ab5bb6de6ed577e7787d3faa8c02f5a842198a5b1b1eafced2ea53", 300, 1),
+    "E": (38389920977, "3b03ea7dee4b270bdf328251f7a404571c9d1013", "de7087dbd3ee367475ef279d01dbeeeea46ee991b11399324289300df10c40bf", "442c7171cb2c522988e6e6c52b12201d1b59104702229dc256ca91b7bf6559c1", 43, 8),
+}
+CAL_ARMS = ("k1", "k2", "k3", "k4", "k6")
+EVAL_ARMS = ("selected_k", "hybrid_k4", "hybrid_k6", "hybrid_k4_reversed", "single_hop", "entity_time", "organized", "program_support", "empty")
+SCORE_ONLY = frozenset(("parsed_identifier", "strict_task_success", "required_sources_covered", "procedure_verification"))
+
+
+def sha(data: bytes) -> str:
+    return hashlib.sha256(data).hexdigest()
+
+
+def strict_json(data):
+    def pairs(items):
+        obj = {}
+        for key, value in items:
+            if key in obj:
+                raise ValueError("duplicate JSON object member")
+            obj[key] = value
+        return obj
+
+    def finite(value):
+        converted = float(value)
+        if not math.isfinite(converted):
+            raise ValueError("nonfinite JSON float")
+        return converted
+
+    def reject(value):
+        raise ValueError("unregistered nonfinite JSON token " + value)
+
+    return json.loads(data, object_pairs_hook=pairs, parse_float=finite, parse_constant=reject)
+
+
+def archived(path: Path, digest: str, expected_members: int, *, replay=False):
+    path = Path(path)
+    if path.is_symlink() or not path.is_file() or path.stat().st_size > 16_000_000:
+        raise ValueError("bounded regular artifact required")
+    if sha(path.read_bytes()) != digest:
+        raise ValueError("original ZIP SHA-256 does not match independently pinned byte identity")
+    with zipfile.ZipFile(path) as z:
+        info = z.infolist()
+        if len(info) != expected_members + (0 if replay and expected_members == 1 else 1):
+            raise ValueError("unexpected exact artifact census")
+        if sum(i.file_size for i in info) > 16_000_000:
+            raise ValueError("unbounded original archive payload")
+        docs = {}
+        for item in info:
+            name = item.filename
+            pos = PurePosixPath(name)
+            if (
+                not name or name != str(pos) or pos.is_absolute()
+                or ".." in pos.parts or "\\" in name or item.is_dir()
+                or name in docs or stat.S_ISLNK(item.external_attr >> 16)
+            ):
+                raise ValueError("unsafe, duplicate, or noncanonical ZIP entry")
+            docs[name] = z.read(item)
+    if "SHA256SUMS" in docs:
+        seen = {}
+        for line in docs["SHA256SUMS"].decode("utf-8", "strict").splitlines():
+            match = re.fullmatch(r"([a-f0-9]{64})  (?:\./)?(.+)", line)
+            if match is None or match[2] in seen:
+                raise ValueError("bad or duplicate original SHA256SUMS member")
+            seen[match[2]] = match[1]
+        if set(seen) != set(docs) - {"SHA256SUMS"} or any(sha(docs[n]) != h for n, h in seen.items()):
+            raise ValueError("modified, omitted, or injected original member")
+    elif not replay or set(docs) != {"shard-replay.json"}:
+        raise ValueError("original archive missing complete manifest")
+    return docs
+
+
+def read_run(label, full_path, replay_path):
+    run_id, source, main_hash, replay_hash, members, replay_members = PINS[label]
+    full = archived(full_path, main_hash, members)
+    replay_file = archived(replay_path, replay_hash, replay_members, replay=True)
+    audited = strict_json(replay_file["shard-replay.json"] if replay_members == 1 else replay_file["receipt.json"])
+    frozen = strict_json(full["calibration/frozen-policy.json"])
+    if (
+        full["tested-commit.txt"].decode().strip() != source
+        or frozen["source_commit"] != source
+        or frozen["original_test_plan_sha256"] != PLAN_SHA
+        or frozen["reader_identity"] != READER
+        or frozen["selected_k"] != 1
+        or frozen["production_accepted"] is not False
+        or audited["generating_commit"] != source
+        or audited["production_accepted"] is not False
+    ):
+        raise ValueError("wrong source, frozen model, or replay lineage")
+    stages = {}
+    for phase, arms in (("calibration", CAL_ARMS), ("evaluation", EVAL_ARMS)):
+        raw_bytes = full[f"{phase}/raw-answers.jsonl"]
+        if not raw_bytes.endswith(b"\n"):
+            raise ValueError("uncommitted raw answer line")
+        raw = [strict_json(line) for line in raw_bytes.splitlines()]
+        scored = strict_json(full[f"{phase}/scored-answers.json"])
+        report = strict_json(full[f"{phase}/report.json"])
+        run = strict_json(full[f"{phase}/run.json"])
+        receipt = audited[phase]
+        n = 8 * len(arms)
+        if (
+            len(raw) != n or len(scored) != n
+            or run["source_commit"] != source or report["source_commit"] != source
+            or report["raw_answers_sha256"] != sha(raw_bytes)
+            or receipt["attempts"] != n or receipt["all_model_calls_succeeded"] is not True
+            or receipt["original_raw_sha256"] != sha(raw_bytes)
+        ):
+            raise ValueError("run, score, or independent replay census drift")
+        original, truth = {}, {}
+        for row, scored_row in zip(raw, scored, strict=True):
+            key = row["question_id"], row["arm"]
+            if (key in original or key[1] not in arms or row["status"] != "succeeded"
+                or scored_row["status"] != "succeeded" or
+                {k: v for k, v in scored_row.items() if k not in SCORE_ONLY} != row
+                or any(k in row for k in SCORE_ONLY)
+                or type(scored_row.get("strict_task_success")) is not bool):
+                raise ValueError("raw-answer tampering, duplicate task, or changed scorer output")
+            rec = row["receipt"]
+            if (
+                rec["reader_identity"] != READER or rec["token_limit"] != 2048
+                or type(rec["input_tokens"]) is not int or not 0 < rec["input_tokens"] <= 2048
+                or type(rec["generated_tokens"]) is not int or not 0 <= rec["generated_tokens"] <= 64
+                or not re.fullmatch(r"[0-9a-f]{64}", rec["input_ids_digest"])
+                or not re.fullmatch(r"[0-9a-f]{64}", rec["generated_ids_digest"])
+                or rec["production_accepted"] is not False):
+                raise ValueError("changed frozen reader, prompt, budget, or output token receipt")
+            original[key], truth[key] = row, scored_row
+        if len({k[0] for k in original}) != 8 or {k[1] for k in original} != set(arms):
+            raise ValueError("not the original eight-question, complete-arm census")
+        for arm in arms:
+            count = sum(truth[k]["strict_task_success"] for k in truth if k[1] == arm)
+            recorded = (report["arms"] if phase == "calibration" else report["success_by_arm"])[arm]
+            if recorded["strict_success"] != count or receipt["strict_success"][arm] != count:
+                raise ValueError("published task metric not derivable from raw answers")
+        if phase == "evaluation":
+            formal = report["formal_citation_chain"]
+            if len(formal["cases"]) != n or formal["planned_attempts"] != n:
+                raise ValueError("missing citation decisions")
+            for case in formal["cases"]:
+                key = case["question_id"], case["arm"]
+                if key not in truth or case["answer"] != original[key]["answer"] or case["strict_task_success"] != truth[key]["strict_task_success"]:
+                    raise ValueError("formal source claim differs from immutable original answer")
+        stages[phase] = {"raw": original, "truth": truth, "report": report, "digest": sha(raw_bytes)}
+    return {"source": source, "run_id": run_id, **stages}
+
+
+def compare_five(runs):
+    if set(runs) != set(PINS):
+        raise ValueError("all five separately pinned original executions required")
+    unchanged = {}; varying = {}; flip = {}; newly_vary = {}; pairwise = {}
+    for phase in ("calibration", "evaluation"):
+        keys = set(runs["A"][phase]["raw"])
+        if any(set(runs[label][phase]["raw"]) != keys for label in PINS):
+            raise ValueError("source task/arm census changed across executions")
+        unstable, flips, new = [], [], []
+        for key in sorted(keys):
+            rows = {name: runs[name][phase]["raw"][key] for name in PINS}
+            scores = {name: runs[name][phase]["truth"][key]["strict_task_success"] for name in PINS}
+            anchor = rows["A"]
+            for name, row in rows.items():
+                for field, a, b in (
+                    ("retrieved candidate pool", anchor["candidate_digest"], row["candidate_digest"]),
+                    ("selected ordered original evidence", anchor["selected"], row["selected"]),
+                    ("reader profile", anchor["receipt"]["reader_profile"], row["receipt"]["reader_profile"]),
+                    ("prompt digest", anchor["receipt"]["input_ids_digest"], row["receipt"]["input_ids_digest"]),
+                    ("delivered original evidence", anchor["receipt"]["delivered_evidence"], row["receipt"]["delivered_evidence"]),
+                    ("input tokens", anchor["receipt"]["input_tokens"], row["receipt"]["input_tokens"]),
+                ):
+                    if a != b:
+                        raise ValueError(f"changed {field} in {name} {phase} {key}")
+            output = {name: (row["answer"], row["receipt"]["generated_ids_digest"]) for name, row in rows.items()}
+            if len(set(output.values())) > 1:
+                unstable.append({"question_id": key[0], "arm": key[1], "answers": {name: row[0] for name, row in output.items()}})
+                if len(set(output[name] for name in ("A", "B", "C", "D"))) == 1:
+                    new.append({"question_id": key[0], "arm": key[1]})
+            if len(set(scores.values())) > 1:
+                flips.append({"question_id": key[0], "arm": key[1], "outcomes": scores})
+        unchanged[phase] = len(keys)
+        varying[phase] = unstable
+        flip[phase] = flips
+        newly_vary[phase] = new
+    for a, b in combinations(PINS, 2):
+        pairwise[a + "_vs_" + b] = {
+            ph: sum(
+                (runs[a][ph]["raw"][key]["answer"], runs[a][ph]["raw"][key]["receipt"]["generated_ids_digest"])
+                != (runs[b][ph]["raw"][key]["answer"], runs[b][ph]["raw"][key]["receipt"]["generated_ids_digest"])
+                for key in runs[a][ph]["raw"]
+            ) for ph in ("calibration", "evaluation")
+        }
+    per_arm = {}
+    for arm in EVAL_ARMS:
+        metrics = {}
+        for label in PINS:
+            record = runs[label]["evaluation"]
+            result = record["report"]
+            metrics[label] = {
+                "correct": result["success_by_arm"][arm]["strict_success"],
+                "full_declared_citation_chain": result["formal_citation_chain"]["by_arm"][arm]["correct_with_full_program_declared_citations"],
+                "input_tokens": result["success_by_arm"][arm]["input_tokens"],
+            }
+        per_arm[arm] = metrics
+    comparison = {
+        label: {
+            "organized_minus_fullpath_correct": per_arm["organized"][label]["correct"] - per_arm["entity_time"][label]["correct"],
+            "organized_minus_fullpath_full_citation": per_arm["organized"][label]["full_declared_citation_chain"] - per_arm["entity_time"][label]["full_declared_citation_chain"],
+            "fullpath_minus_singlehop_correct": per_arm["entity_time"][label]["correct"] - per_arm["single_hop"][label]["correct"],
+        } for label in PINS
+    }
+    return {
+        "schema": SCHEMA, "source_pins": PINS, "reader_inventory_digest": READER,
+        "original_development_plan_sha256": PLAN_SHA,
+        "distinct_original_source_commits": len(PINS), "model_generations_per_source": 112,
+        "actual_original_generations": 112 * len(PINS),
+        "unique_development_questions": 8, "independent_new_source_families": 0,
+        "unchanged_prompt_input_census": unchanged,
+        "output_variations": {ph: len(rows) for ph, rows in varying.items()},
+        "variable_outputs": varying, "task_outcome_flips": flip,
+        "new_variants_only_in_fifth_run": newly_vary, "pairwise_different_outputs": pairwise,
+        "per_arm": per_arm, "within_source_differences": comparison,
+        "calibration_selection_per_source": {label: 1 for label in PINS},
+        "independent_semantic_citation_adjudication": False,
+        "repeated_authored_questions_are_independent": False,
+        "actual_production_lifecycle_cost_observed": False,
+        "parameter_memory_superiority_established": False,
+        "production_accepted": False,
+        "decision": "NO-GO: five repetitions of the same authored source questions show no organized-over-full-path task or complete-citation gain; external source-family validation and semantic citation review remain required",
+    }
+
+
+def audit(paths):
+    if set(paths) != set(PINS):
+        raise ValueError("five original artifact pairs, without missing or extra sources, required")
+    return compare_five({label: read_run(label, *paths[label]) for label in PINS})
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    for label in PINS:
+        parser.add_argument(label.lower() + "_full", type=Path)
+        parser.add_argument(label.lower() + "_replay", type=Path)
+    parser.add_argument("--output", type=Path, required=True)
+    args = parser.parse_args()
+    paths = {label: (getattr(args, label.lower()+"_full"), getattr(args, label.lower()+"_replay")) for label in PINS}
+    value = audit(paths)
+    with args.output.open("x", encoding="utf-8") as f:
+        json.dump(value, f, ensure_ascii=False, allow_nan=False, indent=2)
+        f.write("\n")
+    print(json.dumps({"verified_runs": len(PINS), "observed_generations": value["actual_original_generations"], "unstable_inputs": value["output_variations"], "production_accepted": False}))
+
+
+if __name__ == "__main__":
+    main()

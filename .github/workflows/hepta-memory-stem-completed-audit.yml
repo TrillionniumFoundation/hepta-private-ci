@@ -1,0 +1,73 @@
+name: MemoryCell completed native run independent audit
+on:
+  push:
+    branches: ["codex/memory-cell-evidence-20261008"]
+    paths:
+      - "scripts/memory_cell/stem_audit_completed_run.py"
+      - "scripts/memory_cell/test_stem_audit_completed_run.py"
+      - ".github/workflows/hepta-memory-stem-completed-audit.yml"
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: stem-native-completed-audit-${{ github.sha }}
+  cancel-in-progress: false
+jobs:
+  sealed-model-output-audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      PYTHONPATH: scripts/memory_cell
+      PYTHONDONTWRITEBYTECODE: "1"
+      HEPTA_PINNED_COMPLETED_STEM_ZIP: /tmp/completed-native-stem.zip
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Source identity and static compilation
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/completed-native-audit
+          git rev-parse HEAD > /tmp/completed-native-audit/auditor-commit.txt
+          git rev-parse HEAD^{tree} > /tmp/completed-native-audit/auditor-tree.txt
+          python3 -m compileall -q \
+            scripts/memory_cell/stem_audit_completed_run.py \
+            scripts/memory_cell/test_stem_audit_completed_run.py
+      - name: Download exactly one historical completed model artifact
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11693693993/zip > "$HEPTA_PINNED_COMPLETED_STEM_ZIP"
+          printf '%s  %s\n' \
+            1db7f8f7c13a1f718d5065956f14d554d3fe328c415fac4bb145d1eaf9d913c8 \
+            "$HEPTA_PINNED_COMPLETED_STEM_ZIP" | sha256sum -c -
+      - name: Nine tampering regressions against real immutable bytes
+        run: |
+          set -euo pipefail
+          python3 -m unittest -v test_stem_audit_completed_run \
+            2>&1 | tee /tmp/completed-native-audit/tests.log
+      - name: Reconcile 576 model outputs and evidence opportunity
+        run: |
+          set -euo pipefail
+          python3 scripts/memory_cell/stem_audit_completed_run.py \
+            "$HEPTA_PINNED_COMPLETED_STEM_ZIP" \
+            --output /tmp/completed-native-audit/report.json \
+            2>&1 | tee /tmp/completed-native-audit/reconciliation.log
+      - name: Retain exact source, audit results, and failure logs
+        if: always()
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/completed-native-audit/source
+          cp scripts/memory_cell/stem_audit_archive.py /tmp/completed-native-audit/source/
+          cp scripts/memory_cell/stem_audit_completed_run.py /tmp/completed-native-audit/source/
+          cp scripts/memory_cell/test_stem_audit_completed_run.py /tmp/completed-native-audit/source/
+          cp .github/workflows/hepta-memory-stem-completed-audit.yml /tmp/completed-native-audit/source/
+          (cd /tmp/completed-native-audit && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-stem-completed-native-audit
+          path: /tmp/completed-native-audit
+          if-no-files-found: error

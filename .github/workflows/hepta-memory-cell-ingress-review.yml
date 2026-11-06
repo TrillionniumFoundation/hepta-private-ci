@@ -1,0 +1,76 @@
+name: MemoryCell pinned native ingress review
+on:
+  pull_request:
+    paths:
+      - "scripts/memory_cell/**"
+      - ".github/workflows/hepta-memory-cell-ingress-review.yml"
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: memory-cell-ingress-review-${{ github.event.pull_request.number }}
+  cancel-in-progress: false
+jobs:
+  pinned-history-census:
+    if: github.event.pull_request.number == 1452 && github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: memory-native-staged-inputs
+          run-id: 37862780268
+          github-token: ${{ github.token }}
+          path: /tmp
+      - name: Compare legacy and preserved histories against unchanged source bytes
+        env:
+          PYTHONPATH: scripts/memory_cell
+          TESTED_COMMIT: ${{ github.event.pull_request.head.sha }}
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/ingress-review
+          tar -C /tmp -xzf /tmp/memory-inputs.tar.gz memory-inputs/longmemeval.json
+          python3 - <<'PY' | tee /tmp/ingress-review/diagnostics.log
+          import collections, hashlib, json, os
+          from pathlib import Path
+          from native import digest, load
+          path = Path('/tmp/memory-inputs/longmemeval.json')
+          expected = 'd6f21ea9d60a0d56f34a05b609c79c88a451d2ae03597821ea3d5a9678c3a442'
+          raw = path.read_bytes()
+          if hashlib.sha256(raw).hexdigest() != expected:
+              raise ValueError('immutable native dataset identity changed')
+          data = json.loads(raw)
+          profiles = {}
+          for policy in ('reject', 'preserve'):
+              benchmark = load(path, 'longmemeval', expected, allow_unresolved_evidence=True, session_conflicts='retain-versioned', invalid_history='quarantine-question', empty_turns=policy)
+              profiles[policy] = dict(native_questions=len(data), census_questions=len(benchmark.questions), documents=len(benchmark.documents), ingress_failures=benchmark.ingress_failures, issue_counts=dict(collections.Counter(row['disposition'] for row in benchmark.ingress_issues)), source_family_count=len(set(benchmark.families.values())), issues=benchmark.ingress_issues)
+              if len(data) != len(benchmark.questions):
+                  raise ValueError('native question lost from the census')
+              print(json.dumps({'policy': policy, **{k: v for k, v in profiles[policy].items() if k not in ('issues', 'ingress_failures')}}, sort_keys=True))
+          if profiles['reject']['census_questions'] != 500 or len(profiles['reject']['ingress_failures']) != 7:
+              raise ValueError('historical rejection profile changed')
+          if profiles['preserve']['ingress_failures']:
+              raise ValueError('preserved native history still unavailable')
+          if profiles['preserve']['issue_counts'].get('empty-native-turn-preserved-without-imputation') != 12:
+              raise ValueError('original empty messages not preserved exactly')
+          if path.read_bytes() != raw:
+              raise ValueError('read-only diagnostic changed source bytes')
+          result = dict(schema='hepta.native-ingress.diagnostics.v2', tested_commit=os.environ['TESTED_COMMIT'], dataset_sha256=expected, profiles=profiles, model_executions=0, semantic_citation_precision=None, production_accepted=False)
+          Path('/tmp/ingress-review/diagnostics.json').write_text(json.dumps(result, indent=2, allow_nan=False))
+          PY
+      - name: Run native ingress regressions without importing model dependencies
+        env:
+          PYTHONPATH: scripts/memory_cell
+        run: |
+          set -euo pipefail
+          python3 -m unittest -v test_sessions test_native_empty_turns test_native_conflicts test_coverage 2>&1 | tee /tmp/ingress-review/tests.log
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-native-ingress-diagnostics
+          path: /tmp/ingress-review
+          if-no-files-found: error

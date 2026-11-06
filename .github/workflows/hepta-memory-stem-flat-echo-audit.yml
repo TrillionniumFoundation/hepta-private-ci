@@ -1,0 +1,86 @@
+name: MemoryCell pinned flat Reader citation echo audit
+on:
+  push:
+    branches: ["codex/memory-cell-evidence-20261008"]
+    paths:
+      - "scripts/memory_cell/stem_flat_prompt_echo_audit.py"
+      - "scripts/memory_cell/test_stem_flat_prompt_echo_audit.py"
+      - ".github/workflows/hepta-memory-stem-flat-echo-audit.yml"
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: memory-stem-flat-echo-${{ github.sha }}
+  cancel-in-progress: false
+jobs:
+  source-only-prompt-echo:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      PYTHONPATH: scripts/memory_cell
+      PYTHONDONTWRITEBYTECODE: "1"
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Test label and source identity without a model
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/stem-flat-echo
+          git rev-parse HEAD > /tmp/stem-flat-echo/tested-commit.txt
+          git rev-parse HEAD^{tree} > /tmp/stem-flat-echo/tested-tree.txt
+          python3 -m unittest -v test_stem_flat_prompt_echo_audit 2>&1 | tee /tmp/stem-flat-echo/tests.log
+          python3 -m compileall -q scripts/memory_cell/stem_flat_prompt_echo_audit.py scripts/memory_cell/test_stem_flat_prompt_echo_audit.py
+      - name: Obtain original immutable strict and actual flat Reader ZIPs
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11741082077/zip > /tmp/stem-strict-original.zip
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11746473791/zip > /tmp/stem-flat-original.zip
+          printf '%s  %s\n' \
+            65fe5e99c90a10dba916598dc2a83f164ef6275d7cb6c783aa6edbe3722d2563 /tmp/stem-strict-original.zip \
+            4d28ee07ec9425e3fe3288c9eaf79362fc23d64ec50ad359279d2f9ddca7389b /tmp/stem-flat-original.zip | sha256sum -c -
+      - name: Reopen complete signed-byte manifests and audit exact prompt copies
+        run: |
+          set -euo pipefail
+          python3 scripts/memory_cell/stem_flat_prompt_echo_audit.py \
+            --strict /tmp/stem-strict-original.zip \
+            --flat /tmp/stem-flat-original.zip \
+            --output /tmp/stem-flat-echo/flat-reader-citation-echo.json \
+            2>&1 | tee /tmp/stem-flat-echo/audit.log
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          receipt = json.loads(Path('/tmp/stem-flat-echo/flat-reader-citation-echo.json').read_text())
+          if not (
+              receipt['registered_distinct_questions'] == 32
+              and receipt['registered_original_policy_attempts'] == 576
+              and receipt['structural_citation_markers'] == 17
+              and receipt['bound_to_delivered_evidence_label'] == 17
+              and receipt['verbatim_prompt_citation_markers'] == 17
+              and receipt['flat_user_prompt_copies'] == 15
+              and receipt['original_system_prompt_copies'] == 2
+              and receipt['independent_semantic_entailment_precision'] is None
+              and receipt['production_accepted'] is False
+          ):
+              raise ValueError('immutable original flat Reader citation census drift')
+          PY
+      - name: Retain tested source, every error and SHA256SUMS
+        if: always()
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/stem-flat-echo/source
+          cp scripts/memory_cell/stem_flat_prompt_echo_audit.py /tmp/stem-flat-echo/source/
+          cp scripts/memory_cell/test_stem_flat_prompt_echo_audit.py /tmp/stem-flat-echo/source/
+          cp scripts/memory_cell/stem_reader_format_ablation.py /tmp/stem-flat-echo/source/
+          cp scripts/memory_cell/stem_audit_archive.py /tmp/stem-flat-echo/source/
+          cp .github/workflows/hepta-memory-stem-flat-echo-audit.yml /tmp/stem-flat-echo/source/
+          (cd /tmp/stem-flat-echo && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-stem-flat-reader-citation-echo
+          path: /tmp/stem-flat-echo
+          if-no-files-found: error

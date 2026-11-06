@@ -1,0 +1,61 @@
+# Read-only host capability sampling; never infer model correctness from CPU flags.
+name: MemoryCell native BF16 hosted-runner scout
+on:
+  push:
+    branches:
+      - codex/memory-cell-evidence-20261008
+    paths:
+      - ".github/workflows/hepta-memory-bf16-hosted-scout.yml"
+      - "scripts/memory_cell/strong_rag_cpu_scout.py"
+      - "scripts/memory_cell/strong_rag_host_gate.py"
+      - "scripts/memory_cell/test_strong_rag_cpu_scout.py"
+permissions:
+  contents: read
+concurrency:
+  group: memory-bf16-hosted-scout-${{ github.sha }}
+  cancel-in-progress: false
+jobs:
+  read-only-host-census:
+    strategy:
+      fail-fast: false
+      matrix:
+        image: ["ubuntu-22.04", "ubuntu-24.04", "ubuntu-26.04"]
+        repeat: [0, 1]
+    runs-on: ${{ matrix.image }}
+    timeout-minutes: 10
+    env:
+      PYTHONPATH: scripts/memory_cell
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Record actual runner CPU, no model files or task labels
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/memory-bf16-host-census
+          git rev-parse HEAD > /tmp/memory-bf16-host-census/source-commit.txt
+          git rev-parse HEAD^{tree} > /tmp/memory-bf16-host-census/source-tree.txt
+          python3 scripts/memory_cell/strong_rag_cpu_scout.py \
+            --runner-image "${{ matrix.image }}" \
+            --source-commit "${{ github.sha }}" \
+            --output /tmp/memory-bf16-host-census/host.json \
+            2>&1 | tee /tmp/memory-bf16-host-census/host.log
+          python3 -m unittest -v test_strong_rag_cpu_scout \
+            2>&1 | tee /tmp/memory-bf16-host-census/tests.log
+      - name: Retain original unmodified code and host census
+        if: always()
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/memory-bf16-host-census/source
+          cp scripts/memory_cell/strong_rag_cpu_scout.py /tmp/memory-bf16-host-census/source/
+          cp scripts/memory_cell/strong_rag_host_gate.py /tmp/memory-bf16-host-census/source/
+          cp scripts/memory_cell/test_strong_rag_cpu_scout.py /tmp/memory-bf16-host-census/source/
+          cp .github/workflows/hepta-memory-bf16-hosted-scout.yml /tmp/memory-bf16-host-census/source/
+          (cd /tmp/memory-bf16-host-census && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-native-bf16-host-${{ matrix.image }}-${{ matrix.repeat }}
+          path: /tmp/memory-bf16-host-census
+          if-no-files-found: warn

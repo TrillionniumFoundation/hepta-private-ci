@@ -1,0 +1,149 @@
+{
+  "actual_model_generations": 64,
+  "annotation_privileged_controls_not_deployable": true,
+  "conditions": {
+    "hybrid": {
+      "by_task_kind": {
+        "composition_losses": 0,
+        "composition_planned": 2,
+        "correction_losses": 0,
+        "correction_planned": 2,
+        "new_fact_losses": 0,
+        "new_fact_planned": 2,
+        "procedure_losses": 0,
+        "procedure_planned": 2
+      },
+      "changed_outputs": 5,
+      "generated_tokens": {
+        "original": 104,
+        "premise_chain": 87
+      },
+      "input_tokens": {
+        "original": 10806,
+        "premise_chain": 11438
+      },
+      "original_complete_chain": 1,
+      "original_correct": 3,
+      "original_exact_chain": 1,
+      "original_truncated_identifier": 0,
+      "premise_chain_complete_chain": 0,
+      "premise_chain_correct": 4,
+      "premise_chain_exact_chain": 0,
+      "premise_chain_truncated_identifier": 0,
+      "question_pairs": 8,
+      "task_losses": 0,
+      "task_wins": 1
+    },
+    "organized": {
+      "by_task_kind": {
+        "composition_losses": 1,
+        "composition_planned": 2,
+        "correction_losses": 1,
+        "correction_planned": 2,
+        "new_fact_losses": 1,
+        "new_fact_planned": 2,
+        "procedure_losses": 2,
+        "procedure_planned": 2
+      },
+      "changed_outputs": 5,
+      "generated_tokens": {
+        "original": 105,
+        "premise_chain": 73
+      },
+      "input_tokens": {
+        "original": 5179,
+        "premise_chain": 5811
+      },
+      "original_complete_chain": 4,
+      "original_correct": 8,
+      "original_exact_chain": 4,
+      "original_truncated_identifier": 0,
+      "premise_chain_complete_chain": 2,
+      "premise_chain_correct": 3,
+      "premise_chain_exact_chain": 2,
+      "premise_chain_truncated_identifier": 5,
+      "question_pairs": 8,
+      "task_losses": 5,
+      "task_wins": 0
+    },
+    "program_support": {
+      "by_task_kind": {
+        "composition_losses": 1,
+        "composition_planned": 2,
+        "correction_losses": 1,
+        "correction_planned": 2,
+        "new_fact_losses": 1,
+        "new_fact_planned": 2,
+        "procedure_losses": 2,
+        "procedure_planned": 2
+      },
+      "changed_outputs": 5,
+      "generated_tokens": {
+        "original": 105,
+        "premise_chain": 73
+      },
+      "input_tokens": {
+        "original": 5179,
+        "premise_chain": 5811
+      },
+      "original_complete_chain": 4,
+      "original_correct": 8,
+      "original_exact_chain": 4,
+      "original_truncated_identifier": 0,
+      "premise_chain_complete_chain": 2,
+      "premise_chain_correct": 3,
+      "premise_chain_exact_chain": 2,
+      "premise_chain_truncated_identifier": 5,
+      "question_pairs": 8,
+      "task_losses": 5,
+      "task_wins": 0
+    },
+    "without_prerequisite": {
+      "by_task_kind": {
+        "composition_losses": 0,
+        "composition_planned": 2,
+        "correction_losses": 0,
+        "correction_planned": 2,
+        "new_fact_losses": 0,
+        "new_fact_planned": 2,
+        "procedure_losses": 0,
+        "procedure_planned": 2
+      },
+      "changed_outputs": 3,
+      "generated_tokens": {
+        "original": 84,
+        "premise_chain": 81
+      },
+      "input_tokens": {
+        "original": 2803,
+        "premise_chain": 3435
+      },
+      "original_complete_chain": 0,
+      "original_correct": 4,
+      "original_exact_chain": 0,
+      "original_truncated_identifier": 0,
+      "premise_chain_complete_chain": 0,
+      "premise_chain_correct": 4,
+      "premise_chain_exact_chain": 0,
+      "premise_chain_truncated_identifier": 0,
+      "question_pairs": 8,
+      "task_losses": 0,
+      "task_wins": 0
+    }
+  },
+  "frozen_plan_sha256": "9840a25487af444914dca24c818d98ff798ebc1610ea8dfdd827187c31ad1897",
+  "generating_commit": "fd7e19ccc7bee86afe6bf49f3eab9a75fc1badd9",
+  "independent_future_source_families": 0,
+  "independent_semantic_entailment": false,
+  "matched_question_condition_pairs": 32,
+  "model_identity": "f9aa334d3a02cabececea367c283caf66ef9875132907ebc34dac1c8d3a7f225",
+  "original_frozen_input_zip_sha256": "23e9d44b8d2dbe756c7c33031e18853c83326458a37925d4d368881145bf142b",
+  "original_model_zip_sha256": "6743f0e054b44eea6a7e1eadf7e27651ced94df7885b95e6da81fd82a3075cff",
+  "parametric_memory_training_qualified": false,
+  "production_accepted": false,
+  "prompt_promotion_qualified": false,
+  "prompt_training_performed": false,
+  "provenance": "original model answers, byte-pinned sources, independently replayed task/citation counters",
+  "schema": "hepta.memory-cell.premise-prompt-original-replay.v1",
+  "source_run_id": 38385138211
+}

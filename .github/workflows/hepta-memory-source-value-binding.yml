@@ -1,0 +1,118 @@
+name: MemoryCell historical source value binding
+on:
+  push:
+    branches:
+      - "codex/memory-cell-evidence-20261008"
+    paths:
+      - "scripts/memory_cell/source_value_binding_audit.py"
+      - "scripts/memory_cell/test_source_value_binding_audit.py"
+      - ".github/workflows/hepta-memory-source-value-binding.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  original-answer-only:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      PYTHONPATH: scripts/memory_cell
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Verify authored-fixture mechanism tests
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/source-value-audit
+          python3 -m unittest discover -s scripts/memory_cell -p 'test_source_value_binding_audit.py' -v 2>&1 | tee /tmp/source-value-audit/tests.log
+      - name: Check repository-locked formatter without weakening it
+        run: |
+          set -euo pipefail
+          python3 -m pip install uv==0.8.22
+          set +e
+          uv run --frozen --project scripts ruff format --check scripts/memory_cell/source_value_binding_audit.py scripts/memory_cell/test_source_value_binding_audit.py
+          result=$?
+          set -e
+          if [ "$result" -ne 0 ]; then
+            uv run --frozen --project scripts ruff format scripts/memory_cell/source_value_binding_audit.py scripts/memory_cell/test_source_value_binding_audit.py
+            git diff -- scripts/memory_cell/source_value_binding_audit.py scripts/memory_cell/test_source_value_binding_audit.py > /tmp/source-value-audit/formatter-candidate.diff
+            cat /tmp/source-value-audit/formatter-candidate.diff
+            exit "$result"
+          fi
+          uv run --frozen --project scripts ruff check scripts/memory_cell/source_value_binding_audit.py scripts/memory_cell/test_source_value_binding_audit.py
+      - name: Recompute frozen source-value taxonomy from the original model outputs
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11723225786/zip > /tmp/source-value-original.zip
+          python3 - <<'PY'
+          from hashlib import sha256
+          from pathlib import Path, PurePosixPath
+          import stat
+          from zipfile import ZipFile
+          data = Path('/tmp/source-value-original.zip').read_bytes()
+          assert len(data) < 16 * 1024 * 1024
+          assert sha256(data).hexdigest() == '79c7de0d4f61aa2d4dec6c337b57aa6e6fce28c9567df5bd3cadbdbae714ba19'
+          selected = {
+              'snapshot/READY.json',
+              'source-recall/plan.json',
+              'source-recall/raw-answers.jsonl',
+              'source-recall/report.json',
+          }
+          root = Path('/tmp/source-value-audit/original')
+          with ZipFile('/tmp/source-value-original.zip') as z:
+              assert len(z.infolist()) <= 512
+              members = {}
+              for item in z.infolist():
+                  name = item.filename
+                  p = PurePosixPath(name)
+                  assert not p.is_absolute() and '..' not in p.parts
+                  assert '\\' not in name and not stat.S_ISLNK(item.external_attr >> 16)
+                  assert name not in members
+                  members[name] = item
+              assert selected <= set(members)
+              for name in selected:
+                  item = members[name]
+                  assert 0 < item.file_size <= 4 * 1024 * 1024
+                  path = root / name
+                  path.parent.mkdir(parents=True, exist_ok=True)
+                  path.write_bytes(z.read(item))
+          Path('/tmp/source-value-audit/original-artifact-sha256.txt').write_text(sha256(data).hexdigest() + '\n')
+          PY
+          python3 scripts/memory_cell/source_value_binding_audit.py /tmp/source-value-audit/original /tmp/source-value-audit/diagnosis.json --auditor-commit "$GITHUB_SHA" > /tmp/source-value-audit/diagnosis.log
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          data = json.loads(Path('/tmp/source-value-audit/diagnosis.json').read_text())
+          assert data['generating_source'] == '8ac9692a86a2727ea42e699d9da42dd0e67087bf'
+          assert data['original_model_answers'] == 32
+          assert data['question_count'] == 16
+          assert data['source_only_training_targets'] == 88
+          assert data['arms']['base']['counts'] == {'explicit_refusal': 16}
+          assert data['arms']['memory']['counts'] == {'fabricated_identifier_not_in_any_source_target': 16}
+          assert data['no_new_model_calls'] and not data['production_accepted']
+          print(json.dumps({
+              'historical_model_source': data['generating_source'],
+              'actual_question_count': data['question_count'],
+              'base_refusals': 16,
+              'adapter_fabricated_identifiers': 16,
+              'new_model_calls': 0,
+              'production_qualified': False,
+          }))
+          PY
+      - name: Preserve exact original/source hashes and all failures
+        if: always()
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD > /tmp/source-value-audit/auditor-commit.txt
+          cp scripts/memory_cell/source_value_binding_audit.py scripts/memory_cell/test_source_value_binding_audit.py /tmp/source-value-audit/
+          (cd /tmp/source-value-audit && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-source-value-binding-diagnostic
+          path: /tmp/source-value-audit
+          if-no-files-found: error

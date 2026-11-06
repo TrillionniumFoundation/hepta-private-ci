@@ -1,0 +1,939 @@
+{
+  "schema": "hepta.memory-cell.reader-surface-failures.v1",
+  "source_plan_sha256": "9840a25487af444914dca24c818d98ff798ebc1610ea8dfdd827187c31ad1897",
+  "historical_source_sha": "59f9eadd5cc919359079e04442f7343838a60057",
+  "independently_sampled": false,
+  "new_model_generations": 0,
+  "label_derived_diagnostic_only": true,
+  "modifies_primary_task_score": false,
+  "semantic_citation_adjudication": false,
+  "production_accepted": false,
+  "models": {
+    "qwen-3b": {
+      "generation_commit": "59f9eadd5cc919359079e04442f7343838a60057",
+      "planned": 48,
+      "by_arm": {
+        "empty": {
+          "explicit_abstention": 4,
+          "no_identifier": 4
+        },
+        "hybrid": {
+          "gold_literal_without_strict_grammar": 1,
+          "strict_correct": 3,
+          "wrong_identifier": 4
+        },
+        "entity_time": {
+          "strict_correct": 8
+        },
+        "organized": {
+          "strict_correct": 8
+        },
+        "program_support": {
+          "strict_correct": 8
+        },
+        "without_prerequisite": {
+          "explicit_abstention": 3,
+          "no_identifier": 1,
+          "strict_correct": 4
+        }
+      },
+      "cases": [
+        {
+          "question_id": "controlled_faedc8b9",
+          "task_kind": "new_fact",
+          "arm": "empty",
+          "original_answer": "I do not have enough evidence.",
+          "failure_class": "explicit_abstention",
+          "strict_success": false,
+          "annotated_support_covered": false
+        },
+        {
+          "question_id": "controlled_faedc8b9",
+          "task_kind": "new_fact",
+          "arm": "hybrid",
+          "original_answer": "site_849f0372 [E2]",
+          "failure_class": "wrong_identifier",
+          "strict_success": false,
+          "annotated_support_covered": true
+        },
+        {
+          "question_id": "controlled_faedc8b9",
+          "task_kind": "new_fact",
+          "arm": "entity_time",
+          "original_answer": "site_db330aba [E1]",
+          "failure_class": "strict_correct",
+          "strict_success": true,
+          "annotated_support_covered": true
+        },
+        {
+          "question_id": "controlled_faedc8b9",
+          "task_kind": "new_fact",
+          "arm": "organized",
+          "original_answer": "site_db330aba [E1]",
+          "failure_class": "strict_correct",
+          "strict_success": true,
+          "annotated_support_covered": true
+        },
+        {
+          "question_id": "controlled_faedc8b9",
+          "task_kind": "new_fact",
+          "arm": "program_support",
+          "original_answer": "site_db330aba [E1]",
+          "failure_class": "strict_correct",
+          "strict_success": true,
+          "annotated_support_covered": true
+        },
+        {
+          "question_id": "controlled_faedc8b9",
+          "task_kind": "new_fact",
+          "arm": "without_prerequisite",
+          "original_answer": "I do not have enough evidence.",
+          "failure_class": "explicit_abstention",
+          "strict_success": false,
+          "annotated_support_covered": false
+        },
+        {
+          "question_id": "controlled_cbfd4ba5",
+          "task_kind": "correction",
+          "arm": "empty",
+          "original_answer": "I do not have enough evidence",
+          "failure_class": "no_identifier",
+          "strict_success": false,
+          "annotated_support_covered": false
+        },
+        {
+          "question_id": "controlled_cbfd4ba5",
+          "task_kind": "correction",
+          "arm": "hybrid",
+          "original_answer": "[site_2749e2c9]",
+          "failure_class": "gold_literal_without_strict_grammar",
+          "strict_success": false,
+          "annotated_support_covered": true
+        },
+        {
+          "question_id": "controlled_cbfd4ba5",
+          "task_kind": "correction",
+          "arm": "entity_time",
+          "original_answer": "site_2749e2c9 [E2]",
+          "failure_class": "strict_correct",
+          "strict_success": true,
+          "annotated_support_covered": true
+        },
+        {
+          "question_id": "controlled_cbfd4ba5",
+          "task_kind": "correction",
+          "arm": "organized",
+          "original_answer": "site_2749e2c9 [E1]",
+          "failure_class": "strict_correct",
+          "strict_success": true,
+          "annotated_support_covered": true
+        },
+        {
+          "question_id": "controlled_cbfd4ba5",
+          "task_kind": "correction",
+          "arm": "program_support",
+          "original_answer": "site_2749e2c9 [E1]",
+          "failure_class": "strict_correct",
+          "strict_success": true,
+          "annotated_support_covered": true
+        },
+        {
+          "question_id": "controlled_cbfd4ba5",
+          "task_kind": "correction",
+          "arm": "without_prerequisite",
+          "original_answer": "I do not have enough evidence",
+          "failure_class": "no_identifier",
+          "strict_success": false,
+          "annotated_support_covered": false
+        },
+        {
+          "question_id": "controlled_c71dcd6f",
+          "task_kind": "composition",
+          "arm": "empty",
+          "original_answer": "I do not have enough evidence.",
+          "failure_class": "explicit_abstention",
+          "strict_success": false,
+          "annotated_support_covered": false
+        },
+        {
+          "question_id": "controlled_c71dcd6f",
+          "task_kind": "composition",
+          "arm": "hybrid",
+          "original_answer": "site_d1a66c35",
+          "failure_class": "wrong_identifier",
+          "strict_success": false,
+          "annotated_support_covered": true
+        },
+        {
+          "question_id": "controlled_c71dcd6f",
+          "task_kind": "composition",
+          "arm": "entity_time",
+          "original_answer": "site_c602988f [E2]",
+          "failure_class": "strict_correct",
+          "strict_success": true,
+          "annotated_support_covered": true
+        },
+        {
+          "question_id": "controlled_c71dcd6f",
+          "task_kind": "composition",
+          "arm": "organized",
+          "original_answer": "site_c602988f [E2]",
+          "failure_class": "strict_correct",
+          "strict_success": true,
+          "annotated_support_covered": true
+        },
+        {
+          "question_id": "controlled_c71dcd6f",
+          "task_kind": "composition",
+          "arm": "program_support",
+          "original_answer": "site_c602988f [E2]",
+          "failure_class": "strict_correct",
+          "strict_success": true,
+          "annotated_support_covered": true
+        },
+        {
+          "question_id": "controlled_c71dcd6f",
+          "task_kind": "composition",
+          "arm": "without_prerequisite",
+          "original_answer": "site_c602988f [E1]",
+          "failure_class": "strict_correct",
+          "strict_success": true,
+          "annotated_support_covered": false
+        },
+        {
+          "question_id": "controlled_7fc7f8c2",
+          "task_kind": "procedure",
+          "arm": "empty",
+          "original_answer": "I do not have enough evidence",
+          "failure_class": "no_identifier",
+          "strict_success": false,
+          "annotated_support_covered": false
+        },
+        {
+          "question_id": "controlled_7fc7f8c2",
+          "task_kind": "procedure",
+          "arm": "hybrid",
+          "original_answer": "mode_dde2a75c[E1]",
+          "failure_class": "strict_correct",
+          "strict_success": true,
+          "annotated_support_covered": true
+        },
+        {
+          "question_id": "controlled_7fc7f8c2",
+          "task_kind": "procedure",
+          "arm": "entity_time",
+          "original_answer": "mode_dde2a75c [E2]",
+          "failure_class": "strict_correct",
+          "strict_success": true,
+          "annotated_support_covered": true
+        },
+        {
+          "question_id": "controlled_7fc7f8c2",
+          "task_kind": "procedure",
+          "arm": "organized",
+          "original_answer": "mode_dde2a75c [E2]",
+          "failure_class": "strict_correct",
+          "strict_success": true,
+          "annotated_support_covered": true
+        },
+        {
+          "question_id": "controlled_7fc7f8c2",
+          "task_kind": "procedure",
+          "arm": "program_support",
+          "original_answer": "mode_dde2a75c [E2]",
+          "failure_class": "strict_correct",
+          "strict_success": true,
+          "annotated_support_covered": true
+        },
+        {
+          "question_id": "controlled_7fc7f8c2",
+          "task_kind": "procedure",
+          "arm": "without_prerequisite",
+          "original_answer": "mode_dde2a75c [E1]",
+          "failure_class": "strict_correct",
+          "strict_success": true,
+          "annotated_support_covered": false
+        },
+        {
+          "question_id": "controlled_7fadc16e",
+          "task_kind": "new_fact",
+          "arm": "empty",
+          "original_answer": "I do not have enough evidence.",
+          "failure_class": "explicit_abstention",
+          "strict_success": false,
+          "annotated_support_covered": false
+        },
+        {
+          "question_id": "controlled_7fadc16e",
+          "task_kind": "new_fact",
+          "arm": "hybrid",
+          "original_answer": "site_d1459715 [E2]",
+          "failure_class": "wrong_identifier",
+          "strict_success": false,
+          "annotated_support_covered": true
+        },
+        {
+          "question_id": "controlled_7fadc16e",
+          "task_kind": "new_fact",
+          "arm": "entity_time",
+          "original_answer": "site_cbdf1716 [E1]",
+          "failure_class": "strict_correct",
+          "strict_success": true,
+          "annotated_support_covered": true
+        },
+        {
+          "question_id": "controlled_7fadc16e",
+          "task_kind": "new_fact",
+          "arm": "organized",
+          "original_answer": "site_cbdf1716 [E1]",
+          "failure_class": "strict_correct",
+          "strict_success": true,
+          "annotated_support_covered": true
+        },
+        {
+          "question_id": "controlled_7fadc16e",
+          "task_kind": "new_fact",
+          "arm": "program_support",
+          "original_answer": "site_cbdf1716 [E1]",
+          "failure_class": "strict_correct",
+          "strict_success": true,
+          "annotated_support_covered": true
+        },
+        {
+          "question_id": "controlled_7fadc16e",
+          "task_kind": "new_fact",
+          "arm": "without_prerequisite",
+          "original_answer": "I do not have enough evidence.",
+          "failure_class": "explicit_abstention",
+          "strict_success": false,
+          "annotated_support_covered": false
+        },
+        {
+          "question_id": "controlled_f0609607",
+          "task_kind": "correction",
+          "arm": "empty",
+          "original_answer": "I do not have enough evidence.",
+          "failure_class": "explicit_abstention",
+          "strict_success": false,
+          "annotated_support_covered": false
+        },
+        {
+          "question_id": "controlled_f0609607",
+          "task_kind": "correction",
+          "arm": "hybrid",
+          "original_answer": "site_639dab67 [E1]",
+          "failure_class": "strict_correct",
+          "strict_success": true,
+          "annotated_support_covered": true
+        },
+        {
+          "question_id": "controlled_f0609607",
+          "task_kind": "correction",
+          "arm": "entity_time",
+          "original_answer": "site_639dab67 [E1]",
+          "failure_class": "strict_correct",
+          "strict_success": true,
+          "annotated_support_covered": true
+        },
+        {
+          "question_id": "controlled_f0609607",
+          "task_kind": "correction",
+          "arm": "organized",
+          "original_answer": "site_639dab67 [E1]",
+          "failure_class": "strict_correct",
+          "strict_success": true,
+          "annotated_support_covered": true
+        },
+        {
+          "question_id": "controlled_f0609607",
+          "task_kind": "correction",
+          "arm": "program_support",
+          "original_answer": "site_639dab67 [E1]",
+          "failure_class": "strict_correct",
+          "strict_success": true,
+          "annotated_support_covered": true
+        },
+        {
+          "question_id": "controlled_f0609607",
+          "task_kind": "correction",
+          "arm": "without_prerequisite",
+          "original_answer": "I do not have enough evidence.",
+          "failure_class": "explicit_abstention",
+          "strict_success": false,
+          "annotated_support_covered": false
+        },
+        {
+          "question_id": "controlled_bcb9165b",
+          "task_kind": "composition",
+          "arm": "empty",
+          "original_answer": "I do not have enough evidence",
+          "failure_class": "no_identifier",
+          "strict_success": false,
+          "annotated_support_covered": false
+        },
+        {
+          "question_id": "controlled_bcb9165b",
+          "task_kind": "composition",
+          "arm": "hybrid",
+          "original_answer": "site_184291ff [E2]",
+          "failure_class": "wrong_identifier",
+          "strict_success": false,
+          "annotated_support_covered": true
+        },
+        {
+          "question_id": "controlled_bcb9165b",
+          "task_kind": "composition",
+          "arm": "entity_time",
+          "original_answer": "site_efb770b0 [E2]",
+          "failure_class": "strict_correct",
+          "strict_success": true,
+          "annotated_support_covered": true
+        },
+        {
+          "question_id": "controlled_bcb9165b",
+          "task_kind": "composition",
+          "arm": "organized",
+          "original_answer": "site_efb770b0 [E2]",
+          "failure_class": "strict_correct",
+          "strict_success": true,
+          "annotated_support_covered": true
+        },
+        {
+          "question_id": "controlled_bcb9165b",
+          "task_kind": "composition",
+          "arm": "program_support",
+          "original_answer": "site_efb770b0 [E2]",
+          "failure_class": "strict_correct",
+          "strict_success": true,
+          "annotated_support_covered": true
+        },
+        {
+          "question_id": "controlled_bcb9165b",
+          "task_kind": "composition",
+          "arm": "without_prerequisite",
+          "original_answer": "site_efb770b0 [E1]",
+          "failure_class": "strict_correct",
+          "strict_success": true,
+          "annotated_support_covered": false
+        },
+        {
+          "question_id": "controlled_52a0bb15",
+          "task_kind": "procedure",
+          "arm": "empty",
+          "original_answer": "I do not have enough evidence",
+          "failure_class": "no_identifier",
+          "strict_success": false,
+          "annotated_support_covered": false
+        },
+        {
+          "question_id": "controlled_52a0bb15",
+          "task_kind": "procedure",
+          "arm": "hybrid",
+          "original_answer": "mode_cf75c59e[E1]",
+          "failure_class": "strict_correct",
+          "strict_success": true,
+          "annotated_support_covered": true
+        },
+        {
+          "question_id": "controlled_52a0bb15",
+          "task_kind": "procedure",
+          "arm": "entity_time",
+          "original_answer": "mode_cf75c59e [E2]",
+          "failure_class": "strict_correct",
+          "strict_success": true,
+          "annotated_support_covered": true
+        },
+        {
+          "question_id": "controlled_52a0bb15",
+          "task_kind": "procedure",
+          "arm": "organized",
+          "original_answer": "mode_cf75c59e [E2]",
+          "failure_class": "strict_correct",
+          "strict_success": true,
+          "annotated_support_covered": true
+        },
+        {
+          "question_id": "controlled_52a0bb15",
+          "task_kind": "procedure",
+          "arm": "program_support",
+          "original_answer": "mode_cf75c59e [E2]",
+          "failure_class": "strict_correct",
+          "strict_success": true,
+          "annotated_support_covered": true
+        },
+        {
+          "question_id": "controlled_52a0bb15",
+          "task_kind": "procedure",
+          "arm": "without_prerequisite",
+          "original_answer": "mode_cf75c59e [E1]",
+          "failure_class": "strict_correct",
+          "strict_success": true,
+          "annotated_support_covered": false
+        }
+      ]
+    },
+    "smol-1.7b": {
+      "generation_commit": "59f9eadd5cc919359079e04442f7343838a60057",
+      "planned": 48,
+      "by_arm": {
+        "empty": {
+          "explicit_abstention": 8
+        },
+        "hybrid": {
+          "explicit_abstention": 7,
+          "strict_correct": 1
+        },
+        "entity_time": {
+          "explicit_abstention": 6,
+          "strict_correct": 2
+        },
+        "organized": {
+          "explicit_abstention": 5,
+          "strict_correct": 3
+        },
+        "program_support": {
+          "explicit_abstention": 5,
+          "strict_correct": 3
+        },
+        "without_prerequisite": {
+          "explicit_abstention": 6,
+          "strict_correct": 2
+        }
+      },
+      "cases": [
+        {
+          "question_id": "controlled_faedc8b9",
+          "task_kind": "new_fact",
+          "arm": "empty",
+          "original_answer": "I do not have enough evidence.",
+          "failure_class": "explicit_abstention",
+          "strict_success": false,
+          "annotated_support_covered": false
+        },
+        {
+          "question_id": "controlled_faedc8b9",
+          "task_kind": "new_fact",
+          "arm": "hybrid",
+          "original_answer": "I do not have enough evidence.",
+          "failure_class": "explicit_abstention",
+          "strict_success": false,
+          "annotated_support_covered": true
+        },
+        {
+          "question_id": "controlled_faedc8b9",
+          "task_kind": "new_fact",
+          "arm": "entity_time",
+          "original_answer": "I do not have enough evidence.",
+          "failure_class": "explicit_abstention",
+          "strict_success": false,
+          "annotated_support_covered": true
+        },
+        {
+          "question_id": "controlled_faedc8b9",
+          "task_kind": "new_fact",
+          "arm": "organized",
+          "original_answer": "I do not have enough evidence.",
+          "failure_class": "explicit_abstention",
+          "strict_success": false,
+          "annotated_support_covered": true
+        },
+        {
+          "question_id": "controlled_faedc8b9",
+          "task_kind": "new_fact",
+          "arm": "program_support",
+          "original_answer": "I do not have enough evidence.",
+          "failure_class": "explicit_abstention",
+          "strict_success": false,
+          "annotated_support_covered": true
+        },
+        {
+          "question_id": "controlled_faedc8b9",
+          "task_kind": "new_fact",
+          "arm": "without_prerequisite",
+          "original_answer": "I do not have enough evidence.",
+          "failure_class": "explicit_abstention",
+          "strict_success": false,
+          "annotated_support_covered": false
+        },
+        {
+          "question_id": "controlled_cbfd4ba5",
+          "task_kind": "correction",
+          "arm": "empty",
+          "original_answer": "I do not have enough evidence.",
+          "failure_class": "explicit_abstention",
+          "strict_success": false,
+          "annotated_support_covered": false
+        },
+        {
+          "question_id": "controlled_cbfd4ba5",
+          "task_kind": "correction",
+          "arm": "hybrid",
+          "original_answer": "I do not have enough evidence.",
+          "failure_class": "explicit_abstention",
+          "strict_success": false,
+          "annotated_support_covered": true
+        },
+        {
+          "question_id": "controlled_cbfd4ba5",
+          "task_kind": "correction",
+          "arm": "entity_time",
+          "original_answer": "I do not have enough evidence.",
+          "failure_class": "explicit_abstention",
+          "strict_success": false,
+          "annotated_support_covered": true
+        },
+        {
+          "question_id": "controlled_cbfd4ba5",
+          "task_kind": "correction",
+          "arm": "organized",
+          "original_answer": "site_2749e2c9",
+          "failure_class": "strict_correct",
+          "strict_success": true,
+          "annotated_support_covered": true
+        },
+        {
+          "question_id": "controlled_cbfd4ba5",
+          "task_kind": "correction",
+          "arm": "program_support",
+          "original_answer": "site_2749e2c9",
+          "failure_class": "strict_correct",
+          "strict_success": true,
+          "annotated_support_covered": true
+        },
+        {
+          "question_id": "controlled_cbfd4ba5",
+          "task_kind": "correction",
+          "arm": "without_prerequisite",
+          "original_answer": "I do not have enough evidence.",
+          "failure_class": "explicit_abstention",
+          "strict_success": false,
+          "annotated_support_covered": false
+        },
+        {
+          "question_id": "controlled_c71dcd6f",
+          "task_kind": "composition",
+          "arm": "empty",
+          "original_answer": "I do not have enough evidence.",
+          "failure_class": "explicit_abstention",
+          "strict_success": false,
+          "annotated_support_covered": false
+        },
+        {
+          "question_id": "controlled_c71dcd6f",
+          "task_kind": "composition",
+          "arm": "hybrid",
+          "original_answer": "I do not have enough evidence.",
+          "failure_class": "explicit_abstention",
+          "strict_success": false,
+          "annotated_support_covered": true
+        },
+        {
+          "question_id": "controlled_c71dcd6f",
+          "task_kind": "composition",
+          "arm": "entity_time",
+          "original_answer": "I do not have enough evidence.",
+          "failure_class": "explicit_abstention",
+          "strict_success": false,
+          "annotated_support_covered": true
+        },
+        {
+          "question_id": "controlled_c71dcd6f",
+          "task_kind": "composition",
+          "arm": "organized",
+          "original_answer": "I do not have enough evidence.",
+          "failure_class": "explicit_abstention",
+          "strict_success": false,
+          "annotated_support_covered": true
+        },
+        {
+          "question_id": "controlled_c71dcd6f",
+          "task_kind": "composition",
+          "arm": "program_support",
+          "original_answer": "I do not have enough evidence.",
+          "failure_class": "explicit_abstention",
+          "strict_success": false,
+          "annotated_support_covered": true
+        },
+        {
+          "question_id": "controlled_c71dcd6f",
+          "task_kind": "composition",
+          "arm": "without_prerequisite",
+          "original_answer": "I do not have enough evidence.",
+          "failure_class": "explicit_abstention",
+          "strict_success": false,
+          "annotated_support_covered": false
+        },
+        {
+          "question_id": "controlled_7fc7f8c2",
+          "task_kind": "procedure",
+          "arm": "empty",
+          "original_answer": "I do not have enough evidence.",
+          "failure_class": "explicit_abstention",
+          "strict_success": false,
+          "annotated_support_covered": false
+        },
+        {
+          "question_id": "controlled_7fc7f8c2",
+          "task_kind": "procedure",
+          "arm": "hybrid",
+          "original_answer": "I do not have enough evidence.",
+          "failure_class": "explicit_abstention",
+          "strict_success": false,
+          "annotated_support_covered": true
+        },
+        {
+          "question_id": "controlled_7fc7f8c2",
+          "task_kind": "procedure",
+          "arm": "entity_time",
+          "original_answer": "mode_dde2a75c",
+          "failure_class": "strict_correct",
+          "strict_success": true,
+          "annotated_support_covered": true
+        },
+        {
+          "question_id": "controlled_7fc7f8c2",
+          "task_kind": "procedure",
+          "arm": "organized",
+          "original_answer": "mode_dde2a75c",
+          "failure_class": "strict_correct",
+          "strict_success": true,
+          "annotated_support_covered": true
+        },
+        {
+          "question_id": "controlled_7fc7f8c2",
+          "task_kind": "procedure",
+          "arm": "program_support",
+          "original_answer": "mode_dde2a75c",
+          "failure_class": "strict_correct",
+          "strict_success": true,
+          "annotated_support_covered": true
+        },
+        {
+          "question_id": "controlled_7fc7f8c2",
+          "task_kind": "procedure",
+          "arm": "without_prerequisite",
+          "original_answer": "mode_dde2a75c",
+          "failure_class": "strict_correct",
+          "strict_success": true,
+          "annotated_support_covered": false
+        },
+        {
+          "question_id": "controlled_7fadc16e",
+          "task_kind": "new_fact",
+          "arm": "empty",
+          "original_answer": "I do not have enough evidence.",
+          "failure_class": "explicit_abstention",
+          "strict_success": false,
+          "annotated_support_covered": false
+        },
+        {
+          "question_id": "controlled_7fadc16e",
+          "task_kind": "new_fact",
+          "arm": "hybrid",
+          "original_answer": "I do not have enough evidence.",
+          "failure_class": "explicit_abstention",
+          "strict_success": false,
+          "annotated_support_covered": true
+        },
+        {
+          "question_id": "controlled_7fadc16e",
+          "task_kind": "new_fact",
+          "arm": "entity_time",
+          "original_answer": "I do not have enough evidence.",
+          "failure_class": "explicit_abstention",
+          "strict_success": false,
+          "annotated_support_covered": true
+        },
+        {
+          "question_id": "controlled_7fadc16e",
+          "task_kind": "new_fact",
+          "arm": "organized",
+          "original_answer": "I do not have enough evidence.",
+          "failure_class": "explicit_abstention",
+          "strict_success": false,
+          "annotated_support_covered": true
+        },
+        {
+          "question_id": "controlled_7fadc16e",
+          "task_kind": "new_fact",
+          "arm": "program_support",
+          "original_answer": "I do not have enough evidence.",
+          "failure_class": "explicit_abstention",
+          "strict_success": false,
+          "annotated_support_covered": true
+        },
+        {
+          "question_id": "controlled_7fadc16e",
+          "task_kind": "new_fact",
+          "arm": "without_prerequisite",
+          "original_answer": "I do not have enough evidence.",
+          "failure_class": "explicit_abstention",
+          "strict_success": false,
+          "annotated_support_covered": false
+        },
+        {
+          "question_id": "controlled_f0609607",
+          "task_kind": "correction",
+          "arm": "empty",
+          "original_answer": "I do not have enough evidence.",
+          "failure_class": "explicit_abstention",
+          "strict_success": false,
+          "annotated_support_covered": false
+        },
+        {
+          "question_id": "controlled_f0609607",
+          "task_kind": "correction",
+          "arm": "hybrid",
+          "original_answer": "I do not have enough evidence.",
+          "failure_class": "explicit_abstention",
+          "strict_success": false,
+          "annotated_support_covered": true
+        },
+        {
+          "question_id": "controlled_f0609607",
+          "task_kind": "correction",
+          "arm": "entity_time",
+          "original_answer": "I do not have enough evidence.",
+          "failure_class": "explicit_abstention",
+          "strict_success": false,
+          "annotated_support_covered": true
+        },
+        {
+          "question_id": "controlled_f0609607",
+          "task_kind": "correction",
+          "arm": "organized",
+          "original_answer": "I do not have enough evidence.",
+          "failure_class": "explicit_abstention",
+          "strict_success": false,
+          "annotated_support_covered": true
+        },
+        {
+          "question_id": "controlled_f0609607",
+          "task_kind": "correction",
+          "arm": "program_support",
+          "original_answer": "I do not have enough evidence.",
+          "failure_class": "explicit_abstention",
+          "strict_success": false,
+          "annotated_support_covered": true
+        },
+        {
+          "question_id": "controlled_f0609607",
+          "task_kind": "correction",
+          "arm": "without_prerequisite",
+          "original_answer": "I do not have enough evidence.",
+          "failure_class": "explicit_abstention",
+          "strict_success": false,
+          "annotated_support_covered": false
+        },
+        {
+          "question_id": "controlled_bcb9165b",
+          "task_kind": "composition",
+          "arm": "empty",
+          "original_answer": "I do not have enough evidence.",
+          "failure_class": "explicit_abstention",
+          "strict_success": false,
+          "annotated_support_covered": false
+        },
+        {
+          "question_id": "controlled_bcb9165b",
+          "task_kind": "composition",
+          "arm": "hybrid",
+          "original_answer": "I do not have enough evidence.",
+          "failure_class": "explicit_abstention",
+          "strict_success": false,
+          "annotated_support_covered": true
+        },
+        {
+          "question_id": "controlled_bcb9165b",
+          "task_kind": "composition",
+          "arm": "entity_time",
+          "original_answer": "I do not have enough evidence.",
+          "failure_class": "explicit_abstention",
+          "strict_success": false,
+          "annotated_support_covered": true
+        },
+        {
+          "question_id": "controlled_bcb9165b",
+          "task_kind": "composition",
+          "arm": "organized",
+          "original_answer": "I do not have enough evidence.",
+          "failure_class": "explicit_abstention",
+          "strict_success": false,
+          "annotated_support_covered": true
+        },
+        {
+          "question_id": "controlled_bcb9165b",
+          "task_kind": "composition",
+          "arm": "program_support",
+          "original_answer": "I do not have enough evidence.",
+          "failure_class": "explicit_abstention",
+          "strict_success": false,
+          "annotated_support_covered": true
+        },
+        {
+          "question_id": "controlled_bcb9165b",
+          "task_kind": "composition",
+          "arm": "without_prerequisite",
+          "original_answer": "I do not have enough evidence.",
+          "failure_class": "explicit_abstention",
+          "strict_success": false,
+          "annotated_support_covered": false
+        },
+        {
+          "question_id": "controlled_52a0bb15",
+          "task_kind": "procedure",
+          "arm": "empty",
+          "original_answer": "I do not have enough evidence.",
+          "failure_class": "explicit_abstention",
+          "strict_success": false,
+          "annotated_support_covered": false
+        },
+        {
+          "question_id": "controlled_52a0bb15",
+          "task_kind": "procedure",
+          "arm": "hybrid",
+          "original_answer": "mode_cf75c59e",
+          "failure_class": "strict_correct",
+          "strict_success": true,
+          "annotated_support_covered": true
+        },
+        {
+          "question_id": "controlled_52a0bb15",
+          "task_kind": "procedure",
+          "arm": "entity_time",
+          "original_answer": "mode_cf75c59e",
+          "failure_class": "strict_correct",
+          "strict_success": true,
+          "annotated_support_covered": true
+        },
+        {
+          "question_id": "controlled_52a0bb15",
+          "task_kind": "procedure",
+          "arm": "organized",
+          "original_answer": "mode_cf75c59e",
+          "failure_class": "strict_correct",
+          "strict_success": true,
+          "annotated_support_covered": true
+        },
+        {
+          "question_id": "controlled_52a0bb15",
+          "task_kind": "procedure",
+          "arm": "program_support",
+          "original_answer": "mode_cf75c59e",
+          "failure_class": "strict_correct",
+          "strict_success": true,
+          "annotated_support_covered": true
+        },
+        {
+          "question_id": "controlled_52a0bb15",
+          "task_kind": "procedure",
+          "arm": "without_prerequisite",
+          "original_answer": "mode_cf75c59e",
+          "failure_class": "strict_correct",
+          "strict_success": true,
+          "annotated_support_covered": false
+        }
+      ]
+    }
+  }
+}

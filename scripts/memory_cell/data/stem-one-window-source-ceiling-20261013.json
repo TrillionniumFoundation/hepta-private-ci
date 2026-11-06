@@ -1,0 +1,32 @@
+{
+  "schema": "hepta.stem-native-transfer-one-window-observed.v1",
+  "corpus": {
+    "kind": "longmemeval",
+    "sha256": "d6f21ea9d60a0d56f34a05b609c79c88a451d2ae03597821ea3d5a9678c3a442"
+  },
+  "experiments": [
+    {
+      "source_commit": "e9c8f9c9cfc8df8887290db707598897cbc26ede",
+      "zip_sha256": "3e09533c535f6b847f9ec58d4f56055d3a2c6adb2eee68705873584a72aca909",
+      "sha256_member_count": 95
+    },
+    {
+      "source_commit": "306c2c8dc745b22f4dc137fdfec5e83158189964",
+      "zip_sha256": "2f15aa0a6c4900b2cf19cc03051f2727c58c9c04c1d993eda6486e019d0d0014",
+      "sha256_member_count": 89
+    }
+  ],
+  "original_registered_transfer_questions": 8,
+  "answerable_questions": 7,
+  "native_unanswerable_questions": 1,
+  "answerable_with_multiple_annotated_support_sessions": 4,
+  "answerable_with_selected_annotated_source": 6,
+  "selected_annotated_source_but_multi_session_annotation": 4,
+  "chosen_window_contains_exact_target_answer_literal": 0,
+  "original_frozen_reader_completed_calls": 8,
+  "literal_absence_does_not_prove_semantic_insufficiency": true,
+  "all_annotated_support_sessions_not_proven_jointly_necessary": true,
+  "native_source_labels_not_independent_window_entailment": true,
+  "underlying_model_was_not_rerun": true,
+  "production_accepted": false
+}

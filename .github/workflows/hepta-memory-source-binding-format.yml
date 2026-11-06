@@ -1,0 +1,60 @@
+name: MemoryCell temporary exact source-binding formatter
+on:
+  push:
+    branches:
+      - "codex/memory-cell-evidence-20261008"
+    paths:
+      - ".github/workflows/hepta-memory-source-binding-format.yml"
+permissions:
+  contents: read
+jobs:
+  inspected-source-format:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci'
+    runs-on: ubuntu-latest
+    timeout-minutes: 16
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Exact Python AST-preserving format and restricted-format branch
+        run: |
+          set -euo pipefail
+          python3 -m pip install ruff==0.15.13
+          python3 - <<'PY'
+          import ast,json
+          from pathlib import Path
+          names=[
+            'scripts/memory_cell/source_binding_margin.py',
+            'scripts/memory_cell/test_source_binding_margin.py',
+            'scripts/memory_cell/test_source_binding_writer.py',
+            'scripts/memory_cell/experience_memory.py',
+            'scripts/memory_cell/experience_write_trial.py',
+          ]
+          Path('/tmp/binding-ast.json').write_text(json.dumps({n:ast.dump(ast.parse(Path(n).read_text())) for n in names}))
+          PY
+          ruff format scripts/memory_cell/source_binding_margin.py scripts/memory_cell/test_source_binding_margin.py scripts/memory_cell/test_source_binding_writer.py scripts/memory_cell/experience_memory.py scripts/memory_cell/experience_write_trial.py
+          python3 - <<'PY'
+          import ast,json,subprocess
+          from pathlib import Path
+          old=json.loads(Path('/tmp/binding-ast.json').read_text())
+          files=set(subprocess.check_output(['git','diff','--name-only'],text=True).splitlines())
+          if files-set(old): raise ValueError('out-of-scope formatting edits')
+          for name, previous in old.items():
+              if ast.dump(ast.parse(Path(name).read_text())) != previous:
+                  raise ValueError('formatter changed executable training code')
+          PY
+          git diff --check
+          git diff -- scripts/memory_cell/source_binding_margin.py scripts/memory_cell/test_source_binding_margin.py scripts/memory_cell/test_source_binding_writer.py scripts/memory_cell/experience_memory.py scripts/memory_cell/experience_write_trial.py > /tmp/source-binding-format.diff
+          echo 'BEGIN_EXACT_SOURCE_BINDING_FORMAT_DIFF'
+          cat /tmp/source-binding-format.diff
+          echo 'END_EXACT_SOURCE_BINDING_FORMAT_DIFF'
+          test -s /tmp/source-binding-format.diff
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-source-binding-exact-format-diff
+          path: /tmp/source-binding-format.diff
+          if-no-files-found: error

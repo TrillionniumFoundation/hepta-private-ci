@@ -1,0 +1,174 @@
+name: MemoryCell pinned Qwen2 source loss equivalence
+on:
+  push:
+    branches:
+      - codex/memory-cell-evidence-20261008
+    paths:
+      - scripts/memory_cell/source_pretrained_projection_receipt.py
+      - .github/workflows/hepta-memory-pretrained-projection.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: memory-source-pretrained-parity-${{ github.sha }}
+  cancel-in-progress: false
+jobs:
+  repository-format:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: ./.github/actions/setup-ci
+      - name: Require unchanged repository-wide format gate
+        env:
+          BASE: 78fdb0cf8537e3a84fc6e0a849707559c80881e8
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/memory-parity-format
+          python3 -m pip install uv==0.8.22
+          git fetch --no-tags --depth=1 origin "$BASE"
+          just fmt --check --base "$BASE" 2>&1 | tee /tmp/memory-parity-format/format.log
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-pretrained-projection-format
+          path: /tmp/memory-parity-format
+          if-no-files-found: warn
+  qwen2-peft-contracts:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      PYTHONPATH: scripts/memory_cell
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: ./.github/actions/setup-ci
+      - name: Install exact pinned training environment
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/memory-parity
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11669174727/zip > /tmp/memory-parity/input.zip
+          python3 - <<'PY'
+          import hashlib, zipfile
+          from pathlib import Path
+          raw = Path('/tmp/memory-parity/input.zip').read_bytes()
+          assert 0 < len(raw) < 64 * 1024 * 1024
+          assert hashlib.sha256(raw).hexdigest() == '23e9d44b8d2dbe756c7c33031e18853c83326458a37925d4d368881145bf142b'
+          with zipfile.ZipFile('/tmp/memory-parity/input.zip') as z:
+              value = z.read('environment.txt')
+              assert len(value) < 65536
+              Path('/tmp/memory-parity/environment.lock').write_bytes(value)
+          PY
+          python3 -m venv /tmp/memory-parity/venv
+          /tmp/memory-parity/venv/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          /tmp/memory-parity/venv/bin/pip install -r /tmp/memory-parity/environment.lock
+          /tmp/memory-parity/venv/bin/pip freeze > /tmp/memory-parity/environment.actual
+          diff -u /tmp/memory-parity/environment.lock /tmp/memory-parity/environment.actual
+      - name: Execute actual Transformers Qwen2 and PEFT autograd contracts
+        run: |
+          set -euo pipefail
+          /tmp/memory-parity/venv/bin/python -m unittest -v test_source_completion_qwen test_source_completion_loss test_source_write_schedule test_experience_memory 2>&1 | tee /tmp/memory-parity/qwen2-peft-contracts.log
+          /tmp/memory-parity/venv/bin/python -m unittest discover -s scripts/memory_cell -p 'test_*.py' 2>&1 | tee /tmp/memory-parity/full-regression.log
+      - name: Preserve exact checked source and failures
+        if: always()
+        run: |
+          set -euo pipefail
+          cp scripts/memory_cell/source_completion_loss.py scripts/memory_cell/source_pretrained_projection_receipt.py scripts/memory_cell/test_source_completion_qwen.py /tmp/memory-parity/
+          git rev-parse HEAD > /tmp/memory-parity/tested-commit.txt
+          rm -rf /tmp/memory-parity/venv /tmp/memory-parity/input.zip
+          (cd /tmp/memory-parity && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-source-parity-contracts
+          path: /tmp/memory-parity
+          if-no-files-found: error
+  pinned-pretrained-step:
+    needs: qwen2-peft-contracts
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    env:
+      PYTHONPATH: scripts/memory_cell
+      HF_HUB_DISABLE_IMPLICIT_TOKEN: "1"
+      HF_HUB_OFFLINE: "1"
+      TRANSFORMERS_OFFLINE: "1"
+      OMP_NUM_THREADS: "2"
+      MKL_NUM_THREADS: "2"
+      HEPTA_MEMORY_TESTED_COMMIT: ${{ github.sha }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Pin original corpus and exact Python dependencies
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/memory-pretrained
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11669174727/zip > /tmp/memory-pretrained/input.zip
+          python3 - <<'PY'
+          import hashlib, stat, zipfile
+          from pathlib import Path, PurePosixPath
+          root = Path('/tmp/memory-pretrained')
+          raw = (root / 'input.zip').read_bytes()
+          assert 0 < len(raw) < 64 * 1024 * 1024
+          assert hashlib.sha256(raw).hexdigest() == '23e9d44b8d2dbe756c7c33031e18853c83326458a37925d4d368881145bf142b'
+          with zipfile.ZipFile(root / 'input.zip') as z:
+              seen = set()
+              assert len(z.infolist()) <= 512
+              assert sum(i.file_size for i in z.infolist()) <= 64 * 1024 * 1024
+              for item in z.infolist():
+                  name = PurePosixPath(item.filename)
+                  assert not name.is_absolute() and '..' not in name.parts
+                  assert not stat.S_ISLNK(item.external_attr >> 16)
+                  assert str(name) not in seen
+                  seen.add(str(name))
+                  if not item.is_dir():
+                      dest = root / name
+                      dest.parent.mkdir(parents=True, exist_ok=True)
+                      dest.write_bytes(z.read(item))
+          PY
+          python3 -m venv /tmp/memory-pretrained/venv
+          /tmp/memory-pretrained/venv/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          /tmp/memory-pretrained/venv/bin/pip install -r /tmp/memory-pretrained/environment.txt
+          /tmp/memory-pretrained/venv/bin/pip freeze > /tmp/memory-pretrained/environment.actual
+          diff -u /tmp/memory-pretrained/environment.txt /tmp/memory-pretrained/environment.actual
+      - name: Verify pinned Qwen2.5-3B publisher bytes
+        env:
+          HF_HUB_OFFLINE: "0"
+          TRANSFORMERS_OFFLINE: "0"
+        run: |
+          set -euo pipefail
+          /tmp/memory-pretrained/venv/bin/python scripts/memory_cell/reader_reference.py stage qwen-3b /tmp/memory-pretrained/model 2>&1 | tee /tmp/memory-pretrained/staging.log
+      - name: Compare actual full and selected projections on original source only
+        run: |
+          set -euo pipefail
+          /usr/bin/time -v -o /tmp/memory-pretrained/resources.log /tmp/memory-pretrained/venv/bin/python scripts/memory_cell/source_pretrained_projection_receipt.py /tmp/memory-pretrained/observations/sources.json /tmp/memory-pretrained/model /tmp/memory-pretrained/pretrained-parity.json --source-sha 35756b456f75718cc422d8678ec7ae97790ca36ced625501d24884698fddab24 --stage-sha "$(sha256sum /tmp/memory-pretrained/model/stage.json | cut -d ' ' -f1)" --source-commit "$HEPTA_MEMORY_TESTED_COMMIT" 2>&1 | tee /tmp/memory-pretrained/parity.log
+      - name: Preserve observed results but never export model weights
+        if: always()
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/memory-pretrained/evidence
+          for name in staging.log parity.log resources.log pretrained-parity.json environment.actual; do
+            if [ -f "/tmp/memory-pretrained/$name" ]; then
+              cp "/tmp/memory-pretrained/$name" /tmp/memory-pretrained/evidence/
+            fi
+          done
+          cp scripts/memory_cell/source_pretrained_projection_receipt.py scripts/memory_cell/source_completion_loss.py /tmp/memory-pretrained/evidence/
+          git rev-parse HEAD > /tmp/memory-pretrained/evidence/tested-commit.txt
+          (cd /tmp/memory-pretrained/evidence && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-pinned-pretrained-projection
+          path: /tmp/memory-pretrained/evidence
+          if-no-files-found: error

@@ -1,0 +1,175 @@
+name: MemoryCell one-shot repository format repair
+on:
+  push:
+    branches:
+      - "codex/memory-cell-evidence-20261008"
+    paths:
+      - ".github/workflows/hepta-memory-format-repair-once.yml"
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: hepta-memory-once-format
+  cancel-in-progress: false
+jobs:
+  format-validate-and-forward:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci' && github.ref == 'refs/heads/codex/memory-cell-evidence-20261008'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: write
+      actions: read
+    env:
+      BASE: 78fdb0cf8537e3a84fc6e0a849707559c80881e8
+      PYTHONPATH: scripts/memory_cell
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: true
+      - uses: ./.github/actions/setup-ci
+      # uv >=0.9.17 is required for scripts/pyproject.toml's 7-day cooldown.
+      # Keep the current scripts/uv.lock frozen; never re-resolve for formatting.
+      - name: Format only changed MemoryCell Python without changing syntax
+        run: |
+          set -euo pipefail
+          python3 -m pip install --user uv==0.12.13
+          export PATH="$HOME/.local/bin:$PATH"
+          git fetch --no-tags --depth=1 origin "$BASE"
+          mkdir -p /tmp/format-repair
+          python3 - <<'PY'
+          import ast, json, subprocess
+          from pathlib import Path
+          base = "78fdb0cf8537e3a84fc6e0a849707559c80881e8"
+          paths = subprocess.check_output(
+              ["git", "diff", "--name-only", base, "HEAD", "--", "scripts/memory_cell"],
+              text=True,
+          ).splitlines()
+          paths = sorted(p for p in paths if p.endswith(".py") and Path(p).is_file() and not Path(p).is_symlink())
+          # This PR spans more than 400 Python files. Bound the exact
+          # diff to 1024, while retaining every AST, fmt and test gate.
+          if not paths or len(paths) > 1024:
+              raise ValueError(f"invalid bounded formatter source census: {len(paths)}")
+          snapshot = {p: ast.dump(ast.parse(Path(p).read_text(encoding="utf-8")))
+                      for p in paths}
+          Path("/tmp/format-repair/ast-before.json").write_text(json.dumps(snapshot, sort_keys=True))
+          Path("/tmp/format-repair/paths.json").write_text(json.dumps(paths))
+          subprocess.run(["uv", "run", "--frozen", "--project", "scripts",
+                          "ruff", "format", *paths], check=True)
+          for p, original in snapshot.items():
+              after = ast.dump(ast.parse(Path(p).read_text(encoding="utf-8")))
+              if after != original:
+                  raise ValueError(f"formatter changed executable AST: {p}")
+          changed = subprocess.check_output(["git", "diff", "--name-only"], text=True).splitlines()
+          if not changed or set(changed) - set(paths):
+              raise ValueError("unexpected change or no Python format fix")
+          Path("/tmp/format-repair/changed.json").write_text(json.dumps(changed, sort_keys=True))
+          PY
+          just fmt --check --base "$BASE" 2>&1 | tee /tmp/format-repair/format.log
+      # Pinned native-artifact tests run in the dedicated strict-audit workflow.
+      # Generic model suites report unavailable external audit data explicitly.
+      - name: Execute the complete pinned Python regression suite
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11669174727/zip > /tmp/format-repair/input.zip
+          python3 - <<'PY'
+          import hashlib, zipfile
+          from pathlib import Path
+          data = Path("/tmp/format-repair/input.zip").read_bytes()
+          if len(data) > 64 * 1024 * 1024 or hashlib.sha256(data).hexdigest() != "23e9d44b8d2dbe756c7c33031e18853c83326458a37925d4d368881145bf142b":
+              raise ValueError("locked original dataset archive changed")
+          with zipfile.ZipFile("/tmp/format-repair/input.zip") as archive:
+              env = archive.read("environment.txt")
+              if not env or len(env) > 65536:
+                  raise ValueError("invalid locked environment")
+              Path("/tmp/format-repair/requirements.txt").write_bytes(env)
+          PY
+          python3 -m venv /tmp/memory-format-py
+          /tmp/memory-format-py/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          /tmp/memory-format-py/bin/pip install -r /tmp/format-repair/requirements.txt
+          /tmp/memory-format-py/bin/pip freeze > /tmp/format-repair/freeze.txt
+          diff -u /tmp/format-repair/requirements.txt /tmp/format-repair/freeze.txt
+          /tmp/memory-format-py/bin/python -m unittest discover -s scripts/memory_cell -p 'test_*.py' -v 2>&1 | tee /tmp/format-repair/tests.log
+      - name: Revalidate current head and publish only AST-preserving formatting
+        run: |
+          set -euo pipefail
+          export PATH="$HOME/.local/bin:$PATH"
+          branch=codex/memory-cell-evidence-20261008
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          for attempt in 1 2 3 4; do
+            echo "format publish attempt $attempt"
+            git fetch --no-tags origin "refs/heads/$branch"
+            remote_sha="$(git rev-parse FETCH_HEAD)"
+            git reset --hard "$remote_sha"
+            printf '%s\n' "$remote_sha" > /tmp/format-repair/revalidated-head.txt
+            python3 - <<'PY'
+          import ast, json, subprocess
+          from pathlib import Path
+          base = "78fdb0cf8537e3a84fc6e0a849707559c80881e8"
+          paths = subprocess.check_output(
+              ["git", "diff", "--name-only", base, "HEAD", "--", "scripts/memory_cell"],
+              text=True,
+          ).splitlines()
+          paths = sorted(p for p in paths if p.endswith(".py") and Path(p).is_file() and not Path(p).is_symlink())
+          if not paths or len(paths) > 1024:
+              raise ValueError(f"invalid bounded current source census: {len(paths)}")
+          before = {p: ast.dump(ast.parse(Path(p).read_text(encoding="utf-8"))) for p in paths}
+          subprocess.run(["uv", "run", "--frozen", "--project", "scripts",
+                          "ruff", "format", *paths], check=True)
+          for p, expected in before.items():
+              if ast.dump(ast.parse(Path(p).read_text(encoding="utf-8"))) != expected:
+                  raise ValueError(f"formatter changed executable AST: {p}")
+          changed = subprocess.check_output(["git", "diff", "--name-only"], text=True).splitlines()
+          if set(changed) - set(paths):
+              raise ValueError("unexpected non-Python modifications")
+          Path("/tmp/format-repair/changed.json").write_text(json.dumps(sorted(changed)))
+          Path("/tmp/format-repair/revalidated-source-count.json").write_text(
+              json.dumps({"changed": len(changed), "census": len(paths)}))
+          PY
+            git diff --check
+            just fmt --check --base "$BASE" 2>&1 | tee /tmp/format-repair/revalidated-format.log
+            /tmp/memory-format-py/bin/python -m unittest discover -s scripts/memory_cell -p 'test_*.py' -v 2>&1 | tee /tmp/format-repair/revalidated-tests.log
+            git add -u -- scripts/memory_cell
+            python3 - <<'PY'
+          import json, subprocess
+          from pathlib import Path
+          expected = set(json.loads(Path("/tmp/format-repair/changed.json").read_text()))
+          actual = set(subprocess.check_output(
+              ["git", "diff", "--cached", "--name-only"], text=True
+          ).splitlines())
+          if actual != expected:
+              raise ValueError("staged changes differ from AST-verified Python formatting")
+          PY
+            if git diff --cached --quiet; then
+              echo "Latest branch already matches the verified formatter" | tee /tmp/format-repair/publish-result.txt
+              exit 0
+            fi
+            git commit -m "style(memory-cell): revalidated AST-equivalent Python formatting"
+            git rev-parse HEAD > /tmp/format-repair/committed-sha.txt
+            if git push origin "HEAD:refs/heads/$branch"; then
+              echo "Published non-forced formatting against $remote_sha" | tee /tmp/format-repair/publish-result.txt
+              exit 0
+            fi
+            echo "Remote head advanced, revalidating the next exact head" >&2
+          done
+          echo "Unable to obtain a fast-forward lease after four fully revalidated attempts" >&2
+          exit 1
+      - name: Preserve formatter and test evidence
+        if: always()
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD > /tmp/format-repair/observed-head.txt
+          (cd /tmp/format-repair && find . -type f ! -name SHA256SUMS ! -name input.zip -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+          rm -f /tmp/format-repair/input.zip
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-format-ast-and-regressions
+          path: /tmp/format-repair
+          if-no-files-found: error
+# Source-only/LoCoMo/Stem AST-preserving one-shot repair requested 2026-10-13.
+# Recheck current 8a6ae1fb source: CI 38371025013 diagnosed 11 Ruff formatting files.
+# Do not change Python AST, skip pinned regressions, or push non-fast-forward.

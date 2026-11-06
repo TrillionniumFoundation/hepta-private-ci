@@ -1,0 +1,58 @@
+{
+  "schema": "hepta.memory.reader-format.preexecution-lock.v1",
+  "frozen_parent": "6ca91edbff69386e3f222fe9bf6f739465556a6c",
+  "date_utc": "2026-10-15",
+  "generating_code_sha256": {
+    "prompt_representation_probe.py": "84952869d55069d0830add604883750929efd22e1f93bcf34dbc01b40890bcd5",
+    "offline_smol_reader.py": "1c43e120fcb8c2510e9ce4ff7cfa1ab71ee00a21e4d076e47ae0f70eeac034d8"
+  },
+  "operator_reference_code_sha256": "7c6e0045f9f251ae6e865501e21d7d23d4638e6733bd2c02ba562f50f81f1be0",
+  "original_weights_sha256": "5af571cbf074e6d21a03528d2330792e532ca608f24ac70a143f6b369968ab8c",
+  "original_archive_sha256": "31c6f191ecf62095779f7c9a5dd6c5b2f89c6ae408fe9c26f74e017a2d62c47a",
+  "original_plan_sha256": "9840a25487af444914dca24c818d98ff798ebc1610ea8dfdd827187c31ad1897",
+  "question_ids": [
+    "controlled_faedc8b9",
+    "controlled_cbfd4ba5",
+    "controlled_c71dcd6f",
+    "controlled_7fc7f8c2",
+    "controlled_7fadc16e",
+    "controlled_f0609607",
+    "controlled_bcb9165b",
+    "controlled_52a0bb15"
+  ],
+  "styles": [
+    "verbatim",
+    "normalized"
+  ],
+  "arms": [
+    "empty",
+    "hybrid",
+    "organized",
+    "without_prerequisite"
+  ],
+  "reader_budget": {
+    "max_input_tokens": 2048,
+    "max_new_tokens": 64,
+    "do_sample": false,
+    "one_frozen_model": true
+  },
+  "expected_calls": 64,
+  "score_rules": "strict_identifier plus authored constrained program exit-code; report target identifier mentions and declared citation-chain separately",
+  "protocol": "reuse exact original ranked evidence sets; swap system prompt only once (common to both representations) and text projection only between styles; journal all raw responses before reading labels",
+  "observed_operator_control": {
+    "sampled_prefixes": 6,
+    "continuation_prefixes": 6,
+    "top1_agreements": 12,
+    "max_logit_error": 0.000039101,
+    "actual_hf_runtime_executed": false
+  },
+  "claims": {
+    "prior_test_exposure": true,
+    "independent_human_oracle": false,
+    "hf_tokenizer_parity": false,
+    "hf_runtime_parity": false,
+    "real_project_tasks": false,
+    "training_permitted": false,
+    "production_accepted": false
+  }
+}

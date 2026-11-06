@@ -1,0 +1,54 @@
+name: MemoryCell question-specific K-way and queue smoke
+on:
+  push:
+    branches: ["codex/memory-cell-evidence-20261008"]
+    paths:
+      - "scripts/memory_cell/source_candidate_kway.py"
+      - "scripts/memory_cell/test_source_candidate_kway.py"
+      - "scripts/memory_cell/source_binding_specificity.py"
+      - "scripts/memory_cell/test_source_binding_specificity.py"
+      - "scripts/memory_cell/test_memory_queue_concurrency.py"
+      - ".github/workflows/hepta-memory-factorial-receipt.yml"
+      - ".github/workflows/hepta-memory-reader-reference-receipt.yml"
+      - ".github/workflows/hepta-memory-preference-receipt.yml"
+      - ".github/workflows/hepta-memory-source-kway-smoke.yml"
+permissions:
+  contents: read
+concurrency:
+  group: memory-source-kway-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: false
+jobs:
+  source-only-regressions:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      PYTHONPATH: scripts/memory_cell
+      PYTHONDONTWRITEBYTECODE: "1"
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Verify exact original source and before-model contract tests
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/kway-queue
+          git rev-parse HEAD > /tmp/kway-queue/tested-commit.txt
+          git rev-parse HEAD^{tree} > /tmp/kway-queue/tested-tree.txt
+          python3 -m compileall -q scripts/memory_cell/source_candidate_kway.py scripts/memory_cell/test_source_candidate_kway.py scripts/memory_cell/source_binding_specificity.py scripts/memory_cell/test_source_binding_specificity.py scripts/memory_cell/test_memory_queue_concurrency.py
+          python3 -m unittest -v test_source_candidate_kway test_source_binding_specificity test_memory_queue_concurrency 2>&1 | tee /tmp/kway-queue/tests.log
+      - name: Retain source, complete logs and cryptographic census
+        if: always()
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/kway-queue/source
+          cp scripts/memory_cell/source_candidate_kway.py scripts/memory_cell/test_source_candidate_kway.py scripts/memory_cell/source_binding_specificity.py scripts/memory_cell/test_source_binding_specificity.py scripts/memory_cell/test_memory_queue_concurrency.py /tmp/kway-queue/source/
+          cp .github/workflows/hepta-memory-factorial-receipt.yml .github/workflows/hepta-memory-reader-reference-receipt.yml .github/workflows/hepta-memory-preference-receipt.yml .github/workflows/hepta-memory-source-kway-smoke.yml /tmp/kway-queue/source/
+          (cd /tmp/kway-queue && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-source-kway-queue-smoke
+          path: /tmp/kway-queue
+          if-no-files-found: error

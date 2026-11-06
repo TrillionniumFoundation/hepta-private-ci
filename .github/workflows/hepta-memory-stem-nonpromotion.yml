@@ -1,0 +1,152 @@
+name: MemoryCell pinned successful native nonpromotion gate
+on:
+  push:
+    branches: ["codex/memory-cell-evidence-20261008"]
+    paths:
+      - "scripts/memory_cell/stem_native_nonpromotion.py"
+      - "scripts/memory_cell/test_stem_native_nonpromotion.py"
+      - ".github/workflows/hepta-memory-stem-nonpromotion.yml"
+permissions:
+  contents: read
+  actions: read
+jobs:
+  audit-success-without-learning:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      PYTHONPATH: scripts/memory_cell
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Test exact source failure-closed acceptance
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/native-nonpromotion
+          git rev-parse HEAD > /tmp/native-nonpromotion/auditing-commit.txt
+          git rev-parse HEAD^{tree} > /tmp/native-nonpromotion/auditing-tree.txt
+          python3 -m unittest -v test_stem_native_nonpromotion 2>&1 | tee /tmp/native-nonpromotion/tests.log
+      - name: Retrieve immutable completed strict-native matrix
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11722775596/zip > /tmp/strict-native-current.zip
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11722640804/zip > /tmp/strict-native-prior.zip
+          printf '%s  %s\n' \
+            b4cf1918d9f00baa357eb386397c36f52aac54b333a0c1a629fa3389e7ae7135 /tmp/strict-native-current.zip \
+            0a1e21d6d7b5161dddde743f182b9c2820750b09f5f3384ed38a840ab704f228 /tmp/strict-native-prior.zip | sha256sum -c -
+      - name: Audit original 576 source/answer rows and reject scale-up
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          from stem_audit_archive import PinnedArchive, require
+          from stem_native_nonpromotion import audit_nonpromotion, audit_exact_paired_choices
+          archive = PinnedArchive(
+              Path('/tmp/strict-native-current.zip'),
+              'b4cf1918d9f00baa357eb386397c36f52aac54b333a0c1a629fa3389e7ae7135',
+          )
+          try:
+              require(
+                  archive.read('tested-commit.txt').decode().strip() ==
+                  '565f41fcd1ab6c036c6ddecc3e64b7f9033e1cbf',
+                  'strict-native successful generation commit drift',
+              )
+              require(
+                  archive.read('tested-tree.txt').decode().strip() ==
+                  'e748067a7ecf0f7fb91df6ef7dde915bd44b5882',
+                  'strict-native source tree drift',
+              )
+              report = archive.json('comparison/report.json')
+              receipt = audit_nonpromotion(report)
+              receipt['generating_commit'] = '565f41fcd1ab6c036c6ddecc3e64b7f9033e1cbf'
+              receipt['archive_sha256'] = archive.sha256
+              receipt['verified_members'] = archive.manifest_entries
+              raw = archive.jsonl('comparison/policy-predictions.jsonl')
+              paired = audit_exact_paired_choices(
+                  archive.json('comparison/preregistered.json'),
+                  raw,
+                  archive.json('comparison/scored-policy-attempts.json'),
+                  report,
+                  archive.json('comparison/within-head-train-fit.json'),
+                  archive.json('comparison/post-policy-native-source-ceiling.json'),
+                  archive.json('comparison/heldout-effective-n.json'),
+              )
+              previous = PinnedArchive(
+                  Path('/tmp/strict-native-prior.zip'),
+                  '0a1e21d6d7b5161dddde743f182b9c2820750b09f5f3384ed38a840ab704f228',
+              )
+              try:
+                  require(
+                      previous.read('tested-commit.txt').decode().strip() ==
+                      '06f081daa780dafa4bed0ff20def0999702b299f',
+                      'strict-native prior generating commit drift',
+                  )
+                  earlier = previous.jsonl('comparison/policy-predictions.jsonl')
+                  def index(records):
+                      result = {}
+                      for row in records:
+                          key = row['stage'],row['phase'],row['question_id'],row['arm']
+                          require(key not in result, 'duplicate strict replay key')
+                          result[key] = row
+                      return result
+                  a,b = index(raw),index(earlier)
+                  require(len(a)==len(b)==576 and set(a)==set(b),
+                          'strict-native matched 576 replay census missing')
+                  selections,answers,model_input,model_output=0,0,0,0
+                  for key in a:
+                      one,two=a[key],b[key]
+                      require(
+                          one['status']==two['status']=='succeeded'
+                          and one['pool_digest']==two['pool_digest']
+                          and one['family']==two['family']
+                          and one['receipt']['generator_identity']==two['receipt']['generator_identity']
+                          and one['receipt']['generator_profile']==two['receipt']['generator_profile'],
+                          'strict-source replay changed cohort/Reader identity',
+                      )
+                      selections+=one['selected']==two['selected']
+                      answers+=one['answer']==two['answer']
+                      model_input+=one['receipt']['input_ids_digest']==two['receipt']['input_ids_digest']
+                      model_output+=one['receipt']['generated_ids_digest']==two['receipt']['generated_ids_digest']
+                  require(all(v==576 for v in (selections,answers,model_input,model_output)),
+                          'strict-native replay model choice or answer drift')
+                  paired['strict_independent_execution_replay'] = dict(
+                      original_source=previous.read('tested-commit.txt').decode().strip(),
+                      current_source=archive.read('tested-commit.txt').decode().strip(),
+                      matched_original_policy_rows=576,
+                      same_source_top1=selections,
+                      same_reader_answer_bytes=answers,
+                      same_reader_input_token_hash=model_input,
+                      same_reader_output_token_hash=model_output,
+                      additional_independent_task_questions=0,
+                      research_only=True,
+                  )
+                  paired['prior_zip_sha256']=previous.sha256
+                  paired['prior_verified_members']=previous.manifest_entries
+              finally:
+                  previous.close()
+              for name, doc in (('receipt.json',receipt), ('exact-paired.json',paired)):
+                  path=Path('/tmp/native-nonpromotion') / name
+                  with path.open('x') as output:
+                      json.dump(doc, output, sort_keys=True, indent=2, allow_nan=False)
+                  print(json.dumps(doc, sort_keys=True))
+          finally:
+              archive.close()
+          PY
+      - name: Retain exact source and all audit receipts
+        if: always()
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/native-nonpromotion/source
+          cp scripts/memory_cell/stem_native_nonpromotion.py scripts/memory_cell/test_stem_native_nonpromotion.py scripts/memory_cell/stem_audit_archive.py /tmp/native-nonpromotion/source/
+          cp .github/workflows/hepta-memory-stem-nonpromotion.yml /tmp/native-nonpromotion/source/
+          (cd /tmp/native-nonpromotion && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-stem-strict-native-nonpromotion
+          path: /tmp/native-nonpromotion
+          if-no-files-found: error

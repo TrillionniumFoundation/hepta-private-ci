@@ -1,0 +1,82 @@
+name: MemoryCell pinned frozen-index depth audit
+on:
+  push:
+    branches:
+      - "codex/memory-cell-evidence-20261008"
+    paths:
+      - "scripts/memory_cell/stem_candidate_depth_audit.py"
+      - "scripts/memory_cell/test_stem_candidate_depth_audit.py"
+      - ".github/workflows/hepta-memory-stem-frontier-depth.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  original-source-depth:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      PYTHONPATH: scripts/memory_cell
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Test immutable-archive and frontier contracts before model-free replay
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/frontier-depth
+          python3 -m unittest discover -s scripts/memory_cell -p test_stem_candidate_depth_audit.py -v 2>&1 | tee /tmp/frontier-depth/tests.log
+      - name: Download original exact-source archives without expanding permissions
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/frontier-depth
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11700818304/zip > /tmp/frontier-depth/grid.zip
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11700958394/zip > /tmp/frontier-depth/matrix.zip
+          echo '227453015e4535cff2f7f4df77fa374c0a027eb0ba9873d6625699ddbb96738c  /tmp/frontier-depth/grid.zip' | sha256sum -c -
+          echo '3fe286f84d7f719ebe9ee300d3772aec1842dafb5c97ab9dfdb792eb4daaf43c  /tmp/frontier-depth/matrix.zip' | sha256sum -c -
+      - name: Replay frozen source depths without any model generation
+        run: |
+          set -euo pipefail
+          python3 scripts/memory_cell/stem_candidate_depth_audit.py \
+            /tmp/frontier-depth/grid.zip /tmp/frontier-depth/matrix.zip \
+            /tmp/frontier-depth/report.json | tee /tmp/frontier-depth/replay.log
+          # Exact source/format receipts are hashed in the always() step below.
+          rm /tmp/frontier-depth/grid.zip /tmp/frontier-depth/matrix.zip
+      # Archive replay is read-only. Keep the native result even when a
+      # *separate* exact-source format gate fails. This is not a CI waiver:
+      # a formatting failure still fails the entire workflow run.
+      - name: Enforce pinned Ruff formatting on exact audited source
+        run: |
+          set -euo pipefail
+          python3 -m pip install --disable-pip-version-check ruff==0.15.8
+          ruff format --diff \
+            scripts/memory_cell/stem_candidate_depth_audit.py \
+            scripts/memory_cell/test_stem_candidate_depth_audit.py \
+            2>&1 | tee /tmp/frontier-depth/format.patch || true
+          ruff format --check \
+            scripts/memory_cell/stem_candidate_depth_audit.py \
+            scripts/memory_cell/test_stem_candidate_depth_audit.py
+      - name: Retain exact consumer commit, test/format logs and audit hashes
+        if: always()
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/frontier-depth
+          git rev-parse HEAD > /tmp/frontier-depth/consumer-commit.txt
+          (cd /tmp/frontier-depth && \
+            find . -maxdepth 1 -type f ! -name SHA256SUMS \
+              ! -name grid.zip ! -name matrix.zip -print0 | sort -z | \
+            xargs -0 -r sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-native-depth-posthoc
+          path: |
+            /tmp/frontier-depth/report.json
+            /tmp/frontier-depth/replay.log
+            /tmp/frontier-depth/tests.log
+            /tmp/frontier-depth/format.patch
+            /tmp/frontier-depth/consumer-commit.txt
+            /tmp/frontier-depth/SHA256SUMS
+          if-no-files-found: warn
