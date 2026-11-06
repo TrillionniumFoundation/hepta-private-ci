@@ -1,0 +1,68 @@
+{
+  "native_tested_remote_commit": "6a938bea7ba0fc3dd234930c765729c1a9172a65",
+  "native_tested_local_equivalent": "2c399e2d707288685139dee5c134cfb4171c13f0",
+  "source_objects": {
+    "codex-rs": {
+      "tested_git_object": "6f417ba4c1cffb4ff10e3646d2da49214d7f21d9",
+      "delivered_git_object": "6f417ba4c1cffb4ff10e3646d2da49214d7f21d9"
+    },
+    "justfile": {
+      "tested_git_object": "a215a76cf407ace9715bca39c20497014e7dd4dc",
+      "delivered_git_object": "a215a76cf407ace9715bca39c20497014e7dd4dc"
+    },
+    "scripts/hepta_cell_test_helpers.py": {
+      "tested_git_object": "2d6badc75fd322982b756c4bf6f2bc5181086806",
+      "delivered_git_object": "2d6badc75fd322982b756c4bf6f2bc5181086806"
+    },
+    "scripts/run-nextest.py": {
+      "tested_git_object": "1ed63abe84267b320cbfb0123a70aac5507f4595",
+      "delivered_git_object": "1ed63abe84267b320cbfb0123a70aac5507f4595"
+    },
+    "scripts/format.py": {
+      "tested_git_object": "d4eabe70b68605933240e9129245f7f4cccbde5d",
+      "delivered_git_object": "d4eabe70b68605933240e9129245f7f4cccbde5d"
+    }
+  },
+  "source_objects_equal": true,
+  "scope": "Runtime source and test/formatter launchers remain identical after evidence-only commits. Entire final repository tree differs because it includes these receipts.",
+  "memory_original": {
+    "loop_common.py": {
+      "sha256": "60ef013907e9b2b4e2659f8e2508cbc4f45747dedd7326717076b5655621d6ec",
+      "archived_execution_equals_delivered": true
+    },
+    "loop_tests.py": {
+      "sha256": "e4680fd5530fd1064afe04aa7ab0d8dc8c3dbd7777ba4a2d1867074a8b35e738",
+      "archived_execution_equals_delivered": true
+    },
+    "loop_worker.py": {
+      "sha256": "4a1139c7fa29f18bd576d64b5ec1ef2aa50578357985796e13c76e032c4ff926",
+      "archived_execution_equals_delivered": true
+    },
+    "measure_invocation.py": {
+      "sha256": "13cec405b7e815e32cc414e03c9c1a48923357f5aaa022356a3b6dab4a39b14d",
+      "archived_execution_equals_delivered": true
+    },
+    "prepare_run.py": {
+      "sha256": "7a6c86dd351b3d08acb55bf7d7bb4af40d8389eadd76e8079359ab5062ca4fe4",
+      "archived_execution_equals_delivered": true
+    },
+    "run_loop.py": {
+      "sha256": "5287a33c98c3d93e03e990d7e775a4dbc1671e7a876d764d71e983e2e802053a",
+      "archived_execution_equals_delivered": true
+    }
+  },
+  "decision_replay": {
+    "measure.py": {
+      "sha256": "ce46b93eeccc8cbf7aead1f27829c546d2cd73c6a6f496756130fec6859519ca",
+      "archived_execution_equals_delivered": true
+    },
+    "quality.py": {
+      "sha256": "1a841aad103d158acef19d70b1593ff5e6ab44d79cb87dd96058558224bbd68a",
+      "archived_execution_equals_delivered": true
+    },
+    "run_replay.py": {
+      "sha256": "fea83f75882d66334a68287100c55dd64c1f386f85980cb256d38ca0f0940d8c",
+      "archived_execution_equals_delivered": true
+    }
+  }
+}

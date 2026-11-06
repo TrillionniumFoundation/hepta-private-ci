@@ -1,10 +1,9 @@
-//! Actual synthetic Joint math through the normal generation service, existing
-//! control file owner, Fleet identity, Cell journal and external anchor witness.
-//! The fixed artificial tensors do not qualify any trained checkpoint/adoption.
+//! Synthetic and recovered historical Joint math through the normal generation
+//! service, existing control owner, Fleet identity, journal and external witness.
+//! Lifecycle correctness does not qualify natural-task quality or adoption.
 
 use std::fs;
 use std::path::Path;
-use std::path::PathBuf;
 use std::sync::Arc;
 use std::time::Duration;
 use std::time::Instant;
@@ -25,32 +24,59 @@ use crate::RuntimeTasks;
 use crate::neuron_generation_channel_v2;
 use crate::neuron_generation_service::spawn_neuron_generation_service;
 
+#[path = "neuron_generation_joint_cancel_tests.rs"]
+mod cancellation;
 #[path = "../../hepta-neuron/tests/support/joint_synthetic.rs"]
 mod synthetic;
+#[path = "../../hepta-neuron/tests/support/joint_trained.rs"]
+mod trained;
 
 type TestResult<T = ()> = Result<T, Box<dyn std::error::Error>>;
 type Clock = Arc<dyn Fn() -> u64 + Send + Sync>;
 
+#[derive(Clone, Copy)]
+enum ModelFixture {
+    Synthetic,
+    HistoricalTrained,
+}
+
+fn evidence_directory(prefix: &str) -> TestResult<tempfile::TempDir> {
+    let mut builder = tempfile::Builder::new();
+    builder.prefix(prefix);
+    Ok(match std::env::var_os("HEPTA_JOINT_TRAINED_EVIDENCE_DIR") {
+        Some(parent) => {
+            fs::create_dir_all(&parent)?;
+            builder.tempdir_in(parent)?
+        }
+        None => builder.tempdir()?,
+    })
+}
+
 fn install_model(
     fixture: &mut Fixture,
     clock: Clock,
+    model: ModelFixture,
 ) -> TestResult<(Arc<JointGenerationProcessWorkerV1>, synthetic::Assets)> {
-    let assets = synthetic::assets()?;
-    let executable = PathBuf::from(
-        std::env::var_os("CARGO_BIN_EXE_hepta-joint-propose")
-            .ok_or_else(|| std::io::Error::other("missing actual Joint compiler artifact"))?,
-    );
+    let (assets, source_digest) = match model {
+        ModelFixture::Synthetic => (
+            synthetic::assets()?,
+            Digest32::of_bytes(b"explicit-synthetic-joint-process-fixture").into_array(),
+        ),
+        ModelFixture::HistoricalTrained => (
+            trained::assets()?,
+            Digest32::of_bytes(trained::PROVENANCE.as_bytes()).into_array(),
+        ),
+    };
+    let executable = codex_utils_cargo_bin::cargo_bin("hepta-joint-propose")?;
     if !executable.is_absolute() {
         return Err(std::io::Error::other("Joint helper path must be absolute").into());
     }
     let executable_digest = Digest32::of_bytes(&fs::read(&executable)?).into_array();
     let weights_digest = Digest32::of_bytes(&assets.weights).into_array();
     let public_digest = Digest32::of_bytes(&assets.public).into_array();
-    let source_digest =
-        Digest32::of_bytes(b"explicit-synthetic-joint-process-fixture").into_array();
     let device_digest = JointGenerationProcessWorkerV1::observed_device_digest()?;
-    let weights = fixture.directory.path().join("synthetic-weights.hps");
-    let public = fixture.directory.path().join("synthetic-public.hps");
+    let weights = fixture.directory.path().join("joint-weights.hps");
+    let public = fixture.directory.path().join("joint-public.hps");
     fs::write(&weights, &assets.weights)?;
     fs::write(&public, &assets.public)?;
     let worker = Arc::new(JointGenerationProcessWorkerV1::open(
@@ -241,12 +267,22 @@ async fn deliver(
 #[tokio::test]
 async fn synthetic_joint_control_service_preserves_real_output_cost_and_owner_on_reopen()
 -> TestResult {
+    lifecycle(ModelFixture::Synthetic).await
+}
+
+#[tokio::test]
+async fn historical_trained_joint_control_service_preserves_real_output_cost_and_owner_on_reopen()
+-> TestResult {
+    lifecycle(ModelFixture::HistoricalTrained).await
+}
+
+async fn lifecycle(model: ModelFixture) -> TestResult {
     let mut fixture = Fixture::new().await;
     let epoch = Instant::now();
     // One real monotonic epoch is shared by owner, actor and process worker.
     let clock: Clock =
         Arc::new(move || u64::try_from(epoch.elapsed().as_micros()).unwrap_or(u64::MAX - 1) + 1);
-    let (worker, assets) = install_model(&mut fixture, Arc::clone(&clock))?;
+    let (worker, assets) = install_model(&mut fixture, Arc::clone(&clock), model)?;
     let public_digest = Digest32::of_bytes(&assets.public).into_array();
     let (handle, mut tasks) =
         start_service(&fixture, Arc::clone(&worker), Arc::clone(&clock)).await?;
@@ -329,10 +365,26 @@ async fn synthetic_joint_control_service_preserves_real_output_cost_and_owner_on
     assert_eq!(facts.cursors, synthetic::TOTAL_UNITS);
     assert!(facts.stopped);
     let decoded = synthetic::prefix(&snapshot.prefix)?;
-    assert_eq!(decoded.bytes[0], vec![128; 768]);
-    assert_eq!(decoded.bytes[1], vec![0; 2048]);
-    assert_eq!(decoded.bytes[2], vec![128; 3072]);
-    assert_eq!(decoded.bytes[3], b"action=0;sound=0\n");
+    match model {
+        ModelFixture::Synthetic => {
+            assert_eq!(decoded.bytes[0], vec![128; 768]);
+            assert_eq!(decoded.bytes[1], vec![0; 2048]);
+            assert_eq!(decoded.bytes[2], vec![128; 3072]);
+            assert_eq!(decoded.bytes[3], b"action=0;sound=0\n");
+        }
+        ModelFixture::HistoricalTrained => {
+            assert_eq!(decoded.bytes[0].len(), 768);
+            assert_eq!(decoded.bytes[1].len(), 2048);
+            assert_eq!(decoded.bytes[2].len(), 3072);
+            assert!(decoded.bytes[0].windows(2).any(|pair| pair[0] != pair[1]));
+            assert!(decoded.bytes[1].iter().any(|byte| *byte != 0));
+            assert!(decoded.bytes[2].windows(2).any(|pair| pair[0] != pair[1]));
+            let text = std::str::from_utf8(&decoded.bytes[3])?;
+            assert!(
+                text.starts_with("action=") && text.contains(";sound=") && text.ends_with('\n')
+            );
+        }
+    }
     assert!(!handle.drain().await?);
     assert!(fixture.state().neuron_generation_drain_blockers()? > 0);
     let cost = handle.task_cost().await?;
@@ -371,5 +423,53 @@ async fn synthetic_joint_control_service_preserves_real_output_cost_and_owner_on
     assert_eq!(journal.pending_output()?, None);
     assert_eq!(journal.task_cost()?, &final_cost);
     drop(open_control(&fixture.directory.path().join("joint-control.log")).await?);
+    if let ModelFixture::HistoricalTrained = model {
+        // Retention is independent of asset admission: this test always executes
+        // the trained model, including when no external evidence path is set.
+        let evidence = evidence_directory("joint-trained-agentd-")?;
+        fs::write(evidence.path().join("prefix.hgc"), &snapshot.prefix)?;
+        fs::write(evidence.path().join("state.hps"), &snapshot.state)?;
+        fs::write(evidence.path().join("control.log"), &original_control)?;
+        for (name, bytes) in ["image.rgb", "audio.s16le", "video.rgb", "text.txt"]
+            .into_iter()
+            .zip(&decoded.bytes)
+        {
+            fs::write(evidence.path().join(name), bytes)?;
+        }
+        let provenance: serde_json::Value = serde_json::from_str(trained::PROVENANCE)?;
+        let receipt = serde_json::json!({
+            "schema": "hepta.historical-trained-agentd-lifecycle.v1",
+            "provenance": provenance,
+            "source_digest": fixture.config.manifest.source_digest,
+            "runtime_digest": fixture.config.manifest.runtime_digest,
+            "device_digest": fixture.config.manifest.device_digest,
+            "manifest_digest": fixture.config.manifest.digest()?,
+            "state_sha256": Digest32::of_bytes(&snapshot.state).to_string(),
+            "prefix_sha256": Digest32::of_bytes(&snapshot.prefix).to_string(),
+            "control_sha256": Digest32::of_bytes(&original_control).to_string(),
+            "generation": snapshot.generation,
+            "writer_epoch": snapshot.writer_epoch,
+            "revision": snapshot.revision,
+            "receipts": [initialized, advanced, committed, stopped],
+            "final_cost": final_cost,
+            "delivered_bytes": sink.len(),
+            "reopen_snapshot_output_cost_exact": true,
+            "committed_retry_without_reexecution": true,
+            "consumer_ack_and_drain_complete": true,
+            "new_training_updates": 0,
+            "scope": "Ordinary Agentd service with historical trained weights and synthetic public input; Init, Shared, audio commit, Stop, ACK and reopen.",
+            "cancellation_evidence": "Separate historical_trained_joint_admission_cancel_retains_predecessor_cost_and_receipt_on_reopen test",
+            "not_covered": ["Process death during proposal", "Natural-task quality", "Adoption", "Optimizer resume", "CPU/energy and complete historical cost"]
+        });
+        fs::write(
+            evidence.path().join("LIFECYCLE.json"),
+            serde_json::to_vec_pretty(&receipt)?,
+        )?;
+        let retained = evidence.keep();
+        println!(
+            "historical trained Joint lifecycle evidence: {}",
+            retained.display()
+        );
+    }
     Ok(())
 }

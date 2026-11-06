@@ -187,6 +187,20 @@ impl<W: AnchorWitnessStore> CellGenerationJournalV2<W> {
         Ok(&self.state.snapshot)
     }
 
+    /// Project the current owner, including unresolved work and delivery, while
+    /// preserving its original manifest schemas and complete learning binding.
+    pub fn observe_inventory(
+        &self,
+    ) -> Result<crate::CellOwnerInventoryV1<'_>, CellGenerationErrorV2> {
+        self.require_healthy()?;
+        crate::CellOwnerInventoryV1::generation(
+            &self.config,
+            &self.state,
+            self.continuity_checkpoint()?,
+            self.state.reserved_records() * (MAX_FRAME as u64 + 36),
+        )
+    }
+
     /// Identify the exact healthy journal cut without adding persistent bytes.
     /// The header binds the frozen config and limits; the head binds every
     /// retained event, including cost, cancellation, drain and delivery ACKs.

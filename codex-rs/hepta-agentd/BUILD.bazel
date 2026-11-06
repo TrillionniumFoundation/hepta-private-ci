@@ -14,6 +14,22 @@ _UNIT_TEST_DEPENDENCIES = {
 _JOINT_TEST_FIXTURE = [
     "//codex-rs/hepta-neuron:tests/fixtures/joint-synthetic-v1.json",
     "//codex-rs/hepta-neuron:tests/support/joint_synthetic.rs",
+    "//codex-rs/hepta-neuron:tests/fixtures/joint-trained-public.hps",
+    "//codex-rs/hepta-neuron:tests/fixtures/joint-trained-v1.json",
+    "//codex-rs/hepta-neuron:tests/fixtures/joint-trained-weights-000.bin",
+    "//codex-rs/hepta-neuron:tests/fixtures/joint-trained-weights-001.bin",
+    "//codex-rs/hepta-neuron:tests/fixtures/joint-trained-weights-002.bin",
+    "//codex-rs/hepta-neuron:tests/fixtures/joint-trained-weights-003.bin",
+    "//codex-rs/hepta-neuron:tests/fixtures/joint-trained-weights-004.bin",
+    "//codex-rs/hepta-neuron:tests/fixtures/joint-trained-weights-005.bin",
+    "//codex-rs/hepta-neuron:tests/fixtures/joint-trained-weights-006.bin",
+    "//codex-rs/hepta-neuron:tests/fixtures/joint-trained-weights-007.bin",
+    "//codex-rs/hepta-neuron:tests/fixtures/joint-trained-weights-008.bin",
+    "//codex-rs/hepta-neuron:tests/fixtures/joint-trained-weights-009.bin",
+    "//codex-rs/hepta-neuron:tests/fixtures/joint-trained-weights-010.bin",
+    "//codex-rs/hepta-neuron:tests/fixtures/joint-trained-weights-011.bin",
+    "//codex-rs/hepta-neuron:tests/fixtures/joint-trained-weights-012.bin",
+    "//codex-rs/hepta-neuron:tests/support/joint_trained.rs",
 ]
 
 codex_rust_crate(

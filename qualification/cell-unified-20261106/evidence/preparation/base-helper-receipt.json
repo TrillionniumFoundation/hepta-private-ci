@@ -1,0 +1,28 @@
+{
+  "schema": "hepta.cell-learning.build.v1",
+  "source": "7391c3dc3b0a496b62be4c6cf2769d2ae0c9db75",
+  "source_tree": "1b3a22ee08028175433d20b87263bd1dc1c4eca4",
+  "profile": "existing cell-framework CI dev/test debug=0",
+  "started_utc": "2026-11-06T07:18:25Z",
+  "env": {
+    "CARGO_TARGET_DIR": "/home/qq/work/hepta-cell-learning-050e-20261106/target",
+    "CARGO_PROFILE_TEST_DEBUG": "0",
+    "CARGO_PROFILE_DEV_DEBUG": "0",
+    "CARGO_BUILD_JOBS": "2",
+    "CARGO_INCREMENTAL": "0",
+    "RUSTUP_TOOLCHAIN": "1.96.0"
+  },
+  "command": [
+    "/usr/bin/python3",
+    "/home/qq/work/hepta-cell-learning-050e-20261106/source/scripts/hepta_cell_test_helpers.py",
+    "--package",
+    "codex-hepta-infer-worker-host",
+    "--output-dir",
+    "/home/qq/work/hepta-cell-learning-050e-20261106/records/base-helpers"
+  ],
+  "exit_code": 0,
+  "wall_seconds": 285.82127297192346,
+  "disk_free_bytes": 55271170048,
+  "source_after": "7391c3dc3b0a496b62be4c6cf2769d2ae0c9db75",
+  "source_status_after": ""
+}

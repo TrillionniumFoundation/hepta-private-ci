@@ -1,0 +1,54 @@
+[
+  {
+    "operation_id": "unique_stable",
+    "policy": "Keep the first occurrence of each string.",
+    "revision": 1,
+    "schema": "hepta.engineering.feedback.v1",
+    "source_kind": "authored engineering instruction; not production feedback",
+    "supersedes_revision": null,
+    "training_queries": [
+      {
+        "id": "ebb092923520203a5667aed056be0552986e752bc1f083102b90a8738a95029c",
+        "text": "Apply the Cedar intake rule to these readings."
+      },
+      {
+        "id": "baf567b666ee8dcb195eb40d798f6dd96e332bd5b025f914cae1273273bb8c53",
+        "text": "Process this batch using Cedar's intake policy."
+      },
+      {
+        "id": "f9e6e2bf7185ebd4c4fca67628ca3f1d5aca603345b46da16bd801835071d39e",
+        "text": "Use the current Cedar intake convention for this list."
+      },
+      {
+        "id": "a7df49f4ca141d5f472d75d14c52439bc90e653b4f8d2608d5e616d75180c75f",
+        "text": "Run Cedar intake processing on these entries."
+      }
+    ]
+  },
+  {
+    "operation_id": "sort_numeric",
+    "policy": "Correct revision 1: order text numbers numerically and preserve duplicates.",
+    "revision": 2,
+    "schema": "hepta.engineering.feedback.v1",
+    "source_kind": "authored engineering instruction; not production feedback",
+    "supersedes_revision": 1,
+    "training_queries": [
+      {
+        "id": "ebb092923520203a5667aed056be0552986e752bc1f083102b90a8738a95029c",
+        "text": "Apply the Cedar intake rule to these readings."
+      },
+      {
+        "id": "baf567b666ee8dcb195eb40d798f6dd96e332bd5b025f914cae1273273bb8c53",
+        "text": "Process this batch using Cedar's intake policy."
+      },
+      {
+        "id": "f9e6e2bf7185ebd4c4fca67628ca3f1d5aca603345b46da16bd801835071d39e",
+        "text": "Use the current Cedar intake convention for this list."
+      },
+      {
+        "id": "a7df49f4ca141d5f472d75d14c52439bc90e653b4f8d2608d5e616d75180c75f",
+        "text": "Run Cedar intake processing on these entries."
+      }
+    ]
+  }
+]
