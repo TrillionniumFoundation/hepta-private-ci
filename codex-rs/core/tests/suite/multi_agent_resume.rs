@@ -1,3 +1,4 @@
+use anyhow::Context;
 use anyhow::Result;
 use codex_core::TurnInputRequest;
 use codex_core::config::AgentRoleConfig;
@@ -285,7 +286,11 @@ async fn cold_root_resume_restores_agent_identity_and_role_on_followup() -> Resu
         }
         sleep(Duration::from_millis(10)).await;
     };
-    let worker_thread = initial.thread_manager.get_thread(worker_thread_id).await?;
+    let worker_thread = initial
+        .thread_manager
+        .get_thread(worker_thread_id)
+        .await
+        .with_context(|| format!("initial worker lookup after model request: {worker_thread_id}"))?;
     wait_for_event(worker_thread.as_ref(), |event| {
         matches!(event, EventMsg::TurnComplete(_))
     })
@@ -357,7 +362,11 @@ async fn cold_root_resume_restores_agent_identity_and_role_on_followup() -> Resu
         .into_iter()
         .find(|id| ![root_thread_id, worker_thread_id].contains(id) && &json!(id) != nested_id)
         .ok_or_else(|| anyhow::anyhow!("spawned sibling should be registered"))?;
-    let sibling_thread = initial.thread_manager.get_thread(sibling_thread_id).await?;
+    let sibling_thread = initial
+        .thread_manager
+        .get_thread(sibling_thread_id)
+        .await
+        .with_context(|| format!("initial sibling lookup after spawn turn: {sibling_thread_id}"))?;
     wait_for_event(sibling_thread.as_ref(), |event| {
         matches!(event, EventMsg::TurnComplete(_))
     })
@@ -421,7 +430,10 @@ async fn cold_root_resume_restores_agent_identity_and_role_on_followup() -> Resu
     let mut resume_builder = test_codex().with_config(move |config| {
         configure_multi_agent_v2_with_role(config, &resumed_model_provider_base_url);
     });
-    let resumed = resume_builder.restart(&server, &initial).await?;
+    let resumed = resume_builder
+        .restart(&server, &initial)
+        .await
+        .with_context(|| format!("cold root restart from rollout: {root_thread_id}"))?;
     drop(initial);
     assert_eq!(
         resumed.thread_manager.list_thread_ids().await,
