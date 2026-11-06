@@ -311,6 +311,10 @@ mod neuron_generation_process_bootstrap;
 mod neuron_generation_runtime;
 mod neuron_generation_service;
 #[cfg(unix)]
+mod neuron_generation_update_live;
+#[cfg(unix)]
+mod neuron_generation_update_bootstrap;
+#[cfg(unix)]
 mod neuron_generation_current;
 #[cfg(unix)]
 mod neuron_generation_update_selection;
@@ -655,6 +659,14 @@ pub use neuron_generation_process_bootstrap::neuron_generation_process_identity_
 pub use neuron_generation_runtime::NeuronGenerationRuntimeBootstrapV2;
 pub use neuron_generation_runtime::NeuronGenerationRuntimeHandleV2;
 pub use neuron_generation_runtime::neuron_generation_channel_v2;
+#[cfg(unix)]
+pub use neuron_generation_update_live::AgentdGenerationUpdateAuthoritiesV1;
+#[cfg(unix)]
+pub use neuron_generation_update_bootstrap::AgentdGenerationUpdateRuntimeOptionsV1;
+#[cfg(unix)]
+pub use neuron_generation_update_bootstrap::AgentdGenerationUpdateRuntimeV1;
+#[cfg(unix)]
+pub use neuron_generation_update_bootstrap::ReadyAgentdGenerationUpdateV1;
 #[cfg(unix)]
 pub use neuron_generation_current::NeuronGenerationCurrentOwnerV1;
 #[cfg(unix)]
