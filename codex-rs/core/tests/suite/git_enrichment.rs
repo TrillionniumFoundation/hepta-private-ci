@@ -132,7 +132,11 @@ async fn startup_prewarm_skips_git_enrichment_and_user_turn_observes_fresh_state
     assert!(turn_metadata(&prewarm)?.get("workspaces").is_none());
 
     std::fs::write(repo.path().join("untracked.txt"), "dirty\n")?;
-    test.submit_turn("inspect the workspace").await?;
+    test.submit_turn_with_permission_profile(
+        "inspect the workspace",
+        test.config.permissions.permission_profile().clone(),
+    )
+    .await?;
     let turn = server
         .single_connection()
         .get(2)
