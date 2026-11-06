@@ -1,0 +1,28 @@
+{
+  "returncode": 0,
+  "supervisor_timeout": false,
+  "command": [
+    "/home/qq/work/hepta-r1-4835-20261105-w0-r1/venv/bin/python",
+    "-m",
+    "experiments.multimodal_output_portfolio.joint_hepta_20261029.v3.decision_audit.sd_train",
+    "fit",
+    "--sd",
+    "/home/qq/work/hepta-r1-4835-20261105-w0-r1/models/sd",
+    "--plan",
+    "/home/qq/work/hepta-joint-r2-e5ae-20261106/DEV_PLAN.json",
+    "--output",
+    "/home/qq/work/hepta-joint-r2-e5ae-20261106/fit"
+  ],
+  "started_utc": "2026-11-06T07:48:17.154734+00:00",
+  "finished_utc": "2026-11-06T07:48:27.736686+00:00",
+  "whole_child_wall_seconds": 10.581983571057208,
+  "whole_child_cpu_seconds": 11.459588,
+  "whole_child_peak_rss_bytes": 2846990336,
+  "supervisor_cpu_seconds": 0.008565855,
+  "child_block_input_operations": 2590368,
+  "child_block_output_operations": 624,
+  "io_bytes": null,
+  "energy_joules": null,
+  "tool_dispatch_and_transfer_cost": null,
+  "scope": "whole fit child plus separately measured supervisor; do not sum with inner fit envelope"
+}

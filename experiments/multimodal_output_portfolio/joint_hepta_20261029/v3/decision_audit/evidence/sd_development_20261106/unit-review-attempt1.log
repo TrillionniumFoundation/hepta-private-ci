@@ -1,0 +1,29 @@
+test_delta_and_optimizer_byte_tampering_is_rejected (experiments.multimodal_output_portfolio.joint_hepta_20261029.v3.decision_audit.test_sd_training.SdCheckpointTests.test_delta_and_optimizer_byte_tampering_is_rejected) ... ok
+test_frozen_after_record_mismatch_does_not_partially_mutate_model (experiments.multimodal_output_portfolio.joint_hepta_20261029.v3.decision_audit.test_sd_training.SdCheckpointTests.test_frozen_after_record_mismatch_does_not_partially_mutate_model) ... FAIL
+test_frozen_parameter_change_prevents_checkpoint_publication (experiments.multimodal_output_portfolio.joint_hepta_20261029.v3.decision_audit.test_sd_training.SdCheckpointTests.test_frozen_parameter_change_prevents_checkpoint_publication) ... ok
+test_incomplete_checkpoint_is_retained_and_not_loadable (experiments.multimodal_output_portfolio.joint_hepta_20261029.v3.decision_audit.test_sd_training.SdCheckpointTests.test_incomplete_checkpoint_is_retained_and_not_loadable) ... ok
+test_loaded_base_tensor_change_is_rejected (experiments.multimodal_output_portfolio.joint_hepta_20261029.v3.decision_audit.test_sd_training.SdCheckpointTests.test_loaded_base_tensor_change_is_rejected) ... ok
+test_manifest_byte_tampering_is_rejected (experiments.multimodal_output_portfolio.joint_hepta_20261029.v3.decision_audit.test_sd_training.SdCheckpointTests.test_manifest_byte_tampering_is_rejected) ... ok
+test_nonfinite_candidate_and_momentum_cannot_be_published (experiments.multimodal_output_portfolio.joint_hepta_20261029.v3.decision_audit.test_sd_training.SdCheckpointTests.test_nonfinite_candidate_and_momentum_cannot_be_published) ... ok
+test_nonfinite_model_prediction_is_rejected (experiments.multimodal_output_portfolio.joint_hepta_20261029.v3.decision_audit.test_sd_training.SdCheckpointTests.test_nonfinite_model_prediction_is_rejected) ... ok
+test_only_allowed_parameters_get_gradients_and_updates (experiments.multimodal_output_portfolio.joint_hepta_20261029.v3.decision_audit.test_sd_training.SdCheckpointTests.test_only_allowed_parameters_get_gradients_and_updates) ... ok
+test_replay_requires_successful_bound_fit_receipt_before_model_load (experiments.multimodal_output_portfolio.joint_hepta_20261029.v3.decision_audit.test_sd_training.SdCheckpointTests.test_replay_requires_successful_bound_fit_receipt_before_model_load) ... ok
+test_restored_parameter_momentum_and_rng_continue_exactly (experiments.multimodal_output_portfolio.joint_hepta_20261029.v3.decision_audit.test_sd_training.SdCheckpointTests.test_restored_parameter_momentum_and_rng_continue_exactly) ... ok
+test_shape_mismatch_with_consistent_file_hash_is_rejected (experiments.multimodal_output_portfolio.joint_hepta_20261029.v3.decision_audit.test_sd_training.SdCheckpointTests.test_shape_mismatch_with_consistent_file_hash_is_rejected) ... ok
+test_wrong_external_digest_and_base_manifest_are_rejected (experiments.multimodal_output_portfolio.joint_hepta_20261029.v3.decision_audit.test_sd_training.SdCheckpointTests.test_wrong_external_digest_and_base_manifest_are_rejected) ... ok
+
+======================================================================
+FAIL: test_frozen_after_record_mismatch_does_not_partially_mutate_model (experiments.multimodal_output_portfolio.joint_hepta_20261029.v3.decision_audit.test_sd_training.SdCheckpointTests.test_frozen_after_record_mismatch_does_not_partially_mutate_model)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/e5ae6a941e52/r2-protocol/experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/decision_audit/test_sd_training.py", line 164, in test_frozen_after_record_mismatch_does_not_partially_mutate_model
+    self.assert_rejected_without_mutation(path, digest)
+  File "/workspace/scratch/e5ae6a941e52/r2-protocol/experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/decision_audit/test_sd_training.py", line 86, in assert_rejected_without_mutation
+    self.assertEqual(checkpoint.inventory(model), before)
+AssertionError: {'con[60 chars]6': '82e0ccc10d4cedf1d9e903409d018f65c8359cb48[438 chars]71'}} != {'con[60 chars]6': 'b098acc5b387cf4b1db1a3fb7f6b835138814fc7f[438 chars]71'}}
+Diff is 934 characters long. Set self.maxDiff to None to see it.
+
+----------------------------------------------------------------------
+Ran 13 tests in 1.012s
+
+FAILED (failures=1)

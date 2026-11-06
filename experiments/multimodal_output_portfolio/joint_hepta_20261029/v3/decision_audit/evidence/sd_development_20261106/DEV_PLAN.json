@@ -1,0 +1,27 @@
+{
+  "schema": "hepta.r2.sd-development-plan.v1",
+  "split": "development",
+  "confirmatory_fit": false,
+  "source_sha": "fdbbfdbe582b2de80077236c8f2f0ab8fcbe76c3",
+  "source_files": {
+    "sd_train.py": "f1fc5cdfa4a12020ffa0d6bb856ac2737439848b814b6188b9ee9ce17cad3109",
+    "sd_checkpoint.py": "37db9057d4989f2e60762dae53520272fcb64ed1c06b2d88a919faa5967cf524",
+    "local_models.py": "70a119d2ac4297c31fe86b5c299b30b1f43bb128e3a72f06087a32162f3965e1",
+    "acquire_models.py": "ec9d7dbc943ab029e51174fbf6065be4bd29ac23fb912d1aa3f14c065ad0e1cf"
+  },
+  "image_path": "/home/qq/work/hepta-r1-4835-20261105-w0-r1/models/task/input.jpg",
+  "image_sha256": "8b21ba78250f852ca5990063866b1ace6432521d0251bde7f8de783b22c99a6d",
+  "prompt": "A bee on a flower.",
+  "trainable": [
+    "conv_out.bias",
+    "conv_out.weight"
+  ],
+  "resolution": 256,
+  "momentum": 0.9,
+  "steps": 1,
+  "threads": 2,
+  "seed": 17,
+  "learning_rate": 0.0001,
+  "cpu_limit_seconds": 900,
+  "wall_limit_seconds": 1200
+}
