@@ -28,6 +28,7 @@ SOURCE_PATHS = [
     "codex-rs/hepta-agentd/src/runtime.rs",
     "codex-rs/hepta-agentd/src/neuron_generation_process_bootstrap.rs",
     "codex-rs/hepta-agentd/src/neuron_v13_generation_bootstrap.rs",
+    "codex-rs/hepta-agentd/src/neuron_v13_generation_owners.rs",
     "codex-rs/hepta-agentd/src/neuron_v13_generation_bootstrap_tests.rs",
     "codex-rs/hepta-agentd/src/neuron_v13_generation_bootstrap_test_support.rs",
     "codex-rs/hepta-neuron/BUILD.bazel",
