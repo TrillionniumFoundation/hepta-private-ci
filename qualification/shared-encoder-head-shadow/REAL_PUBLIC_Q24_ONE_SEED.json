@@ -1,0 +1,67 @@
+{
+  "schema": "hepta.real-shared-feature-cell-shadow.v1",
+  "authority": "DENY_ALL",
+  "production_promotion": false,
+  "actual_encoder_reexecuted": false,
+  "source_actions_run": 38902031341,
+  "source_artifact_id": 12068510329,
+  "source_zip_sha256": "dfbef09702004bae8ce111f360584b6c9c641cc1b4475b71ef2b6d68af95a77a",
+  "source_seal_sha256": "180955ec4e74cb985851f7c1ba5ae295b91fc3b5ea2188379e8a958e557e7cc2",
+  "model_revision": "8949b909ec900327062f0ebf497f51aef5e6f0c8",
+  "dataset_revision": "57ec275d8078af65b7731c2a98be812d844a6d6b",
+  "source_attested_encoder_forwards": 96,
+  "training_n": 64,
+  "unscored_official_test_n": 32,
+  "future_window_or_ndu_verified": false,
+  "group_independence_verified": false,
+  "fold_training_size": 48,
+  "fold_validation_size": 16,
+  "fold_specific_pca_uses_validation_features": false,
+  "model_costs": {
+    "linear": {
+      "trainable_parameters": 132,
+      "fp32_weight_payload_bytes": 528,
+      "optimizer_tensor_payload_bytes": 1088,
+      "steps": 120
+    },
+    "gated_rank4": {
+      "trainable_parameters": 1288,
+      "fp32_weight_payload_bytes": 5152,
+      "optimizer_tensor_payload_bytes": 10400,
+      "steps": 120
+    }
+  },
+  "four_fold_metrics": {
+    "frozen_random": {
+      "accuracy": 0.296875,
+      "brier": 0.747837,
+      "nll": 1.371362
+    },
+    "linear": {
+      "accuracy": 0.875,
+      "brier": 0.167925,
+      "nll": 0.352163
+    },
+    "gated_rank4": {
+      "accuracy": 0.890625,
+      "brier": 0.158423,
+      "nll": 0.422525
+    }
+  },
+  "heldout_unscored_prediction_sha256": {
+    "linear": "50b41a8c3c99449b84f165a698f26e289d27b651aec1e35bd5725fc6b2ab109e",
+    "gated_rank4": "d377af9fa45e648cfeb52e8eb1dbfc16065277738ba34496a2f6b03b119a6279"
+  },
+  "q24_replay": {
+    "fit": {
+      "max_q24_integer_drift": 0,
+      "nonidentical_coordinates": 0
+    },
+    "heldout": {
+      "max_q24_integer_drift": 0,
+      "nonidentical_coordinates": 0
+    }
+  },
+  "pytorch_version": "2.10.0+cpu",
+  "note": "Research only. Frozen random != production no-change; no official heldout label or task utility. No target-host full Encoder, independent signature, Final-use or promotion."
+}

@@ -1,0 +1,129 @@
+{
+  "schema": "hepta.five-seed-head-shadow.v1",
+  "source_artifact_id": 12068510329,
+  "authority": "DENY_ALL",
+  "production_promotion": false,
+  "heldout_scored": false,
+  "future_time_verified": false,
+  "group_independence_verified": false,
+  "seeds": [
+    {
+      "seed": 17,
+      "metrics": {
+        "frozen_random": {
+          "accuracy": 0.296875,
+          "nll": 1.371362,
+          "brier": 0.747837
+        },
+        "linear": {
+          "accuracy": 0.875,
+          "nll": 0.352163,
+          "brier": 0.167925
+        },
+        "gated_rank4": {
+          "accuracy": 0.890625,
+          "nll": 0.422525,
+          "brier": 0.158423
+        }
+      }
+    },
+    {
+      "seed": 23,
+      "metrics": {
+        "frozen_random": {
+          "accuracy": 0.0625,
+          "nll": 1.619972,
+          "brier": 0.862916
+        },
+        "linear": {
+          "accuracy": 0.890625,
+          "nll": 0.318239,
+          "brier": 0.154897
+        },
+        "gated_rank4": {
+          "accuracy": 0.890625,
+          "nll": 0.29527,
+          "brier": 0.156031
+        }
+      }
+    },
+    {
+      "seed": 41,
+      "metrics": {
+        "frozen_random": {
+          "accuracy": 0.234375,
+          "nll": 1.443413,
+          "brier": 0.779798
+        },
+        "linear": {
+          "accuracy": 0.953125,
+          "nll": 0.325454,
+          "brier": 0.157522
+        },
+        "gated_rank4": {
+          "accuracy": 0.890625,
+          "nll": 0.341993,
+          "brier": 0.15586
+        }
+      }
+    },
+    {
+      "seed": 59,
+      "metrics": {
+        "frozen_random": {
+          "accuracy": 0.28125,
+          "nll": 1.48806,
+          "brier": 0.789587
+        },
+        "linear": {
+          "accuracy": 0.921875,
+          "nll": 0.28464,
+          "brier": 0.127063
+        },
+        "gated_rank4": {
+          "accuracy": 0.890625,
+          "nll": 0.293744,
+          "brier": 0.149114
+        }
+      }
+    },
+    {
+      "seed": 73,
+      "metrics": {
+        "frozen_random": {
+          "accuracy": 0.328125,
+          "nll": 1.39137,
+          "brier": 0.748517
+        },
+        "linear": {
+          "accuracy": 0.890625,
+          "nll": 0.334337,
+          "brier": 0.159911
+        },
+        "gated_rank4": {
+          "accuracy": 0.859375,
+          "nll": 0.317624,
+          "brier": 0.210657
+        }
+      }
+    }
+  ],
+  "mean": {
+    "frozen_random": {
+      "accuracy": 0.240625,
+      "nll": 1.462835,
+      "brier": 0.785731
+    },
+    "linear": {
+      "accuracy": 0.90625,
+      "nll": 0.322967,
+      "brier": 0.153464
+    },
+    "gated_rank4": {
+      "accuracy": 0.884375,
+      "nll": 0.334231,
+      "brier": 0.166017
+    }
+  },
+  "note": "The same 64 real train observations are reused with five stratified seed-defined folds. They are not five independent external task datasets or future-time NDU results."
+}
