@@ -21,31 +21,56 @@ done
 
 # Resolve the complete manual target list before printing any build patterns.
 # Query failures must not turn into a partial successful lint selection.
-query_args=(--output=label)
 manual_rust_test_query='kind("rust_test rule", attr(tags, "manual", //codex-rs/... except //codex-rs/v8-poc/...))'
+manual_rust_test_targets="$(
+  ./.github/scripts/run-bazel-query-ci.sh \
+    --output=label -- "${manual_rust_test_query}"
+)"
 if [[ "${RUNNER_OS:-}" == "Windows" && $windows_cross_compile -eq 0 ]]; then
   # Native MSVC must honor declared compatibility, including GNU-cross helpers
   # and Unix-only owner fixtures. Keep every compatible manual Rust test;
   # suffix filtering cannot express the latter platform constraints.
-  # A reused server can retain the same label in exec or older configurations.
-  # Test compatibility only in this invocation's top-level target configuration.
-  manual_rust_test_query="config(${manual_rust_test_query}, target)"
-  query_args=(
-    --configured
-    --config=ci-windows
-    --config=clippy
-    --platforms=//:windows_x86_64_msvc
-    --host_platform=//:local_windows_msvc
-    --output=starlark
-    '--starlark:expr="//%s:%s" % (target.label.package, target.label.name) if "IncompatiblePlatformProvider" not in providers(target) else ""'
-  )
-fi
-manual_rust_test_targets="$(
-  ./.github/scripts/run-bazel-query-ci.sh \
-    "${query_args[@]}" \
-    -- "${manual_rust_test_query}"
-)"
-if [[ "${RUNNER_OS:-}" == "Windows" && $windows_cross_compile -eq 0 ]]; then
+  # Discover all candidates before analysis: cquery on //... would also analyze
+  # unrelated manual release transitions before applying kind/attr filters.
+  manual_rust_test_targets="$(printf '%s\n' "${manual_rust_test_targets}" | sed $'s/\r$//; /^$/d')"
+  if [[ -z "${manual_rust_test_targets}" ]]; then
+    echo "Unconfigured Clippy query returned no manual Rust test helpers" >&2
+    exit 1
+  fi
+  # A relative query file works with native Windows and MSYS conversion disabled,
+  # and keeps the complete candidate set out of the Windows command-line limit.
+  query_file="$(mktemp .bazel-clippy-query.XXXXXXXX)"
+  trap 'rm -f -- "${query_file}"' EXIT
+  {
+    printf 'config(set(\n'
+    while IFS= read -r label; do
+      # Bazel query words do not interpret backslash escapes. Use a quote that
+      # is absent from this label so operators and spaces remain literal.
+      if [[ "${label}" != *\"* ]]; then
+        printf '"%s"\n' "${label}"
+      elif [[ "${label}" != *\'* ]]; then
+        printf "'%s'\n" "${label}"
+      else
+        echo "Manual Rust test helper contains both query quote characters" >&2
+        exit 1
+      fi
+    done <<< "${manual_rust_test_targets}"
+    # A reused server can retain exec or older configurations of the same label.
+    printf '), target)\n'
+  } > "${query_file}"
+  manual_rust_test_targets="$(
+    ./.github/scripts/run-bazel-query-ci.sh \
+      --configured \
+      --config=ci-windows \
+      --config=clippy \
+      --platforms=//:windows_x86_64_msvc \
+      --host_platform=//:local_windows_msvc \
+      --output=starlark \
+      '--starlark:expr="//%s:%s" % (target.label.package, target.label.name) if "IncompatiblePlatformProvider" not in providers(target) else ""' \
+      --query-file "${query_file}"
+  )"
+  rm -f -- "${query_file}"
+  trap - EXIT
   # cquery emits an empty line for each incompatible configured target.
   # Native Windows stdout uses CRLF; remove each record's one trailing CR.
   manual_rust_test_targets="$(printf '%s\n' "${manual_rust_test_targets}" | sed $'s/\r$//; /^$/d')"
