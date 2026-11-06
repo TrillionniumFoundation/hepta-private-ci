@@ -1,0 +1,153 @@
+{
+  "code_commit": "fcffa43043ec7f36fa680c449c54b9b3446eb6a6",
+  "code_tree": "d0a50e37bda5073506734f0784807ba6f694d127",
+  "base_commit": "21f99f78e6a176233e711ce5ad233cec0166b8d6",
+  "files": [
+    {
+      "path": ".github/workflows/hepta-hcsn-training-bridge.yml",
+      "bytes": 6598,
+      "sha256": "511f1fedb60e4c53b36c6a6f784676618a55c07d3606171d8d6d3d5ae42de678"
+    },
+    {
+      "path": "codex-rs/hepta-automation/src/hcsn_job.rs",
+      "bytes": 9446,
+      "sha256": "b6846561526a8f7b5388e4387e29196edd0d3092e489f937b3a56ee06acde76b"
+    },
+    {
+      "path": "codex-rs/hepta-automation/src/hcsn_job_tests.rs",
+      "bytes": 6650,
+      "sha256": "c13e062d53f98fc549763056ea97ea96f9e00a499972a452b5d598da93c46d73"
+    },
+    {
+      "path": "codex-rs/hepta-automation/src/hcsn_supervisor.rs",
+      "bytes": 10115,
+      "sha256": "0d80316032c4c71627391d97c46300094d48c275165e5d6bce7f2c7a01df9f2c"
+    },
+    {
+      "path": "codex-rs/hepta-automation/src/hcsn_supervisor_tests.rs",
+      "bytes": 6481,
+      "sha256": "0db381648a64298744fa6038eba8735d974ef75f6d16a168e750a7af86be3787"
+    },
+    {
+      "path": "codex-rs/hepta-automation/src/hcsn_taskflow.rs",
+      "bytes": 7854,
+      "sha256": "a96f973abc299bead00670662383ff2feaa75afde3127757acd77b2889b6eb65"
+    },
+    {
+      "path": "codex-rs/hepta-automation/src/hcsn_taskflow_tests.rs",
+      "bytes": 9445,
+      "sha256": "0ae06ae0efd532d6793761b535dca0e28a1451f213f5f9c95d6874cb157a8a86"
+    },
+    {
+      "path": "codex-rs/hepta-automation/src/lib.rs",
+      "bytes": 7630,
+      "sha256": "dd7334b0d3bb9b3bcefc93509d048d1671b2ebd9f76209cf45b02d0a95b87008"
+    },
+    {
+      "path": "codex-rs/hepta-automation/tests/automation.rs",
+      "bytes": 55484,
+      "sha256": "dfe35fbccd527f1a03d47aeddbbe2c7489d2498fe11b57ee4182aa5794265bca"
+    },
+    {
+      "path": "codex-rs/hepta-automation/tests/hcsn_taskflow.rs",
+      "bytes": 15949,
+      "sha256": "75d9ccc433491ed01d96b7a3f26c15a1a42990e0f7f186f81aa490ac5a762139"
+    },
+    {
+      "path": "qualification/hcsn_training/HOST_INTEGRATION.md",
+      "bytes": 7810,
+      "sha256": "cd81d678caef2f8fe7db81930776652e2d82adbd2ee51644baa7e6f9be8d5e6a"
+    },
+    {
+      "path": "qualification/hcsn_training/README.md",
+      "bytes": 12815,
+      "sha256": "5250da40c0a73c08181149760d3875cc6d713d8407d33fa487fa146a9513b622"
+    },
+    {
+      "path": "qualification/hcsn_training/joint_graph.py",
+      "bytes": 12475,
+      "sha256": "90d2818d2caa6bd8ef28b053c32a1cbc31715e29d25ed9192b032eefea59660f"
+    },
+    {
+      "path": "qualification/hcsn_training/native_build.py",
+      "bytes": 3123,
+      "sha256": "e85d9f68a385382a177e012e397ea5eec6907c244820bb42e05732d61046b6cb"
+    },
+    {
+      "path": "qualification/hcsn_training/native_fixture.rs",
+      "bytes": 16601,
+      "sha256": "d43f4dc88049f7041705895fe3c154dbdf2a6491a62d5fa028e3f9e18aa60d38"
+    },
+    {
+      "path": "qualification/hcsn_training/population_graph.py",
+      "bytes": 7958,
+      "sha256": "8961b0de0f38cb52a80f5012280867283b70405cb1619e99ba5dae3e1d1029bd"
+    },
+    {
+      "path": "qualification/hcsn_training/supervisor.py",
+      "bytes": 16421,
+      "sha256": "ba7adfaef032a8a0b7cb64fa209148fd6e686cd8c1616f121aa8f72e2d0a67fd"
+    },
+    {
+      "path": "qualification/hcsn_training/supervisor_fixture.rs",
+      "bytes": 2326,
+      "sha256": "826e75e566108142b97681ea67080ce2563ad74530e75981a75a0c32fec2d3bc"
+    },
+    {
+      "path": "qualification/hcsn_training/supervisor_store.py",
+      "bytes": 14185,
+      "sha256": "6a09ee1861d554032f16ebc7fc4479c68054c145ee1840f956d370a323c8b99c"
+    },
+    {
+      "path": "qualification/hcsn_training/test_native_build.py",
+      "bytes": 6319,
+      "sha256": "62d93b9c78ba73c6878b94c87f4498294bd8a766c39de6fd8ee57cf8b27ae335"
+    },
+    {
+      "path": "qualification/hcsn_training/test_population_graph.py",
+      "bytes": 11169,
+      "sha256": "055d4c63c91950ced50b24c8e23908f6a29d0b1eda5140b49321319a44f4f16b"
+    },
+    {
+      "path": "qualification/hcsn_training/test_supervisor.py",
+      "bytes": 16847,
+      "sha256": "799453b0f09a90176b97bdbbe18bd28a47d46560ab7277b02c8c67f3dcbdb0d6"
+    },
+    {
+      "path": "qualification/hcsn_training/test_training_state.py",
+      "bytes": 12327,
+      "sha256": "386f8ab05470aabbc39d77c5461a803082bdfd26cafe3d71e2f1b1a0c56c933c"
+    },
+    {
+      "path": "qualification/hcsn_training/training_state.py",
+      "bytes": 6599,
+      "sha256": "236d05c383ca317820f345ab54e3ebd6710a57947d5da3c8de1d24f58c7c9882"
+    },
+    {
+      "path": "qualification/hcsn_training/verify_bridge.py",
+      "bytes": 14680,
+      "sha256": "36df0948f946bb94e52c0767c09edac4d108deb5c75886f15016d9f3e844cc3a"
+    },
+    {
+      "path": "qualification/hcsn_training/verify_second_block.py",
+      "bytes": 6140,
+      "sha256": "157c42982625dda66374b8e7642f026712cb35464961bd42a8196456dfb38915"
+    },
+    {
+      "path": "qualification/hcsn_training/verify_supervised_worker.py",
+      "bytes": 4071,
+      "sha256": "2dd25abf2278a5ff4fa65b64707bc419c629bce45a168a00b9cf413d79726722"
+    },
+    {
+      "path": "qualification/hcsn_training/worker.py",
+      "bytes": 13699,
+      "sha256": "183ae0e5519d4f31321f73a4bcde1a722a9100103440c7689b4d8aec87b762c3"
+    }
+  ],
+  "format_log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "format_exit_code": 0,
+  "local_tests_after_fix_or_fmt": false,
+  "canonical_checkout": "/workspace/scratch/7ee3ec79bc34/full-source",
+  "initial_combined_commit": "92a8b4acbd648deae34ebd90cccc905c6b604d79",
+  "fixture_repair_format_log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+}

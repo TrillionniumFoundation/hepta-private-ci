@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "observed_at_utc": "2026-11-06T10:09:41.392923+00:00",
+  "base_commit": "92a8b4acbd648deae34ebd90cccc905c6b604d79",
+  "changed_file": "codex-rs/hepta-automation/tests/automation.rs",
+  "added_lines": 32,
+  "removed_lines": 0,
+  "source_sha256": "dfe35fbccd527f1a03d47aeddbbe2c7489d2498fe11b57ee4182aa5794265bca",
+  "patch_sha256": "fe48ae0b6a1cf093302d94a756e4da3d9daf74fee9292117d73f5ffddcbffeca",
+  "production_migrations_changed": false,
+  "fix": "Rewind drops v18 timer lifecycle and v17 destination dedupe tables with their attached triggers before the v2 dispatch table. Before committing, assert the remaining user schema is exactly the v1 three tables, two indexes, and two metadata triggers. Production SQLx migration/reopen and causal outcome assertions remain unchanged.",
+  "command": "just test --locked -p codex-hepta-automation --test automation",
+  "command_session_id": 19893,
+  "environment": {
+    "toolchain": "/workspace/scratch/2e04527a60e8/toolchain/1.95.0-x86_64-unknown-linux-gnu/bin",
+    "tools": "/workspace/scratch/734df8eaf8dc/bin",
+    "CARGO_HOME": "/workspace/scratch/c084ba2352cd/cargo-home",
+    "CARGO_TARGET_DIR": "/workspace/scratch/7ee3ec79bc34/automation-target",
+    "CARGO_BUILD_JOBS": "2",
+    "CARGO_INCREMENTAL": "0"
+  },
+  "cache_setting_note": "This defect-fix cycle disables incremental compilation to avoid cache disk pressure; original dependency lock and optimization/debug profile remain unchanged.",
+  "cargo_lock_sha256": "8354b4cbdf14389db7aa5508e2ed5b524fc2d4c4ea0ecb475955c933f8bea389",
+  "cargo_lock_git_blob": "8a9eab30d8957daab7dd027e86e88ca792e04a1c",
+  "cargo_lock_matches_head": true,
+  "result": {
+    "exit_code": 0,
+    "passed": 18,
+    "skipped": 0,
+    "binaries": 1,
+    "former_failed_test": "v1_store_migrates_atomically_to_dispatch_outcome_schema",
+    "former_failed_test_passed": true
+  },
+  "raw_log": {
+    "path": "automation-v1-fixture-repair-test-01.log",
+    "sha256": "b181ca0f60d1cb6e09cd972e36d73257f2c48620b12fd68657d7b9161646e162",
+    "bytes": 15156
+  },
+  "independent_read_only_review": "review_campaign_ci confirmed reverse dependency order and exact v1 catalog; no source edits/tests by reviewer",
+  "verification_epoch": "New fixture-defect repair cycle after hosted run42197891722 failure; tests completed before this cycle's required root fix/fmt. No child fix/fmt or full-package rerun.",
+  "diff_check_passed": true
+}
