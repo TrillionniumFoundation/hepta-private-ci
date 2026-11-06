@@ -1,0 +1,82 @@
+{
+  "unit": "06_operator_buildifier",
+  "base_commit": "e20a143389993ae1202ff14b7ae7b9a327521dc5",
+  "base_tree": "2184e83ec083345fe15717fe8571693a45095146",
+  "files": [
+    {
+      "path": "codex-rs/hepta-operator-acceptance/BUILD.bazel",
+      "base_blob_sha": "99e6b520513b5be085f0bc453de41250bdaf0518",
+      "candidate_blob_sha": "55c3e4cac2c3cd5d5e3be137cf6c08666d0a28e6",
+      "candidate_sha256": "ec59ac6581ac6335d2b9560f01cbd8d621aa400234aef01ff923eb70a45a6d16",
+      "additions": 1,
+      "deletions": 1
+    }
+  ],
+  "authored_changed_lines": 2,
+  "observed_failure": {
+    "run_id": 42215187179,
+    "job_id": 127884146581,
+    "source_head": "024227ff971d9729bf441bbfceb2961bd14ebe5c",
+    "actual_checkout": "0d299d1c75e45b12f83a650e2f73fa57fc5c0faa",
+    "source_and_checkout_tree": "45fa98e76db8571f6547335dc7a9d94072574c65",
+    "failed_step": "just fmt-check: Bazel/Starlark",
+    "scope": "One BUILD.bazel reformat; later Prettier skipped; no Rust behavioral conclusion."
+  },
+  "formatter": {
+    "pin": {
+      "size": 7757842,
+      "hash": "sha256",
+      "digest": "887377fc64d23a850f4d18a077b5db05b19913f4b99b270d193f3c7334b5a9a7",
+      "path": "buildifier",
+      "providers": [
+        {
+          "url": "https://github.com/bazelbuild/buildtools/releases/download/v8.5.1/buildifier-linux-amd64"
+        }
+      ]
+    },
+    "version": {
+      "command": [
+        "/workspace/scratch/3f6a885bb83c/round3_native/tooling/buildifier-linux-amd64",
+        "--version"
+      ],
+      "exit_code": 0,
+      "stdout": "buildifier version: 8.5.1-3-g0951e28 \nbuildifier scm revision: 0951e28ad5a191e4d421d3899f3259e3e0f1aa54 \n",
+      "stderr": ""
+    }
+  },
+  "original_reproduction": {
+    "command": [
+      "/workspace/scratch/3f6a885bb83c/round3_native/tooling/buildifier-linux-amd64",
+      "-mode=check",
+      "-lint=off",
+      "/workspace/scratch/3f6a885bb83c/round3_native/units/06_operator_buildifier/base/codex-rs/hepta-operator-acceptance/BUILD.bazel"
+    ],
+    "exit_code": 4,
+    "stdout": "",
+    "stderr": "/workspace/scratch/3f6a885bb83c/round3_native/units/06_operator_buildifier/base/codex-rs/hepta-operator-acceptance/BUILD.bazel # reformat\n"
+  },
+  "actual_format": {
+    "command": [
+      "/workspace/scratch/3f6a885bb83c/round3_native/tooling/buildifier-linux-amd64",
+      "-mode=fix",
+      "-lint=off",
+      "/workspace/scratch/3f6a885bb83c/round3_native/units/06_operator_buildifier/candidate/codex-rs/hepta-operator-acceptance/BUILD.bazel"
+    ],
+    "exit_code": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  "formatted_check": {
+    "command": [
+      "/workspace/scratch/3f6a885bb83c/round3_native/tooling/buildifier-linux-amd64",
+      "-mode=check",
+      "-lint=off",
+      "/workspace/scratch/3f6a885bb83c/round3_native/units/06_operator_buildifier/candidate/codex-rs/hepta-operator-acceptance/BUILD.bazel"
+    ],
+    "exit_code": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  "semantic_check": "Python-compatible Starlark AST identical after keyword-order normalization; exact diff moves only the unchanged no-remote tags literal.",
+  "qualification": "PINNED_BUILDIFIER_EXECUTED; COMPOSED_NATIVE_RUST_CI_PENDING"
+}

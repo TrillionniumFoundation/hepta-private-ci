@@ -47,9 +47,9 @@ workspace_root_test(
     name = "hepta-operator-acceptance-tests",
     chdir_workspace_root = False,
     exec_compatible_with = HOST_CONSTRAINTS,
+    tags = ["no-remote"],
     test_bin = ":hepta-operator-acceptance-tests-bin",
     workspace_root_marker = "//codex-rs/utils/cargo-bin:repo_root.marker",
-    tags = ["no-remote"],
 )
 
 rust_binary(
