@@ -2,7 +2,10 @@
 
 use std::collections::BTreeMap;
 use std::collections::BTreeSet;
+use std::fs::File;
 use std::fs::OpenOptions;
+use std::io::Write;
+use std::os::unix::fs::MetadataExt;
 use std::os::unix::fs::PermissionsExt;
 use std::path::Path;
 use std::path::PathBuf;
@@ -81,6 +84,8 @@ fn supervisord_child_entry() -> Result<()> {
 #[tokio::test(flavor = "multi_thread", worker_threads = 8)]
 async fn five_real_agents_survive_daemon_restart_and_isolate_one_agent_release_changes()
 -> Result<()> {
+    let observed_start = Instant::now();
+    let _ = writeln!(std::io::stderr(), "FIVE_AGENT_PROGRESS setup elapsed_ms=0");
     let temp = tempfile::tempdir()?;
     let root = temp.path().canonicalize()?;
     let fleet_root = HeptaFleetRoot::parse(root.join("fleet"))?;
@@ -114,13 +119,29 @@ async fn five_real_agents_survive_daemon_restart_and_isolate_one_agent_release_c
     }
     registry.allow_release(&agents[0].agent_id, &release_v2)?;
 
+    let _ = writeln!(
+        std::io::stderr(),
+        "FIVE_AGENT_PROGRESS publication_ready elapsed_ms={}",
+        observed_start.elapsed().as_millis()
+    );
     let log_path = root.join("supervisord-child.log");
     let mut process_guard = AgentProcessGuard::default();
     let mut daemon = DaemonChild::spawn(&fleet_root, &log_path, publisher.config_path())?;
     let client = wait_for_daemon(&registry, &mut daemon, &log_path).await?;
     let first_supervisor_epoch = client.health().await?.supervisor_epoch;
+    let _ = writeln!(
+        std::io::stderr(),
+        "FIVE_AGENT_PROGRESS daemon_ready elapsed_ms={}",
+        observed_start.elapsed().as_millis()
+    );
 
     for agent in &agents[..2] {
+        let _ = writeln!(
+            std::io::stderr(),
+            "FIVE_AGENT_PROGRESS initial_start agent={} elapsed_ms={}",
+            agent.agent_id,
+            observed_start.elapsed().as_millis()
+        );
         let before = client.snapshot(agent.agent_id.clone()).await?;
         let accepted = client
             .start(before.control_fence.clone(), release_v1.clone())
@@ -134,6 +155,11 @@ async fn five_real_agents_survive_daemon_restart_and_isolate_one_agent_release_c
         "the initial two independent agents did not become healthy: {dual:?}"
     );
 
+    let _ = writeln!(
+        std::io::stderr(),
+        "FIVE_AGENT_PROGRESS negative_release_admission elapsed_ms={}",
+        observed_start.elapsed().as_millis()
+    );
     let peer_b_before_rejected_upgrade = client.snapshot(agents[1].agent_id.clone()).await?;
     ensure!(
         client
@@ -167,6 +193,12 @@ async fn five_real_agents_survive_daemon_restart_and_isolate_one_agent_release_c
     )?;
 
     for agent in &agents[2..] {
+        let _ = writeln!(
+            std::io::stderr(),
+            "FIVE_AGENT_PROGRESS remaining_start agent={} elapsed_ms={}",
+            agent.agent_id,
+            observed_start.elapsed().as_millis()
+        );
         let before = client.snapshot(agent.agent_id.clone()).await?;
         let accepted = client
             .start(before.control_fence.clone(), release_v1.clone())
@@ -188,6 +220,11 @@ async fn five_real_agents_survive_daemon_restart_and_isolate_one_agent_release_c
         )?;
     }
 
+    let _ = writeln!(
+        std::io::stderr(),
+        "FIVE_AGENT_PROGRESS drain_restart elapsed_ms={}",
+        observed_start.elapsed().as_millis()
+    );
     let before_drain = client.snapshot(agents[4].agent_id.clone()).await?;
     let accepted = client.drain(before_drain.control_fence.clone()).await?;
     assert_mutation_accepted(
@@ -205,6 +242,11 @@ async fn five_real_agents_survive_daemon_restart_and_isolate_one_agent_release_c
     )?;
     wait_for_release(&client, &agents[4], &release_v1, None, &mut process_guard).await?;
 
+    let _ = writeln!(
+        std::io::stderr(),
+        "FIVE_AGENT_PROGRESS stop_restart elapsed_ms={}",
+        observed_start.elapsed().as_millis()
+    );
     let before_stop = client.snapshot(agents[3].agent_id.clone()).await?;
     let accepted = client.stop(before_stop.control_fence.clone()).await?;
     assert_mutation_accepted(
@@ -222,6 +264,11 @@ async fn five_real_agents_survive_daemon_restart_and_isolate_one_agent_release_c
     )?;
     wait_for_release(&client, &agents[3], &release_v1, None, &mut process_guard).await?;
 
+    let _ = writeln!(
+        std::io::stderr(),
+        "FIVE_AGENT_PROGRESS kill_restart elapsed_ms={}",
+        observed_start.elapsed().as_millis()
+    );
     let mut peer_status_baseline = peer_baseline(&client, &agents[1..]).await?;
     let initial_a = client.snapshot(agents[0].agent_id.clone()).await?;
     let initial_a_pid = require_pid(&initial_a)?;
@@ -259,6 +306,11 @@ async fn five_real_agents_survive_daemon_restart_and_isolate_one_agent_release_c
     );
     assert_peers_unchanged(&client, &agents[1..], &peer_status_baseline).await?;
 
+    let _ = writeln!(
+        std::io::stderr(),
+        "FIVE_AGENT_PROGRESS concurrent_restart elapsed_ms={}",
+        observed_start.elapsed().as_millis()
+    );
     let concurrent_fence = restarted_a.control_fence.clone();
     let (left, right) = tokio::join!(
         client.restart(concurrent_fence.clone()),
@@ -287,6 +339,11 @@ async fn five_real_agents_survive_daemon_restart_and_isolate_one_agent_release_c
         wait_for_release(&client, &agents[0], &release_v1, None, &mut process_guard).await?;
     assert_peers_unchanged(&client, &agents[1..], &peer_status_baseline).await?;
 
+    let _ = writeln!(
+        std::io::stderr(),
+        "FIVE_AGENT_PROGRESS upgrade elapsed_ms={}",
+        observed_start.elapsed().as_millis()
+    );
     let accepted = client
         .upgrade(restarted_a.control_fence.clone(), release_v2.clone())
         .await?;
@@ -309,6 +366,11 @@ async fn five_real_agents_survive_daemon_restart_and_isolate_one_agent_release_c
     );
     assert_peers_unchanged(&client, &agents[1..], &peer_status_baseline).await?;
 
+    let _ = writeln!(
+        std::io::stderr(),
+        "FIVE_AGENT_PROGRESS daemon_restart elapsed_ms={}",
+        observed_start.elapsed().as_millis()
+    );
     let before_daemon_restart = snapshot_all(&client, &agents).await?;
     assert_agentd_endpoints(&agents, &before_daemon_restart).await?;
     daemon.kill()?;
@@ -343,6 +405,11 @@ async fn five_real_agents_survive_daemon_restart_and_isolate_one_agent_release_c
     assert_agentd_endpoints(&agents, &before_daemon_restart).await?;
     peer_status_baseline = peer_baseline(&restarted_client, &agents[1..]).await?;
 
+    let _ = writeln!(
+        std::io::stderr(),
+        "FIVE_AGENT_PROGRESS rollback elapsed_ms={}",
+        observed_start.elapsed().as_millis()
+    );
     let before_rollback = restarted_client
         .snapshot(agents[0].agent_id.clone())
         .await?;
@@ -368,6 +435,11 @@ async fn five_real_agents_survive_daemon_restart_and_isolate_one_agent_release_c
     );
     assert_peers_unchanged(&restarted_client, &agents[1..], &peer_status_baseline).await?;
 
+    let _ = writeln!(
+        std::io::stderr(),
+        "FIVE_AGENT_PROGRESS final_stop elapsed_ms={}",
+        observed_start.elapsed().as_millis()
+    );
     for agent in &agents {
         let before = restarted_client.snapshot(agent.agent_id.clone()).await?;
         let accepted = restarted_client.kill(before.control_fence.clone()).await?;
@@ -705,7 +777,7 @@ fn require_pid(status: &SupervisordAgentStatus) -> Result<u64> {
         .context("active agent has no process identity")
 }
 
-struct DaemonChild(Child);
+struct DaemonChild(Child, Option<File>);
 
 impl DaemonChild {
     fn spawn(fleet_root: &HeptaFleetRoot, log_path: &Path, release_trust: &Path) -> Result<Self> {
@@ -713,6 +785,27 @@ impl DaemonChild {
             .create(true)
             .append(true)
             .open(log_path)?;
+        // Hold an independent read cursor for the same inode the child writes.
+        // A diagnostic-open failure must not change the original spawn result.
+        let diagnostic_log = rustix::fs::open(
+            log_path,
+            rustix::fs::OFlags::RDONLY
+                | rustix::fs::OFlags::NOFOLLOW
+                | rustix::fs::OFlags::NONBLOCK
+                | rustix::fs::OFlags::CLOEXEC,
+            rustix::fs::Mode::empty(),
+        )
+        .ok()
+        .map(File::from)
+        .filter(|reader| match (log.metadata(), reader.metadata()) {
+            (Ok(writer), Ok(reader)) => {
+                writer.is_file()
+                    && reader.is_file()
+                    && writer.dev() == reader.dev()
+                    && writer.ino() == reader.ino()
+            }
+            _ => false,
+        });
         let child = Command::new(std::env::current_exe()?)
             .arg("--exact")
             .arg("supervisord_child_entry")
@@ -725,7 +818,7 @@ impl DaemonChild {
             .stdout(Stdio::from(log.try_clone()?))
             .stderr(Stdio::from(log))
             .spawn()?;
-        Ok(Self(child))
+        Ok(Self(child, diagnostic_log))
     }
 
     fn try_wait(&mut self) -> Result<Option<std::process::ExitStatus>> {
@@ -746,6 +839,26 @@ impl Drop for DaemonChild {
         if self.0.try_wait().ok().flatten().is_none() {
             let _ = self.0.kill();
             let _ = self.0.wait();
+            // Preserve the actual daemon's bounded tail when test cleanup
+            // finds it still running after an error or panic.
+            use std::io::Read;
+            use std::io::Seek;
+            use std::io::SeekFrom;
+            if let Some(file) = self.1.as_mut()
+                && let Ok(metadata) = file.metadata()
+                && metadata.is_file()
+                && file
+                    .seek(SeekFrom::Start(metadata.len().saturating_sub(65_536)))
+                    .is_ok()
+            {
+                let mut bytes = Vec::new();
+                if file.take(65_536).read_to_end(&mut bytes).is_ok() {
+                    let mut stderr = std::io::stderr().lock();
+                    let _ = stderr.write_all(b"FIVE_AGENT_DAEMON_LOG_TAIL ");
+                    let _ = stderr.write_all(&bytes);
+                    let _ = stderr.write_all(b"\n");
+                }
+            }
         }
     }
 }
