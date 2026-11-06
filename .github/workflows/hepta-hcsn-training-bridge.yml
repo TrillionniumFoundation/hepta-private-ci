@@ -1,0 +1,93 @@
+name: Hepta HCSN training bridge
+
+on:
+  pull_request:
+    paths:
+      - qualification/hcsn/**
+      - qualification/hcsn_training/**
+      - codex-rs/hepta-neuron/**
+      - codex-rs/hepta-learning-artifacts/**
+      - .github/workflows/hepta-hcsn-training-bridge.yml
+
+permissions:
+  contents: read
+
+jobs:
+  source-and-owner:
+    if: github.event_name != 'pull_request' || github.head_ref == 'codex/hcsn-training-bridge-20261106'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    env:
+      HCSN_SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+      HCSN_CI_EVIDENCE: ${{ runner.temp }}/hcsn-training-bridge
+      OMP_NUM_THREADS: "1"
+      MKL_NUM_THREADS: "1"
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Check out exact candidate without write credentials
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.HCSN_SOURCE_SHA }}
+          persist-credentials: false
+      - name: Retain exact Git identity
+        run: |
+          mkdir -p "$HCSN_CI_EVIDENCE"
+          test "$(git rev-parse HEAD)" = "$HCSN_SOURCE_SHA"
+          git rev-parse HEAD HEAD^{tree} | tee "$HCSN_CI_EVIDENCE/source.txt"
+      - name: Install existing repository test tools
+        id: tools
+        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+      - name: Install pinned CPU development fixture runtime
+        id: python_runtime
+        if: ${{ !cancelled() }}
+        run: |
+          python3 -m venv "$RUNNER_TEMP/hcsn-training-venv"
+          HCSN_PYTHON="$RUNNER_TEMP/hcsn-training-venv/bin/python"
+          echo "$RUNNER_TEMP/hcsn-training-venv/bin" >> "$GITHUB_PATH"
+          "$HCSN_PYTHON" -m pip install numpy==2.3.5 scipy==1.17.0 2>&1 | tee "$HCSN_CI_EVIDENCE/numeric-install.log"
+          "$HCSN_PYTHON" -m pip install torch==2.8.0+cpu --index-url https://download.pytorch.org/whl/cpu 2>&1 | tee "$HCSN_CI_EVIDENCE/torch-install.log"
+          "$HCSN_PYTHON" -m pip freeze > "$HCSN_CI_EVIDENCE/python-packages.txt"
+          "$HCSN_PYTHON" -c 'import torch,numpy,scipy; assert (str(torch.__version__),numpy.__version__,scipy.__version__,torch.version.cuda)==("2.8.0+cpu","2.3.5","1.17.0",None)'
+      - name: Build exact native crates with the repository lockfile
+        id: rust_build
+        if: ${{ !cancelled() && steps.tools.outcome == 'success' }}
+        working-directory: codex-rs
+        run: |
+          rustc --version | tee "$HCSN_CI_EVIDENCE/rust-version.txt"
+          cargo build --locked -p codex-hepta-neuron -p codex-hepta-learning-artifacts 2>&1 | tee "$HCSN_CI_EVIDENCE/rust-build.log"
+      - name: Run the two affected native packages
+        if: ${{ !cancelled() && steps.rust_build.outcome == 'success' }}
+        working-directory: codex-rs
+        run: just test --locked -p codex-hepta-neuron -p codex-hepta-learning-artifacts 2>&1 | tee "$HCSN_CI_EVIDENCE/rust-tests.log"
+      - name: Strict shared-graph CPU derivative and recovery fixtures
+        if: ${{ !cancelled() && steps.python_runtime.outcome == 'success' }}
+        run: |
+          python - <<'PY' 2>&1 | tee "$HCSN_CI_EVIDENCE/python-tests.log"
+          import sys, unittest
+          suite = unittest.defaultTestLoader.loadTestsFromName("qualification.hcsn_training.test_joint_graph")
+          result = unittest.TextTestRunner(verbosity=2).run(suite)
+          sys.exit(0 if result.testsRun >= 8 and not result.skipped and result.wasSuccessful() else 1)
+          PY
+      - name: Real Python to Rust owner and fresh-process recovery
+        if: ${{ !cancelled() && steps.python_runtime.outcome == 'success' && steps.rust_build.outcome == 'success' }}
+        run: |
+          HCSN_RUSTC="$(cd codex-rs && rustup which rustc)"
+          python -m qualification.hcsn_training.verify_bridge --rust-workspace codex-rs --rustc "$HCSN_RUSTC" --output "$HCSN_CI_EVIDENCE/bridge" 2>&1 | tee "$HCSN_CI_EVIDENCE/bridge.log"
+      - name: Verify tracked source remained unchanged
+        if: always()
+        run: |
+          git diff --check 2>&1 | tee "$HCSN_CI_EVIDENCE/source-diff-check.log"
+          git diff --exit-code 2>&1 | tee "$HCSN_CI_EVIDENCE/source-unchanged.log"
+      - name: Retain complete logs and partial or successful fixture outputs
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hcsn-training-bridge-${{ env.HCSN_SOURCE_SHA }}-${{ github.run_attempt }}
+          path: |
+            ${{ env.HCSN_CI_EVIDENCE }}/
+            codex-rs/target/nextest/local/
+          if-no-files-found: warn
