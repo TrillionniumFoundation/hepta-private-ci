@@ -218,17 +218,12 @@ impl AgentdAutomationEffectHost {
             use std::os::unix::fs::PermissionsExt;
             fs::set_permissions(&authority_root, fs::Permissions::from_mode(0o700))?;
         }
-        let authority = FinalUseAuthority::open_state_dir(
+        let authority = Self::open_final_use_authority(
             &authority_root,
             config.final_use_signer_id,
             final_use_verifying_key,
             initial_revocations,
-        )
-        .map_err(|error| {
-            AgentdError::Protocol(format!(
-                "open automation final-use authority state: {error}"
-            ))
-        })?;
+        )?;
 
         Ok(Self {
             agent_id: identity.agent_id.clone(),
@@ -240,6 +235,20 @@ impl AgentdAutomationEffectHost {
             revocation_frontier: Arc::new(Mutex::new(frontier)),
             adapter: EffectProvider::Http(adapter),
         })
+    }
+
+    fn open_final_use_authority(
+        authority_root: &Path,
+        signer_id: String,
+        verifying_key: [u8; 32],
+        revocations: FinalUseRevocations,
+    ) -> Result<FinalUseAuthority, AgentdError> {
+        FinalUseAuthority::open_state_dir(authority_root, signer_id, verifying_key, revocations)
+            .map_err(|error| {
+                AgentdError::Protocol(format!(
+                    "open automation final-use authority state: {error}"
+                ))
+            })
     }
 
     pub(crate) async fn execute(
