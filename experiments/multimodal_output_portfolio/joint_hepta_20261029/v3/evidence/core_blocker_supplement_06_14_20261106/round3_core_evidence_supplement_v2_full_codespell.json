@@ -1,0 +1,27 @@
+{
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+    "-m",
+    "codespell_lib",
+    "--ignore-words",
+    ".codespellignore",
+    "--skip",
+    "./.git"
+  ],
+  "cwd": "/workspace/scratch/3f6a885bb83c/round3_core_checktrees/supplement_v2_codespell",
+  "tool": "codespell 2.4.3",
+  "configuration_source": "081cca801e70cf730d7d0288ce7a188a27c4df3d",
+  "configuration_sha256": {
+    ".codespellrc": "80805b9340dbdd76645a25929f56c96606e187db8e9d16b75a4a47dcdd248c04",
+    ".codespellignore": "9c6cd9dd86c6300ff67edbe64b2e18ed089714151e5c166382c8ea99931bc275",
+    ".codespell-exclude-lines": "5e2119d75aa7cfa61e87b9c3d98863d0b5d6672eeaccc7411695e91e2366d52b"
+  },
+  "all_bundle_files_in_scope": 33,
+  "policy": "Exact resulting CLI options of actual #5054 job127950554595; same immutable repository configuration as first failed whole-v1 check.",
+  "exit_code": 0,
+  "stdout": "",
+  "stderr": "",
+  "source_bundle_unmodified": true,
+  "native_tests_executed": false,
+  "prior_whole_v1_failure_receipt": "round3_core_evidence_supplement_v1_full_codespell.json"
+}
