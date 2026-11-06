@@ -105,7 +105,11 @@ jobs:
           printf '%s\n' "$helper" > "$RUNNER_TEMP/cell-native-evidence/joint-helper-path.txt"
           sha256sum "$helper" > "$RUNNER_TEMP/cell-native-evidence/joint-helper.sha256"
           printf 'NEXTEST_BIN_EXE_hepta-joint-propose=%s\n' "$helper" >> "$GITHUB_ENV"
+          printf 'CARGO_BIN_EXE_hepta-joint-propose=%s\n' "$helper" >> "$GITHUB_ENV"
+          printf 'CARGO_BIN_EXE_hepta_joint_propose=%s\n' "$helper" >> "$GITHUB_ENV"
           grep -Fx "NEXTEST_BIN_EXE_hepta-joint-propose=$helper" "$GITHUB_ENV"
+          grep -Fx "CARGO_BIN_EXE_hepta-joint-propose=$helper" "$GITHUB_ENV"
+          grep -Fx "CARGO_BIN_EXE_hepta_joint_propose=$helper" "$GITHUB_ENV"
       - name: Run the existing package test entry point
         working-directory: codex-rs
         shell: bash
@@ -115,7 +119,14 @@ jobs:
           import os
           from pathlib import Path
           helper = os.environ.get("NEXTEST_BIN_EXE_hepta-joint-propose", "")
-          assert helper and Path(helper).is_file() and os.access(helper, os.X_OK), helper
+          cargo_hyphen = os.environ.get("CARGO_BIN_EXE_hepta-joint-propose", "")
+          cargo_underscore = os.environ.get("CARGO_BIN_EXE_hepta_joint_propose", "")
+          assert (
+              helper
+              and helper == cargo_hyphen == cargo_underscore
+              and Path(helper).is_file()
+              and os.access(helper, os.X_OK)
+          ), (helper, cargo_hyphen, cargo_underscore)
           PY
           just test --locked -p codex-hepta-neuron -p codex-hepta-plasticity \
             2>&1 | tee "$RUNNER_TEMP/cell-native-evidence/tests.log"
