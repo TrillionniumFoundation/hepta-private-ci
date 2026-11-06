@@ -145,6 +145,18 @@ class TransportOutputBudgetTests(unittest.TestCase):
         self.assertIs(event.get("response_complete"), False)
         self.assertIsNone(response)
 
+    def test_worker_that_closes_stdin_early_cannot_return_a_valid_response(self):
+        code = 'import sys; sys.stdin.buffer.read(1); print("{\\\"ok\\\": true}")'
+        payload = {"input": "x" * (2 * 1024 * 1024)}
+        event, response = invoke([sys.executable, "-c", code], payload, timeout=3, limit=1024)
+        self.assertEqual(event.get("status"), "incomplete_request")
+        self.assertEqual(event.get("error_type"), "InputDeliveryIncomplete")
+        self.assertGreater(event.get("request_bytes_total", 0), 65536)
+        self.assertGreater(event.get("request_bytes_sent", 0), 0)
+        self.assertLess(event["request_bytes_sent"], event["request_bytes_total"])
+        self.assertIs(event.get("request_complete"), False)
+        self.assertIsNone(response)
+
     def test_small_json_worker_response_still_passes(self):
         code = 'import sys; sys.stdin.read(); print("{\\"ok\\": true}")'
         event, response = invoke([sys.executable, "-c", code], {}, timeout=3, limit=1024)
