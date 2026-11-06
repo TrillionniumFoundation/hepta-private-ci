@@ -3,13 +3,16 @@
 from __future__ import annotations
 
 import importlib.util
+import io
 import json
 import subprocess
 import sys
 import tempfile
 import tomllib
 import unittest
+from contextlib import redirect_stdout
 from pathlib import Path
+from unittest import mock
 
 SCRIPT = Path(__file__).resolve().parents[1] / "hepta_ci_dependencies.py"
 spec = importlib.util.spec_from_file_location("hepta_ci_dependencies", SCRIPT)
@@ -392,6 +395,218 @@ class DocumentInputTests(unittest.TestCase):
             check=True,
         )
         self.assertTrue(json.loads(result.stdout)["scope"]["native"])
+
+
+class FixturePreparationTests(unittest.TestCase):
+    def invoke(
+        self,
+        *,
+        packages=("codex-arg0", "codex-core"),
+        action="test",
+        platform="linux",
+        full=False,
+        results=(0, 0),
+        dirty=False,
+        source_error=False,
+        record_output=None,
+        compatibility_run=False,
+    ):
+        root = Path(tempfile.gettempdir()) / "fixture workspace with spaces"
+        tested = "a" * 40
+        selected = {
+            "packages": list(packages),
+            "full_workspace": full,
+            "changed_packages": [],
+            "reasons": [],
+        }
+        argv = ["dependencies", "--root", str(root), "--tested", tested]
+        argv += ["--run"] if compatibility_run else ["--action", action]
+        if full:
+            argv += ["--full"]
+        if record_output:
+            argv += ["--record-output", str(record_output)]
+        diff_calls = 0
+
+        def git(_root, *args):
+            nonlocal diff_calls
+            self.assertEqual(_root, root)
+            if args == ("rev-parse", "HEAD"):
+                return tested.encode()
+            self.assertEqual(args, ("diff", "--no-ext-diff", "--quiet", "HEAD", "--"))
+            diff_calls += 1
+            if diff_calls == 2:
+                if source_error:
+                    raise OSError("source check unavailable")
+                if dirty:
+                    raise subprocess.CalledProcessError(1, ["git", "diff"])
+            return b""
+
+        outputs = [
+            value
+            if isinstance(value, BaseException)
+            else subprocess.CompletedProcess([], value)
+            for value in results
+        ]
+        stream = io.StringIO()
+        code = 0
+        with (
+            mock.patch.object(sys, "argv", argv),
+            mock.patch.object(sys, "platform", platform),
+            mock.patch.object(ci, "plan", return_value=selected) as planned,
+            mock.patch.object(ci, "git", side_effect=git),
+            mock.patch.object(ci.subprocess, "run", side_effect=outputs) as run,
+            redirect_stdout(stream),
+        ):
+            try:
+                ci.main()
+            except SystemExit as error:
+                code = error.code
+        planned.assert_called_once_with(root, None, tested, force_full=full)
+        calls = [(call.args[0], call.kwargs) for call in run.call_args_list]
+        records = [json.loads(line) for line in stream.getvalue().splitlines()]
+        self.assertEqual(
+            records[0], {"tested_sha": tested, "base_sha": None, **selected}
+        )
+        for _, kwargs in calls:
+            self.assertEqual(kwargs, {"cwd": root / "codex-rs", "check": False})
+        return code, calls, records[1:]
+
+    def test_build_precedes_unchanged_scoped_or_full_suite(self):
+        for full, compatibility_run in ((False, False), (True, False), (False, True)):
+            with self.subTest(full=full, compatibility_run=compatibility_run):
+                code, calls, records = self.invoke(
+                    full=full, compatibility_run=compatibility_run
+                )
+                self.assertEqual(code, 0)
+                self.assertEqual(
+                    calls[0][0],
+                    [
+                        "cargo",
+                        "build",
+                        "--locked",
+                        "-p",
+                        "codex-arg0",
+                        "--bin",
+                        "test_arg0_preflight",
+                    ],
+                )
+                self.assertEqual(
+                    calls[1][0],
+                    [
+                        "just",
+                        "test",
+                        "--locked",
+                        *(
+                            ["--workspace"]
+                            if full
+                            else ["-p", "codex-arg0", "-p", "codex-core"]
+                        ),
+                    ],
+                )
+                self.assertEqual(
+                    [item["status"] for item in records], ["running", "passed"]
+                )
+                self.assertEqual(records[-1]["exit_code"], 0)
+                self.assertIs(records[-1]["source_unchanged"], True)
+
+    def test_preparation_is_limited_to_selected_linux_tests(self):
+        cases = [
+            {"packages": ("codex-core",)},
+            {"packages": ("codex-core",), "full": True},
+            {"packages": ()},
+            {"action": "plan"},
+            {"action": "fmt"},
+            {"action": "clippy"},
+            {"platform": "darwin"},
+            {"platform": "win32"},
+        ]
+        for case in cases:
+            with self.subTest(case=case):
+                code, calls, records = self.invoke(**case)
+                self.assertEqual(code, 0)
+                self.assertEqual(records, [])
+                self.assertLessEqual(len(calls), 1)
+                self.assertTrue(
+                    all(command[:2] != ["cargo", "build"] for command, _ in calls)
+                )
+
+    def test_build_failure_or_signal_stops_suite_and_preserves_exit(self):
+        for returncode, expected in ((7, 7), (101, 101), (-15, 143), (-9, 137)):
+            with self.subTest(returncode=returncode):
+                code, calls, records = self.invoke(results=(returncode,))
+                self.assertEqual(code, expected)
+                self.assertEqual(len(calls), 1)
+                self.assertEqual(records[-1]["returncode"], returncode)
+                self.assertEqual(records[-1]["exit_code"], expected)
+                self.assertEqual(records[-1]["status"], "failed")
+
+    def test_dirty_preparation_stops_suite_without_hiding_build_exit(self):
+        for returncode, expected in ((0, 1), (7, 7)):
+            with self.subTest(returncode=returncode):
+                code, calls, records = self.invoke(results=(returncode,), dirty=True)
+                self.assertEqual(code, expected)
+                self.assertEqual(len(calls), 1)
+                self.assertIs(records[-1]["source_unchanged"], False)
+
+    def test_dispatch_or_post_build_source_error_is_not_success(self):
+        for options in (
+            {"results": (OSError("cargo absent"),)},
+            {"source_error": True},
+        ):
+            with self.subTest(options=options):
+                code, calls, records = self.invoke(**options)
+                self.assertEqual(code, 2)
+                self.assertEqual(len(calls), 1)
+                self.assertEqual(records[-1]["status"], "failed")
+                self.assertIn("error", records[-1])
+
+    def test_original_suite_nonzero_and_signal_exit_are_preserved(self):
+        for result, expected in ((100, 100), (-15, 143)):
+            with self.subTest(result=result):
+                code, calls, records = self.invoke(results=(0, result))
+                self.assertEqual(code, expected)
+                self.assertEqual(len(calls), 2)
+                self.assertEqual(records[-1]["status"], "passed")
+
+    def test_explicit_records_use_distinct_paths_and_keep_suite_command(self):
+        output = Path(tempfile.gettempdir()) / "receipts with spaces" / "suite.json"
+        code, calls, records = self.invoke(record_output=output)
+        self.assertEqual(code, 0)
+        prefix = [sys.executable, str(SCRIPT.with_name("hepta_ci_exec.py")), "--output"]
+        preparation_output = str(
+            output.resolve().with_name(output.name + ".arg0-preflight-build.json")
+        )
+        self.assertEqual(
+            calls[0][0],
+            [
+                *prefix,
+                preparation_output,
+                "--",
+                "cargo",
+                "build",
+                "--locked",
+                "-p",
+                "codex-arg0",
+                "--bin",
+                "test_arg0_preflight",
+            ],
+        )
+        self.assertEqual(
+            calls[1][0],
+            [
+                *prefix,
+                str(output.resolve()),
+                "--",
+                "just",
+                "test",
+                "--locked",
+                "-p",
+                "codex-arg0",
+                "-p",
+                "codex-core",
+            ],
+        )
+        self.assertEqual(records[-1]["record_output"], preparation_output)
 
 
 if __name__ == "__main__":

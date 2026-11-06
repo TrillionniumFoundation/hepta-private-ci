@@ -630,6 +630,90 @@ def execution_command(selected: dict, action: str) -> list[str] | None:
     raise ValueError("unknown native check")
 
 
+def prepare_test_fixtures(
+    root: Path,
+    selected: dict,
+    action: str,
+    tested_sha: str,
+    record_output: Path | None,
+) -> None:
+    """Build the normal-main fixture selected by the Linux arg0 unit tests."""
+    if (
+        sys.platform != "linux"
+        or action != "test"
+        or "codex-arg0" not in selected["packages"]
+    ):
+        return
+    command = [
+        "cargo",
+        "build",
+        "--locked",
+        "-p",
+        "codex-arg0",
+        "--bin",
+        "test_arg0_preflight",
+    ]
+    resolved_output = record_output.resolve() if record_output else None
+    output = (
+        resolved_output.with_name(resolved_output.name + ".arg0-preflight-build.json")
+        if resolved_output
+        else None
+    )
+    record = {
+        "kind": "arg0_preflight_fixture_build",
+        "tested_sha": tested_sha,
+        "command": command,
+        "working_directory": str((root / WORKSPACE).resolve()),
+        "record_output": str(output) if output else None,
+        "status": "running",
+        "returncode": None,
+        "exit_code": None,
+        "source_unchanged": None,
+    }
+    # The outer CI recorder retains these separate phase records and the build
+    # output. Explicit --record-output also gets its own exclusive receipt;
+    # the original output path remains reserved for the selected test suite.
+    print(json.dumps(record, sort_keys=True), flush=True)
+    if output:
+        command = [
+            sys.executable,
+            str(Path(__file__).with_name("hepta_ci_exec.py")),
+            "--output",
+            str(output),
+            "--",
+            *command,
+        ]
+    exit_code = 2
+    try:
+        result = subprocess.run(command, cwd=root / WORKSPACE, check=False)
+        record["returncode"] = result.returncode
+        exit_code = (
+            result.returncode if result.returncode >= 0 else 128 - result.returncode
+        )
+        try:
+            git(root, "diff", "--no-ext-diff", "--quiet", "HEAD", "--")
+        except subprocess.CalledProcessError as error:
+            record["source_unchanged"] = False
+            # A dirty source stops the suite without hiding a build failure.
+            exit_code = exit_code or (
+                error.returncode if error.returncode >= 0 else 128 - error.returncode
+            )
+        else:
+            record["source_unchanged"] = True
+    except KeyboardInterrupt:
+        record["error"] = "fixture build interrupted"
+        exit_code = 130
+    except (OSError, subprocess.SubprocessError) as error:
+        record["error"] = str(error)
+        exit_code = exit_code or 2
+    finally:
+        record["exit_code"] = exit_code
+        record["status"] = "passed" if exit_code == 0 else "failed"
+        print(json.dumps(record, sort_keys=True), flush=True)
+    if exit_code:
+        raise SystemExit(exit_code)
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--root", type=Path, default=Path.cwd())
@@ -671,8 +755,12 @@ def main() -> None:
     if args.github_output:
         with args.github_output.open("a", encoding="utf-8") as stream:
             stream.write(f"has_packages={str(bool(selected['packages'])).lower()}\n")
-    command = execution_command(selected, "test" if args.run else args.action)
+    action = "test" if args.run else args.action
+    command = execution_command(selected, action)
     if command is not None:
+        prepare_test_fixtures(
+            args.root, selected, action, args.tested, args.record_output
+        )
         if args.record_output:
             command = [
                 sys.executable,
