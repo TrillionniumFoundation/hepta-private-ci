@@ -155,12 +155,15 @@ class TransportOutputBudgetTests(unittest.TestCase):
         self.assertGreater(event.get("request_bytes_sent", 0), 0)
         self.assertLess(event["request_bytes_sent"], event["request_bytes_total"])
         self.assertIs(event.get("request_complete"), False)
+        self.assertEqual(len(event.get("request_prefix_sha256") or ""), 64)
         self.assertIsNone(response)
 
     def test_small_json_worker_response_still_passes(self):
         code = 'import sys; sys.stdin.read(); print("{\\"ok\\": true}")'
         event, response = invoke([sys.executable, "-c", code], {}, timeout=3, limit=1024)
         self.assertEqual(event["status"], "ok")
+        self.assertIs(event["request_complete"], True)
+        self.assertEqual(event["request_bytes_sent"], event["request_bytes_total"])
         self.assertEqual(response, {"ok": True})
 
 

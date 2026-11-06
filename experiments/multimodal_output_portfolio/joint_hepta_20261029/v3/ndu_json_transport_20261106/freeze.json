@@ -4,7 +4,7 @@
   "development_after_observed_format_failures": true,
   "execution_plan": "Publish and read back this freeze before one new qualification. Start the fixed 16 task episodes only if that qualification passes. No retries, prompt changes, model search or rescoring of prior outputs.",
   "external_preregistration": false,
-  "frozen_at_utc": "2026-11-06T13:45:45.027Z",
+  "frozen_at_utc": "2026-11-06T14:49:32Z",
   "limits": {
     "external_paid_model_api_calls": 0,
     "qualification_model_requests": 1,
@@ -45,7 +45,7 @@
     "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/ndu_json_transport_20261106/protocol.json": "a570b542353de610eb57babfc4bcba3669114d07f5f1eb9dc3dbaa2778019ef3",
     "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/ndu_json_transport_20261106/required-inputs.json": "cd0a6d47cd68a4ac414060d6e6ce3f324da9854db68df68fec3e82a3e77f3f5c",
     "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/ndu_json_transport_20261106/run.py": "b62b9a7795d56dbac00dc285583a02b1558bab90c49b7d20b8a806b8ef2cfe2d",
-    "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/ndu_json_transport_20261106/test_adapter.py": "6f80914009627fa3261d6c2fd1422f2d013d6a4f51982345d6843e16247a6dd4",
+    "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/ndu_json_transport_20261106/test_adapter.py": "c6bae5ba9238875c5d0918838d25cd9ff822de1e3bd6ad093eaa10a191b8db6c",
     "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/ndu_json_transport_20261106/validation.json": "d37f24a7eb2e89e6ea5378ba1e3be02183701e5f439d4cd4a4825d443d60a874",
     "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/ndu_llm_confirmation/__init__.py": "4cce2d0e19921ae9e37a5ad83d59c64b4fd9e2b565270149a1b0af7e4fe9c3df",
     "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/ndu_llm_confirmation/contracts.py": "78e6281a3f100f79cf62ff9aa1d6b2606d374235190c1a1ff8847abd248a3a62",
@@ -56,13 +56,14 @@
     "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/ndu_llm_confirmation/external_smoke/tasks.json": "e0582cb02d8f11991194d61cc1895f6b55930d265a179674351b766d2c55f979",
     "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/ndu_llm_confirmation/external_smoke/tools.py": "9821fd2ab36275739009f722e809f3d7fc9b4fa928788a85b21f64cdde43a854",
     "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/ndu_llm_confirmation/ledger.py": "d6402f54c210e3521fe296369272f5a3d9fbed44873f90dddc57bfd9af6d425f",
-    "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/ndu_llm_confirmation/transport.py": "4e43fd6159be8879490b32a6c09c9e07f63ca3ea07ea0a1f35bec76bfeae819e"
+    "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/ndu_llm_confirmation/transport.py": "b65c4ce00eb6377ffd9c36b05bbc9d362d431d7a733824f40cbe0efac7c0e870",
+    "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/ndu_json_transport_20261106/freeze.json": "5df9da1599a7e77acee4fb4c5e8eca93c974fee4a49558f8803fd767457b637a"
   },
   "synthetic_wiring_scenarios": 0,
   "wiring_receipt_sha256": null,
   "prior_wiring_receipt_sha256": "5558fc74a9a8860d843c9ec2040486c8635d7d955d021161401373fc43c0892d",
   "prior_synthetic_wiring_scenarios": 10,
   "wiring_receipt_status": "historical_only_not_replayed_after_transport_source_change",
-  "previous_source_freeze_sha256": "1a7dac474fb4732166c37226574e37f3e62896ebc540d3bfae6e1499bd38f206",
-  "source_update_reason": "Bounded stdout capture for the exact JSON runner, with a real subprocess flood regression; no new candidate inference has run."
+  "previous_source_freeze_sha256": "5df9da1599a7e77acee4fb4c5e8eca93c974fee4a49558f8803fd767457b637a",
+  "source_update_reason": "Reject valid-looking worker responses after partial stdin delivery; retain exact request byte totals, sent prefix digest and completion state. No new model inference or tool execution."
 }
