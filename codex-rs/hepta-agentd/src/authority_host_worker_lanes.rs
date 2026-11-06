@@ -184,6 +184,10 @@ impl HeldWorkerRootRegistration<'_> {
                 let lane = connected[index].lane;
                 let live = connected[index].channel.exchange(|bytes| {
                     self.verify_original_custody(end).map_err(|_| HostIssuerTransportError::PeerDenied)?;
+                    #[cfg(test)]
+                    if matches!(lane, WorkerLane::ConsumerFrontier) {
+                        super::generation_pause::at_consumer_request(&self.registration).map_err(|_| HostIssuerTransportError::Unavailable)?;
+                    }
                     let response = self._session.service.with_worker_floor_fence(Some(&self.registration), |view| {
                         self.verify_original_custody(end)?;
                         floor.check_current()?;

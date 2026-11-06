@@ -17,6 +17,35 @@ pub(super) fn run(mode: &str, socket: UnixDatagram, agent: &AgentId, generation:
     let unacknowledged = socket.try_clone()?;
     let registration = receive_worker_root_registration(socket, agent, generation, Duration::from_secs(5))?;
     let message = match mode {
+        "lanes-lifecycle-gate" => {
+            let executor = tokio::runtime::Builder::new_current_thread().enable_all().build()?;
+            let mut lanes = executor.block_on(registration.receive_worker_lanes(Duration::from_secs(5)))?;
+            let bootstrap = lanes.bootstrap_observation().clone();
+            let observation = lanes.read_observation()?;
+            let proof = lanes.read_original_writer_proof()?;
+            let ready = serde_json::json!({"kind":"worker_ready_for_lifecycle_gate",
+                "bootstrap":bootstrap, "observation":observation, "writer_proof":proof,
+                "effect_authorization_available":false});
+            write_message(&ready)?;
+            let mut command = [0];
+            std::io::stdin().read_exact(&mut command)?;
+            assert_eq!(command, [2]);
+            let first = lanes.load_frontier();
+            let first_error = first.as_ref().err().map(ToString::to_string);
+            write_message(&serde_json::json!({"kind":"worker_lifecycle_gate_first_load",
+                "accepted":first.is_ok(), "frontier":first.ok(), "error":first_error,
+                "effect_authorization_available":false}))?;
+            std::io::stdin().read_exact(&mut command)?;
+            assert_eq!(command, [3]);
+            let later = lanes.load_frontier();
+            let observation = lanes.read_observation();
+            let report = serde_json::json!({"kind":"worker_lifecycle_gate_after_transition",
+                "load_refused":later.is_err(), "observation_refused":observation.is_err(),
+                "effect_authorization_available":false});
+            drop(lanes);
+            executor.shutdown_timeout(Duration::from_secs(1));
+            report
+        }
         "lanes-roundtrip" => {
             let executor = tokio::runtime::Builder::new_current_thread().enable_all().build()?;
             let mut lanes = executor.block_on(registration.receive_worker_lanes(Duration::from_secs(5)))?;
@@ -130,5 +159,15 @@ pub(super) fn run(mode: &str, socket: UnixDatagram, agent: &AgentId, generation:
     let mut stop = [0];
     std::io::stdin().read_exact(&mut stop)?;
     assert_eq!(stop, [1]);
+    Ok(())
+}
+
+fn write_message(message: &serde_json::Value) -> Result<(), Box<dyn std::error::Error>> {
+    let bytes = serde_json::to_vec(message)?;
+    assert!(bytes.len() <= 64 * 1024);
+    let mut output = std::io::stdout().lock();
+    output.write_all(&(bytes.len() as u32).to_be_bytes())?;
+    output.write_all(&bytes)?;
+    output.flush()?;
     Ok(())
 }
