@@ -39,7 +39,7 @@ type WorkerResult = Result<CellGenerationProposalV2, CellGenerationErrorV2>;
 
 /// A concrete, independently cancellable computation. Return a terminal
 /// proposal only for an observed result; an error remains an unknown operation.
-/// Leave two cost-entry slots for measured control/queue overhead. Implementors
+/// Leave two cost-entry slots for measured control/queue overhead. Implementers
 /// must check cancellation and the live deadline at their actual native entry.
 pub trait CellGenerationWorkerV2: Send + Sync + 'static {
     fn execute(
