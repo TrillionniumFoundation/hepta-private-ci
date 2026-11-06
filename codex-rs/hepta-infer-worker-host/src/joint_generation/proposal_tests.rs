@@ -52,7 +52,7 @@ fn real_kernel_partial_prefix_stop_flush_and_replay_are_deterministic() -> Resul
         (&replay.state, &replay.delta, replay.stopped)
     );
     assert!(stopped.stopped);
-    let mut prefix = partial.delta.clone();
+    let mut prefix = partial.delta;
     prefix.extend(&stopped.delta);
     let complete = Prefixes::read(&prefix)?;
     assert_eq!(complete.cursors, TOTAL_UNITS);

@@ -283,7 +283,9 @@ pub(crate) fn run(
         if interruption.is_none() {
             interruption = if request.cancellation.load(Ordering::Acquire) {
                 Some(ProcessStatus::Cancelled)
-            } else if now < last_clock || now >= request.deadline_micros {
+            } else if now < last_clock {
+                Some(ProcessStatus::Failed)
+            } else if now >= request.deadline_micros {
                 Some(ProcessStatus::Deadline)
             } else if overflow.load(Ordering::Acquire) {
                 Some(ProcessStatus::Failed)

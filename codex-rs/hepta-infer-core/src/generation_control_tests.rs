@@ -190,7 +190,7 @@ fn exact_binding_payload_deadline_and_size_fail_without_writing() -> Result<(), 
     ));
     let late = binding("arrived-after-deadline");
     let (admitted, mut late_token) =
-        control.admit_generation(/*now_micros*/ 100, late.clone(), PAYLOAD)?;
+        control.admit_generation(/*now_micros*/ 100, late, PAYLOAD)?;
     assert_eq!(admitted.admitted_at_micros, 100);
     for now in [99, 100, 101] {
         assert_eq!(

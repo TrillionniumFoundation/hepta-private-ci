@@ -441,7 +441,7 @@ fn rejected_input_finishes_without_process_traffic_and_keeps_measured_validation
 }
 
 #[test]
-fn cancellation_before_spawn_and_deadline_after_spawn_never_adopt_output() -> TestResult {
+fn cancellation_deadline_and_clock_rollback_never_adopt_output() -> TestResult {
     let cancelled = Harness::new(/*weights_bytes*/ 128, Arc::new(|| 10))?;
     let proposal = cancelled.worker.execute(
         &cancelled.manifest,
@@ -471,6 +471,27 @@ fn cancellation_before_spawn_and_deadline_after_spawn_never_adopt_output() -> Te
     );
     assert_eq!(proposal.successor_state, deadline.request.predecessor.state);
     assert_eq!(proposal.output_delta, Vec::<u8>::new());
+    assert_eq!(proposal.cost.entries()[0].metrics.cpu_micros, None);
+    let ticks = AtomicU64::new(10);
+    let rolled_back_micros = 9;
+    let rollback = Harness::new(
+        /*weights_bytes*/ 4_000_000,
+        Arc::new(move || ticks.swap(rolled_back_micros, Ordering::SeqCst)),
+    )?;
+    let proposal = rollback.worker.execute(
+        &rollback.manifest,
+        &rollback.request,
+        &AtomicBool::new(false),
+    )?;
+    // The live clock moved backwards while the child was running; no actual
+    // deadline elapsed. Retain this failed execution without claiming expiry.
+    assert_eq!(proposal.disposition, CellGenerationDispositionV2::Failed);
+    assert_eq!(proposal.successor_state, rollback.request.predecessor.state);
+    assert!(proposal.output_delta.is_empty());
+    assert_eq!(
+        proposal.cost.entries()[0].outcome,
+        CellCostOutcomeV2::Failed
+    );
     assert_eq!(proposal.cost.entries()[0].metrics.cpu_micros, None);
     Ok(())
 }
