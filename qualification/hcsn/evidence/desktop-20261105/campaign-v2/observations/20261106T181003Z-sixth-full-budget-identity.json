@@ -1,0 +1,109 @@
+{
+  "schema": "hcsn-gated-cuda-campaign-v2-independent-observation",
+  "observation_kind": "sixth-full-budget-identity-and-next-start",
+  "source": {
+    "research_commit": "f355cfe2ae96b2bc9a5409f8eeb857894f1b0c5b",
+    "python_source_map_sha256": "415f6a2f2d7a89ad0585f29bea0d91928898a11ec8a672de39ce6e22f04d39e9",
+    "frozen_manifest_sha256": "dafb594b4d6af2ade6915b7767369f1c5c69c7b4a06232cae75855cf6be6f531",
+    "original_full_config_sha256": "7fa3d05b8c04a918043afdfa1c266a17beccb814351258d0555a753baf13777a",
+    "pin_scope": "Pins from frozen campaign record; not rehashed during this observation"
+  },
+  "execution": {
+    "host_alias": "desktop",
+    "campaign_job_id": "1a1acdd69f2-fc05-5757",
+    "campaign_started_utc": "2026-11-05T17:59:19.201114+00:00",
+    "process_state": "running",
+    "stage": "full",
+    "status": "running",
+    "progress_updated_utc": "2026-11-06T18:10:03.868537+00:00",
+    "progress_sha256": "f7aa0bc53536c192ac30e7a246df47b7a4cea945358d7f4ee4ecb4ea6dc46d90",
+    "progress_scope": "non-atomic independent read",
+    "requested": 170,
+    "completed": 6,
+    "failed": 0,
+    "unavailable": 0,
+    "full_b_audited": 0,
+    "training_retries_started": 0
+  },
+  "result": {
+    "task": "delayed_recall",
+    "model": "hx_fixed",
+    "seed": 0,
+    "attempt_id": "19d2c77cadca4dc9a6ba07faf70fda9c",
+    "started_utc": "2026-11-06T16:03:43.965254+00:00",
+    "finished_utc": "2026-11-06T17:39:29.581342+00:00",
+    "status": "completed",
+    "training_steps_completed": 400,
+    "train_examples": 25600,
+    "train_tokens": 1638400,
+    "validation_best_mse": 0.15330447256565094,
+    "test_mse": 0.14621196687221527,
+    "constant_predictor_test_mse": 0.3302898406982422,
+    "initial_training_mse": 0.36468756198883057,
+    "final_training_mse": 0.16546650230884552,
+    "wall_seconds_including_validation": 5241.451250189915,
+    "examples_per_second": 4.884143489662796,
+    "parameter_count": 5633,
+    "trainable_parameter_count": 5505,
+    "peak_gpu_allocated_bytes": 777970176,
+    "peak_gpu_reserved_bytes": 801112064,
+    "physical_gpu_energy_joules": null,
+    "energy_missing_reason": "NVML NVMLError_NotSupported; RAPL PermissionError",
+    "terminal_cuda_synchronized": true,
+    "training_device": "cuda:0",
+    "b_policy": 1,
+    "checkpoint_size_bytes": 29803,
+    "checkpoint_sha256": "bcccbdaca61a83ebd497f654abc40808fdb022e182de1a1b01c21629b177d06b",
+    "checkpoint_verified_with_independent_file_info": true,
+    "terminal_relative_path": "campaigns/full-v2/full.runs/a3cd8f7dfed4c2e84e997a1228f514e0bb99b54fcd9e49c8d3eb0e9008895646.attempts/19d2c77cadca4dc9a6ba07faf70fda9c.json",
+    "terminal_sha256": "be203435b6f13703c19453a80608d5085402bbc228950d1baffae0a69fc3f605",
+    "run_index_relative_path": "campaigns/full-v2/full.runs/a3cd8f7dfed4c2e84e997a1228f514e0bb99b54fcd9e49c8d3eb0e9008895646.json",
+    "run_index_sha256": "06b29d1ae3563996ca35adde32e7c9a4faa3fdd1e48938c565184a2bd54dcb1b",
+    "attempt_started_sha256": "c88608d763b67580bc473348be81bd03fe4db36896a1620ec0d3051faf854036"
+  },
+  "next_started": {
+    "task": "delayed_recall",
+    "model": "hx_fixed",
+    "seed": 1,
+    "attempt_id": "0228a2353fa14d0dbde23f8b2f122a60",
+    "started_utc": "2026-11-06T17:39:29.603558+00:00",
+    "attempt_start_sha256": "e32c76ff324ab2b9f971f6ae505539b401a023681b05a9b74afbf104edf8cabe",
+    "terminal_observed": false,
+    "training_credit": 0
+  },
+  "configuration": {
+    "execution_config_sha256": "43fb7b280bb80643c0bcdbfceae6788b37dd1d45fad682805ec6045088b31611",
+    "full_runtime_profile_sha256": "21a9ca457133123d674a41721c3ecb904477efc42953ab51bf03ae66eacbb3e8",
+    "models": 17,
+    "tasks": 2,
+    "seeds": 5,
+    "steps_per_identity": 400,
+    "batch_size": 64,
+    "length": 64,
+    "hidden_size": 64,
+    "population_checkpoint_steps": 1,
+    "cuda_memory_fraction": 0.5
+  },
+  "github": {
+    "exact_source_cpu_ci": {
+      "run_id": 42078258351,
+      "job_id": 127424159520,
+      "status": "completed",
+      "conclusion": "success"
+    },
+    "trusted_main_gpu_probe": {
+      "run_id": 39526325715,
+      "job_id": 127299267982,
+      "status": "completed",
+      "conclusion": "cancelled"
+    }
+  },
+  "interpretation": {
+    "new_terminal_is_not_model_superiority": true,
+    "complete_a_b_mamba2_comparison_open": true,
+    "full_b_audit_open": true,
+    "original_b_adverse_results_preserved": true,
+    "physical_energy_not_imputed": true,
+    "no_second_campaign_or_automatic_retry": true
+  }
+}
