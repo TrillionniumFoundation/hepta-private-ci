@@ -1,0 +1,118 @@
+{
+  "schema": "ndu.confirmation.qualification.v1",
+  "started_at": "2026-11-06T03:13:01.058902+00:00",
+  "scope": "new confirmation package only; original suites and external_smoke not repeated",
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+    "-m",
+    "unittest",
+    "experiments.multimodal_output_portfolio.joint_hepta_20261029.v3.ndu_llm_confirmation.test_transport",
+    "experiments.multimodal_output_portfolio.joint_hepta_20261029.v3.ndu_llm_confirmation.test_confirmation",
+    "experiments.multimodal_output_portfolio.joint_hepta_20261029.v3.ndu_llm_confirmation.test_tasks",
+    "-v"
+  ],
+  "display_command": "python -m unittest experiments.multimodal_output_portfolio.joint_hepta_20261029.v3.ndu_llm_confirmation.test_transport experiments.multimodal_output_portfolio.joint_hepta_20261029.v3.ndu_llm_confirmation.test_confirmation experiments.multimodal_output_portfolio.joint_hepta_20261029.v3.ndu_llm_confirmation.test_tasks -v",
+  "cwd": "/workspace/scratch/3f6a885bb83c/hepta-research",
+  "exit_code": 0,
+  "wall_seconds": 1.377658462999534,
+  "child_cpu_seconds": 0.756969,
+  "tests_run": 19,
+  "unittest_reported_seconds": 1.25,
+  "stdout": "",
+  "stderr": "test_loopback_http_uses_auth_without_logging_credentials (experiments.multimodal_output_portfolio.joint_hepta_20261029.v3.ndu_llm_confirmation.test_transport.TransportTests.test_loopback_http_uses_auth_without_logging_credentials) ... ok\ntest_nonfinite_and_invalid_utf8_are_receipted_failures (experiments.multimodal_output_portfolio.joint_hepta_20261029.v3.ndu_llm_confirmation.test_transport.TransportTests.test_nonfinite_and_invalid_utf8_are_receipted_failures) ... ok\ntest_private_payload_and_estimated_price_never_become_actual_bill (experiments.multimodal_output_portfolio.joint_hepta_20261029.v3.ndu_llm_confirmation.test_transport.TransportTests.test_private_payload_and_estimated_price_never_become_actual_bill) ... ok\ntest_timeout_keeps_attempt_and_cleans_child_group (experiments.multimodal_output_portfolio.joint_hepta_20261029.v3.ndu_llm_confirmation.test_transport.TransportTests.test_timeout_keeps_attempt_and_cleans_child_group) ... ok\ntest_usage_missing_and_duplicate_billing_are_not_zero (experiments.multimodal_output_portfolio.joint_hepta_20261029.v3.ndu_llm_confirmation.test_transport.TransportTests.test_usage_missing_and_duplicate_billing_are_not_zero) ... ok\ntest_wrong_revision_is_not_fixed_by_matching_invoice (experiments.multimodal_output_portfolio.joint_hepta_20261029.v3.ndu_llm_confirmation.test_transport.TransportTests.test_wrong_revision_is_not_fixed_by_matching_invoice) ... ok\ntest_duplicate_or_split_source_is_not_extra_independence (experiments.multimodal_output_portfolio.joint_hepta_20261029.v3.ndu_llm_confirmation.test_confirmation.ConfirmationTests.test_duplicate_or_split_source_is_not_extra_independence) ... ok\ntest_exact_hoeffding_radius_and_actual_lifecycle_cost (experiments.multimodal_output_portfolio.joint_hepta_20261029.v3.ndu_llm_confirmation.test_confirmation.ConfirmationTests.test_exact_hoeffding_radius_and_actual_lifecycle_cost) ... ok\ntest_failed_attempt_is_retained_and_paid (experiments.multimodal_output_portfolio.joint_hepta_20261029.v3.ndu_llm_confirmation.test_confirmation.ConfirmationTests.test_failed_attempt_is_retained_and_paid) ... ok\ntest_future_baseline_upper_bound_cannot_artificially_improve_contrast (experiments.multimodal_output_portfolio.joint_hepta_20261029.v3.ndu_llm_confirmation.test_confirmation.ConfirmationTests.test_future_baseline_upper_bound_cannot_artificially_improve_contrast) ... ok\ntest_missing_arm_invoice_or_usage_cannot_pass (experiments.multimodal_output_portfolio.joint_hepta_20261029.v3.ndu_llm_confirmation.test_confirmation.ConfirmationTests.test_missing_arm_invoice_or_usage_cannot_pass) ... ok\ntest_multiplicity_precision_and_double_charge (experiments.multimodal_output_portfolio.joint_hepta_20261029.v3.ndu_llm_confirmation.test_confirmation.ConfirmationTests.test_multiplicity_precision_and_double_charge) ... ok\ntest_repeat_records_cannot_inflate_n (experiments.multimodal_output_portfolio.joint_hepta_20261029.v3.ndu_llm_confirmation.test_confirmation.ConfirmationTests.test_repeat_records_cannot_inflate_n) ... ok\ntest_version_cap_late_delivery_and_fixture_fail_closed (experiments.multimodal_output_portfolio.joint_hepta_20261029.v3.ndu_llm_confirmation.test_confirmation.ConfirmationTests.test_version_cap_late_delivery_and_fixture_fail_closed) ... ok\ntest_endpoint_ready_episode_retains_model_tool_verifier_and_answer (experiments.multimodal_output_portfolio.joint_hepta_20261029.v3.ndu_llm_confirmation.test_tasks.TaskTests.test_endpoint_ready_episode_retains_model_tool_verifier_and_answer) ... ok\ntest_file_hash_and_sqlite_read_only_are_enforced (experiments.multimodal_output_portfolio.joint_hepta_20261029.v3.ndu_llm_confirmation.test_tasks.TaskTests.test_file_hash_and_sqlite_read_only_are_enforced) ... ok\ntest_model_misspecification_and_unknown_cost_do_not_use_oracle (experiments.multimodal_output_portfolio.joint_hepta_20261029.v3.ndu_llm_confirmation.test_tasks.TaskTests.test_model_misspecification_and_unknown_cost_do_not_use_oracle) ... ok\ntest_planner_finds_complementary_queries_that_myopic_voi_rejects (experiments.multimodal_output_portfolio.joint_hepta_20261029.v3.ndu_llm_confirmation.test_tasks.TaskTests.test_planner_finds_complementary_queries_that_myopic_voi_rejects) ... ok\ntest_timeout_and_cancellation_deliver_no_quality (experiments.multimodal_output_portfolio.joint_hepta_20261029.v3.ndu_llm_confirmation.test_tasks.TaskTests.test_timeout_and_cancellation_deliver_no_quality) ... ok\n\n----------------------------------------------------------------------\nRan 19 tests in 1.250s\n\nOK\n",
+  "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+  "platform": "linux",
+  "source_sha256_before": {
+    "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/ndu_llm_confirmation/README.md": "b2c03ad150ebced7c11df2a16653930d2420604eccb483c48f35c8810e7ccd46",
+    "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/ndu_llm_confirmation/__init__.py": "4cce2d0e19921ae9e37a5ad83d59c64b4fd9e2b565270149a1b0af7e4fe9c3df",
+    "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/ndu_llm_confirmation/confirmation.py": "fcaa07f84030c42eeaae71bad25c9cda8d0428ffeb1ac18cf5d5fd44a9ef0193",
+    "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/ndu_llm_confirmation/evidence/current_gate.json": "b4874ec4b60ebc852b21ccf6589f6333261fe1474aa6043cd547864e1b47de31",
+    "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/ndu_llm_confirmation/protocol.template.json": "b200ed0a07ba32fe530753ba8cd0185ae9f2c0692bb56c8853cc7c766f59413f",
+    "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/ndu_llm_confirmation/provider.example.json": "098eac0b1c1257658964b3914acdd26ef2c57d545b296f60beeddbe378cfb420",
+    "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/ndu_llm_confirmation/schema.json": "294ae08b7ab150772fb08ef7c19dd2c005863ad92ef8c895d248a442434c52da",
+    "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/ndu_llm_confirmation/status.json": "32151f04adb068b3075935412a650b394ba3b1f5704625a786ef13b869d751a2",
+    "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/ndu_llm_confirmation/tasks.py": "f3ed71c9d786cda20cf3df72946b97f58977d674ea6f3ed9aefc7c7a84bd8b7d",
+    "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/ndu_llm_confirmation/test_confirmation.py": "ae01ef5c30b7a633915e61d57549566a5ac77870e4873e5ad24ef54a614a8c2f",
+    "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/ndu_llm_confirmation/test_tasks.py": "93b90ce1eddd069282940ba9e3d5ba327503f49442058ca86307a9e4150906f0",
+    "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/ndu_llm_confirmation/test_transport.py": "93dd65db5962525b982b39c0d2a0b962a27ea1c4aea556fb2f8e8e01cbdde06d",
+    "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/ndu_llm_confirmation/transport.py": "4452207bf62d7f16470c5bbb86423cacc167c43dd8330fbfc2b994240abdeb02"
+  },
+  "schema_check": {
+    "valid": true,
+    "synthetic_fixture_matches": true
+  },
+  "synthetic_mathematics_only_gate": {
+    "status": "PASS",
+    "not_llm_evidence": true,
+    "note": "Fabricated paired records and proof materials for numerical checks only."
+  },
+  "cli_fixture_smoke": {
+    "exit_code": 0,
+    "stdout": "{\"scientific_status\":\"NOT_LLM_EVIDENCE\",\"terminal\":\"delivered\"}\n",
+    "stderr": "",
+    "not_llm_evidence": true,
+    "terminal": "delivered",
+    "quality": 1.0,
+    "request_kinds": [
+      "model",
+      "verifier",
+      "host_envelope"
+    ],
+    "all_actual_charges_unknown": true,
+    "scientific_status": "NOT_LLM_EVIDENCE"
+  },
+  "source_sha256_after": {
+    "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/ndu_llm_confirmation/README.md": "b2c03ad150ebced7c11df2a16653930d2420604eccb483c48f35c8810e7ccd46",
+    "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/ndu_llm_confirmation/__init__.py": "4cce2d0e19921ae9e37a5ad83d59c64b4fd9e2b565270149a1b0af7e4fe9c3df",
+    "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/ndu_llm_confirmation/confirmation.py": "fcaa07f84030c42eeaae71bad25c9cda8d0428ffeb1ac18cf5d5fd44a9ef0193",
+    "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/ndu_llm_confirmation/evidence/current_gate.json": "b4874ec4b60ebc852b21ccf6589f6333261fe1474aa6043cd547864e1b47de31",
+    "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/ndu_llm_confirmation/protocol.template.json": "b200ed0a07ba32fe530753ba8cd0185ae9f2c0692bb56c8853cc7c766f59413f",
+    "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/ndu_llm_confirmation/provider.example.json": "098eac0b1c1257658964b3914acdd26ef2c57d545b296f60beeddbe378cfb420",
+    "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/ndu_llm_confirmation/schema.json": "294ae08b7ab150772fb08ef7c19dd2c005863ad92ef8c895d248a442434c52da",
+    "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/ndu_llm_confirmation/status.json": "32151f04adb068b3075935412a650b394ba3b1f5704625a786ef13b869d751a2",
+    "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/ndu_llm_confirmation/tasks.py": "f3ed71c9d786cda20cf3df72946b97f58977d674ea6f3ed9aefc7c7a84bd8b7d",
+    "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/ndu_llm_confirmation/test_confirmation.py": "ae01ef5c30b7a633915e61d57549566a5ac77870e4873e5ad24ef54a614a8c2f",
+    "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/ndu_llm_confirmation/test_tasks.py": "93b90ce1eddd069282940ba9e3d5ba327503f49442058ca86307a9e4150906f0",
+    "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/ndu_llm_confirmation/test_transport.py": "93dd65db5962525b982b39c0d2a0b962a27ea1c4aea556fb2f8e8e01cbdde06d",
+    "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/ndu_llm_confirmation/transport.py": "4452207bf62d7f16470c5bbb86423cacc167c43dd8330fbfc2b994240abdeb02"
+  },
+  "source_unchanged_during_qualification": true,
+  "coherent_stage_line_counts": {
+    "transport": {
+      "transport": 289,
+      "test_transport": 141
+    },
+    "confirmation": {
+      "confirmation": 302,
+      "test_confirmation": 183
+    },
+    "tasks": {
+      "tasks": 223,
+      "test_tasks": 103
+    }
+  },
+  "current_confirmation_gate": {
+    "comparisons": [],
+    "independence_unit": "source/task cluster",
+    "protocol_sha256": "f2fd4b23c422d079b01a11f484da1b17ee092ae4f721588ac80741072a4d74d1",
+    "reasons": [
+      "protocol_not_frozen"
+    ],
+    "schema": "ndu.confirmation.result.v1",
+    "status": "HOLD"
+  },
+  "real_llm_calls": 0,
+  "paid_external_api_calls": 0,
+  "network_scope": "loopback HTTP fixture only, no external endpoint",
+  "actual_currency_cost": null,
+  "cost_note": "Local qualification CPU/wall recorded; invoice/host monetary price not configured.",
+  "development_history": [
+    {
+      "kind": "command_typo",
+      "prior_exit_code": 1,
+      "observed_tests": 15,
+      "detail": "A prior command accidentally mixed a dotted import with a slash path for test_tasks. 14 selected tests passed and one loader import failed; corrected module passed 5/5. No implementation failure attributed to this typo."
+    }
+  ],
+  "finished_at": "2026-11-06T03:13:02.834064+00:00"
+}

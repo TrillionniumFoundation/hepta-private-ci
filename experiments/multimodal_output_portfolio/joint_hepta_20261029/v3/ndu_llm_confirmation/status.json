@@ -1,0 +1,59 @@
+{
+  "costs": {
+    "development_currency": null,
+    "future_model_currency": null,
+    "local_host_currency": null,
+    "note": "Unknown monetary cost is not zero. No paid external API call was made by this implementation task."
+  },
+  "date": "2026-11-06",
+  "engineering_test_count": 39,
+  "external_smoke": {
+    "confirmation_eligible": false,
+    "note": "Parent-owned source snapshots and smoke implementation are unchanged by this agent.",
+    "path": "external_smoke/README.md",
+    "source_clusters": 2
+  },
+  "formal_confirmation": "NOT_RUN",
+  "implemented": [
+    "provider-neutral HTTP/local-worker bridge",
+    "per-attempt identity/time/usage ledger",
+    "separate host resource meter and final invoice reconciliation",
+    "strict paired source-cluster Hoeffding/lifecycle gate",
+    "source/evidence bytes must exist and match hashes",
+    "real local file/SQLite adapters and four baseline policies",
+    "instrumented external full-policy callback; no new full algorithm claimed",
+    "fsynced intent before dispatch and terminal pairing; unfinished intent HOLD",
+    "strict schema/type checks including failed episodes and integer deployment count",
+    "observed identity mandatory for successful model responses",
+    "executable source/code/global binding for restricted top-level full callbacks"
+  ],
+  "limitations": [
+    "Identity hashes/material availability do not authenticate an unsigned provider claim.",
+    "Independence/source grouping requires substantive external review; identifier checks cannot detect every semantic near-duplicate.",
+    "Finite strong planner is exact only for the supplied deterministic-signal MAP surrogate and predicted durations.",
+    "No study-level net benefit, sample advantage, novel RL algorithm or scaling readiness is demonstrated.",
+    "Audited callback restrictions are reproducibility checks for trusted source, not a Python security sandbox or transitive arbitrary-dependency proof."
+  ],
+  "overall_gate": "HOLD",
+  "protocol_status": "DRAFT_NOT_PREREGISTERED",
+  "qualification_receipt": "evidence/qualification.json",
+  "real_external_model_calls": 0,
+  "real_llm_execution": "NOT_RUN",
+  "remaining_external_inputs": [
+    "An authorized callable model endpoint or local weights/runtime",
+    "Immutable model/revision evidence plus observed identity and final token usage",
+    "Provider/host/tool final invoices or authoritative zero-charge evidence and frozen price conversion",
+    "Genuine enforceable service-cost bound with evidence, not an asserted observed cap",
+    "Untouched source-independent confirmation bank, blinded verifiers and independent clusters in >=2 families",
+    "Frozen strong-baseline qualification, complete full-candidate source/policy, mechanism ablations if claimed",
+    "Frozen paired arm order/repeats/cache/hardware/retry rules and complete lifecycle allocation proofs"
+  ],
+  "request_ledger_schema": "ndu.request.v2",
+  "schema": "ndu.llm-confirmation.status.v1",
+  "scientific_status": "ENGINEERING_QUALIFICATION_ONLY",
+  "superseded_qualification": {
+    "path": "evidence/qualification-original.json",
+    "sha256": "d9af64b97a57b483a76ebc37f15148eea9465186321400d1049be6df18d2a661",
+    "status": "SUPERSEDED_AFTER_FOUR_INDEPENDENT_REVIEW_BLOCKERS"
+  }
+}

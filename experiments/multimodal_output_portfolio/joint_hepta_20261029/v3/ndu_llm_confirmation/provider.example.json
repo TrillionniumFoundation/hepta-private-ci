@@ -1,0 +1,24 @@
+{
+  "kind": "http",
+  "url_env": "NDU_MODEL_ENDPOINT",
+  "key_env": "NDU_MODEL_API_KEY",
+  "wire_format": "native",
+  "identity": {
+    "kind": "frozen_llm",
+    "model_id": "UNFROZEN",
+    "revision": "UNFROZEN",
+    "evidence_sha256": null
+  },
+  "decoding": {"temperature": 0, "max_output_tokens": 512},
+  "response_map": {
+    "model_id": ["model_id"],
+    "revision": ["revision"],
+    "text": ["text"],
+    "input_tokens": ["usage", "input_tokens"],
+    "output_tokens": ["usage", "output_tokens"],
+    "cached_input_tokens": ["usage", "cached_input_tokens"],
+    "provider_request_id": ["provider_request_id"],
+    "amount": ["amount"],
+    "currency": ["currency"]
+  }
+}
