@@ -19,7 +19,6 @@ use serde::Deserialize;
 use serde::Serialize;
 use sha2::Digest;
 use sha2::Sha256;
-use trnm_release_bundle::pq_release::PqReleaseAuthorityV1;
 use trnm_release_bundle::pq_release::PqReleaseRoleV1;
 use trnm_release_bundle::pq_release::PqReleaseRootV1;
 
@@ -34,9 +33,15 @@ use crate::release_authority_wire::RootRecord;
 mod current;
 #[path = "release_authority_decision_window.rs"]
 mod decision_window;
+#[path = "release_authority_history_owner.rs"]
+mod history_owner;
+#[path = "release_authority_initial_root.rs"]
+mod initial_root;
+pub(crate) use initial_root::InitialRootMaterial;
 #[path = "release_authority_intents.rs"]
 mod intents;
 pub(crate) use decision_window::VerifiedDecisionWindow;
+pub use history_owner::ReleaseIntentHistory;
 #[path = "release_authority_reconciliation.rs"]
 mod reconciliation;
 pub(crate) use reconciliation::PendingIntentReconciliation;
@@ -85,6 +90,7 @@ impl FleetReleaseTrustConfig {
 
 pub(crate) struct ReleaseAuthority {
     config: FleetReleaseTrustConfig,
+    initial_root_material: InitialRootMaterial,
     files: AuthorityFiles,
     clock: Arc<dyn AuthorityClock>,
     frontier: Arc<dyn AuthorityFrontierStore<Option<ReleaseFrontierV1>>>,
@@ -174,12 +180,14 @@ impl ReleaseAuthority {
             return Err(invalid("release owner is already initialized"));
         }
         let now = owner.now()?;
-        let authority = PqReleaseAuthorityV1::bootstrap_pinned(
-            PqReleaseRootV1::try_from(&root)?,
-            owner.config.initial_root_sha256,
-            now,
-        )
-        .map_err(|error| invalid(format!("M15 bootstrap rejected: {error}")))?;
+        let authority = owner
+            .initial_root_material
+            .bootstrap(
+                PqReleaseRootV1::try_from(&root)?,
+                owner.config.initial_root_sha256,
+                now,
+            )
+            .map_err(|error| invalid(format!("M15 bootstrap rejected: {error}")))?;
         let journal = Journal::initial(&owner.config, root, now);
         owner.commit(/*expected*/ None, &journal, authority.checkpoint())?;
         Ok(owner)
@@ -222,7 +230,11 @@ impl ReleaseAuthority {
                 if journal.previous_frontier != attempt.expected {
                     return Err(FleetRegistryError::ReleaseAuthorityRollback);
                 }
-                let state = journal.rebuild(&owner.config, attempt.proposed)?;
+                let state = journal.rebuild(
+                    &owner.config,
+                    attempt.proposed,
+                    &owner.initial_root_material,
+                )?;
                 if owner.now()? < state.time_floor {
                     return Err(invalid(
                         "release clock regressed behind the committed proposal",
@@ -247,6 +259,7 @@ impl ReleaseAuthority {
         })?;
         Ok(Self {
             config,
+            initial_root_material: InitialRootMaterial::default(),
             files,
             clock: Arc::new(clock),
             frontier: Arc::new(frontier),
@@ -298,7 +311,7 @@ impl ReleaseAuthority {
         }
         let journal: Journal = serde_json::from_slice(&bytes)
             .map_err(|_| invalid("invalid release authority journal"))?;
-        let state = journal.rebuild(&self.config, external)?;
+        let state = journal.rebuild(&self.config, external, &self.initial_root_material)?;
         let now = self.now()?;
         if now < state.time_floor {
             return Err(invalid("release clock regressed behind committed history"));

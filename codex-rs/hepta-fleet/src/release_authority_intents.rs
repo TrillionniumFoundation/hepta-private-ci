@@ -70,7 +70,7 @@ impl ReleaseAuthority {
     // The caller owns the same File lock and an already-verified exact state.
     // Expected bytes are supplied after publication so a refresh authenticates
     // the complete journal actually prepared by this operation.
-    fn recheck_history_state(
+    pub(super) fn recheck_history_state(
         &self,
         expected: &ReleaseFrontierV1,
         time_floor: u64,
@@ -364,7 +364,7 @@ impl ReleaseAuthority {
         result
     }
 
-    fn append_intent(
+    pub(super) fn append_intent(
         &self,
         state: LoadedState,
         expected: Option<&ReleaseIntentAnchorV1>,

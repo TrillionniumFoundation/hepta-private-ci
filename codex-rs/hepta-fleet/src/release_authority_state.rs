@@ -14,6 +14,7 @@ use trnm_release_bundle::pq_release::PqReleaseRootV1;
 use crate::FleetRegistryError;
 use crate::ReleaseId;
 use crate::release_authority::FleetReleaseTrustConfig;
+use crate::release_authority::InitialRootMaterial;
 use crate::release_authority::invalid;
 use crate::release_authority_set::ReleaseSetRecord;
 use crate::release_authority_wire::AuthorityEventRecord;
@@ -120,6 +121,7 @@ impl Journal {
         self,
         config: &FleetReleaseTrustConfig,
         frontier: ReleaseFrontierV1,
+        initial_root_material: &InitialRootMaterial,
     ) -> Result<LoadedState, FleetRegistryError> {
         if self.schema_version != 1
             || self.profile != JOURNAL_PROFILE
@@ -145,12 +147,9 @@ impl Journal {
             _ => return Err(invalid("invalid retained release frontier predecessor")),
         }
         let root = PqReleaseRootV1::try_from(&self.initial_root)?;
-        let mut authority = PqReleaseAuthorityV1::bootstrap_pinned(
-            root,
-            config.initial_root_sha256,
-            self.initialized_at,
-        )
-        .map_err(|error| invalid(format!("M15 recovery root rejected: {error}")))?;
+        let mut authority = initial_root_material
+            .bootstrap(root, config.initial_root_sha256, self.initialized_at)
+            .map_err(|error| invalid(format!("M15 recovery root rejected: {error}")))?;
         let mut native = Vec::new();
         let latest_set = self.entries.iter().rposition(|entry| {
             matches!(

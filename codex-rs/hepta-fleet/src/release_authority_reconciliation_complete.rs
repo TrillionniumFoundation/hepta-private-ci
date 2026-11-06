@@ -107,7 +107,9 @@ pub(super) fn known_winner(
         return Err(FleetRegistryError::ReleaseAuthorityRecoveryRequired);
     };
     let winning = load::journal(bytes)?;
-    let state = winning.clone().rebuild(&owner.config, external)?;
+    let state = winning
+        .clone()
+        .rebuild(&owner.config, external, &owner.initial_root_material)?;
     if owner.now()? < state.time_floor {
         return Err(invalid("completed intent recovery clock regressed"));
     }
@@ -188,13 +190,17 @@ pub(super) fn known_winner(
         ) {
             return Err(invalid("original proposal is not intent-only"));
         }
-        let _ = journal.rebuild(&owner.config, original.proposed)?;
+        let _ = journal.rebuild(
+            &owner.config,
+            original.proposed,
+            &owner.initial_root_material,
+        )?;
     }
     if let Some(journal) = replacement_journal {
         let update = replacement
             .as_ref()
             .ok_or(FleetRegistryError::ReleaseAuthorityRecoveryRequired)?;
-        let _ = journal.rebuild(&owner.config, update.proposed)?;
+        let _ = journal.rebuild(&owner.config, update.proposed, &owner.initial_root_material)?;
     } else if replacement.is_some()
         && external == original.proposed
         && (winner != IntentRecoveryWinner::Published || files.original_proposal.is_some())

@@ -81,6 +81,7 @@ pub use release::ReleaseId;
 pub use release::ReleaseMetadata;
 pub use release::ReleaseProgramMetadata;
 pub use release_authority::FleetReleaseTrustConfig;
+pub use release_authority::ReleaseIntentHistory;
 pub use release_intent_anchor::ReleaseIntentAnchorV1;
 pub use release_intent_anchor::ReleaseIntentPhaseV1;
 pub use release_intent_anchor::ReleaseIntentTerminalWitnessV1;

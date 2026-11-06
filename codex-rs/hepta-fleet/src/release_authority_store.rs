@@ -70,13 +70,37 @@ impl AuthorityFiles {
 
     pub fn lock(&self) -> Result<File, FleetRegistryError> {
         let lock = self.recovery_lock()?;
+        self.require_settled()?;
+        Ok(lock)
+    }
+
+    // A held historical owner must preserve every original lock-admission
+    // refusal without attempting to acquire its own non-reentrant File lock.
+    pub fn recheck_held_lock(&self, held: &File) -> Result<(), FleetRegistryError> {
+        let named = open_private(&self.root.join("owner.lock"), OpenMode::Read)?;
+        #[cfg(unix)]
+        {
+            use std::os::unix::fs::MetadataExt;
+
+            let actual = held.metadata()?;
+            let expected = named.metadata()?;
+            if (actual.dev(), actual.ino()) != (expected.dev(), expected.ino()) {
+                return Err(invalid("held release owner lock was replaced"));
+            }
+        }
+        #[cfg(not(unix))]
+        let _ = (held, named);
+        self.require_settled()
+    }
+
+    fn require_settled(&self) -> Result<(), FleetRegistryError> {
         if entry_exists(&self.root.join(ATTEMPT))?
             || entry_exists(&self.root.join(PROPOSAL))?
             || self.has_intent_reconciliation()?
         {
             return Err(FleetRegistryError::ReleaseAuthorityRecoveryRequired);
         }
-        Ok(lock)
+        Ok(())
     }
 
     pub fn recovery_lock(&self) -> Result<File, FleetRegistryError> {
