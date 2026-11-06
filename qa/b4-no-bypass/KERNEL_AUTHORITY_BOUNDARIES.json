@@ -227,7 +227,6 @@
       "allowedCallers": [
         "codex-rs/hepta-memory/src/production_writer.rs",
         "codex-rs/hepta-ndu/src/owner.rs",
-        "codex-rs/hepta-operations/src/durable_store.rs",
         "codex-rs/hepta-prompt-registry/src/admission.rs",
         "codex-rs/hepta-prompt-registry/src/durable.rs",
         "codex-rs/hepta-runtime/src/organs.rs"
@@ -261,7 +260,9 @@
         "\\.\\s*with_dispatch_boundary\\s*\\(",
         "FinalUseAuthority\\s*::\\s*with_dispatch_boundary\\s*\\("
       ],
-      "allowedCallers": []
+      "allowedCallers": [
+        "codex-rs/hepta-operations/src/durable_dispatch.rs"
+      ]
     },
     {
       "id": "final_use_revocation_update",
