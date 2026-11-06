@@ -215,17 +215,22 @@ fn lower_owned_token(token: HANDLE) -> Result<()> {
         if SetTokenInformation(token, TokenIntegrityLevel, start.cast(), length as u32) == 0 {
             anyhow::bail!("MIC_SETUP lower_token os={}", GetLastError());
         }
-        let mut policy = TOKEN_MANDATORY_POLICY {
-            Policy: old_policy | NO_WRITE_UP,
-        };
-        if SetTokenInformation(
-            token,
-            TokenMandatoryPolicy,
-            (&mut policy as *mut TOKEN_MANDATORY_POLICY).cast(),
-            std::mem::size_of_val(&policy) as u32,
-        ) == 0
-        {
-            anyhow::bail!("MIC_SETUP enforce_policy os={}", GetLastError());
+        // Avoid rewriting an already enforced policy. The final readback still
+        // requires every original policy bit to be preserved.
+        let (_, current_policy) = token_state(token)?;
+        if current_policy & NO_WRITE_UP == 0 {
+            let mut policy = TOKEN_MANDATORY_POLICY {
+                Policy: old_policy | NO_WRITE_UP,
+            };
+            if SetTokenInformation(
+                token,
+                TokenMandatoryPolicy,
+                (&mut policy as *mut TOKEN_MANDATORY_POLICY).cast(),
+                std::mem::size_of_val(&policy) as u32,
+            ) == 0
+            {
+                anyhow::bail!("MIC_SETUP enforce_policy os={}", GetLastError());
+            }
         }
     }
     let state = token_state(token)?;
