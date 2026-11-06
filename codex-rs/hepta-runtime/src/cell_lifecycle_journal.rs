@@ -113,7 +113,7 @@ impl<A: RuntimeCellLifecycleAnchorStoreV1> RuntimeCellLifecycleJournalV1<A> {
             return Err(RuntimeCellLifecycleError::Authentication);
         }
         self.append(plan, Some(expected_revision), LifecycleEventV1::Observed {
-            observation, authentication: authentication.to_string(),
+            observation: Box::new(observation), authentication: authentication.to_string(),
         }).await
     }
 
@@ -163,7 +163,7 @@ impl<A: RuntimeCellLifecycleAnchorStoreV1> RuntimeCellLifecycleJournalV1<A> {
             if let LifecycleEventV1::Observed { observation, .. } = event
                 && observation.stage == stage
             {
-                result = Some(observation);
+                result = Some(*observation);
             }
         }
         tx.commit().await.map_err(unavailable)?;

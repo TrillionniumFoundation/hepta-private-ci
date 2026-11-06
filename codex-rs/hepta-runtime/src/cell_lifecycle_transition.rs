@@ -12,7 +12,7 @@ pub(crate) enum LifecycleEventV1 {
     Created { at_ms: u64 },
     Prepared { at_ms: u64 },
     Observed {
-        observation: RuntimeCellLifecycleObservationV1,
+        observation: Box<RuntimeCellLifecycleObservationV1>,
         authentication: String,
     },
 }
