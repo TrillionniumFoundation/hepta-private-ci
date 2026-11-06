@@ -1,0 +1,301 @@
+{
+  "schema": "hepta.cell.p0-readonly-source-review.v1",
+  "authority": "DENY_ALL",
+  "integrated_candidate": null,
+  "donors": [
+    {
+      "pr": 4938,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4938",
+      "head": "codex/cell-six-refactors-20261106-371753",
+      "head_sha": "f09dea504916d551e13fe36752dd1e833bcaa51b",
+      "base": "codex/neuron-generation-bridge-20261106-734df8",
+      "base_sha": "7391c3dc3b0a496b62be4c6cf2769d2ae0c9db75",
+      "draft": true,
+      "state": "open",
+      "read_snapshot_updated_at": "2026-11-06T10:03:15Z"
+    },
+    {
+      "pr": 4944,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4944",
+      "head": "codex/portfolio-owner-integration-20261106-816d",
+      "head_sha": "25fa6d6dd7e1c5c1827a4099f601aee49b2f1b58",
+      "base": "codex/cell-learning-unified-20261106-050e",
+      "base_sha": "9f73f82ca7454d9d00e4fc71af43fdffba14c5e3",
+      "draft": true,
+      "state": "open",
+      "read_snapshot_updated_at": "2026-11-06T08:52:34Z"
+    },
+    {
+      "pr": 4963,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4963",
+      "head": "codex/neuron-v13-runtime-20261106-734df8",
+      "head_sha": "3b31842504121e8ae40909db1edc17e7790cf688",
+      "base": "codex/neuron-normal-entry-20261106-734df8",
+      "base_sha": "61112c3fa2e4a2ab94363f493ab8db14f161fc05",
+      "draft": true,
+      "state": "open",
+      "read_snapshot_updated_at": "2026-11-06T16:05:00Z"
+    },
+    {
+      "pr": 5001,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/5001",
+      "head": "codex/hcsn-gap-closure-20261106",
+      "head_sha": "44e539313e0c54badb4b9b687425dd87ecba6e67",
+      "base": "codex/hcsn-agentd-terminal-recovery-20261106",
+      "base_sha": "fb626328f39207460f9bf54e1eda01b6cfcbd6de",
+      "draft": true,
+      "state": "open",
+      "read_snapshot_updated_at": "2026-11-06T13:37:01Z"
+    },
+    {
+      "pr": 5067,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/5067",
+      "head": "codex/hcsn-production-compose-20261106",
+      "head_sha": "bbe995c43e4eed4bb9c217b52447ba5a32ebb6ca",
+      "base": "codex/hcsn-gap-closure-20261106",
+      "base_sha": "44e539313e0c54badb4b9b687425dd87ecba6e67",
+      "draft": true,
+      "state": "open",
+      "read_snapshot_updated_at": "2026-11-06T15:34:33Z"
+    },
+    {
+      "pr": 4855,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4855",
+      "head": "integration/unified-w0-w7-20261105-4d868a11",
+      "head_sha": "a86267a0525448870c47a641fb54cd510543ba7a",
+      "base": "main",
+      "base_sha": "732e934ba496d90fbe042b8d41d479ef901643e5",
+      "draft": true,
+      "state": "open",
+      "read_snapshot_updated_at": "2026-11-06T15:54:54Z"
+    }
+  ],
+  "comparisons": [
+    {
+      "base": "7391c3dc3b0a496b62be4c6cf2769d2ae0c9db75",
+      "head": "f09dea504916d551e13fe36752dd1e833bcaa51b",
+      "status": "ahead",
+      "ahead_by": 11,
+      "behind_by": 0,
+      "merge_base": "7391c3dc3b0a496b62be4c6cf2769d2ae0c9db75"
+    }
+  ],
+  "reviewed_file_snapshots": [
+    {
+      "donor": "r4938",
+      "path": "codex-rs/hepta-agentd/src/neuron_generation.rs",
+      "bytes": 9794,
+      "sha256": "a359642d8ba8187adeaaa785b4e161e6f251bb1771eda5ff6b3b1803e95c818d",
+      "git_blob": "cc022f4b10bdacc0fb9e521e487c57a2a0a98b94",
+      "remote_git_blob": "cc022f4b10bdacc0fb9e521e487c57a2a0a98b94"
+    },
+    {
+      "donor": "r4938",
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_runtime.rs",
+      "bytes": 12813,
+      "sha256": "dab115c1283cabc9bd0c68faff91bc9af4abbcebb3c2c9df6be0a71f221d4f51",
+      "git_blob": "2375234a3670fd7e8f2634fddc4e449445d02aec",
+      "remote_git_blob": "2375234a3670fd7e8f2634fddc4e449445d02aec"
+    },
+    {
+      "donor": "r4938",
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_runtime_population.rs",
+      "bytes": 2858,
+      "sha256": "37c8c3a4a9e47b6843d79403beaaed1aba0031f847b5d57a02498503dd6345b3",
+      "git_blob": "f548d2ecfa2f0d08a519efad07f9edd24f7cdafb",
+      "remote_git_blob": "f548d2ecfa2f0d08a519efad07f9edd24f7cdafb"
+    },
+    {
+      "donor": "r4938",
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_service.rs",
+      "bytes": 12807,
+      "sha256": "8f76e4921a45fc6e6eae4bb0de53183ffd5460a53587081ba17d636c937a554b",
+      "git_blob": "ad5f9f53f39c1d227fdf100f19a34e553d7b1c78",
+      "remote_git_blob": "ad5f9f53f39c1d227fdf100f19a34e553d7b1c78"
+    },
+    {
+      "donor": "r4938",
+      "path": "codex-rs/hepta-neuron/src/cell_generation_journal.rs",
+      "bytes": 17768,
+      "sha256": "a88a30f0d6c57d97465fb658a7ba453020008588b5ea7071678e3f5bfc7b2901",
+      "git_blob": "7b661b55be1c562819374035c71d62fa5a103522",
+      "remote_git_blob": "7b661b55be1c562819374035c71d62fa5a103522"
+    },
+    {
+      "donor": "r4938",
+      "path": "codex-rs/hepta-neuron/src/cell_generation_lifecycle.rs",
+      "bytes": 11582,
+      "sha256": "68c162e0875927b0399227048809b189a1cddb1eba00308b97e4b89984499526",
+      "git_blob": "8b4a6135b53eca6bd89412531669b26da20d9282",
+      "remote_git_blob": "8b4a6135b53eca6bd89412531669b26da20d9282"
+    },
+    {
+      "donor": "r4938",
+      "path": "codex-rs/hepta-neuron/src/cell_generation_migration.rs",
+      "bytes": 8957,
+      "sha256": "9d58b4d0ada319c16d5e2014fb2046d2f1186e75a4d799ec875839b5587856ae",
+      "git_blob": "343bcd54cb3c856456045c249aa6cb176d1331b2",
+      "remote_git_blob": "343bcd54cb3c856456045c249aa6cb176d1331b2"
+    },
+    {
+      "donor": "r4938",
+      "path": "codex-rs/hepta-neuron/src/cell_generation_state.rs",
+      "bytes": 13070,
+      "sha256": "7c7d2229d63c6f1b0bfa4d517e1236f6d530c1f2c4a98fe029bf44ef08d6ed65",
+      "git_blob": "f0ce239d428d0752e95e7b499f311123e00dcf6b",
+      "remote_git_blob": "f0ce239d428d0752e95e7b499f311123e00dcf6b"
+    },
+    {
+      "donor": "r4938",
+      "path": "codex-rs/hepta-neuron/src/cell_joint_generation.rs",
+      "bytes": 19074,
+      "sha256": "a7ddd8c41587feb6164d731046124ccafc61951bf87e323ee94aa289684605d9",
+      "git_blob": "cb9b59be18021e79f4ed72afc550a94fd1610414",
+      "remote_git_blob": "cb9b59be18021e79f4ed72afc550a94fd1610414"
+    },
+    {
+      "donor": "r4938",
+      "path": "codex-rs/hepta-neuron/src/cell_joint_generation_support.rs",
+      "bytes": 2662,
+      "sha256": "0d54bece3dddb02a40590073538b6a0740798ca3cf885ce6e41a3cb18eaf2551",
+      "git_blob": "dfe60330219c28a7a18078c89fc5923aa6478ad9",
+      "remote_git_blob": "dfe60330219c28a7a18078c89fc5923aa6478ad9"
+    },
+    {
+      "donor": "r4938",
+      "path": "codex-rs/hepta-neuron/src/cell_joint_process.rs",
+      "bytes": 12767,
+      "sha256": "89173c2ac46474a2c0597f453a0be23ee9378acc89c4777afb1a74a179c8d5f0",
+      "git_blob": "35a8864d93d62b057599b406ddaf213475e4fc6c",
+      "remote_git_blob": "35a8864d93d62b057599b406ddaf213475e4fc6c"
+    },
+    {
+      "donor": "r4944",
+      "path": "codex-rs/hepta-agentd/src/neuron_generation.rs",
+      "bytes": 6358,
+      "sha256": "3569daa03a38c726ce6a510befe54623834c80de08ef3c2e1a64ea4210b7c2e4",
+      "git_blob": "e15a65658b882873fb03751e9fd72ee5b46718ac",
+      "remote_git_blob": "e15a65658b882873fb03751e9fd72ee5b46718ac"
+    },
+    {
+      "donor": "r4944",
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_runtime.rs",
+      "bytes": 14407,
+      "sha256": "932a5e86d298f8e580bb07327ed0a1949da3d0bce7ed83c5d31a6f9b94cbe5d4",
+      "git_blob": "6eb260e42dbe897065374b12910250d141e95ff1",
+      "remote_git_blob": "6eb260e42dbe897065374b12910250d141e95ff1"
+    },
+    {
+      "donor": "r4944",
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_service.rs",
+      "bytes": 13654,
+      "sha256": "2f3e635484667ad32f869050839822b22930de159a37539cd60488f2ff11ee97",
+      "git_blob": "cb513155b028963219ee91510d55cb7ffd12f044",
+      "remote_git_blob": "cb513155b028963219ee91510d55cb7ffd12f044"
+    },
+    {
+      "donor": "r4944",
+      "path": "codex-rs/hepta-intelligence/src/generation_episode.rs",
+      "bytes": 9737,
+      "sha256": "de52363ebdd5c2ba7d2dfc78bec5f4e05d5df613bff48ad67e7014cb84fd58f9",
+      "git_blob": "b19ba6574f25fc9bad1ba947b671e05ff42a8ff4",
+      "remote_git_blob": "b19ba6574f25fc9bad1ba947b671e05ff42a8ff4"
+    },
+    {
+      "donor": "r4944",
+      "path": "codex-rs/hepta-neuron/src/cell_generation_journal.rs",
+      "bytes": 17355,
+      "sha256": "d39df96ebec2399819cfccea3e2fe015b6b0ffaa12cb5198baa433b43cf97b9b",
+      "git_blob": "ce595425d40bd3dee46fffd5b3bb9a86617252fd",
+      "remote_git_blob": "ce595425d40bd3dee46fffd5b3bb9a86617252fd"
+    },
+    {
+      "donor": "r4944",
+      "path": "codex-rs/hepta-neuron/src/cell_generation_observation.rs",
+      "bytes": 4715,
+      "sha256": "ffd165406294415483b619db154a5bb458865fc833b3350876c3d3868ddd4151",
+      "git_blob": "47edaa34ddeaad7498bbfc4326bab58a228d2670",
+      "remote_git_blob": "47edaa34ddeaad7498bbfc4326bab58a228d2670"
+    },
+    {
+      "donor": "r4944",
+      "path": "codex-rs/hepta-neuron/src/cell_generation_state.rs",
+      "bytes": 13267,
+      "sha256": "9e72dda90b4178d84978a707f1b0dfd677aba20dadbe4ee3f24e9ef02961d73d",
+      "git_blob": "3d388997ba1d333d7e5e4f224d2dc4d7832c9755",
+      "remote_git_blob": "3d388997ba1d333d7e5e4f224d2dc4d7832c9755"
+    },
+    {
+      "donor": "r4963",
+      "path": "codex-rs/hepta-agentd/src/neuron_generation.rs",
+      "bytes": 9053,
+      "sha256": "9a016962fa357c0b8897931175076e1381222db6d99d31aed406ac55f39c91d8",
+      "git_blob": "85ab3fdc04a04cd4bef5904fa7caaa63bef204f6",
+      "remote_git_blob": "85ab3fdc04a04cd4bef5904fa7caaa63bef204f6"
+    },
+    {
+      "donor": "r4963",
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_runtime.rs",
+      "bytes": 15394,
+      "sha256": "489d8ff1e1d7437220d40746dd3f492b346d7e5613725551c610ee6d69befc00",
+      "git_blob": "7bd997d4fd9ba98ec1ecb777c50722e1c98c593a",
+      "remote_git_blob": "7bd997d4fd9ba98ec1ecb777c50722e1c98c593a"
+    },
+    {
+      "donor": "r4963",
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_service.rs",
+      "bytes": 13898,
+      "sha256": "7d51bf1c3e8ba42082e737072300e012e5b2507522a66ee3594f1c91bf927e38",
+      "git_blob": "2fe764d5efd6b003924b168b4fbf70113d5c7f41",
+      "remote_git_blob": "2fe764d5efd6b003924b168b4fbf70113d5c7f41"
+    },
+    {
+      "donor": "r4963",
+      "path": "codex-rs/hepta-intelligence/src/generation_episode.rs",
+      "bytes": 9737,
+      "sha256": "de52363ebdd5c2ba7d2dfc78bec5f4e05d5df613bff48ad67e7014cb84fd58f9",
+      "git_blob": "b19ba6574f25fc9bad1ba947b671e05ff42a8ff4",
+      "remote_git_blob": "b19ba6574f25fc9bad1ba947b671e05ff42a8ff4"
+    },
+    {
+      "donor": "r4963",
+      "path": "codex-rs/hepta-neuron/src/cell_generation_journal.rs",
+      "bytes": 18511,
+      "sha256": "d4fe27798d2b9949533c08abefc5bc4404bf0d8d518a6249fb79a7b7a80f6e62",
+      "git_blob": "c67a7c06f2447d39b22b3d72be0fd257e47725a3",
+      "remote_git_blob": "c67a7c06f2447d39b22b3d72be0fd257e47725a3"
+    },
+    {
+      "donor": "r4963",
+      "path": "codex-rs/hepta-neuron/src/cell_generation_observation.rs",
+      "bytes": 4715,
+      "sha256": "ffd165406294415483b619db154a5bb458865fc833b3350876c3d3868ddd4151",
+      "git_blob": "47edaa34ddeaad7498bbfc4326bab58a228d2670",
+      "remote_git_blob": "47edaa34ddeaad7498bbfc4326bab58a228d2670"
+    },
+    {
+      "donor": "r4963",
+      "path": "codex-rs/hepta-neuron/src/cell_generation_state.rs",
+      "bytes": 13399,
+      "sha256": "6a0c46037cf3b4263cb65f33317daae2113724d4b24b023cb05e1eea94fa7e62",
+      "git_blob": "92eea85e63a49dbaf3167a726e0799567fb8bc3c",
+      "remote_git_blob": "92eea85e63a49dbaf3167a726e0799567fb8bc3c"
+    },
+    {
+      "donor": "r4963",
+      "path": "codex-rs/hepta-neuron/src/cell_joint_generation.rs",
+      "bytes": 16809,
+      "sha256": "35479eec901937d9a3616a8b9549685bba944e660500d3e40fa8586a4c136216",
+      "git_blob": "199154127e38e9d73d5651d3478efe5c66181fbd",
+      "remote_git_blob": "199154127e38e9d73d5651d3478efe5c66181fbd"
+    },
+    {
+      "donor": "r4963",
+      "path": "codex-rs/hepta-neuron/src/cell_joint_process.rs",
+      "bytes": 12832,
+      "sha256": "896d444820f1253849a09cffcbac907521da504aaa153fc4eebbe741476bace3",
+      "git_blob": "5210085f0ed6075180ffef1e276c271bcfa365ae",
+      "remote_git_blob": "5210085f0ed6075180ffef1e276c271bcfa365ae"
+    }
+  ]
+}
