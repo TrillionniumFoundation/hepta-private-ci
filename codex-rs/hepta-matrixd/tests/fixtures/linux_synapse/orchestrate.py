@@ -343,7 +343,9 @@ def run(args):
             fixture_manifest(source, build, ready, plan_dir, runtime_dir, build_dir),
         )
         nonce = secrets.token_hex(32)
-        write_bytes(runtime_dir / "credentials/completion-nonce", nonce.encode())
+        write_bytes(
+            runtime_dir / "credentials/completion-nonce", (nonce + "\n").encode()
+        )
         run_plan = {
             "schema": "hepta.synapse.linux.run-plan.v1",
             "builder_seal": plan["builder_seal"],

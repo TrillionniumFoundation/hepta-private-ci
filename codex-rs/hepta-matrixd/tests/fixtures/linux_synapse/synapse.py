@@ -1,8 +1,6 @@
 """The original pinned server and unchanged loopback proxy, controlled externally."""
 
-import json
 import os
-from pathlib import Path
 import secrets
 import time
 
@@ -139,7 +137,7 @@ def start_synapse(control, credentials):
         ("hepta-human", "human-password"),
     ):
         password = secrets.token_hex(32)
-        write_bytes(credentials / capability, password.encode())
+        write_bytes(credentials / capability, (password + "\n").encode())
         control.commands.run(
             "docker",
             ["exec", "-i", server, "python3", "-c", REGISTER, name],
