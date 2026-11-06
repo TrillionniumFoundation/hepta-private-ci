@@ -97,11 +97,12 @@ class ExecutionSourceTests(unittest.TestCase):
             "V10",
             "V11",
             "V12",
+            "V13",
         ):
             path = self.profiles / getattr(execution, f"MANIFEST_NAME_{version}")
             profile = getattr(execution, f"PROFILE_{version}")
             manifest = dict(self.manifest, profile=profile)
-            if version in ("V5", "V6", "V7", "V8", "V9", "V10", "V11", "V12"):
+            if version in ("V5", "V6", "V7", "V8", "V9", "V10", "V11", "V12", "V13"):
                 tree = self.git("rev-parse", "HEAD^{tree}").strip()
                 manifest.update(
                     schema="hepta-smollm-public-initial-execution-sources-v2",

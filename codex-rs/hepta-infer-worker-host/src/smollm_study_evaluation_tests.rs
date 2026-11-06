@@ -9,6 +9,30 @@ mod checks;
 #[path = "smollm_study_plan_tests.rs"]
 mod plan;
 
+fn runtime_forward_contract() -> TestResult<(&'static str, &'static str, &'static str)> {
+    let profile = std::env::var("HEPTA_RUNTIME_EXECUTION_PROFILE")
+        .map_err(|_| "explicit runtime source profile required")?;
+    let commit = std::env::var("HEPTA_RUNTIME_CHAIN_SHA")
+        .map_err(|_| "explicit runtime source commit required")?;
+    match (profile.as_str(), commit.as_str()) {
+        ("hepta-integrated-chain-execution-v12", "cad4c18fe146b7d742ac7fa8872044cd4136c22b") => {
+            Ok((
+                "hepta-integrated-chain-execution-v12",
+                "smollm2-neural-forward-v2.sources.json",
+                "hepta_neural_study_forward_v2.py",
+            ))
+        }
+        ("hepta-integrated-chain-execution-v13", "5bb29d6ae39fa0c71f9151f3dce31fa1a3ab1800") => {
+            Ok((
+                "hepta-integrated-chain-execution-v13",
+                "smollm2-neural-forward-v3.sources.json",
+                "hepta_neural_study_forward_v3.py",
+            ))
+        }
+        _ => Err("closed current runtime profile and commit tuple required".into()),
+    }
+}
+
 pub(super) struct Qualified {
     pub raw_plan: eval::CrossFoldPlanV1,
     pub product: Value,
@@ -114,7 +138,7 @@ impl Provider<'_> {
                     "parent":parent,"worker_plan":worker_pin,"tasks":tasks,"model":model,
                     "window_id":window_id.as_str(),"phase_id":format!("{model}-{window}"),"output":output});
                 if self.input.material_runtime_bridge.is_some() {
-                    request["forward_profile"] = json!("hepta-integrated-chain-execution-v12");
+                    request["forward_profile"] = json!(runtime_forward_contract()?.0);
                     request["study_profile"] = json!(match self.profile {
                         StudyProfile::OriginalV1 => "neural-v1",
                         StudyProfile::BinaryAnswerV2 => "binary-v2",
@@ -322,11 +346,16 @@ pub(super) fn evaluate(
     };
     let worker = read_pin(&pin(worker_plan)?)?;
     let forward_script = if input.material_runtime_bridge.is_some() {
-        PathBuf::from(
+        let (_, _, expected_runner) = runtime_forward_contract()?;
+        let selected = PathBuf::from(
             std::env::var_os("HEPTA_NEURAL_FORWARD_RUNNER")
                 .ok_or("explicit runtime-bound forward helper required")?,
         )
-        .canonicalize()?
+        .canonicalize()?;
+        if selected.file_name().and_then(|name| name.to_str()) != Some(expected_runner) {
+            return Err("current runtime forward helper version changed".into());
+        }
+        selected
     } else {
         script.to_path_buf()
     };
@@ -336,15 +365,15 @@ pub(super) fn evaluate(
         "fixed_execution_order":[["parent","child"],["child","parent"]],"minimum_window_micros":1_000_000});
     if input.material_runtime_bridge.is_some() {
         material_value["forward_source"] = pin(&forward_script)?;
+        let (runtime_profile, caller_manifest, _) = runtime_forward_contract()?;
         let caller_contract = forward_script
             .parent()
             .and_then(Path::parent)
             .ok_or("forward source root")?
-            .join(
-                "codex-rs/hepta-learning-artifacts/profiles/smollm2-neural-forward-v2.sources.json",
-            );
+            .join("codex-rs/hepta-learning-artifacts/profiles")
+            .join(caller_manifest);
         material_value["forward_caller_contract"] = pin(&caller_contract)?;
-        material_value["runtime_source_profile"] = json!("hepta-integrated-chain-execution-v12");
+        material_value["runtime_source_profile"] = json!(runtime_profile);
     }
     let material = save(&root.join("holdout-material.json"), &material_value)?;
     let material_digest: Digest32 = material["sha256"]

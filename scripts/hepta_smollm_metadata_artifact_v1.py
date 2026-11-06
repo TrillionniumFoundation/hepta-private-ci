@@ -44,6 +44,9 @@ ROOT_JSON = {
     "evidence-index.json",
 }
 COMMANDS = (
+    "runtime-source-v13-controls",
+    "runtime-forward-v3-controls",
+    "runtime-profile-v13-controls",
     "runtime-source-v12-controls",
     "runtime-forward-v2-controls",
     "runtime-source-role-controls",
@@ -204,8 +207,17 @@ def export(root, output, source_sha):
     bridged = index.get("schema") == "hepta-material-runtime-evidence-index-v1"
     if bridged:
         require(
-            index["runtime_chain"] == "cad4c18fe146b7d742ac7fa8872044cd4136c22b"
-            and index["runtime_profile"] == "hepta-integrated-chain-execution-v12"
+            (index["runtime_chain"], index["runtime_profile"])
+            in {
+                (
+                    "cad4c18fe146b7d742ac7fa8872044cd4136c22b",
+                    "hepta-integrated-chain-execution-v12",
+                ),
+                (
+                    "5bb29d6ae39fa0c71f9151f3dce31fa1a3ab1800",
+                    "hepta-integrated-chain-execution-v13",
+                ),
+            }
             and index["chain"]
             in {
                 "cfa57cd04751427451302b5c10539b3984d7f8db",
