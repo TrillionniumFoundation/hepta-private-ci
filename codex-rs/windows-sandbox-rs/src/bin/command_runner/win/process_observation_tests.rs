@@ -34,12 +34,11 @@ fn command(script: &str) -> Result<Command> {
     let shell = std::path::PathBuf::from(std::env::var_os("SystemRoot").context("SystemRoot")?)
         .join("System32/cmd.exe");
     let mut command = Command::new(shell);
-    // cmd.exe /C consumes the remainder as its command tail. Pass that tail
-    // verbatim: an extra quote makes the original Windows runner treat the
-    // first token as a path instead of executing the fixed command.
-    // Never pass untrusted text to raw_arg; these scripts are test-only.
+    // The command tail is one fixed shell program. Use the Windows Command
+    // implementation's normal argument quoting; the scripts use interactive
+    // `exit N` (not batch-only `exit /b N`) and are never untrusted input.
     command.args(["/D", "/C"]);
-    command.raw_arg(script);
+    command.arg(script);
     // Run the original real cmd.exe child in a redirected headless test worker.
     // Keep its actual exit-status, owned-handle and pending-state assertions.
     command.creation_flags(CREATE_NO_WINDOW);
