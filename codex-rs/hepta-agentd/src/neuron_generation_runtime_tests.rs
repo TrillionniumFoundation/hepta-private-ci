@@ -24,6 +24,9 @@ mod episode;
 mod no_contact;
 #[path = "neuron_generation_observation_tests.rs"]
 mod observation;
+#[cfg(unix)]
+#[path = "neuron_generation_update_runtime_tests.rs"]
+mod update;
 use support::Fixture;
 use support::checked;
 use support::cost;
