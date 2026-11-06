@@ -151,7 +151,12 @@ async fn thread_shell_command_history_responses_exclude_persisted_command_execut
                 ..Default::default()
             },
         })
-        .await?;
+        .await
+        .inspect_err(|error| {
+            if error.is::<tokio::time::error::Elapsed>() {
+                mcp.report_timeout("shell_history_thread_fork_response");
+            }
+        })?;
     assert_eq!(thread.turns.len(), 1);
     assert_no_command_executions(&thread.turns[0].items, "thread/fork");
 

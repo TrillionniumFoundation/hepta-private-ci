@@ -532,7 +532,9 @@ async fn thread_start_accepts_absolute_runtime_workspace_roots() -> Result<()> {
         runtime_workspace_roots,
         sandbox,
         ..
-    } = timeout(DEFAULT_READ_TIMEOUT, mcp.read_response(req_id)).await??;
+    } = timeout(DEFAULT_READ_TIMEOUT, mcp.read_response(req_id))
+        .await
+        .inspect_err(|_| mcp.report_timeout("thread_start_runtime_roots_response"))??;
 
     assert_eq!(response_cwd, cwd.abs());
     assert_eq!(runtime_workspace_roots, vec![extra_root.abs()]);

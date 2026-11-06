@@ -145,6 +145,15 @@ use crate::json_logging::JsonLogCapture;
 use crate::local_websocket_exec_server::LocalWebsocketExecServer;
 use crate::rpc_delay::WebsocketDelayInterposer;
 
+#[derive(Debug)]
+enum StdioStage {
+    Idle,
+    WritePayload,
+    WriteDelimiter,
+    FlushStdin,
+    ReadStdout,
+}
+
 pub struct TestAppServer {
     next_request_id: AtomicI64,
     /// Retain this child process until the client is dropped. The Tokio runtime
@@ -154,6 +163,7 @@ pub struct TestAppServer {
     process: Child,
     stdin: Option<ChildStdin>,
     stdout: BufReader<ChildStdout>,
+    stdio_stage: StdioStage,
     pending_messages: VecDeque<JSONRPCMessage>,
     auto_env: Option<TestEnv>,
     json_logs: JsonLogCapture,
@@ -189,6 +199,26 @@ impl TestAppServer {
 
     pub async fn wait_for_exit(&mut self) -> std::io::Result<ExitStatus> {
         self.process.wait().await
+    }
+
+    /// Reports fixed fixture stages only after an existing timeout has elapsed.
+    /// This polls child status without waiting, retrying, or changing the error.
+    pub fn report_timeout(&mut self, stage: &'static str) {
+        let stdio_stage = &self.stdio_stage;
+        match self.process.try_wait() {
+            Ok(None) => eprintln!(
+                "app_server_timeout stage={stage} stdio={stdio_stage:?} child=not_exited_at_poll"
+            ),
+            Ok(Some(status)) => eprintln!(
+                "app_server_timeout stage={stage} stdio={stdio_stage:?} child=exited code={:?}",
+                status.code()
+            ),
+            Err(error) => eprintln!(
+                "app_server_timeout stage={stage} stdio={stdio_stage:?} child=status_error kind={:?} raw_os_error={:?}",
+                error.kind(),
+                error.raw_os_error()
+            ),
+        }
     }
 
     /// Closes stdio and waits for app-server's graceful thread teardown to finish.
@@ -311,6 +341,7 @@ impl TestAppServer {
             process,
             stdin: Some(stdin),
             stdout,
+            stdio_stage: StdioStage::Idle,
             pending_messages: VecDeque::new(),
             auto_env: None,
             json_logs,
@@ -1615,15 +1646,21 @@ impl TestAppServer {
             anyhow::bail!("mcp stdin closed");
         };
         let payload = serde_json::to_string(&message)?;
+        self.stdio_stage = StdioStage::WritePayload;
         stdin.write_all(payload.as_bytes()).await?;
+        self.stdio_stage = StdioStage::WriteDelimiter;
         stdin.write_all(b"\n").await?;
+        self.stdio_stage = StdioStage::FlushStdin;
         stdin.flush().await?;
+        self.stdio_stage = StdioStage::Idle;
         Ok(())
     }
 
     async fn read_jsonrpc_message(&mut self) -> anyhow::Result<JSONRPCMessage> {
         let mut line = String::new();
+        self.stdio_stage = StdioStage::ReadStdout;
         self.stdout.read_line(&mut line).await?;
+        self.stdio_stage = StdioStage::Idle;
         let message = serde_json::from_str::<JSONRPCMessage>(&line)?;
         eprintln!("read message from stdout: {message:?}");
         Ok(message)
@@ -1931,7 +1968,9 @@ impl TestAppServerBuilder {
         timeout: Duration,
     ) -> anyhow::Result<TestAppServer> {
         let mut server = self.build().await?;
-        tokio::time::timeout(timeout, server.initialize()).await??;
+        tokio::time::timeout(timeout, server.initialize())
+            .await
+            .inspect_err(|_| server.report_timeout("initialize"))??;
         Ok(server)
     }
 
