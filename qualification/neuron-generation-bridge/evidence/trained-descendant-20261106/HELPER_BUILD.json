@@ -1,0 +1,48 @@
+{
+  "child_cpu_seconds": 6.120445,
+  "command": [
+    "/workspace/scratch/2e04527a60e8/toolchain/1.95.0-x86_64-unknown-linux-gnu/bin/rustc",
+    "--edition=2024",
+    "-C",
+    "opt-level=2",
+    "/workspace/scratch/e5ae6a941e52/joint-r2/codex-rs/hepta-infer-worker-host/src/bin/hepta-joint-propose.rs",
+    "-o",
+    "/workspace/scratch/e5ae6a941e52/trained-bridge-run/build-r3/hepta-joint-propose"
+  ],
+  "compiler": "rustc 1.95.0 (59807616e 2026-04-14)\nbinary: rustc\ncommit-hash: 59807616e1fa2540724bfbac14d7976d7e4a3860\ncommit-date: 2026-04-14\nhost: x86_64-unknown-linux-gnu\nrelease: 1.95.0\nLLVM version: 22.1.2\n",
+  "compiler_sha256": "bff349e72704ff70bc08a234a3847338e797065bbedde5e556808bc87b7bf7c6",
+  "executable_sha256": "a400ef5dabddc44e2290d7abf6136ae492355dab059d99f580c4d5de9ba40253",
+  "exit_code": 0,
+  "harness_cpu_seconds": 0.018926626000000002,
+  "ldd": "\tlinux-vdso.so.1 (0x00007f1f7e1b1000)\n\tlibm.so.6 => /lib/x86_64-linux-gnu/libm.so.6 (0x00007f1f7e014000)\n\tlibgcc_s.so.1 => /lib/x86_64-linux-gnu/libgcc_s.so.1 (0x00007f1f7dfe7000)\n\tlibc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007f1f7ddf3000)\n\t/lib64/ld-linux-x86-64.so.2 (0x00007f1f7e1b3000)\n",
+  "linked_library_sha256": {
+    "/lib/x86_64-linux-gnu/libc.so.6": "9792e3cbb541c8f44c7acf5f14f4022ea62998ecc787d326bed4d8b6547dfd92",
+    "/lib/x86_64-linux-gnu/libgcc_s.so.1": "30c61ab012a4241bed033725a09b61f5fdd3bb7df95ee852d0b096520524c7af",
+    "/lib/x86_64-linux-gnu/libm.so.6": "6d567d53e895273ca14a1f9dc164fc6c8d39aed2f60aa46a733c2784228915f3",
+    "/lib64/ld-linux-x86-64.so.2": "c8438e4fde1934e61c88311633f00949ff645d5c04cdb8671fa3d78164d2f307"
+  },
+  "qualification_source_sha256": {
+    "build_replay_helper.py": "c53c5c54546af3ced0c415132e80f672e34efbe2d232b77279a22b8c97871308",
+    "trained_replay.py": "134bcf4450ec1a09b34beb82c92c2cb3951ba6ed49d8a507fe1a42df5eb07bd4"
+  },
+  "schema": "hepta.joint-standalone-qualification-build.v1",
+  "scope": "Standalone std-only entry build. No Cargo, Bazel or Agentd gate claim.",
+  "source_files": {
+    "src/bin/hepta-joint-propose.rs": "7800ffc427d55983266602507165ed75dcbe8a59b0f0f1c6d47cf0044c8d463e",
+    "src/joint_generation/bridge_state.rs": "f771d2c8aa031f5eb1e4f934f2b9a2eca43e0c5537b2c103001d807e7cecbb04",
+    "src/joint_generation/codec.rs": "f34940064e8ea419a086abd3eb6c20fb81eefe6184c526ef663037be84d64c96",
+    "src/joint_generation/decoder.rs": "c6120c09e9dcce76cd63dba5e327d593cdb1bfe6acea0261285bf2a1deccd0bd",
+    "src/joint_generation/math.rs": "8fc24bb6d19aac099389c50ff3ae7ef0f45c8c995c9f87e67f1d2534ef0cc655",
+    "src/joint_generation/model.rs": "2436dfc2393e2702e1ae13e6b111a65bd45e995231c8d11b614ceb08e40a54e7",
+    "src/joint_generation/proposal.rs": "e3847f78bc9d66af9c1d49696a874b318000e374fa5400078c4c5457008142c4",
+    "src/joint_generation/protocol.rs": "102d74d1afed890ae737a52bb44392209b2b2e8410728eb128d4ba6832b88bd2",
+    "src/joint_generation/state.rs": "44cfb9d0e4d17ad6417eb6d873f667ff9568a1cffbe2948589a7194f22220517"
+  },
+  "source_sha": "7391c3dc3b0a496b62be4c6cf2769d2ae0c9db75",
+  "source_unchanged": true,
+  "unmeasured": [
+    "energy_joules",
+    "physical_disk_bytes"
+  ],
+  "wall_seconds": 2.443582151998271
+}

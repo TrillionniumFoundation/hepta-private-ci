@@ -1,0 +1,27 @@
+#![allow(dead_code)]
+#[path = "native-source/codec.rs"] mod codec;
+#[path = "native-source/math.rs"] mod math;
+#[path = "native-source/model.rs"] mod model;
+#[path = "native-source/state.rs"] mod state;
+
+fn run() -> codec::Result<()> {
+    let args: Vec<String> = std::env::args().collect();
+    if args.len() < 4 || (args.len() - 2) % 2 != 0 {
+        return Err("expected weights followed by state/output pairs".into());
+    }
+    let read = |path: &str| std::fs::read(path).map_err(|e| e.to_string());
+    let model = model::Model::new(codec::Packet::decode(&read(&args[1])?)?)?;
+    for pair in args[2..].chunks_exact(2) {
+        let state = state::State::read(&codec::Packet::decode(&read(&pair[0])?)?, &model)?;
+        let packet = model.inspect(&state, 1.0)?.encode()?;
+        std::fs::write(&pair[1], packet).map_err(|e| e.to_string())?;
+    }
+    Ok(())
+}
+
+fn main() {
+    if let Err(error) = run() {
+        eprintln!("{error}");
+        std::process::exit(2);
+    }
+}

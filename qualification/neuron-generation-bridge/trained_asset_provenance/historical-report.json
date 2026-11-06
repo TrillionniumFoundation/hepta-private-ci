@@ -1,0 +1,218 @@
+{
+  "schema": "hepta.free-text-development.v3",
+  "status": "completed_public_development",
+  "model_identity": {
+    "model": "HuggingFaceTB/SmolLM2-135M-Instruct",
+    "revision": "12fd25f77366fa6b3b4b768ec3050bf629380bac",
+    "files": {
+      "README.md": {
+        "sha256": "4f97533ad95b1b2fea15fbc075c01b94578ebdd7c8138888fa43fa3abd530dc4",
+        "bytes": 6772
+      },
+      "config.json": {
+        "sha256": "8eb740e8bbe4cff95ea7b4588d17a2432deb16e8075bc5828ff7ba9be94d982a",
+        "bytes": 861
+      },
+      "generation_config.json": {
+        "sha256": "87b916edaaab66b3899b9d0dd0752727dff6666686da0504d89ae0a6e055a013",
+        "bytes": 132
+      },
+      "model.safetensors": {
+        "sha256": "5af571cbf074e6d21a03528d2330792e532ca608f24ac70a143f6b369968ab8c",
+        "bytes": 269060552
+      },
+      "special_tokens_map.json": {
+        "sha256": "2b7379f3ae813529281a5c602bc5a11c1d4e0a99107aaa597fe936c1e813ca52",
+        "bytes": 655
+      },
+      "tokenizer.json": {
+        "sha256": "9ca9acddb6525a194ec8ac7a87f24fbba7232a9a15ffa1af0c1224fcd888e47c",
+        "bytes": 2104556
+      },
+      "tokenizer_config.json": {
+        "sha256": "4ec77d44f62efeb38d7e044a1db318f6a939438425312dfa333b8382dbad98df",
+        "bytes": 3764
+      }
+    }
+  },
+  "python": "3.12.14",
+  "torch": "2.9.1+cpu",
+  "base_checkpoint_sha256": "9032b0750ea07c9ad5f9d0fb657d0ce16fd67ccacde1a653908207cbfdb542dc",
+  "initial_hepta_sha256": "086fa1df4fd7eb414697938032de7cb1e3fc6de93a407186d96a8a8aaf7cbcdd",
+  "final_hepta_sha256": "227f25ed9e17fc10cd762dda5739ef3f911a8cf3e0be833a6c8d0ce22e5013dc",
+  "initial_prefix_sha256": "254e85b8a861f7c57d8d9de4aa7d96f452ec20c1ac0cfdcdb18d170636809e45",
+  "final_prefix_sha256": "d9ccbbcf160a597f930c6cb6ea843323085f4d90a390e0df0733bb5059452655",
+  "frozen_lm_before_sha256": "66473cd4fefce963c0b5c39ee7170094fa97a76828ca29a444db1b32dc245197",
+  "frozen_lm_after_sha256": "66473cd4fefce963c0b5c39ee7170094fa97a76828ca29a444db1b32dc245197",
+  "trainable_parameters": 341536,
+  "frozen_lm_parameters": 134515008,
+  "losses": [
+    {
+      "update": 0,
+      "case_id": "json.loads",
+      "loss": 2.122438669204712
+    },
+    {
+      "update": 1,
+      "case_id": "textwrap.dedent",
+      "loss": 1.3874021768569946
+    },
+    {
+      "update": 2,
+      "case_id": "bisect.bisect_left",
+      "loss": 2.975513219833374
+    },
+    {
+      "update": 3,
+      "case_id": "urllib.parse.urlsplit",
+      "loss": 0.9451956152915955
+    },
+    {
+      "update": 4,
+      "case_id": "json.loads",
+      "loss": 2.059621572494507
+    },
+    {
+      "update": 5,
+      "case_id": "textwrap.dedent",
+      "loss": 1.3722894191741943
+    },
+    {
+      "update": 6,
+      "case_id": "bisect.bisect_left",
+      "loss": 2.833376407623291
+    },
+    {
+      "update": 7,
+      "case_id": "urllib.parse.urlsplit",
+      "loss": 0.8910155892372131
+    },
+    {
+      "update": 8,
+      "case_id": "json.loads",
+      "loss": 2.0488007068634033
+    },
+    {
+      "update": 9,
+      "case_id": "textwrap.dedent",
+      "loss": 1.4418236017227173
+    },
+    {
+      "update": 10,
+      "case_id": "bisect.bisect_left",
+      "loss": 2.711272716522217
+    },
+    {
+      "update": 11,
+      "case_id": "urllib.parse.urlsplit",
+      "loss": 0.8381075859069824
+    },
+    {
+      "update": 12,
+      "case_id": "json.loads",
+      "loss": 2.0073916912078857
+    },
+    {
+      "update": 13,
+      "case_id": "textwrap.dedent",
+      "loss": 1.4227421283721924
+    },
+    {
+      "update": 14,
+      "case_id": "bisect.bisect_left",
+      "loss": 2.6460015773773193
+    },
+    {
+      "update": 15,
+      "case_id": "urllib.parse.urlsplit",
+      "loss": 0.8029539585113525
+    }
+  ],
+  "decoder_vocabulary_size": 49152,
+  "decoding_rule": "greedy full vocabulary; only EOS and maximum token count terminate generation",
+  "adapter_checkpoint_bytes": 3156046,
+  "reused_local_model_bytes": 271177292,
+  "gradient_max_l1_by_group": {
+    "hepta.image_encoder": 0.9725122451782227,
+    "hepta.audio_encoder": 0.5420759320259094,
+    "hepta.video_encoder": 0.997475802898407,
+    "hepta.token_encoder": 0.3183872401714325,
+    "hepta.encoder_fusion": 10.799549102783203,
+    "hepta.initial_slots": 8.151131629943848,
+    "hepta.core": 1.6279609203338623,
+    "hepta.action_embedding": 0.3050578236579895,
+    "hepta.feedback_projection": 0.2512816786766052,
+    "hepta.transition_input": 6.735570907592773,
+    "hepta.adapters": 5.143057823181152,
+    "prefix.0": 1.2479450702667236,
+    "prefix.1": 9596.208984375
+  },
+  "causal_state_interventions": [
+    {
+      "case_id": "statistics.mean",
+      "state_vs_zero_logit_l2": 251.29515075683594,
+      "state_vs_shuffle_logit_l2": 21.64277458190918,
+      "state_changes_text_vs_zero": true,
+      "state_changes_text_vs_shuffle": false
+    },
+    {
+      "case_id": "functools.lru_cache",
+      "state_vs_zero_logit_l2": 92.7935562133789,
+      "state_vs_shuffle_logit_l2": 1.3084516525268555,
+      "state_changes_text_vs_zero": true,
+      "state_changes_text_vs_shuffle": false
+    },
+    {
+      "case_id": "gzip.open",
+      "state_vs_zero_logit_l2": 155.81825256347656,
+      "state_vs_shuffle_logit_l2": 2.0371532440185547,
+      "state_changes_text_vs_zero": true,
+      "state_changes_text_vs_shuffle": false
+    },
+    {
+      "case_id": "csv.reader",
+      "state_vs_zero_logit_l2": 60.65755081176758,
+      "state_vs_shuffle_logit_l2": 1.0852917432785034,
+      "state_changes_text_vs_zero": false,
+      "state_changes_text_vs_shuffle": false
+    }
+  ],
+  "fixed_fact_passes_by_arm": {
+    "state": 0,
+    "zero_state": 0,
+    "shuffled_state": 0
+  },
+  "cases_per_arm": 4,
+  "generated_tokens": 544,
+  "wall_seconds": 70.91507607200037,
+  "cpu_seconds": 136.20900510799999,
+  "timing_scope": "run() after Python/dependency imports; includes model verification/loading, adaptation, all inference and evidence work",
+  "process_cpu_seconds_including_imports": 139.273179439,
+  "phase_costs": {
+    "preflight_and_load": {
+      "wall_seconds": 1.3045429199992213,
+      "cpu_seconds": 1.49299013
+    },
+    "adaptation_training": {
+      "wall_seconds": 25.578006907999224,
+      "cpu_seconds": 50.882051167
+    },
+    "state_encoding_and_all_decoding": {
+      "wall_seconds": 43.43491147799796,
+      "cpu_seconds": 83.229078708
+    },
+    "evaluation_evidence_and_weight_audit": {
+      "wall_seconds": 0.5925471160007874,
+      "cpu_seconds": 0.599828505000005
+    }
+  },
+  "process_peak_rss_bytes": 1788358656,
+  "per_completion_timing_scope": "LM prefill and decoding; shared state encoding/loading/training is included only in total run timing",
+  "natural_audio_generation": false,
+  "natural_video_generation": false,
+  "open_domain_qualified": false,
+  "natural_multimodal_gain_claim": false,
+  "human_evaluation": "pending; no ratings invented",
+  "fresh_calibration_access": false,
+  "scope": "Real free-form LM plus learned Hepta-state prefix; small public technical-QA development slice"
+}
