@@ -1,0 +1,57 @@
+{
+  "schema": "hepta-private-pin-backport-v1",
+  "crate": {
+    "name": "aws-smithy-http",
+    "version": "0.62.6",
+    "checksum": "826141069295752372f8203c17f28e30c464d22899a43a0c9fd9c458d469c88b",
+    "url": "https://static.crates.io/crates/aws-smithy-http/aws-smithy-http-0.62.6.crate",
+    "archive_bytes": 30197,
+    "archive_regular_files": 22,
+    "vendor": "codex-rs/third_party/aws-smithy-http-0.62.6-pin-backport",
+    "source_scope": "Private adaptation of the upstream AWS pin-only change to this exact older archive. The original mutable Pin binding is retained where data()/as_mut() requires it; all other source, versions and APIs remain unchanged.",
+    "edits": [
+      {
+        "path": "Cargo.toml",
+        "before_sha256": "ac7f42768fcb0f8e0dd68f3d8f160ce4ba7d93ae4c36b81e95b158c19343f08b",
+        "after_sha256": "a9dcec4e6e5c9ad0dbe913efec14142c2d412482dee93d08daaba7c324b91cc7",
+        "replace": [
+          [
+            "[dependencies.pin-utils]\nversion = \"0.1.0\"\n\n",
+            "",
+            1
+          ]
+        ]
+      },
+      {
+        "path": "Cargo.toml.orig",
+        "before_sha256": "0c9ebaafa8c7d464abce538c382a7f7139f98f398b9228b7517ca8cd10ec8a7a",
+        "after_sha256": "e0c37008148990fa67de3e23cb9c13fad001a7822aa5d223cec47437fc5068cf",
+        "replace": [
+          [
+            "pin-utils = \"0.1.0\"\n",
+            "",
+            1
+          ]
+        ]
+      }
+    ],
+    "licenses": {
+      "LICENSE": {
+        "bytes": 10142,
+        "sha256": "09e8a9bcec8067104652c168685ab0931e7868f9c8284b66f5ae6edae5f1130b",
+        "git_blob": "67db8588217f266eb561f75fae738656325deac9"
+      }
+    },
+    "original_rust_version": "1.88"
+  },
+  "upstream": {
+    "aws_before_commit": "b3bdfffc8dbbaf115b572079d7f170ec78ec939c",
+    "aws_after_commit": "b964fc77de60b0a492ff788c40bb66524fd26a44",
+    "loom_before_commit": "a7033ee06a97c52eb2f8131c095fbea6c6eecba3",
+    "rust_pin_macro_stable_since": "1.68.0",
+    "source_note": "Current five locked versions are retained. Existing workspace patches and unrelated dependency facts must remain unchanged. Hyper reuses upstream tokio::pin!; AWS and Loom use std::pin::pin! with binding mutability required by these exact sources.",
+    "hyper_pin_removal_pr": "https://github.com/hyperium/hyper/pull/4023",
+    "hyper_pin_removal_commit": "8ba900853b0f619b165e8530fc8c310bc13e056b",
+    "workspace_toolchain": "1.96.0"
+  }
+}

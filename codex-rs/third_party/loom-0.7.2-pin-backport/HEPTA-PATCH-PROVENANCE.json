@@ -1,0 +1,99 @@
+{
+  "schema": "hepta-private-pin-backport-v1",
+  "crate": {
+    "name": "loom",
+    "version": "0.7.2",
+    "checksum": "419e0dc8046cb947daa77eb95ae174acfbddb7673b4151f56d1eed8e93fbfaca",
+    "url": "https://static.crates.io/crates/loom/loom-0.7.2.crate",
+    "archive_bytes": 73989,
+    "archive_regular_files": 76,
+    "vendor": "codex-rs/third_party/loom-0.7.2-pin-backport",
+    "source_scope": "Exact same-version Loom pinning change from PR #4931. The old implicit pin-utils feature remains an empty compatibility alias. Private MSRV is 1.68; workspace toolchain is 1.96.0.",
+    "edits": [
+      {
+        "path": "src/future/mod.rs",
+        "before_sha256": "bccc36332d32144bde8f64f1387f3860ec5d98e336eedfc65301b991c5f9bbdd",
+        "after_sha256": "180def4583935f3d8e2da155313342f13c7e62a05f2095671e8712c033935868",
+        "replace": [
+          [
+            "use pin_utils::pin_mut;\n",
+            "",
+            1
+          ],
+          [
+            "    pin_mut!(f);",
+            "    let mut f = std::pin::pin!(f);",
+            1
+          ]
+        ]
+      },
+      {
+        "path": "Cargo.toml",
+        "before_sha256": "e2879b505f6b615b71669d9618039633dbc9d974013d080d6cc9993b0db550f7",
+        "after_sha256": "938af91c97ed586d3188aeeb669d5ae8ece24cd3986101c9fe4a36452a2774b5",
+        "replace": [
+          [
+            "[dependencies.pin-utils]\nversion = \"0.1.0\"\noptional = true\n\n",
+            "",
+            1
+          ],
+          [
+            "futures = [\"pin-utils\"]",
+            "futures = [\"pin-utils\"]\n# Preserve the old implicit feature name without the removed dependency.\npin-utils = []",
+            1
+          ],
+          [
+            "rust-version = \"1.65\"",
+            "rust-version = \"1.68\"",
+            1
+          ]
+        ]
+      },
+      {
+        "path": "Cargo.toml.orig",
+        "before_sha256": "ae3485a5c26b2257e297720b4a8152bc6f05ae02661680e00ecb135ff194eb7f",
+        "after_sha256": "e62000cef5d8af3bd094cf9f6098d54c2ef6f5de0ae846de5730f0ecdeed3fe2",
+        "replace": [
+          [
+            "# Requires for \"futures\" feature\n",
+            "",
+            1
+          ],
+          [
+            "pin-utils = { version = \"0.1.0\", optional = true }\n",
+            "",
+            1
+          ],
+          [
+            "futures = [\"pin-utils\"]",
+            "futures = [\"pin-utils\"]\n# Preserve the old implicit feature name without the removed dependency.\npin-utils = []",
+            1
+          ],
+          [
+            "rust-version = \"1.65\"",
+            "rust-version = \"1.68\"",
+            1
+          ]
+        ]
+      }
+    ],
+    "licenses": {
+      "LICENSE": {
+        "bytes": 1055,
+        "sha256": "8ce0830173fdac609dfb4ea603fdc002c2f4af0dc9b1a005653f5da9cf534b18",
+        "git_blob": "819ce21187da4043f615b816bbd0114a4d9fd782"
+      }
+    },
+    "original_rust_version": "1.65"
+  },
+  "upstream": {
+    "aws_before_commit": "b3bdfffc8dbbaf115b572079d7f170ec78ec939c",
+    "aws_after_commit": "b964fc77de60b0a492ff788c40bb66524fd26a44",
+    "loom_before_commit": "a7033ee06a97c52eb2f8131c095fbea6c6eecba3",
+    "rust_pin_macro_stable_since": "1.68.0",
+    "source_note": "Current five locked versions are retained. Existing workspace patches and unrelated dependency facts must remain unchanged. Hyper reuses upstream tokio::pin!; AWS and Loom use std::pin::pin! with binding mutability required by these exact sources.",
+    "hyper_pin_removal_pr": "https://github.com/hyperium/hyper/pull/4023",
+    "hyper_pin_removal_commit": "8ba900853b0f619b165e8530fc8c310bc13e056b",
+    "workspace_toolchain": "1.96.0"
+  }
+}

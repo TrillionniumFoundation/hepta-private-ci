@@ -970,8 +970,6 @@ dependencies = [
 [[package]]
 name = "aws-smithy-http"
 version = "0.62.6"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "826141069295752372f8203c17f28e30c464d22899a43a0c9fd9c458d469c88b"
 dependencies = [
  "aws-smithy-runtime-api",
  "aws-smithy-types",
@@ -984,7 +982,6 @@ dependencies = [
  "http-body 0.4.6",
  "percent-encoding",
  "pin-project-lite",
- "pin-utils",
  "tracing",
 ]
 
@@ -1043,8 +1040,6 @@ dependencies = [
 [[package]]
 name = "aws-smithy-runtime"
 version = "1.9.5"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a392db6c583ea4a912538afb86b7be7c5d8887d91604f50eb55c262ee1b4a5f5"
 dependencies = [
  "aws-smithy-async",
  "aws-smithy-http",
@@ -1059,7 +1054,6 @@ dependencies = [
  "http-body 0.4.6",
  "http-body 1.0.1",
  "pin-project-lite",
- "pin-utils",
  "tokio",
  "tracing",
 ]
@@ -1096,8 +1090,6 @@ dependencies = [
 [[package]]
 name = "aws-smithy-types"
 version = "1.4.7"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "9d73dbfbaa8e4bc57b9045137680b958d274823509a360abfd8e1d514d40c95c"
 dependencies = [
  "base64-simd",
  "bytes",
@@ -1110,7 +1102,6 @@ dependencies = [
  "itoa",
  "num-integer",
  "pin-project-lite",
- "pin-utils",
  "ryu",
  "serde",
  "time",
@@ -9303,8 +9294,6 @@ dependencies = [
 [[package]]
 name = "hyper"
 version = "1.8.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "2ab2d4f250c3d7b1c9fcdff1cece94ea4e2dfbec68614f7b87cb205f24ca9d11"
 dependencies = [
  "atomic-waker",
  "bytes",
@@ -9317,7 +9306,6 @@ dependencies = [
  "httpdate",
  "itoa",
  "pin-project-lite",
- "pin-utils",
  "smallvec",
  "tokio",
  "want",
@@ -10513,12 +10501,9 @@ dependencies = [
 [[package]]
 name = "loom"
 version = "0.7.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "419e0dc8046cb947daa77eb95ae174acfbddb7673b4151f56d1eed8e93fbfaca"
 dependencies = [
  "cfg-if",
  "generator",
- "pin-utils",
  "scoped-tls",
  "serde",
  "serde_json",
@@ -12314,12 +12299,6 @@ name = "pin-project-lite"
 version = "0.2.17"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "a89322df9ebe1c1578d689c92318e070967d1042b512afbe49518723f4e6d5cd"
-
-[[package]]
-name = "pin-utils"
-version = "0.1.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8b870d8c151b6f2fb93e84a13146138f05d02ed11c7e7c54f8826aaaf7c9f184"
 
 [[package]]
 name = "pkcs8"

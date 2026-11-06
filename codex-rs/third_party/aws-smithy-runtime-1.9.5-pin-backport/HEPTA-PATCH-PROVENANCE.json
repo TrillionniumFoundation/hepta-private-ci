@@ -1,0 +1,110 @@
+{
+  "schema": "hepta-private-pin-backport-v1",
+  "crate": {
+    "name": "aws-smithy-runtime",
+    "version": "1.9.5",
+    "checksum": "a392db6c583ea4a912538afb86b7be7c5d8887d91604f50eb55c262ee1b4a5f5",
+    "url": "https://static.crates.io/crates/aws-smithy-runtime/aws-smithy-runtime-1.9.5.crate",
+    "archive_bytes": 118099,
+    "archive_regular_files": 61,
+    "vendor": "codex-rs/third_party/aws-smithy-runtime-1.9.5-pin-backport",
+    "source_scope": "Private adaptation of the upstream AWS pin-only change to this exact older archive. The original mutable Pin binding is retained where data()/as_mut() requires it; all other source, versions and APIs remain unchanged.",
+    "edits": [
+      {
+        "path": "src/client/orchestrator/http.rs",
+        "before_sha256": "2506e3ae1dabbc897075b9c8d89b3d8b249be66b47c5e539d23a5e9ed48c757b",
+        "after_sha256": "0533b536c05744fe7775c71a747499af318f7076e037d78e9fa52470c527694c",
+        "replace": [
+          [
+            "use pin_utils::pin_mut;\n",
+            "",
+            1
+          ],
+          [
+            "    pin_mut!(body);",
+            "    let mut body = std::pin::pin!(body);",
+            1
+          ]
+        ]
+      },
+      {
+        "path": "tests/stalled_stream_common.rs",
+        "before_sha256": "26a903e37350b0a3c71a7b653bf44380ce6328b72977815a777aa7b4b241055b",
+        "after_sha256": "ed2c24748a4e1143d716725f9029f7b88e17f08446ee33324503e3bf9ea6eded",
+        "replace": [
+          [
+            "pub use pin_utils::pin_mut;\n",
+            "",
+            1
+          ]
+        ]
+      },
+      {
+        "path": "tests/stalled_stream_download.rs",
+        "before_sha256": "8ff88e718f435f14cb3a3131937427bbd324e626b7f1453254bff72ad4656f1e",
+        "after_sha256": "c1ac9be40d5c312cc2dd0d792333b30a9c49fd8c35185eb5d9241eea2fcad9ce",
+        "replace": [
+          [
+            "        pin_mut!(body);",
+            "        let mut body = std::pin::pin!(body);",
+            3
+          ]
+        ]
+      },
+      {
+        "path": "tests/stalled_stream_upload.rs",
+        "before_sha256": "5bcb60b026a73e3ce3c3a10e1ff5f75094356e9ea89cce8f161fe9bfd43c3adf",
+        "after_sha256": "2c4888f9fa07626b10749b472d695a890d9b25e5a7d0d3c1f16ba6a5ad36dc7d",
+        "replace": [
+          [
+            "                            pin_mut!(body);",
+            "                            let body = std::pin::pin!(body);",
+            1
+          ]
+        ]
+      },
+      {
+        "path": "Cargo.toml",
+        "before_sha256": "10c8f8b528d4a61d9788f9b9ad47235905d38527353a4614d78b8fc102f43f62",
+        "after_sha256": "b29dddfe95f879c79e56b0cdece69f1fa89c09842616477639a895a9724c2d42",
+        "replace": [
+          [
+            "[dependencies.pin-utils]\nversion = \"0.1.0\"\n\n",
+            "",
+            1
+          ]
+        ]
+      },
+      {
+        "path": "Cargo.toml.orig",
+        "before_sha256": "e091560b55150e18b129a0bec9043ddcfb73a596a2b9aa0ddd23d4137923f802",
+        "after_sha256": "17f5c1c1595e699fcce86a5cba6662be804f2f09dd65ade4cafa40475cd0177d",
+        "replace": [
+          [
+            "pin-utils = \"0.1.0\"\n",
+            "",
+            1
+          ]
+        ]
+      }
+    ],
+    "licenses": {
+      "LICENSE": {
+        "bytes": 10142,
+        "sha256": "09e8a9bcec8067104652c168685ab0931e7868f9c8284b66f5ae6edae5f1130b",
+        "git_blob": "67db8588217f266eb561f75fae738656325deac9"
+      }
+    },
+    "original_rust_version": "1.88"
+  },
+  "upstream": {
+    "aws_before_commit": "b3bdfffc8dbbaf115b572079d7f170ec78ec939c",
+    "aws_after_commit": "b964fc77de60b0a492ff788c40bb66524fd26a44",
+    "loom_before_commit": "a7033ee06a97c52eb2f8131c095fbea6c6eecba3",
+    "rust_pin_macro_stable_since": "1.68.0",
+    "source_note": "Current five locked versions are retained. Existing workspace patches and unrelated dependency facts must remain unchanged. Hyper reuses upstream tokio::pin!; AWS and Loom use std::pin::pin! with binding mutability required by these exact sources.",
+    "hyper_pin_removal_pr": "https://github.com/hyperium/hyper/pull/4023",
+    "hyper_pin_removal_commit": "8ba900853b0f619b165e8530fc8c310bc13e056b",
+    "workspace_toolchain": "1.96.0"
+  }
+}
