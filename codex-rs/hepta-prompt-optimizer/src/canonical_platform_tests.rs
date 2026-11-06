@@ -13,17 +13,27 @@ fn capture_tree(root: &Path) -> BTreeMap<PathBuf, Option<Vec<u8>>> {
     let mut image = BTreeMap::new();
     let mut pending = vec![root.to_path_buf()];
     while let Some(directory) = pending.pop() {
-        for entry in std::fs::read_dir(directory).expect("fixture tree") {
-            let path = entry.expect("fixture entry").path();
+        for entry in
+            std::fs::read_dir(directory).unwrap_or_else(|error| panic!("fixture tree: {error:?}"))
+        {
+            let path = entry
+                .unwrap_or_else(|error| panic!("fixture entry: {error:?}"))
+                .path();
             let relative = path
                 .strip_prefix(root)
-                .expect("fixture child")
+                .unwrap_or_else(|error| panic!("fixture child: {error:?}"))
                 .to_path_buf();
             if path.is_dir() {
                 image.insert(relative, None);
                 pending.push(path);
             } else {
-                image.insert(relative, Some(std::fs::read(path).expect("fixture bytes")));
+                image.insert(
+                    relative,
+                    Some(
+                        std::fs::read(path)
+                            .unwrap_or_else(|error| panic!("fixture bytes: {error:?}")),
+                    ),
+                );
             }
         }
     }
@@ -32,14 +42,16 @@ fn capture_tree(root: &Path) -> BTreeMap<PathBuf, Option<Vec<u8>>> {
 
 fn existing_state(parent: &Path) -> PathBuf {
     let root = parent.join("existing");
-    std::fs::create_dir(&root).expect("existing state directory");
+    std::fs::create_dir(&root)
+        .unwrap_or_else(|error| panic!("existing state directory: {error:?}"));
     for (name, content) in [
         ("registry.sqlite", b"original state".as_slice()),
         ("registry.sqlite-wal", b"original WAL".as_slice()),
         ("registry.sqlite-shm", b"original shared state".as_slice()),
         ("active.json", b"original active pointer".as_slice()),
     ] {
-        std::fs::write(root.join(name), content).expect("original state bytes");
+        std::fs::write(root.join(name), content)
+            .unwrap_or_else(|error| panic!("original state bytes: {error:?}"));
     }
     root
 }
