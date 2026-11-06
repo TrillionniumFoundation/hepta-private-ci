@@ -15,6 +15,7 @@ use codex_hepta_types::FixedQ32;
 use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
 
+mod continuous_time;
 mod deletion;
 mod inference_control;
 mod journal;
@@ -28,6 +29,16 @@ mod runtime_types;
 mod sparse;
 mod witness;
 
+pub use continuous_time::HcsnClockCheckpointV1;
+pub use continuous_time::HcsnClockIdentityV1;
+pub use continuous_time::HcsnIntegrationV1;
+pub use continuous_time::HcsnIntervalPlanV1;
+pub use continuous_time::HcsnTimeError;
+pub use continuous_time::HcsnTimeProfileV1;
+pub use continuous_time::commit_hcsn_batch_v1;
+pub use continuous_time::commit_hcsn_interval_v1;
+pub use continuous_time::plan_hcsn_batch_v1;
+pub use continuous_time::plan_hcsn_interval_v1;
 pub use deletion::DeletionRebuildError;
 pub use deletion::NeuronDeletionRebuildPlanV1;
 pub use deletion::NeuronDeletionRebuildReceiptV1;
