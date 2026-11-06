@@ -1,0 +1,32 @@
+{
+  "divergent_existing_file_rejected": true,
+  "files": [
+    {
+      "bytes": 993449,
+      "encoding": "gzip_parts",
+      "name": "confirmation_raw.npz",
+      "sha256": "a13e44b125bdd32294a3f9d1e0a879c9b315f646ab2a348e8ad683104288cc63",
+      "storage_objects": 3
+    },
+    {
+      "bytes": 1299134,
+      "encoding": "gzip_parts",
+      "name": "paired_utilities.npz",
+      "sha256": "e76cb14e1aefcafdb034397db477b5963ad382e7360761752777122e8d8c5749",
+      "storage_objects": 4
+    },
+    {
+      "bytes": 1364000,
+      "encoding": "gzip",
+      "name": "results.json",
+      "sha256": "5e3c479a257da5776219227690cdaeef03ee7fb33ee3b0a8c8f69040f1f9d221",
+      "storage_objects": 1
+    }
+  ],
+  "fresh_directory_byte_identity": true,
+  "idempotent_existing_identity": true,
+  "schema": "ndu.lossless-evidence-restoration.v1",
+  "scope": "Lossless representation only; no experiment, source freeze, prices or result values changed.",
+  "source_sha256": "b4fd422faa4e8b7841c885d825089e89a92a7aa0840ca9c3e5e693290e38a55e",
+  "status": "matched"
+}
