@@ -21,10 +21,17 @@ pub use codex_hepta_infer_core::NeuronFeatureRequestV1;
 mod cell;
 mod cell_batch;
 mod cell_binding;
+mod cell_generation_control;
 mod cell_generation_journal;
 mod cell_generation_state;
 mod cell_generation_types;
 mod cell_inference;
+#[cfg(target_os = "linux")]
+mod cell_joint_generation;
+#[cfg(target_os = "linux")]
+mod cell_joint_process;
+#[cfg(target_os = "linux")]
+mod cell_joint_protocol;
 mod cell_journal;
 mod cell_journal_codec;
 mod cell_owner;
@@ -54,6 +61,9 @@ pub use cell_batch::CellBatchQueueV1;
 pub use cell_batch::CellBatchResultV1;
 pub use cell_batch::CellMicrobatchInferenceControlPortV1;
 pub use cell_binding::canonical_cell_step_request_digest_v1;
+pub use cell_generation_control::CellGenerationWorkerV2;
+pub use cell_generation_control::ControlledCellGenerationConfigV2;
+pub use cell_generation_control::ControlledCellGenerationPortV2;
 pub use cell_generation_journal::CellGenerationJournalV2;
 pub use cell_generation_state::CellGenerationConfigV2;
 pub use cell_generation_types::CellBackendManifestV2;
@@ -71,6 +81,20 @@ pub use cell_generation_types::CellRuntimeSnapshotV2;
 pub use cell_inference::CellInferenceReadbackPortV1;
 pub use cell_inference::infer_cell;
 pub use cell_inference::recover_cell_inference;
+#[cfg(target_os = "linux")]
+pub use cell_joint_generation::JointGenerationProcessConfigV1;
+#[cfg(target_os = "linux")]
+pub use cell_joint_generation::JointGenerationProcessWorkerV1;
+#[cfg(target_os = "linux")]
+pub use cell_joint_protocol::JointGenerationActionV1;
+#[cfg(target_os = "linux")]
+pub use cell_joint_protocol::JointGenerationCommandV1;
+#[cfg(target_os = "linux")]
+pub use cell_joint_protocol::JointGenerationInputV1;
+#[cfg(target_os = "linux")]
+pub use cell_joint_protocol::JointGenerationModalityV1;
+#[cfg(target_os = "linux")]
+pub use cell_joint_protocol::JointGenerationSamplerV1;
 pub use cell_journal::CellJournalPartitionV1;
 pub use cell_journal::CellOwnerJournalV1;
 pub use cell_owner::CellPartitionOwnerV1;

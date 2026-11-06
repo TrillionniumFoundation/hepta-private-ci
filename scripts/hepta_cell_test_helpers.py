@@ -17,6 +17,7 @@ HELPERS = {
     "codex-rmcp-client": ("test_stdio_server", "test_streamable_http_server"),
     "codex-linux-sandbox": ("codex-linux-sandbox",),
     "codex-shell-escalation": ("codex-execve-wrapper",),
+    "codex-hepta-infer-worker-host": ("hepta-joint-propose",),
 }
 
 
@@ -30,7 +31,11 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output-dir", type=Path, required=True)
     parser.add_argument("--github-env", type=Path)
+    parser.add_argument("--package", action="append", choices=tuple(HELPERS))
     args = parser.parse_args()
+    selected_packages = args.package or list(HELPERS)
+    if len(selected_packages) != len(set(selected_packages)):
+        parser.error("a helper package may be selected only once")
     root = Path(__file__).resolve().parents[1]
     workspace = root / "codex-rs"
     output = args.output_dir.resolve()
@@ -46,6 +51,7 @@ def main():
         "source_status_before": None,
         "source_status_after": None,
         "workspace": str(workspace),
+        "selected_packages": selected_packages,
         "builds": [],
         "artifacts": {},
         "complete": False,
@@ -70,7 +76,8 @@ def main():
             raise RuntimeError(
                 "source has tracked or untracked changes before helper builds"
             )
-        for package, binaries in HELPERS.items():
+        for package in selected_packages:
+            binaries = HELPERS[package]
             command = [
                 "cargo",
                 "build",
