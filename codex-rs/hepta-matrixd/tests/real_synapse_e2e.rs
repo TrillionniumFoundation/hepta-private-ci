@@ -1159,11 +1159,11 @@ async fn wait_for_inbox_dispatch_completed(
     let store = MatrixDurableStore::open(layout, MatrixDurableConfig::default()).await?;
     let deadline = Instant::now() + MATRIX_REPLY_TIMEOUT;
     loop {
-        if let Some(record) = store.inbox_dispatch_for_turn(thread_id, turn_id).await? {
-            if record.state == InboxDispatchState::Completed {
-                store.close().await;
-                return Ok(());
-            }
+        if let Some(record) = store.inbox_dispatch_for_turn(thread_id, turn_id).await?
+            && record.state == InboxDispatchState::Completed
+        {
+            store.close().await;
+            return Ok(());
         }
         if Instant::now() >= deadline {
             let snapshot = store.snapshot(now_ms()?, 64).await?;
@@ -1478,10 +1478,7 @@ async fn wait_matrix_store_drained(layout: &HeptaAgentLayout) -> Result<()> {
         }
         if Instant::now() >= deadline {
             store.close().await;
-            bail!(
-                "Matrix durable queues did not drain before the fault step: {:?}",
-                snapshot
-            );
+            bail!("Matrix durable queues did not drain before the fault step: {snapshot:?}");
         }
         tokio::time::sleep(Duration::from_millis(25)).await;
     }
@@ -5903,8 +5900,7 @@ impl EncryptedMatrixClient {
             .collect();
         if !fragments.is_empty() {
             eprintln!(
-                "R4_TOKEN_FRAGMENT sender={} final={:?} matches={:?}",
-                sender, final_body, fragments
+                "R4_TOKEN_FRAGMENT sender={sender} final={final_body:?} matches={fragments:?}"
             );
         }
         ensure!(
