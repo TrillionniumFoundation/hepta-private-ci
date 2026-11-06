@@ -436,6 +436,14 @@ async fn bounded_capacity_prunes_only_terminal_history_and_keeps_replay_consumed
     .await
     .unwrap();
     assert_eq!(largest_issuer, AUTHBUS_OUTBOX_MAX_ACTIVE_PER_ISSUER);
+    let signed_issuer_active: i64 = sqlx::query_scalar(
+        "SELECT COUNT(*) FROM authbus_outbox
+         WHERE issuer_id = 'issuer:queue' AND state IN ('queued', 'leased')",
+    )
+    .fetch_one(&store.pool)
+    .await
+    .unwrap();
+    assert_eq!(signed_issuer_active, 1);
     let (issuer, message) = fixture(2, u64::MAX);
     assert!(matches!(
         store
