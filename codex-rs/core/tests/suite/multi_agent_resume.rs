@@ -323,6 +323,17 @@ async fn cold_root_resume_restores_agent_identity_and_role_on_followup() -> Resu
         )
     );
 
+    // The sibling can evict this worker: the configured limit reserves one slot for root.
+    // Flush while this handle still owns a live recorder, before that admission.
+    worker_thread
+        .flush_rollout()
+        .await
+        .with_context(|| {
+            format!(
+                "cold-root worker flush before sibling admission: root={root_thread_id}, worker={worker_thread_id}, sibling=not-spawned"
+            )
+        })?;
+
     let sibling_spawn_args = serde_json::to_string(&json!({
         "message": SIBLING_TASK,
         "task_name": SIBLING_NAME,
@@ -371,9 +382,22 @@ async fn cold_root_resume_restores_agent_identity_and_role_on_followup() -> Resu
         matches!(event, EventMsg::TurnComplete(_))
     })
     .await;
-    sibling_thread.flush_rollout().await?;
-    worker_thread.flush_rollout().await?;
-    initial.codex.flush_rollout().await?;
+    sibling_thread
+        .flush_rollout()
+        .await
+        .with_context(|| {
+            format!(
+                "cold-root pre-restart sibling flush: root={root_thread_id}, worker={worker_thread_id}, sibling={sibling_thread_id}"
+            )
+        })?;
+    initial.codex
+        .flush_rollout()
+        .await
+        .with_context(|| {
+            format!(
+                "cold-root pre-restart root flush: root={root_thread_id}, worker={worker_thread_id}, sibling={sibling_thread_id}"
+            )
+        })?;
     sibling_thread.shutdown_and_wait().await?;
     worker_thread.shutdown_and_wait().await?;
     drop(sibling_thread);
