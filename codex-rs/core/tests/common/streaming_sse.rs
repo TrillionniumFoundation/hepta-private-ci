@@ -17,10 +17,17 @@ pub struct StreamingSseChunk {
     pub body: String,
 }
 
+/// Exact HTTP head and body received by the streaming fixture.
+#[derive(Debug, Clone)]
+pub struct StreamingSseRequest {
+    pub head: String,
+    pub body: Vec<u8>,
+}
+
 /// Minimal streaming SSE server for tests that need gated per-chunk delivery.
 pub struct StreamingSseServer {
     uri: String,
-    requests: Arc<TokioMutex<Vec<Vec<u8>>>>,
+    requests: Arc<TokioMutex<Vec<StreamingSseRequest>>>,
     request_notify: Arc<Notify>,
     shutdown: oneshot::Sender<()>,
     task: tokio::task::JoinHandle<()>,
@@ -32,6 +39,14 @@ impl StreamingSseServer {
     }
 
     pub async fn requests(&self) -> Vec<Vec<u8>> {
+        self.requests_with_headers()
+            .await
+            .into_iter()
+            .map(|request| request.body)
+            .collect()
+    }
+
+    pub async fn requests_with_headers(&self) -> Vec<StreamingSseRequest> {
         self.requests.lock().await.clone()
     }
 
@@ -139,7 +154,10 @@ pub async fn start_streaming_sse_server_with_header_gates(
                                     return;
                                 }
                             };
-                            requests.lock().await.push(body);
+                            requests.lock().await.push(StreamingSseRequest {
+                                head: request.clone(),
+                                body,
+                            });
                             request_notify.notify_one();
                             let Some((chunks, completion, header_gate)) = take_next_stream(&state).await else {
                                 let _ = write_http_response(&mut stream, /*status*/ 500, "no responses queued", "text/plain").await;
@@ -637,6 +655,7 @@ data: {"type":"response.completed","response":{"id":"resp-1"}}
             .expect("build HTTP client");
         let resp = client
             .post(url)
+            .header("x-fixture-marker", "original-header")
             .json(&payload)
             .send()
             .await
@@ -649,6 +668,23 @@ data: {"type":"response.completed","response":{"id":"resp-1"}}
         let completion = completions.remove(0);
         let completed_at = completion.await.expect("completion timestamp");
         assert!(completed_at > 0);
+        let recorded = server.requests_with_headers().await;
+        assert_eq!(recorded.len(), 1);
+        assert!(
+            recorded[0]
+                .head
+                .starts_with("POST /v1/responses HTTP/1.1\r\n")
+        );
+        assert_eq!(
+            header_value(&recorded[0].head, "x-fixture-marker"),
+            Some("original-header"),
+        );
+        assert_eq!(
+            serde_json::from_slice::<serde_json::Value>(&recorded[0].body)
+                .expect("recorded request body"),
+            payload,
+        );
+        assert_eq!(server.requests().await, vec![recorded[0].body.clone()]);
 
         server.shutdown().await;
     }
