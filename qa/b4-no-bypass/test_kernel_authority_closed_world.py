@@ -178,6 +178,21 @@ class KernelAuthorityClosedWorldTests(unittest.TestCase):
             f"kernel.authority privileged boundaries missing from privileged_inventory: {sorted(canonical - required)}",
         )
 
+    def test_deployment_issuer_dependency_is_in_both_closed_sets(self) -> None:
+        path = "codex-rs/hepta-agentd/src/deployment_issuer_dependencies.rs"
+        manifest = tomllib.loads(MANIFEST.read_text(encoding="utf-8"))
+        boundary = next(
+            row for row in manifest["boundary"]
+            if row["id"] == "authority_lease_verify_use"
+        )
+        self.assertIn(path, boundary["product_callers"])
+        independent = next(
+            row for row in self.inventory()
+            if row["id"] == "authority_lease_verify_use"
+        )
+        self.assertIn(path, independent["allowedCallers"])
+        self.assertRegex(self.lexical_code(path), r"\.\s*verify_use\s*\(")
+
     def test_type_anchored_callers_match_independent_closed_set(self) -> None:
         ignored = ("/tests/", "/examples/", "_tests.rs")
         rows = self.inventory()
