@@ -149,7 +149,7 @@ id = "http_provider_effect_adapter"
 symbol = "HttpProviderEffectAdapter::new"
 definition_path = "codex-rs/model-provider/src/provider_effect.rs"
 definition_markers = ["pub struct HttpProviderEffectAdapter", "pub fn new", "ProviderEffectAdapter"]
-product_callers = ["codex-rs/hepta-agentd/src/automation_effect_host.rs"]
+product_callers = ["codex-rs/hepta-agentd/src/automation_effect_host.rs", "codex-rs/hepta-agentd/src/automation_effect_host_pq.rs"]
 caller_markers = ["HttpProviderEffectAdapter::new", "HttpProviderEffectContractAttestation"]
 
 [[boundary]]
@@ -561,8 +561,8 @@ id = "final_use_pq_open_state"
 symbol = "FinalUseAuthority::open_pq_state_dir_with_issuer_keys"
 definition_path = "codex-rs/hepta-contracts/src/final_use_pq.rs"
 definition_markers = ["pub fn open_pq_state_dir_with_issuer_keys", "pin_pq_keys", "clock.now_unix_ms()", "frontier_store.load", "AntiRollbackViolation"]
-product_callers = ["codex-rs/hepta-infer-worker-host/src/final_use_authorizer/pq.rs"]
-caller_markers = ["FinalUseAuthority::open_pq_state_dir_with_issuer_keys", "FinalUseAuthenticationProfile::MlDsa65V2", "clock.now_unix_ms()?", "frontier.load"]
+product_callers = ["codex-rs/hepta-infer-worker-host/src/final_use_authorizer/pq.rs", "codex-rs/hepta-agentd/src/automation_effect_host_pq.rs"]
+caller_markers = ["FinalUseAuthority::open_pq_state_dir_with_issuer_keys", "FinalUseAuthenticationProfile::MlDsa65V2", "clock.now_unix_ms()", "frontier.load"]
 
 [[boundary]]
 id = "final_use_pq_approval_trust"
@@ -577,8 +577,8 @@ id = "final_use_pq_revocation_feed_trust"
 symbol = "FinalUseRevocationFeedVerifier::new_pq_with_keys"
 definition_path = "codex-rs/hepta-contracts/src/final_use_control_pq.rs"
 definition_markers = ["impl FinalUseRevocationFeedVerifier", "pub fn new_pq_with_keys", "control_keys(keys)?", "FinalUseAuthenticationProfile::MlDsa65V2"]
-product_callers = ["codex-rs/hepta-infer-worker-host/src/final_use_authorizer/pq.rs"]
-caller_markers = ["FinalUseRevocationFeedVerifier::new_pq_with_keys", "config.revocation_keys"]
+product_callers = ["codex-rs/hepta-infer-worker-host/src/final_use_authorizer/pq.rs", "codex-rs/hepta-agentd/src/automation_effect_host_pq.rs"]
+caller_markers = ["FinalUseRevocationFeedVerifier::new_pq_with_keys", "revocation_keys"]
 
 [[boundary]]
 id = "final_use_pq_revocation_feed_confirm"
@@ -586,7 +586,7 @@ symbol = "FinalUseRevocationFeedVerifier::apply_or_confirm_current"
 call_pattern = "\\.\\s*apply_or_confirm_current\\s*\\("
 definition_path = "codex-rs/hepta-contracts/src/final_use_control_pq.rs"
 definition_markers = ["pub fn apply_or_confirm_current", "self.profile != authority.authentication_profile()", "self.verify_signed(signed, now_unix_ms)?", "update_revocations"]
-product_callers = ["codex-rs/hepta-bao-adapter/src/final_use_host.rs", "codex-rs/hepta-infer-worker-host/src/final_use_authorizer/pq.rs"]
+product_callers = ["codex-rs/hepta-bao-adapter/src/final_use_host.rs", "codex-rs/hepta-infer-worker-host/src/final_use_authorizer/pq.rs", "codex-rs/hepta-agentd/src/automation_effect_host_pq.rs"]
 caller_markers = ["apply_or_confirm_current", "FinalUseAuthenticationProfile::MlDsa65V2"]
 
 [[boundary]]
