@@ -98,7 +98,10 @@ impl ChildFixture {
         let mut child = OwnedChild(Some(command.spawn()?));
         let deadline = Instant::now() + CHILD_DEADLINE;
         loop {
-            let process = child.0.as_mut().expect("owned child remains until reaped");
+            let process = child
+                .0
+                .as_mut()
+                .ok_or_else(|| anyhow::anyhow!("owned child remains until reaped"))?;
             if let Some(status) = process.try_wait()? {
                 child.0.take();
                 ensure!(
