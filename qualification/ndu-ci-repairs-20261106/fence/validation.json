@@ -1,0 +1,142 @@
+{
+  "schema": "ndu.fence-resolver-compatibility.v1",
+  "source_head": "a7aa22a30dfc105ec039f2c0bbf3b7ad6c33b090",
+  "source_tree": "f35d04c92270322b82f2b1a5bf7605d9cb2ec8a2",
+  "workflow_before": {
+    "bytes": 1682,
+    "sha256": "f0860d9723edf6d6a0a701bac787582c7998fd920eb91b23de4288b30ac5a53a",
+    "git_blob": "60de74f581a2fa4f2b504f375bff39942fc2d499"
+  },
+  "workflow_after": {
+    "bytes": 1682,
+    "sha256": "d2501fa1c6031d6bd87cbcd520422b915d02f37443cb5e4ec0b5a082cfe73aa2",
+    "git_blob": "ec94f053dbb715761ab8f7563c361878655406fa"
+  },
+  "one_exact_official_action_pin_change": true,
+  "all_other_workflow_bytes_and_yaml_fields_unchanged": true,
+  "existing_audit_mode_permissions_and_required_gates_unchanged": true,
+  "original_failure": {
+    "run": 42219701177,
+    "job": 127898387456,
+    "head": "319e0b1767ce37391a418cba33d1e23ce4be6317",
+    "action": "e6b39c80c51cb2b2a39448ddeff74b3b886c0a63",
+    "error": "unsupported_resolver_layout"
+  },
+  "original_failed_runner_image": {
+    "image": "ubuntu-24.04",
+    "version": "20261101.360.1"
+  },
+  "exact_failed_host_predicate": "Not exposed by original v0.10.0 job log; do not infer it from the generic error code.",
+  "donor": {
+    "pr": 4649,
+    "head": "94252595fa741ed331b9946d7a910b28c96e44cf",
+    "base": "ff611d62793c2829cab85b38d6ab246691b3ba1d",
+    "run": 41378736133,
+    "job": 125064626070,
+    "conclusion": "success",
+    "overall_ci_required": "failure"
+  },
+  "donor_workflow_exact_preimage_and_postimage": true,
+  "donor_fence_report_controls": {
+    "network": "verified",
+    "sudo": "preserved_verified",
+    "containers": "preserved_verified",
+    "protection_available": false,
+    "readiness": "ready_observation_only",
+    "resident_health": "healthy"
+  },
+  "donor_critical_findings": 0,
+  "official_fix": {
+    "url": "https://github.com/openai/fence/pull/208",
+    "pr": 208,
+    "merged": true,
+    "head": "a80d24f55cc9854d0e8446d8a02d1e93e774dfe1",
+    "merge": "8b34fc8fd00f59cd38f6a6b62b315722ba365350",
+    "title": "Support a regular /etc/resolv.conf on hosted runners"
+  },
+  "official_candidate": {
+    "action_commit": "f9751ca5d767dc0199e88733c2b286bd4800a008",
+    "action_yml": {
+      "content": "name: Fence\ndescription: Launch the bundled Fence Linux x64 agent on a supported GitHub-hosted runner\ninputs:\n  config:\n    description: Advanced inline strict JSON Fence configuration; if set, no other Fence config inputs may be used\n    required: false\n  mode:\n    description: Fence mode, either block or audit\n    required: false\n  invocation_id:\n    description: Optional lowercase slug override; omission derives fence-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}\n    required: false\n  container_policy:\n    description: Container handling for block mode, either disable or unsafe_preserve\n    required: false\n  platform_profile:\n    description: Optional platform profile; only github_hosted_workflow_bootstrap_v5 is supported\n    required: false\n  disable_broad_github_domains:\n    description: Set true to remove github.com, api.github.com, release-assets.githubusercontent.com, the optional hosted-runner watchdog, and new platform-origin *.githubapp.com authorizations from the default GitHub compatibility profile\n    required: false\n  allow_github_artifacts:\n    description: Set true to allow bounded GitHub artifact uploads in block mode; artifacts become an intentional data-egress channel\n    required: false\n  allowlist:\n    description: Optional multiline allowlist entries such as example.com, exact-depth *.example.com or *.*.example.com patterns, example.com:8443, or cidr 192.0.2.0/24 udp 123\n    required: false\nruns:\n  using: node24\n  main: action/main.cts\n  post: action/post.cts\n  post-if: always()\n",
+      "encoding": "utf-8",
+      "sha": "97e91823b99e6b549291901818ebb918116c06d6",
+      "display_url": "https://github.com/openai/fence/blob/f9751ca5d767dc0199e88733c2b286bd4800a008/action.yml",
+      "display_title": "action.yml"
+    },
+    "manifest_file": {
+      "content": "{\n  \"artifact_name\": \"fence_v0.12.5_linux-amd64\",\n  \"artifact_sha256\": \"3434ef8eb32d130daf272c4794772b497a5d4390d458fd0ef73bac6612b6aa1a\",\n  \"bundle_path\": \"action/bin/fence\",\n  \"release_channel\": \"stable\",\n  \"release_tag\": \"v0.12.5\",\n  \"release_url\": \"https://github.com/openai/fence/releases/tag/v0.12.5\",\n  \"repository\": \"openai/fence\",\n  \"schema_version\": 4,\n  \"signer_digest\": \"424c1ac6cc2f844986f38defc6d43150796f35f5\",\n  \"signer_workflow\": \"openai/fence/.github/workflows/release.yml\",\n  \"source_commit\": \"424c1ac6cc2f844986f38defc6d43150796f35f5\",\n  \"source_ref\": \"refs/heads/main\"\n}\n",
+      "encoding": "utf-8",
+      "sha": "699385aac708cd1999197b5a70ef371b1628a0d5",
+      "display_url": "https://github.com/openai/fence/blob/f9751ca5d767dc0199e88733c2b286bd4800a008/action/bundle-manifest.json",
+      "display_title": "bundle-manifest.json"
+    },
+    "bundle": {
+      "artifact_name": "fence_v0.12.5_linux-amd64",
+      "artifact_sha256": "3434ef8eb32d130daf272c4794772b497a5d4390d458fd0ef73bac6612b6aa1a",
+      "bundle_path": "action/bin/fence",
+      "release_channel": "stable",
+      "release_tag": "v0.12.5",
+      "release_url": "https://github.com/openai/fence/releases/tag/v0.12.5",
+      "repository": "openai/fence",
+      "schema_version": 4,
+      "signer_digest": "424c1ac6cc2f844986f38defc6d43150796f35f5",
+      "signer_workflow": "openai/fence/.github/workflows/release.yml",
+      "source_commit": "424c1ac6cc2f844986f38defc6d43150796f35f5",
+      "source_ref": "refs/heads/main"
+    },
+    "source_ancestry": {
+      "status": "ahead",
+      "ahead_by": 38,
+      "behind_by": 0,
+      "base": "8b34fc8fd00f59cd38f6a6b62b315722ba365350",
+      "merge_base": "8b34fc8fd00f59cd38f6a6b62b315722ba365350"
+    }
+  },
+  "official_candidate_source_dns_git_blob": "86871321b86817c9d35dba5d64ad656272db13a8",
+  "upstream_tests_read_only": [
+    "direct_resolver_file_accepts_only_root_ownership",
+    "resolver_layout_checks_regular_target_owner_and_permissions",
+    "resolver_mount_evidence_requires_the_exact_target_and_read_only_options",
+    "live_resolver_must_reach_the_reviewed_path_even_when_backing_identity_matches"
+  ],
+  "upstream_tests_executed_locally": false,
+  "logs": {
+    "original_failure": {
+      "raw_utf8": {
+        "bytes": 3851,
+        "sha256": "2c27551c4cd7341def2e7b077c1a4c30725f2592882b28a88fba1b6a58567c20",
+        "git_blob": "161e9657dd603f2cd93af2ebf2914f3e0f7c45c7"
+      },
+      "gzip": {
+        "bytes": 1535,
+        "sha256": "4afef137455d44699dbb71113445db76ea1e0fbe45ba8471b7f68fcf060bacee",
+        "git_blob": "585fceae13a2616c8e2ba9141d09c5c22977be65"
+      }
+    },
+    "donor_success": {
+      "raw_utf8": {
+        "bytes": 1356167,
+        "sha256": "668058e7e674b013e5402d5c8f7d207bf4c24125455bf1968a18c960e2fc648b",
+        "git_blob": "c772c1161ad074fbc9f487dbb342e3599cc39c78"
+      },
+      "gzip": {
+        "bytes": 147152,
+        "sha256": "193f72aa8d272beed4bb35781460f57d827cf3a9fd51af042c24ea03f3ce6217",
+        "git_blob": "d0a5a437a66d1f04bdea63f5d84a90c404b04e5a"
+      }
+    }
+  },
+  "scope_source_git_blob": "553bb1f2473f58fce7587c254f817a2c5a45ea09",
+  "current_selector_result": {
+    "effects": true,
+    "inference": true,
+    "learning": true,
+    "lifecycle": true,
+    "objective": true,
+    "native": true,
+    "derived": true,
+    "full_repo": true
+  },
+  "new_head_hosted_gate": "NOT_YET_RUN",
+  "remote_mutation_performed": false
+}

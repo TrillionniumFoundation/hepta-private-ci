@@ -1,0 +1,82 @@
+{
+  "schema": "ndu.fence-resolver-recurrence.v1",
+  "candidate_source_commit": "0e63dd2d320262681afeddd8cc45032984b5c8b2",
+  "candidate_source_tree": "5def5d3baa082c04bc9cdac9724a85163528c4ea",
+  "new_failure": {
+    "source_commit": "4bdbfa22ed95f144c8dee7f9b0167ed166bb3841",
+    "run": 42229805749,
+    "job": 127932493561,
+    "error": "unsupported_resolver_layout",
+    "checkout_started": false,
+    "decoded_utf8": {
+      "bytes": 3851,
+      "sha256": "fcca01985f659e947cb46c47b5ae6ff1c549b6f95a032de91090369c1ac84a03",
+      "git_blob": "f93cc7355b79820a39b1d25090589df31442171f"
+    },
+    "gzip": {
+      "bytes": 1549,
+      "sha256": "0edd7f658b770fa7f0211e493485b8532a337c19fd00fdd556ce8ec8958fe1e3",
+      "git_blob": "8470284c83cabf1adad5c4658b0892ebe9b3b913"
+    }
+  },
+  "previous_same_source_same_policy_retry": {
+    "run": 42219701177,
+    "job": 127903594124,
+    "attempt": 2,
+    "conclusion": "success",
+    "interpretation": "A retained earlier success; it does not remove the later recurrence."
+  },
+  "source_preimage_rechecked_at": "c74661b63dc71c840caa6c2df90c3745dad2a4ea",
+  "source_before": {
+    "bytes": 1682,
+    "sha256": "f0860d9723edf6d6a0a701bac787582c7998fd920eb91b23de4288b30ac5a53a",
+    "git_blob": "60de74f581a2fa4f2b504f375bff39942fc2d499"
+  },
+  "source_after": {
+    "bytes": 1682,
+    "sha256": "d2501fa1c6031d6bd87cbcd520422b915d02f37443cb5e4ec0b5a082cfe73aa2",
+    "git_blob": "ec94f053dbb715761ab8f7563c361878655406fa"
+  },
+  "exact_official_pin_and_version_comment_only": true,
+  "entire_yaml_object_equal_except_action_pin": true,
+  "all_existing_security_inputs_permissions_gate_commands_unchanged": true,
+  "official_bundle": {
+    "artifact_name": "fence_v0.12.5_linux-amd64",
+    "artifact_sha256": "3434ef8eb32d130daf272c4794772b497a5d4390d458fd0ef73bac6612b6aa1a",
+    "bundle_path": "action/bin/fence",
+    "release_channel": "stable",
+    "release_tag": "v0.12.5",
+    "release_url": "https://github.com/openai/fence/releases/tag/v0.12.5",
+    "repository": "openai/fence",
+    "schema_version": 4,
+    "signer_digest": "424c1ac6cc2f844986f38defc6d43150796f35f5",
+    "signer_workflow": "openai/fence/.github/workflows/release.yml",
+    "source_commit": "424c1ac6cc2f844986f38defc6d43150796f35f5",
+    "source_ref": "refs/heads/main"
+  },
+  "official_bundle_git_blob": "699385aac708cd1999197b5a70ef371b1628a0d5",
+  "official_dns_source": {
+    "path": "src/dns_mediator.rs",
+    "bytes": 570451,
+    "sha256": "c891dadacb26cd3a1f32fc29e150b8e5c88a631da85def27198c43f4f3e57def",
+    "git_blob": "86871321b86817c9d35dba5d64ad656272db13a8"
+  },
+  "official_fix_ancestry": {
+    "base": "8b34fc8fd00f59cd38f6a6b62b315722ba365350",
+    "head": "424c1ac6cc2f844986f38defc6d43150796f35f5",
+    "status": "ahead",
+    "ahead_by": 38,
+    "behind_by": 0,
+    "merge_base": "8b34fc8fd00f59cd38f6a6b62b315722ba365350"
+  },
+  "upstream_contracts_read": [
+    "((0, 0), &[\"/\", \"/etc\"])",
+    "direct_resolver_file_accepts_only_root_ownership",
+    "resolver_layout_checks_regular_target_owner_and_permissions",
+    "resolver_mount_evidence_requires_the_exact_target_and_read_only_options",
+    "live_resolver_must_reach_the_reviewed_path_even_when_backing_identity_matches"
+  ],
+  "upstream_native_tests_executed_locally": false,
+  "precise_failed_host_layout": "Not disclosed by v0.10.0; no host path or ownership observation is inferred from the generic failure code.",
+  "new_head_ci": "PENDING; same original Fence and blob-size gates must execute on the complete source."
+}
