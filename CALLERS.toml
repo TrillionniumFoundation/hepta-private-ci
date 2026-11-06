@@ -152,7 +152,7 @@ receiver_type = "FinalUseAuthority"
 receiver_methods = ["with_verified_use", "enter_verified_use"]
 definition_path = "codex-rs/hepta-contracts/src/final_use.rs"
 definition_markers = ["pub fn with_verified_use", "pub fn enter_verified_use", "Arc::ptr_eq", "validate_live"]
-product_callers = ["codex-rs/hepta-memory/src/production_writer.rs", "codex-rs/hepta-ndu/src/owner.rs", "codex-rs/hepta-operations/src/durable_store.rs", "codex-rs/hepta-prompt-registry/src/admission.rs", "codex-rs/hepta-prompt-registry/src/durable.rs", "codex-rs/hepta-runtime/src/organs.rs"]
+product_callers = ["codex-rs/hepta-memory/src/production_writer.rs", "codex-rs/hepta-ndu/src/owner.rs", "codex-rs/hepta-prompt-registry/src/admission.rs", "codex-rs/hepta-prompt-registry/src/durable.rs", "codex-rs/hepta-runtime/src/organs.rs"]
 caller_markers = ["with_verified_use", "binding"]
 
 [[boundary]]
@@ -177,8 +177,8 @@ symbol = "FinalUseAuthority::with_dispatch_boundary"
 call_pattern = "authority\\s*\\.\\s*with_dispatch_boundary\\s*\\("
 definition_path = "codex-rs/hepta-contracts/src/final_use.rs"
 definition_markers = ["pub fn with_dispatch_boundary", "validate_live", "dispatch_boundary"]
-product_callers = []
-caller_markers = []
+product_callers = ["codex-rs/hepta-operations/src/durable_dispatch.rs"]
+caller_markers = ["with_dispatch_boundary", "binding"]
 
 [[boundary]]
 id = "final_use_revocation_update"

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import importlib.util
+import json
 import sys
 import tempfile
 import textwrap
@@ -929,6 +930,27 @@ class OriginalNotesSourceGuardTests(unittest.TestCase):
                 ),
             )
 
+
+
+class DurableOperationsFinalUseBoundaryTests(unittest.TestCase):
+    def test_durable_operations_claim_and_dispatch_are_separate_closed_boundaries(self):
+        manifest = tomllib.loads((ROOT / "CALLERS.toml").read_text(encoding="utf-8"))
+        rows = {row["id"]: row for row in manifest["boundary"]}
+        store_path = "codex-rs/hepta-operations/src/durable_store.rs"
+        dispatch_path = "codex-rs/hepta-operations/src/durable_dispatch.rs"
+        self.assertIn(store_path, rows["final_use_claim_raw"]["product_callers"])
+        self.assertNotIn(store_path, rows["final_use_delivery_raw"]["product_callers"])
+        self.assertEqual(rows["final_use_dispatch_raw"]["product_callers"], [dispatch_path])
+        store = (ROOT / store_path).read_text(encoding="utf-8")
+        dispatch = (ROOT / dispatch_path).read_text(encoding="utf-8")
+        self.assertIn("authority.claim(signed, &binding)", store)
+        self.assertNotIn("with_verified_use", store)
+        self.assertIn("authorized.authority.with_dispatch_boundary", dispatch)
+        self.assertIn("authorized.binding", dispatch)
+        registry = json.loads((ROOT / "qa/b4-no-bypass/KERNEL_AUTHORITY_BOUNDARIES.json").read_text(encoding="utf-8"))
+        json_rows = {row["id"]: row for row in registry["boundaries"]}
+        self.assertNotIn(store_path, json_rows["final_use_delivery_raw"]["allowedCallers"])
+        self.assertEqual(json_rows["final_use_dispatch_raw"]["allowedCallers"], [dispatch_path])
 
 if __name__ == "__main__":
     unittest.main()
