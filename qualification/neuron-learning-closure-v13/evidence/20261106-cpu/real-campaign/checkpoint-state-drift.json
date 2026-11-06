@@ -1,0 +1,63 @@
+{
+  "attempts": 1,
+  "authority": "DENY_ALL",
+  "cost": {
+    "child_block_inputs": 0,
+    "child_block_outputs": 178984,
+    "child_involuntary_context_switches": 0,
+    "child_peak_rss_bytes": 33464320,
+    "child_system_seconds": 0.113699,
+    "child_user_seconds": 0.298307,
+    "child_voluntary_context_switches": 1,
+    "energy_joules": null,
+    "parent_cpu_seconds": 0.004391510999999904,
+    "scope": "Parent invocation and this exact child via wait4; model acquisition and caller receipt persistence are separate. Admitted-source-copy counters exclude subsequent staged/NPZ/ONNX reads.",
+    "total_cpu_seconds": 0.4163975109999999,
+    "wall_seconds": 0.4179303210003127
+  },
+  "enforced_resources": {
+    "address_space_bytes": 4294967296,
+    "cpu_seconds": 60,
+    "single_file_bytes": 134217728
+  },
+  "limits": {
+    "address_space_bytes": 4294967296,
+    "cpu_seconds": 60,
+    "input_bytes": 536870912,
+    "max_dataset_rows": 512,
+    "max_datasets": 8,
+    "output_bytes": 2097152,
+    "wall_seconds": 120
+  },
+  "progress": {
+    "adapter_calls_attempted": 0,
+    "admitted_source_copy_bytes": 91582944,
+    "encoder_batches_attempted": 0,
+    "encoder_batches_completed": 0,
+    "encoder_calls_attempted": 0,
+    "encoder_loads_attempted": 0,
+    "executor_calls_attempted": 0,
+    "staging_copy_bytes": 91582944
+  },
+  "reason": "ClosureError: Release manifest differs from the verified checkpoint closure",
+  "schema": "hepta.v13.feature-and-reference-replay.v1",
+  "status": "REJECTED",
+  "worker_exit": 0,
+  "worker_output": {
+    "stderr": {
+      "bytes": 966,
+      "captured_bytes": 966,
+      "complete": true,
+      "sha256": "425824e8e79b526818ea3f55c440cbf6a6c52ba4cb1d251b642869d52513d33a"
+    },
+    "stdout": {
+      "bytes": 542,
+      "captured_bytes": 542,
+      "complete": true,
+      "sha256": "bb235e0bcd77f57016b608087c0fc304d46601837e6dd2f29ff234e8c5748f7f"
+    }
+  },
+  "worker_stderr": "Traceback (most recent call last):\n  File \"/workspace/scratch/62902f6722b7/hepta-cell-work/qualification/neuron-learning-closure-v13/feature_replay.py\", line 91, in _worker_main\n    result.update(execute_reference(config, limits, progress))\n                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/scratch/62902f6722b7/hepta-cell-work/qualification/neuron-learning-closure-v13/feature_worker.py\", line 249, in execute_reference\n    closure = verify_checkpoint(\n              ^^^^^^^^^^^^^^^^^^\n  File \"/workspace/scratch/62902f6722b7/hepta-cell-work/qualification/neuron-learning-closure-v13/verify_closure.py\", line 277, in verify_checkpoint\n    release = _release(\n              ^^^^^^^^^\n  File \"/workspace/scratch/62902f6722b7/hepta-cell-work/qualification/neuron-learning-closure-v13/verify_closure.py\", line 172, in _release\n    raise ClosureError(\nclosure_io.ClosureError: Release manifest differs from the verified checkpoint closure\n",
+  "worker_stdout": "{\"authority\":\"DENY_ALL\",\"enforced_resources\":{\"address_space_bytes\":4294967296,\"cpu_seconds\":60,\"single_file_bytes\":134217728},\"progress\":{\"adapter_calls_attempted\":0,\"admitted_source_copy_bytes\":91582944,\"encoder_batches_attempted\":0,\"encoder_batches_completed\":0,\"encoder_calls_attempted\":0,\"encoder_loads_attempted\":0,\"executor_calls_attempted\":0,\"staging_copy_bytes\":91582944},\"reason\":\"ClosureError: Release manifest differs from the verified checkpoint closure\",\"schema\":\"hepta.v13.feature-and-reference-replay.v1\",\"status\":\"REJECTED\"}\n",
+  "worker_termination": "completed"
+}

@@ -1,0 +1,63 @@
+{
+  "attempts": 1,
+  "authority": "DENY_ALL",
+  "cost": {
+    "child_block_inputs": 0,
+    "child_block_outputs": 178976,
+    "child_involuntary_context_switches": 1,
+    "child_peak_rss_bytes": 31748096,
+    "child_system_seconds": 0.051995,
+    "child_user_seconds": 0.30297399999999997,
+    "child_voluntary_context_switches": 1,
+    "energy_joules": null,
+    "parent_cpu_seconds": 0.0035951559999999327,
+    "scope": "Parent invocation and this exact child via wait4; model acquisition and caller receipt persistence are separate. Admitted-source-copy counters exclude subsequent staged/NPZ/ONNX reads.",
+    "total_cpu_seconds": 0.3585641559999999,
+    "wall_seconds": 0.3565834389992233
+  },
+  "enforced_resources": {
+    "address_space_bytes": 4294967296,
+    "cpu_seconds": 60,
+    "single_file_bytes": 134217728
+  },
+  "limits": {
+    "address_space_bytes": 4294967296,
+    "cpu_seconds": 60,
+    "input_bytes": 536870912,
+    "max_dataset_rows": 512,
+    "max_datasets": 8,
+    "output_bytes": 2097152,
+    "wall_seconds": 120
+  },
+  "progress": {
+    "adapter_calls_attempted": 0,
+    "admitted_source_copy_bytes": 91582945,
+    "encoder_batches_attempted": 0,
+    "encoder_batches_completed": 0,
+    "encoder_calls_attempted": 0,
+    "encoder_loads_attempted": 0,
+    "executor_calls_attempted": 0,
+    "staging_copy_bytes": 91582945
+  },
+  "reason": "ClosureError: Training data fingerprint differs from the checkpoint",
+  "schema": "hepta.v13.feature-and-reference-replay.v1",
+  "status": "REJECTED",
+  "worker_exit": 0,
+  "worker_output": {
+    "stderr": {
+      "bytes": 1093,
+      "captured_bytes": 1093,
+      "complete": true,
+      "sha256": "2069dfb0f78d59a8a7f3707590a32b27108e0a23bc088ed19ff366c159ed31db"
+    },
+    "stdout": {
+      "bytes": 534,
+      "captured_bytes": 534,
+      "complete": true,
+      "sha256": "b2a925e1f9f0ce79f8dd75db47f4934fce31dd2a7469d4ccd173d863de89a0bd"
+    }
+  },
+  "worker_stderr": "Traceback (most recent call last):\n  File \"/workspace/scratch/62902f6722b7/hepta-cell-work/qualification/neuron-learning-closure-v13/feature_replay.py\", line 91, in _worker_main\n    result.update(execute_reference(config, limits, progress))\n                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/scratch/62902f6722b7/hepta-cell-work/qualification/neuron-learning-closure-v13/feature_worker.py\", line 249, in execute_reference\n    closure = verify_checkpoint(\n              ^^^^^^^^^^^^^^^^^^\n  File \"/workspace/scratch/62902f6722b7/hepta-cell-work/qualification/neuron-learning-closure-v13/verify_closure.py\", line 224, in verify_checkpoint\n    data = training_data(dataset_npz_path, metadata, limits)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/scratch/62902f6722b7/hepta-cell-work/qualification/neuron-learning-closure-v13/closure_inputs.py\", line 263, in training_data\n    raise ClosureError(\"Training data fingerprint differs from the checkpoint\")\nclosure_io.ClosureError: Training data fingerprint differs from the checkpoint\n",
+  "worker_stdout": "{\"authority\":\"DENY_ALL\",\"enforced_resources\":{\"address_space_bytes\":4294967296,\"cpu_seconds\":60,\"single_file_bytes\":134217728},\"progress\":{\"adapter_calls_attempted\":0,\"admitted_source_copy_bytes\":91582945,\"encoder_batches_attempted\":0,\"encoder_batches_completed\":0,\"encoder_calls_attempted\":0,\"encoder_loads_attempted\":0,\"executor_calls_attempted\":0,\"staging_copy_bytes\":91582945},\"reason\":\"ClosureError: Training data fingerprint differs from the checkpoint\",\"schema\":\"hepta.v13.feature-and-reference-replay.v1\",\"status\":\"REJECTED\"}\n",
+  "worker_termination": "completed"
+}
