@@ -46,6 +46,19 @@ enum ProviderConfig {
         headers: BTreeMap<String, String>,
         timeout_ms: u64,
     },
+    #[serde(rename = "trillionnium-pon-local-npq6-v1")]
+    PonNative {
+        chain_binary: PathBuf,
+        chain_binary_sha256: String,
+        chain_store: PathBuf,
+        chain_application: pon_profile::NativePqConfig,
+        chain_workers: u64,
+        chain_min_confirmation_depth: u64,
+        chain_min_confirmation_work_depth_hex: String,
+        timeout_ms: u64,
+    },
+    // Historical local-v1 fixtures are absent from the production loader.
+    #[cfg(test)]
     #[serde(rename = "trillionnium-pon-local-v1")]
     Pon {
         chain_binary: PathBuf,
@@ -199,6 +212,60 @@ fn prepare_provider(
                 HttpProviderEffectAdapter::new(provider).map_err(invalid)?,
             ))
         }
+        ProviderConfig::PonNative {
+            chain_binary,
+            chain_binary_sha256,
+            chain_store,
+            chain_application,
+            chain_workers,
+            chain_min_confirmation_depth,
+            chain_min_confirmation_work_depth_hex,
+            timeout_ms,
+        } => {
+            if !(1..=64).contains(chain_workers)
+                || !(1..=4096).contains(chain_min_confirmation_depth)
+                || !lower_hex_64(chain_min_confirmation_work_depth_hex)
+                || chain_min_confirmation_work_depth_hex
+                    .bytes()
+                    .all(|byte| byte == b'0')
+                || !(1..=30_000).contains(timeout_ms)
+            {
+                return Err(invalid("NPQ6 PoN provider limits are invalid"));
+            }
+            let mut contract = b"hepta.agentd.pon-provider-contract.pq.npq6.v1\0".to_vec();
+            contract.extend(serde_json::to_vec(&serde_json::json!({
+                "provider_scope": config.provider_scope, "destination_id": config.destination_id,
+                "final_use_scope_sha256": config.final_use_scope_sha256, "provider": config.provider,
+            }))?);
+            if Sha256Digest::for_bytes(&contract) != *declared {
+                return Err(invalid("NPQ6 PoN provider contract digest mismatch"));
+            }
+            chain_application.validate()?;
+            let binary_sha256 =
+                Sha256Digest::parse(chain_binary_sha256.clone()).map_err(invalid)?;
+            verify_pinned_binary(chain_binary, &binary_sha256)?;
+            if !chain_store.is_absolute()
+                || chain_store.canonicalize()? != *chain_store
+                || !chain_store.join("native.sqlite").is_file()
+            {
+                return Err(invalid(
+                    "NPQ6 store must be an existing canonical Node namespace",
+                ));
+            }
+            Ok(AgentdProviderEffectAdapter::Pon(
+                PonLocalProviderEffectAdapter {
+                    binary: chain_binary.clone(),
+                    binary_sha256,
+                    store: chain_store.clone(),
+                    profile: pon_profile::Profile::NativePq(Box::new(chain_application.clone())),
+                    workers: *chain_workers,
+                    min_confirmation_depth: *chain_min_confirmation_depth,
+                    min_confirmation_work_depth_hex: chain_min_confirmation_work_depth_hex.clone(),
+                    timeout: Duration::from_millis(*timeout_ms),
+                },
+            ))
+        }
+        #[cfg(test)]
         ProviderConfig::Pon {
             chain_binary,
             chain_binary_sha256,
@@ -258,11 +325,13 @@ fn prepare_provider(
                     binary: chain_binary.clone(),
                     binary_sha256,
                     store: chain_store.clone(),
-                    state_backend: chain_state_backend.clone(),
-                    genesis_time: *chain_genesis_time,
-                    evaluation_policy: chain_evaluation_policy.clone(),
-                    task_profile: chain_task_profile.clone(),
-                    model_profile: chain_model_profile.clone(),
+                    profile: crate::automation_effect_host::pon_profile::Profile::Development {
+                        state_backend: chain_state_backend.clone(),
+                        genesis_time: *chain_genesis_time,
+                        evaluation_policy: chain_evaluation_policy.clone(),
+                        task_profile: chain_task_profile.clone(),
+                        model_profile: chain_model_profile.clone(),
+                    },
                     workers: *chain_workers,
                     min_confirmation_depth: *chain_min_confirmation_depth,
                     min_confirmation_work_depth_hex: chain_min_confirmation_work_depth_hex.clone(),

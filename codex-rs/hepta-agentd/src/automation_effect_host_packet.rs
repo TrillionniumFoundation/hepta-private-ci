@@ -45,7 +45,10 @@ impl PonLocalProviderEffectAdapter {
         deadline: Instant,
         execution: Option<&crate::NeuralCognitiveExecutionV1>,
     ) -> PonInvocation {
-        if wire_payload.len() > 1024 * 1024 || self.validate_paths().is_err() {
+        if wire_payload.len() > 1024 * 1024
+            || self.validate_paths().is_err()
+            || self.profile.validate_selected_configuration().is_err()
+        {
             return PonInvocation::BeforeStart;
         }
         let Ok(executable) = pon_executable::PinnedExecutable::prepare(
@@ -93,7 +96,10 @@ impl PonLocalProviderEffectAdapter {
             pon_process::Outcome::BeforeStart => PonInvocation::BeforeStart,
             pon_process::Outcome::Unknown => PonInvocation::Unknown,
             pon_process::Outcome::Complete(stdout) => match serde_json::from_slice(&stdout) {
-                Ok(value) => PonInvocation::Value(value),
+                Ok(value) if self.profile.readback_matches(&stdout, wire_payload) => {
+                    PonInvocation::Value(value)
+                }
+                Ok(_) => PonInvocation::Unknown,
                 Err(_) => PonInvocation::Unknown,
             },
         }

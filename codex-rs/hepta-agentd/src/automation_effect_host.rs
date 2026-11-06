@@ -74,6 +74,8 @@ mod pon_task_acceptance;
 mod pon_executable;
 #[path = "automation_effect_host_pon_process.rs"]
 mod pon_process;
+#[path = "automation_effect_host_pon_profile.rs"]
+mod pon_profile;
 
 #[cfg(all(test, unix))]
 #[path = "automation_effect_host_pon_tests.rs"]
@@ -211,11 +213,7 @@ struct PonLocalProviderEffectAdapter {
     binary: PathBuf,
     binary_sha256: Sha256Digest,
     store: PathBuf,
-    state_backend: String,
-    genesis_time: u64,
-    evaluation_policy: String,
-    task_profile: String,
-    model_profile: String,
+    profile: pon_profile::Profile,
     workers: u64,
     min_confirmation_depth: u64,
     min_confirmation_work_depth_hex: String,
@@ -229,11 +227,7 @@ impl std::fmt::Debug for PonLocalProviderEffectAdapter {
             .field("binary", &self.binary)
             .field("binary_sha256", &self.binary_sha256)
             .field("store", &self.store)
-            .field("state_backend", &self.state_backend)
-            .field("genesis_time", &self.genesis_time)
-            .field("evaluation_policy", &self.evaluation_policy)
-            .field("task_profile", &self.task_profile)
-            .field("model_profile", &self.model_profile)
+            .field("profile", &self.profile)
             .field("workers", &self.workers)
             .field("min_confirmation_depth", &self.min_confirmation_depth)
             .field(
@@ -271,17 +265,9 @@ impl PonLocalProviderEffectAdapter {
             .arg(operation)
             .arg("--development")
             .arg("--store")
-            .arg(&self.store)
-            .arg("--state-backend")
-            .arg(&self.state_backend)
-            .arg("--genesis-time")
-            .arg(self.genesis_time.to_string())
-            .arg("--evaluation-policy")
-            .arg(&self.evaluation_policy)
-            .arg("--task-profile")
-            .arg(&self.task_profile)
-            .arg("--model-profile")
-            .arg(&self.model_profile)
+            .arg(&self.store);
+        self.profile.append_arguments(&mut command);
+        command
             .arg("--workers")
             .arg(self.workers.to_string())
             .arg("--packet-stdin")
@@ -1088,11 +1074,13 @@ impl AgentdAutomationEffectHost {
             binary: config.chain_binary,
             binary_sha256: binary_digest,
             store: config.chain_store,
-            state_backend: config.chain_state_backend,
-            genesis_time: config.chain_genesis_time,
-            evaluation_policy: config.chain_evaluation_policy,
-            task_profile: config.chain_task_profile,
-            model_profile: config.chain_model_profile,
+            profile: crate::automation_effect_host::pon_profile::Profile::Development {
+                state_backend: config.chain_state_backend,
+                genesis_time: config.chain_genesis_time,
+                evaluation_policy: config.chain_evaluation_policy,
+                task_profile: config.chain_task_profile,
+                model_profile: config.chain_model_profile,
+            },
             workers: config.chain_workers,
             min_confirmation_depth: config.chain_min_confirmation_depth,
             min_confirmation_work_depth_hex: config.chain_min_confirmation_work_depth_hex,

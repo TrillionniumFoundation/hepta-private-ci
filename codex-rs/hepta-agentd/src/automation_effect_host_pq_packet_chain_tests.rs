@@ -409,3 +409,6 @@ async fn ordinary_pq_http_does_not_advertise_or_accept_packet_v1() -> anyhow::Re
     fixture.store.close().await;
     Ok(())
 }
+
+#[path = "automation_effect_host_pq_npq6_chain_tests.rs"]
+mod npq6_chain_tests;
