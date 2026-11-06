@@ -4,15 +4,19 @@
 use std::sync::Arc;
 
 use codex_hepta_neuron::AnchorWitnessStore;
+use codex_hepta_neuron::CellCostAccountingV2;
+use codex_hepta_neuron::CellCostEntryV2;
 use codex_hepta_neuron::CellGenerationControlPortV2;
 use codex_hepta_neuron::CellGenerationErrorV2;
 use codex_hepta_neuron::CellGenerationJournalV2;
+use codex_hepta_neuron::CellGenerationObservationV1;
 use codex_hepta_neuron::CellGenerationReceiptV2;
 use codex_hepta_neuron::CellGenerationRequestV2;
 use codex_hepta_neuron::CellGenerationScopeV2;
 use codex_hepta_neuron::CellOutputChunkV2;
 use codex_hepta_neuron::CellRuntimeSnapshotV2;
 use codex_hepta_neuron::CellTaskCostV2;
+use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
 use tokio::sync::mpsc;
@@ -39,6 +43,12 @@ pub(crate) enum GenerationCommand {
         request: Box<CellGenerationRequestV2>,
         response: Response<CellGenerationReceiptV2>,
     },
+    StepPlanned {
+        expected_owner_checkpoint: Digest32,
+        planning_cost: Box<CellCostEntryV2>,
+        request: Box<CellGenerationRequestV2>,
+        response: Response<CellGenerationReceiptV2>,
+    },
     Reconcile {
         expected: [u8; 32],
         response: Response<CellGenerationReceiptV2>,
@@ -48,9 +58,14 @@ pub(crate) enum GenerationCommand {
         response: Response<()>,
     },
     Snapshot(Response<CellRuntimeSnapshotV2>),
+    ObserveGeneration(Response<CellGenerationObservationV1>),
     PendingRequest(Response<Option<CellGenerationRequestV2>>),
     PendingOutput(Response<Option<CellOutputChunkV2>>),
     TaskCost(Response<CellTaskCostV2>),
+    RecordCost {
+        entry: Box<CellCostEntryV2>,
+        response: Response<()>,
+    },
     Acknowledge {
         delivery: Box<OutputAcknowledgement>,
         response: Response<()>,
@@ -76,6 +91,42 @@ impl NeuronGenerationRuntimeHandleV2 {
         &self,
         request: CellGenerationRequestV2,
     ) -> Result<CellGenerationReceiptV2, CellGenerationErrorV2> {
+        self.validate_request(&request)?;
+        self.call(|response| GenerationCommand::Step {
+            request: Box::new(request),
+            response,
+        })
+        .await
+    }
+
+    /// Check the sampled owner cut, record actual planning cost and admit the
+    /// request in one actor command. The journal keeps its ordinary events:
+    /// failure after the cost append retains that cost, and never permits a
+    /// fresh dispatch from an obsolete cut. Exact existing requests only read
+    /// back their original result after proving the charge was retained.
+    /// A stale cut or an extra planning attempt on an existing request still
+    /// retains its valid cost fact before refusing dispatch or readback.
+    pub async fn step_planned(
+        &self,
+        expected_owner_checkpoint: Digest32,
+        planning_cost: CellCostEntryV2,
+        request: CellGenerationRequestV2,
+    ) -> Result<CellGenerationReceiptV2, CellGenerationErrorV2> {
+        self.validate_request(&request)?;
+        Self::validate_cost_entry(&planning_cost)?;
+        self.call(|response| GenerationCommand::StepPlanned {
+            expected_owner_checkpoint,
+            planning_cost: Box::new(planning_cost),
+            request: Box::new(request),
+            response,
+        })
+        .await
+    }
+
+    fn validate_request(
+        &self,
+        request: &CellGenerationRequestV2,
+    ) -> Result<(), CellGenerationErrorV2> {
         request.digest()?;
         if request.predecessor.scope != self.scope
             || request.predecessor.manifest_digest != self.manifest_digest
@@ -88,11 +139,7 @@ impl NeuronGenerationRuntimeHandleV2 {
         {
             return Err(CellGenerationErrorV2::Capacity);
         }
-        self.call(|response| GenerationCommand::Step {
-            request: Box::new(request),
-            response,
-        })
-        .await
+        Ok(())
     }
 
     /// Inspect only the named durable pending request. A stale queued request
@@ -114,6 +161,14 @@ impl NeuronGenerationRuntimeHandleV2 {
         self.call(GenerationCommand::Snapshot).await
     }
 
+    /// Read one owner cut containing state, recorded costs and unresolved work
+    /// and delivery. Separate RPC reads cannot provide this atomic observation.
+    pub async fn observe_generation(
+        &self,
+    ) -> Result<CellGenerationObservationV1, CellGenerationErrorV2> {
+        self.call(GenerationCommand::ObserveGeneration).await
+    }
+
     pub async fn pending_request(
         &self,
     ) -> Result<Option<CellGenerationRequestV2>, CellGenerationErrorV2> {
@@ -124,8 +179,31 @@ impl NeuronGenerationRuntimeHandleV2 {
         self.call(GenerationCommand::PendingOutput).await
     }
 
+    /// Recorded cost only; use `observe_generation` for episode completeness.
     pub async fn task_cost(&self) -> Result<CellTaskCostV2, CellGenerationErrorV2> {
         self.call(GenerationCommand::TaskCost).await
+    }
+
+    /// Submit one metering observation to the existing owner. The owner checks
+    /// task/source identity, capacity and immutable replay before committing it.
+    pub async fn record_cost(&self, entry: CellCostEntryV2) -> Result<(), CellGenerationErrorV2> {
+        Self::validate_cost_entry(&entry)?;
+        self.call(|response| GenerationCommand::RecordCost {
+            entry: Box::new(entry),
+            response,
+        })
+        .await
+    }
+
+    fn validate_cost_entry(entry: &CellCostEntryV2) -> Result<(), CellGenerationErrorV2> {
+        if let CellCostAccountingV2::InclusiveEnvelope {
+            exclusive_event_ids,
+        } = &entry.accounting
+            && exclusive_event_ids.len() > 256
+        {
+            return Err(CellGenerationErrorV2::Capacity);
+        }
+        Ok(())
     }
 
     /// Record the transport's exact acknowledgement for already committed

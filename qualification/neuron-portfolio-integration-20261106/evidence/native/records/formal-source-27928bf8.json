@@ -1,0 +1,104 @@
+{
+  "head": "27928bf8abca28e06a288eb59732037a0c9d4b93",
+  "tree": "7439fb8230e27891f992ed375467f07c203b69a3",
+  "status": "",
+  "sparse": ".github\ncodex-rs\ndocs\npatches\nqualification/cell-learning-loop-v1\nqualification/cell-unified-20261106\nqualification/joint-trained-recovery-v1\nqualification/neuron-generation-bridge\nscripts\nthird_party",
+  "disk_free": 36199038976,
+  "commands": [
+    {
+      "command": [
+        "git",
+        "status",
+        "--porcelain"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "sparse-checkout",
+        "set",
+        ".github",
+        "codex-rs",
+        "docs",
+        "patches",
+        "scripts",
+        "third_party",
+        "qualification/neuron-generation-bridge",
+        "qualification/joint-trained-recovery-v1",
+        "qualification/cell-learning-loop-v1",
+        "qualification/cell-unified-20261106"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "fetch",
+        "--filter=blob:none",
+        "--no-tags",
+        "--depth=4",
+        "origin",
+        "27928bf8abca28e06a288eb59732037a0c9d4b93"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": "From https://github.com/TrillionniumFoundation/hepta-private-ci\n * branch            27928bf8abca28e06a288eb59732037a0c9d4b93 -> FETCH_HEAD\n"
+    },
+    {
+      "command": [
+        "git",
+        "checkout",
+        "--detach",
+        "27928bf8abca28e06a288eb59732037a0c9d4b93"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": "Warning: you are leaving 1 commit behind, not connected to\nany of your branches:\n\n  1dc387c feat(neuron): observe Cell inventory from the existing live owners\n\nIf you want to keep it by creating a new branch, this may be a good time\nto do so with:\n\n git branch <new-branch-name> 1dc387c\n\nHEAD is now at 27928bf Merge current Cell learning candidate and retain trained Joint qualification\n"
+    },
+    {
+      "command": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "exit_code": 0,
+      "stdout": "27928bf8abca28e06a288eb59732037a0c9d4b93\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "rev-parse",
+        "HEAD^{tree}"
+      ],
+      "exit_code": 0,
+      "stdout": "7439fb8230e27891f992ed375467f07c203b69a3\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "status",
+        "--porcelain"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "sparse-checkout",
+        "list"
+      ],
+      "exit_code": 0,
+      "stdout": ".github\ncodex-rs\ndocs\npatches\nqualification/cell-learning-loop-v1\nqualification/cell-unified-20261106\nqualification/joint-trained-recovery-v1\nqualification/neuron-generation-bridge\nscripts\nthird_party\n",
+      "stderr": ""
+    }
+  ]
+}

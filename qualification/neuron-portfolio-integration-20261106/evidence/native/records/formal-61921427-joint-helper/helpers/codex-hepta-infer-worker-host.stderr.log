@@ -1,0 +1,193 @@
+   Compiling codex-utils-absolute-path v0.0.0 (/home/qq/work/hepta-portfolio-816d-20261106/source/codex-rs/utils/absolute-path)
+   Compiling codex-utils-rustls-provider v0.0.0 (/home/qq/work/hepta-portfolio-816d-20261106/source/codex-rs/utils/rustls-provider)
+   Compiling codex-http-client v0.0.0 (/home/qq/work/hepta-portfolio-816d-20261106/source/codex-rs/http-client)
+   Compiling codex-utils-home-dir v0.0.0 (/home/qq/work/hepta-portfolio-816d-20261106/source/codex-rs/utils/home-dir)
+   Compiling codex-utils-cache v0.0.0 (/home/qq/work/hepta-portfolio-816d-20261106/source/codex-rs/utils/cache)
+   Compiling codex-execpolicy v0.0.0 (/home/qq/work/hepta-portfolio-816d-20261106/source/codex-rs/execpolicy)
+   Compiling codex-network-proxy v0.0.0 (/home/qq/work/hepta-portfolio-816d-20261106/source/codex-rs/network-proxy)
+   Compiling codex-utils-image v0.0.0 (/home/qq/work/hepta-portfolio-816d-20261106/source/codex-rs/utils/image)
+   Compiling codex-extension-items v0.0.0 (/home/qq/work/hepta-portfolio-816d-20261106/source/codex-rs/ext/items)
+   Compiling codex-utils-path-uri v0.0.0 (/home/qq/work/hepta-portfolio-816d-20261106/source/codex-rs/utils/path-uri)
+   Compiling codex-utils-redacted-string v0.0.0 (/home/qq/work/hepta-portfolio-816d-20261106/source/codex-rs/utils/redacted-string)
+   Compiling codex-utils-string v0.0.0 (/home/qq/work/hepta-portfolio-816d-20261106/source/codex-rs/utils/string)
+   Compiling codex-async-utils v0.0.0 (/home/qq/work/hepta-portfolio-816d-20261106/source/codex-rs/async-utils)
+   Compiling codex-utils-pty v0.0.0 (/home/qq/work/hepta-portfolio-816d-20261106/source/codex-rs/utils/pty)
+   Compiling tokio-tungstenite v0.28.0 (https://github.com/openai-oss-forks/tokio-tungstenite?rev=0e5b2d73aa18dd9f0a50ee9ff199d5aef7594186#0e5b2d73)
+   Compiling codex-websocket-client v0.0.0 (/home/qq/work/hepta-portfolio-816d-20261106/source/codex-rs/websocket-client)
+   Compiling codex-client v0.0.0 (/home/qq/work/hepta-portfolio-816d-20261106/source/codex-rs/codex-client)
+   Compiling codex-hepta-contracts v0.0.0 (/home/qq/work/hepta-portfolio-816d-20261106/source/codex-rs/hepta-contracts)
+   Compiling codex-protocol v0.0.0 (/home/qq/work/hepta-portfolio-816d-20261106/source/codex-rs/protocol)
+   Compiling codex-utils-path v0.0.0 (/home/qq/work/hepta-portfolio-816d-20261106/source/codex-rs/utils/path-utils)
+   Compiling i18n-config v0.4.8 (/home/qq/work/hepta-portfolio-816d-20261106/source/codex-rs/third_party/i18n-config-0.4.8)
+warning: hiding a lifetime that's elided elsewhere is confusing
+   --> third_party/i18n-config-0.4.8/src/lib.rs:144:9
+    |
+144 |         &self,
+    |         ^^^^^ the lifetime is elided here
+145 |     ) -> Result<Option<(&'_ Crate, &'_ I18nConfig)>, I18nConfigError> {
+    |                          ^^ ^^^^^   ^^ the same lifetime is elided here
+    |                          |  |
+    |                          |  the same lifetime is hidden here
+    |                          the same lifetime is elided here
+    |
+    = help: the same lifetime is referred to in inconsistent ways, making the signature confusing
+    = note: `#[warn(mismatched_lifetime_syntaxes)]` on by default
+help: use `'_` for type paths
+    |
+145 |     ) -> Result<Option<(&'_ Crate<'_>, &'_ I18nConfig)>, I18nConfigError> {
+    |                                  ++++
+
+warning: hiding a lifetime that's elided elsewhere is confusing
+   --> third_party/i18n-config-0.4.8/src/lib.rs:155:26
+    |
+155 |     pub fn active_config(&self) -> Result<Option<(&'_ Crate, &'_ I18nConfig)>, I18nConfigError> {
+    |                          ^^^^^                     ^^ ^^^^^   ^^ the same lifetime is elided here
+    |                          |                         |  |
+    |                          |                         |  the same lifetime is hidden here
+    |                          |                         the same lifetime is elided here
+    |                          the lifetime is elided here
+    |
+    = help: the same lifetime is referred to in inconsistent ways, making the signature confusing
+help: use `'_` for type paths
+    |
+155 |     pub fn active_config(&self) -> Result<Option<(&'_ Crate<'_>, &'_ I18nConfig)>, I18nConfigError> {
+    |                                                            ++++
+
+warning: `i18n-config` (lib) generated 2 warnings (run `cargo fix --lib -p i18n-config` to apply 2 suggestions)
+   Compiling i18n-embed-impl v0.8.4
+   Compiling secret-service v6.0.0 (/home/qq/work/hepta-portfolio-816d-20261106/source/codex-rs/third_party/secret-service-6.0.0)
+   Compiling zbus-secret-service-keyring-store v1.0.1 (/home/qq/work/hepta-portfolio-816d-20261106/source/codex-rs/third_party/zbus-secret-service-keyring-store-1.0.1)
+   Compiling i18n-embed v0.15.4
+   Compiling i18n-embed-fl v0.9.4
+   Compiling keyring v4.2.0
+   Compiling age v0.11.5
+   Compiling codex-keyring-store v0.0.0 (/home/qq/work/hepta-portfolio-816d-20261106/source/codex-rs/keyring-store)
+   Compiling codex-utils-template v0.0.0 (/home/qq/work/hepta-portfolio-816d-20261106/source/codex-rs/utils/template)
+   Compiling codex-workload-identity v0.0.0 (/home/qq/work/hepta-portfolio-816d-20261106/source/codex-rs/workload-identity)
+   Compiling codex-terminal-detection v0.0.0 (/home/qq/work/hepta-portfolio-816d-20261106/source/codex-rs/terminal-detection)
+   Compiling codex-hepta-types v0.0.0 (/home/qq/work/hepta-portfolio-816d-20261106/source/codex-rs/hepta-types)
+   Compiling codex-install-context v0.0.0 (/home/qq/work/hepta-portfolio-816d-20261106/source/codex-rs/install-context)
+   Compiling aws-config v1.12.0 (/home/qq/work/hepta-portfolio-816d-20261106/source/codex-rs/third_party/aws-config-1.12.0)
+   Compiling codex-file-system v0.0.0 (/home/qq/work/hepta-portfolio-816d-20261106/source/codex-rs/file-system)
+   Compiling codex-git-utils v0.0.0 (/home/qq/work/hepta-portfolio-816d-20261106/source/codex-rs/git-utils)
+   Compiling codex-api v0.0.0 (/home/qq/work/hepta-portfolio-816d-20261106/source/codex-rs/codex-api)
+   Compiling codex-shell-command v0.0.0 (/home/qq/work/hepta-portfolio-816d-20261106/source/codex-rs/shell-command)
+   Compiling codex-exec-server-protocol v0.0.0 (/home/qq/work/hepta-portfolio-816d-20261106/source/codex-rs/exec-server-protocol)
+   Compiling codex-otel v0.0.0 (/home/qq/work/hepta-portfolio-816d-20261106/source/codex-rs/otel)
+   Compiling codex-model-provider-info v0.0.0 (/home/qq/work/hepta-portfolio-816d-20261106/source/codex-rs/model-provider-info)
+   Compiling codex-secrets v0.0.0 (/home/qq/work/hepta-portfolio-816d-20261106/source/codex-rs/secrets)
+   Compiling codex-history v0.0.0 (/home/qq/work/hepta-portfolio-816d-20261106/source/codex-rs/history)
+   Compiling codex-features v0.0.0 (/home/qq/work/hepta-portfolio-816d-20261106/source/codex-rs/features)
+   Compiling codex-windows-sandbox v0.0.0 (/home/qq/work/hepta-portfolio-816d-20261106/source/codex-rs/windows-sandbox-rs)
+   Compiling codex-config v0.0.0 (/home/qq/work/hepta-portfolio-816d-20261106/source/codex-rs/config)
+   Compiling codex-sandboxing v0.0.0 (/home/qq/work/hepta-portfolio-816d-20261106/source/codex-rs/sandboxing)
+   Compiling codex-state v0.0.0 (/home/qq/work/hepta-portfolio-816d-20261106/source/codex-rs/state)
+   Compiling codex-agent-identity v0.0.0 (/home/qq/work/hepta-portfolio-816d-20261106/source/codex-rs/agent-identity)
+   Compiling codex-utils-output-truncation v0.0.0 (/home/qq/work/hepta-portfolio-816d-20261106/source/codex-rs/utils/output-truncation)
+   Compiling codex-code-mode-protocol v0.0.0 (/home/qq/work/hepta-portfolio-816d-20261106/source/codex-rs/code-mode-protocol)
+   Compiling codex-collaboration-mode-templates v0.0.0 (/home/qq/work/hepta-portfolio-816d-20261106/source/codex-rs/collaboration-mode-templates)
+   Compiling codex-exec-server v0.0.0 (/home/qq/work/hepta-portfolio-816d-20261106/source/codex-rs/exec-server)
+   Compiling codex-login v0.0.0 (/home/qq/work/hepta-portfolio-816d-20261106/source/codex-rs/login)
+   Compiling codex-utils-plugins v0.0.0 (/home/qq/work/hepta-portfolio-816d-20261106/source/codex-rs/utils/plugins)
+   Compiling codex-models-manager v0.0.0 (/home/qq/work/hepta-portfolio-816d-20261106/source/codex-rs/models-manager)
+   Compiling codex-plugin v0.0.0 (/home/qq/work/hepta-portfolio-816d-20261106/source/codex-rs/plugin)
+   Compiling codex-feedback v0.0.0 (/home/qq/work/hepta-portfolio-816d-20261106/source/codex-rs/feedback)
+   Compiling codex-response-debug-context v0.0.0 (/home/qq/work/hepta-portfolio-816d-20261106/source/codex-rs/response-debug-context)
+   Compiling codex-aws-auth v0.0.0 (/home/qq/work/hepta-portfolio-816d-20261106/source/codex-rs/aws-auth)
+   Compiling codex-model-provider v0.0.0 (/home/qq/work/hepta-portfolio-816d-20261106/source/codex-rs/model-provider)
+   Compiling codex-code-mode v0.0.0 (/home/qq/work/hepta-portfolio-816d-20261106/source/codex-rs/code-mode)
+   Compiling codex-connectors v0.0.0 (/home/qq/work/hepta-portfolio-816d-20261106/source/codex-rs/connectors)
+   Compiling codex-exec-server-test-support v0.0.0 (/home/qq/work/hepta-portfolio-816d-20261106/source/codex-rs/exec-server/tests/support)
+   Compiling codex-rmcp-client v0.0.0 (/home/qq/work/hepta-portfolio-816d-20261106/source/codex-rs/rmcp-client)
+   Compiling codex-diagnostics v0.0.0 (/home/qq/work/hepta-portfolio-816d-20261106/source/codex-rs/diagnostics)
+   Compiling codex-tools v0.0.0 (/home/qq/work/hepta-portfolio-816d-20261106/source/codex-rs/tools)
+   Compiling codex-mcp v0.0.0 (/home/qq/work/hepta-portfolio-816d-20261106/source/codex-rs/codex-mcp)
+   Compiling codex-context-fragments v0.0.0 (/home/qq/work/hepta-portfolio-816d-20261106/source/codex-rs/context-fragments)
+   Compiling codex-file-search v0.0.0 (/home/qq/work/hepta-portfolio-816d-20261106/source/codex-rs/file-search)
+   Compiling codex-utils-cargo-bin v0.0.0 (/home/qq/work/hepta-portfolio-816d-20261106/source/codex-rs/utils/cargo-bin)
+   Compiling codex-rollout v0.0.0 (/home/qq/work/hepta-portfolio-816d-20261106/source/codex-rs/rollout)
+   Compiling codex-extension-api v0.0.0 (/home/qq/work/hepta-portfolio-816d-20261106/source/codex-rs/ext/extension-api)
+   Compiling codex-experimental-api-macros v0.0.0 (/home/qq/work/hepta-portfolio-816d-20261106/source/codex-rs/codex-experimental-api-macros)
+   Compiling codex-app-server-protocol v0.0.0 (/home/qq/work/hepta-portfolio-816d-20261106/source/codex-rs/app-server-protocol)
+   Compiling codex-skills v0.0.0 (/home/qq/work/hepta-portfolio-816d-20261106/source/codex-rs/skills)
+   Compiling codex-hooks v0.0.0 (/home/qq/work/hepta-portfolio-816d-20261106/source/codex-rs/hooks)
+   Compiling codex-apply-patch v0.0.0 (/home/qq/work/hepta-portfolio-816d-20261106/source/codex-rs/apply-patch)
+   Compiling codex-shell-escalation v0.0.0 (/home/qq/work/hepta-portfolio-816d-20261106/source/codex-rs/shell-escalation)
+   Compiling codex-utils-audio v0.0.0 (/home/qq/work/hepta-portfolio-816d-20261106/source/codex-rs/utils/audio)
+   Compiling codex-prompts v0.0.0 (/home/qq/work/hepta-portfolio-816d-20261106/source/codex-rs/prompts)
+   Compiling codex-rollout-trace v0.0.0 (/home/qq/work/hepta-portfolio-816d-20261106/source/codex-rs/rollout-trace)
+   Compiling codex-agent-graph-store v0.0.0 (/home/qq/work/hepta-portfolio-816d-20261106/source/codex-rs/agent-graph-store)
+   Compiling codex-memories-read v0.0.0 (/home/qq/work/hepta-portfolio-816d-20261106/source/codex-rs/memories/read)
+   Compiling codex-utils-stream-parser v0.0.0 (/home/qq/work/hepta-portfolio-816d-20261106/source/codex-rs/utils/stream-parser)
+   Compiling codex-hepta-cognitive-types v0.0.0 (/home/qq/work/hepta-portfolio-816d-20261106/source/codex-rs/hepta-cognitive-types)
+   Compiling codex-hepta-memory-retrieval v0.0.0 (/home/qq/work/hepta-portfolio-816d-20261106/source/codex-rs/hepta-memory-retrieval)
+   Compiling codex-hepta-prompt-registry v0.0.0 (/home/qq/work/hepta-portfolio-816d-20261106/source/codex-rs/hepta-prompt-registry)
+   Compiling codex-hepta-paths v0.0.0 (/home/qq/work/hepta-portfolio-816d-20261106/source/codex-rs/hepta-paths)
+   Compiling codex-hepta-kg v0.0.0 (/home/qq/work/hepta-portfolio-816d-20261106/source/codex-rs/hepta-kg)
+   Compiling codex-analytics v0.0.0 (/home/qq/work/hepta-portfolio-816d-20261106/source/codex-rs/analytics)
+   Compiling codex-core-plugins v0.0.0 (/home/qq/work/hepta-portfolio-816d-20261106/source/codex-rs/core-plugins)
+   Compiling codex-skills-extension v0.0.0 (/home/qq/work/hepta-portfolio-816d-20261106/source/codex-rs/ext/skills)
+   Compiling codex-thread-store v0.0.0 (/home/qq/work/hepta-portfolio-816d-20261106/source/codex-rs/thread-store)
+   Compiling codex-hepta-operations v0.0.0 (/home/qq/work/hepta-portfolio-816d-20261106/source/codex-rs/hepta-operations)
+   Compiling codex-hepta-cognitive-read v0.0.0 (/home/qq/work/hepta-portfolio-816d-20261106/source/codex-rs/hepta-cognitive-read)
+   Compiling codex-backend-openapi-models v0.0.0 (/home/qq/work/hepta-portfolio-816d-20261106/source/codex-rs/codex-backend-openapi-models)
+   Compiling codex-backend-client v0.0.0 (/home/qq/work/hepta-portfolio-816d-20261106/source/codex-rs/backend-client)
+   Compiling codex-hepta-memory-federation v0.0.0 (/home/qq/work/hepta-portfolio-816d-20261106/source/codex-rs/hepta-memory-federation)
+   Compiling codex-core v0.0.0 (/home/qq/work/hepta-portfolio-816d-20261106/source/codex-rs/core)
+   Compiling codex-hepta-memory v0.0.0 (/home/qq/work/hepta-portfolio-816d-20261106/source/codex-rs/hepta-memory)
+   Compiling codex-hepta-intuition v0.0.0 (/home/qq/work/hepta-portfolio-816d-20261106/source/codex-rs/hepta-intuition)
+   Compiling codex-hepta-learning-ledger v0.0.0 (/home/qq/work/hepta-portfolio-816d-20261106/source/codex-rs/hepta-learning-ledger)
+   Compiling codex-hepta-authbus v0.0.0 (/home/qq/work/hepta-portfolio-816d-20261106/source/codex-rs/hepta-authbus)
+   Compiling codex-uds v0.0.0 (/home/qq/work/hepta-portfolio-816d-20261106/source/codex-rs/uds)
+   Compiling codex-process-hardening v0.0.0 (/home/qq/work/hepta-portfolio-816d-20261106/source/codex-rs/process-hardening)
+   Compiling codex-linux-sandbox v0.0.0 (/home/qq/work/hepta-portfolio-816d-20261106/source/codex-rs/linux-sandbox)
+   Compiling codex-hepta-evidence v0.0.0 (/home/qq/work/hepta-portfolio-816d-20261106/source/codex-rs/hepta-evidence)
+   Compiling codex-connectors-extension v0.0.0 (/home/qq/work/hepta-portfolio-816d-20261106/source/codex-rs/ext/connectors)
+   Compiling codex-utils-cli v0.0.0 (/home/qq/work/hepta-portfolio-816d-20261106/source/codex-rs/utils/cli)
+   Compiling codex-hepta-governance v0.0.0 (/home/qq/work/hepta-portfolio-816d-20261106/source/codex-rs/ext/hepta-governance)
+   Compiling codex-file-watcher v0.0.0 (/home/qq/work/hepta-portfolio-816d-20261106/source/codex-rs/file-watcher)
+   Compiling codex-arg0 v0.0.0 (/home/qq/work/hepta-portfolio-816d-20261106/source/codex-rs/arg0)
+   Compiling codex-hepta-memory-extension v0.0.0 (/home/qq/work/hepta-portfolio-816d-20261106/source/codex-rs/ext/hepta-memory)
+   Compiling codex-git-attribution v0.0.0 (/home/qq/work/hepta-portfolio-816d-20261106/source/codex-rs/ext/git-attribution)
+   Compiling codex-memories-write v0.0.0 (/home/qq/work/hepta-portfolio-816d-20261106/source/codex-rs/memories/write)
+   Compiling codex-external-agent-migration v0.0.0 (/home/qq/work/hepta-portfolio-816d-20261106/source/codex-rs/external-agent-migration)
+   Compiling codex-goal-extension v0.0.0 (/home/qq/work/hepta-portfolio-816d-20261106/source/codex-rs/ext/goal)
+   Compiling codex-agent-extension v0.0.0 (/home/qq/work/hepta-portfolio-816d-20261106/source/codex-rs/ext/agent)
+   Compiling codex-cloud-config v0.0.0 (/home/qq/work/hepta-portfolio-816d-20261106/source/codex-rs/cloud-config)
+   Compiling codex-mcp-extension v0.0.0 (/home/qq/work/hepta-portfolio-816d-20261106/source/codex-rs/ext/mcp)
+   Compiling codex-guardian-v2 v0.0.0 (/home/qq/work/hepta-portfolio-816d-20261106/source/codex-rs/ext/guardian-v2)
+   Compiling codex-web-search-extension v0.0.0 (/home/qq/work/hepta-portfolio-816d-20261106/source/codex-rs/ext/web-search)
+   Compiling codex-chatgpt v0.0.0 (/home/qq/work/hepta-portfolio-816d-20261106/source/codex-rs/chatgpt)
+   Compiling codex-memories-extension v0.0.0 (/home/qq/work/hepta-portfolio-816d-20261106/source/codex-rs/ext/memories)
+   Compiling codex-image-generation-extension v0.0.0 (/home/qq/work/hepta-portfolio-816d-20261106/source/codex-rs/ext/image-generation)
+   Compiling codex-app-server-transport v0.0.0 (/home/qq/work/hepta-portfolio-816d-20261106/source/codex-rs/app-server-transport)
+   Compiling codex-history-notes-extension v0.0.0 (/home/qq/work/hepta-portfolio-816d-20261106/source/codex-rs/ext/history-notes)
+   Compiling codex-queue-extension v0.0.0 (/home/qq/work/hepta-portfolio-816d-20261106/source/codex-rs/ext/queue)
+   Compiling codex-home v0.0.0 (/home/qq/work/hepta-portfolio-816d-20261106/source/codex-rs/codex-home)
+   Compiling codex-hepta-prompt-extension v0.0.0 (/home/qq/work/hepta-portfolio-816d-20261106/source/codex-rs/ext/hepta-prompt)
+   Compiling codex-hepta-wire v0.0.0 (/home/qq/work/hepta-portfolio-816d-20261106/source/codex-rs/hepta-wire)
+   Compiling codex-hepta-ndu v0.0.0 (/home/qq/work/hepta-portfolio-816d-20261106/source/codex-rs/hepta-ndu)
+   Compiling codex-utils-json-to-toml v0.0.0 (/home/qq/work/hepta-portfolio-816d-20261106/source/codex-rs/utils/json-to-toml)
+   Compiling codex-app-server v0.0.0 (/home/qq/work/hepta-portfolio-816d-20261106/source/codex-rs/app-server)
+   Compiling codex-hepta-intelligence-eval v0.0.0 (/home/qq/work/hepta-portfolio-816d-20261106/source/codex-rs/hepta-intelligence-eval)
+   Compiling codex-hepta-automation v0.0.0 (/home/qq/work/hepta-portfolio-816d-20261106/source/codex-rs/hepta-automation)
+   Compiling codex-hepta-fleet v0.0.0 (/home/qq/work/hepta-portfolio-816d-20261106/source/codex-rs/hepta-fleet)
+   Compiling codex-hepta-infer-core v0.0.0 (/home/qq/work/hepta-portfolio-816d-20261106/source/codex-rs/hepta-infer-core)
+   Compiling codex-hepta-neuron v0.0.0 (/home/qq/work/hepta-portfolio-816d-20261106/source/codex-rs/hepta-neuron)
+   Compiling codex-hepta-agent-protocol v0.0.0 (/home/qq/work/hepta-portfolio-816d-20261106/source/codex-rs/hepta-agent-protocol)
+   Compiling codex-hepta-control-plane v0.0.0 (/home/qq/work/hepta-portfolio-816d-20261106/source/codex-rs/hepta-control-plane)
+   Compiling codex-hepta-context-compiler v0.0.0 (/home/qq/work/hepta-portfolio-816d-20261106/source/codex-rs/hepta-context-compiler)
+   Compiling codex-app-server-client v0.0.0 (/home/qq/work/hepta-portfolio-816d-20261106/source/codex-rs/app-server-client)
+   Compiling codex-hepta-prompt-optimizer v0.0.0 (/home/qq/work/hepta-portfolio-816d-20261106/source/codex-rs/hepta-prompt-optimizer)
+   Compiling codex-hepta-learning-artifacts v0.0.0 (/home/qq/work/hepta-portfolio-816d-20261106/source/codex-rs/hepta-learning-artifacts)
+   Compiling codex-hepta-plasticity v0.0.0 (/home/qq/work/hepta-portfolio-816d-20261106/source/codex-rs/hepta-plasticity)
+   Compiling codex-hepta-objective v0.0.0 (/home/qq/work/hepta-portfolio-816d-20261106/source/codex-rs/hepta-objective)
+   Compiling codex-hepta-matrix-protocol v0.0.0 (/home/qq/work/hepta-portfolio-816d-20261106/source/codex-rs/hepta-matrix-protocol)
+   Compiling codex-hepta-supervisor v0.0.0 (/home/qq/work/hepta-portfolio-816d-20261106/source/codex-rs/hepta-supervisor)
+   Compiling codex-hepta-intelligence v0.0.0 (/home/qq/work/hepta-portfolio-816d-20261106/source/codex-rs/hepta-intelligence)
+   Compiling codex-hepta-codex-adapter v0.0.0 (/home/qq/work/hepta-portfolio-816d-20261106/source/codex-rs/hepta-codex-adapter)
+   Compiling codex-hepta-bellman-operator v0.0.0 (/home/qq/work/hepta-portfolio-816d-20261106/source/codex-rs/hepta-bellman-operator)
+   Compiling codex-hepta-cognitive-store v0.0.0 (/home/qq/work/hepta-portfolio-816d-20261106/source/codex-rs/hepta-cognitive-store)
+   Compiling codex-hepta-agentd v0.0.0 (/home/qq/work/hepta-portfolio-816d-20261106/source/codex-rs/hepta-agentd)
+   Compiling codex-hepta-infer-worker-host v0.0.0 (/home/qq/work/hepta-portfolio-816d-20261106/source/codex-rs/hepta-infer-worker-host)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 2m 27s

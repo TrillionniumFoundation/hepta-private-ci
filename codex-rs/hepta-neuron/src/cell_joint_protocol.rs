@@ -66,6 +66,17 @@ pub struct JointGenerationInputV1 {
     pub command: JointGenerationCommandV1,
 }
 
+impl JointGenerationInputV1 {
+    /// Canonical input bytes for the existing host adapter. Encoding supplies
+    /// neither a dispatch grant nor permission to replace committed output.
+    pub fn encode(&self) -> Result<Vec<u8>, CellGenerationErrorV2> {
+        if self.public_digest == [0; 32] {
+            return Err(CellGenerationErrorV2::InvalidBinding);
+        }
+        serde_json::to_vec(self).map_err(|_| CellGenerationErrorV2::InvalidBinding)
+    }
+}
+
 pub(crate) fn request_bytes(
     request_digest: [u8; 32],
     weights: &[u8],

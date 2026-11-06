@@ -1,0 +1,159 @@
+{
+  "result": {
+    "source": "/home/qq/work/hepta-portfolio-816d-20261106/source",
+    "head": "1dc387ceaa51dbf472b702bab76e787ef9fe5de9",
+    "tree": "f5dc90c9365c1ea7abc88e8c909b26aa375d71e4",
+    "status": "",
+    "environment": {
+      "PATH": "/home/qq/work/hepta-ci-4853-20261105-bdb7/tools/bin:/home/qq/.cargo/bin:/usr/local/bin:/usr/bin:/bin",
+      "RUSTUP_TOOLCHAIN": "1.96.0",
+      "CARGO_HOME": "/home/qq/.cargo",
+      "RUSTUP_HOME": "/home/qq/.rustup",
+      "CARGO_TARGET_DIR": "/home/qq/work/hepta-portfolio-816d-20261106/target",
+      "CARGO_BUILD_JOBS": "2",
+      "CARGO_INCREMENTAL": "0"
+    },
+    "disk": {
+      "total": 1966736678912,
+      "used": 1813113753600,
+      "free": 53642674176
+    }
+  },
+  "commands": [
+    {
+      "args": [
+        "git",
+        "init"
+      ],
+      "exit_code": 0,
+      "stdout": "Initialized empty Git repository in /home/qq/work/hepta-portfolio-816d-20261106/source/.git/\n",
+      "stderr": "hint: Using 'master' as the name for the initial branch. This default branch name\nhint: will change to \"main\" in Git 3.0. To configure the initial branch name\nhint: to use in all of your new repositories, which will suppress this warning,\nhint: call:\nhint:\nhint: \tgit config --global init.defaultBranch <name>\nhint:\nhint: Names commonly chosen instead of 'master' are 'main', 'trunk' and\nhint: 'development'. The just-created branch can be renamed via this command:\nhint:\nhint: \tgit branch -m <name>\nhint:\nhint: Disable this message with \"git config set advice.defaultBranchName false\"\n"
+    },
+    {
+      "args": [
+        "git",
+        "remote"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "git",
+        "remote",
+        "add",
+        "origin",
+        "https://github.com/TrillionniumFoundation/hepta-private-ci.git"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "git",
+        "config",
+        "remote.origin.promisor",
+        "true"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "git",
+        "config",
+        "remote.origin.partialclonefilter",
+        "blob:none"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "git",
+        "sparse-checkout",
+        "init",
+        "--cone"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "git",
+        "sparse-checkout",
+        "set",
+        ".github",
+        "codex-rs",
+        "docs/architecture",
+        "patches",
+        "scripts",
+        "third_party",
+        "qualification/neuron-generation-bridge"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "git",
+        "fetch",
+        "--filter=blob:none",
+        "--no-tags",
+        "--depth=1",
+        "origin",
+        "1dc387ceaa51dbf472b702bab76e787ef9fe5de9"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": "From https://github.com/TrillionniumFoundation/hepta-private-ci\n * branch            1dc387ceaa51dbf472b702bab76e787ef9fe5de9 -> FETCH_HEAD\n"
+    },
+    {
+      "args": [
+        "git",
+        "checkout",
+        "--detach",
+        "1dc387ceaa51dbf472b702bab76e787ef9fe5de9"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": "HEAD is now at 1dc387c feat(neuron): observe Cell inventory from the existing live owners\n"
+    },
+    {
+      "args": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "exit_code": 0,
+      "stdout": "1dc387ceaa51dbf472b702bab76e787ef9fe5de9\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "git",
+        "rev-parse",
+        "HEAD^{tree}"
+      ],
+      "exit_code": 0,
+      "stdout": "f5dc90c9365c1ea7abc88e8c909b26aa375d71e4\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "git",
+        "status",
+        "--short"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  ]
+}

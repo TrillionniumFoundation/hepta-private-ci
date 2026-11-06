@@ -1,0 +1,2501 @@
+{
+  "source": {
+    "head": "61921427dc19223fd8c9d0ded1a4723b255c5df5",
+    "tree": "31d99be67393619aca47436d82f9dca909cba359",
+    "status": ""
+  },
+  "ignored_count": 66,
+  "tests": [
+    {
+      "binary_id": "codex-hepta-agentd",
+      "package_name": "codex-hepta-agentd",
+      "test_name": "authority_host_bootstrap_seal::tests::original_writer::root_native_writer_purpose_cannot_pass_the_unchanged_original_two_rights_receiver",
+      "kind": "test",
+      "ignored": true,
+      "filter-match": {
+        "status": "mismatch",
+        "reason": "ignored"
+      },
+      "source_matches": [
+        {
+          "source_path": "codex-rs/hepta-agentd/src/root_production_writer_handoff_tests.rs",
+          "line": 61,
+          "attribute_lines": [
+            "#[ignore = \"requires actual Root and the explicit original descriptor-transport qualification\"]"
+          ],
+          "preceding_context": [
+            "        Duration::from_millis(500),",
+            "    )",
+            "    .unwrap();",
+            "    let (_sealed, _root, received) =",
+            "        receive_root_production_writer_handoff(receiver, Duration::from_millis(500)).unwrap();",
+            "    let received = received.into_file();",
+            "    received.try_lock().unwrap();",
+            "    assert!(independent.try_lock().is_err());",
+            "    drop(received);",
+            "    independent",
+            "        .try_lock()",
+            "        .expect(\"consumed sender must not keep the recipient's original OFD lock alive\");",
+            "}",
+            "",
+            "#[test]",
+            "#[ignore = \"requires actual Root and the explicit original descriptor-transport qualification\"]"
+          ]
+        }
+      ]
+    },
+    {
+      "binary_id": "codex-hepta-agentd",
+      "package_name": "codex-hepta-agentd",
+      "test_name": "authority_host_bootstrap_seal::tests::original_writer::root_writer_transfer_consumes_sender_and_releases_original_lock_after_recipient_closes",
+      "kind": "test",
+      "ignored": true,
+      "filter-match": {
+        "status": "mismatch",
+        "reason": "ignored"
+      },
+      "source_matches": [
+        {
+          "source_path": "codex-rs/hepta-agentd/src/root_production_writer_handoff_tests.rs",
+          "line": 22,
+          "attribute_lines": [
+            "#[ignore = \"requires actual Root and the explicit original descriptor-transport qualification\"]"
+          ],
+          "preceding_context": [
+            "use crate::send_root_production_writer_handoff;",
+            "use std::os::fd::FromRawFd;",
+            "use std::os::unix::fs::OpenOptionsExt;",
+            "use std::os::unix::net::UnixDatagram;",
+            "use std::time::Duration;",
+            "",
+            "fn root_pidfd() -> std::os::fd::OwnedFd {",
+            "    // SAFETY: open this still-live test process's actual pidfd, with zero flags.",
+            "    let raw = unsafe { libc::syscall(libc::SYS_pidfd_open, std::process::id(), 0) };",
+            "    assert!(raw >= 0);",
+            "    // SAFETY: successful pidfd_open returned one fresh owned descriptor.",
+            "    unsafe { std::os::fd::OwnedFd::from_raw_fd(raw as i32) }",
+            "}",
+            "",
+            "#[test]",
+            "#[ignore = \"requires actual Root and the explicit original descriptor-transport qualification\"]"
+          ]
+        }
+      ]
+    },
+    {
+      "binary_id": "codex-hepta-agentd",
+      "package_name": "codex-hepta-agentd",
+      "test_name": "authority_host_bootstrap_seal::tests::root_descriptor_is_unlinked_sealed_and_never_mutable",
+      "kind": "test",
+      "ignored": true,
+      "filter-match": {
+        "status": "mismatch",
+        "reason": "ignored"
+      },
+      "source_matches": [
+        {
+          "source_path": "codex-rs/hepta-agentd/src/authority_host_bootstrap_seal_tests.rs",
+          "line": 43,
+          "attribute_lines": [
+            "#[ignore = \"explicit actual root sealed-memfd custody qualification\"]"
+          ],
+          "preceding_context": [
+            "            .kind(),",
+            "        io::ErrorKind::InvalidInput",
+            "    );",
+            "    assert_eq!(bytes.0, before);",
+            "    bytes",
+            "        .write_all(&vec![0; HOST_AUTHORITY_BOOTSTRAP_BOUND - before.len()])",
+            "        .unwrap();",
+            "    assert_eq!(",
+            "        bytes.write(b\"x\").unwrap_err().kind(),",
+            "        io::ErrorKind::InvalidInput",
+            "    );",
+            "    assert_eq!(bytes.0.len(), HOST_AUTHORITY_BOOTSTRAP_BOUND);",
+            "}",
+            "",
+            "#[test]",
+            "#[ignore = \"explicit actual root sealed-memfd custody qualification\"]"
+          ]
+        }
+      ]
+    },
+    {
+      "binary_id": "codex-hepta-agentd",
+      "package_name": "codex-hepta-agentd",
+      "test_name": "authority_host_checkpoint::adoption::tests::physical_material::adopted_current_before_uid_release_cannot_be_adopted_again_or_reinitialized",
+      "kind": "test",
+      "ignored": true,
+      "filter-match": {
+        "status": "mismatch",
+        "reason": "ignored"
+      },
+      "source_matches": [
+        {
+          "source_path": "codex-rs/hepta-agentd/src/authority_host_checkpoint_material_tests.rs",
+          "line": 137,
+          "attribute_lines": [
+            "#[ignore = \"explicit root-owned data-bind qualification\"]"
+          ],
+          "preceding_context": [
+            "    assert_eq!(std::fs::read(installed.path()).unwrap(), bytes);",
+            "    let current = adopted.current_for_handoff().unwrap();",
+            "    assert_eq!(current.last_current, f.previous.head.last_current);",
+            "    assert_eq!(current.counter, f.previous.head.counter + 1);",
+            "    assert_eq!(current.peer_lifetime, f.new.retained.lifetime);",
+            "    installed",
+            "        .release_to_registered_owner(/*uid*/ 60001, /*gid*/ 60001)",
+            "        .unwrap();",
+            "    assert_eq!(root.metadata().unwrap().uid(), 60001);",
+            "    assert_eq!(f.image().metadata().unwrap().uid(), 0);",
+            "    assert_eq!(adopted.current_for_handoff().unwrap(), current);",
+            "    assert!(!original.exists());",
+            "}",
+            "",
+            "#[tokio::test]",
+            "#[ignore = \"explicit root-owned data-bind qualification\"]"
+          ]
+        }
+      ]
+    },
+    {
+      "binary_id": "codex-hepta-agentd",
+      "package_name": "codex-hepta-agentd",
+      "test_name": "authority_host_checkpoint::adoption::tests::physical_material::interrupted_install_resumes_same_original_current_cas_without_republication",
+      "kind": "test",
+      "ignored": true,
+      "filter-match": {
+        "status": "mismatch",
+        "reason": "ignored"
+      },
+      "source_matches": [
+        {
+          "source_path": "codex-rs/hepta-agentd/src/authority_host_checkpoint_material_tests.rs",
+          "line": 205,
+          "attribute_lines": [
+            "#[ignore = \"explicit root-owned data-bind qualification\"]"
+          ],
+          "preceding_context": [
+            "    f.retire_for_material_recovery();",
+            "    assert_eq!(",
+            "        f.observe_recovery().err(),",
+            "        Some(AuthorityTrustError::Invalid)",
+            "    );",
+            "    assert_eq!(f.backend.load().unwrap(), dirty);",
+            "    assert_eq!(",
+            "        std::fs::read_dir(f.material_profile().root)",
+            "            .unwrap()",
+            "            .count(),",
+            "        2",
+            "    );",
+            "}",
+            "",
+            "#[tokio::test]",
+            "#[ignore = \"explicit root-owned data-bind qualification\"]"
+          ]
+        }
+      ]
+    },
+    {
+      "binary_id": "codex-hepta-agentd",
+      "package_name": "codex-hepta-agentd",
+      "test_name": "authority_host_checkpoint::adoption::tests::physical_material::physical_current_survives_live_source_loss_and_refuses_corrupt_retained_image",
+      "kind": "test",
+      "ignored": true,
+      "filter-match": {
+        "status": "mismatch",
+        "reason": "ignored"
+      },
+      "source_matches": [
+        {
+          "source_path": "codex-rs/hepta-agentd/src/authority_host_checkpoint_material_tests.rs",
+          "line": 56,
+          "attribute_lines": [
+            "#[ignore = \"explicit root-owned data-bind qualification\"]"
+          ],
+          "preceding_context": [
+            "            self.directory.clone(),",
+            "            self.material_profile(),",
+            "            self.registration.clone(),",
+            "            self.clock.clone(),",
+            "        )",
+            "    }",
+            "",
+            "    fn retire_for_material_recovery(&mut self) {",
+            "        self.old.stop();",
+            "        self.registration.writer_binding.expires_at_unix_seconds = 20;",
+            "        self.clock.expire_on.store(1, Ordering::SeqCst);",
+            "    }",
+            "}",
+            "",
+            "#[tokio::test]",
+            "#[ignore = \"explicit root-owned data-bind qualification\"]"
+          ]
+        }
+      ]
+    },
+    {
+      "binary_id": "codex-hepta-agentd",
+      "package_name": "codex-hepta-agentd",
+      "test_name": "authority_host_checkpoint::adoption::tests::physical_material::physical_material_never_promotes_actual_dirty_current_predecessor",
+      "kind": "test",
+      "ignored": true,
+      "filter-match": {
+        "status": "mismatch",
+        "reason": "ignored"
+      },
+      "source_matches": [
+        {
+          "source_path": "codex-rs/hepta-agentd/src/authority_host_checkpoint_material_tests.rs",
+          "line": 185,
+          "attribute_lines": [
+            "#[ignore = \"explicit root-owned data-bind qualification\"]"
+          ],
+          "preceding_context": [
+            "        .release_to_registered_owner(/*uid*/ 60001, /*gid*/ 60001)",
+            "        .unwrap();",
+            "    assert_eq!(adopted.current_for_handoff().unwrap(), current);",
+            "    assert_eq!(",
+            "        f.material_profile()",
+            "            .layout",
+            "            .cognitive_root()",
+            "            .metadata()",
+            "            .unwrap()",
+            "            .uid(),",
+            "        60001",
+            "    );",
+            "}",
+            "",
+            "#[tokio::test]",
+            "#[ignore = \"explicit root-owned data-bind qualification\"]"
+          ]
+        }
+      ]
+    },
+    {
+      "binary_id": "codex-hepta-agentd",
+      "package_name": "codex-hepta-agentd",
+      "test_name": "authority_host_checkpoint::adoption::tests::physical_material::physical_recovery_requires_actual_old_exit_and_old_lease_expiry_before_installation",
+      "kind": "test",
+      "ignored": true,
+      "filter-match": {
+        "status": "mismatch",
+        "reason": "ignored"
+      },
+      "source_matches": [
+        {
+          "source_path": "codex-rs/hepta-agentd/src/authority_host_checkpoint_material_tests.rs",
+          "line": 96,
+          "attribute_lines": [
+            "#[ignore = \"explicit root-owned data-bind qualification\"]"
+          ],
+          "preceding_context": [
+            "        .write(true)",
+            "        .open(&image)",
+            "        .unwrap()",
+            "        .set_len(512)",
+            "        .unwrap();",
+            "    assert_eq!(",
+            "        f.backend.current_for_handoff(),",
+            "        Err(AuthorityTrustError::Unavailable)",
+            "    );",
+            "    assert_eq!(f.backend.load().unwrap(), current);",
+            "    assert!(f.backend.closed.load(Ordering::Acquire));",
+            "    assert!(!live.exists());",
+            "}",
+            "",
+            "#[tokio::test]",
+            "#[ignore = \"explicit root-owned data-bind qualification\"]"
+          ]
+        }
+      ]
+    },
+    {
+      "binary_id": "codex-hepta-agentd",
+      "package_name": "codex-hepta-agentd",
+      "test_name": "authority_host_checkpoint::adoption::tests::root_current_adoption_without_any_retained_old_pidfd_preserves_exact_cut",
+      "kind": "test",
+      "ignored": true,
+      "filter-match": {
+        "status": "mismatch",
+        "reason": "ignored"
+      },
+      "source_matches": [
+        {
+          "source_path": "codex-rs/hepta-agentd/src/authority_host_checkpoint_adoption_tests.rs",
+          "line": 472,
+          "attribute_lines": [
+            "#[ignore = \"explicit root-owned data-bind qualification\"]"
+          ],
+          "preceding_context": [
+            "    changed_uid.uid += 1;",
+            "    assert_eq!(",
+            "        RetiredCheckpointPublisher::observe(changed_uid).err(),",
+            "        Some(AuthorityTrustError::Conflict)",
+            "    );",
+            "    let mut changed_boot = lifetime;",
+            "    changed_boot.boot_id = \"00000000-0000-4000-8000-000000000001\".into();",
+            "    assert_eq!(",
+            "        RetiredCheckpointPublisher::observe(changed_boot).err(),",
+            "        Some(AuthorityTrustError::Invalid)",
+            "    );",
+            "    assert_eq!(f.backend.load().unwrap(), f.previous.head);",
+            "}",
+            "",
+            "#[tokio::test]",
+            "#[ignore = \"explicit root-owned data-bind qualification\"]"
+          ]
+        }
+      ]
+    },
+    {
+      "binary_id": "codex-hepta-agentd",
+      "package_name": "codex-hepta-agentd",
+      "test_name": "authority_host_checkpoint::adoption::tests::root_current_handoff_never_promotes_actual_dirty_publishing_or_fenced",
+      "kind": "test",
+      "ignored": true,
+      "filter-match": {
+        "status": "mismatch",
+        "reason": "ignored"
+      },
+      "source_matches": [
+        {
+          "source_path": "codex-rs/hepta-agentd/src/authority_host_checkpoint_adoption_tests.rs",
+          "line": 328,
+          "attribute_lines": [
+            "#[ignore = \"explicit root-owned data-bind qualification\"]"
+          ],
+          "preceding_context": [
+            "    f.registration.writer_binding.generation += 2;",
+            "    assert_eq!(f.adopt().err(), Some(AuthorityTrustError::Invalid));",
+            "    f.registration = original;",
+            "    let previous = f.previous.clone();",
+            "    f.previous.head.last_current.state_digest =",
+            "        Sha256Digest::for_bytes(b\"untrusted replacement cut\");",
+            "    f.previous.token = token_for(&f.previous.head).unwrap();",
+            "    assert_eq!(f.adopt().err(), Some(AuthorityTrustError::Conflict));",
+            "    f.previous = previous;",
+            "    f.new.stop();",
+            "    assert_eq!(f.adopt().err(), Some(AuthorityTrustError::Conflict));",
+            "    assert_eq!(f.backend.load().unwrap(), f.previous.head);",
+            "}",
+            "",
+            "#[tokio::test]",
+            "#[ignore = \"explicit root-owned data-bind qualification\"]"
+          ]
+        }
+      ]
+    },
+    {
+      "binary_id": "codex-hepta-agentd",
+      "package_name": "codex-hepta-agentd",
+      "test_name": "authority_host_checkpoint::adoption::tests::root_current_handoff_post_cas_clock_failure_is_unknown_not_definite_conflict",
+      "kind": "test",
+      "ignored": true,
+      "filter-match": {
+        "status": "mismatch",
+        "reason": "ignored"
+      },
+      "source_matches": [
+        {
+          "source_path": "codex-rs/hepta-agentd/src/authority_host_checkpoint_adoption_tests.rs",
+          "line": 427,
+          "attribute_lines": [
+            "#[ignore = \"explicit root-owned data-bind qualification\"]"
+          ],
+          "preceding_context": [
+            "            .iter()",
+            "            .filter(|result| **result == Err(AuthorityTrustError::Conflict))",
+            "            .count(),",
+            "        1",
+            "    );",
+            "    let reopened =",
+            "        HostCognitiveCheckpoint::open(f.directory.clone(), f.registration.clone(), f.clock.clone())",
+            "            .unwrap();",
+            "    assert_eq!(",
+            "        reopened.load().unwrap().counter,",
+            "        f.previous.head.counter + 1",
+            "    );",
+            "}",
+            "",
+            "#[tokio::test]",
+            "#[ignore = \"explicit root-owned data-bind qualification\"]"
+          ]
+        }
+      ]
+    },
+    {
+      "binary_id": "codex-hepta-agentd",
+      "package_name": "codex-hepta-agentd",
+      "test_name": "authority_host_checkpoint::adoption::tests::root_current_handoff_post_cas_expiry_is_unknown_but_new_head_is_reconciled",
+      "kind": "test",
+      "ignored": true,
+      "filter-match": {
+        "status": "mismatch",
+        "reason": "ignored"
+      },
+      "source_matches": [
+        {
+          "source_path": "codex-rs/hepta-agentd/src/authority_host_checkpoint_adoption_tests.rs",
+          "line": 350,
+          "attribute_lines": [
+            "#[ignore = \"explicit root-owned data-bind qualification\"]"
+          ],
+          "preceding_context": [
+            "        let mut f = Fixture::new().await;",
+            "        f.mutate(CognitiveCheckpointCommand::BeginWrites, 2);",
+            "        if phase == CognitiveCheckpointPhase::Publishing {",
+            "            f.mutate(CognitiveCheckpointCommand::PreparePublication, 3);",
+            "        } else if phase == CognitiveCheckpointPhase::Fenced {",
+            "            f.mutate(CognitiveCheckpointCommand::FencePublisher, 3);",
+            "        }",
+            "        assert_eq!(f.previous.head.phase, phase);",
+            "        f.old.stop();",
+            "        assert_eq!(f.adopt().err(), Some(AuthorityTrustError::Invalid));",
+            "        assert_eq!(f.backend.load().unwrap(), f.previous.head);",
+            "    }",
+            "}",
+            "",
+            "#[tokio::test]",
+            "#[ignore = \"explicit root-owned data-bind qualification\"]"
+          ]
+        }
+      ]
+    },
+    {
+      "binary_id": "codex-hepta-agentd",
+      "package_name": "codex-hepta-agentd",
+      "test_name": "authority_host_checkpoint::adoption::tests::root_current_handoff_refuses_changed_cut_phase_generation_and_dead_successor",
+      "kind": "test",
+      "ignored": true,
+      "filter-match": {
+        "status": "mismatch",
+        "reason": "ignored"
+      },
+      "source_matches": [
+        {
+          "source_path": "codex-rs/hepta-agentd/src/authority_host_checkpoint_adoption_tests.rs",
+          "line": 306,
+          "attribute_lines": [
+            "#[ignore = \"explicit root-owned data-bind qualification\"]"
+          ],
+          "preceding_context": [
+            "    expected.counter += 1;",
+            "    expected.last_mutation_sequence = 0;",
+            "    expected.last_request = None;",
+            "    expected.writer_binding = f.registration.writer_binding.clone();",
+            "    expected.peer_lifetime = f.registration.peer_lifetime.clone();",
+            "    assert_eq!(head, expected);",
+            "    assert!(f.backend.load().is_err());",
+            "    assert_eq!(f.adopt().err(), Some(AuthorityTrustError::Conflict));",
+            "    let reopened =",
+            "        HostCognitiveCheckpoint::open(f.directory.clone(), f.registration.clone(), f.clock.clone())",
+            "            .unwrap();",
+            "    assert_eq!(reopened.load().unwrap(), expected);",
+            "}",
+            "",
+            "#[tokio::test]",
+            "#[ignore = \"explicit root-owned data-bind qualification\"]"
+          ]
+        }
+      ]
+    },
+    {
+      "binary_id": "codex-hepta-agentd",
+      "package_name": "codex-hepta-agentd",
+      "test_name": "authority_host_checkpoint::adoption::tests::root_current_handoff_requires_actual_exit_and_preserves_cut_and_counter",
+      "kind": "test",
+      "ignored": true,
+      "filter-match": {
+        "status": "mismatch",
+        "reason": "ignored"
+      },
+      "source_matches": [
+        {
+          "source_path": "codex-rs/hepta-agentd/src/authority_host_checkpoint_adoption_tests.rs",
+          "line": 274,
+          "attribute_lines": [
+            "#[ignore = \"explicit root-owned data-bind qualification\"]"
+          ],
+          "preceding_context": [
+            "            &self",
+            "                .backend",
+            "                .exchange(&serde_json::to_vec(&request).unwrap())",
+            "                .unwrap(),",
+            "        )",
+            "        .unwrap();",
+            "        assert_eq!(response.status, CognitiveCheckpointStatus::Ack);",
+            "        self.previous = CognitiveCheckpointReceipt {",
+            "            token: response.token.unwrap(),",
+            "            head: response.head.unwrap(),",
+            "        };",
+            "    }",
+            "}",
+            "",
+            "#[tokio::test]",
+            "#[ignore = \"explicit root-owned data-bind qualification\"]"
+          ]
+        }
+      ]
+    },
+    {
+      "binary_id": "codex-hepta-agentd",
+      "package_name": "codex-hepta-agentd",
+      "test_name": "authority_host_checkpoint::adoption::tests::root_current_handoff_two_real_cas_handles_choose_one_successor",
+      "kind": "test",
+      "ignored": true,
+      "filter-match": {
+        "status": "mismatch",
+        "reason": "ignored"
+      },
+      "source_matches": [
+        {
+          "source_path": "codex-rs/hepta-agentd/src/authority_host_checkpoint_adoption_tests.rs",
+          "line": 393,
+          "attribute_lines": [
+            "#[ignore = \"explicit root-owned data-bind qualification\"]"
+          ],
+          "preceding_context": [
+            "        &reopened",
+            "            .exchange(&serde_json::to_vec(&request).unwrap())",
+            "            .unwrap(),",
+            "    )",
+            "    .unwrap();",
+            "    assert_eq!(response.status, CognitiveCheckpointStatus::Refused);",
+            "    assert_eq!(",
+            "        response.reason,",
+            "        Some(CognitiveCheckpointReason::AuthorityDenied)",
+            "    );",
+            "    assert_eq!((response.head, response.token), (None, None));",
+            "    assert_eq!(f.adopt().err(), Some(AuthorityTrustError::Unavailable));",
+            "}",
+            "",
+            "#[tokio::test]",
+            "#[ignore = \"explicit root-owned data-bind qualification\"]"
+          ]
+        }
+      ]
+    },
+    {
+      "binary_id": "codex-hepta-agentd",
+      "package_name": "codex-hepta-agentd",
+      "test_name": "authority_host_checkpoint::adoption::tests::root_retired_adoption_never_promotes_dirty_publishing_or_fenced",
+      "kind": "test",
+      "ignored": true,
+      "filter-match": {
+        "status": "mismatch",
+        "reason": "ignored"
+      },
+      "source_matches": [
+        {
+          "source_path": "codex-rs/hepta-agentd/src/authority_host_checkpoint_adoption_tests.rs",
+          "line": 551,
+          "attribute_lines": [
+            "#[ignore = \"explicit root-owned data-bind qualification\"]"
+          ],
+          "preceding_context": [
+            "        HostCognitiveCheckpoint::adopt_current_after_root_restart(",
+            "            f.directory.clone(),",
+            "            &f.previous,",
+            "            &retirement,",
+            "            f.registration.clone(),",
+            "            &f.new.retained,",
+            "            f.clock.clone()",
+            "        )",
+            "        .err(),",
+            "        Some(AuthorityTrustError::Invalid)",
+            "    );",
+            "    assert_eq!(f.backend.load().unwrap(), f.previous.head);",
+            "}",
+            "",
+            "#[tokio::test]",
+            "#[ignore = \"explicit root-owned data-bind qualification\"]"
+          ]
+        }
+      ]
+    },
+    {
+      "binary_id": "codex-hepta-agentd",
+      "package_name": "codex-hepta-agentd",
+      "test_name": "authority_host_checkpoint::adoption::tests::root_retired_adoption_post_cas_clock_error_is_unknown_and_exactly_reconciled",
+      "kind": "test",
+      "ignored": true,
+      "filter-match": {
+        "status": "mismatch",
+        "reason": "ignored"
+      },
+      "source_matches": [
+        {
+          "source_path": "codex-rs/hepta-agentd/src/authority_host_checkpoint_adoption_tests.rs",
+          "line": 585,
+          "attribute_lines": [
+            "#[ignore = \"explicit root-owned data-bind qualification\"]"
+          ],
+          "preceding_context": [
+            "                f.directory.clone(),",
+            "                &f.previous,",
+            "                &retirement,",
+            "                f.registration.clone(),",
+            "                &f.new.retained,",
+            "                f.clock.clone()",
+            "            )",
+            "            .err(),",
+            "            Some(AuthorityTrustError::Invalid)",
+            "        );",
+            "        assert_eq!(f.backend.load().unwrap(), f.previous.head);",
+            "    }",
+            "}",
+            "",
+            "#[tokio::test]",
+            "#[ignore = \"explicit root-owned data-bind qualification\"]"
+          ]
+        }
+      ]
+    },
+    {
+      "binary_id": "codex-hepta-agentd",
+      "package_name": "codex-hepta-agentd",
+      "test_name": "authority_host_checkpoint::adoption::tests::root_retirement_observation_refuses_live_lifetime_uid_change_and_other_boot",
+      "kind": "test",
+      "ignored": true,
+      "filter-match": {
+        "status": "mismatch",
+        "reason": "ignored"
+      },
+      "source_matches": [
+        {
+          "source_path": "codex-rs/hepta-agentd/src/authority_host_checkpoint_adoption_tests.rs",
+          "line": 448,
+          "attribute_lines": [
+            "#[ignore = \"explicit root-owned data-bind qualification\"]"
+          ],
+          "preceding_context": [
+            "        .store(f.clock.reads.load(Ordering::SeqCst) + 2, Ordering::SeqCst);",
+            "    let result = f.adopt().err();",
+            "    // Observe the actual durable new registration before checking the reported",
+            "    // result. The clock remains unavailable; this is forensic readback, not",
+            "    // revival of an expired or uncertain runtime authority.",
+            "    let reopened =",
+            "        HostCognitiveCheckpoint::open(f.directory.clone(), f.registration.clone(), f.clock.clone())",
+            "            .unwrap();",
+            "    let head = reopened.load().unwrap();",
+            "    assert_eq!(head.counter, f.previous.head.counter + 1);",
+            "    assert_eq!(head.last_current, f.previous.head.last_current);",
+            "    assert_eq!(result, Some(AuthorityTrustError::Unavailable));",
+            "}",
+            "",
+            "#[tokio::test]",
+            "#[ignore = \"explicit root-owned data-bind qualification\"]"
+          ]
+        }
+      ]
+    },
+    {
+      "binary_id": "codex-hepta-agentd",
+      "package_name": "codex-hepta-agentd",
+      "test_name": "authority_host_checkpoint::adoption::tests::root_retirement_proof_cannot_replace_protected_predecessor_lifetime",
+      "kind": "test",
+      "ignored": true,
+      "filter-match": {
+        "status": "mismatch",
+        "reason": "ignored"
+      },
+      "source_matches": [
+        {
+          "source_path": "codex-rs/hepta-agentd/src/authority_host_checkpoint_adoption_tests.rs",
+          "line": 527,
+          "attribute_lines": [
+            "#[ignore = \"explicit root-owned data-bind qualification\"]"
+          ],
+          "preceding_context": [
+            "            &previous,",
+            "            &retirement,",
+            "            registration.clone(),",
+            "            &new.retained,",
+            "            clock.clone()",
+            "        )",
+            "        .err(),",
+            "        Some(AuthorityTrustError::Conflict)",
+            "    );",
+            "    let reopened = HostCognitiveCheckpoint::open(directory, registration, clock).unwrap();",
+            "    assert_eq!(reopened.load().unwrap(), expected);",
+            "    drop(_temp);",
+            "}",
+            "",
+            "#[tokio::test]",
+            "#[ignore = \"explicit root-owned data-bind qualification\"]"
+          ]
+        }
+      ]
+    },
+    {
+      "binary_id": "codex-hepta-agentd",
+      "package_name": "codex-hepta-agentd",
+      "test_name": "authority_host_checkpoint::fresh_tests::root_fresh_publication_binds_original_exclusive_owner_and_checkpoint_client",
+      "kind": "test",
+      "ignored": true,
+      "filter-match": {
+        "status": "mismatch",
+        "reason": "ignored"
+      },
+      "source_matches": [
+        {
+          "source_path": "codex-rs/hepta-agentd/src/authority_host_checkpoint_fresh_tests.rs",
+          "line": 36,
+          "attribute_lines": [
+            "#[ignore = \"explicit root-owned data-bind qualification\"]"
+          ],
+          "preceding_context": [
+            "",
+            "struct ConcreteBackendTransport(Arc<HostCognitiveCheckpoint>);",
+            "",
+            "impl CognitiveCheckpointTransport for ConcreteBackendTransport {",
+            "    async fn exchange(&self, bytes: &[u8]) -> Result<Vec<u8>, ObjectiveSenderCheckpointError> {",
+            "        let backend = self.0.clone();",
+            "        let bytes = bytes.to_vec();",
+            "        tokio::task::spawn_blocking(move || backend.exchange(&bytes))",
+            "            .await",
+            "            .map_err(|_| ObjectiveSenderCheckpointError::Unavailable)?",
+            "            .map_err(|_| ObjectiveSenderCheckpointError::Unavailable)",
+            "    }",
+            "}",
+            "",
+            "#[tokio::test]",
+            "#[ignore = \"explicit root-owned data-bind qualification\"]"
+          ]
+        }
+      ]
+    },
+    {
+      "binary_id": "codex-hepta-agentd",
+      "package_name": "codex-hepta-agentd",
+      "test_name": "authority_host_checkpoint::tests::root_cycle_is_durable_exact_and_never_implicitly_reinitialized",
+      "kind": "test",
+      "ignored": true,
+      "filter-match": {
+        "status": "mismatch",
+        "reason": "ignored"
+      },
+      "source_matches": [
+        {
+          "source_path": "codex-rs/hepta-agentd/src/authority_host_checkpoint_tests.rs",
+          "line": 165,
+          "attribute_lines": [
+            "#[ignore = \"explicit root-owned data-bind qualification\"]"
+          ],
+          "preceding_context": [
+            "            .exchange(&serde_json::to_vec(request).unwrap())",
+            "            .unwrap(),",
+            "    )",
+            "    .unwrap()",
+            "}",
+            "",
+            "fn ack(value: &CognitiveCheckpointResponse, phase: CognitiveCheckpointPhase, counter: u64) {",
+            "    assert_eq!(value.status, CognitiveCheckpointStatus::Ack);",
+            "    assert_eq!(value.reason, None);",
+            "    assert_eq!(value.head.as_ref().unwrap().phase, phase);",
+            "    assert_eq!(value.head.as_ref().unwrap().counter, counter);",
+            "    assert_eq!(value.token.as_ref().unwrap().counter, counter);",
+            "}",
+            "",
+            "#[tokio::test]",
+            "#[ignore = \"explicit root-owned data-bind qualification\"]"
+          ]
+        }
+      ]
+    },
+    {
+      "binary_id": "codex-hepta-agentd",
+      "package_name": "codex-hepta-agentd",
+      "test_name": "authority_host_checkpoint::tests::root_expiry_after_actual_cas_returns_unknown_and_permanently_closes_object",
+      "kind": "test",
+      "ignored": true,
+      "filter-match": {
+        "status": "mismatch",
+        "reason": "ignored"
+      },
+      "source_matches": [
+        {
+          "source_path": "codex-rs/hepta-agentd/src/authority_host_checkpoint_tests.rs",
+          "line": 318,
+          "attribute_lines": [
+            "#[ignore = \"explicit root-owned data-bind qualification\"]"
+          ],
+          "preceding_context": [
+            "        exchange(&f.backend, &epoch).reason,",
+            "        Some(CognitiveCheckpointReason::StalePublisher)",
+            "    );",
+            "    let duplicate =",
+            "        serde_json::to_string(&begin)",
+            "            .unwrap()",
+            "            .replacen(\"{\", \"{\\\"schema_version\\\":1,\", 1);",
+            "    assert_eq!(",
+            "        f.backend.exchange(duplicate.as_bytes()),",
+            "        Err(AuthorityTrustError::Invalid)",
+            "    );",
+            "    assert_eq!(f.reopen().load().unwrap(), dirty.head.unwrap());",
+            "}",
+            "",
+            "#[tokio::test]",
+            "#[ignore = \"explicit root-owned data-bind qualification\"]"
+          ]
+        }
+      ]
+    },
+    {
+      "binary_id": "codex-hepta-agentd",
+      "package_name": "codex-hepta-agentd",
+      "test_name": "authority_host_checkpoint::tests::root_invalid_bindings_and_late_request_ids_leave_exact_head_unchanged",
+      "kind": "test",
+      "ignored": true,
+      "filter-match": {
+        "status": "mismatch",
+        "reason": "ignored"
+      },
+      "source_matches": [
+        {
+          "source_path": "codex-rs/hepta-agentd/src/authority_host_checkpoint_tests.rs",
+          "line": 258,
+          "attribute_lines": [
+            "#[ignore = \"explicit root-owned data-bind qualification\"]"
+          ],
+          "preceding_context": [
+            "        3,",
+            "        CognitiveCheckpointCommand::BeginWrites,",
+            "        fenced.token,",
+            "        None,",
+            "    );",
+            "    assert_eq!(",
+            "        exchange(&f.backend, &begin).status,",
+            "        CognitiveCheckpointStatus::Refused",
+            "    );",
+            "    let observed = exchange(&f.reopen(), &read);",
+            "    ack(&observed, CognitiveCheckpointPhase::Fenced, 2);",
+            "    assert_eq!(observed.head.as_ref().unwrap().last_current, f.initial_cut);",
+            "}",
+            "",
+            "#[tokio::test]",
+            "#[ignore = \"explicit root-owned data-bind qualification\"]"
+          ]
+        }
+      ]
+    },
+    {
+      "binary_id": "codex-hepta-agentd",
+      "package_name": "codex-hepta-agentd",
+      "test_name": "authority_host_checkpoint::tests::root_read_ids_do_not_advance_mutation_highwater_or_revive_fenced_state",
+      "kind": "test",
+      "ignored": true,
+      "filter-match": {
+        "status": "mismatch",
+        "reason": "ignored"
+      },
+      "source_matches": [
+        {
+          "source_path": "codex-rs/hepta-agentd/src/authority_host_checkpoint_tests.rs",
+          "line": 227,
+          "attribute_lines": [
+            "#[ignore = \"explicit root-owned data-bind qualification\"]"
+          ],
+          "preceding_context": [
+            "        .is_err()",
+            "    );",
+            "    let mut wrong = f.registration.clone();",
+            "    wrong.publisher_epoch += 1;",
+            "    assert!(",
+            "        HostCognitiveCheckpoint::open(",
+            "            RootAuthorityDirectory::open(&f.path).unwrap(),",
+            "            wrong,",
+            "            f.clock.clone()",
+            "        )",
+            "        .is_err()",
+            "    );",
+            "}",
+            "",
+            "#[tokio::test]",
+            "#[ignore = \"explicit root-owned data-bind qualification\"]"
+          ]
+        }
+      ]
+    },
+    {
+      "binary_id": "codex-hepta-agentd",
+      "package_name": "codex-hepta-agentd",
+      "test_name": "authority_host_checkpoint::tests::root_trusted_successor_keeps_global_counter_separate_from_publisher_sequence",
+      "kind": "test",
+      "ignored": true,
+      "filter-match": {
+        "status": "mismatch",
+        "reason": "ignored"
+      },
+      "source_matches": [
+        {
+          "source_path": "codex-rs/hepta-agentd/src/authority_host_checkpoint_tests.rs",
+          "line": 450,
+          "attribute_lines": [
+            "#[ignore = \"explicit root-owned data-bind qualification\"]"
+          ],
+          "preceding_context": [
+            "    assert_eq!(unknown.status, CognitiveCheckpointStatus::Unknown);",
+            "    assert_eq!(unknown.head, None);",
+            "    assert_eq!(unknown.token, None);",
+            "    std::fs::rename(&backup, original).unwrap();",
+            "    assert_eq!(std::fs::read(original).unwrap(), bytes);",
+            "    assert_eq!(exchange(&f.backend, &read), unknown);",
+            "    // A distinct explicit root open can observe the still-unmodified durable",
+            "    // original, but it cannot revive the uncertain existing publisher object.",
+            "    assert_eq!(",
+            "        f.reopen().load().unwrap().phase,",
+            "        CognitiveCheckpointPhase::Current",
+            "    );",
+            "}",
+            "",
+            "#[tokio::test]",
+            "#[ignore = \"explicit root-owned data-bind qualification\"]"
+          ]
+        }
+      ]
+    },
+    {
+      "binary_id": "codex-hepta-agentd",
+      "package_name": "codex-hepta-agentd",
+      "test_name": "authority_host_checkpoint::tests::root_two_independent_handles_cannot_both_win_the_same_original_cas",
+      "kind": "test",
+      "ignored": true,
+      "filter-match": {
+        "status": "mismatch",
+        "reason": "ignored"
+      },
+      "source_matches": [
+        {
+          "source_path": "codex-rs/hepta-agentd/src/authority_host_checkpoint_tests.rs",
+          "line": 348,
+          "attribute_lines": [
+            "#[ignore = \"explicit root-owned data-bind qualification\"]"
+          ],
+          "preceding_context": [
+            "    );",
+            "    let unknown = exchange(&f.backend, &begin);",
+            "    assert_eq!(unknown.status, CognitiveCheckpointStatus::Unknown);",
+            "    assert_eq!(unknown.head, None);",
+            "    assert_eq!(unknown.token, None);",
+            "    // The real durable mutation occurred, but there was no successful ACK.",
+            "    assert_eq!(",
+            "        f.reopen().load().unwrap().phase,",
+            "        CognitiveCheckpointPhase::Dirty",
+            "    );",
+            "    f.clock.expire_on.store(0, Ordering::SeqCst);",
+            "    assert_eq!(exchange(&f.backend, &begin), unknown);",
+            "}",
+            "",
+            "#[tokio::test]",
+            "#[ignore = \"explicit root-owned data-bind qualification\"]"
+          ]
+        }
+      ]
+    },
+    {
+      "binary_id": "codex-hepta-agentd",
+      "package_name": "codex-hepta-agentd",
+      "test_name": "authority_host_checkpoint::tests::root_unavailable_read_permanently_fences_even_after_original_file_returns",
+      "kind": "test",
+      "ignored": true,
+      "filter-match": {
+        "status": "mismatch",
+        "reason": "ignored"
+      },
+      "source_matches": [
+        {
+          "source_path": "codex-rs/hepta-agentd/src/authority_host_checkpoint_tests.rs",
+          "line": 420,
+          "attribute_lines": [
+            "#[ignore = \"explicit root-owned data-bind qualification\"]"
+          ],
+          "preceding_context": [
+            "    // head, the original CAS/publication lock refuses the loser as Conflict.",
+            "    match loser.reason {",
+            "        Some(CognitiveCheckpointReason::Conflict) => {}",
+            "        Some(CognitiveCheckpointReason::StalePublisher) => {",
+            "            assert_eq!(head.last_mutation_sequence, 3)",
+            "        }",
+            "        other => panic!(\"unexpected concurrent refusal: {other:?}; {values:?}\"),",
+            "    }",
+            "    let head = f.reopen().load().unwrap();",
+            "    assert_eq!(&head, winner.head.as_ref().unwrap());",
+            "    assert_eq!(head.counter, 2);",
+            "    assert_eq!(head.phase, CognitiveCheckpointPhase::Dirty);",
+            "}",
+            "",
+            "#[tokio::test]",
+            "#[ignore = \"explicit root-owned data-bind qualification\"]"
+          ]
+        }
+      ]
+    },
+    {
+      "binary_id": "codex-hepta-agentd",
+      "package_name": "codex-hepta-agentd",
+      "test_name": "authority_host_consumer_frontier::tests::root_forged_epoch_revision_namespace_and_replayed_transport_ids_do_not_mutate",
+      "kind": "test",
+      "ignored": true,
+      "filter-match": {
+        "status": "mismatch",
+        "reason": "ignored"
+      },
+      "source_matches": [
+        {
+          "source_path": "codex-rs/hepta-agentd/src/authority_host_consumer_frontier_tests.rs",
+          "line": 223,
+          "attribute_lines": [
+            "#[ignore = \"requires explicit root-owned data bind; no production authority\"]"
+          ],
+          "preceding_context": [
+            "        .find(|p| p.extension().is_some_and(|e| e == \"json\"))",
+            "        .unwrap();",
+            "    let raw = fs::read(&path).unwrap();",
+            "    fs::remove_file(&path).unwrap();",
+            "    assert_eq!(f.response(/*id*/ 1, None).status, Status::Unknown);",
+            "    fs::write(&path, &raw).unwrap();",
+            "    fs::set_permissions(&path, fs::Permissions::from_mode(0o600)).unwrap();",
+            "    assert_eq!(f.response(/*id*/ 2, None).status, Status::Unknown);",
+            "    assert_eq!(",
+            "        exchange(&f.reopen(), &f.head, /*id*/ 1, None).frontier,",
+            "        Some(f.initial())",
+            "    );",
+            "}",
+            "",
+            "#[test]",
+            "#[ignore = \"requires explicit root-owned data bind; no production authority\"]"
+          ]
+        }
+      ]
+    },
+    {
+      "binary_id": "codex-hepta-agentd",
+      "package_name": "codex-hepta-agentd",
+      "test_name": "authority_host_consumer_frontier::tests::root_post_cas_expiry_returns_no_ack_and_never_revives_the_uncertain_object",
+      "kind": "test",
+      "ignored": true,
+      "filter-match": {
+        "status": "mismatch",
+        "reason": "ignored"
+      },
+      "source_matches": [
+        {
+          "source_path": "codex-rs/hepta-agentd/src/authority_host_consumer_frontier_tests.rs",
+          "line": 174,
+          "attribute_lines": [
+            "#[ignore = \"requires explicit root-owned data bind; no production authority\"]"
+          ],
+          "preceding_context": [
+            "        ),",
+            "        Err(AuthorityTrustError::Conflict)",
+            "    ));",
+            "    assert!(",
+            "        HostConsumerFrontier::open(",
+            "            RootAuthorityDirectory::open(f.temp.path()).unwrap(),",
+            "            \"missing-original-owner\".into(),",
+            "            f.clock.clone(),",
+            "            /*expires_at_unix_ms*/ 2_000",
+            "        )",
+            "        .is_err()",
+            "    );",
+            "}",
+            "",
+            "#[test]",
+            "#[ignore = \"requires explicit root-owned data bind; no production authority\"]"
+          ]
+        }
+      ]
+    },
+    {
+      "binary_id": "codex-hepta-agentd",
+      "package_name": "codex-hepta-agentd",
+      "test_name": "authority_host_consumer_frontier::tests::root_storage_disappearance_and_restoration_does_not_revive_a_lane",
+      "kind": "test",
+      "ignored": true,
+      "filter-match": {
+        "status": "mismatch",
+        "reason": "ignored"
+      },
+      "source_matches": [
+        {
+          "source_path": "codex-rs/hepta-agentd/src/authority_host_consumer_frontier_tests.rs",
+          "line": 202,
+          "attribute_lines": [
+            "#[ignore = \"requires explicit root-owned data bind; no production authority\"]"
+          ],
+          "preceding_context": [
+            "        }",
+            "    );",
+            "    f.clock.expire_on.store(0, Ordering::SeqCst);",
+            "    assert_eq!(f.response(/*id*/ 2, None).status, Status::Unknown);",
+            "    assert_eq!(",
+            "        f.backend.frontier_for_handoff(&f.head),",
+            "        Err(AuthorityTrustError::Unavailable)",
+            "    );",
+            "    assert_eq!(",
+            "        exchange(&f.reopen(), &f.head, /*id*/ 1, None).frontier,",
+            "        Some(next)",
+            "    );",
+            "}",
+            "",
+            "#[test]",
+            "#[ignore = \"requires explicit root-owned data bind; no production authority\"]"
+          ]
+        }
+      ]
+    },
+    {
+      "binary_id": "codex-hepta-agentd",
+      "package_name": "codex-hepta-agentd",
+      "test_name": "authority_host_consumer_frontier::tests::root_two_original_stores_are_isolated_and_exact_cas_survives_reopen",
+      "kind": "test",
+      "ignored": true,
+      "filter-match": {
+        "status": "mismatch",
+        "reason": "ignored"
+      },
+      "source_matches": [
+        {
+          "source_path": "codex-rs/hepta-agentd/src/authority_host_consumer_frontier_tests.rs",
+          "line": 109,
+          "attribute_lines": [
+            "#[ignore = \"requires explicit root-owned data bind; no production authority\"]"
+          ],
+          "preceding_context": [
+            "        },",
+            "    };",
+            "    serde_json::from_slice(",
+            "        &backend",
+            "            .exchange(&serde_json::to_vec(&request).unwrap(), head)",
+            "            .unwrap(),",
+            "    )",
+            "    .unwrap()",
+            "}",
+            "fn changed(mut frontier: FinalUseFrontier, marker: u8) -> FinalUseFrontier {",
+            "    frontier.state_sha256 = [marker; 32];",
+            "    frontier",
+            "}",
+            "",
+            "#[test]",
+            "#[ignore = \"requires explicit root-owned data bind; no production authority\"]"
+          ]
+        }
+      ]
+    },
+    {
+      "binary_id": "codex-hepta-agentd",
+      "package_name": "codex-hepta-agentd",
+      "test_name": "authority_host_consumer_frontier::tests::root_two_real_handles_race_one_durable_cas_and_refuse_the_other",
+      "kind": "test",
+      "ignored": true,
+      "filter-match": {
+        "status": "mismatch",
+        "reason": "ignored"
+      },
+      "source_matches": [
+        {
+          "source_path": "codex-rs/hepta-agentd/src/authority_host_consumer_frontier_tests.rs",
+          "line": 273,
+          "attribute_lines": [
+            "#[ignore = \"requires explicit root-owned data bind; no production authority\"]"
+          ],
+          "preceding_context": [
+            "        f.backend.exchange(&replay, &f.head),",
+            "        Err(AuthorityTrustError::Invalid)",
+            "    );",
+            "    for bytes in [br#\"{\"operation\":\"runtime.final_use.frontier.load.v1\",\"schema_version\":1,\"request_id\":4,\"owner_id\":\"other\"}\"#.as_slice(),",
+            "        br#\"{\"operation\":\"runtime.final_use.frontier.load.v1\",\"schema_version\":1,\"request_id\":4,\"request_id\":5}\"#.as_slice()] {",
+            "        assert_eq!(f.backend.exchange(bytes, &f.head), Err(AuthorityTrustError::Invalid));",
+            "    }",
+            "    assert_eq!(",
+            "        f.backend.exchange(&vec![b' '; FRAME_LIMIT + 1], &f.head),",
+            "        Err(AuthorityTrustError::Invalid)",
+            "    );",
+            "    assert_eq!(f.response(/*id*/ 4, None).frontier, Some(original));",
+            "}",
+            "",
+            "#[test]",
+            "#[ignore = \"requires explicit root-owned data bind; no production authority\"]"
+          ]
+        }
+      ]
+    },
+    {
+      "binary_id": "codex-hepta-agentd",
+      "package_name": "codex-hepta-agentd",
+      "test_name": "authority_host_runtime::listeners::tests::all_original_listeners_precede_the_one_shot_handoff_and_failure_cleans_up",
+      "kind": "test",
+      "ignored": true,
+      "filter-match": {
+        "status": "mismatch",
+        "reason": "ignored"
+      },
+      "source_matches": [
+        {
+          "source_path": "codex-rs/hepta-agentd/src/authority_host_listeners_tests.rs",
+          "line": 54,
+          "attribute_lines": [
+            "#[ignore = \"explicit actual Root listener qualification under /run; no authority or product launch\"]"
+          ],
+          "preceding_context": [
+            "#[test]",
+            "fn readiness_is_not_called_for_an_invalid_original_lane_parent() {",
+            "    let directory = tempfile::tempdir().unwrap();",
+            "    let config = config(directory.path(), /*gid*/ 60001);",
+            "    let mut called = false;",
+            "    let result = bind_runtime_lanes(&config, || {",
+            "        called = true;",
+            "        Ok(())",
+            "    });",
+            "    assert!(result.is_err());",
+            "    assert!(!called);",
+            "    assert_eq!(std::fs::read_dir(directory.path()).unwrap().count(), 0);",
+            "}",
+            "",
+            "#[test]",
+            "#[ignore = \"explicit actual Root listener qualification under /run; no authority or product launch\"]"
+          ]
+        }
+      ]
+    },
+    {
+      "binary_id": "codex-hepta-agentd",
+      "package_name": "codex-hepta-agentd",
+      "test_name": "authority_host_runtime::process_tests::original_owner_process_rejects_same_uid_with_different_gid",
+      "kind": "test",
+      "ignored": true,
+      "filter-match": {
+        "status": "mismatch",
+        "reason": "ignored"
+      },
+      "source_matches": [
+        {
+          "source_path": "codex-rs/hepta-agentd/src/authority_host_process_tests.rs",
+          "line": 30,
+          "attribute_lines": [
+            "#[ignore = \"explicit Root credential test; only the spawned child changes credentials\"]"
+          ],
+          "preceding_context": [
+            "use std::process::Child;",
+            "use std::process::Command;",
+            "use std::process::Stdio;",
+            "use std::time::Duration;",
+            "",
+            "struct ChildGuard(Child);",
+            "",
+            "impl Drop for ChildGuard {",
+            "    fn drop(&mut self) {",
+            "        let _ = self.0.kill();",
+            "        let _ = self.0.wait();",
+            "    }",
+            "}",
+            "",
+            "#[test]",
+            "#[ignore = \"explicit Root credential test; only the spawned child changes credentials\"]"
+          ]
+        }
+      ]
+    },
+    {
+      "binary_id": "codex-hepta-agentd",
+      "package_name": "codex-hepta-agentd",
+      "test_name": "authority_host_runtime::session::filesystem::tests::original_registry_reader_child",
+      "kind": "test",
+      "ignored": true,
+      "filter-match": {
+        "status": "mismatch",
+        "reason": "ignored"
+      },
+      "source_matches": [
+        {
+          "source_path": "codex-rs/hepta-agentd/src/root_agentd_filesystem_tests.rs",
+          "line": 201,
+          "attribute_lines": [
+            "#[ignore = \"only the explicit Root filesystem test launches this exact dedicated-UID child\"]"
+          ],
+          "preceding_context": [
+            "    assert!(",
+            "        output.status.success(),",
+            "        \"actual peer child failed: stdout={} stderr={}\",",
+            "        String::from_utf8_lossy(&output.stdout),",
+            "        String::from_utf8_lossy(&output.stderr)",
+            "    );",
+            "    let stdout = String::from_utf8(output.stdout).unwrap();",
+            "    assert!(stdout.contains(",
+            "        \"ROOT_FILESYSTEM_READER actual_uid=60001 actual_gid=60001 control_write_denied=true\"",
+            "    ));",
+            "    assert!(stdout.contains(\"1 passed; 0 failed\"));",
+            "    print!(\"{stdout}\");",
+            "}",
+            "",
+            "#[tokio::test]",
+            "#[ignore = \"only the explicit Root filesystem test launches this exact dedicated-UID child\"]"
+          ]
+        }
+      ]
+    },
+    {
+      "binary_id": "codex-hepta-agentd",
+      "package_name": "codex-hepta-agentd",
+      "test_name": "authority_host_runtime::session::filesystem::tests::original_root_filesystem_preserves_registry_reads_and_denies_control_writes",
+      "kind": "test",
+      "ignored": true,
+      "filter-match": {
+        "status": "mismatch",
+        "reason": "ignored"
+      },
+      "source_matches": [
+        {
+          "source_path": "codex-rs/hepta-agentd/src/root_agentd_filesystem_tests.rs",
+          "line": 94,
+          "attribute_lines": [
+            "#[ignore = \"explicit actual Root filesystem handoff and dedicated UID/GID child\"]"
+          ],
+          "preceding_context": [
+            "    .unwrap();",
+            "    std::fs::write(",
+            "        identity.layout.home_root().join(\"write-probe\"),",
+            "        b\"original Agent data\",",
+            "    )",
+            "    .unwrap();",
+            "    OriginalFixture {",
+            "        _temporary: temporary,",
+            "        registry,",
+            "        identity,",
+            "        authority,",
+            "    }",
+            "}",
+            "",
+            "#[tokio::test]",
+            "#[ignore = \"explicit actual Root filesystem handoff and dedicated UID/GID child\"]"
+          ]
+        }
+      ]
+    },
+    {
+      "binary_id": "codex-hepta-agentd",
+      "package_name": "codex-hepta-agentd",
+      "test_name": "authority_host_runtime::session::filesystem::tests::original_root_filesystem_rejects_aliases_and_existing_workspace_before_ownership_change",
+      "kind": "test",
+      "ignored": true,
+      "filter-match": {
+        "status": "mismatch",
+        "reason": "ignored"
+      },
+      "source_matches": [
+        {
+          "source_path": "codex-rs/hepta-agentd/src/root_agentd_filesystem_tests.rs",
+          "line": 312,
+          "attribute_lines": [
+            "#[ignore = \"explicit actual Root scope-refusal test, no Agent runtime is started\"]"
+          ],
+          "preceding_context": [
+            "    )",
+            "    .unwrap();",
+            "    let store = CognitiveStore::open(&record.layout).await.unwrap();",
+            "    assert_eq!(store.recovery_anchor().await.unwrap().owner_agent_id, agent);",
+            "    store.close().await;",
+            "    assert_eq!(",
+            "        registry.load_agent(&record.manifest.agent_id).unwrap(),",
+            "        record",
+            "    );",
+            "    println!(",
+            "        \"ROOT_FILESYSTEM_READER actual_uid=60001 actual_gid=60001 control_write_denied=true original_db_opened=true\"",
+            "    );",
+            "}",
+            "",
+            "#[tokio::test]",
+            "#[ignore = \"explicit actual Root scope-refusal test, no Agent runtime is started\"]"
+          ]
+        }
+      ]
+    },
+    {
+      "binary_id": "codex-hepta-agentd",
+      "package_name": "codex-hepta-agentd",
+      "test_name": "authority_host_runtime::session::notes_startup::tests::original_root_seals_only_empty_private_deployment_and_readonly_consumer_observes_it",
+      "kind": "test",
+      "ignored": true,
+      "filter-match": {
+        "status": "mismatch",
+        "reason": "ignored"
+      },
+      "source_matches": [
+        {
+          "source_path": "codex-rs/hepta-agentd/src/root_notes_startup_tests.rs",
+          "line": 12,
+          "attribute_lines": [
+            "#[ignore = \"requires actual Root; execute the user-built test ELF in the isolated Root runner\"]"
+          ],
+          "preceding_context": [
+            "use super::*;",
+            "use pretty_assertions::assert_eq;",
+            "use std::os::fd::FromRawFd;",
+            "",
+            "#[test]",
+            "fn ordinary_file_cannot_be_a_pending_root_deployment() {",
+            "    assert!(validate_empty_deployment(&tempfile::tempfile().unwrap()).is_err());",
+            "}",
+            "",
+            "#[test]",
+            "#[ignore = \"requires actual Root; execute the user-built test ELF in the isolated Root runner\"]"
+          ]
+        }
+      ]
+    },
+    {
+      "binary_id": "codex-hepta-agentd",
+      "package_name": "codex-hepta-agentd",
+      "test_name": "authority_host_service::logind::tests::original_held_physical_login_matches_actual_logind_and_wrong_birth_or_uid_refuses",
+      "kind": "test",
+      "ignored": true,
+      "filter-match": {
+        "status": "mismatch",
+        "reason": "ignored"
+      },
+      "source_matches": [
+        {
+          "source_path": "codex-rs/hepta-agentd/src/authority_host_logind_tests.rs",
+          "line": 9,
+          "attribute_lines": [
+            "#[ignore = \"requires actual Root and an explicitly selected active physical logind session\"]"
+          ],
+          "preceding_context": [
+            "//! Explicit real Root/physical-login qualification. It creates no authority,",
+            "//! thread or model session and never claims native product completion.",
+            "use super::*;",
+            "use crate::text_session::AgentdTextSessionConfig;",
+            "use std::os::fd::FromRawFd;",
+            "",
+            "#[test]",
+            "#[ignore = \"requires actual Root and an explicitly selected active physical logind session\"]"
+          ]
+        }
+      ]
+    },
+    {
+      "binary_id": "codex-hepta-agentd",
+      "package_name": "codex-hepta-agentd",
+      "test_name": "authority_host_service::tests::root::protected_service_client",
+      "kind": "test",
+      "ignored": true,
+      "filter-match": {
+        "status": "mismatch",
+        "reason": "ignored"
+      },
+      "source_matches": [
+        {
+          "source_path": "codex-rs/hepta-agentd/src/authority_host_service_root_tests.rs",
+          "line": 128,
+          "attribute_lines": [
+            "#[ignore = \"controlled UID60001 client entry, launched by explicit root qualification\"]"
+          ],
+          "preceding_context": [
+            "                    .unwrap();",
+            "                stream",
+            "                    .set_write_timeout(Some(Duration::from_secs(10)))",
+            "                    .unwrap();",
+            "                return stream;",
+            "            }",
+            "            Err(_) => {",
+            "                assert!(Instant::now() < deadline, \"root service listener deadline\");",
+            "                std::thread::sleep(Duration::from_millis(5));",
+            "            }",
+            "        }",
+            "    }",
+            "}",
+            "",
+            "#[test]",
+            "#[ignore = \"controlled UID60001 client entry, launched by explicit root qualification\"]"
+          ]
+        }
+      ]
+    },
+    {
+      "binary_id": "codex-hepta-agentd",
+      "package_name": "codex-hepta-agentd",
+      "test_name": "authority_host_service::tests::root::root_data_service_three_lanes_use_original_wire_key_and_dedicated_peer",
+      "kind": "test",
+      "ignored": true,
+      "filter-match": {
+        "status": "mismatch",
+        "reason": "ignored"
+      },
+      "source_matches": [
+        {
+          "source_path": "codex-rs/hepta-agentd/src/authority_host_service_root_tests.rs",
+          "line": 254,
+          "attribute_lines": [
+            "#[ignore = \"explicit root/data-bind canonical three-lane service qualification\"]"
+          ],
+          "preceding_context": [
+            "        0,",
+            "        \"unregistered writer must not sign an Objective\"",
+            "    );",
+            "    // An absent independently registered head must never return a cut/ACK.",
+            "    let bytes=serde_json::to_vec(&serde_json::json!({\"schema_version\":1,\"operation\":\"runtime.cognitive.checkpoint.v1\",\"request_id\":\"00000000000000010000000000000001\",\"command\":\"read_head\",\"expected\":null,\"proposal\":null})).unwrap();",
+            "    checkpoint",
+            "        .write_all(&(bytes.len() as u32).to_be_bytes())",
+            "        .unwrap();",
+            "    checkpoint.write_all(&bytes).unwrap();",
+            "    let mut bytes = Vec::new();",
+            "    checkpoint.read_to_end(&mut bytes).unwrap();",
+            "    assert!(bytes.is_empty());",
+            "}",
+            "",
+            "#[test]",
+            "#[ignore = \"explicit root/data-bind canonical three-lane service qualification\"]"
+          ]
+        }
+      ]
+    },
+    {
+      "binary_id": "codex-hepta-agentd",
+      "package_name": "codex-hepta-agentd",
+      "test_name": "authority_host_service::writer::fresh::tests::original_fresh_state_retains_writer_lock_and_refuses_nonempty_or_changed_registry",
+      "kind": "test",
+      "ignored": true,
+      "filter-match": {
+        "status": "mismatch",
+        "reason": "ignored"
+      },
+      "source_matches": [
+        {
+          "source_path": "codex-rs/hepta-agentd/src/authority_host_fresh_tests.rs",
+          "line": 12,
+          "attribute_lines": [
+            "#[ignore = \"explicit actual Root original Registry and SQLite qualification\"]"
+          ],
+          "preceding_context": [
+            "//! Actual Root custody and original Registry/SQLite preparation; no authority fixture.",
+            "",
+            "use super::*;",
+            "use codex_hepta_contracts::AgentId;",
+            "use codex_hepta_fleet::AgentManifest;",
+            "use codex_hepta_fleet::ResourceBudget;",
+            "use codex_hepta_fleet::WorkspaceBinding;",
+            "use pretty_assertions::assert_eq;",
+            "",
+            "#[tokio::test]",
+            "#[ignore = \"explicit actual Root original Registry and SQLite qualification\"]"
+          ]
+        }
+      ]
+    },
+    {
+      "binary_id": "codex-hepta-agentd",
+      "package_name": "codex-hepta-agentd",
+      "test_name": "config::root_handoff::tests::original_root_preparation_releases_same_lock_for_fresh_owner_without_changing_registry",
+      "kind": "test",
+      "ignored": true,
+      "filter-match": {
+        "status": "mismatch",
+        "reason": "ignored"
+      },
+      "source_matches": [
+        {
+          "source_path": "codex-rs/hepta-agentd/src/config_root_handoff_tests.rs",
+          "line": 59,
+          "attribute_lines": [
+            "#[ignore = \"explicit actual Root original Registry, file lock and SQLite preparation\"]"
+          ],
+          "preceding_context": [
+            "}",
+            "",
+            "#[test]",
+            "fn root_handoff_rejects_zero_uid_or_gid_without_releasing_a_runtime() {",
+            "    for (uid, gid) in [(0, 60001), (60001, 0), (0, 0)] {",
+            "        let parent = tempfile::tempdir().unwrap();",
+            "        let (_temporary, config) = original_config(parent.path());",
+            "        let error = config.prepare_root_handoff(uid, gid).err().unwrap();",
+            "        assert!(",
+            "            matches!(error, AgentdError::Invalid(message) if message.contains(\"dedicated non-Root UID/GID\"))",
+            "        );",
+            "    }",
+            "}",
+            "",
+            "#[tokio::test]",
+            "#[ignore = \"explicit actual Root original Registry, file lock and SQLite preparation\"]"
+          ]
+        }
+      ]
+    },
+    {
+      "binary_id": "codex-hepta-agentd",
+      "package_name": "codex-hepta-agentd",
+      "test_name": "deployment_issuer::notes::tests::deployment_notes_actual_root_clock_registry_and_canonical_issuer_issue_distinct_payloads",
+      "kind": "test",
+      "ignored": true,
+      "filter-match": {
+        "status": "mismatch",
+        "reason": "ignored"
+      },
+      "source_matches": [
+        {
+          "source_path": "codex-rs/hepta-agentd/src/deployment_notes_tests.rs",
+          "line": 568,
+          "attribute_lines": [
+            "#[ignore = \"explicit Root-only exact Notes admission on selected protected filesystem\"]"
+          ],
+          "preceding_context": [
+            "    let next = NotesTargetIdentity {",
+            "        incarnation: \"3\".repeat(32),",
+            "        ..f.target.clone()",
+            "    };",
+            "    assert!(",
+            "        f.issuer",
+            "            .replace_notes_policy(&f.writer, &f.target, 1_000, &next, 1_000)",
+            "            .is_err()",
+            "    );",
+            "    assert!(f.issuer.store.load(STATE_OWNER).unwrap() == ambiguous);",
+            "    assert_eq!(f.registry.frontier().unwrap(), frontier);",
+            "    assert_eq!(f.sequence(), 1);",
+            "}",
+            "",
+            "#[test]",
+            "#[ignore = \"explicit Root-only exact Notes admission on selected protected filesystem\"]"
+          ]
+        }
+      ]
+    },
+    {
+      "binary_id": "codex-hepta-agentd",
+      "package_name": "codex-hepta-agentd",
+      "test_name": "deployment_issuer::root::tests::deployment_protected_root_factory_retains_original_key_head_counter_and_lease",
+      "kind": "test",
+      "ignored": true,
+      "filter-match": {
+        "status": "mismatch",
+        "reason": "ignored"
+      },
+      "source_matches": [
+        {
+          "source_path": "codex-rs/hepta-agentd/src/deployment_issuer_root_tests.rs",
+          "line": 247,
+          "attribute_lines": [
+            "#[ignore = \"explicit root-only canonical issuer factory qualification on selected protected filesystem\"]"
+          ],
+          "preceding_context": [
+            "    let reopened =",
+            "        DeploymentFinalUseIssuer::open(&fixture._root.path().join(\"issuer\"), fixture.clock)",
+            "            .unwrap();",
+            "    assert!(",
+            "        reopened",
+            "            .issue(&binding())",
+            "            .unwrap()",
+            "            .unwrap()",
+            "            .grant",
+            "            .grant_id",
+            "            .ends_with(\":3\")",
+            "    );",
+            "}",
+            "",
+            "#[test]",
+            "#[ignore = \"explicit root-only canonical issuer factory qualification on selected protected filesystem\"]"
+          ]
+        }
+      ]
+    },
+    {
+      "binary_id": "codex-hepta-agentd",
+      "package_name": "codex-hepta-agentd",
+      "test_name": "native_g2_socket_publication::tests::configured_inode_is_published_and_accepts_the_dedicated_role",
+      "kind": "test",
+      "ignored": true,
+      "filter-match": {
+        "status": "mismatch",
+        "reason": "ignored"
+      },
+      "source_matches": [
+        {
+          "source_path": "codex-rs/hepta-agentd/src/native_g2_entry/socket_publication_tests.rs",
+          "line": 40,
+          "attribute_lines": [
+            "#[ignore = \"requires Root to exercise the actual native socket owner\"]"
+          ],
+          "preceding_context": [
+            "    let listener = UnixListener::bind(&path).unwrap();",
+            "    owner_socket(&path, ROLE_GID).unwrap();",
+            "    let directory = File::open(directory).unwrap();",
+            "    let name = CString::new(\".control.sock.pending\").unwrap();",
+            "    let metadata = metadata_at(&directory, &name).unwrap();",
+            "    let name = SocketName {",
+            "        directory,",
+            "        name,",
+            "        device: metadata.st_dev,",
+            "        inode: metadata.st_ino,",
+            "    };",
+            "    (listener, name)",
+            "}",
+            "",
+            "#[test]",
+            "#[ignore = \"requires Root to exercise the actual native socket owner\"]"
+          ]
+        }
+      ]
+    },
+    {
+      "binary_id": "codex-hepta-agentd",
+      "package_name": "codex-hepta-agentd",
+      "test_name": "native_g2_socket_publication::tests::existing_final_is_not_replaced_and_own_pending_is_removed",
+      "kind": "test",
+      "ignored": true,
+      "filter-match": {
+        "status": "mismatch",
+        "reason": "ignored"
+      },
+      "source_matches": [
+        {
+          "source_path": "codex-rs/hepta-agentd/src/native_g2_entry/socket_publication_tests.rs",
+          "line": 119,
+          "attribute_lines": [
+            "#[ignore = \"requires Root to exercise the actual native socket owner\"]"
+          ],
+          "preceding_context": [
+            "    let pending = directory.path().join(\".control.sock.pending\");",
+            "    std::fs::write(&pending, b\"foreign pending\").unwrap();",
+            "    let before = std::fs::symlink_metadata(&pending).unwrap();",
+            "    let error = listener(&path, ROLE_GID).err().unwrap();",
+            "    assert_eq!(error.raw_os_error(), Some(libc::EADDRINUSE));",
+            "    let after = std::fs::symlink_metadata(&pending).unwrap();",
+            "    assert_eq!((after.dev(), after.ino()), (before.dev(), before.ino()));",
+            "    assert_eq!(std::fs::read(pending).unwrap(), b\"foreign pending\");",
+            "    assert_eq!(",
+            "        std::fs::symlink_metadata(path).unwrap_err().kind(),",
+            "        io::ErrorKind::NotFound",
+            "    );",
+            "}",
+            "",
+            "#[test]",
+            "#[ignore = \"requires Root to exercise the actual native socket owner\"]"
+          ]
+        }
+      ]
+    },
+    {
+      "binary_id": "codex-hepta-agentd",
+      "package_name": "codex-hepta-agentd",
+      "test_name": "native_g2_socket_publication::tests::final_replacement_inode_survives_listener_drop",
+      "kind": "test",
+      "ignored": true,
+      "filter-match": {
+        "status": "mismatch",
+        "reason": "ignored"
+      },
+      "source_matches": [
+        {
+          "source_path": "codex-rs/hepta-agentd/src/native_g2_entry/socket_publication_tests.rs",
+          "line": 139,
+          "attribute_lines": [
+            "#[ignore = \"requires Root to exercise the actual native socket owner\"]"
+          ],
+          "preceding_context": [
+            "    let before = std::fs::symlink_metadata(&path).unwrap();",
+            "    let error = listener(&path, ROLE_GID).err().unwrap();",
+            "    assert_eq!(error.raw_os_error(), Some(libc::EEXIST));",
+            "    let after = std::fs::symlink_metadata(&path).unwrap();",
+            "    assert_eq!((after.dev(), after.ino()), (before.dev(), before.ino()));",
+            "    assert_eq!(std::fs::read(path).unwrap(), b\"foreign final\");",
+            "    assert_eq!(",
+            "        std::fs::symlink_metadata(directory.path().join(\".control.sock.pending\"))",
+            "            .unwrap_err()",
+            "            .kind(),",
+            "        io::ErrorKind::NotFound",
+            "    );",
+            "}",
+            "",
+            "#[test]",
+            "#[ignore = \"requires Root to exercise the actual native socket owner\"]"
+          ]
+        }
+      ]
+    },
+    {
+      "binary_id": "codex-hepta-agentd",
+      "package_name": "codex-hepta-agentd",
+      "test_name": "native_g2_socket_publication::tests::pending_collision_is_preserved_without_publishing",
+      "kind": "test",
+      "ignored": true,
+      "filter-match": {
+        "status": "mismatch",
+        "reason": "ignored"
+      },
+      "source_matches": [
+        {
+          "source_path": "codex-rs/hepta-agentd/src/native_g2_entry/socket_publication_tests.rs",
+          "line": 100,
+          "attribute_lines": [
+            "#[ignore = \"requires Root to exercise the actual native socket owner\"]"
+          ],
+          "preceding_context": [
+            "        .env_clear()",
+            "        .env(\"PATH\", \"/usr/bin:/bin\")",
+            "        .current_dir(\"/\")",
+            "        .status()",
+            "        .unwrap();",
+            "    assert!(status.success());",
+            "    let (_stream, _) = listener.accept().unwrap();",
+            "    drop(listener);",
+            "    assert_eq!(",
+            "        std::fs::symlink_metadata(path).unwrap_err().kind(),",
+            "        io::ErrorKind::NotFound",
+            "    );",
+            "}",
+            "",
+            "#[test]",
+            "#[ignore = \"requires Root to exercise the actual native socket owner\"]"
+          ]
+        }
+      ]
+    },
+    {
+      "binary_id": "codex-hepta-agentd",
+      "package_name": "codex-hepta-agentd",
+      "test_name": "native_g2_socket_publication::tests::pending_replacement_inode_survives_failed_publication_cleanup",
+      "kind": "test",
+      "ignored": true,
+      "filter-match": {
+        "status": "mismatch",
+        "reason": "ignored"
+      },
+      "source_matches": [
+        {
+          "source_path": "codex-rs/hepta-agentd/src/native_g2_entry/socket_publication_tests.rs",
+          "line": 158,
+          "attribute_lines": [
+            "#[ignore = \"requires Root to exercise the actual native socket owner\"]"
+          ],
+          "preceding_context": [
+            "    let listener = listener(&path, ROLE_GID).unwrap();",
+            "    std::fs::remove_file(&path).unwrap();",
+            "    std::fs::write(&path, b\"replacement final\").unwrap();",
+            "    let replacement = std::fs::symlink_metadata(&path).unwrap();",
+            "    assert_ne!(replacement.ino(), listener._name.inode);",
+            "    drop(listener);",
+            "    let retained = std::fs::symlink_metadata(&path).unwrap();",
+            "    assert_eq!(",
+            "        (retained.dev(), retained.ino()),",
+            "        (replacement.dev(), replacement.ino())",
+            "    );",
+            "    assert_eq!(std::fs::read(path).unwrap(), b\"replacement final\");",
+            "}",
+            "",
+            "#[test]",
+            "#[ignore = \"requires Root to exercise the actual native socket owner\"]"
+          ]
+        }
+      ]
+    },
+    {
+      "binary_id": "codex-hepta-agentd",
+      "package_name": "codex-hepta-agentd",
+      "test_name": "native_g2_socket_publication::tests::preexisting_same_inode_alias_is_rejected_without_removing_final",
+      "kind": "test",
+      "ignored": true,
+      "filter-match": {
+        "status": "mismatch",
+        "reason": "ignored"
+      },
+      "source_matches": [
+        {
+          "source_path": "codex-rs/hepta-agentd/src/native_g2_entry/socket_publication_tests.rs",
+          "line": 180,
+          "attribute_lines": [
+            "#[ignore = \"requires Root to exercise the actual native socket owner\"]"
+          ],
+          "preceding_context": [
+            "    assert_ne!(std::fs::symlink_metadata(&path).unwrap().ino(), name.inode);",
+            "    assert!(",
+            "        name.publish(CString::new(\"control.sock\").unwrap(), ROLE_GID)",
+            "            .is_err()",
+            "    );",
+            "    assert_eq!(std::fs::read(path).unwrap(), b\"replacement pending\");",
+            "    assert_eq!(",
+            "        std::fs::symlink_metadata(directory.path().join(\"control.sock\"))",
+            "            .unwrap_err()",
+            "            .kind(),",
+            "        io::ErrorKind::NotFound",
+            "    );",
+            "}",
+            "",
+            "#[test]",
+            "#[ignore = \"requires Root to exercise the actual native socket owner\"]"
+          ]
+        }
+      ]
+    },
+    {
+      "binary_id": "codex-hepta-agentd",
+      "package_name": "codex-hepta-agentd",
+      "test_name": "production_composition::tests::owner_custody::root_preparation_does_not_unlock_a_retained_uninstalled_original_writer",
+      "kind": "test",
+      "ignored": true,
+      "filter-match": {
+        "status": "mismatch",
+        "reason": "ignored"
+      },
+      "source_matches": [
+        {
+          "source_path": "codex-rs/hepta-agentd/src/production_owner_custody_tests.rs",
+          "line": 89,
+          "attribute_lines": [
+            "#[ignore = \"actual UID0 original Root preparation, private TMPDIR and original writer required\"]"
+          ],
+          "preceding_context": [
+            "    );",
+            "    eprintln!(",
+            "        \"owner-custody host_lock_reacquired={host_lock_reacquired} replacement_loaded={replacement_loaded} writer_lock_reacquired={writer_lock_reacquired} store_still_fenced={store_still_fenced} final_lock_reacquired={final_lock_reacquired} dev={} ino={} effects=0\",",
+            "        retained.dev(),",
+            "        retained.ino()",
+            "    );",
+            "    assert!(store_still_fenced);",
+            "    assert!(!host_lock_reacquired);",
+            "    assert!(!replacement_loaded);",
+            "    assert!(!writer_lock_reacquired);",
+            "    assert!(final_lock_reacquired);",
+            "    Ok(())",
+            "}",
+            "",
+            "#[tokio::test(flavor = \"multi_thread\", worker_threads = 2)]",
+            "#[ignore = \"actual UID0 original Root preparation, private TMPDIR and original writer required\"]"
+          ]
+        }
+      ]
+    },
+    {
+      "binary_id": "codex-hepta-agentd",
+      "package_name": "codex-hepta-agentd",
+      "test_name": "root_bound_socket::tests::original_root_bound_listener_child",
+      "kind": "test",
+      "ignored": true,
+      "filter-match": {
+        "status": "mismatch",
+        "reason": "ignored"
+      },
+      "source_matches": [
+        {
+          "source_path": "codex-rs/hepta-agentd/src/root_bound_socket_tests.rs",
+          "line": 190,
+          "attribute_lines": [
+            "#[ignore = \"only the explicit Root socket test supplies these inherited descriptors\"]"
+          ],
+          "preceding_context": [
+            "    assert_eq!(",
+            "        (parent_after.uid(), parent_after.gid(), parent_after.mode()),",
+            "        (",
+            "            parent_before.uid(),",
+            "            parent_before.gid(),",
+            "            parent_before.mode()",
+            "        )",
+            "    );",
+            "    println!(",
+            "        \"ROOT_BOUND_LISTENER actual_server_uid=60001 actual_server_gid=60001 actual_server_pid={} root_path_unchanged=true root_listening_rejected=true wrong_path_rejected=true\",",
+            "        peer.pid",
+            "    );",
+            "}",
+            "",
+            "#[test]",
+            "#[ignore = \"only the explicit Root socket test supplies these inherited descriptors\"]"
+          ]
+        }
+      ]
+    },
+    {
+      "binary_id": "codex-hepta-agentd",
+      "package_name": "codex-hepta-agentd",
+      "test_name": "root_bound_socket::tests::original_root_bound_listener_preserves_peer_identity_and_path_custody",
+      "kind": "test",
+      "ignored": true,
+      "filter-match": {
+        "status": "mismatch",
+        "reason": "ignored"
+      },
+      "source_matches": [
+        {
+          "source_path": "codex-rs/hepta-agentd/src/root_bound_socket_tests.rs",
+          "line": 26,
+          "attribute_lines": [
+            "#[ignore = \"explicit actual Root fixture, held descriptors and dedicated-UID child\"]"
+          ],
+          "preceding_context": [
+            "const CHILD: &str = \"root_bound_socket::tests::original_root_bound_listener_child\";",
+            "const OWNER: u32 = 60001;",
+            "",
+            "#[test]",
+            "fn refuses_shared_or_aliased_parent_without_creating_a_rendezvous() {",
+            "    let directory = tempfile::tempdir().expect(\"fixture directory\");",
+            "    let path = directory.path().join(\"unused.sock\");",
+            "    std::fs::set_permissions(directory.path(), std::fs::Permissions::from_mode(0o777))",
+            "        .expect(\"shared fixture parent\");",
+            "    // A private descendant cannot repair shared writes in its parent chain.",
+            "    assert!(require_root_parent(&path).is_err());",
+            "    assert!(!path.exists());",
+            "}",
+            "",
+            "#[test]",
+            "#[ignore = \"explicit actual Root fixture, held descriptors and dedicated-UID child\"]"
+          ]
+        }
+      ]
+    },
+    {
+      "binary_id": "codex-hepta-agentd",
+      "package_name": "codex-hepta-agentd",
+      "test_name": "runtime::hos2_recovery_tests::notes_tests::gui_tests::crash_owner_tests::notes_actual_app_crash_original_owner_reopen_and_helper_ack_restart",
+      "kind": "test",
+      "ignored": true,
+      "filter-match": {
+        "status": "mismatch",
+        "reason": "ignored"
+      },
+      "source_matches": [
+        {
+          "source_path": "codex-rs/hepta-agentd/src/production_notes_crash_owner_tests.rs",
+          "line": 194,
+          "attribute_lines": [
+            "#[ignore = \"requires explicitly isolated Xvfb and pinned durable Session/App/recovery binaries\"]"
+          ],
+          "preceding_context": [
+            "fn read_document(path: &Path) -> Result<serde_json::Value, Box<dyn Error>> {",
+            "    let bytes = fs::read(path)?;",
+            "    if bytes.is_empty() || bytes.len() > 16 * 1024 {",
+            "        return Err(\"actual document bound\".into());",
+            "    }",
+            "    Ok(serde_json::from_slice(&bytes)?)",
+            "}",
+            "",
+            "#[derive(Clone, Copy)]",
+            "enum CheckpointInput {",
+            "    CurrentV2,",
+            "    LegacyV1,",
+            "}",
+            "",
+            "#[tokio::test]",
+            "#[ignore = \"requires explicitly isolated Xvfb and pinned durable Session/App/recovery binaries\"]"
+          ]
+        }
+      ]
+    },
+    {
+      "binary_id": "codex-hepta-agentd",
+      "package_name": "codex-hepta-agentd",
+      "test_name": "runtime::hos2_recovery_tests::notes_tests::gui_tests::crash_owner_tests::notes_actual_app_legacy_checkpoint_original_owner_reopen_and_helper_ack_restart",
+      "kind": "test",
+      "ignored": true,
+      "filter-match": {
+        "status": "mismatch",
+        "reason": "ignored"
+      },
+      "source_matches": [
+        {
+          "source_path": "codex-rs/hepta-agentd/src/production_notes_crash_owner_tests.rs",
+          "line": 201,
+          "attribute_lines": [
+            "#[ignore = \"requires explicitly isolated Xvfb and pinned durable Session/App/recovery binaries\"]",
+            "#[ignore = \"requires explicitly isolated Xvfb and pinned durable Session/App/recovery binaries\"]"
+          ],
+          "preceding_context": [
+            "",
+            "#[derive(Clone, Copy)]",
+            "enum CheckpointInput {",
+            "    CurrentV2,",
+            "    LegacyV1,",
+            "}",
+            "",
+            "#[tokio::test]",
+            "#[ignore = \"requires explicitly isolated Xvfb and pinned durable Session/App/recovery binaries\"]",
+            "async fn notes_actual_app_crash_original_owner_reopen_and_helper_ack_restart()",
+            "-> Result<(), Box<dyn Error>> {",
+            "    run_original_owner_checkpoint_recovery(CheckpointInput::CurrentV2).await",
+            "}",
+            "",
+            "#[tokio::test]",
+            "#[ignore = \"requires explicitly isolated Xvfb and pinned durable Session/App/recovery binaries\"]"
+          ]
+        }
+      ]
+    },
+    {
+      "binary_id": "codex-hepta-agentd",
+      "package_name": "codex-hepta-agentd",
+      "test_name": "runtime::hos2_recovery_tests::notes_tests::gui_tests::notes_actual_ui_original_owner_roundtrip",
+      "kind": "test",
+      "ignored": true,
+      "filter-match": {
+        "status": "mismatch",
+        "reason": "ignored"
+      },
+      "source_matches": [
+        {
+          "source_path": "codex-rs/hepta-agentd/src/production_notes_gui_tests.rs",
+          "line": 257,
+          "attribute_lines": [
+            "#[ignore = \"requires an explicitly isolated Xvfb and pinned companion Session/App binaries\"]"
+          ],
+          "preceding_context": [
+            "        // reaped, so the group id remains tied to this test-owned Session.",
+            "        // The fallback also stops its own App if an assertion failed before",
+            "        // normal public-IPC cleanup. It cannot reach the enclosing Xvfb/host.",
+            "        if let Ok(group) = libc::pid_t::try_from(self.child.id()) {",
+            "            // SAFETY: signal targets only the freshly created retained child",
+            "            // group; no ambient pid or externally supplied group is accepted.",
+            "            unsafe {",
+            "                libc::kill(-group, libc::SIGKILL);",
+            "            }",
+            "        }",
+            "        let _ = self.child.wait();",
+            "    }",
+            "}",
+            "",
+            "#[tokio::test]",
+            "#[ignore = \"requires an explicitly isolated Xvfb and pinned companion Session/App binaries\"]"
+          ]
+        }
+      ]
+    },
+    {
+      "binary_id": "codex-hepta-agentd",
+      "package_name": "codex-hepta-agentd",
+      "test_name": "state::notes_objective::lock_tests::notes_objective_drain_child",
+      "kind": "test",
+      "ignored": true,
+      "filter-match": {
+        "status": "mismatch",
+        "reason": "ignored"
+      },
+      "source_matches": [
+        {
+          "source_path": "codex-rs/hepta-agentd/src/notes_objective_lock_tests.rs",
+          "line": 217,
+          "attribute_lines": [
+            "#[ignore = \"executed by bounded parent process\"]"
+          ],
+          "preceding_context": [
+            "            break;",
+            "        }",
+            "        if Instant::now() >= deadline {",
+            "            // This is only the test-owned deadlock probe, never a compiler or",
+            "            // a product process. Reap it so a failing regression cannot hang CI.",
+            "            child.kill()?;",
+            "            child.wait()?;",
+            "            anyhow::bail!(\"Notes drain deadlocked while refreshing Fleet\");",
+            "        }",
+            "        std::thread::sleep(Duration::from_millis(10));",
+            "    }",
+            "    Ok(())",
+            "}",
+            "",
+            "#[tokio::test]",
+            "#[ignore = \"executed by bounded parent process\"]"
+          ]
+        }
+      ]
+    },
+    {
+      "binary_id": "codex-hepta-agentd",
+      "package_name": "codex-hepta-agentd",
+      "test_name": "text_session::provider::tests::fifo_reader_child",
+      "kind": "test",
+      "ignored": true,
+      "filter-match": {
+        "status": "mismatch",
+        "reason": "ignored"
+      },
+      "source_matches": [
+        {
+          "source_path": "codex-rs/hepta-agentd/src/text_session_provider_tests.rs",
+          "line": 91,
+          "attribute_lines": [
+            "#[ignore = \"executed only by the bounded FIFO parent process\"]"
+          ],
+          "preceding_context": [
+            "fn root_configuration_fifo_is_rejected_before_read() -> anyhow::Result<()> {",
+            "    // SAFETY: geteuid observes only the current process identity.",
+            "    assert_eq!(unsafe { libc::geteuid() }, 0);",
+            "    let parent = std::env::var_os(\"HEPTA_HOST_AUTHORITY_QUALIFICATION_STATE_PARENT\")",
+            "        .context(\"the existing protected qualification parent is required\")?;",
+            "    let directory = tempfile::Builder::new()",
+            "        .prefix(\"root-config-fifo-\")",
+            "        .tempdir_in(parent)?;",
+            "    std::fs::set_permissions(directory.path(), std::fs::Permissions::from_mode(0o700))?;",
+            "    codex_hepta_contracts::RootAuthorityDirectory::open(directory.path())",
+            "        .map_err(anyhow::Error::msg)?;",
+            "    check_fifo_in_owned_child(directory.path(), \"root\")",
+            "}",
+            "",
+            "#[test]",
+            "#[ignore = \"executed only by the bounded FIFO parent process\"]"
+          ]
+        }
+      ]
+    },
+    {
+      "binary_id": "codex-hepta-agentd",
+      "package_name": "codex-hepta-agentd",
+      "test_name": "text_session::provider::tests::root_configuration_fifo_is_rejected_before_read",
+      "kind": "test",
+      "ignored": true,
+      "filter-match": {
+        "status": "mismatch",
+        "reason": "ignored"
+      },
+      "source_matches": [
+        {
+          "source_path": "codex-rs/hepta-agentd/src/text_session_provider_tests.rs",
+          "line": 75,
+          "attribute_lines": [
+            "#[ignore = \"explicit root-only qualification under an existing protected state parent\"]"
+          ],
+          "preceding_context": [
+            "    anyhow::ensure!(",
+            "        String::from_utf8(output.stdout)?.contains(&marker),",
+            "        \"{reader} child did not execute the exact rejection gate\"",
+            "    );",
+            "    Ok(())",
+            "}",
+            "",
+            "#[test]",
+            "fn provider_route_fifo_is_rejected_before_read() -> anyhow::Result<()> {",
+            "    let directory = tempfile::tempdir()?;",
+            "    check_fifo_in_owned_child(directory.path(), \"provider\")",
+            "}",
+            "",
+            "#[cfg(target_os = \"linux\")]",
+            "#[test]",
+            "#[ignore = \"explicit root-only qualification under an existing protected state parent\"]"
+          ]
+        }
+      ]
+    },
+    {
+      "binary_id": "codex-hepta-agentd::cognitive_product_e2e",
+      "package_name": "codex-hepta-agentd",
+      "test_name": "real_agentd_external_gpt53_spark_read_only_smoke",
+      "kind": "test",
+      "ignored": true,
+      "filter-match": {
+        "status": "mismatch",
+        "reason": "ignored"
+      },
+      "source_matches": [
+        {
+          "source_path": "codex-rs/hepta-agentd/tests/cognitive_product_e2e.rs",
+          "line": 887,
+          "attribute_lines": [
+            "#[ignore = \"set HEPTA_EXTERNAL_CODEX_AUTH_JSON to run the bounded GPT-5.3 Spark provider smoke\"]"
+          ],
+          "preceding_context": [
+            "    product",
+            "        .run_turn(",
+            "            &thread,",
+            "            \"Reply with exactly READY. Do not call tools or access external resources.\",",
+            "        )",
+            "        .await?;",
+            "    product.shutdown().await?;",
+            "    Ok(())",
+            "}",
+            "",
+            "/// Opt-in smoke for the real first-party ChatGPT provider.  This test is",
+            "/// intentionally ignored by default and requires an explicit auth.json path;",
+            "/// the credential is copied only into the ephemeral Agent home created by the",
+            "/// FleetHarness and is never included in a receipt or repository artifact.",
+            "#[tokio::test(flavor = \"multi_thread\", worker_threads = 4)]",
+            "#[ignore = \"set HEPTA_EXTERNAL_CODEX_AUTH_JSON to run the bounded GPT-5.3 Spark provider smoke\"]"
+          ]
+        }
+      ]
+    },
+    {
+      "binary_id": "codex-hepta-agentd::cognitive_product_e2e",
+      "package_name": "codex-hepta-agentd",
+      "test_name": "real_agentd_loopback_provider_read_only_smoke",
+      "kind": "test",
+      "ignored": true,
+      "filter-match": {
+        "status": "mismatch",
+        "reason": "ignored"
+      },
+      "source_matches": [
+        {
+          "source_path": "codex-rs/hepta-agentd/tests/cognitive_product_e2e.rs",
+          "line": 841,
+          "attribute_lines": [
+            "#[ignore = \"set HEPTA_LOCAL_PROVIDER_BASE_URL and HEPTA_LOCAL_PROVIDER_MODEL for a loopback model smoke\"]"
+          ],
+          "preceding_context": [
+            "    let after_reopen =",
+            "        responses::mount_sse_once(&model, final_sse(\"local-memory-tombstone-after-reopen\")).await;",
+            "    restarted_product.run_turn(&restarted_thread, QUERY).await?;",
+            "    assert_physical_request_count_stable(&after_reopen, 1, \"post-reopen tombstone memory-review\")",
+            "        .await?;",
+            "    assert_no_cognitive_reference(&after_reopen.single_request())?;",
+            "    restarted_product.shutdown().await?;",
+            "    Ok(())",
+            "}",
+            "",
+            "/// Opt-in smoke for a real local model process.  The provider URL is accepted",
+            "/// only when it is loopback, and the test always uses a fresh temporary fleet",
+            "/// home.  This deliberately verifies provider/app-server/lifecycle wiring, not",
+            "/// production effects or an external provider contract.",
+            "#[tokio::test(flavor = \"multi_thread\", worker_threads = 4)]",
+            "#[ignore = \"set HEPTA_LOCAL_PROVIDER_BASE_URL and HEPTA_LOCAL_PROVIDER_MODEL for a loopback model smoke\"]"
+          ]
+        }
+      ]
+    },
+    {
+      "binary_id": "codex-hepta-agentd::cognitive_product_e2e",
+      "package_name": "codex-hepta-agentd",
+      "test_name": "real_agentd_remember_recall_correct_and_forget_revalidate_physical_sends",
+      "kind": "test",
+      "ignored": true,
+      "filter-match": {
+        "status": "mismatch",
+        "reason": "ignored"
+      },
+      "source_matches": [
+        {
+          "source_path": "codex-rs/hepta-agentd/tests/cognitive_product_e2e.rs",
+          "line": 284,
+          "attribute_lines": [
+            "#[cfg_attr("
+          ],
+          "preceding_context": [
+            "        .await",
+            "        .context(\"timed out waiting for turn/completed\")??;",
+            "        Ok(())",
+            "    }",
+            "",
+            "    async fn shutdown(self) -> Result<()> {",
+            "        self.inner.shutdown().await?;",
+            "        Ok(())",
+            "    }",
+            "}",
+            "",
+            "#[tokio::test(flavor = \"multi_thread\", worker_threads = 4)]",
+            "#[cfg_attr(",
+            "    not(feature = \"qualification-cognitive-write\"),",
+            "    ignore = \"requires the explicit qualification-cognitive-write profile; local-development keeps remember/correct/forget disabled\"",
+            ")]"
+          ]
+        }
+      ]
+    },
+    {
+      "binary_id": "codex-hepta-agentd::cognitive_product_e2e",
+      "package_name": "codex-hepta-agentd",
+      "test_name": "two_real_agentd_app_servers_never_cross_recall",
+      "kind": "test",
+      "ignored": true,
+      "filter-match": {
+        "status": "mismatch",
+        "reason": "ignored"
+      },
+      "source_matches": [
+        {
+          "source_path": "codex-rs/hepta-agentd/tests/cognitive_product_e2e.rs",
+          "line": 955,
+          "attribute_lines": [
+            "#[cfg_attr("
+          ],
+          "preceding_context": [
+            "            &thread,",
+            "            \"Reply with exactly READY. Do not call tools, access memory, or cause any external effect.\",",
+            "            Duration::from_secs(90),",
+            "        )",
+            "        .await?;",
+            "    let thread_read = product.read_thread(&thread).await?;",
+            "    assert_external_read_only_turn(&thread_read, &turn_id, \"READY\")?;",
+            "    product.shutdown().await?;",
+            "    Ok(())",
+            "}",
+            "",
+            "#[tokio::test(flavor = \"multi_thread\", worker_threads = 4)]",
+            "#[cfg_attr(",
+            "    not(feature = \"qualification-cognitive-write\"),",
+            "    ignore = \"requires the explicit qualification-cognitive-write profile; default/local binary keeps cognitive writes disabled\"",
+            ")]"
+          ]
+        }
+      ]
+    },
+    {
+      "binary_id": "codex-hepta-agentd::optional_module_restart",
+      "package_name": "codex-hepta-agentd",
+      "test_name": "optional_module_process_entrypoint",
+      "kind": "test",
+      "ignored": true,
+      "filter-match": {
+        "status": "mismatch",
+        "reason": "ignored"
+      },
+      "source_matches": [
+        {
+          "source_path": "codex-rs/hepta-agentd/tests/optional_module_restart.rs",
+          "line": 447,
+          "attribute_lines": [
+            "#[ignore = \"subprocess entrypoint; invoked by the parent regression with exact arguments\"]"
+          ],
+          "preceding_context": [
+            "    )",
+            "    .expect(\"report file\");",
+            "}",
+            "",
+            "fn new_draft(prompt: &str) -> AutomationTaskDraft {",
+            "    AutomationTaskDraft::new(",
+            "        \"019153a4-3088-7e03-a56a-9b1964f75ddd\",",
+            "        prompt,",
+            "        AutomationSchedule::Once,",
+            "        /*first_run_at_ms*/ 20_000,",
+            "        /*created_at_ms*/ 10_000,",
+            "    )",
+            "}",
+            "",
+            "#[test]",
+            "#[ignore = \"subprocess entrypoint; invoked by the parent regression with exact arguments\"]"
+          ]
+        }
+      ]
+    },
+    {
+      "binary_id": "codex-hepta-agentd::terminal_cell_owner",
+      "package_name": "codex-hepta-agentd",
+      "test_name": "durable_owner_history_and_concurrent_training_profile",
+      "kind": "test",
+      "ignored": true,
+      "filter-match": {
+        "status": "mismatch",
+        "reason": "ignored"
+      },
+      "source_matches": [
+        {
+          "source_path": "codex-rs/hepta-agentd/tests/terminal_cell_owner.rs",
+          "line": 296,
+          "attribute_lines": [
+            "#[ignore = \"explicit local-host history/concurrent training profile, not an SLO\"]"
+          ],
+          "preceding_context": [
+            "    registry",
+            "        .append(artifacts::ArtifactEvent::Revoke(artifacts::StateChange {",
+            "            event_id: id(\"revoke.contaminated-parent\"),",
+            "            artifact_id: trained.artifact_id,",
+            "            evaluator_id: id(\"independent.dataset-owner\"),",
+            "            reason_digest: digest(\"source-withdrawal\"),",
+            "        }))",
+            "        .unwrap();",
+            "    assert!(",
+            "        !registry.is_eligible(&trained_next.artifact_id),",
+            "        \"withdrawal propagates through candidate lineage\"",
+            "    );",
+            "}",
+            "",
+            "#[test]",
+            "#[ignore = \"explicit local-host history/concurrent training profile, not an SLO\"]"
+          ]
+        }
+      ]
+    }
+  ]
+}

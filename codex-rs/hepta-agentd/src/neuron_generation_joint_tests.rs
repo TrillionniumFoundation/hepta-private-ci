@@ -177,11 +177,25 @@ async fn execute(
     })?;
     original.admitted_at_micros = clock();
     original.deadline_micros = original.admitted_at_micros + 30_000_000;
-    let digest = original.digest()?;
+    execute_request(handle, original).await
+}
+
+async fn execute_request(
+    handle: &NeuronGenerationRuntimeHandleV2,
+    original: CellGenerationRequestV2,
+) -> TestResult<(CellGenerationRequestV2, CellGenerationReceiptV2)> {
     assert_eq!(
         handle.step(original.clone()).await,
         Err(CellGenerationErrorV2::Pending)
     );
+    settle_request(handle, original).await
+}
+
+async fn settle_request(
+    handle: &NeuronGenerationRuntimeHandleV2,
+    original: CellGenerationRequestV2,
+) -> TestResult<(CellGenerationRequestV2, CellGenerationReceiptV2)> {
+    let digest = original.digest()?;
     let receipt = timeout(Duration::from_secs(35), async {
         loop {
             match handle.reconcile(digest).await {
@@ -225,6 +239,190 @@ async fn execute(
             .is_some_and(|bytes| bytes > 4_778_904)
     }));
     Ok((original, receipt))
+}
+
+#[tokio::test]
+async fn frozen_ndu_plan_executes_real_joint_worker_and_exports_settled_episode() -> TestResult {
+    use codex_hepta_intelligence::*;
+    use codex_hepta_ndu::*;
+    use codex_hepta_types::FixedQ32;
+    use codex_hepta_types::Generation;
+    use codex_hepta_types::StableId;
+
+    let id = |value: &str| StableId::new(value);
+    let mut fixture = Fixture::new().await;
+    let epoch = Instant::now();
+    let clock: Clock =
+        Arc::new(move || u64::try_from(epoch.elapsed().as_micros()).unwrap_or(u64::MAX - 1) + 1);
+    let (worker, assets) =
+        install_model(&mut fixture, Arc::clone(&clock), ModelFixture::Synthetic)?;
+    let public_digest = Digest32::of_bytes(&assets.public).into_array();
+    let utility = UtilityProfile {
+        profile_id: id("joint-planning-qualification")?,
+        axis_registry_digest: Digest32::of_bytes(b"qualification-quality-axis"),
+        normalization_manifest_digest: Digest32::of_bytes(b"qualification-q32-units"),
+        dimensions: vec![(id("quality")?, AxisDirection::Maximize)],
+        risk_ceilings: Vec::new(),
+        resource_ceilings: Vec::new(),
+        required_organs: RequiredOrganSet {
+            organ_ids: vec![id("planner")?],
+        },
+    };
+    let policy = legacy_evaluation_policy(&utility)?;
+    let profile = JointGenerationPlanningProfileV1 {
+        utility,
+        policy,
+        scalarization: None,
+    };
+    let frozen = FrozenGenerationEpisodeV1::new(FrozenGenerationEpisodeInputV1 {
+        episode_id: id("joint-episode")?,
+        run_id: id(&fixture.config.initial.scope.run_id)?,
+        decision_id: id("joint-decision")?,
+        objective_digest: Digest32::of_bytes(b"joint-explicit-objective"),
+        policy_digest: profile.digest()?,
+        evaluation_profile_digest: Digest32::of_bytes(b"independent-output-evaluation"),
+        sampler_digest: joint_generation_sampler_digest_v1(
+            public_digest,
+            /*seed*/ 17,
+            JointGenerationSamplerV1::Mean,
+        )?,
+        source_frontier: Digest32::from_array(fixture.config.source_frontier),
+        initial: fixture.config.initial.clone(),
+    })?;
+    fixture.config.task_digest = frozen.task_digest().into_array();
+    let plan = JointGenerationEpisodePlanV1::new(
+        frozen.clone(),
+        public_digest,
+        /*seed*/ 17,
+        JointGenerationSamplerV1::Mean,
+        profile,
+    )?;
+    let next = |name: &str| -> TestResult<JointGenerationStepV1> {
+        let now = clock();
+        Ok(JointGenerationStepV1 {
+            operation_id: id(name)?,
+            planning_attempt_id: id(&format!("plan-{name}"))?,
+            admitted_at_micros: now,
+            deadline_micros: now + 30_000_000,
+        })
+    };
+    let (handle, mut tasks) =
+        start_service(&fixture, Arc::clone(&worker), Arc::clone(&clock)).await?;
+    let init = plan.initialize(&handle.observe_generation().await?, next("bound-init")?)?;
+    execute_request(&handle, init).await?;
+    let mut planning_costs = Vec::new();
+    let mut final_step = None;
+    for preferred in ["shared", "stop"] {
+        let observed = handle.observe_generation().await?;
+        assert!(!observed.snapshot().state.is_empty());
+        let generation = Generation::new(observed.snapshot().generation)?;
+        let objective_digest = frozen.input().objective_digest;
+        let mut contributions = Vec::new();
+        for name in [
+            "abstain", "audio", "image", "shared", "stop", "text", "verify", "video",
+        ] {
+            let candidate_id = id(name)?;
+            let organ_id = id("planner")?;
+            let support_digest =
+                joint_generation_contribution_support_v1(&observed, &candidate_id, &organ_id)?;
+            contributions.push(UtilityContribution {
+                candidate_id,
+                organ_id,
+                objective_digest,
+                generation,
+                // This fixed fixture disallows STOP until one advance. Real
+                // callers must supply their backend's observed feasibility.
+                feasibility: if preferred == "shared" && name == "stop" {
+                    FeasibilityPosture::HardConstraintViolation
+                } else {
+                    FeasibilityPosture::Feasible
+                },
+                utility: vec![AxisValue {
+                    axis: id("quality")?,
+                    value: if name == preferred {
+                        FixedQ32::ONE
+                    } else {
+                        FixedQ32::ZERO
+                    },
+                }],
+                risk: Vec::new(),
+                resource: Vec::new(),
+                uncertainty: vec![AxisValue {
+                    axis: id("quality")?,
+                    value: FixedQ32::ZERO,
+                }],
+                support_digest,
+            });
+        }
+        let attempt = plan.plan_advance(
+            &observed,
+            ContributionSet {
+                objective_digest,
+                generation,
+                contributions,
+            },
+            next(&format!("bound-{preferred}"))?,
+        )?;
+        let planned = attempt.result?;
+        assert_eq!(
+            planned.evaluation.base.advisory_recommendation,
+            Some(id(preferred)?)
+        );
+        let request = planned
+            .request
+            .ok_or_else(|| std::io::Error::other("explicit action"))?;
+        assert_eq!(
+            handle
+                .step_planned(
+                    observed.owner_checkpoint(),
+                    attempt.planning_cost.clone(),
+                    request.clone()
+                )
+                .await,
+            Err(CellGenerationErrorV2::Pending)
+        );
+        let (_, receipt) = settle_request(&handle, request.clone()).await?;
+        planning_costs.push(attempt.planning_cost);
+        final_step = Some((request, receipt));
+    }
+    let (stop_request, receipt) = final_step.ok_or_else(|| std::io::Error::other("final STOP"))?;
+    assert_eq!(receipt.disposition, CellGenerationDispositionV2::Stopped);
+    assert!(!handle.drain().await?);
+    let pending_delivery = handle.observe_generation().await?;
+    assert!(frozen.outcome_evidence(&pending_delivery).is_err());
+    let facts = synthetic::state(
+        &pending_delivery.snapshot().state,
+        &pending_delivery.snapshot().prefix,
+        &assets,
+    )?;
+    assert!(facts.stopped);
+    assert_eq!(facts.cursors, synthetic::TOTAL_UNITS);
+    tasks.shutdown().await;
+    assert!(tasks.failures().is_empty());
+    drop(handle);
+    fixture.reopen_state().await;
+    let (handle, mut tasks) = start_service(&fixture, worker, clock).await?;
+    assert_eq!(handle.observe_generation().await?, pending_delivery);
+    assert_eq!(handle.step(stop_request).await?, receipt);
+    let chunk = handle
+        .pending_output()
+        .await?
+        .ok_or_else(|| std::io::Error::other("final outbox"))?;
+    let mut sink = Vec::new();
+    deliver(&handle, chunk, &fixture, &mut sink).await?;
+    let settled = handle.observe_generation().await?;
+    assert_eq!(&sink, &settled.snapshot().prefix);
+    assert!(
+        planning_costs
+            .iter()
+            .all(|cost| settled.cost().entries().contains(cost))
+    );
+    let evidence = frozen.outcome_evidence(&settled)?;
+    assert!(evidence.complete_metrics().is_none());
+    assert!(!evidence.support_digest().is_zero());
+    tasks.shutdown().await;
+    assert!(tasks.failures().is_empty());
+    Ok(())
 }
 
 async fn deliver(

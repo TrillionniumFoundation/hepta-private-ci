@@ -18,6 +18,9 @@ use crate::cell_test_support::checked;
 mod support;
 use support::*;
 
+#[path = "cell_generation_observation_tests.rs"]
+mod observation;
+
 #[test]
 fn state_prefix_outbox_cost_and_replay_survive_owner_reopen() {
     let fixture = Fixture::new();

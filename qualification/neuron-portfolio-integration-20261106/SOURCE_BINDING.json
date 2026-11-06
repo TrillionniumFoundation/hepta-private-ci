@@ -1,0 +1,59 @@
+{
+  "executed_commit": "61921427dc19223fd8c9d0ded1a4723b255c5df5",
+  "executed_tree": "31d99be67393619aca47436d82f9dca909cba359",
+  "delivery_parent_commit": "2415aa2450b7ba9b6918c3f93c69f7fdc7fd13b0",
+  "delivery_parent_tree": "b3dfef75a40dde5dd952a28687aa3490ae356b3b",
+  "upstream_evidence_parent": "9f73f82ca7454d9d00e4fc71af43fdffba14c5e3",
+  "compared_objects": [
+    {
+      "path": "codex-rs",
+      "executed_git_object": "6f3e15208f0002396d83a9626e6b838d1f3bc738",
+      "delivery_parent_git_object": "6f3e15208f0002396d83a9626e6b838d1f3bc738",
+      "identical": true
+    },
+    {
+      "path": "scripts",
+      "executed_git_object": "7f8724bf7c5cbb39637f81d7fecd8ea0d6f3c209",
+      "delivery_parent_git_object": "7f8724bf7c5cbb39637f81d7fecd8ea0d6f3c209",
+      "identical": true
+    },
+    {
+      "path": "docs",
+      "executed_git_object": "fdd23dfe3c3b7eab1833aca6706bb7dd04bc6ee9",
+      "delivery_parent_git_object": "fdd23dfe3c3b7eab1833aca6706bb7dd04bc6ee9",
+      "identical": true
+    },
+    {
+      "path": ".github",
+      "executed_git_object": "9681e2fa0b81099a3c42294ecb20983fe1eeac0a",
+      "delivery_parent_git_object": "9681e2fa0b81099a3c42294ecb20983fe1eeac0a",
+      "identical": true
+    },
+    {
+      "path": "AGENTS.md",
+      "executed_git_object": "faa57cc0db48123e1011f1eb47692cd3bbbcfc3a",
+      "delivery_parent_git_object": "faa57cc0db48123e1011f1eb47692cd3bbbcfc3a",
+      "identical": true
+    },
+    {
+      "path": "justfile",
+      "executed_git_object": "a215a76cf407ace9715bca39c20497014e7dd4dc",
+      "delivery_parent_git_object": "a215a76cf407ace9715bca39c20497014e7dd4dc",
+      "identical": true
+    }
+  ],
+  "difference_scope": "Only added qualification files from the upstream evidence branch; those added experiments are not qualified by this native run.",
+  "executed_build_inputs": [
+    {
+      "path": "codex-rs/Cargo.lock",
+      "sha256": "4165307bb6c41d08e6c1c362060f2a958c8200ea43fdab2b8b1e6220ad82b55c",
+      "bytes": 417315
+    },
+    {
+      "path": "codex-rs/rust-toolchain.toml",
+      "sha256": "e8b379eaa492bf59d35187de269afd1c4f55d85e0322f6fea32803a3fec1a380",
+      "bytes": 78
+    }
+  ],
+  "scope_note": "Final delivery adds this qualification report and retained evidence; no Rust, build-script, lock, workflow or pre-existing compile-data file changed after the executed source. Upstream qualification additions carry their own original source identities."
+}

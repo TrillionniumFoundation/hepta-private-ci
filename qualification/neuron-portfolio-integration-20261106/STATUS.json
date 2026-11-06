@@ -1,0 +1,400 @@
+{
+  "schema": "hepta.neuron-portfolio.integration-qualification.v1",
+  "qualification": "passed_for_the_declared_linux_scope",
+  "executed_source": {
+    "head": "61921427dc19223fd8c9d0ded1a4723b255c5df5",
+    "tree": "31d99be67393619aca47436d82f9dca909cba359",
+    "status": ""
+  },
+  "delivery_source_binding": "SOURCE_BINDING.json",
+  "scope": {
+    "packages": [
+      "codex-hepta-agentd",
+      "codex-hepta-infer-worker-host",
+      "codex-hepta-intelligence",
+      "codex-hepta-neuron"
+    ],
+    "features": "default",
+    "profile": "repository local, unchanged",
+    "native_host": "ai395 / x86_64-unknown-linux-gnu",
+    "full_workspace_qualified": false,
+    "github_ci_qualified": false,
+    "production_adoption_qualified": false
+  },
+  "stages": [
+    {
+      "label": "formal-61921427-fix",
+      "status": "passed",
+      "exit_code": 0,
+      "command": [
+        "just",
+        "fix",
+        "--locked",
+        "--offline",
+        "-p",
+        "codex-hepta-neuron",
+        "-p",
+        "codex-hepta-intelligence",
+        "-p",
+        "codex-hepta-agentd"
+      ],
+      "elapsed_seconds": 34.302730035968125,
+      "receipt": "evidence/native/records/formal-61921427-fix/receipt.json"
+    },
+    {
+      "label": "formal-61921427-strict",
+      "status": "passed",
+      "exit_code": 0,
+      "command": [
+        "cargo",
+        "clippy",
+        "--tests",
+        "--locked",
+        "--offline",
+        "-p",
+        "codex-hepta-neuron",
+        "-p",
+        "codex-hepta-intelligence",
+        "-p",
+        "codex-hepta-agentd",
+        "-p",
+        "codex-hepta-infer-worker-host",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "elapsed_seconds": 106.1386138680391,
+      "receipt": "evidence/native/records/formal-61921427-strict/receipt.json"
+    },
+    {
+      "label": "formal-61921427-joint-helper",
+      "status": "passed",
+      "exit_code": 0,
+      "command": [
+        "python3",
+        "../scripts/hepta_cell_test_helpers.py",
+        "--output-dir",
+        "/home/qq/work/hepta-portfolio-816d-20261106/records/formal-61921427-joint-helper/helpers",
+        "--package",
+        "codex-hepta-infer-worker-host"
+      ],
+      "elapsed_seconds": 148.09289729001466,
+      "receipt": "evidence/native/records/formal-61921427-joint-helper/receipt.json"
+    },
+    {
+      "label": "formal-61921427-agentd-helper",
+      "status": "passed",
+      "exit_code": 0,
+      "command": [
+        "cargo",
+        "build",
+        "--locked",
+        "--offline",
+        "-p",
+        "codex-hepta-agentd",
+        "--bin",
+        "codex-hepta-agentd",
+        "--message-format=json"
+      ],
+      "elapsed_seconds": 7.303575562080368,
+      "receipt": "evidence/native/records/formal-61921427-agentd-helper/receipt.json"
+    },
+    {
+      "label": "formal-61921427-tests-rebound",
+      "status": "passed",
+      "exit_code": 0,
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "codex-hepta-neuron",
+        "-p",
+        "codex-hepta-intelligence",
+        "-p",
+        "codex-hepta-agentd",
+        "-p",
+        "codex-hepta-infer-worker-host"
+      ],
+      "elapsed_seconds": 60.5492272679694,
+      "receipt": "evidence/native/records/formal-61921427-tests-rebound/receipt.json"
+    }
+  ],
+  "tests": {
+    "enumerated": 1048,
+    "executed": 982,
+    "passed": 982,
+    "failed": 0,
+    "errors": 0,
+    "other_filters": 0,
+    "flaky_or_retry_events_observed": 0,
+    "new_tests_passed": 16,
+    "by_package": [
+      {
+        "package": "codex-hepta-agentd",
+        "passed": 652,
+        "ignored": 66
+      },
+      {
+        "package": "codex-hepta-infer-worker-host",
+        "passed": 54,
+        "ignored": 0
+      },
+      {
+        "package": "codex-hepta-intelligence",
+        "passed": 95,
+        "ignored": 0
+      },
+      {
+        "package": "codex-hepta-neuron",
+        "passed": 181,
+        "ignored": 0
+      }
+    ],
+    "final_junit": "evidence/native/records/formal-61921427-tests-rebound/junit.xml",
+    "final_junit_sha256": "716be7504d72801992de962dbad5b2c108a9434ea9d93569a07b64c12f47cadd",
+    "skipped_list": "evidence/native/records/formal-61921427-test-inventory/skipped-tests.json",
+    "ignored_source_reasons": "evidence/native/records/formal-61921427-test-inventory/ignored-source-reasons.json",
+    "full_list": "evidence/native/records/formal-61921427-test-inventory/nextest-list.json",
+    "analysis": "evidence/native/final-analysis.json",
+    "new_tests": [
+      {
+        "package": "codex-hepta-neuron",
+        "name": "pending_cancel_reopen_stop_and_ack_gate_complete_task_cost",
+        "source": "codex-rs/hepta-neuron/src/cell_generation_observation_tests.rs",
+        "executed_case": {
+          "binary_id": "codex-hepta-neuron",
+          "package": "codex-hepta-neuron",
+          "name": "cell_generation_journal::tests::observation::pending_cancel_reopen_stop_and_ack_gate_complete_task_cost",
+          "seconds": "0.013"
+        },
+        "status": "passed"
+      },
+      {
+        "package": "codex-hepta-neuron",
+        "name": "uncertain_owner_never_mints_an_observation_before_witness_recovery",
+        "source": "codex-rs/hepta-neuron/src/cell_generation_observation_tests.rs",
+        "executed_case": {
+          "binary_id": "codex-hepta-neuron",
+          "package": "codex-hepta-neuron",
+          "name": "cell_generation_journal::tests::observation::uncertain_owner_never_mints_an_observation_before_witness_recovery",
+          "seconds": "0.003"
+        },
+        "status": "passed"
+      },
+      {
+        "package": "codex-hepta-neuron",
+        "name": "first_adopted_input_is_rebuilt_without_promoting_failed_or_cancelled_initialization",
+        "source": "codex-rs/hepta-neuron/src/cell_generation_observation_tests.rs",
+        "executed_case": {
+          "binary_id": "codex-hepta-neuron",
+          "package": "codex-hepta-neuron",
+          "name": "cell_generation_journal::tests::observation::first_adopted_input_is_rebuilt_without_promoting_failed_or_cancelled_initialization",
+          "seconds": "0.008"
+        },
+        "status": "passed"
+      },
+      {
+        "package": "codex-hepta-agentd",
+        "name": "owner_observation_rpc_retains_unknown_work_cost_and_delivery_across_reopen",
+        "source": "codex-rs/hepta-agentd/src/neuron_generation_observation_tests.rs",
+        "executed_case": {
+          "binary_id": "codex-hepta-agentd",
+          "package": "codex-hepta-agentd",
+          "name": "neuron_generation_runtime::tests::observation::owner_observation_rpc_retains_unknown_work_cost_and_delivery_across_reopen",
+          "seconds": "0.089"
+        },
+        "status": "passed"
+      },
+      {
+        "package": "codex-hepta-agentd",
+        "name": "planned_step_rejects_changed_cost_cut_and_replays_only_exact_recorded_work",
+        "source": "codex-rs/hepta-agentd/src/neuron_generation_observation_tests.rs",
+        "executed_case": {
+          "binary_id": "codex-hepta-agentd",
+          "package": "codex-hepta-agentd",
+          "name": "neuron_generation_runtime::tests::observation::planned_step_rejects_changed_cost_cut_and_replays_only_exact_recorded_work",
+          "seconds": "0.065"
+        },
+        "status": "passed"
+      },
+      {
+        "package": "codex-hepta-intelligence",
+        "name": "owner_terminal_and_delivery_cut_precedes_independently_signed_outcome",
+        "source": "codex-rs/hepta-intelligence/src/generation_episode_tests.rs",
+        "executed_case": {
+          "binary_id": "codex-hepta-intelligence",
+          "package": "codex-hepta-intelligence",
+          "name": "generation_episode::tests::owner_terminal_and_delivery_cut_precedes_independently_signed_outcome",
+          "seconds": "0.030"
+        },
+        "status": "passed"
+      },
+      {
+        "package": "codex-hepta-intelligence",
+        "name": "frozen_versions_and_actual_owner_initial_state_cannot_be_substituted",
+        "source": "codex-rs/hepta-intelligence/src/generation_episode_tests.rs",
+        "executed_case": {
+          "binary_id": "codex-hepta-intelligence",
+          "package": "codex-hepta-intelligence",
+          "name": "generation_episode::tests::frozen_versions_and_actual_owner_initial_state_cannot_be_substituted",
+          "seconds": "0.017"
+        },
+        "status": "passed"
+      },
+      {
+        "package": "codex-hepta-intelligence",
+        "name": "signed_decision_must_bind_the_exact_frozen_contract",
+        "source": "codex-rs/hepta-intelligence/src/generation_episode_tests.rs",
+        "executed_case": {
+          "binary_id": "codex-hepta-intelligence",
+          "package": "codex-hepta-intelligence",
+          "name": "generation_episode::tests::signed_decision_must_bind_the_exact_frozen_contract",
+          "seconds": "0.042"
+        },
+        "status": "passed"
+      },
+      {
+        "package": "codex-hepta-intelligence",
+        "name": "signed_outcome_must_bind_the_owner_cut_evaluator_and_observer",
+        "source": "codex-rs/hepta-intelligence/src/generation_episode_tests.rs",
+        "executed_case": {
+          "binary_id": "codex-hepta-intelligence",
+          "package": "codex-hepta-intelligence",
+          "name": "generation_episode::tests::signed_outcome_must_bind_the_owner_cut_evaluator_and_observer",
+          "seconds": "0.030"
+        },
+        "status": "passed"
+      },
+      {
+        "package": "codex-hepta-intelligence",
+        "name": "explicit_ndu_stop_reaches_existing_owner_and_keeps_planning_charge_on_reopen",
+        "source": "codex-rs/hepta-intelligence/src/joint_generation_plan_v1_tests.rs",
+        "executed_case": {
+          "binary_id": "codex-hepta-intelligence",
+          "package": "codex-hepta-intelligence",
+          "name": "joint_generation_plan_v1::tests::explicit_ndu_stop_reaches_existing_owner_and_keeps_planning_charge_on_reopen",
+          "seconds": "0.007"
+        },
+        "status": "passed"
+      },
+      {
+        "package": "codex-hepta-intelligence",
+        "name": "pending_work_and_stale_prediction_cuts_are_refused_before_planning",
+        "source": "codex-rs/hepta-intelligence/src/joint_generation_plan_v1_tests.rs",
+        "executed_case": {
+          "binary_id": "codex-hepta-intelligence",
+          "package": "codex-hepta-intelligence",
+          "name": "joint_generation_plan_v1::tests::pending_work_and_stale_prediction_cuts_are_refused_before_planning",
+          "seconds": "0.006"
+        },
+        "status": "passed"
+      },
+      {
+        "package": "codex-hepta-intelligence",
+        "name": "frozen_sampler_and_policy_drift_cannot_build_joint_requests",
+        "source": "codex-rs/hepta-intelligence/src/joint_generation_plan_v1_tests.rs",
+        "executed_case": {
+          "binary_id": "codex-hepta-intelligence",
+          "package": "codex-hepta-intelligence",
+          "name": "joint_generation_plan_v1::tests::frozen_sampler_and_policy_drift_cannot_build_joint_requests",
+          "seconds": "0.002"
+        },
+        "status": "passed"
+      },
+      {
+        "package": "codex-hepta-intelligence",
+        "name": "abstention_or_tie_does_not_become_an_unrecorded_worker_auto_action",
+        "source": "codex-rs/hepta-intelligence/src/joint_generation_plan_v1_tests.rs",
+        "executed_case": {
+          "binary_id": "codex-hepta-intelligence",
+          "package": "codex-hepta-intelligence",
+          "name": "joint_generation_plan_v1::tests::abstention_or_tie_does_not_become_an_unrecorded_worker_auto_action",
+          "seconds": "0.012"
+        },
+        "status": "passed"
+      },
+      {
+        "package": "codex-hepta-intelligence",
+        "name": "actual_init_cannot_silently_change_the_frozen_sampler_even_after_reopen",
+        "source": "codex-rs/hepta-intelligence/src/joint_generation_plan_v1_tests.rs",
+        "executed_case": {
+          "binary_id": "codex-hepta-intelligence",
+          "package": "codex-hepta-intelligence",
+          "name": "joint_generation_plan_v1::tests::actual_init_cannot_silently_change_the_frozen_sampler_even_after_reopen",
+          "seconds": "0.005"
+        },
+        "status": "passed"
+      },
+      {
+        "package": "codex-hepta-intelligence",
+        "name": "failed_planning_attempts_are_charged_separately_and_recorded_attempts_are_not_recomputed",
+        "source": "codex-rs/hepta-intelligence/src/joint_generation_plan_v1_tests.rs",
+        "executed_case": {
+          "binary_id": "codex-hepta-intelligence",
+          "package": "codex-hepta-intelligence",
+          "name": "joint_generation_plan_v1::tests::failed_planning_attempts_are_charged_separately_and_recorded_attempts_are_not_recomputed",
+          "seconds": "0.007"
+        },
+        "status": "passed"
+      },
+      {
+        "package": "codex-hepta-agentd",
+        "name": "frozen_ndu_plan_executes_real_joint_worker_and_exports_settled_episode",
+        "source": "codex-rs/hepta-agentd/src/neuron_generation_joint_tests.rs",
+        "executed_case": {
+          "binary_id": "codex-hepta-agentd",
+          "package": "codex-hepta-agentd",
+          "name": "neuron_generation_runtime::tests::joint::frozen_ndu_plan_executes_real_joint_worker_and_exports_settled_episode",
+          "seconds": "2.524"
+        },
+        "status": "passed"
+      }
+    ],
+    "ignored_not_executed_as_top_level_tests": 66,
+    "ignored_note": "All 66 are existing Agentd #[ignore] cases. Some are subprocess entrypoints invoked by parent tests; none are counted as separate top-level PASS here."
+  },
+  "helpers": {
+    "manifest": "evidence/native/records/rebound-helper-manifest.json",
+    "manifest_sha256": "b78e77df9d4c4c32ca47464f257e770fee48f7f368503217636de6a9d5d42ac0",
+    "unchanged_before_and_after_tests": true,
+    "actual_artifacts": [
+      {
+        "executable": "/home/qq/work/hepta-portfolio-816d-20261106/target/debug/hepta-joint-propose",
+        "sha256": "1f7ebc34b814fd0264fe1158f1cc4a67a87d609bc50a6e398f8b72b76229134a",
+        "mtime_ns": 1793952977845718243,
+        "bytes": 6020552
+      },
+      {
+        "executable": "/home/qq/work/hepta-portfolio-816d-20261106/target/debug/codex-hepta-agentd",
+        "sha256": "16fa27fe6b985d0b332bedb2db1a17f63412cac3dcf6261066d4207dd3a7d51a",
+        "mtime_ns": 1793953150654545422,
+        "bytes": 1285930984
+      }
+    ]
+  },
+  "retained_history": {
+    "preparation_missing_sparse_docs": "evidence/native/records/base-intelligence-agentd-preparation/receipt.json",
+    "old_source_fix_changed_worktree": "evidence/native/records/formal-27928bf8-fix/receipt.json",
+    "first_successful_test_before_helper_identity_correction": "evidence/native/records/formal-61921427-tests/receipt.json",
+    "first_pretest_manifest": "evidence/native/records/formal-61921427-tests/pre-test-helper-manifest.json",
+    "correction": "The first test compilation relinked the normal Agentd binary. Its initial prebuild hash is not claimed as the final runtime identity. The original successful 982-case run is retained; a second same-source same-scope run binds actual Cargo test-profile artifacts with equal before/after hashes, sizes and mtimes. Joint helper did not change.",
+    "original_junit_collection": "evidence/native/records/junit-collection-receipt.json"
+  },
+  "cost_measurement": {
+    "stage_wall_seconds": "reported per receipt; not a complete end-to-end resource account",
+    "child_cpu_seconds": null,
+    "energy_joules": null,
+    "unknown_cost_is_zero": false,
+    "repeat_and_failed_attempts_retained": true
+  },
+  "evidence_limits": [
+    "The real-worker new test uses a synthetic model and fixed utility/feasibility contributions; it proves protocol and lifecycle behavior, not natural-task quality or NDU benefit.",
+    "The real-worker case ends at outcome_evidence; independent signed LedgerWriter acceptance is exercised in separate fixtures.",
+    "Old generic step and Auto routes remain; this is an opt-in integration, not mandatory provenance for every historical action.",
+    "Feasibility and utility predictions remain caller supplied, with final worker legality checks; no global resource allocator is introduced.",
+    "Temporary journals, prefixes, ACKs and signed-ledger files from the new cases were not separately retained; fixed source plus executed assertions and raw reports are the evidence.",
+    "Full workspace, other platforms, production adoption and complete CPU/energy or net benefit are not qualified."
+  ]
+}

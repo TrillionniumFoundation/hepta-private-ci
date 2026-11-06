@@ -1,0 +1,13 @@
+diff --git a/codex-rs/hepta-intelligence/src/joint_generation_plan_v1_tests.rs b/codex-rs/hepta-intelligence/src/joint_generation_plan_v1_tests.rs
+index e46f9cd..831fc79 100644
+--- a/codex-rs/hepta-intelligence/src/joint_generation_plan_v1_tests.rs
++++ b/codex-rs/hepta-intelligence/src/joint_generation_plan_v1_tests.rs
+@@ -263,7 +263,7 @@ fn frozen_sampler_and_policy_drift_cannot_build_joint_requests() {
+             .is_err()
+         );
+     }
+-    let mut changed = plan.profile.clone();
++    let mut changed = plan.profile;
+     changed.utility.normalization_manifest_digest = Digest32::of_bytes(b"new units");
+     assert!(
+         JointGenerationEpisodePlanV1::new(

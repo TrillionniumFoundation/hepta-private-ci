@@ -1,0 +1,18 @@
+{
+  "error": "{\"args\": [\"git\", \"clone\", \"--shared\", \"--no-checkout\", \"/home/qq/work/hepta-neuron-framework-734df8eaf8dc-20261106/source\", \"/home/qq/work/hepta-portfolio-816d-20261106/source\"], \"exit_code\": 128, \"stdout\": \"\", \"stderr\": \"Cloning into '/home/qq/work/hepta-portfolio-816d-20261106/source'...\\nremote: warning: lazy fetching disabled; some objects may not be available        \\nremote: fatal: could not fetch c2165d410062d9053ad90ef5fa4e7f8ad93de392 from promisor remote        \\nerror: git upload-pack: git-pack-objects died with error.\\nfatal: git upload-pack: aborting due to possible repository corruption on the remote side.\\nremote: aborting due to possible repository corruption on the remote side.\\nfatal: early EOF\\nfatal: fetch-pack: invalid index-pack output\\n\"}",
+  "commands": [
+    {
+      "args": [
+        "git",
+        "clone",
+        "--shared",
+        "--no-checkout",
+        "/home/qq/work/hepta-neuron-framework-734df8eaf8dc-20261106/source",
+        "/home/qq/work/hepta-portfolio-816d-20261106/source"
+      ],
+      "exit_code": 128,
+      "stdout": "",
+      "stderr": "Cloning into '/home/qq/work/hepta-portfolio-816d-20261106/source'...\nremote: warning: lazy fetching disabled; some objects may not be available        \nremote: fatal: could not fetch c2165d410062d9053ad90ef5fa4e7f8ad93de392 from promisor remote        \nerror: git upload-pack: git-pack-objects died with error.\nfatal: git upload-pack: aborting due to possible repository corruption on the remote side.\nremote: aborting due to possible repository corruption on the remote side.\nfatal: early EOF\nfatal: fetch-pack: invalid index-pack output\n"
+    }
+  ]
+}
