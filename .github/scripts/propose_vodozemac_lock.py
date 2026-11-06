@@ -31,10 +31,14 @@ ADDITIONS = {
 CHANGED = {"codex-rs/Cargo.lock", "MODULE.bazel.lock"}
 CAPTURED = CHANGED | {"codex-rs/Cargo.toml"}
 PROPOSAL_PARENT = {
-    "head": "eedc9f1094ccf42afe9fdb7ea9af193ac7a10a30",
-    "tree": "276519b00b34bccb15627ea7ba3f28f3fe88abb8",
-    "ref": "research/ndu-vodozemac-native-lock-proposal-20261106",
+    "head": "90b1c924f1ad7993a0b25f2d54749221f1045276",
+    "tree": "73fd7bbfdeeded8700f6d2ca6ebc39dea5574df9",
+    "ref": "research/ndu-vodozemac-repeatable-resolution-20261106",
     "inherited_files": {
+        ".github/scripts/vodozemac_proposal_evidence.py": (
+            "100644",
+            "df92074358560c9d439323054cab12c2d0c9c7f6",
+        ),
         ".github/scripts/vodozemac-lock-spec.json": (
             "100644",
             "74376db93a746fbdd359e217e2e38d8d50a8fde1",
@@ -386,6 +390,8 @@ def generate(root, private):
             "cargo",
             "+1.96.0",
             "tree",
+            "--color",
+            "never",
             "--locked",
             "--package",
             "vodozemac@0.11.2",
