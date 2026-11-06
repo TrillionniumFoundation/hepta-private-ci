@@ -22,8 +22,7 @@ use crate::neuron_generation_current::NeuronGenerationPredecessorCompletionV1;
 use crate::neuron_generation_update::AgentdGenerationUpdateRequestV1;
 use crate::neuron_generation_update::AgentdGenerationUpdateTargetV1;
 use crate::neuron_generation_update::PreparedAgentdGenerationUpdateV1;
-use crate::neuron_generation_update::prepare_agentd_generation_drained_update_v1;
-use crate::neuron_generation_update::prepare_agentd_generation_update_v1;
+use crate::neuron_generation_update::prepare_with_completion;
 use crate::neuron_generation_update_live::AgentdGenerationUpdateAuthoritiesV1;
 use crate::neuron_generation_update_selection::AgentdSelectedGenerationV1;
 
@@ -90,6 +89,31 @@ where
     )
 }
 
+/// Continue with the identical model after a closed runtime's actual drain.
+/// No prior request or output is replayed, and no model adoption is implied.
+pub fn prepare_agentd_generation_cold_same_model_task_v1<Old, New>(
+    current: Arc<NeuronGenerationCurrentOwnerV1>,
+    authorities: AgentdGenerationUpdateAuthoritiesV1,
+    predecessor: AgentdGenerationUpdatePredecessorFilesV1<Old>,
+    selected: AgentdSelectedGenerationV1,
+    target: AgentdGenerationUpdateTargetV1<New>,
+    request: AgentdGenerationUpdateRequestV1,
+) -> Result<PreparedAgentdGenerationUpdateV1<Old, New>, AgentdError>
+where
+    Old: AnchorWitnessStore,
+    New: AnchorWitnessStore,
+{
+    prepare_cold_with_completion(
+        current,
+        authorities,
+        predecessor,
+        selected,
+        target,
+        request,
+        NeuronGenerationPredecessorCompletionV1::OwnerDrainedSameModel,
+    )
+}
+
 fn prepare_cold_with_completion<Old, New>(
     current: Arc<NeuronGenerationCurrentOwnerV1>,
     authorities: AgentdGenerationUpdateAuthoritiesV1,
@@ -127,33 +151,21 @@ where
             NeuronGenerationPredecessorCompletionV1::ModelStopped => {
                 "cold predecessor requires STOP, exact output ACK and drain"
             }
-            NeuronGenerationPredecessorCompletionV1::OwnerDrained => {
+            NeuronGenerationPredecessorCompletionV1::OwnerDrained
+            | NeuronGenerationPredecessorCompletionV1::OwnerDrainedSameModel => {
                 "cold predecessor requires exact output ACK and durable drain"
             }
         }));
     }
-    match completion {
-        NeuronGenerationPredecessorCompletionV1::ModelStopped => {
-            prepare_agentd_generation_update_v1(
-                current,
-                authorities,
-                old,
-                selected,
-                target,
-                request,
-            )
-        }
-        NeuronGenerationPredecessorCompletionV1::OwnerDrained => {
-            prepare_agentd_generation_drained_update_v1(
-                current,
-                authorities,
-                old,
-                selected,
-                target,
-                request,
-            )
-        }
-    }
+    prepare_with_completion(
+        current,
+        authorities,
+        old,
+        selected,
+        target,
+        request,
+        completion,
+    )
 }
 
 fn invalid(error: impl std::fmt::Display) -> AgentdError {

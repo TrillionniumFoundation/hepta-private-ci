@@ -16,6 +16,8 @@ use super::request;
 use crate::neuron_generation_current::NeuronGenerationPredecessorCompletionV1;
 use crate::neuron_generation_current::NeuronGenerationUpdateReadbackV1;
 
+#[path = "neuron_generation_same_model_tests.rs"]
+mod same_model;
 #[path = "neuron_generation_drained_test_support.rs"]
 mod support;
 

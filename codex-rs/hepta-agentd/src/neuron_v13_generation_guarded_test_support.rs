@@ -33,13 +33,24 @@ pub(super) struct Fixture {
 
 impl Fixture {
     pub(super) fn new() -> anyhow::Result<Self> {
+        Self::with_same_model(/*same_model*/ false)
+    }
+
+    pub(super) fn same_model() -> anyhow::Result<Self> {
+        Self::with_same_model(/*same_model*/ true)
+    }
+
+    fn with_same_model(same_model: bool) -> anyhow::Result<Self> {
         let host = V13Fixture::new()?;
         let mut old = host.config.generation.clone();
         old.initial.scope.run_id = "previous-v13-task".into();
         old.initial.generation -= 1;
         old.initial.writer_epoch -= 1;
         old.task_digest = Digest32::of_bytes(b"previous synthetic task").into_array();
-        old.manifest.bundle_digest = Digest32::of_bytes(b"previous synthetic backend").into_array();
+        if !same_model {
+            old.manifest.bundle_digest =
+                Digest32::of_bytes(b"previous synthetic backend").into_array();
+        }
         old.initial.manifest_digest = old.manifest.digest()?;
         let update = CurrentFixture::new_with_target(old, host.config.generation.clone())?;
         drop(update.stopped_old()?);

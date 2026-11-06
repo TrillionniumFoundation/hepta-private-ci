@@ -104,7 +104,33 @@ where
     )
 }
 
-fn prepare_with_completion<Old, New>(
+/// Start a distinct task using the same complete manifest and current signed
+/// selection. This does not publish a model candidate or infer an evaluation
+/// outcome. A new FinalUse operation fences the drained predecessor.
+pub fn prepare_agentd_generation_same_model_task_v1<Old, New>(
+    current: Arc<NeuronGenerationCurrentOwnerV1>,
+    authorities: AgentdGenerationUpdateAuthoritiesV1,
+    old: CellGenerationJournalV2<Old>,
+    selected: AgentdSelectedGenerationV1,
+    target: AgentdGenerationUpdateTargetV1<New>,
+    request: AgentdGenerationUpdateRequestV1,
+) -> Result<PreparedAgentdGenerationUpdateV1<Old, New>, AgentdError>
+where
+    Old: AnchorWitnessStore,
+    New: AnchorWitnessStore,
+{
+    prepare_with_completion(
+        current,
+        authorities,
+        old,
+        selected,
+        target,
+        request,
+        NeuronGenerationPredecessorCompletionV1::OwnerDrainedSameModel,
+    )
+}
+
+pub(super) fn prepare_with_completion<Old, New>(
     current: Arc<NeuronGenerationCurrentOwnerV1>,
     authorities: AgentdGenerationUpdateAuthoritiesV1,
     old: CellGenerationJournalV2<Old>,
@@ -140,6 +166,9 @@ where
         }
         NeuronGenerationPredecessorCompletionV1::OwnerDrained => {
             current.prepare_drained_retirement(&old, request.operation_id, binding, &selected)?
+        }
+        NeuronGenerationPredecessorCompletionV1::OwnerDrainedSameModel => {
+            current.prepare_same_model_task(&old, request.operation_id, binding, &selected)?
         }
     };
     let guard: Arc<dyn CellGenerationCurrentV1> = current.clone();
@@ -320,7 +349,8 @@ pub(super) fn validate_reset<Old: AnchorWitnessStore, New: AnchorWitnessStore>(
             NeuronGenerationPredecessorCompletionV1::ModelStopped => {
                 "predecessor requires STOP, exact output ACK and drain"
             }
-            NeuronGenerationPredecessorCompletionV1::OwnerDrained => {
+            NeuronGenerationPredecessorCompletionV1::OwnerDrained
+            | NeuronGenerationPredecessorCompletionV1::OwnerDrainedSameModel => {
                 "predecessor requires exact output ACK and durable drain"
             }
         }));
@@ -333,7 +363,15 @@ pub(super) fn validate_reset<Old: AnchorWitnessStore, New: AnchorWitnessStore>(
         || successor.scope.cell_id != predecessor.scope.cell_id
         || successor.scope.run_id == predecessor.scope.run_id
         || target.config.task_digest == observation.task_digest()
-        || successor.manifest_digest == predecessor.manifest_digest
+        || match completion {
+            NeuronGenerationPredecessorCompletionV1::OwnerDrainedSameModel => {
+                successor.manifest_digest != predecessor.manifest_digest
+            }
+            NeuronGenerationPredecessorCompletionV1::ModelStopped
+            | NeuronGenerationPredecessorCompletionV1::OwnerDrained => {
+                successor.manifest_digest == predecessor.manifest_digest
+            }
+        }
         || successor.generation <= predecessor.generation
         || successor.writer_epoch <= predecessor.writer_epoch
         || successor.revision != 0
