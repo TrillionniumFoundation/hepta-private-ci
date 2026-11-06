@@ -1,0 +1,199 @@
+{
+  "status": "PASS",
+  "scope": "Independent proof inspection of rational series/rounding plus 110-digit Decimal Bellman evaluation of the unchanged finite artifact and 20 retained deterministic baselines. No new banks, fitting, observations or model calls.",
+  "check_count": 53,
+  "checks": {
+    "historical_source_identity": true,
+    "corrected_result_identity": true,
+    "20_retained_banks": true,
+    "source_hashes_match_receipt": true,
+    "independent_110_digit_optimum_enclosed": true,
+    "baseline_enclosed_1701": true,
+    "headroom_enclosed_1701": true,
+    "baseline_enclosed_1702": true,
+    "headroom_enclosed_1702": true,
+    "baseline_enclosed_1703": true,
+    "headroom_enclosed_1703": true,
+    "baseline_enclosed_1704": true,
+    "headroom_enclosed_1704": true,
+    "baseline_enclosed_2701": true,
+    "headroom_enclosed_2701": true,
+    "baseline_enclosed_2702": true,
+    "headroom_enclosed_2702": true,
+    "baseline_enclosed_2703": true,
+    "headroom_enclosed_2703": true,
+    "baseline_enclosed_2704": true,
+    "headroom_enclosed_2704": true,
+    "baseline_enclosed_2705": true,
+    "headroom_enclosed_2705": true,
+    "baseline_enclosed_2706": true,
+    "headroom_enclosed_2706": true,
+    "baseline_enclosed_2707": true,
+    "headroom_enclosed_2707": true,
+    "baseline_enclosed_2708": true,
+    "headroom_enclosed_2708": true,
+    "baseline_enclosed_2709": true,
+    "headroom_enclosed_2709": true,
+    "baseline_enclosed_2710": true,
+    "headroom_enclosed_2710": true,
+    "baseline_enclosed_2711": true,
+    "headroom_enclosed_2711": true,
+    "baseline_enclosed_2712": true,
+    "headroom_enclosed_2712": true,
+    "baseline_enclosed_2713": true,
+    "headroom_enclosed_2713": true,
+    "baseline_enclosed_2714": true,
+    "headroom_enclosed_2714": true,
+    "baseline_enclosed_2715": true,
+    "headroom_enclosed_2715": true,
+    "baseline_enclosed_2716": true,
+    "headroom_enclosed_2716": true,
+    "each_oracle_headroom_upper_below_fee": true,
+    "sum_20_one_shot_headrooms_upper_below_single_fee": true,
+    "recorded_max_upper_exact": true,
+    "recorded_mean_upper_exact": true,
+    "recorded_sum_upper_exact": true,
+    "independent_actual_exp_arguments_inside_domain": true,
+    "positive_reuse_not_globally_excluded": true,
+    "no_target_sources_changed": true
+  },
+  "source_sha256": {
+    "confidence.py": "bacd459260fb0cab1685458c1f1fbdba0db3729ea9b0fab894a5fc3d94da4b0c",
+    "core.py": "a04d3a1cc038448e9a2f7fc5f5336c60a80f06171833517f045e90cf7a1b6578",
+    "finite_study.py": "949047331a616e638dc71ff6ddd167a1a63f0234cfaf4524f0d727ce641a2887",
+    "headroom.py": "64ce7d4d9100939a6d86793df7b6888044f559f668203edc69a9d5430090fc2f"
+  },
+  "headroom_json_sha256": "4952e8f736caf1e5e46d0365ab519ff638faaba9bd3f8bbb01f49f3b62d49133",
+  "reference": {
+    "oracle_value_decimal": "0.25274721905017296677523983740737879111989491099602488985510264018327153536795782995100694527466623590852744262",
+    "max_headroom_decimal": "0.00117628694143758715428512606556528563583780918531730423151623765609640247515538573774477510709277190513965836",
+    "mean_headroom_decimal": "0.000176443041215638073142768909834792845375671377797595634727435648414460371273307860661716266063915785770948754",
+    "sum_20_headrooms_decimal": "0.00352886082431276146285537819669585690751342755595191269454871296828920742546615721323432532127831571541897508",
+    "max_paid_gain_one_episode_decimal": "-0.00882371305856241284571487393443471436416219081468269576848376234390359752484461426225522489290722809486034164",
+    "sum_20_one_each_minus_one_fee_decimal": "-0.00647113917568723853714462180330414309248657244404808730545128703171079257453384278676567467872168428458102492",
+    "max_exp_argument_magnitude": "2",
+    "max_log_atanh_abs_z": "0.72291169915605037191170467482503323517790696244194284342572634526985947680937569494215795099927963001764192230",
+    "illustrative_nine_reuses_of_positive_headroom_minus_one_fee": "0.00058658247293828438856613459008757072254028266785573808364613890486762227639847163970297596383494714625692524",
+    "reuse_note": "This only shows the one-episode/20-distinct-bank bound cannot rule out arbitrary M under a separately declared one-time-fee contract. No learned strategy, actual reuse saving, or all-cost net benefit is claimed."
+  },
+  "rows": [
+    {
+      "seed": 1701,
+      "baseline_value_decimal": "0.25157093210873537962095471134181350548405710181070758562358640252717513289280244421326217016757346400338778426",
+      "headroom_decimal": "0.00117628694143758715428512606556528563583780918531730423151623765609640247515538573774477510709277190513965836"
+    },
+    {
+      "seed": 1702,
+      "baseline_value_decimal": "0.25274721905017296677523983740737879111989491099602488985510264018327153536795782995100694527466623590852744262",
+      "headroom_decimal": "0E-110"
+    },
+    {
+      "seed": 1703,
+      "baseline_value_decimal": "0.25157093210873537962095471134181350548405710181070758562358640252717513289280244421326217016757346400338778426",
+      "headroom_decimal": "0.00117628694143758715428512606556528563583780918531730423151623765609640247515538573774477510709277190513965836"
+    },
+    {
+      "seed": 1704,
+      "baseline_value_decimal": "0.25274721905017296677523983740737879111989491099602488985510264018327153536795782995100694527466623590852744262",
+      "headroom_decimal": "0E-110"
+    },
+    {
+      "seed": 2701,
+      "baseline_value_decimal": "0.25274721905017296677523983740737879111989491099602488985510264018327153536795782995100694527466623590852744262",
+      "headroom_decimal": "0E-110"
+    },
+    {
+      "seed": 2702,
+      "baseline_value_decimal": "0.25274721905017296677523983740737879111989491099602488985510264018327153536795782995100694527466623590852744262",
+      "headroom_decimal": "0E-110"
+    },
+    {
+      "seed": 2703,
+      "baseline_value_decimal": "0.25274721905017296677523983740737879111989491099602488985510264018327153536795782995100694527466623590852744262",
+      "headroom_decimal": "0E-110"
+    },
+    {
+      "seed": 2704,
+      "baseline_value_decimal": "0.25274721905017296677523983740737879111989491099602488985510264018327153536795782995100694527466623590852744262",
+      "headroom_decimal": "0E-110"
+    },
+    {
+      "seed": 2705,
+      "baseline_value_decimal": "0.25274721905017296677523983740737879111989491099602488985510264018327153536795782995100694527466623590852744262",
+      "headroom_decimal": "0E-110"
+    },
+    {
+      "seed": 2706,
+      "baseline_value_decimal": "0.25274721905017296677523983740737879111989491099602488985510264018327153536795782995100694527466623590852744262",
+      "headroom_decimal": "0E-110"
+    },
+    {
+      "seed": 2707,
+      "baseline_value_decimal": "0.25274721905017296677523983740737879111989491099602488985510264018327153536795782995100694527466623590852744262",
+      "headroom_decimal": "0E-110"
+    },
+    {
+      "seed": 2708,
+      "baseline_value_decimal": "0.25274721905017296677523983740737879111989491099602488985510264018327153536795782995100694527466623590852744262",
+      "headroom_decimal": "0E-110"
+    },
+    {
+      "seed": 2709,
+      "baseline_value_decimal": "0.25274721905017296677523983740737879111989491099602488985510264018327153536795782995100694527466623590852744262",
+      "headroom_decimal": "0E-110"
+    },
+    {
+      "seed": 2710,
+      "baseline_value_decimal": "0.25274721905017296677523983740737879111989491099602488985510264018327153536795782995100694527466623590852744262",
+      "headroom_decimal": "0E-110"
+    },
+    {
+      "seed": 2711,
+      "baseline_value_decimal": "0.25274721905017296677523983740737879111989491099602488985510264018327153536795782995100694527466623590852744262",
+      "headroom_decimal": "0E-110"
+    },
+    {
+      "seed": 2712,
+      "baseline_value_decimal": "0.25274721905017296677523983740737879111989491099602488985510264018327153536795782995100694527466623590852744262",
+      "headroom_decimal": "0E-110"
+    },
+    {
+      "seed": 2713,
+      "baseline_value_decimal": "0.25274721905017296677523983740737879111989491099602488985510264018327153536795782995100694527466623590852744262",
+      "headroom_decimal": "0E-110"
+    },
+    {
+      "seed": 2714,
+      "baseline_value_decimal": "0.25274721905017296677523983740737879111989491099602488985510264018327153536795782995100694527466623590852744262",
+      "headroom_decimal": "0E-110"
+    },
+    {
+      "seed": 2715,
+      "baseline_value_decimal": "0.25274721905017296677523983740737879111989491099602488985510264018327153536795782995100694527466623590852744262",
+      "headroom_decimal": "0E-110"
+    },
+    {
+      "seed": 2716,
+      "baseline_value_decimal": "0.25157093210873537962095471134181350548405710181070758562358640252717513289280244421326217016757346400338778426",
+      "headroom_decimal": "0.00117628694143758715428512606556528563583780918531730423151623765609640247515538573774477510709277190513965836"
+    }
+  ],
+  "interval_proof_review": {
+    "dyadic_rounding": "floor(lo*2^80), ceil(hi*2^80) is outward for both signs",
+    "exp_tail": "After degree N=40 the first omitted term is x^41/41! and all later term ratios are at most x/42<1 on [0,8]; interval arithmetic preserves the partial sum and upper tail.",
+    "negative_exp": "positive reciprocal with reversed endpoints preserves enclosure",
+    "log_tail": "80 terms leave power z^161; the tail is bounded by 2*z^161/(161*(1-z^2)), with upper interval power and upper squared-z used conservatively.",
+    "recursive_values": "Monotone exponential/log CE transformations, exact probability normalization, and maxima of action intervals enclose the real finite-model optimum and deterministic baseline values.",
+    "headroom": "Intersecting optimum-minus-baseline interval with nonnegative values is valid because the baseline is feasible in the same action/information class."
+  },
+  "accounting_review": {
+    "one_episode_fee_conclusion": "Sound for the frozen one-scored-episode .01 audit-charge gate.",
+    "twenty_episode_shared_fee": "Sound only for the explicitly stated sum of 20 separately scored CE episodes, one from each listed baseline, with one shared fee; this is not a joint entropic objective.",
+    "long_reuse": "No impossibility conclusion for arbitrary deployment count M is justified. A positive-headroom fixed baseline can amortize a one-time fee; existing diagnostics do not include its additional real acquisition/deployment costs.",
+    "confidence_adapter": "The rational headroom enclosure does not upgrade SciPy confidence quantiles or the floating confidence propagation to formal interval arithmetic."
+  },
+  "new_banks": 0,
+  "new_observations": 0,
+  "new_model_calls": 0,
+  "external_review": false
+}

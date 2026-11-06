@@ -84,6 +84,11 @@ bounds can tighten fitted constraints. If tightening makes them infeasible,
 there is no learned certificate; STOP is not a 5%-error identification fallback.
 No useful uniform unknown-kernel certificate or novel RL contribution follows.
 
+In the frozen protocol, “STOP mandatory at exhausted budget” means exhaustion
+of the **time or launch cap**. The expected-resource limit B is a distributional
+constraint, not a per-path remaining balance. This clarification leaves the
+frozen protocol and its recorded source identity unchanged.
+
 ## Reproduce
 
 From the repository root with NumPy and SciPy:

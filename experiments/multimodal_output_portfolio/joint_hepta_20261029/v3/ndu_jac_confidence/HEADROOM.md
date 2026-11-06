@@ -51,6 +51,12 @@ This aggregate means a sum of the 20 separately defined episode CE values; it
 is not a new joint 20-episode entropic objective or a claim about shared hidden
 labels. The actual per-update fee rule is unchanged.
 
+This does not exclude a separately frozen long-run reuse contract for one
+policy. For a baseline with positive headroom Delta, a one-time audit followed
+by M scored deployments has the oracle upper expression M*Delta-.01. Here that
+expression becomes positive at M=9, before other costs. It is only an upper
+possibility bound, not achieved learned-policy gain or a full lifecycle result.
+
 ## Independent numerical enclosure
 
 `headroom.py` first runs the existing known-law DP and evaluates every saved
@@ -98,7 +104,8 @@ implementation. It certifies only the known-law headroom diagnostic.
 Do not spend new calibration budget merely to rescue the old `.01` gate by
 narrowing its confidence intervals. The strong baseline has already consumed
 nearly all the task's attainable utility. Any new study needs a prospectively
-specified task or information contract with actual decision-relevant headroom,
+specified task, information contract, or lifecycle/deployment-volume contract
+with actual decision-relevant headroom,
 then its own complete-cost comparison. The existing negative endpoint remains
 unchanged; this appendix supplies a reason for it.
 
