@@ -25,7 +25,7 @@ serde_json = { workspace = true }
 sha2 = { workspace = true }
 thiserror = { workspace = true }
 toml = { workspace = true }
-trnm-release-bundle = { git = "https://github.com/TrillionniumFoundation/Trillionnium-Chain.git", rev = "81a223c492be2678c1aea34c4d548bf96262a96a" }
+trnm-release-bundle = { git = "https://github.com/TrillionniumFoundation/Trillionnium-Chain.git", rev = "6ba303a8c81cdbc6f5bf5540de43e9be9b93a450" }
 
 [target.'cfg(unix)'.dependencies]
 rustix = { workspace = true, features = ["process"] }
