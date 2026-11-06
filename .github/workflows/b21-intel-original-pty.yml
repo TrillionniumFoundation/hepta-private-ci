@@ -32,7 +32,7 @@ jobs:
       with:
         persist-credentials: false
         ref: ${{ github.event.pull_request.head.sha }}
-        fetch-depth: 3
+        fetch-depth: 4
       name: Checkout exact diagnostic source
     - name: Bind original source, full archive and actual Intel platform
       env:
@@ -46,10 +46,12 @@ jobs:
         mkdir "$evidence_dir" "$private_bep_dir"
         chmod 700 "$private_bep_dir"
         test "$(git rev-parse HEAD)" = "$EXPECTED_HEAD"
-        test "$(git show -s --format=%P HEAD)" = cc65856cc0b20d03db506c19495d53d61162102d
-        test "$(git show -s --format=%P HEAD^)" = 67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed
-        test "$(git rev-parse 'HEAD^1^{tree}')" = eaded1870d080eaa55efae6208354729140e784c
-        test "$(git rev-parse 'HEAD~2^{tree}')" = 3982ba56dc5a3f1da0c1de7ea57992f88125c359
+        test "$(git show -s --format=%P HEAD)" = ebd31e2b3e38ff72cedaa7b57bee60c1c102da27
+        test "$(git show -s --format=%P HEAD^)" = cc65856cc0b20d03db506c19495d53d61162102d
+        test "$(git show -s --format=%P HEAD~2)" = 67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed
+        test "$(git rev-parse 'HEAD^1^{tree}')" = 46fca3e684217066c260dc10d0dc319a33e0a93c
+        test "$(git rev-parse 'HEAD~2^{tree}')" = eaded1870d080eaa55efae6208354729140e784c
+        test "$(git rev-parse 'HEAD~3^{tree}')" = 3982ba56dc5a3f1da0c1de7ea57992f88125c359
         git diff --name-only --no-renames 67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed HEAD > "$evidence_dir/changed-from-main67.txt"
         git diff --name-only --no-renames HEAD^ HEAD > "$evidence_dir/changed-from-parent.txt"
         test "$(cat "$evidence_dir/changed-from-main67.txt")" = .github/workflows/b21-intel-original-pty.yml
@@ -58,7 +60,7 @@ jobs:
         git diff --cached --quiet
         git status --porcelain=v1 > "$evidence_dir/source-status-before.txt"
         test ! -s "$evidence_dir/source-status-before.txt"
-        git rev-parse HEAD 'HEAD^{tree}' HEAD^ 'HEAD^1^{tree}' HEAD~2 'HEAD~2^{tree}' > "$evidence_dir/source-head-tree.txt"
+        git rev-parse HEAD 'HEAD^{tree}' HEAD^ 'HEAD^1^{tree}' HEAD~2 'HEAD~2^{tree}' HEAD~3 'HEAD~3^{tree}' > "$evidence_dir/source-head-tree.txt"
         printf '%s\n' "$EXPECTED_HEAD" "$GITHUB_SHA" > "$evidence_dir/source-head-and-event-merge.txt"
         git ls-tree -r --full-tree HEAD > "$evidence_dir/source-leaves.txt"
         git ls-tree -rz --full-tree HEAD > "$evidence_dir/source-leaves.nul"
@@ -149,6 +151,7 @@ jobs:
           --nocache_test_results
           "--build_event_json_file=${private_bep_dir}/build-events.jsonl"
           --nobuild_event_json_file_path_conversion
+          '--remote_download_regex=^bazel-out/[^/]+/testlogs/.*/(test\.(log|xml)|test_attempts/attempt_[1-9][0-9]*\.(log|xml))$'
         )
 
         args=(./.github/scripts/run-bazel-ci.sh "${bazel_wrapper_args[@]}" -- "${bazel_test_args[@]}" -- "${bazel_targets[@]}")
@@ -218,7 +221,7 @@ jobs:
         HEADER_RE = re.compile(r"--(?:" + "|".join(sorted(HEADERS)) + r")(?=$|[\s=])")
         URI_RE = re.compile(r"[A-Za-z][A-Za-z0-9+.-]*://[^\s\"'<>]+")
         DERIVED_NAME = "build-events.sanitized.jsonl"
-        SCHEMA = "bazel-actual-attempt-evidence-rebuilt-v2"
+        SCHEMA = "bazel-actual-attempt-evidence-fetch-v3"
         CHUNK = 1024 * 1024
 
 
@@ -613,6 +616,7 @@ jobs:
 
         def reconcile(events, root, inventory, expected_target, original_exit, errors):
             attempts, summaries, seen, announced = [], [], set(), set()
+            first_fetch_events, repeated_fetch_events = {}, []
             groups, counts = collections.defaultdict(list), collections.Counter()
             finished = []
             for index, event in enumerate(events):
@@ -621,8 +625,25 @@ jobs:
                     errors.append({"kind": "event_id_missing", "event": index})
                     continue
                 key = canonical(identity)
+                # Fetch IDs contain URL + downloader, not an occurrence number. Bazel can
+                # emit several fetches with this ID; retain every event and its payload.
+                # No TestResult/TestSummary or other ID gains a duplicate exemption.
+                is_fetch = (set(identity) == {"fetch"}
+                            and isinstance(identity["fetch"], dict)
+                            and isinstance(event.get("fetch"), dict)
+                            and set(event).issubset({"id", "fetch", "children", "lastMessage"}))
                 if key in seen:
-                    errors.append({"kind": "duplicate_event_id", "event": index})
+                    if is_fetch and key in first_fetch_events:
+                        first = first_fetch_events[key]
+                        repeated_fetch_events.append({
+                            "event": index, "first_event": first, "id": identity,
+                            "first_payload": events[first]["fetch"], "payload": event["fetch"],
+                            "payload_equal_to_first": event["fetch"] == events[first]["fetch"],
+                        })
+                    else:
+                        errors.append({"kind": "duplicate_event_id", "event": index})
+                elif is_fetch:
+                    first_fetch_events[key] = index
                 seen.add(key)
                 for child in event.get("children", []):
                     announced.add(canonical(child))
@@ -714,7 +735,7 @@ jobs:
                 errors.append({"kind": "no_actual_test_results"})
             if expected_target not in {row["id"].get("label") for row in attempts}:
                 errors.append({"kind": "required_target_not_observed"})
-            return attempts, summaries
+            return attempts, summaries, repeated_fetch_events
 
 
         def read_exit(public, name, errors):
@@ -880,7 +901,8 @@ jobs:
             root, inventory = collect_local_logs(
                 Path("bazel-testlogs") if testlogs is None else Path(testlogs),
                 public, private, policy, errors)
-            attempts, summaries = reconcile(events, root, inventory, expected_target, original_exit, errors)
+            attempts, summaries, repeated_fetch_events = reconcile(
+                events, root, inventory, expected_target, original_exit, errors)
             try:
                 compact = [p for p in execution_logs.rglob("*.zst") if p.is_file() and not p.is_symlink()]
                 if not compact:
@@ -899,6 +921,10 @@ jobs:
                 "original_bazel_exit": original_exit, "console_copy_exit": copy_exit,
                 "resolved_testlogs_root": str(root) if root else None,
                 "actual_attempts": attempts, "test_summaries": summaries,
+                "repeated_fetch_events": repeated_fetch_events,
+                "fetch_repetition_scope": "Only Fetch IDs may repeat; each derived BEP record and "
+                                          "each repeated payload remains retained. This does not "
+                                          "qualify a test attempt or waive missing log/XML evidence.",
                 "files": list(inventory.values()), "errors": errors,
                 "exclusions": ["test.outputs", "test.outputs_manifest", "*.runfiles",
                                "other non-log/XML test outputs", "unexecuted or incompatible targets"],
