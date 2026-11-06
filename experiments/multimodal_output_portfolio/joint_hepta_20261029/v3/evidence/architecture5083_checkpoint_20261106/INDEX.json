@@ -1,0 +1,104 @@
+{
+  "format": "native-blocker-evidence-v1",
+  "purpose": "architecture5083",
+  "snapshot_utc": "2026-11-06 17:44:52 UTC",
+  "qualification": {
+    "source_head": "8c9fdbb144cf1719a0ffa148e463a024b1cb6043",
+    "source_tree": "9bb1dffb70213d288a670b6e7b3598745384f121",
+    "run_id": 42248854689,
+    "job_id": 127998199908,
+    "artifact_id": 13524644917,
+    "source_head_job_conclusion": "success",
+    "runner": "ubuntu-24.04-arm",
+    "native_rust_commands": 26,
+    "native_framework_passed_executions": 495,
+    "python_framework_passed_executions": 130,
+    "derived_checks": 1,
+    "unique_test_count_claimed": false,
+    "internal_early_returns_audited": false,
+    "base_merge_native_execution": "skipped; excluded from this execution count",
+    "architecture_required_job": 128048016137,
+    "architecture_required_at_snapshot": "queued",
+    "complete_latest_source_head_qualification": "pending separately"
+  },
+  "evidence_policy": "Every listed input is retained byte for byte. Restoration produces inert regular 0644 files and never executes archived sources. Complete original ZIP bytes are retained only when expressly listed; the old fixture ZIP and its two largest members are deliberately outside the compact port packet.",
+  "archive_bytes": 860160,
+  "archive_sha256": "764b4484516bbff916c9c5561410e6648d54bf685740143acd64f3e4893a4829",
+  "compressed_bytes": 187964,
+  "compressed_sha256": "e855bd5102283b6a542fad2c333eda70f9aec337b754688deeaab2a0a5b22253",
+  "parts": [
+    {
+      "name": "native-evidence.tar.xz.part000.gz",
+      "bytes": 188042,
+      "sha256": "e011ed873be20689d48c62e9cb3c9dc3f4cc33962013da38212eea65e8356f6f",
+      "git_blob": "c10d1ed43617b8a9d5ab836d86f324bf1c9213d1",
+      "segment_bytes": 187964,
+      "segment_sha256": "e855bd5102283b6a542fad2c333eda70f9aec337b754688deeaab2a0a5b22253"
+    }
+  ],
+  "files": [
+    {
+      "path": "round3_ci/architecture5083/COMPLETE_MEMBER_IDENTITIES.json",
+      "bytes": 13652,
+      "sha256": "6ec9d108eab0b43cc4c778777a5b8b8ecc01d7aced90585b9c638f0aa082097e",
+      "git_blob": "b5cf254b2255aef0ee748ff6f02b1a357c6dae76",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/architecture5083/NATIVE_ARTIFACT_VALIDATION.json",
+      "bytes": 27704,
+      "sha256": "8d22d2492e8f32e09e98962a0bb6fe9f94c37a343b91c7092946c00e3a46cb0a",
+      "git_blob": "ca0b15755a6208ed3550ae50f93628da6896527e",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/architecture5083/artifact.zip",
+      "bytes": 97525,
+      "sha256": "1311a413e5f82eef4287991b891929f7ccaeec5bc24a882630fe0f93e79950d4",
+      "git_blob": "398738a6f26e484bf3d829edd3739f3114dd3d5e",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/architecture5083/artifacts-api.json",
+      "bytes": 1613,
+      "sha256": "802e439de1ddbc20607e959e916fa8a0aa71c9fa02542f9c09b12a2b86a3a459",
+      "git_blob": "c5b773e47c59ada0289909b3167530d8dcd2cc95",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/architecture5083/audit_artifact.py",
+      "bytes": 8675,
+      "sha256": "ef32f63ca61377c30928e26b82d3e5b8767f16bfcf7cdc6d3f6ac315ac2f9e17",
+      "git_blob": "ec9b493ec39e26f809d7f04cd1dc15b2b135d88c",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/architecture5083/job-127998199908.log",
+      "bytes": 635399,
+      "sha256": "3d0e0de1fe35f3714a8519de1f90448e1a3b81f8f6063c25baf77ba51b6d5c9c",
+      "git_blob": "eed77ad62b04038790dec342da7f2ddcf846a9f8",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/architecture5083/qualification-jobs-at-checkpoint.json",
+      "bytes": 12985,
+      "sha256": "b2d9d125ad414f5ec489cb583e1fba365eddf6b6e486e785ce6aed8a3a1b5666",
+      "git_blob": "610af78a5acc8501afa58f8f033a0082278d172d",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/architecture5083/run-api.json",
+      "bytes": 32446,
+      "sha256": "4ec4e01b6a67f33ae5c6f9354c2ef6a59677eae892b0926f6e76846d989b753d",
+      "git_blob": "83b5b322f6c9e1fbfb3bbe8123714f0648325c99",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/build_native_progress_checkpoints.py",
+      "bytes": 16904,
+      "sha256": "d44e5cdc229eff43de2a1445f76f554f2374e66acae0666d3129ebdc09f6b52c",
+      "git_blob": "0b2bab4c2489c61ad2e11d8540032593ea3d4770",
+      "original_mode": "0644"
+    }
+  ]
+}

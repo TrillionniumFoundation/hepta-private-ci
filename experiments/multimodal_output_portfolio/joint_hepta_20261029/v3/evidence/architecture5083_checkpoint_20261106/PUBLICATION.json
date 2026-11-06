@@ -1,0 +1,129 @@
+{
+  "packet": "architecture5083",
+  "suggested_repository_directory": "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/evidence/architecture5083_checkpoint_20261106",
+  "snapshot_utc": "2026-11-06 17:44:52 UTC",
+  "index": {
+    "bytes": 4372,
+    "sha256": "87ec6e38d1dc9f7744fe2fe702ed780777dd50f53cd51213196bfd0e46f18297",
+    "git_blob": "ca383254df97be80c147e2cbc95e6d31c51f6d33"
+  },
+  "source_file_count": 9,
+  "raw_source_bytes": 846903,
+  "archive_bytes": 860160,
+  "compressed_bytes": 187964,
+  "restore_exit_code": 0,
+  "restore_stdout": {
+    "bytes": 420,
+    "sha256": "552360ab809bc3f08840a5ee3b75766f447898f67da4f092224faa273e7071c3",
+    "git_blob": "1db4a48eb1cd5a23cd7787b4be7c2fdf7a376e42"
+  },
+  "restore_stderr": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+  },
+  "all_restored_bytes_complete_roster_and_inert_modes_match": true,
+  "reader_template": {
+    "source_file": "/workspace/scratch/3f6a885bb83c/round3_native/restore_checkpoint_template.py",
+    "bytes": 6626,
+    "sha256": "00bf4373739122934a281273de36cc9e4cce84199aa985926419225cad94303b",
+    "git_blob": "27e463e7b9e73a98b3a35e05d4d7414a2ed7b4a0",
+    "only_replacement": "fixed INDEX SHA-256"
+  },
+  "codespell": {
+    "version": "2.4.3",
+    "command": [
+      "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+      "-m",
+      "codespell_lib",
+      "--ignore-words",
+      ".codespellignore",
+      "--skip",
+      "./.git"
+    ],
+    "exit_code": 0,
+    "stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "configuration": {
+      ".codespellrc": {
+        "bytes": 471,
+        "sha256": "80805b9340dbdd76645a25929f56c96606e187db8e9d16b75a4a47dcdd248c04",
+        "git_blob": "663be376c7381108af0a41eafc3dd08f27125d96"
+      },
+      ".codespellignore": {
+        "bytes": 69,
+        "sha256": "9c6cd9dd86c6300ff67edbe64b2e18ed089714151e5c166382c8ea99931bc275",
+        "git_blob": "0da447f000de188776a33e770c2d2d77b37f97ee"
+      },
+      ".codespell-exclude-lines": {
+        "bytes": 20003,
+        "sha256": "5e2119d75aa7cfa61e87b9c3d98863d0b5d6672eeaccc7411695e91e2366d52b",
+        "git_blob": "490e840301fdfae10d6e40c44a566ff16f82e324"
+      }
+    },
+    "new_exclusion_added": false
+  },
+  "files": [
+    {
+      "path": "INDEX.json",
+      "source_file": "/workspace/scratch/3f6a885bb83c/round3_ci/architecture5083_checkpoint_20261106/INDEX.json",
+      "mode": "100644",
+      "bytes": 4372,
+      "sha256": "87ec6e38d1dc9f7744fe2fe702ed780777dd50f53cd51213196bfd0e46f18297",
+      "git_blob": "ca383254df97be80c147e2cbc95e6d31c51f6d33"
+    },
+    {
+      "path": "README.md",
+      "source_file": "/workspace/scratch/3f6a885bb83c/round3_ci/architecture5083_checkpoint_20261106/README.md",
+      "mode": "100644",
+      "bytes": 2095,
+      "sha256": "4f69f2776e6ac5eeab68dde183bfd78731326e0901217005361fb79d36edf38a",
+      "git_blob": "cc9d8e612498f870c7348d99f6d9cbbb831fc7e7"
+    },
+    {
+      "path": "native-evidence.tar.xz.part000.gz",
+      "source_file": "/workspace/scratch/3f6a885bb83c/round3_ci/architecture5083_checkpoint_20261106/native-evidence.tar.xz.part000.gz",
+      "mode": "100644",
+      "bytes": 188042,
+      "sha256": "e011ed873be20689d48c62e9cb3c9dc3f4cc33962013da38212eea65e8356f6f",
+      "git_blob": "c10d1ed43617b8a9d5ab836d86f324bf1c9213d1"
+    },
+    {
+      "path": "restore.py",
+      "source_file": "/workspace/scratch/3f6a885bb83c/round3_ci/architecture5083_checkpoint_20261106/restore.py",
+      "mode": "100644",
+      "bytes": 6656,
+      "sha256": "16ee2969e5667018fc6948c968aa68025fe3c1729cbfadf097edbab43cc55282",
+      "git_blob": "6223b1d6c25acd99c603cd486cd61df5942fcf89"
+    }
+  ],
+  "qualification_scope": {
+    "source_head": "8c9fdbb144cf1719a0ffa148e463a024b1cb6043",
+    "source_tree": "9bb1dffb70213d288a670b6e7b3598745384f121",
+    "run_id": 42248854689,
+    "job_id": 127998199908,
+    "artifact_id": 13524644917,
+    "source_head_job_conclusion": "success",
+    "runner": "ubuntu-24.04-arm",
+    "native_rust_commands": 26,
+    "native_framework_passed_executions": 495,
+    "python_framework_passed_executions": 130,
+    "derived_checks": 1,
+    "unique_test_count_claimed": false,
+    "internal_early_returns_audited": false,
+    "base_merge_native_execution": "skipped; excluded from this execution count",
+    "architecture_required_job": 128048016137,
+    "architecture_required_at_snapshot": "queued",
+    "complete_latest_source_head_qualification": "pending separately"
+  },
+  "publication_ready": true,
+  "old_packets_modified": false
+}
