@@ -102,14 +102,21 @@ jobs:
           cargo build --locked -p codex-hepta-infer-worker-host --bin hepta-joint-propose
           helper="$target_dir/debug/hepta-joint-propose"
           test -x "$helper"
-          printf '%s\\n' "$helper" > "$RUNNER_TEMP/cell-native-evidence/joint-helper-path.txt"
+          printf '%s\n' "$helper" > "$RUNNER_TEMP/cell-native-evidence/joint-helper-path.txt"
           sha256sum "$helper" > "$RUNNER_TEMP/cell-native-evidence/joint-helper.sha256"
-          printf 'NEXTEST_BIN_EXE_hepta-joint-propose=%s\\n' "$helper" >> "$GITHUB_ENV"
+          printf 'NEXTEST_BIN_EXE_hepta-joint-propose=%s\n' "$helper" >> "$GITHUB_ENV"
+          grep -Fx "NEXTEST_BIN_EXE_hepta-joint-propose=$helper" "$GITHUB_ENV"
       - name: Run the existing package test entry point
         working-directory: codex-rs
         shell: bash
         run: |
           set -euo pipefail
+          python3 - <<'PY'
+          import os
+          from pathlib import Path
+          helper = os.environ.get("NEXTEST_BIN_EXE_hepta-joint-propose", "")
+          assert helper and Path(helper).is_file() and os.access(helper, os.X_OK), helper
+          PY
           just test --locked -p codex-hepta-neuron -p codex-hepta-plasticity \
             2>&1 | tee "$RUNNER_TEMP/cell-native-evidence/tests.log"
       - name: Lint the affected packages
