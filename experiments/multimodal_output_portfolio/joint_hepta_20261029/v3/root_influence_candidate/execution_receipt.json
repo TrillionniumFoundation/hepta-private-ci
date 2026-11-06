@@ -1,0 +1,31 @@
+{
+  "clock_scope": "Subprocess wall time is measured host execution of the entire exact audit. Work*compute_time is a distinct declared model-clock charge. No real external task clock, provider latency or LLM response was measured.",
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+    "-m",
+    "root_influence_candidate.verify",
+    "--output",
+    "root_influence_candidate/result.json"
+  ],
+  "protocol_sha256": "fb326259d18f7af75ffdc3c93d2861db9fdad4503f629954dfc47ba74e546530",
+  "result_sha256": "c25b6eebb531056571fc47a780da67471cfd8c2ef508aff07457c5bf9b300f3c",
+  "returncode": 0,
+  "schema": "ndu.root-influence-candidate.actual-execution.v1",
+  "source_sha256_after": {
+    "__init__.py": "4ee9976fb4031a96e9b760385b8a423078c9fc57628bc828bed6b27e8c031014",
+    "anytime.py": "991bf08d960c3b4a535b6cf1b6eb7c670cab17247f2ba89a9b53a86e965d8a3a",
+    "contract.py": "6810f0bed987605e25f7ddec599796fa3a672d797692e79bf8ca2eae32193da6",
+    "exact_solver.py": "377130b50d4d8095bd1fa3003e8d4a2f21581fe25fe6f6b592169feda1f23de5",
+    "verify.py": "b2443f34ce256e6eed3a5f7cbdfc6f45b374f762cc34635b5519436ff8015e99"
+  },
+  "source_sha256_before": {
+    "__init__.py": "4ee9976fb4031a96e9b760385b8a423078c9fc57628bc828bed6b27e8c031014",
+    "anytime.py": "991bf08d960c3b4a535b6cf1b6eb7c670cab17247f2ba89a9b53a86e965d8a3a",
+    "contract.py": "6810f0bed987605e25f7ddec599796fa3a672d797692e79bf8ca2eae32193da6",
+    "exact_solver.py": "377130b50d4d8095bd1fa3003e8d4a2f21581fe25fe6f6b592169feda1f23de5",
+    "verify.py": "b2443f34ce256e6eed3a5f7cbdfc6f45b374f762cc34635b5519436ff8015e99"
+  },
+  "stderr": "",
+  "stdout": "{\n  \"status\": \"REJECTED_AS_CLASSICAL_SCHEDULER_EQUIVALENT\",\n  \"checks\": 510,\n  \"partial_caches\": 34,\n  \"shared\": 0,\n  \"cases\": [\n    {\n      \"T\": 0,\n      \"V\": \"2\",\n      \"action\": \"stop\",\n      \"candidate_net\": \"199899091/100000000\",\n      \"classical_net\": \"199899091/100000000\",\n      \"full_dp_net\": \"99949697/50000000\"\n    },\n    {\n      \"T\": 1,\n      \"V\": \"2\",\n      \"action\": \"stop\",\n      \"candidate_net\": \"199899091/100000000\",\n      \"classical_net\": \"199899091/100000000\",\n      \"full_dp_net\": \"12493649/6250000\"\n    },\n    {\n      \"T\": 2,\n      \"V\": \"231/100\",\n      \"action\": \"prepare\",\n      \"candidate_net\": \"230893637/100000000\",\n      \"classical_net\": \"230893637/100000000\",\n      \"full_dp_net\": \"115448081/50000000\"\n    },\n    {\n      \"T\": 3,\n      \"V\": \"12/5\",\n      \"action\": \"prepare\",\n      \"candidate_net\": \"239883133/100000000\",\n      \"classical_net\": \"239883133/100000000\",\n      \"full_dp_net\": \"29986389/12500000\"\n    },\n    {\n      \"T\": 4,\n      \"V\": \"3063/1250\",\n      \"action\": \"prepare\",\n      \"candidate_net\": \"2449031047/1000000000\",\n      \"classical_net\": \"2449031047/1000000000\",\n      \"full_dp_net\": \"2449230017/1000000000\"\n    }\n  ],\n  \"counterexamples\": {\n    \"free_preparation_clock\": {\n      \"valid_value\": \"2\",\n      \"invalid_free_prep_clock_value\": \"231/100\"\n    },\n    \"weak_baseline_headroom\": {\n      \"best_no_calibration\": \"2\",\n      \"fixed_follow_value\": \"8/5\",\n      \"actual_perfect_law_headroom\": \"4/5\",\n      \"inflated_headroom_against_follow\": \"6/5\"\n    }\n  }\n}\n",
+  "subprocess_wall_seconds": 0.24511256199912168
+}

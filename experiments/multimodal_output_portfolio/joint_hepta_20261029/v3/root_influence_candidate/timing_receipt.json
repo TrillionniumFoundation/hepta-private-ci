@@ -1,0 +1,20 @@
+{
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+    "-m",
+    "root_influence_candidate.verify",
+    "--output",
+    "/tmp/ndu-influence-cpu-erx6zeec/replay.json"
+  ],
+  "cpu_system_seconds": 0.004195,
+  "cpu_user_seconds": 0.237761,
+  "exit_code": 0,
+  "primary_result_sha256": "c25b6eebb531056571fc47a780da67471cfd8c2ef508aff07457c5bf9b300f3c",
+  "purpose": "Repeat the same deterministic audit solely to measure subprocess user/system CPU; not an independent experiment or extra task/grid.",
+  "real_external_task_or_provider_clock": "NOT_MEASURED; no external task or model calls",
+  "schema": "ndu.root-influence-candidate.host-timing.v1",
+  "scientific_and_declared_cost_fields_identical": true,
+  "synthetic_compute_clock": "Each method separately charges declared work units times 1e-6 model time units; this is not the measured CPU or wall time.",
+  "timing_replay_result_sha256": "5c984f94a045d5d89a2f27246257e7a8c77a5480f37c1470c363d397c4148f30",
+  "wall_seconds": 0.24510156800533878
+}

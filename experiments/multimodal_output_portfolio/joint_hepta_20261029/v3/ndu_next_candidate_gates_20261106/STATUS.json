@@ -1,0 +1,76 @@
+{
+  "schema": "ndu.next-candidate-gates.status.v1",
+  "recorded_utc": "2026-11-06T18:05:04.204049+00:00",
+  "research_disposition": "NO_GO_SCALE; CLOCK_TRANSPORT_IS_CLASSICAL; ROOT_INFLUENCE_EQUIVALENT_TO_CLASSICAL_OCCUPANCY",
+  "previous_publication": {
+    "pr_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/5098",
+    "head_branch": "research/ndu-paid-identification-clock-20261106",
+    "remote_head": "9de6e43ab159e617c1df980e146fffb83d91de73",
+    "commit_count": 4,
+    "changed_file_count": 127,
+    "all_four_trees_equal": true,
+    "draft": true,
+    "merged": false
+  },
+  "clock_semantics": {
+    "grid_cells": 81,
+    "graph_encodings": 162,
+    "checks": 518,
+    "fixed_local_action_flips": 2,
+    "matched_classical_difference_encodings": 0,
+    "independent_internal_review_checks": 266,
+    "result_sha256": "83d10a03c60c5fba7a3edfe39277cde96b113a5c07337b431f8979e0ef5995ac",
+    "review_sha256": "7696c1f8f5e61ffee0213e192c487c7b3cfe6300499830aae38f683f6e4dc662",
+    "frozen_code_and_evidence_unchanged": true,
+    "theory_scope_clarification_added_after_review": true,
+    "formal_outward_rounding_claimed": false
+  },
+  "root_influence_candidate": {
+    "status": "REJECTED_AS_CLASSICAL_SCHEDULER_EQUIVALENT",
+    "checks": 510,
+    "deadline_cases": [
+      0,
+      1,
+      2,
+      3,
+      4
+    ],
+    "admissible_partial_caches": 34,
+    "subset_count": 128,
+    "strong_comparator": "O(E) Kahn DAG forward occupancy; same bounds, cost, stop, cache, ties and warm starts",
+    "both_policies_and_ledgers_exactly_equal": true,
+    "deadline_four_before_planning_validation": "3063/1250",
+    "deadline_four_candidate_net": "2449031047/1000000000",
+    "deadline_four_classical_net": "2449031047/1000000000",
+    "deadline_four_cached_full_dp_net": "2449230017/1000000000",
+    "result_sha256": "c25b6eebb531056571fc47a780da67471cfd8c2ef508aff07457c5bf9b300f3c",
+    "initial_coverage_failure_retained": true,
+    "same_grid_reporting_amendment_retained": true,
+    "declared_model_clock_is_not_measured_task_wall_time": true
+  },
+  "finite_likelihood_reference": {
+    "status": "PASS",
+    "scope": "proof-reference checks only; no candidate performance evidence",
+    "nodes": 78,
+    "conditional_martingale_checks": 76,
+    "ever_excluded_probabilities": [
+      "127/2000",
+      "127/2000"
+    ],
+    "delta": "1/5",
+    "result_sha256": "c5ee079740ba547ad11e2354d0306483e0aee7e5c1e5decfabefc8be1872b8f7"
+  },
+  "new_model_forwards": 0,
+  "new_real_task_tool_calls": 0,
+  "new_random_samples": 0,
+  "independent_task_confirmation": "NOT_ENTERED: structural novelty gate failed",
+  "full_repository_ci": "NOT_RUN",
+  "external_mathematical_review": false,
+  "claims_not_made": [
+    "New RL algorithm",
+    "Unknown-family sample-complexity theorem",
+    "Measured deployment net gain",
+    "Real hardware speed superiority",
+    "All future candidates impossible"
+  ]
+}

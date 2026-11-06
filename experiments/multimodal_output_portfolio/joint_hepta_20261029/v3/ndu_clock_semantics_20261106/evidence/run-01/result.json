@@ -1,0 +1,3715 @@
+{
+  "schema": "ndu.clock-semantics.audit-result.v1",
+  "created_at_utc": "2026-11-06T17:45:11.744891+00:00",
+  "protocol": {
+    "schema": "ndu.clock-semantics.audit-protocol.v1",
+    "purpose": "Fix the next candidate's externally timed risk contract before algorithm comparisons",
+    "study_kind": "Deterministic semantic development after an analytic counterexample; no statistical confirmation or claimed new RL method",
+    "eta_values": [
+      ".5",
+      "1",
+      "2"
+    ],
+    "gamma_values": [
+      ".5",
+      ".8",
+      "1"
+    ],
+    "success_probabilities": [
+      ".1",
+      ".5",
+      ".9"
+    ],
+    "durations": [
+      1,
+      2,
+      3
+    ],
+    "safe_reward_at_time_zero": ".16",
+    "probe_launch_charge": ".01",
+    "decimal_precision": 110,
+    "equality_tolerance": "1e-95",
+    "all_laws_supplied": true,
+    "primary_baseline": "Independent exhaustive terminal-payoff evaluation of the same deterministic policy class under the same time-zero trajectory CE",
+    "original_recursive_objective_replaced": false,
+    "clock_units": "Model ticks, not measured seconds",
+    "new_calibration_observations": 0,
+    "new_model_calls": 0,
+    "independent_real_task_confirmation": false,
+    "entry_gate": "Positive headroom against STOP alone is insufficient; a difference against the correctly matched classical planner is also required"
+  },
+  "source_sha256": {
+    "__init__.py": "f01dca55763cf9cc6fd55cf5b18f434bbf00c51f4c0c7b2c5503f45c56f2c494",
+    "semantics.py": "faa9ffe0bdce971d2ab16296f4dc68c8e0fb26fe1947ee697585d27cfa70f821",
+    "study.py": "43e02e8784070cfce5de0297ce1f27ec872a8079060bee9a38a5751f9daf88ea",
+    "protocol.json": "acce872ea374a394b88402e33c33adb26bf6329be11247e21273ab8b99761b6b"
+  },
+  "freeze_sha256": "dc648780b82499471396f9d4339b631ad28fd3be333c4145887c126a9cb17d41",
+  "checks": [
+    "transport_matches_full_terminal_policy_enumeration",
+    "transport_root_choice_matches_strong_baseline",
+    "transport_matches_full_terminal_policy_enumeration",
+    "transport_root_choice_matches_strong_baseline",
+    "physical_transcripts_identical_after_forced_node_removal",
+    "transport_preserves_wait_refinement",
+    "transport_matches_full_terminal_policy_enumeration",
+    "transport_root_choice_matches_strong_baseline",
+    "transport_matches_full_terminal_policy_enumeration",
+    "transport_root_choice_matches_strong_baseline",
+    "physical_transcripts_identical_after_forced_node_removal",
+    "transport_preserves_wait_refinement",
+    "transport_matches_full_terminal_policy_enumeration",
+    "transport_root_choice_matches_strong_baseline",
+    "transport_matches_full_terminal_policy_enumeration",
+    "transport_root_choice_matches_strong_baseline",
+    "physical_transcripts_identical_after_forced_node_removal",
+    "transport_preserves_wait_refinement",
+    "transport_matches_full_terminal_policy_enumeration",
+    "transport_root_choice_matches_strong_baseline",
+    "transport_matches_full_terminal_policy_enumeration",
+    "transport_root_choice_matches_strong_baseline",
+    "physical_transcripts_identical_after_forced_node_removal",
+    "transport_preserves_wait_refinement",
+    "transport_matches_full_terminal_policy_enumeration",
+    "transport_root_choice_matches_strong_baseline",
+    "transport_matches_full_terminal_policy_enumeration",
+    "transport_root_choice_matches_strong_baseline",
+    "physical_transcripts_identical_after_forced_node_removal",
+    "transport_preserves_wait_refinement",
+    "transport_matches_full_terminal_policy_enumeration",
+    "transport_root_choice_matches_strong_baseline",
+    "transport_matches_full_terminal_policy_enumeration",
+    "transport_root_choice_matches_strong_baseline",
+    "physical_transcripts_identical_after_forced_node_removal",
+    "transport_preserves_wait_refinement",
+    "transport_matches_full_terminal_policy_enumeration",
+    "transport_root_choice_matches_strong_baseline",
+    "transport_matches_full_terminal_policy_enumeration",
+    "transport_root_choice_matches_strong_baseline",
+    "physical_transcripts_identical_after_forced_node_removal",
+    "transport_preserves_wait_refinement",
+    "transport_matches_full_terminal_policy_enumeration",
+    "transport_root_choice_matches_strong_baseline",
+    "transport_matches_full_terminal_policy_enumeration",
+    "transport_root_choice_matches_strong_baseline",
+    "physical_transcripts_identical_after_forced_node_removal",
+    "transport_preserves_wait_refinement",
+    "transport_matches_full_terminal_policy_enumeration",
+    "transport_root_choice_matches_strong_baseline",
+    "transport_matches_full_terminal_policy_enumeration",
+    "transport_root_choice_matches_strong_baseline",
+    "physical_transcripts_identical_after_forced_node_removal",
+    "transport_preserves_wait_refinement",
+    "transport_matches_full_terminal_policy_enumeration",
+    "transport_root_choice_matches_strong_baseline",
+    "transport_matches_full_terminal_policy_enumeration",
+    "transport_root_choice_matches_strong_baseline",
+    "physical_transcripts_identical_after_forced_node_removal",
+    "transport_preserves_wait_refinement",
+    "transport_matches_full_terminal_policy_enumeration",
+    "transport_root_choice_matches_strong_baseline",
+    "transport_matches_full_terminal_policy_enumeration",
+    "transport_root_choice_matches_strong_baseline",
+    "physical_transcripts_identical_after_forced_node_removal",
+    "transport_preserves_wait_refinement",
+    "transport_matches_full_terminal_policy_enumeration",
+    "transport_root_choice_matches_strong_baseline",
+    "transport_matches_full_terminal_policy_enumeration",
+    "transport_root_choice_matches_strong_baseline",
+    "physical_transcripts_identical_after_forced_node_removal",
+    "transport_preserves_wait_refinement",
+    "transport_matches_full_terminal_policy_enumeration",
+    "transport_root_choice_matches_strong_baseline",
+    "transport_matches_full_terminal_policy_enumeration",
+    "transport_root_choice_matches_strong_baseline",
+    "physical_transcripts_identical_after_forced_node_removal",
+    "transport_preserves_wait_refinement",
+    "transport_matches_full_terminal_policy_enumeration",
+    "transport_root_choice_matches_strong_baseline",
+    "transport_matches_full_terminal_policy_enumeration",
+    "transport_root_choice_matches_strong_baseline",
+    "physical_transcripts_identical_after_forced_node_removal",
+    "transport_preserves_wait_refinement",
+    "transport_matches_full_terminal_policy_enumeration",
+    "transport_root_choice_matches_strong_baseline",
+    "transport_matches_full_terminal_policy_enumeration",
+    "transport_root_choice_matches_strong_baseline",
+    "physical_transcripts_identical_after_forced_node_removal",
+    "transport_preserves_wait_refinement",
+    "transport_matches_full_terminal_policy_enumeration",
+    "transport_root_choice_matches_strong_baseline",
+    "transport_matches_full_terminal_policy_enumeration",
+    "transport_root_choice_matches_strong_baseline",
+    "physical_transcripts_identical_after_forced_node_removal",
+    "transport_preserves_wait_refinement",
+    "transport_matches_full_terminal_policy_enumeration",
+    "transport_root_choice_matches_strong_baseline",
+    "transport_matches_full_terminal_policy_enumeration",
+    "transport_root_choice_matches_strong_baseline",
+    "physical_transcripts_identical_after_forced_node_removal",
+    "transport_preserves_wait_refinement",
+    "transport_matches_full_terminal_policy_enumeration",
+    "transport_root_choice_matches_strong_baseline",
+    "transport_matches_full_terminal_policy_enumeration",
+    "transport_root_choice_matches_strong_baseline",
+    "physical_transcripts_identical_after_forced_node_removal",
+    "transport_preserves_wait_refinement",
+    "transport_matches_full_terminal_policy_enumeration",
+    "transport_root_choice_matches_strong_baseline",
+    "transport_matches_full_terminal_policy_enumeration",
+    "transport_root_choice_matches_strong_baseline",
+    "physical_transcripts_identical_after_forced_node_removal",
+    "transport_preserves_wait_refinement",
+    "no_discount_fixed_local_refinement_equivalence",
+    "transport_matches_full_terminal_policy_enumeration",
+    "transport_root_choice_matches_strong_baseline",
+    "transport_matches_full_terminal_policy_enumeration",
+    "transport_root_choice_matches_strong_baseline",
+    "physical_transcripts_identical_after_forced_node_removal",
+    "transport_preserves_wait_refinement",
+    "no_discount_fixed_local_refinement_equivalence",
+    "transport_matches_full_terminal_policy_enumeration",
+    "transport_root_choice_matches_strong_baseline",
+    "transport_matches_full_terminal_policy_enumeration",
+    "transport_root_choice_matches_strong_baseline",
+    "physical_transcripts_identical_after_forced_node_removal",
+    "transport_preserves_wait_refinement",
+    "no_discount_fixed_local_refinement_equivalence",
+    "transport_matches_full_terminal_policy_enumeration",
+    "transport_root_choice_matches_strong_baseline",
+    "transport_matches_full_terminal_policy_enumeration",
+    "transport_root_choice_matches_strong_baseline",
+    "physical_transcripts_identical_after_forced_node_removal",
+    "transport_preserves_wait_refinement",
+    "no_discount_fixed_local_refinement_equivalence",
+    "transport_matches_full_terminal_policy_enumeration",
+    "transport_root_choice_matches_strong_baseline",
+    "transport_matches_full_terminal_policy_enumeration",
+    "transport_root_choice_matches_strong_baseline",
+    "physical_transcripts_identical_after_forced_node_removal",
+    "transport_preserves_wait_refinement",
+    "no_discount_fixed_local_refinement_equivalence",
+    "transport_matches_full_terminal_policy_enumeration",
+    "transport_root_choice_matches_strong_baseline",
+    "transport_matches_full_terminal_policy_enumeration",
+    "transport_root_choice_matches_strong_baseline",
+    "physical_transcripts_identical_after_forced_node_removal",
+    "transport_preserves_wait_refinement",
+    "no_discount_fixed_local_refinement_equivalence",
+    "transport_matches_full_terminal_policy_enumeration",
+    "transport_root_choice_matches_strong_baseline",
+    "transport_matches_full_terminal_policy_enumeration",
+    "transport_root_choice_matches_strong_baseline",
+    "physical_transcripts_identical_after_forced_node_removal",
+    "transport_preserves_wait_refinement",
+    "no_discount_fixed_local_refinement_equivalence",
+    "transport_matches_full_terminal_policy_enumeration",
+    "transport_root_choice_matches_strong_baseline",
+    "transport_matches_full_terminal_policy_enumeration",
+    "transport_root_choice_matches_strong_baseline",
+    "physical_transcripts_identical_after_forced_node_removal",
+    "transport_preserves_wait_refinement",
+    "no_discount_fixed_local_refinement_equivalence",
+    "transport_matches_full_terminal_policy_enumeration",
+    "transport_root_choice_matches_strong_baseline",
+    "transport_matches_full_terminal_policy_enumeration",
+    "transport_root_choice_matches_strong_baseline",
+    "physical_transcripts_identical_after_forced_node_removal",
+    "transport_preserves_wait_refinement",
+    "no_discount_fixed_local_refinement_equivalence",
+    "transport_matches_full_terminal_policy_enumeration",
+    "transport_root_choice_matches_strong_baseline",
+    "transport_matches_full_terminal_policy_enumeration",
+    "transport_root_choice_matches_strong_baseline",
+    "physical_transcripts_identical_after_forced_node_removal",
+    "transport_preserves_wait_refinement",
+    "transport_matches_full_terminal_policy_enumeration",
+    "transport_root_choice_matches_strong_baseline",
+    "transport_matches_full_terminal_policy_enumeration",
+    "transport_root_choice_matches_strong_baseline",
+    "physical_transcripts_identical_after_forced_node_removal",
+    "transport_preserves_wait_refinement",
+    "transport_matches_full_terminal_policy_enumeration",
+    "transport_root_choice_matches_strong_baseline",
+    "transport_matches_full_terminal_policy_enumeration",
+    "transport_root_choice_matches_strong_baseline",
+    "physical_transcripts_identical_after_forced_node_removal",
+    "transport_preserves_wait_refinement",
+    "transport_matches_full_terminal_policy_enumeration",
+    "transport_root_choice_matches_strong_baseline",
+    "transport_matches_full_terminal_policy_enumeration",
+    "transport_root_choice_matches_strong_baseline",
+    "physical_transcripts_identical_after_forced_node_removal",
+    "transport_preserves_wait_refinement",
+    "transport_matches_full_terminal_policy_enumeration",
+    "transport_root_choice_matches_strong_baseline",
+    "transport_matches_full_terminal_policy_enumeration",
+    "transport_root_choice_matches_strong_baseline",
+    "physical_transcripts_identical_after_forced_node_removal",
+    "transport_preserves_wait_refinement",
+    "transport_matches_full_terminal_policy_enumeration",
+    "transport_root_choice_matches_strong_baseline",
+    "transport_matches_full_terminal_policy_enumeration",
+    "transport_root_choice_matches_strong_baseline",
+    "physical_transcripts_identical_after_forced_node_removal",
+    "transport_preserves_wait_refinement",
+    "transport_matches_full_terminal_policy_enumeration",
+    "transport_root_choice_matches_strong_baseline",
+    "transport_matches_full_terminal_policy_enumeration",
+    "transport_root_choice_matches_strong_baseline",
+    "physical_transcripts_identical_after_forced_node_removal",
+    "transport_preserves_wait_refinement",
+    "transport_matches_full_terminal_policy_enumeration",
+    "transport_root_choice_matches_strong_baseline",
+    "transport_matches_full_terminal_policy_enumeration",
+    "transport_root_choice_matches_strong_baseline",
+    "physical_transcripts_identical_after_forced_node_removal",
+    "transport_preserves_wait_refinement",
+    "transport_matches_full_terminal_policy_enumeration",
+    "transport_root_choice_matches_strong_baseline",
+    "transport_matches_full_terminal_policy_enumeration",
+    "transport_root_choice_matches_strong_baseline",
+    "physical_transcripts_identical_after_forced_node_removal",
+    "transport_preserves_wait_refinement",
+    "transport_matches_full_terminal_policy_enumeration",
+    "transport_root_choice_matches_strong_baseline",
+    "transport_matches_full_terminal_policy_enumeration",
+    "transport_root_choice_matches_strong_baseline",
+    "physical_transcripts_identical_after_forced_node_removal",
+    "transport_preserves_wait_refinement",
+    "transport_matches_full_terminal_policy_enumeration",
+    "transport_root_choice_matches_strong_baseline",
+    "transport_matches_full_terminal_policy_enumeration",
+    "transport_root_choice_matches_strong_baseline",
+    "physical_transcripts_identical_after_forced_node_removal",
+    "transport_preserves_wait_refinement",
+    "transport_matches_full_terminal_policy_enumeration",
+    "transport_root_choice_matches_strong_baseline",
+    "transport_matches_full_terminal_policy_enumeration",
+    "transport_root_choice_matches_strong_baseline",
+    "physical_transcripts_identical_after_forced_node_removal",
+    "transport_preserves_wait_refinement",
+    "transport_matches_full_terminal_policy_enumeration",
+    "transport_root_choice_matches_strong_baseline",
+    "transport_matches_full_terminal_policy_enumeration",
+    "transport_root_choice_matches_strong_baseline",
+    "physical_transcripts_identical_after_forced_node_removal",
+    "transport_preserves_wait_refinement",
+    "transport_matches_full_terminal_policy_enumeration",
+    "transport_root_choice_matches_strong_baseline",
+    "transport_matches_full_terminal_policy_enumeration",
+    "transport_root_choice_matches_strong_baseline",
+    "physical_transcripts_identical_after_forced_node_removal",
+    "transport_preserves_wait_refinement",
+    "transport_matches_full_terminal_policy_enumeration",
+    "transport_root_choice_matches_strong_baseline",
+    "transport_matches_full_terminal_policy_enumeration",
+    "transport_root_choice_matches_strong_baseline",
+    "physical_transcripts_identical_after_forced_node_removal",
+    "transport_preserves_wait_refinement",
+    "transport_matches_full_terminal_policy_enumeration",
+    "transport_root_choice_matches_strong_baseline",
+    "transport_matches_full_terminal_policy_enumeration",
+    "transport_root_choice_matches_strong_baseline",
+    "physical_transcripts_identical_after_forced_node_removal",
+    "transport_preserves_wait_refinement",
+    "transport_matches_full_terminal_policy_enumeration",
+    "transport_root_choice_matches_strong_baseline",
+    "transport_matches_full_terminal_policy_enumeration",
+    "transport_root_choice_matches_strong_baseline",
+    "physical_transcripts_identical_after_forced_node_removal",
+    "transport_preserves_wait_refinement",
+    "transport_matches_full_terminal_policy_enumeration",
+    "transport_root_choice_matches_strong_baseline",
+    "transport_matches_full_terminal_policy_enumeration",
+    "transport_root_choice_matches_strong_baseline",
+    "physical_transcripts_identical_after_forced_node_removal",
+    "transport_preserves_wait_refinement",
+    "transport_matches_full_terminal_policy_enumeration",
+    "transport_root_choice_matches_strong_baseline",
+    "transport_matches_full_terminal_policy_enumeration",
+    "transport_root_choice_matches_strong_baseline",
+    "physical_transcripts_identical_after_forced_node_removal",
+    "transport_preserves_wait_refinement",
+    "no_discount_fixed_local_refinement_equivalence",
+    "transport_matches_full_terminal_policy_enumeration",
+    "transport_root_choice_matches_strong_baseline",
+    "transport_matches_full_terminal_policy_enumeration",
+    "transport_root_choice_matches_strong_baseline",
+    "physical_transcripts_identical_after_forced_node_removal",
+    "transport_preserves_wait_refinement",
+    "no_discount_fixed_local_refinement_equivalence",
+    "transport_matches_full_terminal_policy_enumeration",
+    "transport_root_choice_matches_strong_baseline",
+    "transport_matches_full_terminal_policy_enumeration",
+    "transport_root_choice_matches_strong_baseline",
+    "physical_transcripts_identical_after_forced_node_removal",
+    "transport_preserves_wait_refinement",
+    "no_discount_fixed_local_refinement_equivalence",
+    "transport_matches_full_terminal_policy_enumeration",
+    "transport_root_choice_matches_strong_baseline",
+    "transport_matches_full_terminal_policy_enumeration",
+    "transport_root_choice_matches_strong_baseline",
+    "physical_transcripts_identical_after_forced_node_removal",
+    "transport_preserves_wait_refinement",
+    "no_discount_fixed_local_refinement_equivalence",
+    "transport_matches_full_terminal_policy_enumeration",
+    "transport_root_choice_matches_strong_baseline",
+    "transport_matches_full_terminal_policy_enumeration",
+    "transport_root_choice_matches_strong_baseline",
+    "physical_transcripts_identical_after_forced_node_removal",
+    "transport_preserves_wait_refinement",
+    "no_discount_fixed_local_refinement_equivalence",
+    "transport_matches_full_terminal_policy_enumeration",
+    "transport_root_choice_matches_strong_baseline",
+    "transport_matches_full_terminal_policy_enumeration",
+    "transport_root_choice_matches_strong_baseline",
+    "physical_transcripts_identical_after_forced_node_removal",
+    "transport_preserves_wait_refinement",
+    "no_discount_fixed_local_refinement_equivalence",
+    "transport_matches_full_terminal_policy_enumeration",
+    "transport_root_choice_matches_strong_baseline",
+    "transport_matches_full_terminal_policy_enumeration",
+    "transport_root_choice_matches_strong_baseline",
+    "physical_transcripts_identical_after_forced_node_removal",
+    "transport_preserves_wait_refinement",
+    "no_discount_fixed_local_refinement_equivalence",
+    "transport_matches_full_terminal_policy_enumeration",
+    "transport_root_choice_matches_strong_baseline",
+    "transport_matches_full_terminal_policy_enumeration",
+    "transport_root_choice_matches_strong_baseline",
+    "physical_transcripts_identical_after_forced_node_removal",
+    "transport_preserves_wait_refinement",
+    "no_discount_fixed_local_refinement_equivalence",
+    "transport_matches_full_terminal_policy_enumeration",
+    "transport_root_choice_matches_strong_baseline",
+    "transport_matches_full_terminal_policy_enumeration",
+    "transport_root_choice_matches_strong_baseline",
+    "physical_transcripts_identical_after_forced_node_removal",
+    "transport_preserves_wait_refinement",
+    "no_discount_fixed_local_refinement_equivalence",
+    "transport_matches_full_terminal_policy_enumeration",
+    "transport_root_choice_matches_strong_baseline",
+    "transport_matches_full_terminal_policy_enumeration",
+    "transport_root_choice_matches_strong_baseline",
+    "physical_transcripts_identical_after_forced_node_removal",
+    "transport_preserves_wait_refinement",
+    "transport_matches_full_terminal_policy_enumeration",
+    "transport_root_choice_matches_strong_baseline",
+    "transport_matches_full_terminal_policy_enumeration",
+    "transport_root_choice_matches_strong_baseline",
+    "physical_transcripts_identical_after_forced_node_removal",
+    "transport_preserves_wait_refinement",
+    "transport_matches_full_terminal_policy_enumeration",
+    "transport_root_choice_matches_strong_baseline",
+    "transport_matches_full_terminal_policy_enumeration",
+    "transport_root_choice_matches_strong_baseline",
+    "physical_transcripts_identical_after_forced_node_removal",
+    "transport_preserves_wait_refinement",
+    "transport_matches_full_terminal_policy_enumeration",
+    "transport_root_choice_matches_strong_baseline",
+    "transport_matches_full_terminal_policy_enumeration",
+    "transport_root_choice_matches_strong_baseline",
+    "physical_transcripts_identical_after_forced_node_removal",
+    "transport_preserves_wait_refinement",
+    "transport_matches_full_terminal_policy_enumeration",
+    "transport_root_choice_matches_strong_baseline",
+    "transport_matches_full_terminal_policy_enumeration",
+    "transport_root_choice_matches_strong_baseline",
+    "physical_transcripts_identical_after_forced_node_removal",
+    "transport_preserves_wait_refinement",
+    "transport_matches_full_terminal_policy_enumeration",
+    "transport_root_choice_matches_strong_baseline",
+    "transport_matches_full_terminal_policy_enumeration",
+    "transport_root_choice_matches_strong_baseline",
+    "physical_transcripts_identical_after_forced_node_removal",
+    "transport_preserves_wait_refinement",
+    "transport_matches_full_terminal_policy_enumeration",
+    "transport_root_choice_matches_strong_baseline",
+    "transport_matches_full_terminal_policy_enumeration",
+    "transport_root_choice_matches_strong_baseline",
+    "physical_transcripts_identical_after_forced_node_removal",
+    "transport_preserves_wait_refinement",
+    "transport_matches_full_terminal_policy_enumeration",
+    "transport_root_choice_matches_strong_baseline",
+    "transport_matches_full_terminal_policy_enumeration",
+    "transport_root_choice_matches_strong_baseline",
+    "physical_transcripts_identical_after_forced_node_removal",
+    "transport_preserves_wait_refinement",
+    "transport_matches_full_terminal_policy_enumeration",
+    "transport_root_choice_matches_strong_baseline",
+    "transport_matches_full_terminal_policy_enumeration",
+    "transport_root_choice_matches_strong_baseline",
+    "physical_transcripts_identical_after_forced_node_removal",
+    "transport_preserves_wait_refinement",
+    "transport_matches_full_terminal_policy_enumeration",
+    "transport_root_choice_matches_strong_baseline",
+    "transport_matches_full_terminal_policy_enumeration",
+    "transport_root_choice_matches_strong_baseline",
+    "physical_transcripts_identical_after_forced_node_removal",
+    "transport_preserves_wait_refinement",
+    "transport_matches_full_terminal_policy_enumeration",
+    "transport_root_choice_matches_strong_baseline",
+    "transport_matches_full_terminal_policy_enumeration",
+    "transport_root_choice_matches_strong_baseline",
+    "physical_transcripts_identical_after_forced_node_removal",
+    "transport_preserves_wait_refinement",
+    "transport_matches_full_terminal_policy_enumeration",
+    "transport_root_choice_matches_strong_baseline",
+    "transport_matches_full_terminal_policy_enumeration",
+    "transport_root_choice_matches_strong_baseline",
+    "physical_transcripts_identical_after_forced_node_removal",
+    "transport_preserves_wait_refinement",
+    "transport_matches_full_terminal_policy_enumeration",
+    "transport_root_choice_matches_strong_baseline",
+    "transport_matches_full_terminal_policy_enumeration",
+    "transport_root_choice_matches_strong_baseline",
+    "physical_transcripts_identical_after_forced_node_removal",
+    "transport_preserves_wait_refinement",
+    "transport_matches_full_terminal_policy_enumeration",
+    "transport_root_choice_matches_strong_baseline",
+    "transport_matches_full_terminal_policy_enumeration",
+    "transport_root_choice_matches_strong_baseline",
+    "physical_transcripts_identical_after_forced_node_removal",
+    "transport_preserves_wait_refinement",
+    "transport_matches_full_terminal_policy_enumeration",
+    "transport_root_choice_matches_strong_baseline",
+    "transport_matches_full_terminal_policy_enumeration",
+    "transport_root_choice_matches_strong_baseline",
+    "physical_transcripts_identical_after_forced_node_removal",
+    "transport_preserves_wait_refinement",
+    "transport_matches_full_terminal_policy_enumeration",
+    "transport_root_choice_matches_strong_baseline",
+    "transport_matches_full_terminal_policy_enumeration",
+    "transport_root_choice_matches_strong_baseline",
+    "physical_transcripts_identical_after_forced_node_removal",
+    "transport_preserves_wait_refinement",
+    "transport_matches_full_terminal_policy_enumeration",
+    "transport_root_choice_matches_strong_baseline",
+    "transport_matches_full_terminal_policy_enumeration",
+    "transport_root_choice_matches_strong_baseline",
+    "physical_transcripts_identical_after_forced_node_removal",
+    "transport_preserves_wait_refinement",
+    "transport_matches_full_terminal_policy_enumeration",
+    "transport_root_choice_matches_strong_baseline",
+    "transport_matches_full_terminal_policy_enumeration",
+    "transport_root_choice_matches_strong_baseline",
+    "physical_transcripts_identical_after_forced_node_removal",
+    "transport_preserves_wait_refinement",
+    "transport_matches_full_terminal_policy_enumeration",
+    "transport_root_choice_matches_strong_baseline",
+    "transport_matches_full_terminal_policy_enumeration",
+    "transport_root_choice_matches_strong_baseline",
+    "physical_transcripts_identical_after_forced_node_removal",
+    "transport_preserves_wait_refinement",
+    "no_discount_fixed_local_refinement_equivalence",
+    "transport_matches_full_terminal_policy_enumeration",
+    "transport_root_choice_matches_strong_baseline",
+    "transport_matches_full_terminal_policy_enumeration",
+    "transport_root_choice_matches_strong_baseline",
+    "physical_transcripts_identical_after_forced_node_removal",
+    "transport_preserves_wait_refinement",
+    "no_discount_fixed_local_refinement_equivalence",
+    "transport_matches_full_terminal_policy_enumeration",
+    "transport_root_choice_matches_strong_baseline",
+    "transport_matches_full_terminal_policy_enumeration",
+    "transport_root_choice_matches_strong_baseline",
+    "physical_transcripts_identical_after_forced_node_removal",
+    "transport_preserves_wait_refinement",
+    "no_discount_fixed_local_refinement_equivalence",
+    "transport_matches_full_terminal_policy_enumeration",
+    "transport_root_choice_matches_strong_baseline",
+    "transport_matches_full_terminal_policy_enumeration",
+    "transport_root_choice_matches_strong_baseline",
+    "physical_transcripts_identical_after_forced_node_removal",
+    "transport_preserves_wait_refinement",
+    "no_discount_fixed_local_refinement_equivalence",
+    "transport_matches_full_terminal_policy_enumeration",
+    "transport_root_choice_matches_strong_baseline",
+    "transport_matches_full_terminal_policy_enumeration",
+    "transport_root_choice_matches_strong_baseline",
+    "physical_transcripts_identical_after_forced_node_removal",
+    "transport_preserves_wait_refinement",
+    "no_discount_fixed_local_refinement_equivalence",
+    "transport_matches_full_terminal_policy_enumeration",
+    "transport_root_choice_matches_strong_baseline",
+    "transport_matches_full_terminal_policy_enumeration",
+    "transport_root_choice_matches_strong_baseline",
+    "physical_transcripts_identical_after_forced_node_removal",
+    "transport_preserves_wait_refinement",
+    "no_discount_fixed_local_refinement_equivalence",
+    "transport_matches_full_terminal_policy_enumeration",
+    "transport_root_choice_matches_strong_baseline",
+    "transport_matches_full_terminal_policy_enumeration",
+    "transport_root_choice_matches_strong_baseline",
+    "physical_transcripts_identical_after_forced_node_removal",
+    "transport_preserves_wait_refinement",
+    "no_discount_fixed_local_refinement_equivalence",
+    "transport_matches_full_terminal_policy_enumeration",
+    "transport_root_choice_matches_strong_baseline",
+    "transport_matches_full_terminal_policy_enumeration",
+    "transport_root_choice_matches_strong_baseline",
+    "physical_transcripts_identical_after_forced_node_removal",
+    "transport_preserves_wait_refinement",
+    "no_discount_fixed_local_refinement_equivalence",
+    "transport_matches_full_terminal_policy_enumeration",
+    "transport_root_choice_matches_strong_baseline",
+    "transport_matches_full_terminal_policy_enumeration",
+    "transport_root_choice_matches_strong_baseline",
+    "physical_transcripts_identical_after_forced_node_removal",
+    "transport_preserves_wait_refinement",
+    "no_discount_fixed_local_refinement_equivalence",
+    "representative_fixed_local_action_flip",
+    "representative_paid_headroom_above_STOP",
+    "random_duration_transport_equals_full_terminal_enumeration",
+    "random_duration_probe_matches_direct_terminal_CE",
+    "action_randomization_outside_CE_is_different_objective"
+  ],
+  "check_count": 518,
+  "all_pass": true,
+  "rows": [
+    {
+      "eta": "0.5",
+      "gamma": "0.5",
+      "p": "0.1",
+      "duration": 1,
+      "coarse": {
+        "transport_value": "0.16",
+        "transport_choice": "STOP",
+        "strong_value": "0.16",
+        "strong_choice": "STOP",
+        "fixed_local_value": "0.16",
+        "fixed_local_choice": "STOP",
+        "transport_probe_value": "0.034736471567070278805676088145356204916204300217692109506064968203262007449677445081987684212840164412551446294",
+        "fixed_local_probe_value": "0.034736471567070278805676088145356204916204300217692109506064968203262007449677445081987684212840164412551446294"
+      },
+      "refined": {
+        "transport_value": "0.16",
+        "transport_choice": "STOP",
+        "strong_value": "0.16",
+        "strong_choice": "STOP",
+        "fixed_local_value": "0.16",
+        "fixed_local_choice": "STOP",
+        "transport_probe_value": "0.034736471567070278805676088145356204916204300217692109506064968203262007449677445081987684212840164412551446294",
+        "fixed_local_probe_value": "0.030141948750405188547878497168877225543751280540893170915591774853407860922426855735313307735908416498072629677"
+      },
+      "same_physical_terminal_law": [
+        [
+          "0.1",
+          "0.49",
+          "1"
+        ],
+        [
+          "0.9",
+          "-0.01",
+          "1"
+        ]
+      ]
+    },
+    {
+      "eta": "0.5",
+      "gamma": "0.5",
+      "p": "0.1",
+      "duration": 2,
+      "coarse": {
+        "transport_value": "0.16",
+        "transport_choice": "STOP",
+        "strong_value": "0.16",
+        "strong_choice": "STOP",
+        "fixed_local_value": "0.16",
+        "fixed_local_choice": "STOP",
+        "transport_probe_value": "0.013639780459333954359480980817456745062664492954007184370310593847484715229383933354510913167272050270067915124",
+        "fixed_local_probe_value": "0.013639780459333954359480980817456745062664492954007184370310593847484715229383933354510913167272050270067915124"
+      },
+      "refined": {
+        "transport_value": "0.16",
+        "transport_choice": "STOP",
+        "strong_value": "0.16",
+        "strong_choice": "STOP",
+        "fixed_local_value": "0.16",
+        "fixed_local_choice": "STOP",
+        "transport_probe_value": "0.013639780459333954359480980817456745062664492954007184370310593847484715229383933354510913167272050270067915124",
+        "fixed_local_probe_value": "0.010070974375202594273939248584438612771875640270446585457795887426703930461213427867656653867954208249036314838"
+      },
+      "same_physical_terminal_law": [
+        [
+          "0.1",
+          "0.24",
+          "2"
+        ],
+        [
+          "0.9",
+          "-0.01",
+          "2"
+        ]
+      ]
+    },
+    {
+      "eta": "0.5",
+      "gamma": "0.5",
+      "p": "0.1",
+      "duration": 3,
+      "coarse": {
+        "transport_value": "0.16",
+        "transport_choice": "STOP",
+        "strong_value": "0.16",
+        "strong_choice": "STOP",
+        "fixed_local_value": "0.16",
+        "fixed_local_choice": "STOP",
+        "transport_probe_value": "0.002154244151315540375377110598297326779449476570272362582364795308698648508915021256099272517651230675059033573",
+        "fixed_local_probe_value": "0.002154244151315540375377110598297326779449476570272362582364795308698648508915021256099272517651230675059033573"
+      },
+      "refined": {
+        "transport_value": "0.16",
+        "transport_choice": "STOP",
+        "strong_value": "0.16",
+        "strong_choice": "STOP",
+        "fixed_local_value": "0.16",
+        "fixed_local_choice": "STOP",
+        "transport_probe_value": "0.002154244151315540375377110598297326779449476570272362582364795308698648508915021256099272517651230675059033573",
+        "fixed_local_probe_value": "0.000035487187601297136969624292219306385937820135223292728897943713351965230606713933828326933977104124518157419"
+      },
+      "same_physical_terminal_law": [
+        [
+          "0.1",
+          "0.115",
+          "3"
+        ],
+        [
+          "0.9",
+          "-0.010",
+          "3"
+        ]
+      ]
+    },
+    {
+      "eta": "0.5",
+      "gamma": "0.5",
+      "p": "0.5",
+      "duration": 1,
+      "coarse": {
+        "transport_value": "0.22441552136220349441879197959971725197065008985386185979432581383684732776375663854568605980671761665306712056",
+        "transport_choice": "probe",
+        "strong_value": "0.22441552136220349441879197959971725197065008985386185979432581383684732776375663854568605980671761665306712056",
+        "strong_choice": "probe",
+        "fixed_local_value": "0.22441552136220349441879197959971725197065008985386185979432581383684732776375663854568605980671761665306712056",
+        "fixed_local_choice": "probe",
+        "transport_probe_value": "0.22441552136220349441879197959971725197065008985386185979432581383684732776375663854568605980671761665306712056",
+        "fixed_local_probe_value": "0.22441552136220349441879197959971725197065008985386185979432581383684732776375663854568605980671761665306712056"
+      },
+      "refined": {
+        "transport_value": "0.22441552136220349441879197959971725197065008985386185979432581383684732776375663854568605980671761665306712056",
+        "transport_choice": "probe",
+        "strong_value": "0.22441552136220349441879197959971725197065008985386185979432581383684732776375663854568605980671761665306712056",
+        "strong_choice": "probe",
+        "fixed_local_value": "0.20907019637983862854423476637700581831990393969239241291986473439420008923019874079041813322480277946759610985",
+        "fixed_local_choice": "probe",
+        "transport_probe_value": "0.22441552136220349441879197959971725197065008985386185979432581383684732776375663854568605980671761665306712056",
+        "fixed_local_probe_value": "0.20907019637983862854423476637700581831990393969239241291986473439420008923019874079041813322480277946759610985"
+      },
+      "same_physical_terminal_law": [
+        [
+          "0.5",
+          "-0.01",
+          "1"
+        ],
+        [
+          "0.5",
+          "0.49",
+          "1"
+        ]
+      ]
+    },
+    {
+      "eta": "0.5",
+      "gamma": "0.5",
+      "p": "0.5",
+      "duration": 2,
+      "coarse": {
+        "transport_value": "0.16",
+        "transport_choice": "STOP",
+        "strong_value": "0.16",
+        "strong_choice": "STOP",
+        "fixed_local_value": "0.16",
+        "fixed_local_choice": "STOP",
+        "transport_probe_value": "0.11109629048555248634723541161787513340188798110130763845889484399716816804685464639357223950370860454300138863",
+        "fixed_local_probe_value": "0.11109629048555248634723541161787513340188798110130763845889484399716816804685464639357223950370860454300138863"
+      },
+      "refined": {
+        "transport_value": "0.16",
+        "transport_choice": "STOP",
+        "strong_value": "0.16",
+        "strong_choice": "STOP",
+        "fixed_local_value": "0.16",
+        "fixed_local_choice": "STOP",
+        "transport_probe_value": "0.11109629048555248634723541161787513340188798110130763845889484399716816804685464639357223950370860454300138864",
+        "fixed_local_probe_value": "0.09953509818991931427211738318850290915995196984619620645993236719710004461509937039520906661240138973379805492"
+      },
+      "same_physical_terminal_law": [
+        [
+          "0.5",
+          "-0.01",
+          "2"
+        ],
+        [
+          "0.5",
+          "0.24",
+          "2"
+        ]
+      ]
+    },
+    {
+      "eta": "0.5",
+      "gamma": "0.5",
+      "p": "0.5",
+      "duration": 3,
+      "coarse": {
+        "transport_value": "0.16",
+        "transport_choice": "STOP",
+        "strong_value": "0.16",
+        "strong_choice": "STOP",
+        "fixed_local_value": "0.16",
+        "fixed_local_choice": "STOP",
+        "transport_probe_value": "0.05152359640433955369105336551385021302860967911802981651090008415118219024463319907375097900182893973989063075",
+        "fixed_local_probe_value": "0.05152359640433955369105336551385021302860967911802981651090008415118219024463319907375097900182893973989063075"
+      },
+      "refined": {
+        "transport_value": "0.16",
+        "transport_choice": "STOP",
+        "strong_value": "0.16",
+        "strong_choice": "STOP",
+        "fixed_local_value": "0.16",
+        "fixed_local_choice": "STOP",
+        "transport_probe_value": "0.051523596404339553691053365513850213028609679118029816510900084151182190244633199073750979001828939739890630750",
+        "fixed_local_probe_value": "0.044767549094959657136058691594251454579975984923098103229966183598550022307549685197604533306200694866899027462"
+      },
+      "same_physical_terminal_law": [
+        [
+          "0.5",
+          "-0.010",
+          "3"
+        ],
+        [
+          "0.5",
+          "0.115",
+          "3"
+        ]
+      ]
+    },
+    {
+      "eta": "0.5",
+      "gamma": "0.5",
+      "p": "0.9",
+      "duration": 1,
+      "coarse": {
+        "transport_value": "0.43398666422935970040715705917879782166094318715220709814646969278801334194066629829226976951515603261925720946",
+        "transport_choice": "probe",
+        "strong_value": "0.43398666422935970040715705917879782166094318715220709814646969278801334194066629829226976951515603261925720946",
+        "strong_choice": "probe",
+        "fixed_local_value": "0.43398666422935970040715705917879782166094318715220709814646969278801334194066629829226976951515603261925720946",
+        "fixed_local_choice": "probe",
+        "transport_probe_value": "0.43398666422935970040715705917879782166094318715220709814646969278801334194066629829226976951515603261925720946",
+        "fixed_local_probe_value": "0.43398666422935970040715705917879782166094318715220709814646969278801334194066629829226976951515603261925720946"
+      },
+      "refined": {
+        "transport_value": "0.43398666422935970040715705917879782166094318715220709814646969278801334194066629829226976951515603261925720946",
+        "transport_choice": "probe",
+        "strong_value": "0.43398666422935970040715705917879782166094318715220709814646969278801334194066629829226976951515603261925720946",
+        "strong_choice": "probe",
+        "fixed_local_value": "0.42714527652626961824108199176402097744348519269167155738798346002959255690036071152737087294167373798132268718",
+        "fixed_local_choice": "probe",
+        "transport_probe_value": "0.43398666422935970040715705917879782166094318715220709814646969278801334194066629829226976951515603261925720946",
+        "fixed_local_probe_value": "0.42714527652626961824108199176402097744348519269167155738798346002959255690036071152737087294167373798132268718"
+      },
+      "same_physical_terminal_law": [
+        [
+          "0.1",
+          "-0.01",
+          "1"
+        ],
+        [
+          "0.9",
+          "0.49",
+          "1"
+        ]
+      ]
+    },
+    {
+      "eta": "0.5",
+      "gamma": "0.5",
+      "p": "0.9",
+      "duration": 2,
+      "coarse": {
+        "transport_value": "0.21354603635911843402096729096957964865835452740759472354728835293525365489614774265785745040064078364564121134",
+        "transport_choice": "probe",
+        "strong_value": "0.21354603635911843402096729096957964865835452740759472354728835293525365489614774265785745040064078364564121134",
+        "strong_choice": "probe",
+        "fixed_local_value": "0.21354603635911843402096729096957964865835452740759472354728835293525365489614774265785745040064078364564121134",
+        "fixed_local_choice": "probe",
+        "transport_probe_value": "0.21354603635911843402096729096957964865835452740759472354728835293525365489614774265785745040064078364564121134",
+        "fixed_local_probe_value": "0.21354603635911843402096729096957964865835452740759472354728835293525365489614774265785745040064078364564121134"
+      },
+      "refined": {
+        "transport_value": "0.21354603635911843402096729096957964865835452740759472354728835293525365489614774265785745040064078364564121134",
+        "transport_choice": "probe",
+        "strong_value": "0.21354603635911843402096729096957964865835452740759472354728835293525365489614774265785745040064078364564121134",
+        "strong_choice": "probe",
+        "fixed_local_value": "0.20857263826313480912054099588201048872174259634583577869399173001479627845018035576368543647083686899066134359",
+        "fixed_local_choice": "probe",
+        "transport_probe_value": "0.21354603635911843402096729096957964865835452740759472354728835293525365489614774265785745040064078364564121134",
+        "fixed_local_probe_value": "0.20857263826313480912054099588201048872174259634583577869399173001479627845018035576368543647083686899066134359"
+      },
+      "same_physical_terminal_law": [
+        [
+          "0.1",
+          "-0.01",
+          "2"
+        ],
+        [
+          "0.9",
+          "0.24",
+          "2"
+        ]
+      ]
+    },
+    {
+      "eta": "0.5",
+      "gamma": "0.5",
+      "p": "0.9",
+      "duration": 3,
+      "coarse": {
+        "transport_value": "0.16",
+        "transport_choice": "STOP",
+        "strong_value": "0.16",
+        "strong_choice": "STOP",
+        "fixed_local_value": "0.16",
+        "fixed_local_choice": "STOP",
+        "transport_probe_value": "0.10214252558473686237295087075637411612967500432880380259984825378704721916925006227423962465609291468432477012",
+        "fixed_local_probe_value": "0.10214252558473686237295087075637411612967500432880380259984825378704721916925006227423962465609291468432477012"
+      },
+      "refined": {
+        "transport_value": "0.16",
+        "transport_choice": "STOP",
+        "strong_value": "0.16",
+        "strong_choice": "STOP",
+        "fixed_local_value": "0.16",
+        "fixed_local_choice": "STOP",
+        "transport_probe_value": "0.10214252558473686237295087075637411612967500432880380259984825378704721916925006227423962465609291468432477012",
+        "fixed_local_probe_value": "0.09928631913156740456027049794100524436087129817291788934699586500739813922509017788184271823541843449533067180"
+      },
+      "same_physical_terminal_law": [
+        [
+          "0.1",
+          "-0.010",
+          "3"
+        ],
+        [
+          "0.9",
+          "0.115",
+          "3"
+        ]
+      ]
+    },
+    {
+      "eta": "0.5",
+      "gamma": "0.8",
+      "p": "0.1",
+      "duration": 1,
+      "coarse": {
+        "transport_value": "0.16",
+        "transport_choice": "STOP",
+        "strong_value": "0.16",
+        "strong_choice": "STOP",
+        "fixed_local_value": "0.16",
+        "fixed_local_choice": "STOP",
+        "transport_probe_value": "0.057047374557270420985168859045425585296179242278456365058181553654591214279494794823995729874484716702816171448",
+        "fixed_local_probe_value": "0.057047374557270420985168859045425585296179242278456365058181553654591214279494794823995729874484716702816171448"
+      },
+      "refined": {
+        "transport_value": "0.16",
+        "transport_choice": "STOP",
+        "strong_value": "0.16",
+        "strong_choice": "STOP",
+        "fixed_local_value": "0.16",
+        "fixed_local_choice": "STOP",
+        "transport_probe_value": "0.057047374557270420985168859045425585296179242278456365058181553654591214279494794823995729874484716702816171448",
+        "fixed_local_probe_value": "0.054227118000648301676605595470203560870002048865429073464946839765452577475882969176501292377453466396916207483"
+      },
+      "same_physical_terminal_law": [
+        [
+          "0.1",
+          "0.79",
+          "1"
+        ],
+        [
+          "0.9",
+          "-0.01",
+          "1"
+        ]
+      ]
+    },
+    {
+      "eta": "0.5",
+      "gamma": "0.8",
+      "p": "0.1",
+      "duration": 2,
+      "coarse": {
+        "transport_value": "0.16",
+        "transport_choice": "STOP",
+        "strong_value": "0.16",
+        "strong_choice": "STOP",
+        "fixed_local_value": "0.16",
+        "fixed_local_choice": "STOP",
+        "transport_probe_value": "0.045534115113159006669378300269271149352060973416163859451571827971495074421755677220152906039024270787090385828",
+        "fixed_local_probe_value": "0.045534115113159006669378300269271149352060973416163859451571827971495074421755677220152906039024270787090385828"
+      },
+      "refined": {
+        "transport_value": "0.16",
+        "transport_choice": "STOP",
+        "strong_value": "0.16",
+        "strong_choice": "STOP",
+        "fixed_local_value": "0.16",
+        "fixed_local_choice": "STOP",
+        "transport_probe_value": "0.045534115113159006669378300269271149352060973416163859451571827971495074421755677220152906039024270787090385828",
+        "fixed_local_probe_value": "0.041381694400518641341284476376162848696001639092343258771957471812362061980706375341201033901962773117532965987"
+      },
+      "same_physical_terminal_law": [
+        [
+          "0.1",
+          "0.63",
+          "2"
+        ],
+        [
+          "0.9",
+          "-0.01",
+          "2"
+        ]
+      ]
+    },
+    {
+      "eta": "0.5",
+      "gamma": "0.8",
+      "p": "0.1",
+      "duration": 3,
+      "coarse": {
+        "transport_value": "0.16",
+        "transport_choice": "STOP",
+        "strong_value": "0.16",
+        "strong_choice": "STOP",
+        "fixed_local_value": "0.16",
+        "fixed_local_choice": "STOP",
+        "transport_probe_value": "0.035689538208023710111658651116708993466359403594994940983630700412296262786207535118857729556921443701975473692",
+        "fixed_local_probe_value": "0.035689538208023710111658651116708993466359403594994940983630700412296262786207535118857729556921443701975473692"
+      },
+      "refined": {
+        "transport_value": "0.16",
+        "transport_choice": "STOP",
+        "strong_value": "0.16",
+        "strong_choice": "STOP",
+        "fixed_local_value": "0.16",
+        "fixed_local_choice": "STOP",
+        "transport_probe_value": "0.035689538208023710111658651116708993466359403594994940983630700412296262786207535118857729556921443701975473692",
+        "fixed_local_probe_value": "0.031105355520414913073027581100930278956801311273874607017565977449889649584565100272960827121570218494026372789"
+      },
+      "same_physical_terminal_law": [
+        [
+          "0.1",
+          "0.502",
+          "3"
+        ],
+        [
+          "0.9",
+          "-0.010",
+          "3"
+        ]
+      ]
+    },
+    {
+      "eta": "0.5",
+      "gamma": "0.8",
+      "p": "0.5",
+      "duration": 1,
+      "coarse": {
+        "transport_value": "0.3502638563199853714977203412245281496136939387085381875191599060834750900097076903212911978261740534044345828",
+        "transport_choice": "probe",
+        "strong_value": "0.3502638563199853714977203412245281496136939387085381875191599060834750900097076903212911978261740534044345828",
+        "strong_choice": "probe",
+        "fixed_local_value": "0.3502638563199853714977203412245281496136939387085381875191599060834750900097076903212911978261740534044345828",
+        "fixed_local_choice": "probe",
+        "transport_probe_value": "0.3502638563199853714977203412245281496136939387085381875191599060834750900097076903212911978261740534044345828",
+        "fixed_local_probe_value": "0.3502638563199853714977203412245281496136939387085381875191599060834750900097076903212911978261740534044345828"
+      },
+      "refined": {
+        "transport_value": "0.35026385631998537149772034122452814961369393870853818751915990608347509000970769032129119782617405340443458280",
+        "transport_choice": "probe",
+        "strong_value": "0.3502638563199853714977203412245281496136939387085381875191599060834750900097076903212911978261740534044345828",
+        "strong_choice": "probe",
+        "fixed_local_value": "0.34051231420774180567077562620320930931184630350782786067178357503072014276831798526466901315968444714815377576",
+        "fixed_local_choice": "probe",
+        "transport_probe_value": "0.35026385631998537149772034122452814961369393870853818751915990608347509000970769032129119782617405340443458280",
+        "fixed_local_probe_value": "0.34051231420774180567077562620320930931184630350782786067178357503072014276831798526466901315968444714815377576"
+      },
+      "same_physical_terminal_law": [
+        [
+          "0.5",
+          "-0.01",
+          "1"
+        ],
+        [
+          "0.5",
+          "0.79",
+          "1"
+        ]
+      ]
+    },
+    {
+      "eta": "0.5",
+      "gamma": "0.8",
+      "p": "0.5",
+      "duration": 2,
+      "coarse": {
+        "transport_value": "0.2845084867597399857901669566894728104156931067437882894171505610683733845233678844640511137708409848529311604",
+        "transport_choice": "probe",
+        "strong_value": "0.2845084867597399857901669566894728104156931067437882894171505610683733845233678844640511137708409848529311604",
+        "strong_choice": "probe",
+        "fixed_local_value": "0.2845084867597399857901669566894728104156931067437882894171505610683733845233678844640511137708409848529311604",
+        "fixed_local_choice": "probe",
+        "transport_probe_value": "0.2845084867597399857901669566894728104156931067437882894171505610683733845233678844640511137708409848529311604",
+        "fixed_local_probe_value": "0.2845084867597399857901669566894728104156931067437882894171505610683733845233678844640511137708409848529311604"
+      },
+      "refined": {
+        "transport_value": "0.28450848675973998579016695668947281041569310674378828941715056106837338452336788446405111377084098485293116040",
+        "transport_choice": "probe",
+        "strong_value": "0.2845084867597399857901669566894728104156931067437882894171505610683733845233678844640511137708409848529311604",
+        "strong_choice": "probe",
+        "fixed_local_value": "0.27040985136619344453662050096256744744947704280626228853742686002457611421465438821173521052774755771852302061",
+        "fixed_local_choice": "probe",
+        "transport_probe_value": "0.28450848675973998579016695668947281041569310674378828941715056106837338452336788446405111377084098485293116040",
+        "fixed_local_probe_value": "0.27040985136619344453662050096256744744947704280626228853742686002457611421465438821173521052774755771852302061"
+      },
+      "same_physical_terminal_law": [
+        [
+          "0.5",
+          "-0.01",
+          "2"
+        ],
+        [
+          "0.5",
+          "0.63",
+          "2"
+        ]
+      ]
+    },
+    {
+      "eta": "0.5",
+      "gamma": "0.8",
+      "p": "0.5",
+      "duration": 3,
+      "coarse": {
+        "transport_value": "0.22966054474100309831440995953891419836064158338215698684917425254061835485009846888183232123674227766958963264",
+        "transport_choice": "probe",
+        "strong_value": "0.22966054474100309831440995953891419836064158338215698684917425254061835485009846888183232123674227766958963264",
+        "strong_choice": "probe",
+        "fixed_local_value": "0.22966054474100309831440995953891419836064158338215698684917425254061835485009846888183232123674227766958963264",
+        "fixed_local_choice": "probe",
+        "transport_probe_value": "0.22966054474100309831440995953891419836064158338215698684917425254061835485009846888183232123674227766958963264",
+        "fixed_local_probe_value": "0.22966054474100309831440995953891419836064158338215698684917425254061835485009846888183232123674227766958963264"
+      },
+      "refined": {
+        "transport_value": "0.22966054474100309831440995953891419836064158338215698684917425254061835485009846888183232123674227766958963264",
+        "transport_choice": "probe",
+        "strong_value": "0.22966054474100309831440995953891419836064158338215698684917425254061835485009846888183232123674227766958963264",
+        "strong_choice": "probe",
+        "fixed_local_value": "0.21432788109295475562929640077005395795958163424500983082994148801966089137172351056938816842219804617481841649",
+        "fixed_local_choice": "probe",
+        "transport_probe_value": "0.22966054474100309831440995953891419836064158338215698684917425254061835485009846888183232123674227766958963264",
+        "fixed_local_probe_value": "0.21432788109295475562929640077005395795958163424500983082994148801966089137172351056938816842219804617481841649"
+      },
+      "same_physical_terminal_law": [
+        [
+          "0.5",
+          "-0.010",
+          "3"
+        ],
+        [
+          "0.5",
+          "0.502",
+          "3"
+        ]
+      ]
+    },
+    {
+      "eta": "0.5",
+      "gamma": "0.8",
+      "p": "0.9",
+      "duration": 1,
+      "coarse": {
+        "transport_value": "0.6939774786435793219692518011147654245191894427201940261351263556880309590900643637653557918612866113784294865",
+        "transport_choice": "probe",
+        "strong_value": "0.6939774786435793219692518011147654245191894427201940261351263556880309590900643637653557918612866113784294865",
+        "strong_choice": "probe",
+        "fixed_local_value": "0.6939774786435793219692518011147654245191894427201940261351263556880309590900643637653557918612866113784294865",
+        "fixed_local_choice": "probe",
+        "transport_probe_value": "0.6939774786435793219692518011147654245191894427201940261351263556880309590900643637653557918612866113784294865",
+        "fixed_local_probe_value": "0.6939774786435793219692518011147654245191894427201940261351263556880309590900643637653557918612866113784294865"
+      },
+      "refined": {
+        "transport_value": "0.69397747864357932196925180111476542451918944272019402613512635568803095909006436376535579186128661137842948650",
+        "transport_choice": "probe",
+        "strong_value": "0.6939774786435793219692518011147654245191894427201940261351263556880309590900643637653557918612866113784294865",
+        "strong_choice": "probe",
+        "fixed_local_value": "0.68943244244203138918573118682243356390957630830667449182077353604734809104057713844379339670667798077011629949",
+        "fixed_local_choice": "probe",
+        "transport_probe_value": "0.69397747864357932196925180111476542451918944272019402613512635568803095909006436376535579186128661137842948650",
+        "fixed_local_probe_value": "0.68943244244203138918573118682243356390957630830667449182077353604734809104057713844379339670667798077011629949"
+      },
+      "same_physical_terminal_law": [
+        [
+          "0.1",
+          "-0.01",
+          "1"
+        ],
+        [
+          "0.9",
+          "0.79",
+          "1"
+        ]
+      ]
+    },
+    {
+      "eta": "0.5",
+      "gamma": "0.8",
+      "p": "0.9",
+      "duration": 2,
+      "coarse": {
+        "transport_value": "0.55596192437071304063083062143652492525360261826179352616582282580366497942451217766200227786387433803522180562",
+        "transport_choice": "probe",
+        "strong_value": "0.55596192437071304063083062143652492525360261826179352616582282580366497942451217766200227786387433803522180562",
+        "strong_choice": "probe",
+        "fixed_local_value": "0.55596192437071304063083062143652492525360261826179352616582282580366497942451217766200227786387433803522180562",
+        "fixed_local_choice": "probe",
+        "transport_probe_value": "0.55596192437071304063083062143652492525360261826179352616582282580366497942451217766200227786387433803522180562",
+        "fixed_local_probe_value": "0.55596192437071304063083062143652492525360261826179352616582282580366497942451217766200227786387433803522180562"
+      },
+      "refined": {
+        "transport_value": "0.55596192437071304063083062143652492525360261826179352616582282580366497942451217766200227786387433803522180562",
+        "transport_choice": "probe",
+        "strong_value": "0.55596192437071304063083062143652492525360261826179352616582282580366497942451217766200227786387433803522180562",
+        "strong_choice": "probe",
+        "fixed_local_value": "0.54954595395362511134858494945794685112766104664533959345661882883787847283246171075503471736534238461609303959",
+        "fixed_local_choice": "probe",
+        "transport_probe_value": "0.55596192437071304063083062143652492525360261826179352616582282580366497942451217766200227786387433803522180562",
+        "fixed_local_probe_value": "0.54954595395362511134858494945794685112766104664533959345661882883787847283246171075503471736534238461609303959"
+      },
+      "same_physical_terminal_law": [
+        [
+          "0.1",
+          "-0.01",
+          "2"
+        ],
+        [
+          "0.9",
+          "0.63",
+          "2"
+        ]
+      ]
+    },
+    {
+      "eta": "0.5",
+      "gamma": "0.8",
+      "p": "0.9",
+      "duration": 3,
+      "coarse": {
+        "transport_value": "0.4444844490400365174164828829560707082883235761542753909340149877505967648987272821385963153149199755206869531",
+        "transport_choice": "probe",
+        "strong_value": "0.4444844490400365174164828829560707082883235761542753909340149877505967648987272821385963153149199755206869531",
+        "strong_choice": "probe",
+        "fixed_local_value": "0.4444844490400365174164828829560707082883235761542753909340149877505967648987272821385963153149199755206869531",
+        "fixed_local_choice": "probe",
+        "transport_probe_value": "0.4444844490400365174164828829560707082883235761542753909340149877505967648987272821385963153149199755206869531",
+        "fixed_local_probe_value": "0.4444844490400365174164828829560707082883235761542753909340149877505967648987272821385963153149199755206869531"
+      },
+      "refined": {
+        "transport_value": "0.44448444904003651741648288295607070828832357615427539093401498775059676489872728213859631531491997552068695310",
+        "transport_choice": "probe",
+        "strong_value": "0.4444844490400365174164828829560707082883235761542753909340149877505967648987272821385963153149199755206869531",
+        "strong_choice": "probe",
+        "fixed_local_value": "0.43763676316290008907886795956635748090212883731627167476529506307030277826596936860402777389227390769287443167",
+        "fixed_local_choice": "probe",
+        "transport_probe_value": "0.44448444904003651741648288295607070828832357615427539093401498775059676489872728213859631531491997552068695310",
+        "fixed_local_probe_value": "0.43763676316290008907886795956635748090212883731627167476529506307030277826596936860402777389227390769287443167"
+      },
+      "same_physical_terminal_law": [
+        [
+          "0.1",
+          "-0.010",
+          "3"
+        ],
+        [
+          "0.9",
+          "0.502",
+          "3"
+        ]
+      ]
+    },
+    {
+      "eta": "0.5",
+      "gamma": "1",
+      "p": "0.1",
+      "duration": 1,
+      "coarse": {
+        "transport_value": "0.16",
+        "transport_choice": "STOP",
+        "strong_value": "0.16",
+        "strong_choice": "STOP",
+        "fixed_local_value": "0.16",
+        "fixed_local_choice": "STOP",
+        "transport_probe_value": "0.070283897500810377095756994337754451087502561081786341831183549706815721844853711470626615471816832996145259354",
+        "fixed_local_probe_value": "0.070283897500810377095756994337754451087502561081786341831183549706815721844853711470626615471816832996145259354"
+      },
+      "refined": {
+        "transport_value": "0.16",
+        "transport_choice": "STOP",
+        "strong_value": "0.16",
+        "strong_choice": "STOP",
+        "fixed_local_value": "0.16",
+        "fixed_local_choice": "STOP",
+        "transport_probe_value": "0.070283897500810377095756994337754451087502561081786341831183549706815721844853711470626615471816832996145259354",
+        "fixed_local_probe_value": "0.070283897500810377095756994337754451087502561081786341831183549706815721844853711470626615471816832996145259354"
+      },
+      "same_physical_terminal_law": [
+        [
+          "0.1",
+          "0.99",
+          "1"
+        ],
+        [
+          "0.9",
+          "-0.01",
+          "1"
+        ]
+      ]
+    },
+    {
+      "eta": "0.5",
+      "gamma": "1",
+      "p": "0.1",
+      "duration": 2,
+      "coarse": {
+        "transport_value": "0.16",
+        "transport_choice": "STOP",
+        "strong_value": "0.16",
+        "strong_choice": "STOP",
+        "fixed_local_value": "0.16",
+        "fixed_local_choice": "STOP",
+        "transport_probe_value": "0.070283897500810377095756994337754451087502561081786341831183549706815721844853711470626615471816832996145259354",
+        "fixed_local_probe_value": "0.070283897500810377095756994337754451087502561081786341831183549706815721844853711470626615471816832996145259354"
+      },
+      "refined": {
+        "transport_value": "0.16",
+        "transport_choice": "STOP",
+        "strong_value": "0.16",
+        "strong_choice": "STOP",
+        "fixed_local_value": "0.16",
+        "fixed_local_choice": "STOP",
+        "transport_probe_value": "0.070283897500810377095756994337754451087502561081786341831183549706815721844853711470626615471816832996145259354",
+        "fixed_local_probe_value": "0.070283897500810377095756994337754451087502561081786341831183549706815721844853711470626615471816832996145259354"
+      },
+      "same_physical_terminal_law": [
+        [
+          "0.1",
+          "0.99",
+          "2"
+        ],
+        [
+          "0.9",
+          "-0.01",
+          "2"
+        ]
+      ]
+    },
+    {
+      "eta": "0.5",
+      "gamma": "1",
+      "p": "0.1",
+      "duration": 3,
+      "coarse": {
+        "transport_value": "0.16",
+        "transport_choice": "STOP",
+        "strong_value": "0.16",
+        "strong_choice": "STOP",
+        "fixed_local_value": "0.16",
+        "fixed_local_choice": "STOP",
+        "transport_probe_value": "0.070283897500810377095756994337754451087502561081786341831183549706815721844853711470626615471816832996145259354",
+        "fixed_local_probe_value": "0.070283897500810377095756994337754451087502561081786341831183549706815721844853711470626615471816832996145259354"
+      },
+      "refined": {
+        "transport_value": "0.16",
+        "transport_choice": "STOP",
+        "strong_value": "0.16",
+        "strong_choice": "STOP",
+        "fixed_local_value": "0.16",
+        "fixed_local_choice": "STOP",
+        "transport_probe_value": "0.070283897500810377095756994337754451087502561081786341831183549706815721844853711470626615471816832996145259354",
+        "fixed_local_probe_value": "0.070283897500810377095756994337754451087502561081786341831183549706815721844853711470626615471816832996145259354"
+      },
+      "same_physical_terminal_law": [
+        [
+          "0.1",
+          "0.99",
+          "3"
+        ],
+        [
+          "0.9",
+          "-0.01",
+          "3"
+        ]
+      ]
+    },
+    {
+      "eta": "0.5",
+      "gamma": "1",
+      "p": "0.5",
+      "duration": 1,
+      "coarse": {
+        "transport_value": "0.4281403927596772570884695327540116366398078793847848258397294687884001784603974815808362664496055589351922197",
+        "transport_choice": "probe",
+        "strong_value": "0.4281403927596772570884695327540116366398078793847848258397294687884001784603974815808362664496055589351922197",
+        "strong_choice": "probe",
+        "fixed_local_value": "0.4281403927596772570884695327540116366398078793847848258397294687884001784603974815808362664496055589351922197",
+        "fixed_local_choice": "probe",
+        "transport_probe_value": "0.4281403927596772570884695327540116366398078793847848258397294687884001784603974815808362664496055589351922197",
+        "fixed_local_probe_value": "0.4281403927596772570884695327540116366398078793847848258397294687884001784603974815808362664496055589351922197"
+      },
+      "refined": {
+        "transport_value": "0.4281403927596772570884695327540116366398078793847848258397294687884001784603974815808362664496055589351922197",
+        "transport_choice": "probe",
+        "strong_value": "0.4281403927596772570884695327540116366398078793847848258397294687884001784603974815808362664496055589351922197",
+        "strong_choice": "probe",
+        "fixed_local_value": "0.4281403927596772570884695327540116366398078793847848258397294687884001784603974815808362664496055589351922197",
+        "fixed_local_choice": "probe",
+        "transport_probe_value": "0.4281403927596772570884695327540116366398078793847848258397294687884001784603974815808362664496055589351922197",
+        "fixed_local_probe_value": "0.4281403927596772570884695327540116366398078793847848258397294687884001784603974815808362664496055589351922197"
+      },
+      "same_physical_terminal_law": [
+        [
+          "0.5",
+          "-0.01",
+          "1"
+        ],
+        [
+          "0.5",
+          "0.99",
+          "1"
+        ]
+      ]
+    },
+    {
+      "eta": "0.5",
+      "gamma": "1",
+      "p": "0.5",
+      "duration": 2,
+      "coarse": {
+        "transport_value": "0.4281403927596772570884695327540116366398078793847848258397294687884001784603974815808362664496055589351922197",
+        "transport_choice": "probe",
+        "strong_value": "0.4281403927596772570884695327540116366398078793847848258397294687884001784603974815808362664496055589351922197",
+        "strong_choice": "probe",
+        "fixed_local_value": "0.4281403927596772570884695327540116366398078793847848258397294687884001784603974815808362664496055589351922197",
+        "fixed_local_choice": "probe",
+        "transport_probe_value": "0.4281403927596772570884695327540116366398078793847848258397294687884001784603974815808362664496055589351922197",
+        "fixed_local_probe_value": "0.4281403927596772570884695327540116366398078793847848258397294687884001784603974815808362664496055589351922197"
+      },
+      "refined": {
+        "transport_value": "0.4281403927596772570884695327540116366398078793847848258397294687884001784603974815808362664496055589351922197",
+        "transport_choice": "probe",
+        "strong_value": "0.4281403927596772570884695327540116366398078793847848258397294687884001784603974815808362664496055589351922197",
+        "strong_choice": "probe",
+        "fixed_local_value": "0.4281403927596772570884695327540116366398078793847848258397294687884001784603974815808362664496055589351922197",
+        "fixed_local_choice": "probe",
+        "transport_probe_value": "0.4281403927596772570884695327540116366398078793847848258397294687884001784603974815808362664496055589351922197",
+        "fixed_local_probe_value": "0.4281403927596772570884695327540116366398078793847848258397294687884001784603974815808362664496055589351922197"
+      },
+      "same_physical_terminal_law": [
+        [
+          "0.5",
+          "-0.01",
+          "2"
+        ],
+        [
+          "0.5",
+          "0.99",
+          "2"
+        ]
+      ]
+    },
+    {
+      "eta": "0.5",
+      "gamma": "1",
+      "p": "0.5",
+      "duration": 3,
+      "coarse": {
+        "transport_value": "0.4281403927596772570884695327540116366398078793847848258397294687884001784603974815808362664496055589351922197",
+        "transport_choice": "probe",
+        "strong_value": "0.4281403927596772570884695327540116366398078793847848258397294687884001784603974815808362664496055589351922197",
+        "strong_choice": "probe",
+        "fixed_local_value": "0.4281403927596772570884695327540116366398078793847848258397294687884001784603974815808362664496055589351922197",
+        "fixed_local_choice": "probe",
+        "transport_probe_value": "0.4281403927596772570884695327540116366398078793847848258397294687884001784603974815808362664496055589351922197",
+        "fixed_local_probe_value": "0.4281403927596772570884695327540116366398078793847848258397294687884001784603974815808362664496055589351922197"
+      },
+      "refined": {
+        "transport_value": "0.4281403927596772570884695327540116366398078793847848258397294687884001784603974815808362664496055589351922197",
+        "transport_choice": "probe",
+        "strong_value": "0.4281403927596772570884695327540116366398078793847848258397294687884001784603974815808362664496055589351922197",
+        "strong_choice": "probe",
+        "fixed_local_value": "0.4281403927596772570884695327540116366398078793847848258397294687884001784603974815808362664496055589351922197",
+        "fixed_local_choice": "probe",
+        "transport_probe_value": "0.4281403927596772570884695327540116366398078793847848258397294687884001784603974815808362664496055589351922197",
+        "fixed_local_probe_value": "0.4281403927596772570884695327540116366398078793847848258397294687884001784603974815808362664496055589351922197"
+      },
+      "same_physical_terminal_law": [
+        [
+          "0.5",
+          "-0.01",
+          "3"
+        ],
+        [
+          "0.5",
+          "0.99",
+          "3"
+        ]
+      ]
+    },
+    {
+      "eta": "0.5",
+      "gamma": "1",
+      "p": "0.9",
+      "duration": 1,
+      "coarse": {
+        "transport_value": "0.86429055305253923648216398352804195488697038538334311477596692005918511380072142305474174588334747596264537436",
+        "transport_choice": "probe",
+        "strong_value": "0.86429055305253923648216398352804195488697038538334311477596692005918511380072142305474174588334747596264537436",
+        "strong_choice": "probe",
+        "fixed_local_value": "0.86429055305253923648216398352804195488697038538334311477596692005918511380072142305474174588334747596264537436",
+        "fixed_local_choice": "probe",
+        "transport_probe_value": "0.86429055305253923648216398352804195488697038538334311477596692005918511380072142305474174588334747596264537436",
+        "fixed_local_probe_value": "0.86429055305253923648216398352804195488697038538334311477596692005918511380072142305474174588334747596264537436"
+      },
+      "refined": {
+        "transport_value": "0.86429055305253923648216398352804195488697038538334311477596692005918511380072142305474174588334747596264537436",
+        "transport_choice": "probe",
+        "strong_value": "0.86429055305253923648216398352804195488697038538334311477596692005918511380072142305474174588334747596264537436",
+        "strong_choice": "probe",
+        "fixed_local_value": "0.86429055305253923648216398352804195488697038538334311477596692005918511380072142305474174588334747596264537436",
+        "fixed_local_choice": "probe",
+        "transport_probe_value": "0.86429055305253923648216398352804195488697038538334311477596692005918511380072142305474174588334747596264537436",
+        "fixed_local_probe_value": "0.86429055305253923648216398352804195488697038538334311477596692005918511380072142305474174588334747596264537436"
+      },
+      "same_physical_terminal_law": [
+        [
+          "0.1",
+          "-0.01",
+          "1"
+        ],
+        [
+          "0.9",
+          "0.99",
+          "1"
+        ]
+      ]
+    },
+    {
+      "eta": "0.5",
+      "gamma": "1",
+      "p": "0.9",
+      "duration": 2,
+      "coarse": {
+        "transport_value": "0.86429055305253923648216398352804195488697038538334311477596692005918511380072142305474174588334747596264537436",
+        "transport_choice": "probe",
+        "strong_value": "0.86429055305253923648216398352804195488697038538334311477596692005918511380072142305474174588334747596264537436",
+        "strong_choice": "probe",
+        "fixed_local_value": "0.86429055305253923648216398352804195488697038538334311477596692005918511380072142305474174588334747596264537436",
+        "fixed_local_choice": "probe",
+        "transport_probe_value": "0.86429055305253923648216398352804195488697038538334311477596692005918511380072142305474174588334747596264537436",
+        "fixed_local_probe_value": "0.86429055305253923648216398352804195488697038538334311477596692005918511380072142305474174588334747596264537436"
+      },
+      "refined": {
+        "transport_value": "0.86429055305253923648216398352804195488697038538334311477596692005918511380072142305474174588334747596264537436",
+        "transport_choice": "probe",
+        "strong_value": "0.86429055305253923648216398352804195488697038538334311477596692005918511380072142305474174588334747596264537436",
+        "strong_choice": "probe",
+        "fixed_local_value": "0.86429055305253923648216398352804195488697038538334311477596692005918511380072142305474174588334747596264537436",
+        "fixed_local_choice": "probe",
+        "transport_probe_value": "0.86429055305253923648216398352804195488697038538334311477596692005918511380072142305474174588334747596264537436",
+        "fixed_local_probe_value": "0.86429055305253923648216398352804195488697038538334311477596692005918511380072142305474174588334747596264537436"
+      },
+      "same_physical_terminal_law": [
+        [
+          "0.1",
+          "-0.01",
+          "2"
+        ],
+        [
+          "0.9",
+          "0.99",
+          "2"
+        ]
+      ]
+    },
+    {
+      "eta": "0.5",
+      "gamma": "1",
+      "p": "0.9",
+      "duration": 3,
+      "coarse": {
+        "transport_value": "0.86429055305253923648216398352804195488697038538334311477596692005918511380072142305474174588334747596264537436",
+        "transport_choice": "probe",
+        "strong_value": "0.86429055305253923648216398352804195488697038538334311477596692005918511380072142305474174588334747596264537436",
+        "strong_choice": "probe",
+        "fixed_local_value": "0.86429055305253923648216398352804195488697038538334311477596692005918511380072142305474174588334747596264537436",
+        "fixed_local_choice": "probe",
+        "transport_probe_value": "0.86429055305253923648216398352804195488697038538334311477596692005918511380072142305474174588334747596264537436",
+        "fixed_local_probe_value": "0.86429055305253923648216398352804195488697038538334311477596692005918511380072142305474174588334747596264537436"
+      },
+      "refined": {
+        "transport_value": "0.86429055305253923648216398352804195488697038538334311477596692005918511380072142305474174588334747596264537436",
+        "transport_choice": "probe",
+        "strong_value": "0.86429055305253923648216398352804195488697038538334311477596692005918511380072142305474174588334747596264537436",
+        "strong_choice": "probe",
+        "fixed_local_value": "0.86429055305253923648216398352804195488697038538334311477596692005918511380072142305474174588334747596264537436",
+        "fixed_local_choice": "probe",
+        "transport_probe_value": "0.86429055305253923648216398352804195488697038538334311477596692005918511380072142305474174588334747596264537436",
+        "fixed_local_probe_value": "0.86429055305253923648216398352804195488697038538334311477596692005918511380072142305474174588334747596264537436"
+      },
+      "same_physical_terminal_law": [
+        [
+          "0.1",
+          "-0.01",
+          "3"
+        ],
+        [
+          "0.9",
+          "0.99",
+          "3"
+        ]
+      ]
+    },
+    {
+      "eta": "1",
+      "gamma": "0.5",
+      "p": "0.1",
+      "duration": 1,
+      "coarse": {
+        "transport_value": "0.16",
+        "transport_choice": "STOP",
+        "strong_value": "0.16",
+        "strong_choice": "STOP",
+        "fixed_local_value": "0.16",
+        "fixed_local_choice": "STOP",
+        "transport_probe_value": "0.030141948750405188547878497168877225543751280540893170915591774853407860922426855735313307735908416498072629677",
+        "fixed_local_probe_value": "0.030141948750405188547878497168877225543751280540893170915591774853407860922426855735313307735908416498072629677"
+      },
+      "refined": {
+        "transport_value": "0.16",
+        "transport_choice": "STOP",
+        "strong_value": "0.16",
+        "strong_choice": "STOP",
+        "fixed_local_value": "0.16",
+        "fixed_local_choice": "STOP",
+        "transport_probe_value": "0.030141948750405188547878497168877225543751280540893170915591774853407860922426855735313307735908416498072629677",
+        "fixed_local_probe_value": "0.022649167999416847681581752080411371301325924449548241564108422708872559276094690416665193126953460210413265388"
+      },
+      "same_physical_terminal_law": [
+        [
+          "0.1",
+          "0.49",
+          "1"
+        ],
+        [
+          "0.9",
+          "-0.01",
+          "1"
+        ]
+      ]
+    },
+    {
+      "eta": "1",
+      "gamma": "0.5",
+      "p": "0.1",
+      "duration": 2,
+      "coarse": {
+        "transport_value": "0.16",
+        "transport_choice": "STOP",
+        "strong_value": "0.16",
+        "strong_choice": "STOP",
+        "fixed_local_value": "0.16",
+        "fixed_local_choice": "STOP",
+        "transport_probe_value": "0.012368235783535139402838044072678102458102150108846054753032484101631003724838722540993842106420082206275723147",
+        "fixed_local_probe_value": "0.012368235783535139402838044072678102458102150108846054753032484101631003724838722540993842106420082206275723147"
+      },
+      "refined": {
+        "transport_value": "0.16",
+        "transport_choice": "STOP",
+        "strong_value": "0.16",
+        "strong_choice": "STOP",
+        "fixed_local_value": "0.16",
+        "fixed_local_choice": "STOP",
+        "transport_probe_value": "0.012368235783535139402838044072678102458102150108846054753032484101631003724838722540993842106420082206275723147",
+        "fixed_local_probe_value": "0.006324583999708423840790876040205685650662962224774120782054211354436279638047345208332596563476730105206632694"
+      },
+      "same_physical_terminal_law": [
+        [
+          "0.1",
+          "0.24",
+          "2"
+        ],
+        [
+          "0.9",
+          "-0.01",
+          "2"
+        ]
+      ]
+    },
+    {
+      "eta": "1",
+      "gamma": "0.5",
+      "p": "0.1",
+      "duration": 3,
+      "coarse": {
+        "transport_value": "0.16",
+        "transport_choice": "STOP",
+        "strong_value": "0.16",
+        "strong_choice": "STOP",
+        "fixed_local_value": "0.16",
+        "fixed_local_choice": "STOP",
+        "transport_probe_value": "0.001819890229666977179740490408728372531332246477003592185155296923742357614691966677255456583636025135033957562",
+        "fixed_local_probe_value": "0.001819890229666977179740490408728372531332246477003592185155296923742357614691966677255456583636025135033957562"
+      },
+      "refined": {
+        "transport_value": "0.16",
+        "transport_choice": "STOP",
+        "strong_value": "0.16",
+        "strong_choice": "STOP",
+        "fixed_local_value": "0.16",
+        "fixed_local_choice": "STOP",
+        "transport_probe_value": "0.001819890229666977179740490408728372531332246477003592185155296923742357614691966677255456583636025135033957562",
+        "fixed_local_probe_value": "-0.0018377080001457880796045619798971571746685188876129396089728943227818601809763273958337017182616349473966836529"
+      },
+      "same_physical_terminal_law": [
+        [
+          "0.1",
+          "0.115",
+          "3"
+        ],
+        [
+          "0.9",
+          "-0.010",
+          "3"
+        ]
+      ]
+    },
+    {
+      "eta": "1",
+      "gamma": "0.5",
+      "p": "0.5",
+      "duration": 1,
+      "coarse": {
+        "transport_value": "0.20907019637983862854423476637700581831990393969239241291986473439420008923019874079041813322480277946759610985",
+        "transport_choice": "probe",
+        "strong_value": "0.20907019637983862854423476637700581831990393969239241291986473439420008923019874079041813322480277946759610985",
+        "strong_choice": "probe",
+        "fixed_local_value": "0.20907019637983862854423476637700581831990393969239241291986473439420008923019874079041813322480277946759610985",
+        "fixed_local_choice": "probe",
+        "transport_probe_value": "0.20907019637983862854423476637700581831990393969239241291986473439420008923019874079041813322480277946759610985",
+        "fixed_local_probe_value": "0.20907019637983862854423476637700581831990393969239241291986473439420008923019874079041813322480277946759610985"
+      },
+      "refined": {
+        "transport_value": "0.20907019637983862854423476637700581831990393969239241291986473439420008923019874079041813322480277946759610985",
+        "transport_choice": "probe",
+        "strong_value": "0.20907019637983862854423476637700581831990393969239241291986473439420008923019874079041813322480277946759610985",
+        "strong_choice": "probe",
+        "fixed_local_value": "0.17994274652086123768411831324516046308011002434495343970080824732809936023025374733483146035956314807649021710",
+        "fixed_local_choice": "probe",
+        "transport_probe_value": "0.20907019637983862854423476637700581831990393969239241291986473439420008923019874079041813322480277946759610985",
+        "fixed_local_probe_value": "0.17994274652086123768411831324516046308011002434495343970080824732809936023025374733483146035956314807649021710"
+      },
+      "same_physical_terminal_law": [
+        [
+          "0.5",
+          "-0.01",
+          "1"
+        ],
+        [
+          "0.5",
+          "0.49",
+          "1"
+        ]
+      ]
+    },
+    {
+      "eta": "1",
+      "gamma": "0.5",
+      "p": "0.5",
+      "duration": 2,
+      "coarse": {
+        "transport_value": "0.16",
+        "transport_choice": "STOP",
+        "strong_value": "0.16",
+        "strong_choice": "STOP",
+        "fixed_local_value": "0.16",
+        "fixed_local_choice": "STOP",
+        "transport_probe_value": "0.10720776068110174720939598979985862598532504492693092989716290691842366388187831927284302990335880832653356028",
+        "fixed_local_probe_value": "0.10720776068110174720939598979985862598532504492693092989716290691842366388187831927284302990335880832653356028"
+      },
+      "refined": {
+        "transport_value": "0.16",
+        "transport_choice": "STOP",
+        "strong_value": "0.16",
+        "strong_choice": "STOP",
+        "fixed_local_value": "0.16",
+        "fixed_local_choice": "STOP",
+        "transport_probe_value": "0.10720776068110174720939598979985862598532504492693092989716290691842366388187831927284302990335880832653356028",
+        "fixed_local_probe_value": "0.084971373260430618842059156622580231540055012172476719850404123664049680115126873667415730179781574038245108550"
+      },
+      "same_physical_terminal_law": [
+        [
+          "0.5",
+          "-0.01",
+          "2"
+        ],
+        [
+          "0.5",
+          "0.24",
+          "2"
+        ]
+      ]
+    },
+    {
+      "eta": "1",
+      "gamma": "0.5",
+      "p": "0.5",
+      "duration": 3,
+      "coarse": {
+        "transport_value": "0.16",
+        "transport_choice": "STOP",
+        "strong_value": "0.16",
+        "strong_choice": "STOP",
+        "fixed_local_value": "0.16",
+        "fixed_local_choice": "STOP",
+        "transport_probe_value": "0.050548145242776243173617705808937566700943990550653819229447421998584084023427323196786119751854302271500694317",
+        "fixed_local_probe_value": "0.050548145242776243173617705808937566700943990550653819229447421998584084023427323196786119751854302271500694317"
+      },
+      "refined": {
+        "transport_value": "0.16",
+        "transport_choice": "STOP",
+        "strong_value": "0.16",
+        "strong_choice": "STOP",
+        "fixed_local_value": "0.16",
+        "fixed_local_choice": "STOP",
+        "transport_probe_value": "0.050548145242776243173617705808937566700943990550653819229447421998584084023427323196786119751854302271500694318",
+        "fixed_local_probe_value": "0.037485686630215309421029578311290115770027506086238359925202061832024840057563436833707865089890787019122554275"
+      },
+      "same_physical_terminal_law": [
+        [
+          "0.5",
+          "-0.010",
+          "3"
+        ],
+        [
+          "0.5",
+          "0.115",
+          "3"
+        ]
+      ]
+    },
+    {
+      "eta": "1",
+      "gamma": "0.5",
+      "p": "0.9",
+      "duration": 1,
+      "coarse": {
+        "transport_value": "0.42714527652626961824108199176402097744348519269167155738798346002959255690036071152737087294167373798132268718",
+        "transport_choice": "probe",
+        "strong_value": "0.42714527652626961824108199176402097744348519269167155738798346002959255690036071152737087294167373798132268718",
+        "strong_choice": "probe",
+        "fixed_local_value": "0.42714527652626961824108199176402097744348519269167155738798346002959255690036071152737087294167373798132268718",
+        "fixed_local_choice": "probe",
+        "transport_probe_value": "0.42714527652626961824108199176402097744348519269167155738798346002959255690036071152737087294167373798132268718",
+        "fixed_local_probe_value": "0.42714527652626961824108199176402097744348519269167155738798346002959255690036071152737087294167373798132268718"
+      },
+      "refined": {
+        "transport_value": "0.42714527652626961824108199176402097744348519269167155738798346002959255690036071152737087294167373798132268718",
+        "transport_choice": "probe",
+        "strong_value": "0.42714527652626961824108199176402097744348519269167155738798346002959255690036071152737087294167373798132268718",
+        "strong_choice": "probe",
+        "fixed_local_value": "0.41071746062978544449952395914021126042591443679209335037879944343062694104328895592958925084255834254538251206",
+        "fixed_local_choice": "probe",
+        "transport_probe_value": "0.42714527652626961824108199176402097744348519269167155738798346002959255690036071152737087294167373798132268718",
+        "fixed_local_probe_value": "0.41071746062978544449952395914021126042591443679209335037879944343062694104328895592958925084255834254538251206"
+      },
+      "same_physical_terminal_law": [
+        [
+          "0.1",
+          "-0.01",
+          "1"
+        ],
+        [
+          "0.9",
+          "0.49",
+          "1"
+        ]
+      ]
+    },
+    {
+      "eta": "1",
+      "gamma": "0.5",
+      "p": "0.9",
+      "duration": 2,
+      "coarse": {
+        "transport_value": "0.21199333211467985020357852958939891083047159357610354907323484639400667097033314914613488475757801630962860473",
+        "transport_choice": "probe",
+        "strong_value": "0.21199333211467985020357852958939891083047159357610354907323484639400667097033314914613488475757801630962860473",
+        "strong_choice": "probe",
+        "fixed_local_value": "0.21199333211467985020357852958939891083047159357610354907323484639400667097033314914613488475757801630962860473",
+        "fixed_local_choice": "probe",
+        "transport_probe_value": "0.21199333211467985020357852958939891083047159357610354907323484639400667097033314914613488475757801630962860473",
+        "fixed_local_probe_value": "0.21199333211467985020357852958939891083047159357610354907323484639400667097033314914613488475757801630962860473"
+      },
+      "refined": {
+        "transport_value": "0.21199333211467985020357852958939891083047159357610354907323484639400667097033314914613488475757801630962860473",
+        "transport_choice": "probe",
+        "strong_value": "0.21199333211467985020357852958939891083047159357610354907323484639400667097033314914613488475757801630962860473",
+        "strong_choice": "probe",
+        "fixed_local_value": "0.20035873031489272224976197957010563021295721839604667518939972171531347052164447796479462542127917127269125603",
+        "fixed_local_choice": "probe",
+        "transport_probe_value": "0.21199333211467985020357852958939891083047159357610354907323484639400667097033314914613488475757801630962860473",
+        "fixed_local_probe_value": "0.20035873031489272224976197957010563021295721839604667518939972171531347052164447796479462542127917127269125603"
+      },
+      "same_physical_terminal_law": [
+        [
+          "0.1",
+          "-0.01",
+          "2"
+        ],
+        [
+          "0.9",
+          "0.24",
+          "2"
+        ]
+      ]
+    },
+    {
+      "eta": "1",
+      "gamma": "0.5",
+      "p": "0.9",
+      "duration": 3,
+      "coarse": {
+        "transport_value": "0.16",
+        "transport_choice": "STOP",
+        "strong_value": "0.16",
+        "strong_choice": "STOP",
+        "fixed_local_value": "0.16",
+        "fixed_local_choice": "STOP",
+        "transport_probe_value": "0.10177301817955921701048364548478982432917726370379736177364417646762682744807387132892872520032039182282060567",
+        "fixed_local_probe_value": "0.10177301817955921701048364548478982432917726370379736177364417646762682744807387132892872520032039182282060567"
+      },
+      "refined": {
+        "transport_value": "0.16",
+        "transport_choice": "STOP",
+        "strong_value": "0.16",
+        "strong_choice": "STOP",
+        "fixed_local_value": "0.16",
+        "fixed_local_choice": "STOP",
+        "transport_probe_value": "0.10177301817955921701048364548478982432917726370379736177364417646762682744807387132892872520032039182282060567",
+        "fixed_local_probe_value": "0.09517936515744636112488098978505281510647860919802333759469986085765673526082223898239731271063958563634562801"
+      },
+      "same_physical_terminal_law": [
+        [
+          "0.1",
+          "-0.010",
+          "3"
+        ],
+        [
+          "0.9",
+          "0.115",
+          "3"
+        ]
+      ]
+    },
+    {
+      "eta": "1",
+      "gamma": "0.8",
+      "p": "0.1",
+      "duration": 1,
+      "coarse": {
+        "transport_value": "0.16",
+        "transport_choice": "STOP",
+        "strong_value": "0.16",
+        "strong_choice": "STOP",
+        "fixed_local_value": "0.16",
+        "fixed_local_choice": "STOP",
+        "transport_probe_value": "0.046641363097783651474651839691378389644313524984801010217528465920876009195694621723748573801765946849202197682",
+        "fixed_local_probe_value": "0.046641363097783651474651839691378389644313524984801010217528465920876009195694621723748573801765946849202197682"
+      },
+      "refined": {
+        "transport_value": "0.16",
+        "transport_choice": "STOP",
+        "strong_value": "0.16",
+        "strong_choice": "STOP",
+        "fixed_local_value": "0.16",
+        "fixed_local_choice": "STOP",
+        "transport_probe_value": "0.046641363097783651474651839691378389644313524984801010217528465920876009195694621723748573801765946849202197682",
+        "fixed_local_probe_value": "0.042238668799066956290530803328658194082121479119277186502573476334196094841751504666664309003125536336661224622"
+      },
+      "same_physical_terminal_law": [
+        [
+          "0.1",
+          "0.79",
+          "1"
+        ],
+        [
+          "0.9",
+          "-0.01",
+          "1"
+        ]
+      ]
+    },
+    {
+      "eta": "1",
+      "gamma": "0.8",
+      "p": "0.1",
+      "duration": 2,
+      "coarse": {
+        "transport_value": "0.16",
+        "transport_choice": "STOP",
+        "strong_value": "0.16",
+        "strong_choice": "STOP",
+        "fixed_local_value": "0.16",
+        "fixed_local_choice": "STOP",
+        "transport_probe_value": "0.038424526498512918834181635462529961210599930644165623782696467425466003796897573352167433442767839580250265669",
+        "fixed_local_probe_value": "0.038424526498512918834181635462529961210599930644165623782696467425466003796897573352167433442767839580250265669"
+      },
+      "refined": {
+        "transport_value": "0.16",
+        "transport_choice": "STOP",
+        "strong_value": "0.16",
+        "strong_choice": "STOP",
+        "fixed_local_value": "0.16",
+        "fixed_local_choice": "STOP",
+        "transport_probe_value": "0.038424526498512918834181635462529961210599930644165623782696467425466003796897573352167433442767839580250265669",
+        "fixed_local_probe_value": "0.031790935039253565032424642662926555265697183295421749202058781067356875873401203733331447202500429069328979697"
+      },
+      "same_physical_terminal_law": [
+        [
+          "0.1",
+          "0.63",
+          "2"
+        ],
+        [
+          "0.9",
+          "-0.01",
+          "2"
+        ]
+      ]
+    },
+    {
+      "eta": "1",
+      "gamma": "0.8",
+      "p": "0.1",
+      "duration": 3,
+      "coarse": {
+        "transport_value": "0.16",
+        "transport_choice": "STOP",
+        "strong_value": "0.16",
+        "strong_choice": "STOP",
+        "fixed_local_value": "0.16",
+        "fixed_local_choice": "STOP",
+        "transport_probe_value": "0.030895352643652883030620372601887987205926386500129409517076203305009847591627746083231021694299655253018298998",
+        "fixed_local_probe_value": "0.030895352643652883030620372601887987205926386500129409517076203305009847591627746083231021694299655253018298998"
+      },
+      "refined": {
+        "transport_value": "0.16",
+        "transport_choice": "STOP",
+        "strong_value": "0.16",
+        "strong_choice": "STOP",
+        "fixed_local_value": "0.16",
+        "fixed_local_choice": "STOP",
+        "transport_probe_value": "0.030895352643652883030620372601887987205926386500129409517076203305009847591627746083231021694299655253018298998",
+        "fixed_local_probe_value": "0.023432748031402852025939714130341244212557746636337399361647024853885500698720962986665157762000343255463183758"
+      },
+      "same_physical_terminal_law": [
+        [
+          "0.1",
+          "0.502",
+          "3"
+        ],
+        [
+          "0.9",
+          "-0.010",
+          "3"
+        ]
+      ]
+    },
+    {
+      "eta": "1",
+      "gamma": "0.8",
+      "p": "0.5",
+      "duration": 1,
+      "coarse": {
+        "transport_value": "0.31204651461216758341109320654344579859386304447995294636544299803119105444342767635671994723349527599627946101",
+        "transport_choice": "probe",
+        "strong_value": "0.31204651461216758341109320654344579859386304447995294636544299803119105444342767635671994723349527599627946101",
+        "strong_choice": "probe",
+        "fixed_local_value": "0.31204651461216758341109320654344579859386304447995294636544299803119105444342767635671994723349527599627946101",
+        "fixed_local_choice": "probe",
+        "transport_probe_value": "0.31204651461216758341109320654344579859386304447995294636544299803119105444342767635671994723349527599627946101",
+        "fixed_local_probe_value": "0.31204651461216758341109320654344579859386304447995294636544299803119105444342767635671994723349527599627946101"
+      },
+      "refined": {
+        "transport_value": "0.31204651461216758341109320654344579859386304447995294636544299803119105444342767635671994723349527599627946101",
+        "transport_choice": "probe",
+        "strong_value": "0.31204651461216758341109320654344579859386304447995294636544299803119105444342767635671994723349527599627946101",
+        "strong_choice": "probe",
+        "fixed_local_value": "0.29390839443337798029458930119225674092817603895192550352129319572495897636840599573573033657530103692238434736",
+        "fixed_local_choice": "probe",
+        "transport_probe_value": "0.31204651461216758341109320654344579859386304447995294636544299803119105444342767635671994723349527599627946101",
+        "fixed_local_probe_value": "0.29390839443337798029458930119225674092817603895192550352129319572495897636840599573573033657530103692238434736"
+      },
+      "same_physical_terminal_law": [
+        [
+          "0.5",
+          "-0.01",
+          "1"
+        ],
+        [
+          "0.5",
+          "0.79",
+          "1"
+        ]
+      ]
+    },
+    {
+      "eta": "1",
+      "gamma": "0.8",
+      "p": "0.5",
+      "duration": 2,
+      "coarse": {
+        "transport_value": "0.25965067033741104480241871810897739288611603320638922939682479722894151878953263892426900842667066134184108230",
+        "transport_choice": "probe",
+        "strong_value": "0.25965067033741104480241871810897739288611603320638922939682479722894151878953263892426900842667066134184108230",
+        "strong_choice": "probe",
+        "fixed_local_value": "0.25965067033741104480241871810897739288611603320638922939682479722894151878953263892426900842667066134184108230",
+        "fixed_local_choice": "probe",
+        "transport_probe_value": "0.25965067033741104480241871810897739288611603320638922939682479722894151878953263892426900842667066134184108230",
+        "fixed_local_probe_value": "0.25965067033741104480241871810897739288611603320638922939682479722894151878953263892426900842667066134184108230"
+      },
+      "refined": {
+        "transport_value": "0.25965067033741104480241871810897739288611603320638922939682479722894151878953263892426900842667066134184108230",
+        "transport_choice": "probe",
+        "strong_value": "0.25965067033741104480241871810897739288611603320638922939682479722894151878953263892426900842667066134184108230",
+        "strong_choice": "probe",
+        "fixed_local_value": "0.23312671554670238423567144095380539274254083116154040281703455657996718109472479658858426926024082953790747789",
+        "fixed_local_choice": "probe",
+        "transport_probe_value": "0.25965067033741104480241871810897739288611603320638922939682479722894151878953263892426900842667066134184108230",
+        "fixed_local_probe_value": "0.23312671554670238423567144095380539274254083116154040281703455657996718109472479658858426926024082953790747789"
+      },
+      "same_physical_terminal_law": [
+        [
+          "0.5",
+          "-0.01",
+          "2"
+        ],
+        [
+          "0.5",
+          "0.63",
+          "2"
+        ]
+      ]
+    },
+    {
+      "eta": "1",
+      "gamma": "0.8",
+      "p": "0.5",
+      "duration": 3,
+      "coarse": {
+        "transport_value": "0.21358378079752923230431789711199038390584757979533307151156779107537589629945849852398917553242401399242200719",
+        "transport_choice": "probe",
+        "strong_value": "0.21358378079752923230431789711199038390584757979533307151156779107537589629945849852398917553242401399242200719",
+        "strong_choice": "probe",
+        "fixed_local_value": "0.21358378079752923230431789711199038390584757979533307151156779107537589629945849852398917553242401399242200719",
+        "fixed_local_choice": "probe",
+        "transport_probe_value": "0.21358378079752923230431789711199038390584757979533307151156779107537589629945849852398917553242401399242200719",
+        "fixed_local_probe_value": "0.21358378079752923230431789711199038390584757979533307151156779107537589629945849852398917553242401399242200719"
+      },
+      "refined": {
+        "transport_value": "0.21358378079752923230431789711199038390584757979533307151156779107537589629945849852398917553242401399242200719",
+        "transport_choice": "probe",
+        "strong_value": "0.21358378079752923230431789711199038390584757979533307151156779107537589629945849852398917553242401399242200719",
+        "strong_choice": "probe",
+        "fixed_local_value": "0.18450137243736190738853715276304431419403266492923232225362764526397374487577983727086741540819266363032598231",
+        "fixed_local_choice": "probe",
+        "transport_probe_value": "0.21358378079752923230431789711199038390584757979533307151156779107537589629945849852398917553242401399242200719",
+        "fixed_local_probe_value": "0.18450137243736190738853715276304431419403266492923232225362764526397374487577983727086741540819266363032598231"
+      },
+      "same_physical_terminal_law": [
+        [
+          "0.5",
+          "-0.010",
+          "3"
+        ],
+        [
+          "0.5",
+          "0.502",
+          "3"
+        ]
+      ]
+    },
+    {
+      "eta": "1",
+      "gamma": "0.8",
+      "p": "0.9",
+      "duration": 1,
+      "coarse": {
+        "transport_value": "0.67439347090610035555718753429539400624862666817192493055033468463716899644591025947689902451879085200296914821",
+        "transport_choice": "probe",
+        "strong_value": "0.67439347090610035555718753429539400624862666817192493055033468463716899644591025947689902451879085200296914821",
+        "strong_choice": "probe",
+        "fixed_local_value": "0.67439347090610035555718753429539400624862666817192493055033468463716899644591025947689902451879085200296914821",
+        "fixed_local_choice": "probe",
+        "transport_probe_value": "0.67439347090610035555718753429539400624862666817192493055033468463716899644591025947689902451879085200296914821",
+        "fixed_local_probe_value": "0.67439347090610035555718753429539400624862666817192493055033468463716899644591025947689902451879085200296914821"
+      },
+      "refined": {
+        "transport_value": "0.67439347090610035555718753429539400624862666817192493055033468463716899644591025947689902451879085200296914821",
+        "transport_choice": "probe",
+        "strong_value": "0.67439347090610035555718753429539400624862666817192493055033468463716899644591025947689902451879085200296914821",
+        "strong_choice": "probe",
+        "fixed_local_value": "0.66314793700765671119923833462433801668146309886734936060607910948900310566926232948734280134809334807261201929",
+        "fixed_local_choice": "probe",
+        "transport_probe_value": "0.67439347090610035555718753429539400624862666817192493055033468463716899644591025947689902451879085200296914821",
+        "fixed_local_probe_value": "0.66314793700765671119923833462433801668146309886734936060607910948900310566926232948734280134809334807261201929"
+      },
+      "same_physical_terminal_law": [
+        [
+          "0.1",
+          "-0.01",
+          "1"
+        ],
+        [
+          "0.9",
+          "0.79",
+          "1"
+        ]
+      ]
+    },
+    {
+      "eta": "1",
+      "gamma": "0.8",
+      "p": "0.9",
+      "duration": 2,
+      "coarse": {
+        "transport_value": "0.54414521099751643083315734947471573412108660338263704244710632628167774327535854861925167958538661106776049442",
+        "transport_choice": "probe",
+        "strong_value": "0.54414521099751643083315734947471573412108660338263704244710632628167774327535854861925167958538661106776049442",
+        "strong_choice": "probe",
+        "fixed_local_value": "0.54414521099751643083315734947471573412108660338263704244710632628167774327535854861925167958538661106776049442",
+        "fixed_local_choice": "probe",
+        "transport_probe_value": "0.54414521099751643083315734947471573412108660338263704244710632628167774327535854861925167958538661106776049442",
+        "fixed_local_probe_value": "0.54414521099751643083315734947471573412108660338263704244710632628167774327535854861925167958538661106776049442"
+      },
+      "refined": {
+        "transport_value": "0.54414521099751643083315734947471573412108660338263704244710632628167774327535854861925167958538661106776049442",
+        "transport_choice": "probe",
+        "strong_value": "0.54414521099751643083315734947471573412108660338263704244710632628167774327535854861925167958538661106776049442",
+        "strong_choice": "probe",
+        "fixed_local_value": "0.52851834960612536895939066769947041334517047909387948848486328759120248453540986358987424107847467845808961543",
+        "fixed_local_choice": "probe",
+        "transport_probe_value": "0.54414521099751643083315734947471573412108660338263704244710632628167774327535854861925167958538661106776049442",
+        "fixed_local_probe_value": "0.52851834960612536895939066769947041334517047909387948848486328759120248453540986358987424107847467845808961543"
+      },
+      "same_physical_terminal_law": [
+        [
+          "0.1",
+          "-0.01",
+          "2"
+        ],
+        [
+          "0.9",
+          "0.63",
+          "2"
+        ]
+      ]
+    },
+    {
+      "eta": "1",
+      "gamma": "0.8",
+      "p": "0.9",
+      "duration": 3,
+      "coarse": {
+        "transport_value": "0.43727789164000050480041953140965035937673834877312000775981296520885592820272447640291069534266579169193394867",
+        "transport_choice": "probe",
+        "strong_value": "0.43727789164000050480041953140965035937673834877312000775981296520885592820272447640291069534266579169193394867",
+        "strong_choice": "probe",
+        "fixed_local_value": "0.43727789164000050480041953140965035937673834877312000775981296520885592820272447640291069534266579169193394867",
+        "fixed_local_choice": "probe",
+        "transport_probe_value": "0.43727789164000050480041953140965035937673834877312000775981296520885592820272447640291069534266579169193394867",
+        "fixed_local_probe_value": "0.43727789164000050480041953140965035937673834877312000775981296520885592820272447640291069534266579169193394867"
+      },
+      "refined": {
+        "transport_value": "0.43727789164000050480041953140965035937673834877312000775981296520885592820272447640291069534266579169193394867",
+        "transport_choice": "probe",
+        "strong_value": "0.43727789164000050480041953140965035937673834877312000775981296520885592820272447640291069534266579169193394867",
+        "strong_choice": "probe",
+        "fixed_local_value": "0.42081467968490029516751253415957633067613638327510359078789063007296198762832789087189939286277974276647169234",
+        "fixed_local_choice": "probe",
+        "transport_probe_value": "0.43727789164000050480041953140965035937673834877312000775981296520885592820272447640291069534266579169193394867",
+        "fixed_local_probe_value": "0.42081467968490029516751253415957633067613638327510359078789063007296198762832789087189939286277974276647169234"
+      },
+      "same_physical_terminal_law": [
+        [
+          "0.1",
+          "-0.010",
+          "3"
+        ],
+        [
+          "0.9",
+          "0.502",
+          "3"
+        ]
+      ]
+    },
+    {
+      "eta": "1",
+      "gamma": "1",
+      "p": "0.1",
+      "duration": 1,
+      "coarse": {
+        "transport_value": "0.16",
+        "transport_choice": "STOP",
+        "strong_value": "0.16",
+        "strong_choice": "STOP",
+        "fixed_local_value": "0.16",
+        "fixed_local_choice": "STOP",
+        "transport_probe_value": "0.055298335998833695363163504160822742602651848899096483128216845417745118552189380833330386253906920420826530777",
+        "fixed_local_probe_value": "0.055298335998833695363163504160822742602651848899096483128216845417745118552189380833330386253906920420826530777"
+      },
+      "refined": {
+        "transport_value": "0.16",
+        "transport_choice": "STOP",
+        "strong_value": "0.16",
+        "strong_choice": "STOP",
+        "fixed_local_value": "0.16",
+        "fixed_local_choice": "STOP",
+        "transport_probe_value": "0.055298335998833695363163504160822742602651848899096483128216845417745118552189380833330386253906920420826530777",
+        "fixed_local_probe_value": "0.055298335998833695363163504160822742602651848899096483128216845417745118552189380833330386253906920420826530777"
+      },
+      "same_physical_terminal_law": [
+        [
+          "0.1",
+          "0.99",
+          "1"
+        ],
+        [
+          "0.9",
+          "-0.01",
+          "1"
+        ]
+      ]
+    },
+    {
+      "eta": "1",
+      "gamma": "1",
+      "p": "0.1",
+      "duration": 2,
+      "coarse": {
+        "transport_value": "0.16",
+        "transport_choice": "STOP",
+        "strong_value": "0.16",
+        "strong_choice": "STOP",
+        "fixed_local_value": "0.16",
+        "fixed_local_choice": "STOP",
+        "transport_probe_value": "0.055298335998833695363163504160822742602651848899096483128216845417745118552189380833330386253906920420826530777",
+        "fixed_local_probe_value": "0.055298335998833695363163504160822742602651848899096483128216845417745118552189380833330386253906920420826530777"
+      },
+      "refined": {
+        "transport_value": "0.16",
+        "transport_choice": "STOP",
+        "strong_value": "0.16",
+        "strong_choice": "STOP",
+        "fixed_local_value": "0.16",
+        "fixed_local_choice": "STOP",
+        "transport_probe_value": "0.055298335998833695363163504160822742602651848899096483128216845417745118552189380833330386253906920420826530777",
+        "fixed_local_probe_value": "0.055298335998833695363163504160822742602651848899096483128216845417745118552189380833330386253906920420826530777"
+      },
+      "same_physical_terminal_law": [
+        [
+          "0.1",
+          "0.99",
+          "2"
+        ],
+        [
+          "0.9",
+          "-0.01",
+          "2"
+        ]
+      ]
+    },
+    {
+      "eta": "1",
+      "gamma": "1",
+      "p": "0.1",
+      "duration": 3,
+      "coarse": {
+        "transport_value": "0.16",
+        "transport_choice": "STOP",
+        "strong_value": "0.16",
+        "strong_choice": "STOP",
+        "fixed_local_value": "0.16",
+        "fixed_local_choice": "STOP",
+        "transport_probe_value": "0.055298335998833695363163504160822742602651848899096483128216845417745118552189380833330386253906920420826530777",
+        "fixed_local_probe_value": "0.055298335998833695363163504160822742602651848899096483128216845417745118552189380833330386253906920420826530777"
+      },
+      "refined": {
+        "transport_value": "0.16",
+        "transport_choice": "STOP",
+        "strong_value": "0.16",
+        "strong_choice": "STOP",
+        "fixed_local_value": "0.16",
+        "fixed_local_choice": "STOP",
+        "transport_probe_value": "0.055298335998833695363163504160822742602651848899096483128216845417745118552189380833330386253906920420826530777",
+        "fixed_local_probe_value": "0.055298335998833695363163504160822742602651848899096483128216845417745118552189380833330386253906920420826530777"
+      },
+      "same_physical_terminal_law": [
+        [
+          "0.1",
+          "0.99",
+          "3"
+        ],
+        [
+          "0.9",
+          "-0.01",
+          "3"
+        ]
+      ]
+    },
+    {
+      "eta": "1",
+      "gamma": "1",
+      "p": "0.5",
+      "duration": 1,
+      "coarse": {
+        "transport_value": "0.36988549304172247536823662649032092616022004868990687940161649465619872046050749466966292071912629615298043420",
+        "transport_choice": "probe",
+        "strong_value": "0.36988549304172247536823662649032092616022004868990687940161649465619872046050749466966292071912629615298043420",
+        "strong_choice": "probe",
+        "fixed_local_value": "0.36988549304172247536823662649032092616022004868990687940161649465619872046050749466966292071912629615298043420",
+        "fixed_local_choice": "probe",
+        "transport_probe_value": "0.36988549304172247536823662649032092616022004868990687940161649465619872046050749466966292071912629615298043420",
+        "fixed_local_probe_value": "0.36988549304172247536823662649032092616022004868990687940161649465619872046050749466966292071912629615298043420"
+      },
+      "refined": {
+        "transport_value": "0.36988549304172247536823662649032092616022004868990687940161649465619872046050749466966292071912629615298043420",
+        "transport_choice": "probe",
+        "strong_value": "0.36988549304172247536823662649032092616022004868990687940161649465619872046050749466966292071912629615298043420",
+        "strong_choice": "probe",
+        "fixed_local_value": "0.36988549304172247536823662649032092616022004868990687940161649465619872046050749466966292071912629615298043420",
+        "fixed_local_choice": "probe",
+        "transport_probe_value": "0.36988549304172247536823662649032092616022004868990687940161649465619872046050749466966292071912629615298043420",
+        "fixed_local_probe_value": "0.36988549304172247536823662649032092616022004868990687940161649465619872046050749466966292071912629615298043420"
+      },
+      "same_physical_terminal_law": [
+        [
+          "0.5",
+          "-0.01",
+          "1"
+        ],
+        [
+          "0.5",
+          "0.99",
+          "1"
+        ]
+      ]
+    },
+    {
+      "eta": "1",
+      "gamma": "1",
+      "p": "0.5",
+      "duration": 2,
+      "coarse": {
+        "transport_value": "0.36988549304172247536823662649032092616022004868990687940161649465619872046050749466966292071912629615298043420",
+        "transport_choice": "probe",
+        "strong_value": "0.36988549304172247536823662649032092616022004868990687940161649465619872046050749466966292071912629615298043420",
+        "strong_choice": "probe",
+        "fixed_local_value": "0.36988549304172247536823662649032092616022004868990687940161649465619872046050749466966292071912629615298043420",
+        "fixed_local_choice": "probe",
+        "transport_probe_value": "0.36988549304172247536823662649032092616022004868990687940161649465619872046050749466966292071912629615298043420",
+        "fixed_local_probe_value": "0.36988549304172247536823662649032092616022004868990687940161649465619872046050749466966292071912629615298043420"
+      },
+      "refined": {
+        "transport_value": "0.36988549304172247536823662649032092616022004868990687940161649465619872046050749466966292071912629615298043420",
+        "transport_choice": "probe",
+        "strong_value": "0.36988549304172247536823662649032092616022004868990687940161649465619872046050749466966292071912629615298043420",
+        "strong_choice": "probe",
+        "fixed_local_value": "0.36988549304172247536823662649032092616022004868990687940161649465619872046050749466966292071912629615298043420",
+        "fixed_local_choice": "probe",
+        "transport_probe_value": "0.36988549304172247536823662649032092616022004868990687940161649465619872046050749466966292071912629615298043420",
+        "fixed_local_probe_value": "0.36988549304172247536823662649032092616022004868990687940161649465619872046050749466966292071912629615298043420"
+      },
+      "same_physical_terminal_law": [
+        [
+          "0.5",
+          "-0.01",
+          "2"
+        ],
+        [
+          "0.5",
+          "0.99",
+          "2"
+        ]
+      ]
+    },
+    {
+      "eta": "1",
+      "gamma": "1",
+      "p": "0.5",
+      "duration": 3,
+      "coarse": {
+        "transport_value": "0.36988549304172247536823662649032092616022004868990687940161649465619872046050749466966292071912629615298043420",
+        "transport_choice": "probe",
+        "strong_value": "0.36988549304172247536823662649032092616022004868990687940161649465619872046050749466966292071912629615298043420",
+        "strong_choice": "probe",
+        "fixed_local_value": "0.36988549304172247536823662649032092616022004868990687940161649465619872046050749466966292071912629615298043420",
+        "fixed_local_choice": "probe",
+        "transport_probe_value": "0.36988549304172247536823662649032092616022004868990687940161649465619872046050749466966292071912629615298043420",
+        "fixed_local_probe_value": "0.36988549304172247536823662649032092616022004868990687940161649465619872046050749466966292071912629615298043420"
+      },
+      "refined": {
+        "transport_value": "0.36988549304172247536823662649032092616022004868990687940161649465619872046050749466966292071912629615298043420",
+        "transport_choice": "probe",
+        "strong_value": "0.36988549304172247536823662649032092616022004868990687940161649465619872046050749466966292071912629615298043420",
+        "strong_choice": "probe",
+        "fixed_local_value": "0.36988549304172247536823662649032092616022004868990687940161649465619872046050749466966292071912629615298043420",
+        "fixed_local_choice": "probe",
+        "transport_probe_value": "0.36988549304172247536823662649032092616022004868990687940161649465619872046050749466966292071912629615298043420",
+        "fixed_local_probe_value": "0.36988549304172247536823662649032092616022004868990687940161649465619872046050749466966292071912629615298043420"
+      },
+      "same_physical_terminal_law": [
+        [
+          "0.5",
+          "-0.01",
+          "3"
+        ],
+        [
+          "0.5",
+          "0.99",
+          "3"
+        ]
+      ]
+    },
+    {
+      "eta": "1",
+      "gamma": "1",
+      "p": "0.9",
+      "duration": 1,
+      "coarse": {
+        "transport_value": "0.83143492125957088899904791828042252085182887358418670075759888686125388208657791185917850168511668509076502411",
+        "transport_choice": "probe",
+        "strong_value": "0.83143492125957088899904791828042252085182887358418670075759888686125388208657791185917850168511668509076502411",
+        "strong_choice": "probe",
+        "fixed_local_value": "0.83143492125957088899904791828042252085182887358418670075759888686125388208657791185917850168511668509076502411",
+        "fixed_local_choice": "probe",
+        "transport_probe_value": "0.83143492125957088899904791828042252085182887358418670075759888686125388208657791185917850168511668509076502411",
+        "fixed_local_probe_value": "0.83143492125957088899904791828042252085182887358418670075759888686125388208657791185917850168511668509076502411"
+      },
+      "refined": {
+        "transport_value": "0.83143492125957088899904791828042252085182887358418670075759888686125388208657791185917850168511668509076502411",
+        "transport_choice": "probe",
+        "strong_value": "0.83143492125957088899904791828042252085182887358418670075759888686125388208657791185917850168511668509076502411",
+        "strong_choice": "probe",
+        "fixed_local_value": "0.83143492125957088899904791828042252085182887358418670075759888686125388208657791185917850168511668509076502411",
+        "fixed_local_choice": "probe",
+        "transport_probe_value": "0.83143492125957088899904791828042252085182887358418670075759888686125388208657791185917850168511668509076502411",
+        "fixed_local_probe_value": "0.83143492125957088899904791828042252085182887358418670075759888686125388208657791185917850168511668509076502411"
+      },
+      "same_physical_terminal_law": [
+        [
+          "0.1",
+          "-0.01",
+          "1"
+        ],
+        [
+          "0.9",
+          "0.99",
+          "1"
+        ]
+      ]
+    },
+    {
+      "eta": "1",
+      "gamma": "1",
+      "p": "0.9",
+      "duration": 2,
+      "coarse": {
+        "transport_value": "0.83143492125957088899904791828042252085182887358418670075759888686125388208657791185917850168511668509076502411",
+        "transport_choice": "probe",
+        "strong_value": "0.83143492125957088899904791828042252085182887358418670075759888686125388208657791185917850168511668509076502411",
+        "strong_choice": "probe",
+        "fixed_local_value": "0.83143492125957088899904791828042252085182887358418670075759888686125388208657791185917850168511668509076502411",
+        "fixed_local_choice": "probe",
+        "transport_probe_value": "0.83143492125957088899904791828042252085182887358418670075759888686125388208657791185917850168511668509076502411",
+        "fixed_local_probe_value": "0.83143492125957088899904791828042252085182887358418670075759888686125388208657791185917850168511668509076502411"
+      },
+      "refined": {
+        "transport_value": "0.83143492125957088899904791828042252085182887358418670075759888686125388208657791185917850168511668509076502411",
+        "transport_choice": "probe",
+        "strong_value": "0.83143492125957088899904791828042252085182887358418670075759888686125388208657791185917850168511668509076502411",
+        "strong_choice": "probe",
+        "fixed_local_value": "0.83143492125957088899904791828042252085182887358418670075759888686125388208657791185917850168511668509076502411",
+        "fixed_local_choice": "probe",
+        "transport_probe_value": "0.83143492125957088899904791828042252085182887358418670075759888686125388208657791185917850168511668509076502411",
+        "fixed_local_probe_value": "0.83143492125957088899904791828042252085182887358418670075759888686125388208657791185917850168511668509076502411"
+      },
+      "same_physical_terminal_law": [
+        [
+          "0.1",
+          "-0.01",
+          "2"
+        ],
+        [
+          "0.9",
+          "0.99",
+          "2"
+        ]
+      ]
+    },
+    {
+      "eta": "1",
+      "gamma": "1",
+      "p": "0.9",
+      "duration": 3,
+      "coarse": {
+        "transport_value": "0.83143492125957088899904791828042252085182887358418670075759888686125388208657791185917850168511668509076502411",
+        "transport_choice": "probe",
+        "strong_value": "0.83143492125957088899904791828042252085182887358418670075759888686125388208657791185917850168511668509076502411",
+        "strong_choice": "probe",
+        "fixed_local_value": "0.83143492125957088899904791828042252085182887358418670075759888686125388208657791185917850168511668509076502411",
+        "fixed_local_choice": "probe",
+        "transport_probe_value": "0.83143492125957088899904791828042252085182887358418670075759888686125388208657791185917850168511668509076502411",
+        "fixed_local_probe_value": "0.83143492125957088899904791828042252085182887358418670075759888686125388208657791185917850168511668509076502411"
+      },
+      "refined": {
+        "transport_value": "0.83143492125957088899904791828042252085182887358418670075759888686125388208657791185917850168511668509076502411",
+        "transport_choice": "probe",
+        "strong_value": "0.83143492125957088899904791828042252085182887358418670075759888686125388208657791185917850168511668509076502411",
+        "strong_choice": "probe",
+        "fixed_local_value": "0.83143492125957088899904791828042252085182887358418670075759888686125388208657791185917850168511668509076502411",
+        "fixed_local_choice": "probe",
+        "transport_probe_value": "0.83143492125957088899904791828042252085182887358418670075759888686125388208657791185917850168511668509076502411",
+        "fixed_local_probe_value": "0.83143492125957088899904791828042252085182887358418670075759888686125388208657791185917850168511668509076502411"
+      },
+      "same_physical_terminal_law": [
+        [
+          "0.1",
+          "-0.01",
+          "3"
+        ],
+        [
+          "0.9",
+          "0.99",
+          "3"
+        ]
+      ]
+    },
+    {
+      "eta": "2",
+      "gamma": "0.5",
+      "p": "0.1",
+      "duration": 1,
+      "coarse": {
+        "transport_value": "0.16",
+        "transport_choice": "STOP",
+        "strong_value": "0.16",
+        "strong_choice": "STOP",
+        "fixed_local_value": "0.16",
+        "fixed_local_choice": "STOP",
+        "transport_probe_value": "0.022649167999416847681581752080411371301325924449548241564108422708872559276094690416665193126953460210413265388",
+        "fixed_local_probe_value": "0.022649167999416847681581752080411371301325924449548241564108422708872559276094690416665193126953460210413265388"
+      },
+      "refined": {
+        "transport_value": "0.16",
+        "transport_choice": "STOP",
+        "strong_value": "0.16",
+        "strong_choice": "STOP",
+        "fixed_local_value": "0.16",
+        "fixed_local_choice": "STOP",
+        "transport_probe_value": "0.022649167999416847681581752080411371301325924449548241564108422708872559276094690416665193126953460210413265388",
+        "fixed_local_probe_value": "0.012608800172962302688588100214982638488426399347787473830005211565391683229271075524702483404497879500917798441"
+      },
+      "same_physical_terminal_law": [
+        [
+          "0.1",
+          "0.49",
+          "1"
+        ],
+        [
+          "0.9",
+          "-0.01",
+          "1"
+        ]
+      ]
+    },
+    {
+      "eta": "2",
+      "gamma": "0.5",
+      "p": "0.1",
+      "duration": 2,
+      "coarse": {
+        "transport_value": "0.16",
+        "transport_choice": "STOP",
+        "strong_value": "0.16",
+        "strong_choice": "STOP",
+        "fixed_local_value": "0.16",
+        "fixed_local_choice": "STOP",
+        "transport_probe_value": "0.010070974375202594273939248584438612771875640270446585457795887426703930461213427867656653867954208249036314838",
+        "fixed_local_probe_value": "0.010070974375202594273939248584438612771875640270446585457795887426703930461213427867656653867954208249036314838"
+      },
+      "refined": {
+        "transport_value": "0.16",
+        "transport_choice": "STOP",
+        "strong_value": "0.16",
+        "strong_choice": "STOP",
+        "fixed_local_value": "0.16",
+        "fixed_local_choice": "STOP",
+        "transport_probe_value": "0.010070974375202594273939248584438612771875640270446585457795887426703930461213427867656653867954208249036314838",
+        "fixed_local_probe_value": "0.001304400086481151344294050107491319244213199673893736915002605782695841614635537762351241702248939750458899220"
+      },
+      "same_physical_terminal_law": [
+        [
+          "0.1",
+          "0.24",
+          "2"
+        ],
+        [
+          "0.9",
+          "-0.01",
+          "2"
+        ]
+      ]
+    },
+    {
+      "eta": "2",
+      "gamma": "0.5",
+      "p": "0.1",
+      "duration": 3,
+      "coarse": {
+        "transport_value": "0.16",
+        "transport_choice": "STOP",
+        "strong_value": "0.16",
+        "strong_choice": "STOP",
+        "fixed_local_value": "0.16",
+        "fixed_local_choice": "STOP",
+        "transport_probe_value": "0.001184117891767569701419022036339051229051075054423027376516242050815501862419361270496921053210041103137861574",
+        "fixed_local_probe_value": "0.001184117891767569701419022036339051229051075054423027376516242050815501862419361270496921053210041103137861574"
+      },
+      "refined": {
+        "transport_value": "0.16",
+        "transport_choice": "STOP",
+        "strong_value": "0.16",
+        "strong_choice": "STOP",
+        "fixed_local_value": "0.16",
+        "fixed_local_choice": "STOP",
+        "transport_probe_value": "0.001184117891767569701419022036339051229051075054423027376516242050815501862419361270496921053210041103137861574",
+        "fixed_local_probe_value": "-0.0043477999567594243278529749462543403778934001630531315424986971086520791926822311188243791488755301247705503898"
+      },
+      "same_physical_terminal_law": [
+        [
+          "0.1",
+          "0.115",
+          "3"
+        ],
+        [
+          "0.9",
+          "-0.010",
+          "3"
+        ]
+      ]
+    },
+    {
+      "eta": "2",
+      "gamma": "0.5",
+      "p": "0.5",
+      "duration": 1,
+      "coarse": {
+        "transport_value": "0.17994274652086123768411831324516046308011002434495343970080824732809936023025374733483146035956314807649021710",
+        "transport_choice": "probe",
+        "strong_value": "0.17994274652086123768411831324516046308011002434495343970080824732809936023025374733483146035956314807649021710",
+        "strong_choice": "probe",
+        "fixed_local_value": "0.17994274652086123768411831324516046308011002434495343970080824732809936023025374733483146035956314807649021710",
+        "fixed_local_choice": "probe",
+        "transport_probe_value": "0.17994274652086123768411831324516046308011002434495343970080824732809936023025374733483146035956314807649021710",
+        "fixed_local_probe_value": "0.17994274652086123768411831324516046308011002434495343970080824732809936023025374733483146035956314807649021710"
+      },
+      "refined": {
+        "transport_value": "0.17994274652086123768411831324516046308011002434495343970080824732809936023025374733483146035956314807649021710",
+        "transport_choice": "probe",
+        "strong_value": "0.17994274652086123768411831324516046308011002434495343970080824732809936023025374733483146035956314807649021710",
+        "strong_choice": "probe",
+        "fixed_local_value": "0.16",
+        "fixed_local_choice": "STOP",
+        "transport_probe_value": "0.17994274652086123768411831324516046308011002434495343970080824732809936023025374733483146035956314807649021710",
+        "fixed_local_probe_value": "0.13155479237924320324337632877496803416029176788797422414263469817635508557823407296658519230592142530214625338"
+      },
+      "same_physical_terminal_law": [
+        [
+          "0.5",
+          "-0.01",
+          "1"
+        ],
+        [
+          "0.5",
+          "0.49",
+          "1"
+        ]
+      ]
+    },
+    {
+      "eta": "2",
+      "gamma": "0.5",
+      "p": "0.5",
+      "duration": 2,
+      "coarse": {
+        "transport_value": "0.16",
+        "transport_choice": "STOP",
+        "strong_value": "0.16",
+        "strong_choice": "STOP",
+        "fixed_local_value": "0.16",
+        "fixed_local_choice": "STOP",
+        "transport_probe_value": "0.09953509818991931427211738318850290915995196984619620645993236719710004461509937039520906661240138973379805492",
+        "fixed_local_probe_value": "0.09953509818991931427211738318850290915995196984619620645993236719710004461509937039520906661240138973379805492"
+      },
+      "refined": {
+        "transport_value": "0.16",
+        "transport_choice": "STOP",
+        "strong_value": "0.16",
+        "strong_choice": "STOP",
+        "fixed_local_value": "0.16",
+        "fixed_local_choice": "STOP",
+        "transport_probe_value": "0.09953509818991931427211738318850290915995196984619620645993236719710004461509937039520906661240138973379805492",
+        "fixed_local_probe_value": "0.060777396189621601621688164387484017080145883943987112071317349088177542789117036483292596152960712651073126690"
+      },
+      "same_physical_terminal_law": [
+        [
+          "0.5",
+          "-0.01",
+          "2"
+        ],
+        [
+          "0.5",
+          "0.24",
+          "2"
+        ]
+      ]
+    },
+    {
+      "eta": "2",
+      "gamma": "0.5",
+      "p": "0.5",
+      "duration": 3,
+      "coarse": {
+        "transport_value": "0.16",
+        "transport_choice": "STOP",
+        "strong_value": "0.16",
+        "strong_choice": "STOP",
+        "fixed_local_value": "0.16",
+        "fixed_local_choice": "STOP",
+        "transport_probe_value": "0.04860388034055087360469799489992931299266252246346546494858145345921183194093915963642151495167940416326678014",
+        "fixed_local_probe_value": "0.04860388034055087360469799489992931299266252246346546494858145345921183194093915963642151495167940416326678014"
+      },
+      "refined": {
+        "transport_value": "0.16",
+        "transport_choice": "STOP",
+        "strong_value": "0.16",
+        "strong_choice": "STOP",
+        "fixed_local_value": "0.16",
+        "fixed_local_choice": "STOP",
+        "transport_probe_value": "0.048603880340550873604697994899929312992662522463465464948581453459211831940939159636421514951679404163266780140",
+        "fixed_local_probe_value": "0.025388698094810800810844082193742008540072941971993556035658674544088771394558518241646298076480356325536563345"
+      },
+      "same_physical_terminal_law": [
+        [
+          "0.5",
+          "-0.010",
+          "3"
+        ],
+        [
+          "0.5",
+          "0.115",
+          "3"
+        ]
+      ]
+    },
+    {
+      "eta": "2",
+      "gamma": "0.5",
+      "p": "0.9",
+      "duration": 1,
+      "coarse": {
+        "transport_value": "0.41071746062978544449952395914021126042591443679209335037879944343062694104328895592958925084255834254538251206",
+        "transport_choice": "probe",
+        "strong_value": "0.41071746062978544449952395914021126042591443679209335037879944343062694104328895592958925084255834254538251206",
+        "strong_choice": "probe",
+        "fixed_local_value": "0.41071746062978544449952395914021126042591443679209335037879944343062694104328895592958925084255834254538251206",
+        "fixed_local_choice": "probe",
+        "transport_probe_value": "0.41071746062978544449952395914021126042591443679209335037879944343062694104328895592958925084255834254538251206",
+        "fixed_local_probe_value": "0.41071746062978544449952395914021126042591443679209335037879944343062694104328895592958925084255834254538251206"
+      },
+      "refined": {
+        "transport_value": "0.41071746062978544449952395914021126042591443679209335037879944343062694104328895592958925084255834254538251206",
+        "transport_choice": "probe",
+        "strong_value": "0.41071746062978544449952395914021126042591443679209335037879944343062694104328895592958925084255834254538251206",
+        "strong_choice": "probe",
+        "fixed_local_value": "0.36649282298895531247920711149861729487313192635762730263263543828616853471015755863454869943668017960646697395",
+        "fixed_local_choice": "probe",
+        "transport_probe_value": "0.41071746062978544449952395914021126042591443679209335037879944343062694104328895592958925084255834254538251206",
+        "fixed_local_probe_value": "0.36649282298895531247920711149861729487313192635762730263263543828616853471015755863454869943668017960646697395"
+      },
+      "same_physical_terminal_law": [
+        [
+          "0.1",
+          "-0.01",
+          "1"
+        ],
+        [
+          "0.9",
+          "0.49",
+          "1"
+        ]
+      ]
+    },
+    {
+      "eta": "2",
+      "gamma": "0.5",
+      "p": "0.9",
+      "duration": 2,
+      "coarse": {
+        "transport_value": "0.20857263826313480912054099588201048872174259634583577869399173001479627845018035576368543647083686899066134359",
+        "transport_choice": "probe",
+        "strong_value": "0.20857263826313480912054099588201048872174259634583577869399173001479627845018035576368543647083686899066134359",
+        "strong_choice": "probe",
+        "fixed_local_value": "0.20857263826313480912054099588201048872174259634583577869399173001479627845018035576368543647083686899066134359",
+        "fixed_local_choice": "probe",
+        "transport_probe_value": "0.20857263826313480912054099588201048872174259634583577869399173001479627845018035576368543647083686899066134359",
+        "fixed_local_probe_value": "0.20857263826313480912054099588201048872174259634583577869399173001479627845018035576368543647083686899066134359"
+      },
+      "refined": {
+        "transport_value": "0.20857263826313480912054099588201048872174259634583577869399173001479627845018035576368543647083686899066134359",
+        "transport_choice": "probe",
+        "strong_value": "0.20857263826313480912054099588201048872174259634583577869399173001479627845018035576368543647083686899066134359",
+        "strong_choice": "probe",
+        "fixed_local_value": "0.17824641149447765623960355574930864743656596317881365131631771914308426735507877931727434971834008980323348698",
+        "fixed_local_choice": "probe",
+        "transport_probe_value": "0.20857263826313480912054099588201048872174259634583577869399173001479627845018035576368543647083686899066134359",
+        "fixed_local_probe_value": "0.17824641149447765623960355574930864743656596317881365131631771914308426735507877931727434971834008980323348698"
+      },
+      "same_physical_terminal_law": [
+        [
+          "0.1",
+          "-0.01",
+          "2"
+        ],
+        [
+          "0.9",
+          "0.24",
+          "2"
+        ]
+      ]
+    },
+    {
+      "eta": "2",
+      "gamma": "0.5",
+      "p": "0.9",
+      "duration": 3,
+      "coarse": {
+        "transport_value": "0.16",
+        "transport_choice": "STOP",
+        "strong_value": "0.16",
+        "strong_choice": "STOP",
+        "fixed_local_value": "0.16",
+        "fixed_local_choice": "STOP",
+        "transport_probe_value": "0.10099666605733992510178926479469945541523579678805177453661742319700333548516657457306744237878900815481430236",
+        "fixed_local_probe_value": "0.10099666605733992510178926479469945541523579678805177453661742319700333548516657457306744237878900815481430236"
+      },
+      "refined": {
+        "transport_value": "0.16",
+        "transport_choice": "STOP",
+        "strong_value": "0.16",
+        "strong_choice": "STOP",
+        "fixed_local_value": "0.16",
+        "fixed_local_choice": "STOP",
+        "transport_probe_value": "0.10099666605733992510178926479469945541523579678805177453661742319700333548516657457306744237878900815481430236",
+        "fixed_local_probe_value": "0.084123205747238828119801777874654323718282981589406825658158859571542133677539389658637174859170044901616743488"
+      },
+      "same_physical_terminal_law": [
+        [
+          "0.1",
+          "-0.010",
+          "3"
+        ],
+        [
+          "0.9",
+          "0.115",
+          "3"
+        ]
+      ]
+    },
+    {
+      "eta": "2",
+      "gamma": "0.8",
+      "p": "0.1",
+      "duration": 1,
+      "coarse": {
+        "transport_value": "0.16",
+        "transport_choice": "STOP",
+        "strong_value": "0.16",
+        "strong_choice": "STOP",
+        "fixed_local_value": "0.16",
+        "fixed_local_choice": "STOP",
+        "transport_probe_value": "0.031587743461682368672269419834657277140672118121612787045443589517704138191387742358055406403209729563798707135",
+        "fixed_local_probe_value": "0.031587743461682368672269419834657277140672118121612787045443589517704138191387742358055406403209729563798707135"
+      },
+      "refined": {
+        "transport_value": "0.16",
+        "transport_choice": "STOP",
+        "strong_value": "0.16",
+        "strong_choice": "STOP",
+        "fixed_local_value": "0.16",
+        "fixed_local_choice": "STOP",
+        "transport_probe_value": "0.031587743461682368672269419834657277140672118121612787045443589517704138191387742358055406403209729563798707135",
+        "fixed_local_probe_value": "0.026174080276739684301740960343972221581482238956459958128008338504626693166833720839523973447196607201468477506"
+      },
+      "same_physical_terminal_law": [
+        [
+          "0.1",
+          "0.79",
+          "1"
+        ],
+        [
+          "0.9",
+          "-0.01",
+          "1"
+        ]
+      ]
+    },
+    {
+      "eta": "2",
+      "gamma": "0.8",
+      "p": "0.1",
+      "duration": 2,
+      "coarse": {
+        "transport_value": "0.16",
+        "transport_choice": "STOP",
+        "strong_value": "0.16",
+        "strong_choice": "STOP",
+        "fixed_local_value": "0.16",
+        "fixed_local_choice": "STOP",
+        "transport_probe_value": "0.027467533180370684741708101227699447466337084936616376125137148800737093709643742111548358175053123813043414689",
+        "fixed_local_probe_value": "0.027467533180370684741708101227699447466337084936616376125137148800737093709643742111548358175053123813043414689"
+      },
+      "refined": {
+        "transport_value": "0.16",
+        "transport_choice": "STOP",
+        "strong_value": "0.16",
+        "strong_choice": "STOP",
+        "fixed_local_value": "0.16",
+        "fixed_local_choice": "STOP",
+        "transport_probe_value": "0.027467533180370684741708101227699447466337084936616376125137148800737093709643742111548358175053123813043414689",
+        "fixed_local_probe_value": "0.018939264221391747441392768275177777265185791165167966502406670803701354533466976671619178757757285761174782004"
+      },
+      "same_physical_terminal_law": [
+        [
+          "0.1",
+          "0.63",
+          "2"
+        ],
+        [
+          "0.9",
+          "-0.01",
+          "2"
+        ]
+      ]
+    },
+    {
+      "eta": "2",
+      "gamma": "0.8",
+      "p": "0.1",
+      "duration": 3,
+      "coarse": {
+        "transport_value": "0.16",
+        "transport_choice": "STOP",
+        "strong_value": "0.16",
+        "strong_choice": "STOP",
+        "fixed_local_value": "0.16",
+        "fixed_local_choice": "STOP",
+        "transport_probe_value": "0.023115018601386649415792494600499568150203115528364123071480121195768728849926226784447014998504755296120054793",
+        "fixed_local_probe_value": "0.023115018601386649415792494600499568150203115528364123071480121195768728849926226784447014998504755296120054793"
+      },
+      "refined": {
+        "transport_value": "0.16",
+        "transport_choice": "STOP",
+        "strong_value": "0.16",
+        "strong_choice": "STOP",
+        "fixed_local_value": "0.16",
+        "fixed_local_choice": "STOP",
+        "transport_probe_value": "0.023115018601386649415792494600499568150203115528364123071480121195768728849926226784447014998504755296120054793",
+        "fixed_local_probe_value": "0.013151411377113397953114214620142221812148632932134373201925336642961083626773581337295343006205828608939825604"
+      },
+      "same_physical_terminal_law": [
+        [
+          "0.1",
+          "0.502",
+          "3"
+        ],
+        [
+          "0.9",
+          "-0.010",
+          "3"
+        ]
+      ]
+    },
+    {
+      "eta": "2",
+      "gamma": "0.8",
+      "p": "0.5",
+      "duration": 1,
+      "coarse": {
+        "transport_value": "0.24462321983580323985486845476466561275529880489252109070935231288542608695436523037047009948752369820037909562",
+        "transport_choice": "probe",
+        "strong_value": "0.24462321983580323985486845476466561275529880489252109070935231288542608695436523037047009948752369820037909562",
+        "strong_choice": "probe",
+        "fixed_local_value": "0.24462321983580323985486845476466561275529880489252109070935231288542608695436523037047009948752369820037909562",
+        "fixed_local_choice": "probe",
+        "transport_probe_value": "0.24462321983580323985486845476466561275529880489252109070935231288542608695436523037047009948752369820037909562",
+        "fixed_local_probe_value": "0.24462321983580323985486845476466561275529880489252109070935231288542608695436523037047009948752369820037909562"
+      },
+      "refined": {
+        "transport_value": "0.24462321983580323985486845476466561275529880489252109070935231288542608695436523037047009948752369820037909562",
+        "transport_choice": "probe",
+        "strong_value": "0.24462321983580323985486845476466561275529880489252109070935231288542608695436523037047009948752369820037909562",
+        "strong_choice": "probe",
+        "fixed_local_value": "0.21648766780678912518940212603994885465646682862075875862821551708216813692517451674653630768947428048343400541",
+        "fixed_local_choice": "probe",
+        "transport_probe_value": "0.24462321983580323985486845476466561275529880489252109070935231288542608695436523037047009948752369820037909562",
+        "fixed_local_probe_value": "0.21648766780678912518940212603994885465646682862075875862821551708216813692517451674653630768947428048343400541"
+      },
+      "same_physical_terminal_law": [
+        [
+          "0.5",
+          "-0.01",
+          "1"
+        ],
+        [
+          "0.5",
+          "0.79",
+          "1"
+        ]
+      ]
+    },
+    {
+      "eta": "2",
+      "gamma": "0.8",
+      "p": "0.5",
+      "duration": 2,
+      "coarse": {
+        "transport_value": "0.21391081922371413835808592772250335087622991719813998003620156002895218882828162326247405956595924445103403938",
+        "transport_choice": "probe",
+        "strong_value": "0.21391081922371413835808592772250335087622991719813998003620156002895218882828162326247405956595924445103403938",
+        "strong_choice": "probe",
+        "fixed_local_value": "0.21391081922371413835808592772250335087622991719813998003620156002895218882828162326247405956595924445103403938",
+        "fixed_local_choice": "probe",
+        "transport_probe_value": "0.21391081922371413835808592772250335087622991719813998003620156002895218882828162326247405956595924445103403938",
+        "fixed_local_probe_value": "0.21391081922371413835808592772250335087622991719813998003620156002895218882828162326247405956595924445103403938"
+      },
+      "refined": {
+        "transport_value": "0.21391081922371413835808592772250335087622991719813998003620156002895218882828162326247405956595924445103403939",
+        "transport_choice": "probe",
+        "strong_value": "0.21391081922371413835808592772250335087622991719813998003620156002895218882828162326247405956595924445103403938",
+        "strong_choice": "probe",
+        "fixed_local_value": "0.17119013424543130015152170083195908372517346289660700690257241366573450954013961339722904615157942438674720433",
+        "fixed_local_choice": "probe",
+        "transport_probe_value": "0.21391081922371413835808592772250335087622991719813998003620156002895218882828162326247405956595924445103403939",
+        "fixed_local_probe_value": "0.17119013424543130015152170083195908372517346289660700690257241366573450954013961339722904615157942438674720433"
+      },
+      "same_physical_terminal_law": [
+        [
+          "0.5",
+          "-0.01",
+          "2"
+        ],
+        [
+          "0.5",
+          "0.63",
+          "2"
+        ]
+      ]
+    },
+    {
+      "eta": "2",
+      "gamma": "0.8",
+      "p": "0.5",
+      "duration": 3,
+      "coarse": {
+        "transport_value": "0.18314183636711937826207391791174752830593946819767315533188860427712529650661506914862934751671810783298495591",
+        "transport_choice": "probe",
+        "strong_value": "0.18314183636711937826207391791174752830593946819767315533188860427712529650661506914862934751671810783298495591",
+        "strong_choice": "probe",
+        "fixed_local_value": "0.18314183636711937826207391791174752830593946819767315533188860427712529650661506914862934751671810783298495591",
+        "fixed_local_choice": "probe",
+        "transport_probe_value": "0.18314183636711937826207391791174752830593946819767315533188860427712529650661506914862934751671810783298495591",
+        "fixed_local_probe_value": "0.18314183636711937826207391791174752830593946819767315533188860427712529650661506914862934751671810783298495591"
+      },
+      "refined": {
+        "transport_value": "0.18314183636711937826207391791174752830593946819767315533188860427712529650661506914862934751671810783298495591",
+        "transport_choice": "probe",
+        "strong_value": "0.18314183636711937826207391791174752830593946819767315533188860427712529650661506914862934751671810783298495591",
+        "strong_choice": "probe",
+        "fixed_local_value": "0.16",
+        "fixed_local_choice": "STOP",
+        "transport_probe_value": "0.18314183636711937826207391791174752830593946819767315533188860427712529650661506914862934751671810783298495591",
+        "fixed_local_probe_value": "0.13495210739634504012121736066556726698013877031728560552205793093258760763211169071778323692126353950939776346"
+      },
+      "same_physical_terminal_law": [
+        [
+          "0.5",
+          "-0.010",
+          "3"
+        ],
+        [
+          "0.5",
+          "0.502",
+          "3"
+        ]
+      ]
+    },
+    {
+      "eta": "2",
+      "gamma": "0.8",
+      "p": "0.9",
+      "duration": 1,
+      "coarse": {
+        "transport_value": "0.6234441151285127599620837440885413411948198231625692168004884307887597634390341443854657882561476700692552323",
+        "transport_choice": "probe",
+        "strong_value": "0.6234441151285127599620837440885413411948198231625692168004884307887597634390341443854657882561476700692552323",
+        "strong_choice": "probe",
+        "fixed_local_value": "0.6234441151285127599620837440885413411948198231625692168004884307887597634390341443854657882561476700692552323",
+        "fixed_local_choice": "probe",
+        "transport_probe_value": "0.6234441151285127599620837440885413411948198231625692168004884307887597634390341443854657882561476700692552323",
+        "fixed_local_probe_value": "0.6234441151285127599620837440885413411948198231625692168004884307887597634390341443854657882561476700692552323"
+      },
+      "refined": {
+        "transport_value": "0.62344411512851275996208374408854134119481982316256921680048843078875976343903414438546578825614767006925523230",
+        "transport_choice": "probe",
+        "strong_value": "0.6234441151285127599620837440885413411948198231625692168004884307887597634390341443854657882561476700692552323",
+        "strong_choice": "probe",
+        "fixed_local_value": "0.59238851678232849996673137839778767179701108217220368421221670125786965553625209381527791909868828737034715832",
+        "fixed_local_choice": "probe",
+        "transport_probe_value": "0.62344411512851275996208374408854134119481982316256921680048843078875976343903414438546578825614767006925523230",
+        "fixed_local_probe_value": "0.59238851678232849996673137839778767179701108217220368421221670125786965553625209381527791909868828737034715832"
+      },
+      "same_physical_terminal_law": [
+        [
+          "0.1",
+          "-0.01",
+          "1"
+        ],
+        [
+          "0.9",
+          "0.79",
+          "1"
+        ]
+      ]
+    },
+    {
+      "eta": "2",
+      "gamma": "0.8",
+      "p": "0.9",
+      "duration": 2,
+      "coarse": {
+        "transport_value": "0.51457750152559172305035648801054593781303801251963528161477538861470260347734936142153139627196329392585487655",
+        "transport_choice": "probe",
+        "strong_value": "0.51457750152559172305035648801054593781303801251963528161477538861470260347734936142153139627196329392585487655",
+        "strong_choice": "probe",
+        "fixed_local_value": "0.51457750152559172305035648801054593781303801251963528161477538861470260347734936142153139627196329392585487655",
+        "fixed_local_choice": "probe",
+        "transport_probe_value": "0.51457750152559172305035648801054593781303801251963528161477538861470260347734936142153139627196329392585487655",
+        "fixed_local_probe_value": "0.51457750152559172305035648801054593781303801251963528161477538861470260347734936142153139627196329392585487655"
+      },
+      "refined": {
+        "transport_value": "0.51457750152559172305035648801054593781303801251963528161477538861470260347734936142153139627196329392585487655",
+        "transport_choice": "probe",
+        "strong_value": "0.51457750152559172305035648801054593781303801251963528161477538861470260347734936142153139627196329392585487655",
+        "strong_choice": "probe",
+        "fixed_local_value": "0.47191081342586279997338510271823013743760886573776294736977336100629572442900167505222233527895062989627772666",
+        "fixed_local_choice": "probe",
+        "transport_probe_value": "0.51457750152559172305035648801054593781303801251963528161477538861470260347734936142153139627196329392585487655",
+        "fixed_local_probe_value": "0.47191081342586279997338510271823013743760886573776294736977336100629572442900167505222233527895062989627772666"
+      },
+      "same_physical_terminal_law": [
+        [
+          "0.1",
+          "-0.01",
+          "2"
+        ],
+        [
+          "0.9",
+          "0.63",
+          "2"
+        ]
+      ]
+    },
+    {
+      "eta": "2",
+      "gamma": "0.8",
+      "p": "0.9",
+      "duration": 3,
+      "coarse": {
+        "transport_value": "0.41990806392137783949044913911238638318615304883813487532575147982569335059574963988684478285317349828026469040",
+        "transport_choice": "probe",
+        "strong_value": "0.41990806392137783949044913911238638318615304883813487532575147982569335059574963988684478285317349828026469040",
+        "strong_choice": "probe",
+        "fixed_local_value": "0.41990806392137783949044913911238638318615304883813487532575147982569335059574963988684478285317349828026469040",
+        "fixed_local_choice": "probe",
+        "transport_probe_value": "0.41990806392137783949044913911238638318615304883813487532575147982569335059574963988684478285317349828026469040",
+        "fixed_local_probe_value": "0.41990806392137783949044913911238638318615304883813487532575147982569335059574963988684478285317349828026469040"
+      },
+      "refined": {
+        "transport_value": "0.41990806392137783949044913911238638318615304883813487532575147982569335059574963988684478285317349828026469041",
+        "transport_choice": "probe",
+        "strong_value": "0.41990806392137783949044913911238638318615304883813487532575147982569335059574963988684478285317349828026469040",
+        "strong_choice": "probe",
+        "fixed_local_value": "0.37552865074069023997870808217458410995008709259021035789581868880503657954320134004177786822316050391702218132",
+        "fixed_local_choice": "probe",
+        "transport_probe_value": "0.41990806392137783949044913911238638318615304883813487532575147982569335059574963988684478285317349828026469041",
+        "fixed_local_probe_value": "0.37552865074069023997870808217458410995008709259021035789581868880503657954320134004177786822316050391702218132"
+      },
+      "same_physical_terminal_law": [
+        [
+          "0.1",
+          "-0.010",
+          "3"
+        ],
+        [
+          "0.9",
+          "0.502",
+          "3"
+        ]
+      ]
+    },
+    {
+      "eta": "2",
+      "gamma": "1",
+      "p": "0.1",
+      "duration": 1,
+      "coarse": {
+        "transport_value": "0.16",
+        "transport_choice": "STOP",
+        "strong_value": "0.16",
+        "strong_choice": "STOP",
+        "fixed_local_value": "0.16",
+        "fixed_local_choice": "STOP",
+        "transport_probe_value": "0.035217600345924605377176200429965276976852798695574947660010423130783366458542151049404966808995759001835596882",
+        "fixed_local_probe_value": "0.035217600345924605377176200429965276976852798695574947660010423130783366458542151049404966808995759001835596882"
+      },
+      "refined": {
+        "transport_value": "0.16",
+        "transport_choice": "STOP",
+        "strong_value": "0.16",
+        "strong_choice": "STOP",
+        "fixed_local_value": "0.16",
+        "fixed_local_choice": "STOP",
+        "transport_probe_value": "0.035217600345924605377176200429965276976852798695574947660010423130783366458542151049404966808995759001835596882",
+        "fixed_local_probe_value": "0.035217600345924605377176200429965276976852798695574947660010423130783366458542151049404966808995759001835596882"
+      },
+      "same_physical_terminal_law": [
+        [
+          "0.1",
+          "0.99",
+          "1"
+        ],
+        [
+          "0.9",
+          "-0.01",
+          "1"
+        ]
+      ]
+    },
+    {
+      "eta": "2",
+      "gamma": "1",
+      "p": "0.1",
+      "duration": 2,
+      "coarse": {
+        "transport_value": "0.16",
+        "transport_choice": "STOP",
+        "strong_value": "0.16",
+        "strong_choice": "STOP",
+        "fixed_local_value": "0.16",
+        "fixed_local_choice": "STOP",
+        "transport_probe_value": "0.035217600345924605377176200429965276976852798695574947660010423130783366458542151049404966808995759001835596882",
+        "fixed_local_probe_value": "0.035217600345924605377176200429965276976852798695574947660010423130783366458542151049404966808995759001835596882"
+      },
+      "refined": {
+        "transport_value": "0.16",
+        "transport_choice": "STOP",
+        "strong_value": "0.16",
+        "strong_choice": "STOP",
+        "fixed_local_value": "0.16",
+        "fixed_local_choice": "STOP",
+        "transport_probe_value": "0.035217600345924605377176200429965276976852798695574947660010423130783366458542151049404966808995759001835596882",
+        "fixed_local_probe_value": "0.035217600345924605377176200429965276976852798695574947660010423130783366458542151049404966808995759001835596882"
+      },
+      "same_physical_terminal_law": [
+        [
+          "0.1",
+          "0.99",
+          "2"
+        ],
+        [
+          "0.9",
+          "-0.01",
+          "2"
+        ]
+      ]
+    },
+    {
+      "eta": "2",
+      "gamma": "1",
+      "p": "0.1",
+      "duration": 3,
+      "coarse": {
+        "transport_value": "0.16",
+        "transport_choice": "STOP",
+        "strong_value": "0.16",
+        "strong_choice": "STOP",
+        "fixed_local_value": "0.16",
+        "fixed_local_choice": "STOP",
+        "transport_probe_value": "0.035217600345924605377176200429965276976852798695574947660010423130783366458542151049404966808995759001835596882",
+        "fixed_local_probe_value": "0.035217600345924605377176200429965276976852798695574947660010423130783366458542151049404966808995759001835596882"
+      },
+      "refined": {
+        "transport_value": "0.16",
+        "transport_choice": "STOP",
+        "strong_value": "0.16",
+        "strong_choice": "STOP",
+        "fixed_local_value": "0.16",
+        "fixed_local_choice": "STOP",
+        "transport_probe_value": "0.035217600345924605377176200429965276976852798695574947660010423130783366458542151049404966808995759001835596882",
+        "fixed_local_probe_value": "0.035217600345924605377176200429965276976852798695574947660010423130783366458542151049404966808995759001835596882"
+      },
+      "same_physical_terminal_law": [
+        [
+          "0.1",
+          "0.99",
+          "3"
+        ],
+        [
+          "0.9",
+          "-0.01",
+          "3"
+        ]
+      ]
+    },
+    {
+      "eta": "2",
+      "gamma": "1",
+      "p": "0.5",
+      "duration": 1,
+      "coarse": {
+        "transport_value": "0.27310958475848640648675265754993606832058353577594844828526939635271017115646814593317038461184285060429250676",
+        "transport_choice": "probe",
+        "strong_value": "0.27310958475848640648675265754993606832058353577594844828526939635271017115646814593317038461184285060429250676",
+        "strong_choice": "probe",
+        "fixed_local_value": "0.27310958475848640648675265754993606832058353577594844828526939635271017115646814593317038461184285060429250676",
+        "fixed_local_choice": "probe",
+        "transport_probe_value": "0.27310958475848640648675265754993606832058353577594844828526939635271017115646814593317038461184285060429250676",
+        "fixed_local_probe_value": "0.27310958475848640648675265754993606832058353577594844828526939635271017115646814593317038461184285060429250676"
+      },
+      "refined": {
+        "transport_value": "0.27310958475848640648675265754993606832058353577594844828526939635271017115646814593317038461184285060429250676",
+        "transport_choice": "probe",
+        "strong_value": "0.27310958475848640648675265754993606832058353577594844828526939635271017115646814593317038461184285060429250676",
+        "strong_choice": "probe",
+        "fixed_local_value": "0.27310958475848640648675265754993606832058353577594844828526939635271017115646814593317038461184285060429250676",
+        "fixed_local_choice": "probe",
+        "transport_probe_value": "0.27310958475848640648675265754993606832058353577594844828526939635271017115646814593317038461184285060429250676",
+        "fixed_local_probe_value": "0.27310958475848640648675265754993606832058353577594844828526939635271017115646814593317038461184285060429250676"
+      },
+      "same_physical_terminal_law": [
+        [
+          "0.5",
+          "-0.01",
+          "1"
+        ],
+        [
+          "0.5",
+          "0.99",
+          "1"
+        ]
+      ]
+    },
+    {
+      "eta": "2",
+      "gamma": "1",
+      "p": "0.5",
+      "duration": 2,
+      "coarse": {
+        "transport_value": "0.27310958475848640648675265754993606832058353577594844828526939635271017115646814593317038461184285060429250676",
+        "transport_choice": "probe",
+        "strong_value": "0.27310958475848640648675265754993606832058353577594844828526939635271017115646814593317038461184285060429250676",
+        "strong_choice": "probe",
+        "fixed_local_value": "0.27310958475848640648675265754993606832058353577594844828526939635271017115646814593317038461184285060429250676",
+        "fixed_local_choice": "probe",
+        "transport_probe_value": "0.27310958475848640648675265754993606832058353577594844828526939635271017115646814593317038461184285060429250676",
+        "fixed_local_probe_value": "0.27310958475848640648675265754993606832058353577594844828526939635271017115646814593317038461184285060429250676"
+      },
+      "refined": {
+        "transport_value": "0.27310958475848640648675265754993606832058353577594844828526939635271017115646814593317038461184285060429250676",
+        "transport_choice": "probe",
+        "strong_value": "0.27310958475848640648675265754993606832058353577594844828526939635271017115646814593317038461184285060429250676",
+        "strong_choice": "probe",
+        "fixed_local_value": "0.27310958475848640648675265754993606832058353577594844828526939635271017115646814593317038461184285060429250676",
+        "fixed_local_choice": "probe",
+        "transport_probe_value": "0.27310958475848640648675265754993606832058353577594844828526939635271017115646814593317038461184285060429250676",
+        "fixed_local_probe_value": "0.27310958475848640648675265754993606832058353577594844828526939635271017115646814593317038461184285060429250676"
+      },
+      "same_physical_terminal_law": [
+        [
+          "0.5",
+          "-0.01",
+          "2"
+        ],
+        [
+          "0.5",
+          "0.99",
+          "2"
+        ]
+      ]
+    },
+    {
+      "eta": "2",
+      "gamma": "1",
+      "p": "0.5",
+      "duration": 3,
+      "coarse": {
+        "transport_value": "0.27310958475848640648675265754993606832058353577594844828526939635271017115646814593317038461184285060429250676",
+        "transport_choice": "probe",
+        "strong_value": "0.27310958475848640648675265754993606832058353577594844828526939635271017115646814593317038461184285060429250676",
+        "strong_choice": "probe",
+        "fixed_local_value": "0.27310958475848640648675265754993606832058353577594844828526939635271017115646814593317038461184285060429250676",
+        "fixed_local_choice": "probe",
+        "transport_probe_value": "0.27310958475848640648675265754993606832058353577594844828526939635271017115646814593317038461184285060429250676",
+        "fixed_local_probe_value": "0.27310958475848640648675265754993606832058353577594844828526939635271017115646814593317038461184285060429250676"
+      },
+      "refined": {
+        "transport_value": "0.27310958475848640648675265754993606832058353577594844828526939635271017115646814593317038461184285060429250676",
+        "transport_choice": "probe",
+        "strong_value": "0.27310958475848640648675265754993606832058353577594844828526939635271017115646814593317038461184285060429250676",
+        "strong_choice": "probe",
+        "fixed_local_value": "0.27310958475848640648675265754993606832058353577594844828526939635271017115646814593317038461184285060429250676",
+        "fixed_local_choice": "probe",
+        "transport_probe_value": "0.27310958475848640648675265754993606832058353577594844828526939635271017115646814593317038461184285060429250676",
+        "fixed_local_probe_value": "0.27310958475848640648675265754993606832058353577594844828526939635271017115646814593317038461184285060429250676"
+      },
+      "same_physical_terminal_law": [
+        [
+          "0.5",
+          "-0.01",
+          "3"
+        ],
+        [
+          "0.5",
+          "0.99",
+          "3"
+        ]
+      ]
+    },
+    {
+      "eta": "2",
+      "gamma": "1",
+      "p": "0.9",
+      "duration": 1,
+      "coarse": {
+        "transport_value": "0.7429856459779106249584142229972345897462638527152546052652708765723370694203151172690973988733603592129339479",
+        "transport_choice": "probe",
+        "strong_value": "0.7429856459779106249584142229972345897462638527152546052652708765723370694203151172690973988733603592129339479",
+        "strong_choice": "probe",
+        "fixed_local_value": "0.7429856459779106249584142229972345897462638527152546052652708765723370694203151172690973988733603592129339479",
+        "fixed_local_choice": "probe",
+        "transport_probe_value": "0.7429856459779106249584142229972345897462638527152546052652708765723370694203151172690973988733603592129339479",
+        "fixed_local_probe_value": "0.7429856459779106249584142229972345897462638527152546052652708765723370694203151172690973988733603592129339479"
+      },
+      "refined": {
+        "transport_value": "0.7429856459779106249584142229972345897462638527152546052652708765723370694203151172690973988733603592129339479",
+        "transport_choice": "probe",
+        "strong_value": "0.7429856459779106249584142229972345897462638527152546052652708765723370694203151172690973988733603592129339479",
+        "strong_choice": "probe",
+        "fixed_local_value": "0.7429856459779106249584142229972345897462638527152546052652708765723370694203151172690973988733603592129339479",
+        "fixed_local_choice": "probe",
+        "transport_probe_value": "0.7429856459779106249584142229972345897462638527152546052652708765723370694203151172690973988733603592129339479",
+        "fixed_local_probe_value": "0.7429856459779106249584142229972345897462638527152546052652708765723370694203151172690973988733603592129339479"
+      },
+      "same_physical_terminal_law": [
+        [
+          "0.1",
+          "-0.01",
+          "1"
+        ],
+        [
+          "0.9",
+          "0.99",
+          "1"
+        ]
+      ]
+    },
+    {
+      "eta": "2",
+      "gamma": "1",
+      "p": "0.9",
+      "duration": 2,
+      "coarse": {
+        "transport_value": "0.7429856459779106249584142229972345897462638527152546052652708765723370694203151172690973988733603592129339479",
+        "transport_choice": "probe",
+        "strong_value": "0.7429856459779106249584142229972345897462638527152546052652708765723370694203151172690973988733603592129339479",
+        "strong_choice": "probe",
+        "fixed_local_value": "0.7429856459779106249584142229972345897462638527152546052652708765723370694203151172690973988733603592129339479",
+        "fixed_local_choice": "probe",
+        "transport_probe_value": "0.7429856459779106249584142229972345897462638527152546052652708765723370694203151172690973988733603592129339479",
+        "fixed_local_probe_value": "0.7429856459779106249584142229972345897462638527152546052652708765723370694203151172690973988733603592129339479"
+      },
+      "refined": {
+        "transport_value": "0.7429856459779106249584142229972345897462638527152546052652708765723370694203151172690973988733603592129339479",
+        "transport_choice": "probe",
+        "strong_value": "0.7429856459779106249584142229972345897462638527152546052652708765723370694203151172690973988733603592129339479",
+        "strong_choice": "probe",
+        "fixed_local_value": "0.7429856459779106249584142229972345897462638527152546052652708765723370694203151172690973988733603592129339479",
+        "fixed_local_choice": "probe",
+        "transport_probe_value": "0.7429856459779106249584142229972345897462638527152546052652708765723370694203151172690973988733603592129339479",
+        "fixed_local_probe_value": "0.7429856459779106249584142229972345897462638527152546052652708765723370694203151172690973988733603592129339479"
+      },
+      "same_physical_terminal_law": [
+        [
+          "0.1",
+          "-0.01",
+          "2"
+        ],
+        [
+          "0.9",
+          "0.99",
+          "2"
+        ]
+      ]
+    },
+    {
+      "eta": "2",
+      "gamma": "1",
+      "p": "0.9",
+      "duration": 3,
+      "coarse": {
+        "transport_value": "0.7429856459779106249584142229972345897462638527152546052652708765723370694203151172690973988733603592129339479",
+        "transport_choice": "probe",
+        "strong_value": "0.7429856459779106249584142229972345897462638527152546052652708765723370694203151172690973988733603592129339479",
+        "strong_choice": "probe",
+        "fixed_local_value": "0.7429856459779106249584142229972345897462638527152546052652708765723370694203151172690973988733603592129339479",
+        "fixed_local_choice": "probe",
+        "transport_probe_value": "0.7429856459779106249584142229972345897462638527152546052652708765723370694203151172690973988733603592129339479",
+        "fixed_local_probe_value": "0.7429856459779106249584142229972345897462638527152546052652708765723370694203151172690973988733603592129339479"
+      },
+      "refined": {
+        "transport_value": "0.7429856459779106249584142229972345897462638527152546052652708765723370694203151172690973988733603592129339479",
+        "transport_choice": "probe",
+        "strong_value": "0.7429856459779106249584142229972345897462638527152546052652708765723370694203151172690973988733603592129339479",
+        "strong_choice": "probe",
+        "fixed_local_value": "0.7429856459779106249584142229972345897462638527152546052652708765723370694203151172690973988733603592129339479",
+        "fixed_local_choice": "probe",
+        "transport_probe_value": "0.7429856459779106249584142229972345897462638527152546052652708765723370694203151172690973988733603592129339479",
+        "fixed_local_probe_value": "0.7429856459779106249584142229972345897462638527152546052652708765723370694203151172690973988733603592129339479"
+      },
+      "same_physical_terminal_law": [
+        [
+          "0.1",
+          "-0.01",
+          "3"
+        ],
+        [
+          "0.9",
+          "0.99",
+          "3"
+        ]
+      ]
+    }
+  ],
+  "details": {
+    "representative": {
+      "eta": "2",
+      "gamma": "0.5",
+      "p": "0.5",
+      "duration": 1,
+      "coarse": {
+        "transport_value": "0.17994274652086123768411831324516046308011002434495343970080824732809936023025374733483146035956314807649021710",
+        "transport_choice": "probe",
+        "strong_value": "0.17994274652086123768411831324516046308011002434495343970080824732809936023025374733483146035956314807649021710",
+        "strong_choice": "probe",
+        "fixed_local_value": "0.17994274652086123768411831324516046308011002434495343970080824732809936023025374733483146035956314807649021710",
+        "fixed_local_choice": "probe",
+        "transport_probe_value": "0.17994274652086123768411831324516046308011002434495343970080824732809936023025374733483146035956314807649021710",
+        "fixed_local_probe_value": "0.17994274652086123768411831324516046308011002434495343970080824732809936023025374733483146035956314807649021710"
+      },
+      "refined": {
+        "transport_value": "0.17994274652086123768411831324516046308011002434495343970080824732809936023025374733483146035956314807649021710",
+        "transport_choice": "probe",
+        "strong_value": "0.17994274652086123768411831324516046308011002434495343970080824732809936023025374733483146035956314807649021710",
+        "strong_choice": "probe",
+        "fixed_local_value": "0.16",
+        "fixed_local_choice": "STOP",
+        "transport_probe_value": "0.17994274652086123768411831324516046308011002434495343970080824732809936023025374733483146035956314807649021710",
+        "fixed_local_probe_value": "0.13155479237924320324337632877496803416029176788797422414263469817635508557823407296658519230592142530214625338"
+      },
+      "same_physical_terminal_law": [
+        [
+          "0.5",
+          "-0.01",
+          "1"
+        ],
+        [
+          "0.5",
+          "0.49",
+          "1"
+        ]
+      ]
+    },
+    "paid_headroom_above_STOP": "0.01994274652086123768411831324516046308011002434495343970080824732809936023025374733483146035956314807649021710",
+    "matched_strong_planner_headroom": "0E-110",
+    "random_duration": {
+      "dynamic_value": "0.13350441600424566569820155788251029468742288671686400855755597833684223643714191241518236358670040330536016792",
+      "exhaustive_value": "0.13350441600424566569820155788251029468742288671686400855755597833684223643714191241518236358670040330536016792",
+      "root_choice": "probe",
+      "probe_value": "0.13350441600424566569820155788251029468742288671686400855755597833684223643714191241518236358670040330536016792"
+    },
+    "action_lottery": {
+      "outside_CE_value": ".5",
+      "trajectory_CE_value": "0.28310958475848640648675265754993606832058353577594844828526939635271017115646814593317038461184285060429250676"
+    }
+  },
+  "grid_cells": 81,
+  "matched_strong_baseline_difference_cells": 0,
+  "fixed_local_action_flip_cells": 2,
+  "wall_seconds": 0.07512697899801424,
+  "cpu_seconds": 0.074964744,
+  "python": "3.12.14",
+  "new_samples": 0,
+  "model_calls": 0,
+  "host_currency_cost": null,
+  "formal_outward_rounding_claimed": false,
+  "candidate_disposition": "REJECT_AS_NEW_ALGORITHM: clock transport matches the classical trajectory-CE planner; retain as a semantic guard",
+  "external_review": false,
+  "historical_results_rewritten": false
+}
