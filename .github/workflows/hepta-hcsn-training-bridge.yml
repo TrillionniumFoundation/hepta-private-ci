@@ -8,6 +8,7 @@ on:
       - codex-rs/hepta-neuron/**
       - codex-rs/hepta-learning-artifacts/**
       - codex-rs/hepta-automation/**
+      - codex-rs/hepta-agentd/**
       - .github/workflows/hepta-hcsn-training-bridge.yml
 
 permissions:
@@ -15,13 +16,17 @@ permissions:
 
 jobs:
   source-and-owner:
-    if: github.event_name != 'pull_request' || github.head_ref == 'codex/hcsn-training-bridge-20261106' || github.head_ref == 'codex/hcsn-taskflow-integration-20261106'
+    if: github.event_name != 'pull_request' || github.head_ref == 'codex/hcsn-training-bridge-20261106' || github.head_ref == 'codex/hcsn-taskflow-integration-20261106' || github.head_ref == 'codex/hcsn-gap-closure-20261106'
     runs-on: ubuntu-24.04
     timeout-minutes: 60
     env:
       HCSN_SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
       OMP_NUM_THREADS: "1"
       MKL_NUM_THREADS: "1"
+      CARGO_BUILD_JOBS: "2"
+      CARGO_INCREMENTAL: "0"
+      CARGO_PROFILE_DEV_DEBUG: "0"
+      CARGO_PROFILE_TEST_DEBUG: "0"
     defaults:
       run:
         shell: bash
@@ -68,6 +73,33 @@ jobs:
         if: ${{ !cancelled() && steps.rust_build.outcome == 'success' }}
         working-directory: codex-rs
         run: just test --locked -p codex-hepta-neuron -p codex-hepta-learning-artifacts 2>&1 | tee "$HCSN_CI_EVIDENCE/rust-tests.log"
+      - name: Build signed TaskFlow real-worker test executable
+        id: signed_worker_build
+        if: ${{ !cancelled() && steps.rust_build.outcome == 'success' }}
+        working-directory: codex-rs
+        run: |
+          cargo build --locked -p codex-hepta-automation --test hcsn_signed_worker --message-format=json > "$HCSN_CI_EVIDENCE/signed-worker-artifacts.jsonl" 2> "$HCSN_CI_EVIDENCE/signed-worker-build.log"
+          python3 - <<'PY'
+          import hashlib, json, os
+          from pathlib import Path
+          root = Path(os.environ["HCSN_CI_EVIDENCE"])
+          rows = [json.loads(line) for line in (root/"signed-worker-artifacts.jsonl").read_text().splitlines()]
+          assert rows[-1] == {"reason": "build-finished", "success": True}
+          selected = [row for row in rows if row.get("reason") == "compiler-artifact"
+                      and row["target"]["name"] == "hcsn_signed_worker" and row["profile"]["test"]]
+          assert len(selected) == 1 and selected[0]["executable"]
+          executable = Path(selected[0]["executable"]).resolve(strict=True)
+          (root/"signed-worker-executable.json").write_text(json.dumps({
+              "path": str(executable), "sha256": hashlib.sha256(executable.read_bytes()).hexdigest()}))
+          with open(os.environ["GITHUB_ENV"], "a") as stream:
+              stream.write("HCSN_SIGNED_WORKER_EXECUTABLE=" + str(executable) + "\n")
+          PY
+      - name: Bind native bridge artifacts after the test executable builds
+        id: bridge_native_build
+        if: ${{ !cancelled() && steps.signed_worker_build.outcome == 'success' }}
+        working-directory: codex-rs
+        run: |
+          cargo build --locked --message-format=json -p codex-hepta-neuron -p codex-hepta-learning-artifacts -p codex-hepta-contracts -p codex-hepta-automation -p codex-hepta-types -p serde_json -p ed25519-dalek > "$HCSN_CI_EVIDENCE/bridge-cargo-artifacts.jsonl" 2> "$HCSN_CI_EVIDENCE/bridge-rust-build.log"
       - name: Strict shared-graph CPU derivative and recovery fixtures
         if: ${{ !cancelled() && steps.python_runtime.outcome == 'success' }}
         run: |
@@ -76,7 +108,9 @@ jobs:
           import sys, unittest
           suite = unittest.TestSuite()
           expected = {"test_joint_graph": 8, "test_population_graph": 8,
-                      "test_training_state": 8, "test_native_build": 5, "test_supervisor": 11}
+                      "test_training_state": 8, "test_native_build": 5, "test_supervisor": 11,
+                      "test_population_age_graph": 8, "test_population_generator": 5,
+                      "test_resumed_derivatives": 3}
           for name, minimum in expected.items():
               module = unittest.defaultTestLoader.loadTestsFromName("qualification.hcsn_training." + name)
               if module.countTestCases() < minimum:
@@ -85,16 +119,21 @@ jobs:
           result = unittest.TextTestRunner(verbosity=2).run(suite)
           sys.exit(0 if result.testsRun >= sum(expected.values()) and not result.skipped and result.wasSuccessful() else 1)
           PY
-      - name: A graph through native supervisor, owner and second training block
-        if: ${{ !cancelled() && steps.python_runtime.outcome == 'success' && steps.rust_build.outcome == 'success' }}
+      - name: A graph through signed TaskFlow, real worker, owner and second training block
+        if: ${{ !cancelled() && steps.python_runtime.outcome == 'success' && steps.bridge_native_build.outcome == 'success' }}
         run: |
           HCSN_RUSTC="$(cd codex-rs && rustup which rustc)"
-          python -m qualification.hcsn_training.verify_bridge --rust-workspace codex-rs --rustc "$HCSN_RUSTC" --cargo-artifacts "$HCSN_CI_EVIDENCE/cargo-artifacts.jsonl" --supervised --backend value_kernel --output "$HCSN_CI_EVIDENCE/bridge-a" 2>&1 | tee "$HCSN_CI_EVIDENCE/bridge-a.log"
-      - name: B graph through native supervisor, owner and second training block
-        if: ${{ !cancelled() && steps.python_runtime.outcome == 'success' && steps.rust_build.outcome == 'success' }}
+          python -m qualification.hcsn_training.verify_bridge --rust-workspace codex-rs --rustc "$HCSN_RUSTC" --cargo-artifacts "$HCSN_CI_EVIDENCE/bridge-cargo-artifacts.jsonl" --signed-worker-executable "$HCSN_SIGNED_WORKER_EXECUTABLE" --backend value_kernel --output "$HCSN_CI_EVIDENCE/bridge-a" 2>&1 | tee "$HCSN_CI_EVIDENCE/bridge-a.log"
+      - name: Fixed-grid B through signed TaskFlow, real worker and second training block
+        if: ${{ !cancelled() && steps.python_runtime.outcome == 'success' && steps.bridge_native_build.outcome == 'success' }}
         run: |
           HCSN_RUSTC="$(cd codex-rs && rustup which rustc)"
-          python -m qualification.hcsn_training.verify_bridge --rust-workspace codex-rs --rustc "$HCSN_RUSTC" --cargo-artifacts "$HCSN_CI_EVIDENCE/cargo-artifacts.jsonl" --supervised --backend population_grid --output "$HCSN_CI_EVIDENCE/bridge-b" 2>&1 | tee "$HCSN_CI_EVIDENCE/bridge-b.log"
+          python -m qualification.hcsn_training.verify_bridge --rust-workspace codex-rs --rustc "$HCSN_RUSTC" --cargo-artifacts "$HCSN_CI_EVIDENCE/bridge-cargo-artifacts.jsonl" --signed-worker-executable "$HCSN_SIGNED_WORKER_EXECUTABLE" --backend population_grid --output "$HCSN_CI_EVIDENCE/bridge-b" 2>&1 | tee "$HCSN_CI_EVIDENCE/bridge-b.log"
+      - name: Physical-time B through signed TaskFlow, real worker and second training block
+        if: ${{ !cancelled() && steps.python_runtime.outcome == 'success' && steps.bridge_native_build.outcome == 'success' }}
+        run: |
+          HCSN_RUSTC="$(cd codex-rs && rustup which rustc)"
+          python -m qualification.hcsn_training.verify_bridge --rust-workspace codex-rs --rustc "$HCSN_RUSTC" --cargo-artifacts "$HCSN_CI_EVIDENCE/bridge-cargo-artifacts.jsonl" --signed-worker-executable "$HCSN_SIGNED_WORKER_EXECUTABLE" --backend population_age --output "$HCSN_CI_EVIDENCE/bridge-b-age" 2>&1 | tee "$HCSN_CI_EVIDENCE/bridge-b-age.log"
       - name: Full authorized TaskFlow package tests
         if: ${{ !cancelled() && steps.tools.outcome == 'success' }}
         working-directory: codex-rs
@@ -111,5 +150,58 @@ jobs:
           name: hcsn-training-bridge-${{ env.HCSN_SOURCE_SHA }}-${{ github.run_attempt }}
           path: |
             ${{ runner.temp }}/hcsn-training-bridge/
+            codex-rs/target/nextest/local/
+          if-no-files-found: warn
+
+  agentd-registration:
+    if: github.event_name == 'pull_request' && github.head_ref == 'codex/hcsn-gap-closure-20261106'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    env:
+      HCSN_SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+      CARGO_BUILD_JOBS: "2"
+      CARGO_INCREMENTAL: "0"
+      CARGO_PROFILE_DEV_DEBUG: "0"
+      CARGO_PROFILE_TEST_DEBUG: "0"
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.HCSN_SOURCE_SHA }}
+          persist-credentials: false
+      - name: Bind Agentd candidate identity
+        run: |
+          test "$(git rev-parse HEAD)" = "$HCSN_SOURCE_SHA"
+          mkdir -p "$RUNNER_TEMP/hcsn-agentd"
+          git rev-parse HEAD HEAD^{tree} > "$RUNNER_TEMP/hcsn-agentd/source.txt"
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+      - name: Resolve existing sandboxed V8 dependency
+        env:
+          CODEX_REPO_ROOT: ${{ github.workspace }}
+          PYTHONPATH: scripts
+        run: python3 scripts/hepta_ci_v8.py
+      - name: Compile actual Agentd and exercise provider registration and existing HTTP owner
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          just test --locked --lib -p codex-hepta-agentd automation_effect_host --test-threads=1 2>&1 | tee "$RUNNER_TEMP/hcsn-agentd/tests.log"
+      - name: Check actual Agentd owner lints
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo clippy --locked -p codex-hepta-agentd --lib --no-deps -- -D clippy::correctness -D clippy::await_holding_lock -D clippy::await_holding_invalid_type 2>&1 | tee "$RUNNER_TEMP/hcsn-agentd/clippy.log"
+      - name: Verify Agentd source remained unchanged
+        if: always()
+        run: git diff --exit-code > "$RUNNER_TEMP/hcsn-agentd/source-unchanged.log"
+      - name: Retain Agentd build and test outcome
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hcsn-agentd-${{ env.HCSN_SOURCE_SHA }}-${{ github.run_attempt }}
+          path: |
+            ${{ runner.temp }}/hcsn-agentd/
             codex-rs/target/nextest/local/
           if-no-files-found: warn
