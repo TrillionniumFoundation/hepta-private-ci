@@ -18,6 +18,12 @@ pub struct AgentdNeuronGenerationOwnerV2<W: AnchorWitnessStore, P: CellGeneratio
     inference_control: P,
 }
 
+pub(crate) enum GenerationOwnerBoundary {
+    Admission,
+    Dispatch,
+    Settlement,
+}
+
 impl<W: AnchorWitnessStore, P: CellGenerationControlPortV2> AgentdNeuronGenerationOwnerV2<W, P> {
     pub fn new(journal: CellGenerationJournalV2<W>, inference_control: P) -> Self {
         Self {
@@ -40,7 +46,16 @@ impl<W: AnchorWitnessStore, P: CellGenerationControlPortV2> AgentdNeuronGenerati
     pub fn step(
         &mut self,
         request: CellGenerationRequestV2,
+        clock: impl FnMut() -> u64,
+    ) -> Result<CellGenerationReceiptV2, CellGenerationErrorV2> {
+        self.step_checked(request, clock, |_| Ok(()))
+    }
+
+    pub(crate) fn step_checked(
+        &mut self,
+        request: CellGenerationRequestV2,
         mut clock: impl FnMut() -> u64,
+        mut check: impl FnMut(GenerationOwnerBoundary) -> Result<(), CellGenerationErrorV2>,
     ) -> Result<CellGenerationReceiptV2, CellGenerationErrorV2> {
         if let Some(receipt) = self.journal.lookup(&request)? {
             return Ok(receipt);
@@ -49,9 +64,10 @@ impl<W: AnchorWitnessStore, P: CellGenerationControlPortV2> AgentdNeuronGenerati
             if pending != &request {
                 return Err(CellGenerationErrorV2::Conflict);
             }
-            return self.reconcile(clock);
+            return self.reconcile_checked(clock, || check(GenerationOwnerBoundary::Settlement));
         }
         let admitted = clock();
+        check(GenerationOwnerBoundary::Admission)?;
         if let Some(receipt) = self.journal.admit(request.clone(), admitted)? {
             return Ok(receipt);
         }
@@ -68,6 +84,7 @@ impl<W: AnchorWitnessStore, P: CellGenerationControlPortV2> AgentdNeuronGenerati
                 source_digest: manifest.source_digest,
             })
             .map_err(|_| CellGenerationErrorV2::InvalidBinding)?;
+            check(GenerationOwnerBoundary::Settlement)?;
             return self.journal.commit(
                 CellGenerationProposalV2 {
                     request_digest: request.digest()?,
@@ -84,6 +101,7 @@ impl<W: AnchorWitnessStore, P: CellGenerationControlPortV2> AgentdNeuronGenerati
         }
         self.journal
             .observe_dispatch_time(request.digest()?, before_contact)?;
+        check(GenerationOwnerBoundary::Dispatch)?;
         let proposal = self
             .inference_control
             .execute_generation(self.journal.manifest(), &request)?;
@@ -91,32 +109,53 @@ impl<W: AnchorWitnessStore, P: CellGenerationControlPortV2> AgentdNeuronGenerati
         if after_contact < before_contact {
             return Err(CellGenerationErrorV2::Deadline);
         }
+        check(GenerationOwnerBoundary::Settlement)?;
         self.journal.commit(proposal, after_contact)
     }
 
     pub fn reconcile(
         &mut self,
+        clock: impl FnMut() -> u64,
+    ) -> Result<CellGenerationReceiptV2, CellGenerationErrorV2> {
+        self.reconcile_checked(clock, || Ok(()))
+    }
+
+    pub(crate) fn reconcile_checked(
+        &mut self,
         mut clock: impl FnMut() -> u64,
+        mut check: impl FnMut() -> Result<(), CellGenerationErrorV2>,
     ) -> Result<CellGenerationReceiptV2, CellGenerationErrorV2> {
         let request = self
             .journal
             .pending_request()?
             .cloned()
             .ok_or(CellGenerationErrorV2::Conflict)?;
+        check()?;
         let proposal = self
             .inference_control
             .read_generation(&request)?
             .ok_or(CellGenerationErrorV2::Pending)?;
-        self.journal.commit(proposal, clock())
+        let settled = clock();
+        check()?;
+        self.journal.commit(proposal, settled)
     }
 
     pub fn cancel_pending(&mut self) -> Result<(), CellGenerationErrorV2> {
+        self.cancel_pending_checked(|| Ok(()))
+    }
+
+    pub(crate) fn cancel_pending_checked(
+        &mut self,
+        mut check: impl FnMut() -> Result<(), CellGenerationErrorV2>,
+    ) -> Result<(), CellGenerationErrorV2> {
         let request = self
             .journal
             .pending_request()?
             .cloned()
             .ok_or(CellGenerationErrorV2::Conflict)?;
+        check()?;
         self.journal.cancel(request.digest()?)?;
+        check()?;
         self.inference_control.cancel_generation(&request)
     }
 
