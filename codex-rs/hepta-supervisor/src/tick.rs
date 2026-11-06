@@ -105,16 +105,27 @@ impl<D: ProcessDriver> Supervisor<D> {
                     Err(error) => return Some(error),
                 };
                 slot.restart_pending = true;
+                // Recovery events must retain the durable attempt identity.
                 slot.event(
                     record.lifecycle.generation,
-                    SupervisorEventKind::RestartQueued,
+                    SupervisorEventKind::AutomaticRestartQueued {
+                        attempt: claim.attempt,
+                    },
                 );
                 None
             }
             Err(RestartBudgetError::Exhausted) => {
                 slot.restart_pending = false;
                 slot.restart_not_before = None;
-                Some(SupervisorError::RestartBudgetExhausted(agent_id.clone()))
+                slot.restart_attempt = self.config.restart_max_attempts;
+                // Durable budget exhaustion is terminal, not a retry trigger.
+                slot.event(
+                    record.lifecycle.generation,
+                    SupervisorEventKind::AutomaticRestartBudgetExhausted {
+                        attempts: self.config.restart_max_attempts,
+                    },
+                );
+                None
             }
             Err(error) => {
                 slot.restart_pending = false;

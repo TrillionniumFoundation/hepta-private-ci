@@ -21,6 +21,7 @@ mod planner;
 mod planner_context;
 mod planner_journal;
 mod planner_ndu;
+mod scope_lane_wal;
 #[path = "embodiment/timing.rs"]
 mod timing;
 
@@ -141,6 +142,12 @@ pub use planner_ndu::NduPlanningError;
 pub use planner_ndu::NduPlanningInputV1;
 pub use planner_ndu::canonical_ndu_planning_policy_digest;
 pub use planner_ndu::evaluate_prepared_plan_with_ndu;
+pub use scope_lane_wal::ScopeLaneEntryV1;
+pub use scope_lane_wal::ScopeLaneFileWalV1;
+pub use scope_lane_wal::ScopeLaneReceiptV1;
+pub use scope_lane_wal::ScopeLaneWalError;
+pub use scope_lane_wal::ScopeLaneWalV1;
+pub use scope_lane_wal::ScopeOwnerEnvelopeV1;
 pub use timing::FixedPriorityTaskV1;
 pub use timing::TimingError;
 pub use timing::fixed_priority_response_times;

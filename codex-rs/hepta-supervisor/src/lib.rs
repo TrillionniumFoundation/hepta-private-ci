@@ -3,6 +3,7 @@
 //! The supervisor does not execute turns or forward messages, models, or tokens.
 
 mod authority_signer;
+mod cell_split;
 mod control;
 mod daemon;
 mod daemon_client;
@@ -45,6 +46,21 @@ pub use authority_signer::load_signing_key_from_fd;
 pub use authority_signer::load_signing_key_from_path;
 pub use authority_signer::read_request;
 pub use authority_signer::sign_request;
+pub use cell_split::CellSplitArtifactCasReceiptV1;
+pub use cell_split::CellSplitCnsRouteOwnerV1;
+pub use cell_split::CellSplitExecutionErrorV1;
+pub use cell_split::CellSplitExecutionOwnerV1;
+pub use cell_split::CellSplitGenerationFenceOwnerV1;
+pub use cell_split::CellSplitGenerationFenceReceiptV1;
+pub use cell_split::CellSplitLedgerReceiptV1;
+pub use cell_split::CellSplitLedgerV1;
+pub use cell_split::CellSplitMigrationReceiptV1;
+pub use cell_split::CellSplitPhaseV1;
+pub use cell_split::CellSplitPlanV1;
+pub use cell_split::CellSplitRouteCutoverReceiptV1;
+pub use cell_split::CellSplitSnapshotReceiptV1;
+pub use cell_split::CellSplitStateMigrationOwnerV1;
+pub use cell_split::FileCellSplitArtifactCasV1;
 pub use daemon::PRODUCTION_AUTHORITY_FEATURE_ENABLED;
 pub use daemon::run_supervisord;
 pub use daemon::run_supervisord_with_grant_verifier;
