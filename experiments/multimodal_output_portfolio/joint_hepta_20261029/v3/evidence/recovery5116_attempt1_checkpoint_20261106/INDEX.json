@@ -1,0 +1,186 @@
+{
+  "format": "native-blocker-evidence-v1",
+  "purpose": "recovery5116_attempt1",
+  "snapshot_utc": "2026-11-06 19:43:51 UTC",
+  "qualification": {
+    "schema": "hepta.fixed-recovery-attempt-audit.v1",
+    "pull_request": 5116,
+    "run_id": 42280081679,
+    "job_id": 128106496652,
+    "attempt": 1,
+    "result": "failure",
+    "fixed_source": {
+      "head": "7eea44fd62d75579e85c49666ffe44303bfddde9",
+      "tree": "07f129414cf4058d66bdac5e582c517f5b428119",
+      "parent": "f191a1d87ca34ae378fc9c6ae87cc6096f5165d2",
+      "parent_tree": "748a6807f02ccb77785f344e86b883b38340ba5e"
+    },
+    "manifest_artifact_id": 13534519226,
+    "manifest_archive": {
+      "bytes": 693,
+      "sha256": "fdfebaa9f2546fd737004b23f639fc3a319377e46976fd89070fe42503290c3f"
+    },
+    "all_archive_members_crc_verified": 1,
+    "all_archive_members": [
+      "RECOVERY.json"
+    ],
+    "recovery_receipt": {
+      "bytes": 1061,
+      "sha256": "a94e6b3ed3467a09e936d2a291f8967b86310770ba42e85589f3a4ab7fa848fd"
+    },
+    "console": {
+      "bytes": 1453062,
+      "sha256": "531770a3876e16649b10a863d5798a97c7219ed8027c7c5391bfa9e59453d105"
+    },
+    "observed_boundary": {
+      "exact_source_guard_passed": true,
+      "archive_phase_error_type": "TimeoutError",
+      "inner_download_subphase_known": false,
+      "original_archive_hash_completed": false,
+      "original_zip_directory_retained": false,
+      "projection_parts": 0,
+      "original_arm_build_stderr_recovered": false,
+      "qualification_or_promotion": false
+    },
+    "one_retry_rationale": "A real archive-stage network TimeoutError after the exact source guard. Preserve attempt one outside Actions first, then at most one identical job retry; no timeout, input identity, collector, policy or workflow edit. No assurance about platform retention of prior attempts is claimed.",
+    "upload_name_conclusion": "The fixed upload-artifact 4.6.2 lock uses official @actions/artifact 2.3.2 whose API documentation explicitly permits repeated names from reruns; ordinary within-attempt conflict guidance is not proof that rerunning must return HTTP 409.",
+    "original_collector_has_credential_scanner": false,
+    "current_run_or_product_qualification_claimed": false
+  },
+  "evidence_policy": "Every listed input is retained byte for byte. Restoration produces inert regular 0644 files and never executes archived sources. This packet retains the complete 693-byte failed recovery artifact and original console; it does not contain the uncompleted 3.67 GB original ARM artifact download or any recovered projection.",
+  "archive_bytes": 3727360,
+  "archive_sha256": "88167c765111a46cdb302528a3efc69a8faab1611f6b84ed11091cd82bf7eb13",
+  "compressed_bytes": 285372,
+  "compressed_sha256": "fa352bfad3dc7e50a8acd04cbd56367e468a632d8ea3abd6eb5ab93bb16b12cd",
+  "parts": [
+    {
+      "name": "native-evidence.tar.xz.part000.gz",
+      "bytes": 285480,
+      "sha256": "6affef5aefbb33179090cac6a9e93080cb801f5a622f2807d75df8d020a4d42f",
+      "git_blob": "7a771a091a912a56cb2553d8543b2597e733e31d",
+      "segment_bytes": 285372,
+      "segment_sha256": "fa352bfad3dc7e50a8acd04cbd56367e468a632d8ea3abd6eb5ab93bb16b12cd"
+    }
+  ],
+  "files": [
+    {
+      "path": "round3_ci/arm_recovery_23/candidate/.github/scripts/recover_fixed_synapse_evidence.py",
+      "bytes": 13586,
+      "sha256": "f41ac349333e30673c6de973100ff19f41f80ec8fae10806b23464286c6690e3",
+      "git_blob": "09722f82b5533347d2d9cba47f86623d3abfc506",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/arm_recovery_23/candidate/.github/workflows/hepta-fixed-synapse-evidence-recovery.yml",
+      "bytes": 5702,
+      "sha256": "88c0bd2be702f6d12000b78d34f886344ca9cf3982b547479286d6c295f64c77",
+      "git_blob": "4206c4129f6f619ec25aab3bb219b7a7c5cfabfa",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/arm_recovery_23/manifest.json",
+      "bytes": 9483,
+      "sha256": "6bf6546cb56abcdee26edd2c71f7d068b26bc0fc5f48b2a9e5145202d547a1e3",
+      "git_blob": "4ec508660664d5d56f4f01c6102370b5422c6aca",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/arm_recovery_23/rerun_review/artifact-2.3.2.tgz",
+      "bytes": 54442,
+      "sha256": "498e687ccee76b1a6782838194aa6069034694832419c403e0fd76d9ac590073",
+      "git_blob": "c09aab29fec74208dd7efe7e6e27f697d20d9d4a",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/arm_recovery_23/rerun_review/client.d.ts",
+      "bytes": 4586,
+      "sha256": "29166983fa3f9e7848af1c87a0cda52b78628c6e13620f2fb976bf5ba6840451",
+      "git_blob": "0eb41638a8500ccf858aaa16a9b757d369d5c253",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/arm_recovery_23/rerun_review/upload-artifact-package-lock.json",
+      "bytes": 531418,
+      "sha256": "7f2eb1bc227d681340a806fc95e4e76acb3aae2cb4a9113735d8703725887824",
+      "git_blob": "faafc639b8aa3abdbf734f1830e6e94bc6037abd",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/arm_recovery_23/runs/42280081679/ATTEMPT1_VALIDATION.json",
+      "bytes": 2003,
+      "sha256": "150f9f4a7f36138a33bb404a5c584794ffa69f9f4c3668ea69948987fcd0cda0",
+      "git_blob": "85441865650b375c02843633e7e45893f136e4a4",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/arm_recovery_23/runs/42280081679/RECOVERY.json",
+      "bytes": 1061,
+      "sha256": "a94e6b3ed3467a09e936d2a291f8967b86310770ba42e85589f3a4ab7fa848fd",
+      "git_blob": "044a4dad5c7ac88ae66393b99135f6dd71b2d10f",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/arm_recovery_23/runs/42280081679/STARTED_JOBS_API.json",
+      "bytes": 7225,
+      "sha256": "fb8f6b58b25f085b17be22083030f1d57246094ba86f69de05a401be498e9c0f",
+      "git_blob": "10679342758de7ff9c59c28c9785271fa4c196fe",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/arm_recovery_23/runs/42280081679/STARTED_RUNS_API.json",
+      "bytes": 132425,
+      "sha256": "d883b674c7fd3fa9e9d564bb9b622ab20d1c74cf5d4d7fe2a7e9d270d725edf9",
+      "git_blob": "f7494d375061e76d6e603e65fd792c4c3fde7142",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/arm_recovery_23/runs/42280081679/artifact-13534519226.zip",
+      "bytes": 693,
+      "sha256": "fdfebaa9f2546fd737004b23f639fc3a319377e46976fd89070fe42503290c3f",
+      "git_blob": "7eb3ccff74516944ebc29cbf025a647e75e0cb95",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/arm_recovery_23/runs/42280081679/artifacts-api.json",
+      "bytes": 864,
+      "sha256": "d6e629f1105650ee958180f5003fb7b07fb33287484ab6da947b467990462b31",
+      "git_blob": "0e20018e4a9041c36f32c22208f549439729d1bd",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/arm_recovery_23/runs/42280081679/job-128106496652.log",
+      "bytes": 1453062,
+      "sha256": "531770a3876e16649b10a863d5798a97c7219ed8027c7c5391bfa9e59453d105",
+      "git_blob": "e6579a0b2e34267e090c44b5056314c07a9c3fcb",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/arm_recovery_23/runs/42280081679/job-128106496652.raw.json",
+      "bytes": 1461289,
+      "sha256": "9983cf8164b13e39f58394edd7ad2060f1872d3ae8bd4251dad47e25a5dc1092",
+      "git_blob": "5ee171a57eb83c002e3ffafb179a2dc0cf80ebd1",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/arm_recovery_23/runs/42280081679/jobs-api.json",
+      "bytes": 8541,
+      "sha256": "15569384d4cbd4c3b6f724b104e92fe07a14ab2c27ce11c863c3df3ea81b6fc1",
+      "git_blob": "8802eba9da93a49b2f1c3804fb37b68a163acaf0",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/build_recovery_attempt1_checkpoint.py",
+      "bytes": 11245,
+      "sha256": "3bc20a638ad820eed63a3309ec105cbcfab23e8686ef3647ad013f9f9338fe93",
+      "git_blob": "709bd9bc62a92fa7c3151a7e801015c76971346c",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_local_qualification/arm_recovery23/ROOT_REVIEW.json",
+      "bytes": 6404,
+      "sha256": "f5cf91fb0eb9489f46521e5db81e2cdbf9ecdd3296a04bd246c4a5b5023a9917",
+      "git_blob": "06657d0035b3664a6d7b81e8c4bcf29dd10914b6",
+      "original_mode": "0644"
+    }
+  ]
+}
