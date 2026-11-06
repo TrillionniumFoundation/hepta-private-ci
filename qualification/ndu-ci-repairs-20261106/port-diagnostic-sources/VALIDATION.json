@@ -1,0 +1,74 @@
+{
+  "effective_reviewed_files": 321,
+  "formatting_ast_equivalence": {
+    "python_added": 263,
+    "python_deleted": 0,
+    "same_ast_as_89_test_run": {
+      "codex-rs/hepta-matrixd/tests/fixtures/linux_synapse/source.py": true,
+      "scripts/ndu_port_candidate_common.py": true,
+      "scripts/ndu_port_integrated.py": true,
+      "scripts/test_ndu_port_build_amendment.py": true,
+      "scripts/test_ndu_port_dependency_amendment.py": true,
+      "scripts/test_ndu_port_diagnostic_amendment.py": true
+    }
+  },
+  "full_tree_leaves": 14849,
+  "logs": {
+    "port-tests.log.gz": {
+      "archive_bytes": 2900,
+      "archive_sha256": "88f45a410a5ad143c4969e4645c866a2560693ff7d08885fe81a56642f1c3a04",
+      "bytes": 16610,
+      "sha256": "5e1c98853427ee26d0fb8b4911ff0721478f9691a73d8ea1a186a300f370139c"
+    },
+    "port-tests.stdout.log.gz": {
+      "archive_bytes": 8743,
+      "archive_sha256": "c099096c2bedb5394fc460ca808d43ca3c63d978ecea84c8d28f874aa4c9894a",
+      "bytes": 486445,
+      "sha256": "c1ace92fd9c94ce497b6c727a597e0b545027b36832581f8d873ccf54a4a2bfa"
+    },
+    "synapse-source-tests.log.gz": {
+      "archive_bytes": 363,
+      "archive_sha256": "9570392009308d10d0d016f033240dd3bb627853a0d736cf0b21e8d36bc400bf",
+      "bytes": 1312,
+      "sha256": "ab0beeef307c9c62615cffb4c6092855becb949f70588f01ba318715c594cde8"
+    },
+    "synapse-source-tests.stdout.log.gz": {
+      "archive_bytes": 280,
+      "archive_sha256": "7584db8c18e2abeacd016a4fe6a9d3b3a6b4dcc9407fe67527e74d5db07ecdaf",
+      "bytes": 1118,
+      "sha256": "b176154afd6fc794f921dcc8f868f7f6c67ea1901415962b59bfd721c73351e4"
+    }
+  },
+  "native_generation_executed": false,
+  "native_windows_persistence_qualified": false,
+  "only_two_reviewed_differences": true,
+  "original_5058_failure_retained": true,
+  "port_tests": {
+    "command": "python -m unittest discover -s scripts -p 'test_ndu_port*.py' -v",
+    "errors": 0,
+    "exit_code": 0,
+    "failures": 0,
+    "seconds": 25.814,
+    "skipped": 0,
+    "tests": 89
+  },
+  "ruff": {
+    "check_exit_code": 0,
+    "files": 6,
+    "format_check_exit_code": 0,
+    "version": "0.15.13"
+  },
+  "schema": "hepta.port-diagnostic-source-validation.v1",
+  "source_anchor": "2b8cd4eb823a2ba4ac0469543f1036e6197d50c9",
+  "source_tree": "f856e8df96c65ac72421dfcffc765b4da6efc014",
+  "synapse_source_boundary_tests": {
+    "command": "python -m unittest linux_synapse.test_source linux_synapse.test_restore -v",
+    "errors": 0,
+    "exit_code": 0,
+    "failures": 0,
+    "scope": "Existing import/restore boundaries; no native Synapse execution.",
+    "seconds": 8.155,
+    "skipped": 0,
+    "tests": 7
+  }
+}

@@ -1,0 +1,80 @@
+{
+  "changes": {
+    "codex-rs/hepta-matrix-sdk/src/sdk.rs": {
+      "after": {
+        "bytes": 29600,
+        "sha256": "4aa4927daad46f926ad7d8c482c4028d38016b3ef8b7466e55111d79c01232e4"
+      },
+      "before": {
+        "bytes": 28633,
+        "sha256": "97ffaf520931ff71ace0b3db0e4f24eaee17577e83e69333a7d699bfac46be24"
+      },
+      "mode": "100644"
+    },
+    "codex-rs/hepta-matrix-sdk/src/startup_deadline_tests.rs": {
+      "after": {
+        "bytes": 4963,
+        "sha256": "e8f2ac638c15bcb129a30dd37f765abf0baccb9b4bdaea4ef097cddd6991ae7c"
+      },
+      "before": {
+        "bytes": 4706,
+        "sha256": "0fb04da4d28ac84ec52bd338fe466a5593791df3539b9847ab09c9d8d731645a"
+      },
+      "mode": "100644"
+    }
+  },
+  "locks": {
+    "MODULE.bazel.lock": {
+      "bytes": 1725804,
+      "sha256": "333b2545bd671a88aeb762afd74c725801138f8f53ddfc30af1e75b5f446deed"
+    },
+    "codex-rs/Cargo.lock": {
+      "bytes": 419275,
+      "sha256": "70d1590734ce663b956981e5c3e7253c6b712039ca5e11e090487a371fbece7b"
+    }
+  },
+  "operation": "bind-reviewed-sdk-stage-diagnostics",
+  "parents": {
+    "experiments/multimodal_output_portfolio/closure_20261028/ci/port-remediation/BUILD_AMENDMENT.v7.3.json": {
+      "bytes": 2820,
+      "sha256": "2ebd2e0ceacf4f22f2c3b28b7397d353c52e95d944ef664e9dcf6cb70b0e6a5e"
+    },
+    "experiments/multimodal_output_portfolio/closure_20261028/ci/port-remediation/DEPENDENCY_AMENDMENT.v7.2.json": {
+      "bytes": 76071,
+      "sha256": "334d6a0000bb6c14c1f8742e680c799d7e9f768e035ce06a99593bedd0e1d538"
+    },
+    "experiments/multimodal_output_portfolio/closure_20261028/ci/port-remediation/INTEGRATION.v7.json": {
+      "bytes": 9120,
+      "sha256": "ef1fc0a4cfd8c2621eeb82e413555c1ea1780020a1f74f7c666253b62a5bfde2"
+    },
+    "experiments/multimodal_output_portfolio/closure_20261028/ci/port-remediation/SOURCE_AMENDMENT.v7.1.json": {
+      "bytes": 3256,
+      "sha256": "f802638dd5d01f3b3d7583986848c1ad6264c3ec478ed055f4e1edebc7a0d40a"
+    },
+    "experiments/multimodal_output_portfolio/closure_v2_20261027/ci/port-remediation/RECIPE.v7.json": {
+      "bytes": 348278,
+      "sha256": "8c655b7b3c539527e6506869a52d0e98a88ed37e334e9d34d13be83713bce03f"
+    }
+  },
+  "promotion_allowed": false,
+  "proofs": {
+    "qualification/ndu-ci-repairs-20261106/port-diagnostic-sources/producer-127955133360.log.gz": {
+      "bytes": 13842,
+      "sha256": "9df12b4e6379d2370af2fa08c931fa4337cfd85c225426d1a716dd461263ba6a"
+    },
+    "qualification/ndu-ci-repairs-20261106/port-diagnostic-sources/provenance.json": {
+      "bytes": 2256,
+      "sha256": "f442b0b6087580e1fab0ac0778697a1736f17b2ae8e6ae939ab90a06531cf0b9"
+    },
+    "qualification/ndu-ci-repairs-20261106/port-diagnostic-sources/source-comparison.json.gz": {
+      "bytes": 27941,
+      "sha256": "ee85a8fa9076029c3f502a40d88f799a0aab8701701aa3aa70df63f2edf16f74"
+    }
+  },
+  "reviewed_source": {
+    "commit": "2b8cd4eb823a2ba4ac0469543f1036e6197d50c9",
+    "full_leaf_count": 14849,
+    "tree": "f856e8df96c65ac72421dfcffc765b4da6efc014"
+  },
+  "schema": "hepta.port-diagnostic-source-amendment.v1"
+}

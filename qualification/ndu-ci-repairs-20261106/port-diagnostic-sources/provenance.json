@@ -1,0 +1,48 @@
+{
+  "observed_failure": {
+    "artifact_count": 0,
+    "errors": 4,
+    "failures": 2,
+    "generator_started": false,
+    "job": 127955133360,
+    "pull_request": 5058,
+    "raw_log": {
+      "bytes": 93890,
+      "sha256": "2d02a25365a66be4fadb653c0096df2be49220e417b555daa55b4b050d40d2bc"
+    },
+    "run": 42236430509,
+    "source_commit": "9bc77a10a02c1b6cf72b31ed01656fe13d5d15cb",
+    "source_tree": "7e264bbe4ca044f1339c6f44ed5536af7ebea657",
+    "tests_run": 82
+  },
+  "prior_local_evidence_boundary": "Unit 17's 82-test local replay used the earlier source fixture. It did not qualify the later SDK diagnostics or the #5058 hosted source. The hosted six failing tests are retained here.",
+  "qualification": "This source amendment authorizes only the two reviewed byte successors. It supplies no native generation, security, Windows persistence or full CI pass.",
+  "reviewed_source": {
+    "commit": "2b8cd4eb823a2ba4ac0469543f1036e6197d50c9",
+    "full_leaf_count": 14849,
+    "tree": "f856e8df96c65ac72421dfcffc765b4da6efc014"
+  },
+  "schema": "hepta.port-diagnostic-source-review.v1",
+  "source_changes": {
+    "codex-rs/hepta-matrix-sdk/src/sdk.rs": {
+      "after_git_blob": "7551dce984a48e750e90e5c4c4aace6b987591d4",
+      "before_git_blob": "9e236eb200e43ee906622e00c0bbf5752e9d8249",
+      "commit": "2b8cd4eb823a2ba4ac0469543f1036e6197d50c9",
+      "pull_request": 5076,
+      "scope": "Preserve existing failure mapping and all I/O operations; add test-only stage, error kind and OS code diagnostics without paths, session data or raw error text."
+    },
+    "codex-rs/hepta-matrix-sdk/src/startup_deadline_tests.rs": {
+      "after_git_blob": "22b34073b65118f85b4daedb906912a40bf86309",
+      "before_git_blob": "a3db16eff4f8eba2c9aae4c0fa7bf6e0b0310fe2",
+      "commit": "69286823c7a06fc8e90db03825b329a9bd9af5d2",
+      "pull_request": 5049,
+      "scope": "Label three existing fixture error stages; retain the original finalization deadline, persistence and reload assertions."
+    }
+  },
+  "unchanged": [
+    "35 original source paths and historical seals",
+    "existing five path crates and 284 vendor files",
+    "both lock bytes and original dependency policy",
+    "generation commands, test selection and deadlines"
+  ]
+}
