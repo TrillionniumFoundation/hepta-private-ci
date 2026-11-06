@@ -1,0 +1,60 @@
+{
+  "unit": "05_paired_drain_fixture",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "base_commit": "7f1bb73b49e5fcc0f1bd46845c3acbfb78767a7a",
+  "failed_run_id": 42160192456,
+  "failed_linux_job_id": 127712940876,
+  "source_donor": {
+    "kind": "new_fixture_repair_from_exact_failing_source",
+    "historical_donors_examined": [
+      4797,
+      4846,
+      4936
+    ],
+    "reason_not_transplanted": "Their transport and runfile changes do not fix this unconditional Health reply."
+  },
+  "reason": "The paired child replied Health to an actual Drain request; production correctly rejected that payload. Dispatch Health and Drain explicitly in the fixture, binding schema, spawn and persisted draining generation.",
+  "files": [
+    {
+      "path": "codex-rs/hepta-supervisor/tests/paired_process_product.rs",
+      "base_blob_sha": "520a02e30b25d5a2b20694e5d2e18039b1efb148",
+      "candidate_blob_sha": "f81d0f30b6802b9ba91307d709b250907bdadcc2",
+      "candidate_sha256": "3ee4287f03afe7ff3a8cdcd1c9f6c27cf7698c364f6537b20483898c850e5b4c",
+      "additions": 18,
+      "deletions": 11
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/tests/paired_process/agent_fixture.rs",
+      "base_blob_sha": null,
+      "candidate_blob_sha": "c92cd47f80ce5c1ff905250afe124097efdfc364",
+      "candidate_sha256": "dfc0db64f5545890931c59a3f91a766c0ab32b379d41e5d1c0c3c56507ec4c02",
+      "additions": 143,
+      "deletions": 0
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/unix_drain_tests.rs",
+      "base_blob_sha": "3c641c8e44b6eb608e673b39a64725bc0181291f",
+      "candidate_blob_sha": "20207efe7df3038a63126d4fb811bc550151ece5",
+      "candidate_sha256": "6b9a55caa8f9d710dc80a37e1f6fc6e01f7eda9119d9145fba4ab242c20956a7",
+      "additions": 18,
+      "deletions": 0
+    }
+  ],
+  "authored_changed_lines": 190,
+  "static_checks": [
+    "Original two process scenarios, PID assertions, lifecycle budgets and ignored child launch mechanism remain unchanged.",
+    "AgentdRequest contains schema_version, request_id, spawn_generation and method; there is no separate token field to invent.",
+    "Fixture response still mirrors request_id and binds original agent_id, spawn_generation and persisted current_generation.",
+    "Drain is acknowledged only for the exact Draining generation with no admitted business turns; wrong schema, spawn, state, overflow, fence and unsupported method are rejected.",
+    "New negative Rust assertion sends a matching-envelope Health payload through the unchanged production drain parser and requires the original error.",
+    "New fixture helper path was observed absent at the base through GitHub API; Bazel tests/** compile_data already includes nested helpers.",
+    "Production unix.rs blob remains d02b9b9b02af2b03f3904277f5028e1fb52672b4; SHA-256 6d25f074cf050bc94b39a60634ac42a7c2a73fd096aab931ce3846a5577fba99."
+  ],
+  "required_native_targets": [
+    "//codex-rs/hepta-supervisor:hepta-supervisor-paired_process_product-test",
+    "//codex-rs/hepta-supervisor:hepta-supervisor-unit-tests"
+  ],
+  "current_candidate_native_execution": "NOT_RUN_NO_RUST_BAZEL_JUST_TOOLCHAIN",
+  "current_candidate_qualified": false,
+  "publication_owner": "root"
+}

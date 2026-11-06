@@ -1,5 +1,8 @@
 #![cfg(unix)]
 
+#[path = "paired_process/agent_fixture.rs"]
+mod agent_fixture;
+
 use std::io::BufRead;
 use std::io::BufReader;
 use std::io::Write;
@@ -13,7 +16,6 @@ use std::time::Instant;
 use anyhow::Context;
 use anyhow::Result;
 use codex_hepta_agent_protocol::AGENTD_CONTROL_SCHEMA_VERSION;
-use codex_hepta_agent_protocol::AgentdPayload;
 use codex_hepta_agent_protocol::AgentdRequest;
 use codex_hepta_agent_protocol::AgentdResponse;
 use codex_hepta_agent_protocol::HealthSnapshot;
@@ -551,16 +553,21 @@ fn run_agent_child() -> Result<()> {
             agent_id: agent_id.clone(),
             spawn_generation,
             current_generation: lifecycle.generation,
-            payload: AgentdPayload::Health(HealthSnapshot {
-                promotion_ready: true,
-                ready: running,
-                fenced: false,
-                lifecycle: lifecycle.lifecycle,
-                process_id: std::process::id(),
-                workspace,
-                home_root,
-                run_root,
-            }),
+            payload: agent_fixture::payload(
+                &request,
+                spawn_generation,
+                lifecycle.generation,
+                HealthSnapshot {
+                    promotion_ready: true,
+                    ready: running,
+                    fenced: false,
+                    lifecycle: lifecycle.lifecycle,
+                    process_id: std::process::id(),
+                    workspace,
+                    home_root,
+                    run_root,
+                },
+            ),
         };
         let mut stream = reader.into_inner();
         serde_json::to_writer(&mut stream, &response)?;
