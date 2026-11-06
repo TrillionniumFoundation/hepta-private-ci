@@ -62,11 +62,17 @@ async fn public_completion_survives_cancel_and_waits_for_real_idle_cleanup() -> 
         .with_extensions(Arc::new(extensions.build()))
         .build_with_auto_env(&server)
         .await?;
-    let first = test.codex.start_turn_if_idle(request("first")).await?;
+    let first = test
+        .codex
+        .start_turn_if_idle(request("first"))
+        .await
+        .expect("initial start-if-idle admission should return a routing result");
     let StartIfIdleSubmission::Started { turn_id: first_id } = first else {
         panic!("initial turn must be admitted: {first:?}");
     };
-    tokio::time::timeout(Duration::from_secs(5), gate.entered.notified()).await?;
+    tokio::time::timeout(Duration::from_secs(5), gate.entered.notified())
+        .await
+        .expect("first idle callback must enter within the original five-second deadline");
     assert!(test.codex.pending_turn_cleanup().is_some());
     assert!(
         tokio::time::timeout(
@@ -79,7 +85,10 @@ async fn public_completion_survives_cancel_and_waits_for_real_idle_cleanup() -> 
         .is_err()
     );
     assert_eq!(
-        test.codex.start_turn_if_idle(request("too early")).await?,
+        test.codex
+            .start_turn_if_idle(request("too early"))
+            .await
+            .expect("admission during gated cleanup should return a routing result"),
         StartIfIdleSubmission::NotSubmitted {
             reason: NotSubmittedReason::NotIdle,
         },
@@ -91,7 +100,11 @@ async fn public_completion_survives_cancel_and_waits_for_real_idle_cleanup() -> 
     })
     .await;
     assert_eq!(completed, first_id);
-    let next = test.codex.start_turn_if_idle(request("second")).await?;
+    let next = test
+        .codex
+        .start_turn_if_idle(request("second"))
+        .await
+        .expect("admission after public completion should return a routing result");
     let StartIfIdleSubmission::Started { turn_id: next_id } = next else {
         panic!("public completion must leave normal admission ready: {next:?}");
     };
