@@ -3494,17 +3494,21 @@ mod final_use_dispatch_tests {
     use tempfile::TempDir;
 
     fn agent() -> AgentId {
-        AgentId::parse("018f4f72-5f8f-7cc1-8f55-df9fb3aa2cff").expect("agent")
+        AgentId::parse("018f4f72-5f8f-7cc1-8f55-df9fb3aa2cff")
+            .unwrap_or_else(|error| panic!("agent: {error:?}"))
     }
 
     async fn store(temp: &TempDir) -> CognitiveStore {
         let root = temp.path().join("fleet-final-use");
-        std::fs::create_dir_all(&root).expect("fleet root");
-        let fleet = HeptaFleetRoot::parse(root.canonicalize().expect("canonical root"))
-            .expect("fleet root");
+        std::fs::create_dir_all(&root).unwrap_or_else(|error| panic!("fleet root: {error:?}"));
+        let fleet = HeptaFleetRoot::parse(
+            root.canonicalize()
+                .unwrap_or_else(|error| panic!("canonical root: {error:?}")),
+        )
+        .unwrap_or_else(|error| panic!("fleet root: {error:?}"));
         CognitiveStore::open(&fleet.layout().agent(&agent()))
             .await
-            .expect("store")
+            .unwrap_or_else(|error| panic!("store: {error:?}"))
     }
 
     struct FinalUseVerifier;
@@ -3565,15 +3569,16 @@ mod final_use_dispatch_tests {
         payload: &str,
     ) -> OperationIntentV1 {
         OperationIntentV1::new(
-            StableId::new(operation_id).expect("operation id"),
-            StableId::new(owner.as_str()).expect("subject"),
-            StableId::new(destination).expect("destination"),
+            StableId::new(operation_id).unwrap_or_else(|error| panic!("operation id: {error:?}")),
+            StableId::new(owner.as_str()).unwrap_or_else(|error| panic!("subject: {error:?}")),
+            StableId::new(destination).unwrap_or_else(|error| panic!("destination: {error:?}")),
             Digest32::of_bytes(payload.as_bytes()),
             Digest32::of_bytes(b"scope:production-test"),
-            codex_hepta_types::Generation::new(1).expect("policy generation"),
+            codex_hepta_types::Generation::new(1)
+                .unwrap_or_else(|error| panic!("policy generation: {error:?}")),
             None,
         )
-        .expect("operation intent")
+        .unwrap_or_else(|error| panic!("operation intent: {error:?}"))
     }
 
     fn production_authority(owner: AgentId) -> ProductionAuthorityLease {
@@ -3582,17 +3587,17 @@ mod final_use_dispatch_tests {
             Sha256Digest::for_bytes(b"production-grant"),
             31,
             41,
-            now_unix_seconds().expect("clock") + 3_600,
+            now_unix_seconds().unwrap_or_else(|error| panic!("clock: {error:?}")) + 3_600,
             ProductionAuthorityToken::from_verified_bytes(b"production-token".to_vec())
-                .expect("token"),
+                .unwrap_or_else(|error| panic!("token: {error:?}")),
         )
-        .expect("authority")
+        .unwrap_or_else(|error| panic!("authority: {error:?}"))
     }
 
     fn test_nonce(label: &str) -> [u8; 32] {
         let now_nanos = SystemTime::now()
             .duration_since(UNIX_EPOCH)
-            .expect("clock")
+            .unwrap_or_else(|error| panic!("clock: {error:?}"))
             .as_nanos();
         let material = format!("{label}:{now_nanos}:{}", std::process::id());
         let digest = <sha2::Sha256 as sha2::Digest>::digest(material.as_bytes());
@@ -3607,7 +3612,7 @@ mod final_use_dispatch_tests {
     ) -> SignedFinalUseGrant {
         let now_ms = SystemTime::now()
             .duration_since(UNIX_EPOCH)
-            .expect("clock")
+            .unwrap_or_else(|error| panic!("clock: {error:?}"))
             .as_millis() as u64;
         let grant = FinalUseGrant {
             schema_version: 1,
@@ -3620,7 +3625,11 @@ mod final_use_dispatch_tests {
             expires_at_unix_ms: now_ms + 30_000,
         };
         let signature = issuer
-            .sign(&grant.signing_bytes().expect("signing bytes"))
+            .sign(
+                &grant
+                    .signing_bytes()
+                    .unwrap_or_else(|error| panic!("signing bytes: {error:?}")),
+            )
             .to_bytes()
             .to_vec();
         SignedFinalUseGrant { grant, signature }
