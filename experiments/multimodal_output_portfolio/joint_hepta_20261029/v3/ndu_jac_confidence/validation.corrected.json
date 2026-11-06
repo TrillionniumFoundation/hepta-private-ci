@@ -1,0 +1,63 @@
+{
+  "behavioral_test_count": 11,
+  "checks": {
+    "actual_test_command_exit_zero": true,
+    "all_40_paid_decisions_unchanged": true,
+    "all_observed_coverage_and_gain_checks": true,
+    "archived_initial_sources_and_results_unchanged": true,
+    "corrected_protocol_source_lock_matches": true,
+    "reanalysis_result_source_hash_matches": true,
+    "same_historical_bank_identity": true,
+    "test_source_stable": true
+  },
+  "created_utc": "2026-11-06T17:09:51.553424+00:00",
+  "files": {
+    "CORRECTION.md": "82ba27286e43b6bb3ace7e29cd96fff4134b503d93c5403b72a79f3728913e42",
+    "README.md": "03c0392be548b1fd0de1dd1dd1d04f2f197bc59868e78d4ff759ce044ed16b60",
+    "THEORY.md": "2b3c3a0432ddadc383f725f0c232c3c2e5a63d4e58e81d3229d498826c07c370",
+    "__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "confidence.py": "bacd459260fb0cab1685458c1f1fbdba0db3729ea9b0fab894a5fc3d94da4b0c",
+    "correction_comparison.json": "49c75214a2fe0102bc6ad0cdecb1082be4a78d23ec59963533827b042f408898",
+    "protocol.corrected.json": "d7ee776bf1b0f323aa139ac0f1cf7c650b8d28dd286ab223dff2a9e2154544e8",
+    "result.corrected.json": "6e0638e3fe9b6003b42aee826dd40cc653e8ac25d87a712dabdd01642444d58d",
+    "study.py": "f375d5ec9d47646547770b522300b212a1884cf43f069c7845e2477ba155b5a8",
+    "test_confidence.py": "103bd5ea8a349a5bf32259c1cf3c7499041114fd17f561031c482cd59ed4318e"
+  },
+  "new_observations": 0,
+  "numpy": "2.3.5",
+  "platform": "Linux-6.18.57-x86_64-with-glibc2.41",
+  "python": "3.12.14",
+  "reanalysis_command": "python -m v3.ndu_jac_confidence.study --protocol v3/ndu_jac_confidence/protocol.corrected.json --evidence <unchanged historical ndu_jac/evidence/gap_study.json> --output v3/ndu_jac_confidence/result.corrected.json",
+  "reanalysis_command_exit_observed": 0,
+  "schema": "ndu-jac.corrected-confidence-validation.v1",
+  "scipy": "1.17.0",
+  "scope": "Internal source/counterexample repair and replay of retained banks; not independent statistical confirmation, external mathematical review, full repository CI or a formal floating-point certificate.",
+  "status": "CORRECTED_IMPLEMENTATION_WITH_NEGATIVE_PAID_STUDY",
+  "tests": {
+    "command": [
+      "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+      "-m",
+      "unittest",
+      "v3.ndu_jac_confidence.test_confidence",
+      "-v"
+    ],
+    "created_utc": "2026-11-06T17:06:21.375266+00:00",
+    "returncode": 0,
+    "schema": "ndu-jac.corrected-confidence-tests.v1",
+    "source_after": {
+      "__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "confidence.py": "bacd459260fb0cab1685458c1f1fbdba0db3729ea9b0fab894a5fc3d94da4b0c",
+      "study.py": "f375d5ec9d47646547770b522300b212a1884cf43f069c7845e2477ba155b5a8",
+      "test_confidence.py": "103bd5ea8a349a5bf32259c1cf3c7499041114fd17f561031c482cd59ed4318e"
+    },
+    "source_before": {
+      "__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "confidence.py": "bacd459260fb0cab1685458c1f1fbdba0db3729ea9b0fab894a5fc3d94da4b0c",
+      "study.py": "f375d5ec9d47646547770b522300b212a1884cf43f069c7845e2477ba155b5a8",
+      "test_confidence.py": "103bd5ea8a349a5bf32259c1cf3c7499041114fd17f561031c482cd59ed4318e"
+    },
+    "source_stable": true,
+    "stderr": "test_baseline_and_candidate_must_be_complete_valid_policies (v3.ndu_jac_confidence.test_confidence.ConfidenceTests.test_baseline_and_candidate_must_be_complete_valid_policies) ... ok\ntest_box_moment_matches_independent_lp_including_zero_atoms (v3.ndu_jac_confidence.test_confidence.ConfidenceTests.test_box_moment_matches_independent_lp_including_zero_atoms) ... ok\ntest_delayed_gain_propagates_through_unchanged_root (v3.ndu_jac_confidence.test_confidence.ConfidenceTests.test_delayed_gain_propagates_through_unchanged_root) ... ok\ntest_empty_successor_and_empty_action_are_rejected (v3.ndu_jac_confidence.test_confidence.ConfidenceTests.test_empty_successor_and_empty_action_are_rejected) ... ok\ntest_false_candidate_rejected_and_paid_cost_preserved (v3.ndu_jac_confidence.test_confidence.ConfidenceTests.test_false_candidate_rejected_and_paid_cost_preserved) ... ok\ntest_fixed_sample_binomial_coverage_by_exhaustive_count_enumeration (v3.ndu_jac_confidence.test_confidence.ConfidenceTests.test_fixed_sample_binomial_coverage_by_exhaustive_count_enumeration) ... ok\ntest_gain_bound_survives_uncertain_laws_and_mixed_terminal_branches (v3.ndu_jac_confidence.test_confidence.ConfidenceTests.test_gain_bound_survives_uncertain_laws_and_mixed_terminal_branches) ... ok\ntest_large_continuation_is_retained_in_risk_tilt (v3.ndu_jac_confidence.test_confidence.ConfidenceTests.test_large_continuation_is_retained_in_risk_tilt) ... ok\ntest_rounding_mass_and_common_currency_offset_cannot_invent_gain (v3.ndu_jac_confidence.test_confidence.ConfidenceTests.test_rounding_mass_and_common_currency_offset_cannot_invent_gain) ... ok\ntest_same_bank_policy_selection_has_uniform_value_coverage (v3.ndu_jac_confidence.test_confidence.ConfidenceTests.test_same_bank_policy_selection_has_uniform_value_coverage) ... ok\ntest_signed_advantage_is_invariant_to_common_currency_offset (v3.ndu_jac_confidence.test_confidence.ConfidenceTests.test_signed_advantage_is_invariant_to_common_currency_offset) ... ok\n\n----------------------------------------------------------------------\nRan 11 tests in 0.030s\n\nOK\n",
+    "stdout": ""
+  }
+}
