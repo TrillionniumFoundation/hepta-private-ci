@@ -1,0 +1,51 @@
+{
+  "schema": "hepta.r2.readiness-input.v1",
+  "protocol_sha256": "17fc492f638858e1104d2dfe8d058c1e837a2d055df7991e0ae28ec5097358a9",
+  "actual_gates": {
+    "NEW_DATA": {
+      "status": "OPEN",
+      "evidence_sha256": null,
+      "requirement": "Actual new train/validation/test source-cluster manifests and acquisition/license receipts; independent anti-overlap audit. No new holdout has been opened."
+    },
+    "EVALUATOR_CUSTODY": {
+      "status": "OPEN",
+      "evidence_sha256": null,
+      "requirement": "Named independent owner, immutable evaluator source/model/rubric, label manifest and OS/capability separation proof; evaluation dispatch receipt and no trainer access."
+    },
+    "REAL_TRAINER": {
+      "status": "OPEN",
+      "evidence_sha256": null,
+      "requirement": "Actual real-provider learned-controller and generator training entrypoints, trainable parameter groups, optimizer/hyperparameter manifest, complete source SHA/tree and new-process checkpoint-load verification. Existing V3 synthetic trainer is not a substitute."
+    },
+    "BUDGET_AND_BASELINES": {
+      "status": "OPEN",
+      "evidence_sha256": null,
+      "requirement": "Numeric total-budget cap, search library/depth/beam/call caps, data budget, real action-service mapping, failure/abstention utilities and before-test strong-baseline selection receipt."
+    },
+    "QUALITY_AND_POWER": {
+      "status": "OPEN",
+      "evidence_sha256": null,
+      "requirement": "Task utility rubric/scale, quality and safety floors, minimum meaningful gain, eligible test-source count and pre-outcome precision/power justification."
+    },
+    "CANDIDATE_IDENTITY": {
+      "status": "OPEN",
+      "evidence_sha256": null,
+      "requirement": "Immutable candidate/checkpoint and retrieval-index hashes produced within the registered training/selection budget; retain all rejected candidates."
+    }
+  },
+  "selected_test_clusters": null,
+  "strong_reference": null,
+  "actual_test_manifest": null,
+  "actual_candidate_manifest": null,
+  "trainer_entrypoint": null,
+  "evaluator_owner": null,
+  "permitted_now": [
+    "development-only source review",
+    "protocol review",
+    "synthetic format/arithmetic controls"
+  ],
+  "model_calls": 0,
+  "training_calls": 0,
+  "evaluation_calls": 0,
+  "reason": "No independently sealed new test, real trainer, admitted budget/baselines, validated evaluator or new candidates exists in the inspected evidence."
+}

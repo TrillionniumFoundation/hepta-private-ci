@@ -1,0 +1,40 @@
+{
+  "schema": "hepta.r2.selected-source-recovery.v1",
+  "scope": "Historical provenance only; none is a runtime import dependency",
+  "original_complete_index_identity": {
+    "bytes": 4037,
+    "sha256": "0178428947596e05c00858adffbb001b72dc5b58118a296dcff9e242b1568083",
+    "git_blob": "33d49b5979161ade1fe37e74c0fdb990a279ea75"
+  },
+  "files": [
+    {
+      "package_path": "source-recovery/fixed/r2_PARTIAL_FREEZE.json",
+      "repository_path": "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/decision_audit/evidence/ai395_r1_20261105/r2/PARTIAL_FREEZE.json",
+      "commit": "de2b1212242cfa6f25563b99a385497a86dc7e49",
+      "bytes": 31379,
+      "sha256": "db43eb73bf2a6e74780c39084ff2abfff9c55a388f2083b939b4ed9ef17fdac5",
+      "git_blob": "a466d6e14c71dca46bf0e47774372a47e89ba728",
+      "original_recovery_record": {
+        "path": "r1-diagnostics/r2-preregistration-v2/source-recovery/fixed/r2_PARTIAL_FREEZE.json",
+        "bytes": 31379,
+        "sha256": "db43eb73bf2a6e74780c39084ff2abfff9c55a388f2083b939b4ed9ef17fdac5",
+        "git_blob": "a466d6e14c71dca46bf0e47774372a47e89ba728"
+      }
+    },
+    {
+      "package_path": "source-recovery/fixed/r2_SOURCE_REFERENCES.json",
+      "repository_path": "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/decision_audit/evidence/ai395_r1_20261105/r2/SOURCE_REFERENCES.json",
+      "commit": "de2b1212242cfa6f25563b99a385497a86dc7e49",
+      "bytes": 5782,
+      "sha256": "517a90e577a8f1215172143676ac6261549207c9adfe62f0862d85c53e05a38d",
+      "git_blob": "8fab1b8a95871044525ad08bd3d247b25250097b",
+      "original_recovery_record": {
+        "path": "r1-diagnostics/r2-preregistration-v2/source-recovery/fixed/r2_SOURCE_REFERENCES.json",
+        "bytes": 5782,
+        "sha256": "517a90e577a8f1215172143676ac6261549207c9adfe62f0862d85c53e05a38d",
+        "git_blob": "8fab1b8a95871044525ad08bd3d247b25250097b"
+      }
+    }
+  ],
+  "omission_reason": "Other historical code and data are already pinned by original repository references and are not needed to execute this preserved tool package."
+}

@@ -1,0 +1,248 @@
+{
+  "schema": "hepta.r2.candidate-publication-audit.v1",
+  "observed_at": "2026-11-06T08:14:18.628Z",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "historical_pr": 4857,
+  "observed_head": "68564f6fd8414ba5452ad6c6bf37d7cc41c767e8",
+  "original_evidence_head": "de2b1212242cfa6f25563b99a385497a86dc7e49",
+  "fixed_reference_comparison": {
+    "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/compare/de2b1212242cfa6f25563b99a385497a86dc7e49...68564f6fd8414ba5452ad6c6bf37d7cc41c767e8",
+    "status": "ahead",
+    "ahead_by": 8,
+    "behind_by": 0,
+    "total_commits": 8,
+    "merge_base_commit": "de2b1212242cfa6f25563b99a385497a86dc7e49",
+    "files": [
+      {
+        "path": "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/decision_audit/dual_runtime.py",
+        "git_blob": "bf0c2096fd84a06b6ff7d44174cb22c0c420415b",
+        "status": "modified",
+        "additions": 48,
+        "deletions": 2
+      },
+      {
+        "path": "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/decision_audit/test_observer_admission.py",
+        "git_blob": "a751dbe5894767fba9f08721953c58871e3ed9aa",
+        "status": "added",
+        "additions": 163,
+        "deletions": 0
+      },
+      {
+        "path": "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/decision_audit/test_transition_capture.py",
+        "git_blob": "9b61076aebbb839f56c648e99800a58c4a5bf880",
+        "status": "added",
+        "additions": 284,
+        "deletions": 0
+      },
+      {
+        "path": "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/decision_audit/transition_capture.py",
+        "git_blob": "7e2ebb3077ccbfd3c18c94ebd03d3c530a68ec12",
+        "status": "added",
+        "additions": 265,
+        "deletions": 0
+      },
+      {
+        "path": "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/decision_audit/transition_capture_read.py",
+        "git_blob": "5fce1f5f1b6b8947f58960bf5770226efa3bdea8",
+        "status": "added",
+        "additions": 186,
+        "deletions": 0
+      }
+    ],
+    "commits": [
+      {
+        "sha": "5482bfdbc1f26307ec8dd964cf2d65b17d4bb416",
+        "parents": [
+          "de2b1212242cfa6f25563b99a385497a86dc7e49"
+        ]
+      },
+      {
+        "sha": "5b798825b6dfbf9fc517067d218e65354ad88792",
+        "parents": [
+          "5482bfdbc1f26307ec8dd964cf2d65b17d4bb416"
+        ]
+      },
+      {
+        "sha": "23e1e5a09e97458eba17e7d4e2f556c0aae117f7",
+        "parents": [
+          "5b798825b6dfbf9fc517067d218e65354ad88792"
+        ]
+      },
+      {
+        "sha": "11aa53636de4a60d86b0565693f7a2f88b94444a",
+        "parents": [
+          "23e1e5a09e97458eba17e7d4e2f556c0aae117f7"
+        ]
+      },
+      {
+        "sha": "4a519e55271bdc924b2f5aa34eca4bad5c7e9bf5",
+        "parents": [
+          "11aa53636de4a60d86b0565693f7a2f88b94444a"
+        ]
+      },
+      {
+        "sha": "d1f1e56b4fa7525823ff92ea1d6596e0819e2cbe",
+        "parents": [
+          "4a519e55271bdc924b2f5aa34eca4bad5c7e9bf5"
+        ]
+      },
+      {
+        "sha": "6e7e6ea05ac8a3ee51d53b4ebda265df90d4ce3d",
+        "parents": [
+          "d1f1e56b4fa7525823ff92ea1d6596e0819e2cbe"
+        ]
+      },
+      {
+        "sha": "68564f6fd8414ba5452ad6c6bf37d7cc41c767e8",
+        "parents": [
+          "6e7e6ea05ac8a3ee51d53b4ebda265df90d4ce3d"
+        ]
+      }
+    ]
+  },
+  "action_value_A_dependencies_all_match": true,
+  "original_r2_evidence_files": [
+    {
+      "path": "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/decision_audit/evidence/ai395_r1_20261105/r2/INHERITED_COST_VALUES.json",
+      "git_blob": "2b80c9c605429eff27d621ba46c5fead8bb8923e",
+      "bytes": 303
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/decision_audit/evidence/ai395_r1_20261105/r2/INHERITED_PROTOCOL.json",
+      "git_blob": "60937c1b0da3cf622868af7975bdad9173335876",
+      "bytes": 2131
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/decision_audit/evidence/ai395_r1_20261105/r2/PARTIAL_FREEZE.json",
+      "git_blob": "a466d6e14c71dca46bf0e47774372a47e89ba728",
+      "bytes": 31379
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/decision_audit/evidence/ai395_r1_20261105/r2/REMAINING.md",
+      "git_blob": "3b2a925578f35ad647ced27a8b3eb0292a46b913",
+      "bytes": 4616
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/decision_audit/evidence/ai395_r1_20261105/r2/SOURCE_REFERENCES.json",
+      "git_blob": "8fab1b8a95871044525ad08bd3d247b25250097b",
+      "bytes": 5782
+    }
+  ],
+  "candidate_blob_lookups": [
+    {
+      "name": "PROTOCOL.json",
+      "sha": "0c14a2ba2564584ccca47efe31987b75139eb0e9",
+      "returned_sha": null,
+      "isError": true,
+      "detail": "GitHub API error 404: {\"message\":\"Not Found\",\"documentation_url\":\"https://docs.github.com/rest/git/blobs#get-a-blob\",\"status\":\"404\"}"
+    },
+    {
+      "name": "BASELINE_CONTRACT.json",
+      "sha": "3b24decc5d4fe22a2dd6031fe4dae78d98324a84",
+      "returned_sha": null,
+      "isError": true,
+      "detail": "GitHub API error 404: {\"message\":\"Not Found\",\"documentation_url\":\"https://docs.github.com/rest/git/blobs#get-a-blob\",\"status\":\"404\"}"
+    },
+    {
+      "name": "DATA_CONTRACT.json",
+      "sha": "8f594481a4103076cc815899557989e12688e666",
+      "returned_sha": null,
+      "isError": true,
+      "detail": "GitHub API error 404: {\"message\":\"Not Found\",\"documentation_url\":\"https://docs.github.com/rest/git/blobs#get-a-blob\",\"status\":\"404\"}"
+    },
+    {
+      "name": "BUDGET_CONTRACT.json",
+      "sha": "43b38874e9ad5aedc85e3d8039a0546f949906b4",
+      "returned_sha": null,
+      "isError": true,
+      "detail": "GitHub API error 404: {\"message\":\"Not Found\",\"documentation_url\":\"https://docs.github.com/rest/git/blobs#get-a-blob\",\"status\":\"404\"}"
+    },
+    {
+      "name": "UTILITY_AND_POWER.json",
+      "sha": "d4253a8b42321c03c08ac073cd6bf458470f4a1f",
+      "returned_sha": null,
+      "isError": true,
+      "detail": "GitHub API error 404: {\"message\":\"Not Found\",\"documentation_url\":\"https://docs.github.com/rest/git/blobs#get-a-blob\",\"status\":\"404\"}"
+    },
+    {
+      "name": "EXPOSURE_REGISTER.json",
+      "sha": "ecc4e88b786f596fd70eda51fe917ee57e8db1c1",
+      "returned_sha": null,
+      "isError": true,
+      "detail": "GitHub API error 404: {\"message\":\"Not Found\",\"documentation_url\":\"https://docs.github.com/rest/git/blobs#get-a-blob\",\"status\":\"404\"}"
+    },
+    {
+      "name": "READINESS_INPUT.json",
+      "sha": "cbac6ea8dde2b76ca09d45fbfed1e04ae41f06b7",
+      "returned_sha": null,
+      "isError": true,
+      "detail": "GitHub API error 404: {\"message\":\"Not Found\",\"documentation_url\":\"https://docs.github.com/rest/git/blobs#get-a-blob\",\"status\":\"404\"}"
+    },
+    {
+      "name": "r2_statistics.py",
+      "sha": "24e9a3131280b04b79247c3adaf253cd892ff278",
+      "returned_sha": null,
+      "isError": true,
+      "detail": "GitHub API error 404: {\"message\":\"Not Found\",\"documentation_url\":\"https://docs.github.com/rest/git/blobs#get-a-blob\",\"status\":\"404\"}"
+    },
+    {
+      "name": "r2_capture.py",
+      "sha": "2a93abe2db5c49529a8cf3ee91406a38b7a45ca1",
+      "returned_sha": null,
+      "isError": true,
+      "detail": "GitHub API error 404: {\"message\":\"Not Found\",\"documentation_url\":\"https://docs.github.com/rest/git/blobs#get-a-blob\",\"status\":\"404\"}"
+    },
+    {
+      "name": "analyze_capture.py",
+      "sha": "7e23d920410aa03beedffd6bf37c5195b755abfd",
+      "returned_sha": null,
+      "isError": true,
+      "detail": "GitHub API error 404: {\"message\":\"Not Found\",\"documentation_url\":\"https://docs.github.com/rest/git/blobs#get-a-blob\",\"status\":\"404\"}"
+    },
+    {
+      "name": "compile_contracts.py",
+      "sha": "b527a984d4e857bfdfbe0ca110ad36dcc9c10457",
+      "returned_sha": null,
+      "isError": true,
+      "detail": "GitHub API error 404: {\"message\":\"Not Found\",\"documentation_url\":\"https://docs.github.com/rest/git/blobs#get-a-blob\",\"status\":\"404\"}"
+    },
+    {
+      "name": "check_readiness.py",
+      "sha": "289b773a7cb17cdb854ebae95a8af3254b5d065f",
+      "returned_sha": null,
+      "isError": true,
+      "detail": "GitHub API error 404: {\"message\":\"Not Found\",\"documentation_url\":\"https://docs.github.com/rest/git/blobs#get-a-blob\",\"status\":\"404\"}"
+    },
+    {
+      "name": "audit_data_manifest.py",
+      "sha": "ea7947fb4acbfee22f08a99b88ddd808c9990dc1",
+      "returned_sha": null,
+      "isError": true,
+      "detail": "GitHub API error 404: {\"message\":\"Not Found\",\"documentation_url\":\"https://docs.github.com/rest/git/blobs#get-a-blob\",\"status\":\"404\"}"
+    },
+    {
+      "name": "test_protocol_tools.py",
+      "sha": "704fbf501c88825308d26793ff169a66fd167beb",
+      "returned_sha": null,
+      "isError": true,
+      "detail": "GitHub API error 404: {\"message\":\"Not Found\",\"documentation_url\":\"https://docs.github.com/rest/git/blobs#get-a-blob\",\"status\":\"404\"}"
+    },
+    {
+      "name": "EXPORT_FORMAT.md",
+      "sha": "b330153c66d26f21630016af806b30aaa60f2d70",
+      "returned_sha": null,
+      "isError": true,
+      "detail": "GitHub API error 404: {\"message\":\"Not Found\",\"documentation_url\":\"https://docs.github.com/rest/git/blobs#get-a-blob\",\"status\":\"404\"}"
+    },
+    {
+      "name": "PUBLISHED_CONTROL_PARTIAL_FREEZE",
+      "sha": "a466d6e14c71dca46bf0e47774372a47e89ba728",
+      "returned_sha": null,
+      "isError": false,
+      "detail": "Action completed."
+    }
+  ],
+  "interpretation": "At this observation, all 15 exact local candidate blobs returned GitHub API 404 while the published PARTIAL_FREEZE positive control was readable. This checks these exact bytes and the named R2 directory; it does not assert absence of every differently encoded or historical variant elsewhere.",
+  "publication_performed_by_this_audit": false,
+  "originals_modified": false
+}

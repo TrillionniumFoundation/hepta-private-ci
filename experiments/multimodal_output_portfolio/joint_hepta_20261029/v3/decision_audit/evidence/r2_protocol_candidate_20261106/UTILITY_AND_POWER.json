@@ -1,0 +1,57 @@
+{
+  "schema": "hepta.r2.utility-power-candidate.v1",
+  "status": "PRE_OUTCOME_CHOICES_FOR_REVIEW_NOT_VALIDATED_EVALUATOR",
+  "utility_domain": [
+    -1.0,
+    1.0
+  ],
+  "components": {
+    "visible_fact_grounding": 0.4,
+    "instruction_completion": 0.25,
+    "text_diagram_consistency": 0.2,
+    "legibility": 0.15
+  },
+  "component_values": [
+    0.0,
+    0.25,
+    0.5,
+    0.75,
+    1.0
+  ],
+  "delivered_utility": "2 * weighted_quality - 1; any critical invented visible fact or contradictory diagram sets quality=0 and utility=-1",
+  "abstention_utility": 0.0,
+  "failure_utilities": {
+    "failed": -1.0,
+    "cancelled": -1.0,
+    "timeout": -1.0,
+    "incomplete": -1.0
+  },
+  "rater_process": "two independently assigned blind raters; scores and reasons retained; a third blind adjudicator resolves any critical-error disagreement or component spread >=0.5 before arm identity is released",
+  "independent_evaluator_implemented": false,
+  "minimum_meaningful_ce_gain": 0.02,
+  "minimum_gain_interpretation": "one percent of the declared [-1,1] utility range; a research decision threshold chosen before R2 outcomes, not proven production value",
+  "joint_required_lower_bounds": {
+    "controller_given_generator_training": 0.02,
+    "joint_vs_baseline": 0.02,
+    "joint_vs_strong_reference": 0.02
+  },
+  "quality_floors": {
+    "mean_quality_lower_bound": 0.75,
+    "critical_error_rate_upper_bound": 0.01,
+    "noninferiority_vs_selected_reference_quality_lower_bound": -0.02
+  },
+  "floor_inference": "three separately preregistered one-sided familywise95% bounds using source-cluster/fit structure; validate the binary rare-error bound with the independent evaluator, not ordinary per-draw binomial counting",
+  "power_target": 0.8,
+  "minimum_alternative_ce_gain_for_power": 0.04,
+  "precision_target_primary_ci_halfwidth": 0.02,
+  "power_data": "new development pilot only; no R1 six cases, test scores, or old synthetic matrix substituted for real-task variance",
+  "power_method": "fit a development-only crossed fit/source variance model and calibrate simulations at the fixed gamma2 CE and seven-contrast multiplicity; count whole failed fits and source clusters; freeze code/input hashes and selected N before test acquisition",
+  "power_implemented_or_demonstrated": false,
+  "no_update_if": [
+    "any readiness gate is open",
+    "capture is incomplete or costs unknown",
+    "any required benefit lower bound fails",
+    "any independent quality/safety floor fails"
+  ],
+  "automatic_promotion": false
+}

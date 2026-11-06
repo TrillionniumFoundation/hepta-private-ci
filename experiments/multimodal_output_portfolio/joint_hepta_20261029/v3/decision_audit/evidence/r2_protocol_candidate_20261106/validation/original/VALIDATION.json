@@ -1,0 +1,69 @@
+{
+  "schema": "hepta.r2.protocol-tools-validation.v1",
+  "scope": "synthetic local Python arithmetic and manifest controls only",
+  "actual_control_count": 17,
+  "control_terminal_exit": 0,
+  "test_framework_reported_seconds": 1.685,
+  "bootstrap_replicates_in_small_synthetic_control": 99999,
+  "models_loaded": 0,
+  "model_calls": 0,
+  "training_calls": 0,
+  "real_evaluation_calls": 0,
+  "compiled_fit_arm_plan_rows": 128,
+  "compiled_rows_all_not_run": true,
+  "readiness": {
+    "argv": [
+      "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+      "/workspace/scratch/4d868a11a31c/r1-diagnostics/r2-preregistration-v2/check_readiness.py",
+      "--output",
+      "/workspace/scratch/4d868a11a31c/r1-diagnostics/r2-preregistration-v2/READINESS_REPORT.json"
+    ],
+    "exit_code": 2,
+    "expected_six_gate_refusal": true,
+    "wall_seconds": 0.16261602799932007,
+    "child_cpu_seconds": 0.9759549999999999,
+    "stdout_sha256": "310b901ebeb3f598a2e2bef16f891a2119acc88daa528053d036ef71e09bf5db",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "model_calls": 0,
+    "training_calls": 0,
+    "evaluation_calls": 0
+  },
+  "source_files": [
+    {
+      "path": "r2_statistics.py",
+      "bytes": 6389,
+      "sha256": "d5ee2dc348bcd91905d300fb93b95382f643bafdba0977d7e6be4e0cd49edb17"
+    },
+    {
+      "path": "r2_capture.py",
+      "bytes": 10463,
+      "sha256": "c952aed8b160c0d44eac06c7a27e9d6cf309e26e437ef24806575c27c0396422"
+    },
+    {
+      "path": "analyze_capture.py",
+      "bytes": 1718,
+      "sha256": "c4da7fcc97a9e1f8cd798029e1f7cfeef696b4d328a0a0cc0d933834dfea4e01"
+    },
+    {
+      "path": "check_readiness.py",
+      "bytes": 2011,
+      "sha256": "d6cdf72234a715cb89d5bbab0d6f51a35418aa3bac711b8deb1677f7429540e8"
+    },
+    {
+      "path": "test_protocol_tools.py",
+      "bytes": 9611,
+      "sha256": "a80c43b21358aac4e7f0400508e6baff70b7efe839c649f2e7ebcc768db6c4d5"
+    }
+  ],
+  "not_qualified": [
+    "real trainer",
+    "real baselines",
+    "test custody",
+    "new test population",
+    "real power",
+    "complete resource budget",
+    "candidate models",
+    "product runtime"
+  ],
+  "no_update": true
+}

@@ -1,0 +1,35 @@
+{
+  "schema": "hepta.root.r2-protocol-tool-source-review.v1",
+  "decision": "ACCEPTED_ARITHMETIC_AND_ACCOUNTING_SCOPE_SCIENTIFIC_GATES_OPEN",
+  "manifest_sha256": "03a8068ca00e36f10699457b19d5736b99a85a254adb98e0a398d24d6220203d",
+  "frozen_files_verified": 12,
+  "complete_legacy_object_preserved": true,
+  "independent_scalar_checks": {
+    "nine_crossed_weight_patterns": true,
+    "seven_methods_each": true,
+    "four_reference_choices": true,
+    "maximum_absolute_error": 8.881784197001252e-16
+  },
+  "findings": [
+    "All seven registered contrasts use differences of arm CE, not CE of within-pair differences.",
+    "One multinomial fit draw and one independent cluster draw are shared by all methods and both nested draws; CPU bootstrap uses 99999 replicates in the ordinary CLI.",
+    "Seven Bonferroni percentile intervals use lower floor and upper ceil order statistics; finite-sample coverage remains approximate and explicitly disclaimed.",
+    "Frozen capture roster/digests, exact full coordinates, physical event ownership/deduplication, all explicit categories and known tariff meters are structurally checked.",
+    "Missing/rejected/failed/unselected work cannot be silently removed from an already independently pinned capture payload; JSON commitments alone do not prove original capture completeness.",
+    "All six readiness gates remain OPEN; readiness never grants dispatch or update, and analysis always reports confirmation=false/no_update=true.",
+    "32 fit blocks and two draws per source are distinguished from independent new images or 32 independently trained control models."
+  ],
+  "limits": [
+    "Source review and synthetic scalar arithmetic are not R2 model, training or evaluation results.",
+    "New utility weights, MDE, quality floors, power method and N grid are reviewable choices, not a fully sealed or empirically validated design.",
+    "Real trainer, independent evaluator/custody, actual strong-baseline implementations, new test data, resource allocation and candidate bytes remain absent.",
+    "The accounting report selected_and_unselected_cost covers episode costs only; outer lifecycle costs are separately unamortized. Preserve this distinction in presentation.",
+    "No signature verification, actual OS isolation, rare-error floor inference, real power demonstration or promotion owner is implemented by these tools."
+  ],
+  "new_model_calls": 0,
+  "new_training_calls": 0,
+  "new_real_evaluation_calls": 0,
+  "source_modified": false,
+  "confirmation": false,
+  "no_update": true
+}
