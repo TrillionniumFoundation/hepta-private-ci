@@ -280,3 +280,7 @@ fn write_private(path: &Path, bytes: &[u8]) {
     crate::durable::write_private_new(path, bytes)
         .unwrap_or_else(|error| panic!("create private Windows test file: {error}"));
 }
+
+#[cfg(windows)]
+#[path = "trust_openssh_diagnostic_tests.rs"]
+mod openssh_diagnostic;
