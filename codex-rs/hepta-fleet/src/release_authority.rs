@@ -114,10 +114,11 @@ pub(crate) struct ReleaseUse {
 pub(crate) struct CurrentPublication {
     pub _lock: File,
     pub frontier: ReleaseFrontierV1,
-    authority: PqReleaseAuthorityV1,
+    // Validated state belongs only to this held owner lock. Current-use
+    // projection must recheck the fresh frontier, journal hash and clock.
+    state: LoadedState,
     role: PqReleaseRoleV1,
     content: [u8; 32],
-    time_floor: u64,
     pub decision_window: Option<VerifiedDecisionWindow>,
 }
 

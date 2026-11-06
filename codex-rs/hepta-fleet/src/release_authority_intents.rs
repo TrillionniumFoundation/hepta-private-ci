@@ -220,6 +220,7 @@ impl ReleaseAuthority {
             let unix_ms = self.recheck_with_protocol_configuration(admission, policy)?;
             window.check(unix_ms)?;
             admission
+                .state
                 .authority
                 .check_current(
                     PqReleaseRoleV1::NodeSoftware,
@@ -236,8 +237,7 @@ impl ReleaseAuthority {
         // acquisition. A fresh load also fences any unexpected external change.
         let (state, _now) = self.load_locked(&admission._lock)?;
         admission.frontier = state.frontier;
-        admission.authority = state.authority;
-        admission.time_floor = state.time_floor;
+        admission.state = state;
         Ok(())
     }
 

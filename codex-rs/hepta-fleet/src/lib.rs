@@ -99,6 +99,9 @@ pub use revocation_control::MAX_FLEET_REVOCATION_NODES;
 mod allocation_tests;
 
 #[cfg(all(test, unix))]
+#[path = "release_authority_projection_tests.rs"]
+mod release_authority_projection_tests;
+#[cfg(all(test, unix))]
 #[path = "release_authority_recovery_tests.rs"]
 mod release_authority_recovery_tests;
 #[cfg(all(test, unix))]

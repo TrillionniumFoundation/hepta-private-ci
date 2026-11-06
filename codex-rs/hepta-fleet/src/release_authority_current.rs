@@ -98,22 +98,11 @@ impl ReleaseAuthority {
                 "release observation requires its actual protocol admission",
             ));
         }
-        let (state, now) = self.load_locked(&admission._lock)?;
-        if state.frontier != admission.frontier {
-            return Err(FleetRegistryError::ReleaseAuthorityRollback);
-        }
-        state
-            .authority
-            .check_current(
-                admission.role,
-                admission.content,
-                state.frontier.checkpoint_sha256,
-                now,
-            )
-            .map_err(|error| {
-                invalid(format!("M15 release observation policy rejected: {error}"))
-            })?;
-        self.member_projection(&state, agent_id, release_id, now)
+        // The held guard already verified these exact journal bytes. This
+        // recheck still reads the signed external frontier and full local
+        // journal hash, then obtains a fresh trusted time and current policy.
+        let unix_ms = self.recheck(admission)?;
+        self.member_projection(&admission.state, agent_id, release_id, unix_ms / 1000)
     }
 
     fn permission_sha256(
@@ -191,10 +180,9 @@ impl ReleaseAuthority {
         CurrentPublication {
             _lock: lock,
             frontier: state.frontier,
-            authority: state.authority,
+            state,
             role,
             content,
-            time_floor: state.time_floor,
             decision_window: None,
         }
     }
@@ -245,10 +233,11 @@ impl ReleaseAuthority {
             window.check(unix_ms)?;
         }
         let now = unix_ms / 1000;
-        if now < admission.time_floor {
+        if now < admission.state.time_floor {
             return Err(invalid("release clock regressed at dispatch"));
         }
         admission
+            .state
             .authority
             .check_current(
                 admission.role,
@@ -267,6 +256,7 @@ impl ReleaseAuthority {
     ) -> Result<u64, FleetRegistryError> {
         let unix_ms = self.recheck(admission)?;
         admission
+            .state
             .authority
             .check_current(
                 PqReleaseRoleV1::ProtocolConfiguration,
