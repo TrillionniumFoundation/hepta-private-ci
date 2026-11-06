@@ -1,0 +1,46 @@
+{
+  "schema": "hepta.r2.action-value-development-qualification.v1",
+  "implementation_source_commit": "7044eac0f5132f894da2de93158f9bf07c86e8ad",
+  "source_scope": "exact listed files, not whole workspace",
+  "ancestry_reconciled_commit": "c870b1262f91d5c5ccbc172448e6934f302c2175",
+  "upstream_A_commit": "68564f6fd8414ba5452ad6c6bf37d7cc41c767e8",
+  "A_reused_byte_identically": true,
+  "source_manifest": "ACTION_VALUE_FINAL.json",
+  "A_manifest": "ACTION_VALUE_SOURCE.json",
+  "combined_controls": {
+    "cases": 36,
+    "passed": 36,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "receipt": "COMBINED_EXECUTION.json"
+  },
+  "independent_review": {
+    "result": "acceptable_for_scoped_development_publication",
+    "receipt": "REVIEW.json",
+    "sha256": "9bfff1690dea4a09ce1041bb56dfb8db408d9faf87ccbd8a842aa18d7504350b",
+    "shared_filesystem_not_evaluator_custody": true
+  },
+  "actual_numeric_sgd_updates_in_control_tests": true,
+  "real_provider_calls": 0,
+  "real_independent_evaluation_labels": 0,
+  "confirmatory_fits": 0,
+  "r2_four_arm_execution": false,
+  "production_qualified": false,
+  "incumbent_changed": false,
+  "remaining_gates": [
+    "NEW_DATA",
+    "EVALUATOR_CUSTODY",
+    "REAL_TRAINER (complete controller/generator/four-arm composition)",
+    "BUDGET_AND_BASELINES",
+    "QUALITY_AND_POWER",
+    "CANDIDATE_IDENTITY (confirmatory campaign)"
+  ],
+  "repeated_test_runs_are_not_independent_fits": true,
+  "whole_cost_known": false,
+  "notes": [
+    "ACTION_VALUE_SOURCE and ACTION_VALUE_FINAL retain their original historical wording; dependency A was unpublished when collected and concurrently published before this evidence commit.",
+    "No source or test bytes changed during ancestry reconciliation.",
+    "No optimizer-resume API, EVSI, continuation-Q, actor-critic or planner qualification is claimed."
+  ]
+}

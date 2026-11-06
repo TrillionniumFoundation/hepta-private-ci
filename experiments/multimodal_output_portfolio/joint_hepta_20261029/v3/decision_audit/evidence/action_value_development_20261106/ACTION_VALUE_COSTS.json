@@ -1,0 +1,77 @@
+{
+  "schema": "hepta.r2.action-value-authoring-controls-costs.v1",
+  "attempts": [
+    {
+      "attempt": 1,
+      "receipt": "validation/action-value-attempt1/RESULT.json",
+      "unique_suite_methods_executed": 10,
+      "failures": 0,
+      "errors": 0,
+      "passed": 10,
+      "cpu_seconds_reaped_children": null,
+      "measured_wrapper_wall_seconds": null,
+      "framework_only_reported_seconds": 13.998
+    },
+    {
+      "attempt": 2,
+      "receipt": "validation/action-value-attempt2/EXECUTION.json",
+      "unique_suite_methods_executed": 12,
+      "failures": 0,
+      "errors": 0,
+      "passed": 12,
+      "cpu_seconds_reaped_children": 3.6544719999999997,
+      "measured_wrapper_wall_seconds": 1.1762934459984535,
+      "framework_only_reported_seconds": null
+    },
+    {
+      "attempt": 3,
+      "receipt": "validation/action-value-attempt3/EXECUTION.json",
+      "unique_suite_methods_executed": 17,
+      "failures": 0,
+      "errors": 1,
+      "passed": 16,
+      "cpu_seconds_reaped_children": 5.716741,
+      "measured_wrapper_wall_seconds": 2.461609412002872,
+      "framework_only_reported_seconds": null
+    },
+    {
+      "attempt": 4,
+      "receipt": "validation/action-value-attempt4/EXECUTION.json",
+      "unique_suite_methods_executed": 17,
+      "failures": 0,
+      "errors": 0,
+      "passed": 17,
+      "cpu_seconds_reaped_children": 6.080622,
+      "measured_wrapper_wall_seconds": 2.8221627630009607,
+      "framework_only_reported_seconds": null
+    },
+    {
+      "attempt": 5,
+      "receipt": "validation/action-value-attempt5/EXECUTION.json",
+      "unique_suite_methods_executed": 18,
+      "failures": 0,
+      "errors": 0,
+      "passed": 18,
+      "cpu_seconds_reaped_children": 5.820848000000001,
+      "measured_wrapper_wall_seconds": 2.6284017260004475,
+      "framework_only_reported_seconds": null
+    }
+  ],
+  "sums_of_complete_metered_attempts_2_through_5": {
+    "cpu_seconds_reaped_children": 21.272683,
+    "wrapper_wall_seconds": 9.088467347002734
+  },
+  "meter_scope": "RUSAGE_CHILDREN for unittest process and its reaped descendants; wrapper wall around invocation (some attempts include stdout/stderr persistence). Do not add individual fit or nested subprocess meters again.",
+  "unknown_costs": [
+    "attempt1 process CPU and complete wrapper wall",
+    "outer authoring, source recovery, orchestration and publication",
+    "energy_joules",
+    "physical storage and network IO"
+  ],
+  "independent_review_costs": "Separate evidence under ../sd-review/action-value-*; not included or treated as zero here.",
+  "whole_cost_known": false,
+  "final_qualified_control_suite_methods": 18,
+  "repeated_runs_not_independent_fits": true,
+  "r2_real_training_performed": false,
+  "real_evaluation_labels_available": false
+}

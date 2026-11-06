@@ -1,0 +1,37 @@
+{
+  "baseline_contract_sha256": "cc2eecec685029507bc9387807d774c2795528ccf7f76a5d2db12939e6ebf55c",
+  "baseline_qualified": false,
+  "cost": {
+    "current_process_cpu_seconds": 2.716937743,
+    "scope": "Inclusive current validation process with shared synthetic SGD fixture and all test episodes; child CPU separately additive. Inner FIT/runner/controller/prediction intervals overlap; do not add them again. Excludes this final receipt write and outer interpreter startup.",
+    "unknown": [
+      "energy_joules",
+      "physical_disk_bytes",
+      "initial_source_inspection_and_code_authoring_cost"
+    ],
+    "waited_child_cpu_seconds": 1.547164,
+    "wall_seconds": 3.045380354000372
+  },
+  "errors": 0,
+  "failures": 0,
+  "finished_utc": "2026-11-06T08:22:18.214369+00:00",
+  "four_arm_experiment_run": false,
+  "independent_labels": false,
+  "passed": true,
+  "real_model_calls": 0,
+  "schema": "hepta.r2.development-greedy-controlled-validation.v1",
+  "source_pins": {
+    "dual_runtime.py": "3a23bd955233b45d1ae15f7a81961111ce9e191bec9dc98ffeb7a4d744fca30d",
+    "r2_action_value.py": "0a620b0188fb21432ae530aa3857025b9595a82a7d22747635cacb50754e3945",
+    "r2_greedy_policy.py": "b7bf7b9c7c48709eb3fd0c2e9c298471580981e86a5c5c8abddf8d85af024d88",
+    "test_r2_action_value.py": "3f48f39e40141e5fd12552e5825695f519c89f9474ea88ce8d88dc2c3203700b",
+    "test_r2_greedy_policy.py": "748d0388dafafb87f29eeb0b0f21c17ba16998ac825b6762abd8cfc8dc4e3d0b",
+    "test_transition_capture.py": "5f448aee11014d699626c370443b9288faad444852c1ba390989eb9538182190",
+    "transition_capture.py": "ac8058aca20c251bb619b7a7571ac9bb310debfc76b5f1b931b1174e8dcf9b0e",
+    "transition_capture_read.py": "d9073798c98dd576ef41872ad80ca3541b0ba221faad0e2b5d795ae5b37388a3"
+  },
+  "sources_unchanged": true,
+  "started_utc": "2026-11-06T08:22:15.175558+00:00",
+  "synthetic_control_only": true,
+  "tests_run": 6
+}

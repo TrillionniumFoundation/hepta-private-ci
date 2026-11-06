@@ -1,0 +1,64 @@
+{
+  "schema": "hepta.r2.action-value-source-final.v1",
+  "base_commit": "de2b1212242cfa6f25563b99a385497a86dc7e49",
+  "unpublished_dependency": "A observer-admission-v2 stage-04; exact blobs in ACTION_VALUE_SOURCE.json",
+  "files": [
+    {
+      "path": "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/decision_audit/r2_action_value.py",
+      "bytes": 23942,
+      "lines": 377,
+      "sha256": "0a620b0188fb21432ae530aa3857025b9595a82a7d22747635cacb50754e3945",
+      "git_blob": "3dbf823549ff9eae0a39efb92958227e7fd7e9f3"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/decision_audit/test_r2_action_value.py",
+      "bytes": 22475,
+      "lines": 390,
+      "sha256": "3f48f39e40141e5fd12552e5825695f519c89f9474ea88ce8d88dc2c3203700b",
+      "git_blob": "bbdab8c5f9fcd15b77f9dbe4aa2e0863ae0e3555"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/decision_audit/R2_ACTION_VALUE.md",
+      "bytes": 6890,
+      "lines": 108,
+      "sha256": "a2b76f01769a2497db2d3499376fc83fddc735b64e98f7897285bd44453b7fda",
+      "git_blob": "b2a4e8812583fb6a7715583210947b7a1947eaca"
+    }
+  ],
+  "tested_code": "validation/action-value-attempt5/EXECUTION.json",
+  "final_tests": {
+    "methods": 18,
+    "passed": 18,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "documentation_only_change_after_tests": "Clarified no_update means no incumbent promotion, and regression is not established EVSI/continuation Q. Source and test bytes remain exact-tested.",
+  "publishing_stages": [
+    {
+      "name": "action-value-implementation",
+      "paths": [
+        "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/decision_audit/r2_action_value.py"
+      ],
+      "changed_lines": 377
+    },
+    {
+      "name": "action-value-controls-and-contract",
+      "paths": [
+        "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/decision_audit/test_r2_action_value.py",
+        "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/decision_audit/R2_ACTION_VALUE.md"
+      ],
+      "changed_lines": 498
+    }
+  ],
+  "real_provider_calls": 0,
+  "real_independent_evaluations": 0,
+  "r2_training_performed": false,
+  "six_r2_gates_closed": false,
+  "costs": "ACTION_VALUE_COSTS.json",
+  "independent_counterexamples_and_successor_retests": [
+    "../sd-review/action-value-probe-r1/RESULT.json",
+    "../sd-review/action-value-final-signal-probe-r1/RESULT.json",
+    "../sd-review/action-value-fixed-probe-r1/RESULT.json"
+  ]
+}
