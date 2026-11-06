@@ -1,0 +1,35 @@
+{
+  "unit": "03_registry_stalled_body",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "base_commit": "7f1bb73b49e5fcc0f1bd46845c3acbfb78767a7a",
+  "failed_run_id": 42160192456,
+  "failed_linux_job_id": 127712940876,
+  "source_donor": {
+    "pr": 4735,
+    "head": "aaf74551dccf99f2d0d1525d02337cf804233817"
+  },
+  "reason": "The synthetic registry replied before consuming the real POST; drain that bounded request before creating a partial response body.",
+  "files": [
+    {
+      "path": "codex-rs/exec-server/src/remote.rs",
+      "base_blob_sha": "8836e4065a0e228eb39f3c7d361aba3be07cd18d",
+      "candidate_blob_sha": "5ad375a0cf4d2b7193297fec49ccff25f0f4b321",
+      "candidate_sha256": "99722792b462bed16ec32a5e80bcd6145975443257d00d1d5d34f0ce5a9e8544",
+      "additions": 39,
+      "deletions": 4
+    }
+  ],
+  "authored_changed_lines": 43,
+  "static_checks": [
+    "Exact final donor file; changes confined to this test function.",
+    "A single 4096-byte reader bounds headers plus body.",
+    "Original 50 ms client timeout, one second server hold and timeout-classification assertion retained.",
+    "Production HTTP implementation remains byte-identical."
+  ],
+  "required_native_targets": [
+    "//codex-rs/exec-server:exec-server-unit-tests"
+  ],
+  "current_candidate_native_execution": "NOT_RUN_NO_RUST_BAZEL_JUST_TOOLCHAIN",
+  "current_candidate_qualified": false,
+  "publication_owner": "root"
+}
