@@ -20,6 +20,7 @@ use crate::cell_journal_codec::apply_record;
 use crate::cell_journal_codec::encode_commit;
 use crate::cell_journal_codec::encode_admission;
 use crate::cell_journal_codec::encode_reset;
+use crate::cell_journal_codec::validate_admission_model;
 use crate::cell_owner::CellPartitionOwnerV1;
 use crate::cell_types::*;
 use crate::journal_lock::LockedFile;
@@ -226,6 +227,7 @@ impl<W: AnchorWitnessStore> CellStateOwnerV1 for CellOwnerJournalV1<W> {
         self.require_healthy()?;
         let index = self.partition_index(&admission.snapshot.scope)?;
         self.owner.check_admission(&admission)?;
+        validate_admission_model(&self.specs[index].definition, &admission.model_request)?;
         let payload = encode_admission(index, &admission);
         self.check_reserved_capacity(payload.len(), self.owner.pending_count() + 1)?;
         self.persist(payload)?;

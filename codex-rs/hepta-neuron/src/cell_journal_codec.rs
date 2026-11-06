@@ -98,6 +98,24 @@ pub(crate) fn encode_admission(index: usize, admission: &CellInferenceAdmissionV
     bytes
 }
 
+/// Apply the same frozen model binding before append and during replay so an
+/// acknowledged admission cannot make its own journal unrecoverable.
+pub(crate) fn validate_admission_model(
+    definition: &CellDefinitionV1,
+    model_request: &NeuronModelRequestV1,
+) -> Result<(), CellExecutionError> {
+    let config = &definition.runtime;
+    if model_request.config_id != config.config_id || model_request.model_id != config.model_id
+        || model_request.generation != config.generation || model_request.encoder_digest != config.encoder_digest
+        || model_request.head_digest != config.head_digest || model_request.weights_digest != config.weights_digest
+        || model_request.feature_vector_q24.len() != config.input_feature_dimension
+        || model_request.expected_output_width != config.state_width
+    {
+        return Err(CellExecutionError::ModelBindingMismatch);
+    }
+    Ok(())
+}
+
 pub(crate) fn encode_reset(index: usize, frontier: Digest32, epoch: u64) -> Vec<u8> {
     let mut bytes = vec![1];
     put_u64(&mut bytes, index as u64);
@@ -143,15 +161,8 @@ pub(crate) fn apply_record(
             feature_vector_q24: read.q24(/*bound*/512)?, expected_output_width: read.usize()?,
         };
         read.finish()?;
-        let config = &spec.definition.runtime;
-        if model_request.config_id != config.config_id || model_request.model_id != config.model_id
-            || model_request.generation != config.generation || model_request.encoder_digest != config.encoder_digest
-            || model_request.head_digest != config.head_digest || model_request.weights_digest != config.weights_digest
-            || model_request.feature_vector_q24.len() != config.input_feature_dimension
-            || model_request.expected_output_width != config.state_width
-        {
-            return Err(CellExecutionError::JournalCorrupt);
-        }
+        validate_admission_model(&spec.definition, &model_request)
+            .map_err(|_| CellExecutionError::JournalCorrupt)?;
         return owner.admit_inference(CellInferenceAdmissionV1 {
             snapshot, operation_id, semantic_request_digest, model_request, deadline_micros, admitted_at_micros,
         });

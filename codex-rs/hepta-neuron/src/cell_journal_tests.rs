@@ -62,6 +62,74 @@ fn specs() -> Vec<CellJournalPartitionV1> {
     }).collect()
 }
 
+fn journal_bytes<W: AnchorWitnessStore>(journal: &mut CellOwnerJournalV1<W>) -> Vec<u8> {
+    let position = checked(journal.file.stream_position());
+    checked(journal.file.rewind());
+    let mut bytes = Vec::new();
+    checked(journal.file.read_to_end(&mut bytes));
+    checked(journal.file.seek(SeekFrom::Start(position)));
+    bytes
+}
+
+#[test]
+fn mismatched_admission_cannot_write_unreplayable_history() {
+    #[derive(Clone, Copy, Debug)]
+    enum ChangedBinding { Config, Model, Generation, Encoder, Head, Weights, InputWidth, OutputWidth }
+
+    for changed in [
+        ChangedBinding::Config, ChangedBinding::Model, ChangedBinding::Generation,
+        ChangedBinding::Encoder, ChangedBinding::Head, ChangedBinding::Weights,
+        ChangedBinding::InputWidth, ChangedBinding::OutputWidth,
+    ] {
+        let fixture = Fixture::new();
+        let mut journal = fixture.open();
+        let existing = proposal(&mut journal, input("run2"));
+        checked(commit_cell_step(&mut journal, existing, /*now_micros*/13));
+        let prepared = checked(prepare_cell_step(
+            &definition(), &journal, &Encoder, input("run1"), /*now_micros*/10,
+        ));
+        let mut invalid = checked(crate::cell_inference::admission_for_step(&prepared, /*now_micros*/11));
+        match changed {
+            ChangedBinding::Config => invalid.model_request.config_id = id("other-config"),
+            ChangedBinding::Model => invalid.model_request.model_id = id("other-model"),
+            ChangedBinding::Generation => invalid.model_request.generation = checked(Generation::new(2)),
+            ChangedBinding::Encoder => invalid.model_request.encoder_digest = d("other-encoder"),
+            ChangedBinding::Head => invalid.model_request.head_digest = d("other-head"),
+            ChangedBinding::Weights => invalid.model_request.weights_digest = d("other-weights"),
+            ChangedBinding::InputWidth => invalid.model_request.feature_vector_q24.push(0),
+            ChangedBinding::OutputWidth => invalid.model_request.expected_output_width += 1,
+        }
+        let unchanged = (
+            journal_bytes(&mut journal), checked(journal.witness.current()),
+            checked(journal.snapshot(&scope("run1"))), None,
+        );
+        assert_eq!(journal.admit_inference(invalid), Err(CellExecutionError::ModelBindingMismatch), "{changed:?}");
+        assert_eq!((
+            journal_bytes(&mut journal), checked(journal.witness.current()),
+            checked(journal.snapshot(&scope("run1"))), checked(journal.pending_inference(&scope("run1"))),
+        ), unchanged, "{changed:?}");
+
+        let mut control = RecordedControl::new();
+        drop(checked(infer_cell(prepared, &mut journal, &mut control, /*now_micros*/11)));
+        let pending = checked(journal.pending_inference(&scope("run1")));
+        drop(journal);
+        let mut journal = fixture.open();
+        assert_eq!(checked(journal.pending_inference(&scope("run1"))), pending);
+        let inferred = checked(recover_cell_inference(
+            &definition(), &journal, &Encoder, input("run1"), &mut control, /*now_micros*/12,
+        ));
+        let proposed = checked(decide_cell(inferred, /*now_micros*/12));
+        let receipt = checked(commit_cell_step(&mut journal, proposed, /*now_micros*/13));
+        assert_eq!((control.executions, control.reads), (1, 1));
+        drop(journal);
+        let journal = fixture.open();
+        assert_eq!(checked(journal.lookup(
+            &receipt.scope, &receipt.operation_id, receipt.semantic_request_digest,
+        )), Some(receipt));
+        assert_eq!(checked(journal.pending_inference(&scope("run1"))), None);
+    }
+}
+
 #[test]
 fn shared_file_recovers_independent_checkpoints_and_exact_policy_receipts() {
     let fixture = Fixture::new();
