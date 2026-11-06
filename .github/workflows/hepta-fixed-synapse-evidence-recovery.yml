@@ -1,0 +1,123 @@
+name: Recover fixed ARM Synapse diagnostics
+
+on:
+  pull_request:
+    branches: [research/ndu-credential-diagnostic-evidence-20261106]
+    paths:
+      - .github/scripts/recover_fixed_synapse_evidence.py
+      - .github/workflows/hepta-fixed-synapse-evidence-recovery.yml
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number }}
+  cancel-in-progress: false
+
+jobs:
+  recover-evidence:
+    if: github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      CANDIDATE_SHA: ${{ github.event.pull_request.head.sha }}
+      PYTHONDONTWRITEBYTECODE: "1"
+    steps:
+      - name: Check out the exact reviewed recovery source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ env.CANDIDATE_SHA }}
+          persist-credentials: false
+          fetch-depth: 0
+
+      - name: Verify the original artifact and export its diagnostic projection
+        id: recover
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: python3 .github/scripts/recover_fixed_synapse_evidence.py
+
+      - name: Retain original identities, projection scope and recovery failures
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: fixed-synapse-recovery-${{ github.run_id }}-manifest
+          path: |
+            ${{ runner.temp }}/fixed-synapse-recovery/public/RECOVERY.json
+            ${{ runner.temp }}/fixed-synapse-recovery/public/ORIGINAL_ZIP_DIRECTORY.json
+            ${{ runner.temp }}/fixed-synapse-recovery/public/diagnostics/DIAGNOSTICS.json
+          if-no-files-found: error
+          retention-days: 21
+
+      - name: Retain diagnostic projection part 1
+        if: always() && fromJSON(steps.recover.outputs.part_count || '0') >= 1
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: fixed-synapse-recovery-${{ github.run_id }}-part-01
+          path: ${{ runner.temp }}/fixed-synapse-recovery/public/diagnostics/part-01.tar.part
+          if-no-files-found: error
+          retention-days: 21
+          compression-level: 0
+      - name: Retain diagnostic projection part 2
+        if: always() && fromJSON(steps.recover.outputs.part_count || '0') >= 2
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: fixed-synapse-recovery-${{ github.run_id }}-part-02
+          path: ${{ runner.temp }}/fixed-synapse-recovery/public/diagnostics/part-02.tar.part
+          if-no-files-found: error
+          retention-days: 21
+          compression-level: 0
+      - name: Retain diagnostic projection part 3
+        if: always() && fromJSON(steps.recover.outputs.part_count || '0') >= 3
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: fixed-synapse-recovery-${{ github.run_id }}-part-03
+          path: ${{ runner.temp }}/fixed-synapse-recovery/public/diagnostics/part-03.tar.part
+          if-no-files-found: error
+          retention-days: 21
+          compression-level: 0
+      - name: Retain diagnostic projection part 4
+        if: always() && fromJSON(steps.recover.outputs.part_count || '0') >= 4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: fixed-synapse-recovery-${{ github.run_id }}-part-04
+          path: ${{ runner.temp }}/fixed-synapse-recovery/public/diagnostics/part-04.tar.part
+          if-no-files-found: error
+          retention-days: 21
+          compression-level: 0
+      - name: Retain diagnostic projection part 5
+        if: always() && fromJSON(steps.recover.outputs.part_count || '0') >= 5
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: fixed-synapse-recovery-${{ github.run_id }}-part-05
+          path: ${{ runner.temp }}/fixed-synapse-recovery/public/diagnostics/part-05.tar.part
+          if-no-files-found: error
+          retention-days: 21
+          compression-level: 0
+      - name: Retain diagnostic projection part 6
+        if: always() && fromJSON(steps.recover.outputs.part_count || '0') >= 6
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: fixed-synapse-recovery-${{ github.run_id }}-part-06
+          path: ${{ runner.temp }}/fixed-synapse-recovery/public/diagnostics/part-06.tar.part
+          if-no-files-found: error
+          retention-days: 21
+          compression-level: 0
+      - name: Retain diagnostic projection part 7
+        if: always() && fromJSON(steps.recover.outputs.part_count || '0') >= 7
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: fixed-synapse-recovery-${{ github.run_id }}-part-07
+          path: ${{ runner.temp }}/fixed-synapse-recovery/public/diagnostics/part-07.tar.part
+          if-no-files-found: error
+          retention-days: 21
+          compression-level: 0
+      - name: Retain diagnostic projection part 8
+        if: always() && fromJSON(steps.recover.outputs.part_count || '0') >= 8
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: fixed-synapse-recovery-${{ github.run_id }}-part-08
+          path: ${{ runner.temp }}/fixed-synapse-recovery/public/diagnostics/part-08.tar.part
+          if-no-files-found: error
+          retention-days: 21
+          compression-level: 0
