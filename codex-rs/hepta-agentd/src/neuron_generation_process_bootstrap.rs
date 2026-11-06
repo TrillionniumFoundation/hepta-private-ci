@@ -27,7 +27,7 @@ pub fn neuron_generation_process_identity_digest_v1(
     ]))
 }
 
-fn identity_context_digest(identity: &AgentdIdentity) -> Result<Digest32, AgentdError> {
+pub(crate) fn identity_context_digest(identity: &AgentdIdentity) -> Result<Digest32, AgentdError> {
     let layout = &identity.layout;
     let paths = [
         layout.agent_root(),
@@ -96,7 +96,7 @@ pub fn load_neuron_generation_process_bootstrap_v1(
 }
 
 #[cfg(target_os = "linux")]
-mod linux {
+pub(crate) mod linux {
     use std::path::Path;
     use std::path::PathBuf;
     use std::sync::Arc;
@@ -287,7 +287,7 @@ mod linux {
         neuron_generation_channel_v2(identity, journal, port, move || clock(), d.queue_capacity)
     }
 
-    pub(super) fn boot_id() -> Result<String, AgentdError> {
+    pub(crate) fn boot_id() -> Result<String, AgentdError> {
         let bytes = std::fs::read("/proc/sys/kernel/random/boot_id")?;
         let value = std::str::from_utf8(&bytes).map_err(invalid)?.trim();
         if value.len() != 36
@@ -304,7 +304,7 @@ mod linux {
         Ok(value.to_owned())
     }
 
-    pub(super) fn boottime_micros() -> Result<u64, AgentdError> {
+    pub(crate) fn boottime_micros() -> Result<u64, AgentdError> {
         let mut stamp = libc::timespec {
             tv_sec: 0,
             tv_nsec: 0,

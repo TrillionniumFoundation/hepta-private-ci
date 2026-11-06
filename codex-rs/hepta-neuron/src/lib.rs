@@ -41,6 +41,14 @@ mod cell_task_cost;
 mod cell_test_support;
 mod cell_types;
 mod cell_update;
+#[cfg(target_os = "linux")]
+mod cell_v13_assets;
+#[cfg(target_os = "linux")]
+mod cell_v13_generation;
+#[cfg(target_os = "linux")]
+mod cell_v13_process;
+#[cfg(target_os = "linux")]
+mod cell_v13_protocol;
 mod deletion;
 mod inference_control;
 mod journal;
@@ -139,6 +147,18 @@ pub use cell_update::CellUpdateOutcomeV1;
 pub use cell_update::CellUpdatePortV1;
 pub use cell_update::CellUpdateRequestV1;
 pub use cell_update::propose_cell_update;
+#[cfg(target_os = "linux")]
+pub use cell_v13_generation::V13GenerationAssetFileV1;
+#[cfg(target_os = "linux")]
+pub use cell_v13_generation::V13GenerationProcessConfigV1;
+#[cfg(target_os = "linux")]
+pub use cell_v13_generation::V13GenerationProcessFilesV1;
+#[cfg(target_os = "linux")]
+pub use cell_v13_generation::V13GenerationProcessWorkerV1;
+#[cfg(target_os = "linux")]
+pub use cell_v13_protocol::V13LearningClosureV1;
+#[cfg(target_os = "linux")]
+pub use cell_v13_protocol::V13TaskInputV1;
 pub use deletion::DeletionRebuildError;
 pub use deletion::NeuronDeletionRebuildPlanV1;
 pub use deletion::NeuronDeletionRebuildReceiptV1;

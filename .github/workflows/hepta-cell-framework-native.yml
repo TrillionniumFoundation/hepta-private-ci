@@ -7,6 +7,7 @@ on:
       - codex/neuron-convergence-20261106-734df8
       - codex/neuron-generation-bridge-20261106-734df8
       - codex/neuron-normal-entry-20261106-734df8
+      - codex/neuron-v13-runtime-20261106-734df8
   workflow_dispatch:
 
 permissions:
@@ -115,6 +116,12 @@ jobs:
           python3 scripts/hepta_ci_exec.py --timeout-seconds 120 --minimum-tests 1 \
             --output "$RUNNER_TEMP/cell-framework-records/helper-gate-tests.json" \
             -- python3 -m unittest discover -s scripts -p 'test_hepta_cell_test_helpers.py'
+      - name: Verify the bounded V13 process protocol
+        run: |
+          python3 scripts/hepta_ci_exec.py --timeout-seconds 120 --minimum-tests 9 \
+            --output "$RUNNER_TEMP/cell-framework-records/v13-protocol-tests.json" \
+            -- python3 -B -m unittest discover -s qualification/neuron-v13-generation \
+            -p test_proposal_worker.py -v
       - name: Strict lint of the changed owners and dependencies
         env:
           PACKAGES: ${{ matrix.packages }}
@@ -125,6 +132,13 @@ jobs:
           python3 scripts/hepta_ci_exec.py --timeout-seconds 1800 \
             --output "$RUNNER_TEMP/cell-framework-records/clippy.json" \
             -- just clippy --locked "${packages[@]}" -- -D warnings
+      - name: Strict lint of the explicit V13 runtime example
+        if: matrix.owner == 'agentd-composition'
+        run: |
+          python3 scripts/hepta_ci_exec.py --timeout-seconds 1800 \
+            --output "$RUNNER_TEMP/cell-framework-records/v13-example-clippy.json" \
+            -- just clippy --locked -p codex-hepta-agentd \
+            --example neuron_v13_acceptance -- -D warnings
       - name: Build real same-source test helpers from Cargo metadata
         if: matrix.owner == 'agentd-composition'
         run: |

@@ -313,6 +313,8 @@ mod neuron_generation_service;
 mod neuron_generation_test_support;
 mod neuron_runtime;
 #[cfg(target_os = "linux")]
+mod neuron_v13_generation_bootstrap;
+#[cfg(target_os = "linux")]
 mod notes_bootstrap;
 #[cfg(unix)]
 mod notes_channel;
@@ -629,6 +631,18 @@ pub use neuron_generation_runtime::NeuronGenerationRuntimeHandleV2;
 pub use neuron_generation_runtime::neuron_generation_channel_v2;
 pub use neuron_runtime::AgentdNeuronOwner;
 #[cfg(target_os = "linux")]
+pub use neuron_v13_generation_bootstrap::AgentdV13GenerationBootstrapConfigV1;
+#[cfg(target_os = "linux")]
+pub use neuron_v13_generation_bootstrap::AgentdV13GenerationWorkerV1;
+#[cfg(target_os = "linux")]
+pub use neuron_v13_generation_bootstrap::V13GenerationOwnerFilesV1;
+#[cfg(target_os = "linux")]
+pub use neuron_v13_generation_bootstrap::V13GenerationOwnerModeV1;
+#[cfg(target_os = "linux")]
+pub use neuron_v13_generation_bootstrap::bootstrap_agentd_v13_generation_v1;
+#[cfg(target_os = "linux")]
+pub use neuron_v13_generation_bootstrap::prepare_agentd_v13_generation_worker_v1;
+#[cfg(target_os = "linux")]
 pub use notes_bootstrap::AgentdNotesStartupRelease;
 #[cfg(unix)]
 pub use notes_channel::AgentdNotesChannel;
@@ -738,6 +752,7 @@ pub use prompt_runtime::AgentdPromptRuntimeError;
 pub use prompt_runtime::AgentdPromptRuntimeOwner;
 pub use prompt_runtime::PromptRuntimeStageDisposition;
 pub use runtime::run;
+pub use runtime::run_with_shutdown;
 pub use runtime_tasks::RuntimeTaskFailure;
 pub use runtime_tasks::RuntimeTasks;
 pub use state::AgentdDesktopObjectiveConfig;

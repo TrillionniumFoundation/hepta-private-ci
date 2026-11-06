@@ -35,9 +35,18 @@ const RUN_RECONCILE_GRACE: Duration = Duration::from_secs(2);
 
 const TASK_SHUTDOWN_GRACE: Duration = Duration::from_secs(3);
 
-pub async fn run(
+pub async fn run(config: AgentdConfig, arg0_paths: Arg0DispatchPaths) -> Result<(), AgentdError> {
+    run_with_shutdown(config, arg0_paths, shutdown_signal()).await
+}
+
+/// Run the ordinary Agentd composition with an explicit embedded-host stop
+/// request. Startup, real App Server readiness, Fleet fences and drain are the
+/// same as `run`; completing the future requests the existing drain sequence
+/// and does not bypass outstanding owners or grant model/effect authority.
+pub async fn run_with_shutdown(
     mut config: AgentdConfig,
     arg0_paths: Arg0DispatchPaths,
+    shutdown: impl Future<Output = Result<(), AgentdError>> + Send,
 ) -> Result<(), AgentdError> {
     let production_operations = config.take_production_operations();
     let sockets = config.take_socket_inputs();
@@ -440,7 +449,7 @@ pub async fn run(
     }
     tasks
         .run_until(async move {
-            shutdown_signal().await?;
+            shutdown.await?;
             // Keep control and owner reconciliation alive throughout drain.
             drain_runtime(state).await
         })
