@@ -1,6 +1,7 @@
 """Bounded SQLite/source-reading workers for actual-tool integration checks."""
 
 import argparse
+import gzip
 import hashlib
 import json
 from pathlib import Path
@@ -33,8 +34,16 @@ def source_bytes(name):
     rows = [row for row in manifest["files"] if row["local_file"] == name]
     if len(rows) != 1:
         raise ValueError("Unregistered source")
-    data = (ROOT / "sources" / name).read_bytes()
-    if hashlib.sha256(data).hexdigest() != rows[0]["sha256"]:
+    row = rows[0]
+    data = (ROOT / "sources" / row.get("storage_file", name)).read_bytes()
+    encoding = row.get("encoding", "identity")
+    if encoding == "gzip":
+        if hashlib.sha256(data).hexdigest() != row["storage_sha256"]:
+            raise ValueError("Stored source digest mismatch")
+        data = gzip.decompress(data)
+    elif encoding != "identity":
+        raise ValueError("Unsupported source encoding")
+    if hashlib.sha256(data).hexdigest() != row["sha256"]:
         raise ValueError("Source digest mismatch")
     return data
 

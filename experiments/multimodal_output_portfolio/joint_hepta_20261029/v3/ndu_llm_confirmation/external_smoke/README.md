@@ -14,6 +14,15 @@ fixture. **There are zero LLM calls and no independent confirmation result.**
 - CPython 3.12.0 commit `0fb18b02c8ad56299d6a2910be0bab8ad601ef24`, using
   `Lib/statistics.py`; the complete upstream license file is retained.
 
+The logical SQL source remains `chinook.sql`, with its original byte count,
+SHA-256 and Git blob ID. Its physical representation is `sources/chinook.sql.gz`
+(152,396 bytes), using gzip with `mtime=0` and no stored filename. The manifest
+keeps `local_file`, `bytes` and `sha256` for the logical original and adds
+`storage_file`, `storage_bytes`, `storage_sha256` and `encoding` for storage.
+Workers check the compressed hash, decode it, then check the original SQL hash.
+The decoded bytes match the original SQL byte-for-byte. Execution needs no raw
+SQL file; do not republish the larger plaintext copy. License files are unchanged.
+
 The questions and answers in [tasks.json](tasks.json) are disclosed engineering
 cases. Four questions share each source. They constitute **two source clusters**,
 not eight independent samples. Each family has only one source cluster. No task
@@ -49,12 +58,24 @@ unknown-law learning, comparative net benefit or a scaling decision.
 behavioral checks and eight measured scripted episodes. Checks include attempted
 SQL mutation, prohibited file access, VM exhaustion, oversized single values,
 source-window validation and omission of private answers from the public task.
-All eight scripted episodes delivered the expected answers. The receipt binds
-the worker, task, builder and source manifest hashes, preserves timing and paid
-attempt events, and states `real_llm_calls: 0`.
+The existing bounded-execution test also verifies gzip integrity, zero mtime,
+original-content identity, and reading in a temporary tree with no raw SQL file.
+All eight scripted episodes delivered the expected answers. This storage stage
+uses the original runner: its receipt binds worker, task, builder and source
+manifest hashes and preserves timing and paid attempt events. It does not yet
+include the separate runtime-source binding added by the downstream runner.
+All results remain explicitly `real_llm_calls: 0`.
 
-Earlier local development receipts are superseded qualification runs, not
-scientific model experiments. The final receipt is the current accepted record.
+The pre-storage published receipt is preserved byte-for-byte as
+[qualification-original.json](evidence/qualification-original.json). The current
+final receipt is a fresh five-check/eight-episode run using compressed SQL and
+the original runner. A separate downstream stage has its own runtime-bound
+runner and freshly executed receipt; those results must not be substituted into
+this stage's source manifest. New timings are rerun measurements, not a
+performance comparison or scientific confirmation.
+
+Earlier development receipts are historical engineering runs. Only the final
+receipt in this stage is the accepted record for this stage's source hashes.
 
 ## Reproduce
 
