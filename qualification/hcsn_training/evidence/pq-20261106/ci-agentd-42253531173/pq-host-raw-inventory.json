@@ -1,0 +1,955 @@
+{
+  "all_included_files_reopened_and_sha256_verified": true,
+  "complete_archive_local_path": "/workspace/scratch/7b4b0c316c52/hcsn-evidence-stage/ci-agentd-42253531173/agentd-complete.zip",
+  "complete_extraction_local_path": "/workspace/scratch/7b4b0c316c52/hcsn-evidence-stage/ci-agentd-42253531173/original-extracted",
+  "excluded_compiled_binaries": [],
+  "filtered_archive": {
+    "path": "pq-host-raw-filtered.zip",
+    "sha256": "7ab4adce82adda78cc8b64754f827444b45dce64178fa4c3b2d39354d1c6d119",
+    "size": 434685
+  },
+  "included": [
+    {
+      "path": "_temp/hcsn-agentd/agentd-executable.json",
+      "sha256": "ebbb957bd8f65d6d20a004a31117ce2ccf3dc9de13e529e3cbe733728668ce28",
+      "size": 204
+    },
+    {
+      "path": "_temp/hcsn-agentd/callers.json",
+      "sha256": "337f1b809b7f43a6829b89efd63bbf317bd6782bab37df871e8e47914df209d9",
+      "size": 18404
+    },
+    {
+      "path": "_temp/hcsn-agentd/cargo-metadata.json",
+      "sha256": "32d296a846a1414846bbea66cf8d0f735d71655669b59846aae7e9578980cbc6",
+      "size": 927582
+    },
+    {
+      "path": "_temp/hcsn-agentd/clippy.log",
+      "sha256": "441eab3ca1559aa13acc28844460b0eeaf90cd2e12a2ace45b5e9c2670610c0c",
+      "size": 49947
+    },
+    {
+      "path": "_temp/hcsn-agentd/nextest-list.json",
+      "sha256": "058f5632df4281cc1b7af980f86a91f122374509a60b80390d8915b52f0479ef",
+      "size": 29720
+    },
+    {
+      "path": "_temp/hcsn-agentd/nextest-list.log",
+      "sha256": "a80b1cec01f3ee07de93c002426eb8e92d70dafbb68246fd284a641220372901",
+      "size": 19006
+    },
+    {
+      "path": "_temp/hcsn-agentd/numeric-install.log",
+      "sha256": "c36058e440968c9af7450637726da239472f01efcdb0495a331edf358985de3f",
+      "size": 1176
+    },
+    {
+      "path": "_temp/hcsn-agentd/ordinary-build-check.log",
+      "sha256": "5bdd771abcd45e514eb544383db7c0de63b2c8aff4285b38e9cc715f2e6b9817",
+      "size": 42929
+    },
+    {
+      "path": "_temp/hcsn-agentd/pq-host-population_age/agent-owner/fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c53/agent.toml",
+      "sha256": "82fce8b7861642999a5b79f32d19d804a81be633267c0201a9ed9133ecf3add9",
+      "size": 284
+    },
+    {
+      "path": "_temp/hcsn-agentd/pq-host-population_age/agent-owner/fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c53/automation/automation_1.sqlite3",
+      "sha256": "dc98bd44f58b428355c39a999748a7e40f459a27ebdca2970cb364177c2f7f20",
+      "size": 307200
+    },
+    {
+      "path": "_temp/hcsn-agentd/pq-host-population_age/agent-owner/fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c53/automation/final-use-authority/authority.claims",
+      "sha256": "f3bb1ec57f7c12f6dab064273ab6cb77ffc9071da1729cb3084aa96d9c1d8206",
+      "size": 80
+    },
+    {
+      "path": "_temp/hcsn-agentd/pq-host-population_age/agent-owner/fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c53/automation/final-use-authority/authority.json",
+      "sha256": "61c9d20cd3006a33ac4b18fd2af355db4e92ca270c9200b927bfaa745bf59c61",
+      "size": 255
+    },
+    {
+      "path": "_temp/hcsn-agentd/pq-host-population_age/agent-owner/fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c53/automation/final-use-authority/authority.lock",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0
+    },
+    {
+      "path": "_temp/hcsn-agentd/pq-host-population_age/agent-owner/fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c53/releases/release-state-00000000000000000000.json",
+      "sha256": "2326fc68cc636ee6ccc3b7ff1fa9f04a7dadeaa45ed0078d27356238941039c4",
+      "size": 117
+    },
+    {
+      "path": "_temp/hcsn-agentd/pq-host-population_age/agent-owner/fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c53/run/lifecycle-00000000000000000000.json",
+      "sha256": "484091f8b0ac4aa34f873b0727a330c86f0f3af7659c65d0cd3df61d41d4c7ea",
+      "size": 108
+    },
+    {
+      "path": "_temp/hcsn-agentd/pq-host-population_age/agentd-test-executable.json",
+      "sha256": "17e3eff5dc309fb56c87c86e4a235cab879084122b25d700f842a68fdbb856df",
+      "size": 300
+    },
+    {
+      "path": "_temp/hcsn-agentd/pq-host-population_age/base.pt",
+      "sha256": "2c0edbe2e794e267419fa20439bd70c6abdb6996a6605d80f234e484bfbfee57",
+      "size": 6323
+    },
+    {
+      "path": "_temp/hcsn-agentd/pq-host-population_age/cancel-request.json",
+      "sha256": "638452d6374b174009c1ec1efa7dd659d285c24702bc892aaea86c85af0e4e51",
+      "size": 332
+    },
+    {
+      "path": "_temp/hcsn-agentd/pq-host-population_age/cancellation-preflight/candidate.pt",
+      "sha256": "6df4e6dcea8c4e3ccacd853a6081adeae5ba9702c7047aac045624f7b4d8b4a7",
+      "size": 10255
+    },
+    {
+      "path": "_temp/hcsn-agentd/pq-host-population_age/cancellation-preflight/receipt.json",
+      "sha256": "131b0b7ab519aed632a245280ba1f50a86a531940867f6a3576b380d2fc5cdc7",
+      "size": 8947
+    },
+    {
+      "path": "_temp/hcsn-agentd/pq-host-population_age/cancellation-preflight/request.json",
+      "sha256": "fee0cab668ebd167f777a8ff77829a32a9153f2c60b2f8baa019b9db3b08f711",
+      "size": 8194
+    },
+    {
+      "path": "_temp/hcsn-agentd/pq-host-population_age/cancellation-preflight/result.json",
+      "sha256": "6d44c63dd1ca07bbdf3566b159a51a6362c116bdda53dc98caa36c856c01b3c3",
+      "size": 921
+    },
+    {
+      "path": "_temp/hcsn-agentd/pq-host-population_age/cancellation-workload.json",
+      "sha256": "f8b04aad9ad80d587d9ef44b37201f7c1cd5de2404da5c079905c3d6279b2d7e",
+      "size": 610
+    },
+    {
+      "path": "_temp/hcsn-agentd/pq-host-population_age/deployment-sources.json",
+      "sha256": "7496607f596af0919aa56fd2676c060cd7b9aeff59ca25ef9503f5b941d803a2",
+      "size": 6266
+    },
+    {
+      "path": "_temp/hcsn-agentd/pq-host-population_age/dispatch.json",
+      "sha256": "ff705b8da2e6695e28ee57edb3114157d2071ec015093482c7b491c43adb7129",
+      "size": 2670
+    },
+    {
+      "path": "_temp/hcsn-agentd/pq-host-population_age/pq-dispatches.json",
+      "sha256": "2af0325f74a56730b0d8dc978df39d19b02803d2005d3b19cc014444925a8138",
+      "size": 26484
+    },
+    {
+      "path": "_temp/hcsn-agentd/pq-host-population_age/pq-feed-before-terminal-readback.json",
+      "sha256": "a4d16aa36deff1323eb97d7c05aa93df49ecc1542f1f9aa18e3cd19b2ca47ceb",
+      "size": 11927
+    },
+    {
+      "path": "_temp/hcsn-agentd/pq-host-population_age/pq-host-child.json",
+      "sha256": "e5e2a134d26cc0a5a3dabfa0e45f99d18e6cf2f2c069d50dcd5c181cc32f14a9",
+      "size": 266
+    },
+    {
+      "path": "_temp/hcsn-agentd/pq-host-population_age/pq-host-config.json",
+      "sha256": "548ed27083cd7b3b8a55ac797372496332ba9d106339371e571da25c2022ca8f",
+      "size": 55599
+    },
+    {
+      "path": "_temp/hcsn-agentd/pq-host-population_age/pq-host-real-worker.process.json",
+      "sha256": "c4c4eb3b2dc3fe3972a756b23d630837e584c7f5b0479e6b7b1d1823307aca55",
+      "size": 795
+    },
+    {
+      "path": "_temp/hcsn-agentd/pq-host-population_age/pq-host-real-worker.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0
+    },
+    {
+      "path": "_temp/hcsn-agentd/pq-host-population_age/pq-host-real-worker.stdout",
+      "sha256": "077471e654b94b8fe2a9b5d2593d2aea0df7e8c7bae29a7a7aa63005572f1d28",
+      "size": 220
+    },
+    {
+      "path": "_temp/hcsn-agentd/pq-host-population_age/pq-host.json",
+      "sha256": "4ce7aeed07188b862b17cbe2b1fb2a3b32ed6428031f47703f39e7cd07a8eb32",
+      "size": 7801
+    },
+    {
+      "path": "_temp/hcsn-agentd/pq-host-population_age/pq-initial-receipts.json",
+      "sha256": "2df3684594ffb7b9f64aface13fa9f29b644d5224697fa5861f7f6306d4dab33",
+      "size": 1327
+    },
+    {
+      "path": "_temp/hcsn-agentd/pq-host-population_age/pq-running.json",
+      "sha256": "30303675dd5a464a8c0acc55f13ae2d85d8ccf9d9be39bab5aea831da5a86b2a",
+      "size": 1465
+    },
+    {
+      "path": "_temp/hcsn-agentd/pq-host-population_age/pq-service-requests.json",
+      "sha256": "ae321e04eaf918d4a6c3755d2230cfd60725800acaffb3ff382945a6068f0864",
+      "size": 81
+    },
+    {
+      "path": "_temp/hcsn-agentd/pq-host-population_age/pq-services/clock.json",
+      "sha256": "ffcb1c85722254fda8b3f2c34157db3ae178ce62a5369cab5c2983148fd671c3",
+      "size": 13
+    },
+    {
+      "path": "_temp/hcsn-agentd/pq-host-population_age/pq-services/frontier.json",
+      "sha256": "95ea4054a3070f1ab364dae4c38bdaf1e54aa7c967e587caef6061fc457df769",
+      "size": 181
+    },
+    {
+      "path": "_temp/hcsn-agentd/pq-host-population_age/request.json",
+      "sha256": "3ef9c594a07fff317efe13c564a55ea6d17eec3dee41797fe59256f987fc3eb8",
+      "size": 8185
+    },
+    {
+      "path": "_temp/hcsn-agentd/pq-host-population_age/result.json",
+      "sha256": "8b1a8bef61bfb5f8857c5a4d68ee811f90a399da38937ee293d54beb7eb118a0",
+      "size": 3191
+    },
+    {
+      "path": "_temp/hcsn-agentd/pq-host-population_age/retained-files.json",
+      "sha256": "056c8f83aa2f2e9c4ec73a5d5e7e4f10739ea9434ccac2e723ac1125129c5ded",
+      "size": 6857
+    },
+    {
+      "path": "_temp/hcsn-agentd/pq-host-population_age/sources-after.json",
+      "sha256": "7f66e1cc50fb4c925b383bad20d88f851d10d342735bd3f832a3ee9dad5e59dd",
+      "size": 11319
+    },
+    {
+      "path": "_temp/hcsn-agentd/pq-host-population_age/sources-before.json",
+      "sha256": "7f66e1cc50fb4c925b383bad20d88f851d10d342735bd3f832a3ee9dad5e59dd",
+      "size": 11319
+    },
+    {
+      "path": "_temp/hcsn-agentd/pq-host-population_age/supervisor-config.json",
+      "sha256": "8ab6672c292ba84a68d470aca29a6a15eacdf5bdd365b18d7c49deab1220969a",
+      "size": 433
+    },
+    {
+      "path": "_temp/hcsn-agentd/pq-host-population_age/supervisor-initialize.process.json",
+      "sha256": "971712b56b7ae3bed09ee0dc1be77b82924041e2d4b411537bd1c3a4445fc42d",
+      "size": 818
+    },
+    {
+      "path": "_temp/hcsn-agentd/pq-host-population_age/supervisor-initialize.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0
+    },
+    {
+      "path": "_temp/hcsn-agentd/pq-host-population_age/supervisor-initialize.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0
+    },
+    {
+      "path": "_temp/hcsn-agentd/pq-host-population_age/supervisor-store/cancellations/c84d4adc5567a9e5b15919a0522cb7991724ad3e80493601a9e2b29ecec85a1e",
+      "sha256": "d930571f71a966c2e3048e32863dffe9c4a789ea875d64b5f7df2a80f596e979",
+      "size": 687
+    },
+    {
+      "path": "_temp/hcsn-agentd/pq-host-population_age/supervisor-store/dispatch.lock",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0
+    },
+    {
+      "path": "_temp/hcsn-agentd/pq-host-population_age/supervisor-store/jobs/2296017c70ecdbb256f4c5c2f4f965327a3609df03d716822f70186d43e19aed/5898ea3db0de5dfe7ac0c8ce41b1088e09d98b1de7ab6717cdcc82332fdcbbcd/started.json",
+      "sha256": "07740beb85386dc1609e6dba7c7359bd66707f86654f39a3ffcdfdcf1be3dfbd",
+      "size": 180
+    },
+    {
+      "path": "_temp/hcsn-agentd/pq-host-population_age/supervisor-store/jobs/2296017c70ecdbb256f4c5c2f4f965327a3609df03d716822f70186d43e19aed/cancel.json",
+      "sha256": "d930571f71a966c2e3048e32863dffe9c4a789ea875d64b5f7df2a80f596e979",
+      "size": 687
+    },
+    {
+      "path": "_temp/hcsn-agentd/pq-host-population_age/supervisor-store/jobs/2296017c70ecdbb256f4c5c2f4f965327a3609df03d716822f70186d43e19aed/request.json",
+      "sha256": "3ef9c594a07fff317efe13c564a55ea6d17eec3dee41797fe59256f987fc3eb8",
+      "size": 8185
+    },
+    {
+      "path": "_temp/hcsn-agentd/pq-host-population_age/supervisor-store/jobs/2296017c70ecdbb256f4c5c2f4f965327a3609df03d716822f70186d43e19aed/reservation.json",
+      "sha256": "69deb8fb64c705511cbe3e5ee16a2d8c236eba48ca0645bbe14d45f99d3cc019",
+      "size": 4769
+    },
+    {
+      "path": "_temp/hcsn-agentd/pq-host-population_age/supervisor-store/jobs/2296017c70ecdbb256f4c5c2f4f965327a3609df03d716822f70186d43e19aed/runner.json",
+      "sha256": "3aca52432bee11753675fc02b0eec25fd31fc6bd36e936799248c3b4a82c20ba",
+      "size": 178
+    },
+    {
+      "path": "_temp/hcsn-agentd/pq-host-population_age/supervisor-store/jobs/2296017c70ecdbb256f4c5c2f4f965327a3609df03d716822f70186d43e19aed/runner.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0
+    },
+    {
+      "path": "_temp/hcsn-agentd/pq-host-population_age/supervisor-store/jobs/2296017c70ecdbb256f4c5c2f4f965327a3609df03d716822f70186d43e19aed/runner.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0
+    },
+    {
+      "path": "_temp/hcsn-agentd/pq-host-population_age/supervisor-store/jobs/2296017c70ecdbb256f4c5c2f4f965327a3609df03d716822f70186d43e19aed/terminal.json",
+      "sha256": "c9cb30ca36f0b842e35346c9676157122e1033e59a6b269b0a5003074cd6a045",
+      "size": 870
+    },
+    {
+      "path": "_temp/hcsn-agentd/pq-host-population_age/supervisor-store/jobs/2296017c70ecdbb256f4c5c2f4f965327a3609df03d716822f70186d43e19aed/worker.json",
+      "sha256": "c09500bdc59941226a47958e255cea8737982bb3523f7827355c5f9daee1732e",
+      "size": 178
+    },
+    {
+      "path": "_temp/hcsn-agentd/pq-host-population_age/supervisor-store/jobs/2296017c70ecdbb256f4c5c2f4f965327a3609df03d716822f70186d43e19aed/worker.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0
+    },
+    {
+      "path": "_temp/hcsn-agentd/pq-host-population_age/supervisor-store/jobs/2296017c70ecdbb256f4c5c2f4f965327a3609df03d716822f70186d43e19aed/worker.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0
+    },
+    {
+      "path": "_temp/hcsn-agentd/pq-host-population_age/supervisor-store/store.json",
+      "sha256": "f61535f437c9f4335bcd808033d9855c7c0530abf7bcd7a5ced221556ce460a1",
+      "size": 139
+    },
+    {
+      "path": "_temp/hcsn-agentd/pq-host-population_age/supervisor-store/taskflow-requests/1a33787b3c112763da16a6045312a95f71160b60730997914bb36082939a677f.json",
+      "sha256": "0278ab18c6c3ae12f892f6e25e184d7bc26349583746b9a785ff871e833ef337",
+      "size": 9364
+    },
+    {
+      "path": "_temp/hcsn-agentd/pq-host-population_age/supervisor-store/taskflow-requests/5fe7e44268ef14adf47f46c569cf3a1355534c5848d77b78e8dd22bc0a1ea1b9.json",
+      "sha256": "db14b8a2cbc6994abc238ac40ed3e534a22be1bbada42c8600c9ca37a1568d3e",
+      "size": 841
+    },
+    {
+      "path": "_temp/hcsn-agentd/pq-host-population_age-status.json",
+      "sha256": "84288689183cc074d16fee48016f8d8eb65bfb6030ed22bc63f2a5d80f1bce13",
+      "size": 52
+    },
+    {
+      "path": "_temp/hcsn-agentd/pq-host-population_age.log",
+      "sha256": "88ae1a8250bedc6c84e8f742f361c5a88389b2c7938fc3639bf252958fe5490f",
+      "size": 2969
+    },
+    {
+      "path": "_temp/hcsn-agentd/pq-host-population_grid/agent-owner/fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c53/agent.toml",
+      "sha256": "a1e0c47d1e9737019212cc606cd8774da423cbb5484d5ace9234fddbcc82ccba",
+      "size": 285
+    },
+    {
+      "path": "_temp/hcsn-agentd/pq-host-population_grid/agent-owner/fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c53/automation/automation_1.sqlite3",
+      "sha256": "4b0631eeee62202e249cb25df5c75974b62f818fe27467745fb40f8cc8eaf96d",
+      "size": 307200
+    },
+    {
+      "path": "_temp/hcsn-agentd/pq-host-population_grid/agent-owner/fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c53/automation/final-use-authority/authority.claims",
+      "sha256": "f3bb1ec57f7c12f6dab064273ab6cb77ffc9071da1729cb3084aa96d9c1d8206",
+      "size": 80
+    },
+    {
+      "path": "_temp/hcsn-agentd/pq-host-population_grid/agent-owner/fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c53/automation/final-use-authority/authority.json",
+      "sha256": "61c9d20cd3006a33ac4b18fd2af355db4e92ca270c9200b927bfaa745bf59c61",
+      "size": 255
+    },
+    {
+      "path": "_temp/hcsn-agentd/pq-host-population_grid/agent-owner/fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c53/automation/final-use-authority/authority.lock",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0
+    },
+    {
+      "path": "_temp/hcsn-agentd/pq-host-population_grid/agent-owner/fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c53/releases/release-state-00000000000000000000.json",
+      "sha256": "2326fc68cc636ee6ccc3b7ff1fa9f04a7dadeaa45ed0078d27356238941039c4",
+      "size": 117
+    },
+    {
+      "path": "_temp/hcsn-agentd/pq-host-population_grid/agent-owner/fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c53/run/lifecycle-00000000000000000000.json",
+      "sha256": "484091f8b0ac4aa34f873b0727a330c86f0f3af7659c65d0cd3df61d41d4c7ea",
+      "size": 108
+    },
+    {
+      "path": "_temp/hcsn-agentd/pq-host-population_grid/agentd-test-executable.json",
+      "sha256": "17e3eff5dc309fb56c87c86e4a235cab879084122b25d700f842a68fdbb856df",
+      "size": 300
+    },
+    {
+      "path": "_temp/hcsn-agentd/pq-host-population_grid/base.pt",
+      "sha256": "0962cc3f7f87ae4f96d59f65090c2bcb3903b5fed13845156b79c083020a785c",
+      "size": 6259
+    },
+    {
+      "path": "_temp/hcsn-agentd/pq-host-population_grid/cancel-request.json",
+      "sha256": "15fc39931ecf21c2cb196304f4935b41ad8c947610d6deec07a9041ee7958784",
+      "size": 332
+    },
+    {
+      "path": "_temp/hcsn-agentd/pq-host-population_grid/cancellation-preflight/candidate.pt",
+      "sha256": "f0fb731c69e97caad38b35c0301c59cdcce140ba747c0fef83e8381fd7a07d70",
+      "size": 9429
+    },
+    {
+      "path": "_temp/hcsn-agentd/pq-host-population_grid/cancellation-preflight/receipt.json",
+      "sha256": "15eee3ab390100148301a43564458b00835cb83ce07379041b2bbfab10cca44e",
+      "size": 8739
+    },
+    {
+      "path": "_temp/hcsn-agentd/pq-host-population_grid/cancellation-preflight/request.json",
+      "sha256": "86951eba7f16fd00141d3c7467d9be8bdccd86c71d6d7e94131966aff14bb606",
+      "size": 7295
+    },
+    {
+      "path": "_temp/hcsn-agentd/pq-host-population_grid/cancellation-preflight/result.json",
+      "sha256": "de94687f137f69e41a084cf96c631574f56646011ad063ea19949dc932849602",
+      "size": 922
+    },
+    {
+      "path": "_temp/hcsn-agentd/pq-host-population_grid/cancellation-workload.json",
+      "sha256": "5c4e4afdbd648a42793e48a38cd5d9fd0fbba6b542935884be28e2595999fc39",
+      "size": 610
+    },
+    {
+      "path": "_temp/hcsn-agentd/pq-host-population_grid/deployment-sources.json",
+      "sha256": "7496607f596af0919aa56fd2676c060cd7b9aeff59ca25ef9503f5b941d803a2",
+      "size": 6266
+    },
+    {
+      "path": "_temp/hcsn-agentd/pq-host-population_grid/dispatch.json",
+      "sha256": "2e3514a4da601f2e749d647e28430a299bc8a7e7d0ce2871362d33c986d7d3ee",
+      "size": 2672
+    },
+    {
+      "path": "_temp/hcsn-agentd/pq-host-population_grid/pq-dispatches.json",
+      "sha256": "bc6effa896c5dac71f5c19362fa5490a88b9777e16dde3d37ffd248026840173",
+      "size": 26432
+    },
+    {
+      "path": "_temp/hcsn-agentd/pq-host-population_grid/pq-feed-before-terminal-readback.json",
+      "sha256": "a4d16aa36deff1323eb97d7c05aa93df49ecc1542f1f9aa18e3cd19b2ca47ceb",
+      "size": 11927
+    },
+    {
+      "path": "_temp/hcsn-agentd/pq-host-population_grid/pq-host-child.json",
+      "sha256": "e9136c97c8379f97b85360c8f19609e04f1c1a11f2d64ada3a2effea77798915",
+      "size": 266
+    },
+    {
+      "path": "_temp/hcsn-agentd/pq-host-population_grid/pq-host-config.json",
+      "sha256": "e96d027421ea9e4ecf7fe6244b67159bf05814cdfc1ea27b82207e5153f497e8",
+      "size": 55561
+    },
+    {
+      "path": "_temp/hcsn-agentd/pq-host-population_grid/pq-host-real-worker.process.json",
+      "sha256": "7d170335a0a2ff6436c55cb6ee82a92826c2f64f39651b5bfa923660e871cf1c",
+      "size": 796
+    },
+    {
+      "path": "_temp/hcsn-agentd/pq-host-population_grid/pq-host-real-worker.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0
+    },
+    {
+      "path": "_temp/hcsn-agentd/pq-host-population_grid/pq-host-real-worker.stdout",
+      "sha256": "0a9158d08f2ee9cec798b7ab36412be0746aa0a00c90667dbd939793444b13c0",
+      "size": 220
+    },
+    {
+      "path": "_temp/hcsn-agentd/pq-host-population_grid/pq-host.json",
+      "sha256": "41389dfa648334d7bce391463d7bca4329aaeb8387cf6d52167e94a98b59b63f",
+      "size": 7801
+    },
+    {
+      "path": "_temp/hcsn-agentd/pq-host-population_grid/pq-initial-receipts.json",
+      "sha256": "6a8a13220d1f5af2b7025e56361ff45c8ca591d3a693b63619abfc6d8315f73e",
+      "size": 1327
+    },
+    {
+      "path": "_temp/hcsn-agentd/pq-host-population_grid/pq-running.json",
+      "sha256": "e64f15665dca94822350fad0b111d9c9be60d0ab51de92c107e4d365499db864",
+      "size": 1465
+    },
+    {
+      "path": "_temp/hcsn-agentd/pq-host-population_grid/pq-service-requests.json",
+      "sha256": "ae321e04eaf918d4a6c3755d2230cfd60725800acaffb3ff382945a6068f0864",
+      "size": 81
+    },
+    {
+      "path": "_temp/hcsn-agentd/pq-host-population_grid/pq-services/clock.json",
+      "sha256": "ffcb1c85722254fda8b3f2c34157db3ae178ce62a5369cab5c2983148fd671c3",
+      "size": 13
+    },
+    {
+      "path": "_temp/hcsn-agentd/pq-host-population_grid/pq-services/frontier.json",
+      "sha256": "95ea4054a3070f1ab364dae4c38bdaf1e54aa7c967e587caef6061fc457df769",
+      "size": 181
+    },
+    {
+      "path": "_temp/hcsn-agentd/pq-host-population_grid/request.json",
+      "sha256": "a6e56b20f3344ed8b8415587f8035f0f2a890aa7e3df49e951c0f551ad08a2d3",
+      "size": 7286
+    },
+    {
+      "path": "_temp/hcsn-agentd/pq-host-population_grid/result.json",
+      "sha256": "ac8b53aa0ec6c1a93390880ebb7243f4890ede719ee844b56d6c5b140a48b846",
+      "size": 3193
+    },
+    {
+      "path": "_temp/hcsn-agentd/pq-host-population_grid/retained-files.json",
+      "sha256": "44b8a41faa7d0caa0c31e8b1a522a1378f1ff9e86016c72ec5040ec20518d37a",
+      "size": 6857
+    },
+    {
+      "path": "_temp/hcsn-agentd/pq-host-population_grid/sources-after.json",
+      "sha256": "7f66e1cc50fb4c925b383bad20d88f851d10d342735bd3f832a3ee9dad5e59dd",
+      "size": 11319
+    },
+    {
+      "path": "_temp/hcsn-agentd/pq-host-population_grid/sources-before.json",
+      "sha256": "7f66e1cc50fb4c925b383bad20d88f851d10d342735bd3f832a3ee9dad5e59dd",
+      "size": 11319
+    },
+    {
+      "path": "_temp/hcsn-agentd/pq-host-population_grid/supervisor-config.json",
+      "sha256": "1f9960b877ac71b72605211f90b1bbeabb834207b16167cc8ec7cdd7b3616a44",
+      "size": 434
+    },
+    {
+      "path": "_temp/hcsn-agentd/pq-host-population_grid/supervisor-initialize.process.json",
+      "sha256": "ad5b7d9abbb64c3a818da9410a54cec25d6ab8bd94f719bf2cd43ede6f2f3ffe",
+      "size": 822
+    },
+    {
+      "path": "_temp/hcsn-agentd/pq-host-population_grid/supervisor-initialize.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0
+    },
+    {
+      "path": "_temp/hcsn-agentd/pq-host-population_grid/supervisor-initialize.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0
+    },
+    {
+      "path": "_temp/hcsn-agentd/pq-host-population_grid/supervisor-store/cancellations/c84d4adc5567a9e5b15919a0522cb7991724ad3e80493601a9e2b29ecec85a1e",
+      "sha256": "36b9fb86b161eb0a9907fdc2916daff4ac050325c9ae6a5bff58ca4a383bdf6f",
+      "size": 687
+    },
+    {
+      "path": "_temp/hcsn-agentd/pq-host-population_grid/supervisor-store/dispatch.lock",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0
+    },
+    {
+      "path": "_temp/hcsn-agentd/pq-host-population_grid/supervisor-store/jobs/2296017c70ecdbb256f4c5c2f4f965327a3609df03d716822f70186d43e19aed/154c56088cf1762b51e7cf435a67cc01f3417cb76dd42521982050cb604b3aef/started.json",
+      "sha256": "50660432d4724603f89d6ff1102e070998ca267ab6b70a3a7e938253f68149bd",
+      "size": 180
+    },
+    {
+      "path": "_temp/hcsn-agentd/pq-host-population_grid/supervisor-store/jobs/2296017c70ecdbb256f4c5c2f4f965327a3609df03d716822f70186d43e19aed/cancel.json",
+      "sha256": "36b9fb86b161eb0a9907fdc2916daff4ac050325c9ae6a5bff58ca4a383bdf6f",
+      "size": 687
+    },
+    {
+      "path": "_temp/hcsn-agentd/pq-host-population_grid/supervisor-store/jobs/2296017c70ecdbb256f4c5c2f4f965327a3609df03d716822f70186d43e19aed/request.json",
+      "sha256": "a6e56b20f3344ed8b8415587f8035f0f2a890aa7e3df49e951c0f551ad08a2d3",
+      "size": 7286
+    },
+    {
+      "path": "_temp/hcsn-agentd/pq-host-population_grid/supervisor-store/jobs/2296017c70ecdbb256f4c5c2f4f965327a3609df03d716822f70186d43e19aed/reservation.json",
+      "sha256": "93088c8a0cb7ad219b4f23a2d6763eef3565edcc36ec2522a3a0cebb6d6660dd",
+      "size": 4769
+    },
+    {
+      "path": "_temp/hcsn-agentd/pq-host-population_grid/supervisor-store/jobs/2296017c70ecdbb256f4c5c2f4f965327a3609df03d716822f70186d43e19aed/runner.json",
+      "sha256": "5693eee1be3a505ce73e299848fcf7f44e7d9eca1cf2fab94432b414aefe4c68",
+      "size": 178
+    },
+    {
+      "path": "_temp/hcsn-agentd/pq-host-population_grid/supervisor-store/jobs/2296017c70ecdbb256f4c5c2f4f965327a3609df03d716822f70186d43e19aed/runner.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0
+    },
+    {
+      "path": "_temp/hcsn-agentd/pq-host-population_grid/supervisor-store/jobs/2296017c70ecdbb256f4c5c2f4f965327a3609df03d716822f70186d43e19aed/runner.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0
+    },
+    {
+      "path": "_temp/hcsn-agentd/pq-host-population_grid/supervisor-store/jobs/2296017c70ecdbb256f4c5c2f4f965327a3609df03d716822f70186d43e19aed/terminal.json",
+      "sha256": "e15785f89288963b01c6869f106c4abc552a066c2e9cdbd76827139206388b31",
+      "size": 879
+    },
+    {
+      "path": "_temp/hcsn-agentd/pq-host-population_grid/supervisor-store/jobs/2296017c70ecdbb256f4c5c2f4f965327a3609df03d716822f70186d43e19aed/worker.json",
+      "sha256": "56ea3306ba07719150ad715806672ec268135d7aed97d0a73a697d8adecf5cc8",
+      "size": 178
+    },
+    {
+      "path": "_temp/hcsn-agentd/pq-host-population_grid/supervisor-store/jobs/2296017c70ecdbb256f4c5c2f4f965327a3609df03d716822f70186d43e19aed/worker.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0
+    },
+    {
+      "path": "_temp/hcsn-agentd/pq-host-population_grid/supervisor-store/jobs/2296017c70ecdbb256f4c5c2f4f965327a3609df03d716822f70186d43e19aed/worker.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0
+    },
+    {
+      "path": "_temp/hcsn-agentd/pq-host-population_grid/supervisor-store/store.json",
+      "sha256": "f61535f437c9f4335bcd808033d9855c7c0530abf7bcd7a5ced221556ce460a1",
+      "size": 139
+    },
+    {
+      "path": "_temp/hcsn-agentd/pq-host-population_grid/supervisor-store/taskflow-requests/4f32311deb454fe1addbaaf74b9ba1f8b0697d4bc487a0e20dad81626979976b.json",
+      "sha256": "4ca38e36be2accdf6737d8258e066ada5a16846900265bf4701fd73188d368a4",
+      "size": 841
+    },
+    {
+      "path": "_temp/hcsn-agentd/pq-host-population_grid/supervisor-store/taskflow-requests/c6513c0f933ecc1556c959192a50a1ec511d9acb6ffa90f569b3934a763d1ac3.json",
+      "sha256": "f616a5fa0976835ed5dd02d1e00c5ad6df1002115167292662db2dc4b4a1f1e2",
+      "size": 8393
+    },
+    {
+      "path": "_temp/hcsn-agentd/pq-host-population_grid-status.json",
+      "sha256": "f45dc98a89c4433e15edcd323620e277b531663c62500ef86ef110d85aee89dd",
+      "size": 53
+    },
+    {
+      "path": "_temp/hcsn-agentd/pq-host-population_grid.log",
+      "sha256": "544419fec936a9e1a844b6873337c530bbc215eecaf1162d27bfb7b2745a3901",
+      "size": 2971
+    },
+    {
+      "path": "_temp/hcsn-agentd/pq-host-value_kernel/agent-owner/fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c53/agent.toml",
+      "sha256": "5034af145948d41a5a09b0e29339b75eebd459690f842ef205a2eaec9226bf99",
+      "size": 282
+    },
+    {
+      "path": "_temp/hcsn-agentd/pq-host-value_kernel/agent-owner/fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c53/automation/automation_1.sqlite3",
+      "sha256": "5341255bf0b71961e318b94b4da2dae70272cf1054d3dcc9360a22ccf553037d",
+      "size": 307200
+    },
+    {
+      "path": "_temp/hcsn-agentd/pq-host-value_kernel/agent-owner/fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c53/automation/final-use-authority/authority.claims",
+      "sha256": "f3bb1ec57f7c12f6dab064273ab6cb77ffc9071da1729cb3084aa96d9c1d8206",
+      "size": 80
+    },
+    {
+      "path": "_temp/hcsn-agentd/pq-host-value_kernel/agent-owner/fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c53/automation/final-use-authority/authority.json",
+      "sha256": "61c9d20cd3006a33ac4b18fd2af355db4e92ca270c9200b927bfaa745bf59c61",
+      "size": 255
+    },
+    {
+      "path": "_temp/hcsn-agentd/pq-host-value_kernel/agent-owner/fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c53/automation/final-use-authority/authority.lock",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0
+    },
+    {
+      "path": "_temp/hcsn-agentd/pq-host-value_kernel/agent-owner/fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c53/releases/release-state-00000000000000000000.json",
+      "sha256": "2326fc68cc636ee6ccc3b7ff1fa9f04a7dadeaa45ed0078d27356238941039c4",
+      "size": 117
+    },
+    {
+      "path": "_temp/hcsn-agentd/pq-host-value_kernel/agent-owner/fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c53/run/lifecycle-00000000000000000000.json",
+      "sha256": "484091f8b0ac4aa34f873b0727a330c86f0f3af7659c65d0cd3df61d41d4c7ea",
+      "size": 108
+    },
+    {
+      "path": "_temp/hcsn-agentd/pq-host-value_kernel/agentd-test-executable.json",
+      "sha256": "17e3eff5dc309fb56c87c86e4a235cab879084122b25d700f842a68fdbb856df",
+      "size": 300
+    },
+    {
+      "path": "_temp/hcsn-agentd/pq-host-value_kernel/base.pt",
+      "sha256": "123bb675e1629322609e6c31062e645a8544dfd21d42ae9befe7828c8550a56f",
+      "size": 9807
+    },
+    {
+      "path": "_temp/hcsn-agentd/pq-host-value_kernel/cancel-request.json",
+      "sha256": "1b44388c9c7adc99e3e074125b0c94f87283148cc3f5c90b33ff18cbfe9f121b",
+      "size": 332
+    },
+    {
+      "path": "_temp/hcsn-agentd/pq-host-value_kernel/cancellation-preflight/candidate.pt",
+      "sha256": "2feab3e01cc29fefa08e49eab0fa18e48c670576600dbb4e366209c8a3c620c4",
+      "size": 11459
+    },
+    {
+      "path": "_temp/hcsn-agentd/pq-host-value_kernel/cancellation-preflight/receipt.json",
+      "sha256": "bdae64f2a673f8dcc3f11c08d893fae3e7a6c8ee9fc8415bfa42888def3d767b",
+      "size": 9540
+    },
+    {
+      "path": "_temp/hcsn-agentd/pq-host-value_kernel/cancellation-preflight/request.json",
+      "sha256": "35fb3a59445b0b55658eee6b3624b159a6551b370aef1500f164812d035397e9",
+      "size": 17924
+    },
+    {
+      "path": "_temp/hcsn-agentd/pq-host-value_kernel/cancellation-preflight/result.json",
+      "sha256": "ecabdbf8e31a46e81535c3ec30a5ccea31e1a9a9f26822eb4413a3eed4bd3db2",
+      "size": 921
+    },
+    {
+      "path": "_temp/hcsn-agentd/pq-host-value_kernel/cancellation-workload.json",
+      "sha256": "e7259584ac776e91673342becca30849cfeb0a34b11ffb49965e917249189b82",
+      "size": 609
+    },
+    {
+      "path": "_temp/hcsn-agentd/pq-host-value_kernel/deployment-sources.json",
+      "sha256": "7496607f596af0919aa56fd2676c060cd7b9aeff59ca25ef9503f5b941d803a2",
+      "size": 6266
+    },
+    {
+      "path": "_temp/hcsn-agentd/pq-host-value_kernel/dispatch.json",
+      "sha256": "0906eab657c67f38b58e3b36fda42fd6922fbf65206acc5ceed8571259a2fcc0",
+      "size": 2667
+    },
+    {
+      "path": "_temp/hcsn-agentd/pq-host-value_kernel/pq-dispatches.json",
+      "sha256": "e14bd6544b3b33081f27667d4835ce9b7f96aee6f4e9579b3518de0e7ae46bf7",
+      "size": 26354
+    },
+    {
+      "path": "_temp/hcsn-agentd/pq-host-value_kernel/pq-feed-before-terminal-readback.json",
+      "sha256": "a4d16aa36deff1323eb97d7c05aa93df49ecc1542f1f9aa18e3cd19b2ca47ceb",
+      "size": 11927
+    },
+    {
+      "path": "_temp/hcsn-agentd/pq-host-value_kernel/pq-host-child.json",
+      "sha256": "f312d572570ee272792963b07595c11886ad9fa4d430bf84b9d8ecc769d4ef1e",
+      "size": 266
+    },
+    {
+      "path": "_temp/hcsn-agentd/pq-host-value_kernel/pq-host-config.json",
+      "sha256": "00ea107c83db3d7b8f6663401a07debb2cc4701926800a1225e94e99e7b7bc2e",
+      "size": 55532
+    },
+    {
+      "path": "_temp/hcsn-agentd/pq-host-value_kernel/pq-host-real-worker.process.json",
+      "sha256": "0a572fc52af35df574af070a6a777f6a6ec41f0ff622b3e2dd24b4629ea3b437",
+      "size": 795
+    },
+    {
+      "path": "_temp/hcsn-agentd/pq-host-value_kernel/pq-host-real-worker.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0
+    },
+    {
+      "path": "_temp/hcsn-agentd/pq-host-value_kernel/pq-host-real-worker.stdout",
+      "sha256": "4b38cbfcf379a6b1fe0ba609a2d73655e0de3ed50084cd1042bfcb3390cdd5a8",
+      "size": 220
+    },
+    {
+      "path": "_temp/hcsn-agentd/pq-host-value_kernel/pq-host.json",
+      "sha256": "e719f330ee16986f151d360ee562b1ef7dd5986abad0a31dad858177694f8489",
+      "size": 7801
+    },
+    {
+      "path": "_temp/hcsn-agentd/pq-host-value_kernel/pq-initial-receipts.json",
+      "sha256": "e8ec6e7b89bc639acbeb8139ae82ba70230d38d9fe78cc31af16502f72d91531",
+      "size": 1327
+    },
+    {
+      "path": "_temp/hcsn-agentd/pq-host-value_kernel/pq-running.json",
+      "sha256": "d98d65b4bdf89b6dfb5f59e9f5e37cf7cb4fee5358be58300fe1d94a93af0c0a",
+      "size": 1465
+    },
+    {
+      "path": "_temp/hcsn-agentd/pq-host-value_kernel/pq-service-requests.json",
+      "sha256": "ae321e04eaf918d4a6c3755d2230cfd60725800acaffb3ff382945a6068f0864",
+      "size": 81
+    },
+    {
+      "path": "_temp/hcsn-agentd/pq-host-value_kernel/pq-services/clock.json",
+      "sha256": "ffcb1c85722254fda8b3f2c34157db3ae178ce62a5369cab5c2983148fd671c3",
+      "size": 13
+    },
+    {
+      "path": "_temp/hcsn-agentd/pq-host-value_kernel/pq-services/frontier.json",
+      "sha256": "95ea4054a3070f1ab364dae4c38bdaf1e54aa7c967e587caef6061fc457df769",
+      "size": 181
+    },
+    {
+      "path": "_temp/hcsn-agentd/pq-host-value_kernel/request.json",
+      "sha256": "38150828afdfe5d6852ac2ed98188515b32cc688a30f346aea7e01f06ac5fcb2",
+      "size": 17915
+    },
+    {
+      "path": "_temp/hcsn-agentd/pq-host-value_kernel/result.json",
+      "sha256": "eaec30f48dc745648639fccd067852d31b242bcf81ee9fae2e3edf7028fef05e",
+      "size": 3188
+    },
+    {
+      "path": "_temp/hcsn-agentd/pq-host-value_kernel/retained-files.json",
+      "sha256": "c9de01b9c294170874a51f14ba39caf08f01af2ff3e732f06f659fec2375b188",
+      "size": 6857
+    },
+    {
+      "path": "_temp/hcsn-agentd/pq-host-value_kernel/sources-after.json",
+      "sha256": "7f66e1cc50fb4c925b383bad20d88f851d10d342735bd3f832a3ee9dad5e59dd",
+      "size": 11319
+    },
+    {
+      "path": "_temp/hcsn-agentd/pq-host-value_kernel/sources-before.json",
+      "sha256": "7f66e1cc50fb4c925b383bad20d88f851d10d342735bd3f832a3ee9dad5e59dd",
+      "size": 11319
+    },
+    {
+      "path": "_temp/hcsn-agentd/pq-host-value_kernel/supervisor-config.json",
+      "sha256": "b4a1b9b12e9c0d83b87c390a1554212ae2778c4c83115f0b2cf12f78eb6ccf4e",
+      "size": 431
+    },
+    {
+      "path": "_temp/hcsn-agentd/pq-host-value_kernel/supervisor-initialize.process.json",
+      "sha256": "32c83c418484c0c7e8557d2ae503e6603fb909ce5af811bfd3494a9f6ec400b9",
+      "size": 819
+    },
+    {
+      "path": "_temp/hcsn-agentd/pq-host-value_kernel/supervisor-initialize.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0
+    },
+    {
+      "path": "_temp/hcsn-agentd/pq-host-value_kernel/supervisor-initialize.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0
+    },
+    {
+      "path": "_temp/hcsn-agentd/pq-host-value_kernel/supervisor-store/cancellations/c84d4adc5567a9e5b15919a0522cb7991724ad3e80493601a9e2b29ecec85a1e",
+      "sha256": "34388e218994b328685504b80c7b7c9b927a5dd9d5031a706edf2ddb67aa7158",
+      "size": 687
+    },
+    {
+      "path": "_temp/hcsn-agentd/pq-host-value_kernel/supervisor-store/dispatch.lock",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0
+    },
+    {
+      "path": "_temp/hcsn-agentd/pq-host-value_kernel/supervisor-store/jobs/2296017c70ecdbb256f4c5c2f4f965327a3609df03d716822f70186d43e19aed/25aabf8e45a5297f791892d26cb83a169a241fd1baafb4d3eb8641fd78fdd4fe/started.json",
+      "sha256": "bf65ebb631833dbe07964832c66209883620a5788de180fd46c2bf434904ff89",
+      "size": 180
+    },
+    {
+      "path": "_temp/hcsn-agentd/pq-host-value_kernel/supervisor-store/jobs/2296017c70ecdbb256f4c5c2f4f965327a3609df03d716822f70186d43e19aed/cancel.json",
+      "sha256": "34388e218994b328685504b80c7b7c9b927a5dd9d5031a706edf2ddb67aa7158",
+      "size": 687
+    },
+    {
+      "path": "_temp/hcsn-agentd/pq-host-value_kernel/supervisor-store/jobs/2296017c70ecdbb256f4c5c2f4f965327a3609df03d716822f70186d43e19aed/request.json",
+      "sha256": "38150828afdfe5d6852ac2ed98188515b32cc688a30f346aea7e01f06ac5fcb2",
+      "size": 17915
+    },
+    {
+      "path": "_temp/hcsn-agentd/pq-host-value_kernel/supervisor-store/jobs/2296017c70ecdbb256f4c5c2f4f965327a3609df03d716822f70186d43e19aed/reservation.json",
+      "sha256": "a412fa9750fc04688171a0bba7074491567248a648c8c85e33b2100caafc78ae",
+      "size": 4769
+    },
+    {
+      "path": "_temp/hcsn-agentd/pq-host-value_kernel/supervisor-store/jobs/2296017c70ecdbb256f4c5c2f4f965327a3609df03d716822f70186d43e19aed/runner.json",
+      "sha256": "601166de8f86e574d10ff95cea8a4ca8f7c22307609fea5d277e1df48511175c",
+      "size": 178
+    },
+    {
+      "path": "_temp/hcsn-agentd/pq-host-value_kernel/supervisor-store/jobs/2296017c70ecdbb256f4c5c2f4f965327a3609df03d716822f70186d43e19aed/runner.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0
+    },
+    {
+      "path": "_temp/hcsn-agentd/pq-host-value_kernel/supervisor-store/jobs/2296017c70ecdbb256f4c5c2f4f965327a3609df03d716822f70186d43e19aed/runner.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0
+    },
+    {
+      "path": "_temp/hcsn-agentd/pq-host-value_kernel/supervisor-store/jobs/2296017c70ecdbb256f4c5c2f4f965327a3609df03d716822f70186d43e19aed/terminal.json",
+      "sha256": "cb31005282c6a8c2925e6753b8172140c30a0a6f204a67c27c4ec7352f768440",
+      "size": 871
+    },
+    {
+      "path": "_temp/hcsn-agentd/pq-host-value_kernel/supervisor-store/jobs/2296017c70ecdbb256f4c5c2f4f965327a3609df03d716822f70186d43e19aed/worker.json",
+      "sha256": "02b5c50a08d4456cfcd6b61adb4d1cb4609f2969598b674df43b51a332feb858",
+      "size": 178
+    },
+    {
+      "path": "_temp/hcsn-agentd/pq-host-value_kernel/supervisor-store/jobs/2296017c70ecdbb256f4c5c2f4f965327a3609df03d716822f70186d43e19aed/worker.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0
+    },
+    {
+      "path": "_temp/hcsn-agentd/pq-host-value_kernel/supervisor-store/jobs/2296017c70ecdbb256f4c5c2f4f965327a3609df03d716822f70186d43e19aed/worker.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0
+    },
+    {
+      "path": "_temp/hcsn-agentd/pq-host-value_kernel/supervisor-store/store.json",
+      "sha256": "f61535f437c9f4335bcd808033d9855c7c0530abf7bcd7a5ced221556ce460a1",
+      "size": 139
+    },
+    {
+      "path": "_temp/hcsn-agentd/pq-host-value_kernel/supervisor-store/taskflow-requests/6ff31fb9b9800f87f5c117fc69b837a9272f50eb328d8328dbe1b3ac795ecdd4.json",
+      "sha256": "81dace5a0ec6735c67bbe9f1ea3593821c0697d0bea4c5ec508adce8554bd312",
+      "size": 19901
+    },
+    {
+      "path": "_temp/hcsn-agentd/pq-host-value_kernel/supervisor-store/taskflow-requests/8a4bbba385764ab75099709f6ad5c0205c75bb9e9e3ed5490a23933483319e79.json",
+      "sha256": "f678b4bbdb143611b00da6591ae4511652d6decea8eee872e4bc859dc54c3a3b",
+      "size": 841
+    },
+    {
+      "path": "_temp/hcsn-agentd/pq-host-value_kernel-status.json",
+      "sha256": "dcf2bf2a97d3e9c509d2b30617a5f62be2f4b3850bf7a400522d6483be00e52a",
+      "size": 50
+    },
+    {
+      "path": "_temp/hcsn-agentd/pq-host-value_kernel.log",
+      "sha256": "6657858f8ab1b962fc5f99e4c75c6291b163aa838abf98ff2a743f3f1b12037e",
+      "size": 2966
+    },
+    {
+      "path": "_temp/hcsn-agentd/python-packages.txt",
+      "sha256": "10a5b4d6ffaf90707f63615ff7056fe0c193cd78afbfe7e6e423c9cd8ff4dae3",
+      "size": 196
+    },
+    {
+      "path": "_temp/hcsn-agentd/source-pins.json",
+      "sha256": "e7ea530be3ee54f0b76925912a11579271c55c85ecf2adf573c9c0eeeb1c3f7a",
+      "size": 1688
+    },
+    {
+      "path": "_temp/hcsn-agentd/source-unchanged.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0
+    },
+    {
+      "path": "_temp/hcsn-agentd/source.txt",
+      "sha256": "7d1b1c99a86cf58f7476073a4b572994f17a54df179e5a759168ecb180003b44",
+      "size": 82
+    },
+    {
+      "path": "_temp/hcsn-agentd/tests.log",
+      "sha256": "4bd546fb251039716d02babf84b483e223c85f778fe742fae60aa70f851a44a1",
+      "size": 98399
+    },
+    {
+      "path": "_temp/hcsn-agentd/torch-install.log",
+      "sha256": "885b6f3543cc669829a26f378a6c1d3cfc2de57141d3295dcdf27610bda5d38e",
+      "size": 3925
+    }
+  ],
+  "raw_files_deleted": false,
+  "schema_version": 1,
+  "source_artifact": {
+    "artifact_id": 13526813253,
+    "created_at": "2026-11-06T17:56:55Z",
+    "expires_at": "2027-02-04T16:33:44Z",
+    "head_sha": "a20ea6a862e501d8a4993195c7da1ac52ca9a7be",
+    "job_id": 128014547600,
+    "name": "hcsn-agentd-a20ea6a862e501d8a4993195c7da1ac52ca9a7be-1",
+    "repository": "TrillionniumFoundation/hepta-private-ci",
+    "run_attempt": 1,
+    "run_id": 42253531173,
+    "sha256": "9f339af4602f67ee578dd45e6be0619fa55557d5cf6acf0c62b6f1c4d4441c7e",
+    "size_in_bytes": 432185,
+    "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/13526813253"
+  },
+  "source_sha": "a20ea6a862e501d8a4993195c7da1ac52ca9a7be"
+}

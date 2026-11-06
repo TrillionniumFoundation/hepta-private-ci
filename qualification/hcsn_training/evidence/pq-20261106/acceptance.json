@@ -1,12 +1,14 @@
 {
-  "schema_version": 2,
-  "status": "prior_source_hosted_acceptance_passed_final_source_pending",
+  "schema_version": 3,
+  "status": "final_source_dedicated_acceptance_passed_broader_ci_not_all_green",
   "source_pr": 5067,
+  "evidence_pr": 5088,
   "source_head": "a20ea6a862e501d8a4993195c7da1ac52ca9a7be",
   "source_tree": "b8e8b66b957aaf1e5e1cd9db8bb479137cf9fceb",
   "base_head": "44e539313e0c54badb4b9b687425dd87ecba6e67",
   "dedicated_run": 42253531173,
-  "final_source_hosted_acceptance": "pending",
+  "final_source_hosted_dedicated_acceptance": "passed",
+  "dedicated_summary": "ci-02-summary.json",
   "accepted_prior_source": {
     "source_head": "bbe995c43e4eed4bb9c217b52447ba5a32ebb6ca",
     "source_tree": "e74509e6a2a49bd004b79854b3a6dbc2fe581be0",
@@ -20,13 +22,6 @@
     "classical_real_cancellations_passed": 3,
     "pq_real_cancellations_passed": 3,
     "summary": "ci-01-summary.json"
-  },
-  "final_source_change": {
-    "path": "qa/b4-no-bypass/KERNEL_AUTHORITY_BOUNDARIES.json",
-    "scope": "exactly three non-authorizing method classifications plus one exact signed PQ wrapper caller",
-    "rust_python_implementation_changes": false,
-    "no_bypass_local_tests_passed": 17,
-    "format_then_no_local_tests": true
   },
   "local_archive": {
     "path": "local-raw.tgz",
@@ -43,20 +38,29 @@
     "distinct_referenced_files": 132
   },
   "claims": {
-    "final_source_69_tests_passed": null,
-    "final_source_extended_classical_cancellation_passes": null,
-    "final_source_pq_host_real_cancellation_passes": null,
+    "final_source_69_tests_passed": true,
+    "final_source_extended_classical_cancellation_passes": 3,
+    "final_source_pq_host_real_cancellation_passes": 3,
     "all_repository_ci_green": false,
-    "production_deployment": false,
+    "hosted_final_source_no_bypass_gate_passed": false,
+    "local_final_inventory_no_bypass_tests_passed": 17,
+    "production_deployed": false,
+    "model_adopted": false,
     "agentd_daemon_booted": false,
     "authbus_ingress_exercised": false,
-    "independent_custody": false,
-    "optimizer_entry_proven": false,
-    "autograd_graph_persisted": false,
+    "independent_production_key_custody_proven": false,
+    "cancellation_optimizer_entry_proven": false,
+    "autograd_graph_preserved_across_serialization": false,
     "desktop_cuda_campaign_touched": false
   },
-  "unresolved_broader_ci": {
-    "cargo_deny": "Run cargo-deny failed; detailed log unavailable; cause unclassified",
-    "other_failures": "see first-round snapshot and retained readouts; no blanket baseline attribution"
+  "broader_ci": {
+    "blocking_run": 42253531351,
+    "observed_at": "2026-11-06 17:59:45 UTC",
+    "status": "pending",
+    "jobs": 0,
+    "final_no_bypass_and_cargo_deny_not_executed": true,
+    "old_cargo_deny_failure_cause": "unknown",
+    "assessment": "ci-final-blocking-assessment.json",
+    "new_v8_assessment": "ci-final-v8-assessment.json"
   }
 }
