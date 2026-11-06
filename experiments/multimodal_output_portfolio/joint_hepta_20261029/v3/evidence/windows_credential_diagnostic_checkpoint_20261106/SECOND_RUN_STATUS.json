@@ -1,0 +1,67 @@
+{
+  "schema": "controlled-credential-second-run-status-v1",
+  "frozen_at_utc": "2026-11-06 18:09:29 UTC",
+  "pull_request": 5102,
+  "source_commit": "4b24453488d4c49ffcd142e09fd85706809ce80e",
+  "source_tree": "3c910060048cb53c6193d80e7157526525f9d57d",
+  "single_parent": "7004f1b7f2a0ac0511f099ba3f686870788a706d",
+  "workflow_run_id": 42265636599,
+  "job_id": 128056692745,
+  "job_name": "rotation-probe",
+  "job_conclusion": "failure",
+  "actual_checkout": {
+    "commit": "4b24453488d4c49ffcd142e09fd85706809ce80e",
+    "source_tree_matches_commit_api": true,
+    "original_log_line_numbers": [
+      216,
+      217
+    ]
+  },
+  "verified_steps": {
+    "checkout": "success",
+    "python_3_12_10": "success",
+    "exact_source_and_hosted_runner_preflight": "success",
+    "rust_toolchain": "success",
+    "just_and_nextest_installation": "success",
+    "native_composite_step": "failure",
+    "evidence_collector": "failure",
+    "artifact_upload": "skipped",
+    "final_gate": "failure"
+  },
+  "fixed_observations": {
+    "native_composite_return_code": 1,
+    "collector_rejection_code": "AMBIGUOUS_SHORT_CREDENTIAL",
+    "collector_return_code": 1,
+    "final_gate_return_code": 1,
+    "workflow_artifact_count_observed": 0
+  },
+  "account_started": "UNKNOWN",
+  "account_cleanup": "UNKNOWN",
+  "first_failing_native_substage": "UNKNOWN",
+  "native_test_case_outcome": "UNKNOWN",
+  "qualification": "No credential mechanism pass, no unique historical cause, and no account cleanup success may be inferred. The composite step began and failed; unavailable private logs do not establish whether account APIs were reached.",
+  "original_job_log": {
+    "local_path": "round3_native/windows_credentials_proposal/second_run/job_128056692745.log",
+    "bytes": 62579,
+    "sha256": "34bcd1e1bdefb1aadd14ad5ab6c32c466137ffe00a4686218a201c46cb35b99e",
+    "representation": "Complete connector-decoded GitHub job text encoded as UTF-8, not original HTTP archive bytes",
+    "raw_embedded": false,
+    "raw_in_frozen_checkpoint": false
+  },
+  "evidence_refs": {
+    "completed_jobs": "round3_native/windows_credentials_proposal/second_run/completed_jobs.json",
+    "artifact_listing": "round3_native/windows_credentials_proposal/second_run/artifacts.json"
+  },
+  "unchanged_checkpoint": {
+    "publication_manifest_sha256": "532ac210ad5de7b39743b9f8772af5d24a14ba7cf92acf0d8e0174f216565f27",
+    "index_sha256": "9e46a9a8ad3fcc63a19a3ecc301f1eb2e857c0200e616f6ab5c209845795859b",
+    "scope": "The earlier checkpoint remains a correct snapshot taken before this terminal result. This status is an independent supplement; the packet was not rewritten."
+  },
+  "remote_actions_by_observer": {
+    "rerun": false,
+    "cancel": false,
+    "source_changes": false,
+    "credential_environment_changes": false,
+    "scanner_rule_changes": false
+  }
+}
