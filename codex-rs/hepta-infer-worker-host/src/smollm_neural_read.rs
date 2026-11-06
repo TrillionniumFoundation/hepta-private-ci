@@ -49,6 +49,7 @@ pub use driver::SmolLmCellStartOwnerV1;
 use driver::SmolLmDriver;
 pub use driver::SmolLmFirstExchangeFailureV1;
 pub use driver::SmolLmFixedInitialBackboneProofV1;
+pub use driver::SmolLmMaterialRuntimeBridgeV1;
 pub use driver::SmolLmMeasuredForwardV1;
 pub use driver::SmolLmMeasuredLoadV1;
 pub use driver::SmolLmNeuralReadConfigV1;

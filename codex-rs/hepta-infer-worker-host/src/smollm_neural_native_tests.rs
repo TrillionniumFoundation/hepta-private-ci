@@ -174,6 +174,7 @@ fn run_original_native_case(input: NativeInput, route: NativeRoute) -> Result<()
         run_directory: input.output.join("owned-model-session"),
         source_pins,
         runtime_snapshot,
+        material_runtime_bridge: None,
         target_contract: raw_contract,
         wrapped_adapter,
         contract_digest: parent["contract"]

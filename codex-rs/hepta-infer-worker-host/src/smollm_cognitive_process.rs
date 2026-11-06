@@ -53,6 +53,7 @@ struct WorkerFile {
     run_directory: PathBuf,
     source_pins: BTreeMap<PathBuf, String>,
     runtime_snapshot: PinnedFile,
+    material_runtime_bridge: None,
     target_contract: PinnedFile,
     wrapped_adapter: PinnedFile,
     contract_digest: String,
@@ -213,6 +214,7 @@ fn decode_host(file: HostFile) -> Result<SmolLmCognitiveHostInputsV1, String> {
                     .map_err(|e| e.to_string())?,
                 /*limit*/ 16 * 1024 * 1024,
             )?,
+            material_runtime_bridge: None,
             target_contract,
             wrapped_adapter,
             contract_digest: raw

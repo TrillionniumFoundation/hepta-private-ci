@@ -5,6 +5,8 @@ load("//bazel/rules/testing:rust_test_dependencies.bzl", "rust_test_dependencies
 
 _COMPILE_DATA = [
     "ordinary_cpu_owner.sql",
+    "fixtures/material-runtime-bridge-v1-plan.json",
+    "fixtures/material-runtime-bridge-v1-target.json",
     "fixtures/smollm-cell-tcd1-synthetic-v1.json",
     "fixtures/smollm-consumed-prompts-067-v2.json",
     "fixtures/smollm-consumed-prompts-all-through-a593-v3.json.part-01",

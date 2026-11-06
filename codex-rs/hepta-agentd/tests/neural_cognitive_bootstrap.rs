@@ -390,6 +390,7 @@ async fn ordinary_native_composition_rejects_untrusted_qualification_before_infe
             source_pins: BTreeMap::new(),
             // Qualification must reject before these invalid runtime bytes are read.
             runtime_snapshot: b"must-not-use-unadmitted-runtime-snapshot".to_vec(),
+            material_runtime_bridge: None,
             target_contract: Vec::new(),
             wrapped_adapter: Vec::new(),
             contract_digest: digest,

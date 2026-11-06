@@ -548,6 +548,7 @@ fn input_and_worker(name: &str) -> TestResult<(NativeInput, SmolLmNeuralReadConf
         run_directory: run.join("session"),
         source_pins,
         runtime_snapshot,
+        material_runtime_bridge: None,
         target_contract,
         wrapped_adapter: fs::read(directory.join("wrapped-adapter.json"))?,
         contract_digest: parent["contract"].as_str().unwrap().parse()?,
