@@ -1,0 +1,29 @@
+{
+  "source_commit": "bef6fa7645df9df12b69fda499e97eed25de6c75",
+  "repair": "Private LifecycleEventV1::Observed observation Box, one producer and one owned readback",
+  "changed_lines_added": 3,
+  "changed_lines_removed": 3,
+  "inverse_of_three_boxing_edits_recovers_original_bytes": true,
+  "public_api_fields_schema_tags_digest_authentication_and_order_unchanged": true,
+  "borrowed_transition_and_recovery_uses": "Unchanged; deref coercion accesses original observation",
+  "wire_reason": "Serde Box delegates serialization/deserialization to the inner observation; enum tagging and all fields unchanged",
+  "existing_tests_unchanged": true,
+  "native_full_checkout_map_status": "CONFIRMED: only transition, journal and recovery; all original blobs match bef6fa; nearest instructions root AGENTS.md",
+  "native_execution_status": "PENDING_NATIVE_VALIDATION",
+  "files": [
+    {
+      "path": "codex-rs/hepta-runtime/src/cell_lifecycle_transition.rs",
+      "before_sha256": "ce7f86e8cb1c8f6a8a6e388a17aea98cd94df97c3f967f4386f1cf404c7633df",
+      "after_sha256": "abdd97460cbc8b1701e96cdf049bb79b067afe3e1181e371341d40e363654c10",
+      "before_bytes": 6815,
+      "after_bytes": 6820
+    },
+    {
+      "path": "codex-rs/hepta-runtime/src/cell_lifecycle_journal.rs",
+      "before_sha256": "89e8630aee93af2a2f68a78dfeccf60242d75c741fe3a419ca5e48fa27c03083",
+      "after_sha256": "20e90350d6a7ba07728e3d1629b9c459f7aae8fb50b41a1f48d80c86e6b21489",
+      "before_bytes": 20036,
+      "after_bytes": 20060
+    }
+  ]
+}

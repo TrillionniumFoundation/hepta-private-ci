@@ -1,0 +1,26 @@
+{
+  "schema": "hepta.r15-core-test-support-ci-audit.v1",
+  "state": "ISOLATED_CANDIDATE_NATIVE_NOT_APPLIED",
+  "reason": "The recovery fixture candidate changes core/tests/common/streaming_sse.rs, owned by core_test_support. Its own test target must be covered in addition to Core and MCP.",
+  "only_edit": "Append -p core_test_support to the existing owner: core package list.",
+  "unchanged": "Owner, commands, warning policy, format command, profiles, timeouts, resources, retries and all other lanes remain byte-identical. No new lane or exclusion.",
+  "package_manifest": {
+    "path": "codex-rs/core/tests/common/Cargo.toml",
+    "ref": "638997499470f0b7dd33ad18226feacf0198ef3d",
+    "git_blob": "a4851eb1d9ef3f9bc0d1535f84e937bfb82aaf93",
+    "package": "core_test_support"
+  },
+  "inverse_exact": true,
+  "patch_sha256": "4442c64de07334ae60d5187926e1e9faf093b62aa54be44935db907ec19db787",
+  "files": [
+    {
+      "path": ".github/workflows/hepta-cell-framework-native.yml",
+      "before_sha256": "9b04365dba53f7bf2b9c5f57bbfb264cddfa63d0509ee1d0401762d52ca46d1c",
+      "after_sha256": "4a0cbfa961838f492423e6897d24802c1b456278032a0cedc8c33da385653ed0",
+      "before_blob": "e175cee31931f94487a134873465e97987102718",
+      "after_blob": "29eb48f017280fee3bbc1efc48ac1e9eb204bc32",
+      "bytes": 8848,
+      "mode": "100644"
+    }
+  ]
+}

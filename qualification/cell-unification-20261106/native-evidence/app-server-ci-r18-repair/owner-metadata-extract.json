@@ -1,0 +1,123 @@
+{
+  "schema": "hepta.app-server-owner-r18-evidence.v1",
+  "source_commit": "2d7ad1d60019f35fc13d84138ceb2755d914f434",
+  "source_tree": "ffa0a37f4616c5563169c7f0a9305bf6c982d58b",
+  "native_metadata": {
+    "path": "native-validation-results/r18-workspace-start/inputs/native-workspace-r18-metadata.json",
+    "bytes": 937669,
+    "sha256": "99fdbea678582580ebb373c06e4e91cd547f49d83765c22a59a1dd143510a834",
+    "git_blob": "ab7a20655d865adbf7fe783c2eb19318ae2bf72b"
+  },
+  "workspace_member_count": 193,
+  "workspace_default_member_count": 193,
+  "package": {
+    "name": "codex-app-server",
+    "id": "path+file:///home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/app-server#codex-app-server@0.0.0",
+    "manifest_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/app-server/Cargo.toml",
+    "targets": [
+      {
+        "kind": [
+          "lib"
+        ],
+        "crate_types": [
+          "lib"
+        ],
+        "name": "codex_app_server",
+        "src_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/app-server/src/lib.rs",
+        "edition": "2024",
+        "doc": true,
+        "doctest": false,
+        "test": true
+      },
+      {
+        "kind": [
+          "bin"
+        ],
+        "crate_types": [
+          "bin"
+        ],
+        "name": "codex-app-server",
+        "src_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/app-server/src/main.rs",
+        "edition": "2024",
+        "doc": true,
+        "doctest": false,
+        "test": true
+      },
+      {
+        "kind": [
+          "bin"
+        ],
+        "crate_types": [
+          "bin"
+        ],
+        "name": "codex-app-server-test-notify-capture",
+        "src_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/app-server/src/bin/notify_capture.rs",
+        "edition": "2024",
+        "doc": true,
+        "doctest": false,
+        "test": true
+      },
+      {
+        "kind": [
+          "bin"
+        ],
+        "crate_types": [
+          "bin"
+        ],
+        "name": "exec-server",
+        "src_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/app-server/src/bin/exec_server.rs",
+        "edition": "2024",
+        "doc": true,
+        "doctest": false,
+        "test": true
+      },
+      {
+        "kind": [
+          "bin"
+        ],
+        "crate_types": [
+          "bin"
+        ],
+        "name": "test_notify_capture",
+        "src_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/app-server/src/bin/test_notify_capture.rs",
+        "edition": "2024",
+        "doc": true,
+        "doctest": false,
+        "test": true
+      },
+      {
+        "kind": [
+          "test"
+        ],
+        "crate_types": [
+          "bin"
+        ],
+        "name": "all",
+        "src_path": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/app-server/tests/all.rs",
+        "edition": "2024",
+        "doc": false,
+        "doctest": false,
+        "test": true
+      }
+    ],
+    "features": {}
+  },
+  "workspace_member": true,
+  "workspace_default_member": true,
+  "fixture_path": "codex-rs/app-server/tests/suite/v2/process_exec.rs",
+  "nearest_manifest": {
+    "path": "codex-rs/app-server/Cargo.toml",
+    "mode": "100644",
+    "type": "blob",
+    "sha": "d3f4b4ef949e5853060ad600d80ed58bc3b85fcf",
+    "size": 4997,
+    "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/d3f4b4ef949e5853060ad600d80ed58bc3b85fcf"
+  },
+  "original_manifest_inventory": {
+    "path": "native-validation-results/final-fix-scope/base-cargo-manifest-entries.json",
+    "bytes": 71129,
+    "sha256": "96c4773af69c85b6b15a9d9b7e1374000fb63380d2e016818f05efbbe65790d3",
+    "git_blob": "a9b433a918dbcedaab3c46505f9c6160df800749"
+  },
+  "metadata_command_run_by_this_agent": false
+}

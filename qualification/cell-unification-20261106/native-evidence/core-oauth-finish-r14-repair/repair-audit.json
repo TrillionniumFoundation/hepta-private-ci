@@ -1,0 +1,51 @@
+{
+  "source_tree": "d3d2313b838422818bf9448ce5a1b86d89abdf69",
+  "before": {
+    "bytes": 146845,
+    "sha256": "78fbb2b9cef8a4dd64dab34123e28524c0964ee11058fef8bb2f4fa1dcff04ee",
+    "git_blob": "3897f4396696ba94ce93c7be8f29b3c65a0f5de8"
+  },
+  "after": {
+    "bytes": 147566,
+    "sha256": "11ba2ce26510c4b3edac11351bd83efb879b466a22c9dc1c241dde63890ecb16",
+    "git_blob": "5b7c708647d343820ca5ca1fb0c3a1754d317d25"
+  },
+  "reasoning": "The original first completion branch immediately continues into refresh and a sequential StartOrSteer call. Core publishes TurnComplete before its normal finish owner retires; StartOrSteer may decline as NotIdle during terminalization while still returning Ok. Existing common wait_for_event already observes the same owner. No OAuth-store lock, credentials, startup events, model script, production code, timeout or assertion is changed. The native gate must verify whether this fixture synchronization resolves the observed failure; it is not a measured production diagnosis.",
+  "edits": [
+    "wait_for_first_observed_normal_turn_finish_inside_original_five_second_budget",
+    "wait_for_discovered_turn_finish_before_followup_refresh_inside_original_budget"
+  ],
+  "original_assertion_macro_entries_preserved": 103,
+  "all_edits_outside_original_assertion_macros": true,
+  "original_numeric_duration_expressions_preserved": [
+    "Duration::from_secs(10)",
+    "Duration::from_secs(5)",
+    "Duration::from_secs(5)",
+    "Duration::from_secs(5)",
+    "Duration::from_secs(2)",
+    "Duration::from_secs(5)",
+    "Duration::from_secs(2)",
+    "Duration::from_millis(100)",
+    "Duration::from_secs(5)",
+    "Duration::from_secs(2)",
+    "Duration::from_secs(2)",
+    "Duration::from_secs(2)",
+    "Duration::from_secs(5)",
+    "Duration::from_secs(5)",
+    "Duration::from_secs(5)",
+    "Duration::from_secs(5)",
+    "Duration::from_secs(5)",
+    "Duration::from_secs(5)",
+    "Duration::from_secs(5)",
+    "Duration::from_secs(5)",
+    "Duration::from_millis(50)",
+    "Duration::from_millis(50)",
+    "Duration::from_millis(50)",
+    "Duration::from_millis(50)",
+    "Duration::from_secs(3600)"
+  ],
+  "operation_inverse_exact": true,
+  "patch_forward_reverse_exact": true,
+  "production_modified": false,
+  "runtime_claim": "NOT_TESTED"
+}

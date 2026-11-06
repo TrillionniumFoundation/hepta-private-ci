@@ -1,0 +1,34 @@
+{
+  "schema": "hepta.exec-proxy-fixture-source.v1",
+  "state": "FROZEN_PENDING_NATIVE_GATES",
+  "source_tree": "6d88ca9c8964669a408d8549efaeff7b94d68674",
+  "nearest_instructions": [
+    "AGENTS.md"
+  ],
+  "file": {
+    "path": "codex-rs/exec-server/src/process_sandbox_tests.rs",
+    "before": {
+      "sha256": "acf2825d8370a77c5f72bb5cd881aadb2bbd43f9046cc5c9d51b799e04266b80",
+      "git_blob": "a66387ee0d892b82ba3fcf45662a13ef6b13c4c3",
+      "bytes": 16221
+    },
+    "after": {
+      "sha256": "de7ea3470e17659569dcba1d69873785ca27b9827a30783d4b6fb14433756073",
+      "git_blob": "0ecf84979cb49c1ca7de8f9ea96bd3c5828d9e95",
+      "bytes": 16361
+    }
+  },
+  "patch": {
+    "path": "repair.patch",
+    "sha256": "b863bd550905ad3b24ceae6225b4ba5affa95c0d25a21fabfbd5d57c746e349a",
+    "git_blob": "f1a08bd45476669bef834a22d016fc0e6f75f9dc",
+    "bytes": 707
+  },
+  "exact_replacement": {
+    "before": "    stream\n        .write_all(b\"CONNECT blocked.example:443 HTTP/1.1\\r\\nHost: blocked.example:443\\r\\n\\r\\n\")",
+    "after": "    // Use a public IP literal so this allowlist check does not depend on DNS,\n    // which can consume the same two-second budget as the response timeout.\n    stream\n        .write_all(b\"CONNECT 8.8.8.8:443 HTTP/1.1\\r\\nHost: 8.8.8.8:443\\r\\n\\r\\n\")",
+    "occurrences": 1
+  },
+  "forward_only_declared_change": true,
+  "inverse_restores_original_bytes": true
+}

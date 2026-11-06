@@ -1,0 +1,49 @@
+{
+  "schema": "hepta.formatter-prerequisite-failed-attempt.v1",
+  "job_id": "1a1af99dd0c-fc05-6a00",
+  "idempotency_key": "cell-unified-final-formatter-uv0113-frozen-ruff-prerequisites-20261106",
+  "source_tree_at_start": "6be3dbb1420c0ac7e0590c6e3c17191a073af9a9",
+  "stage": "official uv0.11.3 wheel body read",
+  "status": {
+    "at_unix_ms": 1793947509769,
+    "audit_recorded": true,
+    "automatic_retry": false,
+    "cancelled": false,
+    "exit_code": 1,
+    "job_id": "1a1af99dd0c-fc05-6a00",
+    "launch_nonce": "56c13568025eec55b099da0d2c7fe361",
+    "log_bytes": {
+      "stderr": {
+        "seen": 780,
+        "stored": 780
+      },
+      "stdout": {
+        "seen": 0,
+        "stored": 0
+      }
+    },
+    "log_errors": {
+      "stderr": null,
+      "stdout": null
+    },
+    "log_synced": {
+      "stderr": true,
+      "stdout": true
+    },
+    "log_truncated": {
+      "stderr": false,
+      "stdout": false
+    },
+    "output_complete": true,
+    "output_durable": true,
+    "state": "failed",
+    "terminal_publication_confirmed": true,
+    "terminal_publication_protocol": 1,
+    "timed_out": false
+  },
+  "stderr": "Traceback (most recent call last):\n  File \"<stdin>\", line 14, in <module>\n  File \"/usr/lib/python3.14/http/client.py\", line 500, in read\n    s = self._safe_read(self.length)\n  File \"/usr/lib/python3.14/http/client.py\", line 660, in _safe_read\n    data.write(self.fp.read(delta))\n               ~~~~~~~~~~~~^^^^^^^\n  File \"/usr/lib/python3.14/socket.py\", line 725, in readinto\n    return self._sock.recv_into(b)\n           ~~~~~~~~~~~~~~~~~~~~^^^\n  File \"/usr/lib/python3.14/ssl.py\", line 1304, in recv_into\n    return self.read(nbytes, buffer)\n           ~~~~~~~~~^^^^^^^^^^^^^^^^\n  File \"/usr/lib/python3.14/ssl.py\", line 1138, in read\n    return self._sslobj.read(len, buffer)\n           ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^\nConnectionResetError: [Errno 104] Connection reset by peer\n",
+  "stdout": "",
+  "formatter_executed": false,
+  "rust_command_executed": false,
+  "source_changed": false
+}

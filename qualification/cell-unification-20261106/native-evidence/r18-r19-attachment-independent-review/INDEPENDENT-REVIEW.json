@@ -1,0 +1,298 @@
+{
+  "schema": "hepta.r18-r19-formal-attachment-independent-review.v1",
+  "result": "NO_ATTACHMENT_OR_SCOPE_ERROR_FOUND",
+  "scope": "Read-only local correspondence of three root readbacks, their attachments, stage47 input archive and source identities. attach.py and all native/controller/Rust commands were not executed.",
+  "attachment_script": {
+    "path": "root-evidence-r18-r19/attach.py",
+    "bytes": 14228,
+    "sha256": "e7ce3ab7259a4c1cafef98d17d10272e978e858a0da1baec26f34f3c74232277"
+  },
+  "readbacks": {
+    "r18": {
+      "path": "hepta-cell/qualification/cell-unification-20261106/native-evidence/r18-workspace-checkpoint/ROOT-TERMINAL-RECEIPT-READBACK.json",
+      "bytes": 4263,
+      "sha256": "bbbc40154634db0865d9b4c9fabc9325a08f28b5fa9febe980663a8f2b7c4024"
+    },
+    "r19": {
+      "path": "hepta-cell/qualification/cell-unification-20261106/native-evidence/r19-app-server-checkpoint/ROOT-STRICT-READBACK.json",
+      "bytes": 4697,
+      "sha256": "0903629dae0752464f45f190d38a98adeb880b48eb00d1b347d2a0818f09ac46"
+    },
+    "input": {
+      "path": "hepta-cell/qualification/cell-unification-20261106/native-evidence/r19-stage47-input/ROOT-INPUT-READBACK.json",
+      "bytes": 6298,
+      "sha256": "44df5c624dcc3c3e3ebf55a76da73a5bba177498f6cb287c9ab65bc1bfb0fda7"
+    }
+  },
+  "readback_attachment_records_verified": 20,
+  "attachment_results": [
+    {
+      "repository_path": "qualification/cell-unification-20261106/native-evidence/r18-workspace-checkpoint/native-workspace-r18-result-review.json",
+      "raw_sha256": "11cc5f3d71a11db4957f97b2d8188d0dd6336f3b681d7df7167d18b277bc257b",
+      "attachment_sha256": "11cc5f3d71a11db4957f97b2d8188d0dd6336f3b681d7df7167d18b277bc257b",
+      "lossless_gzip": false,
+      "bytes_equal": true
+    },
+    {
+      "repository_path": "qualification/cell-unification-20261106/native-evidence/r18-workspace-checkpoint/native-workspace-r18-source-post-verification.json",
+      "raw_sha256": "a4f2abca3ad9f283e0b67e1277316595a2355b54b25f7d1cfd1e05e1b37e1515",
+      "attachment_sha256": "a4f2abca3ad9f283e0b67e1277316595a2355b54b25f7d1cfd1e05e1b37e1515",
+      "lossless_gzip": false,
+      "bytes_equal": true
+    },
+    {
+      "repository_path": "qualification/cell-unification-20261106/native-evidence/r18-workspace-checkpoint/native-workspace-r18-tests-receipt.json",
+      "raw_sha256": "b5468bc4b36acac96752da1b73d318c7484be723790fa62e3e06bfc5c14012f0",
+      "attachment_sha256": "b5468bc4b36acac96752da1b73d318c7484be723790fa62e3e06bfc5c14012f0",
+      "lossless_gzip": false,
+      "bytes_equal": true
+    },
+    {
+      "repository_path": "qualification/cell-unification-20261106/native-evidence/r18-workspace-checkpoint/native-workspace-r18-tests-resources.txt",
+      "raw_sha256": "d08aca0d5c77bad9110b17598dca99d51787f79bb9c52ce044b2dd0e454dc73f",
+      "attachment_sha256": "d08aca0d5c77bad9110b17598dca99d51787f79bb9c52ce044b2dd0e454dc73f",
+      "lossless_gzip": false,
+      "bytes_equal": true
+    },
+    {
+      "repository_path": "qualification/cell-unification-20261106/native-evidence/r18-workspace-checkpoint/native-workspace-r18-tests.log.gz",
+      "raw_sha256": "cedada3433e2c782b423857f8abeff744fdf45c3de4523c3c312d2e15586d3ad",
+      "attachment_sha256": "d7126db8be522760f0c0bceb8958f9f86e6d09dd0b0ebf8ca309462f733bd9e7",
+      "lossless_gzip": true,
+      "bytes_equal": true
+    },
+    {
+      "repository_path": "qualification/cell-unification-20261106/native-evidence/r19-app-server-checkpoint/native-app-server-r19-environment.json",
+      "raw_sha256": "a94b261ea6ab9cb0ef47e20a87748a0f4b1567f3c2656fd333275329b9f37e93",
+      "attachment_sha256": "a94b261ea6ab9cb0ef47e20a87748a0f4b1567f3c2656fd333275329b9f37e93",
+      "lossless_gzip": false,
+      "bytes_equal": true
+    },
+    {
+      "repository_path": "qualification/cell-unification-20261106/native-evidence/r19-app-server-checkpoint/native-app-server-r19-strict-receipt.json",
+      "raw_sha256": "31dba7a9821ad3a46e48714cba9819665a23bb6919c71c97865a5f11b637a8e6",
+      "attachment_sha256": "31dba7a9821ad3a46e48714cba9819665a23bb6919c71c97865a5f11b637a8e6",
+      "lossless_gzip": false,
+      "bytes_equal": true
+    },
+    {
+      "repository_path": "qualification/cell-unification-20261106/native-evidence/r19-app-server-checkpoint/native-app-server-r19-strict-resources.txt",
+      "raw_sha256": "ac96f88d8b11f18a02d406d709e206d094fe641ee6c9d4eb5cffb608d98b10b1",
+      "attachment_sha256": "ac96f88d8b11f18a02d406d709e206d094fe641ee6c9d4eb5cffb608d98b10b1",
+      "lossless_gzip": false,
+      "bytes_equal": true
+    },
+    {
+      "repository_path": "qualification/cell-unification-20261106/native-evidence/r19-app-server-checkpoint/native-app-server-r19-strict-source-post-verification.json",
+      "raw_sha256": "583e0a5cb059e47c3faa9aca119c58084bc73858414db6666ac5af1e7f1ef28e",
+      "attachment_sha256": "583e0a5cb059e47c3faa9aca119c58084bc73858414db6666ac5af1e7f1ef28e",
+      "lossless_gzip": false,
+      "bytes_equal": true
+    },
+    {
+      "repository_path": "qualification/cell-unification-20261106/native-evidence/r19-app-server-checkpoint/native-app-server-r19-strict.log.gz",
+      "raw_sha256": "333adb720288c90c2932075d7f18597e352c808caeeb0ff7d0e379a15ec7437f",
+      "attachment_sha256": "1f1b6b23514a64b573845d417f44e9fe044c8ea529938865051e85a8355834a2",
+      "lossless_gzip": true,
+      "bytes_equal": true
+    },
+    {
+      "repository_path": "qualification/cell-unification-20261106/native-evidence/r19-app-server-checkpoint/native-candidate-r19-source.json",
+      "raw_sha256": "64e26c5c3340b27d6b64b7342fac8561300224f9f1e96c22f2aa23b184eafee3",
+      "attachment_sha256": "64e26c5c3340b27d6b64b7342fac8561300224f9f1e96c22f2aa23b184eafee3",
+      "lossless_gzip": false,
+      "bytes_equal": true
+    },
+    {
+      "repository_path": "qualification/cell-unification-20261106/native-evidence/r19-stage47-input/combined.patch",
+      "raw_sha256": "32bc43746c093c098f0444ef524e7f3fa66cbf09a8bf559b83d1682a8823d626",
+      "attachment_sha256": "32bc43746c093c098f0444ef524e7f3fa66cbf09a8bf559b83d1682a8823d626",
+      "lossless_gzip": false,
+      "bytes_equal": true
+    },
+    {
+      "repository_path": "qualification/cell-unification-20261106/native-evidence/r19-stage47-input/manifest.json",
+      "raw_sha256": "bf3d552106cd19a51bb37be983e017d847b4a01986d4a4c7d73e8307647560a2",
+      "attachment_sha256": "bf3d552106cd19a51bb37be983e017d847b4a01986d4a4c7d73e8307647560a2",
+      "lossless_gzip": false,
+      "bytes_equal": true
+    },
+    {
+      "repository_path": "qualification/cell-unification-20261106/native-evidence/r19-stage47-input/native-gate.sh",
+      "raw_sha256": "c6472a8d71a550b1a363483aa1ed7c442947238aa9f5006cbe3f33266f1d6e13",
+      "attachment_sha256": "c6472a8d71a550b1a363483aa1ed7c442947238aa9f5006cbe3f33266f1d6e13",
+      "lossless_gzip": false,
+      "bytes_equal": true
+    },
+    {
+      "repository_path": "qualification/cell-unification-20261106/native-evidence/r19-stage47-input/native-gate.template.sh",
+      "raw_sha256": "e338c1e73ef19fdaf80f7f09bf187ec0092bbc3b7e76da74e043304b3a862f2c",
+      "attachment_sha256": "e338c1e73ef19fdaf80f7f09bf187ec0092bbc3b7e76da74e043304b3a862f2c",
+      "lossless_gzip": false,
+      "bytes_equal": true
+    },
+    {
+      "repository_path": "qualification/cell-unification-20261106/native-evidence/r19-stage47-input/patch-1.patch",
+      "raw_sha256": "d2ee3aa332d7ddeb122297a1ab97b934d04dfd2c12b897700b6628b0e4de9317",
+      "attachment_sha256": "d2ee3aa332d7ddeb122297a1ab97b934d04dfd2c12b897700b6628b0e4de9317",
+      "lossless_gzip": false,
+      "bytes_equal": true
+    },
+    {
+      "repository_path": "qualification/cell-unification-20261106/native-evidence/r19-stage47-input/patch-2.patch",
+      "raw_sha256": "dade2d5b3811097bf5aa3a0cfadf0cf1d0231be336c5c75b0b08e29b26717c33",
+      "attachment_sha256": "dade2d5b3811097bf5aa3a0cfadf0cf1d0231be336c5c75b0b08e29b26717c33",
+      "lossless_gzip": false,
+      "bytes_equal": true
+    },
+    {
+      "repository_path": "qualification/cell-unification-20261106/native-evidence/r19-stage47-input/root-publish-manifest.json",
+      "raw_sha256": "4d5c42b92c02f2c5bfd4231a76b5c137a4cbb1a903540f0e3220169d3470c8bb",
+      "attachment_sha256": "4d5c42b92c02f2c5bfd4231a76b5c137a4cbb1a903540f0e3220169d3470c8bb",
+      "lossless_gzip": false,
+      "bytes_equal": true
+    },
+    {
+      "repository_path": "qualification/cell-unification-20261106/native-evidence/r19-stage47-input/root-published-source.json",
+      "raw_sha256": "82ecb1c86609a99f98617a8b17f23492bac4f54933893a45ff5b19db7699087e",
+      "attachment_sha256": "82ecb1c86609a99f98617a8b17f23492bac4f54933893a45ff5b19db7699087e",
+      "lossless_gzip": false,
+      "bytes_equal": true
+    },
+    {
+      "repository_path": "qualification/cell-unification-20261106/native-evidence/r19-stage47-input/stage47-input.tar.gz",
+      "raw_sha256": "61d0c164d38db476ab7d19cacea66994d004bf7f0f3680ef5ad1edcb99aa90a5",
+      "attachment_sha256": "61d0c164d38db476ab7d19cacea66994d004bf7f0f3680ef5ad1edcb99aa90a5",
+      "lossless_gzip": false,
+      "bytes_equal": true
+    }
+  ],
+  "source47_audit_closures": [
+    {
+      "group": "app-server-process-exec-r18-repair",
+      "closure": {
+        "path": "hepta-cell/qualification/cell-unification-20261106/native-evidence/app-server-process-exec-r18-repair/CLOSURE-MAPPING.json",
+        "bytes": 8156,
+        "sha256": "12bc1e187ab656367c8296b6acf2e669fe7fb0d33c9d724d46ffdb67ab968131"
+      },
+      "attachments_verified": 14,
+      "source_manifest": "source-manifest.json",
+      "null_is_review_only": false
+    },
+    {
+      "group": "app-server-ci-r18-repair",
+      "closure": {
+        "path": "hepta-cell/qualification/cell-unification-20261106/native-evidence/app-server-ci-r18-repair/CLOSURE-MAPPING.json",
+        "bytes": 5320,
+        "sha256": "d937c68633b425ec1f35d109c2a8f82e295046a6450c6cfcce57a3b12cb6d519"
+      },
+      "attachments_verified": 9,
+      "source_manifest": "source-manifest.json",
+      "null_is_review_only": false
+    },
+    {
+      "group": "app-server-r18-independent-review",
+      "closure": {
+        "path": "hepta-cell/qualification/cell-unification-20261106/native-evidence/app-server-r18-independent-review/CLOSURE-MAPPING.json",
+        "bytes": 1232,
+        "sha256": "81e7bec0b62cf43c2ffebada5032bb084b680d3da188bbc3deb5085bd5aa20b1"
+      },
+      "attachments_verified": 1,
+      "source_manifest": null,
+      "null_is_review_only": true
+    },
+    {
+      "group": "r18-root-candidate-review",
+      "closure": {
+        "path": "hepta-cell/qualification/cell-unification-20261106/native-evidence/r18-root-candidate-review/CLOSURE-MAPPING.json",
+        "bytes": 1216,
+        "sha256": "1de7a40b0b43e3cfa725c8077c681022f47d0a159aa3bbe0b8e65c11b85c3968"
+      },
+      "attachments_verified": 1,
+      "source_manifest": null,
+      "null_is_review_only": true
+    }
+  ],
+  "source_review_pointer_pins": [
+    {
+      "path": "hepta-cell/qualification/cell-unification-20261106/native-evidence/app-server-process-exec-r18-repair/repair-audit.json",
+      "bytes": 5989,
+      "sha256": "835c0a56596d546d604fa01accfdf312ccde1baaa6c050efc23213017b47b76f"
+    },
+    {
+      "path": "hepta-cell/qualification/cell-unification-20261106/native-evidence/app-server-ci-r18-repair/repair-audit.json",
+      "bytes": 5694,
+      "sha256": "ce2fb1a01a93bd0520b86dc0ffdd2c653c0fa490acd078ccb4f2e435a4e770e2"
+    },
+    {
+      "path": "hepta-cell/qualification/cell-unification-20261106/native-evidence/app-server-r18-independent-review/INDEPENDENT-REVIEW.json",
+      "bytes": 5435,
+      "sha256": "7e9ee01f96a24e7cbb916f318d720a99a45ce5fb33538f411c076a23bdd6cc3d"
+    },
+    {
+      "path": "hepta-cell/qualification/cell-unification-20261106/native-evidence/r18-root-candidate-review/INDEPENDENT-REVIEW.json",
+      "bytes": 8046,
+      "sha256": "39d7b6d37ed9953849cb41ca3463fc83b0177ef06b28029806b6e7bfd50cbf86"
+    }
+  ],
+  "r18": {
+    "command": [
+      "just",
+      "test",
+      "--locked",
+      "--retries",
+      "0"
+    ],
+    "exit_code": 101,
+    "compiler_error": "E0308",
+    "exact_log_byte_interval": [
+      55680,
+      56205
+    ],
+    "test_execution_started": false,
+    "terminal_test_counts": null,
+    "workspace_default_members": 193,
+    "receipt_log_resources_match": true,
+    "archive_and_full_source_roundtrip": "PENDING_NOT_CLAIMED"
+  },
+  "r19_strict": {
+    "command": [
+      "just",
+      "clippy",
+      "--locked",
+      "-p",
+      "codex-app-server",
+      "--",
+      "-D",
+      "warnings"
+    ],
+    "exit_code": 0,
+    "receipt_log_resources_match": true,
+    "native_post_phase_proof_valid": true,
+    "local_source_files_rehashed": 181,
+    "identity_basis": "179 retained r17 source files plus two frozen stage47 files, checked against actual native r19 manifest. Not a new complete native source export.",
+    "full_archive_and_source_roundtrip": "PENDING_NOT_CLAIMED",
+    "readback_is_strict_phase_snapshot_not_current_test_status": true,
+    "terminal_test_counts_in_snapshot": null
+  },
+  "stage47_input": {
+    "safe_regular_members_verified": 6,
+    "extra_launch_scripts_are_not_archive_members": true,
+    "input_manifest_and_patch_bind_native_manifest": true
+  },
+  "current_scope": {
+    "commit": "0c78b43424ced27d37892a7744de065c1497d5e8",
+    "tree": "cc2b01c2f69f43d63f8f5c561abd5e941d645769",
+    "paths": 181,
+    "rust": 168,
+    "non_rust": 13,
+    "owners": 22,
+    "fix_not_executed": true
+  },
+  "latest_status_boundary": "Root subsequently reported r19 terminal failure: 1338 PASS, 7 FAIL, 2 skipped. That later terminal receipt is outside these six strict inputs and is not revalidated here. Do not infer continued RUNNING or a complete test PASS from the strict snapshot.",
+  "issues": [],
+  "existing_formal_files_modified": false,
+  "root_state_docs_modified": false,
+  "remote_controller_called": false,
+  "rust_commands_run": false
+}

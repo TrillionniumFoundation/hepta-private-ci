@@ -1,0 +1,18 @@
+        FAIL [   5.159s] codex-core::all suite::turn_input_submission::recover_turn_if_idle_preserves_id_and_resumes_plan_mode
+  stdout ───
+
+    running 1 test
+    test suite::turn_input_submission::recover_turn_if_idle_preserves_id_and_resumes_plan_mode ... FAILED
+
+    failures:
+
+    failures:
+        suite::turn_input_submission::recover_turn_if_idle_preserves_id_and_resumes_plan_mode
+
+    test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1425 filtered out; finished in 5.14s
+
+  stderr ───
+
+    thread 'suite::turn_input_submission::recover_turn_if_idle_preserves_id_and_resumes_plan_mode' (1066979) panicked at core/tests/suite/turn_input_submission.rs:210:6:
+    interrupted idle turn should expose its recovery epoch: Elapsed(())
+    note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace

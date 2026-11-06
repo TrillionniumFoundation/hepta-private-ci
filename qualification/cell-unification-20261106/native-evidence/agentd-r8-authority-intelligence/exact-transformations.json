@@ -1,0 +1,172 @@
+[
+  {
+    "path": "codex-rs/hepta-agentd/src/authority_host_checkpoint_adoption.rs",
+    "replacements": [
+      {
+        "before": "AdoptMaterial::Physical(profile)",
+        "after": "AdoptMaterial::Physical(Box::new(profile))",
+        "count": 1
+      },
+      {
+        "before": "Physical(RootMaterialProfile)",
+        "after": "Physical(Box<RootMaterialProfile>)",
+        "count": 1
+      },
+      {
+        "before": "RootCheckpointMaterial::open(profile, next.peer_lifetime.clone())",
+        "after": "RootCheckpointMaterial::open(*profile, next.peer_lifetime.clone())",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/authority_host_checkpoint_material_worker.rs",
+    "replacements": [
+      {
+        "before": "Rebind(CognitiveCheckpointReceipt)",
+        "after": "Rebind(Box<CognitiveCheckpointReceipt>)",
+        "count": 1
+      },
+      {
+        "before": "Verified(MaterialRecord)",
+        "after": "Verified(Box<MaterialRecord>)",
+        "count": 1
+      },
+      {
+        "before": "Ok(Outcome::Verified(captured))",
+        "after": "Ok(Outcome::Verified(Box::new(captured)))",
+        "count": 1
+      },
+      {
+        "before": "                                area.verify(&job.candidate).await.map(Outcome::Verified)",
+        "after": "                                area.verify(&job.candidate)\n                                    .await\n                                    .map(Box::new)\n                                    .map(Outcome::Verified)",
+        "count": 1
+      },
+      {
+        "before": "                                .await\n                                .map(Outcome::Verified),",
+        "after": "                                .await\n                                .map(Box::new)\n                                .map(Outcome::Verified),",
+        "count": 1
+      },
+      {
+        "before": "            Outcome::Verified(record) => Ok(HostPhysicalCurrentObservation {\n                current: record.candidate,\n                material_sha256: record.image_sha256,\n                material_bytes: record.image_bytes,\n            }),",
+        "after": "            Outcome::Verified(record) => {\n                let record = *record;\n                Ok(HostPhysicalCurrentObservation {\n                    current: record.candidate,\n                    material_sha256: record.image_sha256,\n                    material_bytes: record.image_bytes,\n                })\n            }",
+        "count": 1
+      },
+      {
+        "before": "        self.call(candidate, Command::Rebind(previous)).map(|_| ())",
+        "after": "        self.call(candidate, Command::Rebind(Box::new(previous)))\n            .map(|_| ())",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/authority_host_checkpoint_material_binding.rs",
+    "replacements": [
+      {
+        "before": "Physical(RootMaterialProfile)",
+        "after": "Physical(Box<RootMaterialProfile>)",
+        "count": 1
+      },
+      {
+        "before": "let owner = RootCheckpointMaterial::open(profile, head.peer_lifetime.clone())",
+        "after": "let owner = RootCheckpointMaterial::open(*profile, head.peer_lifetime.clone())",
+        "count": 1
+      },
+      {
+        "before": "FreshMaterial::Physical(profile)",
+        "after": "FreshMaterial::Physical(Box::new(profile))",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/authority_host_admin_protocol.rs",
+    "replacements": [
+      {
+        "before": "observation: RootAdminObservation,",
+        "after": "observation: Box<RootAdminObservation>,",
+        "count": 1
+      },
+      {
+        "before": "effect_lease: codex_hepta_contracts::authority_lease::AuthorityLeaseReadV1,",
+        "after": "effect_lease: Box<codex_hepta_contracts::authority_lease::AuthorityLeaseReadV1>,",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/authority_host_admin_service.rs",
+    "replacements": [
+      {
+        "before": "observation: RootAdminObservation {",
+        "after": "observation: Box::new(RootAdminObservation {",
+        "count": 1
+      },
+      {
+        "before": "                        physical_current,\n                    },",
+        "after": "                        physical_current,\n                    }),",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/authority_host_admin_effect.rs",
+    "replacements": [
+      {
+        "before": "effect_lease: actual.lease,",
+        "after": "effect_lease: Box::new(actual.lease),",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/automation_effect_host.rs",
+    "replacements": [
+      {
+        "before": "Observed(TaskFlowStepReceipt)",
+        "after": "Observed(Box<TaskFlowStepReceipt>)",
+        "count": 1
+      },
+      {
+        "before": "AgentdAutomationEffectReconcileOutcome::Observed(*receipt)",
+        "after": "AgentdAutomationEffectReconcileOutcome::Observed(receipt)",
+        "count": 2
+      }
+    ]
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/intelligence_product.rs",
+    "replacements": [
+      {
+        "before": "Ready(PreparedAgentdIntelligenceRunV1)",
+        "after": "Ready(Box<PreparedAgentdIntelligenceRunV1>)",
+        "count": 1
+      },
+      {
+        "before": "prepared: PreparedAgentdIntelligenceRunV1,",
+        "after": "prepared: Box<PreparedAgentdIntelligenceRunV1>,",
+        "count": 1
+      },
+      {
+        "before": "Indeterminate(PendingIntelligenceLedgerAppendV1)",
+        "after": "Indeterminate(Box<PendingIntelligenceLedgerAppendV1>)",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/intelligence_product_runner.rs",
+    "replacements": [
+      {
+        "before": "                    PreparedAgentdIntelligenceRunV1 {\n                        envelope: *envelope,\n                        dispatch_proposal_digest,\n                        snapshot,\n                        candidate_ids,\n                        run_snapshot,\n                        context_attachment,\n                    },",
+        "after": "                    Box::new(PreparedAgentdIntelligenceRunV1 {\n                        envelope: *envelope,\n                        dispatch_proposal_digest,\n                        snapshot,\n                        candidate_ids,\n                        run_snapshot,\n                        context_attachment,\n                    }),",
+        "count": 1
+      },
+      {
+        "before": "                AgentdIntelligenceLedgerError::Indeterminate(PendingIntelligenceLedgerAppendV1 {\n                    expected_predecessor,\n                    snapshot,\n                    event,\n                }),",
+        "after": "                AgentdIntelligenceLedgerError::Indeterminate(Box::new(\n                    PendingIntelligenceLedgerAppendV1 {\n                        expected_predecessor,\n                        snapshot,\n                        event,\n                    },\n                )),",
+        "count": 1
+      }
+    ]
+  }
+]

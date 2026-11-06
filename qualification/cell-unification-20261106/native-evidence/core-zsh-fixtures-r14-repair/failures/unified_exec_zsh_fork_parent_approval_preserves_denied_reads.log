@@ -1,0 +1,15 @@
+        FAIL [   0.138s] codex-core::all suite::unified_exec_zsh_fork_approvals::unified_exec_zsh_fork_parent_approval_preserves_denied_reads
+  stdout ───
+
+    running 1 test
+    test suite::unified_exec_zsh_fork_approvals::unified_exec_zsh_fork_parent_approval_preserves_denied_reads ... FAILED
+
+    failures:
+
+    failures:
+        suite::unified_exec_zsh_fork_approvals::unified_exec_zsh_fork_parent_approval_preserves_denied_reads
+
+    test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1425 filtered out; finished in 0.12s
+
+  stderr ───
+    Error: Fatal error: Failed to initialize session: failed to load AGENTS.md instructions for environment `local`: fs sandbox helper failed with status exit status: 1: error building bubblewrap command: Fatal error: unreadable glob `/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/core/.tmp1EQr3C/secret.env` cannot be safely expanded; use a pattern with a non-root directory prefix

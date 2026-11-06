@@ -1,0 +1,49 @@
+{
+  "schema": "hepta.turn-state-r14-fixture-source.v1",
+  "base_commit": "b44d4ca4aa0ef9f894eff29e9975938e066a82f5",
+  "base_tree": "d3d2313b838422818bf9448ce5a1b86d89abdf69",
+  "files": [
+    {
+      "path": "codex-rs/core/tests/suite/turn_state.rs",
+      "before_sha256": "12acdc6694a254506a423df2e5fbe111d62e7e943923ce329b074f7ac4a5e7a4",
+      "after_sha256": "28b0f899966c45a78c1ee62f471757e217a350540f66e9158b7464cf5da280b1",
+      "before_blob": "ce306dbe96b47ed0ab48cd86fb8cfab0777e044c",
+      "after_blob": "4e74772dbfdd995733bf73dcf67f889ca4d4a127",
+      "bytes": 11010,
+      "mode": "100644"
+    }
+  ],
+  "patch_sha256": "bc8867f4515ab8f02fb02ed803dbe84f4b4c9b349b76ed73d2f2c03775bb158a",
+  "records": [
+    {
+      "function": "websocket_turn_state_persists_within_turn_and_resets_after",
+      "original_response_batches": 4,
+      "original_batches_preserved": true,
+      "added_startup_prewarm_batch": false,
+      "candidate_connection_counts": [
+        1,
+        3
+      ],
+      "sampling_connection_kept_open": true,
+      "original_handshake_assertion": 1,
+      "candidate_handshake_assertion": 2,
+      "reason": "The original test changes read-only prewarm to a disabled sandbox user turn; these permission identities are intentionally distinct. Exact state and lineage assertions remain unchanged on the actual sampling connection."
+    },
+    {
+      "function": "websocket_turn_state_is_stable_within_turn",
+      "original_response_batches": 3,
+      "original_batches_preserved": true,
+      "added_startup_prewarm_batch": true,
+      "candidate_connection_counts": [
+        1,
+        3
+      ],
+      "sampling_connection_kept_open": true,
+      "original_handshake_assertion": 1,
+      "candidate_handshake_assertion": 2,
+      "reason": "The original test changes read-only prewarm to a disabled sandbox user turn; these permission identities are intentionally distinct. Exact state and lineage assertions remain unchanged on the actual sampling connection."
+    }
+  ],
+  "whole_file_inverse_exact": true,
+  "native_execution": "NOT_RUN"
+}

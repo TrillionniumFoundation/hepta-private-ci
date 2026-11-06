@@ -1,0 +1,118 @@
+{
+  "schema": "hepta.inherited-extension-dead-code-repair.v1",
+  "state": "FROZEN_PENDING_NATIVE_PACKAGE_AND_ORIGINAL_GATES",
+  "native_input_tree": "7a4727b8ffaccf914ccbca2b2c57bbe90409f5e3",
+  "baseline_commit": "bef6fa7645df9df12b69fda499e97eed25de6c75",
+  "nearest_instructions": {
+    "path": "AGENTS.md",
+    "sha256": "c3f80e8386eb170b00af1e21de40d770c4941e464915687e728e2d14a7e79480",
+    "native_verified_only_nearest": true
+  },
+  "files": [
+    {
+      "path": "codex-rs/ext/hepta-memory/src/cognitive/mod.rs",
+      "baseline": {
+        "sha256": "67a651a4a14489adc3aa6e53a7a66aefe3b45d922d830f1f7487cca60a97734a",
+        "git_blob": "db3dba13defba49f73a5006c8dafdd4e714b4c7f",
+        "size": 34069
+      },
+      "frozen": {
+        "sha256": "03e00a44e0e5c1395323261511b130992449aa68d0c86b8a4479835b1692258b",
+        "git_blob": "4cb6efb8650d352ba84be101bd8bcb03af7ed0a4",
+        "size": 33949
+      },
+      "inverse_byte_identical": true,
+      "only_announced_edits": true
+    },
+    {
+      "path": "codex-rs/ext/hepta-memory/src/cognitive/federation.rs",
+      "baseline": {
+        "sha256": "4d85d7d3d467bc518bd8388d4bb567e091f44073cc4f6b66e1ce4efeefa29cde",
+        "git_blob": "74ce45602c3ae063579c4c4ed672e391d4dacb85",
+        "size": 54974
+      },
+      "frozen": {
+        "sha256": "039f83a3fe85b84d6b0e6ed01331c8cece027f191f59151393b36587604b6656",
+        "git_blob": "8688815e743d4d3ac12645f7216c131c971fb6aa",
+        "size": 54756
+      },
+      "inverse_byte_identical": true,
+      "only_announced_edits": true
+    },
+    {
+      "path": "codex-rs/ext/hepta-memory/src/cognitive/tests.rs",
+      "baseline": {
+        "sha256": "1ee472ade9c0c9c9f1382baa51ad8b82b13973994cafc286c9e3df54ea0171ad",
+        "git_blob": "6b552dec6c25924f364df657134b314904b3002a",
+        "size": 31150
+      },
+      "frozen": {
+        "sha256": "87575efcf2653be51a409c5cf9868d2e571981e3715493d05c33978c2337054e",
+        "git_blob": "ae6ba1400840999b4bdcf83c585365b85b0a8b0d",
+        "size": 31500
+      },
+      "inverse_byte_identical": true,
+      "only_announced_edits": true
+    }
+  ],
+  "removed_production_declarations": [
+    {
+      "path": "codex-rs/ext/hepta-memory/src/cognitive/mod.rs",
+      "symbol": "CognitiveExtension::new",
+      "visibility": "pub(crate)",
+      "production_callers": 0,
+      "test_callers": 3,
+      "replacement": "Existing new_with_mutation called directly by all three tests with the exact None/false defaults formerly supplied by the wrapper",
+      "history_commit": "258544f06f9a211c3eeef14ed91c2b22e9381659"
+    },
+    {
+      "path": "codex-rs/ext/hepta-memory/src/cognitive/federation.rs",
+      "symbol": "cognitive::federation::api_digest",
+      "visibility": "private",
+      "all_callers": 0,
+      "replacement": "Existing CognitiveProposalMaterial::into_proposal in parent module already owns conversion and final-use guard attachment",
+      "history_commit": "a5cdf490727e785a7e5939665df168a7eac4205f"
+    }
+  ],
+  "preserved_owner_path": {
+    "source": "codex-rs/ext/hepta-memory/src/extension.rs",
+    "sha256": "322eaee43ddc72f0cb3dd555dee8ef245d127fe6da32fe4e1b5e0d374d44d470",
+    "git_blob": "3e887464153c5fa6140cb7b22c487ba617f3bbe4",
+    "size": 33200,
+    "modified": false,
+    "constructor": "CognitiveExtension::new_with_mutation",
+    "constructor_body_sha256": "322a4d4bb1efd5bfb56297fdf2229d425c3f7d07361673bf4ea59aee800729a1",
+    "constructor_body_byte_identical": true,
+    "proposal_impl_sha256": "b3cd9d13f936b0febfef8d393282fa15f29dae208845a7a21a8346e7f86ddb74",
+    "proposal_impl_byte_identical": true,
+    "active_parent_api_digest_calls": 4
+  },
+  "semantics": {
+    "production_behavior_changed": false,
+    "source_api_change": "Removed one crate-private no-authority constructor wrapper and one unused private helper; three tests now call the existing constructor explicitly. No public API change.",
+    "all_test_assertions_and_fixture_values_preserved": true,
+    "owner_matching_and_qualification_write_gate_unchanged": true,
+    "final_use_guards_and_revalidation_unchanged": true,
+    "wire_codec_and_digest_bytes_unchanged": true,
+    "no_new_lint_allows_or_cfg_gates": true,
+    "no_new_tests_for_removed_logic": true
+  },
+  "validation_scope": {
+    "independent_native_call_map": "inventory.json:extension_full_map",
+    "inverse_full_files": true,
+    "rust_builds_or_tests_run_by_this_agent": false,
+    "native_owns_project_strict_tests_and_final_fmt": true
+  },
+  "patch": {
+    "path": "extension-repair.patch",
+    "sha256": "c92ae985a4d441db2284c34f9441d29909b001899edc18387ecfe9cdfa5a3827",
+    "git_blob": "9c31f5404a2884b1e88880cd54bcf4a82c835542",
+    "size": 3076
+  },
+  "history_evidence": {
+    "path": "extension-history-audit.json",
+    "sha256": "b7ba6854e367ba8455010e467f63ecb2b64b793877ec4afd8cfbaa27a56b206f",
+    "git_blob": "ebba0b8af39fd60f150dc084c019f75dcbeddd1d",
+    "size": 42465
+  }
+}

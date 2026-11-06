@@ -1,0 +1,53 @@
+{
+  "schema": "hepta.root-r14-repair-independent-review.v1",
+  "state": "STATIC_REVIEW_PASSED_NATIVE_VALIDATION_PENDING",
+  "reviewer": "root",
+  "base_commit": "b44d4ca4aa0ef9f894eff29e9975938e066a82f5",
+  "base_tree": "d3d2313b838422818bf9448ce5a1b86d89abdf69",
+  "candidate": "core-zsh-fixtures-r14-repair",
+  "patch_sha256": "ee8f42615a3f67d63343a4d41780b3729911dba1e0ef0174b9913ef93cf72cce",
+  "files": [
+    {
+      "path": "codex-rs/core/tests/suite/skill_approval.rs",
+      "before": {
+        "bytes": 9892,
+        "sha256": "8e977c5bf5bbd94f345886b83e16fcf8a3661a467090bc3ab67ae7604de79952",
+        "git_blob": "b62848b6bd3c88e776d5bb0683f24cbacddd787b"
+      },
+      "after": {
+        "bytes": 9924,
+        "sha256": "d78696cee410d754f2993e48d3d8bc2c058aa111bd2d74fd78044e481c6a4c27",
+        "git_blob": "746dfc59f6db3a379440df805d821435d46d8e86"
+      },
+      "original_assertion_macros_exactly_preserved": 6,
+      "candidate_assertion_macros": 6,
+      "numeric_duration_multiset_unchanged": true,
+      "original_source_local_path": "core-zsh-fixtures-r14-audit/original/codex-rs/core/tests/suite/skill_approval.rs",
+      "original_git_blob_independently_confirmed_against_b44d4_github_metadata": true
+    },
+    {
+      "path": "codex-rs/core/tests/suite/unified_exec_zsh_fork_approvals.rs",
+      "before": {
+        "bytes": 31383,
+        "sha256": "79e550c948ce2eb51f0829c619bd73c2dd582c800299cbc78bc86c1feb524cae",
+        "git_blob": "218e22809391565142021a9809c1d5ef2adc0f14"
+      },
+      "after": {
+        "bytes": 31429,
+        "sha256": "35982a2804b74d3f2eb1027bda62e097abe20c546937b25ee251274b7bdbd6ec",
+        "git_blob": "02a8e0abc60f415327cd2713d92d23bc503ab3e4"
+      },
+      "original_assertion_macros_exactly_preserved": 23,
+      "candidate_assertion_macros": 23,
+      "numeric_duration_multiset_unchanged": true,
+      "original_source_local_path": "core-zsh-fixtures-r14-audit/original/codex-rs/core/tests/suite/unified_exec_zsh_fork_approvals.rs",
+      "original_git_blob_independently_confirmed_against_b44d4_github_metadata": true
+    }
+  ],
+  "forward_reverse_patch_exact_without_fuzz_or_offset": true,
+  "source_reasoning": "No-approval already consumes TurnComplete, so the second wait is redundant. Separately, the private profile helper incorrectly encoded an absolute literal deny as GlobPattern. The candidate restores that literal path without changing production glob rejection or deny authority; original assertions remain.",
+  "limits": [
+    "No native build, test or formatter executed in this review.",
+    "Source-supported interleavings are distinguished from actual observed failure messages; runtime validation remains pending."
+  ]
+}

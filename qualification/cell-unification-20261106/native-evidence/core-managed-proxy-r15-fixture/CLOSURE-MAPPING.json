@@ -1,0 +1,446 @@
+{
+  "schema": "hepta.candidate-audit-closure-mapping.v1",
+  "purpose": "Exact-byte archive and source/reference closure. This task does not rerun Rust, qualify candidate behavior, or rewrite frozen audits.",
+  "original_executed_source44": {
+    "commit": "638997499470f0b7dd33ad18226feacf0198ef3d",
+    "tree": "1646e1656cf6365e74accae19a1225fd2ce6d964",
+    "gate": "r15 Core+MCP",
+    "terminal": "FAIL",
+    "counts": {
+      "run": 4026,
+      "passed": 4023,
+      "failed": 3,
+      "timeout": 0,
+      "skipped": 9
+    }
+  },
+  "published_candidate_source45": {
+    "commit": "96dc9232535fedf735e3099ef1391b69477270d4",
+    "tree": "3ebd193f213d640e5330a1be4b983bcc4b06617a",
+    "candidate_after_pins_match_root_publication": true,
+    "execution_outcome": "NOT_ESTABLISHED_BY_THIS_ARCHIVE"
+  },
+  "retained_artifacts": [
+    {
+      "original_path": "core-managed-proxy-r15-fixture/edit-operations.json",
+      "archived_path": "edit-operations.json",
+      "bytes": 494,
+      "sha256": "ac38a9ef009401ae31e4a271210aee026c32fafe3154de07546436045303efc3",
+      "copied_bytes_exact": true
+    },
+    {
+      "original_path": "core-managed-proxy-r15-fixture/repair-audit.json",
+      "archived_path": "repair-audit.json",
+      "bytes": 5501,
+      "sha256": "c750395063273fa800a9d7cb9f8f61971693e9626204a3a520a2f61d0e80f145",
+      "copied_bytes_exact": true
+    },
+    {
+      "original_path": "core-managed-proxy-r15-fixture/repair.patch",
+      "archived_path": "repair.patch",
+      "bytes": 702,
+      "sha256": "ce0e594600932842dfd3f6e22b49c810b15ec504add40166e2090f340d3f8389",
+      "copied_bytes_exact": true
+    },
+    {
+      "original_path": "core-managed-proxy-r15-fixture/root-independent-review.json",
+      "archived_path": "root-independent-review.json",
+      "bytes": 2006,
+      "sha256": "85b5e64a98c1f1b3fc65ffb93515c18f0b433f2502e7686676aaa3691ff09db3",
+      "copied_bytes_exact": true
+    },
+    {
+      "original_path": "core-managed-proxy-r15-fixture/source-manifest.json",
+      "archived_path": "source-manifest.json",
+      "bytes": 1180,
+      "sha256": "c8a392b49b98dc93c81da401dcfcd4aebd6a39f9e7ddbbbcfd5e88a29bb040b4",
+      "copied_bytes_exact": true
+    },
+    {
+      "original_path": "core-managed-proxy-r15-fixture/support/native-http-proof.json",
+      "archived_path": "support/native-http-proof.json",
+      "bytes": 13509,
+      "sha256": "e83d907c36833f7af1998fec42487da017d7312f0d8623a5313b186e2ec1ab25",
+      "copied_bytes_exact": true
+    },
+    {
+      "original_path": "core-managed-proxy-r15-fixture/support/native-runtime-map.json",
+      "archived_path": "support/native-runtime-map.json",
+      "bytes": 4101,
+      "sha256": "6c6ad101f600cca368382be5132be5f444c1742f66a9942e500d0548d9dabb2d",
+      "copied_bytes_exact": true
+    },
+    {
+      "original_path": "core-managed-proxy-r15-fixture/support/network-proxy-source-manifest.json",
+      "archived_path": "support/network-proxy-source-manifest.json",
+      "bytes": 872,
+      "sha256": "d1f362d391c6335c4f3dc69642d70f039c46d39077a0535d6adb6880e4aeeb3a",
+      "copied_bytes_exact": true
+    }
+  ],
+  "reference_mappings": [
+    {
+      "artifact": "repair-audit.json",
+      "pointer": "/prior_r14_observation/log/path",
+      "reference": "native-validation-results/checkpoint-r14/evidence/native-core-r14-tests.log",
+      "formal_artifact": {
+        "path": "../r14-core-checkpoint/native-core-r14-tests.log.gz",
+        "bytes": 85335,
+        "sha256": "400ba9860f303f32173fdf7c51a67aed56701c76319e12a18c0bf68f03c9fe9a",
+        "representation": "gzip of the exact original raw log",
+        "raw_bytes": 551526,
+        "raw_sha256": "443a58d70c34d76ba9b8141ad7ee32d997a4f16af79e8f5a873770966028952c"
+      }
+    },
+    {
+      "artifact": "repair-audit.json",
+      "pointer": "/candidate/path",
+      "reference": "codex-rs/core/src/session/tests.rs",
+      "versions": [
+        {
+          "role": "before",
+          "source_key": "codex-rs/core/src/session/tests.rs@29da32a96770cc74df87d09465c9d138dbabc539d038d1641001a0affd29d085"
+        },
+        {
+          "role": "after",
+          "source_key": "codex-rs/core/src/session/tests.rs@8d06e0e5d0f59b5c06d093ae822aec42f76a212c23b8ac26939345ab2e1c8309"
+        }
+      ],
+      "source_keys": [
+        "codex-rs/core/src/session/tests.rs@29da32a96770cc74df87d09465c9d138dbabc539d038d1641001a0affd29d085",
+        "codex-rs/core/src/session/tests.rs@8d06e0e5d0f59b5c06d093ae822aec42f76a212c23b8ac26939345ab2e1c8309"
+      ]
+    },
+    {
+      "artifact": "repair-audit.json",
+      "pointer": "/support/0/path",
+      "reference": "core-managed-proxy-r15-fixture/support/native-http-proof.json",
+      "formal_artifact": {
+        "path": "support/native-http-proof.json",
+        "bytes": 13509,
+        "sha256": "e83d907c36833f7af1998fec42487da017d7312f0d8623a5313b186e2ec1ab25"
+      }
+    },
+    {
+      "artifact": "repair-audit.json",
+      "pointer": "/support/1/path",
+      "reference": "core-managed-proxy-r15-fixture/support/native-runtime-map.json",
+      "formal_artifact": {
+        "path": "support/native-runtime-map.json",
+        "bytes": 4101,
+        "sha256": "6c6ad101f600cca368382be5132be5f444c1742f66a9942e500d0548d9dabb2d"
+      }
+    },
+    {
+      "artifact": "repair-audit.json",
+      "pointer": "/support/2/path",
+      "reference": "core-managed-proxy-r15-fixture/support/network-proxy-source-manifest.json",
+      "formal_artifact": {
+        "path": "support/network-proxy-source-manifest.json",
+        "bytes": 872,
+        "sha256": "d1f362d391c6335c4f3dc69642d70f039c46d39077a0535d6adb6880e4aeeb3a"
+      }
+    },
+    {
+      "artifact": "repair-audit.json",
+      "pointer": "/retained_complete_runtime/path",
+      "reference": "native-validation-results/r8b-test-failures/proxy-fixture-repair/baseline-source/codex-rs/network-proxy/src/runtime.rs",
+      "source_keys": [
+        "codex-rs/network-proxy/src/runtime.rs@3214446d85796e5d1c4a308ba53aab3bf7098fc18cd38cfc6f97a1cbb14d2e4f"
+      ]
+    },
+    {
+      "artifact": "repair-audit.json",
+      "pointer": "/proof_chain/0/file",
+      "reference": "codex-rs/core/src/session/tests.rs",
+      "source_keys": [
+        "codex-rs/core/src/session/tests.rs@29da32a96770cc74df87d09465c9d138dbabc539d038d1641001a0affd29d085"
+      ]
+    },
+    {
+      "artifact": "repair-audit.json",
+      "pointer": "/proof_chain/1/file",
+      "reference": "codex-rs/network-proxy/src/http_proxy.rs",
+      "source_keys": [
+        "codex-rs/network-proxy/src/http_proxy.rs@487ac9a167f0a1814df68ac761912081a614c83a1b6f024dbcfbca60bb537709"
+      ]
+    },
+    {
+      "artifact": "repair-audit.json",
+      "pointer": "/proof_chain/2/file",
+      "reference": "codex-rs/network-proxy/src/network_policy.rs",
+      "source_keys": [
+        "codex-rs/network-proxy/src/network_policy.rs@87fdcffab34867f3e182ed67983fad3298dbfa3aa640e0f79906d8cd02a11dc2"
+      ]
+    },
+    {
+      "artifact": "repair-audit.json",
+      "pointer": "/proof_chain/3/file",
+      "reference": "codex-rs/network-proxy/src/runtime.rs",
+      "source_keys": [
+        "codex-rs/network-proxy/src/runtime.rs@3214446d85796e5d1c4a308ba53aab3bf7098fc18cd38cfc6f97a1cbb14d2e4f"
+      ]
+    },
+    {
+      "artifact": "root-independent-review.json",
+      "pointer": "/source_file/path",
+      "reference": "codex-rs/core/src/session/tests.rs",
+      "versions": [
+        {
+          "role": "before",
+          "source_key": "codex-rs/core/src/session/tests.rs@29da32a96770cc74df87d09465c9d138dbabc539d038d1641001a0affd29d085"
+        },
+        {
+          "role": "after",
+          "source_key": "codex-rs/core/src/session/tests.rs@8d06e0e5d0f59b5c06d093ae822aec42f76a212c23b8ac26939345ab2e1c8309"
+        }
+      ],
+      "source_keys": [
+        "codex-rs/core/src/session/tests.rs@29da32a96770cc74df87d09465c9d138dbabc539d038d1641001a0affd29d085",
+        "codex-rs/core/src/session/tests.rs@8d06e0e5d0f59b5c06d093ae822aec42f76a212c23b8ac26939345ab2e1c8309"
+      ]
+    },
+    {
+      "artifact": "source-manifest.json",
+      "pointer": "/files/0/path",
+      "reference": "codex-rs/core/src/session/tests.rs",
+      "versions": [
+        {
+          "role": "before",
+          "source_key": "codex-rs/core/src/session/tests.rs@29da32a96770cc74df87d09465c9d138dbabc539d038d1641001a0affd29d085"
+        },
+        {
+          "role": "after",
+          "source_key": "codex-rs/core/src/session/tests.rs@8d06e0e5d0f59b5c06d093ae822aec42f76a212c23b8ac26939345ab2e1c8309"
+        }
+      ],
+      "source_keys": [
+        "codex-rs/core/src/session/tests.rs@29da32a96770cc74df87d09465c9d138dbabc539d038d1641001a0affd29d085",
+        "codex-rs/core/src/session/tests.rs@8d06e0e5d0f59b5c06d093ae822aec42f76a212c23b8ac26939345ab2e1c8309"
+      ]
+    },
+    {
+      "artifact": "support/native-http-proof.json",
+      "pointer": "/source_pin/path",
+      "reference": "codex-rs/network-proxy/src/http_proxy.rs",
+      "source_keys": [
+        "codex-rs/network-proxy/src/http_proxy.rs@487ac9a167f0a1814df68ac761912081a614c83a1b6f024dbcfbca60bb537709"
+      ]
+    },
+    {
+      "artifact": "support/native-runtime-map.json",
+      "pointer": "/runtime/path",
+      "reference": "codex-rs/network-proxy/src/runtime.rs",
+      "source_keys": [
+        "codex-rs/network-proxy/src/runtime.rs@3214446d85796e5d1c4a308ba53aab3bf7098fc18cd38cfc6f97a1cbb14d2e4f"
+      ]
+    },
+    {
+      "artifact": "support/network-proxy-source-manifest.json",
+      "pointer": "/files/0/path",
+      "reference": "codex-rs/network-proxy/src/network_policy.rs",
+      "source_keys": [
+        "codex-rs/network-proxy/src/network_policy.rs@87fdcffab34867f3e182ed67983fad3298dbfa3aa640e0f79906d8cd02a11dc2"
+      ]
+    },
+    {
+      "artifact": "support/network-proxy-source-manifest.json",
+      "pointer": "/files/1/path",
+      "reference": "codex-rs/network-proxy/src/proxy.rs",
+      "source_keys": [
+        "codex-rs/network-proxy/src/proxy.rs@df2cd838e6f348f8043f4bf603c9aefa5097c54b76aa99736dcabfe09447c5f8"
+      ]
+    },
+    {
+      "artifact": "support/network-proxy-source-manifest.json",
+      "pointer": "/files/2/path",
+      "reference": "codex-rs/network-proxy/src/connect_policy.rs",
+      "source_keys": [
+        "codex-rs/network-proxy/src/connect_policy.rs@94da78147d65bba30aeb6533ee4dfa0f866e494a9e33b3d7e9fa8e7718aa06e7"
+      ]
+    },
+    {
+      "artifact": "support/network-proxy-source-manifest.json",
+      "pointer": "/native_runtime_map",
+      "reference": "native-core-r15-managed-proxy-support-map.json",
+      "formal_artifact": {
+        "path": "support/native-runtime-map.json",
+        "bytes": 4101,
+        "sha256": "6c6ad101f600cca368382be5132be5f444c1742f66a9942e500d0548d9dabb2d"
+      }
+    }
+  ],
+  "source_objects": [
+    {
+      "path": "codex-rs/core/src/session/tests.rs",
+      "commit": "638997499470f0b7dd33ad18226feacf0198ef3d",
+      "sha256": "29da32a96770cc74df87d09465c9d138dbabc539d038d1641001a0affd29d085",
+      "git_blob": "dce43c7f844f45036a7b58b307de500029f1f001",
+      "immutable_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/638997499470f0b7dd33ad18226feacf0198ef3d/codex-rs/core/src/session/tests.rs",
+      "pin_evidence": "core-managed-proxy-r15-fixture/repair-audit.json",
+      "bytes": 504602
+    },
+    {
+      "path": "codex-rs/core/src/session/tests.rs",
+      "commit": "96dc9232535fedf735e3099ef1391b69477270d4",
+      "sha256": "8d06e0e5d0f59b5c06d093ae822aec42f76a212c23b8ac26939345ab2e1c8309",
+      "git_blob": "d9fb57b98d68fc8b548ba312b5f1671f70fd0573",
+      "immutable_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/96dc9232535fedf735e3099ef1391b69477270d4/codex-rs/core/src/session/tests.rs",
+      "pin_evidence": "core-managed-proxy-r15-fixture/source-manifest.json",
+      "bytes": 504663
+    },
+    {
+      "path": "codex-rs/network-proxy/src/connect_policy.rs",
+      "commit": "638997499470f0b7dd33ad18226feacf0198ef3d",
+      "sha256": "94da78147d65bba30aeb6533ee4dfa0f866e494a9e33b3d7e9fa8e7718aa06e7",
+      "git_blob": "59cecaf801c52987f600c9e862799d5b462c73ce",
+      "immutable_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/638997499470f0b7dd33ad18226feacf0198ef3d/codex-rs/network-proxy/src/connect_policy.rs",
+      "pin_evidence": "core-managed-proxy-r15-fixture/support/network-proxy-source-manifest.json",
+      "bytes": 8930
+    },
+    {
+      "path": "codex-rs/network-proxy/src/http_proxy.rs",
+      "commit": "638997499470f0b7dd33ad18226feacf0198ef3d",
+      "sha256": "487ac9a167f0a1814df68ac761912081a614c83a1b6f024dbcfbca60bb537709",
+      "git_blob": "70c892c9176387df92c74b59fd9c0e7b9f16f0ce",
+      "immutable_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/638997499470f0b7dd33ad18226feacf0198ef3d/codex-rs/network-proxy/src/http_proxy.rs",
+      "pin_evidence": "core-managed-proxy-r15-fixture/support/native-http-proof.json",
+      "bytes": 69014
+    },
+    {
+      "path": "codex-rs/network-proxy/src/network_policy.rs",
+      "commit": "638997499470f0b7dd33ad18226feacf0198ef3d",
+      "sha256": "87fdcffab34867f3e182ed67983fad3298dbfa3aa640e0f79906d8cd02a11dc2",
+      "git_blob": "b5d2d2719ea23c713f6ee2e679bb023ae7bf47b5",
+      "immutable_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/638997499470f0b7dd33ad18226feacf0198ef3d/codex-rs/network-proxy/src/network_policy.rs",
+      "pin_evidence": "core-managed-proxy-r15-fixture/support/network-proxy-source-manifest.json",
+      "bytes": 37311
+    },
+    {
+      "path": "codex-rs/network-proxy/src/proxy.rs",
+      "commit": "638997499470f0b7dd33ad18226feacf0198ef3d",
+      "sha256": "df2cd838e6f348f8043f4bf603c9aefa5097c54b76aa99736dcabfe09447c5f8",
+      "git_blob": "c723686fed75b1eb8cc3b447af15619543a75432",
+      "immutable_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/638997499470f0b7dd33ad18226feacf0198ef3d/codex-rs/network-proxy/src/proxy.rs",
+      "pin_evidence": "core-managed-proxy-r15-fixture/support/network-proxy-source-manifest.json",
+      "bytes": 101540
+    },
+    {
+      "path": "codex-rs/network-proxy/src/runtime.rs",
+      "commit": "638997499470f0b7dd33ad18226feacf0198ef3d",
+      "sha256": "3214446d85796e5d1c4a308ba53aab3bf7098fc18cd38cfc6f97a1cbb14d2e4f",
+      "git_blob": "1a449a44381fafa4a5d6a5d0e08753f425f339fc",
+      "immutable_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/638997499470f0b7dd33ad18226feacf0198ef3d/codex-rs/network-proxy/src/runtime.rs",
+      "pin_evidence": "core-managed-proxy-r15-fixture/support/native-runtime-map.json",
+      "bytes": 75473
+    }
+  ],
+  "candidate_source_objects": [
+    {
+      "path": "codex-rs/core/src/session/tests.rs",
+      "commit": "96dc9232535fedf735e3099ef1391b69477270d4",
+      "sha256": "8d06e0e5d0f59b5c06d093ae822aec42f76a212c23b8ac26939345ab2e1c8309",
+      "git_blob": "d9fb57b98d68fc8b548ba312b5f1671f70fd0573",
+      "immutable_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/96dc9232535fedf735e3099ef1391b69477270d4/codex-rs/core/src/session/tests.rs",
+      "pin_evidence": "core-managed-proxy-r15-fixture/source-manifest.json",
+      "bytes": 504663
+    }
+  ],
+  "formal_evidence": [
+    {
+      "path": "../r15-core-mcp-checkpoint/native-core-mcp-r15-result-review.json",
+      "bytes": 9965,
+      "sha256": "a31121be22b0ff02347fbae5266a21597fe58e811f2cd697617e1bda577bc061"
+    },
+    {
+      "path": "../r15-core-mcp-checkpoint/native-core-mcp-r15-tests.log.gz",
+      "bytes": 80935,
+      "sha256": "200254fdc071f68f4a67f6c8b5518775ecc4bf7bd4a0f0b6db29aad3ed3d9829",
+      "representation": "gzip of the exact original raw log",
+      "raw_bytes": 515261,
+      "raw_sha256": "2e9b11682a84cce7be7e1db72e47eb4be260e8d7ef7a3b1fa916fe59c5a3e39f"
+    },
+    {
+      "path": "../r15-core-mcp-checkpoint/native-candidate-r15-source.json",
+      "bytes": 48734,
+      "sha256": "ee85feeca1c8da886ab3f52ab26fb741bb5d8569880b26985a2b0d7f8533dc2d"
+    },
+    {
+      "path": "../r15-core-mcp-checkpoint/native-core-mcp-r15-tests-receipt.json",
+      "bytes": 903,
+      "sha256": "cae7277834a12e8a42fc3e559eb1c99996a72f19d276cecda55871768e9ed2f6"
+    },
+    {
+      "path": "../r15-core-mcp-checkpoint/ROOT-RESULT-READBACK.json",
+      "bytes": 8337,
+      "sha256": "afd285a66165a0f28ec41a2f2926c1c313d07f5a4cafe5ab53f5d0673361a8de"
+    },
+    {
+      "path": "../r15-core-mcp-checkpoint/ROOT-SOURCE-ROUNDTRIP.json",
+      "bytes": 524,
+      "sha256": "1d2967bbf8914f22d3b3fb4eb3684ab66e8a165ebbb7624e3a8a6ddc6ad9fa2f"
+    },
+    {
+      "path": "../r16-stage45-input/root-published-source.json",
+      "bytes": 3039,
+      "sha256": "815c43fa1bb9e2ceddcc0ff6491b310b0a731fd7b26baa50a89345047f16448b"
+    },
+    {
+      "path": "../r16-stage45-input/root-publish-manifest.json",
+      "bytes": 2915,
+      "sha256": "ce5772f0884caa85935f066044521eec2dc66ea58415541f1b83bcf378422aee"
+    },
+    {
+      "path": "../r16-stage45-input/ROOT-SOURCE-REVIEWS.json",
+      "bytes": 6512,
+      "sha256": "0eb1bf5c6e9a6cf60c60097006fc9657baf061566e7007fdc2f7ca0f0268ad11"
+    },
+    {
+      "path": "../r14-core-checkpoint/native-core-r14-tests.log.gz",
+      "bytes": 85335,
+      "sha256": "400ba9860f303f32173fdf7c51a67aed56701c76319e12a18c0bf68f03c9fe9a",
+      "representation": "gzip of the exact original raw log",
+      "raw_bytes": 551526,
+      "raw_sha256": "443a58d70c34d76ba9b8141ad7ee32d997a4f16af79e8f5a873770966028952c"
+    }
+  ],
+  "closed_original_failures": [
+    {
+      "binary": "codex-core",
+      "name": "session::tests::managed_network_proxy_decider_survives_full_access_start",
+      "status": "FAIL",
+      "elapsed": "5.262s",
+      "log_byte_range": [
+        211007,
+        211765
+      ],
+      "excerpt_sha256": "cc777669f33e6b70e79e15b3056c83b4d876556e7f0b1a6ca63ea3c9844c8479",
+      "excerpt_exact_against_closed_raw_log": true
+    }
+  ],
+  "closed_log_raw_sha256": "2e9b11682a84cce7be7e1db72e47eb4be260e8d7ef7a3b1fa916fe59c5a3e39f",
+  "closed_log_raw_bytes": 515261,
+  "local_materialized_original_source_pins_checked": [
+    {
+      "group": "core-managed-proxy-r15-fixture",
+      "path": "codex-rs/core/src/session/tests.rs",
+      "bytes": 504602,
+      "sha256": "29da32a96770cc74df87d09465c9d138dbabc539d038d1641001a0affd29d085",
+      "git_blob": "dce43c7f844f45036a7b58b307de500029f1f001"
+    }
+  ],
+  "qualifications": [
+    "The source44 r15 result is the original failed execution. It is not a source45 result and does not qualify any changed source45 behavior.",
+    "Source45 publication metadata and matching Git blob/SHA pins establish content identity only, not a successful native or CI run.",
+    "Frozen pending/native-not-run wording is preserved as written at candidate creation; later execution receipts must remain separate.",
+    "Source/original trees and duplicate full logs are not copied. Immutable source URLs and existing formal raw-log gzip/receipts close those references.",
+    "Copied native support maps/proofs are source-content evidence unless the artifact expressly records an executed result. No event trace, DNS timing, or new permission grant is inferred.",
+    "Zsh independent review checked its then-existing 13 original inputs; the final author pins add two enum/reexport inputs without changing candidate source or patch.",
+    "The CI package-owner pin establishes core_test_support from its manifest. This archive does not reinterpret a literal Cargo.toml members search as Cargo metadata membership or claim full platform/feature/service coverage.",
+    "Reproduction scripts require materializing their pinned originals from the immutable source before use; merely archiving a script is not execution evidence."
+  ],
+  "scientific_disposition": "HOLD",
+  "cell_authority": "DENY_ALL",
+  "unresolved_references": [],
+  "rust_or_ci_execution_by_archive_task": false
+}

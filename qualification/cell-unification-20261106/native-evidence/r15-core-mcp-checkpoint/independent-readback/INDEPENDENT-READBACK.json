@@ -1,0 +1,605 @@
+{
+  "schema": "hepta.independent-r15-closed-readback.v1",
+  "audit_status": "PASS",
+  "native_gate_status": "STRICT_PASS_TESTS_FAIL",
+  "reviewer": "/root/differentiation_study",
+  "scope": "Independent read-only archive/raw-byte/receipt/test-ID/Git-object readback of closed r15; no Rust or native command execution; no r16 input or active log read.",
+  "source_base_commit": "bef6fa7645df9df12b69fda499e97eed25de6c75",
+  "source_base_tree": "ce997fd958b8073d99b1e5bc302b7a0188fb4c3b",
+  "source_commit_recorded_in_native_evidence": "638997499470f0b7dd33ad18226feacf0198ef3d",
+  "independently_reconstructed_source_tree": "1646e1656cf6365e74accae19a1225fd2ce6d964",
+  "source_stage": 44,
+  "native_job_id": "1a1afd6b583-fc05-6c15",
+  "archive": {
+    "path": "hepta-cell/qualification/cell-unification-20261106/native-evidence/r15-core-mcp-checkpoint/checkpoint-r15-closed.tar.gz",
+    "bytes": 1022448,
+    "sha256": "4f1943f25c0e2ff0f549fe0463d9b5c9f29c24019d896ddf2418b2e8e431e866",
+    "members": 190,
+    "all_regular_unique_safe_relative": true,
+    "all_extracted_bytes_equal": true,
+    "all_189_indexed_size_sha_and_archive_modes_equal": true,
+    "index_sha256": "f92d7825d478d343fe16044fd28641323b07f7311fe62f88b0359e2d9b08ea7d",
+    "source_members": 177,
+    "original_evidence_members": 11,
+    "input_archive_members": 1,
+    "index_members": 1
+  },
+  "source": {
+    "computed_blob_count": 177,
+    "git_modes": [
+      "100644"
+    ],
+    "archive_modes": [
+      "644"
+    ],
+    "mode_boundary": "Tar 0644 and extracted filesystem permissions are not Git mode 100644; only native source manifest Git modes entered object construction.",
+    "source_manifest_sha256": "ee85feeca1c8da886ab3f52ab26fb741bb5d8569880b26985a2b0d7f8533dc2d",
+    "original_base_input": {
+      "path": "hepta-cell/qualification/cell-unification-20261106/native-evidence/r14-core-checkpoint/INDEPENDENT-SOURCE-TREE-INPUT.json",
+      "bytes": 360137,
+      "sha256": "56f7a3076b782105db36509abe860d9872c27bfa41685fb80b31e68b1a5abda1",
+      "retained_copy": "input/original-base-direct-map.json.gz",
+      "retained_gzip_sha256": "991f3b4dbb917bc4495429921d04751f8bb8c1fe8a136ff0e4f037874cfa839d",
+      "r14_source_tree_and_ancestor_metadata_used_for_target": false
+    },
+    "base_directories_verified": 60,
+    "additional_original_base_trees": [
+      {
+        "path": "codex-rs/codex-mcp",
+        "direct_children": 3,
+        "requested_sha": "ba9b8e2b486d80485f77a3bdaa88814a1f3fc2cb",
+        "computed_sha": "ba9b8e2b486d80485f77a3bdaa88814a1f3fc2cb",
+        "response_file": "input/base-tree-codex-mcp.json",
+        "response_sha256": "8aa8741bef2b36890b46b48c6ebed3bd1aa026b53eeade9cbba5081cdeb427de",
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/trees/ba9b8e2b486d80485f77a3bdaa88814a1f3fc2cb"
+      },
+      {
+        "path": "codex-rs/codex-mcp/src",
+        "direct_children": 36,
+        "requested_sha": "3768dd58fbdbf0e50789939e1006708b01d3d3cb",
+        "computed_sha": "3768dd58fbdbf0e50789939e1006708b01d3d3cb",
+        "response_file": "input/base-tree-codex-mcp-src.json",
+        "response_sha256": "43543e313bc4da72e56e4919e98aae755aaa37db2c17daab444ab215d5edade1",
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/trees/3768dd58fbdbf0e50789939e1006708b01d3d3cb"
+      },
+      {
+        "path": "codex-rs/core/src/session",
+        "direct_children": 36,
+        "requested_sha": "99e1e9f15b770e59990e7b7220667f00ae1da278",
+        "computed_sha": "99e1e9f15b770e59990e7b7220667f00ae1da278",
+        "response_file": "input/base-tree-session.json",
+        "response_sha256": "a197b6f8810587274094e634ce105709b8342130020e5603cdf6b2397c822f10",
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/trees/99e1e9f15b770e59990e7b7220667f00ae1da278"
+      }
+    ],
+    "target_ancestors_computed_from_r15_paths": 61,
+    "computed_tree": "1646e1656cf6365e74accae19a1225fd2ce6d964",
+    "root_gitdata_roundtrip_result_used_as_input": false,
+    "unexpanded_subtrees": "Unchanged opaque child tree and blob IDs are anchored in the verified original base direct maps; their entire descendant contents were not downloaded or rehashed.",
+    "lock": {
+      "changed_in_overlay": false,
+      "base_git_blob": "b7e710988d6a3377a7e0a1dc68aef49c68dda36e",
+      "native_source_and_post_gate_sha256": "4165307bb6c41d08e6c1c362060f2a958c8200ea43fdab2b8b1e6220ad82b55c",
+      "raw_lock_bytes_independently_rehashed": false
+    },
+    "workflow_raw_sha256_verified": "9b04365dba53f7bf2b9c5f57bbfb264cddfa63d0509ee1d0401762d52ca46d1c"
+  },
+  "formal_original_evidence": [
+    {
+      "path": "hepta-cell/qualification/cell-unification-20261106/native-evidence/r15-core-mcp-checkpoint/native-candidate-r15-source.json",
+      "bytes": 48734,
+      "sha256": "ee85feeca1c8da886ab3f52ab26fb741bb5d8569880b26985a2b0d7f8533dc2d",
+      "original_bytes": 48734,
+      "original_sha256": "ee85feeca1c8da886ab3f52ab26fb741bb5d8569880b26985a2b0d7f8533dc2d",
+      "gzip_decompressed_equal": false,
+      "archive_and_extracted_equal": true
+    },
+    {
+      "path": "hepta-cell/qualification/cell-unification-20261106/native-evidence/r15-core-mcp-checkpoint/native-core-mcp-r15-environment.json",
+      "bytes": 778,
+      "sha256": "d3527934f3f8705b43476f1b1bcaec443ae8e0ecf4ad4b99b157c48bd876cdfe",
+      "original_bytes": 778,
+      "original_sha256": "d3527934f3f8705b43476f1b1bcaec443ae8e0ecf4ad4b99b157c48bd876cdfe",
+      "gzip_decompressed_equal": false,
+      "archive_and_extracted_equal": true
+    },
+    {
+      "path": "hepta-cell/qualification/cell-unification-20261106/native-evidence/r15-core-mcp-checkpoint/native-core-mcp-r15-process-terminal.json",
+      "bytes": 733,
+      "sha256": "5128b395841786bdbbbafcf4d0174d5c4ac25b899c3c6b3f7736bc24e1049d0b",
+      "original_bytes": 733,
+      "original_sha256": "5128b395841786bdbbbafcf4d0174d5c4ac25b899c3c6b3f7736bc24e1049d0b",
+      "gzip_decompressed_equal": false,
+      "archive_and_extracted_equal": true
+    },
+    {
+      "path": "hepta-cell/qualification/cell-unification-20261106/native-evidence/r15-core-mcp-checkpoint/native-core-mcp-r15-result-review.json",
+      "bytes": 9965,
+      "sha256": "a31121be22b0ff02347fbae5266a21597fe58e811f2cd697617e1bda577bc061",
+      "original_bytes": 9965,
+      "original_sha256": "a31121be22b0ff02347fbae5266a21597fe58e811f2cd697617e1bda577bc061",
+      "gzip_decompressed_equal": false,
+      "archive_and_extracted_equal": true
+    },
+    {
+      "path": "hepta-cell/qualification/cell-unification-20261106/native-evidence/r15-core-mcp-checkpoint/native-core-mcp-r15-source-post-test-verification.json",
+      "bytes": 275,
+      "sha256": "c4a76bc4fbb5ffe6fae91150e7a9d03d915f7fffefd820e71fa137ae5b8ebe8a",
+      "original_bytes": 275,
+      "original_sha256": "c4a76bc4fbb5ffe6fae91150e7a9d03d915f7fffefd820e71fa137ae5b8ebe8a",
+      "gzip_decompressed_equal": false,
+      "archive_and_extracted_equal": true
+    },
+    {
+      "path": "hepta-cell/qualification/cell-unification-20261106/native-evidence/r15-core-mcp-checkpoint/native-core-mcp-r15-strict-receipt.json",
+      "bytes": 917,
+      "sha256": "4129fe2f4a14b757d642661b9da5e55bb3633e32cc61a9f7ee4e8574cb9f240a",
+      "original_bytes": 917,
+      "original_sha256": "4129fe2f4a14b757d642661b9da5e55bb3633e32cc61a9f7ee4e8574cb9f240a",
+      "gzip_decompressed_equal": false,
+      "archive_and_extracted_equal": true
+    },
+    {
+      "path": "hepta-cell/qualification/cell-unification-20261106/native-evidence/r15-core-mcp-checkpoint/native-core-mcp-r15-strict-resources.txt",
+      "bytes": 807,
+      "sha256": "05ac0facc7ee7cad8645fc50ecdda6ef852c425a31244dd550ccfaf08d3aacc3",
+      "original_bytes": 807,
+      "original_sha256": "05ac0facc7ee7cad8645fc50ecdda6ef852c425a31244dd550ccfaf08d3aacc3",
+      "gzip_decompressed_equal": false,
+      "archive_and_extracted_equal": true
+    },
+    {
+      "path": "hepta-cell/qualification/cell-unification-20261106/native-evidence/r15-core-mcp-checkpoint/native-core-mcp-r15-strict.log.gz",
+      "bytes": 733,
+      "sha256": "0597ed6ce04fd61570167431bb1e95dfec695f0e0e31c8ab94122afd4d84a1fc",
+      "original_bytes": 3080,
+      "original_sha256": "fa8972cc1cf309346f513dee0ad51e6b7e4f8d4973e240d51564c90080631ab0",
+      "gzip_decompressed_equal": true,
+      "archive_and_extracted_equal": true
+    },
+    {
+      "path": "hepta-cell/qualification/cell-unification-20261106/native-evidence/r15-core-mcp-checkpoint/native-core-mcp-r15-tests-receipt.json",
+      "bytes": 903,
+      "sha256": "cae7277834a12e8a42fc3e559eb1c99996a72f19d276cecda55871768e9ed2f6",
+      "original_bytes": 903,
+      "original_sha256": "cae7277834a12e8a42fc3e559eb1c99996a72f19d276cecda55871768e9ed2f6",
+      "gzip_decompressed_equal": false,
+      "archive_and_extracted_equal": true
+    },
+    {
+      "path": "hepta-cell/qualification/cell-unification-20261106/native-evidence/r15-core-mcp-checkpoint/native-core-mcp-r15-tests-resources.txt",
+      "bytes": 854,
+      "sha256": "34f461ce0b17cb02bdc443a823f3ae7417ed535e354b75e3e92279fe4288b92d",
+      "original_bytes": 854,
+      "original_sha256": "34f461ce0b17cb02bdc443a823f3ae7417ed535e354b75e3e92279fe4288b92d",
+      "gzip_decompressed_equal": false,
+      "archive_and_extracted_equal": true
+    },
+    {
+      "path": "hepta-cell/qualification/cell-unification-20261106/native-evidence/r15-core-mcp-checkpoint/native-core-mcp-r15-tests.log.gz",
+      "bytes": 80935,
+      "sha256": "200254fdc071f68f4a67f6c8b5518775ecc4bf7bd4a0f0b6db29aad3ed3d9829",
+      "original_bytes": 515261,
+      "original_sha256": "2e9b11682a84cce7be7e1db72e47eb4be260e8d7ef7a3b1fa916fe59c5a3e39f",
+      "gzip_decompressed_equal": true,
+      "archive_and_extracted_equal": true
+    }
+  ],
+  "gates": {
+    "strict": {
+      "receipt": "strict-receipt.json",
+      "command": [
+        "just",
+        "clippy",
+        "--locked",
+        "-p",
+        "codex-core",
+        "-p",
+        "codex-mcp",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 45.16182255744934,
+      "log_bytes": 3080,
+      "log_sha256": "fa8972cc1cf309346f513dee0ad51e6b7e4f8d4973e240d51564c90080631ab0",
+      "resources_bytes": 807,
+      "resources_sha256": "05ac0facc7ee7cad8645fc50ecdda6ef852c425a31244dd550ccfaf08d3aacc3",
+      "receipt_log_resources_match": true
+    },
+    "tests": {
+      "receipt": "tests-receipt.json",
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-core",
+        "-p",
+        "codex-mcp",
+        "--retries",
+        "0"
+      ],
+      "exit_code": 100,
+      "elapsed_seconds": 594.9447140693665,
+      "log_bytes": 515261,
+      "log_sha256": "2e9b11682a84cce7be7e1db72e47eb4be260e8d7ef7a3b1fa916fe59c5a3e39f",
+      "resources_bytes": 854,
+      "resources_sha256": "34f461ce0b17cb02bdc443a823f3ae7417ed535e354b75e3e92279fe4288b92d",
+      "receipt_log_resources_match": true
+    }
+  },
+  "environment_manifest": {
+    "sha256": "d3527934f3f8705b43476f1b1bcaec443ae8e0ecf4ad4b99b157c48bd876cdfe",
+    "source_tree_equal": true
+  },
+  "tests": {
+    "unique_executed_ids": 4026,
+    "counts": {
+      "PASS": 4023,
+      "FAIL": 3,
+      "TIMEOUT": 0
+    },
+    "per_package": {
+      "codex-core": {
+        "PASS": 3827,
+        "FAIL": 3
+      },
+      "codex-mcp": {
+        "PASS": 196
+      }
+    },
+    "per_binary": {
+      "codex-core": {
+        "PASS": 2451,
+        "FAIL": 1
+      },
+      "codex-core::all": {
+        "PASS": 1372,
+        "FAIL": 2
+      },
+      "codex-core::responses_headers": {
+        "PASS": 4
+      },
+      "codex-mcp": {
+        "PASS": 196
+      }
+    },
+    "nextest_execution_seconds": 479.725,
+    "reported_skipped": 9,
+    "skip_identity_boundary": "9 is independently read from Starting and Summary. No original per-ID SKIP rows or list JSON are present in this r15 archive, so this report does not derive or certify the nine identities.",
+    "footer_failure_repetitions_excluded": 3,
+    "raw_log_bytes": 515261,
+    "raw_log_sha256": "2e9b11682a84cce7be7e1db72e47eb4be260e8d7ef7a3b1fa916fe59c5a3e39f",
+    "summary_line": "     Summary [ 479.725s] 4026 tests run: 4023 passed, 3 failed, 9 skipped",
+    "all_actual_rows": "TEST-ROWS.json.gz",
+    "failure_ranges": [
+      {
+        "status": "FAIL",
+        "elapsed": "5.262s",
+        "binary": "codex-core",
+        "name": "session::tests::managed_network_proxy_decider_survives_full_access_start",
+        "log_byte_offset": 211007,
+        "log_line": 1822,
+        "log_byte_range_half_open": [
+          211007,
+          211765
+        ],
+        "bytes": 758,
+        "sha256": "cc777669f33e6b70e79e15b3056c83b4d876556e7f0b1a6ca63ea3c9844c8479",
+        "native_review_range_and_bytes_equal": true
+      },
+      {
+        "status": "FAIL",
+        "elapsed": "5.166s",
+        "binary": "codex-core::all",
+        "name": "suite::turn_input_submission::recover_turn_if_idle_preserves_id_and_resumes_plan_mode",
+        "log_byte_offset": 476277,
+        "log_line": 3966,
+        "log_byte_range_half_open": [
+          476277,
+          477124
+        ],
+        "bytes": 847,
+        "sha256": "d22af15eb161af09b2c051dbc386d4929b09ec86e428e59022da62789524dfe5",
+        "native_review_range_and_bytes_equal": true
+      },
+      {
+        "status": "FAIL",
+        "elapsed": "0.569s",
+        "binary": "codex-core::all",
+        "name": "suite::unified_exec_zsh_fork_approvals::unified_exec_zsh_fork_parent_approval_preserves_denied_reads",
+        "log_byte_offset": 484059,
+        "log_line": 4036,
+        "log_byte_range_half_open": [
+          484059,
+          485047
+        ],
+        "bytes": 988,
+        "sha256": "692fcb858778ffff1e21f48b8dc67564101848adc3bace4898724f186511363f",
+        "native_review_range_and_bytes_equal": true
+      }
+    ],
+    "failure_excerpts": "FAILURE-BLOCKS.json"
+  },
+  "original_r14_failures": {
+    "input": {
+      "path": "hepta-cell/qualification/cell-unification-20261106/native-evidence/r14-core-checkpoint/native-core-r14-result-review.json",
+      "bytes": 35985,
+      "sha256": "9b5b3a81d4901d8c6769908e2021235e3ef82e3257d5b0c21bf1c086899f0732"
+    },
+    "only_original_failed_IDs_used": true,
+    "distinct_ids": 24,
+    "r15_counts": {
+      "PASS": 22,
+      "FAIL": 2
+    },
+    "outcomes_from_r15_raw_log": [
+      {
+        "status": "PASS",
+        "elapsed": "1.465s",
+        "binary": "codex-core::all",
+        "name": "suite::git_enrichment::ephemeral_system_thread_prewarm_skips_and_turn_observes_fresh_state::test_case_1_system_background_thread",
+        "log_byte_offset": 375815,
+        "log_line": 3181
+      },
+      {
+        "status": "PASS",
+        "elapsed": "1.487s",
+        "binary": "codex-core::all",
+        "name": "suite::git_enrichment::ephemeral_system_thread_prewarm_skips_and_turn_observes_fresh_state::test_case_2_ambient_background_thread",
+        "log_byte_offset": 375985,
+        "log_line": 3182
+      },
+      {
+        "status": "PASS",
+        "elapsed": "0.369s",
+        "binary": "codex-core::all",
+        "name": "suite::hooks::async_hook_finishing_while_idle_waits_for_the_next_turn",
+        "log_byte_offset": 380188,
+        "log_line": 3210
+      },
+      {
+        "status": "PASS",
+        "elapsed": "5.448s",
+        "binary": "codex-core::all",
+        "name": "suite::git_enrichment::startup_prewarm_skips_git_enrichment_and_user_turn_observes_fresh_state",
+        "log_byte_offset": 378153,
+        "log_line": 3196
+      },
+      {
+        "status": "PASS",
+        "elapsed": "0.184s",
+        "binary": "codex-core::all",
+        "name": "suite::hooks_mcp::mcp_tool_hook_passes_thread_metadata_to_model_hidden_tools",
+        "log_byte_offset": 387170,
+        "log_line": 3271
+      },
+      {
+        "status": "PASS",
+        "elapsed": "0.571s",
+        "binary": "codex-core::all",
+        "name": "suite::mcp_tool_exposure::later_follow_up_uses_background_recovered_apps_after_mid_thread_startup_failures",
+        "log_byte_offset": 392801,
+        "log_line": 3318
+      },
+      {
+        "status": "PASS",
+        "elapsed": "1.679s",
+        "binary": "codex-core::all",
+        "name": "suite::rmcp_client::streamable_http_with_oauth_round_trip",
+        "log_byte_offset": 448582,
+        "log_line": 3753
+      },
+      {
+        "status": "PASS",
+        "elapsed": "0.360s",
+        "binary": "codex-core::all",
+        "name": "suite::skill_approval::shell_zsh_fork_skill_scripts_ignore_declared_permissions",
+        "log_byte_offset": 454099,
+        "log_line": 3799
+      },
+      {
+        "status": "PASS",
+        "elapsed": "0.167s",
+        "binary": "codex-core::all",
+        "name": "suite::token_budget::token_budget_context_injects_plain_thread_hint_text",
+        "log_byte_offset": 468899,
+        "log_line": 3903
+      },
+      {
+        "status": "PASS",
+        "elapsed": "0.243s",
+        "binary": "codex-core::all",
+        "name": "suite::token_budget::token_budget_context_uses_new_window_after_compaction::test_case_1_token_budget_only",
+        "log_byte_offset": 469130,
+        "log_line": 3905
+      },
+      {
+        "status": "PASS",
+        "elapsed": "0.274s",
+        "binary": "codex-core::all",
+        "name": "suite::token_budget::token_budget_context_uses_new_window_after_compaction::test_case_2_with_client_developer_retention",
+        "log_byte_offset": 469277,
+        "log_line": 3906
+      },
+      {
+        "status": "FAIL",
+        "elapsed": "5.166s",
+        "binary": "codex-core::all",
+        "name": "suite::turn_input_submission::recover_turn_if_idle_preserves_id_and_resumes_plan_mode",
+        "log_byte_offset": 476277,
+        "log_line": 3966
+      },
+      {
+        "status": "PASS",
+        "elapsed": "0.426s",
+        "binary": "codex-core::all",
+        "name": "suite::turn_state::websocket_turn_state_is_stable_within_turn",
+        "log_byte_offset": 475269,
+        "log_line": 3957
+      },
+      {
+        "status": "PASS",
+        "elapsed": "0.445s",
+        "binary": "codex-core::all",
+        "name": "suite::turn_state::websocket_turn_state_persists_within_turn_and_resets_after",
+        "log_byte_offset": 475372,
+        "log_line": 3958
+      },
+      {
+        "status": "PASS",
+        "elapsed": "0.406s",
+        "binary": "codex-core::all",
+        "name": "suite::unified_exec_process_events::exec_command_consumes_pushed_remote_process_events::test_case_1_complete_event_stream",
+        "log_byte_offset": 481640,
+        "log_line": 4021
+      },
+      {
+        "status": "PASS",
+        "elapsed": "0.370s",
+        "binary": "codex-core::all",
+        "name": "suite::unified_exec_process_events::exec_command_consumes_pushed_remote_process_events::test_case_2_direct_sandbox_denial",
+        "log_byte_offset": 481803,
+        "log_line": 4022
+      },
+      {
+        "status": "PASS",
+        "elapsed": "0.368s",
+        "binary": "codex-core::all",
+        "name": "suite::unified_exec_process_events::exec_command_consumes_pushed_remote_process_events::test_case_3_legacy_exit_metadata",
+        "log_byte_offset": 481966,
+        "log_line": 4023
+      },
+      {
+        "status": "PASS",
+        "elapsed": "0.395s",
+        "binary": "codex-core::all",
+        "name": "suite::unified_exec_process_events::exec_command_consumes_pushed_remote_process_events::test_case_4_truncated_event_replay",
+        "log_byte_offset": 482128,
+        "log_line": 4024
+      },
+      {
+        "status": "PASS",
+        "elapsed": "0.472s",
+        "binary": "codex-core::all",
+        "name": "suite::unified_exec_process_events::exec_command_consumes_pushed_remote_process_events::test_case_5_managed_network_uses_executor_proxy_launch",
+        "log_byte_offset": 482292,
+        "log_line": 4025
+      },
+      {
+        "status": "PASS",
+        "elapsed": "0.468s",
+        "binary": "codex-core::all",
+        "name": "suite::unified_exec_process_events::exec_command_consumes_pushed_remote_process_events::test_case_6_strict_managed_allowlist_omits_policy_callbacks",
+        "log_byte_offset": 482476,
+        "log_line": 4026
+      },
+      {
+        "status": "PASS",
+        "elapsed": "0.425s",
+        "binary": "codex-core::all",
+        "name": "suite::unified_exec_process_events::exec_command_consumes_pushed_remote_process_events::test_case_7_foreign_windows_managed_network_preserves_approval_registration",
+        "log_byte_offset": 482665,
+        "log_line": 4027
+      },
+      {
+        "status": "PASS",
+        "elapsed": "0.319s",
+        "binary": "codex-core::all",
+        "name": "suite::unified_exec_process_events::exec_command_consumes_pushed_remote_process_events::test_case_8_foreign_windows_workspace_sandbox",
+        "log_byte_offset": 482870,
+        "log_line": 4028
+      },
+      {
+        "status": "FAIL",
+        "elapsed": "0.569s",
+        "binary": "codex-core::all",
+        "name": "suite::unified_exec_zsh_fork_approvals::unified_exec_zsh_fork_parent_approval_preserves_denied_reads",
+        "log_byte_offset": 484059,
+        "log_line": 4036
+      },
+      {
+        "status": "PASS",
+        "elapsed": "0.328s",
+        "binary": "codex-core::all",
+        "name": "suite::unified_exec_process_events::exec_command_consumes_pushed_remote_process_events::test_case_9_windows_elevated_powershell_disables_profile",
+        "log_byte_offset": 483045,
+        "log_line": 4029
+      }
+    ]
+  },
+  "new_hook_owner_regression": {
+    "status": "PASS",
+    "elapsed": "0.008s",
+    "binary": "codex-mcp",
+    "name": "binding::tests::hook_call_retains_owner_and_rejects_stale_catalog_before_preparation",
+    "log_byte_offset": 492254,
+    "log_line": 4116
+  },
+  "native_terminal_and_post_gate": {
+    "terminal_receipt_sha256": "5128b395841786bdbbbafcf4d0174d5c4ac25b899c3c6b3f7736bc24e1049d0b",
+    "terminal_exit_code": 100,
+    "wrapper_log_truncation_reported": false,
+    "terminal_wrapper_stdout_bytes": 21812,
+    "wrapper_output_is_distinct_from_full_test_log": true,
+    "post_gate_manifest_sha256": "c4a76bc4fbb5ffe6fae91150e7a9d03d915f7fffefd820e71fa137ae5b8ebe8a",
+    "source_and_clean_worktree_fields_consistent": true,
+    "boundary": "These are closed native execution receipts; the reviewer checked their exact bytes and consistency but did not independently re-execute or inspect the remote working tree."
+  },
+  "discrepancies": [],
+  "qualification_boundary": "Readback PASS certifies evidence consistency, not test success. r15 remains FAIL100, 3 actual failures. This report confers no r16, full-workspace, ignored-test, cross-platform, external-service or model-efficacy qualification.",
+  "reproducibility_files": [
+    {
+      "path": "r15-independent-readback/ARCHIVE-MEMBER-READBACK.json",
+      "bytes": 48990,
+      "sha256": "ea50063475a2e4589f2da4cdd26d3b53a4e3db0ee64f1ee237eeeaf55e673142"
+    },
+    {
+      "path": "r15-independent-readback/TREE-REBUILD.json",
+      "bytes": 68414,
+      "sha256": "e23dfe2ee453bfd0fd8f12799081be149b8746f2dc6c2f2e66f3d1b6e5323226"
+    },
+    {
+      "path": "r15-independent-readback/FAILURE-BLOCKS.json",
+      "bytes": 4397,
+      "sha256": "20eafc0d50334d0183b5957148196a9bb2562c66b40f15675133d786a5baa872"
+    },
+    {
+      "path": "r15-independent-readback/TEST-ROWS.json.gz",
+      "bytes": 115332,
+      "sha256": "f3983c1b7241752ae2405750a13a4e69abebda174c0fad2f0a71feea906af89f"
+    },
+    {
+      "path": "r15-independent-readback/independent_readback.py",
+      "bytes": 23962,
+      "sha256": "88879277e167ab4268379871812bdf5f4384b65bcc424d236ca99782bdf18074"
+    },
+    {
+      "path": "r15-independent-readback/input/base-tree-fetch-manifest.json",
+      "bytes": 1611,
+      "sha256": "eb12a4c8b98dfd07caba0d237eaee24edc8f9fd510b52dcb3adcd834adaf5bc2"
+    },
+    {
+      "path": "r15-independent-readback/input/original-base-direct-map.json.gz",
+      "bytes": 70566,
+      "sha256": "991f3b4dbb917bc4495429921d04751f8bb8c1fe8a136ff0e4f037874cfa839d"
+    },
+    {
+      "path": "r15-independent-readback/input/base-tree-codex-mcp.json",
+      "bytes": 909,
+      "sha256": "8aa8741bef2b36890b46b48c6ebed3bd1aa026b53eeade9cbba5081cdeb427de"
+    },
+    {
+      "path": "r15-independent-readback/input/base-tree-codex-mcp-src.json",
+      "bytes": 9130,
+      "sha256": "43543e313bc4da72e56e4919e98aae755aaa37db2c17daab444ab215d5edade1"
+    },
+    {
+      "path": "r15-independent-readback/input/base-tree-session.json",
+      "bytes": 9056,
+      "sha256": "a197b6f8810587274094e634ce105709b8342130020e5603cdf6b2397c822f10"
+    }
+  ]
+}

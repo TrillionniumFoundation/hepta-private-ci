@@ -1,0 +1,255 @@
+--- a/codex-rs/hepta-supervisor/src/supervisor_tests.rs
++++ b/codex-rs/hepta-supervisor/src/supervisor_tests.rs
+@@ -42,6 +42,9 @@
+ use crate::SupervisorEventKind;
+ use crate::TickReport;
+ use crate::driver::SpawnedProcess;
++
++#[path = "supervisor_restart_recovery_tests.rs"]
++mod restart_recovery;
+ 
+ const FIRST_AGENT_ID: &str = "018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12";
+ const SECOND_AGENT_ID: &str = "019153a4-3088-7e03-a56a-9b1964f75dd3";
+--- /dev/null
++++ b/codex-rs/hepta-supervisor/src/supervisor_restart_recovery_tests.rs
+@@ -0,0 +1,240 @@
++use super::*;
++
++use pretty_assertions::assert_eq;
++
++use crate::restart_journal::DurableRestartWindow;
++use crate::restart_journal::RESTART_JOURNAL_FILE;
++use crate::restart_journal::RestartBudgetJournal;
++use crate::restart_journal::read_main_restart_budget;
++use crate::restart_journal::read_restart_journal;
++use crate::restart_journal::unix_millis_now;
++use crate::restart_journal::write_restart_journal;
++use crate::restart_policy::RESTART_ATTEMPT_BUDGET;
++
++#[test]
++fn matrix_exhausted_budget_survives_repeated_supervisor_recovery()
++-> Result<(), SupervisorError> {
++    let (fleet, control, mut supervisor, mut now) =
++        ready_paired_supervisor("matrix-budget-recovery")?;
++    for attempt in 1..=RESTART_ATTEMPT_BUDGET {
++        control.set_matrix_exit(&fleet.first);
++        assert_eq!(supervisor.tick(now), TickReport::default());
++        assert_eq!(
++            supervisor.snapshot(&fleet.first).expect("fault snapshot").matrix.restart_attempt,
++            attempt
++        );
++        now += Duration::from_secs(2);
++        assert_eq!(supervisor.tick(now), TickReport::default());
++        control.set_matrix_healthy(&fleet.first);
++        assert_eq!(supervisor.tick(now), TickReport::default());
++    }
++    control.set_matrix_exit(&fleet.first);
++    assert_eq!(supervisor.tick(now), TickReport::default());
++    let exhausted = supervisor.snapshot(&fleet.first).expect("exhausted snapshot");
++    assert!(!exhausted.matrix.active);
++    assert!(exhausted.events.iter().any(|event| {
++        event.kind == SupervisorEventKind::MatrixRestartBudgetExhausted {
++            attempts: RESTART_ATTEMPT_BUDGET,
++        }
++    }));
++    let record = fleet.registry.load()?.agent(&fleet.first).cloned().expect("agent");
++    let durable_before = read_restart_journal(record.layout.run_root())?;
++    let matrix_spawns = control.matrix_spawn_count(&fleet.first);
++    assert_eq!(matrix_spawns, 4);
++    drop(supervisor);
++
++    for _ in 0..2 {
++        let (mut recovered, report) =
++            Supervisor::recover(fleet.registry.clone(), control.driver(), config(), now)?;
++        assert_eq!(report, TickReport::default());
++        assert_eq!(
++            recovered.snapshot(&fleet.first).expect("recovered snapshot").matrix.restart_attempt,
++            RESTART_ATTEMPT_BUDGET
++        );
++        now += Duration::from_secs(2);
++        assert_eq!(recovered.tick(now), TickReport::default());
++        assert_eq!(control.matrix_spawn_count(&fleet.first), matrix_spawns);
++        assert_eq!(control.spawn_count(&fleet.first), 1);
++        assert_eq!(control.matrix_spawn_count(&fleet.second), 1);
++        assert_eq!(read_restart_journal(record.layout.run_root())?, durable_before);
++    }
++    Ok(())
++}
++
++#[test]
++fn matrix_orphan_fault_uses_lease_release_budget_before_writing()
++-> Result<(), SupervisorError> {
++    let (fleet, control, mut supervisor, mut now) =
++        ready_paired_supervisor("matrix-lease-release")?;
++    control.set_matrix_exit(&fleet.first);
++    assert_eq!(supervisor.tick(now), TickReport::default());
++    now += Duration::from_secs(2);
++    assert_eq!(supervisor.tick(now), TickReport::default());
++    control.set_matrix_healthy(&fleet.first);
++    assert_eq!(supervisor.tick(now), TickReport::default());
++
++    let record = fleet.registry.load()?.agent(&fleet.first).cloned().expect("agent");
++    let journal = read_restart_journal(record.layout.run_root())?.expect("Matrix budget");
++    assert_eq!(journal.matrix.attempts, 1);
++    let claim = crate::restart_budget::claim_restart(
++        record.layout.run_root(),
++        config().restart_max_attempts,
++        config().restart_window,
++        config().restart_backoff_base,
++    )
++    .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
++    let main_before = read_main_restart_budget(record.layout.run_root())?;
++    assert!(main_before.as_ref().expect("main budget").pending);
++
++    // Model a crash after exact target-process admission but before the
++    // registry's release revision. The live lease identifies the actual
++    // release; restoring against the stale registry value would erase its
++    // existing Matrix fault window.
++    let stale_release = ReleaseId::parse("matrix-stale-registry-release")?;
++    let source = fleet.write_release_source()?;
++    fleet.registry.install_release_bundle(
++        stale_release.clone(),
++        &source,
++        Vec::new(),
++        Some(&source),
++        Vec::new(),
++    )?;
++    fleet.registry.allow_release(&fleet.first, &stale_release)?;
++    fleet.registry.compare_and_set_release_state(
++        &fleet.first,
++        record.release_state.generation,
++        Some(stale_release),
++        record.release_state.previous.clone(),
++    )?;
++
++    // Leave the dead Matrix lease unobserved so recovery itself adds a fault.
++    control.set_matrix_exit(&fleet.first);
++    drop(supervisor);
++    let (recovered, report) =
++        Supervisor::recover(fleet.registry.clone(), control.driver(), config(), now)?;
++    assert_eq!(report, TickReport::default());
++    let snapshot = recovered.snapshot(&fleet.first).expect("recovered snapshot");
++    assert_eq!(snapshot.active_release.as_deref(), Some(journal.release_id.as_str()));
++    assert_eq!(snapshot.matrix.restart_attempt, 2);
++    assert_eq!(snapshot.restart_attempt, claim.attempt);
++    assert!(!snapshot.restart_pending, "the exact Agent was already adopted");
++    assert_eq!(read_main_restart_budget(record.layout.run_root())?, main_before);
++    assert_eq!(
++        read_restart_journal(record.layout.run_root())?,
++        Some(RestartBudgetJournal::new(
++            journal.agent_id,
++            journal.release_id,
++            DurableRestartWindow::empty(),
++            DurableRestartWindow {
++                attempts: 2,
++                window_started_unix_millis: journal.matrix.window_started_unix_millis,
++            },
++        )?)
++    );
++    assert_eq!(control.spawn_count(&fleet.first), 1);
++    assert_eq!(control.matrix_spawn_count(&fleet.first), 2);
++    Ok(())
++}
++
++#[test]
++fn matrix_budget_identity_is_checked_even_when_agent_recovery_faults()
++-> Result<(), SupervisorError> {
++    let (fleet, control, supervisor, now) =
++        ready_paired_supervisor("matrix-budget-owner")?;
++    let record = fleet.registry.load()?.agent(&fleet.first).cloned().expect("agent");
++    let wrong_owner = RestartBudgetJournal::new(
++        fleet.second.clone(),
++        record.release_state.current.clone().expect("active release"),
++        DurableRestartWindow::empty(),
++        DurableRestartWindow {
++            attempts: 2,
++            window_started_unix_millis: Some(unix_millis_now()?),
++        },
++    )?;
++    write_restart_journal(record.layout.run_root(), &wrong_owner)?;
++    let journal_path = record.layout.run_root().join(RESTART_JOURNAL_FILE);
++    let bytes_before = std::fs::read(&journal_path)?;
++    std::fs::write(record.layout.run_root().join("supervisor-process.json"), b"{")?;
++    drop(supervisor);
++
++    let result = Supervisor::recover(fleet.registry.clone(), control.driver(), config(), now);
++    assert!(matches!(
++        result,
++        Err(SupervisorError::CorruptLease(message))
++            if message.contains("restart budget journal belongs to")
++    ));
++    assert_eq!(std::fs::read(journal_path)?, bytes_before);
++    assert_eq!(control.spawn_count(&fleet.first), 1);
++    assert_eq!(control.matrix_spawn_count(&fleet.first), 1);
++    Ok(())
++}
++
++#[test]
++fn unresolved_agent_release_cannot_reset_another_release_matrix_budget()
++-> Result<(), SupervisorError> {
++    let (fleet, control, supervisor, now) =
++        ready_paired_supervisor("matrix-unresolved-lease")?;
++    let record = fleet.registry.load()?.agent(&fleet.first).cloned().expect("agent");
++    let actual_release = record.release_state.current.clone().expect("active release");
++    let journal = RestartBudgetJournal::new(
++        fleet.first.clone(),
++        actual_release.clone(),
++        DurableRestartWindow::empty(),
++        DurableRestartWindow {
++            attempts: 2,
++            window_started_unix_millis: Some(unix_millis_now()?),
++        },
++    )?;
++    write_restart_journal(record.layout.run_root(), &journal)?;
++    let journal_path = record.layout.run_root().join(RESTART_JOURNAL_FILE);
++    let journal_before = std::fs::read(&journal_path)?;
++    let main_before = read_main_restart_budget(record.layout.run_root())?;
++    let lease_path = record.layout.run_root().join("supervisor-process.json");
++    let lease_before = std::fs::read(&lease_path)?;
++
++    let stale_release = ReleaseId::parse("matrix-unresolved-stale-registry")?;
++    let source = fleet.write_release_source()?;
++    fleet.registry.install_release_bundle(
++        stale_release.clone(),
++        &source,
++        Vec::new(),
++        Some(&source),
++        Vec::new(),
++    )?;
++    fleet.registry.allow_release(&fleet.first, &stale_release)?;
++    fleet.registry.compare_and_set_release_state(
++        &fleet.first,
++        record.release_state.generation,
++        Some(stale_release),
++        record.release_state.previous.clone(),
++    )?;
++    std::fs::write(&lease_path, b"{")?;
++    drop(supervisor);
++
++    let (mut unresolved, report) =
++        Supervisor::recover(fleet.registry.clone(), control.driver(), config(), now)?;
++    assert_eq!(report.faults.len(), 1);
++    assert_eq!(report.faults[0].agent_id, fleet.first);
++    assert_eq!(
++        unresolved.snapshot(&fleet.first).expect("unresolved snapshot").matrix.restart_attempt,
++        journal.matrix.attempts
++    );
++    assert_eq!(unresolved.tick(now), TickReport::default());
++    assert_eq!(control.matrix_spawn_count(&fleet.first), 1);
++    assert_eq!(std::fs::read(&journal_path)?, journal_before);
++    assert_eq!(read_main_restart_budget(record.layout.run_root())?, main_before);
++    drop(unresolved);
++
++    std::fs::write(lease_path, lease_before)?;
++    let (recovered, report) =
++        Supervisor::recover(fleet.registry.clone(), control.driver(), config(), now)?;
++    assert_eq!(report, TickReport::default());
++    let snapshot = recovered.snapshot(&fleet.first).expect("resolved snapshot");
++    assert_eq!(snapshot.active_release.as_deref(), Some(actual_release.as_str()));
++    assert_eq!(snapshot.matrix.restart_attempt, journal.matrix.attempts);
++    assert_eq!(control.spawn_count(&fleet.first), 1);
++    assert_eq!(control.matrix_spawn_count(&fleet.first), 1);
++    assert_eq!(std::fs::read(journal_path)?, journal_before);
++    assert_eq!(read_main_restart_budget(record.layout.run_root())?, main_before);
++    Ok(())
++}

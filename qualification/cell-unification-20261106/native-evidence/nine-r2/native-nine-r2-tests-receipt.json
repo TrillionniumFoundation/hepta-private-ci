@@ -1,0 +1,40 @@
+{
+  "command": [
+    "just",
+    "test",
+    "--locked",
+    "-p",
+    "codex-hepta-neuron",
+    "-p",
+    "codex-hepta-learning-artifacts",
+    "-p",
+    "codex-hepta-automation",
+    "-p",
+    "codex-hepta-runtime",
+    "-p",
+    "codex-hepta-control-plane",
+    "-p",
+    "codex-hepta-plasticity",
+    "-p",
+    "codex-utils-pty",
+    "-p",
+    "codex-hepta-context-compiler",
+    "-p",
+    "codex-hepta-intelligence",
+    "--retries",
+    "0"
+  ],
+  "kind": "tests",
+  "staged_tree": "40da496d1e1c163f67ed83dcdb23d61bf16836aa",
+  "source_manifest": "native-nine-r2-agentd-source.json",
+  "start_unix": 1793935945.4526005,
+  "end_unix": 1793935972.5755913,
+  "elapsed_seconds": 27.12299084663391,
+  "exit_code": 0,
+  "log_sha256": "25e7d55b4c2fbf6ca2a22562fc683c5609a97f94fb4babd46840d756cf5e85b3",
+  "disk_after": {
+    "total": 1966736678912,
+    "used": 1566931460096,
+    "free": 299824967680
+  }
+}

@@ -1,0 +1,170 @@
+{
+  "schema": "hepta.r20-closed-native-readback.v1",
+  "source_tree": "e65356fc570296b74644967054eaded15b8ed440",
+  "source_commit": "07699df6fb5bfb46562ecb0c2eccd0d232d18eac",
+  "source_manifest_sha256": "1109bc5d38e702cb4e30de40af8877fe024a2b92933285546ab9b6c02b05bcb8",
+  "log_sha256": "8efb59e5fbe125a8f16bd5efe138d1e4d4aed579dd84b873790cfbee8a1973a6",
+  "strict_exit": 0,
+  "tests_exit": 0,
+  "outer_job_exit": 0,
+  "unique_test_count": 1495,
+  "per_package": {
+    "codex-app-server": {
+      "PASS": 1345,
+      "FAIL": 0,
+      "TIMEOUT": 0
+    },
+    "codex-linux-sandbox": {
+      "PASS": 150,
+      "FAIL": 0,
+      "TIMEOUT": 0
+    }
+  },
+  "summary_lines": [
+    "     Summary [ 401.653s] 1495 tests run: 1495 passed, 2 skipped"
+  ],
+  "reported_skips": [
+    2
+  ],
+  "original_app_server_count": 1345,
+  "original_app_server_missing_ids": [],
+  "original_seven_cases": [
+    {
+      "previous": {
+        "binary": "codex-app-server::all",
+        "name": "suite::v2::command_exec::command_exec_accepts_permission_profile",
+        "status": "FAIL",
+        "seconds": 0.26
+      },
+      "current": {
+        "status": "PASS",
+        "seconds": 0.214,
+        "binary": "codex-app-server::all",
+        "name": "suite::v2::command_exec::command_exec_accepts_permission_profile"
+      }
+    },
+    {
+      "previous": {
+        "binary": "codex-app-server::all",
+        "name": "suite::v2::command_exec::command_exec_env_overrides_merge_with_server_environment_and_support_unset",
+        "status": "FAIL",
+        "seconds": 0.266
+      },
+      "current": {
+        "status": "PASS",
+        "seconds": 0.214,
+        "binary": "codex-app-server::all",
+        "name": "suite::v2::command_exec::command_exec_env_overrides_merge_with_server_environment_and_support_unset"
+      }
+    },
+    {
+      "previous": {
+        "binary": "codex-app-server::all",
+        "name": "suite::v2::command_exec::command_exec_non_streaming_respects_output_cap",
+        "status": "FAIL",
+        "seconds": 0.276
+      },
+      "current": {
+        "status": "PASS",
+        "seconds": 0.222,
+        "binary": "codex-app-server::all",
+        "name": "suite::v2::command_exec::command_exec_non_streaming_respects_output_cap"
+      }
+    },
+    {
+      "previous": {
+        "binary": "codex-app-server::all",
+        "name": "suite::v2::command_exec::command_exec_permission_profile_does_not_reuse_default_network_proxy",
+        "status": "FAIL",
+        "seconds": 0.274
+      },
+      "current": {
+        "status": "PASS",
+        "seconds": 0.227,
+        "binary": "codex-app-server::all",
+        "name": "suite::v2::command_exec::command_exec_permission_profile_does_not_reuse_default_network_proxy"
+      }
+    },
+    {
+      "previous": {
+        "binary": "codex-app-server::all",
+        "name": "suite::v2::command_exec::command_exec_permission_profile_starts_selected_network_proxy",
+        "status": "FAIL",
+        "seconds": 0.301
+      },
+      "current": {
+        "status": "PASS",
+        "seconds": 0.238,
+        "binary": "codex-app-server::all",
+        "name": "suite::v2::command_exec::command_exec_permission_profile_starts_selected_network_proxy"
+      }
+    },
+    {
+      "previous": {
+        "binary": "codex-app-server::all",
+        "name": "suite::v2::command_exec::command_exec_without_process_id_keeps_buffered_compatibility",
+        "status": "FAIL",
+        "seconds": 0.26
+      },
+      "current": {
+        "status": "PASS",
+        "seconds": 0.217,
+        "binary": "codex-app-server::all",
+        "name": "suite::v2::command_exec::command_exec_without_process_id_keeps_buffered_compatibility"
+      }
+    },
+    {
+      "previous": {
+        "binary": "codex-app-server::all",
+        "name": "suite::v2::command_exec::command_exec_process_ids_are_connection_scoped_and_disconnect_terminates_process",
+        "status": "FAIL",
+        "seconds": 5.631
+      },
+      "current": {
+        "status": "PASS",
+        "seconds": 0.583,
+        "binary": "codex-app-server::all",
+        "name": "suite::v2::command_exec::command_exec_process_ids_are_connection_scoped_and_disconnect_terminates_process"
+      }
+    }
+  ],
+  "new_linux_cases": {
+    "owner_lifetime::tests::already_exited_owner_is_rejected_before_payload_start": [
+      {
+        "status": "PASS",
+        "seconds": 0.004,
+        "binary": "codex-linux-sandbox",
+        "name": "owner_lifetime::tests::already_exited_owner_is_rejected_before_payload_start"
+      }
+    ],
+    "owner_lifetime::tests::owner_exit_is_observed_after_observer_start": [
+      {
+        "status": "PASS",
+        "seconds": 0.004,
+        "binary": "codex-linux-sandbox",
+        "name": "owner_lifetime::tests::owner_exit_is_observed_after_observer_start"
+      }
+    ],
+    "owner_lifetime::tests::inherited_owner_handle_is_resealed_before_inner_setup": [
+      {
+        "status": "PASS",
+        "seconds": 0.003,
+        "binary": "codex-linux-sandbox",
+        "name": "owner_lifetime::tests::inherited_owner_handle_is_resealed_before_inner_setup"
+      }
+    ],
+    "suite::landlock::sandbox_payload_does_not_inherit_the_owner_pidfd": [
+      {
+        "status": "PASS",
+        "seconds": 0.085,
+        "binary": "codex-linux-sandbox::all",
+        "name": "suite::landlock::sandbox_payload_does_not_inherit_the_owner_pidfd"
+      }
+    ]
+  },
+  "duplicate_execution_ids": false,
+  "assertions_deadlines_filters_ignored_attributes_changed_by_export": false,
+  "fix_fmt_executed": false,
+  "source_frozen_during_tests": true,
+  "export_disk_sampling": "No post-export disk delta is attributed to r20; a later same-source workspace job may be running."
+}

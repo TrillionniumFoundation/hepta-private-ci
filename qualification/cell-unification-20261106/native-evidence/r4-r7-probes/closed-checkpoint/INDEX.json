@@ -1,0 +1,39 @@
+{
+  "schema": "hepta.closed-native-checkpoint-index.v1",
+  "scope": "VERIFIED_CLOSED_EVIDENCE_ONLY",
+  "archive": "checkpoint-through-r7-probe.tar.gz",
+  "archive_sha256": "70c7226d65e29aa234d58458fcff6e5a2b87aab325b24a8bee2f79ab6c24212b",
+  "original_export_manifest": "export-manifest.json",
+  "original_export_file_count": 25,
+  "supplemental_file_count": 1,
+  "transfer_verification": "transfer-verification.json",
+  "independent_verification": "verification.json",
+  "read_only_verifier": "verify_checkpoint.py",
+  "files": [
+    {
+      "path": "export-manifest.json",
+      "bytes": 8781,
+      "sha256": "3068e460209ea100cdeb0ea253f0960e15cd1edd6223e77b491ccb81e0b88e9c"
+    },
+    {
+      "path": "transfer-verification.json",
+      "bytes": 7187,
+      "sha256": "155b28d2befb23db6bb966296adbb7c1c1d0b3b776711fe0e247a5af1494a8fb"
+    },
+    {
+      "path": "verification.json",
+      "bytes": 18109,
+      "sha256": "08c443bfd91904af0f9ada0b5c85c14a3ff94274c9305f5b000e7731d5bb893c"
+    },
+    {
+      "path": "verify_checkpoint.py",
+      "bytes": 12100,
+      "sha256": "125c4161ff4e2ae86454f9f95f6ac002c7c5a7b0103c59e14ecd5d73b7ff2aef"
+    },
+    {
+      "path": "evidence/native-supervisor-red-production-tree-binding.json",
+      "bytes": 3487,
+      "sha256": "b28129b3f7ade57d4df8071e5cf4f306ad42452d65a17c30a82c359bb6f59c43"
+    }
+  ]
+}

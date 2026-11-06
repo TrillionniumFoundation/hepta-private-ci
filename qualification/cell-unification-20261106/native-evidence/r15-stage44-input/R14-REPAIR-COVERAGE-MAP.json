@@ -1,0 +1,374 @@
+{
+  "schema": "hepta.r14-stage44-repair-coverage-map.v1",
+  "source_failure_commit": "b44d4ca4aa0ef9f894eff29e9975938e066a82f5",
+  "source_failure_tree": "d3d2313b838422818bf9448ce5a1b86d89abdf69",
+  "closed_failure_log_sha256": "443a58d70c34d76ba9b8141ad7ee32d997a4f16af79e8f5a873770966028952c",
+  "closed_failure_review_sha256": "9b5b3a81d4901d8c6769908e2021235e3ef82e3257d5b0c21bf1c086899f0732",
+  "candidate_commit": "638997499470f0b7dd33ad18226feacf0198ef3d",
+  "candidate_tree": "1646e1656cf6365e74accae19a1225fd2ce6d964",
+  "unique_failed_cases": 24,
+  "candidate_groups": 10,
+  "claim": "Complete mapping of the24 original failed IDs to source44 candidate repairs, not proof that they have passed. Complete original package gates remain authoritative.",
+  "cases": [
+    {
+      "binary": "codex-core::all",
+      "test_id": "suite::git_enrichment::ephemeral_system_thread_prewarm_skips_and_turn_observes_fresh_state::test_case_1_system_background_thread",
+      "r14_status": "FAIL",
+      "r14_log_byte_range": [
+        413480,
+        414983
+      ],
+      "candidate": "core-git-enrichment-r14-repair",
+      "patch_sha256": "fe4eaef83d94788b3b1fd9e3f0972059e6211cab85b6e6db5d1377f74078283f",
+      "change": "fixture_connection_delivery",
+      "causal_evidence": "source_bound_identity_transition_and_serial_mock",
+      "limits": "Startup permission transition is source-supported; exact ephemeral compatibility projection was not captured.",
+      "r15_result": "PENDING_CLOSED_COMPLETE_LOG"
+    },
+    {
+      "binary": "codex-core::all",
+      "test_id": "suite::git_enrichment::ephemeral_system_thread_prewarm_skips_and_turn_observes_fresh_state::test_case_2_ambient_background_thread",
+      "r14_status": "FAIL",
+      "r14_log_byte_range": [
+        414983,
+        416491
+      ],
+      "candidate": "core-git-enrichment-r14-repair",
+      "patch_sha256": "fe4eaef83d94788b3b1fd9e3f0972059e6211cab85b6e6db5d1377f74078283f",
+      "change": "fixture_connection_delivery",
+      "causal_evidence": "source_bound_identity_transition_and_serial_mock",
+      "limits": "Startup permission transition is source-supported; exact ephemeral compatibility projection was not captured.",
+      "r15_result": "PENDING_CLOSED_COMPLETE_LOG"
+    },
+    {
+      "binary": "codex-core::all",
+      "test_id": "suite::hooks::async_hook_finishing_while_idle_waits_for_the_next_turn",
+      "r14_status": "FAIL",
+      "r14_log_byte_range": [
+        420388,
+        420966
+      ],
+      "candidate": "core-async-hook-r14-fixture",
+      "patch_sha256": "234cb5cea3fd5cd9b0a23e2c7fabd02cc3783865ac1f352df96d6dc3d0140c1d",
+      "change": "fixture_observed_prompt_scope",
+      "causal_evidence": "source_reachable_extra_hook_context",
+      "limits": "Original closed log shows timeout, without a third-request trace.",
+      "r15_result": "PENDING_CLOSED_COMPLETE_LOG"
+    },
+    {
+      "binary": "codex-core::all",
+      "test_id": "suite::git_enrichment::startup_prewarm_skips_git_enrichment_and_user_turn_observes_fresh_state",
+      "r14_status": "FAIL",
+      "r14_log_byte_range": [
+        424852,
+        425796
+      ],
+      "candidate": "core-git-enrichment-r14-repair",
+      "patch_sha256": "fe4eaef83d94788b3b1fd9e3f0972059e6211cab85b6e6db5d1377f74078283f",
+      "change": "fixture_connection_delivery",
+      "causal_evidence": "source_bound_identity_transition_and_serial_mock",
+      "limits": "Startup permission transition is source-supported; exact ephemeral compatibility projection was not captured.",
+      "r15_result": "PENDING_CLOSED_COMPLETE_LOG"
+    },
+    {
+      "binary": "codex-core::all",
+      "test_id": "suite::hooks_mcp::mcp_tool_hook_passes_thread_metadata_to_model_hidden_tools",
+      "r14_status": "FAIL",
+      "r14_log_byte_range": [
+        428919,
+        429737
+      ],
+      "candidate": "core-hook-binding-r14-repair",
+      "patch_sha256": "863068a1820967e9b5557f2dbe07006eaaa42495363419ce65201c33120852f5",
+      "change": "production_hidden_hook_binding",
+      "causal_evidence": "hidden_model_catalog_exclusion_conflicted_with_hook_call",
+      "limits": "Same frozen calls map, ToolFilter, exact owner and revision guard are retained.",
+      "r15_result": "PENDING_CLOSED_COMPLETE_LOG"
+    },
+    {
+      "binary": "codex-core::all",
+      "test_id": "suite::mcp_tool_exposure::later_follow_up_uses_background_recovered_apps_after_mid_thread_startup_failures",
+      "r14_status": "FAIL",
+      "r14_log_byte_range": [
+        438480,
+        439367
+      ],
+      "candidate": "core-mcp-recovery-r14-repair",
+      "patch_sha256": "6bbebb10a81f31dc3f007a1d08431422bd5bc0a35eea15bd28d2e6b6c1157dea",
+      "change": "fixture_exact_finish_owner_observation",
+      "causal_evidence": "source_reachable_turn_complete_before_finish",
+      "limits": "The original timeout log does not record an actual NotSubmitted outcome.",
+      "r15_result": "PENDING_CLOSED_COMPLETE_LOG"
+    },
+    {
+      "binary": "codex-core::all",
+      "test_id": "suite::rmcp_client::streamable_http_with_oauth_round_trip",
+      "r14_status": "FAIL",
+      "r14_log_byte_range": [
+        492226,
+        492874
+      ],
+      "candidate": "core-oauth-finish-r14-repair",
+      "patch_sha256": "c26eacee91fc8ccd2911e9dcdb7bd315e2a070ec779591d81b9e27760bf4356d",
+      "change": "fixture_exact_finish_owner_observation",
+      "causal_evidence": "source_reachable_turn_complete_before_finish",
+      "limits": "No per-owner scheduling trace is present in the original failure.",
+      "r15_result": "PENDING_CLOSED_COMPLETE_LOG"
+    },
+    {
+      "binary": "codex-core::all",
+      "test_id": "suite::skill_approval::shell_zsh_fork_skill_scripts_ignore_declared_permissions",
+      "r14_status": "FAIL",
+      "r14_log_byte_range": [
+        504259,
+        505038
+      ],
+      "candidate": "core-zsh-fixtures-r14-repair",
+      "patch_sha256": "ee8f42615a3f67d63343a4d41780b3729911dba1e0ef0174b9913ef93cf72cce",
+      "change": "fixture_remove_second_consumption_of_unique_turn_complete",
+      "causal_evidence": "helper_already_consumed_event_and_observed_finish",
+      "limits": "Original behavioral assertions and actual shell invocation are retained.",
+      "r15_result": "PENDING_CLOSED_COMPLETE_LOG"
+    },
+    {
+      "binary": "codex-core::all",
+      "test_id": "suite::token_budget::token_budget_context_injects_plain_thread_hint_text",
+      "r14_status": "FAIL",
+      "r14_log_byte_range": [
+        513171,
+        513923
+      ],
+      "candidate": "core-token-budget-r14-repair",
+      "patch_sha256": "2d8fdd192a0c336acc999895109867bad26e386faa18f9d6636a43dceda5261d",
+      "change": "production_hidden_tool_metadata",
+      "causal_evidence": "empty_argument_schema_and_metadata_thread_identity",
+      "limits": "Corrects existing call arguments and metadata; original error-to-no-hint behavior is retained.",
+      "r15_result": "PENDING_CLOSED_COMPLETE_LOG"
+    },
+    {
+      "binary": "codex-core::all",
+      "test_id": "suite::token_budget::token_budget_context_uses_new_window_after_compaction::test_case_1_token_budget_only",
+      "r14_status": "FAIL",
+      "r14_log_byte_range": [
+        514168,
+        515051
+      ],
+      "candidate": "core-token-budget-r14-repair",
+      "patch_sha256": "2d8fdd192a0c336acc999895109867bad26e386faa18f9d6636a43dceda5261d",
+      "change": "fixture_exact_finish_owner_observation",
+      "causal_evidence": "source_reachable_turn_complete_before_finish",
+      "limits": "The closed failure is a generic event timeout, not an owner scheduling trace.",
+      "r15_result": "PENDING_CLOSED_COMPLETE_LOG"
+    },
+    {
+      "binary": "codex-core::all",
+      "test_id": "suite::token_budget::token_budget_context_uses_new_window_after_compaction::test_case_2_with_client_developer_retention",
+      "r14_status": "FAIL",
+      "r14_log_byte_range": [
+        515051,
+        515991
+      ],
+      "candidate": "core-token-budget-r14-repair",
+      "patch_sha256": "2d8fdd192a0c336acc999895109867bad26e386faa18f9d6636a43dceda5261d",
+      "change": "fixture_exact_finish_owner_observation",
+      "causal_evidence": "source_reachable_turn_complete_before_finish",
+      "limits": "The closed failure is a generic event timeout, not an owner scheduling trace.",
+      "r15_result": "PENDING_CLOSED_COMPLETE_LOG"
+    },
+    {
+      "binary": "codex-core::all",
+      "test_id": "suite::turn_input_submission::recover_turn_if_idle_preserves_id_and_resumes_plan_mode",
+      "r14_status": "FAIL",
+      "r14_log_byte_range": [
+        521823,
+        522670
+      ],
+      "candidate": "core-recovery-epoch-r14-fixture",
+      "patch_sha256": "752f2dd47c18ce162b156c5fddd70b8c586a7ba05eee78c229445f8d9c9c3b81",
+      "change": "fixture_gate_before_first_response_event",
+      "causal_evidence": "recovery_closes_before_first_created_event",
+      "limits": "Actual response arrival timing was not recorded in the closed timeout.",
+      "r15_result": "PENDING_CLOSED_COMPLETE_LOG"
+    },
+    {
+      "binary": "codex-core::all",
+      "test_id": "suite::turn_state::websocket_turn_state_is_stable_within_turn",
+      "r14_status": "FAIL",
+      "r14_log_byte_range": [
+        522774,
+        523681
+      ],
+      "candidate": "core-turn-state-r14-fixture",
+      "patch_sha256": "bc8867f4515ab8f02fb02ed803dbe84f4b4c9b349b76ed73d2f2c03775bb158a",
+      "change": "fixture_prewarm_and_sampling_connections",
+      "causal_evidence": "permission_identity_transition_and_serial_mock",
+      "limits": "Explicit total handshakes change 1 to2; exact [1,3] and original sampling state/lineage assertions remain. Forced prewarm close alone is not identity proof.",
+      "r15_result": "PENDING_CLOSED_COMPLETE_LOG"
+    },
+    {
+      "binary": "codex-core::all",
+      "test_id": "suite::turn_state::websocket_turn_state_persists_within_turn_and_resets_after",
+      "r14_status": "FAIL",
+      "r14_log_byte_range": [
+        524812,
+        525705
+      ],
+      "candidate": "core-turn-state-r14-fixture",
+      "patch_sha256": "bc8867f4515ab8f02fb02ed803dbe84f4b4c9b349b76ed73d2f2c03775bb158a",
+      "change": "fixture_prewarm_and_sampling_connections",
+      "causal_evidence": "permission_identity_transition_and_serial_mock",
+      "limits": "Explicit total handshakes change 1 to2; exact [1,3] and original sampling state/lineage assertions remain. Forced prewarm close alone is not identity proof.",
+      "r15_result": "PENDING_CLOSED_COMPLETE_LOG"
+    },
+    {
+      "binary": "codex-core::all",
+      "test_id": "suite::unified_exec_process_events::exec_command_consumes_pushed_remote_process_events::test_case_1_complete_event_stream",
+      "r14_status": "FAIL",
+      "r14_log_byte_range": [
+        529996,
+        530957
+      ],
+      "candidate": "core-exec-events-r14-repair",
+      "patch_sha256": "e312b0dd838833fe4893cc49eaefdefcd34dccd0555a9bdac5dcf860d48d5fd4",
+      "change": "fixture_stop_server_after_observed_completion",
+      "causal_evidence": "mock_waited_for_redundant_terminate_after_actual_exit",
+      "limits": "No complete RPC transcript in the original log; actual output/exit scripts and assertions are retained.",
+      "r15_result": "PENDING_CLOSED_COMPLETE_LOG"
+    },
+    {
+      "binary": "codex-core::all",
+      "test_id": "suite::unified_exec_process_events::exec_command_consumes_pushed_remote_process_events::test_case_2_direct_sandbox_denial",
+      "r14_status": "FAIL",
+      "r14_log_byte_range": [
+        530957,
+        531919
+      ],
+      "candidate": "core-exec-events-r14-repair",
+      "patch_sha256": "e312b0dd838833fe4893cc49eaefdefcd34dccd0555a9bdac5dcf860d48d5fd4",
+      "change": "fixture_stop_server_after_observed_completion",
+      "causal_evidence": "mock_waited_for_redundant_terminate_after_actual_exit",
+      "limits": "No complete RPC transcript in the original log; actual output/exit scripts and assertions are retained.",
+      "r15_result": "PENDING_CLOSED_COMPLETE_LOG"
+    },
+    {
+      "binary": "codex-core::all",
+      "test_id": "suite::unified_exec_process_events::exec_command_consumes_pushed_remote_process_events::test_case_3_legacy_exit_metadata",
+      "r14_status": "FAIL",
+      "r14_log_byte_range": [
+        531919,
+        532878
+      ],
+      "candidate": "core-exec-events-r14-repair",
+      "patch_sha256": "e312b0dd838833fe4893cc49eaefdefcd34dccd0555a9bdac5dcf860d48d5fd4",
+      "change": "fixture_stop_server_after_observed_completion",
+      "causal_evidence": "mock_waited_for_redundant_terminate_after_actual_exit",
+      "limits": "No complete RPC transcript in the original log; actual output/exit scripts and assertions are retained.",
+      "r15_result": "PENDING_CLOSED_COMPLETE_LOG"
+    },
+    {
+      "binary": "codex-core::all",
+      "test_id": "suite::unified_exec_process_events::exec_command_consumes_pushed_remote_process_events::test_case_4_truncated_event_replay",
+      "r14_status": "FAIL",
+      "r14_log_byte_range": [
+        532878,
+        533843
+      ],
+      "candidate": "core-exec-events-r14-repair",
+      "patch_sha256": "e312b0dd838833fe4893cc49eaefdefcd34dccd0555a9bdac5dcf860d48d5fd4",
+      "change": "fixture_stop_server_after_observed_completion",
+      "causal_evidence": "mock_waited_for_redundant_terminate_after_actual_exit",
+      "limits": "No complete RPC transcript in the original log; actual output/exit scripts and assertions are retained.",
+      "r15_result": "PENDING_CLOSED_COMPLETE_LOG"
+    },
+    {
+      "binary": "codex-core::all",
+      "test_id": "suite::unified_exec_process_events::exec_command_consumes_pushed_remote_process_events::test_case_5_managed_network_uses_executor_proxy_launch",
+      "r14_status": "FAIL",
+      "r14_log_byte_range": [
+        533843,
+        534868
+      ],
+      "candidate": "core-exec-events-r14-repair",
+      "patch_sha256": "e312b0dd838833fe4893cc49eaefdefcd34dccd0555a9bdac5dcf860d48d5fd4",
+      "change": "fixture_stop_server_after_observed_completion",
+      "causal_evidence": "mock_waited_for_redundant_terminate_after_actual_exit",
+      "limits": "No complete RPC transcript in the original log; actual output/exit scripts and assertions are retained.",
+      "r15_result": "PENDING_CLOSED_COMPLETE_LOG"
+    },
+    {
+      "binary": "codex-core::all",
+      "test_id": "suite::unified_exec_process_events::exec_command_consumes_pushed_remote_process_events::test_case_6_strict_managed_allowlist_omits_policy_callbacks",
+      "r14_status": "FAIL",
+      "r14_log_byte_range": [
+        534868,
+        535908
+      ],
+      "candidate": "core-exec-events-r14-repair",
+      "patch_sha256": "e312b0dd838833fe4893cc49eaefdefcd34dccd0555a9bdac5dcf860d48d5fd4",
+      "change": "fixture_stop_server_after_observed_completion",
+      "causal_evidence": "mock_waited_for_redundant_terminate_after_actual_exit",
+      "limits": "No complete RPC transcript in the original log; actual output/exit scripts and assertions are retained.",
+      "r15_result": "PENDING_CLOSED_COMPLETE_LOG"
+    },
+    {
+      "binary": "codex-core::all",
+      "test_id": "suite::unified_exec_process_events::exec_command_consumes_pushed_remote_process_events::test_case_7_foreign_windows_managed_network_preserves_approval_registration",
+      "r14_status": "FAIL",
+      "r14_log_byte_range": [
+        535908,
+        536996
+      ],
+      "candidate": "core-exec-events-r14-repair",
+      "patch_sha256": "e312b0dd838833fe4893cc49eaefdefcd34dccd0555a9bdac5dcf860d48d5fd4",
+      "change": "fixture_stop_server_after_observed_completion",
+      "causal_evidence": "mock_waited_for_redundant_terminate_after_actual_exit",
+      "limits": "No complete RPC transcript in the original log; actual output/exit scripts and assertions are retained.",
+      "r15_result": "PENDING_CLOSED_COMPLETE_LOG"
+    },
+    {
+      "binary": "codex-core::all",
+      "test_id": "suite::unified_exec_process_events::exec_command_consumes_pushed_remote_process_events::test_case_8_foreign_windows_workspace_sandbox",
+      "r14_status": "FAIL",
+      "r14_log_byte_range": [
+        536996,
+        537994
+      ],
+      "candidate": "core-exec-events-r14-repair",
+      "patch_sha256": "e312b0dd838833fe4893cc49eaefdefcd34dccd0555a9bdac5dcf860d48d5fd4",
+      "change": "fixture_stop_server_after_observed_completion",
+      "causal_evidence": "mock_waited_for_redundant_terminate_after_actual_exit",
+      "limits": "No complete RPC transcript in the original log; actual output/exit scripts and assertions are retained.",
+      "r15_result": "PENDING_CLOSED_COMPLETE_LOG"
+    },
+    {
+      "binary": "codex-core::all",
+      "test_id": "suite::unified_exec_zsh_fork_approvals::unified_exec_zsh_fork_parent_approval_preserves_denied_reads",
+      "r14_status": "FAIL",
+      "r14_log_byte_range": [
+        538582,
+        539548
+      ],
+      "candidate": "core-zsh-fixtures-r14-repair",
+      "patch_sha256": "ee8f42615a3f67d63343a4d41780b3729911dba1e0ef0174b9913ef93cf72cce",
+      "change": "fixture_absolute_deny_path_encoding",
+      "causal_evidence": "literal_absolute_path_was_encoded_as_glob",
+      "limits": "Production fail-closed glob policy is unchanged.",
+      "r15_result": "PENDING_CLOSED_COMPLETE_LOG"
+    },
+    {
+      "binary": "codex-core::all",
+      "test_id": "suite::unified_exec_process_events::exec_command_consumes_pushed_remote_process_events::test_case_9_windows_elevated_powershell_disables_profile",
+      "r14_status": "FAIL",
+      "r14_log_byte_range": [
+        540917,
+        541947
+      ],
+      "candidate": "core-exec-events-r14-repair",
+      "patch_sha256": "e312b0dd838833fe4893cc49eaefdefcd34dccd0555a9bdac5dcf860d48d5fd4",
+      "change": "fixture_stop_server_after_observed_completion",
+      "causal_evidence": "mock_waited_for_redundant_terminate_after_actual_exit",
+      "limits": "No complete RPC transcript in the original log; actual output/exit scripts and assertions are retained.",
+      "r15_result": "PENDING_CLOSED_COMPLETE_LOG"
+    }
+  ]
+}

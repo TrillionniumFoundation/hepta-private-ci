@@ -1,0 +1,32 @@
+{
+  "schema": "hepta.root-stage45-source-review.v1",
+  "status": "SOURCE_REVIEW_PASS_NATIVE_GATE_PENDING",
+  "base_commit": "638997499470f0b7dd33ad18226feacf0198ef3d",
+  "base_tree": "1646e1656cf6365e74accae19a1225fd2ce6d964",
+  "patch_sha256": "646926bc7e25b9c45cd4d12ac88cfd348c00c7d08769302ec4afb23cecc933f3",
+  "files": [
+    {
+      "path": "codex-rs/core/src/tools/runtimes/zsh_fork/unix_escalation.rs",
+      "before_sha256": "c4dbf8d0c3fdd572e20aacaf9a91a7bc9f75742bd4ff75dd08a685b6d79bbc31",
+      "before_blob": "631bf4c6db2876fe32f653c73e386c253ffc939d",
+      "after_sha256": "4568501da5cf0c5b74be83a41d632f877087d77d128feed2db05d56bb4a3207a",
+      "after_blob": "03f497fb524b187c62325679dcff465663c4f30b",
+      "bytes": 33969,
+      "original_assertions_outside_edit_regions": true
+    }
+  ],
+  "exact_full_patch_forward_and_reverse": true,
+  "no_fuzz_or_offset": true,
+  "original_github_blob_identity_verified": true,
+  "tests_not_executed_by_review": true,
+  "semantic_review": {
+    "only_import_and_approval_fallback_field_changed": true,
+    "existing_denied_read_preserving_helper_reused": true,
+    "parent_admission_boundary": "Only production constructor follows UnifiedExecRuntime via ToolOrchestrator::run; Forbidden and unsuccessful approval return before run_attempt. Configuration Skip remains policy admission, not a claim of human approval.",
+    "physical_execution_fields_and_denied_reads_unchanged": true,
+    "explicit_prefix_rules_and_dangerous_command_prompts_unchanged": true,
+    "direct_provider_granular_unapproved_negative_route_unchanged": true,
+    "existing_integration_regression_unchanged": true,
+    "complete_native_execution_still_required": true
+  }
+}

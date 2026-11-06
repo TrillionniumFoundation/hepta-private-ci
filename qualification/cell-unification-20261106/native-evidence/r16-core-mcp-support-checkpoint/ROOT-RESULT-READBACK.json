@@ -1,0 +1,252 @@
+{
+  "schema": "hepta.root-r16-result-readback.v1",
+  "state": "COMPLETE_FAILED_RETAINED",
+  "source_tree": "3ebd193f213d640e5330a1be4b983bcc4b06617a",
+  "identical_tree_commit": "96dc9232535fedf735e3099ef1391b69477270d4",
+  "root_gitdata_source_reconstruction": {
+    "base_tree": "ce997fd958b8073d99b1e5bc302b7a0188fb4c3b",
+    "returned_tree": "3ebd193f213d640e5330a1be4b983bcc4b06617a",
+    "expected_tree": "3ebd193f213d640e5330a1be4b983bcc4b06617a",
+    "exact": true,
+    "source_files": 180,
+    "tree_input": "ROOT-SOURCE-ROUNDTRIP-INPUT.json"
+  },
+  "archive_sha256": "92fdcfbd6aa3b96b2c7a4bcb5ddbceb6b5b5945f5e30a8400b61de445c309d6e",
+  "all_archive_members_verified": 195,
+  "source_files_verified": 180,
+  "strict_exit": 0,
+  "strict_elapsed_seconds": 36.3511917591095,
+  "tests_exit": 100,
+  "command": [
+    "just",
+    "test",
+    "--locked",
+    "-p",
+    "codex-core",
+    "-p",
+    "codex-mcp",
+    "-p",
+    "core_test_support",
+    "--retries",
+    "0"
+  ],
+  "test_total_seconds": 562.3899312019348,
+  "test_execution_seconds": 452.452,
+  "counts_unique": {
+    "PASS": 4061,
+    "FAIL": 2,
+    "TIMEOUT": 0
+  },
+  "per_package": {
+    "codex-core": {
+      "PASS": 3828,
+      "FAIL": 2
+    },
+    "codex-mcp": {
+      "PASS": 196
+    },
+    "core_test_support": {
+      "PASS": 37
+    }
+  },
+  "tests_run": 4063,
+  "skipped_reported": 9,
+  "skip_identities_reconstructed": false,
+  "exact_2_failure_blocks_raw_byte_ranges_verified": true,
+  "receipt_log_and_resources_sha256_verified": true,
+  "strict_log_sha256": "b7b9ef98e984db5a3302f8628b6854b457dd73bbd43530165447b356e12e3991",
+  "test_log_sha256": "fe6cafe40e0efbe36a34f284234cfbfea68aaf658b5d65d9d0c3d754fbff813b",
+  "old_24_failed_ids_readback": [
+    {
+      "status": "PASS",
+      "elapsed": "1.488s",
+      "binary": "codex-core::all",
+      "name": "suite::git_enrichment::ephemeral_system_thread_prewarm_skips_and_turn_observes_fresh_state::test_case_1_system_background_thread"
+    },
+    {
+      "status": "PASS",
+      "elapsed": "1.496s",
+      "binary": "codex-core::all",
+      "name": "suite::git_enrichment::ephemeral_system_thread_prewarm_skips_and_turn_observes_fresh_state::test_case_2_ambient_background_thread"
+    },
+    {
+      "status": "PASS",
+      "elapsed": "0.349s",
+      "binary": "codex-core::all",
+      "name": "suite::hooks::async_hook_finishing_while_idle_waits_for_the_next_turn"
+    },
+    {
+      "status": "PASS",
+      "elapsed": "5.533s",
+      "binary": "codex-core::all",
+      "name": "suite::git_enrichment::startup_prewarm_skips_git_enrichment_and_user_turn_observes_fresh_state"
+    },
+    {
+      "status": "PASS",
+      "elapsed": "0.180s",
+      "binary": "codex-core::all",
+      "name": "suite::hooks_mcp::mcp_tool_hook_passes_thread_metadata_to_model_hidden_tools"
+    },
+    {
+      "status": "PASS",
+      "elapsed": "0.539s",
+      "binary": "codex-core::all",
+      "name": "suite::mcp_tool_exposure::later_follow_up_uses_background_recovered_apps_after_mid_thread_startup_failures"
+    },
+    {
+      "status": "PASS",
+      "elapsed": "1.590s",
+      "binary": "codex-core::all",
+      "name": "suite::rmcp_client::streamable_http_with_oauth_round_trip"
+    },
+    {
+      "status": "PASS",
+      "elapsed": "0.307s",
+      "binary": "codex-core::all",
+      "name": "suite::skill_approval::shell_zsh_fork_skill_scripts_ignore_declared_permissions"
+    },
+    {
+      "status": "PASS",
+      "elapsed": "0.165s",
+      "binary": "codex-core::all",
+      "name": "suite::token_budget::token_budget_context_injects_plain_thread_hint_text"
+    },
+    {
+      "status": "PASS",
+      "elapsed": "0.258s",
+      "binary": "codex-core::all",
+      "name": "suite::token_budget::token_budget_context_uses_new_window_after_compaction::test_case_1_token_budget_only"
+    },
+    {
+      "status": "PASS",
+      "elapsed": "0.268s",
+      "binary": "codex-core::all",
+      "name": "suite::token_budget::token_budget_context_uses_new_window_after_compaction::test_case_2_with_client_developer_retention"
+    },
+    {
+      "status": "FAIL",
+      "elapsed": "0.168s",
+      "binary": "codex-core::all",
+      "name": "suite::turn_input_submission::recover_turn_if_idle_preserves_id_and_resumes_plan_mode"
+    },
+    {
+      "status": "PASS",
+      "elapsed": "0.441s",
+      "binary": "codex-core::all",
+      "name": "suite::turn_state::websocket_turn_state_is_stable_within_turn"
+    },
+    {
+      "status": "PASS",
+      "elapsed": "0.461s",
+      "binary": "codex-core::all",
+      "name": "suite::turn_state::websocket_turn_state_persists_within_turn_and_resets_after"
+    },
+    {
+      "status": "PASS",
+      "elapsed": "0.366s",
+      "binary": "codex-core::all",
+      "name": "suite::unified_exec_process_events::exec_command_consumes_pushed_remote_process_events::test_case_1_complete_event_stream"
+    },
+    {
+      "status": "PASS",
+      "elapsed": "0.376s",
+      "binary": "codex-core::all",
+      "name": "suite::unified_exec_process_events::exec_command_consumes_pushed_remote_process_events::test_case_2_direct_sandbox_denial"
+    },
+    {
+      "status": "PASS",
+      "elapsed": "0.361s",
+      "binary": "codex-core::all",
+      "name": "suite::unified_exec_process_events::exec_command_consumes_pushed_remote_process_events::test_case_3_legacy_exit_metadata"
+    },
+    {
+      "status": "PASS",
+      "elapsed": "0.407s",
+      "binary": "codex-core::all",
+      "name": "suite::unified_exec_process_events::exec_command_consumes_pushed_remote_process_events::test_case_4_truncated_event_replay"
+    },
+    {
+      "status": "PASS",
+      "elapsed": "0.494s",
+      "binary": "codex-core::all",
+      "name": "suite::unified_exec_process_events::exec_command_consumes_pushed_remote_process_events::test_case_5_managed_network_uses_executor_proxy_launch"
+    },
+    {
+      "status": "PASS",
+      "elapsed": "0.471s",
+      "binary": "codex-core::all",
+      "name": "suite::unified_exec_process_events::exec_command_consumes_pushed_remote_process_events::test_case_6_strict_managed_allowlist_omits_policy_callbacks"
+    },
+    {
+      "status": "PASS",
+      "elapsed": "0.440s",
+      "binary": "codex-core::all",
+      "name": "suite::unified_exec_process_events::exec_command_consumes_pushed_remote_process_events::test_case_7_foreign_windows_managed_network_preserves_approval_registration"
+    },
+    {
+      "status": "PASS",
+      "elapsed": "0.330s",
+      "binary": "codex-core::all",
+      "name": "suite::unified_exec_process_events::exec_command_consumes_pushed_remote_process_events::test_case_8_foreign_windows_workspace_sandbox"
+    },
+    {
+      "status": "PASS",
+      "elapsed": "0.622s",
+      "binary": "codex-core::all",
+      "name": "suite::unified_exec_zsh_fork_approvals::unified_exec_zsh_fork_parent_approval_preserves_denied_reads"
+    },
+    {
+      "status": "PASS",
+      "elapsed": "0.335s",
+      "binary": "codex-core::all",
+      "name": "suite::unified_exec_process_events::exec_command_consumes_pushed_remote_process_events::test_case_9_windows_elevated_powershell_disables_profile"
+    }
+  ],
+  "old_failed_cases_now": {
+    "PASS": 23,
+    "FAIL": 1
+  },
+  "r15_3_failed_ids_readback": [
+    {
+      "status": "PASS",
+      "elapsed": "0.013s",
+      "binary": "codex-core",
+      "name": "session::tests::managed_network_proxy_decider_survives_full_access_start"
+    },
+    {
+      "status": "FAIL",
+      "elapsed": "0.168s",
+      "binary": "codex-core::all",
+      "name": "suite::turn_input_submission::recover_turn_if_idle_preserves_id_and_resumes_plan_mode"
+    },
+    {
+      "status": "PASS",
+      "elapsed": "0.622s",
+      "binary": "codex-core::all",
+      "name": "suite::unified_exec_zsh_fork_approvals::unified_exec_zsh_fork_parent_approval_preserves_denied_reads"
+    }
+  ],
+  "new_hook_owner_regression": [
+    {
+      "status": "PASS",
+      "elapsed": "0.029s",
+      "binary": "codex-mcp",
+      "name": "binding::tests::hook_call_retains_owner_and_rejects_stale_catalog_before_preparation"
+    }
+  ],
+  "no_native_test_retry": true,
+  "workspace_gate_started": false,
+  "final_fix_fmt_ran": false,
+  "scientific_adoption": "HOLD",
+  "failure_identities": [
+    {
+      "binary": "codex-core::all",
+      "name": "suite::multi_agent_resume::cold_root_resume_restores_agent_identity_and_role_on_followup"
+    },
+    {
+      "binary": "codex-core::all",
+      "name": "suite::turn_input_submission::recover_turn_if_idle_preserves_id_and_resumes_plan_mode"
+    }
+  ],
+  "source_identity_scope": "Actual staged native tree and exact exported bytes, modes and Git blobs. A matching Git commit is not a claim that this commit was checked out; no later-source or full-workspace qualification."
+}

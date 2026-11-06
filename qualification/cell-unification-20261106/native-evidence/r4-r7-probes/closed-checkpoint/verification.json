@@ -1,0 +1,455 @@
+{
+  "schema": "hepta.closed-native-checkpoint-independent-verification.v1",
+  "reviewer": "/root/differentiation_study",
+  "outcome": "VERIFIED_CLOSED_EVIDENCE_ONLY",
+  "original_export_files_verified": [
+    {
+      "path": "evidence/native-inherited-agentd-r4-strict-diagnostic.log",
+      "bytes": 7269,
+      "sha256": "bccc56f340dec57563cd6945393ed014815b182f3877ee4eab8de3169d22ccdf"
+    },
+    {
+      "path": "evidence/native-inherited-agentd-r4-strict-diagnostic-receipt.json",
+      "bytes": 776,
+      "sha256": "c498f52b534302790431cca5e67489d10a3c21d6a86ab9635e1045744136a890"
+    },
+    {
+      "path": "evidence/native-inherited-agentd-r4-strict-diagnostic-resources.txt",
+      "bytes": 956,
+      "sha256": "8da99619ab8e336fa679ff9eb34f25792d2d8199b261b63e06c41fbe5758945d"
+    },
+    {
+      "path": "evidence/native-inherited-r5-strict.log",
+      "bytes": 14528,
+      "sha256": "40b8a752b532cd0979ffda550fd7af86e0f41644df2e17f759de32022abc4be9"
+    },
+    {
+      "path": "evidence/native-inherited-r5-strict-receipt.json",
+      "bytes": 713,
+      "sha256": "65feafdd615d054c45d107b047dd7dc52434403ef468461774593df3acc5d612"
+    },
+    {
+      "path": "evidence/native-inherited-r5-strict-resources.txt",
+      "bytes": 924,
+      "sha256": "b1ba91cdd76328f4c9e2ec494f5fe5044cb51986878b675faebdca8077cdc779"
+    },
+    {
+      "path": "evidence/native-supervisor-red-r6.log",
+      "bytes": 40241,
+      "sha256": "b4d7c8721f5441e5ccf007d7a5bdee701b8ca49824e00c29175f3693e55f249b"
+    },
+    {
+      "path": "evidence/native-supervisor-red-r6-receipt.json",
+      "bytes": 1105,
+      "sha256": "999dc1755a7271dbb4e74e10b78a940c835940bd44aca1af868f2ad1a2127e57"
+    },
+    {
+      "path": "evidence/native-supervisor-red-r6-resources.txt",
+      "bytes": 893,
+      "sha256": "a08daa880914ef860048dd149e63e0ebfedbff2e58e5e2399f66886c08b99195"
+    },
+    {
+      "path": "evidence/native-supervisor-red-r6b.log",
+      "bytes": 19093,
+      "sha256": "a5656d36a917486e9a1024897ba6dcc48416f00c1dbc0d26e3cc7f5fbd73aa48"
+    },
+    {
+      "path": "evidence/native-supervisor-red-r6b-receipt.json",
+      "bytes": 1470,
+      "sha256": "5d7dd9328d41b601ca1669b6766de8aa108413683c766c9daf5c157250865370"
+    },
+    {
+      "path": "evidence/native-supervisor-red-r6b-resources.txt",
+      "bytes": 893,
+      "sha256": "6f968629b1d341fc35fda0c6a68e7b9eb016c8b027b2b7aeafd03f78901502fe"
+    },
+    {
+      "path": "evidence/native-supervisor-green-r7.log",
+      "bytes": 12374,
+      "sha256": "47402d00593d360d1707f71e27dfea3764332e812ecff6d0a7c49142715cba67"
+    },
+    {
+      "path": "evidence/native-supervisor-green-r7-receipt.json",
+      "bytes": 843,
+      "sha256": "94231f475dbb38d7238893d87e85f5c70ab4c7e70c47e9dd7c9f6e851221e8ef"
+    },
+    {
+      "path": "evidence/native-supervisor-green-r7-resources.txt",
+      "bytes": 850,
+      "sha256": "74ac418f2289c6c1ebe25ec8480fdd065bd3dfe221e29a73f6061d24e25086c9"
+    },
+    {
+      "path": "evidence/native-inherited-agentd-r4-source.json",
+      "bytes": 18960,
+      "sha256": "15dfab07c2d353b5eb5c3b41748c822661806749a0fe1a27166d930d0087771d"
+    },
+    {
+      "path": "evidence/native-independent-r5-source.json",
+      "bytes": 19557,
+      "sha256": "19267c8aa15a17f809294b1d377b7beb8c43875157e721a49b5c8dac0bda20c9"
+    },
+    {
+      "path": "evidence/native-supervisor-red-r6-source.json",
+      "bytes": 19705,
+      "sha256": "c9e220779894bdb2c055e00f331d2ac3d456577222b47b5b1e55748c92a9bd4d"
+    },
+    {
+      "path": "evidence/native-supervisor-red-r6b-source.json",
+      "bytes": 19902,
+      "sha256": "c0a6948a9f84a64993062e1c18fafc448dacd0902b29705d677f388362bd5430"
+    },
+    {
+      "path": "evidence/native-candidate-r7-source.json",
+      "bytes": 22082,
+      "sha256": "8988e113b7e7d73154b11531f66573edd921a5d19abac3dbf1f09d48b1daf085"
+    },
+    {
+      "path": "evidence/native-r4-retained-source-equivalence.json",
+      "bytes": 883,
+      "sha256": "938cc46746c7c03fd2986bfd1fb86aaa5df7c304b53f292dc8991cd1ff024f9e"
+    },
+    {
+      "path": "evidence/native-r5-retained-source-equivalence.json",
+      "bytes": 1113,
+      "sha256": "fc18f0de2be41cea8556e2c5719223833f70abac1cc52f979290cfda6ff6b529"
+    },
+    {
+      "path": "evidence/native-r7-retained-source-equivalence.json",
+      "bytes": 883,
+      "sha256": "61936134085ae48368fb8be5032befe34674a1eb65ee5cc7e24a35c8086f4acc"
+    },
+    {
+      "path": "evidence/native-full-workspace-runner-audit.json",
+      "bytes": 1419,
+      "sha256": "c33c2a924dc5e74139e502eecf47fe7f69467809111da6fff21db4f6837d7594"
+    },
+    {
+      "path": "evidence/native-full-workspace-scope-audit.json",
+      "bytes": 1606,
+      "sha256": "4eedc188f2017cb71447c2a5fa0420747bd5525f98baf41aee37a663f4d8b600"
+    }
+  ],
+  "original_export_json_files_parsed": 15,
+  "archive_sha256": "70c7226d65e29aa234d58458fcff6e5a2b87aab325b24a8bee2f79ab6c24212b",
+  "archive_bytes": 26322,
+  "additional_source_binding": {
+    "path": "evidence/native-supervisor-red-production-tree-binding.json",
+    "sha256": "b28129b3f7ade57d4df8071e5cf4f306ad42452d65a17c30a82c359bb6f59c43",
+    "bytes": 3487
+  },
+  "stages": [
+    {
+      "stage": "native-inherited-agentd-r4-strict-diagnostic",
+      "command": [
+        "just",
+        "clippy",
+        "--locked",
+        "--keep-going",
+        "-p",
+        "codex-model-provider-info",
+        "-p",
+        "codex-shell-escalation",
+        "-p",
+        "codex-linux-sandbox",
+        "-p",
+        "codex-hepta-memory",
+        "-p",
+        "codex-hepta-agentd",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "kind": "diagnostic",
+      "source_tree": "a4c4a141ec488d8b0f4482b0d47c6ea3c31a8896",
+      "source_manifest": "evidence/native-inherited-agentd-r4-source.json",
+      "receipt": "evidence/native-inherited-agentd-r4-strict-diagnostic-receipt.json",
+      "log": "evidence/native-inherited-agentd-r4-strict-diagnostic.log",
+      "log_sha256": "bccc56f340dec57563cd6945393ed014815b182f3877ee4eab8de3169d22ccdf",
+      "resource_record": "evidence/native-inherited-agentd-r4-strict-diagnostic-resources.txt",
+      "exit_code": 101,
+      "elapsed_seconds_including_compile": 45.2055230140686,
+      "resource_user_seconds": 60.3,
+      "resource_system_seconds": 4.17,
+      "resource_peak_rss_kbytes": 1700312,
+      "diagnostics": [
+        "error: redundant closure",
+        "error: function `read_restart_journal` is never used",
+        "error: function `restore_window` is never used",
+        "error: methods `reset_restart_budget_for_release`, `reset_restart_budget`, and `restore_restart_budget` are never used",
+        "error: function `reset_slot_restart_budget` is never used",
+        "error: fields `restart_window_started_at`, `restart_window_started_unix_millis`, `restart_retry_at`, `restart_automatic`, `restart_after_exit`, and `restart_exhausted` are never read",
+        "error: very complex type used. Consider factoring parts into `type` definitions"
+      ],
+      "unique_test_names": {
+        "PASS": [],
+        "FAIL": []
+      },
+      "test_summary": null,
+      "receipt_log_resource_source_binding_verified": true
+    },
+    {
+      "stage": "native-inherited-r5-strict",
+      "command": [
+        "just",
+        "clippy",
+        "--locked",
+        "-p",
+        "codex-model-provider-info",
+        "-p",
+        "codex-shell-escalation",
+        "-p",
+        "codex-linux-sandbox",
+        "-p",
+        "codex-hepta-memory",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "kind": "strict",
+      "source_tree": "74ef4ad0ed92355ec58a173fc862b9d500c0c104",
+      "source_manifest": "evidence/native-independent-r5-source.json",
+      "receipt": "evidence/native-inherited-r5-strict-receipt.json",
+      "log": "evidence/native-inherited-r5-strict.log",
+      "log_sha256": "40b8a752b532cd0979ffda550fd7af86e0f41644df2e17f759de32022abc4be9",
+      "resource_record": "evidence/native-inherited-r5-strict-resources.txt",
+      "exit_code": 101,
+      "elapsed_seconds_including_compile": 150.85521626472473,
+      "resource_user_seconds": 266.11,
+      "resource_system_seconds": 19.27,
+      "resource_peak_rss_kbytes": 2077404,
+      "diagnostics": [
+        "error: this function has too many arguments (8/7)"
+      ],
+      "unique_test_names": {
+        "PASS": [],
+        "FAIL": []
+      },
+      "test_summary": null,
+      "receipt_log_resource_source_binding_verified": true
+    },
+    {
+      "stage": "native-supervisor-red-r6",
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-supervisor",
+        "--retries",
+        "0",
+        "-E",
+        "test(supervisor::tests::restart_recovery::)"
+      ],
+      "kind": "expected-original-behavior-counterexample",
+      "source_tree": "9e3978cdcd75cdd5d37b44085c85f03a1397d73b",
+      "source_manifest": "evidence/native-supervisor-red-r6-source.json",
+      "receipt": "evidence/native-supervisor-red-r6-receipt.json",
+      "log": "evidence/native-supervisor-red-r6.log",
+      "log_sha256": "b4d7c8721f5441e5ccf007d7a5bdee701b8ca49824e00c29175f3693e55f249b",
+      "resource_record": "evidence/native-supervisor-red-r6-resources.txt",
+      "exit_code": 101,
+      "elapsed_seconds_including_compile": 78.03291416168213,
+      "resource_user_seconds": 114.63,
+      "resource_system_seconds": 12.06,
+      "resource_peak_rss_kbytes": 1366748,
+      "diagnostics": [
+        "error[E0659]: `assert_eq` is ambiguous",
+        "error[E0659]: `assert_eq` is ambiguous",
+        "error[E0659]: `assert_eq` is ambiguous",
+        "error[E0659]: `assert_eq` is ambiguous",
+        "error[E0659]: `assert_eq` is ambiguous",
+        "error[E0659]: `assert_eq` is ambiguous",
+        "error[E0659]: `assert_eq` is ambiguous",
+        "error[E0659]: `assert_eq` is ambiguous",
+        "error[E0659]: `assert_eq` is ambiguous",
+        "error[E0659]: `assert_eq` is ambiguous",
+        "error[E0659]: `assert_eq` is ambiguous",
+        "error[E0659]: `assert_eq` is ambiguous",
+        "error[E0659]: `assert_eq` is ambiguous",
+        "error[E0659]: `assert_eq` is ambiguous",
+        "error[E0659]: `assert_eq` is ambiguous",
+        "error[E0659]: `assert_eq` is ambiguous",
+        "error[E0659]: `assert_eq` is ambiguous",
+        "error[E0659]: `assert_eq` is ambiguous",
+        "error[E0659]: `assert_eq` is ambiguous",
+        "error[E0659]: `assert_eq` is ambiguous",
+        "error[E0659]: `assert_eq` is ambiguous",
+        "error[E0659]: `assert_eq` is ambiguous",
+        "error[E0659]: `assert_eq` is ambiguous",
+        "error[E0659]: `assert_eq` is ambiguous",
+        "error[E0659]: `assert_eq` is ambiguous",
+        "error[E0659]: `assert_eq` is ambiguous",
+        "error[E0659]: `assert_eq` is ambiguous",
+        "error[E0659]: `assert_eq` is ambiguous",
+        "error[E0659]: `assert_eq` is ambiguous",
+        "error[E0659]: `assert_eq` is ambiguous",
+        "error[E0659]: `assert_eq` is ambiguous",
+        "error[E0659]: `assert_eq` is ambiguous",
+        "error[E0659]: `assert_eq` is ambiguous",
+        "error[E0659]: `assert_eq` is ambiguous",
+        "error[E0659]: `assert_eq` is ambiguous",
+        "error[E0659]: `assert_eq` is ambiguous",
+        "error[E0659]: `assert_eq` is ambiguous",
+        "error[E0659]: `assert_eq` is ambiguous",
+        "error[E0659]: `assert_eq` is ambiguous",
+        "error[E0659]: `assert_eq` is ambiguous",
+        "error[E0659]: `assert_eq` is ambiguous",
+        "error[E0659]: `assert_eq` is ambiguous"
+      ],
+      "unique_test_names": {
+        "PASS": [],
+        "FAIL": []
+      },
+      "test_summary": null,
+      "receipt_log_resource_source_binding_verified": true
+    },
+    {
+      "stage": "native-supervisor-red-r6b",
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-supervisor",
+        "--retries",
+        "0",
+        "-E",
+        "test(supervisor::tests::restart_recovery::)"
+      ],
+      "kind": "expected-original-behavior-counterexample",
+      "source_tree": "e313f4cc49df5c99f32bb7f22a722efd2c3d01bb",
+      "source_manifest": "evidence/native-supervisor-red-r6b-source.json",
+      "receipt": "evidence/native-supervisor-red-r6b-receipt.json",
+      "log": "evidence/native-supervisor-red-r6b.log",
+      "log_sha256": "a5656d36a917486e9a1024897ba6dcc48416f00c1dbc0d26e3cc7f5fbd73aa48",
+      "resource_record": "evidence/native-supervisor-red-r6b-resources.txt",
+      "exit_code": 100,
+      "elapsed_seconds_including_compile": 25.989032745361328,
+      "resource_user_seconds": 48.74,
+      "resource_system_seconds": 23.93,
+      "resource_peak_rss_kbytes": 1775040,
+      "diagnostics": [
+        "error: test run failed"
+      ],
+      "unique_test_names": {
+        "PASS": [],
+        "FAIL": [
+          "matrix_budget_identity_is_checked_even_when_agent_recovery_faults",
+          "matrix_exhausted_budget_survives_repeated_supervisor_recovery",
+          "matrix_orphan_fault_uses_lease_release_budget_before_writing",
+          "unresolved_agent_release_cannot_reset_another_release_matrix_budget"
+        ]
+      },
+      "test_summary": {
+        "test_phase_seconds": 0.049,
+        "run": 4,
+        "passed": 0,
+        "failed": 4,
+        "skipped": 120
+      },
+      "receipt_log_resource_source_binding_verified": true
+    },
+    {
+      "stage": "native-supervisor-green-r7",
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-supervisor",
+        "--retries",
+        "0",
+        "-E",
+        "test(supervisor::tests::restart_recovery::)"
+      ],
+      "kind": "focused-tests",
+      "source_tree": "7a4727b8ffaccf914ccbca2b2c57bbe90409f5e3",
+      "source_manifest": "evidence/native-candidate-r7-source.json",
+      "receipt": "evidence/native-supervisor-green-r7-receipt.json",
+      "log": "evidence/native-supervisor-green-r7.log",
+      "log_sha256": "47402d00593d360d1707f71e27dfea3764332e812ecff6d0a7c49142715cba67",
+      "resource_record": "evidence/native-supervisor-green-r7-resources.txt",
+      "exit_code": 0,
+      "elapsed_seconds_including_compile": 21.47490382194519,
+      "resource_user_seconds": 42.16,
+      "resource_system_seconds": 18.29,
+      "resource_peak_rss_kbytes": 1773064,
+      "diagnostics": [],
+      "unique_test_names": {
+        "PASS": [
+          "matrix_budget_identity_is_checked_even_when_agent_recovery_faults",
+          "matrix_exhausted_budget_survives_repeated_supervisor_recovery",
+          "matrix_orphan_fault_uses_lease_release_budget_before_writing",
+          "unresolved_agent_release_cannot_reset_another_release_matrix_budget"
+        ],
+        "FAIL": []
+      },
+      "test_summary": {
+        "test_phase_seconds": 0.063,
+        "run": 4,
+        "passed": 4,
+        "failed": 0,
+        "skipped": 120
+      },
+      "receipt_log_resource_source_binding_verified": true
+    }
+  ],
+  "behavior_counterexamples": [
+    {
+      "test": "matrix_exhausted_budget_survives_repeated_supervisor_recovery",
+      "assertion_line": 50,
+      "actual": 0,
+      "expected": 3
+    },
+    {
+      "test": "matrix_orphan_fault_uses_lease_release_budget_before_writing",
+      "assertion_line": 118,
+      "actual": 1,
+      "expected": 2
+    },
+    {
+      "test": "unresolved_agent_release_cannot_reset_another_release_matrix_budget",
+      "assertion_line": 218,
+      "actual": 0,
+      "expected": 2
+    },
+    {
+      "test": "matrix_budget_identity_is_checked_even_when_agent_recovery_faults",
+      "assertion_line": 161,
+      "failed_requirement": "CorruptLease with restart budget journal ownership error"
+    }
+  ],
+  "red_green_test_sources_identical": [
+    {
+      "path": "codex-rs/hepta-supervisor/src/supervisor_tests.rs",
+      "sha256": "d8696b8d4e7001ae7eca5f3e287ad736b17065cdded4d1cb734f90b8b3ea7c62",
+      "git_blob": "9ff44241c573ad7dd897a57fdaabfdc723af17e2"
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/supervisor_restart_recovery_tests.rs",
+      "sha256": "41dd08230db0fb5168f0eba1ef87cac0e9cf912927392a8b7da70f21b326814e",
+      "git_blob": "938defa5d4a3056e2158be7686c95cd9ab0728fa"
+    }
+  ],
+  "red_production_exactly_base_in_both_red_trees": true,
+  "red_green_whole_tree_changed_paths": [
+    "codex-rs/core/src/client.rs",
+    "codex-rs/core/src/client_provider_policy_tests.rs",
+    "codex-rs/core/src/client_tests.rs",
+    "codex-rs/hepta-supervisor/src/recovery.rs",
+    "codex-rs/hepta-supervisor/src/restart_state.rs",
+    "codex-rs/hepta-supervisor/src/runtime.rs",
+    "codex-rs/hepta-supervisor/src/supervisor.rs"
+  ],
+  "source_identity_field_caveat": "Original r6/r6b production_before.sha256/bytes describe the proposed candidate B; original_sha256/original_git_blob are the actual old production identity. The supplemental git-show receipt independently binds both red trees to the latter. Original evidence is retained unchanged.",
+  "coverage_limits": [
+    "r4/r5 are failed strict compilation stages, not test runs.",
+    "r6 is an assert_eq macro ambiguity compile failure (42 diagnostics), not a behavioral counterexample.",
+    "r6b and green-r7 deliberately select the same four new regression tests; 120 skipped is the focused nextest selection count, not 120 disabled tests or the full-suite ignored count.",
+    "The same four test cases appear in both focused stages; their counts must not be added as eight unique tests.",
+    "The red-to-green whole-tree delta also contains three core client files; the exact seven changed paths are listed rather than claiming only four files changed in the entire tree.",
+    "Earlier retained package receipts remain stage-bound. The dependency-equivalence statements do not claim execution of all features or platforms.",
+    "No active r7 strict/r8/later gate files were read by this export or verifier. No complete Supervisor, Agentd, core or full-workspace result is established here.",
+    "This readback does not run Rust, alter source, replace original logs, or establish final fmt/publication status."
+  ]
+}

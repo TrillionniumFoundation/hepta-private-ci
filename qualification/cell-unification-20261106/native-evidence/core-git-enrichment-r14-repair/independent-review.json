@@ -1,0 +1,49 @@
+{
+  "schema": "hepta.independent-git-enrichment-fixture-review.v1",
+  "reviewer": "historical_assets",
+  "status": "STATIC_REVIEW_NO_BLOCKER",
+  "source_commit": "b44d4ca4aa0ef9f894eff29e9975938e066a82f5",
+  "source_tree": "d3d2313b838422818bf9448ce5a1b86d89abdf69",
+  "candidate": {
+    "path": "codex-rs/core/tests/suite/git_enrichment.rs",
+    "sha256": "0b4074be01f03e511ebe9a12e3a6d2b13387417629974a95b0089c1bfc6a1ed3",
+    "git_blob": "729ff8173fe42f63d88377929bfd7ea802a81f27",
+    "patch_sha256": "fe4eaef83d94788b3b1fd9e3f0972059e6211cab85b6e6db5d1377f74078283f"
+  },
+  "independent_mechanical_checks": {
+    "before_after_raw_sha_and_blob_verified": true,
+    "regenerated_patch_exact": true,
+    "all_five_primary_source_pins_rehashed": true,
+    "only_two_function_bodies_change": true,
+    "whole_file_forward_and_inverse_exact": true,
+    "original_assertions_verbatim_ordered_subsequence": 12,
+    "new_exact_connection_count_assertions": 2,
+    "event_batches": [
+      {
+        "function": "startup_prewarm_skips_git_enrichment_and_user_turn_observes_fresh_state",
+        "original_event_batch_count": 3,
+        "candidate_event_batch_count": 3,
+        "expressions_equal_except_indentation": true
+      },
+      {
+        "function": "ephemeral_system_thread_prewarm_skips_and_turn_observes_fresh_state",
+        "original_event_batch_count": 4,
+        "candidate_event_batch_count": 4,
+        "expressions_equal_except_indentation": true
+      }
+    ],
+    "durations_raw_tool_arguments_root_turn_calls_attributes_network_skip_expressions_unchanged": true
+  },
+  "semantic_review": [
+    "The original common mock accepts connections serially, consumes the entire per-connection request queue, and closes after that queue. Splitting queues into one request per connection permits the next phase handshake without changing this common implementation.",
+    "The client determines reuse from its serialized connection compatibility projection or transport closure. When identity differs it awaits a new handshake before replacing the old connection, so the serial mock's wait for another old-socket request is a source-supported blocking mechanism.",
+    "The projection retains sandbox, sandbox_mode, workspaces and tool inventory. The pinned submit_turn helper explicitly requests PermissionProfile::Disabled. The revised audit does not falsely collapse all possible changes to workspaces or claim a captured compatibility-projection trace.",
+    "These tests assert metadata-free prewarm and fresh Git workspace metadata after repository mutation. They do not assert a socket-reuse contract. Retaining the same ordered event expressions and selecting the last follow-up at [2][0] / [3][0] preserves that purpose.",
+    "The new [1,1,1] / [1,1,1,1] assertions constrain request cardinality and delivery, while all original workspace values, root-turn assertions, waits and tool arguments remain exact. The fixture deliberately closes each one-request socket; these counts are fixture behavior, not evidence that production identity naturally changes on every request."
+  ],
+  "limitations": [
+    "No native execution, Rust invocation, source edit, or dynamic connection-identity trace was performed in this independent review.",
+    "The original three failure blocks support stopping at prewarm; source analysis explains a reachable transport/mock incompatibility. Exact projection fields/timing in each failed ephemeral case remain uncaptured.",
+    "Acceptance here is static review of the narrow fixture correction. Native original strict and full Core gates are still required."
+  ]
+}

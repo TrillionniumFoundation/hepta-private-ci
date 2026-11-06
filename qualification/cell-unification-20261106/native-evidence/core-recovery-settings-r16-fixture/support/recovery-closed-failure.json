@@ -1,0 +1,20 @@
+{
+  "schema": "hepta.r16-recovery-settings-closed-failure.v1",
+  "source_tree": "3ebd193f213d640e5330a1be4b983bcc4b06617a",
+  "source_commit": "96dc9232535fedf735e3099ef1391b69477270d4",
+  "source_review_sha256": "71ef2ce53ad26f61378d2cab8edc089dedc2726867d659bf348d8b6024e580c5",
+  "raw_full_log_sha256_recorded_by_native": "fe6cafe40e0efbe36a34f284234cfbfea68aaf658b5d65d9d0c3d754fbff813b",
+  "block": {
+    "status": "FAIL",
+    "elapsed": "0.168s",
+    "binary": "codex-core::all",
+    "name": "suite::turn_input_submission::recover_turn_if_idle_preserves_id_and_resumes_plan_mode",
+    "log_byte_range": [
+      472508,
+      473395
+    ],
+    "excerpt": "        FAIL [   0.168s] codex-core::all suite::turn_input_submission::recover_turn_if_idle_preserves_id_and_resumes_plan_mode\n  stdout \u2500\u2500\u2500\n\n    running 1 test\n    test suite::turn_input_submission::recover_turn_if_idle_preserves_id_and_resumes_plan_mode ... FAILED\n\n    failures:\n\n    failures:\n        suite::turn_input_submission::recover_turn_if_idle_preserves_id_and_resumes_plan_mode\n\n    test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1425 filtered out; finished in 0.15s\n\n  stderr \u2500\u2500\u2500\n\n    thread 'suite::turn_input_submission::recover_turn_if_idle_preserves_id_and_resumes_plan_mode' (1635492) panicked at core/tests/suite/turn_input_submission.rs:237:10:\n    recovered turn should start: InvalidRequest(\"turn recovery cannot override the interrupted turn settings\")\n    note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n"
+  },
+  "full_raw_r16_log_independently_read_by_this_repair_audit": false,
+  "boundary": "The terminal native failure excerpt and exact source45 bytes were read. This audit does not impersonate the separate full closed-log readback."
+}

@@ -1,0 +1,155 @@
+{
+  "schema": "hepta.recovery-independent-readback.v1",
+  "audit_is_new_after_scratch_loss": true,
+  "run": "r21",
+  "archive_and_source_verification": "VERIFIED",
+  "archive": {
+    "archive": {
+      "path": "native-validation-results/checkpoint-r21-closed.tar.gz",
+      "bytes": 1190333,
+      "sha256": "1d9c0dc71fdda73158d1011d828046aa3c6f02219ed311a10d6e864795519652",
+      "git_blob": "8ddbd58b9be4c3efde5b971ad3e772909c3eba2e"
+    },
+    "members": 206,
+    "indexed_members": 205,
+    "groups": {
+      "INDEX.json": 1,
+      "evidence": 14,
+      "input": 4,
+      "source": 187
+    },
+    "all_member_paths_regular_safe_unique": true,
+    "all_archive_modes_0644": true,
+    "all_index_sizes_sha256_modes_matched": true,
+    "all_extracted_bytes_and_member_set_matched": true,
+    "index": {
+      "bytes": 41180,
+      "sha256": "d4cedf8a6b1cfcf3c0d8145de8d2aff2e43bcce97bddff47a3d38cf67d0f18c5"
+    },
+    "member_readback": {
+      "path": "r21/ARCHIVE-MEMBERS.json",
+      "bytes": 41336,
+      "sha256": "532e407005def3e1d085973ecb83ad0722ae0bbc11b6644f22e12671c002362b"
+    }
+  },
+  "source": {
+    "source_manifest": {
+      "path": "evidence/native-candidate-r20-source.json",
+      "bytes": 51406,
+      "sha256": "1109bc5d38e702cb4e30de40af8877fe024a2b92933285546ab9b6c02b05bcb8"
+    },
+    "source_count": 187,
+    "computed_tree": "e65356fc570296b74644967054eaded15b8ed440",
+    "source_commit": "07699df6fb5bfb46562ecb0c2eccd0d232d18eac",
+    "all_raw_sha_git_blob_declared_modes_matched": true,
+    "archive_mode_vs_git_mode": "Archive transport mode is 0644; Git modes are separately bound to the source manifest and tree hash.",
+    "raw_lock": {
+      "bytes": 417315,
+      "sha256": "4165307bb6c41d08e6c1c362060f2a958c8200ea43fdab2b8b1e6220ad82b55c",
+      "git_blob": "b7e710988d6a3377a7e0a1dc68aef49c68dda36e",
+      "matches_original_framework": true
+    },
+    "source_readback": {
+      "path": "r21/SOURCE-FILES.json",
+      "bytes": 67277,
+      "sha256": "2403acc226ea1231e90b000fd8b456da46bdb3065251bafa8a37aa655e7c4e3b"
+    },
+    "tree_readback": {
+      "path": "r21/TREE-REBUILD.json",
+      "bytes": 14565,
+      "sha256": "9da1547575cf9da7b266d8994da477716a2d41e1a8c9405771181077765fae3e"
+    }
+  },
+  "original_framework_validation": {
+    "path": "BASE-TREE-VALIDATION.json",
+    "bytes": 200286,
+    "sha256": "10fef173f236a669e045ce76f18fac8b0debc51cea74ddb9b7b7c51908d4a78d"
+  },
+  "original_phases_and_terminal": {
+    "phase_results": [
+      {
+        "phase": "tests",
+        "command": [
+          "just",
+          "test",
+          "--locked",
+          "--retries",
+          "0"
+        ],
+        "exit_code": 101,
+        "elapsed_seconds": 547.5407721996307,
+        "start_unix": 1793966819.782758,
+        "end_unix": 1793967367.3235302,
+        "inputs": {
+          "receipt": {
+            "path": "evidence/native-workspace-r21-tests-receipt.json",
+            "bytes": 1003,
+            "sha256": "dcd1ae60c8dfec9ade39518917b5b3c047f6f75fc3266853068297223b1f6427"
+          },
+          "raw": {
+            "path": "evidence/native-workspace-r21-tests-raw-process-result.json",
+            "bytes": 499,
+            "sha256": "f54b30dcb10426d26853c29c48fda505055baf1211bd5c342d8f8b8f5e20abf4"
+          },
+          "log": {
+            "path": "evidence/native-workspace-r21-tests.log",
+            "bytes": 27143,
+            "sha256": "7f2a8bb5a5b9ed5f227c19fa605d37b88f5fc7c0c527b43636bb2667b1df2e10"
+          },
+          "resources": {
+            "path": "evidence/native-workspace-r21-tests-resources.txt",
+            "bytes": 827,
+            "sha256": "223a2187f644ba6b9b5f36307dd2692f16ac0fe1ace0c293078681c4ebd53dcb"
+          }
+        },
+        "post_guard": {
+          "path": "evidence/native-workspace-r21-source-post-test-verification.json",
+          "bytes": 419,
+          "sha256": "cb2d40f06be65bede25c8e97d9912aef514c31be5b13b4c3e569c378b38eb64d",
+          "pass": true
+        },
+        "raw_rc_receipt_resource_exit_bound": true
+      }
+    ],
+    "outer": {
+      "path": "evidence/native-workspace-r21-terminal-process-status.json",
+      "bytes": 731,
+      "sha256": "1b5e134aa5b41766ca690f20eebdb4c7246ecfdb60501a885238c70ab1330917",
+      "job_id": "1a1b0c142d4-fc05-729f",
+      "exit_code": 101,
+      "state": "failed",
+      "natural_terminal_no_timeout_cancel_retry": true,
+      "complete_and_durable_terminal_publication": true
+    }
+  },
+  "executed_any_native_commands": false,
+  "executed_rust_or_tests": false,
+  "read_active_logs": false,
+  "modified_source": false,
+  "old_lost_audit_bytes_reconstructed": false,
+  "scientific_or_authority_disposition_changed": false,
+  "full_test_id_semantic_readback": "Separately owned by differentiation_study in the new recovered-checkpoint group; this report binds the complete raw logs and original phase results to independently rebuilt source trees.",
+  "workspace": {
+    "metadata": {
+      "path": "evidence/native-workspace-r21-metadata.json",
+      "bytes": 937669,
+      "sha256": "99fdbea678582580ebb373c06e4e91cd547f49d83765c22a59a1dd143510a834"
+    },
+    "scope": {
+      "path": "evidence/native-workspace-r21-scope.json",
+      "bytes": 70399,
+      "sha256": "29c1d743354ee674dd0cf1c248d753362bb648ebe3ddfb7bffc6bf9d7fd9047b"
+    },
+    "member_count": 193,
+    "default_member_count": 193,
+    "member_sets_equal": true,
+    "test_execution_started": false,
+    "test_counts": null,
+    "raw_compile_errors": [
+      "error[E0063]: missing field `trace` in initializer of `codex_app_server_protocol::JSONRPCRequest`",
+      "error[E0063]: missing field `trace` in initializer of `codex_app_server_protocol::JSONRPCRequest`"
+    ],
+    "original_compile_exit": 101,
+    "readback_boundary": "Exact error spans and all project test ID parsing are in the independent recovered-checkpoint log review by differentiation_study."
+  }
+}

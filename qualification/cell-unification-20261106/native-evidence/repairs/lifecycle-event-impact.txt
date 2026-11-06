@@ -1,0 +1,43 @@
+codex-rs/hepta-learning-artifacts/src/lib.rs:55:pub use closure_v2::ArtifactLifecycleEventV1;
+codex-rs/hepta-learning-artifacts/src/closure_v2.rs:497:pub struct ArtifactLifecycleEventV1 {
+codex-rs/hepta-learning-artifacts/src/closure_v2.rs:511:    event: &ArtifactLifecycleEventV1,
+codex-rs/hepta-learning-artifacts/src/closure_v2_tests.rs:134:    let self_selected = ArtifactLifecycleEventV1 {
+codex-rs/hepta-learning-artifacts/src/closure_v2_tests.rs:150:    let skipped = ArtifactLifecycleEventV1 {
+codex-rs/hepta-learning-artifacts/src/lifecycle_journal.rs:17:use crate::ArtifactLifecycleEventV1;
+codex-rs/hepta-learning-artifacts/src/lifecycle_journal.rs:59:    pub event: ArtifactLifecycleEventV1,
+codex-rs/hepta-learning-artifacts/src/lifecycle_journal.rs:118:        event: ArtifactLifecycleEventV1,
+codex-rs/hepta-learning-artifacts/src/lifecycle_journal.rs:260:    event: &ArtifactLifecycleEventV1,
+codex-rs/hepta-learning-artifacts/src/lifecycle_journal.rs:388:    ) -> ArtifactLifecycleEventV1 {
+codex-rs/hepta-learning-artifacts/src/lifecycle_journal.rs:389:        ArtifactLifecycleEventV1 {
+codex-rs/hepta-learning-artifacts/src/durable_snapshots.rs:15:use crate::ArtifactLifecycleEventV1;
+codex-rs/hepta-learning-artifacts/src/durable_snapshots.rs:410:        let event = ArtifactLifecycleEventV1 {
+codex-rs/hepta-learning-artifacts/src/durable_snapshots.rs:631:    fn trained_event(actor: &LifecycleActorEvidenceV2) -> ArtifactLifecycleEventV1 {
+codex-rs/hepta-learning-artifacts/src/durable_snapshots.rs:632:        ArtifactLifecycleEventV1 {
+codex-rs/hepta-learning-artifacts/src/durable_snapshots.rs:666:        let next = ArtifactLifecycleEventV1 {
+codex-rs/hepta-learning-artifacts/src/selection.rs:22:use crate::ArtifactLifecycleEventV1;
+codex-rs/hepta-learning-artifacts/src/selection.rs:363:    let event = ArtifactLifecycleEventV1 {
+codex-rs/hepta-learning-artifacts/src/selection.rs:747:                ArtifactLifecycleEventV1 {
+codex-rs/hepta-runtime/src/cell_lifecycle_recovery.rs:9:use crate::cell_lifecycle_transition::LifecycleEventV1;
+codex-rs/hepta-runtime/src/cell_lifecycle_recovery.rs:69:        let event: LifecycleEventV1 = serde_json::from_str(&bytes)
+codex-rs/hepta-runtime/src/cell_lifecycle_recovery.rs:72:            LifecycleEventV1::Observed { observation, authentication } => {
+codex-rs/hepta-runtime/src/cell_lifecycle_recovery.rs:81:            LifecycleEventV1::Created { .. } | LifecycleEventV1::Prepared { .. } => {}
+codex-rs/hepta-runtime/src/cell_lifecycle_journal.rs:10:use crate::cell_lifecycle_transition::LifecycleEventV1;
+codex-rs/hepta-runtime/src/cell_lifecycle_journal.rs:86:        self.append(plan, None, LifecycleEventV1::Created { at_ms: now_ms }).await
+codex-rs/hepta-runtime/src/cell_lifecycle_journal.rs:96:            plan, Some(expected_revision), LifecycleEventV1::Prepared { at_ms: now_ms },
+codex-rs/hepta-runtime/src/cell_lifecycle_journal.rs:115:        self.append(plan, Some(expected_revision), LifecycleEventV1::Observed {
+codex-rs/hepta-runtime/src/cell_lifecycle_journal.rs:161:            let event: LifecycleEventV1 = serde_json::from_str(&bytes)
+codex-rs/hepta-runtime/src/cell_lifecycle_journal.rs:163:            if let LifecycleEventV1::Observed { observation, .. } = event
+codex-rs/hepta-runtime/src/cell_lifecycle_journal.rs:215:        event: LifecycleEventV1,
+codex-rs/hepta-runtime/src/cell_lifecycle_journal.rs:298:        let event: LifecycleEventV1 = serde_json::from_str(&bytes)
+codex-rs/hepta-runtime/src/cell_lifecycle_journal.rs:300:        if matches!(event, LifecycleEventV1::Prepared { .. }) { pending += 1; }
+codex-rs/hepta-runtime/src/cell_lifecycle_journal.rs:376:        let event: LifecycleEventV1 = serde_json::from_str(&event_json)
+codex-rs/hepta-runtime/src/cell_lifecycle_transition.rs:11:pub(crate) enum LifecycleEventV1 {
+codex-rs/hepta-runtime/src/cell_lifecycle_transition.rs:23:    event: &LifecycleEventV1,
+codex-rs/hepta-runtime/src/cell_lifecycle_transition.rs:27:        (None, LifecycleEventV1::Created { at_ms }) => {
+codex-rs/hepta-runtime/src/cell_lifecycle_transition.rs:37:        (Some(state), LifecycleEventV1::Prepared { at_ms }) => {
+codex-rs/hepta-runtime/src/cell_lifecycle_transition.rs:57:        (Some(state), LifecycleEventV1::Observed { observation, authentication }) => {
+codex-rs/hepta-runtime/src/cell_lifecycle_transition.rs:79:        (Some(_), LifecycleEventV1::Created { .. })
+codex-rs/hepta-runtime/src/cell_lifecycle_transition.rs:80:        | (None, LifecycleEventV1::Prepared { .. } | LifecycleEventV1::Observed { .. }) => {
+codex-rs/hepta-shadow-qualification/src/lane_e_closure_tests.rs:43:use codex_hepta_learning_artifacts::ArtifactLifecycleEventV1;
+codex-rs/hepta-shadow-qualification/src/lane_e_closure_tests.rs:664:    let trained_event = ArtifactLifecycleEventV1 {
+codex-rs/hepta-shadow-qualification/src/lane_e_closure_tests.rs:676:    let evaluated_event = ArtifactLifecycleEventV1 {

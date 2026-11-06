@@ -1,0 +1,155 @@
+{
+  "source_tree": "d3d2313b838422818bf9448ce5a1b86d89abdf69",
+  "closed_failure_review": {
+    "path": "native-validation-results/r14-blockers/native-core-r14-result-review.json",
+    "bytes": 35985,
+    "sha256": "9b5b3a81d4901d8c6769908e2021235e3ef82e3257d5b0c21bf1c086899f0732",
+    "git_blob": "9692fd994460c43b0f443b1b6ce850550057e9aa"
+  },
+  "nine_original_failures": [
+    {
+      "status": "FAIL",
+      "elapsed": "5.303s",
+      "binary": "codex-core::all",
+      "name": "suite::unified_exec_process_events::exec_command_consumes_pushed_remote_process_events::test_case_1_complete_event_stream",
+      "log_byte_range": [
+        529996,
+        530957
+      ],
+      "excerpt": "        FAIL [   5.303s] codex-core::all suite::unified_exec_process_events::exec_command_consumes_pushed_remote_process_events::test_case_1_complete_event_stream\n  stdout \u2500\u2500\u2500\n\n    running 1 test\n    test suite::unified_exec_process_events::exec_command_consumes_pushed_remote_process_events::test_case_1_complete_event_stream ... FAILED\n\n    failures:\n\n    failures:\n        suite::unified_exec_process_events::exec_command_consumes_pushed_remote_process_events::test_case_1_complete_event_stream\n\n    test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1425 filtered out; finished in 5.29s\n\n  stderr \u2500\u2500\u2500\n\n    thread 'tokio-rt-worker' (1074052) panicked at core/tests/suite/unified_exec_process_events.rs:87:14:\n    websocket read should not time out: Elapsed(())\n    note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n    Error: task 4 panicked with message \"websocket read should not time out: Elapsed(())\"\n"
+    },
+    {
+      "status": "FAIL",
+      "elapsed": "5.288s",
+      "binary": "codex-core::all",
+      "name": "suite::unified_exec_process_events::exec_command_consumes_pushed_remote_process_events::test_case_2_direct_sandbox_denial",
+      "log_byte_range": [
+        530957,
+        531919
+      ],
+      "excerpt": "\n        FAIL [   5.288s] codex-core::all suite::unified_exec_process_events::exec_command_consumes_pushed_remote_process_events::test_case_2_direct_sandbox_denial\n  stdout \u2500\u2500\u2500\n\n    running 1 test\n    test suite::unified_exec_process_events::exec_command_consumes_pushed_remote_process_events::test_case_2_direct_sandbox_denial ... FAILED\n\n    failures:\n\n    failures:\n        suite::unified_exec_process_events::exec_command_consumes_pushed_remote_process_events::test_case_2_direct_sandbox_denial\n\n    test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1425 filtered out; finished in 5.28s\n\n  stderr \u2500\u2500\u2500\n\n    thread 'tokio-rt-worker' (1074125) panicked at core/tests/suite/unified_exec_process_events.rs:87:14:\n    websocket read should not time out: Elapsed(())\n    note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n    Error: task 4 panicked with message \"websocket read should not time out: Elapsed(())\"\n"
+    },
+    {
+      "status": "FAIL",
+      "elapsed": "5.305s",
+      "binary": "codex-core::all",
+      "name": "suite::unified_exec_process_events::exec_command_consumes_pushed_remote_process_events::test_case_3_legacy_exit_metadata",
+      "log_byte_range": [
+        531919,
+        532878
+      ],
+      "excerpt": "\n        FAIL [   5.305s] codex-core::all suite::unified_exec_process_events::exec_command_consumes_pushed_remote_process_events::test_case_3_legacy_exit_metadata\n  stdout \u2500\u2500\u2500\n\n    running 1 test\n    test suite::unified_exec_process_events::exec_command_consumes_pushed_remote_process_events::test_case_3_legacy_exit_metadata ... FAILED\n\n    failures:\n\n    failures:\n        suite::unified_exec_process_events::exec_command_consumes_pushed_remote_process_events::test_case_3_legacy_exit_metadata\n\n    test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1425 filtered out; finished in 5.29s\n\n  stderr \u2500\u2500\u2500\n\n    thread 'tokio-rt-worker' (1074382) panicked at core/tests/suite/unified_exec_process_events.rs:87:14:\n    websocket read should not time out: Elapsed(())\n    note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n    Error: task 4 panicked with message \"websocket read should not time out: Elapsed(())\"\n"
+    },
+    {
+      "status": "FAIL",
+      "elapsed": "5.326s",
+      "binary": "codex-core::all",
+      "name": "suite::unified_exec_process_events::exec_command_consumes_pushed_remote_process_events::test_case_4_truncated_event_replay",
+      "log_byte_range": [
+        532878,
+        533843
+      ],
+      "excerpt": "\n        FAIL [   5.326s] codex-core::all suite::unified_exec_process_events::exec_command_consumes_pushed_remote_process_events::test_case_4_truncated_event_replay\n  stdout \u2500\u2500\u2500\n\n    running 1 test\n    test suite::unified_exec_process_events::exec_command_consumes_pushed_remote_process_events::test_case_4_truncated_event_replay ... FAILED\n\n    failures:\n\n    failures:\n        suite::unified_exec_process_events::exec_command_consumes_pushed_remote_process_events::test_case_4_truncated_event_replay\n\n    test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1425 filtered out; finished in 5.31s\n\n  stderr \u2500\u2500\u2500\n\n    thread 'tokio-rt-worker' (1074413) panicked at core/tests/suite/unified_exec_process_events.rs:87:14:\n    websocket read should not time out: Elapsed(())\n    note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n    Error: task 4 panicked with message \"websocket read should not time out: Elapsed(())\"\n"
+    },
+    {
+      "status": "FAIL",
+      "elapsed": "5.316s",
+      "binary": "codex-core::all",
+      "name": "suite::unified_exec_process_events::exec_command_consumes_pushed_remote_process_events::test_case_5_managed_network_uses_executor_proxy_launch",
+      "log_byte_range": [
+        533843,
+        534868
+      ],
+      "excerpt": "\n        FAIL [   5.316s] codex-core::all suite::unified_exec_process_events::exec_command_consumes_pushed_remote_process_events::test_case_5_managed_network_uses_executor_proxy_launch\n  stdout \u2500\u2500\u2500\n\n    running 1 test\n    test suite::unified_exec_process_events::exec_command_consumes_pushed_remote_process_events::test_case_5_managed_network_uses_executor_proxy_launch ... FAILED\n\n    failures:\n\n    failures:\n        suite::unified_exec_process_events::exec_command_consumes_pushed_remote_process_events::test_case_5_managed_network_uses_executor_proxy_launch\n\n    test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1425 filtered out; finished in 5.30s\n\n  stderr \u2500\u2500\u2500\n\n    thread 'tokio-rt-worker' (1074593) panicked at core/tests/suite/unified_exec_process_events.rs:87:14:\n    websocket read should not time out: Elapsed(())\n    note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n    Error: task 4 panicked with message \"websocket read should not time out: Elapsed(())\"\n"
+    },
+    {
+      "status": "FAIL",
+      "elapsed": "5.323s",
+      "binary": "codex-core::all",
+      "name": "suite::unified_exec_process_events::exec_command_consumes_pushed_remote_process_events::test_case_6_strict_managed_allowlist_omits_policy_callbacks",
+      "log_byte_range": [
+        534868,
+        535908
+      ],
+      "excerpt": "\n        FAIL [   5.323s] codex-core::all suite::unified_exec_process_events::exec_command_consumes_pushed_remote_process_events::test_case_6_strict_managed_allowlist_omits_policy_callbacks\n  stdout \u2500\u2500\u2500\n\n    running 1 test\n    test suite::unified_exec_process_events::exec_command_consumes_pushed_remote_process_events::test_case_6_strict_managed_allowlist_omits_policy_callbacks ... FAILED\n\n    failures:\n\n    failures:\n        suite::unified_exec_process_events::exec_command_consumes_pushed_remote_process_events::test_case_6_strict_managed_allowlist_omits_policy_callbacks\n\n    test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1425 filtered out; finished in 5.31s\n\n  stderr \u2500\u2500\u2500\n\n    thread 'tokio-rt-worker' (1074628) panicked at core/tests/suite/unified_exec_process_events.rs:87:14:\n    websocket read should not time out: Elapsed(())\n    note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n    Error: task 4 panicked with message \"websocket read should not time out: Elapsed(())\"\n"
+    },
+    {
+      "status": "FAIL",
+      "elapsed": "5.274s",
+      "binary": "codex-core::all",
+      "name": "suite::unified_exec_process_events::exec_command_consumes_pushed_remote_process_events::test_case_7_foreign_windows_managed_network_preserves_approval_registration",
+      "log_byte_range": [
+        535908,
+        536996
+      ],
+      "excerpt": "\n        FAIL [   5.274s] codex-core::all suite::unified_exec_process_events::exec_command_consumes_pushed_remote_process_events::test_case_7_foreign_windows_managed_network_preserves_approval_registration\n  stdout \u2500\u2500\u2500\n\n    running 1 test\n    test suite::unified_exec_process_events::exec_command_consumes_pushed_remote_process_events::test_case_7_foreign_windows_managed_network_preserves_approval_registration ... FAILED\n\n    failures:\n\n    failures:\n        suite::unified_exec_process_events::exec_command_consumes_pushed_remote_process_events::test_case_7_foreign_windows_managed_network_preserves_approval_registration\n\n    test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1425 filtered out; finished in 5.26s\n\n  stderr \u2500\u2500\u2500\n\n    thread 'tokio-rt-worker' (1074868) panicked at core/tests/suite/unified_exec_process_events.rs:87:14:\n    websocket read should not time out: Elapsed(())\n    note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n    Error: task 4 panicked with message \"websocket read should not time out: Elapsed(())\"\n"
+    },
+    {
+      "status": "FAIL",
+      "elapsed": "5.259s",
+      "binary": "codex-core::all",
+      "name": "suite::unified_exec_process_events::exec_command_consumes_pushed_remote_process_events::test_case_8_foreign_windows_workspace_sandbox",
+      "log_byte_range": [
+        536996,
+        537994
+      ],
+      "excerpt": "\n        FAIL [   5.259s] codex-core::all suite::unified_exec_process_events::exec_command_consumes_pushed_remote_process_events::test_case_8_foreign_windows_workspace_sandbox\n  stdout \u2500\u2500\u2500\n\n    running 1 test\n    test suite::unified_exec_process_events::exec_command_consumes_pushed_remote_process_events::test_case_8_foreign_windows_workspace_sandbox ... FAILED\n\n    failures:\n\n    failures:\n        suite::unified_exec_process_events::exec_command_consumes_pushed_remote_process_events::test_case_8_foreign_windows_workspace_sandbox\n\n    test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1425 filtered out; finished in 5.25s\n\n  stderr \u2500\u2500\u2500\n\n    thread 'tokio-rt-worker' (1074912) panicked at core/tests/suite/unified_exec_process_events.rs:87:14:\n    websocket read should not time out: Elapsed(())\n    note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n    Error: task 4 panicked with message \"websocket read should not time out: Elapsed(())\"\n"
+    },
+    {
+      "status": "FAIL",
+      "elapsed": "5.268s",
+      "binary": "codex-core::all",
+      "name": "suite::unified_exec_process_events::exec_command_consumes_pushed_remote_process_events::test_case_9_windows_elevated_powershell_disables_profile",
+      "log_byte_range": [
+        540917,
+        541947
+      ],
+      "excerpt": "        FAIL [   5.268s] codex-core::all suite::unified_exec_process_events::exec_command_consumes_pushed_remote_process_events::test_case_9_windows_elevated_powershell_disables_profile\n  stdout \u2500\u2500\u2500\n\n    running 1 test\n    test suite::unified_exec_process_events::exec_command_consumes_pushed_remote_process_events::test_case_9_windows_elevated_powershell_disables_profile ... FAILED\n\n    failures:\n\n    failures:\n        suite::unified_exec_process_events::exec_command_consumes_pushed_remote_process_events::test_case_9_windows_elevated_powershell_disables_profile\n\n    test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1425 filtered out; finished in 5.25s\n\n  stderr \u2500\u2500\u2500\n\n    thread 'tokio-rt-worker' (1075085) panicked at core/tests/suite/unified_exec_process_events.rs:87:14:\n    websocket read should not time out: Elapsed(())\n    note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n    Error: task 4 panicked with message \"websocket read should not time out: Elapsed(())\"\n"
+    }
+  ],
+  "original_and_stage42_native_exit_fast_path": [
+    {
+      "pin": {
+        "path": "core-unified-termination-r8c-repair/original/codex-rs/core/src/unified_exec/process.rs",
+        "bytes": 26968,
+        "sha256": "342d7bb7ed3b4038687f34cce451f985af68dd25b6bf31d9436df4cdf7981394",
+        "git_blob": "549d118cfe090af1aea51a47ba0eeb1eb5ff0098"
+      },
+      "entries": [
+        {
+          "start_line": 230,
+          "excerpt": "    pub(super) fn terminate(&self) {\n        if self.observe_current_exit() {\n            self.finish_termination();\n            return;\n        }\n        match &self.process_handle {\n            ProcessHandle::Local(process_handle) => process_handle.terminate(),\n            ProcessHandle::ExecServer(process_handle) => {\n                let process_handle = Arc::clone(process_handle);\n                tokio::spawn(async move {\n                    let _ = process_handle.terminate().await;\n                });"
+        },
+        {
+          "start_line": 247,
+          "excerpt": "    pub(super) async fn terminate_confirmed(&self) -> Result<(), UnifiedExecError> {\n        if self.observe_current_exit() {\n            self.finish_termination();\n            return Ok(());\n        }\n        if let Some(message) = self.failure_message() {\n            self.terminate();\n            return Err(UnifiedExecError::process_failed(message));\n        }\n        match &self.process_handle {\n            ProcessHandle::Local(process_handle) => process_handle.terminate(),\n            ProcessHandle::ExecServer(process_handle) => {"
+        }
+      ]
+    },
+    {
+      "pin": {
+        "path": "core-unified-termination-r8c-repair/source/codex-rs/core/src/unified_exec/process.rs",
+        "bytes": 29589,
+        "sha256": "76a7e709326b8fe4c2e0cd59ba335c01ceb7ad32e852e7f3c2fe12b60b052060",
+        "git_blob": "b82a8cb16a7c33e7ac54f33445e5622a53675e63"
+      },
+      "entries": [
+        {
+          "start_line": 233,
+          "excerpt": "    pub(super) fn terminate(&self) {\n        if self.observe_current_exit() {\n            self.finish_termination();\n            return;\n        }\n        match &self.process_handle {\n            ProcessHandle::Local(process_handle) => process_handle.terminate(),\n            ProcessHandle::ExecServer(process_handle) => {\n                let process_handle = Arc::clone(process_handle);\n                tokio::spawn(async move {\n                    let _ = process_handle.terminate().await;\n                });"
+        },
+        {
+          "start_line": 250,
+          "excerpt": "    pub(super) async fn terminate_confirmed(\n        &self,\n        deadline: Instant,\n    ) -> Result<(), UnifiedExecError> {\n        if self.observe_current_exit() {\n            self.finish_termination();\n            return Ok(());\n        }\n        let prior_failure = self.failure_message();\n        // The owner supplies one cooperative budget for both the request and\n        // observation. The existing synchronous local driver is not preemptible.\n        let request_result = if Instant::now() >= deadline {"
+        }
+      ]
+    }
+  ],
+  "candidate_source": {
+    "path": "core-exec-events-r14-repair/source/codex-rs/core/tests/suite/unified_exec_process_events.rs",
+    "bytes": 41379,
+    "sha256": "f3a58d32dac0ecab83d45bd1460b34babcfb17500ebcffdfb4dbc302ed656b77",
+    "git_blob": "0be5dc7774419edf11f7b3256a9f8ad2025882fa"
+  },
+  "runtime_limit": "This is a source-backed correction to the fake-server termination contract. It has not yet passed native execution. The new channel is test fixture shutdown only, not a production process-exit acknowledgement. All original native event payloads, output assertions, compatibility read counts and numeric duration expressions remain."
+}

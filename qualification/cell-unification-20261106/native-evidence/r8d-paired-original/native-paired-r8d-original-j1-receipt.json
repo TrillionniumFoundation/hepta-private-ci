@@ -1,0 +1,33 @@
+{
+  "command": [
+    "just",
+    "test",
+    "--locked",
+    "-p",
+    "codex-hepta-supervisor",
+    "--test",
+    "paired_process_product",
+    "--retries",
+    "0",
+    "-j",
+    "1"
+  ],
+  "kind": "diagnostic_original_source_profile_single_thread",
+  "staged_tree": "6d88ca9c8964669a408d8549efaeff7b94d68674",
+  "source_manifest": "native-paired-r8d-original-j1-source.json",
+  "observations": "native-paired-r8d-original-j1-observations.json",
+  "start_unix": 1793943338.5846732,
+  "end_unix": 1793943454.2175255,
+  "elapsed_seconds": 115.63285231590271,
+  "exit_code": 100,
+  "log_sha256": "206dd14059805d873fc05e2b7e0ebf906397472c94088a22eb68cbb8b95a322e",
+  "summaries": [
+    "     Summary [ 113.905s] 2 tests run: 0 passed, 1 failed, 1 timed out, 1 skipped"
+  ],
+  "disk_after": {
+    "total": 1966736678912,
+    "used": 1655462428672,
+    "free": 211293999104
+  },
+  "no_source_changes": true
+}
