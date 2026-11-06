@@ -1,0 +1,182 @@
+{
+  "schema": "hepta-skills-invalid-negative-complete-original-archive-v1",
+  "original_native_job": "1a1a9955443-fc05-3624",
+  "original_native_status": {
+    "at_unix_ms": 1793846636446,
+    "audit_recorded": true,
+    "automatic_retry": false,
+    "cancelled": false,
+    "exit_code": 1,
+    "job_id": "1a1a9955443-fc05-3624",
+    "launch_nonce": "aa8e13fb05f26d991e1fb5886951647b",
+    "log_bytes": {
+      "stderr": {
+        "seen": 825,
+        "stored": 825
+      },
+      "stdout": {
+        "seen": 1735,
+        "stored": 1735
+      }
+    },
+    "log_errors": {
+      "stderr": null,
+      "stdout": null
+    },
+    "log_synced": {
+      "stderr": true,
+      "stdout": true
+    },
+    "log_truncated": {
+      "stderr": false,
+      "stdout": false
+    },
+    "output_complete": true,
+    "output_durable": true,
+    "state": "failed",
+    "terminal_publication_confirmed": true,
+    "terminal_publication_protocol": 1,
+    "timed_out": false
+  },
+  "tested_tree": "e55c92c7546fceccd37c16fcd04aaf606e182201",
+  "restored_tree": "1125d197cf798176bea6dcc2c0b0c499eb22cf44",
+  "root_execution_guard": "ae89d64dfe4b7abb50f0d7c6e9278335bb369265",
+  "small_failure_bundle": "92b497559c315c0cc48db5a8d7f3de89470a2158",
+  "export_job": "1a1a99ab906-fc05-364a",
+  "export_status": {
+    "at_unix_ms": 1793846852999,
+    "audit_recorded": true,
+    "automatic_retry": false,
+    "cancelled": false,
+    "exit_code": 0,
+    "job_id": "1a1a99ab906-fc05-364a",
+    "launch_nonce": "9f45fdb01493955ccd4e31e86ead9882",
+    "log_bytes": {
+      "stderr": {
+        "seen": 0,
+        "stored": 0
+      },
+      "stdout": {
+        "seen": 302,
+        "stored": 302
+      }
+    },
+    "log_errors": {
+      "stderr": null,
+      "stdout": null
+    },
+    "log_synced": {
+      "stderr": true,
+      "stdout": true
+    },
+    "log_truncated": {
+      "stderr": false,
+      "stdout": false
+    },
+    "output_complete": true,
+    "output_durable": true,
+    "state": "succeeded",
+    "terminal_publication_confirmed": true,
+    "terminal_publication_protocol": 1,
+    "timed_out": false
+  },
+  "native_export_manifest": {
+    "git_blob": "c5969482cdd1680a3d8202e5d2c70d546020d28b",
+    "bytes": 10582,
+    "sha256": "1fb1d6315193c5bead1fcc4b90be95e1e11fc8ac2f20df589735cd710bb59aa1"
+  },
+  "original_unique_files_count": 36,
+  "assets": [
+    {
+      "name": "driver-error.json",
+      "original": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full18-three-repairs-v2-20261105-0242/driver-error.json",
+        "bytes": 71219,
+        "sha256": "ba7d57888561492deda2ab9f1524032fe595383ef1ef02585963446d9386bcdb"
+      },
+      "gzip": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/skills-invalid-negative-frozen-export-20261105/driver-error.json.gz",
+        "bytes": 10940,
+        "sha256": "eda8d9a0934c7b3170b21a053c9a168d858295c68b0d4f1d4437f1b4e0801b70"
+      },
+      "gzip_mtime": 0,
+      "base64_bytes": 14588,
+      "base64_sha256": "92da0790d4c3b2b4bbf0fedcfdabc2fa7072d606c131bfbb5e2952987a31d6a3",
+      "github_chunks": [
+        {
+          "offset": 0,
+          "git_blob": "860fa331e4e4a37a6e1b08dca6083a3c9a33452b",
+          "bytes": 14588,
+          "sha256": "92da0790d4c3b2b4bbf0fedcfdabc2fa7072d606c131bfbb5e2952987a31d6a3",
+          "local_transport_file": "/workspace/scratch/07dd58cc9630/ci-audit/recovered-20261105/skills-invalid-negative-compressed-archive/00-000.b64.txt",
+          "local_transport_added_final_newline": true
+        }
+      ]
+    },
+    {
+      "name": "skills-marker-negative-metadata.stdout",
+      "original": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full18-three-repairs-v2-20261105-0242/skills-marker-negative-metadata.stdout",
+        "bytes": 8163658,
+        "sha256": "51ff98c991ea71a7a1be5135acb3c35bd6070b09544306f4b3bbc0fa1ea52e19"
+      },
+      "gzip": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/skills-invalid-negative-frozen-export-20261105/skills-marker-negative-metadata.stdout.gz",
+        "bytes": 596961,
+        "sha256": "8e52af367ddcdc8a0694f7ab5aecc04137d9e6be16c24089c3b869f216d6e826"
+      },
+      "gzip_mtime": 0,
+      "base64_bytes": 795948,
+      "base64_sha256": "05b7da731e02afd2751d37771428d5bfe9fb37d31d0793ae05d86aaf6bc1198c",
+      "github_chunks": [
+        {
+          "offset": 0,
+          "git_blob": "bb2caf6d3e7ab1572e10e56f7a91f1a08072ee56",
+          "bytes": 400000,
+          "sha256": "fa002bff4c2de97ba41138c7fe8d464ffaca6bb87d016a4118a3f5d9be4d9752",
+          "local_transport_file": "/workspace/scratch/07dd58cc9630/ci-audit/recovered-20261105/app-parent-probe-compressed-archive/02-000.b64.txt",
+          "local_transport_added_final_newline": true
+        },
+        {
+          "offset": 400000,
+          "git_blob": "d6cc00eb227cd2ab00162be0b66c09df89a4d0cb",
+          "bytes": 395948,
+          "sha256": "5520e1b07f6788cf6eeaf35cced07b9bb352ab7555e7f361f96151e97c6ead94",
+          "local_transport_file": "/workspace/scratch/07dd58cc9630/ci-audit/recovered-20261105/app-parent-probe-compressed-archive/02-001.b64.txt",
+          "local_transport_added_final_newline": true
+        }
+      ],
+      "deduplicated_same_original_sha_from": "8c1e13c2d6c91597dc5543ff16a50892ba7da891"
+    },
+    {
+      "name": "complete-small-originals.json",
+      "original": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/skills-invalid-negative-frozen-export-20261105/complete-small-originals.json",
+        "bytes": 310612,
+        "sha256": "54df7364092184d8524b63d52b6d4e6ae21aa13fb12145272b42f419aa9aa94e"
+      },
+      "gzip": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/skills-invalid-negative-frozen-export-20261105/complete-small-originals.json.gz",
+        "bytes": 49044,
+        "sha256": "b518c8b626ee6926774948cb98b162cb8ba5799b543de68d8cf2441b49257b94"
+      },
+      "gzip_mtime": 0,
+      "base64_bytes": 65392,
+      "base64_sha256": "7a65a43f3ae053481cd0f24f0b3572fc3cb167a34f34372fb2189d6d453d0b00",
+      "github_chunks": [
+        {
+          "offset": 0,
+          "git_blob": "919e9d8400c7152db74c57c37527c0d237e111bf",
+          "bytes": 65392,
+          "sha256": "7a65a43f3ae053481cd0f24f0b3572fc3cb167a34f34372fb2189d6d453d0b00",
+          "local_transport_file": "/workspace/scratch/07dd58cc9630/ci-audit/recovered-20261105/skills-invalid-negative-compressed-archive/02-000.b64.txt",
+          "local_transport_added_final_newline": true
+        }
+      ]
+    }
+  ],
+  "originals_untouched": true,
+  "decode_contract": "Strict exact Git base64 UTF-8 chunks -> verify bytes/SHA/Git id -> concatenate offsets -> verify base64 bytes/SHA -> decode validate=true -> gzip bytes/SHA -> decompress -> original bytes/SHA. Local transport has exactly one added final newline removed before hash verification.",
+  "deduplication_contract": "The metadata asset is byte-identical to the prior parent-probe metadata at all original/gzip/base64 hash layers. Its native path and command provenance remain from this failed Skills stage; the same existing Git chunks are reused without claiming the prior stage executed Skills.",
+  "qualification_limit": "Fixture preparation panic at source425 before expected business assertion441. Negative is INVALID; exact positive1125 restored by finally, zero positive/migration/V8 executions."
+}

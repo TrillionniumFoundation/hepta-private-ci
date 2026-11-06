@@ -1,0 +1,20 @@
+--- reviewed-v2.py
++++ v3-continuation.py
+@@ -169,7 +169,7 @@
+   outer=left_paths[0][:-len("/.agents/skills")] if left_paths and left_paths[0].endswith("/outer/.agents/skills") else None
+   expected_paths=[outer+"/.agents/skills",outer+"/nested/inner/.agents/skills"] if outer else []
+   proof["actual_left_vector_paths"]=left_paths;proof["added_left_paths"]=added_paths
+-  conditions={"original_assertion_location":"ext/skills/src/host_roots_tests.rs:441:" in failure,"exact_vector_assertion":"assertion failed:" in failure and "Diff < left / right >" in failure,"controlled_outer_added":bool(outer and expected_paths[0] in added_paths),"exact_actual_ordered_outer_and_cwd":bool(outer and left_paths==expected_paths),"not_timeout":"TIMEOUT" not in raw}
++  conditions={"original_assertion_location":"ext/skills/src/host_roots_tests.rs:446:" in failure,"exact_vector_assertion":"assertion failed:" in failure and "Diff < left / right >" in failure,"controlled_outer_added":bool(outer and expected_paths[0] in added_paths),"exact_actual_ordered_outer_and_cwd":bool(outer and left_paths==expected_paths),"not_timeout":"TIMEOUT" not in raw}
+  elif kind=="migration":
+   conditions={"child_original_assertion_location":"external-agent-migration/src/service_tests/plugins/marketplaces.rs:588:" in raw,"child_original_equality":"assertion failed:" in raw and "Diff < left / right >" in raw,"original_inferred_name":'"claude-plugins-official"' in raw,"child_one_failed":"test result: FAILED. 0 passed; 1 failed; 0 ignored;" in raw,"parent_reports_child_failure":"isolated import assertions failed" in raw,"not_timeout":"TIMEOUT" not in raw}
+  else:raise AssertionError("unexpected negative kind")
+@@ -254,7 +254,7 @@
+   rows.append({"path":path,"mode":mode,"git_blob":blob,**{k:v for k,v in rec(tree/path).items() if k!="path"}})
+  save("final-source-map.json",{"before_tree":approved["initial_tree"],"final_tree":source,"paths":rows})
+ try:
+- assert approved["initial_tree"]=="f8251e1d14fa8524ab469281296cd4cf708f173c"
++ assert approved["initial_tree"]=="1125d197cf798176bea6dcc2c0b0c499eb22cf44"
+  assert re.fullmatch("[0-9a-f]{40}",request["root_guard_blob"])
+  assert target.is_dir() and not target.is_symlink()
+  assert not any(k in os.environ for k in ("CODEX_SANDBOX_NETWORK_DISABLED","CODEX_SANDBOX"))

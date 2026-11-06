@@ -1,0 +1,121 @@
+{
+  "schema": "hepta_r2d_root_source_review_v1",
+  "reviewer": "/root",
+  "status": "STATIC_PASS_NATIVE_REAL_CONTROLS_PENDING",
+  "manifest": "526fa18835b0502fd388660ded3884a61fb5a456",
+  "full_patch": "4582d6909dd0eb18e0f8f8a12d71c791a14c95a2",
+  "postimages_verified": [
+    {
+      "path": "codex-rs/state/src/sqlite.rs",
+      "blob": "eb73bc3c24ae6bd64a35be1187f83d5655350bbe",
+      "bytes": 17110,
+      "sha256": "9a7a44d0d6c4564683f6f62f8efbe3dfb6633d40c22bb940e3f78418360fe468"
+    },
+    {
+      "path": "codex-rs/state/src/lib.rs",
+      "blob": "50775acff67c99b80c779c8b94f9c2f0db07b175",
+      "bytes": 5199,
+      "sha256": "5c48fe243f95f66e3814a48506b6b163020d8ee275283979dc5ffa3fb4c16013"
+    },
+    {
+      "path": "codex-rs/state/src/sqlite_read_barrier.rs",
+      "blob": "98ed5528e76b948c965def714994d67ecb3e0457",
+      "bytes": 3693,
+      "sha256": "c91ee20f033dec15e84ad0cad32619b54d37212a9156ae6fe4fba5077bf70fcc"
+    },
+    {
+      "path": "codex-rs/state/src/sqlite_read_barrier_tests.rs",
+      "blob": "dc73d453b2bc5b34fca584c31fbdd56db9b165fd",
+      "bytes": 10249,
+      "sha256": "ae8a7af902d4e6c848e90221ab2dc190b4fe7060bb582dae83452dc2f61d17e7"
+    }
+  ],
+  "roundtrips": {
+    "sqlite_roundtrip": true,
+    "lib_roundtrip": true,
+    "counterfactual_exact_one_removed_line": true
+  },
+  "primary_full_bytes_hash_verified": [
+    {
+      "repo": "transact-rs/sqlx",
+      "blob": "7912b12aa14f763e8928bf8ac9466a97a81f681a",
+      "bytes": 13405,
+      "sha256": "94269a532ef60aaa31321e43af17cba2424f919a36501d862328ed05958a08de"
+    },
+    {
+      "repo": "transact-rs/sqlx",
+      "blob": "2585dc1312210d9eb18c15f6df1158656d3c6b2c",
+      "bytes": 22317,
+      "sha256": "b66aafc56f0e287eac3b09111c5d4997d350ab61294c5cc576ce359bc18cebe4"
+    },
+    {
+      "repo": "transact-rs/sqlx",
+      "blob": "733a1abbe66be36ddc4227c9cba8fbf46ad6b115",
+      "bytes": 3586,
+      "sha256": "d51b358721e8d790b3e81f1be6cf1d5db9391d0a81d6e04f607033fda7e61bf7"
+    },
+    {
+      "repo": "sqlite/sqlite",
+      "blob": "de890c2e91580a506873a6ba54b4136f54c8a882",
+      "bytes": 195668,
+      "sha256": "45dde8e666fa12ffb693c97f449d7b9cba188afa6a4b79b48f9c6cf017bae8ef"
+    }
+  ],
+  "findings": [
+    "The observer opens an existing database read-only, does not create it, and installs an actual permanent commit veto.",
+    "A barrier acquires one owned pool connection, marks close_on_drop before its first changing SQL, verifies actual sqlite3_db_readonly(main)==0 under the SQLx handle lock, then BEGIN IMMEDIATE and query_only ON.",
+    "The static C name is NUL terminated; the SQLx lock retains and serializes the raw handle during the unsafe read-only-state query. The lock is released before SQL awaits.",
+    "SQLite primary source emits a read transaction for a read-only Btree even for BEGIN IMMEDIATE; requested open flags alone cannot prove writer exclusion.",
+    "Fixed SQLx PoolConnection::Drop spawns take_and_close when marked, otherwise return_to_pool. The latter's ping is not a PRAGMA reset.",
+    "Fixed SQLx Execute advances prepare/step before checking send/receiver loss; iterator Drop resets statements. The proposed controlled first-PRAGMA cancellation is a meaningful actual experiment, still unexecuted.",
+    "The negative source removes exactly one close_on_drop line; a compile/environment/callback-timeout failure will not qualify as the expected causal negative.",
+    "The ordinary read-only pool, recovery refusal, R2c writer hook, original tests and Windows private-state helpers remain outside this patch."
+  ],
+  "actual_test_requirements": [
+    "sqlite_read_barrier::tests::observation_pool_is_read_only_and_does_not_create_missing_database",
+    "sqlite_read_barrier::tests::barrier_excludes_real_writer_while_observer_reads",
+    "sqlite_read_barrier::tests::barrier_commit_hook_rejects_writes_if_query_only_is_disabled",
+    "sqlite_read_barrier::tests::barrier_rejects_read_only_connection",
+    "sqlite_read_barrier::tests::cancelled_barrier_transition_discards_changed_connection"
+  ],
+  "negative": {
+    "status": "UNEXECUTED_EXPLICIT_NEGATIVE_SOURCE_VARIANT_NEVER_FOR_PUBLICATION",
+    "final_barrier_blob": "98ed5528e76b948c965def714994d67ecb3e0457",
+    "counterfactual_source": {
+      "blob": "6b0909f7909eb323d7ecf11fc292598aee8f2405",
+      "bytes": 3657,
+      "sha256": "0e7c28fad15f1bbe591f0deaa2a6aa8d1336520e35c20e6c6b5444413fef6cd9"
+    },
+    "final_to_counterfactual_patch": {
+      "blob": "4f6b0999e4a38e60c97fdbe60d47d85de928b797",
+      "bytes": 629,
+      "sha256": "9735a81e65d88aeab3f2dc0ae6cbc88560e4e199ce8f349de59bd53174244666"
+    },
+    "counterfactual_to_final_patch": {
+      "blob": "1a2fefb5e147a6beec23104ac45eb881a3ca0f42",
+      "bytes": 629,
+      "sha256": "20321f0e1189c5189ffc82aa6295bbc087087883b961f7fe7c0c16ebadd1628d"
+    },
+    "exact_mutation": "Remove only connection.close_on_drop(); keep actual readonly validation, both APIs, every assertion and all test code unchanged.",
+    "exact_selector": "sqlite_read_barrier::tests::cancelled_barrier_transition_discards_changed_connection",
+    "expected": "One actual FAIL after the progress callback enters and the future is canceled. With the known SQLx path, the reused connection is expected to retain query_only 0 and busy_timeout 7; raw diagnostics and the specific assertion must be inspected.",
+    "qualification_rule": "A compile/environment failure, failure before the SQLite callback, a 5-second callback timeout, or missing original diagnostic is not the requested negative proof. If this counterfactual passes, preserve that outcome and investigate actual SQLx cancellation; do not weaken the final test or manufacture a failure.",
+    "scope": "This is a controlled omission in a new primitive, not an existing-product baseline failure."
+  },
+  "dependencies": {
+    "state_cargo": "02cb82d778fc02859a42c0658597799ad00f5559",
+    "already_direct": [
+      "libsqlite3-sys",
+      "sqlx",
+      "tokio",
+      "scopeguard"
+    ],
+    "new_dependency": false
+  },
+  "limits": [
+    "No compile, format, test, runtime SQLite version or actual cancellation outcome is claimed by this static review.",
+    "close_on_drop cleanup is asynchronous; explicit pool.close controls must observe actual cleanup in native tests.",
+    "The barrier uses a pathname; its caller must retain the original identity/recovery guard. This API is not independently authenticated Current, whole-pool store authority or normal Root entry.",
+    "Any real negative outcome differing from query_only0/busy_timeout7 must be retained and investigated, not forced to the planned result."
+  ]
+}

@@ -1,0 +1,445 @@
+{
+  "schema": "hepta.sqlx.native-lifetime-token.repair.v1",
+  "status": "STATIC_CANDIDATE_UNCOMPILED_UNEXECUTED",
+  "created_at_utc": "2026-11-05T01:12:09Z",
+  "purpose": "Close the proven pre-registration cancellation custody gap with an explicit dependency API that moves real resource ownership into SQLx's existing worker/native handle before native open.",
+  "authorization": {
+    "source": "Parent /root authorized a minimal dependency-layer static patch after the earlier public-API-only investigation.",
+    "previous_no_fork_scope": "The earlier no-fork condition was a research-stage scope constraint, not a permanent user or automatic-approval prohibition.",
+    "performed": "Own local files, exact immutable source reads, isolated static git apply, unreachable blobs in the project repository.",
+    "not_performed": [
+      "Dependency adoption or replacement",
+      "Native/shared worktree or target mutation",
+      "Cargo/Bazel/rustfmt execution",
+      "Ref/commit/PR mutation in either repository"
+    ]
+  },
+  "source_identity": {
+    "repository": "transact-rs/sqlx",
+    "actual_published_vcs": "003b698e99e024f3621b8043a2426fde5b741171",
+    "prior_tag_vcs": "75bc0487eb661da811bb7a3c5d158f1bd463fef4",
+    "exact_source_alignment": {
+      "blob": "246b438e9f8026abaa4c48b62dd4d55ffa470cee",
+      "sha256": "b7dcecffb0523d8a03a11df032ca852cce4bcde9237e96c76d02830beab26aae",
+      "scope": "All 12 cited Git source files are equal between the commits. SQLite/Core subtrees are equal. All 17 full native receipt files were independently rehashed; all 11 requested Rust files equal their fixed Git counterparts. The native executor, not this agent, extracted and checked the two actual crate archives."
+    },
+    "native_registry_receipt": {
+      "blob": "93b99eb2fc88c5b8fd4b48f7efc0db8057e24d47",
+      "bytes": 196031,
+      "sha256": "13cff3b686052b69aa26e20c30500ac45765b2e9565a6649d01ea3b6f2057647"
+    },
+    "actual_sqlite_archive": {
+      "version": "0.9.0",
+      "bytes": 93440,
+      "sha256": "488e99c397a62007e4229aec669a179816339afc6d2620ca6fa420dbee2e982c",
+      "matches_observed_cargo_lock_checksum": true
+    },
+    "actual_core_archive": {
+      "version": "0.9.0",
+      "bytes": 154984,
+      "sha256": "05b44e85bf579a8eeb4ceaa77a3a523baf2bf0e9bac7e40f405d537b5d2d5ccb",
+      "matches_observed_cargo_lock_checksum": true
+    },
+    "normalized_driver_manifest": {
+      "blob": "8a8dafdc79c9811494e3b03faca2af0df4515f3c",
+      "bytes": 3782,
+      "sha256": "d659405cf1a18299845d699b4ab681a3d341805556c4a837d70f5f1c3589bb9a",
+      "dev_dependencies": "empty; the new tests use only existing normal dependencies"
+    },
+    "missing_archive_sidecars": "Both observed .cargo-checksum.json files were absent; no value was invented.",
+    "source_files": [
+      {
+        "name": "options_mod",
+        "repository": "transact-rs/sqlx",
+        "ref": "003b698e99e024f3621b8043a2426fde5b741171",
+        "path": "sqlx-sqlite/src/options/mod.rs",
+        "blob": "0cafc4d08c4c63c342685fedbcc43222dd38d2f1",
+        "bytes": 28010,
+        "sha256": "ff5005abc6408f2df073d95bf3440c2a3ee96c1a312d73468bf66123f8ab2f1e"
+      },
+      {
+        "name": "options_connect",
+        "repository": "transact-rs/sqlx",
+        "ref": "003b698e99e024f3621b8043a2426fde5b741171",
+        "path": "sqlx-sqlite/src/options/connect.rs",
+        "blob": "cfa25872b2c118cc955ac4e2f9cfb64e19e4a0ee",
+        "bytes": 2305,
+        "sha256": "6eab2d3914a2c9f35c60bd8b324e46790eca39a23c30a0d4101e35be52b04253"
+      },
+      {
+        "name": "establish",
+        "repository": "transact-rs/sqlx",
+        "ref": "003b698e99e024f3621b8043a2426fde5b741171",
+        "path": "sqlx-sqlite/src/connection/establish.rs",
+        "blob": "cedf752e6adef404b6f7d537f521045cb8342b5a",
+        "bytes": 10033,
+        "sha256": "447d5067838ec05c713a53b381df4b8ae16652917b4206c553cdea6d3a1fe92a"
+      },
+      {
+        "name": "worker",
+        "repository": "transact-rs/sqlx",
+        "ref": "003b698e99e024f3621b8043a2426fde5b741171",
+        "path": "sqlx-sqlite/src/connection/worker.rs",
+        "blob": "2585dc1312210d9eb18c15f6df1158656d3c6b2c",
+        "bytes": 22317,
+        "sha256": "b66aafc56f0e287eac3b09111c5d4997d350ab61294c5cc576ce359bc18cebe4"
+      },
+      {
+        "name": "connection",
+        "repository": "transact-rs/sqlx",
+        "ref": "003b698e99e024f3621b8043a2426fde5b741171",
+        "path": "sqlx-sqlite/src/connection/mod.rs",
+        "blob": "218c747143fe80b344bca3405d4b0b38da2bd932",
+        "bytes": 20337,
+        "sha256": "a20c2e51a1505e298fd897b378f9032c89b82850838aa6e5d9409f612fb1e7fd"
+      },
+      {
+        "name": "handle",
+        "repository": "transact-rs/sqlx",
+        "ref": "003b698e99e024f3621b8043a2426fde5b741171",
+        "path": "sqlx-sqlite/src/connection/handle.rs",
+        "blob": "e89179b30ed489bf831e56575d1269f223a368ac",
+        "bytes": 5320,
+        "sha256": "63d9b11374ebd453f3f7d0be95a728030f05997d5ccdc756fd8057ee0d31dc6f"
+      },
+      {
+        "name": "pool_inner",
+        "repository": "transact-rs/sqlx",
+        "ref": "003b698e99e024f3621b8043a2426fde5b741171",
+        "path": "sqlx-core/src/pool/inner.rs",
+        "blob": "b698dc9df07fdd763f6b15a171b7b545c6898696",
+        "bytes": 23376,
+        "sha256": "cba56628f259270dccb2f4a0d7a351dcff34d9239f6e6e1aee187ebe0e39c539"
+      },
+      {
+        "name": "pool_options",
+        "repository": "transact-rs/sqlx",
+        "ref": "003b698e99e024f3621b8043a2426fde5b741171",
+        "path": "sqlx-core/src/pool/options.rs",
+        "blob": "3d048f179514e992f478f0f854563fad7c0e41dd",
+        "bytes": 25108,
+        "sha256": "924cd57a062328b2e7c6ac55242eabb1706893d80ce1e8cb02fe643a592f4f83"
+      },
+      {
+        "name": "lib",
+        "repository": "transact-rs/sqlx",
+        "ref": "003b698e99e024f3621b8043a2426fde5b741171",
+        "path": "sqlx-sqlite/src/lib.rs",
+        "blob": "17b4bed1ca40f112690011dbc3f38b4585ed1001",
+        "bytes": 6797,
+        "sha256": "6e19e45ffc8e018912798e2290527a2a332ecc775b70bd86223efffc06d6e57b"
+      },
+      {
+        "name": "core_connection",
+        "repository": "transact-rs/sqlx",
+        "ref": "003b698e99e024f3621b8043a2426fde5b741171",
+        "path": "sqlx-core/src/connection.rs",
+        "blob": "b5f8138b2bc1b2a9a82a21b4aa8c65fe0e42934f",
+        "bytes": 10046,
+        "sha256": "a0ea974fb1bfe6ec7891e594333098b3d2fac3b3e27737e733dea461e8dee737"
+      },
+      {
+        "name": "collation",
+        "repository": "transact-rs/sqlx",
+        "ref": "003b698e99e024f3621b8043a2426fde5b741171",
+        "path": "sqlx-sqlite/src/connection/collation.rs",
+        "blob": "229e780adfbdb34ac117cf279e11b70a79a491fc",
+        "bytes": 4730,
+        "sha256": "d863421fe2f377315ca75c2912e702b13cbb4b978ec3940989ae08c9acf2f752"
+      },
+      {
+        "name": "release_cargo",
+        "repository": "transact-rs/sqlx",
+        "ref": "003b698e99e024f3621b8043a2426fde5b741171",
+        "path": "Cargo.toml",
+        "blob": "3738b814ca07636ec652be18d95de0559f279182",
+        "bytes": 14370,
+        "sha256": "77c3ab21aa396a7dad0daf09210d9c517cd98ca084c39f59e8db28ba1b9221fe"
+      }
+    ]
+  },
+  "changes": {
+    "files": [
+      {
+        "path": "sqlx-sqlite/src/options/mod.rs",
+        "before_blob": "0cafc4d08c4c63c342685fedbcc43222dd38d2f1",
+        "blob": "a9da93a72c7840f98dd9b53181c28f7fae5807ae",
+        "bytes": 28204,
+        "sha256": "ab2ad89bc9a6b84fce35fb108744343cf364ce121330657477ecdcb2ed8a2fdf",
+        "insertions": 4,
+        "deletions": 0
+      },
+      {
+        "path": "sqlx-sqlite/src/options/connection_lifetime.rs",
+        "before_blob": null,
+        "blob": "ea1b6007e9ac8ed14328f3cac79fb909183cb5dc",
+        "bytes": 1591,
+        "sha256": "b0d7e000af86e4e698b1453e3cc01e5d5cce08cce32022eab45a1708420aee5e",
+        "insertions": 41,
+        "deletions": 0
+      },
+      {
+        "path": "sqlx-sqlite/src/connection/establish.rs",
+        "before_blob": "cedf752e6adef404b6f7d537f521045cb8342b5a",
+        "blob": "7bf04f3f06165371bfbe525c61cbaafa0c46667f",
+        "bytes": 10287,
+        "sha256": "3052fcc3047592fbb9b2d56030b39065fa3e77e1b9de69630671f1fa07d62dbe",
+        "insertions": 8,
+        "deletions": 1
+      },
+      {
+        "path": "sqlx-sqlite/src/connection/handle.rs",
+        "before_blob": "e89179b30ed489bf831e56575d1269f223a368ac",
+        "blob": "ed7f2a0798a30f4e3574d0e6e685ac9b41aae1a6",
+        "bytes": 5735,
+        "sha256": "d1e809bb28d216bc0b84c6381adcbb6f89d123754c66a4b4498412295c0a2240",
+        "insertions": 19,
+        "deletions": 8
+      },
+      {
+        "path": "sqlx-sqlite/src/options/connection_lifetime_tests.rs",
+        "before_blob": null,
+        "blob": "15b4ac44e4f3cee8ddca8731a0af1063e4dafe89",
+        "bytes": 15437,
+        "sha256": "7428bfddb31e81922c921ba7ae7237926d5332631a43f34a1bedf40477c00cb9",
+        "insertions": 395,
+        "deletions": 0
+      }
+    ],
+    "full_patch": {
+      "name": "full",
+      "path": "native-lifetime-token.patch",
+      "blob": "abe067bc6f2ca9601eef83b0cd4e0db4811827ac",
+      "bytes": 23537,
+      "sha256": "c733c2eb50ea35aea18981bba478af2f7dbea369acaf563398f9b0e887c5cc75"
+    },
+    "insertions": 467,
+    "deletions": 9,
+    "pre_format_changed_lines": 476,
+    "production_changed_lines_excluding_test_module_declaration": 77,
+    "new_test_module_declaration_lines": 4,
+    "new_test_source_lines": 395,
+    "modes": "100644",
+    "new_dependencies": false,
+    "project_manifests_or_locks_changed": false
+  },
+  "ownership_chain": [
+    {
+      "stage": "Options",
+      "meaning": "An explicitly supplied Arc owns the actual external resource. Cloned options/pools may hold it longer than any one connection. Replacement of an option does not alter already-created native handles."
+    },
+    {
+      "stage": "EstablishParams",
+      "meaning": "from_options clones the opaque owner before the existing SQLx thread::Builder::spawn. No new production task or thread is introduced."
+    },
+    {
+      "stage": "ConnectionHandle::open",
+      "meaning": "An owned argument remains live across sqlite3_open_v2. A non-NULL returned handle receives it before status errors are examined; the existing error path closes the handle while retaining custody. A NULL result preserves the original OutOfMemory error and has no native SQLite object to protect."
+    },
+    {
+      "stage": "Physical close",
+      "meaning": "Existing sqlite3_close runs before the owner's field can be dropped. Successful close permits ordinary destruction. Non-OK close first forgets the owner's Option, then keeps the original panic; unwinding cannot release the resource while SQLite may remain live."
+    }
+  ],
+  "behavior_limits": [
+    "The API does not authenticate a Current receipt, validate authority, lease, expiry, revocation, FinalUse or exact checkpoint cuts.",
+    "It does not coordinate transactions or install a commit hook; existing commit-hook semantics remain the independent veto oracle.",
+    "The owner must be real and must not retain these options or their pool, which would create an Arc cycle. No Arc-count assertion is used as custody proof.",
+    "A failed native close deliberately leaks the retained owner until process exit. Later unsafe external manual close does not recover it. This preserves fail-closed custody at a cost to availability; the original error/panic is not turned into success.",
+    "The default None does not change backend selection, SQL, permissions, callback order, close calls or errors. Debug output for the private handle/options acquires an additional optional field, so byte-identical Debug formatting is not claimed.",
+    "Existing independent pools/connections that do not opt into this owner are not covered. No current project caller opts in in this candidate.",
+    "The earlier registered-collation R2e3 control is not re-labelled full-lifetime coverage. This proposed native token must be adopted and empirically qualified before that open boundary can be closed."
+  ],
+  "test_controls": [
+    {
+      "name": "options::connection_lifetime::tests::cancellation_during_native_open_keeps_resource_custody",
+      "scenario": "open",
+      "physical_oracle": "A second process opens custody.lock independently. try_lock must be WouldBlock after the connect future and options are dropped while the real sqlite3_open_v2 auto-extension callback remains blocked (gate_status=0). After callback release and observed resource-owner destruction, the same independent probe must succeed.",
+      "expected_positive": "PASS",
+      "counterfactual": "no_worker_token",
+      "scope": "actual native-open cancellation, before a SQLite handle can be returned to the async caller"
+    },
+    {
+      "name": "options::connection_lifetime::tests::cancellation_during_initial_pragmas_keeps_resource_custody",
+      "scenario": "pragma",
+      "physical_oracle": "Drive connect through the establish oneshot with the existing flume async channel and SQLx runtime timeout. A real SQLite progress callback blocks during default initial SQL; cancel the connect future and options, then require the independent process's lock to remain held and gate_status=0. Release the callback and require eventual actual owner release.",
+      "expected_positive": "PASS",
+      "counterfactual": "no_worker_token",
+      "scope": "default initial PRAGMA cancellation, before pool after_connect can install any hook"
+    },
+    {
+      "name": "options::connection_lifetime::tests::pool_growth_and_cancelled_close_keep_borrowed_connection_custody",
+      "scenario": "pool",
+      "physical_oracle": "Hold five physical pool connections, each with a TEMP marker; close one and prove its replacement has no marker. Poll and cancel the original pool close, close the other four, detach the last live connection, drop the pool and execute a real SELECT. Independent process lock stays held until that connection really closes, then becomes available.",
+      "expected_positive": "PASS",
+      "counterfactual": null,
+      "scope": "growth, physical replacement, borrowed/detached connection and cancelled pool close"
+    },
+    {
+      "name": "options::connection_lifetime::tests::initialization_error_releases_but_failed_native_close_retains_custody",
+      "scenario": "failure",
+      "physical_oracle": "A real invalid initial PRAGMA retains Database error code 1 and releases the lock after cleanup. A real unfinalized statement then makes sqlite3_close return SQLITE_BUSY; SQLx's original worker panic returns WorkerCrashed, and sqlite3_step still returns SQLITE_ROW. The independent process must still be unable to lock. Even later manual finalization/close cannot reclaim the deliberately forgotten owner; the lock is released only when the owned child exits.",
+      "expected_positive": "PASS",
+      "counterfactual": "unwind_releases",
+      "scope": "ordinary initialization error cleanup and actual failed native close with a live handle"
+    }
+  ],
+  "support_entry": {
+    "name": "options::connection_lifetime::tests::owned_scenario",
+    "declaration": "#[test] #[ignore]",
+    "meaning": "Invoked explicitly by the four selected parent controls through the normal libtest executable with --exact/--ignored/--nocapture/--test-threads=1; not counted as a fifth PASS or hidden product skip.",
+    "no_ctor_or_premain": true,
+    "no_faked_nextest_protocol": true,
+    "child_lifecycle": "Each parent owns its direct child and reader thread. Failure drops the receiver, kills/waits the child and joins the reader. No descendant processes are spawned; SQLite workers are threads inside that child.",
+    "physical_resource": "File::lock/try_lock on separately opened file handles in different processes; neither counters nor callback destruction alone are the lock oracle.",
+    "budgets": "New checkpoints, native callback gates, runtime entry wait and child completion use the existing candidate's five-second bound; no existing repository deadline, retry or assertion is changed."
+  },
+  "negative_controls": [
+    {
+      "name": "no_worker_token",
+      "patch": {
+        "name": "no_worker_token",
+        "path": "negative-no-worker-token.patch",
+        "blob": "916c28d3c54119909342eeebe7beebd1d9ad7e91",
+        "bytes": 637,
+        "sha256": "52efe7fa47035ff5628e6224e4e946c1a99c582c09f3f64ebc580f8d3224c8cc"
+      },
+      "restore": {
+        "name": "restore_worker_token",
+        "path": "restore-worker-token.patch",
+        "blob": "cc635a7a55d3737039cc7fa2751fa003a7428b78",
+        "bytes": 637,
+        "sha256": "636877d63d6dd3fb810b19ad45f469b54ea41388f6f23618f5b8b331dcbc5ae0"
+      },
+      "exact_negative_postimage": {
+        "path": "sqlx-sqlite/src/connection/establish.rs",
+        "blob": "4e31d9fc66df45eab48b24643f87e5cb52258241"
+      },
+      "selected": [
+        "options::connection_lifetime::tests::cancellation_during_native_open_keeps_resource_custody",
+        "options::connection_lifetime::tests::cancellation_during_initial_pragmas_keeps_resource_custody"
+      ],
+      "causal_acceptance": "Both must reach their real cancellation checkpoint, observe parent try_lock succeed incorrectly, and then report gate_status=0 while the native callback is still blocked. A callback timeout/disconnection, connect completion, build failure, no tests selected or setup failure is not causal evidence.",
+      "not_old_source": "An explicit one-line counterfactual of the final API-bearing candidate, not unmodified sqlx-sqlite 0.9.0."
+    },
+    {
+      "name": "unwind_releases",
+      "patch": {
+        "name": "unwind_releases",
+        "path": "negative-close-unwind-releases.patch",
+        "blob": "5871bdd770ce0c99231a073cc227f320511a5938",
+        "bytes": 633,
+        "sha256": "573c6bf2af160b3b4a6a4af095f0cee6261f63adabd88e02b5ccc894bd114020"
+      },
+      "restore": {
+        "name": "restore_close_retention",
+        "path": "restore-close-retention.patch",
+        "blob": "1e54da270be0c25b381cf3dcf2cbbab1c1ce4515",
+        "bytes": 633,
+        "sha256": "db2dacacc04e5d67af8dfdecdb9cc138a98bb5802422bb6ef586f6f38cf830b4"
+      },
+      "exact_negative_postimage": {
+        "path": "sqlx-sqlite/src/connection/handle.rs",
+        "blob": "e106e9ec8dd3e5b33ccde609ed22449709f1a488"
+      },
+      "selected": [
+        "options::connection_lifetime::tests::initialization_error_releases_but_failed_native_close_retains_custody"
+      ],
+      "causal_acceptance": "Initial error/release control must pass first; real native SQLITE_BUSY, original WorkerCrashed and subsequent SQLITE_ROW must all occur. The independent parent lock then succeeds incorrectly at busy_close_failed_and_native_statement_still_runs. Panic/setup/build/timeout before that checkpoint is not a qualified negative.",
+      "not_old_source": "Removes only the forget-before-panic line from the final candidate. It does not suppress the original error or alter the tests."
+    }
+  ],
+  "primary_test_api_evidence": {
+    "sqlx_runtime": {
+      "repository": "transact-rs/sqlx",
+      "ref": "003b698e99e024f3621b8043a2426fde5b741171",
+      "path": "sqlx-core/src/rt/mod.rs",
+      "blob": "273a1bfcd911be956b388fc7e40f0d37dee780bb",
+      "scope": "Existing test_block_on and timeout drive the connect future; the frozen run must enable sqlx-core/_rt-tokio."
+    },
+    "sql_safe_str": {
+      "repository": "transact-rs/sqlx",
+      "ref": "003b698e99e024f3621b8043a2426fde5b741171",
+      "path": "sqlx-core/src/sql_str.rs",
+      "blob": "53e404268f8aa61e867557d27996b0b379fc62c6",
+      "scope": "Existing &'static str SqlSafeStr implementation; no ambiguous generic .into() is used."
+    },
+    "file_lock": {
+      "repository": "rust-lang/rust",
+      "ref": "1.95.0",
+      "path": "library/std/src/fs.rs",
+      "blob": "cf6f9594c0027af9755a4518b1460a7db92a36ff",
+      "scope": "Actual File::lock/try_lock and WouldBlock/error distinction."
+    },
+    "auto_extension_binding": {
+      "repository": "rusqlite/rusqlite",
+      "ref": "v0.39.0",
+      "package_version": "libsqlite3-sys 0.37.0",
+      "manifest_blob": "0c5c19c5985edfd4f5a1b8ac29b6f64dc7d8ef5d",
+      "binding_blob": "c892eefa6d15577af6379e39872420b9829903b7",
+      "build_script_blob": "845fd3d3c23becb1ae586c69616412b1c14495b1",
+      "scope": "Public tagged source exposes the real typed sqlite3_auto_extension/cancel_auto_extension callback; no function-pointer transmute. This pass did not independently extract the native libsqlite3-sys archive or run the binding."
+    },
+    "sqlite_open_order": {
+      "repository": "sqlite/sqlite",
+      "ref": "a5333afb9ad1aa473f8963b92caeaa955f47dc74",
+      "version": "3.51.3",
+      "path": "src/main.c",
+      "blob": "6efe538d4d9621818e41e996b622d131d3e216f1",
+      "scope": "sqlite3AutoLoadExtensions occurs inside openDatabase; the subsequent normal successful tail installs lookaside/WAL callbacks and returns. The owned child sets no SQL-log callback or other automatic extension. SQLx default establish performs native configuration and then options.connect executes initial PRAGMAs. Runtime linked SQLite identity still must be recorded."
+    },
+    "official_api_urls": [
+      "https://sqlite.org/c3ref/auto_extension.html",
+      "https://sqlite.org/c3ref/cancel_auto_extension.html",
+      "https://sqlite.org/c3ref/close.html"
+    ]
+  },
+  "static_validation": {
+    "proof": {
+      "path": "static-verification-v3.json",
+      "blob": "baa8eff98f3f88bd960d84f7985e23c8f5b406be",
+      "bytes": 8111,
+      "sha256": "65bc3af62e2cfa77ffc512eb023c7439ed41a33fb76a91235cb41aa80851b2eb"
+    },
+    "script": {
+      "path": "verify_static_patch_v3.py",
+      "blob": "1f991224b053e7703fa35924e4e507ad7524cb43",
+      "bytes": 3527,
+      "sha256": "3e546fce7d1875a7d40fde430059d7e64d0f3b98cd3aac10a3ccd872f62cdd68"
+    },
+    "status": "5 sequential static git apply --check/apply phases succeeded with exact source-map reconstruction",
+    "proof_scope": "Own isolated static copies only; no Git refs, compiler, native SQLite or permission experiment.",
+    "production_changes_since_previous_four_file_draft": false,
+    "superseded_unexecuted_drafts": {
+      "reason": "Static connect-driving review: keep polling through the establish oneshot until the real SQLite callback enters; use the existing flume async channel and SQLx runtime timeout, preserving the five-second native gate and physical lock assertions.",
+      "superseded_unexecuted_full_patches": [
+        "38de56f757adfc08eb99c0ffd153a6c46400fc4a",
+        "300fb77060af5f91fcd1ef108d79d85f9bf7009a"
+      ],
+      "production_unchanged": true,
+      "previous_revision_reason": "Use literal &'static str directly for the actual SqlSafeStr API, avoiding ambiguous AssertSqlSafe(<literal>.into())."
+    }
+  },
+  "next_execution_gates": [
+    "Root and the sole CI owner must choose and freeze the exact dependency adoption layout and normalized package manifest. Preserve licenses, the observed package source/identity and unchanged dependency versions; do not synthesize .cargo-checksum.json or hand-edit Cargo/MODULE locks.",
+    "Run the original dependency/Bazel lock generators on that concrete adopted tree and preserve true lock change/no-change results. The current five-source patch by itself is not a project dependency adoption.",
+    "Freeze the actual driver manifest, features (bundled and sqlx-core/_rt-tokio for these four controls), source tree, real Rust/SQLite versions, original test command, exact roster and original existing driver tests. Require no early-return or selected-test skips.",
+    "Apply no_worker_token, run the first two exact controls and require the physical causal failures described above; restore exact source. Apply unwind_releases, run the fourth exact control and require its specified physical failure; restore exact source.",
+    "Run all four positive parent controls with zero retries and full raw/JUnit. Preserve the one explicit ignored support entry separately. Record child completion and actual lock checkpoints.",
+    "Run the applicable original owning state/Memory regression gates on the same adopted driver, then original fix/fmt and source/lock rechecks. Do not infer whole-workspace or platform qualification from these four controls.",
+    "Only after this dependency mechanism is qualified should a separately reviewed state/Current caller pass the real OpenGuard and demonstrate its complete resource lifetime. Native token success alone does not close B16."
+  ],
+  "execution_status": {
+    "rust_compile": false,
+    "rustfmt": false,
+    "native_controls": false,
+    "dependency_adoption": false,
+    "original_platform_qualification": false,
+    "shared_native_worktree_changed": false,
+    "git_ref_changed": false
+  },
+  "related_serial_plan": {
+    "blob": "a46fdc65f78295bfb041732aeb03b1937f85eab9",
+    "meaning": "Existing R2c/d/e1/e2/e3 source alignment remains separate. This new dependency candidate is not silently inserted into that already-frozen sequence."
+  }
+}

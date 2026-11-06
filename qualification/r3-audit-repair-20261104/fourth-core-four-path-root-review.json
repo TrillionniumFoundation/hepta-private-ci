@@ -1,0 +1,177 @@
+{
+  "schema": "hepta_fourth_core_six_root_actual_review_v1",
+  "reviewer": "/root",
+  "receipt_blob": "ce067a749f248d9b684cc3f8bc82281890f98bc8",
+  "embedded_files_verified": [
+    {
+      "bytes": 5336,
+      "sha256": "10289410e6dc5a51d8b2bb2fc6462314d675e5263ff452148672250a23393793",
+      "path": "/home/qian-qi/work/hepta-audit-20261104-1230-hookmetadata-evidence/fourth-core-turnstate-subagent-six-20261104-2155/core-selected-six-review.json",
+      "match": true
+    },
+    {
+      "bytes": 1573,
+      "sha256": "4fd51cf2e3884e4620a4323d20910a53e72c1d16cf856b9cd788f3312c8df1ca",
+      "path": "/home/qian-qi/work/hepta-audit-20261104-1230-hookmetadata-evidence/fourth-core-turnstate-subagent-six-20261104-2155/core-selected-six.junit.xml",
+      "match": true
+    },
+    {
+      "bytes": 19350,
+      "sha256": "0c4225042bc39a1a04ee1d156dd394ed6e98cc4da9d1a4842e15f2043a31ea0f",
+      "path": "/home/qian-qi/work/hepta-audit-20261104-1230-hookmetadata-evidence/fourth-core-turnstate-subagent-six-20261104-2155/terminal.json",
+      "match": true
+    },
+    {
+      "bytes": 21764,
+      "sha256": "f11b03f1d339b94045f8d1fb73c110cf2f950630167357b597ce2e4b501cc088",
+      "path": "/home/qian-qi/work/hepta-audit-20261104-1230-hookmetadata-evidence/fourth-core-turnstate-subagent-six-20261104-2155/core-selected-six.log",
+      "match": true
+    },
+    {
+      "bytes": 18208,
+      "sha256": "25abadd60d85c7a868e8fa142c870d1116f57cbe3b12156bfbfaa84627534424",
+      "path": "/home/qian-qi/work/hepta-audit-20261104-1230-hookmetadata-evidence/fourth-core-turnstate-subagent-six-20261104-2155/core-selected-six-catalog.stderr",
+      "match": true
+    },
+    {
+      "bytes": 2595,
+      "sha256": "5dbef8788ce74b5babd984175ec73530f8bed18c48e80410228a07a9e0a34d44",
+      "path": "/home/qian-qi/work/hepta-audit-20261104-1230-hookmetadata-evidence/fourth-core-turnstate-subagent-six-20261104-2155/core-selected-six-selection.json",
+      "match": true
+    },
+    {
+      "bytes": 680,
+      "sha256": "4007344af655e7ee5b369718543586d34430563210a11e42f5e5484f160cf5a4",
+      "path": "/home/qian-qi/work/hepta-audit-20261104-1230-hookmetadata-evidence/fourth-core-turnstate-subagent-six-20261104-2155/native-host.json",
+      "match": true
+    }
+  ],
+  "source_before": "c058953879b13a687163d0038a6031dfdb3c725f",
+  "tested_tree": "5d8a5db90c83c12b19cbcd24b2d49d94542f73a1",
+  "expected_tree": "5d8a5db90c83c12b19cbcd24b2d49d94542f73a1",
+  "source_unchanged": true,
+  "exact_cases": [
+    {
+      "name": "suite::turn_state::websocket_turn_state_persists_within_turn_and_resets_after",
+      "classname": "codex-core::all",
+      "seconds": "0.845",
+      "result": "PASS",
+      "failure_text": ""
+    },
+    {
+      "name": "suite::turn_state::websocket_turn_state_is_stable_within_turn",
+      "classname": "codex-core::all",
+      "seconds": "0.890",
+      "result": "PASS",
+      "failure_text": ""
+    },
+    {
+      "name": "suite::turn_state::websocket_turn_state_survives_permission_change_by_reconnecting",
+      "classname": "codex-core::all",
+      "seconds": "1.011",
+      "result": "PASS",
+      "failure_text": ""
+    },
+    {
+      "name": "suite::subagent_notifications::subagent_start_replaces_session_start_and_injects_context",
+      "classname": "codex-core::all",
+      "seconds": "1.051",
+      "result": "PASS",
+      "failure_text": ""
+    },
+    {
+      "name": "suite::turn_state::responses_turn_state_persists_within_turn_and_resets_after",
+      "classname": "codex-core::all",
+      "seconds": "1.137",
+      "result": "PASS",
+      "failure_text": ""
+    },
+    {
+      "name": "suite::subagent_notifications::subagent_stop_replaces_stop_and_skips_internal_subagents",
+      "classname": "codex-core::all",
+      "seconds": "1.630",
+      "result": "PASS",
+      "failure_text": ""
+    }
+  ],
+  "selected_total": 6,
+  "pass": 6,
+  "selected_fail_skip_retry": 0,
+  "raw_nextest_out_of_selection_skips": 1383,
+  "real_ws_observations": [
+    "    [concurrent ws test server +507ms] connection=0 received request=0",
+    "    [concurrent ws test server +664ms] connection=1 received request=0",
+    "    [concurrent ws test server +851ms] connection=1 received request=1",
+    "    [concurrent ws test server +946ms] connection=1 received request=2"
+  ],
+  "source_assertion_scope": "PASS plus absence of the only early return macro is evidence of these unchanged source assertions; no independent packet capture is claimed.",
+  "actual_test_binary": [
+    {
+      "binary_id": "codex-core::all",
+      "path": "/home/qian-qi/work/hepta-audit-native-target-20261103/debug/deps/all-fd5453b9cef44215",
+      "bytes": 1031441216,
+      "sha256": "feec91d968c78290d2cdb712ec9e84543cb261fbc363446eb1a590f7e6b7eec4"
+    }
+  ],
+  "declared_catalog_binary": [
+    {
+      "catalog_entry": {
+        "name": "codex-write-config-schema",
+        "kind": "bin-exe",
+        "path": "debug/codex-write-config-schema"
+      },
+      "path": "/home/qian-qi/work/hepta-audit-native-target-20261103/debug/codex-write-config-schema",
+      "bytes": 303262960,
+      "sha256": "fca81f838582e6fc631a18af993a14b475a76d467e060e197272bd08ef5a2531"
+    }
+  ],
+  "identity_limit": "The catalogue-declared codex-write-config-schema binary was hashed; this does not assert that this binary executed in these six cases, or invent identity for every system shell/interpreter.",
+  "catalog_prejust_post_hashes_match": true,
+  "no_network_early_return_absent": true,
+  "ordinary_index_unchanged": true,
+  "lock_inputs_unchanged": true,
+  "controller": {
+    "at_unix_ms": 1793829309861,
+    "audit_recorded": true,
+    "automatic_retry": false,
+    "cancelled": false,
+    "exit_code": 0,
+    "job_id": "1a1a88c5f13-fc05-2f0c",
+    "launch_nonce": "fafce218b0a2749b1773d6f6ea7f5c3b",
+    "log_bytes": {
+      "stderr": {
+        "seen": 0,
+        "stored": 0
+      },
+      "stdout": {
+        "seen": 4885,
+        "stored": 4885
+      }
+    },
+    "log_errors": {
+      "stderr": null,
+      "stdout": null
+    },
+    "log_synced": {
+      "stderr": true,
+      "stdout": true
+    },
+    "log_truncated": {
+      "stderr": false,
+      "stdout": false
+    },
+    "output_complete": true,
+    "output_durable": true,
+    "state": "succeeded",
+    "terminal_publication_confirmed": true,
+    "terminal_publication_protocol": 1,
+    "timed_out": false
+  },
+  "hygiene": "Deferred to assembled A batch, not yet run for these four source files.",
+  "limits": [
+    "Linux x86_64 only; no Wine, Windows or Darwin qualification.",
+    "Selected six only; owning-project/full workspace gates remain pending assembly.",
+    "No-network early-return diagnostic absent; real request and existing source assertions passed.",
+    "Hygiene deliberately deferred until all batch A gates."
+  ]
+}

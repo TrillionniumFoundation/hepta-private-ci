@@ -1,0 +1,188 @@
+import tomllib,collections,datetime,hashlib,json,os,pathlib,re,shutil,subprocess,sys,time,traceback,xml.etree.ElementTree as ET
+request=json.load(sys.stdin);root=pathlib.Path("/home/qian-qi/work/hepta-audit-r3-fullgate-20261104");tree=root/"source";out=root/"evidence"/request["evidence_name"];out.mkdir(exist_ok=False)
+source=request["source_tree"];counter=0;phases=[]
+env=dict(os.environ);env["PATH"]=str(root/"tools/uv-venv/bin")+":"+str(root/"tools/bin")+":/home/qian-qi/.cargo/bin:/home/qian-qi/.local/bin:"+env.get("PATH","")
+env.update(CARGO_TARGET_DIR=str(root/"target"),CARGO_INCREMENTAL="0",CARGO_BUILD_JOBS="4",RUSTUP_TOOLCHAIN="1.95.0",CARGO_NET_GIT_FETCH_WITH_CLI="true",PYTHONDONTWRITEBYTECODE="1",DOTSLASH_CACHE=str(root/"tools/dotslash-cache"),NEXTEST_PROFILE="local",UV_CACHE_DIR=str(out/"uv-cache"),UV_PYTHON_DOWNLOADS="never",
+RUSTY_V8_ARCHIVE=str(root/"tools/rusty-v8/librusty_v8_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.a.gz"),RUSTY_V8_SRC_BINDING_PATH=str(root/"tools/rusty-v8/src_binding_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.rs"))
+def now():return datetime.datetime.now(datetime.timezone.utc).isoformat()
+def sha(b):return hashlib.sha256(b).hexdigest()
+def rec(p):
+ h=hashlib.sha256();size=0
+ with p.open("rb") as f:
+  while b:=f.read(1024*1024):h.update(b);size+=len(b)
+ return {"path":str(p),"bytes":size,"sha256":h.hexdigest()}
+def save(name,obj):
+ p=out/name;p.parent.mkdir(parents=True,exist_ok=True);p.write_text(json.dumps(obj,indent=2)+"\n");return p
+def git(args,e=None):return subprocess.run(["git"]+args,cwd=tree,env=e or env,capture_output=True,check=True).stdout
+def guard(label):
+ global counter
+ counter+=1;e=dict(env);e["GIT_INDEX_FILE"]=str(out/(str(counter)+"-"+label+".index"));git(["read-tree",source],e);git(["add","-u","--","."],e);actual=git(["write-tree"],e).decode().strip()
+ if actual!=source:raise RuntimeError("source drift "+label+": "+actual)
+ if git(["rev-parse","HEAD"]).decode().strip()!="cabcb40d36e116beaa65750e1f674c52035da785":raise RuntimeError("ordinary HEAD changed")
+ ordinary_check=pathlib.Path(git(["rev-parse","--git-path","index"]).decode().strip());ordinary_check=ordinary_check if ordinary_check.is_absolute() else tree/ordinary_check
+ actual_index=rec(ordinary_check)
+ if any(actual_index[k]!=request["guard"]["ordinary_index"][k] for k in ("bytes","sha256")):raise RuntimeError("ordinary index drift "+label)
+ for lock_path,lock_expected in request["guard"]["locks"].items():
+  actual_lock=rec(tree/lock_path)
+  if any(actual_lock[k]!=lock_expected[k] for k in ("bytes","sha256")):raise RuntimeError("lock drift "+label+": "+lock_path)
+
+ return actual
+def split(p,label):
+ data=p.read_bytes();directory=out/"parts"/label;directory.mkdir(parents=True,exist_ok=True);rows=[];offset=0
+ while offset<len(data):
+  end=min(offset+44000,len(data))
+  while end<len(data) and data[end]&0xc0==0x80:end-=1
+  q=directory/(str(len(rows)).zfill(4)+".txt");q.write_bytes(data[offset:end]);rows.append({"offset":offset,**rec(q)});offset=end
+ return {"full":rec(p),"parts":rows}
+def phase(name,argv,streams=False):
+ guard(name+"-before");started=now();t=time.monotonic();stdout=out/(name+(".stdout" if streams else ".log"));stderr=out/(name+".stderr")
+ save(name+"-command.json",{"argv":argv,"cwd":str(tree/"codex-rs"),"source":source,"started_at":started,"attempt":1,"cargo_profile":"dev-small","nextest_profile":"local","disk_before":dict(zip(("total","used","free"),shutil.disk_usage(tree)))})
+ print(json.dumps({"phase_start":name,"source":source,"argv":argv}),flush=True)
+ with stdout.open("wb") as so:
+  if streams:
+   with stderr.open("wb") as se:r=subprocess.run(argv,cwd=tree/"codex-rs",env=env,stdout=so,stderr=se)
+  else:r=subprocess.run(argv,cwd=tree/"codex-rs",env=env,stdout=so,stderr=subprocess.STDOUT)
+ actual=guard(name+"-after");result={"name":name,"argv":argv,"source_before":source,"source_after":actual,"source_unchanged":True,"exit_code":r.returncode,"started_at":started,"completed_at":now(),"duration_seconds":time.monotonic()-t,"stdout":split(stdout,name+"-stdout"),"disk_after":dict(zip(("total","used","free"),shutil.disk_usage(tree)))}
+ if streams:result["stderr"]=split(stderr,name+"-stderr")
+ phases.append(result);save(name+"-status.json",result);print(json.dumps({"phase_terminal":name,"source":source,"exit_code":r.returncode,"seconds":result["duration_seconds"],"disk_after":result["disk_after"]}),flush=True);return result
+def package_artifacts(parsed):
+ rows=[]
+ def visit(value):
+  if isinstance(value,dict):
+   if value.get("kind")=="bin-exe" and isinstance(value.get("path"),str):
+    p=pathlib.Path(value["path"]);p=p if p.is_absolute() else pathlib.Path(parsed["rust-build-meta"]["target-directory"])/p;rows.append({"origin":"nextest-catalog","catalog_entry":value,**rec(p)})
+   for child in value.values():visit(child)
+  elif isinstance(value,list):
+   for child in value:visit(child)
+ visit(parsed["rust-build-meta"]["non-test-binaries"]);return rows
+def export():
+ rows=[]
+ for value in git(["diff","--name-only","-z","b2d7f038d6d88156bc6a4cb29c8703f69b808f29",source]).split(b"\0"):
+  if not value:continue
+  path=value.decode();mode,kind,oid=git(["ls-tree",source,"--",path]).decode().split("\t")[0].split();rows.append({"path":path,"mode":mode,"git_blob":oid,**{k:v for k,v in rec(tree/path).items() if k!="path"}})
+ save("source-map.json",{"base_tree":"b2d7f038d6d88156bc6a4cb29c8703f69b808f29","final_tree":source,"files":rows})
+try:
+ (out/"runner.py").write_text(request["runner_source"]);save("approved-original-gate.json",request["guard"]);guard("initial")
+ ordinary_path=pathlib.Path(git(["rev-parse","--git-path","index"]).decode().strip());ordinary_path=ordinary_path if ordinary_path.is_absolute() else tree/ordinary_path;ordinary=rec(ordinary_path)
+ locks={p:rec(tree/p) for p in ("codex-rs/Cargo.lock","MODULE.bazel.lock")}
+ if any(ordinary[k]!=request["guard"]["ordinary_index"][k] for k in ("bytes","sha256")):raise RuntimeError("ordinary index pre-full checkpoint mismatch")
+ for p,expected_lock in request["guard"]["locks"].items():
+  if any(locks[p][k]!=expected_lock[k] for k in ("bytes","sha256")):raise RuntimeError("lock pre-full checkpoint mismatch "+p)
+ save("pre-execution-checkpoint.json",{"source":source,"ordinary_head":git(["rev-parse","HEAD"]).decode().strip(),"ordinary_index":ordinary,"locks":locks,"root_guard_blob":"3512e07b1b1b23163085ef83b2869cf3340ea555"})
+
+ skipped_env={k:k in os.environ for k in ("CODEX_SANDBOX_NETWORK_DISABLED","CODEX_SANDBOX")}
+ save("native-host.json",{"observed_at":now(),"uname":subprocess.run(["uname","-srm"],capture_output=True,text=True,check=True).stdout,"rustc_vv":subprocess.run(["rustc","-vV"],env=env,capture_output=True,text=True,check=True).stdout,"cargo_profile":"dev-small","nextest_profile":"local","disk":dict(zip(("total","used","free"),shutil.disk_usage(tree))),"existing_skip_environment_keys_present":skipped_env,"skip_environment_keys_changed":False,"dotslash":rec(root/"tools/bin/dotslash"),"dot_cache":env["DOTSLASH_CACHE"],"original_profile_file":rec(tree/"codex-rs/.config/nextest.toml"),"original_recipe":rec(tree/"justfile"),"original_runner":rec(tree/"scripts/run-nextest.py")})
+ if any(skipped_env.values()):raise RuntimeError("Existing sandbox skip environment key is present; not altering it")
+ helper_path=pathlib.Path(request["helper_receipt_path"]);helper=json.loads(helper_path.read_text())
+ if not helper["success"] or not helper["source_unchanged"]:raise RuntimeError("missing source-bound helper build receipt")
+ if helper["source"]!=source or not helper["exact_artifact_roster"] or sorted(a["target"]["name"] for a in helper["artifacts"])!=sorted(request["guard"]["normal_helper_preparation"]["expected_names"]):raise RuntimeError("full exact six helper prerequisite mismatch")
+ if helper["command"]!=request["guard"]["normal_helper_preparation"]["argv"] or helper["build_finished"]!=[{"reason":"build-finished","success":True}]:raise RuntimeError("full normal six helper build evidence mismatch")
+
+ helper_source_delta=[p for p in git(["diff","--name-only","-z",helper["source"],source]).decode().split("\0") if p]
+ if sorted(helper_source_delta)!=sorted(request["approved_helper_source_delta"]):raise RuntimeError("unexpected helper source attribution delta")
+ if any("/tests/" not in p for p in helper_source_delta):raise RuntimeError("helper receipt can extend only across exact approved test-source changes")
+ save("helper-source-extension.json",{"actual_build_source":helper["source"],"current_source":source,"exact_test_source_delta":helper_source_delta,"actual_build_receipt":rec(helper_path),"limit":"No new normal-helper build is claimed. Feature-unified artifacts are independently hashed after catalog and immediately before/after just."})
+ save("helper-build-input.json",{"receipt":rec(helper_path),"source":helper["source"],"artifacts":helper["artifacts"]})
+ packages=[]
+ workspace_manifest=tomllib.loads((tree/"codex-rs/Cargo.toml").read_text())
+ if "package" in workspace_manifest or "workspace" not in workspace_manifest or "default-members" in workspace_manifest["workspace"]:raise RuntimeError("full workspace default selection contract changed")
+ if shutil.disk_usage(tree).free<24_000_000_000:raise RuntimeError("resource guard below 24GB before full owning catalog")
+ metadata_argv=["cargo","metadata","--format-version=1","--locked"]
+ if metadata_argv!=request["guard"]["original_gates"]["full_metadata_argv"]:raise RuntimeError("original full metadata argv mismatch")
+ meta=phase("workspace-metadata",metadata_argv,True)
+ if meta["exit_code"]!=0:raise RuntimeError("full workspace metadata failed")
+ workspace_metadata=json.loads((out/"workspace-metadata.stdout").read_text())
+ # Root separately requested read-only registry provenance after natural full metadata.
+ sqlx_rows=[{k:p.get(k) for k in ("id","name","version","source","manifest_path","links")} for p in workspace_metadata["packages"] if p["name"]=="sqlx-sqlite" and p["version"]=="0.9.0"]
+ save("sqlx-sqlite-natural-metadata.json",{"source":source,"metadata":rec(out/"workspace-metadata.stdout"),"packages":sqlx_rows,"additional_fetch_or_dependency_mutation":False})
+
+ workspace_ids=set(workspace_metadata["workspace_members"])
+ workspace_names={p["name"] for p in workspace_metadata["packages"] if p["id"] in workspace_ids}
+ save("workspace-members.json",{"source":source,"members":sorted(workspace_names),"member_ids":sorted(workspace_ids),"normal_metadata":rec(out/"workspace-metadata.stdout")})
+ package_args=[]
+ # Keep the original no-package workspace recipe's normal full metadata path.
+ catalog_argv=["cargo","nextest","list","--locked","--cargo-profile","dev-small","--message-format=json"]
+ if catalog_argv!=request["guard"]["original_gates"]["full_catalog_argv"]:raise RuntimeError("original full catalog argv mismatch")
+ cat=phase("full-workspace-catalog",catalog_argv,True)
+ if cat["exit_code"]!=0:raise RuntimeError("owning project catalog/build failed")
+ parsed=json.loads((out/"full-workspace-catalog.stdout").read_text());expected=[];ignored=[];unmatched=[];binaries=[];actual_packages=set()
+ for sid,suite in parsed["rust-suites"].items():
+  matched=False
+  for name,item in suite["testcases"].items():
+   row={"classname":sid,"name":name,"package":suite["package-name"],"ignored":item["ignored"],"filter_match":item["filter-match"]}
+   if item["filter-match"]["status"]=="matches" and not item["ignored"]:expected.append(row);matched=True
+   elif item["ignored"]:ignored.append(row)
+   else:unmatched.append(row)
+  if matched:
+   actual_packages.add(suite["package-name"]);binaries.append({"binary_id":sid,**rec(pathlib.Path(suite["binary-path"]))})
+ if not expected:raise RuntimeError("empty owning project roster")
+ if not actual_packages.issubset(workspace_names):raise RuntimeError("non-workspace package in full catalog")
+ empty_packages=sorted(workspace_names-actual_packages)
+ packages=sorted(workspace_names)
+ helper_rows=package_artifacts(parsed)
+ for a in helper["artifacts"]:
+  helper_rows.append({"origin":"source-bound-helper-build","target_name":a["target"]["name"],"build_receipt_sha256":rec(helper_path)["sha256"],**rec(pathlib.Path(a["path"]))})
+ paths={}
+ for row in helper_rows:paths.setdefault(row["path"],[]).append({k:v for k,v in row.items() if k not in ("path","bytes","sha256")})
+ helpers=[{"origins":origins,**rec(pathlib.Path(path))} for path,origins in sorted(paths.items())]
+ names={pathlib.Path(x["path"]).name for x in helpers}
+ required={"codex","codex-hepta-agentd","apply_patch","test_arg0_preflight","codex-code-mode-host","codex-execve-wrapper","test_stdio_server","test_streamable_http_server","codex-exec"}
+ if not required.issubset(names):raise RuntimeError("missing required actual helpers before just "+repr(sorted(required-names)))
+ selection={"source":source,"packages":packages,"actual_packages":sorted(actual_packages),"packages_without_testcases":empty_packages,"cargo_profile":"dev-small","nextest_profile":"local","expected_selected":expected,"existing_ignored":ignored,"existing_unmatched":unmatched,"test_binaries_after_catalog_before_just":binaries,"helpers_after_catalog_before_just":helpers,"catalog_non_test_binaries":parsed["rust-build-meta"]["non-test-binaries"],"catalog":rec(out/"full-workspace-catalog.stdout")}
+ sp=save("full-workspace-selection.json",selection);save("full-workspace-selection-index.json",split(sp,"selection"))
+ junit=tree/"codex-rs/target/nextest/local/junit.xml";prior=rec(junit) if junit.exists() else None;started=time.time_ns()
+ print(json.dumps({"catalog_roster":{"selected":len(expected),"existing_ignored":len(ignored),"existing_unmatched":len(unmatched),"binaries":len(binaries),"helpers":len(helpers),"packages":sorted(actual_packages),"empty_packages":empty_packages}}),flush=True)
+ test_argv=["just","test","--locked","--cargo-profile","dev-small"]+package_args+["--no-tests","fail","--retries","0","--success-output","immediate"]
+ if test_argv!=request["guard"]["original_gates"]["full_workspace_argv"]:raise RuntimeError("original full workspace argv mismatch")
+ test=phase("full-workspace",test_argv)
+ if not junit.is_file() or junit.stat().st_mtime_ns<started-2_000_000_000:raise RuntimeError("missing or stale owning JUnit")
+ if prior and rec(junit)["sha256"]==prior["sha256"]:raise RuntimeError("unchanged owning JUnit")
+ copy=out/"full-workspace.junit.xml";copy.write_bytes(junit.read_bytes());cases=[]
+ for c in ET.parse(copy).getroot().iter("testcase"):
+  result="FAIL" if c.find("failure") is not None else "ERROR" if c.find("error") is not None else "SKIP" if c.find("skipped") is not None else "PASS"
+  cases.append({"name":c.attrib.get("name"),"classname":c.attrib.get("classname"),"seconds":c.attrib.get("time"),"result":result,"failure":"\n".join(x.text or "" for x in c if x.tag in ("failure","error"))})
+ expected_keys=collections.Counter((x["classname"],x["name"]) for x in expected)
+ actual_keys=collections.Counter((x["classname"],x["name"]) for x in cases if x["result"]!="SKIP")
+ ignored_keys={(x["classname"],x["name"]) for x in ignored}
+ unexpected_skips=[x for x in cases if x["result"]=="SKIP" and (x["classname"],x["name"]) not in ignored_keys]
+ after=[{"binary_id":b["binary_id"],**rec(pathlib.Path(b["path"]))} for b in binaries];ha=[{"origins":h["origins"],**rec(pathlib.Path(h["path"]))} for h in helpers]
+ raw=(out/"full-workspace.log").read_text();clean=re.sub(r"\x1b\[[0-?]*[ -/]*[@-~]","",raw)
+ early=[l for l in clean.splitlines() if "Skipping test because it cannot execute when network is disabled" in l or "python not found; skipping" in l or "setsid not available; skipping" in l or "skipping zsh-fork test:" in l or "unable to resolve \u0060codex-execve-wrapper\u0060 binary" in l or "failed to fetch zsh via dotslash" in l]
+ skip_observations=[l for l in clean.splitlines() if re.search(r"\bskipping\b",l,re.I)]
+ # Bind early-return notices to actual nextest case blocks; PASS JUnit can omit output.
+ raw_lines=raw.splitlines(keepends=True);plain_lines=[re.sub(r"\x1b\[[0-?]*[ -/]*[@-~]","",line) for line in raw_lines];byte_offsets=[0]
+ for line in raw_lines:byte_offsets.append(byte_offsets[-1]+len(line.encode()))
+ case_by_key={(c["classname"],c["name"]):c for c in cases}
+ summary_line=max((i for i,line in enumerate(plain_lines) if re.match(r"^\s*Summary\s+\[",line)),default=len(raw_lines))
+ headers=[]
+ for i,line in enumerate(plain_lines[:summary_line]):
+  match=re.match(r"^\s*(PASS|FAIL|TIMEOUT|LEAK|SKIP)\s+\[\s*[0-9.]+s\]\s+(\S+)\s+(.+?)\s*$",line)
+  if match:headers.append({"line":i,"result":match.group(1),"classname":match.group(2),"name":match.group(3)})
+ early_patterns=("requires a remote test environment","Skipping test because it cannot execute when network is disabled","python not found; skipping","setsid not available; skipping","skipping zsh-fork test:","unable to resolve \u0060codex-execve-wrapper\u0060 binary","failed to fetch zsh via dotslash","skipping sandbox test:")
+ notice_lines={i for i,line in enumerate(plain_lines) if any(marker in line for marker in early_patterns)}
+ early_case_observations=[];associated_lines=set()
+ for i,header in enumerate(headers):
+  stop=headers[i+1]["line"] if i+1<len(headers) else summary_line
+  notices=[line for line in sorted(notice_lines) if header["line"]<=line<stop]
+  if not notices:continue
+  key=(header["classname"],header["name"]);junit_case=case_by_key.get(key)
+  block="".join(raw_lines[header["line"]:stop]);encoded=block.encode()
+  item={"classname":key[0],"name":key[1],"nextest_header_result":header["result"],"junit_result":junit_case["result"] if junit_case else None,"exact_junit_key_bound":junit_case is not None,"messages":[{"line":n+1,"original_line":raw_lines[n],"plain_line":plain_lines[n]} for n in notices],"original_raw_block":{"start_line":header["line"]+1,"end_line":stop,"byte_offset":byte_offsets[header["line"]],"bytes":len(encoded),"sha256":sha(encoded),"content":block},"limit":"Original explicit early-return notice is preserved. JUnit PASS does not establish execution of the omitted remote or prerequisite-dependent behavior."}
+  early_case_observations.append(item);associated_lines.update(notices)
+ unbound_early_notices=[{"line":i+1,"original_line":raw_lines[i],"plain_line":plain_lines[i]} for i in sorted(notice_lines-associated_lines)]
+ observations={"source":source,"original_raw":rec(out/"full-workspace.log"),"original_junit":rec(copy),"cases":early_case_observations,"unbound_notices":unbound_early_notices,"full_raw_test_early_return_notice_count":len(notice_lines),"legacy_missing_binary_network_pattern_list":early,"limits":"Derived observation only; original full test command/status/roster remain unchanged. Other skipping analytics messages are retained separately without labeling them test early returns."}
+ save("early-return-case-observations.json",observations)
+ counts=dict(collections.Counter(c["result"] for c in cases));roster=expected_keys==actual_keys
+ all_pass=all(c["result"] in ("PASS","SKIP") for c in cases) and not unexpected_skips
+ review={"source":source,"host":"rog","cargo_profile":"dev-small","nextest_profile":"local","retries":0,"cases":cases,"counts":counts,"selected_catalog_count":len(expected),"existing_ignored_catalog_count":len(ignored),"existing_unmatched_catalog_count":len(unmatched),"exact_executed_roster":roster,"missing_roster":[{"classname":k[0],"name":k[1],"count":v} for k,v in (expected_keys-actual_keys).items()],"unexpected_roster":[{"classname":k[0],"name":k[1],"count":v} for k,v in (actual_keys-expected_keys).items()],"unexpected_skips":unexpected_skips,"known_missing_prerequisite_early_returns":early,"all_skip_observations":skip_observations,"early_return_case_observations":early_case_observations,"unbound_early_return_notices":unbound_early_notices,"all_selected_cases_without_observed_early_return":not early_case_observations and not unbound_early_notices,"binary_before":binaries,"binary_after":after,"binary_stable":binaries==after,"helpers_before":helpers,"helpers_after":ha,"helpers_stable":helpers==ha,"source_unchanged":True,"junit":split(copy,"junit"),"prior_junit":prior,"exit_code":test["exit_code"],"nextest_summaries":[l for l in clean.splitlines() if "Starting " in l or "Summary" in l],"passed":test["exit_code"]==0 and roster and all_pass and binaries==after and helpers==ha and not early}
+ rp=save("full-workspace-review.json",review);save("full-workspace-review-index.json",split(rp,"review"))
+ if ordinary["sha256"]!=rec(ordinary_path)["sha256"]:raise RuntimeError("ordinary index changed")
+ if locks!={p:rec(tree/p) for p in locks}:raise RuntimeError("locks changed")
+ guard("final");export();terminal={"success":review["passed"],"source":source,"phases":phases,"review":rec(rp),"counts":counts,"exact_roster":roster,"source_unchanged":True,"ordinary_index_before":ordinary,"ordinary_index_after":rec(ordinary_path),"locks":locks,"completed_at":now(),"disk_after":dict(zip(("total","used","free"),shutil.disk_usage(tree))),"next_boundary":"Full original workspace attempt complete; root reviews actual failures and qualifications before final scoped hygiene. No tests after hygiene."}
+ save("terminal.json",terminal);save("terminal-index.json",split(out/"terminal.json","terminal"));print(json.dumps({"terminal":review["passed"],"source":source,"counts":counts,"exact_roster":roster,"binary_stable":binaries==after,"helpers_stable":helpers==ha,"early_returns":early,"disk_after":terminal["disk_after"]}),flush=True)
+ if not review["passed"]:raise SystemExit(1)
+except Exception as e:
+ error={"success":False,"source_observed":source,"error_type":type(e).__name__,"error":str(e),"traceback":traceback.format_exc(),"phases":phases,"completed_at":now(),"disk_after":dict(zip(("total","used","free"),shutil.disk_usage(tree)))}
+ try:export()
+ except Exception as ee:error["export_error"]=str(ee)
+ save("terminal.json",error);save("terminal-index.json",split(out/"terminal.json","terminal"));print(json.dumps({"terminal":False,"source":source,"error":str(e)}),flush=True);raise

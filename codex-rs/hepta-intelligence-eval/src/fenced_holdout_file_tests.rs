@@ -289,3 +289,80 @@ fn longer_divergent_history_cannot_skip_the_retained_minimum_prefix() {
         Some(LockedFileCasErrorV1::Rollback)
     );
 }
+
+#[test]
+fn dropping_store_unlocks_while_a_duplicate_file_remains_open() {
+    let temp = TempFile::new();
+    let file = temp.create();
+    let duplicate = file
+        .try_clone()
+        .unwrap_or_else(|error| panic!("duplicate store file: {error}"));
+    let store = LockedFileFinalHoldoutCasStoreV1::create(file, digest("binding"))
+        .unwrap_or_else(|error| panic!("create store: {error}"));
+    let first = owner(store, /*minimum*/ None);
+    let minimum = first.anchor();
+    let store = first.into_store();
+    pretty_assertions::assert_eq!(
+        LockedFileFinalHoldoutCasStoreV1::recover(temp.open(), digest("binding"), Some(minimum))
+            .err(),
+        Some(LockedFileCasErrorV1::Busy)
+    );
+    drop(store);
+
+    let recovered =
+        LockedFileFinalHoldoutCasStoreV1::recover(temp.open(), digest("binding"), Some(minimum))
+            .unwrap_or_else(|error| panic!("recover after store drop: {error}"));
+    pretty_assertions::assert_eq!(recovered.anchor(), Some(minimum));
+    drop(duplicate);
+    pretty_assertions::assert_eq!(
+        LockedFileFinalHoldoutCasStoreV1::recover(temp.open(), digest("binding"), Some(minimum))
+            .err(),
+        Some(LockedFileCasErrorV1::Busy)
+    );
+}
+
+#[test]
+fn failed_create_unlocks_while_a_duplicate_file_remains_open() {
+    let temp = TempFile::new();
+    let mut file = temp.create();
+    file.write_all(b"existing")
+        .unwrap_or_else(|error| panic!("write existing file: {error}"));
+    let duplicate = file
+        .try_clone()
+        .unwrap_or_else(|error| panic!("duplicate existing file: {error}"));
+    pretty_assertions::assert_eq!(
+        LockedFileFinalHoldoutCasStoreV1::create(file, digest("binding")).err(),
+        Some(LockedFileCasErrorV1::AlreadyInitialized)
+    );
+    let contender = temp.open();
+    contender
+        .try_lock()
+        .unwrap_or_else(|error| panic!("lock after rejected creation: {error}"));
+    drop(duplicate);
+}
+
+#[test]
+fn failed_recover_unlocks_while_a_duplicate_file_remains_open() {
+    let temp = TempFile::new();
+    let file = temp.create();
+    let duplicate = file
+        .try_clone()
+        .unwrap_or_else(|error| panic!("duplicate empty file: {error}"));
+    pretty_assertions::assert_eq!(
+        LockedFileFinalHoldoutCasStoreV1::recover(file, digest("binding"), /*minimum*/ None).err(),
+        Some(LockedFileCasErrorV1::MissingHeader)
+    );
+    let store = LockedFileFinalHoldoutCasStoreV1::create(temp.open(), digest("binding"))
+        .unwrap_or_else(|error| panic!("create after rejected recovery: {error}"));
+    drop(duplicate);
+    pretty_assertions::assert_eq!(
+        LockedFileFinalHoldoutCasStoreV1::recover(
+            temp.open(),
+            digest("binding"),
+            /*minimum*/ None
+        )
+        .err(),
+        Some(LockedFileCasErrorV1::Busy)
+    );
+    drop(store);
+}

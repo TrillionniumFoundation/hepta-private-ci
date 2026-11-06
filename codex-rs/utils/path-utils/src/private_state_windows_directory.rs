@@ -6,6 +6,7 @@ use std::io;
 use std::mem::size_of;
 use std::os::windows::io::FromRawHandle;
 use std::path::Path;
+use std::path::PathBuf;
 use std::ptr;
 
 use windows_sys::Win32::Foundation::HANDLE;
@@ -14,8 +15,10 @@ use windows_sys::Win32::Foundation::NTSTATUS;
 use windows_sys::Win32::Foundation::RtlNtStatusToDosError;
 use windows_sys::Win32::Foundation::UNICODE_STRING;
 use windows_sys::Win32::Storage::FileSystem::FILE_ATTRIBUTE_NORMAL;
+use windows_sys::Win32::Storage::FileSystem::FILE_ATTRIBUTE_REPARSE_POINT;
 use windows_sys::Win32::Storage::FileSystem::FILE_GENERIC_READ;
 use windows_sys::Win32::Storage::FileSystem::FILE_GENERIC_WRITE;
+use windows_sys::Win32::Storage::FileSystem::FILE_READ_ATTRIBUTES;
 use windows_sys::Win32::Storage::FileSystem::FILE_SHARE_READ;
 use windows_sys::Win32::Storage::FileSystem::FILE_SHARE_WRITE;
 use windows_sys::Win32::System::IO::IO_STATUS_BLOCK;
@@ -27,10 +30,12 @@ use super::unsafe_state;
 use super::wide_path;
 use super::with_private_security;
 
+const FILE_CREATE: u32 = 2;
 const FILE_OPEN_IF: u32 = 3;
 const FILE_DIRECTORY_FILE: u32 = 1;
 const FILE_SYNCHRONOUS_IO_NONALERT: u32 = 0x20;
 const FILE_OPEN_REPARSE_POINT: u32 = 0x0020_0000;
+const SYNCHRONIZE: u32 = 0x0010_0000;
 const STATUS_REPARSE_POINT_ENCOUNTERED: NTSTATUS = 0xC000_050B_u32 as i32;
 
 // Match the existing windows-sandbox no_reparse_dir NtCreateFile ABI. Keep the
@@ -62,7 +67,48 @@ unsafe extern "system" {
     ) -> NTSTATUS;
 }
 
+enum DirectoryOpen {
+    Create,
+    CreateNew,
+    ExistingRead,
+    ExistingReadWrite,
+    ExistingPathIdentity,
+}
+
+/// Return the final spelling of an existing file or directory opened without
+/// reparse traversal. The handle pins the actual object while its name is read;
+/// case and 8.3 aliases are never compared by lowercasing path strings.
+///
+/// This path observation does not qualify a private owner/DACL or retain a
+/// recovery guard for the caller. Those checks remain at the owning API.
+pub fn canonical_existing_path_without_reparse(path: &Path) -> io::Result<PathBuf> {
+    let file = open_with_mode(path, DirectoryOpen::ExistingPathIdentity)?;
+    if winapi_util::file::information(&file)?.file_attributes()
+        & u64::from(FILE_ATTRIBUTE_REPARSE_POINT)
+        != 0
+    {
+        return Err(unsafe_state("identity path is a reparse point"));
+    }
+    super::final_path(&file)
+}
+
 pub(super) fn open(root: &Path) -> io::Result<File> {
+    open_with_mode(root, DirectoryOpen::Create)
+}
+
+pub(super) fn create_new(root: &Path) -> io::Result<File> {
+    open_with_mode(root, DirectoryOpen::CreateNew)
+}
+
+pub(super) fn open_existing(root: &Path) -> io::Result<File> {
+    open_with_mode(root, DirectoryOpen::ExistingRead)
+}
+
+pub(super) fn open_existing_writable(root: &Path) -> io::Result<File> {
+    open_with_mode(root, DirectoryOpen::ExistingReadWrite)
+}
+
+fn open_with_mode(root: &Path, mode: DirectoryOpen) -> io::Result<File> {
     let mut name = wide_path(root)?;
     // Convert the already absolute Win32 verbatim spelling to the NT namespace.
     // This retains long paths and UNC (\\?\UNC\... -> \??\UNC\...) without
@@ -92,7 +138,12 @@ pub(super) fn open(root: &Path) -> io::Result<File> {
             attributes: OBJ_CASE_INSENSITIVE as u32 | OBJ_DONT_REPARSE as u32,
             // Applied only if the leaf is created. Existing security is never
             // repaired; the caller validates the exact returned handle.
-            security_descriptor: security.lpSecurityDescriptor,
+            security_descriptor: match mode {
+                DirectoryOpen::Create | DirectoryOpen::CreateNew => security.lpSecurityDescriptor,
+                DirectoryOpen::ExistingRead
+                | DirectoryOpen::ExistingReadWrite
+                | DirectoryOpen::ExistingPathIdentity => ptr::null(),
+            },
             security_quality_of_service: ptr::null(),
         };
         let mut io_status = IO_STATUS_BLOCK {
@@ -105,15 +156,35 @@ pub(super) fn open(root: &Path) -> io::Result<File> {
         let status = unsafe {
             NtCreateFile(
                 &mut handle,
-                FILE_GENERIC_READ | FILE_GENERIC_WRITE,
+                match mode {
+                    DirectoryOpen::ExistingPathIdentity => FILE_READ_ATTRIBUTES | SYNCHRONIZE,
+                    DirectoryOpen::ExistingRead => FILE_GENERIC_READ,
+                    DirectoryOpen::Create
+                    | DirectoryOpen::CreateNew
+                    | DirectoryOpen::ExistingReadWrite => FILE_GENERIC_READ | FILE_GENERIC_WRITE,
+                },
                 &attributes,
                 &mut io_status,
                 ptr::null(),
                 FILE_ATTRIBUTE_NORMAL,
                 // Retain the original no-delete-sharing pin until File drops.
                 FILE_SHARE_READ | FILE_SHARE_WRITE,
-                FILE_OPEN_IF,
-                FILE_DIRECTORY_FILE | FILE_SYNCHRONOUS_IO_NONALERT | FILE_OPEN_REPARSE_POINT,
+                match mode {
+                    DirectoryOpen::Create => FILE_OPEN_IF,
+                    DirectoryOpen::CreateNew => FILE_CREATE,
+                    DirectoryOpen::ExistingRead
+                    | DirectoryOpen::ExistingReadWrite
+                    | DirectoryOpen::ExistingPathIdentity => 1, // FILE_OPEN
+                },
+                FILE_SYNCHRONOUS_IO_NONALERT
+                    | FILE_OPEN_REPARSE_POINT
+                    | match mode {
+                        DirectoryOpen::ExistingPathIdentity => 0,
+                        DirectoryOpen::Create
+                        | DirectoryOpen::CreateNew
+                        | DirectoryOpen::ExistingRead
+                        | DirectoryOpen::ExistingReadWrite => FILE_DIRECTORY_FILE,
+                    },
                 ptr::null(),
                 /*ea_length*/ 0,
             )

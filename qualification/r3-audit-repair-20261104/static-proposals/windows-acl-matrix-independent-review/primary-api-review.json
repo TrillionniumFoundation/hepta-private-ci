@@ -1,0 +1,189 @@
+{
+  "schema": "windows_acl_matrix_independent_primary_api_review_v1",
+  "files": [
+    {
+      "module": "FileSystem",
+      "repository": "microsoft/windows-rs",
+      "ref": "0.52.0",
+      "requested_blob": "5cb313fe5ba69cbec6eee56b86ec13608744dae4",
+      "computed_blob": "5cb313fe5ba69cbec6eee56b86ec13608744dae4",
+      "bytes": 296470,
+      "sha256": "62de1e36d41b1efdb8651c887dae8fbfb0ca2dc34e4d3a789e716f50e424630d",
+      "full_original_read": true,
+      "stored_in_this_receipt": "selected declarations only; full original body was fetched and hashed in this review",
+      "excerpts": [
+        {
+          "line": 295,
+          "text": "::windows_targets::link!(\"kernel32.dll\" \"system\" #[doc = \"Required features: `\\\"Win32_Foundation\\\"`\"] fn GetFileInformationByHandleEx(hfile : super::super::Foundation:: HANDLE, fileinformationclass : FILE_INFO_BY_HANDLE_CLASS, lpfileinformation : *mut ::core::ffi::c_void, dwbuffersize : u32) -> super::super::Foundation:: BOOL);"
+        },
+        {
+          "line": 502,
+          "text": "::windows_targets::link!(\"kernel32.dll\" \"system\" #[doc = \"Required features: `\\\"Win32_Foundation\\\"`\"] fn ReOpenFile(horiginalfile : super::super::Foundation:: HANDLE, dwdesiredaccess : u32, dwsharemode : FILE_SHARE_MODE, dwflagsandattributes : FILE_FLAGS_AND_ATTRIBUTES) -> super::super::Foundation:: HANDLE);"
+        },
+        {
+          "line": 899,
+          "text": "pub const DELETE: FILE_ACCESS_RIGHTS = 65536u32;"
+        },
+        {
+          "line": 968,
+          "text": "pub const FILE_DELETE_CHILD: FILE_ACCESS_RIGHTS = 64u32;"
+        },
+        {
+          "line": 981,
+          "text": "pub const FILE_FLAG_BACKUP_SEMANTICS: FILE_FLAGS_AND_ATTRIBUTES = 33554432u32;"
+        },
+        {
+          "line": 998,
+          "text": "pub const FILE_GENERIC_READ: FILE_ACCESS_RIGHTS = 1179785u32;"
+        },
+        {
+          "line": 1018,
+          "text": "pub const FILE_SHARE_DELETE: FILE_SHARE_MODE = 4u32;"
+        },
+        {
+          "line": 1020,
+          "text": "pub const FILE_SHARE_READ: FILE_SHARE_MODE = 1u32;"
+        },
+        {
+          "line": 1021,
+          "text": "pub const FILE_SHARE_WRITE: FILE_SHARE_MODE = 2u32;"
+        },
+        {
+          "line": 1062,
+          "text": "pub const FileStandardInfo: FILE_INFO_BY_HANDLE_CLASS = 1i32;"
+        },
+        {
+          "line": 1443,
+          "text": "pub const READ_CONTROL: FILE_ACCESS_RIGHTS = 131072u32;"
+        },
+        {
+          "line": 1694,
+          "text": "pub const WRITE_DAC: FILE_ACCESS_RIGHTS = 262144u32;"
+        },
+        {
+          "line": 3106,
+          "text": "pub struct FILE_STANDARD_INFO {\n    pub AllocationSize: i64,\n    pub EndOfFile: i64,\n    pub NumberOfLinks: u32,\n    pub DeletePending: super::super::Foundation::BOOLEAN,\n    pub Directory: super::super::Foundation::BOOLEAN,\n}"
+        }
+      ]
+    },
+    {
+      "module": "Authorization",
+      "repository": "microsoft/windows-rs",
+      "ref": "0.52.0",
+      "requested_blob": "75767ccc1fd85b05762b66339e432b4e45ab711e",
+      "computed_blob": "75767ccc1fd85b05762b66339e432b4e45ab711e",
+      "bytes": 89139,
+      "sha256": "8f815ef1e07914982c627898d4dc071a703e86240e9a9f946878e3210bc23ac7",
+      "full_original_read": true,
+      "stored_in_this_receipt": "selected declarations only; full original body was fetched and hashed in this review",
+      "excerpts": [
+        {
+          "line": 132,
+          "text": "::windows_targets::link!(\"advapi32.dll\" \"system\" #[doc = \"Required features: `\\\"Win32_Foundation\\\"`\"] fn GetSecurityInfo(handle : super::super::Foundation:: HANDLE, objecttype : SE_OBJECT_TYPE, securityinfo : super:: OBJECT_SECURITY_INFORMATION, ppsidowner : *mut super::super::Foundation:: PSID, ppsidgroup : *mut super::super::Foundation:: PSID, ppdacl : *mut *mut super:: ACL, ppsacl : *mut *mut super:: ACL, ppsecuritydescriptor : *mut super:: PSECURITY_DESCRIPTOR) -> super::super::Foundation:: WIN32_ERROR);"
+        },
+        {
+          "line": 146,
+          "text": "::windows_targets::link!(\"advapi32.dll\" \"system\" #[doc = \"Required features: `\\\"Win32_Foundation\\\"`\"] fn SetEntriesInAclW(ccountofexplicitentries : u32, plistofexplicitentries : *const EXPLICIT_ACCESS_W, oldacl : *const super:: ACL, newacl : *mut *mut super:: ACL) -> super::super::Foundation:: WIN32_ERROR);"
+        },
+        {
+          "line": 152,
+          "text": "::windows_targets::link!(\"advapi32.dll\" \"system\" #[doc = \"Required features: `\\\"Win32_Foundation\\\"`\"] fn SetSecurityInfo(handle : super::super::Foundation:: HANDLE, objecttype : SE_OBJECT_TYPE, securityinfo : super:: OBJECT_SECURITY_INFORMATION, psidowner : super::super::Foundation:: PSID, psidgroup : super::super::Foundation:: PSID, pdacl : *const super:: ACL, psacl : *const super:: ACL) -> super::super::Foundation:: WIN32_ERROR);"
+        },
+        {
+          "line": 647,
+          "text": "pub const SE_FILE_OBJECT: SE_OBJECT_TYPE = 1i32;"
+        }
+      ]
+    },
+    {
+      "module": "Foundation",
+      "repository": "microsoft/windows-rs",
+      "ref": "0.52.0",
+      "requested_blob": "6502b8224f3bebf23dca29c6ea1a68b47e7c7611",
+      "computed_blob": "6502b8224f3bebf23dca29c6ea1a68b47e7c7611",
+      "bytes": 739086,
+      "sha256": "ee8378fd7a513d263aca8d5d441625965c746658f5a595f571d82e7a6cf71b36",
+      "full_original_read": true,
+      "stored_in_this_receipt": "selected declarations only; full original body was fetched and hashed in this review",
+      "excerpts": [
+        {
+          "line": 5,
+          "text": "::windows_targets::link!(\"kernel32.dll\" \"system\" fn GetHandleInformation(hobject : HANDLE, lpdwflags : *mut u32) -> BOOL);"
+        },
+        {
+          "line": 5025,
+          "text": "pub const HANDLE_FLAG_INHERIT: HANDLE_FLAGS = 1u32;"
+        }
+      ]
+    },
+    {
+      "module": "Security",
+      "repository": "microsoft/windows-rs",
+      "ref": "0.52.0",
+      "requested_blob": "e474d1dfc62b7be1443f2b59eda8370477fdfa74",
+      "computed_blob": "e474d1dfc62b7be1443f2b59eda8370477fdfa74",
+      "bytes": 111353,
+      "sha256": "b35db507ad9380695f15b7ba798d0e677e08cc84b905577489d7e63994f00673",
+      "full_original_read": true,
+      "stored_in_this_receipt": "selected declarations only; full original body was fetched and hashed in this review",
+      "excerpts": [
+        {
+          "line": 164,
+          "text": "::windows_targets::link!(\"advapi32.dll\" \"system\" #[doc = \"Required features: `\\\"Win32_Foundation\\\"`\"] fn GetSecurityDescriptorControl(psecuritydescriptor : PSECURITY_DESCRIPTOR, pcontrol : *mut u16, lpdwrevision : *mut u32) -> super::Foundation:: BOOL);"
+        },
+        {
+          "line": 367,
+          "text": "pub const PROTECTED_DACL_SECURITY_INFORMATION: OBJECT_SECURITY_INFORMATION = 2147483648u32;"
+        },
+        {
+          "line": 414,
+          "text": "pub const SE_DACL_PROTECTED: SECURITY_DESCRIPTOR_CONTROL = 4096u16;"
+        },
+        {
+          "line": 552,
+          "text": "pub const UNPROTECTED_DACL_SECURITY_INFORMATION: OBJECT_SECURITY_INFORMATION = 536870912u32;"
+        }
+      ]
+    }
+  ],
+  "dependency": {
+    "package": "windows-sys",
+    "version": "0.52.0",
+    "crate_declaration": "codex-rs/windows-sandbox-rs/Cargo.toml: existing target cfg(windows) dependency enables Foundation, Security, Security_Authorization, Storage_FileSystem, System_Threading and other original features",
+    "no_new_dependency_or_feature_change": true
+  },
+  "documents": [
+    {
+      "url": "https://learn.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-getfileinformationbyhandleex",
+      "retrieval_ref": "turn91view0",
+      "finding": "Win32 FileStandardInfo returns FILE_STANDARD_INFO, whose size is passed exactly; false returns propagate OS error. This declaration review does not prove every filesystem accepts the request."
+    },
+    {
+      "url": "https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-zwqueryinformationfile",
+      "retrieval_ref": "turn92search0",
+      "finding": "Native FileStandardInformation can be queried on an open handle without a particular DesiredAccess requirement. Used as supporting access-rights evidence, not as a claim the candidate directly calls this kernel API."
+    },
+    {
+      "url": "https://learn.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-reopenfile",
+      "retrieval_ref": "turn91search2",
+      "finding": "Reopens the original CreateFile filesystem object with requested access/share/flags; FILE_FLAG_BACKUP_SEMANTICS is supported for directories. Sharing conflicts and native access-denied remain errors."
+    },
+    {
+      "url": "https://learn.microsoft.com/en-us/windows/win32/api/aclapi/nf-aclapi-getsecurityinfo",
+      "retrieval_ref": "turn91view1",
+      "finding": "DACL retrieval requires READ_CONTROL granted on open; returned DACL borrows the returned security descriptor, released using LocalFree. The API does not serialize concurrent security-descriptor changes."
+    },
+    {
+      "url": "https://learn.microsoft.com/en-us/windows/win32/api/aclapi/nf-aclapi-setsecurityinfo",
+      "retrieval_ref": "turn91view2",
+      "finding": "Handle-based setter preserves object identity; inheritable entries can propagate and the API does not reorder existing ACEs. The candidate supplies original explicit masks and inheritance; no MAXIMUM_ALLOWED handle is used."
+    }
+  ],
+  "execution": {
+    "windows": false,
+    "cargo": false,
+    "bazel": false,
+    "native": false,
+    "source_or_ref_mutation": false
+  }
+}

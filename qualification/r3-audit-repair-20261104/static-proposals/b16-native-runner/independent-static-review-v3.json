@@ -1,0 +1,751 @@
+{
+  "schema": "hepta.b16.runner.independent-static-review.v3",
+  "observed_at_utc": "2026-11-05T04:49:25.822850+00:00",
+  "verdict": "STATIC_PASS_V3_WITH_NATIVE_QUALIFICATION_PENDING",
+  "reviewer": "research_audit",
+  "reviewed_manifest": {
+    "bytes": 19860,
+    "sha256": "657cb255da756dd7e239e1db332ce6ae77e04d836faa0628958686260a3a141b",
+    "blob": "0386b554e5a396330e4ddee83a0cc903647b9f2b"
+  },
+  "v2_must_fix": {
+    "schema": "hepta.b16.runner.terminal-classification-finding.v1",
+    "observed_at": "2026-11-05T04:42:27.405382+00:00",
+    "status": "V2_MUST_FIX_BEFORE_NATIVE",
+    "finding": "JUnit failure element alone cannot distinguish ordinary assertion from outer timeout or failed/leaked process. V2 loses type/message before physical oracle; captured output need not contain nextest console summary.",
+    "real_archived_xml": {
+      "path": "ci-audit/recovered-20261105/full-owning-compressed-archive/full-junit.original",
+      "bytes": 4149275,
+      "sha256": "afdf124cb8cb44e65808b71f824c880875253378588ccaffc9b4783857fc18ed",
+      "uuid": "0cf739dd-590b-4603-82a2-29a29039c27b",
+      "matching_cases": [
+        {
+          "case": {
+            "name": "service::tests::plugins::marketplaces::import_plugins_infers_external_official_marketplace_when_missing_from_settings",
+            "classname": "codex-external-agent-migration",
+            "timestamp": "2026-11-04T19:52:52.515-05:00",
+            "time": "60.004"
+          },
+          "tag": "failure",
+          "attributes": {
+            "type": "test timeout"
+          },
+          "element_text": null,
+          "has_case_output": true
+        }
+      ]
+    },
+    "official_primary": {
+      "repository": "nextest-rs/nextest",
+      "commit": "e636f389aefb9f58fd753f55a394f9099e51ed50",
+      "path": "nextest-runner/src/reporter/aggregator/junit.rs",
+      "git_blob": "2cddcf28b090d73b33773e823e6afe74ce015285",
+      "bytes": 38012,
+      "sha256": "74013b0c76e646f330ff1634410b602a730a8c32b5ba2aa3031450401dfb8fc1",
+      "source_url": "https://github.com/nextest-rs/nextest/blob/e636f389aefb9f58fd753f55a394f9099e51ed50/nextest-runner/src/reporter/aggregator/junit.rs",
+      "actual_native_binary_same_version_established": false,
+      "lines": {
+        "sets_xml_type": [
+          190,
+          197
+        ],
+        "failed_with_leak": [
+          399,
+          408
+        ],
+        "ordinary_failure": [
+          410,
+          417
+        ],
+        "timeout_failure": [
+          419,
+          424
+        ],
+        "leak_errors": [
+          428,
+          445
+        ]
+      }
+    },
+    "requested_minimal_repair": "Preserve full original failure/error attributes. Physical counterfactual qualification requires the exact ordinary test failure with exit code 101. Reject timeout/leak/abort/missing/unknown terminal types without changing marker/panic requirements.",
+    "no_B_native_executed": true,
+    "does_not_claim_an_actual_false_positive_B_run": true
+  },
+  "v3_resolution": {
+    "native_blob": "8accb86a14acaa88305575da13dd49692db11757",
+    "terminal_elements": "All failure/error/skipped tags and full attributes retained in case receipt.",
+    "precondition": "Selection rejects missing/unknown/timeout/leak/error/skip before unchanged physical qualify; ordinary sole failure type=test failure with exit code 101 still must satisfy exact roster, overall exit100 and all marker/panic predicates.",
+    "ordinary_failure_text_or_message_not_required": true,
+    "unknown_future_format": "Fail closed rather than silently qualify; any format change needs a separate reviewed adaptation."
+  },
+  "independent_static_checks": {
+    "listed_files_checked": 41,
+    "runtime_integrity_files_checked": 19,
+    "listed_files": [
+      {
+        "path": "b16_native.py",
+        "bytes": 16843,
+        "sha256": "1955c298c3ae120ad1e7a3fb8bb1302d20aedc392a2a13c278ad9e988d915ea7",
+        "blob": "8accb86a14acaa88305575da13dd49692db11757"
+      },
+      {
+        "path": "test_runner_guards.py",
+        "bytes": 15658,
+        "sha256": "d83e8391dc64aacd2daa1bddb2ec104796f6e30f7054796ef5144b7265b67128",
+        "blob": "378fe4b966d86cced0c89303c34c6ad7bf3b0d57"
+      },
+      {
+        "path": "observed-nextest-timeout-testcase.xml",
+        "bytes": 390,
+        "sha256": "fabd54568dd293a814449bc59027d1f5ecd6ee96a806b68b691ae2bb170a57df",
+        "blob": "e3cd2d7df83b2d5abebd96840722edcdd34d32f8"
+      },
+      {
+        "path": "runner-integrity.json",
+        "bytes": 4331,
+        "sha256": "dacf3296af381bee42fcf7bafb7796aac8cb558ea8a0df078d325e919344780a",
+        "blob": "135a66c21f78053accbd450a275847d2825e6178"
+      },
+      {
+        "path": "binding-template-UNBOUND.json",
+        "bytes": 3229,
+        "sha256": "1b77c047e7f8c5947b97ff7ddb3d5d1874bfb0245b56c57eeb25bdb7087a9a24",
+        "blob": "615ea4dcae2f5c4a212bf5a05040d8cd625326fd"
+      },
+      {
+        "path": "README.md",
+        "bytes": 13618,
+        "sha256": "913361cffdfed45640b051e04d3a27386d3020f04388b37f43d2dbd8659ed470",
+        "blob": "7a87ef71eda402b9117949142555fe655285c3f6"
+      },
+      {
+        "path": "pure-guard-validation-v3.json",
+        "bytes": 2524,
+        "sha256": "91a0d6497350f08c5c566c12ce748e86c4b28b406a8958f453a4d509c6121600",
+        "blob": "f18ba2797932297c64dc6082e3adc19c06ae8edc"
+      },
+      {
+        "path": "pure-guard-validation-v3.log",
+        "bytes": 2258,
+        "sha256": "6f5449340e5c43e43ecb5ae838e71d0118c31160a40540f430777d75ccf16d57",
+        "blob": "c62d37c8ab561233f078128356aa2d77cc814098"
+      },
+      {
+        "path": "unbound-refusal-v3.json",
+        "bytes": 546,
+        "sha256": "466069e78e6d286bece8059b95390b9e6692ad3d8da4106625a498b5436703ce",
+        "blob": "c3e79b2a3e79d39c7b2527a7d4920877b2428b12"
+      },
+      {
+        "path": "unbound-refusal-v3.log",
+        "bytes": 868,
+        "sha256": "b03190cbfeaf080d9ef8d5cb04c6228111207d0dda6bbfffb160ce7b541c21ba",
+        "blob": "2b64caa3c2b979e3a457765151b71f9ec84402f2"
+      },
+      {
+        "path": "v3-delta-validation.json",
+        "bytes": 3184,
+        "sha256": "3fe3fe25fd67a56b440ab8d8d46a7782224ba1677b975f6a8895b8d44bc32046",
+        "blob": "1a2e21660bb75d0ea764846470d8cfccc78a2e07"
+      },
+      {
+        "path": "runner-v3.delta.patch",
+        "bytes": 14314,
+        "sha256": "f691ed20a743a591428957aa3d12653c8a1ee08e5ca895c245e495552055cb05",
+        "blob": "2f26f8a7d3864e3ac524980ad3fa3c3bdfe3291f"
+      },
+      {
+        "path": "junit-terminal-evidence-v3.json",
+        "bytes": 8098,
+        "sha256": "0ebbada082227576b41aecb0d7dabd515327353fd7026d145c595e5d72675f69",
+        "blob": "5e9708b4f66f2881bccbe97a82a69d0c274667f1"
+      },
+      {
+        "path": "negative-terminal-contract-v3.json",
+        "bytes": 18380,
+        "sha256": "f8b4ab7661c7521bf54c0859cac0f009661aeca12615b0d623573f0c9fbe96d2",
+        "blob": "ed11b0cb2f1f362819dec4d37732a8471d0e943a"
+      },
+      {
+        "path": "b16_capacity.py",
+        "bytes": 4796,
+        "sha256": "2879eaf9f1e3c87bc575e33e34880ba3dc6b80a211687a1317533fcfbf8e3168",
+        "blob": "12d04a630e613c6170d2e1172c3fc988dcfc2965"
+      },
+      {
+        "path": "b16_guard.py",
+        "bytes": 10724,
+        "sha256": "dfaa27e85dd1ee2843893af811484f7bc059583615a4234a716e3472d507bb3d",
+        "blob": "9d1c5716db2b50ef86a689fe43db18816d06b561"
+      },
+      {
+        "path": "b16_locks.py",
+        "bytes": 13015,
+        "sha256": "5edb44c7e4a6ce63981adc4681fead1987ddc19389e7d0659c9e4d3e13d8514e",
+        "blob": "1a6583b6226af4d20bb336b778476dedb02d59f4"
+      },
+      {
+        "path": "b16_oracles.py",
+        "bytes": 7483,
+        "sha256": "5928528add9ecb0f6a1681057a26954d9c607fb14c129293fa4bc6eac4e07e85",
+        "blob": "1a6efff50846f5c04bb5ea6def203ada42342050"
+      },
+      {
+        "path": "b16_runner.py",
+        "bytes": 15307,
+        "sha256": "63aac34b3bd16201615b6b3f4391d468fb0dad39c2a6187bfe17d7b627b33e6a",
+        "blob": "f0ecc2359b81d49a5088e51cedbad32a8b54504a"
+      },
+      {
+        "path": "build_payload.py",
+        "bytes": 11192,
+        "sha256": "35b05b1ae777ec4f3b6bd94a7fc59145c415702eb65df34f3269c1ae744258fa",
+        "blob": "bf7a3e53781fe4dbc97af905a2d87952d8c9f38c"
+      },
+      {
+        "path": "capacity-plan-v2.json",
+        "bytes": 4751,
+        "sha256": "8dbabb53d8e199b87bc637c8e1d5d6fd17463bcca64e493c3fee9428a62f3f9f",
+        "blob": "1850906a2c60abc7926eb93f73f5e16ec1cf868c"
+      },
+      {
+        "path": "epoch-checkpoint.json",
+        "bytes": 3938,
+        "sha256": "0a9d2e32fe5aa16ef6dd490383fd4f7cc6ef10400a5a94a7bd5e97719b8780f8",
+        "blob": "7fb7a81cacd734e395f63d93938f9f4c94ba3468"
+      },
+      {
+        "path": "epoch-driver.json",
+        "bytes": 4348,
+        "sha256": "d28c2e9faa1cc0e3272d6aba88bfc3a49b062a484b6df530cca2ef2cf95a189f",
+        "blob": "5bd1014173766cb3599439e6a202514916286a5e"
+      },
+      {
+        "path": "epoch-foundation.json",
+        "bytes": 11472,
+        "sha256": "a8ac8886ec02230d5004dc8b608e0a33c0b89d5fdfabc1032569a13ee812fabd",
+        "blob": "6cc71ef831549fbe54f26c9bbe080e53effc59fa"
+      },
+      {
+        "path": "epoch-owning.json",
+        "bytes": 265,
+        "sha256": "87c7e1c517d3d601884a7555a7c677cec7490743dd2b5f7c0f1e2c45131efbe5",
+        "blob": "ce08a93c32f41135139b858d3bc22c6b224fec12"
+      },
+      {
+        "path": "epoch-pool.json",
+        "bytes": 3807,
+        "sha256": "19e1a06c6c97e20d1f1ef097222f6f7c2877850502223f16ed939848e228bf64",
+        "blob": "6d686ead86ef2c83f3b32f8bbd1b73e662d26093"
+      },
+      {
+        "path": "operation-order-validation.json",
+        "bytes": 1826,
+        "sha256": "2064dd3ecbbccc6e7bf5540a185e33880b7c0e68b4b86d211217e3200e8ab789",
+        "blob": "538e344537d745f3c9d8ddd0372d41cf540da3fd"
+      },
+      {
+        "path": "payload-manifest.json",
+        "bytes": 62667,
+        "sha256": "a34cd6c5400deff4fedfffcb1f4f170eecabbb6bbfab1916829ab3911e986237",
+        "blob": "64db580beabe2642eb8611184dac4fc686fe34e1"
+      },
+      {
+        "path": "payload-reconstruction.json",
+        "bytes": 167264,
+        "sha256": "fdc677b722a8459c3b726be102fe47e11f7cd69d334d9dc908fe1314fb5e5426",
+        "blob": "ae55de8214fe54793624034ccbcbbb9221c26b4e"
+      },
+      {
+        "path": "pure-guard-validation-v2.json",
+        "bytes": 2569,
+        "sha256": "005244408c5ed289418be4426239ef8464041e24246d531f6c2bee632ba5e69b",
+        "blob": "26ad020c558a9330d7e53fc41cf4117d636c7ab0"
+      },
+      {
+        "path": "pure-guard-validation-v2.log",
+        "bytes": 2075,
+        "sha256": "cc27410c4a7eff46acc07efa284f0adaf72f60e06d5b01c8725707ab74664c4c",
+        "blob": "a022840f1fe3511d27cfb3d7f9ecc0dba16148df"
+      },
+      {
+        "path": "review-manifest-v2.json",
+        "bytes": 16134,
+        "sha256": "612911fe3c00c105ba30c98b6ba04a10430f6eb5702cab13c363a3619aadd806",
+        "blob": "63c330617fc5bbfffa7b64e4c52ea6571d4d2612"
+      },
+      {
+        "path": "runner-v2.delta.patch",
+        "bytes": 49463,
+        "sha256": "5cdee5f87633af8ece538e58044126189c6076703f67e8570ada5aade99cf350",
+        "blob": "c6a4304533f42fdf758dd6d391af0150b4c02b0b"
+      },
+      {
+        "path": "source-payload-00.json",
+        "bytes": 350291,
+        "sha256": "44299f93d8cfc2cd6a264a1df985052d8c7c4eb16e62c9bd8614b70cb9564f78",
+        "blob": "8e5ed16eca037384b17830f3625489ddf69f7d7a"
+      },
+      {
+        "path": "source-payload-01.json",
+        "bytes": 333825,
+        "sha256": "85adc1e88702b4fb8c9d417a936d665519fa56386cb434bbc6ef55d5f9cdf07d",
+        "blob": "e621574b496731997af604b8e4b138851c8be3d0"
+      },
+      {
+        "path": "source-payload-02.json",
+        "bytes": 342693,
+        "sha256": "563074644cce7c3e63f92e5b5e346e09d24ff4ca03e90cea4ca1b001347186ce",
+        "blob": "3bb4615120935560dd4bff326795b68e03cfb31a"
+      },
+      {
+        "path": "source-payload-03.json",
+        "bytes": 345962,
+        "sha256": "8a633ff6916a8b543e8aca196c54a41cc180d8f68c2cd2a26f2fe0e87ca57f55",
+        "blob": "819cfab8bf8a410d944e7d2c8c185d07a1eea886"
+      },
+      {
+        "path": "source-payload-04.json",
+        "bytes": 135857,
+        "sha256": "5d43327e7379cca4e6502973efd7ba6a3f67fb464c3bf41ebbaf1f88c6132bba",
+        "blob": "e5a287d7ae1f8a0c77cec32ce1113a48e94f8daa"
+      },
+      {
+        "path": "unbound-refusal-v2.json",
+        "bytes": 973,
+        "sha256": "98d81fd972a92866d5c09cb92be4c44512930fc1eb56c33df41607d1258e5229",
+        "blob": "6125161985f570034e72e35a3559ee5d8d47eafd"
+      },
+      {
+        "path": "unbound-refusal-v2.log",
+        "bytes": 868,
+        "sha256": "b03190cbfeaf080d9ef8d5cb04c6228111207d0dda6bbfffb160ce7b541c21ba",
+        "blob": "2b64caa3c2b979e3a457765151b71f9ec84402f2"
+      },
+      {
+        "path": "v2-delta-validation.json",
+        "bytes": 7927,
+        "sha256": "c22d778ab2d9e1009062fb170a95fc2790bbab8743b68aa7af36456a0cdf556b",
+        "blob": "42aaa6877cfe6d9275d43fdcb2e57d29c99923f1"
+      }
+    ],
+    "real_git_apply_check_and_apply_postimages": [
+      {
+        "path": "b16_native.py",
+        "bytes": 16843,
+        "sha256": "1955c298c3ae120ad1e7a3fb8bb1302d20aedc392a2a13c278ad9e988d915ea7",
+        "blob": "8accb86a14acaa88305575da13dd49692db11757"
+      },
+      {
+        "path": "test_runner_guards.py",
+        "bytes": 15658,
+        "sha256": "d83e8391dc64aacd2daa1bddb2ec104796f6e30f7054796ef5144b7265b67128",
+        "blob": "378fe4b966d86cced0c89303c34c6ad7bf3b0d57"
+      },
+      {
+        "path": "observed-nextest-timeout-testcase.xml",
+        "bytes": 390,
+        "sha256": "fabd54568dd293a814449bc59027d1f5ecd6ee96a806b68b691ae2bb170a57df",
+        "blob": "e3cd2d7df83b2d5abebd96840722edcdd34d32f8"
+      },
+      {
+        "path": "runner-integrity.json",
+        "bytes": 4331,
+        "sha256": "dacf3296af381bee42fcf7bafb7796aac8cb558ea8a0df078d325e919344780a",
+        "blob": "135a66c21f78053accbd450a275847d2825e6178"
+      },
+      {
+        "path": "binding-template-UNBOUND.json",
+        "bytes": 3229,
+        "sha256": "1b77c047e7f8c5947b97ff7ddb3d5d1874bfb0245b56c57eeb25bdb7087a9a24",
+        "blob": "615ea4dcae2f5c4a212bf5a05040d8cd625326fd"
+      },
+      {
+        "path": "README.md",
+        "bytes": 13618,
+        "sha256": "913361cffdfed45640b051e04d3a27386d3020f04388b37f43d2dbd8659ed470",
+        "blob": "7a87ef71eda402b9117949142555fe655285c3f6"
+      }
+    ],
+    "original_13_pure_test_functions_byteequal": true,
+    "new_test_functions": [
+      "test_actual_timeout_and_leak_types_cannot_satisfy_assertion_failure"
+    ],
+    "v2_physical_oracle_entire_file_byteequal": true,
+    "fourteen_payload_epoch_and_builder_files_byteequal": true,
+    "source_object_and_transition_projection": {
+      "schema": "hepta.b16.runner.independent-oracle-source-projection.v1",
+      "frozen_v1_runner": "6125db4e7102c226f2c2deee45459fa1202e5894",
+      "scope": "Static parsed approved source payload and exact epoch order; no test/native execution. V2 physical parsers/epoch payloads reported unchanged; final byte comparison pending.",
+      "verified_source_objects": 112,
+      "applied_source_transitions_in_memory": 24,
+      "final_paths": 81,
+      "selected_negative_occurrences": 17,
+      "selected_positive_occurrences_before_owning": 57,
+      "foundation_negative_occurrences": 10,
+      "negative_anchors": [
+        {
+          "epoch": "foundation",
+          "operation": "B02_R2d_counterfactual",
+          "case": "sqlite_read_barrier::tests::cancelled_barrier_transition_discards_changed_connection",
+          "oracle": "barrier",
+          "anchors": [
+            {
+              "path": "codex-rs/state/src/sqlite_read_barrier_tests.rs",
+              "source_blob_at_negative": "dc73d453b2bc5b34fca584c31fbdd56db9b165fd",
+              "line": 264,
+              "needle": "assert_eq!(query_only, 1,",
+              "macro_anchor_unique": true
+            },
+            {
+              "path": "codex-rs/state/src/sqlite_read_barrier_tests.rs",
+              "source_blob_at_negative": "dc73d453b2bc5b34fca584c31fbdd56db9b165fd",
+              "line": 265,
+              "needle": "assert_eq!(busy_timeout, 5_000,",
+              "macro_anchor_unique": true
+            }
+          ]
+        },
+        {
+          "epoch": "foundation",
+          "operation": "B04_R2e1_baseline",
+          "case": "production_writer::objective_sender::commit_interlock_tests::cancelled_checkpoint_vetoes_a_preexisting_read_transaction",
+          "oracle": "interlock",
+          "anchors": [
+            {
+              "path": "codex-rs/hepta-memory/src/objective_sender_commit_interlock_tests.rs",
+              "source_blob_at_negative": "62d85c330446b7b5059016d7501bcd85af2e556a",
+              "line": 16,
+              "needle": "assert_eq!(code.as_deref(), Some(\"531\"))",
+              "macro_anchor_unique": true
+            }
+          ]
+        },
+        {
+          "epoch": "foundation",
+          "operation": "B04_R2e1_baseline",
+          "case": "production_writer::objective_sender::commit_interlock_tests::cancelled_checkpoint_vetoes_a_preexisting_connection_waiting_for_sqlite",
+          "oracle": "interlock",
+          "anchors": [
+            {
+              "path": "codex-rs/hepta-memory/src/objective_sender_commit_interlock_tests.rs",
+              "source_blob_at_negative": "62d85c330446b7b5059016d7501bcd85af2e556a",
+              "line": 16,
+              "needle": "assert_eq!(code.as_deref(), Some(\"531\"))",
+              "macro_anchor_unique": true
+            }
+          ]
+        },
+        {
+          "epoch": "foundation",
+          "operation": "B04_R2e1_baseline",
+          "case": "production_writer::objective_sender::commit_interlock_tests::refused_checkpoint_vetoes_growth_replacement_and_writes_after_read_ack",
+          "oracle": "interlock",
+          "anchors": [
+            {
+              "path": "codex-rs/hepta-memory/src/objective_sender_commit_interlock_tests.rs",
+              "source_blob_at_negative": "62d85c330446b7b5059016d7501bcd85af2e556a",
+              "line": 16,
+              "needle": "assert_eq!(code.as_deref(), Some(\"531\"))",
+              "macro_anchor_unique": true
+            }
+          ]
+        },
+        {
+          "epoch": "foundation",
+          "operation": "B04_R2e1_baseline",
+          "case": "production_writer::objective_sender::commit_interlock_tests::recovered_pool_vetoes_commits_and_retains_its_exclusive_open_guard",
+          "oracle": "interlock",
+          "anchors": [
+            {
+              "path": "codex-rs/hepta-memory/src/objective_sender_commit_interlock_tests.rs",
+              "source_blob_at_negative": "62d85c330446b7b5059016d7501bcd85af2e556a",
+              "line": 16,
+              "needle": "assert_eq!(code.as_deref(), Some(\"531\"))",
+              "macro_anchor_unique": true
+            }
+          ]
+        },
+        {
+          "epoch": "foundation",
+          "operation": "B08_R2e3_baseline",
+          "case": "production_writer::objective_sender::connection_custody_tests::detached_shared_connection_retains_original_file_lock_until_close",
+          "oracle": "custody",
+          "anchors": [
+            {
+              "path": "codex-rs/hepta-memory/src/objective_sender_connection_custody_tests.rs",
+              "source_blob_at_negative": "09a61b69e8cd34f27a0c968433b2b29df9c95380",
+              "line": 20,
+              "needle": "assert!(matches!(\n        competing,",
+              "macro_anchor_unique": true
+            }
+          ]
+        },
+        {
+          "epoch": "foundation",
+          "operation": "B08_R2e3_baseline",
+          "case": "production_writer::objective_sender::connection_custody_tests::recovered_connection_retains_exclusive_custody_after_store_close",
+          "oracle": "custody",
+          "anchors": [
+            {
+              "path": "codex-rs/hepta-memory/src/objective_sender_connection_custody_tests.rs",
+              "source_blob_at_negative": "09a61b69e8cd34f27a0c968433b2b29df9c95380",
+              "line": 20,
+              "needle": "assert!(matches!(\n        competing,",
+              "macro_anchor_unique": true
+            }
+          ]
+        },
+        {
+          "epoch": "foundation",
+          "operation": "B08_R2e3_baseline",
+          "case": "production_writer::objective_sender::connection_custody_tests::cancelled_close_retains_custody_after_a_cancelled_checkpoint",
+          "oracle": "custody",
+          "anchors": [
+            {
+              "path": "codex-rs/hepta-memory/src/objective_sender_connection_custody_tests.rs",
+              "source_blob_at_negative": "09a61b69e8cd34f27a0c968433b2b29df9c95380",
+              "line": 20,
+              "needle": "assert!(matches!(\n        competing,",
+              "macro_anchor_unique": true
+            }
+          ]
+        },
+        {
+          "epoch": "foundation",
+          "operation": "B08_R2e3_baseline",
+          "case": "production_writer::objective_sender::connection_custody_tests::commit_hook_teardown_keeps_custody_until_native_connection_close",
+          "oracle": "custody",
+          "anchors": [
+            {
+              "path": "codex-rs/hepta-memory/src/objective_sender_connection_custody_tests.rs",
+              "source_blob_at_negative": "09a61b69e8cd34f27a0c968433b2b29df9c95380",
+              "line": 20,
+              "needle": "assert!(matches!(\n        competing,",
+              "macro_anchor_unique": true
+            }
+          ]
+        },
+        {
+          "epoch": "foundation",
+          "operation": "B09_R2e3_anchor_counterfactual",
+          "case": "production_writer::objective_sender::connection_custody_tests::commit_hook_teardown_keeps_custody_until_native_connection_close",
+          "oracle": "anchor",
+          "anchors": [
+            {
+              "path": "codex-rs/hepta-memory/src/objective_sender_connection_custody_tests.rs",
+              "source_blob_at_negative": "09a61b69e8cd34f27a0c968433b2b29df9c95380",
+              "line": 20,
+              "needle": "assert!(matches!(\n        competing,",
+              "macro_anchor_unique": true
+            }
+          ]
+        },
+        {
+          "epoch": "driver",
+          "operation": "B12_driver_no_worker_token",
+          "case": "options::connection_lifetime::tests::cancellation_during_native_open_keeps_resource_custody",
+          "oracle": "driver-worker",
+          "anchors": [
+            {
+              "path": "codex-rs/third_party/sqlx-sqlite-0.9.0/src/options/connection_lifetime_tests.rs",
+              "source_blob_at_negative": "15b4ac44e4f3cee8ddca8731a0af1063e4dafe89",
+              "line": 114,
+              "needle": "panic!(\"unexpected physical lock result:",
+              "macro_anchor_unique": true
+            }
+          ]
+        },
+        {
+          "epoch": "driver",
+          "operation": "B12_driver_no_worker_token",
+          "case": "options::connection_lifetime::tests::cancellation_during_initial_pragmas_keeps_resource_custody",
+          "oracle": "driver-worker",
+          "anchors": [
+            {
+              "path": "codex-rs/third_party/sqlx-sqlite-0.9.0/src/options/connection_lifetime_tests.rs",
+              "source_blob_at_negative": "15b4ac44e4f3cee8ddca8731a0af1063e4dafe89",
+              "line": 114,
+              "needle": "panic!(\"unexpected physical lock result:",
+              "macro_anchor_unique": true
+            }
+          ]
+        },
+        {
+          "epoch": "driver",
+          "operation": "B13_driver_unwind_releases",
+          "case": "options::connection_lifetime::tests::initialization_error_releases_but_failed_native_close_retains_custody",
+          "oracle": "driver-close",
+          "anchors": [
+            {
+              "path": "codex-rs/third_party/sqlx-sqlite-0.9.0/src/options/connection_lifetime_tests.rs",
+              "source_blob_at_negative": "15b4ac44e4f3cee8ddca8731a0af1063e4dafe89",
+              "line": 114,
+              "needle": "panic!(\"unexpected physical lock result:",
+              "macro_anchor_unique": true
+            }
+          ]
+        },
+        {
+          "epoch": "pool",
+          "operation": "B16_pool_binding_negative",
+          "case": "sqlite::native_custody_tests::guarded_pool_retains_custody_when_native_open_is_cancelled",
+          "oracle": "pool",
+          "anchors": [
+            {
+              "path": "codex-rs/state/src/sqlite_native_custody_tests.rs",
+              "source_blob_at_negative": "469db639ae19cb89263089045c2f05814000d5a0",
+              "line": 107,
+              "needle": "panic!(\"unexpected physical lock result:",
+              "macro_anchor_unique": true
+            }
+          ]
+        },
+        {
+          "epoch": "pool",
+          "operation": "B16_pool_binding_negative",
+          "case": "sqlite::native_custody_tests::coordinated_pool_retains_custody_when_initial_pragma_is_cancelled",
+          "oracle": "pool",
+          "anchors": [
+            {
+              "path": "codex-rs/state/src/sqlite_native_custody_tests.rs",
+              "source_blob_at_negative": "469db639ae19cb89263089045c2f05814000d5a0",
+              "line": 107,
+              "needle": "panic!(\"unexpected physical lock result:",
+              "macro_anchor_unique": true
+            }
+          ]
+        },
+        {
+          "epoch": "pool",
+          "operation": "B16_pool_binding_negative",
+          "case": "production_writer::objective_sender::connection_custody_tests::native_custody_survives_removal_of_both_registered_anchors",
+          "oracle": "pool",
+          "anchors": [
+            {
+              "path": "codex-rs/hepta-memory/src/objective_sender_connection_custody_tests.rs",
+              "source_blob_at_negative": "6b8e88296507a8fe302aa45cd9015ce602465b56",
+              "line": 20,
+              "needle": "assert!(matches!(\n        competing,",
+              "macro_anchor_unique": true
+            }
+          ]
+        },
+        {
+          "epoch": "checkpoint",
+          "operation": "B18_checkpoint_negative",
+          "case": "cognitive_store::recovery::tests::checkpoint_custody::cancelled_private_checkpoint_keeps_actual_recovery_fence_until_native_close",
+          "oracle": "checkpoint",
+          "anchors": [
+            {
+              "path": "codex-rs/hepta-memory/src/cognitive_store_recovery_custody_tests.rs",
+              "source_blob_at_negative": "377b8227ff9ae33493467527130092415e2a08e0",
+              "line": 159,
+              "needle": "assert!(matches!(actual, Err(TryLockError::WouldBlock))",
+              "macro_anchor_unique": true
+            }
+          ]
+        }
+      ],
+      "nested_child_marker_sources": [
+        {
+          "path": "codex-rs/third_party/sqlx-sqlite-0.9.0/src/options/connection_lifetime_tests.rs",
+          "blob": "15b4ac44e4f3cee8ddca8731a0af1063e4dafe89",
+          "initial_marker_line": 229,
+          "leading_newline_before_marker": true,
+          "flush": true,
+          "stdout_owned_pipe_parent_line_reader": true,
+          "parent_forwards_marker_to_stderr": true,
+          "argv_owned_single_ignored_support": true,
+          "limits": "Static source path check; actual execution/marker delivery remains native gate."
+        },
+        {
+          "path": "codex-rs/state/src/sqlite_native_custody_tests.rs",
+          "blob": "469db639ae19cb89263089045c2f05814000d5a0",
+          "initial_marker_line": 198,
+          "leading_newline_before_marker": true,
+          "flush": true,
+          "stdout_owned_pipe_parent_line_reader": true,
+          "parent_forwards_marker_to_stderr": true,
+          "argv_owned_single_ignored_support": true,
+          "limits": "Static source path check; actual execution/marker delivery remains native gate."
+        },
+        {
+          "path": "codex-rs/hepta-memory/src/cognitive_store_recovery_custody_tests.rs",
+          "blob": "377b8227ff9ae33493467527130092415e2a08e0",
+          "initial_marker_line": 241,
+          "leading_newline_before_marker": true,
+          "flush": true,
+          "stdout_owned_pipe_parent_line_reader": true,
+          "parent_forwards_marker_to_stderr": true,
+          "argv_owned_single_ignored_support": true,
+          "limits": "Static source path check; actual execution/marker delivery remains native gate."
+        }
+      ],
+      "all_panic_needles_unique": true,
+      "expected_panic_location_not_physically_executed": true
+    },
+    "prior_actual_normal101_xml_independently_reopened": [
+      {
+        "path": "ci-audit/recovered-20261105/app-parent-liveness-v2-complete-archive/decoded-verified-v1/small/no_exit_rejection-negative.junit.xml",
+        "bytes": 2769,
+        "sha256": "0f2cd050757518e575a0b0cf5387582e55a347cfba9a101d5485bccd6856e81c",
+        "blob": "3d477d413261fcca6bbac306357e35697ec12c97"
+      },
+      {
+        "path": "ci-audit/recovered-20261105/app-parent-liveness-v2-complete-archive/decoded-verified-v1/small/no_rearm-negative.junit.xml",
+        "bytes": 2612,
+        "sha256": "2bd7deea69a1467079d5dc3781b15ce1a3cc1fd9fd70b96d35b27ab0934869f7",
+        "blob": "7523bac3d0492ed0f572f3e24240b7f997dc49cd"
+      },
+      {
+        "path": "ci-audit/recovered-20261105/app-parent-liveness-v2-complete-archive/decoded-verified-v1/small/leaked_parent_fd-negative.junit.xml",
+        "bytes": 3490,
+        "sha256": "00643a8d9b9d055bae60e36e8f06065477f69584830fd8fd270f0ecfda68864d",
+        "blob": "b8b32970b98dd80df867c4af4f8ee62eaa30a4aa"
+      }
+    ]
+  },
+  "important_contract_review": [
+    "All 112 payload objects and 24 declared transitions were independently hashed and replayed as data; final 81 path map matched. These are static source checks, not 112 executed tests.",
+    "17 negative case occurrences include foundation10, driver3, pool3 and checkpoint1; 16 distinct names. The 57 selected positive occurrences precede broad owning scope and are not an executed count.",
+    "Nested driver/state/recovery helpers use normal ignored libtest child modes with piped stdout. Their first stage marker begins with a newline and is flushed. Parent consumes complete marked lines and re-emits them separately, avoiding the known libtest banner concatenation. Actual native delivery is not yet demonstrated.",
+    "Unique panic anchors were matched to the actual negative-stage source. require_exclusive_lock_blocked uses the exact two-line assert!(matches!( plus competing anchor, avoiding the second same-file assertion.",
+    "Cancellation controls hold an actually entered callback while the parent probes the physical cross-process lock, then require gate status0. Setup errors or callback timeout2 cannot satisfy physical proof. Child ownership and Drop kill/wait/join are retained.",
+    "negative_with_finally only restores after guard establishes the exact approved whole negative tree; it restores then rethrows an invalid oracle, and refuses a source drift rather than overwriting independent work.",
+    "Ordinary HEAD/index and both lock identities remain guarded; source staging uses a private index. Actual test executables/helper bytes must be recorded before and after each scope, not inherited from A.",
+    "V2 retains the complete last-tested-A helper name multiset, separate last-tested versus final-A trees, same approved Cargo target, one task-owned B Bazel cache and unchanged reserve-capacity stop. No cache deletion, fallback skip or scope reduction is authorized.",
+    "Real Cargo/MODULE generators, strict dev-edge graph diff and registry source checks precede actual Bazel registration compile. Internal B15 is build-only and does not claim Bazel test or original-platform acceptance.",
+    "Final owning crates and original just fix scope remain; fix includes --locked --profile dev-small. Post-hygiene changed bytes require separate review and are not silently called retested.",
+    "B16 internal phase IDs are distinct from the original 23 blocker IDs. This review changes none of their status or exit conditions."
+  ],
+  "validation_observed_not_rerun": {
+    "author_pure_guard_receipt": {
+      "bytes": 2524,
+      "sha256": "91a0d6497350f08c5c566c12ce748e86c4b28b406a8958f453a4d509c6121600",
+      "blob": "f18ba2797932297c64dc6082e3adc19c06ae8edc"
+    },
+    "author_pure_tests": 14,
+    "author_log": {
+      "bytes": 2258,
+      "sha256": "6f5449340e5c43e43ecb5ae838e71d0118c31160a40540f430777d75ccf16d57",
+      "blob": "c62d37c8ab561233f078128356aa2d77cc814098"
+    },
+    "unbound_cli_receipt": {
+      "bytes": 546,
+      "sha256": "466069e78e6d286bece8059b95390b9e6692ad3d8da4106625a498b5436703ce",
+      "blob": "c3e79b2a3e79d39c7b2527a7d4920877b2428b12"
+    },
+    "reviewer_executed_native_or_Cargo_or_Bazel": false,
+    "reviewer_reexecuted_pure_tests": false,
+    "reviewer_executed_only_static_hash_AST_XML_and_isolated_patch_checks": true
+  },
+  "remaining_gates": [
+    "Bind actual final-A source, tested-to-final relation, exact index/locks/metadata/program/helper receipt and capacity to the unbound template.",
+    "Execute all physical negative/positive scopes in the sole native lane with fresh exact-source JUnit. Unknown terminal kinds or setup/timeout failures must stop and retain evidence.",
+    "Generate and verify actual dependency locks, verify real Bazel owner registration and compile the intended target; no historical generated lock is borrowed.",
+    "Normal Root/Session/Current producer and external authority acceptance remain outside this runner; successful local component controls would not close all B16."
+  ],
+  "shared_source_target_refs_modified": false,
+  "original_blocker_ledger_modified": false
+}

@@ -1,0 +1,133 @@
+{
+  "schema": "hepta.fourth.event-diagnostic.root-causal-review.v1",
+  "observed_at_utc": "2026-11-04 23:09:14 UTC",
+  "source": "073bc9fbcd958d0281eedc52f330c9847a0961d5",
+  "bundle": {
+    "blob": "d11d068455d15b5b89f5cd70445ffb8c51f9ebff",
+    "bytes": 86956,
+    "sha256": "1029b32964583b7c10e13a2a3aa048864196f47d563f3b5f528c4164b3c41752"
+  },
+  "file_checks": [
+    {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/two-event-diagnostics-073-20261104-2322/two-event-diagnostics-review.json",
+      "bytes": 22322,
+      "sha256": "fe70e402fbd1aad84285ea7581265cbb4344bc837a9c85282442c26c44d4b093",
+      "match": true
+    },
+    {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/two-event-diagnostics-073-20261104-2322/two-event-diagnostics.log",
+      "bytes": 30562,
+      "sha256": "351eefed1547588d174a57a1257990181491e26dedc50de168c169ec5cd9d99d",
+      "match": true
+    },
+    {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/two-event-diagnostics-073-20261104-2322/two-event-diagnostics.junit.xml",
+      "bytes": 28298,
+      "sha256": "f91538215be662914dd21e19c952473aec490a93f82a801c9a60e7d72004b1f7",
+      "match": true
+    }
+  ],
+  "controller": {
+    "at_unix_ms": 1793833428785,
+    "audit_recorded": true,
+    "automatic_retry": false,
+    "cancelled": false,
+    "exit_code": 1,
+    "job_id": "1a1a8cd34a8-fc05-2fc4",
+    "launch_nonce": "7d954f88cd5207e7c5750e1f6e384f9a",
+    "log_bytes": {
+      "stderr": {
+        "seen": 0,
+        "stored": 0
+      },
+      "stdout": {
+        "seen": 2594,
+        "stored": 2594
+      }
+    },
+    "log_errors": {
+      "stderr": null,
+      "stdout": null
+    },
+    "log_synced": {
+      "stderr": true,
+      "stdout": true
+    },
+    "log_truncated": {
+      "stderr": false,
+      "stdout": false
+    },
+    "output_complete": true,
+    "output_durable": true,
+    "state": "failed",
+    "terminal_publication_confirmed": true,
+    "terminal_publication_protocol": 1,
+    "timed_out": false
+  },
+  "actual_command_contract": {
+    "recipe": "just test",
+    "locked": true,
+    "cargo_profile": "dev-small",
+    "nextest_profile": "local",
+    "retries": 0,
+    "no_tests": "fail",
+    "success_output": "immediate",
+    "packages": [
+      "codex-core",
+      "core_test_support",
+      "codex-cli",
+      "codex-utils-pty",
+      "codex-exec-server",
+      "codex-hepta-agentd",
+      "codex-apply-patch"
+    ],
+    "selection": "Only the two exact names, retaining the full seven-package feature-unified build context from the failed owning gate; do not silently narrow to a differently unified Core binary."
+  },
+  "result": {
+    "selected": 2,
+    "fail": 2,
+    "pass": 0,
+    "original_ignored_outside_selection": 19,
+    "other_unmatched": 5414,
+    "retries": 0,
+    "source_stable": true,
+    "test_binary_stable": true,
+    "helper_count": 12,
+    "helpers_stable": true,
+    "prerequisite_early_returns": []
+  },
+  "skill_cause": {
+    "case": "suite::skill_approval::shell_zsh_fork_skill_scripts_ignore_declared_permissions",
+    "seconds": "10.238",
+    "phase_marker": "skill_approval_phase: turn completed without an approval request",
+    "proof": "The marker occurs after approval.is_none passes and immediately before the retained second wait. The original raw capture then reports the shared waiter timeout. Its None branch only comes from a consumed real TurnComplete. This is the required causal baseline for removing the redundant second wait.",
+    "fixed_postimage": "ddce58d4534ea77bd3ffd84c914aa005edf0d713",
+    "fixed_patch": "3a758b74ac48a1979445abbe8dba5741a00b74e5",
+    "independent_review": "2155546efd2852de4cb8b8d2a37945dbd3ed9e60",
+    "qualification": "STATIC_FIX_ALLOWED_FIXED_ORIGINAL_CASE_PENDING"
+  },
+  "hook_cause": {
+    "case": "suite::hooks::async_hook_finishing_while_idle_waits_for_the_next_turn",
+    "seconds": "5.274",
+    "observations": [
+      "Actual submission is Started with a new turn ID.",
+      "Buffered previous-turn warning and context are emitted under that second turn; actual response2 AgentMessage and RawResponseCompleted occur.",
+      "The second UserPromptSubmit hook then emits its own additional context/warning within the second turn.",
+      "Subsequent actual HTTP404 stream errors report Reconnecting1/5 through5/5; the fixture supplies only two responses."
+    ],
+    "primary_source": {
+      "path": "codex-rs/core/src/hook_runtime.rs",
+      "blob": "c520135afdd384df148c184baa57568766eb3abc",
+      "reviewed_contract": "drain_async_hook_results records stale context before the new user prompt; after sampling it injects fresh context into the active pending-input queue, leading to another sampling request."
+    },
+    "inference": "The unexpected continuation is consistent with the documented production async-context contract. It is not evidence that admission, the buffered previous result, or response2 failed; the current fixture inadvertently launches a second context-producing hook despite asserting exactly two model requests.",
+    "proposed_fix": "Make the idle-result fixture explicitly gated and one-shot; retain a real first hook, actual idle completion, original two requests, identity/order/warning assertions and all time budgets. The separate active-turn async test retains immediate behavior.",
+    "qualification": "PROPOSAL_PENDING_REVIEW_AND_NATIVE"
+  },
+  "limits": [
+    "No fixed test has run; neither case nor B07 is closed by this diagnostic phase.",
+    "The three-file immediate bundle contains original review/raw/JUnit and authoritative controller. Complete runner/source-map/catalog receipt archiving remains the native executor's follow-up.",
+    "Diagnostic event strings are bounded to32 entries×512 Unicode characters; those truncation limits are visible and are not represented as a full event-stream archive.",
+    "No production code, retry policy, sandbox or timeout was changed."
+  ]
+}

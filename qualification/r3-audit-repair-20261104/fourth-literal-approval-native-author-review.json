@@ -1,0 +1,391 @@
+{
+  "schema": "hepta_literal_denied_read_author_native_review_v1",
+  "status": "EXACT_NATIVE_ORIGINAL25_PASS_WITH_SCOPE_LIMITS",
+  "prepared_at_utc_date": "2026-11-05",
+  "author_manifest_blob": "7b25405ed36e2d16edfd18f2d53becb8f5d11698",
+  "production_patch_blob": "af3ce8c4c5e4c9e6a96af9d67eaefdcfbf5bcbd2",
+  "production_postimage_blob": "94d24836406cda58de7fb5e8f3a54bc09c9e3eae",
+  "baseline": {
+    "source_tree": "da60f29b6789434c394edeff3c79f59191ad932c",
+    "bundle_blob": "f488fe2819ce0e63fad7dbae5f8386b9e4aac99f",
+    "failed_case": "suite::unified_exec_zsh_fork_approvals::unified_exec_zsh_fork_parent_approval_preserves_denied_reads",
+    "time_seconds": 0.408,
+    "observed": "After the parent approval helper completed, the original no-second-approval helper received /usr/bin/cat and failed. The original raw/XML remain immutable; this baseline was not rerun."
+  },
+  "positive": {
+    "source_tree": "f8251e1d14fa8524ab469281296cd4cf708f173c",
+    "job_id": "1a1a90e0847-fc05-30d9",
+    "controller_state": "succeeded",
+    "controller_exit_code": 0,
+    "test_exit_code": 0,
+    "automatic_retry": false,
+    "host": "Linux x86_64",
+    "cargo_profile": "dev-small",
+    "nextest_profile": "local",
+    "packages": [
+      "codex-core",
+      "core_test_support",
+      "codex-cli",
+      "codex-utils-pty",
+      "codex-exec-server",
+      "codex-hepta-agentd",
+      "codex-apply-patch"
+    ],
+    "retries": 0,
+    "case_count": 25,
+    "pass_count": 25,
+    "fail_count": 0,
+    "selected_skip_count": 0,
+    "unselected_nextest_skipped": 5410,
+    "existing_ignored": 19,
+    "existing_unmatched": 5391,
+    "early_returns": [],
+    "source_unchanged": true,
+    "case_roster": [
+      {
+        "name": "tools::runtimes::zsh_fork::unix_escalation::tests::shell_request_escalation_execution_is_explicit",
+        "classname": "codex-core",
+        "time": 0.013,
+        "failed": false,
+        "skipped": false
+      },
+      {
+        "name": "tools::runtimes::zsh_fork::unix_escalation::tests::extract_shell_script_supports_wrapped_command_prefixes",
+        "classname": "codex-core",
+        "time": 0.013,
+        "failed": false,
+        "skipped": false
+      },
+      {
+        "name": "tools::runtimes::zsh_fork::unix_escalation::tests::execve_prompt_rejection_keeps_unmatched_commands_on_sandbox_flag",
+        "classname": "codex-core",
+        "time": 0.014,
+        "failed": false,
+        "skipped": false
+      },
+      {
+        "name": "tools::runtimes::zsh_fork::unix_escalation::tests::approval_sandbox_permissions_only_downgrades_preapproved_additional_permissions",
+        "classname": "codex-core",
+        "time": 0.015,
+        "failed": false,
+        "skipped": false
+      },
+      {
+        "name": "tools::runtimes::zsh_fork::unix_escalation::tests::extract_shell_script_rejects_unsupported_shell_invocation",
+        "classname": "codex-core",
+        "time": 0.015,
+        "failed": false,
+        "skipped": false
+      },
+      {
+        "name": "tools::runtimes::zsh_fork::unix_escalation::tests::extract_shell_script_preserves_login_flag",
+        "classname": "codex-core",
+        "time": 0.015,
+        "failed": false,
+        "skipped": false
+      },
+      {
+        "name": "tools::runtimes::zsh_fork::unix_escalation::tests::execve_prompt_rejection_keeps_prefix_rules_on_rules_flag",
+        "classname": "codex-core",
+        "time": 0.016,
+        "failed": false,
+        "skipped": false
+      },
+      {
+        "name": "tools::runtimes::zsh_fork::unix_escalation::tests::join_program_and_argv_replaces_original_argv_zero",
+        "classname": "codex-core",
+        "time": 0.016,
+        "failed": false,
+        "skipped": false
+      },
+      {
+        "name": "tools::runtimes::zsh_fork::unix_escalation::tests::commands_for_intercepted_exec_policy_parses_plain_shell_wrappers",
+        "classname": "codex-core",
+        "time": 0.016,
+        "failed": false,
+        "skipped": false
+      },
+      {
+        "name": "tools::runtimes::zsh_fork::unix_escalation::tests::commands_for_intercepted_exec_policy_preserves_unparsed_shell_wrappers",
+        "classname": "codex-core",
+        "time": 0.016,
+        "failed": false,
+        "skipped": false
+      },
+      {
+        "name": "tools::runtimes::zsh_fork::unix_escalation::tests::intercepted_exec_policy_treats_preapproved_additional_permissions_as_default",
+        "classname": "codex-core",
+        "time": 0.016,
+        "failed": false,
+        "skipped": false
+      },
+      {
+        "name": "tools::runtimes::zsh_fork::unix_escalation::tests::evaluate_intercepted_exec_policy_matches_inner_shell_commands_when_enabled",
+        "classname": "codex-core",
+        "time": 0.028,
+        "failed": false,
+        "skipped": false
+      },
+      {
+        "name": "tools::runtimes::zsh_fork::unix_escalation::tests::evaluate_intercepted_exec_policy_uses_wrapper_command_when_shell_wrapper_parsing_disabled",
+        "classname": "codex-core",
+        "time": 0.028,
+        "failed": false,
+        "skipped": false
+      },
+      {
+        "name": "tools::runtimes::zsh_fork::unix_escalation::tests::intercepted_exec_policy_uses_host_executable_mappings",
+        "classname": "codex-core",
+        "time": 0.03,
+        "failed": false,
+        "skipped": false
+      },
+      {
+        "name": "tools::runtimes::zsh_fork::unix_escalation::tests::denied_reads_keep_granular_sandbox_rejection_for_escalation",
+        "classname": "codex-core",
+        "time": 0.032,
+        "failed": false,
+        "skipped": false
+      },
+      {
+        "name": "tools::runtimes::zsh_fork::unix_escalation::tests::intercepted_exec_policy_rejects_disallowed_host_executable_mapping",
+        "classname": "codex-core",
+        "time": 0.032,
+        "failed": false,
+        "skipped": false
+      },
+      {
+        "name": "tools::runtimes::zsh_fork::unix_escalation::tests::preapproved_additional_permissions_escalate_intercepted_exec",
+        "classname": "codex-core",
+        "time": 0.033,
+        "failed": false,
+        "skipped": false
+      },
+      {
+        "name": "tools::runtimes::zsh_fork::unix_escalation::tests::execve_permission_request_hook_short_circuits_prompt",
+        "classname": "codex-core",
+        "time": 0.038,
+        "failed": false,
+        "skipped": false
+      },
+      {
+        "name": "tools::runtimes::zsh_fork::unix_escalation::tests::denied_reads_keep_prefix_rule_allow_inside_sandbox",
+        "classname": "codex-core",
+        "time": 0.048,
+        "failed": false,
+        "skipped": false
+      },
+      {
+        "name": "tools::runtimes::zsh_fork::unix_escalation::tests::unsandboxed_intercepted_exec_strips_managed_network_env",
+        "classname": "codex-core",
+        "time": 0.13,
+        "failed": false,
+        "skipped": false
+      },
+      {
+        "name": "suite::unified_exec_zsh_fork_approvals::unified_exec_zsh_fork_parent_approval_escalates_intercepted_exec",
+        "classname": "codex-core::all",
+        "time": 0.21,
+        "failed": false,
+        "skipped": false
+      },
+      {
+        "name": "suite::unified_exec_zsh_fork_approvals::unified_exec_zsh_fork_parent_approval_keeps_explicit_prompt_rule",
+        "classname": "codex-core::all",
+        "time": 0.235,
+        "failed": false,
+        "skipped": false
+      },
+      {
+        "name": "suite::unified_exec_zsh_fork_approvals::unified_exec_zsh_fork_guardian_reviews_intercepted_execve",
+        "classname": "codex-core::all",
+        "time": 0.355,
+        "failed": false,
+        "skipped": false
+      },
+      {
+        "name": "suite::unified_exec_zsh_fork_approvals::unified_exec_zsh_fork_parent_approval_preserves_denied_reads",
+        "classname": "codex-core::all",
+        "time": 0.452,
+        "failed": false,
+        "skipped": false
+      },
+      {
+        "name": "suite::unified_exec_zsh_fork_approvals::unified_exec_zsh_fork_guardian_reviews_persistent_terminal_in_current_turn",
+        "classname": "codex-core::all",
+        "time": 0.782,
+        "failed": false,
+        "skipped": false
+      }
+    ],
+    "raw": {
+      "bytes": 31601,
+      "sha256": "d42d6479f3fd98e94abafdedc8b087e826396953f1d88701ed62511ac0bd3d7f"
+    },
+    "junit": {
+      "uuid": "1e41bd02-d6c7-4c4b-bd39-846917f3c3ba",
+      "bytes": 6324,
+      "sha256": "be72be58506780fc0bbce5275008192295d9ebde0960b8bf92d2d2ea604af397"
+    }
+  },
+  "independent_checks": {
+    "bundle": {
+      "blob": "b9f330b300a82abefad7d680eee331876d80305d",
+      "bytes": 240289,
+      "sha256": "b4020bf981dff4fb003643ea2b717d233a951fa7b05c9f4203059109cbeb09e8"
+    },
+    "all_22_records_exact": true,
+    "all_source_read_hashes_verified": true,
+    "full_xml_exact_25_roster_vs_author_source": true,
+    "full_raw_25_pass_lines_match": true,
+    "no_duplicate_names": true,
+    "one_production_source_delta_from_da60": [
+      {
+        "path": "codex-rs/core/src/tools/runtimes/zsh_fork/unix_escalation.rs",
+        "previous_mapped_blob": "(unchanged relative to cabcb)",
+        "new_blob": "94d24836406cda58de7fb5e8f3a54bc09c9e3eae"
+      }
+    ],
+    "binary_and_helper_hashes_computed_by_native_then_independently_compared": true,
+    "test_binaries": [
+      {
+        "name": "codex-core",
+        "bytes": 308564752,
+        "sha256": "81b867e11479f65ededf6dab91aaefd564de4c57323fff471863ba3035437bca"
+      },
+      {
+        "name": "codex-core::all",
+        "bytes": 284116912,
+        "sha256": "5ed685ff1fe649955723c0f7fe4a201faa3405107940a348e4a5fc8677803fc5"
+      }
+    ],
+    "helpers": [
+      {
+        "name": "apply_patch",
+        "bytes": 30094056,
+        "sha256": "bf2abc340d80be55134f243244b21d26eef7bf0b8d4d2ebfe3dfb8043e9b5324"
+      },
+      {
+        "name": "codex",
+        "bytes": 377714400,
+        "sha256": "6726b0d642772320a418154a2e7ac75d4d0542c3f25a88714bf8814f12a2feca"
+      },
+      {
+        "name": "codex-code-mode-host",
+        "bytes": 82166456,
+        "sha256": "5b6e7c745b0af4538fee7e246ea00675c433a6273c9349ac3c415867856c9859"
+      },
+      {
+        "name": "codex-execve-wrapper",
+        "bytes": 26103616,
+        "sha256": "5529974e631d716d30a424e49cec1beada259386227a2d0b1f2e71e652417500"
+      },
+      {
+        "name": "codex-hepta-agentd",
+        "bytes": 329460256,
+        "sha256": "c513d22141ad88a4a2a1849755a05e8b4593ddff69bc3cc2df11228d1a08dca1"
+      },
+      {
+        "name": "codex-write-config-schema",
+        "bytes": 29513512,
+        "sha256": "6d706de83d063dbe864040894f38388dcc9a70f6da9086cca0e530b6fdd15510"
+      },
+      {
+        "name": "hepta",
+        "bytes": 377714400,
+        "sha256": "0fdf24ddb56b8a53e216053af0e9ad7b47df69f2c9f37dfcc6b4c87d5d9f2ccd"
+      },
+      {
+        "name": "hepta-agentd-browser",
+        "bytes": 35434176,
+        "sha256": "71ee6c17c9b3e7f6741017958d9a63ed620a9197d84fc4266836a279cd4004a4"
+      },
+      {
+        "name": "logs_client",
+        "bytes": 76277384,
+        "sha256": "8ac3e1020c049663ac289f63c54e7b460cc550e3274772d1b223d0869f0c5849"
+      },
+      {
+        "name": "test_arg0_preflight",
+        "bytes": 35724016,
+        "sha256": "8e92a097e7f5144d7b2d507685086aa61eecd61bd1c0496fac9eb979d64a9eab"
+      },
+      {
+        "name": "test_stdio_server",
+        "bytes": 6903600,
+        "sha256": "aa9392d4c41ff2ee7f3545d48ac58739d33ac6d30624c775afee81b4e08cb744"
+      },
+      {
+        "name": "test_streamable_http_server",
+        "bytes": 12311208,
+        "sha256": "6aca12454b3e30750c6ad2c6e62cc4d85b0974ed359e035c284dc3ea6f6a6c72"
+      }
+    ],
+    "helper_build_stdout": {
+      "bytes": 784623,
+      "sha256": "91dc55224a15e0f4ff4122c6fa0c220caf20bc1185b6851cb6d3b2c2fcf8ec1f",
+      "chunks": [
+        "35930867bf63fd8f0eb9f87cb512a9e47e30360c",
+        "aa92362c2453cd906fc1dd4409a653ab65c3ea98"
+      ],
+      "both_chunk_and_full_hash_verified": true,
+      "all_964_jsonl_records_parsed": true,
+      "compiler_artifacts": [
+        {
+          "package_id": "codex-rmcp-client@0.0.0",
+          "target": "test_streamable_http_server",
+          "kind": [
+            "bin"
+          ],
+          "fresh": true,
+          "executable_file": "test_streamable_http_server"
+        },
+        {
+          "package_id": "codex-rmcp-client@0.0.0",
+          "target": "test_stdio_server",
+          "kind": [
+            "bin"
+          ],
+          "fresh": true,
+          "executable_file": "test_stdio_server"
+        },
+        {
+          "package_id": "codex-shell-escalation@0.0.0",
+          "target": "codex-execve-wrapper",
+          "kind": [
+            "bin"
+          ],
+          "fresh": true,
+          "executable_file": "codex-execve-wrapper"
+        },
+        {
+          "package_id": "codex-code-mode-host@0.0.0",
+          "target": "codex-code-mode-host",
+          "kind": [
+            "bin"
+          ],
+          "fresh": true,
+          "executable_file": "codex-code-mode-host"
+        },
+        {
+          "package_id": "codex-arg0@0.0.0",
+          "target": "test_arg0_preflight",
+          "kind": [
+            "bin"
+          ],
+          "fresh": true,
+          "executable_file": "test_arg0_preflight"
+        }
+      ],
+      "build_finished_success": true,
+      "fresh_true_means": "All five artifacts were current dependency-graph cache hits; this is a successful exact-source normal build check, not five fresh compilations."
+    }
+  },
+  "qualification_limits": [
+    "Only this original 25-case suite/module gate is qualified on the recorded Linux dev-small/local source.",
+    "Owning seven-package and full-workspace gates were not run in this phase.",
+    "No formatting/lint gate was run in this phase; later source changes must be recorded separately.",
+    "No macOS, Windows, release or normal Root/Current acceptance is inferred.",
+    "The author read immutable artifacts only; no native process or source mutation was performed."
+  ]
+}

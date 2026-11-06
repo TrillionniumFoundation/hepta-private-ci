@@ -1,0 +1,638 @@
+{
+  "schema": "hepta-frozen-native-evidence-cloud-decoding-v1",
+  "native_source": "fb9e131272f7e7a138d6c0d1af2b048b9a6ab7ff",
+  "native_original_job": "1a1a9f68261-fc05-3a71",
+  "original_files": 42,
+  "original_bytes": 60915164,
+  "strict_assets": [
+    {
+      "name": "full-workspace-catalog.stdout",
+      "original": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/windows-full-after-index-continuation-20261105-v1/full-workspace-catalog.stdout",
+        "bytes": 2846923,
+        "sha256": "37aa98bace85dfa81d9c729820de24912d913bd85c3a10b60243f4dba67e4001"
+      },
+      "gzip": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full-fb9-complete-frozen-export-20261105-v1/full-workspace-catalog.stdout.gz",
+        "bytes": 368985,
+        "sha256": "682bb6749b551b50335256932a9c736d2e5ea6027e5369725e16f7af861bb03a"
+      },
+      "strict_base64": true,
+      "gzip_crc_and_mtime_zero": true,
+      "raw_hash_matches": true,
+      "reopened_equal": true
+    },
+    {
+      "name": "full-workspace-normal-six-helper-build.stdout",
+      "original": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/windows-full-after-index-continuation-20261105-v1/full-workspace-normal-six-helper-build.stdout",
+        "bytes": 1129336,
+        "sha256": "5258ed52d17734e01f6f3d5bd4c55432a645d4fe30464db2394003237fe38db2"
+      },
+      "gzip": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full-fb9-complete-frozen-export-20261105-v1/full-workspace-normal-six-helper-build.stdout.gz",
+        "bytes": 74563,
+        "sha256": "c6601bd5ba99ea574f38b58189bab3c29e2dcba36f66073b8ff67c8759d036ce"
+      },
+      "strict_base64": true,
+      "gzip_crc_and_mtime_zero": true,
+      "raw_hash_matches": true,
+      "reopened_equal": true
+    },
+    {
+      "name": "full-workspace-review.json",
+      "original": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/windows-full-after-index-continuation-20261105-v1/full-workspace-review.json",
+        "bytes": 4625796,
+        "sha256": "8ba22d57c10ea80ac35603cdafeac538f1c13b83a83afd3cb03f792ee5b052bb"
+      },
+      "gzip": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full-fb9-complete-frozen-export-20261105-v1/full-workspace-review.json.gz",
+        "bytes": 505207,
+        "sha256": "39f3c0580281d69bc2e0e963d474ba46f09ec77a141d4d6499d7f2bfecc4d6d4"
+      },
+      "strict_base64": true,
+      "gzip_crc_and_mtime_zero": true,
+      "raw_hash_matches": true,
+      "reopened_equal": true
+    },
+    {
+      "name": "full-workspace-selection.json",
+      "original": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/windows-full-after-index-continuation-20261105-v1/full-workspace-selection.json",
+        "bytes": 5364870,
+        "sha256": "48dcb2b104793c7dac9699803e4746d6d8145bcc66701de167de57cbf6bd3c6c"
+      },
+      "gzip": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full-fb9-complete-frozen-export-20261105-v1/full-workspace-selection.json.gz",
+        "bytes": 411054,
+        "sha256": "aeaa466b5506e8bb70f4b7f6bfd6ec510947c4876fc668a617af1441b8e28bf9"
+      },
+      "strict_base64": true,
+      "gzip_crc_and_mtime_zero": true,
+      "raw_hash_matches": true,
+      "reopened_equal": true
+    },
+    {
+      "name": "full-workspace-status.json",
+      "original": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/windows-full-after-index-continuation-20261105-v1/full-workspace-status.json",
+        "bytes": 246588,
+        "sha256": "09c5ad8580c383cae5ebf5a119867508479ab19983e160584618eaae1bf6f969"
+      },
+      "gzip": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full-fb9-complete-frozen-export-20261105-v1/full-workspace-status.json.gz",
+        "bytes": 33128,
+        "sha256": "bdd091a83d4c3f483ed8ee2aa9e9d21ba6284690e1ca8ac75c65ed38a01dfbe3"
+      },
+      "strict_base64": true,
+      "gzip_crc_and_mtime_zero": true,
+      "raw_hash_matches": true,
+      "reopened_equal": true
+    },
+    {
+      "name": "full-workspace.junit.xml",
+      "original": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/windows-full-after-index-continuation-20261105-v1/full-workspace.junit.xml",
+        "bytes": 4147101,
+        "sha256": "a64ad0f88d187caa6dd0fa7c2dedd2f816a8366bedb1a93d026c169a16cf7ac8"
+      },
+      "gzip": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full-fb9-complete-frozen-export-20261105-v1/full-workspace.junit.xml.gz",
+        "bytes": 502991,
+        "sha256": "e3d29de8ada29f55c2f1728529f69471ac25fa342357dfe694b7c1b18c0bb5ac"
+      },
+      "strict_base64": true,
+      "gzip_crc_and_mtime_zero": true,
+      "raw_hash_matches": true,
+      "reopened_equal": true
+    },
+    {
+      "name": "full-workspace.log",
+      "original": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/windows-full-after-index-continuation-20261105-v1/full-workspace.log",
+        "bytes": 33668423,
+        "sha256": "32a5b36b73badb7b9096759e0faf58aa6acb6679aac90f7dc593118c62f90735"
+      },
+      "gzip": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full-fb9-complete-frozen-export-20261105-v1/full-workspace.log.gz",
+        "bytes": 2336413,
+        "sha256": "e41f4a748063c9c577a260aa987165ea9970a069d045f5173fc3696947e0ae3f"
+      },
+      "strict_base64": true,
+      "gzip_crc_and_mtime_zero": true,
+      "raw_hash_matches": true,
+      "reopened_equal": true
+    },
+    {
+      "name": "terminal.json",
+      "original": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/windows-full-after-index-continuation-20261105-v1/terminal.json",
+        "bytes": 369147,
+        "sha256": "b02cfd1fd44fc0aad5cd759608e663bc2917ce95cf3de429f7f24697d4fa7e82"
+      },
+      "gzip": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full-fb9-complete-frozen-export-20261105-v1/terminal.json.gz",
+        "bytes": 48651,
+        "sha256": "8f87d668e5498f40b9b0077120261794f313e7fb99b11ae65fbc73c271931d19"
+      },
+      "strict_base64": true,
+      "gzip_crc_and_mtime_zero": true,
+      "raw_hash_matches": true,
+      "reopened_equal": true
+    },
+    {
+      "name": "workspace-metadata.stdout",
+      "original": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/windows-full-after-index-continuation-20261105-v1/workspace-metadata.stdout",
+        "bytes": 8163699,
+        "sha256": "3a53323eae920e2e53dcb3e334128a4aff63cfb51840793e9150d617d2c9ba18"
+      },
+      "gzip": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full-fb9-complete-frozen-export-20261105-v1/workspace-metadata.stdout.gz",
+        "bytes": 596975,
+        "sha256": "2bfdeb1b46c29492c9af1a154f7a6ef9c2dca853991dc92d66704244fd23553d"
+      },
+      "strict_base64": true,
+      "gzip_crc_and_mtime_zero": true,
+      "raw_hash_matches": true,
+      "reopened_equal": true
+    },
+    {
+      "name": "complete-small-originals.json",
+      "original": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full-fb9-complete-frozen-export-20261105-v1/complete-small-originals.json",
+        "bytes": 387763,
+        "sha256": "3b28d33d63285f7b3c9b52bc34b4edb6ebe8240c8792b76dcb619ff7f4bf870b"
+      },
+      "gzip": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full-fb9-complete-frozen-export-20261105-v1/complete-small-originals.json.gz",
+        "bytes": 65389,
+        "sha256": "9b6defab816f7c606af0ff3a9de7d37b6699915c2685b65ceafd10f6f684190b"
+      },
+      "strict_base64": true,
+      "gzip_crc_and_mtime_zero": true,
+      "raw_hash_matches": true,
+      "reopened_equal": true
+    }
+  ],
+  "originals": [
+    {
+      "name": "full-workspace-catalog.stdout",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/windows-full-after-index-continuation-20261105-v1/full-workspace-catalog.stdout",
+      "bytes": 2846923,
+      "sha256": "37aa98bace85dfa81d9c729820de24912d913bd85c3a10b60243f4dba67e4001"
+    },
+    {
+      "name": "full-workspace-normal-six-helper-build.stdout",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/windows-full-after-index-continuation-20261105-v1/full-workspace-normal-six-helper-build.stdout",
+      "bytes": 1129336,
+      "sha256": "5258ed52d17734e01f6f3d5bd4c55432a645d4fe30464db2394003237fe38db2"
+    },
+    {
+      "name": "full-workspace-review.json",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/windows-full-after-index-continuation-20261105-v1/full-workspace-review.json",
+      "bytes": 4625796,
+      "sha256": "8ba22d57c10ea80ac35603cdafeac538f1c13b83a83afd3cb03f792ee5b052bb"
+    },
+    {
+      "name": "full-workspace-selection.json",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/windows-full-after-index-continuation-20261105-v1/full-workspace-selection.json",
+      "bytes": 5364870,
+      "sha256": "48dcb2b104793c7dac9699803e4746d6d8145bcc66701de167de57cbf6bd3c6c"
+    },
+    {
+      "name": "full-workspace-status.json",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/windows-full-after-index-continuation-20261105-v1/full-workspace-status.json",
+      "bytes": 246588,
+      "sha256": "09c5ad8580c383cae5ebf5a119867508479ab19983e160584618eaae1bf6f969"
+    },
+    {
+      "name": "full-workspace.junit.xml",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/windows-full-after-index-continuation-20261105-v1/full-workspace.junit.xml",
+      "bytes": 4147101,
+      "sha256": "a64ad0f88d187caa6dd0fa7c2dedd2f816a8366bedb1a93d026c169a16cf7ac8"
+    },
+    {
+      "name": "full-workspace.log",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/windows-full-after-index-continuation-20261105-v1/full-workspace.log",
+      "bytes": 33668423,
+      "sha256": "32a5b36b73badb7b9096759e0faf58aa6acb6679aac90f7dc593118c62f90735"
+    },
+    {
+      "name": "terminal.json",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/windows-full-after-index-continuation-20261105-v1/terminal.json",
+      "bytes": 369147,
+      "sha256": "b02cfd1fd44fc0aad5cd759608e663bc2917ce95cf3de429f7f24697d4fa7e82"
+    },
+    {
+      "name": "workspace-metadata.stdout",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/windows-full-after-index-continuation-20261105-v1/workspace-metadata.stdout",
+      "bytes": 8163699,
+      "sha256": "3a53323eae920e2e53dcb3e334128a4aff63cfb51840793e9150d617d2c9ba18"
+    },
+    {
+      "name": "1-initial-source-guard.json",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/windows-full-after-index-continuation-20261105-v1/1-initial-source-guard.json",
+      "bytes": 962,
+      "sha256": "bd036d63257a24e64c069e916be7e654f3643510223863f73d98fb7486c42e90"
+    },
+    {
+      "name": "10-final-source-guard.json",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/windows-full-after-index-continuation-20261105-v1/10-final-source-guard.json",
+      "bytes": 962,
+      "sha256": "bd036d63257a24e64c069e916be7e654f3643510223863f73d98fb7486c42e90"
+    },
+    {
+      "name": "2-full-workspace-normal-six-helper-build-before-source-guard.json",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/windows-full-after-index-continuation-20261105-v1/2-full-workspace-normal-six-helper-build-before-source-guard.json",
+      "bytes": 962,
+      "sha256": "bd036d63257a24e64c069e916be7e654f3643510223863f73d98fb7486c42e90"
+    },
+    {
+      "name": "3-full-workspace-normal-six-helper-build-after-source-guard.json",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/windows-full-after-index-continuation-20261105-v1/3-full-workspace-normal-six-helper-build-after-source-guard.json",
+      "bytes": 962,
+      "sha256": "bd036d63257a24e64c069e916be7e654f3643510223863f73d98fb7486c42e90"
+    },
+    {
+      "name": "4-workspace-metadata-before-source-guard.json",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/windows-full-after-index-continuation-20261105-v1/4-workspace-metadata-before-source-guard.json",
+      "bytes": 962,
+      "sha256": "bd036d63257a24e64c069e916be7e654f3643510223863f73d98fb7486c42e90"
+    },
+    {
+      "name": "5-workspace-metadata-after-source-guard.json",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/windows-full-after-index-continuation-20261105-v1/5-workspace-metadata-after-source-guard.json",
+      "bytes": 962,
+      "sha256": "bd036d63257a24e64c069e916be7e654f3643510223863f73d98fb7486c42e90"
+    },
+    {
+      "name": "6-full-workspace-catalog-before-source-guard.json",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/windows-full-after-index-continuation-20261105-v1/6-full-workspace-catalog-before-source-guard.json",
+      "bytes": 962,
+      "sha256": "bd036d63257a24e64c069e916be7e654f3643510223863f73d98fb7486c42e90"
+    },
+    {
+      "name": "7-full-workspace-catalog-after-source-guard.json",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/windows-full-after-index-continuation-20261105-v1/7-full-workspace-catalog-after-source-guard.json",
+      "bytes": 962,
+      "sha256": "bd036d63257a24e64c069e916be7e654f3643510223863f73d98fb7486c42e90"
+    },
+    {
+      "name": "8-full-workspace-before-source-guard.json",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/windows-full-after-index-continuation-20261105-v1/8-full-workspace-before-source-guard.json",
+      "bytes": 962,
+      "sha256": "bd036d63257a24e64c069e916be7e654f3643510223863f73d98fb7486c42e90"
+    },
+    {
+      "name": "9-full-workspace-after-source-guard.json",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/windows-full-after-index-continuation-20261105-v1/9-full-workspace-after-source-guard.json",
+      "bytes": 962,
+      "sha256": "bd036d63257a24e64c069e916be7e654f3643510223863f73d98fb7486c42e90"
+    },
+    {
+      "name": "early-return-case-observations.json",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/windows-full-after-index-continuation-20261105-v1/early-return-case-observations.json",
+      "bytes": 36152,
+      "sha256": "9e57dd107c822a532b8a0df02753e2e5a0445d4cad6348df136c4cc990085a36"
+    },
+    {
+      "name": "execution-request.json",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/windows-full-after-index-continuation-20261105-v1/execution-request.json",
+      "bytes": 50884,
+      "sha256": "a7edd624c7792e4ad527ea41ee368eb3cbda4f614efe3ca06adb2eff9ce6a5eb"
+    },
+    {
+      "name": "final-source-map.json",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/windows-full-after-index-continuation-20261105-v1/final-source-map.json",
+      "bytes": 14360,
+      "sha256": "79fc8b5da99da4f89a824d4615a7d470fa43116bdb835016cf6324deae977fa0"
+    },
+    {
+      "name": "full-feature-graph-binding.json",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/windows-full-after-index-continuation-20261105-v1/full-feature-graph-binding.json",
+      "bytes": 822,
+      "sha256": "b1ff149164498c1a87f7f9c4788c86d262119b4f6a602a9ae9a89fae0001d0f7"
+    },
+    {
+      "name": "full-frozen-App-roster-binding.json",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/windows-full-after-index-continuation-20261105-v1/full-frozen-App-roster-binding.json",
+      "bytes": 1274,
+      "sha256": "25efcff337897c2d6acc036f45e8def7f96c1217f998d6deacf8f0ebe3b9abbd"
+    },
+    {
+      "name": "full-workspace-catalog-command.json",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/windows-full-after-index-continuation-20261105-v1/full-workspace-catalog-command.json",
+      "bytes": 512,
+      "sha256": "3c39f88db2ab69e130f049bc02604c7a0bac56216a66ac6baeb7aa90414dd075"
+    },
+    {
+      "name": "full-workspace-catalog-status.json",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/windows-full-after-index-continuation-20261105-v1/full-workspace-catalog-status.json",
+      "bytes": 22859,
+      "sha256": "a0bfe51d0fdfa60caf4bcaaa4707daae6f6c37e8832c84faae13d3432ff189c9"
+    },
+    {
+      "name": "full-workspace-catalog.stderr",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/windows-full-after-index-continuation-20261105-v1/full-workspace-catalog.stderr",
+      "bytes": 15684,
+      "sha256": "39acafb2e38fedbd5d311ffd767f05f4202fd854066dd00c654dc6206842c9b1"
+    },
+    {
+      "name": "full-workspace-command.json",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/windows-full-after-index-continuation-20261105-v1/full-workspace-command.json",
+      "bytes": 564,
+      "sha256": "3214d92cb5c2c47f1a3e05f701da62a32292092b96191b04964b9f3b2d2ea5ca"
+    },
+    {
+      "name": "full-workspace-normal-six-helper-build-command.json",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/windows-full-after-index-continuation-20261105-v1/full-workspace-normal-six-helper-build-command.json",
+      "bytes": 919,
+      "sha256": "baf2d279937011da6942196b2c387d6b0570849ba52d59e8f385e6fd760ed7e4"
+    },
+    {
+      "name": "full-workspace-normal-six-helper-build-status.json",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/windows-full-after-index-continuation-20261105-v1/full-workspace-normal-six-helper-build-status.json",
+      "bytes": 10952,
+      "sha256": "e3af12b86af2ed1d0c52f37c6ca16a54036566951d28e31cb23e0ec2e40221a8"
+    },
+    {
+      "name": "full-workspace-normal-six-helper-build.stderr",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/windows-full-after-index-continuation-20261105-v1/full-workspace-normal-six-helper-build.stderr",
+      "bytes": 7985,
+      "sha256": "14ccc9148a5197ce660eb3fdaa2a58acd7fd276db43e7894ec2f26d54b7b91b1"
+    },
+    {
+      "name": "full-workspace-normal-six-helper-receipt.json",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/windows-full-after-index-continuation-20261105-v1/full-workspace-normal-six-helper-receipt.json",
+      "bytes": 7409,
+      "sha256": "1a53e166df38e1d8227e9c6f0cf07512dac2a69c21943503f6950b7e97ef4e87"
+    },
+    {
+      "name": "full-workspace-review-index.json",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/windows-full-after-index-continuation-20261105-v1/full-workspace-review-index.json",
+      "bytes": 31320,
+      "sha256": "a65c82c9b77080040d8908c9321b8c28205a0a6315fc44001a5829620cbd8a78"
+    },
+    {
+      "name": "full-workspace-selection-index.json",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/windows-full-after-index-continuation-20261105-v1/full-workspace-selection-index.json",
+      "bytes": 36378,
+      "sha256": "68f841934a604e9a738a0c0f00dee321131ec3a141d9aceaa2869ef02b5c8def"
+    },
+    {
+      "name": "native-host.json",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/windows-full-after-index-continuation-20261105-v1/native-host.json",
+      "bytes": 711,
+      "sha256": "ba616b08abc90dfa3110f765e282f1a5266a1f97e157cd33150c825f3efe71dc"
+    },
+    {
+      "name": "sqlx-sqlite-natural-metadata.json",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/windows-full-after-index-continuation-20261105-v1/sqlx-sqlite-natural-metadata.json",
+      "bytes": 777,
+      "sha256": "6c8ea637af8520ab7d2e3df5c27411a795456dec05fdd8f52d20630a4b474771"
+    },
+    {
+      "name": "terminal.parts.json",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/windows-full-after-index-continuation-20261105-v1/terminal.parts.json",
+      "bytes": 2918,
+      "sha256": "e3accb04dd73098783d54c9438a4488a6a75f3588874abae1cc77bc194e01bac"
+    },
+    {
+      "name": "workspace-members.json",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/windows-full-after-index-continuation-20261105-v1/workspace-members.json",
+      "bytes": 30810,
+      "sha256": "f48a82c449ab56f33a80e8c6ccba421ae3f7fb6e31f80a0d266cb7ee3e70af3c"
+    },
+    {
+      "name": "workspace-metadata-command.json",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/windows-full-after-index-continuation-20261105-v1/workspace-metadata-command.json",
+      "bytes": 458,
+      "sha256": "c6700fd97c7e0c3c8de3621334f414d09a4e1911024eb77b8b6f9d6a6f2fc4ef"
+    },
+    {
+      "name": "workspace-metadata-status.json",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/windows-full-after-index-continuation-20261105-v1/workspace-metadata-status.json",
+      "bytes": 61408,
+      "sha256": "2999a66c8ad0ab8ae41313faf9d9f5aba2be1fcd369d7ed47630a83418a503a2"
+    },
+    {
+      "name": "workspace-metadata.stderr",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/windows-full-after-index-continuation-20261105-v1/workspace-metadata.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "wrapper-python-original-review.json",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/windows-full-after-index-continuation-20261105-v1/wrapper-python-original-review.json",
+      "bytes": 8505,
+      "sha256": "d86bbc0e7837c0727de8a7849d87545c03c1232579d822270e056c78bcae5be3"
+    }
+  ],
+  "transport_chunks": [
+    {
+      "asset": "full-workspace-catalog.stdout",
+      "offset": 0,
+      "bytes": 400000,
+      "sha256": "c4bafc4b9573185947c1361979246e3634b4ee3df03351c7270dc61f3d788d2c",
+      "git_blob": "f324984a8829cefbb6d0e0a084c6bbc976618290",
+      "local_path": "ci-audit/recovered-20261105/full-fb9-complete-archive/transport-chunks-v1/full-workspace-catalog.stdout.000.b64",
+      "local_transport_terminal_lf": true
+    },
+    {
+      "asset": "full-workspace-catalog.stdout",
+      "offset": 400000,
+      "bytes": 91980,
+      "sha256": "22f595340bd05320f7965ed00397b6e53f3a65dd0cd1d70664ed47211897fdd7",
+      "git_blob": "c17dbf252cf80c344eb8b2c6f5b83bcfa19e671f",
+      "local_path": "ci-audit/recovered-20261105/full-fb9-complete-archive/transport-chunks-v1/full-workspace-catalog.stdout.001.b64",
+      "local_transport_terminal_lf": true
+    },
+    {
+      "asset": "full-workspace-normal-six-helper-build.stdout",
+      "offset": 0,
+      "bytes": 99420,
+      "sha256": "0845fee47e28f64f5b1ae24541960df774cafef7f167509c7a1149725e4afdbd",
+      "git_blob": "80bc90e86dcaee5837e981a2ce3a82305e20221f",
+      "local_path": "ci-audit/recovered-20261105/full-fb9-complete-archive/transport-chunks-v1/full-workspace-normal-six-helper-build.stdout.000.b64",
+      "local_transport_terminal_lf": true
+    },
+    {
+      "asset": "full-workspace-review.json",
+      "offset": 0,
+      "bytes": 400000,
+      "sha256": "5558e198685fba4762b30b8f702028607c0cc9ac9e5cfd31714b938c18675c7d",
+      "git_blob": "cf92a5e1e4764fb3913babc3fcebd88b34cefc71",
+      "local_path": "ci-audit/recovered-20261105/full-fb9-complete-archive/transport-chunks-v1/full-workspace-review.json.000.b64",
+      "local_transport_terminal_lf": true
+    },
+    {
+      "asset": "full-workspace-review.json",
+      "offset": 400000,
+      "bytes": 273612,
+      "sha256": "10cc59a5e9335e8a9353a3800f10eb4ad976543433820f20b34e9070e4910fc7",
+      "git_blob": "0b7cb0f72d92728e7f6e8a2e7eb4d80e3a593e63",
+      "local_path": "ci-audit/recovered-20261105/full-fb9-complete-archive/transport-chunks-v1/full-workspace-review.json.001.b64",
+      "local_transport_terminal_lf": true
+    },
+    {
+      "asset": "full-workspace-selection.json",
+      "offset": 0,
+      "bytes": 400000,
+      "sha256": "d3db59d9ad333c24b8e238a55358784262988624dfae6d1ca2b9f4eee7fea451",
+      "git_blob": "993e463bfd58f27ece2b817c0f88a00a5e04b07a",
+      "local_path": "ci-audit/recovered-20261105/full-fb9-complete-archive/transport-chunks-v1/full-workspace-selection.json.000.b64",
+      "local_transport_terminal_lf": true
+    },
+    {
+      "asset": "full-workspace-selection.json",
+      "offset": 400000,
+      "bytes": 148072,
+      "sha256": "e79e025a03a315811795fa702774ef2ebc7eae4b168481e6327b3e2c25aab532",
+      "git_blob": "de55db78eaaca79df0457e691c6a2233cf26c631",
+      "local_path": "ci-audit/recovered-20261105/full-fb9-complete-archive/transport-chunks-v1/full-workspace-selection.json.001.b64",
+      "local_transport_terminal_lf": true
+    },
+    {
+      "asset": "full-workspace-status.json",
+      "offset": 0,
+      "bytes": 44172,
+      "sha256": "67f8d723ad07a16600c116bfa81fa33841b05ca2db97c18740ec0b5bb5db125d",
+      "git_blob": "a47aab933c44e3d11e6f75c69f69c0b2369c316c",
+      "local_path": "ci-audit/recovered-20261105/full-fb9-complete-archive/transport-chunks-v1/full-workspace-status.json.000.b64",
+      "local_transport_terminal_lf": true
+    },
+    {
+      "asset": "full-workspace.junit.xml",
+      "offset": 0,
+      "bytes": 400000,
+      "sha256": "c78232cb5f1b8ac029f45d77bc8d6cd61fd2728a7d454e7efadca71bb20b0aa4",
+      "git_blob": "6adaf69842f2fa5655eae4b28bdd00191b608c0b",
+      "local_path": "ci-audit/recovered-20261105/full-fb9-complete-archive/transport-chunks-v1/full-workspace.junit.xml.000.b64",
+      "local_transport_terminal_lf": true
+    },
+    {
+      "asset": "full-workspace.junit.xml",
+      "offset": 400000,
+      "bytes": 270656,
+      "sha256": "cb67d2a32ff1ab77e8d9e9670bdae40ad7aa10b5d2b9974511999ea6b17075ed",
+      "git_blob": "2e555b8f29c5100179dabfe9881f4828a9d80db9",
+      "local_path": "ci-audit/recovered-20261105/full-fb9-complete-archive/transport-chunks-v1/full-workspace.junit.xml.001.b64",
+      "local_transport_terminal_lf": true
+    },
+    {
+      "asset": "full-workspace.log",
+      "offset": 0,
+      "bytes": 400000,
+      "sha256": "9475025ad5bf82e6214667366aeb9f86eb41e2a01cdb1c64f28562fc0d1eb77e",
+      "git_blob": "f6370adefa60580338864097146507fca3aef641",
+      "local_path": "ci-audit/recovered-20261105/full-fb9-complete-archive/transport-chunks-v1/full-workspace.log.000.b64",
+      "local_transport_terminal_lf": true
+    },
+    {
+      "asset": "full-workspace.log",
+      "offset": 400000,
+      "bytes": 400000,
+      "sha256": "b63ec184199457e5c6161d52e38ca4e041c452d25aad304f327375eaf3414af0",
+      "git_blob": "e34ed80a4e85af059c90b7be44affa17130fd7d7",
+      "local_path": "ci-audit/recovered-20261105/full-fb9-complete-archive/transport-chunks-v1/full-workspace.log.001.b64",
+      "local_transport_terminal_lf": true
+    },
+    {
+      "asset": "full-workspace.log",
+      "offset": 800000,
+      "bytes": 400000,
+      "sha256": "a4e1549921cef3ef9706158b0bbe3233a59f31766074cb9c8368736ae8e40ee7",
+      "git_blob": "8a9f8a3ac6ac1cef220bfeb09919056fcf336f27",
+      "local_path": "ci-audit/recovered-20261105/full-fb9-complete-archive/transport-chunks-v1/full-workspace.log.002.b64",
+      "local_transport_terminal_lf": true
+    },
+    {
+      "asset": "full-workspace.log",
+      "offset": 1200000,
+      "bytes": 400000,
+      "sha256": "d20fc15f56c7c438e19b89e41d5d558b69030d17690f3d2ae7ee16bb7cfcb04c",
+      "git_blob": "393865050dd4bef183d8905999bcb9c74604f426",
+      "local_path": "ci-audit/recovered-20261105/full-fb9-complete-archive/transport-chunks-v1/full-workspace.log.003.b64",
+      "local_transport_terminal_lf": true
+    },
+    {
+      "asset": "full-workspace.log",
+      "offset": 1600000,
+      "bytes": 400000,
+      "sha256": "a860a79465982fd9fc9f59099444e13c509d876fb99e82348c9e65ec7c5df553",
+      "git_blob": "d7ce5f928fddef47cf7f39ba3814c86af686cf47",
+      "local_path": "ci-audit/recovered-20261105/full-fb9-complete-archive/transport-chunks-v1/full-workspace.log.004.b64",
+      "local_transport_terminal_lf": true
+    },
+    {
+      "asset": "full-workspace.log",
+      "offset": 2000000,
+      "bytes": 400000,
+      "sha256": "8763f99646b7b9c1acb9cd99d976fc04530110dba458e3ed367f30f553ce9938",
+      "git_blob": "3d56b121777ce7dfff99a221291f32ada2faa59b",
+      "local_path": "ci-audit/recovered-20261105/full-fb9-complete-archive/transport-chunks-v1/full-workspace.log.005.b64",
+      "local_transport_terminal_lf": true
+    },
+    {
+      "asset": "full-workspace.log",
+      "offset": 2400000,
+      "bytes": 400000,
+      "sha256": "7f5fd20dd21966efdd948e734cf121356ea6eb11fdff7314b375faa5179feafc",
+      "git_blob": "2331c355f87a53b6a4282c1a8185533f5d078a5a",
+      "local_path": "ci-audit/recovered-20261105/full-fb9-complete-archive/transport-chunks-v1/full-workspace.log.006.b64",
+      "local_transport_terminal_lf": true
+    },
+    {
+      "asset": "full-workspace.log",
+      "offset": 2800000,
+      "bytes": 315220,
+      "sha256": "ac9c56c52012a9769945a4328437f66caa87a579fcc9e10ea3ab759e1c005f67",
+      "git_blob": "0239578392f79bca4b629e2b8a6d8cf715f68280",
+      "local_path": "ci-audit/recovered-20261105/full-fb9-complete-archive/transport-chunks-v1/full-workspace.log.007.b64",
+      "local_transport_terminal_lf": true
+    },
+    {
+      "asset": "terminal.json",
+      "offset": 0,
+      "bytes": 64868,
+      "sha256": "73a17903e1eda93cb8bfa67b4da21d9dc6191309a462a49e6ed2e47c08324238",
+      "git_blob": "50a08e5e61cbbceb60c98686448a0586fa3fd2b5",
+      "local_path": "ci-audit/recovered-20261105/full-fb9-complete-archive/transport-chunks-v1/terminal.json.000.b64",
+      "local_transport_terminal_lf": true
+    },
+    {
+      "asset": "workspace-metadata.stdout",
+      "offset": 0,
+      "bytes": 400000,
+      "sha256": "4eff581346b14d5d60dbaa890a2bd6d225604bc8c377b69fb5309ad4f999eaee",
+      "git_blob": "2bfdec5855e4d8be582c2c45d3e61e853ec8c1b0",
+      "local_path": "ci-audit/recovered-20261105/full-fb9-complete-archive/transport-chunks-v1/workspace-metadata.stdout.000.b64",
+      "local_transport_terminal_lf": true
+    },
+    {
+      "asset": "workspace-metadata.stdout",
+      "offset": 400000,
+      "bytes": 395968,
+      "sha256": "e9d1577555af5f1c029f1a6b7bc52f20a3a8bab2e78405f91d8f9ffbbc9f1466",
+      "git_blob": "028d94d6f0793bcbf9f9ffe396ba71104a2978d4",
+      "local_path": "ci-audit/recovered-20261105/full-fb9-complete-archive/transport-chunks-v1/workspace-metadata.stdout.001.b64",
+      "local_transport_terminal_lf": true
+    },
+    {
+      "asset": "complete-small-originals.json",
+      "offset": 0,
+      "bytes": 87188,
+      "sha256": "5afedcfe40449c22f97fe8cf431c11cc124726d2eca69bc511106da7d13ff439",
+      "git_blob": "a8434d2f00295427edf082887114d30cb19f6e42",
+      "local_path": "ci-audit/recovered-20261105/full-fb9-complete-archive/transport-chunks-v1/complete-small-originals.json.000.b64",
+      "local_transport_terminal_lf": true
+    }
+  ],
+  "limits": [
+    "Original native files, outcomes, exits and qualification limits are preserved.",
+    "Local transport chunk terminal LF is a text-envelope delimiter only; each decoded base64 payload and original has its exact declared bytes and SHA256.",
+    "No native tests, source, target or ordinary index were touched by this cloud decoder."
+  ]
+}

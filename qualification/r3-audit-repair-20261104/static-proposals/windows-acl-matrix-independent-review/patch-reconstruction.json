@@ -1,0 +1,544 @@
+{
+  "schema": "independent_windows_acl_matrix_patch_reconstruction_v1",
+  "scope": "Isolated partial source fixtures only; not compilation, native testing, or whole repository reconstruction.",
+  "initial_review_script_error": {
+    "type": "ValueError: substring not found",
+    "reason": "The review helper looked for public add_deny_write_ace after the private function; the actual next function is add_deny_read_ace.",
+    "product_finding": false,
+    "resolution": "Use the exact next read-function documentation boundary and persist every subsequent command receipt."
+  },
+  "manifests": {
+    "idempotency": {
+      "bytes": 11038,
+      "sha256": "45a4b586d807e2f48315cce642723598030a2c30283e354a2b16919a8ea7e7e3",
+      "blob": "4bb7e4d361710dc8679196fe6e5f88f61c7e2e36"
+    },
+    "matrix": {
+      "bytes": 22445,
+      "sha256": "ed277a5f0b52c1583174d585169edb0490eed0f57c5f7ee7d39f47408c5c5e9b",
+      "blob": "fa0ab271828530e277bfd76ff1793c03de184b9d"
+    }
+  },
+  "patches": [
+    {
+      "path": "research-audit/b11-current-boundary-design/idempotency-candidate.patch",
+      "bytes": 17274,
+      "sha256": "6327a84870d5e69ad95fcf8f6d22ce496e505f45b8b4fb95f124140c8d13dd70",
+      "blob": "a7b977f79547249bc253c0bc915d7e85f13480dc"
+    },
+    {
+      "path": "research-audit/b11-delete-matrix/combined.patch",
+      "bytes": 27590,
+      "sha256": "5e8ed8c574d95bc195b5b058d89906fab303f7bee01841f766ff2e944cbf4783",
+      "blob": "ba0f8c1dddb24e0309f1ebfd810f2537f7210a7e"
+    },
+    {
+      "path": "research-audit/b11-delete-matrix/token-matrix.patch",
+      "bytes": 19951,
+      "sha256": "9682a7d00f0b2c393dea716ca2f4e39aec39f3ef8171822629d3fbab4acb5542",
+      "blob": "a71a921b86756128e9e178876e10c567b4dbf695"
+    },
+    {
+      "path": "research-audit/b11-delete-matrix/legacy-matrix.patch",
+      "bytes": 7639,
+      "sha256": "7db876c48519842d8f64d3ba3fe6b8db26ceb262e6bcebc6fd8616f75c4ff989",
+      "blob": "48f22913ec9af8b34287a2746e87209bcb12f521"
+    }
+  ],
+  "results": [
+    {
+      "label": "idempotency",
+      "worktree": "/workspace/scratch/07dd58cc9630/architecture-audit/windows-acl-matrix-independent-review-20261105/idempotency-verified-czse4wc4",
+      "commands": [
+        {
+          "argv": [
+            "git",
+            "init",
+            "-q"
+          ],
+          "exit": 0,
+          "stdout": "",
+          "stderr": ""
+        },
+        {
+          "argv": [
+            "git",
+            "add",
+            "."
+          ],
+          "exit": 0,
+          "stdout": "",
+          "stderr": ""
+        },
+        {
+          "argv": [
+            "git",
+            "apply",
+            "--check",
+            "/workspace/scratch/07dd58cc9630/research-audit/b11-current-boundary-design/idempotency-candidate.patch"
+          ],
+          "exit": 0,
+          "stdout": "",
+          "stderr": ""
+        },
+        {
+          "argv": [
+            "git",
+            "apply",
+            "/workspace/scratch/07dd58cc9630/research-audit/b11-current-boundary-design/idempotency-candidate.patch"
+          ],
+          "exit": 0,
+          "stdout": "",
+          "stderr": ""
+        }
+      ],
+      "files": [
+        {
+          "path": "codex-rs/windows-sandbox-rs/src/acl.rs",
+          "bytes": 25821,
+          "sha256": "c6507c81014e82a7d968530e72b6f8534e5eb62040222fefd226e90060713eb7",
+          "blob": "53c7053c5880da13640f3bd777998b6998da6d47",
+          "matches_manifest": true
+        },
+        {
+          "path": "codex-rs/windows-sandbox-rs/src/acl_deny.rs",
+          "bytes": 6999,
+          "sha256": "0808a06e71bca59f3807f9efde0ebc0e2c4847d8de22c98cb68b9de1ef2f1c56",
+          "blob": "3aeb65179f1a8bc77f0314974efdcf8940e5a1f6",
+          "matches_manifest": true
+        },
+        {
+          "path": "codex-rs/windows-sandbox-rs/src/acl_tests.rs",
+          "bytes": 15843,
+          "sha256": "efb7d60719fbea616518081bc125dca03901c56d2712a4e689d8b01772634851",
+          "blob": "31db071d8a2fe2de3e9e9f37cb245a0757ecb973",
+          "matches_manifest": true
+        }
+      ],
+      "all_postimages_equal": true
+    },
+    {
+      "label": "matrix-combined",
+      "worktree": "/workspace/scratch/07dd58cc9630/architecture-audit/windows-acl-matrix-independent-review-20261105/matrix-combined-verified-i_oiibeg",
+      "commands": [
+        {
+          "argv": [
+            "git",
+            "init",
+            "-q"
+          ],
+          "exit": 0,
+          "stdout": "",
+          "stderr": ""
+        },
+        {
+          "argv": [
+            "git",
+            "add",
+            "."
+          ],
+          "exit": 0,
+          "stdout": "",
+          "stderr": ""
+        },
+        {
+          "argv": [
+            "git",
+            "apply",
+            "--check",
+            "/workspace/scratch/07dd58cc9630/research-audit/b11-delete-matrix/combined.patch"
+          ],
+          "exit": 0,
+          "stdout": "",
+          "stderr": ""
+        },
+        {
+          "argv": [
+            "git",
+            "apply",
+            "/workspace/scratch/07dd58cc9630/research-audit/b11-delete-matrix/combined.patch"
+          ],
+          "exit": 0,
+          "stdout": "",
+          "stderr": ""
+        }
+      ],
+      "files": [
+        {
+          "path": "codex-rs/windows-sandbox-rs/src/lib.rs",
+          "bytes": 30379,
+          "sha256": "51f901eb825ee60491aff7fffae23e90b9987de900c81774abdb15e3e63c807e",
+          "blob": "f7b90d6f2d3ecad07f487e05932431c979450c77",
+          "matches_manifest": true
+        },
+        {
+          "path": "codex-rs/windows-sandbox-rs/src/token_tests.rs",
+          "bytes": 21983,
+          "sha256": "471403c4500ef70a4f12ce3fa7af75cec4d314a2718129b8d08334c74edf33ea",
+          "blob": "d406532fd3b69bc4a3635963022365aaec93280e",
+          "matches_manifest": true
+        },
+        {
+          "path": "codex-rs/windows-sandbox-rs/src/unified_exec/tests.rs",
+          "bytes": 43106,
+          "sha256": "f6b49b35c8c0aed98dc621ae179faa2ec6d5d33858c09223a38bf4784fa2b940",
+          "blob": "aea1ff8476ab8ce33642677a36b1609054888a4e",
+          "matches_manifest": true
+        },
+        {
+          "path": "codex-rs/windows-sandbox-rs/src/delete_permission_matrix_tests.rs",
+          "bytes": 14651,
+          "sha256": "c4f985e1e89e5915cab13955bd26af2a1a79802f635f4c0b974a09eb24275f9e",
+          "blob": "e3c999e68382837bde16e2621de94bcb83509bc8",
+          "matches_manifest": true
+        },
+        {
+          "path": "codex-rs/windows-sandbox-rs/src/unified_exec/delete_permission_tests.rs",
+          "bytes": 6737,
+          "sha256": "996b47813dde5e21ed6ca33f8764a6249957d2f3ace93b50c36d3d622895f775",
+          "blob": "4727675e9b85d75bfbe1de175571bcc481906353",
+          "matches_manifest": true
+        }
+      ],
+      "all_postimages_equal": true
+    },
+    {
+      "label": "matrix-split",
+      "worktree": "/workspace/scratch/07dd58cc9630/architecture-audit/windows-acl-matrix-independent-review-20261105/matrix-split-verified-rpuy933c",
+      "commands": [
+        {
+          "argv": [
+            "git",
+            "init",
+            "-q"
+          ],
+          "exit": 0,
+          "stdout": "",
+          "stderr": ""
+        },
+        {
+          "argv": [
+            "git",
+            "add",
+            "."
+          ],
+          "exit": 0,
+          "stdout": "",
+          "stderr": ""
+        },
+        {
+          "argv": [
+            "git",
+            "apply",
+            "--check",
+            "/workspace/scratch/07dd58cc9630/research-audit/b11-delete-matrix/token-matrix.patch"
+          ],
+          "exit": 0,
+          "stdout": "",
+          "stderr": ""
+        },
+        {
+          "argv": [
+            "git",
+            "apply",
+            "/workspace/scratch/07dd58cc9630/research-audit/b11-delete-matrix/token-matrix.patch"
+          ],
+          "exit": 0,
+          "stdout": "",
+          "stderr": ""
+        },
+        {
+          "argv": [
+            "git",
+            "apply",
+            "--check",
+            "/workspace/scratch/07dd58cc9630/research-audit/b11-delete-matrix/legacy-matrix.patch"
+          ],
+          "exit": 0,
+          "stdout": "",
+          "stderr": ""
+        },
+        {
+          "argv": [
+            "git",
+            "apply",
+            "/workspace/scratch/07dd58cc9630/research-audit/b11-delete-matrix/legacy-matrix.patch"
+          ],
+          "exit": 0,
+          "stdout": "",
+          "stderr": ""
+        }
+      ],
+      "files": [
+        {
+          "path": "codex-rs/windows-sandbox-rs/src/lib.rs",
+          "bytes": 30379,
+          "sha256": "51f901eb825ee60491aff7fffae23e90b9987de900c81774abdb15e3e63c807e",
+          "blob": "f7b90d6f2d3ecad07f487e05932431c979450c77",
+          "matches_manifest": true
+        },
+        {
+          "path": "codex-rs/windows-sandbox-rs/src/token_tests.rs",
+          "bytes": 21983,
+          "sha256": "471403c4500ef70a4f12ce3fa7af75cec4d314a2718129b8d08334c74edf33ea",
+          "blob": "d406532fd3b69bc4a3635963022365aaec93280e",
+          "matches_manifest": true
+        },
+        {
+          "path": "codex-rs/windows-sandbox-rs/src/unified_exec/tests.rs",
+          "bytes": 43106,
+          "sha256": "f6b49b35c8c0aed98dc621ae179faa2ec6d5d33858c09223a38bf4784fa2b940",
+          "blob": "aea1ff8476ab8ce33642677a36b1609054888a4e",
+          "matches_manifest": true
+        },
+        {
+          "path": "codex-rs/windows-sandbox-rs/src/delete_permission_matrix_tests.rs",
+          "bytes": 14651,
+          "sha256": "c4f985e1e89e5915cab13955bd26af2a1a79802f635f4c0b974a09eb24275f9e",
+          "blob": "e3c999e68382837bde16e2621de94bcb83509bc8",
+          "matches_manifest": true
+        },
+        {
+          "path": "codex-rs/windows-sandbox-rs/src/unified_exec/delete_permission_tests.rs",
+          "bytes": 6737,
+          "sha256": "996b47813dde5e21ed6ca33f8764a6249957d2f3ace93b50c36d3d622895f775",
+          "blob": "4727675e9b85d75bfbe1de175571bcc481906353",
+          "matches_manifest": true
+        }
+      ],
+      "all_postimages_equal": true
+    },
+    {
+      "label": "both-composed",
+      "worktree": "/workspace/scratch/07dd58cc9630/architecture-audit/windows-acl-matrix-independent-review-20261105/both-composed-verified-q2ic9quk",
+      "commands": [
+        {
+          "argv": [
+            "git",
+            "init",
+            "-q"
+          ],
+          "exit": 0,
+          "stdout": "",
+          "stderr": ""
+        },
+        {
+          "argv": [
+            "git",
+            "add",
+            "."
+          ],
+          "exit": 0,
+          "stdout": "",
+          "stderr": ""
+        },
+        {
+          "argv": [
+            "git",
+            "apply",
+            "--check",
+            "/workspace/scratch/07dd58cc9630/research-audit/b11-current-boundary-design/idempotency-candidate.patch"
+          ],
+          "exit": 0,
+          "stdout": "",
+          "stderr": ""
+        },
+        {
+          "argv": [
+            "git",
+            "apply",
+            "/workspace/scratch/07dd58cc9630/research-audit/b11-current-boundary-design/idempotency-candidate.patch"
+          ],
+          "exit": 0,
+          "stdout": "",
+          "stderr": ""
+        },
+        {
+          "argv": [
+            "git",
+            "apply",
+            "--check",
+            "/workspace/scratch/07dd58cc9630/research-audit/b11-delete-matrix/combined.patch"
+          ],
+          "exit": 0,
+          "stdout": "",
+          "stderr": ""
+        },
+        {
+          "argv": [
+            "git",
+            "apply",
+            "/workspace/scratch/07dd58cc9630/research-audit/b11-delete-matrix/combined.patch"
+          ],
+          "exit": 0,
+          "stdout": "",
+          "stderr": ""
+        }
+      ],
+      "files": [
+        {
+          "path": "codex-rs/windows-sandbox-rs/src/acl.rs",
+          "bytes": 25821,
+          "sha256": "c6507c81014e82a7d968530e72b6f8534e5eb62040222fefd226e90060713eb7",
+          "blob": "53c7053c5880da13640f3bd777998b6998da6d47",
+          "matches_manifest": true
+        },
+        {
+          "path": "codex-rs/windows-sandbox-rs/src/acl_deny.rs",
+          "bytes": 6999,
+          "sha256": "0808a06e71bca59f3807f9efde0ebc0e2c4847d8de22c98cb68b9de1ef2f1c56",
+          "blob": "3aeb65179f1a8bc77f0314974efdcf8940e5a1f6",
+          "matches_manifest": true
+        },
+        {
+          "path": "codex-rs/windows-sandbox-rs/src/acl_tests.rs",
+          "bytes": 15843,
+          "sha256": "efb7d60719fbea616518081bc125dca03901c56d2712a4e689d8b01772634851",
+          "blob": "31db071d8a2fe2de3e9e9f37cb245a0757ecb973",
+          "matches_manifest": true
+        },
+        {
+          "path": "codex-rs/windows-sandbox-rs/src/lib.rs",
+          "bytes": 30379,
+          "sha256": "51f901eb825ee60491aff7fffae23e90b9987de900c81774abdb15e3e63c807e",
+          "blob": "f7b90d6f2d3ecad07f487e05932431c979450c77",
+          "matches_manifest": true
+        },
+        {
+          "path": "codex-rs/windows-sandbox-rs/src/token_tests.rs",
+          "bytes": 21983,
+          "sha256": "471403c4500ef70a4f12ce3fa7af75cec4d314a2718129b8d08334c74edf33ea",
+          "blob": "d406532fd3b69bc4a3635963022365aaec93280e",
+          "matches_manifest": true
+        },
+        {
+          "path": "codex-rs/windows-sandbox-rs/src/unified_exec/tests.rs",
+          "bytes": 43106,
+          "sha256": "f6b49b35c8c0aed98dc621ae179faa2ec6d5d33858c09223a38bf4784fa2b940",
+          "blob": "aea1ff8476ab8ce33642677a36b1609054888a4e",
+          "matches_manifest": true
+        },
+        {
+          "path": "codex-rs/windows-sandbox-rs/src/delete_permission_matrix_tests.rs",
+          "bytes": 14651,
+          "sha256": "c4f985e1e89e5915cab13955bd26af2a1a79802f635f4c0b974a09eb24275f9e",
+          "blob": "e3c999e68382837bde16e2621de94bcb83509bc8",
+          "matches_manifest": true
+        },
+        {
+          "path": "codex-rs/windows-sandbox-rs/src/unified_exec/delete_permission_tests.rs",
+          "bytes": 6737,
+          "sha256": "996b47813dde5e21ed6ca33f8764a6249957d2f3ace93b50c36d3d622895f775",
+          "blob": "4727675e9b85d75bfbe1de175571bcc481906353",
+          "matches_manifest": true
+        }
+      ],
+      "all_postimages_equal": true
+    }
+  ],
+  "source_files": [
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/acl.rs",
+      "before": {
+        "bytes": 27953,
+        "sha256": "58976c6d1594c116dfd108316bb748b5cf2e9f108785605eaa93c96b77145b83",
+        "blob": "755083dd97ef25065692028405412326e4e2ac49"
+      },
+      "after": {
+        "bytes": 25821,
+        "sha256": "c6507c81014e82a7d968530e72b6f8534e5eb62040222fefd226e90060713eb7",
+        "blob": "53c7053c5880da13640f3bd777998b6998da6d47"
+      }
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/acl_deny.rs",
+      "before": null,
+      "after": {
+        "bytes": 6999,
+        "sha256": "0808a06e71bca59f3807f9efde0ebc0e2c4847d8de22c98cb68b9de1ef2f1c56",
+        "blob": "3aeb65179f1a8bc77f0314974efdcf8940e5a1f6"
+      }
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/acl_tests.rs",
+      "before": {
+        "bytes": 8717,
+        "sha256": "45c313a55741e798af7efc3ef3d9b3878f6ffa092ad77fe2457dacab777db06b",
+        "blob": "a27ce6bde8a5a8ec68b005d6fc10cc4abf261d59"
+      },
+      "after": {
+        "bytes": 15843,
+        "sha256": "efb7d60719fbea616518081bc125dca03901c56d2712a4e689d8b01772634851",
+        "blob": "31db071d8a2fe2de3e9e9f37cb245a0757ecb973"
+      }
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/lib.rs",
+      "before": {
+        "bytes": 30261,
+        "sha256": "7154ed07604553cd278db04a9e39b337aa2abe12dd8b5df782b3461cd906e124",
+        "blob": "43d3e5c935db4579809525e58f33718e8a250005"
+      },
+      "after": {
+        "bytes": 30379,
+        "sha256": "51f901eb825ee60491aff7fffae23e90b9987de900c81774abdb15e3e63c807e",
+        "blob": "f7b90d6f2d3ecad07f487e05932431c979450c77"
+      }
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/token_tests.rs",
+      "before": {
+        "bytes": 18059,
+        "sha256": "17c7398576cebbd83cfc236c0e2788eccff0765e2ff058676aa7a9c334d6a850",
+        "blob": "140f141bc0a5807856ceb1068c9fbf423d5ce543"
+      },
+      "after": {
+        "bytes": 21983,
+        "sha256": "471403c4500ef70a4f12ce3fa7af75cec4d314a2718129b8d08334c74edf33ea",
+        "blob": "d406532fd3b69bc4a3635963022365aaec93280e"
+      }
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/unified_exec/tests.rs",
+      "before": {
+        "bytes": 43037,
+        "sha256": "9dcb0cc508227290437dd6b851496d02b9731bac8e91c087d11a2b57a0e1706d",
+        "blob": "694db339514d08efb54c05d82f2e58026b673998"
+      },
+      "after": {
+        "bytes": 43106,
+        "sha256": "f6b49b35c8c0aed98dc621ae179faa2ec6d5d33858c09223a38bf4784fa2b940",
+        "blob": "aea1ff8476ab8ce33642677a36b1609054888a4e"
+      }
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/delete_permission_matrix_tests.rs",
+      "before": null,
+      "after": {
+        "bytes": 14651,
+        "sha256": "c4f985e1e89e5915cab13955bd26af2a1a79802f635f4c0b974a09eb24275f9e",
+        "blob": "e3c999e68382837bde16e2621de94bcb83509bc8"
+      }
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/unified_exec/delete_permission_tests.rs",
+      "before": null,
+      "after": {
+        "bytes": 6737,
+        "sha256": "996b47813dde5e21ed6ca33f8764a6249957d2f3ace93b50c36d3d622895f775",
+        "blob": "4727675e9b85d75bfbe1de175571bcc481906353"
+      }
+    }
+  ],
+  "preservation": {
+    "acl_outside_private_add_deny_ace_byte_equal": true,
+    "all_original_acl_tests_prefix_byte_equal": true,
+    "all_original_token_tests_prefix_byte_equal": true,
+    "codex-rs/windows-sandbox-rs/src/unified_exec/tests.rs_inverse_registration_byte_equal": true,
+    "codex-rs/windows-sandbox-rs/src/lib.rs_inverse_registration_byte_equal": true
+  },
+  "all_roundtrips_pass": true,
+  "product_execution_performed": false,
+  "shared_or_native_source_changed": false,
+  "refs_changed": false
+}

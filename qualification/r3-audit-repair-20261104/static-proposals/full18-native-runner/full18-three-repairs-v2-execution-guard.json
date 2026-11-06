@@ -1,0 +1,29 @@
+{
+  "schema": "hepta-full18-three-repairs-v2-execution-authorization-v1",
+  "authorization": "Root explicitly accepted the complete parent-probe terminal and exact restoration and authorized immediate execution of reviewed V2 runner 6a88, manifest 7dbc and source payload c5d. No further source, test, budget or permission changes.",
+  "runner": "6a88d730302334977a3275218443f766cd07fd55",
+  "runner_bytes": 23244,
+  "runner_sha256": "08faad541e33d77c9c5263e90a442011958d34c22418c3f58d5aa638980417f0",
+  "manifest": "7dbc3adb768e10592beba53ef7511f68dd17cf11",
+  "source_payload": "c5d0876a2c21582c530894a2d6f365b4909a9eef",
+  "initial_tree": "f8251e1d14fa8524ab469281296cd4cf708f173c",
+  "parent_probe_terminal_bundle": "2f8ffc305f0e1d5814b9f838f8a3b4ad57bc21ab",
+  "parent_probe_job": "1a1a98a00bb-fc05-35d8",
+  "restoration": {
+    "temporary_applied": true,
+    "diagnostic_tree": "1e936b1ca6df807d8928a4cc6c527f40f92808aa",
+    "expected_restored_tree": "f8251e1d14fa8524ab469281296cd4cf708f173c",
+    "source_variable_at_terminal": "f8251e1d14fa8524ab469281296cd4cf708f173c",
+    "restored_exact_original": true,
+    "original_source_already_exact": false,
+    "diagnostic_eligibility_error": null,
+    "restoration_error": null,
+    "original_exception": {
+      "type": "SystemExit",
+      "message": "1",
+      "traceback": "Traceback (most recent call last):\n  File \"<string>\", line 291, in <module>\n    if not result[\"test_passed\"] or not complete:raise SystemExit(1)\n                                                 ^^^^^^^^^^^^^^^^^^^\nSystemExit: 1\n"
+    },
+    "limit": "Only the exact owned temporary tree with unchanged ordinary index, locks and reviewed untracked inputs may be restored. Existing target executables remain bound to the diagnostic build until a later source-bound rebuild; restoration is not a production fix or binary qualification."
+  },
+  "terminal_contract": "Stop for root review after the three repairs. No Windows cohort, whole-workspace tests, fix or fmt automatically follows."
+}

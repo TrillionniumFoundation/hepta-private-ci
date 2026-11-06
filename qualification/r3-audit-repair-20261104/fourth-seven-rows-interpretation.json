@@ -1,0 +1,3864 @@
+{
+  "schema": "hepta.cabc-seven-scope-exact-case-projection-review.v1",
+  "status": "READ_ONLY_EXISTING_EVIDENCE_VERIFIED_NO_LEDGER_FULLY_CLOSED",
+  "product_head": "cabcb40d36e116beaa65750e1f674c52035da785",
+  "tree": "b2d7f038d6d88156bc6a4cb29c8703f69b808f29",
+  "ordinary_merge": "28af7f705fa1024b9a6d2ef751fec116002260eb",
+  "windows_lifecycle_source_head": "cabcb40d36e116beaa65750e1f674c52035da785",
+  "observed_interval": {
+    "started_at_utc": "2026-11-04T23:00:07.359066+00:00",
+    "completed_at_utc": "2026-11-04T23:00:13.268267+00:00"
+  },
+  "prior_map": {
+    "json": "c9265a2edc78d3e78e6ef137cf90498194a5bf5c",
+    "md": "de9722e71c9b7dd7032f739b0aec7a2d2ea410ae"
+  },
+  "evidence": [
+    {
+      "path": "cabc-seven-scope-exact-case-projection.json",
+      "blob": "37a93aba1fb93023262caf5f51d43960c5acc83d",
+      "bytes": 370941,
+      "sha256": "6eaae624e71dd127102f8a7a19a92240bb59df5d9401fb684b2b713e1c8f8378"
+    },
+    {
+      "path": "project-existing-cabc-archives.py",
+      "blob": "bbe91c8941ebe2736c6ef62fe7edea89e1acb6b6",
+      "bytes": 8780,
+      "sha256": "379f2f78faa2684e1bd6756b28279063fe4e8e3762264f7e923821da5e0a7c14"
+    },
+    {
+      "path": "existing-cabc-archive-projection-input.json",
+      "blob": "68a2fda31908f5f4f35384b4b2facd52096b19fb",
+      "bytes": 124022,
+      "sha256": "a190becad3e6752481cc24eed8824c3008f2fca250ac56f231574fcdc3ad021b"
+    }
+  ],
+  "read_job": {
+    "id": "1a1a8ca80d0-fc05-2fbf",
+    "status": {
+      "at_unix_ms": 1793833213336,
+      "audit_recorded": true,
+      "automatic_retry": false,
+      "cancelled": false,
+      "exit_code": 0,
+      "job_id": "1a1a8ca80d0-fc05-2fbf",
+      "launch_nonce": "3423260b71cb6167286eb84f0aee05df",
+      "log_bytes": {
+        "stderr": {
+          "seen": 0,
+          "stored": 0
+        },
+        "stdout": {
+          "seen": 1128,
+          "stored": 1128
+        }
+      },
+      "log_errors": {
+        "stderr": null,
+        "stdout": null
+      },
+      "log_synced": {
+        "stderr": true,
+        "stdout": true
+      },
+      "log_truncated": {
+        "stderr": false,
+        "stdout": false
+      },
+      "output_complete": true,
+      "output_durable": true,
+      "state": "succeeded",
+      "terminal_publication_confirmed": true,
+      "terminal_publication_protocol": 1,
+      "timed_out": false
+    },
+    "meaning": "Exit0 is the read-only projection job result, not a product test result.",
+    "no_download_build_test_source_mutation": true
+  },
+  "verified_totals": {
+    "archives": 7,
+    "members": 243,
+    "exact_requested_result_rows": 406,
+    "xml_files": 39,
+    "xml_files_with_exact_requested_names": 0,
+    "all_xml_single_target_wrapper": true,
+    "unclassified_requested_mentions": 0
+  },
+  "same_linux_log_content": {
+    "members_per_archive": 54,
+    "equal_content_by_target_relative_path": 54
+  },
+  "platform_cfg_source_proof": [
+    {
+      "path": "codex-rs/core/tests/suite/mod.rs",
+      "blob": "17145f671a76a894ab374ca299a67cf1a43e9c55",
+      "fixed_ref": "cabcb40d36e116beaa65750e1f674c52035da785",
+      "lines": [
+        {
+          "line": 78,
+          "text": "mod guardian_subagent_authorization;"
+        },
+        {
+          "line": 79,
+          "text": "#[cfg(not(target_os = \"windows\"))]"
+        },
+        {
+          "line": 80,
+          "text": "mod hooks;"
+        },
+        {
+          "line": 81,
+          "text": "#[cfg(not(target_os = \"windows\"))]"
+        },
+        {
+          "line": 82,
+          "text": "mod hooks_executor;"
+        },
+        {
+          "line": 83,
+          "text": "#[cfg(not(target_os = \"windows\"))]"
+        },
+        {
+          "line": 84,
+          "text": "mod hooks_mcp;"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/core/tests/suite/mod.rs",
+      "blob": "17145f671a76a894ab374ca299a67cf1a43e9c55",
+      "fixed_ref": "cabcb40d36e116beaa65750e1f674c52035da785",
+      "lines": [
+        {
+          "line": 35,
+          "text": ""
+        },
+        {
+          "line": 36,
+          "text": "#[cfg(not(target_os = \"windows\"))]"
+        },
+        {
+          "line": 37,
+          "text": "mod abort_tasks;"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/core/tests/suite/tools.rs",
+      "blob": "1fc4b08dd39ec30085d38cc3b5b661e2bdc6775e",
+      "fixed_ref": "cabcb40d36e116beaa65750e1f674c52035da785",
+      "lines": [
+        {
+          "line": 1,
+          "text": "#![cfg(not(target_os = \"windows\"))]"
+        },
+        {
+          "line": 2,
+          "text": "#![allow(clippy::unwrap_used)]"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/app-server/tests/suite/v2/turn_recover.rs",
+      "blob": "43cd9b0c2d1ba3a6560ade3f3a85616674fcd4c8",
+      "fixed_ref": "cabcb40d36e116beaa65750e1f674c52035da785",
+      "lines": [
+        {
+          "line": 1,
+          "text": "#![cfg(unix)]"
+        },
+        {
+          "line": 2,
+          "text": ""
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/core/tests/suite/code_mode.rs",
+      "blob": "d1970f7853bcd5777ef96881b457525b7abfa92a",
+      "fixed_ref": "cabcb40d36e116beaa65750e1f674c52035da785",
+      "lines": [
+        {
+          "line": 2046,
+          "text": "#[cfg_attr(windows, ignore = \"no exec_command on Windows\")]"
+        },
+        {
+          "line": 2047,
+          "text": "#[tokio::test(flavor = \"multi_thread\", worker_threads = 2)]"
+        },
+        {
+          "line": 2048,
+          "text": "async fn code_mode_exec_surfaces_handler_errors_as_exceptions() -> Result<()> {"
+        },
+        {
+          "line": 2049,
+          "text": "    skip_if_no_network!(Ok(()));"
+        }
+      ]
+    }
+  ],
+  "summary_by_platform": [
+    {
+      "platform": "gnu",
+      "members": 54,
+      "groups": {
+        "B07": {
+          "requested": 28,
+          "observed_names": 22,
+          "ok_names": 22,
+          "failed_names": [],
+          "ignored_names": [],
+          "rows": 44,
+          "attempt_rows": 0
+        },
+        "B09": {
+          "requested": 19,
+          "observed_names": 10,
+          "ok_names": 10,
+          "failed_names": [],
+          "ignored_names": [],
+          "rows": 11,
+          "attempt_rows": 0
+        },
+        "B13": {
+          "requested": 9,
+          "observed_names": 0,
+          "ok_names": 0,
+          "failed_names": [],
+          "ignored_names": [],
+          "rows": 0,
+          "attempt_rows": 0
+        },
+        "B20": {
+          "requested": 19,
+          "observed_names": 19,
+          "ok_names": 19,
+          "failed_names": [],
+          "ignored_names": [],
+          "rows": 21,
+          "attempt_rows": 2
+        },
+        "B22": {
+          "requested": 13,
+          "observed_names": 0,
+          "ok_names": 0,
+          "failed_names": [],
+          "ignored_names": [],
+          "rows": 0,
+          "attempt_rows": 0
+        },
+        "B23": {
+          "requested": 5,
+          "observed_names": 0,
+          "ok_names": 0,
+          "failed_names": [],
+          "ignored_names": [],
+          "rows": 0,
+          "attempt_rows": 0
+        },
+        "B08": {
+          "requested": 4,
+          "observed_names": 1,
+          "ok_names": 1,
+          "failed_names": [],
+          "ignored_names": [],
+          "rows": 2,
+          "attempt_rows": 0
+        }
+      },
+      "unclassified_mentions": 0
+    },
+    {
+      "platform": "musl-label",
+      "members": 54,
+      "groups": {
+        "B07": {
+          "requested": 28,
+          "observed_names": 22,
+          "ok_names": 22,
+          "failed_names": [],
+          "ignored_names": [],
+          "rows": 44,
+          "attempt_rows": 0
+        },
+        "B09": {
+          "requested": 19,
+          "observed_names": 10,
+          "ok_names": 10,
+          "failed_names": [],
+          "ignored_names": [],
+          "rows": 11,
+          "attempt_rows": 0
+        },
+        "B13": {
+          "requested": 9,
+          "observed_names": 0,
+          "ok_names": 0,
+          "failed_names": [],
+          "ignored_names": [],
+          "rows": 0,
+          "attempt_rows": 0
+        },
+        "B20": {
+          "requested": 19,
+          "observed_names": 19,
+          "ok_names": 19,
+          "failed_names": [],
+          "ignored_names": [],
+          "rows": 21,
+          "attempt_rows": 2
+        },
+        "B22": {
+          "requested": 13,
+          "observed_names": 0,
+          "ok_names": 0,
+          "failed_names": [],
+          "ignored_names": [],
+          "rows": 0,
+          "attempt_rows": 0
+        },
+        "B23": {
+          "requested": 5,
+          "observed_names": 0,
+          "ok_names": 0,
+          "failed_names": [],
+          "ignored_names": [],
+          "rows": 0,
+          "attempt_rows": 0
+        },
+        "B08": {
+          "requested": 4,
+          "observed_names": 1,
+          "ok_names": 1,
+          "failed_names": [],
+          "ignored_names": [],
+          "rows": 2,
+          "attempt_rows": 0
+        }
+      },
+      "unclassified_mentions": 0
+    },
+    {
+      "platform": "arm",
+      "members": 38,
+      "groups": {
+        "B07": {
+          "requested": 28,
+          "observed_names": 22,
+          "ok_names": 22,
+          "failed_names": [],
+          "ignored_names": [],
+          "rows": 22,
+          "attempt_rows": 0
+        },
+        "B09": {
+          "requested": 19,
+          "observed_names": 1,
+          "ok_names": 1,
+          "failed_names": [],
+          "ignored_names": [],
+          "rows": 1,
+          "attempt_rows": 0
+        },
+        "B13": {
+          "requested": 9,
+          "observed_names": 0,
+          "ok_names": 0,
+          "failed_names": [],
+          "ignored_names": [],
+          "rows": 0,
+          "attempt_rows": 0
+        },
+        "B20": {
+          "requested": 19,
+          "observed_names": 0,
+          "ok_names": 0,
+          "failed_names": [],
+          "ignored_names": [],
+          "rows": 0,
+          "attempt_rows": 0
+        },
+        "B22": {
+          "requested": 13,
+          "observed_names": 0,
+          "ok_names": 0,
+          "failed_names": [],
+          "ignored_names": [],
+          "rows": 0,
+          "attempt_rows": 0
+        },
+        "B23": {
+          "requested": 5,
+          "observed_names": 0,
+          "ok_names": 0,
+          "failed_names": [],
+          "ignored_names": [],
+          "rows": 0,
+          "attempt_rows": 0
+        },
+        "B08": {
+          "requested": 4,
+          "observed_names": 1,
+          "ok_names": 1,
+          "failed_names": [],
+          "ignored_names": [],
+          "rows": 1,
+          "attempt_rows": 0
+        }
+      },
+      "unclassified_mentions": 0
+    },
+    {
+      "platform": "intel",
+      "members": 40,
+      "groups": {
+        "B07": {
+          "requested": 28,
+          "observed_names": 22,
+          "ok_names": 22,
+          "failed_names": [],
+          "ignored_names": [],
+          "rows": 22,
+          "attempt_rows": 0
+        },
+        "B09": {
+          "requested": 19,
+          "observed_names": 1,
+          "ok_names": 1,
+          "failed_names": [],
+          "ignored_names": [],
+          "rows": 1,
+          "attempt_rows": 0
+        },
+        "B13": {
+          "requested": 9,
+          "observed_names": 0,
+          "ok_names": 0,
+          "failed_names": [],
+          "ignored_names": [],
+          "rows": 0,
+          "attempt_rows": 0
+        },
+        "B20": {
+          "requested": 19,
+          "observed_names": 0,
+          "ok_names": 0,
+          "failed_names": [],
+          "ignored_names": [],
+          "rows": 0,
+          "attempt_rows": 0
+        },
+        "B22": {
+          "requested": 13,
+          "observed_names": 0,
+          "ok_names": 0,
+          "failed_names": [],
+          "ignored_names": [],
+          "rows": 0,
+          "attempt_rows": 0
+        },
+        "B23": {
+          "requested": 5,
+          "observed_names": 0,
+          "ok_names": 0,
+          "failed_names": [],
+          "ignored_names": [],
+          "rows": 0,
+          "attempt_rows": 0
+        },
+        "B08": {
+          "requested": 4,
+          "observed_names": 1,
+          "ok_names": 1,
+          "failed_names": [],
+          "ignored_names": [],
+          "rows": 1,
+          "attempt_rows": 0
+        }
+      },
+      "unclassified_mentions": 0
+    },
+    {
+      "platform": "windows-shard2",
+      "members": 20,
+      "groups": {
+        "B07": {
+          "requested": 28,
+          "observed_names": 0,
+          "ok_names": 0,
+          "failed_names": [],
+          "ignored_names": [],
+          "rows": 0,
+          "attempt_rows": 0
+        },
+        "B09": {
+          "requested": 19,
+          "observed_names": 1,
+          "ok_names": 1,
+          "failed_names": [],
+          "ignored_names": [],
+          "rows": 1,
+          "attempt_rows": 0
+        },
+        "B13": {
+          "requested": 9,
+          "observed_names": 0,
+          "ok_names": 0,
+          "failed_names": [],
+          "ignored_names": [],
+          "rows": 0,
+          "attempt_rows": 0
+        },
+        "B20": {
+          "requested": 19,
+          "observed_names": 19,
+          "ok_names": 19,
+          "failed_names": [],
+          "ignored_names": [],
+          "rows": 22,
+          "attempt_rows": 3
+        },
+        "B22": {
+          "requested": 13,
+          "observed_names": 0,
+          "ok_names": 0,
+          "failed_names": [],
+          "ignored_names": [],
+          "rows": 0,
+          "attempt_rows": 0
+        },
+        "B23": {
+          "requested": 5,
+          "observed_names": 0,
+          "ok_names": 0,
+          "failed_names": [],
+          "ignored_names": [],
+          "rows": 0,
+          "attempt_rows": 0
+        },
+        "B08": {
+          "requested": 4,
+          "observed_names": 0,
+          "ok_names": 0,
+          "failed_names": [],
+          "ignored_names": [],
+          "rows": 0,
+          "attempt_rows": 0
+        }
+      },
+      "unclassified_mentions": 0
+    },
+    {
+      "platform": "windows-shard4",
+      "members": 24,
+      "groups": {
+        "B07": {
+          "requested": 28,
+          "observed_names": 4,
+          "ok_names": 3,
+          "failed_names": [],
+          "ignored_names": [
+            "suite::code_mode::code_mode_exec_surfaces_handler_errors_as_exceptions"
+          ],
+          "rows": 8,
+          "attempt_rows": 4
+        },
+        "B09": {
+          "requested": 19,
+          "observed_names": 0,
+          "ok_names": 0,
+          "failed_names": [],
+          "ignored_names": [],
+          "rows": 0,
+          "attempt_rows": 0
+        },
+        "B13": {
+          "requested": 9,
+          "observed_names": 0,
+          "ok_names": 0,
+          "failed_names": [],
+          "ignored_names": [],
+          "rows": 0,
+          "attempt_rows": 0
+        },
+        "B20": {
+          "requested": 19,
+          "observed_names": 0,
+          "ok_names": 0,
+          "failed_names": [],
+          "ignored_names": [],
+          "rows": 0,
+          "attempt_rows": 0
+        },
+        "B22": {
+          "requested": 13,
+          "observed_names": 0,
+          "ok_names": 0,
+          "failed_names": [],
+          "ignored_names": [],
+          "rows": 0,
+          "attempt_rows": 0
+        },
+        "B23": {
+          "requested": 5,
+          "observed_names": 0,
+          "ok_names": 0,
+          "failed_names": [],
+          "ignored_names": [],
+          "rows": 0,
+          "attempt_rows": 0
+        },
+        "B08": {
+          "requested": 4,
+          "observed_names": 0,
+          "ok_names": 0,
+          "failed_names": [],
+          "ignored_names": [],
+          "rows": 0,
+          "attempt_rows": 0
+        }
+      },
+      "unclassified_mentions": 0
+    },
+    {
+      "platform": "windows-core-lifecycle",
+      "members": 13,
+      "groups": {
+        "B07": {
+          "requested": 28,
+          "observed_names": 0,
+          "ok_names": 0,
+          "failed_names": [],
+          "ignored_names": [],
+          "rows": 0,
+          "attempt_rows": 0
+        },
+        "B09": {
+          "requested": 19,
+          "observed_names": 9,
+          "ok_names": 9,
+          "failed_names": [],
+          "ignored_names": [],
+          "rows": 72,
+          "attempt_rows": 0
+        },
+        "B13": {
+          "requested": 9,
+          "observed_names": 0,
+          "ok_names": 0,
+          "failed_names": [],
+          "ignored_names": [],
+          "rows": 0,
+          "attempt_rows": 0
+        },
+        "B20": {
+          "requested": 19,
+          "observed_names": 0,
+          "ok_names": 0,
+          "failed_names": [],
+          "ignored_names": [],
+          "rows": 0,
+          "attempt_rows": 0
+        },
+        "B22": {
+          "requested": 13,
+          "observed_names": 0,
+          "ok_names": 0,
+          "failed_names": [],
+          "ignored_names": [],
+          "rows": 0,
+          "attempt_rows": 0
+        },
+        "B23": {
+          "requested": 5,
+          "observed_names": 0,
+          "ok_names": 0,
+          "failed_names": [],
+          "ignored_names": [],
+          "rows": 0,
+          "attempt_rows": 0
+        },
+        "B08": {
+          "requested": 4,
+          "observed_names": 3,
+          "ok_names": 3,
+          "failed_names": [],
+          "ignored_names": [],
+          "rows": 24,
+          "attempt_rows": 0
+        }
+      },
+      "unclassified_mentions": 0
+    }
+  ],
+  "case_index": {
+    "B07": [
+      {
+        "test": "suite::hooks_executor::executor_stop_hook_stops_after_disconnection",
+        "binary": "codex-core::all",
+        "observations": [
+          {
+            "platform": "gnu",
+            "target": "//codex-rs/core:core-all-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/0/members/21/matches/0"
+          },
+          {
+            "platform": "gnu",
+            "target": "//codex-rs/core:core-all-wine-exec-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/0/members/39/matches/1"
+          },
+          {
+            "platform": "musl-label",
+            "target": "//codex-rs/core:core-all-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/1/members/21/matches/0"
+          },
+          {
+            "platform": "musl-label",
+            "target": "//codex-rs/core:core-all-wine-exec-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/1/members/39/matches/1"
+          },
+          {
+            "platform": "arm",
+            "target": "//codex-rs/core:core-all-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/2/members/8/matches/0"
+          },
+          {
+            "platform": "intel",
+            "target": "//codex-rs/core:core-all-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/3/members/8/matches/0"
+          }
+        ]
+      },
+      {
+        "test": "suite::hooks_executor::executor_stop_hook_runs_after_attachment",
+        "binary": "codex-core::all",
+        "observations": [
+          {
+            "platform": "gnu",
+            "target": "//codex-rs/core:core-all-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/0/members/27/matches/0"
+          },
+          {
+            "platform": "gnu",
+            "target": "//codex-rs/core:core-all-wine-exec-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/0/members/45/matches/0"
+          },
+          {
+            "platform": "musl-label",
+            "target": "//codex-rs/core:core-all-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/1/members/27/matches/0"
+          },
+          {
+            "platform": "musl-label",
+            "target": "//codex-rs/core:core-all-wine-exec-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/1/members/45/matches/0"
+          },
+          {
+            "platform": "arm",
+            "target": "//codex-rs/core:core-all-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/2/members/20/matches/0"
+          },
+          {
+            "platform": "intel",
+            "target": "//codex-rs/core:core-all-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/3/members/20/matches/0"
+          }
+        ]
+      },
+      {
+        "test": "suite::code_mode::code_mode_exec_surfaces_handler_errors_as_exceptions",
+        "binary": "codex-core::all",
+        "observations": [
+          {
+            "platform": "gnu",
+            "target": "//codex-rs/core:core-all-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/0/members/25/matches/1"
+          },
+          {
+            "platform": "gnu",
+            "target": "//codex-rs/core:core-all-wine-exec-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/0/members/43/matches/1"
+          },
+          {
+            "platform": "musl-label",
+            "target": "//codex-rs/core:core-all-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/1/members/25/matches/1"
+          },
+          {
+            "platform": "musl-label",
+            "target": "//codex-rs/core:core-all-wine-exec-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/1/members/43/matches/1"
+          },
+          {
+            "platform": "arm",
+            "target": "//codex-rs/core:core-all-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/2/members/16/matches/1"
+          },
+          {
+            "platform": "intel",
+            "target": "//codex-rs/core:core-all-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/3/members/16/matches/1"
+          },
+          {
+            "platform": "windows-shard4",
+            "target": "//codex-rs/core:core-all-test",
+            "result": "ignored, no exec_command on Windows",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/5/members/10/matches/0"
+          }
+        ]
+      },
+      {
+        "test": "suite::hooks_mcp::active_tool_policy_disables_mcp_tool_hooks_before_transport",
+        "binary": "codex-core::all",
+        "observations": [
+          {
+            "platform": "gnu",
+            "target": "//codex-rs/core:core-all-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/0/members/31/matches/0"
+          },
+          {
+            "platform": "gnu",
+            "target": "//codex-rs/core:core-all-wine-exec-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/0/members/49/matches/0"
+          },
+          {
+            "platform": "musl-label",
+            "target": "//codex-rs/core:core-all-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/1/members/31/matches/0"
+          },
+          {
+            "platform": "musl-label",
+            "target": "//codex-rs/core:core-all-wine-exec-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/1/members/49/matches/0"
+          },
+          {
+            "platform": "arm",
+            "target": "//codex-rs/core:core-all-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/2/members/28/matches/0"
+          },
+          {
+            "platform": "intel",
+            "target": "//codex-rs/core:core-all-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/3/members/28/matches/0"
+          }
+        ]
+      },
+      {
+        "test": "suite::hooks_mcp::hepta_feature_disables_mcp_tool_hooks_before_transport",
+        "binary": "codex-core::all",
+        "observations": [
+          {
+            "platform": "gnu",
+            "target": "//codex-rs/core:core-all-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/0/members/22/matches/0"
+          },
+          {
+            "platform": "gnu",
+            "target": "//codex-rs/core:core-all-wine-exec-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/0/members/40/matches/0"
+          },
+          {
+            "platform": "musl-label",
+            "target": "//codex-rs/core:core-all-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/1/members/22/matches/0"
+          },
+          {
+            "platform": "musl-label",
+            "target": "//codex-rs/core:core-all-wine-exec-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/1/members/40/matches/0"
+          },
+          {
+            "platform": "arm",
+            "target": "//codex-rs/core:core-all-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/2/members/10/matches/0"
+          },
+          {
+            "platform": "intel",
+            "target": "//codex-rs/core:core-all-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/3/members/10/matches/0"
+          }
+        ]
+      },
+      {
+        "test": "suite::hooks_mcp::mcp_tool_hook_blocks_model_tool_without_recursive_hooks_or_approval",
+        "binary": "codex-core::all",
+        "observations": [
+          {
+            "platform": "gnu",
+            "target": "//codex-rs/core:core-all-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/0/members/22/matches/1"
+          },
+          {
+            "platform": "gnu",
+            "target": "//codex-rs/core:core-all-wine-exec-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/0/members/40/matches/1"
+          },
+          {
+            "platform": "musl-label",
+            "target": "//codex-rs/core:core-all-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/1/members/22/matches/1"
+          },
+          {
+            "platform": "musl-label",
+            "target": "//codex-rs/core:core-all-wine-exec-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/1/members/40/matches/1"
+          },
+          {
+            "platform": "arm",
+            "target": "//codex-rs/core:core-all-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/2/members/10/matches/1"
+          },
+          {
+            "platform": "intel",
+            "target": "//codex-rs/core:core-all-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/3/members/10/matches/1"
+          }
+        ]
+      },
+      {
+        "test": "suite::hooks_mcp::mcp_tool_hook_fails_open_when_server_is_unavailable",
+        "binary": "codex-core::all",
+        "observations": [
+          {
+            "platform": "gnu",
+            "target": "//codex-rs/core:core-all-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/0/members/33/matches/0"
+          },
+          {
+            "platform": "gnu",
+            "target": "//codex-rs/core:core-all-wine-exec-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/0/members/51/matches/0"
+          },
+          {
+            "platform": "musl-label",
+            "target": "//codex-rs/core:core-all-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/1/members/33/matches/0"
+          },
+          {
+            "platform": "musl-label",
+            "target": "//codex-rs/core:core-all-wine-exec-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/1/members/51/matches/0"
+          },
+          {
+            "platform": "arm",
+            "target": "//codex-rs/core:core-all-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/2/members/32/matches/1"
+          },
+          {
+            "platform": "intel",
+            "target": "//codex-rs/core:core-all-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/3/members/32/matches/1"
+          }
+        ]
+      },
+      {
+        "test": "suite::hooks_mcp::mcp_tool_hook_interpolates_prompt_and_runs_without_tool_approval",
+        "binary": "codex-core::all",
+        "observations": [
+          {
+            "platform": "gnu",
+            "target": "//codex-rs/core:core-all-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/0/members/32/matches/0"
+          },
+          {
+            "platform": "gnu",
+            "target": "//codex-rs/core:core-all-wine-exec-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/0/members/50/matches/1"
+          },
+          {
+            "platform": "musl-label",
+            "target": "//codex-rs/core:core-all-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/1/members/32/matches/0"
+          },
+          {
+            "platform": "musl-label",
+            "target": "//codex-rs/core:core-all-wine-exec-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/1/members/50/matches/1"
+          },
+          {
+            "platform": "arm",
+            "target": "//codex-rs/core:core-all-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/2/members/30/matches/0"
+          },
+          {
+            "platform": "intel",
+            "target": "//codex-rs/core:core-all-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/3/members/30/matches/0"
+          }
+        ]
+      },
+      {
+        "test": "suite::hooks_executor::executor_stop_hook_rejects_mismatched_environment",
+        "binary": "codex-core::all",
+        "observations": [
+          {
+            "platform": "gnu",
+            "target": "//codex-rs/core:core-all-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/0/members/24/matches/0"
+          },
+          {
+            "platform": "gnu",
+            "target": "//codex-rs/core:core-all-wine-exec-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/0/members/42/matches/0"
+          },
+          {
+            "platform": "musl-label",
+            "target": "//codex-rs/core:core-all-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/1/members/24/matches/0"
+          },
+          {
+            "platform": "musl-label",
+            "target": "//codex-rs/core:core-all-wine-exec-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/1/members/42/matches/0"
+          },
+          {
+            "platform": "arm",
+            "target": "//codex-rs/core:core-all-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/2/members/14/matches/0"
+          },
+          {
+            "platform": "intel",
+            "target": "//codex-rs/core:core-all-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/3/members/14/matches/0"
+          }
+        ]
+      },
+      {
+        "test": "suite::hooks_mcp::mcp_tool_hook_cannot_call_tools_excluded_by_server_filters",
+        "binary": "codex-core::all",
+        "observations": [
+          {
+            "platform": "gnu",
+            "target": "//codex-rs/core:core-all-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/0/members/33/matches/1"
+          },
+          {
+            "platform": "gnu",
+            "target": "//codex-rs/core:core-all-wine-exec-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/0/members/51/matches/1"
+          },
+          {
+            "platform": "musl-label",
+            "target": "//codex-rs/core:core-all-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/1/members/33/matches/1"
+          },
+          {
+            "platform": "musl-label",
+            "target": "//codex-rs/core:core-all-wine-exec-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/1/members/51/matches/1"
+          },
+          {
+            "platform": "arm",
+            "target": "//codex-rs/core:core-all-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/2/members/32/matches/0"
+          },
+          {
+            "platform": "intel",
+            "target": "//codex-rs/core:core-all-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/3/members/32/matches/0"
+          }
+        ]
+      },
+      {
+        "test": "suite::hooks_mcp::mcp_tool_hook_marks_thread_memory_mode_polluted_when_configured",
+        "binary": "codex-core::all",
+        "observations": [
+          {
+            "platform": "gnu",
+            "target": "//codex-rs/core:core-all-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/0/members/23/matches/0"
+          },
+          {
+            "platform": "gnu",
+            "target": "//codex-rs/core:core-all-wine-exec-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/0/members/41/matches/0"
+          },
+          {
+            "platform": "musl-label",
+            "target": "//codex-rs/core:core-all-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/1/members/23/matches/0"
+          },
+          {
+            "platform": "musl-label",
+            "target": "//codex-rs/core:core-all-wine-exec-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/1/members/41/matches/0"
+          },
+          {
+            "platform": "arm",
+            "target": "//codex-rs/core:core-all-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/2/members/12/matches/0"
+          },
+          {
+            "platform": "intel",
+            "target": "//codex-rs/core:core-all-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/3/members/12/matches/0"
+          }
+        ]
+      },
+      {
+        "test": "suite::hooks_mcp::mcp_tool_hook_passes_thread_metadata_to_model_hidden_tools",
+        "binary": "codex-core::all",
+        "observations": [
+          {
+            "platform": "gnu",
+            "target": "//codex-rs/core:core-all-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/0/members/21/matches/1"
+          },
+          {
+            "platform": "gnu",
+            "target": "//codex-rs/core:core-all-wine-exec-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/0/members/39/matches/0"
+          },
+          {
+            "platform": "musl-label",
+            "target": "//codex-rs/core:core-all-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/1/members/21/matches/1"
+          },
+          {
+            "platform": "musl-label",
+            "target": "//codex-rs/core:core-all-wine-exec-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/1/members/39/matches/0"
+          },
+          {
+            "platform": "arm",
+            "target": "//codex-rs/core:core-all-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/2/members/8/matches/1"
+          },
+          {
+            "platform": "intel",
+            "target": "//codex-rs/core:core-all-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/3/members/8/matches/1"
+          }
+        ]
+      },
+      {
+        "test": "suite::hooks_mcp::permission_request_hook_allows_mcp_tool_without_user_or_guardian_review",
+        "binary": "codex-core::all",
+        "observations": [
+          {
+            "platform": "gnu",
+            "target": "//codex-rs/core:core-all-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/0/members/32/matches/1"
+          },
+          {
+            "platform": "gnu",
+            "target": "//codex-rs/core:core-all-wine-exec-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/0/members/50/matches/0"
+          },
+          {
+            "platform": "musl-label",
+            "target": "//codex-rs/core:core-all-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/1/members/32/matches/1"
+          },
+          {
+            "platform": "musl-label",
+            "target": "//codex-rs/core:core-all-wine-exec-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/1/members/50/matches/0"
+          },
+          {
+            "platform": "arm",
+            "target": "//codex-rs/core:core-all-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/2/members/30/matches/1"
+          },
+          {
+            "platform": "intel",
+            "target": "//codex-rs/core:core-all-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/3/members/30/matches/1"
+          }
+        ]
+      },
+      {
+        "test": "suite::hooks_mcp::permission_request_hook_denies_mcp_tool_without_user_or_guardian_review",
+        "binary": "codex-core::all",
+        "observations": [
+          {
+            "platform": "gnu",
+            "target": "//codex-rs/core:core-all-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/0/members/28/matches/0"
+          },
+          {
+            "platform": "gnu",
+            "target": "//codex-rs/core:core-all-wine-exec-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/0/members/46/matches/0"
+          },
+          {
+            "platform": "musl-label",
+            "target": "//codex-rs/core:core-all-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/1/members/28/matches/0"
+          },
+          {
+            "platform": "musl-label",
+            "target": "//codex-rs/core:core-all-wine-exec-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/1/members/46/matches/0"
+          },
+          {
+            "platform": "arm",
+            "target": "//codex-rs/core:core-all-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/2/members/22/matches/0"
+          },
+          {
+            "platform": "intel",
+            "target": "//codex-rs/core:core-all-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/3/members/22/matches/0"
+          }
+        ]
+      },
+      {
+        "test": "suite::hooks_mcp::post_tool_use_records_mcp_tool_payload_and_context_with_legacy_prefixed_names",
+        "binary": "codex-core::all",
+        "observations": [
+          {
+            "platform": "gnu",
+            "target": "//codex-rs/core:core-all-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/0/members/31/matches/1"
+          },
+          {
+            "platform": "gnu",
+            "target": "//codex-rs/core:core-all-wine-exec-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/0/members/49/matches/1"
+          },
+          {
+            "platform": "musl-label",
+            "target": "//codex-rs/core:core-all-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/1/members/31/matches/1"
+          },
+          {
+            "platform": "musl-label",
+            "target": "//codex-rs/core:core-all-wine-exec-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/1/members/49/matches/1"
+          },
+          {
+            "platform": "arm",
+            "target": "//codex-rs/core:core-all-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/2/members/28/matches/1"
+          },
+          {
+            "platform": "intel",
+            "target": "//codex-rs/core:core-all-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/3/members/28/matches/1"
+          }
+        ]
+      },
+      {
+        "test": "suite::hooks_mcp::post_tool_use_records_mcp_tool_payload_and_context_with_non_prefixed_names",
+        "binary": "codex-core::all",
+        "observations": [
+          {
+            "platform": "gnu",
+            "target": "//codex-rs/core:core-all-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/0/members/25/matches/2"
+          },
+          {
+            "platform": "gnu",
+            "target": "//codex-rs/core:core-all-wine-exec-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/0/members/43/matches/2"
+          },
+          {
+            "platform": "musl-label",
+            "target": "//codex-rs/core:core-all-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/1/members/25/matches/2"
+          },
+          {
+            "platform": "musl-label",
+            "target": "//codex-rs/core:core-all-wine-exec-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/1/members/43/matches/2"
+          },
+          {
+            "platform": "arm",
+            "target": "//codex-rs/core:core-all-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/2/members/16/matches/2"
+          },
+          {
+            "platform": "intel",
+            "target": "//codex-rs/core:core-all-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/3/members/16/matches/2"
+          }
+        ]
+      },
+      {
+        "test": "suite::hooks_mcp::pre_tool_use_blocks_mcp_tool_before_execution_with_legacy_prefixed_names",
+        "binary": "codex-core::all",
+        "observations": [
+          {
+            "platform": "gnu",
+            "target": "//codex-rs/core:core-all-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/0/members/26/matches/0"
+          },
+          {
+            "platform": "gnu",
+            "target": "//codex-rs/core:core-all-wine-exec-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/0/members/44/matches/0"
+          },
+          {
+            "platform": "musl-label",
+            "target": "//codex-rs/core:core-all-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/1/members/26/matches/0"
+          },
+          {
+            "platform": "musl-label",
+            "target": "//codex-rs/core:core-all-wine-exec-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/1/members/44/matches/0"
+          },
+          {
+            "platform": "arm",
+            "target": "//codex-rs/core:core-all-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/2/members/18/matches/0"
+          },
+          {
+            "platform": "intel",
+            "target": "//codex-rs/core:core-all-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/3/members/18/matches/0"
+          }
+        ]
+      },
+      {
+        "test": "suite::hooks_mcp::pre_tool_use_rewrites_mcp_tool_before_execution",
+        "binary": "codex-core::all",
+        "observations": [
+          {
+            "platform": "gnu",
+            "target": "//codex-rs/core:core-all-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/0/members/33/matches/2"
+          },
+          {
+            "platform": "gnu",
+            "target": "//codex-rs/core:core-all-wine-exec-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/0/members/51/matches/2"
+          },
+          {
+            "platform": "musl-label",
+            "target": "//codex-rs/core:core-all-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/1/members/33/matches/2"
+          },
+          {
+            "platform": "musl-label",
+            "target": "//codex-rs/core:core-all-wine-exec-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/1/members/51/matches/2"
+          },
+          {
+            "platform": "arm",
+            "target": "//codex-rs/core:core-all-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/2/members/32/matches/2"
+          },
+          {
+            "platform": "intel",
+            "target": "//codex-rs/core:core-all-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/3/members/32/matches/2"
+          }
+        ]
+      },
+      {
+        "test": "suite::hooks_mcp::pre_tool_use_blocks_mcp_tool_before_execution_with_non_prefixed_names",
+        "binary": "codex-core::all",
+        "observations": [
+          {
+            "platform": "gnu",
+            "target": "//codex-rs/core:core-all-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/0/members/30/matches/0"
+          },
+          {
+            "platform": "gnu",
+            "target": "//codex-rs/core:core-all-wine-exec-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/0/members/48/matches/0"
+          },
+          {
+            "platform": "musl-label",
+            "target": "//codex-rs/core:core-all-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/1/members/30/matches/0"
+          },
+          {
+            "platform": "musl-label",
+            "target": "//codex-rs/core:core-all-wine-exec-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/1/members/48/matches/0"
+          },
+          {
+            "platform": "arm",
+            "target": "//codex-rs/core:core-all-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/2/members/26/matches/0"
+          },
+          {
+            "platform": "intel",
+            "target": "//codex-rs/core:core-all-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/3/members/26/matches/0"
+          }
+        ]
+      },
+      {
+        "test": "suite::token_budget::active_tool_policy_skips_notes_thread_hint_without_calling_server",
+        "binary": "codex-core::all",
+        "observations": [
+          {
+            "platform": "gnu",
+            "target": "//codex-rs/core:core-all-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/0/members/26/matches/1"
+          },
+          {
+            "platform": "gnu",
+            "target": "//codex-rs/core:core-all-wine-exec-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/0/members/44/matches/1"
+          },
+          {
+            "platform": "musl-label",
+            "target": "//codex-rs/core:core-all-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/1/members/26/matches/1"
+          },
+          {
+            "platform": "musl-label",
+            "target": "//codex-rs/core:core-all-wine-exec-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/1/members/44/matches/1"
+          },
+          {
+            "platform": "arm",
+            "target": "//codex-rs/core:core-all-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/2/members/18/matches/1"
+          },
+          {
+            "platform": "intel",
+            "target": "//codex-rs/core:core-all-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/3/members/18/matches/1"
+          },
+          {
+            "platform": "windows-shard4",
+            "target": "//codex-rs/core:core-all-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/5/members/11/matches/1"
+          },
+          {
+            "platform": "windows-shard4",
+            "target": "//codex-rs/core:core-all-test",
+            "result": "ok",
+            "kind": "attempt",
+            "raw_pointer": "/archives/5/members/12/matches/0"
+          },
+          {
+            "platform": "windows-shard4",
+            "target": "//codex-rs/core:core-all-test",
+            "result": "ok",
+            "kind": "attempt",
+            "raw_pointer": "/archives/5/members/13/matches/0"
+          }
+        ]
+      },
+      {
+        "test": "suite::token_budget::hepta_token_budget_skips_notes_thread_hint_without_calling_server",
+        "binary": "codex-core::all",
+        "observations": [
+          {
+            "platform": "gnu",
+            "target": "//codex-rs/core:core-all-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/0/members/22/matches/2"
+          },
+          {
+            "platform": "gnu",
+            "target": "//codex-rs/core:core-all-wine-exec-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/0/members/40/matches/2"
+          },
+          {
+            "platform": "musl-label",
+            "target": "//codex-rs/core:core-all-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/1/members/22/matches/2"
+          },
+          {
+            "platform": "musl-label",
+            "target": "//codex-rs/core:core-all-wine-exec-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/1/members/40/matches/2"
+          },
+          {
+            "platform": "arm",
+            "target": "//codex-rs/core:core-all-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/2/members/10/matches/2"
+          },
+          {
+            "platform": "intel",
+            "target": "//codex-rs/core:core-all-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/3/members/10/matches/2"
+          },
+          {
+            "platform": "windows-shard4",
+            "target": "//codex-rs/core:core-all-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/5/members/7/matches/0"
+          }
+        ]
+      },
+      {
+        "test": "suite::token_budget::token_budget_context_injects_plain_thread_hint_text",
+        "binary": "codex-core::all",
+        "observations": [
+          {
+            "platform": "gnu",
+            "target": "//codex-rs/core:core-all-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/0/members/26/matches/2"
+          },
+          {
+            "platform": "gnu",
+            "target": "//codex-rs/core:core-all-wine-exec-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/0/members/44/matches/2"
+          },
+          {
+            "platform": "musl-label",
+            "target": "//codex-rs/core:core-all-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/1/members/26/matches/2"
+          },
+          {
+            "platform": "musl-label",
+            "target": "//codex-rs/core:core-all-wine-exec-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/1/members/44/matches/2"
+          },
+          {
+            "platform": "arm",
+            "target": "//codex-rs/core:core-all-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/2/members/18/matches/2"
+          },
+          {
+            "platform": "intel",
+            "target": "//codex-rs/core:core-all-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/3/members/18/matches/2"
+          },
+          {
+            "platform": "windows-shard4",
+            "target": "//codex-rs/core:core-all-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/5/members/11/matches/0"
+          },
+          {
+            "platform": "windows-shard4",
+            "target": "//codex-rs/core:core-all-test",
+            "result": "ok",
+            "kind": "attempt",
+            "raw_pointer": "/archives/5/members/12/matches/1"
+          },
+          {
+            "platform": "windows-shard4",
+            "target": "//codex-rs/core:core-all-test",
+            "result": "ok",
+            "kind": "attempt",
+            "raw_pointer": "/archives/5/members/13/matches/1"
+          }
+        ]
+      },
+      {
+        "test": "binding::tests::configured_hook_call_preserves_model_and_environment_boundaries",
+        "binary": "codex-mcp",
+        "observations": []
+      },
+      {
+        "test": "binding::tests::prepared_call_keeps_captured_connection_and_authority_after_refresh",
+        "binary": "codex-mcp",
+        "observations": []
+      },
+      {
+        "test": "binding::tests::prepared_call_does_not_reroute_after_captured_connection_closes",
+        "binary": "codex-mcp",
+        "observations": []
+      },
+      {
+        "test": "binding::tests::prepared_call_is_rejected_after_catalog_refresh",
+        "binary": "codex-mcp",
+        "observations": []
+      },
+      {
+        "test": "binding::tests::stale_prepared_call_does_not_run_preparation",
+        "binary": "codex-mcp",
+        "observations": []
+      },
+      {
+        "test": "binding::tests::preparation_holds_catalog_authority_until_it_finishes",
+        "binary": "codex-mcp",
+        "observations": []
+      }
+    ],
+    "B09": [
+      {
+        "test": "suite::v2::thread_inject_items::thread_inject_items_adds_raw_response_items_after_a_turn",
+        "binary": "codex-app-server::all",
+        "observations": [
+          {
+            "platform": "gnu",
+            "target": "//codex-rs/app-server:app-server-all-wine-exec-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/0/members/0/matches/2"
+          },
+          {
+            "platform": "musl-label",
+            "target": "//codex-rs/app-server:app-server-all-wine-exec-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/1/members/0/matches/2"
+          },
+          {
+            "platform": "windows-shard2",
+            "target": "//codex-rs/app-server:app-server-all-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/4/members/0/matches/2"
+          }
+        ]
+      },
+      {
+        "test": "suite::v2::turn_recover::cold_resume_explicit_cwd_override_is_fail_closed_for_recovery",
+        "binary": "codex-app-server::all",
+        "observations": [
+          {
+            "platform": "gnu",
+            "target": "//codex-rs/app-server:app-server-all-wine-exec-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/0/members/15/matches/1"
+          },
+          {
+            "platform": "musl-label",
+            "target": "//codex-rs/app-server:app-server-all-wine-exec-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/1/members/15/matches/1"
+          }
+        ]
+      },
+      {
+        "test": "suite::v2::turn_recover::cold_paginated_sigkill_recovery_uses_canonical_context_tail",
+        "binary": "codex-app-server::all",
+        "observations": [
+          {
+            "platform": "gnu",
+            "target": "//codex-rs/app-server:app-server-all-wine-exec-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/0/members/8/matches/2"
+          },
+          {
+            "platform": "musl-label",
+            "target": "//codex-rs/app-server:app-server-all-wine-exec-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/1/members/8/matches/2"
+          }
+        ]
+      },
+      {
+        "test": "suite::v2::turn_recover::cold_resume_explicit_workspace_roots_override_is_fail_closed_for_recovery",
+        "binary": "codex-app-server::all",
+        "observations": [
+          {
+            "platform": "gnu",
+            "target": "//codex-rs/app-server:app-server-all-wine-exec-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/0/members/16/matches/0"
+          },
+          {
+            "platform": "musl-label",
+            "target": "//codex-rs/app-server:app-server-all-wine-exec-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/1/members/16/matches/0"
+          }
+        ]
+      },
+      {
+        "test": "suite::v2::turn_recover::cold_sigkill_after_provider_output_is_not_recoverable",
+        "binary": "codex-app-server::all",
+        "observations": [
+          {
+            "platform": "gnu",
+            "target": "//codex-rs/app-server:app-server-all-wine-exec-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/0/members/10/matches/2"
+          },
+          {
+            "platform": "musl-label",
+            "target": "//codex-rs/app-server:app-server-all-wine-exec-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/1/members/10/matches/2"
+          }
+        ]
+      },
+      {
+        "test": "suite::v2::turn_recover::recover_rejects_busy_completed_and_cross_thread_turns",
+        "binary": "codex-app-server::all",
+        "observations": [
+          {
+            "platform": "gnu",
+            "target": "//codex-rs/app-server:app-server-all-wine-exec-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/0/members/13/matches/2"
+          },
+          {
+            "platform": "musl-label",
+            "target": "//codex-rs/app-server:app-server-all-wine-exec-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/1/members/13/matches/2"
+          }
+        ]
+      },
+      {
+        "test": "suite::v2::turn_recover::same_process_ephemeral_interrupted_turn_recovers_from_listener_state",
+        "binary": "codex-app-server::all",
+        "observations": [
+          {
+            "platform": "gnu",
+            "target": "//codex-rs/app-server:app-server-all-wine-exec-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/0/members/16/matches/1"
+          },
+          {
+            "platform": "musl-label",
+            "target": "//codex-rs/app-server:app-server-all-wine-exec-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/1/members/16/matches/1"
+          }
+        ]
+      },
+      {
+        "test": "suite::v2::turn_recover::turn_recover_requires_hepta_turn_recovery_feature",
+        "binary": "codex-app-server::all",
+        "observations": [
+          {
+            "platform": "gnu",
+            "target": "//codex-rs/app-server:app-server-all-wine-exec-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/0/members/16/matches/2"
+          },
+          {
+            "platform": "musl-label",
+            "target": "//codex-rs/app-server:app-server-all-wine-exec-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/1/members/16/matches/2"
+          }
+        ]
+      },
+      {
+        "test": "suite::v2::turn_recover::cold_sigkill_recovery_preserves_turn_and_deduplicates_stable_queue_input",
+        "binary": "codex-app-server::all",
+        "observations": [
+          {
+            "platform": "gnu",
+            "target": "//codex-rs/app-server:app-server-all-wine-exec-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/0/members/14/matches/0"
+          },
+          {
+            "platform": "musl-label",
+            "target": "//codex-rs/app-server:app-server-all-wine-exec-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/1/members/14/matches/0"
+          }
+        ]
+      },
+      {
+        "test": "suite::abort_tasks::root_turn_suspension_preserves_unfinished_turn_history",
+        "binary": "codex-core::all",
+        "observations": [
+          {
+            "platform": "gnu",
+            "target": "//codex-rs/core:core-all-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/0/members/25/matches/0"
+          },
+          {
+            "platform": "gnu",
+            "target": "//codex-rs/core:core-all-wine-exec-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/0/members/43/matches/0"
+          },
+          {
+            "platform": "musl-label",
+            "target": "//codex-rs/core:core-all-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/1/members/25/matches/0"
+          },
+          {
+            "platform": "musl-label",
+            "target": "//codex-rs/core:core-all-wine-exec-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/1/members/43/matches/0"
+          },
+          {
+            "platform": "arm",
+            "target": "//codex-rs/core:core-all-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/2/members/16/matches/0"
+          },
+          {
+            "platform": "intel",
+            "target": "//codex-rs/core:core-all-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/3/members/16/matches/0"
+          }
+        ]
+      },
+      {
+        "test": "session::tests::panicking_session_task_is_converted_to_terminal_error_and_releases_slot",
+        "binary": "codex-core",
+        "observations": [
+          {
+            "platform": "windows-core-lifecycle",
+            "target": "//codex-rs/core:core-unit-tests",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/6/members/4/matches/13"
+          },
+          {
+            "platform": "windows-core-lifecycle",
+            "target": "//codex-rs/core:core-unit-tests",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/6/members/5/matches/15"
+          },
+          {
+            "platform": "windows-core-lifecycle",
+            "target": "//codex-rs/core:core-unit-tests",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/6/members/6/matches/14"
+          },
+          {
+            "platform": "windows-core-lifecycle",
+            "target": "//codex-rs/core:core-unit-tests",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/6/members/7/matches/14"
+          },
+          {
+            "platform": "windows-core-lifecycle",
+            "target": "//codex-rs/core:core-unit-tests",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/6/members/8/matches/15"
+          },
+          {
+            "platform": "windows-core-lifecycle",
+            "target": "//codex-rs/core:core-unit-tests",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/6/members/9/matches/14"
+          },
+          {
+            "platform": "windows-core-lifecycle",
+            "target": "//codex-rs/core:core-unit-tests",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/6/members/10/matches/14"
+          },
+          {
+            "platform": "windows-core-lifecycle",
+            "target": "//codex-rs/core:core-unit-tests",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/6/members/11/matches/15"
+          }
+        ]
+      },
+      {
+        "test": "session::tests::cancelled_finish_owner_keeps_terminalizer_alive",
+        "binary": "codex-core",
+        "observations": [
+          {
+            "platform": "windows-core-lifecycle",
+            "target": "//codex-rs/core:core-unit-tests",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/6/members/4/matches/10"
+          },
+          {
+            "platform": "windows-core-lifecycle",
+            "target": "//codex-rs/core:core-unit-tests",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/6/members/5/matches/10"
+          },
+          {
+            "platform": "windows-core-lifecycle",
+            "target": "//codex-rs/core:core-unit-tests",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/6/members/6/matches/10"
+          },
+          {
+            "platform": "windows-core-lifecycle",
+            "target": "//codex-rs/core:core-unit-tests",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/6/members/7/matches/10"
+          },
+          {
+            "platform": "windows-core-lifecycle",
+            "target": "//codex-rs/core:core-unit-tests",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/6/members/8/matches/9"
+          },
+          {
+            "platform": "windows-core-lifecycle",
+            "target": "//codex-rs/core:core-unit-tests",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/6/members/9/matches/10"
+          },
+          {
+            "platform": "windows-core-lifecycle",
+            "target": "//codex-rs/core:core-unit-tests",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/6/members/10/matches/10"
+          },
+          {
+            "platform": "windows-core-lifecycle",
+            "target": "//codex-rs/core:core-unit-tests",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/6/members/11/matches/10"
+          }
+        ]
+      },
+      {
+        "test": "session::tests::panicking_finish_terminalizer_retains_fence",
+        "binary": "codex-core",
+        "observations": [
+          {
+            "platform": "windows-core-lifecycle",
+            "target": "//codex-rs/core:core-unit-tests",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/6/members/4/matches/14"
+          },
+          {
+            "platform": "windows-core-lifecycle",
+            "target": "//codex-rs/core:core-unit-tests",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/6/members/5/matches/14"
+          },
+          {
+            "platform": "windows-core-lifecycle",
+            "target": "//codex-rs/core:core-unit-tests",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/6/members/6/matches/13"
+          },
+          {
+            "platform": "windows-core-lifecycle",
+            "target": "//codex-rs/core:core-unit-tests",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/6/members/7/matches/13"
+          },
+          {
+            "platform": "windows-core-lifecycle",
+            "target": "//codex-rs/core:core-unit-tests",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/6/members/8/matches/12"
+          },
+          {
+            "platform": "windows-core-lifecycle",
+            "target": "//codex-rs/core:core-unit-tests",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/6/members/9/matches/15"
+          },
+          {
+            "platform": "windows-core-lifecycle",
+            "target": "//codex-rs/core:core-unit-tests",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/6/members/10/matches/15"
+          },
+          {
+            "platform": "windows-core-lifecycle",
+            "target": "//codex-rs/core:core-unit-tests",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/6/members/11/matches/14"
+          }
+        ]
+      },
+      {
+        "test": "session::tests::hung_finish_terminalizer_watchdog_retains_fence",
+        "binary": "codex-core",
+        "observations": [
+          {
+            "platform": "windows-core-lifecycle",
+            "target": "//codex-rs/core:core-unit-tests",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/6/members/4/matches/15"
+          },
+          {
+            "platform": "windows-core-lifecycle",
+            "target": "//codex-rs/core:core-unit-tests",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/6/members/5/matches/13"
+          },
+          {
+            "platform": "windows-core-lifecycle",
+            "target": "//codex-rs/core:core-unit-tests",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/6/members/6/matches/15"
+          },
+          {
+            "platform": "windows-core-lifecycle",
+            "target": "//codex-rs/core:core-unit-tests",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/6/members/7/matches/15"
+          },
+          {
+            "platform": "windows-core-lifecycle",
+            "target": "//codex-rs/core:core-unit-tests",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/6/members/8/matches/13"
+          },
+          {
+            "platform": "windows-core-lifecycle",
+            "target": "//codex-rs/core:core-unit-tests",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/6/members/9/matches/12"
+          },
+          {
+            "platform": "windows-core-lifecycle",
+            "target": "//codex-rs/core:core-unit-tests",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/6/members/10/matches/13"
+          },
+          {
+            "platform": "windows-core-lifecycle",
+            "target": "//codex-rs/core:core-unit-tests",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/6/members/11/matches/12"
+          }
+        ]
+      },
+      {
+        "test": "session::tests::cancelled_abort_owner_keeps_terminalizer_alive",
+        "binary": "codex-core",
+        "observations": [
+          {
+            "platform": "windows-core-lifecycle",
+            "target": "//codex-rs/core:core-unit-tests",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/6/members/4/matches/9"
+          },
+          {
+            "platform": "windows-core-lifecycle",
+            "target": "//codex-rs/core:core-unit-tests",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/6/members/5/matches/9"
+          },
+          {
+            "platform": "windows-core-lifecycle",
+            "target": "//codex-rs/core:core-unit-tests",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/6/members/6/matches/9"
+          },
+          {
+            "platform": "windows-core-lifecycle",
+            "target": "//codex-rs/core:core-unit-tests",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/6/members/7/matches/9"
+          },
+          {
+            "platform": "windows-core-lifecycle",
+            "target": "//codex-rs/core:core-unit-tests",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/6/members/8/matches/10"
+          },
+          {
+            "platform": "windows-core-lifecycle",
+            "target": "//codex-rs/core:core-unit-tests",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/6/members/9/matches/9"
+          },
+          {
+            "platform": "windows-core-lifecycle",
+            "target": "//codex-rs/core:core-unit-tests",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/6/members/10/matches/9"
+          },
+          {
+            "platform": "windows-core-lifecycle",
+            "target": "//codex-rs/core:core-unit-tests",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/6/members/11/matches/9"
+          }
+        ]
+      },
+      {
+        "test": "session::tests::panicking_abort_terminalizer_retains_fence",
+        "binary": "codex-core",
+        "observations": [
+          {
+            "platform": "windows-core-lifecycle",
+            "target": "//codex-rs/core:core-unit-tests",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/6/members/4/matches/12"
+          },
+          {
+            "platform": "windows-core-lifecycle",
+            "target": "//codex-rs/core:core-unit-tests",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/6/members/5/matches/12"
+          },
+          {
+            "platform": "windows-core-lifecycle",
+            "target": "//codex-rs/core:core-unit-tests",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/6/members/6/matches/12"
+          },
+          {
+            "platform": "windows-core-lifecycle",
+            "target": "//codex-rs/core:core-unit-tests",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/6/members/7/matches/12"
+          },
+          {
+            "platform": "windows-core-lifecycle",
+            "target": "//codex-rs/core:core-unit-tests",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/6/members/8/matches/14"
+          },
+          {
+            "platform": "windows-core-lifecycle",
+            "target": "//codex-rs/core:core-unit-tests",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/6/members/9/matches/13"
+          },
+          {
+            "platform": "windows-core-lifecycle",
+            "target": "//codex-rs/core:core-unit-tests",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/6/members/10/matches/12"
+          },
+          {
+            "platform": "windows-core-lifecycle",
+            "target": "//codex-rs/core:core-unit-tests",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/6/members/11/matches/13"
+          }
+        ]
+      },
+      {
+        "test": "session::tests::cancelled_suspend_caller_keeps_writer_handoff_alive",
+        "binary": "codex-core",
+        "observations": [
+          {
+            "platform": "windows-core-lifecycle",
+            "target": "//codex-rs/core:core-unit-tests",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/6/members/4/matches/11"
+          },
+          {
+            "platform": "windows-core-lifecycle",
+            "target": "//codex-rs/core:core-unit-tests",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/6/members/5/matches/11"
+          },
+          {
+            "platform": "windows-core-lifecycle",
+            "target": "//codex-rs/core:core-unit-tests",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/6/members/6/matches/11"
+          },
+          {
+            "platform": "windows-core-lifecycle",
+            "target": "//codex-rs/core:core-unit-tests",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/6/members/7/matches/11"
+          },
+          {
+            "platform": "windows-core-lifecycle",
+            "target": "//codex-rs/core:core-unit-tests",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/6/members/8/matches/11"
+          },
+          {
+            "platform": "windows-core-lifecycle",
+            "target": "//codex-rs/core:core-unit-tests",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/6/members/9/matches/11"
+          },
+          {
+            "platform": "windows-core-lifecycle",
+            "target": "//codex-rs/core:core-unit-tests",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/6/members/10/matches/11"
+          },
+          {
+            "platform": "windows-core-lifecycle",
+            "target": "//codex-rs/core:core-unit-tests",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/6/members/11/matches/11"
+          }
+        ]
+      },
+      {
+        "test": "session::turn_input::tests::steer_only_requires_active_turn",
+        "binary": "codex-core",
+        "observations": [
+          {
+            "platform": "windows-core-lifecycle",
+            "target": "//codex-rs/core:core-unit-tests",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/6/members/4/matches/17"
+          },
+          {
+            "platform": "windows-core-lifecycle",
+            "target": "//codex-rs/core:core-unit-tests",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/6/members/5/matches/17"
+          },
+          {
+            "platform": "windows-core-lifecycle",
+            "target": "//codex-rs/core:core-unit-tests",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/6/members/6/matches/17"
+          },
+          {
+            "platform": "windows-core-lifecycle",
+            "target": "//codex-rs/core:core-unit-tests",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/6/members/7/matches/16"
+          },
+          {
+            "platform": "windows-core-lifecycle",
+            "target": "//codex-rs/core:core-unit-tests",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/6/members/8/matches/16"
+          },
+          {
+            "platform": "windows-core-lifecycle",
+            "target": "//codex-rs/core:core-unit-tests",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/6/members/9/matches/17"
+          },
+          {
+            "platform": "windows-core-lifecycle",
+            "target": "//codex-rs/core:core-unit-tests",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/6/members/10/matches/16"
+          },
+          {
+            "platform": "windows-core-lifecycle",
+            "target": "//codex-rs/core:core-unit-tests",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/6/members/11/matches/16"
+          }
+        ]
+      },
+      {
+        "test": "session::turn_input::tests::steer_only_enforces_expected_turn_id",
+        "binary": "codex-core",
+        "observations": [
+          {
+            "platform": "windows-core-lifecycle",
+            "target": "//codex-rs/core:core-unit-tests",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/6/members/4/matches/16"
+          },
+          {
+            "platform": "windows-core-lifecycle",
+            "target": "//codex-rs/core:core-unit-tests",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/6/members/5/matches/16"
+          },
+          {
+            "platform": "windows-core-lifecycle",
+            "target": "//codex-rs/core:core-unit-tests",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/6/members/6/matches/16"
+          },
+          {
+            "platform": "windows-core-lifecycle",
+            "target": "//codex-rs/core:core-unit-tests",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/6/members/7/matches/17"
+          },
+          {
+            "platform": "windows-core-lifecycle",
+            "target": "//codex-rs/core:core-unit-tests",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/6/members/8/matches/17"
+          },
+          {
+            "platform": "windows-core-lifecycle",
+            "target": "//codex-rs/core:core-unit-tests",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/6/members/9/matches/16"
+          },
+          {
+            "platform": "windows-core-lifecycle",
+            "target": "//codex-rs/core:core-unit-tests",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/6/members/10/matches/17"
+          },
+          {
+            "platform": "windows-core-lifecycle",
+            "target": "//codex-rs/core:core-unit-tests",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/6/members/11/matches/17"
+          }
+        ]
+      }
+    ],
+    "B13": [
+      {
+        "test": "runtime::tests::qualification_prepare_quarantines_expired_registry_attempt_with_h7_evidence",
+        "binary": "codex-hepta-agentd",
+        "observations": []
+      },
+      {
+        "test": "caller_abort_after_core_started_keeps_exact_authority_until_persistence",
+        "binary": "codex-queue-extension::queue_service",
+        "observations": []
+      },
+      {
+        "test": "completion_panic_retains_exact_authority_in_settlement_guardian",
+        "binary": "codex-queue-extension::queue_service",
+        "observations": []
+      },
+      {
+        "test": "core_error_after_started_never_releases_ambiguous_dispatch",
+        "binary": "codex-queue-extension::queue_service",
+        "observations": []
+      },
+      {
+        "test": "rollout_flush_before_dispatch_db_completion_recovers_without_resubmit",
+        "binary": "codex-queue-extension::queue_service",
+        "observations": []
+      },
+      {
+        "test": "queued_input_and_unique_event_ids_round_trip",
+        "binary": "codex-queue-extension::queue_service",
+        "observations": []
+      },
+      {
+        "test": "reserved_to_persisted_legacy_row_deletion_emits_queue_changed",
+        "binary": "codex-queue-extension::queue_service",
+        "observations": []
+      },
+      {
+        "test": "queue_empty_observer_waits_for_owned_database_ack_after_turn_complete",
+        "binary": "codex-queue-extension::queue_service",
+        "observations": []
+      },
+      {
+        "test": "externally_changed_queues_dispatch_independently_and_retry_failed_wakes",
+        "binary": "codex-queue-extension::queue_service",
+        "observations": []
+      }
+    ],
+    "B20": [
+      {
+        "test": "suite::v2::remote_control::connected_backend_handles_models_lookup_before_websocket_initialize",
+        "binary": "codex-app-server::all",
+        "observations": [
+          {
+            "platform": "gnu",
+            "target": "//codex-rs/app-server:app-server-all-wine-exec-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/0/members/1/matches/0"
+          },
+          {
+            "platform": "musl-label",
+            "target": "//codex-rs/app-server:app-server-all-wine-exec-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/1/members/1/matches/0"
+          },
+          {
+            "platform": "windows-shard2",
+            "target": "//codex-rs/app-server:app-server-all-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/4/members/1/matches/0"
+          },
+          {
+            "platform": "windows-shard2",
+            "target": "//codex-rs/app-server:app-server-all-test",
+            "result": "ok",
+            "kind": "attempt",
+            "raw_pointer": "/archives/4/members/2/matches/0"
+          }
+        ]
+      },
+      {
+        "test": "suite::v2::remote_control::http_fixture_rejects_eof_before_request_headers_complete",
+        "binary": "codex-app-server::all",
+        "observations": [
+          {
+            "platform": "gnu",
+            "target": "//codex-rs/app-server:app-server-all-wine-exec-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/0/members/10/matches/0"
+          },
+          {
+            "platform": "musl-label",
+            "target": "//codex-rs/app-server:app-server-all-wine-exec-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/1/members/10/matches/0"
+          },
+          {
+            "platform": "windows-shard2",
+            "target": "//codex-rs/app-server:app-server-all-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/4/members/10/matches/0"
+          },
+          {
+            "platform": "windows-shard2",
+            "target": "//codex-rs/app-server:app-server-all-test",
+            "result": "ok",
+            "kind": "attempt",
+            "raw_pointer": "/archives/4/members/11/matches/0"
+          }
+        ]
+      },
+      {
+        "test": "suite::v2::remote_control::explicit_remote_control_startup_fails_when_disabled_by_requirements",
+        "binary": "codex-app-server::all",
+        "observations": [
+          {
+            "platform": "gnu",
+            "target": "//codex-rs/app-server:app-server-all-wine-exec-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/0/members/15/matches/0"
+          },
+          {
+            "platform": "musl-label",
+            "target": "//codex-rs/app-server:app-server-all-wine-exec-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/1/members/15/matches/0"
+          },
+          {
+            "platform": "windows-shard2",
+            "target": "//codex-rs/app-server:app-server-all-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/4/members/16/matches/0"
+          }
+        ]
+      },
+      {
+        "test": "suite::v2::remote_control::disable_waits_for_in_flight_durable_enable",
+        "binary": "codex-app-server::all",
+        "observations": [
+          {
+            "platform": "gnu",
+            "target": "//codex-rs/app-server:app-server-all-wine-exec-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/0/members/0/matches/0"
+          },
+          {
+            "platform": "musl-label",
+            "target": "//codex-rs/app-server:app-server-all-wine-exec-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/1/members/0/matches/0"
+          },
+          {
+            "platform": "windows-shard2",
+            "target": "//codex-rs/app-server:app-server-all-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/4/members/0/matches/0"
+          }
+        ]
+      },
+      {
+        "test": "suite::v2::remote_control::listen_off_honors_persisted_remote_control_enable",
+        "binary": "codex-app-server::all",
+        "observations": [
+          {
+            "platform": "gnu",
+            "target": "//codex-rs/app-server:app-server-all-wine-exec-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/0/members/13/matches/0"
+          },
+          {
+            "platform": "musl-label",
+            "target": "//codex-rs/app-server:app-server-all-wine-exec-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/1/members/13/matches/0"
+          },
+          {
+            "platform": "windows-shard2",
+            "target": "//codex-rs/app-server:app-server-all-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/4/members/14/matches/1"
+          }
+        ]
+      },
+      {
+        "test": "suite::v2::remote_control::listen_off_ignores_persisted_enable_when_disabled_by_requirements",
+        "binary": "codex-app-server::all",
+        "observations": [
+          {
+            "platform": "gnu",
+            "target": "//codex-rs/app-server:app-server-all-wine-exec-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/0/members/0/matches/1"
+          },
+          {
+            "platform": "musl-label",
+            "target": "//codex-rs/app-server:app-server-all-wine-exec-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/1/members/0/matches/1"
+          },
+          {
+            "platform": "windows-shard2",
+            "target": "//codex-rs/app-server:app-server-all-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/4/members/0/matches/1"
+          }
+        ]
+      },
+      {
+        "test": "suite::v2::remote_control::models_http_request_is_not_a_websocket_upgrade",
+        "binary": "codex-app-server::all",
+        "observations": [
+          {
+            "platform": "gnu",
+            "target": "//codex-rs/app-server:app-server-all-wine-exec-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/0/members/8/matches/0"
+          },
+          {
+            "platform": "musl-label",
+            "target": "//codex-rs/app-server:app-server-all-wine-exec-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/1/members/8/matches/0"
+          },
+          {
+            "platform": "windows-shard2",
+            "target": "//codex-rs/app-server:app-server-all-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/4/members/8/matches/0"
+          }
+        ]
+      },
+      {
+        "test": "suite::v2::remote_control::listen_off_exits_without_persisted_remote_control_enable",
+        "binary": "codex-app-server::all",
+        "observations": [
+          {
+            "platform": "gnu",
+            "target": "//codex-rs/app-server:app-server-all-wine-exec-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/0/members/12/matches/1"
+          },
+          {
+            "platform": "musl-label",
+            "target": "//codex-rs/app-server:app-server-all-wine-exec-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/1/members/12/matches/1"
+          },
+          {
+            "platform": "windows-shard2",
+            "target": "//codex-rs/app-server:app-server-all-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/4/members/13/matches/1"
+          }
+        ]
+      },
+      {
+        "test": "suite::v2::remote_control::managed_requirements_allow_remote_control_true_does_not_enable_or_block_it",
+        "binary": "codex-app-server::all",
+        "observations": [
+          {
+            "platform": "gnu",
+            "target": "//codex-rs/app-server:app-server-all-wine-exec-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/0/members/2/matches/0"
+          },
+          {
+            "platform": "musl-label",
+            "target": "//codex-rs/app-server:app-server-all-wine-exec-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/1/members/2/matches/0"
+          },
+          {
+            "platform": "windows-shard2",
+            "target": "//codex-rs/app-server:app-server-all-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/4/members/3/matches/0"
+          }
+        ]
+      },
+      {
+        "test": "suite::v2::remote_control::managed_requirements_reject_all_remote_control_rpcs",
+        "binary": "codex-app-server::all",
+        "observations": [
+          {
+            "platform": "gnu",
+            "target": "//codex-rs/app-server:app-server-all-wine-exec-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/0/members/11/matches/0"
+          },
+          {
+            "platform": "musl-label",
+            "target": "//codex-rs/app-server:app-server-all-wine-exec-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/1/members/11/matches/0"
+          },
+          {
+            "platform": "windows-shard2",
+            "target": "//codex-rs/app-server:app-server-all-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/4/members/12/matches/0"
+          }
+        ]
+      },
+      {
+        "test": "suite::v2::remote_control::pairing_start_works_after_ephemeral_enable",
+        "binary": "codex-app-server::all",
+        "observations": [
+          {
+            "platform": "gnu",
+            "target": "//codex-rs/app-server:app-server-all-wine-exec-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/0/members/8/matches/1"
+          },
+          {
+            "platform": "musl-label",
+            "target": "//codex-rs/app-server:app-server-all-wine-exec-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/1/members/8/matches/1"
+          },
+          {
+            "platform": "windows-shard2",
+            "target": "//codex-rs/app-server:app-server-all-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/4/members/8/matches/1"
+          }
+        ]
+      },
+      {
+        "test": "suite::v2::remote_control::remote_control_client_management_works_while_disabled",
+        "binary": "codex-app-server::all",
+        "observations": [
+          {
+            "platform": "gnu",
+            "target": "//codex-rs/app-server:app-server-all-wine-exec-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/0/members/13/matches/1"
+          },
+          {
+            "platform": "musl-label",
+            "target": "//codex-rs/app-server:app-server-all-wine-exec-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/1/members/13/matches/1"
+          },
+          {
+            "platform": "windows-shard2",
+            "target": "//codex-rs/app-server:app-server-all-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/4/members/14/matches/0"
+          }
+        ]
+      },
+      {
+        "test": "suite::v2::remote_control::remote_control_disable_returns_disabled_status",
+        "binary": "codex-app-server::all",
+        "observations": [
+          {
+            "platform": "gnu",
+            "target": "//codex-rs/app-server:app-server-all-wine-exec-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/0/members/12/matches/0"
+          },
+          {
+            "platform": "musl-label",
+            "target": "//codex-rs/app-server:app-server-all-wine-exec-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/1/members/12/matches/0"
+          },
+          {
+            "platform": "windows-shard2",
+            "target": "//codex-rs/app-server:app-server-all-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/4/members/13/matches/0"
+          }
+        ]
+      },
+      {
+        "test": "suite::v2::remote_control::remote_control_enable_returns_connecting_status",
+        "binary": "codex-app-server::all",
+        "observations": [
+          {
+            "platform": "gnu",
+            "target": "//codex-rs/app-server:app-server-all-wine-exec-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/0/members/4/matches/0"
+          },
+          {
+            "platform": "gnu",
+            "target": "//codex-rs/app-server:app-server-all-wine-exec-test",
+            "result": "ok",
+            "kind": "attempt",
+            "raw_pointer": "/archives/0/members/5/matches/0"
+          },
+          {
+            "platform": "musl-label",
+            "target": "//codex-rs/app-server:app-server-all-wine-exec-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/1/members/4/matches/0"
+          },
+          {
+            "platform": "musl-label",
+            "target": "//codex-rs/app-server:app-server-all-wine-exec-test",
+            "result": "ok",
+            "kind": "attempt",
+            "raw_pointer": "/archives/1/members/5/matches/0"
+          },
+          {
+            "platform": "windows-shard2",
+            "target": "//codex-rs/app-server:app-server-all-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/4/members/5/matches/0"
+          }
+        ]
+      },
+      {
+        "test": "suite::v2::remote_control::remote_control_status_read_returns_disabled_status",
+        "binary": "codex-app-server::all",
+        "observations": [
+          {
+            "platform": "gnu",
+            "target": "//codex-rs/app-server:app-server-all-wine-exec-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/0/members/7/matches/0"
+          },
+          {
+            "platform": "musl-label",
+            "target": "//codex-rs/app-server:app-server-all-wine-exec-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/1/members/7/matches/0"
+          },
+          {
+            "platform": "windows-shard2",
+            "target": "//codex-rs/app-server:app-server-all-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/4/members/7/matches/0"
+          }
+        ]
+      },
+      {
+        "test": "suite::v2::remote_control::remote_control_status_read_returns_connecting_status_after_enable",
+        "binary": "codex-app-server::all",
+        "observations": [
+          {
+            "platform": "gnu",
+            "target": "//codex-rs/app-server:app-server-all-wine-exec-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/0/members/6/matches/0"
+          },
+          {
+            "platform": "musl-label",
+            "target": "//codex-rs/app-server:app-server-all-wine-exec-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/1/members/6/matches/0"
+          },
+          {
+            "platform": "windows-shard2",
+            "target": "//codex-rs/app-server:app-server-all-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/4/members/6/matches/0"
+          }
+        ]
+      },
+      {
+        "test": "suite::v2::remote_control::remote_control_pairing_start_returns_pairing_artifacts",
+        "binary": "codex-app-server::all",
+        "observations": [
+          {
+            "platform": "gnu",
+            "target": "//codex-rs/app-server:app-server-all-wine-exec-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/0/members/3/matches/0"
+          },
+          {
+            "platform": "musl-label",
+            "target": "//codex-rs/app-server:app-server-all-wine-exec-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/1/members/3/matches/0"
+          },
+          {
+            "platform": "windows-shard2",
+            "target": "//codex-rs/app-server:app-server-all-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/4/members/4/matches/0"
+          }
+        ]
+      },
+      {
+        "test": "suite::v2::remote_control::rpc_updates_durable_preference_but_ephemeral_does_not",
+        "binary": "codex-app-server::all",
+        "observations": [
+          {
+            "platform": "gnu",
+            "target": "//codex-rs/app-server:app-server-all-wine-exec-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/0/members/4/matches/1"
+          },
+          {
+            "platform": "gnu",
+            "target": "//codex-rs/app-server:app-server-all-wine-exec-test",
+            "result": "ok",
+            "kind": "attempt",
+            "raw_pointer": "/archives/0/members/5/matches/1"
+          },
+          {
+            "platform": "musl-label",
+            "target": "//codex-rs/app-server:app-server-all-wine-exec-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/1/members/4/matches/1"
+          },
+          {
+            "platform": "musl-label",
+            "target": "//codex-rs/app-server:app-server-all-wine-exec-test",
+            "result": "ok",
+            "kind": "attempt",
+            "raw_pointer": "/archives/1/members/5/matches/1"
+          },
+          {
+            "platform": "windows-shard2",
+            "target": "//codex-rs/app-server:app-server-all-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/4/members/5/matches/1"
+          }
+        ]
+      },
+      {
+        "test": "suite::v2::remote_control::stdio_eof_exits_with_remote_control_connection",
+        "binary": "codex-app-server::all",
+        "observations": [
+          {
+            "platform": "gnu",
+            "target": "//codex-rs/app-server:app-server-all-wine-exec-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/0/members/10/matches/1"
+          },
+          {
+            "platform": "musl-label",
+            "target": "//codex-rs/app-server:app-server-all-wine-exec-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/1/members/10/matches/1"
+          },
+          {
+            "platform": "windows-shard2",
+            "target": "//codex-rs/app-server:app-server-all-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/4/members/10/matches/1"
+          },
+          {
+            "platform": "windows-shard2",
+            "target": "//codex-rs/app-server:app-server-all-test",
+            "result": "ok",
+            "kind": "attempt",
+            "raw_pointer": "/archives/4/members/11/matches/1"
+          }
+        ]
+      }
+    ],
+    "B22": [
+      {
+        "test": "tests::embedded_state_db_corruption_preserves_failed_database_for_cli_recovery",
+        "binary": "codex-tui",
+        "observations": []
+      },
+      {
+        "test": "app::tests::background_exit_tests::daemon_ctrl_c_during_mcp_startup_does_not_show_background_exit_menu",
+        "binary": "codex-tui",
+        "observations": []
+      },
+      {
+        "test": "app::tests::background_exit_tests::cancel_task_interrupts_without_exiting",
+        "binary": "codex-tui",
+        "observations": []
+      },
+      {
+        "test": "app::tests::background_exit_tests::daemon_ctrl_c_during_paste_burst_does_not_show_exit_menu",
+        "binary": "codex-tui",
+        "observations": []
+      },
+      {
+        "test": "app::tests::background_exit_tests::daemon_ctrl_c_hides_background_exit_for_running_background_side_thread",
+        "binary": "codex-tui",
+        "observations": []
+      },
+      {
+        "test": "app::tests::background_exit_tests::daemon_ctrl_c_shows_background_exit_menu_and_escape_dismisses_it",
+        "binary": "codex-tui",
+        "observations": []
+      },
+      {
+        "test": "app::tests::background_exit_tests::daemon_ctrl_c_hides_background_exit_with_queued_follow_up",
+        "binary": "codex-tui",
+        "observations": []
+      },
+      {
+        "test": "app::tests::background_exit_tests::daemon_ctrl_c_with_draft_preserves_composer_cancellation",
+        "binary": "codex-tui",
+        "observations": []
+      },
+      {
+        "test": "app::tests::background_exit_tests::non_daemon_ctrl_c_keeps_interrupt_behavior",
+        "binary": "codex-tui",
+        "observations": []
+      },
+      {
+        "test": "app::tests::background_exit_tests::run_in_background_detaches_without_interrupting_main_or_side_threads",
+        "binary": "codex-tui",
+        "observations": []
+      },
+      {
+        "test": "app::tests::background_exit_tests::background_exit_shell_readiness_rejects_failed_start",
+        "binary": "codex-tui",
+        "observations": []
+      },
+      {
+        "test": "app::tests::background_exit_tests::daemon_ctrl_c_closes_running_side_thread_and_returns_to_parent",
+        "binary": "codex-tui",
+        "observations": []
+      },
+      {
+        "test": "app::tests::background_exit_tests::exit_interrupts_before_requesting_shutdown",
+        "binary": "codex-tui",
+        "observations": []
+      }
+    ],
+    "B23": [
+      {
+        "test": "drain_handle_tests::repeated_drain_requests_preserve_the_real_completion_acknowledgement",
+        "binary": "codex-app-server",
+        "observations": []
+      },
+      {
+        "test": "drain_handle_tests::requesting_drain_does_not_acknowledge_outstanding_turns",
+        "binary": "codex-app-server",
+        "observations": []
+      },
+      {
+        "test": "shutdown_signals::tests::first_sigint_survives_cancelled_receive",
+        "binary": "codex-app-server",
+        "observations": []
+      },
+      {
+        "test": "shutdown_signals::tests::first_sighup_survives_cancelled_receive",
+        "binary": "codex-app-server",
+        "observations": []
+      },
+      {
+        "test": "shutdown_signals::tests::first_sigterm_survives_cancelled_receive",
+        "binary": "codex-app-server",
+        "observations": []
+      }
+    ],
+    "B08": [
+      {
+        "test": "tools::executed_tool_calls::tests::executed_tool_call_recorder_bounds_pending_calls_and_preserves_overflow",
+        "binary": "codex-core",
+        "observations": [
+          {
+            "platform": "windows-core-lifecycle",
+            "target": "//codex-rs/core:core-unit-tests",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/6/members/4/matches/18"
+          },
+          {
+            "platform": "windows-core-lifecycle",
+            "target": "//codex-rs/core:core-unit-tests",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/6/members/5/matches/18"
+          },
+          {
+            "platform": "windows-core-lifecycle",
+            "target": "//codex-rs/core:core-unit-tests",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/6/members/6/matches/18"
+          },
+          {
+            "platform": "windows-core-lifecycle",
+            "target": "//codex-rs/core:core-unit-tests",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/6/members/7/matches/18"
+          },
+          {
+            "platform": "windows-core-lifecycle",
+            "target": "//codex-rs/core:core-unit-tests",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/6/members/8/matches/18"
+          },
+          {
+            "platform": "windows-core-lifecycle",
+            "target": "//codex-rs/core:core-unit-tests",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/6/members/9/matches/18"
+          },
+          {
+            "platform": "windows-core-lifecycle",
+            "target": "//codex-rs/core:core-unit-tests",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/6/members/10/matches/18"
+          },
+          {
+            "platform": "windows-core-lifecycle",
+            "target": "//codex-rs/core:core-unit-tests",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/6/members/11/matches/18"
+          }
+        ]
+      },
+      {
+        "test": "tools::executed_tool_calls::tests::executed_tool_call_recorder_bounds_retained_history_and_reports_omissions",
+        "binary": "codex-core",
+        "observations": [
+          {
+            "platform": "windows-core-lifecycle",
+            "target": "//codex-rs/core:core-unit-tests",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/6/members/4/matches/19"
+          },
+          {
+            "platform": "windows-core-lifecycle",
+            "target": "//codex-rs/core:core-unit-tests",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/6/members/5/matches/19"
+          },
+          {
+            "platform": "windows-core-lifecycle",
+            "target": "//codex-rs/core:core-unit-tests",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/6/members/6/matches/19"
+          },
+          {
+            "platform": "windows-core-lifecycle",
+            "target": "//codex-rs/core:core-unit-tests",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/6/members/7/matches/19"
+          },
+          {
+            "platform": "windows-core-lifecycle",
+            "target": "//codex-rs/core:core-unit-tests",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/6/members/8/matches/19"
+          },
+          {
+            "platform": "windows-core-lifecycle",
+            "target": "//codex-rs/core:core-unit-tests",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/6/members/9/matches/19"
+          },
+          {
+            "platform": "windows-core-lifecycle",
+            "target": "//codex-rs/core:core-unit-tests",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/6/members/10/matches/19"
+          },
+          {
+            "platform": "windows-core-lifecycle",
+            "target": "//codex-rs/core:core-unit-tests",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/6/members/11/matches/19"
+          }
+        ]
+      },
+      {
+        "test": "client::tests::chatgpt_codex_wire_strips_local_content_metadata_but_openai_wire_keeps_it",
+        "binary": "codex-core",
+        "observations": [
+          {
+            "platform": "windows-core-lifecycle",
+            "target": "//codex-rs/core:core-unit-tests",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/6/members/4/matches/7"
+          },
+          {
+            "platform": "windows-core-lifecycle",
+            "target": "//codex-rs/core:core-unit-tests",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/6/members/5/matches/7"
+          },
+          {
+            "platform": "windows-core-lifecycle",
+            "target": "//codex-rs/core:core-unit-tests",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/6/members/6/matches/7"
+          },
+          {
+            "platform": "windows-core-lifecycle",
+            "target": "//codex-rs/core:core-unit-tests",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/6/members/7/matches/7"
+          },
+          {
+            "platform": "windows-core-lifecycle",
+            "target": "//codex-rs/core:core-unit-tests",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/6/members/8/matches/7"
+          },
+          {
+            "platform": "windows-core-lifecycle",
+            "target": "//codex-rs/core:core-unit-tests",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/6/members/9/matches/7"
+          },
+          {
+            "platform": "windows-core-lifecycle",
+            "target": "//codex-rs/core:core-unit-tests",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/6/members/10/matches/7"
+          },
+          {
+            "platform": "windows-core-lifecycle",
+            "target": "//codex-rs/core:core-unit-tests",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/6/members/11/matches/7"
+          }
+        ]
+      },
+      {
+        "test": "suite::tools::namespaced_custom_tool_call_preserves_namespace_through_dispatch_and_replay",
+        "binary": "codex-core::all",
+        "observations": [
+          {
+            "platform": "gnu",
+            "target": "//codex-rs/core:core-all-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/0/members/20/matches/0"
+          },
+          {
+            "platform": "gnu",
+            "target": "//codex-rs/core:core-all-wine-exec-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/0/members/38/matches/0"
+          },
+          {
+            "platform": "musl-label",
+            "target": "//codex-rs/core:core-all-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/1/members/20/matches/0"
+          },
+          {
+            "platform": "musl-label",
+            "target": "//codex-rs/core:core-all-wine-exec-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/1/members/38/matches/0"
+          },
+          {
+            "platform": "arm",
+            "target": "//codex-rs/core:core-all-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/2/members/6/matches/0"
+          },
+          {
+            "platform": "intel",
+            "target": "//codex-rs/core:core-all-test",
+            "result": "ok",
+            "kind": "final_or_isolated_log",
+            "raw_pointer": "/archives/3/members/6/matches/0"
+          }
+        ]
+      }
+    ]
+  },
+  "scope_findings": [
+    {
+      "id": "B07",
+      "finding": "All original22 have exact ok rows in the ordinary and Wine-exec Core targets of each Linux label, plus ordinary Mac ARM and Intel Core. Windows token-budget3 are ok, code-mode1 is the existing explicit ignore, and hooks_executor3+hooks_mcp15 are not compiled on Windows by the original module cfg. The six binding controls remain missing case-level evidence."
+    },
+    {
+      "id": "B08",
+      "finding": "Windows full unit logs each contain the actual2 recorder and1 wire names with ok (24 rows across8 shard files,3 distinct cases). Unix ordinary/Wine Core logs contain the exact namespace/replay case. Its entire tools.rs file excludes Windows. No third recorder unit was invented."
+    },
+    {
+      "id": "B09",
+      "finding": "Linux Wine-exec AppServer logs contain all8 exact turn_recover controls, including turn_recover_requires_hepta_turn_recovery_feature. Windows full unit logs contain all9 requested terminalization/steer controls (72 rows across8 shard files). Original Unix integration exclusions remain distinct; ordinary AppServer successful logs are still absent."
+    },
+    {
+      "id": "B13",
+      "finding": "No requested Queue/Lease case body is present in these seven archives; original target-level successes cannot be promoted."
+    },
+    {
+      "id": "B20",
+      "finding": "All19 exact remote-control controls are ok in Linux Wine-exec and Windows AppServer logs. The Linux archive also retains2 matching ok rows in an earlier attempt; Windows retains3. No selected B20 failure/ignore row is hidden by the target's overall FLAKY result, which belongs to other cases. This does not supply ordinary Linux/Mac target receipts."
+    },
+    {
+      "id": "B22",
+      "finding": "No TUI exact success log was in these original failure archives. One uploaded-file identity remains inference; the retention candidate is future evidence plumbing, not historical test evidence."
+    },
+    {
+      "id": "B23",
+      "finding": "Current exact signal/drain unit bodies remain absent. Earlier native5-case qualification stays attached to its original source; Unix signal parents remain inapplicable as Windows cases."
+    }
+  ],
+  "source_and_attempt_limits": [
+    "The two Linux-label ZIPs have identical bytes for all54 corresponding target-relative records. They share GNU RBE configuration; do not count them as independent musl compile/runtime qualification.",
+    "Every available indexed attempt log was read. This establishes a projection of the archived members, not a claim that unarchived successful targets or missing remote files existed.",
+    "All39 XMLs are target wrappers, not exact requested Rust testcases. Their target status is not double-counted as case-level proof.",
+    "Windows lifecycle full unit shard4 still reports2339 passed/1 failed/3 ignored; the other7 full logs report2340 passed/0 failed/3 ignored. Exact requested unit rows being ok does not make the full target pass.",
+    "The retained top-level core-unit-tests/test.log is a prior isolated3-case run with2340 filtered out. It is distinguished from the8 full shard logs, not added to a full-target total.",
+    "Existing compile exclusions and ignores are stated explicitly. Their absence is not a runtime pass and does not independently qualify an analogous Windows product behavior.",
+    "These receipts belong to cabc/treeb2d7 (ordinary merge28af). They cannot be borrowed as current owning e84 or a subsequent product head passing."
+  ],
+  "smallest_remaining_exact_evidence": [
+    {
+      "id": "B07",
+      "target": "//codex-rs/codex-mcp:codex-mcp-unit-tests",
+      "names": [
+        "binding::tests::configured_hook_call_preserves_model_and_environment_boundaries",
+        "binding::tests::prepared_call_keeps_captured_connection_and_authority_after_refresh",
+        "binding::tests::prepared_call_does_not_reroute_after_captured_connection_closes",
+        "binding::tests::prepared_call_is_rejected_after_catalog_refresh",
+        "binding::tests::stale_prepared_call_does_not_run_preparation",
+        "binding::tests::preparation_holds_catalog_authority_until_it_finishes"
+      ],
+      "platforms": [
+        "GNU job",
+        "musl-label job (same GNU RBE, not musl)",
+        "Mac ARM",
+        "Mac Intel",
+        "Windows"
+      ],
+      "reason": "Six existing binding positive/rejection controls still have only target/cache evidence; the successful unit logs were outside these archives."
+    },
+    {
+      "id": "B08",
+      "target": "//codex-rs/core:core-unit-tests",
+      "names": [
+        "tools::executed_tool_calls::tests::executed_tool_call_recorder_bounds_pending_calls_and_preserves_overflow",
+        "tools::executed_tool_calls::tests::executed_tool_call_recorder_bounds_retained_history_and_reports_omissions",
+        "client::tests::chatgpt_codex_wire_strips_local_content_metadata_but_openai_wire_keeps_it"
+      ],
+      "platforms": [
+        "GNU job",
+        "musl-label job (same GNU RBE, not musl)",
+        "Mac ARM",
+        "Mac Intel"
+      ],
+      "reason": "The two recorder units and wire matrix now have exact Windows rows, but the Linux/Mac unit targets were successful/cached and unarchived."
+    },
+    {
+      "id": "B09",
+      "target": "//codex-rs/app-server:app-server-all-test",
+      "names": [
+        "suite::v2::thread_inject_items::thread_inject_items_adds_raw_response_items_after_a_turn",
+        "suite::v2::turn_recover::cold_resume_explicit_cwd_override_is_fail_closed_for_recovery",
+        "suite::v2::turn_recover::cold_paginated_sigkill_recovery_uses_canonical_context_tail",
+        "suite::v2::turn_recover::cold_resume_explicit_workspace_roots_override_is_fail_closed_for_recovery",
+        "suite::v2::turn_recover::cold_sigkill_after_provider_output_is_not_recoverable",
+        "suite::v2::turn_recover::recover_rejects_busy_completed_and_cross_thread_turns",
+        "suite::v2::turn_recover::same_process_ephemeral_interrupted_turn_recovers_from_listener_state",
+        "suite::v2::turn_recover::turn_recover_requires_hepta_turn_recovery_feature",
+        "suite::v2::turn_recover::cold_sigkill_recovery_preserves_turn_and_deduplicates_stable_queue_input"
+      ],
+      "platforms": [
+        "GNU ordinary target",
+        "musl-label ordinary target (same GNU RBE, not musl)",
+        "Mac ARM",
+        "Mac Intel"
+      ],
+      "reason": "The8 turn_recover controls and the thread_inject_items control are observed in the Linux Wine-exec variant only for Linux. Ordinary Linux and Mac successful AppServer logs remain absent. The8 turn_recover cases are cfg(unix); the separate injection case is actually observed ok on Windows."
+    },
+    {
+      "id": "B09",
+      "target": "//codex-rs/core:core-unit-tests",
+      "names": [
+        "session::tests::panicking_session_task_is_converted_to_terminal_error_and_releases_slot",
+        "session::tests::cancelled_finish_owner_keeps_terminalizer_alive",
+        "session::tests::panicking_finish_terminalizer_retains_fence",
+        "session::tests::hung_finish_terminalizer_watchdog_retains_fence",
+        "session::tests::cancelled_abort_owner_keeps_terminalizer_alive",
+        "session::tests::panicking_abort_terminalizer_retains_fence",
+        "session::tests::cancelled_suspend_caller_keeps_writer_handoff_alive",
+        "session::turn_input::tests::steer_only_requires_active_turn",
+        "session::turn_input::tests::steer_only_enforces_expected_turn_id"
+      ],
+      "platforms": [
+        "GNU job",
+        "musl-label job (same GNU RBE, not musl)",
+        "Mac ARM",
+        "Mac Intel"
+      ],
+      "reason": "Nine exact terminalization/steer controls now have actual Windows unit result rows, but no successful Linux/Mac unit body was archived."
+    },
+    {
+      "id": "B13",
+      "target": "//codex-rs/ext/queue:queue-queue_service-test",
+      "names": [
+        "caller_abort_after_core_started_keeps_exact_authority_until_persistence",
+        "completion_panic_retains_exact_authority_in_settlement_guardian",
+        "core_error_after_started_never_releases_ambiguous_dispatch",
+        "rollout_flush_before_dispatch_db_completion_recovers_without_resubmit",
+        "queued_input_and_unique_event_ids_round_trip",
+        "reserved_to_persisted_legacy_row_deletion_emits_queue_changed",
+        "queue_empty_observer_waits_for_owned_database_ack_after_turn_complete",
+        "externally_changed_queues_dispatch_independently_and_retry_failed_wakes"
+      ],
+      "platforms": [
+        "GNU job",
+        "musl-label job (same GNU RBE, not musl)",
+        "Mac ARM",
+        "Mac Intel",
+        "Windows"
+      ],
+      "reason": "Target-level passes do not provide the eight exact queue guard/ack result rows; no target logs occur in the existing failure archives."
+    },
+    {
+      "id": "B13",
+      "target": "//codex-rs/hepta-agentd:hepta-agentd-cognitive-write-qualification-test",
+      "names": [
+        "runtime::tests::qualification_prepare_quarantines_expired_registry_attempt_with_h7_evidence"
+      ],
+      "platforms": [
+        "GNU job",
+        "musl-label job (same GNU RBE, not musl)",
+        "Mac ARM",
+        "Mac Intel",
+        "Windows"
+      ],
+      "reason": "The exact lease/expiry qualification name remains target-only/cached or executed-marker evidence, with no case body in the existing archives."
+    },
+    {
+      "id": "B20",
+      "target": "//codex-rs/app-server:app-server-all-test",
+      "names": [
+        "suite::v2::remote_control::connected_backend_handles_models_lookup_before_websocket_initialize",
+        "suite::v2::remote_control::http_fixture_rejects_eof_before_request_headers_complete",
+        "suite::v2::remote_control::explicit_remote_control_startup_fails_when_disabled_by_requirements",
+        "suite::v2::remote_control::disable_waits_for_in_flight_durable_enable",
+        "suite::v2::remote_control::listen_off_honors_persisted_remote_control_enable",
+        "suite::v2::remote_control::listen_off_ignores_persisted_enable_when_disabled_by_requirements",
+        "suite::v2::remote_control::models_http_request_is_not_a_websocket_upgrade",
+        "suite::v2::remote_control::listen_off_exits_without_persisted_remote_control_enable",
+        "suite::v2::remote_control::managed_requirements_allow_remote_control_true_does_not_enable_or_block_it",
+        "suite::v2::remote_control::managed_requirements_reject_all_remote_control_rpcs",
+        "suite::v2::remote_control::pairing_start_works_after_ephemeral_enable",
+        "suite::v2::remote_control::remote_control_client_management_works_while_disabled",
+        "suite::v2::remote_control::remote_control_disable_returns_disabled_status",
+        "suite::v2::remote_control::remote_control_enable_returns_connecting_status",
+        "suite::v2::remote_control::remote_control_status_read_returns_disabled_status",
+        "suite::v2::remote_control::remote_control_status_read_returns_connecting_status_after_enable",
+        "suite::v2::remote_control::remote_control_pairing_start_returns_pairing_artifacts",
+        "suite::v2::remote_control::rpc_updates_durable_preference_but_ephemeral_does_not",
+        "suite::v2::remote_control::stdio_eof_exits_with_remote_control_connection"
+      ],
+      "platforms": [
+        "GNU ordinary target",
+        "musl-label ordinary target (same GNU RBE, not musl)",
+        "Mac ARM",
+        "Mac Intel"
+      ],
+      "reason": "All nineteen exact original controls are now observed in Windows and Linux Wine-exec logs. The ordinary successful Linux/Mac AppServer logs were not archived; do not transfer the variant result."
+    },
+    {
+      "id": "B22",
+      "target": "//codex-rs/tui:tui-unit-tests",
+      "names": [
+        "tests::embedded_state_db_corruption_preserves_failed_database_for_cli_recovery",
+        "app::tests::background_exit_tests::daemon_ctrl_c_during_mcp_startup_does_not_show_background_exit_menu",
+        "app::tests::background_exit_tests::cancel_task_interrupts_without_exiting",
+        "app::tests::background_exit_tests::daemon_ctrl_c_during_paste_burst_does_not_show_exit_menu",
+        "app::tests::background_exit_tests::daemon_ctrl_c_hides_background_exit_for_running_background_side_thread",
+        "app::tests::background_exit_tests::daemon_ctrl_c_shows_background_exit_menu_and_escape_dismisses_it",
+        "app::tests::background_exit_tests::daemon_ctrl_c_hides_background_exit_with_queued_follow_up",
+        "app::tests::background_exit_tests::daemon_ctrl_c_with_draft_preserves_composer_cancellation",
+        "app::tests::background_exit_tests::non_daemon_ctrl_c_keeps_interrupt_behavior",
+        "app::tests::background_exit_tests::run_in_background_detaches_without_interrupting_main_or_side_threads",
+        "app::tests::background_exit_tests::background_exit_shell_readiness_rejects_failed_start",
+        "app::tests::background_exit_tests::daemon_ctrl_c_closes_running_side_thread_and_returns_to_parent",
+        "app::tests::background_exit_tests::exit_interrupts_before_requesting_shutdown"
+      ],
+      "platforms": [
+        "GNU job",
+        "musl-label job (same GNU RBE, not musl)",
+        "Mac ARM",
+        "Mac Intel",
+        "Windows"
+      ],
+      "reason": "No exact TUI success body in these archives. Windows TUI target PASS29.4s is real but does not supply the missing original case output. The identity of shard3's single uploaded file remains a source/count inference."
+    },
+    {
+      "id": "B23",
+      "target": "//codex-rs/app-server:app-server-unit-tests",
+      "names": [
+        "drain_handle_tests::repeated_drain_requests_preserve_the_real_completion_acknowledgement",
+        "drain_handle_tests::requesting_drain_does_not_acknowledge_outstanding_turns",
+        "shutdown_signals::tests::first_sigint_survives_cancelled_receive",
+        "shutdown_signals::tests::first_sighup_survives_cancelled_receive",
+        "shutdown_signals::tests::first_sigterm_survives_cancelled_receive"
+      ],
+      "platforms": [
+        "GNU job",
+        "musl-label job (same GNU RBE, not musl)",
+        "Mac ARM",
+        "Mac Intel"
+      ],
+      "reason": "Original five-case native causal evidence was a different source tree; current target/cache success lacks exact signal/drain bodies."
+    },
+    {
+      "id": "B23",
+      "target": "//codex-rs/app-server:app-server-unit-tests",
+      "names": [
+        "drain_handle_tests::repeated_drain_requests_preserve_the_real_completion_acknowledgement",
+        "drain_handle_tests::requesting_drain_does_not_acknowledge_outstanding_turns"
+      ],
+      "platforms": [
+        "Windows"
+      ],
+      "reason": "Only the portable drain controls are applicable here; the three Unix signal parents are original cfg exclusions, not Windows passes."
+    }
+  ],
+  "new_retention_candidate": {
+    "manifest": "00869f84b429c93e8006a248faf57af80012d5e7",
+    "patch": "08813bc3453b331056c2fb1a1b16f90aed88720e",
+    "root_static_review": "0ff3886fbd3e22ac8ea9709284e0380d28dd4af7",
+    "architecture_static_review": "2542b3f69b62aa8844fa56bc7fa094ce5656f391",
+    "state": "STATIC_ACCEPTED_NOT_APPLIED_OR_TESTED_AT_THIS_REVIEW",
+    "constraints": "Same original product test invocation/filter/budget/cache/retry/skip/exit. Missing remote-success records remain explicit incomplete evidence. The sole CI mutator verifies fresh preimages and runs the original script gate."
+  },
+  "corrected_b22_wording": "The single-upload-member being the compact log is source-plus-upload-count inference, not an independently inspected ZIP-member fact.",
+  "fully_closed_ledger_ids": [],
+  "other_original_flaky_failures_preserved": [
+    {
+      "platforms": [
+        "gnu",
+        "musl-label"
+      ],
+      "target": "//codex-rs/app-server:app-server-all-wine-exec-test",
+      "case": "suite::v2::account::login_account_chatgpt_device_code_can_be_cancelled",
+      "attempt": "shard_14_of_16/test_attempts/attempt_1.log",
+      "source_review": "3a8a43ce9e53a2a9b496403e4437d29f96812d40",
+      "note": "This original FAILED row is outside B20; no claim the full AppServer target was first-attempt green."
+    },
+    {
+      "platforms": [
+        "windows"
+      ],
+      "target": "//codex-rs/app-server:app-server-all-test",
+      "case": "suite::v2::multi_agent_v2_developer_instructions::cold_resume_preserves_effective_developer_instructions_for_worker::test_case_1_inherits_parent_developer_instructions_without_an_override",
+      "attempt": "shard_11_of_16/test_attempts/attempt_1.log",
+      "source_review": "36920461da0727915efb9e0735377d3d0021f8d7"
+    },
+    {
+      "platforms": [
+        "windows"
+      ],
+      "target": "//codex-rs/app-server:app-server-all-test",
+      "case": "suite::v2::plugin_list::app_server_startup_refreshes_cached_remote_catalog_without_blocking_plugin_list",
+      "attempt": "shard_3_of_16/test_attempts/attempt_1.log",
+      "source_review": "36920461da0727915efb9e0735377d3d0021f8d7"
+    }
+  ]
+}

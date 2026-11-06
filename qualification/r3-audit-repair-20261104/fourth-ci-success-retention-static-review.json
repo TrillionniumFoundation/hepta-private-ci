@@ -1,0 +1,132 @@
+{
+  "schema": "hepta.fourth.ci-success-retention.root-static-review.v1",
+  "observed_at_utc": "2026-11-04 22:57:42 UTC",
+  "manifest": "00869f84b429c93e8006a248faf57af80012d5e7",
+  "patch": "08813bc3453b331056c2fb1a1b16f90aed88720e",
+  "disposition": "STATIC_ACCEPTED_ORIGINAL_PYTHON_REGRESSION_AND_HOSTED_CI_PENDING",
+  "checks": {
+    "files": [
+      {
+        "path": ".github/scripts/collect_bazel_failed_test_logs.py",
+        "before_blob": "27294323b62aae86d288a9d42d4c7cf21f5da003",
+        "after_blob": "e7745ee2a1b8b230119027c0faf56e58462d97ed",
+        "before": {
+          "bytes": 9611,
+          "sha256": "d3668532f2030afd6b0daec407c03f3896deba47fa2414d7b15b788ccc0295af"
+        },
+        "after": {
+          "bytes": 16171,
+          "sha256": "ee091e5af356afb4bb868debf61704290b26d7319ca57e12b2179abf5a1f5147"
+        },
+        "before_match": true,
+        "after_match": true,
+        "roundtrip": true
+      },
+      {
+        "path": ".github/scripts/run-bazel-ci.sh",
+        "before_blob": "6960ef43592d3f09454374367da1cd8923e2ed80",
+        "after_blob": "204c0ac2481f70cc977f777eb2299b740f7ddc17",
+        "before": {
+          "bytes": 14752,
+          "sha256": "52b63cef9c51e4a905eaf9a2529348103161355e2606249bb5e5bd7fb90ce301"
+        },
+        "after": {
+          "bytes": 17214,
+          "sha256": "c98766a076b79dc00f08104989faf55cce56375da8ff8ac5d14fb4686b1d6fe7"
+        },
+        "before_match": true,
+        "after_match": true,
+        "roundtrip": true
+      },
+      {
+        "path": ".github/scripts/test_run_bazel_ci.py",
+        "before_blob": "0fc2062e950133a1fc736a5303f928a28698c91b",
+        "after_blob": "045457bb4d7f5e54d4429a93615970a223bb48db",
+        "before": {
+          "bytes": 24707,
+          "sha256": "df6261055504a1d494afbccda3f173f0c3e0fdc09f02dd9ebf17f0c8c45ba289"
+        },
+        "after": {
+          "bytes": 33780,
+          "sha256": "ded8a2f14aab391f3f571780df8e39ee0ca626b6a1962331449318192c67c65c"
+        },
+        "before_match": true,
+        "after_match": true,
+        "roundtrip": true
+      }
+    ],
+    "old_test_definitions": [
+      {
+        "name": "test_keyless_cross_uses_msvc_exec_and_gnullvm_target",
+        "unchanged": true
+      },
+      {
+        "name": "test_large_windows_build_preserves_all_targets_without_a_large_native_command",
+        "unchanged": true
+      },
+      {
+        "name": "test_windows_target_files_preserve_test_and_coverage_failures",
+        "unchanged": true
+      },
+      {
+        "name": "test_native_windows_forwards_required_msvc_environment",
+        "unchanged": true
+      },
+      {
+        "name": "test_native_windows_rejects_missing_required_msvc_environment",
+        "unchanged": true
+      },
+      {
+        "name": "test_windows_argument_lint_uses_the_shared_split_abi_wrapper",
+        "unchanged": true
+      },
+      {
+        "name": "test_windows_argument_lint_preserves_the_entire_large_crlf_query_roster",
+        "unchanged": true
+      },
+      {
+        "name": "test_authenticated_cross_keeps_linux_build_actions_and_windows_tests",
+        "unchanged": true
+      },
+      {
+        "name": "test_failure_preserves_status_linker_diagnostics_and_test_log_configuration",
+        "unchanged": true
+      },
+      {
+        "name": "test_failure_archives_all_selected_shards_and_attempts_without_truncation",
+        "unchanged": true
+      },
+      {
+        "name": "test_collector_accepts_root_link_but_refuses_traversal_and_external_links",
+        "unchanged": true
+      },
+      {
+        "name": "test_collector_failure_keeps_original_bazel_status_and_tail",
+        "unchanged": true
+      },
+      {
+        "name": "test_success_does_not_collect_failed_test_logs",
+        "unchanged": true
+      }
+    ],
+    "new_count": 16,
+    "actual_bazel_command_body_byte_identical": true,
+    "original_safe_copy_engine_byte_identical_except_optional_mtime": true,
+    "original_target_path_parser_byte_identical": true
+  },
+  "reviewed_logic": [
+    "Only ten exact existing target labels are eligible, and only unambiguous PASSED/FLAKY console summaries select existing local files. SKIPPED/NOT_REPORTED/ambiguous/failed targets do not turn old directories into successful-case evidence.",
+    "Current invocation's owned console file drives selection. Cached markers, original status lines, absent/conflicting results, requested config/filter/cache/retry/timeout/shard flags, collection-time Git identity and per-file mtime/hash/bytes are retained explicitly.",
+    "New selected-target-test-logs scope/schema does not call successful logs failed. It explicitly disclaims complete case inventory, test-start identity and independent per-file invocation binding.",
+    "Actual test command construction/execution/PIPESTATUS capture is byte-identical. No test rerun, new target execution, downloading policy, timeout, cache, retry, production permission or dependency change.",
+    "Collection remains diagnostic and preserves original Bazel exit status 0 or nonzero. Existing failed-target tail/archive path is retained. Existing configured upload root already includes the new directory.",
+    "Copied original safe traversal/streaming/error machinery is byte-identical except selected-mode mtime provenance. Original 13 test method bodies remain byte-identical, including R1 effective-argv and LF fixture fixes; three meaningful evidence-copy/failure controls are added."
+  ],
+  "limitations": [
+    "Not yet syntax-checked or executed on the native source.",
+    "A locally absent remote-success log remains absent. No original TUI/Queue/Core/Hook/etc case is declared PASS by this patch alone.",
+    "An absent cached marker is not proof of local or fresh remote execution. NOT_REPORTED is not labeled filtered/skipped without separate evidence.",
+    "Windows paths retain the existing MSYS conversion exclusion mechanism, but original Windows runtime must still run.",
+    "A first root method-comparison parser missed multiline Python signatures; the final comparison recognizes all 13 originals and all 16 final definitions. No source/test result changed because of that review correction."
+  ]
+}

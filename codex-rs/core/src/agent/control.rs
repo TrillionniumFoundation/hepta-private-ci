@@ -67,11 +67,14 @@ use uuid::Uuid;
 pub(crate) use self::execution::AgentExecutionGuard;
 use self::execution::AgentExecutionLimiter;
 use self::residency::V2Residency;
+pub(crate) use self::transitions::AgentTransitionLease;
+use self::transitions::AgentTransitions;
 
 mod execution;
 mod legacy;
 mod residency;
 mod spawn;
+mod transitions;
 mod user_authorization;
 
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -122,6 +125,7 @@ pub(crate) struct AgentControl {
     /// Captured at construction so delegates retain their manager's allocation policy.
     thread_id_generator: ThreadIdGenerator,
     state: Arc<AgentRegistry>,
+    transitions: Arc<AgentTransitions>,
     v2_residency: Arc<V2Residency>,
     agent_execution_limiter: Arc<AgentExecutionLimiter>,
     /// Session-scoped state shared by the root thread and every cloned sub-agent control handle.
@@ -150,6 +154,7 @@ impl AgentControl {
             manager,
             thread_id_generator,
             state: Arc::default(),
+            transitions: Arc::default(),
             v2_residency: Arc::default(),
             agent_execution_limiter: Arc::default(),
             rollout_budget: Arc::default(),
@@ -210,7 +215,7 @@ impl AgentControl {
             )),
             Err(err) => Err(err),
         };
-        self.handle_thread_request_result(agent_id, &state, result)
+        self.handle_thread_request_result(agent_id, &state, &thread, result)
             .await
     }
 
@@ -317,6 +322,7 @@ impl AgentControl {
         parent_turn_id: Option<String>,
         root_turn_id: Option<String>,
     ) -> CodexResult<String> {
+        let thread = state.get_thread(agent_id).await?;
         let communication_for_log =
             crate::agent_communication::logging_enabled().then(|| communication.clone());
         let parent_turn_id = parent_turn_id.filter(|_| communication.trigger_turn);
@@ -325,9 +331,10 @@ impl AgentControl {
             .handle_thread_request_result(
                 agent_id,
                 state,
+                &thread,
                 state
-                    .send_op(
-                        agent_id,
+                    .send_op_to_runtime(
+                        thread.as_ref(),
                         Op::InterAgentCommunication { communication },
                         parent_turn_id,
                         root_turn_id,
@@ -351,12 +358,14 @@ impl AgentControl {
     /// Interrupt the current task for an existing agent thread.
     pub(crate) async fn interrupt_agent(&self, agent_id: ThreadId) -> CodexResult<String> {
         let state = self.upgrade()?;
+        let thread = state.get_thread(agent_id).await?;
         self.handle_thread_request_result(
             agent_id,
             &state,
+            &thread,
             state
-                .send_op(
-                    agent_id,
+                .send_op_to_runtime(
+                    thread.as_ref(),
                     Op::Interrupt,
                     /*parent_turn_id*/ None,
                     /*root_turn_id*/ None,
@@ -370,15 +379,19 @@ impl AgentControl {
         &self,
         agent_id: ThreadId,
         state: &Arc<ThreadManagerState>,
+        thread: &Arc<crate::CodexThread>,
         result: CodexResult<String>,
     ) -> CodexResult<String> {
         if result
             .as_ref()
             .is_err_and(|err| matches!(err.details(), CodexErrorDetails::InternalAgentDied))
         {
-            let _ = state.remove_thread(&agent_id).await;
-            self.forget_v2_residency(agent_id);
-            self.state.release_spawned_thread(agent_id);
+            let _ = state
+                .retire_runtime_if_current(agent_id, thread, || {
+                    self.forget_v2_residency(agent_id);
+                    self.state.release_spawned_thread(agent_id);
+                })
+                .await;
         }
         result
     }

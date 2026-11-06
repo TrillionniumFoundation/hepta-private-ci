@@ -14,10 +14,10 @@ FIXTURES = ROOT / ".github/fixtures/windows-private-state-acquisition"
 PREFIX = "private_state_windows::directory::tests::"
 CREATION = PREFIX + "rejects_junction_before_creating_private_leaf"
 SUBSTITUTION = PREFIX + "rejects_ancestor_substitution_at_retained_open"
-SOURCE_SHA256 = "05f8abf49d5a0d5f099695d6138e01525ac9b5e0b369e5172e0dd8f342e2f2a6"
+SOURCE_SHA256 = "66c07bc62a3d808bb980f83ff7ff7faf5d0430f228d3cc8cc696cb6dbeb60f51"
 PATCHES = {
-    "unchecked-create": "93ed0742de0e4cfe226334fd2f71f1129ee42125f214ecf77297916d97696369",
-    "path-check-open": "24efb0448aaac1cc0a1b70bf661ad590fe0d1ee407d7787ea5b33c9923f2b320",
+    "unchecked-create": "c882a2f9798b3aa5318236c6a16b7bd0edde1cd5b88395e3364a2bb831899448",
+    "path-check-open": "e57b07ed6fc04bd973d05c4426576cb42253b35ab423ac39f1a3c2f792f2fdd9",
 }
 COMMAND = [
     "just",
@@ -27,7 +27,8 @@ COMMAND = [
     "codex-utils-path",
     "--lib",
     "-E",
-    f"test({PREFIX})",
+    # Other directory regressions run in the full private-state step.
+    f"test({CREATION}) | test({SUBSTITUTION})",
     "--test-threads",
     "1",
     "--no-tests",

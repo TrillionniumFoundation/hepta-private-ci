@@ -1,0 +1,95 @@
+{
+  "schema": "hepta-app-parent-liveness-invalid-first-negative-root-review-v1",
+  "reviewed_at_utc": "2026-11-05T03:41:42.321883+00:00",
+  "source_bundle": {
+    "bytes": 77480,
+    "sha256": "6f84b598ab2a21e96c2148106c235bd67227eabd0a5ac641f77c582fb23bb4ee",
+    "blob": "92e85c6f4ccdcf54e49ea7dbb6269bde28938f91"
+  },
+  "job": "1a1a9bd0f35-fc05-3714",
+  "all_original_small_files_reopened_and_hashed": 13,
+  "original_test": {
+    "name": "parent_lifecycle::tests::exited_original_parent_is_rejected_after_actual_reparenting",
+    "result": "FAIL",
+    "seconds": "5.005",
+    "retry": 0,
+    "causal_negative_valid": false,
+    "failure_location": "parent_lifecycle_tests.rs:68:18",
+    "cause": "Nested libtest banner and first marker share one line. The unchanged strict marker equality stopped before kill/reparent/arm. No parent-death counterfactual was reached."
+  },
+  "actual_runtime_status": {
+    "at_unix_ms": 1793849683585,
+    "audit_recorded": true,
+    "automatic_retry": false,
+    "cancelled": false,
+    "exit_code": 1,
+    "job_id": "1a1a9bd0f35-fc05-3714",
+    "launch_nonce": "46aaf2887f3291ae4618e09363058ae7",
+    "log_bytes": {
+      "stderr": {
+        "seen": 901,
+        "stored": 901
+      },
+      "stdout": {
+        "seen": 2765,
+        "stored": 2765
+      }
+    },
+    "log_errors": {
+      "stderr": null,
+      "stdout": null
+    },
+    "log_synced": {
+      "stderr": true,
+      "stdout": true
+    },
+    "log_truncated": {
+      "stderr": false,
+      "stdout": false
+    },
+    "output_complete": true,
+    "output_durable": true,
+    "state": "failed",
+    "terminal_publication_confirmed": true,
+    "terminal_publication_protocol": 1,
+    "timed_out": false
+  },
+  "source_at_test": "7e1bb54a24c240287c7f4f6a2b85fed008509cff",
+  "exact_finally_restored": {
+    "negative_tree": "7e1bb54a24c240287c7f4f6a2b85fed008509cff",
+    "positive_tree": "d8a5e94af06b9555fc8256af1337e9f28f7c7fa8",
+    "actual_source_at_return": "d8a5e94af06b9555fc8256af1337e9f28f7c7fa8",
+    "restored_exact_positive": true,
+    "original_exception": {
+      "type": "AssertionError",
+      "message": "negative did not reach its specific physical causal oracle",
+      "traceback": "Traceback (most recent call last):\n  File \"<string>\", line 323, in negative_with_finally\n    review, raw = run_scope(stage[\"scope\"]); proof = qualify_negative(stage[\"kind\"], review, raw)\n                                                     ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"<string>\", line 316, in qualify_negative\n    assert proof[\"qualified\"], \"negative did not reach its specific physical causal oracle\"\n           ~~~~~^^^^^^^^^^^^^\nAssertionError: negative did not reach its specific physical causal oracle\n"
+    },
+    "restoration_exception": null,
+    "negative_qualified": false,
+    "next_stage_allowed": false,
+    "contract": "Only the exact owned negative tree with unchanged ordinary index, locks and no unreviewed untracked input may be restored. Invalid negative evidence stops after restoration; external drift is never overwritten."
+  },
+  "next_stages_executed": false,
+  "minimal_fixture_correction": {
+    "before_blob": "0293bce3c08720952fd3413c92c4e9a033da3d03",
+    "after_blob": "ed07ba4eed573d659dfdf647b1aab241a28e4b46",
+    "bytes_added": 16,
+    "logical_added_lines": 1,
+    "only_change": "println!(); at owned support entry",
+    "all_remaining_bytes_equal": true,
+    "marker_equality_unchanged": true,
+    "all_budgets_unchanged": true,
+    "production_source_unchanged": true,
+    "new_early_panic_macro_line": 259,
+    "new_leak_panic_macro_line": 269,
+    "no_rearm_panic_macro_line": 111,
+    "runtime_qualification": "PENDING_NEW_EXECUTION"
+  },
+  "not_claimed": [
+    "valid counterfactual",
+    "App repair passed",
+    "original disconnect passed",
+    "any original B-ID closure"
+  ]
+}

@@ -1,0 +1,836 @@
+{
+  "schema": "hepta-complete-native-stage-frozen-compressed-export-v1",
+  "created_at": "2026-11-05T03:03:11.576415+00:00",
+  "original_job": "1a1a9a0aa93-fc05-3667",
+  "source_directory": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full18-three-repairs-v3-20261105-0254",
+  "terminal_source": "7d703610ae4f778ad305ebc139860d276f416e8c",
+  "execution_guard": "f9e355f7b7b39749fe64811bb029d2e6d6e3c174",
+  "tested_phase_sources": [
+    {
+      "label": "skills-marker-negative",
+      "source": "59fa1100c2ad24328e7841611092132ca08942ad",
+      "counts": {
+        "FAIL": 1
+      }
+    },
+    {
+      "label": "skills-original-nine",
+      "source": "51673d30d34674faeac6bb17e565fc9d04aec8f1",
+      "counts": {
+        "PASS": 9
+      }
+    },
+    {
+      "label": "migration-inference-negative",
+      "source": "f9bfef21d511a3e9ee25fb67802d240c691f62ec",
+      "counts": {
+        "FAIL": 1
+      }
+    },
+    {
+      "label": "migration-original-package",
+      "source": "b2cee2e56d32199dc67d362ec15b796b2814ee7e",
+      "counts": {
+        "PASS": 166
+      }
+    },
+    {
+      "label": "v8-and-runtime-original",
+      "source": "7d703610ae4f778ad305ebc139860d276f416e8c",
+      "counts": {
+        "PASS": 76
+      }
+    }
+  ],
+  "original_unique_files_count": 171,
+  "assets": [
+    {
+      "name": "migration-inference-negative-metadata.stdout",
+      "original": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full18-three-repairs-v3-20261105-0254/migration-inference-negative-metadata.stdout",
+        "bytes": 8163658,
+        "sha256": "51ff98c991ea71a7a1be5135acb3c35bd6070b09544306f4b3bbc0fa1ea52e19"
+      },
+      "gzip": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full18-three-repairs-v3-frozen-export-20261105/migration-inference-negative-metadata.stdout.gz",
+        "bytes": 596961,
+        "sha256": "8e52af367ddcdc8a0694f7ab5aecc04137d9e6be16c24089c3b869f216d6e826"
+      },
+      "gzip_mtime": 0,
+      "base64_bytes": 795948,
+      "base64_sha256": "05b7da731e02afd2751d37771428d5bfe9fb37d31d0793ae05d86aaf6bc1198c",
+      "parts": [
+        {
+          "offset": 0,
+          "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full18-three-repairs-v3-frozen-export-20261105/migration-inference-negative-metadata.stdout-parts/0000.txt",
+          "bytes": 44000,
+          "sha256": "a93f454b69d5d33b2546ff6dab8bac4e8314a416d946c7d8b4648c1745218a99"
+        },
+        {
+          "offset": 44000,
+          "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full18-three-repairs-v3-frozen-export-20261105/migration-inference-negative-metadata.stdout-parts/0001.txt",
+          "bytes": 44000,
+          "sha256": "82265ed6c2b002fa04d15aabd9651f5ffd29bcdfe88fc494660554eb64c070b8"
+        },
+        {
+          "offset": 88000,
+          "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full18-three-repairs-v3-frozen-export-20261105/migration-inference-negative-metadata.stdout-parts/0002.txt",
+          "bytes": 44000,
+          "sha256": "9eb58165e495a43bb8e8bcd1d2cf4a45c5737bf764f5e592f79f91af87e32096"
+        },
+        {
+          "offset": 132000,
+          "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full18-three-repairs-v3-frozen-export-20261105/migration-inference-negative-metadata.stdout-parts/0003.txt",
+          "bytes": 44000,
+          "sha256": "15e97ed68d5769f7cc16f77d1899ebed4db723971aa26dcba5b923435005d7d8"
+        },
+        {
+          "offset": 176000,
+          "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full18-three-repairs-v3-frozen-export-20261105/migration-inference-negative-metadata.stdout-parts/0004.txt",
+          "bytes": 44000,
+          "sha256": "9344ccbe220b4968d4b313f12ca0e0bd44faf3b486cef42edd0cda650ea0ddc9"
+        },
+        {
+          "offset": 220000,
+          "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full18-three-repairs-v3-frozen-export-20261105/migration-inference-negative-metadata.stdout-parts/0005.txt",
+          "bytes": 44000,
+          "sha256": "89f55bfb2b5d187160532823f3d79d1aa1ea9d543d9042f3c7606057ec024778"
+        },
+        {
+          "offset": 264000,
+          "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full18-three-repairs-v3-frozen-export-20261105/migration-inference-negative-metadata.stdout-parts/0006.txt",
+          "bytes": 44000,
+          "sha256": "aef8919e853b03bcfaf1013a6f8a128cee8f62c2e9478a42753f3e8b1d9fbbf1"
+        },
+        {
+          "offset": 308000,
+          "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full18-three-repairs-v3-frozen-export-20261105/migration-inference-negative-metadata.stdout-parts/0007.txt",
+          "bytes": 44000,
+          "sha256": "3dedff792b8837b2ff0f221b36fa001f13ef9c2188c6c3edd49ce6649a7fbea0"
+        },
+        {
+          "offset": 352000,
+          "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full18-three-repairs-v3-frozen-export-20261105/migration-inference-negative-metadata.stdout-parts/0008.txt",
+          "bytes": 44000,
+          "sha256": "5c8412399d282f67e5010943a7bc33d218036d64f8fd5cd96cdf7aa4b1140364"
+        },
+        {
+          "offset": 396000,
+          "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full18-three-repairs-v3-frozen-export-20261105/migration-inference-negative-metadata.stdout-parts/0009.txt",
+          "bytes": 44000,
+          "sha256": "a9e451d94905ae12641f250a3067b073fd49b77d7be90c27c82e3f70a3025e4f"
+        },
+        {
+          "offset": 440000,
+          "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full18-three-repairs-v3-frozen-export-20261105/migration-inference-negative-metadata.stdout-parts/0010.txt",
+          "bytes": 44000,
+          "sha256": "57a9751f31dbc58b751d08997d1cdaf6122d06773e554f9a9873fffaf8047738"
+        },
+        {
+          "offset": 484000,
+          "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full18-three-repairs-v3-frozen-export-20261105/migration-inference-negative-metadata.stdout-parts/0011.txt",
+          "bytes": 44000,
+          "sha256": "1443166c4ae6e29951b5c8c4de1af05bc2d813ac3a7bc06c39d983e6717e23ac"
+        },
+        {
+          "offset": 528000,
+          "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full18-three-repairs-v3-frozen-export-20261105/migration-inference-negative-metadata.stdout-parts/0012.txt",
+          "bytes": 44000,
+          "sha256": "4ce342af5a497db140343df8b8e005d6efef7572b4be88c6543957ef45d1e461"
+        },
+        {
+          "offset": 572000,
+          "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full18-three-repairs-v3-frozen-export-20261105/migration-inference-negative-metadata.stdout-parts/0013.txt",
+          "bytes": 44000,
+          "sha256": "d7570c0011a9cdade577bf7d1327e4f852a39c7faf0589ef65fa138c6fe2617e"
+        },
+        {
+          "offset": 616000,
+          "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full18-three-repairs-v3-frozen-export-20261105/migration-inference-negative-metadata.stdout-parts/0014.txt",
+          "bytes": 44000,
+          "sha256": "cffe70e2e279225a6dd176b1025386b70184d46463b879e7063228c2efe73e65"
+        },
+        {
+          "offset": 660000,
+          "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full18-three-repairs-v3-frozen-export-20261105/migration-inference-negative-metadata.stdout-parts/0015.txt",
+          "bytes": 44000,
+          "sha256": "2e672cf0250c8231c980f295f4c4d46b52ab930d3c69d4cc0cd21951b41599c6"
+        },
+        {
+          "offset": 704000,
+          "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full18-three-repairs-v3-frozen-export-20261105/migration-inference-negative-metadata.stdout-parts/0016.txt",
+          "bytes": 44000,
+          "sha256": "b2024180792c817a7b802ab15b881ca27d2c3919e60fc7583314892dd4cf6d3d"
+        },
+        {
+          "offset": 748000,
+          "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full18-three-repairs-v3-frozen-export-20261105/migration-inference-negative-metadata.stdout-parts/0017.txt",
+          "bytes": 44000,
+          "sha256": "51bcc19c4732814013c5f3d0be912db7527e16c05dfd44a82047e7185000628a"
+        },
+        {
+          "offset": 792000,
+          "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full18-three-repairs-v3-frozen-export-20261105/migration-inference-negative-metadata.stdout-parts/0018.txt",
+          "bytes": 3948,
+          "sha256": "e627e5cf7befa532ae81fb6aa45cbe131728a4b340bd23c317229bdb4eb152a1"
+        }
+      ]
+    },
+    {
+      "name": "migration-original-package-metadata.stdout",
+      "original": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full18-three-repairs-v3-20261105-0254/migration-original-package-metadata.stdout",
+        "bytes": 8163658,
+        "sha256": "51ff98c991ea71a7a1be5135acb3c35bd6070b09544306f4b3bbc0fa1ea52e19"
+      },
+      "gzip": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full18-three-repairs-v3-frozen-export-20261105/migration-original-package-metadata.stdout.gz",
+        "bytes": 596961,
+        "sha256": "8e52af367ddcdc8a0694f7ab5aecc04137d9e6be16c24089c3b869f216d6e826"
+      },
+      "gzip_mtime": 0,
+      "base64_bytes": 795948,
+      "base64_sha256": "05b7da731e02afd2751d37771428d5bfe9fb37d31d0793ae05d86aaf6bc1198c",
+      "parts": [
+        {
+          "offset": 0,
+          "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full18-three-repairs-v3-frozen-export-20261105/migration-original-package-metadata.stdout-parts/0000.txt",
+          "bytes": 44000,
+          "sha256": "a93f454b69d5d33b2546ff6dab8bac4e8314a416d946c7d8b4648c1745218a99"
+        },
+        {
+          "offset": 44000,
+          "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full18-three-repairs-v3-frozen-export-20261105/migration-original-package-metadata.stdout-parts/0001.txt",
+          "bytes": 44000,
+          "sha256": "82265ed6c2b002fa04d15aabd9651f5ffd29bcdfe88fc494660554eb64c070b8"
+        },
+        {
+          "offset": 88000,
+          "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full18-three-repairs-v3-frozen-export-20261105/migration-original-package-metadata.stdout-parts/0002.txt",
+          "bytes": 44000,
+          "sha256": "9eb58165e495a43bb8e8bcd1d2cf4a45c5737bf764f5e592f79f91af87e32096"
+        },
+        {
+          "offset": 132000,
+          "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full18-three-repairs-v3-frozen-export-20261105/migration-original-package-metadata.stdout-parts/0003.txt",
+          "bytes": 44000,
+          "sha256": "15e97ed68d5769f7cc16f77d1899ebed4db723971aa26dcba5b923435005d7d8"
+        },
+        {
+          "offset": 176000,
+          "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full18-three-repairs-v3-frozen-export-20261105/migration-original-package-metadata.stdout-parts/0004.txt",
+          "bytes": 44000,
+          "sha256": "9344ccbe220b4968d4b313f12ca0e0bd44faf3b486cef42edd0cda650ea0ddc9"
+        },
+        {
+          "offset": 220000,
+          "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full18-three-repairs-v3-frozen-export-20261105/migration-original-package-metadata.stdout-parts/0005.txt",
+          "bytes": 44000,
+          "sha256": "89f55bfb2b5d187160532823f3d79d1aa1ea9d543d9042f3c7606057ec024778"
+        },
+        {
+          "offset": 264000,
+          "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full18-three-repairs-v3-frozen-export-20261105/migration-original-package-metadata.stdout-parts/0006.txt",
+          "bytes": 44000,
+          "sha256": "aef8919e853b03bcfaf1013a6f8a128cee8f62c2e9478a42753f3e8b1d9fbbf1"
+        },
+        {
+          "offset": 308000,
+          "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full18-three-repairs-v3-frozen-export-20261105/migration-original-package-metadata.stdout-parts/0007.txt",
+          "bytes": 44000,
+          "sha256": "3dedff792b8837b2ff0f221b36fa001f13ef9c2188c6c3edd49ce6649a7fbea0"
+        },
+        {
+          "offset": 352000,
+          "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full18-three-repairs-v3-frozen-export-20261105/migration-original-package-metadata.stdout-parts/0008.txt",
+          "bytes": 44000,
+          "sha256": "5c8412399d282f67e5010943a7bc33d218036d64f8fd5cd96cdf7aa4b1140364"
+        },
+        {
+          "offset": 396000,
+          "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full18-three-repairs-v3-frozen-export-20261105/migration-original-package-metadata.stdout-parts/0009.txt",
+          "bytes": 44000,
+          "sha256": "a9e451d94905ae12641f250a3067b073fd49b77d7be90c27c82e3f70a3025e4f"
+        },
+        {
+          "offset": 440000,
+          "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full18-three-repairs-v3-frozen-export-20261105/migration-original-package-metadata.stdout-parts/0010.txt",
+          "bytes": 44000,
+          "sha256": "57a9751f31dbc58b751d08997d1cdaf6122d06773e554f9a9873fffaf8047738"
+        },
+        {
+          "offset": 484000,
+          "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full18-three-repairs-v3-frozen-export-20261105/migration-original-package-metadata.stdout-parts/0011.txt",
+          "bytes": 44000,
+          "sha256": "1443166c4ae6e29951b5c8c4de1af05bc2d813ac3a7bc06c39d983e6717e23ac"
+        },
+        {
+          "offset": 528000,
+          "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full18-three-repairs-v3-frozen-export-20261105/migration-original-package-metadata.stdout-parts/0012.txt",
+          "bytes": 44000,
+          "sha256": "4ce342af5a497db140343df8b8e005d6efef7572b4be88c6543957ef45d1e461"
+        },
+        {
+          "offset": 572000,
+          "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full18-three-repairs-v3-frozen-export-20261105/migration-original-package-metadata.stdout-parts/0013.txt",
+          "bytes": 44000,
+          "sha256": "d7570c0011a9cdade577bf7d1327e4f852a39c7faf0589ef65fa138c6fe2617e"
+        },
+        {
+          "offset": 616000,
+          "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full18-three-repairs-v3-frozen-export-20261105/migration-original-package-metadata.stdout-parts/0014.txt",
+          "bytes": 44000,
+          "sha256": "cffe70e2e279225a6dd176b1025386b70184d46463b879e7063228c2efe73e65"
+        },
+        {
+          "offset": 660000,
+          "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full18-three-repairs-v3-frozen-export-20261105/migration-original-package-metadata.stdout-parts/0015.txt",
+          "bytes": 44000,
+          "sha256": "2e672cf0250c8231c980f295f4c4d46b52ab930d3c69d4cc0cd21951b41599c6"
+        },
+        {
+          "offset": 704000,
+          "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full18-three-repairs-v3-frozen-export-20261105/migration-original-package-metadata.stdout-parts/0016.txt",
+          "bytes": 44000,
+          "sha256": "b2024180792c817a7b802ab15b881ca27d2c3919e60fc7583314892dd4cf6d3d"
+        },
+        {
+          "offset": 748000,
+          "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full18-three-repairs-v3-frozen-export-20261105/migration-original-package-metadata.stdout-parts/0017.txt",
+          "bytes": 44000,
+          "sha256": "51bcc19c4732814013c5f3d0be912db7527e16c05dfd44a82047e7185000628a"
+        },
+        {
+          "offset": 792000,
+          "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full18-three-repairs-v3-frozen-export-20261105/migration-original-package-metadata.stdout-parts/0018.txt",
+          "bytes": 3948,
+          "sha256": "e627e5cf7befa532ae81fb6aa45cbe131728a4b340bd23c317229bdb4eb152a1"
+        }
+      ]
+    },
+    {
+      "name": "migration-original-package-selection.json",
+      "original": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full18-three-repairs-v3-20261105-0254/migration-original-package-selection.json",
+        "bytes": 78838,
+        "sha256": "a0bf469b95fea9053f1ad3feef9f05779a9427f2dabdb92881389e245c622cf9"
+      },
+      "gzip": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full18-three-repairs-v3-frozen-export-20261105/migration-original-package-selection.json.gz",
+        "bytes": 6639,
+        "sha256": "b27d533ee83a1394b72b8244ad2721078838c839d5ec86fa48da367f12670dc7"
+      },
+      "gzip_mtime": 0,
+      "base64_bytes": 8852,
+      "base64_sha256": "3bc01305942c56e74db5ea33aed24eb49d104b6ae06d478cf9c5f5c2bed4a082",
+      "parts": [
+        {
+          "offset": 0,
+          "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full18-three-repairs-v3-frozen-export-20261105/migration-original-package-selection.json-parts/0000.txt",
+          "bytes": 8852,
+          "sha256": "3bc01305942c56e74db5ea33aed24eb49d104b6ae06d478cf9c5f5c2bed4a082"
+        }
+      ]
+    },
+    {
+      "name": "migration-original-package.log",
+      "original": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full18-three-repairs-v3-20261105-0254/migration-original-package.log",
+        "bytes": 78925,
+        "sha256": "a994abd8523a56c5124ebf3d16b12137c6f122cc71743c423c83fcef75be8905"
+      },
+      "gzip": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full18-three-repairs-v3-frozen-export-20261105/migration-original-package.log.gz",
+        "bytes": 7056,
+        "sha256": "6952789b17d96c565115726b578caefd323d7181ffdc8ab82f587f2ef00a3fe6"
+      },
+      "gzip_mtime": 0,
+      "base64_bytes": 9408,
+      "base64_sha256": "f52aa5b95adc9068a0ed075c8418e8cb48e7ecb1956b5d043ed1d75c7c064861",
+      "parts": [
+        {
+          "offset": 0,
+          "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full18-three-repairs-v3-frozen-export-20261105/migration-original-package.log-parts/0000.txt",
+          "bytes": 9408,
+          "sha256": "f52aa5b95adc9068a0ed075c8418e8cb48e7ecb1956b5d043ed1d75c7c064861"
+        }
+      ]
+    },
+    {
+      "name": "skills-marker-negative-metadata.stdout",
+      "original": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full18-three-repairs-v3-20261105-0254/skills-marker-negative-metadata.stdout",
+        "bytes": 8163658,
+        "sha256": "51ff98c991ea71a7a1be5135acb3c35bd6070b09544306f4b3bbc0fa1ea52e19"
+      },
+      "gzip": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full18-three-repairs-v3-frozen-export-20261105/skills-marker-negative-metadata.stdout.gz",
+        "bytes": 596961,
+        "sha256": "8e52af367ddcdc8a0694f7ab5aecc04137d9e6be16c24089c3b869f216d6e826"
+      },
+      "gzip_mtime": 0,
+      "base64_bytes": 795948,
+      "base64_sha256": "05b7da731e02afd2751d37771428d5bfe9fb37d31d0793ae05d86aaf6bc1198c",
+      "parts": [
+        {
+          "offset": 0,
+          "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full18-three-repairs-v3-frozen-export-20261105/skills-marker-negative-metadata.stdout-parts/0000.txt",
+          "bytes": 44000,
+          "sha256": "a93f454b69d5d33b2546ff6dab8bac4e8314a416d946c7d8b4648c1745218a99"
+        },
+        {
+          "offset": 44000,
+          "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full18-three-repairs-v3-frozen-export-20261105/skills-marker-negative-metadata.stdout-parts/0001.txt",
+          "bytes": 44000,
+          "sha256": "82265ed6c2b002fa04d15aabd9651f5ffd29bcdfe88fc494660554eb64c070b8"
+        },
+        {
+          "offset": 88000,
+          "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full18-three-repairs-v3-frozen-export-20261105/skills-marker-negative-metadata.stdout-parts/0002.txt",
+          "bytes": 44000,
+          "sha256": "9eb58165e495a43bb8e8bcd1d2cf4a45c5737bf764f5e592f79f91af87e32096"
+        },
+        {
+          "offset": 132000,
+          "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full18-three-repairs-v3-frozen-export-20261105/skills-marker-negative-metadata.stdout-parts/0003.txt",
+          "bytes": 44000,
+          "sha256": "15e97ed68d5769f7cc16f77d1899ebed4db723971aa26dcba5b923435005d7d8"
+        },
+        {
+          "offset": 176000,
+          "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full18-three-repairs-v3-frozen-export-20261105/skills-marker-negative-metadata.stdout-parts/0004.txt",
+          "bytes": 44000,
+          "sha256": "9344ccbe220b4968d4b313f12ca0e0bd44faf3b486cef42edd0cda650ea0ddc9"
+        },
+        {
+          "offset": 220000,
+          "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full18-three-repairs-v3-frozen-export-20261105/skills-marker-negative-metadata.stdout-parts/0005.txt",
+          "bytes": 44000,
+          "sha256": "89f55bfb2b5d187160532823f3d79d1aa1ea9d543d9042f3c7606057ec024778"
+        },
+        {
+          "offset": 264000,
+          "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full18-three-repairs-v3-frozen-export-20261105/skills-marker-negative-metadata.stdout-parts/0006.txt",
+          "bytes": 44000,
+          "sha256": "aef8919e853b03bcfaf1013a6f8a128cee8f62c2e9478a42753f3e8b1d9fbbf1"
+        },
+        {
+          "offset": 308000,
+          "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full18-three-repairs-v3-frozen-export-20261105/skills-marker-negative-metadata.stdout-parts/0007.txt",
+          "bytes": 44000,
+          "sha256": "3dedff792b8837b2ff0f221b36fa001f13ef9c2188c6c3edd49ce6649a7fbea0"
+        },
+        {
+          "offset": 352000,
+          "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full18-three-repairs-v3-frozen-export-20261105/skills-marker-negative-metadata.stdout-parts/0008.txt",
+          "bytes": 44000,
+          "sha256": "5c8412399d282f67e5010943a7bc33d218036d64f8fd5cd96cdf7aa4b1140364"
+        },
+        {
+          "offset": 396000,
+          "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full18-three-repairs-v3-frozen-export-20261105/skills-marker-negative-metadata.stdout-parts/0009.txt",
+          "bytes": 44000,
+          "sha256": "a9e451d94905ae12641f250a3067b073fd49b77d7be90c27c82e3f70a3025e4f"
+        },
+        {
+          "offset": 440000,
+          "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full18-three-repairs-v3-frozen-export-20261105/skills-marker-negative-metadata.stdout-parts/0010.txt",
+          "bytes": 44000,
+          "sha256": "57a9751f31dbc58b751d08997d1cdaf6122d06773e554f9a9873fffaf8047738"
+        },
+        {
+          "offset": 484000,
+          "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full18-three-repairs-v3-frozen-export-20261105/skills-marker-negative-metadata.stdout-parts/0011.txt",
+          "bytes": 44000,
+          "sha256": "1443166c4ae6e29951b5c8c4de1af05bc2d813ac3a7bc06c39d983e6717e23ac"
+        },
+        {
+          "offset": 528000,
+          "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full18-three-repairs-v3-frozen-export-20261105/skills-marker-negative-metadata.stdout-parts/0012.txt",
+          "bytes": 44000,
+          "sha256": "4ce342af5a497db140343df8b8e005d6efef7572b4be88c6543957ef45d1e461"
+        },
+        {
+          "offset": 572000,
+          "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full18-three-repairs-v3-frozen-export-20261105/skills-marker-negative-metadata.stdout-parts/0013.txt",
+          "bytes": 44000,
+          "sha256": "d7570c0011a9cdade577bf7d1327e4f852a39c7faf0589ef65fa138c6fe2617e"
+        },
+        {
+          "offset": 616000,
+          "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full18-three-repairs-v3-frozen-export-20261105/skills-marker-negative-metadata.stdout-parts/0014.txt",
+          "bytes": 44000,
+          "sha256": "cffe70e2e279225a6dd176b1025386b70184d46463b879e7063228c2efe73e65"
+        },
+        {
+          "offset": 660000,
+          "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full18-three-repairs-v3-frozen-export-20261105/skills-marker-negative-metadata.stdout-parts/0015.txt",
+          "bytes": 44000,
+          "sha256": "2e672cf0250c8231c980f295f4c4d46b52ab930d3c69d4cc0cd21951b41599c6"
+        },
+        {
+          "offset": 704000,
+          "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full18-three-repairs-v3-frozen-export-20261105/skills-marker-negative-metadata.stdout-parts/0016.txt",
+          "bytes": 44000,
+          "sha256": "b2024180792c817a7b802ab15b881ca27d2c3919e60fc7583314892dd4cf6d3d"
+        },
+        {
+          "offset": 748000,
+          "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full18-three-repairs-v3-frozen-export-20261105/skills-marker-negative-metadata.stdout-parts/0017.txt",
+          "bytes": 44000,
+          "sha256": "51bcc19c4732814013c5f3d0be912db7527e16c05dfd44a82047e7185000628a"
+        },
+        {
+          "offset": 792000,
+          "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full18-three-repairs-v3-frozen-export-20261105/skills-marker-negative-metadata.stdout-parts/0018.txt",
+          "bytes": 3948,
+          "sha256": "e627e5cf7befa532ae81fb6aa45cbe131728a4b340bd23c317229bdb4eb152a1"
+        }
+      ]
+    },
+    {
+      "name": "skills-original-nine-metadata.stdout",
+      "original": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full18-three-repairs-v3-20261105-0254/skills-original-nine-metadata.stdout",
+        "bytes": 8163658,
+        "sha256": "51ff98c991ea71a7a1be5135acb3c35bd6070b09544306f4b3bbc0fa1ea52e19"
+      },
+      "gzip": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full18-three-repairs-v3-frozen-export-20261105/skills-original-nine-metadata.stdout.gz",
+        "bytes": 596961,
+        "sha256": "8e52af367ddcdc8a0694f7ab5aecc04137d9e6be16c24089c3b869f216d6e826"
+      },
+      "gzip_mtime": 0,
+      "base64_bytes": 795948,
+      "base64_sha256": "05b7da731e02afd2751d37771428d5bfe9fb37d31d0793ae05d86aaf6bc1198c",
+      "parts": [
+        {
+          "offset": 0,
+          "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full18-three-repairs-v3-frozen-export-20261105/skills-original-nine-metadata.stdout-parts/0000.txt",
+          "bytes": 44000,
+          "sha256": "a93f454b69d5d33b2546ff6dab8bac4e8314a416d946c7d8b4648c1745218a99"
+        },
+        {
+          "offset": 44000,
+          "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full18-three-repairs-v3-frozen-export-20261105/skills-original-nine-metadata.stdout-parts/0001.txt",
+          "bytes": 44000,
+          "sha256": "82265ed6c2b002fa04d15aabd9651f5ffd29bcdfe88fc494660554eb64c070b8"
+        },
+        {
+          "offset": 88000,
+          "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full18-three-repairs-v3-frozen-export-20261105/skills-original-nine-metadata.stdout-parts/0002.txt",
+          "bytes": 44000,
+          "sha256": "9eb58165e495a43bb8e8bcd1d2cf4a45c5737bf764f5e592f79f91af87e32096"
+        },
+        {
+          "offset": 132000,
+          "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full18-three-repairs-v3-frozen-export-20261105/skills-original-nine-metadata.stdout-parts/0003.txt",
+          "bytes": 44000,
+          "sha256": "15e97ed68d5769f7cc16f77d1899ebed4db723971aa26dcba5b923435005d7d8"
+        },
+        {
+          "offset": 176000,
+          "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full18-three-repairs-v3-frozen-export-20261105/skills-original-nine-metadata.stdout-parts/0004.txt",
+          "bytes": 44000,
+          "sha256": "9344ccbe220b4968d4b313f12ca0e0bd44faf3b486cef42edd0cda650ea0ddc9"
+        },
+        {
+          "offset": 220000,
+          "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full18-three-repairs-v3-frozen-export-20261105/skills-original-nine-metadata.stdout-parts/0005.txt",
+          "bytes": 44000,
+          "sha256": "89f55bfb2b5d187160532823f3d79d1aa1ea9d543d9042f3c7606057ec024778"
+        },
+        {
+          "offset": 264000,
+          "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full18-three-repairs-v3-frozen-export-20261105/skills-original-nine-metadata.stdout-parts/0006.txt",
+          "bytes": 44000,
+          "sha256": "aef8919e853b03bcfaf1013a6f8a128cee8f62c2e9478a42753f3e8b1d9fbbf1"
+        },
+        {
+          "offset": 308000,
+          "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full18-three-repairs-v3-frozen-export-20261105/skills-original-nine-metadata.stdout-parts/0007.txt",
+          "bytes": 44000,
+          "sha256": "3dedff792b8837b2ff0f221b36fa001f13ef9c2188c6c3edd49ce6649a7fbea0"
+        },
+        {
+          "offset": 352000,
+          "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full18-three-repairs-v3-frozen-export-20261105/skills-original-nine-metadata.stdout-parts/0008.txt",
+          "bytes": 44000,
+          "sha256": "5c8412399d282f67e5010943a7bc33d218036d64f8fd5cd96cdf7aa4b1140364"
+        },
+        {
+          "offset": 396000,
+          "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full18-three-repairs-v3-frozen-export-20261105/skills-original-nine-metadata.stdout-parts/0009.txt",
+          "bytes": 44000,
+          "sha256": "a9e451d94905ae12641f250a3067b073fd49b77d7be90c27c82e3f70a3025e4f"
+        },
+        {
+          "offset": 440000,
+          "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full18-three-repairs-v3-frozen-export-20261105/skills-original-nine-metadata.stdout-parts/0010.txt",
+          "bytes": 44000,
+          "sha256": "57a9751f31dbc58b751d08997d1cdaf6122d06773e554f9a9873fffaf8047738"
+        },
+        {
+          "offset": 484000,
+          "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full18-three-repairs-v3-frozen-export-20261105/skills-original-nine-metadata.stdout-parts/0011.txt",
+          "bytes": 44000,
+          "sha256": "1443166c4ae6e29951b5c8c4de1af05bc2d813ac3a7bc06c39d983e6717e23ac"
+        },
+        {
+          "offset": 528000,
+          "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full18-three-repairs-v3-frozen-export-20261105/skills-original-nine-metadata.stdout-parts/0012.txt",
+          "bytes": 44000,
+          "sha256": "4ce342af5a497db140343df8b8e005d6efef7572b4be88c6543957ef45d1e461"
+        },
+        {
+          "offset": 572000,
+          "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full18-three-repairs-v3-frozen-export-20261105/skills-original-nine-metadata.stdout-parts/0013.txt",
+          "bytes": 44000,
+          "sha256": "d7570c0011a9cdade577bf7d1327e4f852a39c7faf0589ef65fa138c6fe2617e"
+        },
+        {
+          "offset": 616000,
+          "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full18-three-repairs-v3-frozen-export-20261105/skills-original-nine-metadata.stdout-parts/0014.txt",
+          "bytes": 44000,
+          "sha256": "cffe70e2e279225a6dd176b1025386b70184d46463b879e7063228c2efe73e65"
+        },
+        {
+          "offset": 660000,
+          "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full18-three-repairs-v3-frozen-export-20261105/skills-original-nine-metadata.stdout-parts/0015.txt",
+          "bytes": 44000,
+          "sha256": "2e672cf0250c8231c980f295f4c4d46b52ab930d3c69d4cc0cd21951b41599c6"
+        },
+        {
+          "offset": 704000,
+          "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full18-three-repairs-v3-frozen-export-20261105/skills-original-nine-metadata.stdout-parts/0016.txt",
+          "bytes": 44000,
+          "sha256": "b2024180792c817a7b802ab15b881ca27d2c3919e60fc7583314892dd4cf6d3d"
+        },
+        {
+          "offset": 748000,
+          "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full18-three-repairs-v3-frozen-export-20261105/skills-original-nine-metadata.stdout-parts/0017.txt",
+          "bytes": 44000,
+          "sha256": "51bcc19c4732814013c5f3d0be912db7527e16c05dfd44a82047e7185000628a"
+        },
+        {
+          "offset": 792000,
+          "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full18-three-repairs-v3-frozen-export-20261105/skills-original-nine-metadata.stdout-parts/0018.txt",
+          "bytes": 3948,
+          "sha256": "e627e5cf7befa532ae81fb6aa45cbe131728a4b340bd23c317229bdb4eb152a1"
+        }
+      ]
+    },
+    {
+      "name": "terminal.json",
+      "original": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full18-three-repairs-v3-20261105-0254/terminal.json",
+        "bytes": 442484,
+        "sha256": "8eeb0e45ba86abe64d603b55f3dd9e81427f892f88a558ab887dfef24f9b415d"
+      },
+      "gzip": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full18-three-repairs-v3-frozen-export-20261105/terminal.json.gz",
+        "bytes": 61867,
+        "sha256": "6f9bac3246aa5c1a92c291151db9d285e19cd63163ad0bf9450ec61e11aad172"
+      },
+      "gzip_mtime": 0,
+      "base64_bytes": 82492,
+      "base64_sha256": "2c27a39dca00f8dfba2776c3b2cc98334bbb0497a348fdf62c4ead13d278e584",
+      "parts": [
+        {
+          "offset": 0,
+          "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full18-three-repairs-v3-frozen-export-20261105/terminal.json-parts/0000.txt",
+          "bytes": 44000,
+          "sha256": "190f5417a22d420b48c3212fec0faeaaee055211d78ae9c53f1616f8e404e0d0"
+        },
+        {
+          "offset": 44000,
+          "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full18-three-repairs-v3-frozen-export-20261105/terminal.json-parts/0001.txt",
+          "bytes": 38492,
+          "sha256": "4127a4af56772f10696f47aa114d52fc85de363f9d5d6dd0141b51320bca6dca"
+        }
+      ]
+    },
+    {
+      "name": "v8-and-runtime-original-metadata.stdout",
+      "original": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full18-three-repairs-v3-20261105-0254/v8-and-runtime-original-metadata.stdout",
+        "bytes": 8163699,
+        "sha256": "3a53323eae920e2e53dcb3e334128a4aff63cfb51840793e9150d617d2c9ba18"
+      },
+      "gzip": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full18-three-repairs-v3-frozen-export-20261105/v8-and-runtime-original-metadata.stdout.gz",
+        "bytes": 596975,
+        "sha256": "2bfdeb1b46c29492c9af1a154f7a6ef9c2dca853991dc92d66704244fd23553d"
+      },
+      "gzip_mtime": 0,
+      "base64_bytes": 795968,
+      "base64_sha256": "b435316db0802312920c577b35ece7871377b854bada0d9a1451338f8944e720",
+      "parts": [
+        {
+          "offset": 0,
+          "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full18-three-repairs-v3-frozen-export-20261105/v8-and-runtime-original-metadata.stdout-parts/0000.txt",
+          "bytes": 44000,
+          "sha256": "a93f454b69d5d33b2546ff6dab8bac4e8314a416d946c7d8b4648c1745218a99"
+        },
+        {
+          "offset": 44000,
+          "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full18-three-repairs-v3-frozen-export-20261105/v8-and-runtime-original-metadata.stdout-parts/0001.txt",
+          "bytes": 44000,
+          "sha256": "82265ed6c2b002fa04d15aabd9651f5ffd29bcdfe88fc494660554eb64c070b8"
+        },
+        {
+          "offset": 88000,
+          "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full18-three-repairs-v3-frozen-export-20261105/v8-and-runtime-original-metadata.stdout-parts/0002.txt",
+          "bytes": 44000,
+          "sha256": "774cbf4e389238e1a329e72699fb417d4d0243f000c7885d11affcec4b5983c9"
+        },
+        {
+          "offset": 132000,
+          "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full18-three-repairs-v3-frozen-export-20261105/v8-and-runtime-original-metadata.stdout-parts/0003.txt",
+          "bytes": 44000,
+          "sha256": "dbf24ffd0d994285513ac342f7cb9a61076987007a3dfb64c14604c574eb2981"
+        },
+        {
+          "offset": 176000,
+          "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full18-three-repairs-v3-frozen-export-20261105/v8-and-runtime-original-metadata.stdout-parts/0004.txt",
+          "bytes": 44000,
+          "sha256": "f1d3c3938480a2ba4a4079ae78cf5c75a1190f1a202609a59c35d27cbace05c9"
+        },
+        {
+          "offset": 220000,
+          "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full18-three-repairs-v3-frozen-export-20261105/v8-and-runtime-original-metadata.stdout-parts/0005.txt",
+          "bytes": 44000,
+          "sha256": "df1f0091165976b2eb27667ba0cea15c005cd0b9a1ffc326884f4aeff3fa60de"
+        },
+        {
+          "offset": 264000,
+          "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full18-three-repairs-v3-frozen-export-20261105/v8-and-runtime-original-metadata.stdout-parts/0006.txt",
+          "bytes": 44000,
+          "sha256": "07bb3a80e2e89be7c08f307861521950b24693be8bf01b76a9b1f1cbf232b8c1"
+        },
+        {
+          "offset": 308000,
+          "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full18-three-repairs-v3-frozen-export-20261105/v8-and-runtime-original-metadata.stdout-parts/0007.txt",
+          "bytes": 44000,
+          "sha256": "5bab8a4713fcc605481010da74a9d0a06136c041124727c98ecf3817d49a6444"
+        },
+        {
+          "offset": 352000,
+          "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full18-three-repairs-v3-frozen-export-20261105/v8-and-runtime-original-metadata.stdout-parts/0008.txt",
+          "bytes": 44000,
+          "sha256": "f9cdc84e2ccb4998627b23153821d2ddd1ea67762055f39ff51bb2761d12f217"
+        },
+        {
+          "offset": 396000,
+          "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full18-three-repairs-v3-frozen-export-20261105/v8-and-runtime-original-metadata.stdout-parts/0009.txt",
+          "bytes": 44000,
+          "sha256": "f422cb967dff7f5b45058e549e6834f0c7820d340b04400714b59d4369f7e606"
+        },
+        {
+          "offset": 440000,
+          "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full18-three-repairs-v3-frozen-export-20261105/v8-and-runtime-original-metadata.stdout-parts/0010.txt",
+          "bytes": 44000,
+          "sha256": "9dae4ba9f591a2421aa5fe07780528665aa56df9ec176bf5b0a9888f73498233"
+        },
+        {
+          "offset": 484000,
+          "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full18-three-repairs-v3-frozen-export-20261105/v8-and-runtime-original-metadata.stdout-parts/0011.txt",
+          "bytes": 44000,
+          "sha256": "651490add8e6094f9276bd6e99852ccabbac3ed984b29bf4c151047666142419"
+        },
+        {
+          "offset": 528000,
+          "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full18-three-repairs-v3-frozen-export-20261105/v8-and-runtime-original-metadata.stdout-parts/0012.txt",
+          "bytes": 44000,
+          "sha256": "cfc4f16c822bdaf0cf8e1c315014f08e804c85d98210522e4a11d082c2851199"
+        },
+        {
+          "offset": 572000,
+          "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full18-three-repairs-v3-frozen-export-20261105/v8-and-runtime-original-metadata.stdout-parts/0013.txt",
+          "bytes": 44000,
+          "sha256": "310656984c38871bf7122512f02e51c94029fdc1bf937f4cb3e4eb8bdcfd8a25"
+        },
+        {
+          "offset": 616000,
+          "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full18-three-repairs-v3-frozen-export-20261105/v8-and-runtime-original-metadata.stdout-parts/0014.txt",
+          "bytes": 44000,
+          "sha256": "833b3fa61c42dfb16cd305f639558255f4d49d6afc3aa6ce7c96002abc8362c9"
+        },
+        {
+          "offset": 660000,
+          "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full18-three-repairs-v3-frozen-export-20261105/v8-and-runtime-original-metadata.stdout-parts/0015.txt",
+          "bytes": 44000,
+          "sha256": "33cd299b960d7bf8c51c646fb9312cdd085703e87277bfc29b6a62457490706b"
+        },
+        {
+          "offset": 704000,
+          "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full18-three-repairs-v3-frozen-export-20261105/v8-and-runtime-original-metadata.stdout-parts/0016.txt",
+          "bytes": 44000,
+          "sha256": "d728852b769857c60c16fbc72d1271f926a66dc91a57b8a2acb9843f2553ba70"
+        },
+        {
+          "offset": 748000,
+          "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full18-three-repairs-v3-frozen-export-20261105/v8-and-runtime-original-metadata.stdout-parts/0017.txt",
+          "bytes": 44000,
+          "sha256": "1f1dd2ffeac86873237da25d3b2066e4e1c787fe267a721f1e6c2db8cab2926a"
+        },
+        {
+          "offset": 792000,
+          "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full18-three-repairs-v3-frozen-export-20261105/v8-and-runtime-original-metadata.stdout-parts/0018.txt",
+          "bytes": 3968,
+          "sha256": "ae74bcceaa603df77032d811aab2325d7285c60bd293050085423ef0438aa38f"
+        }
+      ]
+    },
+    {
+      "name": "complete-small-originals.json",
+      "original": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full18-three-repairs-v3-frozen-export-20261105/complete-small-originals.json",
+        "bytes": 1191872,
+        "sha256": "0610d0b9281881287d1b77bed196f66f5f7b442394aa7799654e2ce301255cc2"
+      },
+      "gzip": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full18-three-repairs-v3-frozen-export-20261105/complete-small-originals.json.gz",
+        "bytes": 154170,
+        "sha256": "4df4032372ec03aa0af2351c82698969d89043b4b0f17365f77ede1cc3ce348b"
+      },
+      "gzip_mtime": 0,
+      "base64_bytes": 205560,
+      "base64_sha256": "1b8b3c5877011cbaa556b05e90d0ef7a6385faccf251758af24347e172370e12",
+      "parts": [
+        {
+          "offset": 0,
+          "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full18-three-repairs-v3-frozen-export-20261105/complete-small-originals.json-parts/0000.txt",
+          "bytes": 44000,
+          "sha256": "8512144ce563b81c265572403c79a117afa4f0cce4f3926977077d3dad919c9f"
+        },
+        {
+          "offset": 44000,
+          "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full18-three-repairs-v3-frozen-export-20261105/complete-small-originals.json-parts/0001.txt",
+          "bytes": 44000,
+          "sha256": "2e6784a531f255f850693a126a523ddd0836ab046c8d69a1a4507fd7b1d2a18d"
+        },
+        {
+          "offset": 88000,
+          "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full18-three-repairs-v3-frozen-export-20261105/complete-small-originals.json-parts/0002.txt",
+          "bytes": 44000,
+          "sha256": "69425186a010ec25fbf1aa79e67f0d4b10e991c63805650ee9ae6de1436d1a58"
+        },
+        {
+          "offset": 132000,
+          "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full18-three-repairs-v3-frozen-export-20261105/complete-small-originals.json-parts/0003.txt",
+          "bytes": 44000,
+          "sha256": "7cd076d9ef208fb7437f3abf251dc9c9bd99efae9b2eaea60facb670935c44ab"
+        },
+        {
+          "offset": 176000,
+          "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full18-three-repairs-v3-frozen-export-20261105/complete-small-originals.json-parts/0004.txt",
+          "bytes": 29560,
+          "sha256": "90376aecac2e19bc412e8b2d7549026341eb2fcb71221bb2efbe4c3db9960e5a"
+        }
+      ]
+    }
+  ],
+  "original_files_untouched": true,
+  "scope_limit": "Actual two causal negatives, original9/166/76 zero-retry scoped package passes and real Bazel lock update/check. Not whole-workspace or cross-platform closure. Original failed V2 fixture remains separate."
+}

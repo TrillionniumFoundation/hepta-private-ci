@@ -1,0 +1,228 @@
+{
+  "schema": "hepta.ci-selected-target-evidence-retention-candidate.v1",
+  "created_at_utc": "2026-11-04 22:55:27 UTC",
+  "status": "STATIC_CANDIDATE_NOT_APPLIED_NOT_EXECUTED",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "based_on": {
+    "product_commit": "cabcb40d36e116beaa65750e1f674c52035da785",
+    "product_tree": "b2d7f038d6d88156bc6a4cb29c8703f69b808f29",
+    "owning_test_preimage": "0fc2062e950133a1fc736a5303f928a28698c91b",
+    "owning_preimage_confirmation": "CI owner confirmed the current e84 owning source still uses this exact test script; LF fixture and effective argv fixes are retained. This candidate is a three-path delta, not a claim the entire e84 tree was reverified.",
+    "old_cabc_test_blob": "aba44fc70d8b7e786b6c5cc3dc07551eb148f4b8",
+    "before_files": [
+      {
+        "path": ".github/scripts/collect_bazel_failed_test_logs.py",
+        "blob": "27294323b62aae86d288a9d42d4c7cf21f5da003",
+        "bytes": 9611,
+        "sha256": "d3668532f2030afd6b0daec407c03f3896deba47fa2414d7b15b788ccc0295af"
+      },
+      {
+        "path": ".github/scripts/run-bazel-ci.sh",
+        "blob": "6960ef43592d3f09454374367da1cd8923e2ed80",
+        "bytes": 14752,
+        "sha256": "52b63cef9c51e4a905eaf9a2529348103161355e2606249bb5e5bd7fb90ce301"
+      },
+      {
+        "path": ".github/scripts/test_run_bazel_ci.py",
+        "blob": "0fc2062e950133a1fc736a5303f928a28698c91b",
+        "bytes": 24707,
+        "sha256": "df6261055504a1d494afbccda3f173f0c3e0fdc09f02dd9ebf17f0c8c45ba289"
+      }
+    ]
+  },
+  "problem": {
+    "evidence_map_json": "c9265a2edc78d3e78e6ef137cf90498194a5bf5c",
+    "evidence_map_md": "de9722e71c9b7dd7032f739b0aec7a2d2ea410ae",
+    "original_cabc_run": 41902318286,
+    "ordinary_merge": "28af7f705fa1024b9a6d2ef751fec116002260eb",
+    "conclusion": "Original successful targets were outside the failed-target-only collector. The original seven-ledger exit conditions require exact case bodies and attempt context, which target-level green or a cached summary cannot replace.",
+    "b22_single_artifact_member_inference": "The Windows shard3 upload reported one file, while the wrapper writes a compact execution log and invokes the collector only for failures. Interpreting that single uploaded file as the compact log is a source-plus-count inference; its ZIP member was not independently read in this audit."
+  },
+  "changes": {
+    "path_count": 3,
+    "lines_added": 411,
+    "lines_removed": 35,
+    "files": [
+      {
+        "path": ".github/scripts/collect_bazel_failed_test_logs.py",
+        "blob": "e7745ee2a1b8b230119027c0faf56e58462d97ed",
+        "bytes": 16171,
+        "sha256": "ee091e5af356afb4bb868debf61704290b26d7319ca57e12b2179abf5a1f5147"
+      },
+      {
+        "path": ".github/scripts/run-bazel-ci.sh",
+        "blob": "204c0ac2481f70cc977f777eb2299b740f7ddc17",
+        "bytes": 17214,
+        "sha256": "c98766a076b79dc00f08104989faf55cce56375da8ff8ac5d14fb4686b1d6fe7"
+      },
+      {
+        "path": ".github/scripts/test_run_bazel_ci.py",
+        "blob": "045457bb4d7f5e54d4429a93615970a223bb48db",
+        "bytes": 33780,
+        "sha256": "ded8a2f14aab391f3f571780df8e39ee0ca626b6a1962331449318192c67c65c"
+      }
+    ],
+    "patch": {
+      "path": "selected-target-retention.patch",
+      "blob": "08813bc3453b331056c2fb1a1b16f90aed88720e",
+      "bytes": 25193,
+      "sha256": "0ec0b7d53318ef3a5f8fc40287320d22ffea89ec9de3a2c60e2e478677b5655a"
+    },
+    "retained_targets": [
+      "//codex-rs/tui:tui-unit-tests",
+      "//codex-rs/ext/queue:queue-queue_service-test",
+      "//codex-rs/app-server:app-server-all-test",
+      "//codex-rs/app-server:app-server-unit-tests",
+      "//codex-rs/app-server:app-server-all-wine-exec-test",
+      "//codex-rs/codex-mcp:codex-mcp-unit-tests",
+      "//codex-rs/core:core-unit-tests",
+      "//codex-rs/core:core-all-test",
+      "//codex-rs/core:core-all-wine-exec-test",
+      "//codex-rs/hepta-agentd:hepta-agentd-cognitive-write-qualification-test"
+    ],
+    "workflow_change": false,
+    "original_workflow_blob": "9eed8ed8fa46c88d9d89d1499f55cb8c303137af",
+    "existing_upload_contract": "The existing workflow already uploads CODEX_BAZEL_EXECUTION_LOG_COMPACT_DIR after success or failure. The added selected-target-test-logs directory lives inside that existing upload root.",
+    "trigger": "The existing --print-failed-test-logs option continues its failure-tail behavior. If the existing compact-log directory is configured and the original command is test, it additionally plans selected-target evidence after the original command completes, including an overall success.",
+    "selection": "Only exact allowlisted target summary lines from the completed invocation's owned console temp file are considered. PASSED and FLAKY select existing logs. SKIPPED, NOT_REPORTED, FAILED, TIMEOUT, NO STATUS, and conflicting summaries do not select successful-scope logs. The unchanged failed collector remains responsible for its original FAIL:/Testing failure targets.",
+    "statuses": "Each allowlisted target records all matching summary lines, a status, and the presence/absence/unknown state of the cached marker. Conflicting status/cache reports are explicitly AMBIGUOUS and incomplete, with no directory traversal.",
+    "filters": "NUL-separated existing wrapper arguments are handed to the collector in a temporary file with the existing Windows MSYS conversion guard. Only named config/filter/cache/timeout/retry/shard options are retained in metadata. This records wrapper-requested flags, not expanded Bazel RC options or a per-case selection proof.",
+    "archive_scope": "New schema bazel_selected_target_logs_v1 in selected-target-test-logs/invocation-*/manifest.json. Legacy failed-test-logs schema, filename semantics and normal CLI remain intact.",
+    "source": "Existing git commit/tree/tracked-worktree-dirty source checks run at collection time. The manifest explicitly does not claim test-start source identity or an independently established per-file invocation binding.",
+    "unavailable": "Missing local records, changing files, linked escapes, copy/source errors or ambiguous summaries make complete_for_selected_targets false and produce an explicit warning. The original Bazel exit code remains the result.",
+    "no_remote_materialization": "No download flag, cache policy, remote access, rerun or rebuild is added. Missing remote-success logs remain missing evidence; old local files are not silently promoted to a fresh execution.",
+    "limits": "complete_for_selected_targets only describes copying the selected existing records; complete_case_inventory is explicitly false. A cached marker is not a new platform execution. Its absence does not prove independent execution. NOT_REPORTED is not equivalent to filtered or skipped.",
+    "file_preservation": "The same safe copier preserves existing test.log, test.xml and test_attempts *.log/*.xml, with no truncation; per-file byte count, SHA256, local mtime and relative path are retained. test.outputs/runfiles are excluded."
+  },
+  "static_checks": {
+    "rebuilt_all_equal": true,
+    "old_definitions": [
+      {
+        "test": "test_keyless_cross_uses_msvc_exec_and_gnullvm_target",
+        "unchanged": true
+      },
+      {
+        "test": "test_large_windows_build_preserves_all_targets_without_a_large_native_command",
+        "unchanged": true
+      },
+      {
+        "test": "test_windows_target_files_preserve_test_and_coverage_failures",
+        "unchanged": true
+      },
+      {
+        "test": "test_native_windows_forwards_required_msvc_environment",
+        "unchanged": true
+      },
+      {
+        "test": "test_native_windows_rejects_missing_required_msvc_environment",
+        "unchanged": true
+      },
+      {
+        "test": "test_windows_argument_lint_uses_the_shared_split_abi_wrapper",
+        "unchanged": true
+      },
+      {
+        "test": "test_windows_argument_lint_preserves_the_entire_large_crlf_query_roster",
+        "unchanged": true
+      },
+      {
+        "test": "test_authenticated_cross_keeps_linux_build_actions_and_windows_tests",
+        "unchanged": true
+      },
+      {
+        "test": "test_failure_preserves_status_linker_diagnostics_and_test_log_configuration",
+        "unchanged": true
+      },
+      {
+        "test": "test_failure_archives_all_selected_shards_and_attempts_without_truncation",
+        "unchanged": true
+      },
+      {
+        "test": "test_collector_accepts_root_link_but_refuses_traversal_and_external_links",
+        "unchanged": true
+      },
+      {
+        "test": "test_collector_failure_keeps_original_bazel_status_and_tail",
+        "unchanged": true
+      },
+      {
+        "test": "test_success_does_not_collect_failed_test_logs",
+        "unchanged": true
+      }
+    ],
+    "build_argv_and_command_region_unchanged": true,
+    "safety_engine_unchanged_except_optional_mtime": true,
+    "target_path_unchanged": true,
+    "shared_cpp_rust_source_modified": false,
+    "original_test_command_budget_filter_cache_skip_retry_modified": false,
+    "original_test_definitions_count": 13,
+    "new_test_definitions": [
+      "test_success_retains_reported_targets_and_preserves_status_scope",
+      "test_missing_selected_logs_preserve_success_and_failure_status",
+      "test_conflicting_selected_summaries_do_not_read_existing_logs"
+    ],
+    "total_test_definitions_in_file": 16,
+    "build_or_test_executed": false,
+    "python_or_shell_syntax_executed": false,
+    "artifact_or_case_closure_claimed": false
+  },
+  "original_regression_gate": {
+    "command": "python3 -m unittest discover -s .github/scripts -p 'test_run_bazel*.py'",
+    "existing_scope": "CI owner reports the existing complete scope was 54 tests on the previous exact source. This candidate adds three definitions; the next sole-lane run must report its actual roster/count rather than borrowing 54 or assuming 57 passed.",
+    "preserved_original_tests": [
+      "test_keyless_cross_uses_msvc_exec_and_gnullvm_target",
+      "test_large_windows_build_preserves_all_targets_without_a_large_native_command",
+      "test_windows_target_files_preserve_test_and_coverage_failures",
+      "test_native_windows_forwards_required_msvc_environment",
+      "test_native_windows_rejects_missing_required_msvc_environment",
+      "test_windows_argument_lint_uses_the_shared_split_abi_wrapper",
+      "test_windows_argument_lint_preserves_the_entire_large_crlf_query_roster",
+      "test_authenticated_cross_keeps_linux_build_actions_and_windows_tests",
+      "test_failure_preserves_status_linker_diagnostics_and_test_log_configuration",
+      "test_failure_archives_all_selected_shards_and_attempts_without_truncation",
+      "test_collector_accepts_root_link_but_refuses_traversal_and_external_links",
+      "test_collector_failure_keeps_original_bazel_status_and_tail",
+      "test_success_does_not_collect_failed_test_logs"
+    ],
+    "necessary_original_controls": [
+      "Original >1 MiB multi-shard / attempt binary-safe copying and hashes.",
+      "Existing real root link acceptance with path traversal / nested external link refusal.",
+      "Original output-creation failure keeps Bazel exit 37 and diagnostic tail.",
+      "Original successful unselected target does not invoke bazel info or create a failed archive.",
+      "Windows native argument transport, 900-target pattern file, effective expanded argv, CRLF query roster, and the owning LF fixture correction."
+    ],
+    "new_controls": [
+      {
+        "test": "test_success_retains_reported_targets_and_preserves_status_scope",
+        "purpose": "Real temporary testlogs with >1 MiB binary content, shards, failed attempt log/XML, successful uncached/cached/flaky summaries, skipped/unreported stale logs and unrelated outputs. Assert exact copied payload set, file hashes/mtime, source identity, scope, cache markers and original argv/filter/retry/timeout preservation."
+      },
+      {
+        "test": "test_missing_selected_logs_preserve_success_and_failure_status",
+        "purpose": "Missing successful local logs remain explicitly incomplete on both original Bazel status 0 and 37. The original failed target archive/tail remains available for status 37."
+      },
+      {
+        "test": "test_conflicting_selected_summaries_do_not_read_existing_logs",
+        "purpose": "Conflicting PASSED/SKIPPED reports cannot promote an existing stale target log into evidence; ambiguity remains incomplete while original Bazel success remains 0."
+      }
+    ],
+    "syntax_gates": [
+      "bash -n .github/scripts/run-bazel-ci.sh",
+      "python3 -m py_compile .github/scripts/collect_bazel_failed_test_logs.py .github/scripts/test_run_bazel_ci.py"
+    ],
+    "actual_next_ci_acceptance": [
+      "Apply only after all three current preimages are verified by the sole CI mutator; do not overwrite a newer owning test script.",
+      "Retain the same original workflow commands and their target/cache/retry/skip/time budgets.",
+      "Verify uploaded new-schema manifests, source commit/tree and track dirty state against the actual next source/merge checkout.",
+      "Use exact test.log/XML case and attempt bodies where present; retain cached/retried/filtered distinctions.",
+      "If remote-success logs are absent or local records lack an independently established invocation binding, keep the affected exact-case/platform gate open."
+    ]
+  },
+  "safety_and_scope": {
+    "no_native_or_ref_mutation": true,
+    "no_cargo_or_platform_install": true,
+    "no_production_permission_change": true,
+    "unavailable_artifacts_not_fabricated": true,
+    "no_ledger_id_closed_by_candidate": true
+  },
+  "supersedes_metadata_only": "da182eb6eba3dccaf3cc4e015fbf179684c64cac omitted the per-file list because of a duplicate JSON construction key; no candidate source changed."
+}

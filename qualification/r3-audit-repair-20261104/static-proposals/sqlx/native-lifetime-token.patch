@@ -1,0 +1,585 @@
+diff --git a/sqlx-sqlite/src/options/mod.rs b/sqlx-sqlite/src/options/mod.rs
+--- a/sqlx-sqlite/src/options/mod.rs
++++ b/sqlx-sqlite/src/options/mod.rs
+@@ -2,12 +2,14 @@
+ 
+ mod auto_vacuum;
+ mod connect;
++mod connection_lifetime;
+ mod journal_mode;
+ mod locking_mode;
+ mod parse;
+ mod synchronous;
+ 
+ use crate::connection::LogSettings;
++pub(crate) use connection_lifetime::ConnectionLifetimeToken;
+ pub use auto_vacuum::SqliteAutoVacuum;
+ pub use journal_mode::SqliteJournalMode;
+ pub use locking_mode::SqliteLockingMode;
+@@ -84,6 +86,7 @@
+     pub(crate) row_channel_size: usize,
+ 
+     pub(crate) collations: Vec<Collation>,
++    pub(crate) connection_lifetime: Option<ConnectionLifetimeToken>,
+ 
+     pub(crate) serialized: bool,
+     pub(crate) thread_name: Arc<DebugFn<dyn Fn(u64) -> String + Send + Sync + 'static>>,
+@@ -208,6 +211,7 @@
+             #[cfg(feature = "load-extension")]
+             extensions: Default::default(),
+             collations: Default::default(),
++            connection_lifetime: None,
+             serialized: false,
+             thread_name: Arc::new(DebugFn(|id| format!("sqlx-sqlite-worker-{id}"))),
+             command_channel_size: 50,
+diff --git a/sqlx-sqlite/src/options/connection_lifetime.rs b/sqlx-sqlite/src/options/connection_lifetime.rs
+new file mode 100644
+--- /dev/null
++++ b/sqlx-sqlite/src/options/connection_lifetime.rs
+@@ -0,0 +1,41 @@
++use std::fmt;
++use std::sync::Arc;
++
++use super::SqliteConnectOptions;
++
++/// Opaque resource custody shared by options and each native connection.
++#[derive(Clone)]
++pub(crate) struct ConnectionLifetimeToken {
++    _token: Arc<dyn Send + Sync + 'static>,
++}
++
++impl fmt::Debug for ConnectionLifetimeToken {
++    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
++        formatter.write_str("ConnectionLifetimeToken(..)")
++    }
++}
++
++impl SqliteConnectOptions {
++    /// Retain `token` until each native SQLite connection is actually closed.
++    ///
++    /// A clone enters the worker before it is spawned and remains owned across
++    /// native open, initial PRAGMAs, cancellation and connection teardown.
++    /// Options, their clones and pools also retain a copy, so custody may last
++    /// longer than a particular connection.
++    ///
++    /// If native close fails, the connection's token is intentionally retained:
++    /// releasing the protected resource while SQLite is still live is unsafe.
++    /// The existing close error or panic is not converted into success.
++    ///
++    /// The caller must supply the actual resource owner. This does not verify
++    /// authority, coordinate transactions or authorize any database operation.
++    /// A token must not own these options or their pool, which would form a cycle.
++    pub fn connection_lifetime_token(mut self, token: Arc<dyn Send + Sync + 'static>) -> Self {
++        self.connection_lifetime = Some(ConnectionLifetimeToken { _token: token });
++        self
++    }
++}
++
++#[cfg(test)]
++#[path = "connection_lifetime_tests.rs"]
++mod tests;
+diff --git a/sqlx-sqlite/src/connection/establish.rs b/sqlx-sqlite/src/connection/establish.rs
+--- a/sqlx-sqlite/src/connection/establish.rs
++++ b/sqlx-sqlite/src/connection/establish.rs
+@@ -2,6 +2,7 @@
+ use crate::connection::LogSettings;
+ use crate::connection::{ConnectionState, Statements};
+ use crate::error::Error;
++use crate::options::ConnectionLifetimeToken;
+ use crate::SqliteConnectOptions;
+ use libsqlite3_sys::{
+     sqlite3_busy_timeout, SQLITE_OPEN_CREATE, SQLITE_OPEN_FULLMUTEX, SQLITE_OPEN_MEMORY,
+@@ -29,6 +30,7 @@
+     busy_timeout: Duration,
+     statement_cache_capacity: usize,
+     log_settings: LogSettings,
++    connection_lifetime: Option<ConnectionLifetimeToken>,
+     #[cfg(feature = "load-extension")]
+     extensions: IndexMap<CString, Option<CString>>,
+     pub(crate) thread_name: String,
+@@ -147,6 +149,7 @@
+             busy_timeout: options.busy_timeout,
+             statement_cache_capacity: options.statement_cache_capacity,
+             log_settings: options.log_settings.clone(),
++            connection_lifetime: options.connection_lifetime.clone(),
+             #[cfg(feature = "load-extension")]
+             extensions,
+             thread_name: (options.thread_name)(thread_id as u64),
+@@ -157,7 +160,11 @@
+     }
+ 
+     pub(crate) fn establish(&self) -> Result<ConnectionState, Error> {
+-        let mut handle = ConnectionHandle::open(&self.filename, self.open_flags)?;
++        let mut handle = ConnectionHandle::open(
++            &self.filename,
++            self.open_flags,
++            self.connection_lifetime.clone(),
++        )?;
+ 
+         #[cfg(feature = "load-extension")]
+         unsafe {
+diff --git a/sqlx-sqlite/src/connection/handle.rs b/sqlx-sqlite/src/connection/handle.rs
+--- a/sqlx-sqlite/src/connection/handle.rs
++++ b/sqlx-sqlite/src/connection/handle.rs
+@@ -3,6 +3,7 @@
+ use std::{io, ptr};
+ 
+ use crate::error::Error;
++use crate::options::ConnectionLifetimeToken;
+ use libsqlite3_sys::{
+     sqlite3, sqlite3_close, sqlite3_exec, sqlite3_extended_result_codes, sqlite3_get_autocommit,
+     sqlite3_last_insert_rowid, sqlite3_open_v2, SQLITE_OK,
+@@ -13,7 +14,7 @@
+ /// Managed SQLite3 database handle.
+ /// The database handle will be closed when this is dropped.
+ #[derive(Debug)]
+-pub(crate) struct ConnectionHandle(NonNull<sqlite3>);
++pub(crate) struct ConnectionHandle(NonNull<sqlite3>, Option<ConnectionLifetimeToken>);
+ 
+ // A SQLite3 handle is safe to send between threads, provided not more than
+ // one is accessing it at the same time. This is upheld as long as [SQLITE_CONFIG_MULTITHREAD] is
+@@ -26,7 +27,11 @@
+ unsafe impl Send for ConnectionHandle {}
+ 
+ impl ConnectionHandle {
+-    pub(crate) fn open(filename: &CStr, flags: c_int) -> Result<Self, Error> {
++    pub(crate) fn open(
++        filename: &CStr,
++        flags: c_int,
++        lifetime: Option<ConnectionLifetimeToken>,
++    ) -> Result<Self, Error> {
+         let mut handle = ptr::null_mut();
+ 
+         // <https://www.sqlite.org/c3ref/open.html>
+@@ -34,12 +39,15 @@
+ 
+         // SAFETY: the database is still initialized as long as the pointer is not `NULL`.
+         // We need to close it even if there's an error.
+-        let mut handle = Self(NonNull::new(handle).ok_or_else(|| {
+-            Error::Io(io::Error::new(
+-                io::ErrorKind::OutOfMemory,
+-                "SQLite is unable to allocate memory to hold the sqlite3 object",
+-            ))
+-        })?);
++        let mut handle = Self(
++            NonNull::new(handle).ok_or_else(|| {
++                Error::Io(io::Error::new(
++                    io::ErrorKind::OutOfMemory,
++                    "SQLite is unable to allocate memory to hold the sqlite3 object",
++                ))
++            })?,
++            lifetime,
++        );
+ 
+         if status != SQLITE_OK {
+             return Err(Error::Database(Box::new(handle.expect_error())));
+@@ -142,6 +150,9 @@
+             // https://sqlite.org/c3ref/close.html
+             let status = sqlite3_close(self.0.as_ptr());
+             if status != SQLITE_OK {
++                // Native SQLite may still be live. Keep custody even if the
++                // original panic unwinds the rest of this Rust object.
++                std::mem::forget(self.1.take());
+                 // this should *only* happen due to an internal bug in SQLite where we left
+                 // SQLite handles open
+                 panic!("{}", SqliteError::new(self.0.as_ptr()));
+diff --git a/sqlx-sqlite/src/options/connection_lifetime_tests.rs b/sqlx-sqlite/src/options/connection_lifetime_tests.rs
+new file mode 100644
+--- /dev/null
++++ b/sqlx-sqlite/src/options/connection_lifetime_tests.rs
+@@ -0,0 +1,395 @@
++use std::ffi::{c_char, c_int, c_void};
++use std::fs::{self, File, OpenOptions, TryLockError};
++use std::future::Future;
++use std::io::{BufRead, BufReader, Write};
++use std::path::{Path, PathBuf};
++use std::process::{Child, ChildStdin, Command, Stdio};
++use std::sync::atomic::{AtomicBool, AtomicI32, AtomicUsize, Ordering};
++use std::sync::{mpsc, Arc, Mutex, OnceLock};
++use std::task::{Context, Poll};
++use std::thread::{self, JoinHandle};
++use std::time::{Duration, Instant};
++
++use futures_util::task::noop_waker;
++use libsqlite3_sys::{
++    sqlite3, sqlite3_api_routines, sqlite3_auto_extension, sqlite3_cancel_auto_extension, sqlite3_close,
++    sqlite3_finalize, sqlite3_prepare_v2, sqlite3_progress_handler, sqlite3_step,
++    SQLITE_BUSY, SQLITE_OK, SQLITE_ROW,
++};
++use sqlx_core::connection::{ConnectOptions, Connection};
++use sqlx_core::executor::Executor;
++use sqlx_core::row::Row;
++
++use crate::{SqliteConnectOptions, SqlitePoolOptions};
++
++const BOUND: Duration = Duration::from_secs(5);
++const CHILD: &str = "options::connection_lifetime::tests::owned_scenario";
++static SERIAL: AtomicUsize = AtomicUsize::new(0);
++
++#[derive(Debug)]
++enum LockState {
++    Held,
++    Released,
++}
++
++enum GateState { Absent, Blocked, Released }
++
++struct OwnedScenario {
++    child: Child,
++    input: Option<ChildStdin>,
++    lines: Option<mpsc::Receiver<String>>,
++    reader: Option<JoinHandle<()>>,
++    directory: PathBuf,
++    reaped: bool,
++}
++
++impl OwnedScenario {
++    fn start(scenario: &str) -> Self {
++        let directory = std::env::temp_dir().join(format!(
++            "sqlx-native-custody-{}-{}",
++            std::process::id(),
++            SERIAL.fetch_add(1, Ordering::Relaxed)
++        ));
++        fs::create_dir(&directory).unwrap();
++        let mut child = Command::new(std::env::current_exe().unwrap())
++            .args(["--exact", CHILD, "--ignored", "--nocapture", "--test-threads=1"])
++            .env("SQLX_LIFETIME_SCENARIO", scenario)
++            .env("SQLX_LIFETIME_DIRECTORY", &directory)
++            .stdin(Stdio::piped())
++            .stdout(Stdio::piped())
++            .stderr(Stdio::inherit())
++            .spawn()
++            .unwrap();
++        let input = child.stdin.take();
++        let output = child.stdout.take().unwrap();
++        let (sender, lines) = mpsc::sync_channel(64);
++        let mut owned = Self {
++            child, input, lines: Some(lines), reader: None, directory, reaped: false,
++        };
++        owned.reader = Some(thread::spawn(move || {
++            for line in BufReader::new(output).lines() {
++                match line {
++                    Ok(line) => { if sender.send(line).is_err() { break; } }
++                    Err(_) => break,
++                }
++            }
++        }));
++        owned
++    }
++
++    fn marker(&self) -> String {
++        let deadline = Instant::now() + BOUND;
++        loop {
++            let line = self.lines.as_ref().unwrap()
++                .recv_timeout(deadline.saturating_duration_since(Instant::now()))
++                .expect("owned scenario did not reach its physical checkpoint");
++            if let Some(stage) = line.strip_prefix("LIFETIME: ") {
++                eprintln!("owned lifetime checkpoint={stage}");
++                return stage.to_owned();
++            }
++        }
++    }
++
++    fn send(&mut self, command: &[u8]) {
++        self.input.as_mut().unwrap().write_all(command).unwrap();
++        self.input.as_mut().unwrap().flush().unwrap();
++    }
++
++    fn checkpoint(&mut self, expected: &str, lock: LockState, gate: GateState) {
++        assert_eq!(self.marker(), expected);
++        let actual = self.probe_lock();
++        eprintln!("physical custody expected={lock:?} result={actual:?}");
++        self.send(b"inspect\n");
++        let expected_gate = match gate {
++            GateState::Absent => "gate_status=-1",
++            GateState::Blocked => "gate_status=0",
++            GateState::Released => "gate_status=1",
++        };
++        // Check after the physical probe so a timed-out callback cannot count
++        // as the intended early-release counterfactual.
++        assert_eq!(self.marker(), expected_gate, "native gate is not in the required state");
++        match (lock, actual) {
++            (LockState::Held, Err(TryLockError::WouldBlock))
++            | (LockState::Released, Ok(())) => {}
++            (_, actual) => panic!("unexpected physical lock result: {actual:?}"),
++        }
++        self.send(b"go\n");
++    }
++
++    fn probe_lock(&self) -> Result<(), TryLockError> {
++        let contender = OpenOptions::new().read(true).write(true)
++            .open(self.directory.join("custody.lock")).unwrap();
++        contender.try_lock()
++    }
++
++    fn finish(&mut self) {
++        let deadline = Instant::now() + BOUND;
++        loop {
++            if let Some(status) = self.child.try_wait().unwrap() {
++                self.reaped = true;
++                assert!(status.success(), "owned scenario failed: {status}");
++                assert!(self.probe_lock().is_ok(), "custody survived owned process exit");
++                return;
++            }
++            assert!(Instant::now() < deadline, "owned scenario did not exit");
++            thread::sleep(Duration::from_millis(10));
++        }
++    }
++}
++
++impl Drop for OwnedScenario {
++    fn drop(&mut self) {
++        drop(self.input.take());
++        drop(self.lines.take());
++        if !self.reaped {
++            let _ = self.child.kill();
++            let _ = self.child.wait();
++        }
++        if let Some(reader) = self.reader.take() {
++            let _ = reader.join();
++        }
++        let _ = fs::remove_dir_all(&self.directory);
++    }
++}
++
++#[test]
++fn cancellation_during_native_open_keeps_resource_custody() {
++    let mut child = OwnedScenario::start("open");
++    child.checkpoint("cancelled_inside_native_open", LockState::Held, GateState::Blocked);
++    child.checkpoint("native_closed", LockState::Released, GateState::Released);
++    child.finish();
++}
++
++#[test]
++fn cancellation_during_initial_pragmas_keeps_resource_custody() {
++    let mut child = OwnedScenario::start("pragma");
++    child.checkpoint("cancelled_inside_initial_pragma", LockState::Held, GateState::Blocked);
++    child.checkpoint("native_closed", LockState::Released, GateState::Released);
++    child.finish();
++}
++
++#[test]
++fn pool_growth_and_cancelled_close_keep_borrowed_connection_custody() {
++    let mut child = OwnedScenario::start("pool");
++    child.checkpoint("closed_pool_with_live_detached_connection", LockState::Held, GateState::Absent);
++    child.checkpoint("native_closed", LockState::Released, GateState::Absent);
++    child.finish();
++}
++
++#[test]
++fn initialization_error_releases_but_failed_native_close_retains_custody() {
++    let mut child = OwnedScenario::start("failure");
++    child.checkpoint("initialization_error_preserved_and_closed", LockState::Released, GateState::Absent);
++    child.checkpoint("busy_close_failed_and_native_statement_still_runs", LockState::Held, GateState::Absent);
++    child.checkpoint("manual_native_close_cannot_release_forgotten_custody", LockState::Held, GateState::Absent);
++    child.finish();
++}
++
++// Explicitly invoked by the four parents using the ordinary libtest main.
++// This support entry is not a fifth product control or a passed ignored test.
++#[test]
++#[ignore]
++fn owned_scenario() {
++    let scenario = std::env::var("SQLX_LIFETIME_SCENARIO").unwrap();
++    let directory = PathBuf::from(std::env::var_os("SQLX_LIFETIME_DIRECTORY").unwrap());
++    match scenario.as_str() {
++        "open" | "pragma" => cancelled_initialization(&directory, &scenario),
++        "pool" => pool_lifetime(&directory),
++        "failure" => error_lifetime(&directory),
++        _ => panic!("unknown owned scenario"),
++    }
++}
++
++struct ResourceOwner {
++    file: Option<File>,
++    released: mpsc::Sender<()>,
++}
++
++impl Drop for ResourceOwner {
++    fn drop(&mut self) {
++        drop(self.file.take());
++        let _ = self.released.send(());
++    }
++}
++
++fn options(directory: &Path) -> (SqliteConnectOptions, mpsc::Receiver<()>) {
++    let file = OpenOptions::new().read(true).write(true).create(true)
++        .truncate(false).open(directory.join("custody.lock")).unwrap();
++    file.lock().unwrap();
++    let (released, receiver) = mpsc::channel();
++    let token = Arc::new(ResourceOwner { file: Some(file), released });
++    let options = SqliteConnectOptions::new()
++        .filename(directory.join("database.sqlite"))
++        .create_if_missing(true)
++        .connection_lifetime_token(token);
++    (options, receiver)
++}
++
++fn checkpoint(stage: &str) {
++    println!("\nLIFETIME: {stage}");
++    std::io::stdout().flush().unwrap();
++    let mut line = String::new();
++    std::io::stdin().read_line(&mut line).unwrap();
++    assert_eq!(line, "inspect\n");
++    let status = NATIVE_GATE.get().map(|gate| gate.outcome.load(Ordering::Acquire)).unwrap_or(-1);
++    println!("LIFETIME: gate_status={status}");
++    std::io::stdout().flush().unwrap();
++    line.clear();
++    std::io::stdin().read_line(&mut line).unwrap();
++    assert_eq!(line, "go\n");
++}
++
++enum GatePoint {
++    Open,
++    Pragma,
++}
++
++struct NativeGate {
++    point: GatePoint,
++    entered: flume::Sender<()>,
++    release: Mutex<mpsc::Receiver<()>>,
++    first_progress: AtomicBool,
++    outcome: AtomicI32,
++}
++
++static NATIVE_GATE: OnceLock<NativeGate> = OnceLock::new();
++
++fn wait_at_native_gate() -> c_int {
++    let Some(gate) = NATIVE_GATE.get() else { return 1 };
++    if gate.entered.send(()).is_err() { return 1; }
++    let released = match gate.release.lock() {
++        Ok(receiver) => receiver.recv_timeout(BOUND).is_ok(),
++        Err(_) => false,
++    };
++    gate.outcome.store(if released { 1 } else { 2 }, Ordering::Release);
++    if released { 0 } else { 1 }
++}
++
++unsafe extern "C" fn progress(_: *mut c_void) -> c_int {
++    let Some(gate) = NATIVE_GATE.get() else { return 1 };
++    if gate.first_progress.swap(false, Ordering::AcqRel) {
++        wait_at_native_gate()
++    } else {
++        0
++    }
++}
++
++unsafe extern "C" fn opened(
++    database: *mut sqlite3,
++    _: *mut *mut c_char,
++    _: *const sqlite3_api_routines,
++) -> c_int {
++    match NATIVE_GATE.get().map(|gate| &gate.point) {
++        Some(GatePoint::Open) => wait_at_native_gate(),
++        Some(GatePoint::Pragma) => {
++            unsafe { sqlite3_progress_handler(database, 1, Some(progress), std::ptr::null_mut()); }
++            SQLITE_OK
++        }
++        None => 1,
++    }
++}
++
++fn cancelled_initialization(directory: &Path, scenario: &str) {
++    let (entered, receiver) = flume::bounded(1);
++    let (release, release_receiver) = mpsc::channel();
++    let point = if scenario == "open" { GatePoint::Open } else { GatePoint::Pragma };
++    assert!(NATIVE_GATE.set(NativeGate {
++        point, entered, release: Mutex::new(release_receiver),
++        first_progress: AtomicBool::new(true), outcome: AtomicI32::new(0),
++    }).is_ok());
++    assert_eq!(unsafe { sqlite3_auto_extension(Some(opened)) }, SQLITE_OK);
++    let (options, closed) = options(directory);
++    let mut connecting = Box::pin(options.connect());
++    sqlx_core::rt::test_block_on(async {
++        // Keep polling through establish so initial PRAGMAs actually execute.
++        let entered = futures_util::future::select(
++            connecting.as_mut(),
++            Box::pin(receiver.recv_async()),
++        );
++        match sqlx_core::rt::timeout(BOUND, entered).await.expect("real SQLite callback did not enter") {
++            futures_util::future::Either::Right((Ok(()), _)) => {}
++            futures_util::future::Either::Right((Err(error), _)) => panic!("native gate disconnected: {error}"),
++            futures_util::future::Either::Left((result, _)) => panic!("connect completed before the native gate: {result:?}"),
++        }
++    });
++    drop(connecting);
++    drop(options);
++    checkpoint(if scenario == "open" {
++        "cancelled_inside_native_open"
++    } else {
++        "cancelled_inside_initial_pragma"
++    });
++    release.send(()).unwrap();
++    closed.recv_timeout(BOUND).expect("native connection did not release custody");
++    assert_eq!(unsafe { sqlite3_cancel_auto_extension(Some(opened)) }, 1);
++    checkpoint("native_closed");
++}
++
++fn pool_lifetime(directory: &Path) {
++    let (options, closed) = options(directory);
++    sqlx_core::rt::test_block_on(async {
++        let pool = SqlitePoolOptions::new().min_connections(0).max_connections(5)
++            .connect_lazy_with(options);
++        let mut held = Vec::new();
++        for _ in 0..5 {
++            let mut connection = pool.acquire().await.unwrap();
++            connection.execute("CREATE TEMP TABLE lifetime_marker(value);")
++                .await.unwrap();
++            held.push(connection);
++        }
++        held.pop().unwrap().close().await.unwrap();
++        let mut replacement = pool.acquire().await.unwrap();
++        let row = replacement.fetch_one(
++            "SELECT count(*) FROM sqlite_temp_master WHERE name = 'lifetime_marker';"
++        ).await.unwrap();
++        assert_eq!(row.get::<i64, _>(0), 0);
++        let mut closing = Box::pin(pool.close());
++        assert!(matches!(closing.as_mut().poll(&mut Context::from_waker(&noop_waker())), Poll::Pending));
++        drop(closing);
++        for connection in held { connection.close().await.unwrap(); }
++        let mut detached = replacement.detach();
++        drop(pool);
++        let row = detached.fetch_one("SELECT 1;").await.unwrap();
++        assert_eq!(row.get::<i64, _>(0), 1);
++        checkpoint("closed_pool_with_live_detached_connection");
++        detached.close().await.unwrap();
++    });
++    closed.recv_timeout(BOUND).expect("closed physical connections retained custody");
++    checkpoint("native_closed");
++}
++
++fn error_lifetime(directory: &Path) {
++    let (bad_options, closed) = options(directory);
++    let bad_options = bad_options.pragma("SQLX_LIFETIME_INVALID(", "1");
++    let error = match futures_executor::block_on(bad_options.connect()) {
++        Ok(_) => panic!("invalid initial PRAGMA unexpectedly succeeded"),
++        Err(error) => error,
++    };
++    eprintln!("original initialization error={error:?}");
++    assert_eq!(error.as_database_error().and_then(|error| error.code()).as_deref(), Some("1"));
++    drop(bad_options);
++    closed.recv_timeout(BOUND).expect("initialization error did not close SQLite");
++    checkpoint("initialization_error_preserved_and_closed");
++
++    let (options, _closed) = options(directory);
++    let mut connection = futures_executor::block_on(options.connect()).unwrap();
++    drop(options);
++    let mut locked = futures_executor::block_on(connection.lock_handle()).unwrap();
++    let database = locked.as_raw_handle().as_ptr();
++    let mut statement = std::ptr::null_mut();
++    assert_eq!(unsafe {
++        sqlite3_prepare_v2(database, c"SELECT 1".as_ptr(), -1, &mut statement, std::ptr::null_mut())
++    }, SQLITE_OK);
++    // A genuine live statement makes native close return BUSY without destroying the handle.
++    assert_eq!(unsafe { sqlite3_close(database) }, SQLITE_BUSY);
++    drop(locked);
++    let error = futures_executor::block_on(connection.close()).unwrap_err();
++    eprintln!("original failed-close result={error:?}");
++    assert!(matches!(error, sqlx_core::error::Error::WorkerCrashed));
++    assert_eq!(unsafe { sqlite3_step(statement) }, SQLITE_ROW);
++    checkpoint("busy_close_failed_and_native_statement_still_runs");
++    assert_eq!(unsafe { sqlite3_finalize(statement) }, SQLITE_OK);
++    assert_eq!(unsafe { sqlite3_close(database) }, SQLITE_OK);
++    // The forgotten token is fail-closed until this owned process exits.
++    checkpoint("manual_native_close_cannot_release_forgotten_custody");
++}

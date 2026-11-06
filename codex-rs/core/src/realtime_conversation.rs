@@ -75,6 +75,7 @@ use std::time::Instant;
 use tokio::sync::Mutex;
 use tokio::task::JoinHandle;
 use tokio_util::sync::CancellationToken;
+use tokio_util::task::AbortOnDropHandle;
 use tracing::debug;
 use tracing::error;
 use tracing::info;
@@ -123,6 +124,11 @@ enum RealtimeConversationEnd {
 enum RealtimeFanoutTaskStop {
     Await,
     Detach,
+}
+
+enum RealtimeRoutedInput {
+    Handoff(String),
+    TranscriptTail(String),
 }
 
 pub(crate) struct RealtimeConversationManager {
@@ -485,6 +491,7 @@ struct RealtimeStart {
 
 struct RealtimeStartOutput {
     realtime_active: Arc<AtomicBool>,
+    stop_token: CancellationToken,
     events_rx: Receiver<RealtimeEvent>,
     transcript_tail_rx: Receiver<String>,
     sdp: Option<String>,
@@ -686,10 +693,11 @@ impl RealtimeConversationManager {
             input_task: task,
             fanout_task: None,
             realtime_active: Arc::clone(&realtime_active),
-            stop_token,
+            stop_token: stop_token.clone(),
         });
         Ok(RealtimeStartOutput {
             realtime_active,
+            stop_token,
             events_rx,
             transcript_tail_rx,
             sdp,
@@ -1550,6 +1558,7 @@ async fn handle_start_inner(
 
     let RealtimeStartOutput {
         realtime_active,
+        stop_token,
         events_rx,
         transcript_tail_rx,
         sdp,
@@ -1571,6 +1580,49 @@ async fn handle_start_inner(
             msg,
         };
         let mut end = RealtimeConversationEnd::TransportClosed;
+        // Keep text submissions ordered without making a terminalizing turn stop
+        // audio/event forwarding. Dropping fanout also cancels its input worker.
+        let (routed_text_tx, routed_text_rx) =
+            async_channel::bounded::<RealtimeRoutedInput>(TEXT_IN_QUEUE_CAPACITY);
+        let sess_for_routed_text = Arc::clone(&sess_clone);
+        let routed_text_task = AbortOnDropHandle::new(tokio::spawn(async move {
+            while let Ok(input) = routed_text_rx.recv().await {
+                let text = match input {
+                    RealtimeRoutedInput::Handoff(text) => {
+                        if stop_token.is_cancelled() {
+                            continue;
+                        }
+                        if let Some(completion) =
+                            sess_for_routed_text.pending_turn_terminalization()
+                        {
+                            tokio::select! {
+                                biased;
+                                _ = stop_token.cancelled() => continue,
+                                _ = completion => {}
+                            }
+                        }
+                        // Close/replacement can cancel the old conversation while
+                        // its previous turn is finishing. Do not admit that input.
+                        if stop_token.is_cancelled() {
+                            continue;
+                        }
+                        text
+                    }
+                    RealtimeRoutedInput::TranscriptTail(text) => {
+                        // The existing opt-in tail is intentionally delivered on
+                        // closure, after all earlier handoffs have been resolved.
+                        if let Some(completion) =
+                            sess_for_routed_text.pending_turn_terminalization()
+                        {
+                            completion.await;
+                        }
+                        text
+                    }
+                };
+                sess_for_routed_text.route_realtime_text_input(text).await;
+            }
+        }));
+        let mut routing_failed = false;
         // Drain already-parsed events so a queued handoff is routed before the final tail.
         while let Ok(event) = events_rx.recv().await {
             match &event {
@@ -1593,8 +1645,27 @@ async fn handle_start_inner(
             };
             if let Some(text) = maybe_routed_text {
                 debug!(text = %text, "[realtime-text] realtime conversation text output");
-                let sess_for_routed_text = Arc::clone(&sess_clone);
-                sess_for_routed_text.route_realtime_text_input(text).await;
+                if let Err(error) = routed_text_tx.try_send(RealtimeRoutedInput::Handoff(text)) {
+                    let message = match error {
+                        TrySendError::Full(_) => "realtime handoff routing queue is full",
+                        TrySendError::Closed(_) => "realtime handoff routing queue is closed",
+                    };
+                    // Fail explicitly instead of blocking audio or silently losing input.
+                    routing_failed = true;
+                    end = RealtimeConversationEnd::Error;
+                    routed_text_task.abort();
+                    // Unblock the transport reader before finish_if_active joins
+                    // it; fanout will no longer drain this bounded event queue.
+                    events_rx.close();
+                    send_conversation_error(
+                        &sess_clone,
+                        sub_id.clone(),
+                        message.to_string(),
+                        CodexErrorInfo::InternalServerError,
+                    )
+                    .await;
+                    break;
+                }
             }
             sess_clone
                 .send_event_raw(ev(EventMsg::RealtimeConversationRealtime(
@@ -1604,8 +1675,33 @@ async fn handle_start_inner(
                 )))
                 .await;
         }
-        if let Ok(text) = transcript_tail_rx.recv().await {
-            sess_clone.route_realtime_text_input(text).await;
+        if !routing_failed
+            && let Ok(text) = transcript_tail_rx.recv().await
+            && routed_text_tx
+                .send(RealtimeRoutedInput::TranscriptTail(text))
+                .await
+                .is_err()
+        {
+            routing_failed = true;
+            end = RealtimeConversationEnd::Error;
+            send_conversation_error(
+                &sess_clone,
+                sub_id.clone(),
+                "realtime handoff routing closed before the final transcript".to_string(),
+                CodexErrorInfo::InternalServerError,
+            )
+            .await;
+        }
+        drop(routed_text_tx);
+        if routed_text_task.await.is_err() && !routing_failed {
+            end = RealtimeConversationEnd::Error;
+            send_conversation_error(
+                &sess_clone,
+                sub_id.clone(),
+                "realtime handoff routing task failed".to_string(),
+                CodexErrorInfo::InternalServerError,
+            )
+            .await;
         }
         if fanout_realtime_active.swap(false, Ordering::Relaxed) {
             match end {

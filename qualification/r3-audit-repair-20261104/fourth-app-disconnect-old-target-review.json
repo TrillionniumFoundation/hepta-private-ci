@@ -1,0 +1,564 @@
+{
+  "schema": "hepta-task-target-disappearance-readonly-audit-v1",
+  "observed_at": "2026-11-05T01:41:16.022254+00:00",
+  "source_current_tree": "f8251e1d14fa8524ab469281296cd4cf708f173c",
+  "source_expected_tree": "f8251e1d14fa8524ab469281296cd4cf708f173c",
+  "source_matches_expected": true,
+  "head": "cabcb40d36e116beaa65750e1f674c52035da785",
+  "ordinary_index_before": {
+    "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/source/.git/index",
+    "bytes": 1222758,
+    "sha256": "8ccf08bcd5b633a38fa81be4814ae264365f1a2cdd1ed81e1633fbcc0ac31502"
+  },
+  "ordinary_index_after": {
+    "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/source/.git/index",
+    "bytes": 1222758,
+    "sha256": "8ccf08bcd5b633a38fa81be4814ae264365f1a2cdd1ed81e1633fbcc0ac31502"
+  },
+  "ordinary_index_unchanged": true,
+  "locks": {
+    "codex-rs/Cargo.lock": {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/source/codex-rs/Cargo.lock",
+      "bytes": 413768,
+      "sha256": "4a7a5535cf045089458468411e126b5f59bc6bbf34fc0deead9b0c1b8d84000a"
+    },
+    "MODULE.bazel.lock": {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/source/MODULE.bazel.lock",
+      "bytes": 1738619,
+      "sha256": "11f8a421224b9b05f32c4c14054e8868083d989fc497310c8d51e1156f189ca3"
+    }
+  },
+  "target_root": {
+    "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target",
+    "mode": "0o700",
+    "bytes": 4096,
+    "mtime_ns": 1793841670553544106,
+    "ctime_ns": 1793841670553544106,
+    "ino": 37002541,
+    "dev": 66306,
+    "is_symlink": false
+  },
+  "target_entries": [
+    {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/.rustc_info.json",
+      "mode": "0o600",
+      "bytes": 1727,
+      "mtime_ns": 1793831683647215514,
+      "ctime_ns": 1793831683647215514,
+      "ino": 37002545,
+      "dev": 66306,
+      "is_symlink": false
+    },
+    {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/CACHEDIR.TAG",
+      "mode": "0o600",
+      "bytes": 177,
+      "mtime_ns": 1793830829454146019,
+      "ctime_ns": 1793830829454146019,
+      "ino": 37002542,
+      "dev": 66306,
+      "is_symlink": false
+    },
+    {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/tmp",
+      "mode": "0o700",
+      "bytes": 4096,
+      "mtime_ns": 1793830848919051936,
+      "ctime_ns": 1793830848919051936,
+      "ino": 37002546,
+      "dev": 66306,
+      "is_symlink": false
+    }
+  ],
+  "profile": {
+    "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small",
+    "error": "FileNotFoundError",
+    "errno": 2
+  },
+  "disk_free": 85065723904,
+  "runner_scans": [
+    {
+      "label": "app-disconnect-owned-diagnostic-f825-20261105-0130/runner.py",
+      "origin": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-disconnect-owned-diagnostic-f825-20261105-0130/runner.py",
+      "bytes": 19335,
+      "sha256": "f5b5edef2f9a900993f572cab7e9f734c0736bda71147d22b6543b9e672d93a8",
+      "potential_mutation_calls": [
+        {
+          "line": 217,
+          "call": "name.replace(\".\",\"-\")"
+        }
+      ],
+      "literal_cleanup_commands": []
+    },
+    {
+      "label": "applypatch-fixed-20261104-2248/runner.py",
+      "origin": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/applypatch-fixed-20261104-2248/runner.py",
+      "bytes": 11715,
+      "sha256": "7246b9dc6e1f32918e68a7a905057545db305f3a61760d3d1abb3c4a1497dedc",
+      "potential_mutation_calls": [
+        {
+          "line": 51,
+          "call": "os.replace(tmp,p)"
+        }
+      ],
+      "literal_cleanup_commands": []
+    },
+    {
+      "label": "ci-and-applypatch-baseline-20261104-2240/runner.py",
+      "origin": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/ci-and-applypatch-baseline-20261104-2240/runner.py",
+      "bytes": 13155,
+      "sha256": "6aaba6f21c6ea50c551256ef62c518b173479dfd6a501b1a201b578d9dfd89aa",
+      "potential_mutation_calls": [
+        {
+          "line": 51,
+          "call": "os.replace(tmp,p)"
+        }
+      ],
+      "literal_cleanup_commands": []
+    },
+    {
+      "label": "ci-success-retention-df74-20261104-2330/runner.py",
+      "origin": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/ci-success-retention-df74-20261104-2330/runner.py",
+      "bytes": 6547,
+      "sha256": "3dd688fa408c01f5e59b50ba741092bdeedc0e0f5f447bc82501ed5d2a4b3ee2",
+      "potential_mutation_calls": [],
+      "literal_cleanup_commands": []
+    },
+    {
+      "label": "four-fixtures-d64-a0e8-20261104-2340/runner.py",
+      "origin": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/four-fixtures-d64-a0e8-20261104-2340/runner.py",
+      "bytes": 16972,
+      "sha256": "0e761e89a3e20eb646dc531caec9d9015b8e57d8da2b12f80de2fe5c6573b017",
+      "potential_mutation_calls": [],
+      "literal_cleanup_commands": []
+    },
+    {
+      "label": "full-six-helper-build-f825-20261105-0035/runner.py",
+      "origin": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full-six-helper-build-f825-20261105-0035/runner.py",
+      "bytes": 9899,
+      "sha256": "ebf5c40d3ca228091b1982bfd1f3c812ad6fb9fcb107faca4a692d5a4c631b2b",
+      "potential_mutation_calls": [],
+      "literal_cleanup_commands": []
+    },
+    {
+      "label": "full-workspace-f825-20261105-0040/runner.py",
+      "origin": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full-workspace-f825-20261105-0040/runner.py",
+      "bytes": 22027,
+      "sha256": "4bcc39e2c66e9e98e34e464e924ef8abc807746173181dfe6f8f5dde32f7eae8",
+      "potential_mutation_calls": [],
+      "literal_cleanup_commands": []
+    },
+    {
+      "label": "literal-approval-f825-20261105-0015/runner.py",
+      "origin": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/literal-approval-f825-20261105-0015/runner.py",
+      "bytes": 18627,
+      "sha256": "508ea1f3f64a241f52028eff2377fbe25140b13a97f3555d53b476ff86b08cf5",
+      "potential_mutation_calls": [],
+      "literal_cleanup_commands": []
+    },
+    {
+      "label": "norc-four-fixtures-c270-da60-20261104-2340/runner.py",
+      "origin": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/norc-four-fixtures-c270-da60-20261104-2340/runner.py",
+      "bytes": 18625,
+      "sha256": "43016893e5b40e4959b1a6d59e59fd2e587dd84ef875701d3b0a579947c21a03",
+      "potential_mutation_calls": [],
+      "literal_cleanup_commands": []
+    },
+    {
+      "label": "norc-positive-continuation-da60-20261104-2350/runner.py",
+      "origin": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/norc-positive-continuation-da60-20261104-2350/runner.py",
+      "bytes": 19603,
+      "sha256": "191e413bc23dfecc4e7b57969f610abb4c96e46bf66889fd96e7e1f39c1ca694",
+      "potential_mutation_calls": [],
+      "literal_cleanup_commands": []
+    },
+    {
+      "label": "owning-helper-build-e84-20261104-2252/runner.py",
+      "origin": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-helper-build-e84-20261104-2252/runner.py",
+      "bytes": 5483,
+      "sha256": "f35a505d5fe1196cf6018860c61ecec445753ba199dc129c074c9665ca8e778a",
+      "potential_mutation_calls": [],
+      "literal_cleanup_commands": []
+    },
+    {
+      "label": "owning-seven-f825-20261105-0025/runner.py",
+      "origin": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-f825-20261105-0025/runner.py",
+      "bytes": 17820,
+      "sha256": "879b487c431022690857c1526057ebfd9eb4d5cbb6c9d21bc40c7f6a677d06de",
+      "potential_mutation_calls": [],
+      "literal_cleanup_commands": []
+    },
+    {
+      "label": "owning-seven-project-gate-e84-20261104-2255/runner.py",
+      "origin": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/runner.py",
+      "bytes": 15414,
+      "sha256": "842613ccc098af3043d79fad254ecf07b7b3077f1920aab5572102d65350eeb1",
+      "potential_mutation_calls": [],
+      "literal_cleanup_commands": []
+    },
+    {
+      "label": "readonly-command-identity-19ec-20261104-2355/runner.py",
+      "origin": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/readonly-command-identity-19ec-20261104-2355/runner.py",
+      "bytes": 15220,
+      "sha256": "14fdf5f87439309bb7b239473127a5788d557e24260f0be6816b0da9a99d14a7",
+      "potential_mutation_calls": [],
+      "literal_cleanup_commands": []
+    },
+    {
+      "label": "readonly-unset-diagnostic-9d5f-20261104-2350/runner.py",
+      "origin": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/readonly-unset-diagnostic-9d5f-20261104-2350/runner.py",
+      "bytes": 15203,
+      "sha256": "8f82d1e893d059fd7c347e80206f76804bdb5dbd805a3035a8657998d1c3b3f9",
+      "potential_mutation_calls": [],
+      "literal_cleanup_commands": []
+    },
+    {
+      "label": "remaining-diagnostics-dev-small-20261104-2225/runner.py",
+      "origin": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/remaining-diagnostics-dev-small-20261104-2225/runner.py",
+      "bytes": 16420,
+      "sha256": "60a89e78021cb6a857949df1c3ec7dddfdbde4ca03535494fc0601fb409ce8e1",
+      "potential_mutation_calls": [
+        {
+          "line": 67,
+          "call": "os.replace(tmp,p)"
+        }
+      ],
+      "literal_cleanup_commands": []
+    },
+    {
+      "label": "two-event-diagnostics-073-20261104-2322/runner.py",
+      "origin": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/two-event-diagnostics-073-20261104-2322/runner.py",
+      "bytes": 16891,
+      "sha256": "0de4b4281026f3086df48765270ec695a2370855b059382a1e8be01b867876c5",
+      "potential_mutation_calls": [],
+      "literal_cleanup_commands": []
+    },
+    {
+      "label": "full-workspace",
+      "origin": "captured exact process_start script for 1a1a9270b60-fc05-3209",
+      "bytes": 22027,
+      "sha256": "4bcc39e2c66e9e98e34e464e924ef8abc807746173181dfe6f8f5dde32f7eae8",
+      "potential_mutation_calls": [],
+      "literal_cleanup_commands": []
+    },
+    {
+      "label": "sealed-export",
+      "origin": "captured exact process_start script for 1a1a9375428-fc05-32d7",
+      "bytes": 3507,
+      "sha256": "bc327f5192a37ce2444d5d86ff3c963a69785519911db3fc085088823b4a8950",
+      "potential_mutation_calls": [],
+      "literal_cleanup_commands": []
+    },
+    {
+      "label": "sqlx-readonly",
+      "origin": "captured exact process_start script for 1a1a9309117-fc05-3275",
+      "bytes": 4432,
+      "sha256": "27a7629d1a2e123623db36b7291915486cdf938a9a11f355f03d0dda5d211f64",
+      "potential_mutation_calls": [],
+      "literal_cleanup_commands": []
+    },
+    {
+      "label": "app-preflight",
+      "origin": "captured exact process_start script for 1a1a951380e-fc05-342f",
+      "bytes": 19335,
+      "sha256": "f5b5edef2f9a900993f572cab7e9f734c0736bda71147d22b6543b9e672d93a8",
+      "potential_mutation_calls": [
+        {
+          "line": 217,
+          "call": "name.replace(\".\",\"-\")"
+        }
+      ],
+      "literal_cleanup_commands": []
+    },
+    {
+      "label": "helper-probe",
+      "origin": "captured exact process_start script for 1a1a9543dee-fc05-344f",
+      "bytes": 2367,
+      "sha256": "9a4787ccc83e7f6075ad27075948311e1d1301904e80ad1466f2c9a943a70bad",
+      "potential_mutation_calls": [],
+      "literal_cleanup_commands": []
+    },
+    {
+      "label": "normal-six-helper",
+      "origin": "captured exact process_start script for 1a1a91fa121-fc05-319e",
+      "bytes": 9899,
+      "sha256": "ebf5c40d3ca228091b1982bfd1f3c812ad6fb9fcb107faca4a692d5a4c631b2b",
+      "potential_mutation_calls": [],
+      "literal_cleanup_commands": []
+    },
+    {
+      "label": "owning-seven",
+      "origin": "captured exact process_start script for 1a1a916fc98-fc05-3136",
+      "bytes": 17820,
+      "sha256": "879b487c431022690857c1526057ebfd9eb4d5cbb6c9d21bc40c7f6a677d06de",
+      "potential_mutation_calls": [],
+      "literal_cleanup_commands": []
+    }
+  ],
+  "known_job_unit_observations": {
+    "services": [
+      {
+        "exit_code": 0,
+        "name": "hepta-runtime-job-1a1a9270b60-fc05-3209",
+        "observations": [
+          {
+            "exit_code": 0,
+            "observation_complete": true,
+            "properties": {
+              "ActiveState": "inactive",
+              "Description": "hepta-runtime-job-1a1a9270b60-fc05-3209.service",
+              "ExecMainStatus": "0",
+              "InvocationID": "",
+              "LoadState": "not-found",
+              "MainPID": "0",
+              "Result": "success",
+              "SubState": "dead",
+              "UnitFileState": ""
+            },
+            "properties_truncated": [],
+            "scope": "system",
+            "stderr": "",
+            "stderr_truncated": false
+          },
+          {
+            "exit_code": 0,
+            "observation_complete": true,
+            "properties": {
+              "ActiveState": "inactive",
+              "Description": "hepta-runtime-job-1a1a9270b60-fc05-3209.service",
+              "ExecMainStatus": "0",
+              "InvocationID": "",
+              "LoadState": "not-found",
+              "MainPID": "0",
+              "Result": "success",
+              "SubState": "dead",
+              "UnitFileState": ""
+            },
+            "properties_truncated": [],
+            "scope": "user",
+            "stderr": "",
+            "stderr_truncated": false
+          }
+        ],
+        "properties": {
+          "LoadState": "not-found"
+        },
+        "resolution": "not_found",
+        "resolution_complete": true,
+        "scope": null,
+        "stderr": ""
+      },
+      {
+        "exit_code": 0,
+        "name": "hepta-runtime-job-1a1a91fa121-fc05-319e",
+        "observations": [
+          {
+            "exit_code": 0,
+            "observation_complete": true,
+            "properties": {
+              "ActiveState": "inactive",
+              "Description": "hepta-runtime-job-1a1a91fa121-fc05-319e.service",
+              "ExecMainStatus": "0",
+              "InvocationID": "",
+              "LoadState": "not-found",
+              "MainPID": "0",
+              "Result": "success",
+              "SubState": "dead",
+              "UnitFileState": ""
+            },
+            "properties_truncated": [],
+            "scope": "system",
+            "stderr": "",
+            "stderr_truncated": false
+          },
+          {
+            "exit_code": 0,
+            "observation_complete": true,
+            "properties": {
+              "ActiveState": "inactive",
+              "Description": "hepta-runtime-job-1a1a91fa121-fc05-319e.service",
+              "ExecMainStatus": "0",
+              "InvocationID": "",
+              "LoadState": "not-found",
+              "MainPID": "0",
+              "Result": "success",
+              "SubState": "dead",
+              "UnitFileState": ""
+            },
+            "properties_truncated": [],
+            "scope": "user",
+            "stderr": "",
+            "stderr_truncated": false
+          }
+        ],
+        "properties": {
+          "LoadState": "not-found"
+        },
+        "resolution": "not_found",
+        "resolution_complete": true,
+        "scope": null,
+        "stderr": ""
+      },
+      {
+        "exit_code": 0,
+        "name": "hepta-runtime-job-1a1a916fc98-fc05-3136",
+        "observations": [
+          {
+            "exit_code": 0,
+            "observation_complete": true,
+            "properties": {
+              "ActiveState": "inactive",
+              "Description": "hepta-runtime-job-1a1a916fc98-fc05-3136.service",
+              "ExecMainStatus": "0",
+              "InvocationID": "",
+              "LoadState": "not-found",
+              "MainPID": "0",
+              "Result": "success",
+              "SubState": "dead",
+              "UnitFileState": ""
+            },
+            "properties_truncated": [],
+            "scope": "system",
+            "stderr": "",
+            "stderr_truncated": false
+          },
+          {
+            "exit_code": 0,
+            "observation_complete": true,
+            "properties": {
+              "ActiveState": "inactive",
+              "Description": "hepta-runtime-job-1a1a916fc98-fc05-3136.service",
+              "ExecMainStatus": "0",
+              "InvocationID": "",
+              "LoadState": "not-found",
+              "MainPID": "0",
+              "Result": "success",
+              "SubState": "dead",
+              "UnitFileState": ""
+            },
+            "properties_truncated": [],
+            "scope": "user",
+            "stderr": "",
+            "stderr_truncated": false
+          }
+        ],
+        "properties": {
+          "LoadState": "not-found"
+        },
+        "resolution": "not_found",
+        "resolution_complete": true,
+        "scope": null,
+        "stderr": ""
+      },
+      {
+        "exit_code": 0,
+        "name": "hepta-runtime-job-1a1a9375428-fc05-32d7",
+        "observations": [
+          {
+            "exit_code": 0,
+            "observation_complete": true,
+            "properties": {
+              "ActiveState": "inactive",
+              "Description": "hepta-runtime-job-1a1a9375428-fc05-32d7.service",
+              "ExecMainStatus": "0",
+              "InvocationID": "",
+              "LoadState": "not-found",
+              "MainPID": "0",
+              "Result": "success",
+              "SubState": "dead",
+              "UnitFileState": ""
+            },
+            "properties_truncated": [],
+            "scope": "system",
+            "stderr": "",
+            "stderr_truncated": false
+          },
+          {
+            "exit_code": 0,
+            "observation_complete": true,
+            "properties": {
+              "ActiveState": "inactive",
+              "Description": "hepta-runtime-job-1a1a9375428-fc05-32d7.service",
+              "ExecMainStatus": "0",
+              "InvocationID": "",
+              "LoadState": "not-found",
+              "MainPID": "0",
+              "Result": "success",
+              "SubState": "dead",
+              "UnitFileState": ""
+            },
+            "properties_truncated": [],
+            "scope": "user",
+            "stderr": "",
+            "stderr_truncated": false
+          }
+        ],
+        "properties": {
+          "LoadState": "not-found"
+        },
+        "resolution": "not_found",
+        "resolution_complete": true,
+        "scope": null,
+        "stderr": ""
+      },
+      {
+        "exit_code": 0,
+        "name": "hepta-runtime-job-1a1a951380e-fc05-342f",
+        "observations": [
+          {
+            "exit_code": 0,
+            "observation_complete": true,
+            "properties": {
+              "ActiveState": "inactive",
+              "Description": "hepta-runtime-job-1a1a951380e-fc05-342f.service",
+              "ExecMainStatus": "0",
+              "InvocationID": "",
+              "LoadState": "not-found",
+              "MainPID": "0",
+              "Result": "success",
+              "SubState": "dead",
+              "UnitFileState": ""
+            },
+            "properties_truncated": [],
+            "scope": "system",
+            "stderr": "",
+            "stderr_truncated": false
+          },
+          {
+            "exit_code": 0,
+            "observation_complete": true,
+            "properties": {
+              "ActiveState": "inactive",
+              "Description": "hepta-runtime-job-1a1a951380e-fc05-342f.service",
+              "ExecMainStatus": "0",
+              "InvocationID": "",
+              "LoadState": "not-found",
+              "MainPID": "0",
+              "Result": "success",
+              "SubState": "dead",
+              "UnitFileState": ""
+            },
+            "properties_truncated": [],
+            "scope": "user",
+            "stderr": "",
+            "stderr_truncated": false
+          }
+        ],
+        "properties": {
+          "LoadState": "not-found"
+        },
+        "resolution": "not_found",
+        "resolution_complete": true,
+        "scope": null,
+        "stderr": ""
+      }
+    ]
+  },
+  "limits": [
+    "Scope is this task's evidence Python files and captured known launchers only; no other user's directory/environment was read.",
+    "Potential mutation calls include string replace methods and require context review; a text match is not proof of deletion.",
+    "The known unit status API found no active system/user unit for the listed completed jobs. No claim about unknown or reparented work outside those units is made.",
+    "Private Git index under this evidence directory was used for source identity; ordinary index/source/target files were not changed.",
+    "The source of the profile-directory disappearance is not established by this audit."
+  ]
+}

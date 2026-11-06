@@ -37,7 +37,7 @@ walkdir = { workspace = true }
 pretty_assertions = { workspace = true }
 
 [target.'cfg(windows)'.dev-dependencies]
-base64 = { workspace = true }
+ctor = { workspace = true }
 
 [lib]
 doctest = false

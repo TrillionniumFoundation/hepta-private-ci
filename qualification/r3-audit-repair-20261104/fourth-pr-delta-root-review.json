@@ -1,0 +1,252 @@
+{
+  "schema": "hepta.fourth.pr-delta.root-source-and-log-review.v1",
+  "evidence_blob": "d302cad4ead462c17258c8fce33eac0c21f5ad37",
+  "evidence_identity": {
+    "bytes": 495624,
+    "sha256": "047268359a985db7ccd7ad37b4fe6c18107b01c76db0491546b3d4781285763e"
+  },
+  "raw_log_checks": [
+    {
+      "status": "fulfilled",
+      "value": {
+        "job_id": 126891190902,
+        "blob": "61df2e0c8eceedb7c9fc7816c8faab8d89682b9e",
+        "bytes": 53872,
+        "sha256": "eaf0e7dd7131d85864397024c5ed1844c982e5f0888a8f67261c128c8ccd5011",
+        "ok": true
+      }
+    },
+    {
+      "status": "fulfilled",
+      "value": {
+        "job_id": 126907047861,
+        "blob": "09e3124f97e9be90530858fc0e56e8668f7ec592",
+        "bytes": 239722,
+        "sha256": "957cf9a271039a6627fdfb34a2940006662238facbd29950785ee342bc8c32cb",
+        "ok": true
+      }
+    },
+    {
+      "status": "fulfilled",
+      "value": {
+        "job_id": 126907048733,
+        "blob": "951efbee877044de88a3ffed136690362e6d21a2",
+        "bytes": 1512750,
+        "sha256": "8ce6d0281e43cc28472ee1670a7271b32ec585c18e959c20f4eab3aac12d56b1",
+        "ok": true
+      }
+    },
+    {
+      "status": "fulfilled",
+      "value": {
+        "job_id": 126907049952,
+        "blob": "d3586d5c2f3ea83d7df746f268adb52a9f53db59",
+        "bytes": 108611,
+        "sha256": "a28257b423354d1a2a319f1ea3efd0a8561b57a3b5be2a64eefe78eddba2579f",
+        "ok": true
+      }
+    }
+  ],
+  "actual_original_scope_checks": {
+    "counts": {
+      "selected": 91,
+      "nonpassing": 47
+    },
+    "checks": [
+      {
+        "id": "retained-windows-identity",
+        "selected": 8,
+        "nonpassing": 0,
+        "passed": true,
+        "exit": 0,
+        "roster_length_equal": true,
+        "all_nonpassing_in_roster": true,
+        "missing_required": 0,
+        "selection_matches": true
+      },
+      {
+        "id": "git-process-cleanup",
+        "selected": 2,
+        "nonpassing": 0,
+        "passed": true,
+        "exit": 0,
+        "roster_length_equal": true,
+        "all_nonpassing_in_roster": true,
+        "missing_required": 0,
+        "selection_matches": true
+      },
+      {
+        "id": "retained-mcp",
+        "selected": 3,
+        "nonpassing": 0,
+        "passed": true,
+        "exit": 0,
+        "roster_length_equal": true,
+        "all_nonpassing_in_roster": true,
+        "missing_required": 0,
+        "selection_matches": true
+      },
+      {
+        "id": "original-protected-owner",
+        "selected": 14,
+        "nonpassing": 14,
+        "passed": false,
+        "exit": 1,
+        "roster_length_equal": true,
+        "all_nonpassing_in_roster": true,
+        "missing_required": 0,
+        "selection_matches": true
+      },
+      {
+        "id": "operator-native",
+        "selected": 26,
+        "nonpassing": 11,
+        "passed": false,
+        "exit": 1,
+        "roster_length_equal": true,
+        "all_nonpassing_in_roster": true,
+        "missing_required": 0,
+        "selection_matches": true
+      },
+      {
+        "id": "shadow-native",
+        "selected": 31,
+        "nonpassing": 17,
+        "passed": false,
+        "exit": 1,
+        "roster_length_equal": true,
+        "all_nonpassing_in_roster": true,
+        "missing_required": 0,
+        "selection_matches": true
+      },
+      {
+        "id": "sandbox-original-failures",
+        "selected": 7,
+        "nonpassing": 5,
+        "passed": false,
+        "exit": 1,
+        "roster_length_equal": true,
+        "all_nonpassing_in_roster": true,
+        "missing_required": 0,
+        "selection_matches": true
+      }
+    ],
+    "pointers": [
+      {
+        "job_id": 126891190902,
+        "lines": [
+          {
+            "line": 563,
+            "text": "2026-11-04T21:57:47.5151350Z FAIL_HEPTA_CALLER_PROOF: authority_lease_put: caller set mismatch; missing=[], unexpected=['codex-rs/hepta-agentd/src/deployment_calculator.rs']"
+          }
+        ]
+      },
+      {
+        "job_id": 126907047861,
+        "lines": [
+          {
+            "line": 2997,
+            "text": "2026-11-04T22:45:02.6969059Z Ran 6 tests in 0.003s\r"
+          },
+          {
+            "line": 3007,
+            "text": "2026-11-04T22:45:03.3674435Z RuntimeError: production source differs from frozen controls\r"
+          }
+        ]
+      },
+      {
+        "job_id": 126907048733,
+        "lines": [
+          {
+            "line": 8774,
+            "text": "2026-11-04T22:32:05.1572589Z   = note: rust-lld: error: unable to find library -lpulse"
+          }
+        ]
+      },
+      {
+        "job_id": 126907049952,
+        "lines": [
+          {
+            "line": 38,
+            "text": "2026-11-04T22:24:45.8495190Z   ref: 2496308dbbe8b2452ea599357fcd9cd63884e2b9\r"
+          },
+          {
+            "line": 97,
+            "text": "2026-11-04T22:24:49.8466866Z [command]\"C:\\Program Files\\Git\\bin\\git.exe\" -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin 2496308dbbe8b2452ea599357fcd9cd63884e2b9\r"
+          },
+          {
+            "line": 99,
+            "text": "2026-11-04T22:24:52.9871819Z  * branch            2496308dbbe8b2452ea599357fcd9cd63884e2b9 -> FETCH_HEAD\r"
+          },
+          {
+            "line": 100,
+            "text": "2026-11-04T22:24:52.9920986Z [command]\"C:\\Program Files\\Git\\bin\\git.exe\" rev-parse --verify --quiet 2496308dbbe8b2452ea599357fcd9cd63884e2b9^{object}\r"
+          },
+          {
+            "line": 101,
+            "text": "2026-11-04T22:24:53.1977687Z 2496308dbbe8b2452ea599357fcd9cd63884e2b9\r"
+          },
+          {
+            "line": 108,
+            "text": "2026-11-04T22:24:53.2781306Z [command]\"C:\\Program Files\\Git\\bin\\git.exe\" checkout --progress --force 2496308dbbe8b2452ea599357fcd9cd63884e2b9\r"
+          },
+          {
+            "line": 176,
+            "text": "2026-11-04T22:24:56.3113730Z Note: switching to '2496308dbbe8b2452ea599357fcd9cd63884e2b9'.\r"
+          },
+          {
+            "line": 196,
+            "text": "2026-11-04T22:24:56.4619099Z 2496308dbbe8b2452ea599357fcd9cd63884e2b9\r"
+          },
+          {
+            "line": 595,
+            "text": "2026-11-04T22:25:19.8237245Z \u001b[36;1mpython .github/scripts/windows_current_ci.py --expected-head \"2496308dbbe8b2452ea599357fcd9cd63884e2b9\" --output \"$env:RUNNER_TEMP/hepta-windows-current-ci\"\u001b[0m\r"
+          },
+          {
+            "line": 865,
+            "text": "2026-11-04T23:02:47.6254404Z   name: windows-current-ci-2496308dbbe8b2452ea599357fcd9cd63884e2b9-41925028068-1\r"
+          },
+          {
+            "line": 894,
+            "text": "2026-11-04T23:02:50.4079317Z Artifact windows-current-ci-2496308dbbe8b2452ea599357fcd9cd63884e2b9-41925028068-1.zip successfully finalized. Artifact ID 13371396629\r"
+          },
+          {
+            "line": 895,
+            "text": "2026-11-04T23:02:50.4080449Z Artifact windows-current-ci-2496308dbbe8b2452ea599357fcd9cd63884e2b9-41925028068-1 has been successfully uploaded! Final size is 41584 bytes. Artifact ID is 13371396629\r"
+          }
+        ]
+      }
+    ],
+    "excluded_selftest_rows": 2
+  },
+  "lineage": {
+    "base": "fbf786803f07e402bcaddbb8fbe3dd387f6b7688",
+    "head": "2496308dbbe8b2452ea599357fcd9cd63884e2b9",
+    "status": "diverged",
+    "ahead_by": 1,
+    "behind_by": 5,
+    "merge_base": "735b980092e4cca7790037923111322660672059",
+    "meaning": "The PR base branch advanced. The source head still parents 735b980; it does not include the five later base commits. No conflict-free integration or common qualified tree is inferred."
+  },
+  "product_identity": {
+    "head": "cabcb40d36e116beaa65750e1f674c52035da785",
+    "tree": "b2d7f038d6d88156bc6a4cb29c8703f69b808f29",
+    "base": {
+      "sha": "63652be658ebed8d3052eb789b951793384fd5e4",
+      "ref": "integration/ui-objective-20261103-product"
+    },
+    "main": {
+      "ref": "refs/heads/main",
+      "sha": "732e934ba496d90fbe042b8d41d479ef901643e5"
+    }
+  },
+  "disposition": "DONOR_SCOPE_FAILURES_RETAINED_NO_TRANSFER_TO_CURRENT_PRODUCT",
+  "limits": [
+    "Root fetched all4 full raw job logs and verified their entire exact length/SHA. Original-source checkpoint errors, link failures and actual original test results remain separate stages.",
+    "Raw Windows job output also contains two fake scope rows from script self-tests. Root excludes those exact original/second owner-package rows and independently counts only the7 actual original scopes:91 selected,47 nonpassing; all missing-required lists empty and selection identities matched.",
+    "The Windows per-case results here are structured original runner summaries and raw excerpts, not independently fetched full case JUnit.",
+    "Private-state6 self-tests are script tests; production-source mismatch precedes the attack controls. UI lpulse link failure precedes native test execution.",
+    "The current product remains cabc/treeb2d7 at this read; main732. Different donor source results neither regress nor qualify cabc. Base-ref movement does not put five additional commits into PR4808's head.",
+    "This is a targeted refresh, not a new complete inventory or independent full-source review of all donor files."
+  ]
+}

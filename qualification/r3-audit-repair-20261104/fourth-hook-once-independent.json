@@ -1,0 +1,116 @@
+{
+  "schema": "hepta.async-idle-hook-fixture-independent-review.v1",
+  "verdict": "STATIC_PASS_FIXED_NATIVE_PENDING",
+  "path": "codex-rs/core/tests/suite/hooks.rs",
+  "preimage": {
+    "blob": "03982721e37198052f7ec30d5d092292f96a2c0d",
+    "bytes": 179398,
+    "sha256": "a3803ec05fdffc332caab3c113685114f9dc175e5512053f772cacf59b11e698"
+  },
+  "postimage": {
+    "blob": "e9ddd7198c4c1550741fcb58524ba2108337ab15",
+    "bytes": 179703,
+    "sha256": "5825b06b28ecf123f588b1a2764f513c4ce7a39f486e4fa5c8b65e6f0379818a"
+  },
+  "patch": "3f0cff138dc8f0fba3a39614f0c973ae47a7dea4",
+  "roundtrip": [
+    {
+      "path": "codex-rs/core/tests/suite/hooks.rs",
+      "hunks": 4,
+      "exact_reconstructed": true
+    }
+  ],
+  "unchanged_case_proof": {
+    "idle_only_mode_call_changed": true,
+    "active_only_mode_call_changed": true
+  },
+  "python_proof": {
+    "original_script_preserved_except_guard": true,
+    "second_process_reads_input_before_guard": true,
+    "first_started_and_finished_markers_not_rewritten_on_noop": true,
+    "immediate_guard_false_short_circuit": true
+  },
+  "primary_sources": [
+    {
+      "path": "codex-rs/core/src/hook_runtime.rs",
+      "blob": "c520135afdd384df148c184baa57568766eb3abc",
+      "relevant_lines": "682-733",
+      "contract": "Finished prior-turn context is recorded before the new user prompt; new post-sampling context is injected into the active pending-input queue."
+    },
+    {
+      "path": "codex-rs/hooks/src/events/user_prompt_submit.rs",
+      "blob": "c70deba2f7ba15d34ec7e1132bcae191e52aacab",
+      "relevant_lines": "150-179",
+      "contract": "Exit status 0 with empty trimmed stdout adds no context or warning output entries. It is a supported successful hook result, not an invalid-JSON bypass."
+    }
+  ],
+  "independently_read_original_evidence": {
+    "bundle": "d11d068455d15b5b89f5cd70445ffb8c51f9ebff",
+    "source_tree": "073bc9fbcd958d0281eedc52f330c9847a0961d5",
+    "controller_job": "1a1a8cd34a8-fc05-2fc4",
+    "three_complete_file_checks": [
+      {
+        "member": "two-event-diagnostics-review.json",
+        "bytes": 22322,
+        "sha256": "fe70e402fbd1aad84285ea7581265cbb4344bc837a9c85282442c26c44d4b093"
+      },
+      {
+        "member": "two-event-diagnostics.log",
+        "bytes": 30562,
+        "sha256": "351eefed1547588d174a57a1257990181491e26dedc50de168c169ec5cd9d99d"
+      },
+      {
+        "member": "two-event-diagnostics.junit.xml",
+        "bytes": 28298,
+        "sha256": "f91538215be662914dd21e19c952473aec490a93f82a801c9a60e7d72004b1f7"
+      }
+    ],
+    "hook_case_seconds": 5.274,
+    "diagnostic_event_count": 20,
+    "event_order": [
+      {
+        "index": 1,
+        "observed": "Previous-turn context under the new second turn"
+      },
+      {
+        "index": 2,
+        "observed": "Previous-turn warning under the new second turn"
+      },
+      {
+        "index": 11,
+        "observed": "RawResponseCompleted for resp-2"
+      },
+      {
+        "index": 13,
+        "observed": "Fresh warning for the second user prompt"
+      },
+      {
+        "index": 14,
+        "observed": "Fresh context for the second user prompt"
+      },
+      {
+        "indices": [
+          15,
+          16,
+          17,
+          18,
+          19
+        ],
+        "observed": "HTTP 404 stream reconnect errors after the two supplied responses"
+      }
+    ],
+    "limit": "The complete files were hash verified. The test's diagnostic event strings themselves are bounded to 32 entries by 512 characters; this is not a full untruncated event-stream archive."
+  },
+  "findings": [
+    "The former gated fixture generated new context for every UserPromptSubmit, including the second turn that was meant only to consume the earlier idle result. The visible fresh second context plus the production pending-input contract explains why two configured model responses were insufficient in this attempt.",
+    "GatedOnce suppresses only later fixture output after the first real hook has written its finished marker. It still starts the Python process and reads the hook input, then returns successful empty output before overwriting either first-run marker.",
+    "The first execution retains its actual release wait, original JSON output and actual finished marker. The idle case still requires no idle events/model request, then exactly two requests, distinct turn IDs, the buffered warning on the second ID and context preceding the second prompt.",
+    "Immediate uses the same original Python path with a constant False short-circuit guard, so it does not read the finished path or acquire one-shot behavior."
+  ],
+  "limits": [
+    "This filesystem existence guard is justified by this fixture's ordered first-finished-before-second-submit protocol; it is not a generally atomic one-shot implementation for arbitrary concurrent hooks.",
+    "No third model response, relaxed request count, longer deadline, production hook change, new permission or skip/retry is introduced.",
+    "The fixed case and unchanged active-turn immediate case have not yet run. Run them under the original seven-package feature-unified owning context and preserve original diagnostic failure receipts.",
+    "The independently read skill baseline in the same bundle contains its phase marker followed by the original shared waiter timeout; that supplies the previously required causal prerequisite for review 2155546efd2852de4cb8b8d2a37945dbd3ed9e60, without asserting the fixed skill case has passed."
+  ]
+}

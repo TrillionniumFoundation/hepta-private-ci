@@ -1,0 +1,282 @@
+{
+  "schema": "hepta.independent-state-native-custody-binding-review.v1",
+  "reviewed_at_utc": "2026-11-05",
+  "reviewer": "/root/research_audit",
+  "verdict": "STATIC_PASS_FOR_EXPLICIT_POOL_BINDINGS_WITH_RECOVERY_CHECKPOINT_GAP_OPEN",
+  "reviewed_manifest": {
+    "blob": "781d9153910147841372cf60ab4919033668c5cd",
+    "bytes": 18443,
+    "sha256": "fc4969f34d331b4c6cb4f78c186ed31e776aeff7f7c18827cb77a4462f5b3e13"
+  },
+  "scope": "Four application paths on the exact serial B foundation postimages; source-only independent review, not a product build, platform acceptance or whole-recovery closure.",
+  "source_files": [
+    {
+      "path": "codex-rs/state/src/sqlite.rs",
+      "before_blob": "b9fb565cadd14f6541bfc8421164897e2907e2ad",
+      "postimage": {
+        "blob": "27b123f6862ca4355da74ed4d1b21c7047b3b2df",
+        "bytes": 20446,
+        "sha256": "2f940666b2e309c5767f9e9f5912f403f622886566a7c4275a8f8af03f737088"
+      }
+    },
+    {
+      "path": "codex-rs/state/src/sqlite_native_custody_tests.rs",
+      "before_blob": null,
+      "postimage": {
+        "blob": "469db639ae19cb89263089045c2f05814000d5a0",
+        "bytes": 11254,
+        "sha256": "e3683461e310713d1566f225e1de22cf5e64782cbd6a116ddc61abafd0ab6f0e"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_store.rs",
+      "before_blob": "5c0704c4e70ffdf2f65864a42da5e6e48bf79006",
+      "postimage": {
+        "blob": "1cb023504fa3b871e9c60d60b8ed84047c058072",
+        "bytes": 74394,
+        "sha256": "dbe8075c35d0eb870744eead691de8a2a31b1a289e2ed68babb4c80c7bbb5e4b"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/objective_sender_connection_custody_tests.rs",
+      "before_blob": "09a61b69e8cd34f27a0c968433b2b29df9c95380",
+      "postimage": {
+        "blob": "6b8e88296507a8fe302aa45cd9015ce602465b56",
+        "bytes": 9608,
+        "sha256": "09b25d8faa1cbace0088175494dc01918fa156f0a78b3c376c1bbf0eccab3fcf"
+      }
+    }
+  ],
+  "context_sources": [
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_store_gate.rs",
+      "blob": "f351700e3a7f382217db9f11f164871e7b2a09e4",
+      "bytes": 1758,
+      "sha256": "216612cbe1d27e3ec75e80e3a54cb54768b3d438667fa69968627cd4d9a9f597",
+      "source": "/workspace/scratch/07dd58cc9630/architecture-audit/b16-b-serial-alignment-20261105/static-full-patches/codex-rs/hepta-memory/src/cognitive_store_gate.rs"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_store_recovery.rs",
+      "blob": "54e917f45520f6b0e31fcd6a2f57ac3a00d8ae6c",
+      "bytes": 27552,
+      "sha256": "7271ec690ac9bd1ef7242f44d127c74dd6232fca107ac89548da285466648599",
+      "source": "/workspace/scratch/07dd58cc9630/architecture-audit/b16-b-serial-alignment-20261105/static-full-patches/codex-rs/hepta-memory/src/cognitive_store_recovery.rs"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_store_windows.rs",
+      "blob": "83225e8fd04a575ac816544aceedda82c7701d1f",
+      "bytes": 4266,
+      "sha256": "76072e34610533bccc36e0212d939a6b6600b8d79fdaed64475af03cc06fa124",
+      "source": "GitHub fixed cabcb40d36e116beaa65750e1f674c52035da785 file GET, saved complete original body"
+    }
+  ],
+  "independent_reconstruction": [
+    {
+      "patch": "state-native-token-binding.patch",
+      "blob": "223ce97fbdeec446f8baf1f44831954041026321",
+      "bytes": 17656,
+      "sha256": "e5c9a1822ecd3d6b4f46709b356e10881d6f9a440cb6f1286807f67c02489e2d",
+      "commands": [
+        {
+          "argv": [
+            "git",
+            "apply",
+            "--whitespace=error-all",
+            "--check",
+            "/workspace/scratch/07dd58cc9630/architecture-audit/b16-state-native-token-binding-20261105/state-native-token-binding.patch"
+          ],
+          "exit_code": 0,
+          "stdout": "",
+          "stderr": ""
+        },
+        {
+          "argv": [
+            "git",
+            "apply",
+            "--whitespace=error-all",
+            "/workspace/scratch/07dd58cc9630/architecture-audit/b16-state-native-token-binding-20261105/state-native-token-binding.patch"
+          ],
+          "exit_code": 0,
+          "stdout": "",
+          "stderr": ""
+        }
+      ],
+      "source_map": {
+        "codex-rs/state/src/sqlite.rs": "27b123f6862ca4355da74ed4d1b21c7047b3b2df",
+        "codex-rs/state/src/sqlite_native_custody_tests.rs": "469db639ae19cb89263089045c2f05814000d5a0",
+        "codex-rs/hepta-memory/src/objective_sender_connection_custody_tests.rs": "6b8e88296507a8fe302aa45cd9015ce602465b56",
+        "codex-rs/hepta-memory/src/cognitive_store.rs": "1cb023504fa3b871e9c60d60b8ed84047c058072"
+      },
+      "all_expected_bytes": true
+    },
+    {
+      "patch": "negative-no-options-binding.patch",
+      "blob": "842177e235d729e92e73e82c1ebd4fac2ede7fb2",
+      "bytes": 1125,
+      "sha256": "bd4041c7d8515df786812715f27b5a909727d49fde2057ce2a6775c9938800ba",
+      "commands": [
+        {
+          "argv": [
+            "git",
+            "apply",
+            "--whitespace=error-all",
+            "--check",
+            "/workspace/scratch/07dd58cc9630/architecture-audit/b16-state-native-token-binding-20261105/negative-no-options-binding.patch"
+          ],
+          "exit_code": 0,
+          "stdout": "",
+          "stderr": ""
+        },
+        {
+          "argv": [
+            "git",
+            "apply",
+            "--whitespace=error-all",
+            "/workspace/scratch/07dd58cc9630/architecture-audit/b16-state-native-token-binding-20261105/negative-no-options-binding.patch"
+          ],
+          "exit_code": 0,
+          "stdout": "",
+          "stderr": ""
+        }
+      ],
+      "source_map": {
+        "codex-rs/state/src/sqlite.rs": "8a3e727c312815829975f8bcb455982b1a972b04",
+        "codex-rs/state/src/sqlite_native_custody_tests.rs": "469db639ae19cb89263089045c2f05814000d5a0",
+        "codex-rs/hepta-memory/src/objective_sender_connection_custody_tests.rs": "6b8e88296507a8fe302aa45cd9015ce602465b56",
+        "codex-rs/hepta-memory/src/cognitive_store.rs": "1cb023504fa3b871e9c60d60b8ed84047c058072"
+      },
+      "all_expected_bytes": true
+    },
+    {
+      "patch": "restore-options-binding.patch",
+      "blob": "40e559a07abbe39d4d796311b09252fc07e43a9d",
+      "bytes": 1125,
+      "sha256": "28866cf8b2305ff6e75c079fceddaca8584eac3a8be3fcc8846b2d81d4a42501",
+      "commands": [
+        {
+          "argv": [
+            "git",
+            "apply",
+            "--whitespace=error-all",
+            "--check",
+            "/workspace/scratch/07dd58cc9630/architecture-audit/b16-state-native-token-binding-20261105/restore-options-binding.patch"
+          ],
+          "exit_code": 0,
+          "stdout": "",
+          "stderr": ""
+        },
+        {
+          "argv": [
+            "git",
+            "apply",
+            "--whitespace=error-all",
+            "/workspace/scratch/07dd58cc9630/architecture-audit/b16-state-native-token-binding-20261105/restore-options-binding.patch"
+          ],
+          "exit_code": 0,
+          "stdout": "",
+          "stderr": ""
+        }
+      ],
+      "source_map": {
+        "codex-rs/state/src/sqlite.rs": "27b123f6862ca4355da74ed4d1b21c7047b3b2df",
+        "codex-rs/state/src/sqlite_native_custody_tests.rs": "469db639ae19cb89263089045c2f05814000d5a0",
+        "codex-rs/hepta-memory/src/objective_sender_connection_custody_tests.rs": "6b8e88296507a8fe302aa45cd9015ce602465b56",
+        "codex-rs/hepta-memory/src/cognitive_store.rs": "1cb023504fa3b871e9c60d60b8ed84047c058072"
+      },
+      "all_expected_bytes": true
+    }
+  ],
+  "production_binding": {
+    "exact_executable_changes": "Four lines: clone original Arc<F> twice and pass each clone to the native connection_lifetime_token builder before connect in the two explicit state pool constructors.",
+    "actual_owner_chain": [
+      "CognitiveStoreOpenGuard owns Arc<CognitiveStoreLockCustody>; the latter contains the original locked File, path and cfg(windows) retained directory File (cognitive_store.rs 258-303).",
+      "Windows open_lock_file returns the child File and the same retained private directory File (fixed cognitive_store_windows.rs 53-58); no replacement path-only owner is introduced.",
+      "CognitiveCommitGate::for_open_guard clones this original custody Arc (cognitive_store_gate.rs 25-29). Existing Memory open/recovery pool closures capture a clone of that gate.",
+      "State Arc<F> now enters the proposed SQLx native-lifetime API; it also retains original hook/collation capture. The driver API must be adopted before this source can compile."
+    ],
+    "no_ownership_cycle_found": "The gate captures the resource owner and atomic state, not the SqlitePool/connection; the File/Windows directory owner does not capture the gate.",
+    "unchanged_authority": "The predicate remains the original commit oracle; native token ownership is not Current construction, Root provenance, checkpoint ACK or outside-effect authority."
+  },
+  "test_review": {
+    "state_parent_names": [
+      {
+        "package": "codex-state",
+        "name": "sqlite::native_custody_tests::guarded_pool_retains_custody_when_native_open_is_cancelled",
+        "mechanism": "Owned ordinary libtest subprocess holds a real File lock. sqlite3_auto_extension blocks during native open; the real state opening future is actively polled to the callback then cancelled. Parent independently opens/try_locks in another process while child gate is still zero; after release and actual resource destruction, lock succeeds.",
+        "expected": "WouldBlock before native gate release; gate_status=0 is checked after physical probe. After native close: lock available and gate_status=1; child exits successfully and is reaped."
+      },
+      {
+        "package": "codex-state",
+        "name": "sqlite::native_custody_tests::coordinated_pool_retains_custody_when_initial_pragma_is_cancelled",
+        "mechanism": "Same physical cross-process proof, with a real SQLite progress callback paused during initial statement execution. The actual coordinated state constructor is used. Its before_checkout is a deliberate panic sentinel because it must not be reached before cancelled initialization finishes; it is not a successful no-op coordinator.",
+        "expected": "Same physical lock/gate proof. Any successful early open, checkout sentinel, callback timeout or cleanup failure does not qualify."
+      }
+    ],
+    "actual_mechanism": "Ordinary libtest child, actual private File lock, real sqlite3_auto_extension/progress callbacks, opening future actively polled with tokio::select until callback entry, then cancelled. Independent parent process opens and probes the real lock.",
+    "callback_bound": "Five seconds. After the physical probe the parent must receive gate_status=0; timeout/disconnect status2 or setup/selector failure cannot count as missing-custody causal evidence.",
+    "cancellation_precision": "The current-thread Tokio runtime is a temporary and is dropped immediately before drop(opening). These controls cover cancellation with runtime shutdown; they do not separately prove runtime-alive cancellation. The native worker is the original SQLx thread. No unbounded Tokio task is introduced.",
+    "release_precision": "ResourceOwner::drop closes its File before sending the release event; the parent then observes native_closed, gate_status=1 and real lock availability. The dependency's close ordering remains a separate required gate.",
+    "cleanup": "OwnedScenario drops its stdin and receiver, kills/waits an unreaped direct child and joins the bounded stdout reader. Successful child exit is reaped and checked. No grandchild or shared host process is involved.",
+    "support_count": "Two selected state parents plus one selected Memory parent. The explicitly ignored child support is invoked by exact name and is not a fourth PASS; no test has been run.",
+    "memory_name": "production_writer::objective_sender::connection_custody_tests::native_custody_survives_removal_of_both_registered_anchors",
+    "memory_mechanism": "Actual CognitiveStore and detached native connection: live SELECT and original exclusive OpenGuard contention before and after removal of commit hook plus replacement of reserved collation; no writes after oracle removal. Physical close must release custody. This control uses independent handles in one process, not cross-process qualification.",
+    "original_memory_controls_preserved": {
+      "blob": "09a61b69e8cd34f27a0c968433b2b29df9c95380",
+      "bytes": 8421,
+      "sha256": "6056776c17d1d4f0649ae2936dfad893a16aa52cba175d9859a0e5a8d86f2682",
+      "complete_prefix_byte_equal": true
+    }
+  },
+  "counterfactual_review": {
+    "negative": "842177e235d729e92e73e82c1ebd4fac2ede7fb2",
+    "restore": "40e559a07abbe39d4d796311b09252fc07e43a9d",
+    "only_removed_executable_lines": [
+      "        let connection_custody = Arc::clone(&commit_allowed);",
+      "            .connection_lifetime_token(connection_custody)",
+      "        let connection_custody = Arc::clone(&commit_allowed);",
+      "            .connection_lifetime_token(connection_custody)"
+    ],
+    "all_tests_and_dependency_api_preserved": true,
+    "three_phase_exact_roundtrip": true,
+    "causal_requirements": [
+      "Both owned state children must actually enter the intended native callback, the opening future must be cancelled, and parent must observe an erroneously available real lock while post-probe gate_status remains zero.",
+      "The Memory test must complete original opening/close/live-SELECT/initial contention and emit both_registered_anchors_removed=true native_close_started=false; only then unexpected exclusive-lock success proves missing native custody.",
+      "Compile/setup errors, no tests, a failed child selector, gate timeout/outcome 2, sentinel panic, earlier SQL failure or missing stage do not count as causal negatives."
+    ],
+    "actual_results": "NONE: setup, compile, physical controls and negative failures have not run."
+  },
+  "open_concrete_gap": {
+    "id": "PRIVATE_RECOVERY_CHECKPOINT_CONNECTION_NOT_BOUND",
+    "state_path": "codex-rs/state/src/sqlite.rs",
+    "state_postimage": "27b123f6862ca4355da74ed4d1b21c7047b3b2df",
+    "method": "checkpoint_private_recovery_database",
+    "unchanged_method_body": {
+      "blob": "19f40951cffc92bb66628a525e892945f5894582",
+      "bytes": 1349,
+      "sha256": "f0dc32ebfc29c89dc3a1bc26053a824063c718e1c1646f0028f8e2074698d49c"
+    },
+    "lines": "444-476",
+    "caller_path": "codex-rs/hepta-memory/src/cognitive_store_recovery.rs",
+    "caller_blob": "54e917f45520f6b0e31fcd6a2f57ac3a00d8ae6c",
+    "caller_lines": "216-224",
+    "finding": "After closing the guarded validation pool, actual Memory recovery opens a separate ordinary single connection for wal_checkpoint(TRUNCATE) and journal_mode=DELETE. Its options do not carry the proposed native token. The caller's lexical exclusive guard does not by itself establish native lifetime through future cancellation.",
+    "severity_scope": "Existing separate entry remains open; not introduced by these four lines. The manifest's description of two guarded recovery pool calls is accurate, but must not be generalized to the whole recovery flow.",
+    "next_action": "Parent authorized separate read-only full caller/test/ownership audit and a distinct minimal proposal on 27b123 if the cancellation gap is confirmed. Do not modify this frozen binding cohort."
+  },
+  "boundaries": [
+    "Only opted-in guarded/coordinated pools and their actually captured owner are bound. Defaults and separately opened legacy instances remain outside this change.",
+    "from_read_only_pool still has an inert new gate, no native token/hook and no OpenGuard; its physical readonly image is separate protection.",
+    "Original read-ACK, AlreadyRetained, recovery authorization, publication, original_sender and Current contracts are unchanged and not requalified here.",
+    "Windows original File/directory ownership is statically traced; no Windows runtime or security-boundary behavior is claimed.",
+    "SQLx normalized source adoption, features/BUILD/lock generation, original regression gates, formatter and compile are outstanding."
+  ],
+  "actions": {
+    "cloud_isolated_git_apply_check_and_reconstruction": true,
+    "native": false,
+    "compile": false,
+    "format": false,
+    "tests": false,
+    "shared_source_changed": false,
+    "refs_changed": false
+  }
+}

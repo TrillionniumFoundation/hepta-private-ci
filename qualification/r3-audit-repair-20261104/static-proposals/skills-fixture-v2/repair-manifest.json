@@ -1,0 +1,260 @@
+{
+  "schema": "hepta.skills_marker_fixture_preparation_repair.v2",
+  "created_at_utc": "2026-11-05T02:49:48.272224+00:00",
+  "state": "STATIC_CANDIDATE_NOT_APPLIED_NOT_FORMATTED_NOT_COMPILED_NOT_EXECUTED",
+  "path": "codex-rs/ext/skills/src/host_roots_tests.rs",
+  "actual_native_source_at_return": "1125d197cf798176bea6dcc2c0b0c499eb22cf44",
+  "actual_current_preimage": {
+    "bytes": 23392,
+    "sha256": "fa2d78f6fea0018f34d57971ff9defb8b709d1085ba6f2e901b14a2e2ae520c4",
+    "blob": "3d8412f8eca445b1eba85f26d7975aa7ddfbb524"
+  },
+  "base_original_source_commit": "7bc267096f23159605c0b6563374e697f8a0bd1f",
+  "base_original_source_tree": "f8251e1d14fa8524ab469281296cd4cf708f173c",
+  "variants": {
+    "original": {
+      "bytes": 22485,
+      "sha256": "054070e3f7935d2945b99987e08eff5cbf96c27870d25c466bc31b54b174f00b",
+      "blob": "fee6c1a0398c0f9bacbb60853e20786e804a3271"
+    },
+    "v1_positive": {
+      "bytes": 23392,
+      "sha256": "fa2d78f6fea0018f34d57971ff9defb8b709d1085ba6f2e901b14a2e2ae520c4",
+      "blob": "3d8412f8eca445b1eba85f26d7975aa7ddfbb524"
+    },
+    "v1_negative": {
+      "bytes": 23571,
+      "sha256": "a56d6f5d9e6f592ac9e7cd4dd815bd7a8b2d8c31d8902433639c9ff601236a45",
+      "blob": "9814df0cddc9cf8c02e8e0259ccdac1fa2b117b1"
+    },
+    "v2_positive": {
+      "bytes": 23508,
+      "sha256": "1987b4f5b24df98283281f1124f6ab9fa364da41ac1cbf352e4b952058f82f94",
+      "blob": "ffae69d365402929787f9029a15f02d9c328149b"
+    },
+    "v2_negative": {
+      "bytes": 23687,
+      "sha256": "33d606f5e35b6c8b77a4693a516c376a498c55e40fbdc811fdb7cbfab721daef",
+      "blob": "0af7f9a6be0f1e6795bd5f7ab9006d0c8ce24a88"
+    }
+  },
+  "prior_invalid_negative": {
+    "bundle": {
+      "bytes": 26376,
+      "sha256": "a851dac9cdd3dab1d1e1588b52c52b3eb1a670a1ba90063eeb11a55d9b7341f8",
+      "blob": "92b497559c315c0cc48db5a8d7f3de89470a2158"
+    },
+    "job_id": "1a1a9955443-fc05-3624",
+    "negative_source_tree": "e55c92c7546fceccd37c16fcd04aaf606e182201",
+    "source_blob": "9814df0cddc9cf8c02e8e0259ccdac1fa2b117b1",
+    "case": "host_roots::tests::repo_ancestry_without_project_marker_does_not_walk_parents",
+    "selected_count": 1,
+    "result": "FAIL",
+    "test_duration_seconds": 0.008,
+    "panic_location": "ext/skills/src/host_roots_tests.rs:425:11",
+    "panic": "index not found",
+    "causal_qualification": false,
+    "original_roots_assertion_reached": false,
+    "original_just_exit_code": 100,
+    "controller_exit_code": 1,
+    "selected_retries": 0,
+    "original_ignored": 0,
+    "filtered_unmatched": 144,
+    "program_identity_stable": true,
+    "finally_restored_tree": "1125d197cf798176bea6dcc2c0b0c499eb22cf44",
+    "finally_restored_exact_positive": true,
+    "positive_or_migration_or_v8_tests_executed": false
+  },
+  "root_cause": {
+    "actual_fixture_definition": "empty_config at original test source lines182-184 returns toml::Value::Table(toml::map::Map::new())",
+    "failing_operation": "Index assignment config[\"project_root_markers\"] requires an existing key; both V1 positive and negative use it on the empty table.",
+    "scope": "Actual new fixture preparation defect, not causal evidence for the original ancestry behavior. The original host ancestor marker remains an inference with unknown exact marker path.",
+    "fix": "In both variants, obtain the known table via as_table_mut().expect(\"empty config table\") and insert the same key and unchanged nonempty marker array."
+  },
+  "preserved_contracts": [
+    "Unique nonempty project marker derived from owned TempDir",
+    "Actual symlink_metadata NotFound for every cwd ancestor before the query",
+    "Existing SessionFlags config layer and real LOCAL_FS",
+    "Original whole roots vector assertion byte-for-byte",
+    "All other original test definitions byte-for-byte",
+    "No production source, permission, environment, Cargo, BUILD, lock, selector, or timeout change"
+  ],
+  "original_assertion_lines": {
+    "original": 415,
+    "v1_positive": 438,
+    "v1_negative": 441,
+    "v2_positive": 443,
+    "v2_negative": 446
+  },
+  "negative_endpoint": {
+    "exact_case": "host_roots::tests::repo_ancestry_without_project_marker_does_not_walk_parents",
+    "source_file": "ext/skills/src/host_roots_tests.rs",
+    "line": 446,
+    "column": 5,
+    "required_actual_left_order": [
+      "<owned temp>/outer/.agents/skills",
+      "<owned temp>/outer/nested/inner/.agents/skills"
+    ],
+    "required_expected_right": [
+      "<owned temp>/outer/nested/inner/.agents/skills"
+    ],
+    "extra_outer_must_be_a_left_added_diff_line": true,
+    "actual_paths_must_come_from_left_or_common_diff_lines_not_expected_right": true,
+    "only_difference_from_fixed_positive": "After all absence checks, write the same configured marker to owned outer; no altered production condition or assertion.",
+    "inconclusive_outcomes": [
+      "setup assertion/panic including index not found",
+      "compile error",
+      "zero or wrong selected case",
+      "timeout",
+      "other error without exact full roots assertion",
+      "negative passes",
+      "marker found at an unintended ancestor before controlled write"
+    ]
+  },
+  "serial_plan_from_actual_restored_source": [
+    {
+      "step": "install_fixed_negative",
+      "patch": "v1-positive-to-v2-negative.patch",
+      "expected_preimage": {
+        "bytes": 23392,
+        "sha256": "fa2d78f6fea0018f34d57971ff9defb8b709d1085ba6f2e901b14a2e2ae520c4",
+        "blob": "3d8412f8eca445b1eba85f26d7975aa7ddfbb524"
+      },
+      "expected_postimage": {
+        "bytes": 23687,
+        "sha256": "33d606f5e35b6c8b77a4693a516c376a498c55e40fbdc811fdb7cbfab721daef",
+        "blob": "0af7f9a6be0f1e6795bd5f7ab9006d0c8ce24a88"
+      }
+    },
+    {
+      "step": "original_negative",
+      "command": "just test --locked -p codex-skills-extension --lib -E 'test(=host_roots::tests::repo_ancestry_without_project_marker_does_not_walk_parents)' --retries 0",
+      "must_reach": "exact original full roots assertion at 446:5 with both ordered left paths and outer added"
+    },
+    {
+      "step": "restore_exact_fixed_positive",
+      "patch": "v2-negative-to-v2-positive.patch",
+      "expected_preimage": {
+        "bytes": 23687,
+        "sha256": "33d606f5e35b6c8b77a4693a516c376a498c55e40fbdc811fdb7cbfab721daef",
+        "blob": "0af7f9a6be0f1e6795bd5f7ab9006d0c8ce24a88"
+      },
+      "expected_postimage": {
+        "bytes": 23508,
+        "sha256": "1987b4f5b24df98283281f1124f6ab9fa364da41ac1cbf352e4b952058f82f94",
+        "blob": "ffae69d365402929787f9029a15f02d9c328149b"
+      },
+      "failure_behavior": "Use existing sole-writer exact source/index/lock/untracked guards; restore after invalid negative when safe, then stop. Do not count it as causal or proceed to positives."
+    },
+    {
+      "step": "original_nine_only_after_valid_negative",
+      "command": "just test --locked -p codex-skills-extension --lib -E 'test(host_roots::tests::)' --retries 0",
+      "exact_names": [
+        "host_roots::tests::layer_roots_preserve_scope_precedence_and_disabled_projects",
+        "host_roots::tests::plugin_roots_preserve_plugin_resolution_metadata",
+        "host_roots::tests::repo_ancestry_stops_at_project_root_and_preserves_root_to_cwd_order",
+        "host_roots::tests::repo_ancestry_without_project_marker_does_not_walk_parents",
+        "host_roots::tests::resolved_project_layer_loads_skill_when_cwd_is_file",
+        "host_roots::tests::resolved_project_layer_loads_skill_without_git_marker",
+        "host_roots::tests::unique_extra_root_loads_as_recursive_user_root",
+        "host_roots::tests::resolved_config_and_repo_roots_preserve_order_and_dedupe_paths_not_names",
+        "host_roots::tests::repo_ancestry_limits_concurrent_probes_and_preserves_order"
+      ],
+      "actual_outcome": "PENDING"
+    }
+  ],
+  "fixed_positive_original_assertion_line": 443,
+  "patches": [
+    {
+      "path": "v1-positive-to-v2-positive.patch",
+      "from": "v1_positive",
+      "to": "v2_positive",
+      "bytes": 636,
+      "sha256": "347018f80b87c45035943c848098f63bd555817d81c21513e77364c410453ae1",
+      "blob": "2d4900f1877cbabae5a78e25636d9f9ccdc9b7ba",
+      "postimage_byte_equal": true
+    },
+    {
+      "path": "v1-negative-to-v2-negative.patch",
+      "from": "v1_negative",
+      "to": "v2_negative",
+      "bytes": 636,
+      "sha256": "347018f80b87c45035943c848098f63bd555817d81c21513e77364c410453ae1",
+      "blob": "2d4900f1877cbabae5a78e25636d9f9ccdc9b7ba",
+      "postimage_byte_equal": true
+    },
+    {
+      "path": "v1-positive-to-v2-negative.patch",
+      "from": "v1_positive",
+      "to": "v2_negative",
+      "bytes": 938,
+      "sha256": "70ccb9fa54c3efb438fd20dae88ef07917b841de6876353be2365f10c7fe916e",
+      "blob": "7fcbe62a48dc4b018dea95e75c2a05e86b4ef406",
+      "postimage_byte_equal": true
+    },
+    {
+      "path": "v2-positive-to-v2-negative.patch",
+      "from": "v2_positive",
+      "to": "v2_negative",
+      "bytes": 460,
+      "sha256": "7c3ab96f43d16d1e9c1c6aa261712c023a98ab50382469880b193a8d2ac8cba8",
+      "blob": "723374d75c6e8831ec02860b0f86c93058742e51",
+      "postimage_byte_equal": true
+    },
+    {
+      "path": "v2-negative-to-v2-positive.patch",
+      "from": "v2_negative",
+      "to": "v2_positive",
+      "bytes": 460,
+      "sha256": "26d2c254be1c04b50f5477defcdbfc8bdcc6a966188d991cf65753873a5d448d",
+      "blob": "bf3b197f7772643caaeb8593c78a8a9fae08d7ec",
+      "postimage_byte_equal": true
+    },
+    {
+      "path": "full-v2-positive-from-original.patch",
+      "from": "original",
+      "to": "v2_positive",
+      "bytes": 1602,
+      "sha256": "34f0bcc9cb79dea49769231e258384f00e785e72b83ae5adb73cd2ae56ac81a5",
+      "blob": "9928af4051e1f78b21156f6a220fcbdbd0958a23",
+      "postimage_byte_equal": true
+    },
+    {
+      "path": "full-v2-negative-from-original.patch",
+      "from": "original",
+      "to": "v2_negative",
+      "bytes": 1784,
+      "sha256": "baf7314d78f2a7445a6337366b3565c521f66bc469fb13f6bd3bd9b57b1c65ba",
+      "blob": "3f4b066083613a72bd956a543ed08453b756df51",
+      "postimage_byte_equal": true
+    }
+  ],
+  "static_reconstruction": {
+    "bytes": 8560,
+    "sha256": "c5275f1e783e4bfc77aadd31d2958d7821c8a9883b2ca8ded1afdc2883a1f75e",
+    "blob": "94a6f96974be8b0edd8ec8310ff102e67d74a58d"
+  },
+  "original_roster": [
+    "host_roots::tests::layer_roots_preserve_scope_precedence_and_disabled_projects",
+    "host_roots::tests::plugin_roots_preserve_plugin_resolution_metadata",
+    "host_roots::tests::repo_ancestry_stops_at_project_root_and_preserves_root_to_cwd_order",
+    "host_roots::tests::repo_ancestry_without_project_marker_does_not_walk_parents",
+    "host_roots::tests::resolved_project_layer_loads_skill_when_cwd_is_file",
+    "host_roots::tests::resolved_project_layer_loads_skill_without_git_marker",
+    "host_roots::tests::unique_extra_root_loads_as_recursive_user_root",
+    "host_roots::tests::resolved_config_and_repo_roots_preserve_order_and_dedupe_paths_not_names",
+    "host_roots::tests::repo_ancestry_limits_concurrent_probes_and_preserves_order"
+  ],
+  "new_test_definitions": 0,
+  "original_budget_policy": "all original deadlines, outer harness and filters unchanged; concurrency original5s waits untouched",
+  "v1_frozen_directory": "v1-frozen/",
+  "v1_package_original_not_modified": true,
+  "not_claimed": [
+    "No V2 native result",
+    "No whole-package or platform qualification",
+    "No proof of which original host ancestor marker existed",
+    "No production skills boundary bug or repair",
+    "No change to migration or V8 source or plan",
+    "No shared native source/index/target/ref mutation"
+  ]
+}

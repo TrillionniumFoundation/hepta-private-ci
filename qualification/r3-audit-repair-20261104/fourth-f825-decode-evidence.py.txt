@@ -1,0 +1,63 @@
+#!/usr/bin/env python3
+"""Reconstruct and verify the frozen f825 full/owning original evidence.
+
+Usage: python fourth-f825-decode-evidence.py.txt --output /absolute/new-directory
+The script and index belong together in the published qualification directory.
+It never runs tests or changes source, and refuses to overwrite output files.
+"""
+
+import argparse
+import base64
+import gzip
+import hashlib
+import json
+from pathlib import Path
+import re
+
+
+def verify(data, expected):
+    assert len(data) == expected["bytes"], "byte count differs"
+    assert hashlib.sha256(data).hexdigest() == expected["sha256"], "SHA256 differs"
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--output", required=True, type=Path)
+    parser.add_argument("--index", type=Path, default=Path(__file__).with_name("fourth-f825-full-owning-compressed-index.json"))
+    args = parser.parse_args()
+    directory = args.index.resolve().parent
+    index = json.loads(args.index.read_text())
+    prepared = []
+    for artifact in index["artifacts"]:
+        label = artifact["label"]
+        assert re.fullmatch(r"[a-z0-9-]+", label), "unexpected output label"
+        output = args.output / f"{label}.original"
+        assert not output.exists(), f"refusing to overwrite {output}"
+        encoded = bytearray()
+        for part in artifact["parts"]:
+            path = (directory / part["archive_path"]).resolve()
+            assert path.is_relative_to(directory), "part escapes archive directory"
+            data = path.read_bytes()
+            verify(data, part)
+            git_blob = hashlib.sha1(b"blob " + str(len(data)).encode() + b"\0" + data).hexdigest()
+            assert git_blob == part["git_blob"], "Git blob identity differs"
+            assert len(encoded) == part["offset"], "part ordering differs"
+            encoded.extend(data)
+        verify(encoded, artifact["base64"])
+        compressed = base64.b64decode(encoded, validate=True)
+        verify(compressed, artifact["gzip"])
+        original = gzip.decompress(compressed)
+        verify(original, artifact["original"])
+        prepared.append((output, original, artifact["original"]))
+    args.output.mkdir(parents=True, exist_ok=True)
+    for path, original, identity in prepared:
+        with path.open("xb") as handle:
+            for offset in range(0, len(original), 1024 * 1024):
+                chunk = original[offset:offset + 1024 * 1024]
+                assert handle.write(chunk) == len(chunk), "short output write"
+        verify(path.read_bytes(), identity)
+        print(f"VERIFIED {path.name} {len(original)} bytes {identity['sha256']}")
+
+
+if __name__ == "__main__":
+    main()

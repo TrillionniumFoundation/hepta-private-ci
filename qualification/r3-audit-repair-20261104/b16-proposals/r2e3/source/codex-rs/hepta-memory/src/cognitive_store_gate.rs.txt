@@ -1,0 +1,64 @@
+//! A monotonic commit interlock for one original store pool and its clones.
+//! This is not an independent Current witness or a cross-process publisher fence.
+
+use std::sync::Arc;
+use std::sync::atomic::AtomicBool;
+use std::sync::atomic::Ordering;
+
+use super::CognitiveStoreLockCustody;
+use super::CognitiveStoreOpenGuard;
+
+#[derive(Clone)]
+pub(crate) struct CognitiveCommitGate {
+    fenced: Arc<AtomicBool>,
+    _custody: Option<Arc<CognitiveStoreLockCustody>>,
+}
+
+impl CognitiveCommitGate {
+    pub(crate) fn new() -> Self {
+        Self {
+            fenced: Arc::new(AtomicBool::new(false)),
+            _custody: None,
+        }
+    }
+
+    pub(crate) fn for_open_guard(guard: &CognitiveStoreOpenGuard) -> Self {
+        Self {
+            fenced: Arc::new(AtomicBool::new(false)),
+            _custody: Some(Arc::clone(&guard.custody)),
+        }
+    }
+
+    pub(crate) fn commit_allowed(&self) -> bool {
+        !self.fenced.load(Ordering::SeqCst)
+    }
+
+    /// The caller must hold this pool's original SQLite writer lock from before
+    /// capturing the cut until after this attempt has completed or been dropped.
+    pub(crate) fn checkpoint_attempt(&self) -> CheckpointAttempt {
+        CheckpointAttempt {
+            gate: self.clone(),
+            acknowledged: false,
+        }
+    }
+}
+
+pub(crate) struct CheckpointAttempt {
+    gate: CognitiveCommitGate,
+    acknowledged: bool,
+}
+
+impl CheckpointAttempt {
+    pub(crate) fn acknowledge(mut self) {
+        // A later read ACK never reopens a gate closed by an earlier attempt.
+        self.acknowledged = true;
+    }
+}
+
+impl Drop for CheckpointAttempt {
+    fn drop(&mut self) {
+        if !self.acknowledged {
+            self.gate.fenced.store(true, Ordering::SeqCst);
+        }
+    }
+}

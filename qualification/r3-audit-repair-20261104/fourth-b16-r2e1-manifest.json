@@ -1,0 +1,419 @@
+{
+  "schema": "hepta.b16.r2e1.commit-interlock-candidate.v1",
+  "status": "UNREACHABLE_SOURCE_CANDIDATE_NOT_FORMATTED_COMPILED_OR_EXECUTED",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "base_commit": "cabcb40d36e116beaa65750e1f674c52035da785",
+  "base_tree": "b2d7f038d6d88156bc6a4cb29c8703f69b808f29",
+  "layered_state_preimage": {
+    "blob": "eb73bc3c24ae6bd64a35be1187f83d5655350bbe",
+    "r2c_manifest": "081aa0f20aa3c05c43aa0a3ea48254039321bd92",
+    "r2d_manifest": "526fa18835b0502fd388660ded3884a61fb5a456",
+    "note": "The exact state preimage contains the unexecuted R2c and R2d candidates. Original memory production files remain cabcb40d. Apply only after sole-lane source reconciliation and those prior qualification gates; this is not an unmodified cabcb40d whole-product result."
+  },
+  "interface_contract": {
+    "blob": "5b901bc677cea3b3af687bc709f10349ad604372",
+    "sha256": "569617248028b93e28ad31eb34d0581327771433a3ac1736eb11c0522bfb1823"
+  },
+  "full_patch": {
+    "blob": "6ddf11215e309b3fcb7e19d521c8d2651a3a0726",
+    "bytes": 21826,
+    "sha256": "bfed033c82b2590eaf42415739c7349cee9dd5d6ab0ac3e6227add57a073605b"
+  },
+  "source_files": [
+    {
+      "path": "codex-rs/state/src/sqlite.rs",
+      "mode": "100644",
+      "before_blob": "eb73bc3c24ae6bd64a35be1187f83d5655350bbe",
+      "after_blob": "7b9ee0117d7425e20e4f08255aa0fe3e319f26ea",
+      "bytes": 18971,
+      "sha256": "110d0be7ae0eb1f6c62e23363c281338109115ddffc04e6ab67da6a6dff74a73"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_store.rs",
+      "mode": "100644",
+      "before_blob": "03f469dcdc0b44754e92a855fcbabf7c21059899",
+      "after_blob": "f670ec69480bc8960c7a3f90a9dc80e4ebd9763c",
+      "bytes": 73694,
+      "sha256": "41f6496d0176ddf8243e46593ea049b2f48531bbd711f86484811814a9e7f33f"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_store_recovery.rs",
+      "mode": "100644",
+      "before_blob": "5639d61d6d0f97d12058a3e5eed90332864983f4",
+      "after_blob": "994230252cf0992b811c0aba08f5e4d97565c923",
+      "bytes": 27525,
+      "sha256": "109e7d9e6b46b6e48f203276fbbc1acd6032b89fa21c0c1002b31b438e7ac0bd"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_store_gate.rs",
+      "mode": "100644",
+      "before_blob": null,
+      "after_blob": "f69a43e09aa1864dda3e208ffb7a53b41e05d9d7",
+      "bytes": 1383,
+      "sha256": "ae68d821c85b454dd6f66447d63996baf9192ac9a25d531a73624b9350135139"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/objective_sender.rs",
+      "mode": "100644",
+      "before_blob": "fe3be44196377039070c62c228d5c2e642560ac0",
+      "after_blob": "6b3102c0ec4422b3658415df2372a7480990c6e2",
+      "bytes": 20024,
+      "sha256": "63a7d654926630ef8849e4691df6578bce32d2801e0c9391cbbbb9c55fd86295"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/objective_sender_store.rs",
+      "mode": "100644",
+      "before_blob": "3e4e477eced86fd0b99c33c7b147ef0be874c75e",
+      "after_blob": "378243e46d48df099d69b494b8879381221b3964",
+      "bytes": 10954,
+      "sha256": "e461757c0b44422001c70799c73c97049498d72880ef5cd59f80ff686b044333"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/objective_sender_commit_interlock_tests.rs",
+      "mode": "100644",
+      "before_blob": null,
+      "after_blob": "62d85c330446b7b5059016d7501bcd85af2e556a",
+      "bytes": 8168,
+      "sha256": "a15602e8946499da789282a2fcd1b26909b34a8c86f5fadd8187aa86c3490bda"
+    }
+  ],
+  "change_stats": {
+    "paths": 7,
+    "insertions": 384,
+    "deletions": 18,
+    "by_path": [
+      {
+        "path": "codex-rs/state/src/sqlite.rs",
+        "insertions": 53,
+        "deletions": 4
+      },
+      {
+        "path": "codex-rs/hepta-memory/src/cognitive_store.rs",
+        "insertions": 10,
+        "deletions": 1
+      },
+      {
+        "path": "codex-rs/hepta-memory/src/cognitive_store_recovery.rs",
+        "insertions": 12,
+        "deletions": 3
+      },
+      {
+        "path": "codex-rs/hepta-memory/src/cognitive_store_gate.rs",
+        "insertions": 52,
+        "deletions": 0
+      },
+      {
+        "path": "codex-rs/hepta-memory/src/objective_sender.rs",
+        "insertions": 16,
+        "deletions": 6
+      },
+      {
+        "path": "codex-rs/hepta-memory/src/objective_sender_store.rs",
+        "insertions": 11,
+        "deletions": 4
+      },
+      {
+        "path": "codex-rs/hepta-memory/src/objective_sender_commit_interlock_tests.rs",
+        "insertions": 230,
+        "deletions": 0
+      }
+    ]
+  },
+  "unified_patch_roundtrip": [
+    {
+      "path": "codex-rs/state/src/sqlite.rs",
+      "hunks": 3,
+      "exact_reconstructed": true
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_store.rs",
+      "hunks": 5,
+      "exact_reconstructed": true
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_store_recovery.rs",
+      "hunks": 5,
+      "exact_reconstructed": true
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_store_gate.rs",
+      "hunks": 1,
+      "exact_reconstructed": true
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/objective_sender.rs",
+      "hunks": 5,
+      "exact_reconstructed": true
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/objective_sender_store.rs",
+      "hunks": 4,
+      "exact_reconstructed": true
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/objective_sender_commit_interlock_tests.rs",
+      "hunks": 1,
+      "exact_reconstructed": true
+    }
+  ],
+  "behavior": {
+    "explicit_state_api": "open_commit_guarded_durable_evidence_pool installs an actual commit hook on each new physical connection and supplies no before-checkout callback. The original unguarded API is byte-identical. The coordinated API keeps both new/reused coordination and calls the same actual hook installer.",
+    "actual_pool_sites": [
+      {
+        "path": "codex-rs/hepta-memory/src/cognitive_store.rs",
+        "before_blob": "03f469dcdc0b44754e92a855fcbabf7c21059899",
+        "site": "ordinary open:354-357",
+        "gate": "One new per-pool Arc<AtomicBool>, cloned into each physical hook and all CognitiveStore clones."
+      },
+      {
+        "path": "codex-rs/hepta-memory/src/cognitive_store_recovery.rs",
+        "before_blob": "5639d61d6d0f97d12058a3e5eed90332864983f4",
+        "site": "candidate validation open:169-172",
+        "gate": "Shared with the final recovered active pool."
+      },
+      {
+        "path": "codex-rs/hepta-memory/src/cognitive_store_recovery.rs",
+        "before_blob": "5639d61d6d0f97d12058a3e5eed90332864983f4",
+        "site": "post-checkpoint final open:240-243",
+        "gate": "Same per-recovery gate; original retained exclusive guard remains owned by returned store."
+      }
+    ],
+    "monotonic_lifetime": "The RAII attempt is created at the checkpoint await boundary only after original current-fence/cut capture/live checks. Error, mismatch, timeout or cancellation after that point drops the attempt and stores fenced=true before the caller-owned SQLite transaction drops/releases its writer lock. Exact ACK plus the original final live check acknowledges the attempt without clearing any prior fence. No public reset exists.",
+    "admission_scope": "Ordinary pool initialization remains permitted before any uncertainty. No default-closed pool is reported as successful ordinary startup. No public sender, authority or ticket APIs are replaced.",
+    "readback_and_duplicate": "recovery_anchor keeps its original BEGIN IMMEDIATE and exact capture but rolls back the read-only transaction. Internal AppendOutcome::Existing is returned only by the original exact retained event-kind/bytes match, and that transaction rolls back before the original independent ACK. Inserted performs the original real COMMIT. No error check is reordered and AlreadyRetained still precedes commit.",
+    "from_read_only_pool": "The existing physically read-only observer constructor stays physically read-only and owns no exclusive guard. Its new inert struct field is not an installed writer hook, protected coordinator, or Current authorization."
+  },
+  "unchanged_original_files": [
+    {
+      "path": "codex-rs/hepta-memory/src/objective_sender_crash_tests.rs",
+      "blob": "f68cb71c593533bdc2f3fc6adbdc5713b175e470",
+      "bytes": 11711
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/objective_sender_integrity.rs",
+      "blob": "40bd46882a7c41bd716f1da49b99f5bd3eac1de4",
+      "bytes": 8659
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/objective_sender_model.rs",
+      "blob": "e1e0155936a493adadf883ffda47caea58fbb7ad",
+      "bytes": 10499
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/objective_sender_model_tests.rs",
+      "blob": "4bbe254b1d7d8da912e67e9e9d366d8f4a534caa",
+      "bytes": 3937
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/objective_sender_read.rs",
+      "blob": "127cef603de2b91cbc5f0f188e1c64a5d45ae790",
+      "bytes": 4648
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/objective_sender_test_support.rs",
+      "blob": "f8afbc3351a10efd055056a728bfd71a5ea47a2a",
+      "bytes": 6404
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/objective_sender_tests.rs",
+      "blob": "bdc6765e6f6c48d78963f1ace5a23cdd6f97e309",
+      "bytes": 36875
+    }
+  ],
+  "security_preservation": {
+    "windows_private_paths": "cognitive_store_windows.rs 83225e8fd04a575ac816544aceedda82c7701d1f and cognitive_store_sync.rs 1f6326de18cbfaf6c4f06a8aa153282927510eda unchanged. Existing cognitive_store.rs Windows retained _directory, prepare/validate and private pointer helpers are preserved.",
+    "ordinary_peer_and_sender": "No Agentd, UDS peer/current-user check, generic AgentdProductionHostAttachment<C>.original_sender, production credential, token, ACL, loader or DLL source changed.",
+    "recovery": "No path-based recovery fallback, fresh genesis after recovery failure, open-guard replacement, Current fabrication or alternate SQLite store. Existing retained descriptor copy, exact-cut validation, checkpoint, pointer publication and failure cleanup remain.",
+    "dependencies": "No Cargo.toml, Cargo.lock, BUILD.bazel, MODULE.bazel or MODULE.bazel.lock change; new Rust modules are under the existing src glob. Existing codex-state, sqlx, tokio, pretty_assertions and tempfile dependencies are used.",
+    "inputs": [
+      {
+        "path": "codex-rs/hepta-memory/Cargo.toml",
+        "blob": "048e31020125843c2265a8bc0db256fa504d92af"
+      },
+      {
+        "path": "codex-rs/hepta-memory/BUILD.bazel",
+        "blob": "75dda822f4ef6eac1e15366974f722edf5332781"
+      },
+      {
+        "path": "codex-rs/state/Cargo.toml",
+        "blob": "02cb82d778fc02859a42c0658597799ad00f5559"
+      },
+      {
+        "path": "codex-rs/state/BUILD.bazel",
+        "blob": "8f27a6255fa88e40a93db65e110a4b3c934b6958"
+      }
+    ]
+  },
+  "primary_sources": [
+    {
+      "repository": "transact-rs/sqlx",
+      "commit": "75bc0487eb661da811bb7a3c5d158f1bd463fef4",
+      "version_tag": "v0.9.0",
+      "path": "sqlx-sqlite/src/connection/mod.rs",
+      "blob": "218c747143fe80b344bca3405d4b0b38da2bd932",
+      "fact": "safe set_commit_hook maps false to native veto; LockedSqliteHandle is dropped before coordinated await",
+      "scope": "Fixed upstream bytes, not a native extracted registry-package receipt."
+    },
+    {
+      "repository": "sqlite/sqlite",
+      "commit": "a5333afb9ad1aa473f8963b92caeaa955f47dc74",
+      "version_tag": "version-3.51.3",
+      "path": "src/vdbeaux.c",
+      "blob": "5368c0c4202b08aeac99913393a74edaf67156cc",
+      "bytes": 178353,
+      "sha256": "2f5313c95ea96782d5af11773e9b1e526a5dd8f7e6925d3e64c74501fa2dd22a",
+      "lines": [
+        2944,
+        2981
+      ],
+      "fact": "All active SQLITE_TXN_WRITE transactions invoke the native commit hook, including a BEGIN IMMEDIATE with no new row. Veto returns SQLITE_CONSTRAINT_COMMITHOOK (531).",
+      "scope": "Fixed primary implementation; runtime version must be read from actual test receipt, not inferred from the minimum version."
+    },
+    {
+      "repository": "TrillionniumFoundation/hepta-private-ci",
+      "commit": "cabcb40d36e116beaa65750e1f674c52035da785",
+      "path": "codex-rs/hepta-memory/src/local_lease_outbox.rs",
+      "blob": "aac82355a64f315d218f0f9bcf373fdaf3c75d39",
+      "lines": [
+        3205,
+        3227
+      ],
+      "fact": "current_fence require_current_transaction only validates the host-bound lease and loads the chain; it performs no write before exact duplicate append can roll back."
+    }
+  ],
+  "validation_plan": {
+    "executed": false,
+    "recipe": {
+      "path": "justfile",
+      "blob": "a215a76cf407ace9715bca39c20497014e7dd4dc",
+      "lines": [
+        87,
+        93
+      ],
+      "cwd": "codex-rs",
+      "instruction_source": {
+        "path": "AGENTS.md",
+        "blob": "a22ff3bee70261f6061d598c31f0016e785a7a3c"
+      }
+    },
+    "baseline": {
+      "patch": {
+        "blob": "2909207b49983944e5b5c1e021975b64b1d0ff6a",
+        "bytes": 9099,
+        "sha256": "54594950c557578fd3ff64fcc0979a1ff991d58d35febd766c18172bdc8ae10e"
+      },
+      "objective_sender_postimage": {
+        "blob": "36105804909ecccfb02e039a10dfa43a5a6f5ba7",
+        "bytes": 19590,
+        "sha256": "c11c050f86ec4e1c42bfd809a7da5b79877d5173272e0d85a8daade6687f61e5"
+      },
+      "test_postimage": "62d85c330446b7b5059016d7501bcd85af2e556a",
+      "roundtrip": [
+        {
+          "path": "codex-rs/hepta-memory/src/objective_sender.rs",
+          "hunks": 1,
+          "exact_reconstructed": true
+        },
+        {
+          "path": "codex-rs/hepta-memory/src/objective_sender_commit_interlock_tests.rs",
+          "hunks": 1,
+          "exact_reconstructed": true
+        }
+      ],
+      "command": "just test -p codex-hepta-memory --lib -E 'test(/production_writer::objective_sender::commit_interlock_tests::/)' --retries 0",
+      "exact_cases": [
+        "production_writer::objective_sender::commit_interlock_tests::cancelled_checkpoint_vetoes_a_preexisting_read_transaction",
+        "production_writer::objective_sender::commit_interlock_tests::cancelled_checkpoint_vetoes_a_preexisting_connection_waiting_for_sqlite",
+        "production_writer::objective_sender::commit_interlock_tests::refused_checkpoint_vetoes_growth_replacement_and_writes_after_read_ack",
+        "production_writer::objective_sender::commit_interlock_tests::recovered_pool_vetoes_commits_and_retains_its_exclusive_open_guard"
+      ],
+      "expected": "Four selected failures at the actual require_commit_veto 531 assertion, with raw diagnostic commit_succeeded=true sqlite_code=None after the real checkpoint preconditions. This expectation has not run.",
+      "invalid_negative": "Compile/setup/authority errors, a missing checkpoint gate, busy/deadline timeouts, or failures before the real write/COMMIT are not causal proof. Save any such result and investigate without weakening assertions.",
+      "scope": "New fixtures against unchanged Memory production. State may already contain R2c/R2d and other previously reviewed combined repairs; report the actual full source tree, not 'unmodified product'."
+    },
+    "repair_after_baseline": {
+      "patch": {
+        "blob": "69c4991b024b0db7e0e49b65fdf685864a12c64c",
+        "bytes": 12938,
+        "sha256": "6ebed99ab45c4913970fc6816fa64a7c1081a5d0a299c48a547572f5fc63c5e1"
+      },
+      "roundtrip": [
+        {
+          "path": "codex-rs/state/src/sqlite.rs",
+          "hunks": 3,
+          "exact_reconstructed": true
+        },
+        {
+          "path": "codex-rs/hepta-memory/src/cognitive_store.rs",
+          "hunks": 5,
+          "exact_reconstructed": true
+        },
+        {
+          "path": "codex-rs/hepta-memory/src/cognitive_store_recovery.rs",
+          "hunks": 5,
+          "exact_reconstructed": true
+        },
+        {
+          "path": "codex-rs/hepta-memory/src/cognitive_store_gate.rs",
+          "hunks": 1,
+          "exact_reconstructed": true
+        },
+        {
+          "path": "codex-rs/hepta-memory/src/objective_sender.rs",
+          "hunks": 4,
+          "exact_reconstructed": true
+        },
+        {
+          "path": "codex-rs/hepta-memory/src/objective_sender_store.rs",
+          "hunks": 4,
+          "exact_reconstructed": true
+        }
+      ],
+      "expected_tests_unchanged": true
+    },
+    "final_controls": [
+      {
+        "name": "production_writer::objective_sender::commit_interlock_tests::cancelled_checkpoint_vetoes_a_preexisting_read_transaction",
+        "proof": "A real BEGIN plus SELECT holds an existing read transaction; original checkpoint enters Hold and is cancelled. A separate no-write BEGIN IMMEDIATE/ROLLBACK proves the queued owner rollback completed before the old read transaction upgrades and receives actual COMMIT 531."
+      },
+      {
+        "name": "production_writer::objective_sender::commit_interlock_tests::cancelled_checkpoint_vetoes_a_preexisting_connection_waiting_for_sqlite",
+        "proof": "A preexisting physical connection really polls BEGIN IMMEDIATE behind the original checkpoint writer lock. After cancellation the same handle begins, DDL succeeds within its transaction, COMMIT is 531, schema/cut unchanged; a writer capability cannot commit a new admission."
+      },
+      {
+        "name": "production_writer::objective_sender::commit_interlock_tests::refused_checkpoint_vetoes_growth_replacement_and_writes_after_read_ack",
+        "proof": "Actual refusal precedes five simultaneously borrowed physical handles. Every implicit DDL is 531, each old handle is closed, a cloned store's replacement is 531, a true later independent read ACK succeeds, then writing still returns 531 with unchanged cut."
+      },
+      {
+        "name": "production_writer::objective_sender::commit_interlock_tests::recovered_pool_vetoes_commits_and_retains_its_exclusive_open_guard",
+        "proof": "The original exact-cut recovery constructor returns its real exclusive owner. After failed checkpoint, actual recovered-pool DDL is 531; cut is unchanged and both legacy open and a second recovery remain rejected while the original guard is held."
+      }
+    ],
+    "final_commands": [
+      "just test -p codex-hepta-memory --lib -E 'test(/production_writer::objective_sender::commit_interlock_tests::/)' --retries 0",
+      "just test -p codex-hepta-memory --lib --retries 0",
+      "just test -p codex-state --lib --retries 0",
+      "just fix -p codex-hepta-memory -p codex-state",
+      "just fmt"
+    ],
+    "receipts_required": "Exact selected rosters, fresh complete raw/JUnit, no retries, pre/post whole-source hashes, actual native host/toolchain, and all generated fix/fmt differences. Preserve baseline failures and filtered/ignored semantics. Do not rerun tests solely because fix/fmt ran.",
+    "platform_gate": "Native evidence proves only its actual host/source. Existing project CI and platform-specific Windows recovery safety remain separately required."
+  },
+  "remaining_unproved": [
+    "This gate does not revalidate deadline, live authority, protected Current, or FinalUse on every COMMIT. Time/state changes between the original final live check and a later COMMIT still require subsequent coordinator/entry work.",
+    "It does not cover independently opened legacy shared instances or other processes/raw connections. Exclusive recovered-owner binding and protected publisher CAS are separate requirements.",
+    "It does not establish an authenticated Current receipt, real Root peer, sealed handoff, credential conversion, normal Root producer, or all external-effect admission behavior.",
+    "R1 preflight must remain single-threaded before Tokio; R2a from_inherited requires entered Tokio. These APIs are not automatically composed by this pool work.",
+    "R2c/R2d and this candidate are still unexecuted in this preparation receipt; no B16 completion or final same-tree production qualification is claimed."
+  ],
+  "superseded_unexecuted_candidates": [
+    {
+      "patch": "b3738c2aafb6847616060bd93c27a5da64ce2f21",
+      "reason": "Three-control initial draft; replaced before execution by the real preexisting-read-transaction control."
+    },
+    {
+      "patch": "928b4d71366cb17eba5cc82d611ed6de75af0de6",
+      "reason": "Four-control draft; replaced before execution to await a real lock handoff rather than assume SQLx's queued rollback finished at future drop."
+    }
+  ]
+}

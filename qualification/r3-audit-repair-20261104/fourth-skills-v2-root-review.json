@@ -1,0 +1,214 @@
+{
+  "schema": "hepta.root.skills-fixture-v2-causal-original-nine-review.v1",
+  "observed_at_utc": "2026-11-05T02:58:43.499102+00:00",
+  "status": "VALID_REAL_MARKER_NEGATIVE_AND_NINE_ORIGINAL_TESTS_PASS",
+  "invalid_first_fixture_attempt": {
+    "bundle": {
+      "bytes": 26376,
+      "sha256": "a851dac9cdd3dab1d1e1588b52c52b3eb1a670a1ba90063eeb11a55d9b7341f8",
+      "blob": "92b497559c315c0cc48db5a8d7f3de89470a2158"
+    },
+    "all_five_files_verified": [
+      {
+        "name": "skills-marker-negative.log",
+        "bytes": 16404,
+        "sha256": "176e9eec898e94ac6645871943a359a3df88e008383b49010d00fdc4d2254be2",
+        "blob": "fa3162364739c67f52ac160bd9520de82c223453"
+      },
+      {
+        "name": "skills-causal-negative.json",
+        "bytes": 944,
+        "sha256": "a83dff0ef60133ce3cce4428033144d15191137884f79a630c630c65163957f5",
+        "blob": "ad1289766d28c6311cf7712c350ea2d14a58232a"
+      },
+      {
+        "name": "skills-negative-finally-restore.json",
+        "bytes": 1174,
+        "sha256": "f18f0293140470960a7c7489e8220f7433178bbb3a86f49a2e280346b845f27a",
+        "blob": "691ee213d824643d47986603b86a8b67561a6468"
+      },
+      {
+        "name": "skills-marker-negative.junit.xml",
+        "bytes": 1685,
+        "sha256": "ea8c8bb052b7e54c33283224c75a884496b6cdb260bc48857fd40b91116bb9c2",
+        "blob": "606dcb17f1d75096f2d54658f858b749532c0d89"
+      },
+      {
+        "name": "skills-marker-negative-review.json",
+        "bytes": 2508,
+        "sha256": "7fef700797c5e757b381fa22d36c889cffe96227bc1e10aaf73d6c4e2873843c",
+        "blob": "e37c6d307d37a3da083b33093aab0556c21f92d7"
+      }
+    ],
+    "actual_failure": {
+      "classname": "codex-skills-extension",
+      "name": "host_roots::tests::repo_ancestry_without_project_marker_does_not_walk_parents",
+      "seconds": "0.008",
+      "result": "FAIL",
+      "failure": "thread 'host_roots::tests::repo_ancestry_without_project_marker_does_not_walk_parents' (797063) panicked at ext/skills/src/host_roots_tests.rs:425:11:\nindex not found\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+    },
+    "qualified": false,
+    "cause": "New test fixture indexed a missing key in an empty toml::Value. Both positive and negative variants needed Table.insert; the preparation panic never counted as causal evidence."
+  },
+  "valid_second_source_epoch": {
+    "bundle": {
+      "bytes": 53034,
+      "sha256": "555251612294f8b2a670acd623f4bd35372ffd581c4bb8da049c3de9ef5feb7a",
+      "blob": "df61b67369e67f7f697dd80cb9810f476c01829b"
+    },
+    "all_eight_files_verified": [
+      {
+        "name": "skills-marker-negative.log",
+        "bytes": 16663,
+        "sha256": "458e62c5746a014e92fe8a6160cb2954d15e63a56f417f1bd0502b5080fc5283",
+        "blob": "ca81c4407c6a713870acf2249193c004b1d119a0"
+      },
+      {
+        "name": "skills-marker-negative.junit.xml",
+        "bytes": 2200,
+        "sha256": "578ad847f4c099588a039a0bddc4eaa60d2d15d3437bc309ad0412c8ba050a4e",
+        "blob": "7b25b82288b34e9897a81a25dbe0135acbbbea1f"
+      },
+      {
+        "name": "skills-marker-negative-review.json",
+        "bytes": 2747,
+        "sha256": "218c790efa0a35868863bc8c1c14a80d2598be53897f198a11ff7f5a58865c42",
+        "blob": "6bd401903127c02c9da5438f8d1ea903ccce7b52"
+      },
+      {
+        "name": "skills-causal-negative.json",
+        "bytes": 1327,
+        "sha256": "0aed8696260d4bec6234332935669f5c099c7b58bc355738ea0e33fa4be05b4d",
+        "blob": "eaf3fa668fc7e50a47018766d9f4933827b712fe"
+      },
+      {
+        "name": "skills-negative-finally-restore.json",
+        "bytes": 586,
+        "sha256": "4949f514c7c0f5cfe2cdf5354d78846d8e78fe9e8a32d80d5b7bbf21536059d1",
+        "blob": "7658ec137461b515535f8039020575a51f4b77df"
+      },
+      {
+        "name": "skills-original-nine.log",
+        "bytes": 18664,
+        "sha256": "9494172628de52da8e72ae6db5170bfbace20426dcedf59c3783c97b86fff4b6",
+        "blob": "ee117074de93faeda5b62ec9cec39dd2566b7fdd"
+      },
+      {
+        "name": "skills-original-nine.junit.xml",
+        "bytes": 2244,
+        "sha256": "9764a5765ddcc4c4d7e7ba142cc9fb1e473fc9bcf90c214f3e7d71874bfea8a4",
+        "blob": "70e3369df1e5ba210fdd9fefa24c3bc107c92b20"
+      },
+      {
+        "name": "skills-original-nine-review.json",
+        "bytes": 4020,
+        "sha256": "34fa5d3bb8688dcd554c6c5409c8e20565ecbcb4c3d15f1d10f7357a681dd80a",
+        "blob": "d59eceb8d76b11b66d14770dce174b89e7ea4e0a"
+      }
+    ],
+    "native_job": "1a1a9a0aa93-fc05-3667",
+    "negative_tree": "59fa1100c2ad24328e7841611092132ca08942ad",
+    "positive_tree": "51673d30d34674faeac6bb17e565fc9d04aec8f1",
+    "negative_case": {
+      "classname": "codex-skills-extension",
+      "name": "host_roots::tests::repo_ancestry_without_project_marker_does_not_walk_parents",
+      "seconds": "0.008",
+      "result": "FAIL",
+      "failure": "thread 'host_roots::tests::repo_ancestry_without_project_marker_does_not_walk_parents' (807610) panicked at ext/skills/src/host_roots_tests.rs:446:5:\nassertion failed: `(left == right)`\n\nDiff < left / right > :\n [\n     AbsolutePathBuf(\n<        \"/tmp/.tmpsJg6QP/outer/.agents/skills\",\n<    ),\n<    AbsolutePathBuf(\n         \"/tmp/.tmpsJg6QP/outer/nested/inner/.agents/skills\",\n     ),\n ]\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+    },
+    "actual_left_paths": [
+      "/tmp/.tmpsJg6QP/outer/.agents/skills",
+      "/tmp/.tmpsJg6QP/outer/nested/inner/.agents/skills"
+    ],
+    "added_left_paths": [
+      "/tmp/.tmpsJg6QP/outer/.agents/skills"
+    ],
+    "restore": {
+      "negative_tree": "59fa1100c2ad24328e7841611092132ca08942ad",
+      "positive_tree": "51673d30d34674faeac6bb17e565fc9d04aec8f1",
+      "actual_source_at_return": "51673d30d34674faeac6bb17e565fc9d04aec8f1",
+      "restored_exact_positive": true,
+      "original_exception": null,
+      "restoration_exception": null,
+      "negative_qualified": true,
+      "positive_tests_allowed": true,
+      "contract": "Restore only after exact owned-negative source, ordinary index, locks and untracked-input guards pass. An invalid negative remains invalid and stops after restoration; external drift is never overwritten."
+    },
+    "original_nine_cases": [
+      {
+        "classname": "codex-skills-extension",
+        "name": "host_roots::tests::layer_roots_preserve_scope_precedence_and_disabled_projects",
+        "seconds": "0.005",
+        "result": "PASS",
+        "failure": ""
+      },
+      {
+        "classname": "codex-skills-extension",
+        "name": "host_roots::tests::repo_ancestry_stops_at_project_root_and_preserves_root_to_cwd_order",
+        "seconds": "0.005",
+        "result": "PASS",
+        "failure": ""
+      },
+      {
+        "classname": "codex-skills-extension",
+        "name": "host_roots::tests::repo_ancestry_without_project_marker_does_not_walk_parents",
+        "seconds": "0.006",
+        "result": "PASS",
+        "failure": ""
+      },
+      {
+        "classname": "codex-skills-extension",
+        "name": "host_roots::tests::resolved_project_layer_loads_skill_without_git_marker",
+        "seconds": "0.006",
+        "result": "PASS",
+        "failure": ""
+      },
+      {
+        "classname": "codex-skills-extension",
+        "name": "host_roots::tests::resolved_project_layer_loads_skill_when_cwd_is_file",
+        "seconds": "0.006",
+        "result": "PASS",
+        "failure": ""
+      },
+      {
+        "classname": "codex-skills-extension",
+        "name": "host_roots::tests::unique_extra_root_loads_as_recursive_user_root",
+        "seconds": "0.007",
+        "result": "PASS",
+        "failure": ""
+      },
+      {
+        "classname": "codex-skills-extension",
+        "name": "host_roots::tests::plugin_roots_preserve_plugin_resolution_metadata",
+        "seconds": "0.007",
+        "result": "PASS",
+        "failure": ""
+      },
+      {
+        "classname": "codex-skills-extension",
+        "name": "host_roots::tests::resolved_config_and_repo_roots_preserve_order_and_dedupe_paths_not_names",
+        "seconds": "0.011",
+        "result": "PASS",
+        "failure": ""
+      },
+      {
+        "classname": "codex-skills-extension",
+        "name": "host_roots::tests::repo_ancestry_limits_concurrent_probes_and_preserves_order",
+        "seconds": "0.091",
+        "result": "PASS",
+        "failure": ""
+      }
+    ],
+    "original_nine_names_match_frozen_roster": true,
+    "raw_and_fresh_junit_agree": true,
+    "retries": 0,
+    "ignored": 0,
+    "filter_unmatched_negative": 144,
+    "filter_unmatched_positive": 136,
+    "one_program_stable_in_each_source_epoch": true,
+    "catalog_helpers_in_this_unit_scope": 0,
+    "early_return_notices": []
+  },
+  "limits_zh": "仅原host_roots九项与真实marker负控的同源范围通过，不是整个145项package、最终完整workspace或跨平台通过。整体三修复job仍继续迁移和V8；首次无效准备失败不删除，也不计为有效负控。",
+  "all_original_blockers_closed": false
+}

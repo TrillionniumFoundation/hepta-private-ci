@@ -1,0 +1,311 @@
+use super::SqliteConfig;
+use crate::runtime::test_support::create_private_test_directory;
+use crate::runtime::test_support::unique_temp_dir;
+use anyhow::Context;
+use codex_utils_absolute_path::test_support::PathExt;
+use pretty_assertions::assert_eq;
+use sqlx::SqlitePool;
+use std::future::Future;
+use std::path::PathBuf;
+use std::pin::Pin;
+use std::sync::Arc;
+use std::sync::atomic::AtomicBool;
+use std::sync::atomic::Ordering;
+use std::task::Poll;
+use std::time::Duration;
+use tokio::sync::Semaphore;
+use tokio::time::timeout;
+
+const CHECKOUT_DEADLINE: Duration = Duration::from_secs(5);
+
+struct Fixture {
+    home: PathBuf,
+    database: PathBuf,
+    sqlite: SqliteConfig,
+}
+
+impl Fixture {
+    async fn new() -> anyhow::Result<Self> {
+        let home = unique_temp_dir();
+        create_private_test_directory(&home)?;
+        let fixture = Self {
+            database: home.join("commit-gate.sqlite"),
+            sqlite: SqliteConfig::new_for_testing(home.as_path().abs()),
+            home,
+        };
+        let pool = fixture
+            .sqlite
+            .open_durable_evidence_pool(&fixture.database)
+            .await?;
+        let result = sqlx::query("CREATE TABLE evidence (value INTEGER NOT NULL)")
+            .execute(&pool)
+            .await;
+        pool.close().await;
+        result?;
+        Ok(fixture)
+    }
+
+    async fn open(
+        &self,
+        allowed: Arc<AtomicBool>,
+        gate: Arc<CheckoutGate>,
+    ) -> Result<SqlitePool, sqlx::Error> {
+        self.sqlite
+            .open_coordinated_durable_evidence_pool(
+                &self.database,
+                move || allowed.load(Ordering::SeqCst),
+                move || {
+                    let gate = Arc::clone(&gate);
+                    async move { gate.wait().await }
+                },
+            )
+            .await
+    }
+
+    async fn persisted_rows(&self) -> anyhow::Result<Vec<i64>> {
+        let reader = self.sqlite.open_read_only_pool(&self.database).await?;
+        let result = sqlx::query_scalar("SELECT value FROM evidence ORDER BY value")
+            .fetch_all(&reader)
+            .await;
+        reader.close().await;
+        Ok(result?)
+    }
+}
+
+impl Drop for Fixture {
+    fn drop(&mut self) {
+        let _ = std::fs::remove_dir_all(&self.home);
+    }
+}
+
+struct CheckoutGate {
+    blocked: AtomicBool,
+    entered: Semaphore,
+    resume: Semaphore,
+}
+
+impl CheckoutGate {
+    fn ready() -> Self {
+        Self {
+            blocked: AtomicBool::new(false),
+            entered: Semaphore::new(0),
+            resume: Semaphore::new(0),
+        }
+    }
+
+    fn blocked() -> Self {
+        let gate = Self::ready();
+        gate.blocked.store(true, Ordering::SeqCst);
+        gate
+    }
+
+    async fn wait(&self) {
+        if self.blocked.load(Ordering::SeqCst) {
+            self.entered.add_permits(1);
+            self.resume
+                .acquire()
+                .await
+                .expect("checkout release semaphore remains open")
+                .forget();
+        }
+    }
+
+    fn release(&self) {
+        self.blocked.store(false, Ordering::SeqCst);
+        self.resume.add_permits(1);
+    }
+}
+
+async fn assert_waits_for_checkout<F>(
+    operation: &mut Pin<Box<F>>,
+    gate: &CheckoutGate,
+) -> anyhow::Result<()>
+where
+    F: Future,
+    F::Output: std::fmt::Debug,
+{
+    timeout(CHECKOUT_DEADLINE, async {
+        tokio::select! {
+            result = operation.as_mut() => {
+                anyhow::bail!("checkout completed before its callback entered: {result:?}");
+            }
+            permit = gate.entered.acquire() => permit?.forget(),
+        }
+        let polled = std::future::poll_fn(|cx| Poll::Ready(operation.as_mut().poll(cx))).await;
+        assert!(
+            polled.is_pending(),
+            "checkout completed before release: {polled:?}"
+        );
+        Ok(())
+    })
+    .await?
+}
+
+fn assert_commit_veto(error: sqlx::Error) {
+    let sqlx::Error::Database(error) = error else {
+        panic!("expected SQLite commit-hook veto, got {error:?}");
+    };
+    let expected = libsqlite3_sys::SQLITE_CONSTRAINT_COMMITHOOK.to_string();
+    assert_eq!(
+        error.code().as_deref(),
+        Some(expected.as_str()),
+        "expected SQLITE_CONSTRAINT_COMMITHOOK"
+    );
+}
+
+#[tokio::test]
+async fn commit_gate_rejects_explicit_transaction_after_revocation() -> anyhow::Result<()> {
+    let fixture = Fixture::new().await?;
+    let allowed = Arc::new(AtomicBool::new(true));
+    let pool = fixture
+        .open(Arc::clone(&allowed), Arc::new(CheckoutGate::ready()))
+        .await?;
+    let sqlite_version: String = sqlx::query_scalar("SELECT sqlite_version()")
+        .fetch_one(&pool)
+        .await?;
+    eprintln!("commit_gate_runtime: sqlite_version={sqlite_version}");
+    let mut transaction = pool.begin().await?;
+    sqlx::query("INSERT INTO evidence VALUES (1)")
+        .execute(&mut *transaction)
+        .await?;
+    allowed.store(false, Ordering::SeqCst);
+    assert_commit_veto(
+        transaction
+            .commit()
+            .await
+            .expect_err("revocation must veto the actual commit"),
+    );
+    assert_eq!(fixture.persisted_rows().await?, Vec::<i64>::new());
+
+    allowed.store(true, Ordering::SeqCst);
+    sqlx::query("INSERT INTO evidence VALUES (2)")
+        .execute(&pool)
+        .await?;
+    pool.close().await;
+    assert_eq!(fixture.persisted_rows().await?, vec![2]);
+    Ok(())
+}
+
+#[tokio::test]
+async fn commit_gate_covers_pool_growth_and_replacement() -> anyhow::Result<()> {
+    let fixture = Fixture::new().await?;
+    let allowed = Arc::new(AtomicBool::new(false));
+    let pool = fixture
+        .open(Arc::clone(&allowed), Arc::new(CheckoutGate::ready()))
+        .await?;
+    let mut connections = Vec::new();
+    for _ in 0..5 {
+        let mut connection = pool.acquire().await?;
+        assert_commit_veto(
+            sqlx::query("INSERT INTO evidence VALUES (3)")
+                .execute(&mut *connection)
+                .await
+                .expect_err("every connection must veto an implicit commit"),
+        );
+        connections.push(connection);
+    }
+    assert_eq!(pool.size(), 5);
+    connections.pop().context("fifth connection exists")?.close().await?;
+    let mut replacement = pool.acquire().await?;
+    assert_commit_veto(
+        sqlx::query("INSERT INTO evidence VALUES (4)")
+            .execute(&mut *replacement)
+            .await
+            .expect_err("replacement connection must retain the commit gate"),
+    );
+    assert_eq!(fixture.persisted_rows().await?, Vec::<i64>::new());
+
+    allowed.store(true, Ordering::SeqCst);
+    sqlx::query("INSERT INTO evidence VALUES (5)")
+        .execute(&mut *replacement)
+        .await?;
+    replacement.close().await?;
+    for connection in connections {
+        connection.close().await?;
+    }
+    pool.close().await;
+    assert_eq!(fixture.persisted_rows().await?, vec![5]);
+    Ok(())
+}
+
+#[tokio::test]
+async fn checkout_callback_blocks_initial_connect_and_reused_connection() -> anyhow::Result<()> {
+    let fixture = Fixture::new().await?;
+    let gate = Arc::new(CheckoutGate::blocked());
+    let mut opening = Box::pin(fixture.open(Arc::new(AtomicBool::new(true)), Arc::clone(&gate)));
+    assert_waits_for_checkout(&mut opening, &gate).await?;
+    gate.release();
+    let pool = timeout(CHECKOUT_DEADLINE, opening).await??;
+
+    let mut held = Vec::new();
+    for _ in 0..5 {
+        held.push(pool.acquire().await?);
+    }
+    let mut returned = held.pop().context("fifth connection exists")?;
+    sqlx::query("CREATE TEMP TABLE checkout_marker (value INTEGER)")
+        .execute(&mut *returned)
+        .await?;
+    sqlx::query("INSERT INTO checkout_marker VALUES (17)")
+        .execute(&mut *returned)
+        .await?;
+    drop(returned);
+    gate.blocked.store(true, Ordering::SeqCst);
+    let mut checkout = Box::pin(pool.acquire());
+    assert_waits_for_checkout(&mut checkout, &gate).await?;
+    gate.release();
+    let mut reused = timeout(CHECKOUT_DEADLINE, checkout).await??;
+    let marker: i64 = sqlx::query_scalar("SELECT value FROM checkout_marker")
+        .fetch_one(&mut *reused)
+        .await?;
+    assert_eq!(marker, 17, "the same physical connection must be reused");
+    reused.close().await?;
+    for connection in held {
+        connection.close().await?;
+    }
+    pool.close().await;
+    Ok(())
+}
+
+#[tokio::test]
+async fn cancelled_checkout_does_not_release_uncoordinated_connection() -> anyhow::Result<()> {
+    let fixture = Fixture::new().await?;
+    let gate = Arc::new(CheckoutGate::ready());
+    let allowed = Arc::new(AtomicBool::new(true));
+    let pool = fixture.open(Arc::clone(&allowed), Arc::clone(&gate)).await?;
+    let mut held = Vec::new();
+    for _ in 0..5 {
+        held.push(pool.acquire().await?);
+    }
+    let mut returned = held.pop().context("fifth connection exists")?;
+    sqlx::query("CREATE TEMP TABLE cancelled_checkout_marker (value INTEGER)")
+        .execute(&mut *returned)
+        .await?;
+    drop(returned);
+    gate.blocked.store(true, Ordering::SeqCst);
+    let mut checkout = Box::pin(pool.acquire());
+    assert_waits_for_checkout(&mut checkout, &gate).await?;
+    drop(checkout);
+
+    gate.blocked.store(false, Ordering::SeqCst);
+    allowed.store(false, Ordering::SeqCst);
+    let mut replacement = timeout(CHECKOUT_DEADLINE, pool.acquire()).await??;
+    let marker_count: i64 = sqlx::query_scalar(
+        "SELECT COUNT(*) FROM sqlite_temp_master WHERE name = 'cancelled_checkout_marker'",
+    )
+    .fetch_one(&mut *replacement)
+    .await?;
+    assert_eq!(marker_count, 0, "cancelled checkout must discard its connection");
+    assert_commit_veto(
+        sqlx::query("INSERT INTO evidence VALUES (6)")
+            .execute(&mut *replacement)
+            .await
+            .expect_err("cancellation must not bypass the replacement commit hook"),
+    );
+    assert_eq!(fixture.persisted_rows().await?, Vec::<i64>::new());
+    replacement.close().await?;
+    for connection in held {
+        connection.close().await?;
+    }
+    pool.close().await;
+    Ok(())
+}

@@ -1,0 +1,355 @@
+{
+  "schema": "hepta_b16_r2d_sqlite_observation_and_barrier_candidate_v1",
+  "created_at_utc": "2026-11-04 21:42:22 UTC",
+  "status": "SOURCE_CANDIDATE_UNEXECUTED",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "base": {
+    "published_commit": "cabcb40d36e116beaa65750e1f674c52035da785",
+    "published_tree": "b2d7f038d6d88156bc6a4cb29c8703f69b808f29",
+    "required_source_overlay": {
+      "r2c_manifest": "081aa0f20aa3c05c43aa0a3ea48254039321bd92",
+      "sqlite_blob": "4a147f593ef580de5d79b1dd47b0234437c629ca",
+      "r2c_tests_blob": "e1ea6dcb1c7911d42e0e892c2697dedf4a56f665",
+      "note": "R2c tests are unchanged and are not duplicated in this four-path delta."
+    }
+  },
+  "corrected_r0": {
+    "json_blob": "1bb19c599efc651465d00843fce025635a60556d",
+    "markdown_blob": "bd9f208933636b2f2c3fc24491979fc1d368b058"
+  },
+  "patch": {
+    "blob": "4582d6909dd0eb18e0f8f8a12d71c791a14c95a2",
+    "bytes": 16827,
+    "sha256": "2fc72480a7c7ff5b5d6d241818b6df0f84e85ec1653973672a754636498dafbf"
+  },
+  "files": [
+    {
+      "path": "codex-rs/state/src/sqlite.rs",
+      "mode": "100644",
+      "before_blob": "4a147f593ef580de5d79b1dd47b0234437c629ca",
+      "blob": "eb73bc3c24ae6bd64a35be1187f83d5655350bbe",
+      "bytes": 17110,
+      "sha256": "9a7a44d0d6c4564683f6f62f8efbe3dfb6633d40c22bb940e3f78418360fe468"
+    },
+    {
+      "path": "codex-rs/state/src/lib.rs",
+      "mode": "100644",
+      "before_blob": "83a333ab206c9f9396b794058cd94bd28cedd52a",
+      "blob": "50775acff67c99b80c779c8b94f9c2f0db07b175",
+      "bytes": 5199,
+      "sha256": "5c48fe243f95f66e3814a48506b6b163020d8ee275283979dc5ffa3fb4c16013"
+    },
+    {
+      "path": "codex-rs/state/src/sqlite_read_barrier.rs",
+      "mode": "100644",
+      "before_blob": null,
+      "blob": "98ed5528e76b948c965def714994d67ecb3e0457",
+      "bytes": 3693,
+      "sha256": "c91ee20f033dec15e84ad0cad32619b54d37212a9156ae6fe4fba5077bf70fcc"
+    },
+    {
+      "path": "codex-rs/state/src/sqlite_read_barrier_tests.rs",
+      "mode": "100644",
+      "before_blob": null,
+      "blob": "dc73d453b2bc5b34fca584c31fbdd56db9b165fd",
+      "bytes": 10249,
+      "sha256": "ae8a7af902d4e6c848e90221ab2dc190b4fe7060bb582dae83452dc2f61d17e7"
+    }
+  ],
+  "diff": {
+    "insertions": 404,
+    "deletions": 0,
+    "paths": 4
+  },
+  "actual_missing_dependency": {
+    "caller": {
+      "ref": "14e2d89b3367232ec5dbe6187f09feed0f2b68d3",
+      "path": "codex-rs/hepta-memory/src/cognitive_checkpoint_bind.rs",
+      "blob": "d8106db0d9ca9ff7abf38d104c7fc76e3c1f552f"
+    },
+    "open_durable_observation_pool": "Actual binder lines 103-113 opens the observer and checks it against the same expected recovered cut.",
+    "open_durable_read_barrier": "Actual binder lines 114-119 retains this barrier before acknowledging the whole-store checkpoint binding.",
+    "scope_limit": "These two real SQLite primitives fill the remaining state-layer calls. They do not implement the independent Current authentication, memory whole-pool gate, writer identity or final Root caller."
+  },
+  "production_behavior": {
+    "observation": "Existing-only SQLite READONLY file-open flags plus permanently rejecting commit hooks on all connections. Ordinary open_read_only_pool and durable writer methods remain unchanged.",
+    "barrier": "Existing-only private one-connection pool starts query_only=ON and installs a permanently rejecting commit hook. begin acquires its owned connection, marks close_on_drop, validates actual main-database READWRITE status, temporarily clears query_only, obtains BEGIN IMMEDIATE, restores query_only, and only then returns the transaction.",
+    "real_readonly_guard": "SQLx LockedSqliteHandle protects the sqlite3_db_readonly(main) query; only return value 0 is accepted. Return values 1 and -1 fail with Protocol before the writable transition. This handles SQLite's READWRITE-to-READONLY open fallback without assuming that the requested flag guarantees exclusion.",
+    "ffi_safety": "The existing libsqlite3-sys 0.37 handle type is the same one exposed by the locked SQLx handle; the nonnull connection remains live and worker access is excluded during the read-only query. c\"main\" is a static NUL-terminated identifier. No FFI callback or custom allocator is added.",
+    "cancellation": "Every acquired barrier connection is close_on_drop before another asynchronous operation. SQLx transactions retain that connection and rollback on drop; error/cancellation closes its physical connection so intermediate query_only=OFF is not reused.",
+    "owner_lifetime": "The caller must retain the independently established database identity/recovery/lifetime guard. This factory does not validate lexical-path authority, mint a recovered owner, provide Current, or replace descriptor-bound recovery.",
+    "isolation": "Only explicit callers of new APIs change behavior. Agentd composition/original_sender, ordinary peer/current-user checks, Root credentials, Windows production permission/token/ACL/loader/DLL paths are untouched."
+  },
+  "independent_discovered_boundary": {
+    "donor_read_barrier": {
+      "path": "codex-rs/state/src/sqlite_read_barrier.rs",
+      "ref": "14e2d89b3367232ec5dbe6187f09feed0f2b68d3",
+      "blob": "f24ba3f724b7eb36125918e494f139b75f57b887"
+    },
+    "difference": "The reviewed port adds an actual handle-mode check absent from the donor; a requested READWRITE flag is not used as evidence of a writer fence.",
+    "official_open_document": "https://www.sqlite.org/c3ref/open.html",
+    "official_readonly_document": "https://www.sqlite.org/c3ref/db_readonly.html",
+    "sqlite_source": {
+      "repository": "sqlite/sqlite",
+      "ref": "a5333afb9ad1aa473f8963b92caeaa955f47dc74",
+      "path": "src/build.c",
+      "blob": "de890c2e91580a506873a6ba54b4136f54c8a882",
+      "bytes": 195668,
+      "sha256": "45dde8e666fa12ffb693c97f449d7b9cba188afa6a4b79b48f9c6cf017bae8ef"
+    },
+    "source_lines": [
+      5239,
+      5267
+    ],
+    "source_fact": "SQLite's BEGIN generator emits eTxnType=0 for an actual read-only Btree, even for BEGIN IMMEDIATE; the source explicitly chooses the write transaction only for writable databases.",
+    "version_limit": "The fixed upstream SQLite 3.51.3 source is the project's asserted minimum supported engine version. This is primary-source reasoning, not a claim that an unexecuted native test has reported its runtime SQLite version."
+  },
+  "primary_sqlx_evidence": {
+    "version": "0.9.0",
+    "upstream_commit": "75bc0487eb661da811bb7a3c5d158f1bd463fef4",
+    "project_lock_blob": "9743ef2f4f4c8521265c0187524278c256114163",
+    "relevant_sources": [
+      {
+        "key": "connection",
+        "path": "sqlx-sqlite/src/connection/mod.rs",
+        "blob": "218c747143fe80b344bca3405d4b0b38da2bd932",
+        "bytes": 20337,
+        "sha256": "a20c2e51a1505e298fd897b378f9032c89b82850838aa6e5d9409f612fb1e7fd"
+      },
+      {
+        "key": "pool-inner",
+        "path": "sqlx-core/src/pool/inner.rs",
+        "blob": "b698dc9df07fdd763f6b15a171b7b545c6898696",
+        "bytes": 23376,
+        "sha256": "cba56628f259270dccb2f4a0d7a351dcff34d9239f6e6e1aee187ebe0e39c539"
+      },
+      {
+        "key": "pool-connection",
+        "path": "sqlx-core/src/pool/connection.rs",
+        "blob": "7912b12aa14f763e8928bf8ac9466a97a81f681a",
+        "bytes": 13405,
+        "sha256": "94269a532ef60aaa31321e43af17cba2424f919a36501d862328ed05958a08de"
+      },
+      {
+        "repository": "transact-rs/sqlx",
+        "ref": "75bc0487eb661da811bb7a3c5d158f1bd463fef4",
+        "path": "sqlx-core/src/transaction.rs",
+        "blob": "46f89d25b2be6a04d7ab80347f22e21f16cd0731",
+        "bytes": 9197,
+        "sha256": "7c0e1b28f1f0b56920d71b3340407abc2eeef9fe442321d25f43d1bf1721dbf7"
+      },
+      {
+        "repository": "transact-rs/sqlx",
+        "ref": "75bc0487eb661da811bb7a3c5d158f1bd463fef4",
+        "path": "sqlx-sqlite/src/transaction.rs",
+        "blob": "1c57d0163f3505dc048be18c5d47bfee4360cf96",
+        "bytes": 1008,
+        "sha256": "5f6958702455ef631a9a7290e63c1666e60731c85ffc828a176c39d0ce01f6be"
+      },
+      {
+        "repository": "transact-rs/sqlx",
+        "ref": "75bc0487eb661da811bb7a3c5d158f1bd463fef4",
+        "path": "sqlx-sqlite/src/connection/worker.rs",
+        "blob": "2585dc1312210d9eb18c15f6df1158656d3c6b2c",
+        "bytes": 22317,
+        "sha256": "b66aafc56f0e287eac3b09111c5d4997d350ab61294c5cc576ce359bc18cebe4"
+      },
+      {
+        "repository": "transact-rs/sqlx",
+        "ref": "75bc0487eb661da811bb7a3c5d158f1bd463fef4",
+        "path": "sqlx-sqlite/src/connection/execute.rs",
+        "blob": "733a1abbe66be36ddc4227c9cba8fbf46ad6b115",
+        "bytes": 3586,
+        "sha256": "d51b358721e8d790b3e81f1be6cf1d5db9391d0a81d6e04f607033fda7e61bf7"
+      },
+      {
+        "repository": "transact-rs/sqlx",
+        "ref": "75bc0487eb661da811bb7a3c5d158f1bd463fef4",
+        "path": "sqlx-sqlite/src/connection/executor.rs",
+        "blob": "a62d3349a5590c726c44e9898b319b19ea507e48",
+        "bytes": 2934,
+        "sha256": "290451e396a8337eb8d850757537b8830d834790e386ed9f3887c8257a567e08"
+      }
+    ],
+    "cancellation_trace": [
+      {
+        "source": "sqlx-sqlite/src/connection/mod.rs",
+        "blob": "218c747143fe80b344bca3405d4b0b38da2bd932",
+        "lines": [
+          49,
+          54,
+          242,
+          245,
+          389,
+          418
+        ],
+        "fact": "SQLx performs SQLite access on a dedicated blocking worker. ping delegates to the worker; the safe progress-handler API retains its Send callback and invokes it inside SQLite."
+      },
+      {
+        "source": "sqlx-core/src/pool/connection.rs",
+        "blob": "7912b12aa14f763e8928bf8ac9466a97a81f681a",
+        "lines": [
+          275,
+          328
+        ],
+        "fact": "With no after_release callback, returning the marked fixture connection only pings it; no query is run by this reuse step."
+      },
+      {
+        "source": "sqlx-sqlite/src/connection/worker.rs",
+        "blob": "2585dc1312210d9eb18c15f6df1158656d3c6b2c",
+        "lines": [
+          106,
+          110,
+          328,
+          340
+        ],
+        "fact": "The worker is a std thread; UnlockDb only manages its mutex, and Ping only sends an acknowledgement. These cannot trigger the SQLite progress handler."
+      },
+      {
+        "source": "codex-rs/state/src/sqlite_read_barrier_tests.rs",
+        "blob": "dc73d453b2bc5b34fca584c31fbdd56db9b165fd",
+        "fact": "The callback is installed only after fixture marker queries have completed. The pool is already open and has one connection. After that connection is returned, the first SQL in begin is PRAGMA query_only=OFF; the actual readonly getter is a direct API query, not SQL."
+      },
+      {
+        "source": "sqlx-sqlite/src/connection/worker.rs",
+        "blob": "2585dc1312210d9eb18c15f6df1158656d3c6b2c",
+        "lines": [
+          163,
+          212,
+          364,
+          389
+        ],
+        "fact": "Command::Execute obtains and advances the iterator before checking whether sending the resulting row/done item fails. Receiver loss is checked after the actual iterator step; it does not synchronously abort the in-flight step while the progress callback is held."
+      },
+      {
+        "source": "sqlx-sqlite/src/connection/execute.rs",
+        "blob": "733a1abbe66be36ddc4227c9cba8fbf46ad6b115",
+        "lines": [
+          71,
+          131
+        ],
+        "fact": "Advancing the iterator prepares and steps the real statement. Iterator Drop resets statements; it does not restore connection PRAGMA flags."
+      },
+      {
+        "source": "sqlx-sqlite/src/connection/executor.rs",
+        "blob": "a62d3349a5590c726c44e9898b319b19ea507e48",
+        "lines": [
+          13,
+          39
+        ],
+        "fact": "The query future consumes the worker's flume receiver stream; dropping this future drops its receiver. There is no separate interrupt callback in this path."
+      }
+    ],
+    "cancellation_source_limit": "A progress callback can occur during statement preparation or VM stepping. The control identifies the actual first PRAGMA window, not a portable SQLite opcode or a later BEGIN stage. The receiver-loss reasoning applies to the fixed inspected SQLx version after this callback has actually entered; it is not a claim that all future cancellations execute queued SQL."
+  },
+  "tests": {
+    "new_exact_names": [
+      "sqlite_read_barrier::tests::observation_pool_is_read_only_and_does_not_create_missing_database",
+      "sqlite_read_barrier::tests::barrier_excludes_real_writer_while_observer_reads",
+      "sqlite_read_barrier::tests::barrier_commit_hook_rejects_writes_if_query_only_is_disabled",
+      "sqlite_read_barrier::tests::barrier_rejects_read_only_connection",
+      "sqlite_read_barrier::tests::cancelled_barrier_transition_discards_changed_connection"
+    ],
+    "count": 5,
+    "controls": [
+      {
+        "name": "sqlite_read_barrier::tests::observation_pool_is_read_only_and_does_not_create_missing_database",
+        "proves": "A physically read-only observer reads the seed, rejects a real INSERT with SQLITE_READONLY, and neither new observer nor barrier creates an absent database."
+      },
+      {
+        "name": "sqlite_read_barrier::tests::barrier_excludes_real_writer_while_observer_reads",
+        "proves": "A successful barrier begins a real writer-excluding transaction: a separate valid writer receives actual SQLITE_BUSY while an independent observer can read. The barrier rejects a real write via query_only. After rollback the writer can commit, and after dropping a later transaction plus closing the barrier another write can commit."
+      },
+      {
+        "name": "sqlite_read_barrier::tests::barrier_commit_hook_rejects_writes_if_query_only_is_disabled",
+        "proves": "Even if the trusted test deliberately disables query_only and performs a real INSERT, COMMIT must return SQLITE_CONSTRAINT_COMMITHOOK and a freshly opened independent reader observes the unchanged cut."
+      },
+      {
+        "name": "sqlite_read_barrier::tests::barrier_rejects_read_only_connection",
+        "proves": "A real READONLY BEGIN IMMEDIATE is first shown to permit a distinct writer's actual INSERT. Wrapping that same read-only pool in the private test construction must then be rejected by the new barrier's actual handle check. This avoids an OS chmod/root-bypass dependent fixture; it is not a claim that an OS fallback was reproduced."
+      },
+      {
+        "name": "sqlite_read_barrier::tests::cancelled_barrier_transition_discards_changed_connection",
+        "proves": "The existing physical connection is marked with busy_timeout 7 and query_only 1 before installing a real SQLite progress callback. The first PRAGMA enters the callback; the begin future is observed Pending, then dropped before releasing the worker. The next connection must have query_only 1 and default busy_timeout 5000, and a subsequent barrier transaction must read the original row and rollback normally."
+      }
+    ],
+    "cancellation_fixture_threading": "The callback's bounded recv_timeout runs on SQLx's dedicated SQLite thread, not on the Tokio test runtime. Tokio awaits a oneshot notification. An unbounded mpsc sender has a scopeguard that releases the callback on every test exit; the callback itself has a 5-second bound and returns false if its release fails. No production test hook or detached test task is added.",
+    "deadlines": "Production busy_timeout remains 5 seconds. Only new test synchronization uses 5 seconds; one fixture writer sets its own busy_timeout 0 to obtain an immediate real SQLITE_BUSY observation, and the cancellation fixture connection uses 7 solely as a physical-connection marker. No existing test budget changes.",
+    "original_tests": "All existing tests, including R2c's four controls, remain byte-identical. Counts for the original whole-state roster must come from the fresh actual JUnit/listing.",
+    "execution": false
+  },
+  "cancellation_counterfactual": {
+    "status": "UNEXECUTED_EXPLICIT_NEGATIVE_SOURCE_VARIANT_NEVER_FOR_PUBLICATION",
+    "final_barrier_blob": "98ed5528e76b948c965def714994d67ecb3e0457",
+    "counterfactual_source": {
+      "blob": "6b0909f7909eb323d7ecf11fc292598aee8f2405",
+      "bytes": 3657,
+      "sha256": "0e7c28fad15f1bbe591f0deaa2a6aa8d1336520e35c20e6c6b5444413fef6cd9"
+    },
+    "final_to_counterfactual_patch": {
+      "blob": "4f6b0999e4a38e60c97fdbe60d47d85de928b797",
+      "bytes": 629,
+      "sha256": "9735a81e65d88aeab3f2dc0ae6cbc88560e4e199ce8f349de59bd53174244666"
+    },
+    "counterfactual_to_final_patch": {
+      "blob": "1a2fefb5e147a6beec23104ac45eb881a3ca0f42",
+      "bytes": 629,
+      "sha256": "20321f0e1189c5189ffc82aa6295bbc087087883b961f7fe7c0c16ebadd1628d"
+    },
+    "exact_mutation": "Remove only connection.close_on_drop(); keep actual readonly validation, both APIs, every assertion and all test code unchanged.",
+    "exact_selector": "sqlite_read_barrier::tests::cancelled_barrier_transition_discards_changed_connection",
+    "expected": "One actual FAIL after the progress callback enters and the future is canceled. With the known SQLx path, the reused connection is expected to retain query_only 0 and busy_timeout 7; raw diagnostics and the specific assertion must be inspected.",
+    "qualification_rule": "A compile/environment failure, failure before the SQLite callback, a 5-second callback timeout, or missing original diagnostic is not the requested negative proof. If this counterfactual passes, preserve that outcome and investigate actual SQLx cancellation; do not weaken the final test or manufacture a failure.",
+    "scope": "This is a controlled omission in a new primitive, not an existing-product baseline failure."
+  },
+  "preservation": {
+    "remove_observation_method_exactly_equals_r2c_sqlite": true,
+    "remove_two_lib_lines_exactly_equals_original": true,
+    "original_path_recovery_still_disabled": true,
+    "patch_roundtrip": [
+      {
+        "path": "codex-rs/state/src/sqlite.rs",
+        "hunks": 1,
+        "exact_reconstructed": true
+      },
+      {
+        "path": "codex-rs/state/src/lib.rs",
+        "hunks": 2,
+        "exact_reconstructed": true
+      },
+      {
+        "path": "codex-rs/state/src/sqlite_read_barrier.rs",
+        "hunks": 1,
+        "exact_reconstructed": true
+      },
+      {
+        "path": "codex-rs/state/src/sqlite_read_barrier_tests.rs",
+        "hunks": 1,
+        "exact_reconstructed": true
+      }
+    ],
+    "defaults": "The original ordinary SQLite constructors, in-memory helper, recovery/checkpoint functions, runtime modules and migrations are not modified.",
+    "prohibited_boundaries": "No Windows production permissions, token, ACL, loader, DLL, ordinary peer gate, Root credentials/signatures or Agentd caller changes.",
+    "writes": "Only unreachable GitHub blobs; no native/shared tree, cache, branch or ref mutation."
+  },
+  "qualification_gates": {
+    "source_application": "Apply as a distinct R2d stage after exact R2c source; verify four preimages/postimages and source tree before commands.",
+    "negative_command": "just test -p codex-state --lib -E 'test(sqlite_read_barrier::tests::cancelled_barrier_transition_discards_changed_connection)' --retries 0",
+    "positive_command": "just test -p codex-state --lib -E 'test(sqlite_read_barrier::tests::)' --retries 0 --no-fail-fast",
+    "original_whole_state_command": "just test -p codex-state --lib --retries 0 --no-fail-fast",
+    "positive_selection": "Require exactly the five new names, then actual original whole-state tests including all four unchanged R2c controls. No guessed total or filtered result is counted as an original pass.",
+    "evidence": "Preserve complete fresh JUnit/raw stdout, exact command, actual source tree and unchanged-source proof, host/toolchain, retries 0, and the counterfactual's specific physical gate/PRAGMA values.",
+    "hygiene": [
+      "just fix -p codex-state",
+      "just fmt",
+      "Review actual final diff and hashes; do not rerun tests after hygiene absent a material behavioral change or required gate."
+    ],
+    "locks": "No dependency/Cargo/BUILD declaration changes. Existing sqlx, libsqlite3-sys, Tokio, anyhow and scopeguard suffice. Cargo.lock/MODULE.bazel.lock must remain equal to the actual application base; no hand edits.",
+    "status": "No native commands, format, lint, tests or Bazel have run for R2d."
+  },
+  "follow_on_boundary": {
+    "r2e": "Only after original whole-state qualification: integrate actual whole-pool CognitiveStore gate/coordinator and independently authenticated Current binding through compilable dependency slices; DTOs alone do not close the gate.",
+    "r3": "Keep synchronous R1 preflight before any Tokio runtime. R2a inherited listener registration requires an entered runtime. The real Root caller must separate preflight validation/CLOEXEC descriptor custody from later runtime registration instead of treating those independently tested APIs as naturally composed.",
+    "b16": "Remains open; no normal joint producer, final Root admission or product activation is claimed."
+  }
+}

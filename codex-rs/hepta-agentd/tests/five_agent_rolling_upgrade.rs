@@ -464,6 +464,44 @@ async fn six_agent_fleet_lifecycle_keeps_peers_fair_and_isolated() -> Result<()>
     ensure!(!final_target.release_change_pending);
     assert_peers_healthy_and_unchanged(&fleet, target_peers, &target_peer_baseline).await?;
 
+    // The direct control requests above do not refresh Supervisor's cached
+    // health. Sample the driver's latest available observation at this boundary
+    // without waiting for a new probe or allowing a peer restart to pass.
+    let final_agent_ids: Vec<_> = agents.iter().map(|agent| agent.agent_id.clone()).collect();
+    let final_identities = peer_snapshots(&fleet, &final_agent_ids)?;
+    let cached_health_before: Vec<_> = final_agent_ids
+        .iter()
+        .map(|agent_id| {
+            fleet
+                .supervisor
+                .snapshot(agent_id)
+                .map(|snapshot| snapshot.healthy)
+        })
+        .collect();
+    let report = fleet.supervisor.tick(Instant::now());
+    ensure!(
+        report.faults.is_empty(),
+        "Supervisor fault at final fleet health boundary: {:?}",
+        report.faults
+    );
+    let observed_identities = peer_snapshots(&fleet, &final_agent_ids)?;
+    ensure!(
+        observed_identities == final_identities,
+        "final health observation changed a fleet process or generation: before={final_identities:?}; after={observed_identities:?}"
+    );
+    let cached_health_after: Vec<_> = final_agent_ids
+        .iter()
+        .map(|agent_id| {
+            fleet
+                .supervisor
+                .snapshot(agent_id)
+                .map(|snapshot| snapshot.healthy)
+        })
+        .collect();
+    eprintln!(
+        "FLEET_FINAL_PROBE_REFRESH cached_health_before={cached_health_before:?}; cached_health_after={cached_health_after:?}"
+    );
+
     for agent in &agents {
         let snapshot = fleet
             .supervisor

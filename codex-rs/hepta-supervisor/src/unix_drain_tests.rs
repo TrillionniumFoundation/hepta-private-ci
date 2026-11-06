@@ -1,7 +1,10 @@
 use std::io::BufRead;
 use std::io::BufReader;
 use std::io::Write;
+use std::net::Shutdown;
+use std::os::unix::net::UnixDatagram;
 use std::os::unix::net::UnixListener;
+use std::os::unix::net::UnixStream;
 
 use codex_hepta_agent_protocol::AGENTD_CONTROL_SCHEMA_VERSION;
 use codex_hepta_agent_protocol::AgentdPayload;
@@ -11,6 +14,7 @@ use codex_hepta_contracts::AgentId;
 use codex_hepta_fleet::AgentLifecycle;
 
 use super::AgentHealthProbeIdentity;
+use super::interpret_agent_drain_response;
 use super::query_agent_drain_once;
 use crate::ProcessDriverError;
 
@@ -112,5 +116,66 @@ fn only_exact_closed_admission_with_no_running_turns_is_drained() -> TestResult 
         snapshot.fenced = true;
     }
     assert!(exchange(&identity, frame(&fenced)?)?.is_err());
+    Ok(())
+}
+
+#[test]
+fn disconnected_peer_never_becomes_a_drain_acknowledgement() -> TestResult {
+    let temp = tempfile::tempdir()?;
+    let identity = identity(&temp)?;
+    let (stream, peer) = UnixStream::pair()?;
+    drop(peer);
+    let shutdown = stream.shutdown(Shutdown::Write);
+    let shutdown_error = shutdown
+        .as_ref()
+        .err()
+        .map(|error| (error.kind(), error.raw_os_error()));
+    #[cfg(target_os = "macos")]
+    assert_eq!(
+        shutdown_error,
+        Some((std::io::ErrorKind::NotConnected, Some(libc::ENOTCONN)))
+    );
+    let observed = interpret_agent_drain_response(&identity, 17, shutdown.map(|()| Vec::new()));
+    eprintln!("DRAIN_CLOSED_PEER shutdown_error={shutdown_error:?} observed={observed:?}");
+    assert!(
+        matches!(observed, Ok(false)),
+        "a disconnected peer cannot acknowledge drain: {observed:?}"
+    );
+
+    #[cfg(target_os = "linux")]
+    {
+        // Linux permits shutdown after this peer closes. Obtain a real ENOTCONN
+        // from getpeername on an unconnected socket to exercise the same error
+        // classifier; this does not reproduce the macOS shutdown race.
+        let socket = UnixDatagram::unbound()?;
+        let error = socket
+            .peer_addr()
+            .expect_err("an unconnected datagram must not have a peer");
+        assert_eq!(error.kind(), std::io::ErrorKind::NotConnected);
+        assert_eq!(error.raw_os_error(), Some(libc::ENOTCONN));
+        let observed = interpret_agent_drain_response(&identity, 18, Err(error));
+        eprintln!(
+            "DRAIN_NOT_CONNECTED kernel_errno={} observed={observed:?}",
+            libc::ENOTCONN
+        );
+        assert!(
+            matches!(observed, Ok(false)),
+            "a disconnected transport cannot acknowledge drain: {observed:?}"
+        );
+    }
+    Ok(())
+}
+
+#[test]
+fn wrong_socket_protocol_remains_a_driver_fault() -> TestResult {
+    let temp = tempfile::tempdir()?;
+    let identity = identity(&temp)?;
+    let _wrong_protocol = UnixDatagram::bind(&identity.control_socket)?;
+    let error = UnixStream::connect(&identity.control_socket)
+        .expect_err("a stream must not connect to a datagram control socket");
+    assert_eq!(error.raw_os_error(), Some(libc::EPROTOTYPE));
+    let fault = query_agent_drain_once(&identity, 17)
+        .expect_err("a wrong socket protocol must remain a driver fault");
+    assert_eq!(fault.to_string(), error.to_string());
     Ok(())
 }

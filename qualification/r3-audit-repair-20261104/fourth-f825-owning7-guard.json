@@ -1,0 +1,84 @@
+{
+  "schema": "hepta.fourth-f825-owning-seven-root-gate.v1",
+  "status": "AUTHORIZED_ORIGINAL_OWNING_SEVEN_ONLY",
+  "observed_at_utc": "2026-11-05 00:22:16 UTC",
+  "source_tree": "f8251e1d14fa8524ab469281296cd4cf708f173c",
+  "root_review_blob": "6266148d903085ee8151831168548b9d68be05bb",
+  "original25_bundle": "b9f330b300a82abefad7d680eee331876d80305d",
+  "ordinary_head": "cabcb40d36e116beaa65750e1f674c52035da785",
+  "ordinary_index": {
+    "bytes": 1222758,
+    "sha256": "8ccf08bcd5b633a38fa81be4814ae264365f1a2cdd1ed81e1633fbcc0ac31502"
+  },
+  "locks": {
+    "codex-rs/Cargo.lock": {
+      "bytes": 413768,
+      "sha256": "4a7a5535cf045089458468411e126b5f59bc6bbf34fc0deead9b0c1b8d84000a"
+    },
+    "MODULE.bazel.lock": {
+      "bytes": 1738619,
+      "sha256": "11f8a421224b9b05f32c4c14054e8868083d989fc497310c8d51e1156f189ca3"
+    }
+  },
+  "original_gates": {
+    "owning_packages": [
+      "codex-core",
+      "core_test_support",
+      "codex-cli",
+      "codex-utils-pty",
+      "codex-exec-server",
+      "codex-hepta-agentd",
+      "codex-apply-patch"
+    ],
+    "argv": [
+      "just",
+      "test",
+      "--locked",
+      "--cargo-profile",
+      "dev-small",
+      "-p",
+      "codex-core",
+      "-p",
+      "core_test_support",
+      "-p",
+      "codex-cli",
+      "-p",
+      "codex-utils-pty",
+      "-p",
+      "codex-exec-server",
+      "-p",
+      "codex-hepta-agentd",
+      "-p",
+      "codex-apply-patch",
+      "--no-tests",
+      "fail",
+      "--retries",
+      "0",
+      "--success-output",
+      "immediate"
+    ],
+    "nextest_profile": "local",
+    "case_filter": null,
+    "no_tests": "fail",
+    "retries": 0,
+    "original_ignore_and_remote_early_return": "Retain and report separately; neither counted as executed behavior.",
+    "normal_helpers": {
+      "receipt": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/literal-approval-f825-20261105-0015/source-bound-helper-build-terminal.json",
+      "source": "f8251e1d14fa8524ab469281296cd4cf708f173c",
+      "approved_source_delta": [],
+      "new_build_claim": false
+    }
+  },
+  "template": {
+    "blob": "2c0ebc189c522e6828d07e800c832b697193089c",
+    "bytes": 17116,
+    "sha256": "b4d2ac93f13abd192c9ef648e5a1fdb616a78674b18d05f4a09a8ddde61aeabe"
+  },
+  "requirements": [
+    "Check exact current source, ordinary index and both locks before execution and unchanged after.",
+    "Run complete original seven-package catalog and original just recipe without -E or exclusions; collect full catalog, selection, raw stdout, all failure contexts and fresh JUnit.",
+    "Hash actual normal helpers and all selected test programs after feature-unified catalog and before/after execution.",
+    "Preserve known original eight host-startup-noise failures and any new failures without normalizing output, changing host profiles, sandbox environment, retries, ignores or deadlines.",
+    "Stop for root review after owning-seven actual terminal. No full workspace or final fix/fmt in this phase."
+  ]
+}

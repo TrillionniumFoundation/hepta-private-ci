@@ -1,0 +1,653 @@
+{
+  "schema": "hepta.root.app-parent-probe-complete-provenance-review.v1",
+  "observed_at_utc": "2026-11-05T02:55:05.847647+00:00",
+  "status": "ALL_50_ORIGINALS_STRICTLY_DECODED_REOPENED_DIAGNOSTIC_FAILED_SOURCE_RESTORED",
+  "archive_index": {
+    "bytes": 13646,
+    "sha256": "321c9d80749c6b9dbe723113f9d07808e26e7241c2de24d7d1ef1c1ef960df3a",
+    "blob": "8c1e13c2d6c91597dc5543ff16a50892ba7da891"
+  },
+  "native_job": "1a1a98a00bb-fc05-35d8",
+  "source_tree": "1e936b1ca6df807d8928a4cc6c527f40f92808aa",
+  "transport_chunks": [
+    {
+      "asset": "normal-six-helper-build-epoch2.stdout",
+      "offset": 0,
+      "bytes": 99336,
+      "sha256": "e38b6246aedb06b428b5dad13dfabe6db6be2113fc95b6cc5fbbd70d6705bcc7",
+      "blob": "9cf780dad1f0a1ee6233ab3dc21667bb1ec4b9dd"
+    },
+    {
+      "asset": "normal-six-helper-build-epoch2.stderr",
+      "offset": 0,
+      "bytes": 2064,
+      "sha256": "2ae2cb1c2c4a066db4b94380540d9dafa64fc408f87e36b5862830087bb3aa98",
+      "blob": "60149fbc90ea0baf823969c0e7299ea7c4db1b8b"
+    },
+    {
+      "asset": "workspace-metadata.stdout",
+      "offset": 0,
+      "bytes": 400000,
+      "sha256": "fa002bff4c2de97ba41138c7fe8d464ffaca6bb87d016a4118a3f5d9be4d9752",
+      "blob": "bb2caf6d3e7ab1572e10e56f7a91f1a08072ee56"
+    },
+    {
+      "asset": "workspace-metadata.stdout",
+      "offset": 400000,
+      "bytes": 395948,
+      "sha256": "5520e1b07f6788cf6eeaf35cced07b9bb352ab7555e7f361f96151e97c6ead94",
+      "blob": "d6cc00eb227cd2ab00162be0b66c09df89a4d0cb"
+    },
+    {
+      "asset": "app-disconnect-full-context-catalog.stdout",
+      "offset": 0,
+      "bytes": 400000,
+      "sha256": "2e262dec3d4094539583241e6c191a84b95e47406783c0d95dc44354fd5ba25c",
+      "blob": "d60f682878fc8b14dfa9b56753464846a96b9c01"
+    },
+    {
+      "asset": "app-disconnect-full-context-catalog.stdout",
+      "offset": 400000,
+      "bytes": 104808,
+      "sha256": "8c167e28dcd440d32f65bdcc5e1378b1d8a92dd02f95ab82bd1c3f5f68eab093",
+      "blob": "be5984a3f9453349ea6b9788957a754416dab616"
+    },
+    {
+      "asset": "app-disconnect-full-context-catalog.stderr",
+      "offset": 0,
+      "bytes": 3984,
+      "sha256": "000a375b910d592716e7b564e7cd9048c2fd8e241bafec431768e2fdbdd7129e",
+      "blob": "8b5b426cfd6596c579eb2ea2f861de157e583530"
+    },
+    {
+      "asset": "selection.json",
+      "offset": 0,
+      "bytes": 400000,
+      "sha256": "5501a27701702aba7673bd989ec5d79371d045aab85f5dc6767b6edf21be6db2",
+      "blob": "0f43fb6db7d3771a105847062c9ae0a0283e86d4"
+    },
+    {
+      "asset": "selection.json",
+      "offset": 400000,
+      "bytes": 125784,
+      "sha256": "82ff676057feb4ce58f4c1c55d4d6882418e2a612366e3ee9d21130c93ed4f52",
+      "blob": "4d1b2fb3e4566957e029e15368c9c45b6409ded6"
+    },
+    {
+      "asset": "complete-small-originals.json",
+      "offset": 0,
+      "bytes": 76424,
+      "sha256": "04a2a672ae5ba8d1ed6a49bd786b650a58c5625c552ae682e2fc22c76aa183ba",
+      "blob": "0d2c4be022fe2179b6f1149fa132018e371dde04"
+    }
+  ],
+  "assets": [
+    {
+      "name": "normal-six-helper-build-epoch2.stdout",
+      "original": {
+        "bytes": 1129355,
+        "sha256": "ae13b94486f64ed67bc00fddde76aaaaefeae66d853d7a68cc2560f23f84381a",
+        "blob": "8764e75a2e4c1abc10deb98319822494d5f310a8"
+      },
+      "gzip": {
+        "bytes": 74502,
+        "sha256": "15a9e1c187457f717d51c15d6abf0da3cf60603c1d9759a43a6e5d28fc123c53",
+        "blob": "26ac0ba6f088caac1afc94e0a682519911481a32"
+      },
+      "chunks": 1
+    },
+    {
+      "name": "normal-six-helper-build-epoch2.stderr",
+      "original": {
+        "bytes": 10263,
+        "sha256": "78c60b8da80efab73cc780757ed8f7a2ef0cbcd48efa77f84d2ca31e3152bd9b",
+        "blob": "7bf3ac38cc2c631bac6b202eb35aede4fc61a6a8"
+      },
+      "gzip": {
+        "bytes": 1547,
+        "sha256": "7785d8cc7420e20e9c62f3ef4ee0eb1dd9054873692c9ae31c1732026afad02d",
+        "blob": "28e38e4df8338a03518647efd836a70ce0e77239"
+      },
+      "chunks": 1
+    },
+    {
+      "name": "workspace-metadata.stdout",
+      "original": {
+        "bytes": 8163658,
+        "sha256": "51ff98c991ea71a7a1be5135acb3c35bd6070b09544306f4b3bbc0fa1ea52e19",
+        "blob": "b93afb4600fc2878e9265af52ecee17dc1a72140"
+      },
+      "gzip": {
+        "bytes": 596961,
+        "sha256": "8e52af367ddcdc8a0694f7ab5aecc04137d9e6be16c24089c3b869f216d6e826",
+        "blob": "937313a534a7514db0d306c21abeb02df1b6c8eb"
+      },
+      "chunks": 2
+    },
+    {
+      "name": "app-disconnect-full-context-catalog.stdout",
+      "original": {
+        "bytes": 3294917,
+        "sha256": "00fc38c7ac704092f801f975f23dc3d119c982caf34096cc2fe123f05d2dd153",
+        "blob": "c61e227f1731f7ec451d308f5ef1437e72cc66ea"
+      },
+      "gzip": {
+        "bytes": 378606,
+        "sha256": "4b1219fafd7f57191db0e47cb59a2a8c010ab192c7b15e572ad0c456bc1d9030",
+        "blob": "a022e92411f977df80bf9dd091235a2deec6b479"
+      },
+      "chunks": 2
+    },
+    {
+      "name": "app-disconnect-full-context-catalog.stderr",
+      "original": {
+        "bytes": 19492,
+        "sha256": "81b55fd27b802c08a7d783522e7d7e07d830da7badf729f2965aec613c04b902",
+        "blob": "e15fdbf1aa9ba68c2f58705de627d6178e5b228e"
+      },
+      "gzip": {
+        "bytes": 2987,
+        "sha256": "a17ef2c12cba289b787acd83b639b720bb5a8dec882a935e44b9c225e707ffa5",
+        "blob": "5f7c8568a966136ff8f080d2e0856d8d42f75532"
+      },
+      "chunks": 1
+    },
+    {
+      "name": "selection.json",
+      "original": {
+        "bytes": 5894093,
+        "sha256": "70a38d7b3ef3c8198da59fd76e5c11cc214265c94b6c90b0f9ece2614077be47",
+        "blob": "0e0279dc5e6fe863fadbcd5597049bc8d39ddf55"
+      },
+      "gzip": {
+        "bytes": 394337,
+        "sha256": "ec86cf817b4dac0f2008cdae7d6a5560d93ea9ef668b30bb321fe8508036f774",
+        "blob": "d2a79566304822a7e60daae7051d4ab056c92781"
+      },
+      "chunks": 2
+    },
+    {
+      "name": "complete-small-originals.json",
+      "original": {
+        "bytes": 406873,
+        "sha256": "79a91174c011f668b5f9d893ffc6db2884af82e21631966ff3fdee4b8d6ee0d1",
+        "blob": "7fc20e600416128187d8febcc19524a0f0485977"
+      },
+      "gzip": {
+        "bytes": 57316,
+        "sha256": "3437a5ca41b57c86f440aa1e2009a78a862b4663a5cd64b1523f6ad1a2e910e1",
+        "blob": "933f9dc7983a2039eb1ad1a6430002b6fa20c9ff"
+      },
+      "chunks": 1
+    }
+  ],
+  "complete_unique_originals": [
+    {
+      "name": "1-initial-untracked-source-paths.json",
+      "bytes": 172,
+      "sha256": "2c792b9cbf1332e9cf51b78d7629e40dbc7cc27f87523b3fc3db5046739f3146",
+      "blob": "f11065a81e40447969a6a39287c035492a55b707"
+    },
+    {
+      "name": "10-app-disconnect-original-diagnostic-before-untracked-source-paths.json",
+      "bytes": 172,
+      "sha256": "c9c67e335ab42436009ca7410dce970287d0c50de1c0664fe8ed775495513288",
+      "blob": "442022938e5ef99f125b3aff63194982d2e02799"
+    },
+    {
+      "name": "11-app-disconnect-original-diagnostic-after-untracked-source-paths.json",
+      "bytes": 172,
+      "sha256": "c9c67e335ab42436009ca7410dce970287d0c50de1c0664fe8ed775495513288",
+      "blob": "442022938e5ef99f125b3aff63194982d2e02799"
+    },
+    {
+      "name": "12-final-untracked-source-paths.json",
+      "bytes": 172,
+      "sha256": "c9c67e335ab42436009ca7410dce970287d0c50de1c0664fe8ed775495513288",
+      "blob": "442022938e5ef99f125b3aff63194982d2e02799"
+    },
+    {
+      "name": "13-restoration-eligible-untracked-source-paths.json",
+      "bytes": 172,
+      "sha256": "c9c67e335ab42436009ca7410dce970287d0c50de1c0664fe8ed775495513288",
+      "blob": "442022938e5ef99f125b3aff63194982d2e02799"
+    },
+    {
+      "name": "14-restore-parent-observation-before-untracked-source-paths.json",
+      "bytes": 172,
+      "sha256": "c9c67e335ab42436009ca7410dce970287d0c50de1c0664fe8ed775495513288",
+      "blob": "442022938e5ef99f125b3aff63194982d2e02799"
+    },
+    {
+      "name": "15-restore-parent-observation-after-untracked-source-paths.json",
+      "bytes": 172,
+      "sha256": "2c792b9cbf1332e9cf51b78d7629e40dbc7cc27f87523b3fc3db5046739f3146",
+      "blob": "f11065a81e40447969a6a39287c035492a55b707"
+    },
+    {
+      "name": "2-apply-parent-observation-before-untracked-source-paths.json",
+      "bytes": 172,
+      "sha256": "2c792b9cbf1332e9cf51b78d7629e40dbc7cc27f87523b3fc3db5046739f3146",
+      "blob": "f11065a81e40447969a6a39287c035492a55b707"
+    },
+    {
+      "name": "3-apply-parent-observation-after-untracked-source-paths.json",
+      "bytes": 172,
+      "sha256": "c9c67e335ab42436009ca7410dce970287d0c50de1c0664fe8ed775495513288",
+      "blob": "442022938e5ef99f125b3aff63194982d2e02799"
+    },
+    {
+      "name": "4-normal-six-helper-build-epoch2-before-untracked-source-paths.json",
+      "bytes": 172,
+      "sha256": "c9c67e335ab42436009ca7410dce970287d0c50de1c0664fe8ed775495513288",
+      "blob": "442022938e5ef99f125b3aff63194982d2e02799"
+    },
+    {
+      "name": "5-normal-six-helper-build-epoch2-after-untracked-source-paths.json",
+      "bytes": 172,
+      "sha256": "c9c67e335ab42436009ca7410dce970287d0c50de1c0664fe8ed775495513288",
+      "blob": "442022938e5ef99f125b3aff63194982d2e02799"
+    },
+    {
+      "name": "6-workspace-metadata-before-untracked-source-paths.json",
+      "bytes": 172,
+      "sha256": "c9c67e335ab42436009ca7410dce970287d0c50de1c0664fe8ed775495513288",
+      "blob": "442022938e5ef99f125b3aff63194982d2e02799"
+    },
+    {
+      "name": "7-workspace-metadata-after-untracked-source-paths.json",
+      "bytes": 172,
+      "sha256": "c9c67e335ab42436009ca7410dce970287d0c50de1c0664fe8ed775495513288",
+      "blob": "442022938e5ef99f125b3aff63194982d2e02799"
+    },
+    {
+      "name": "8-app-disconnect-full-context-catalog-before-untracked-source-paths.json",
+      "bytes": 172,
+      "sha256": "c9c67e335ab42436009ca7410dce970287d0c50de1c0664fe8ed775495513288",
+      "blob": "442022938e5ef99f125b3aff63194982d2e02799"
+    },
+    {
+      "name": "9-app-disconnect-full-context-catalog-after-untracked-source-paths.json",
+      "bytes": 172,
+      "sha256": "c9c67e335ab42436009ca7410dce970287d0c50de1c0664fe8ed775495513288",
+      "blob": "442022938e5ef99f125b3aff63194982d2e02799"
+    },
+    {
+      "name": "app-disconnect-full-context-catalog-command.json",
+      "bytes": 642,
+      "sha256": "88bfecd4ebe8f81c5837e6f310444c31fa752d9731cc2d4eecfb4736497c1272",
+      "blob": "6c2dc16cc176534ab3777344db62bf3be60f3f60"
+    },
+    {
+      "name": "app-disconnect-full-context-catalog-status.json",
+      "bytes": 27063,
+      "sha256": "19769671bedc4dbb97f4d9e0d7fbc4ba33bd3f6f170a13f4ba6dcafcd468f02d",
+      "blob": "de35e4f8b13aed33323546ac33dfa2342bae8cf9"
+    },
+    {
+      "name": "app-disconnect-full-context-catalog.stderr",
+      "bytes": 19492,
+      "sha256": "81b55fd27b802c08a7d783522e7d7e07d830da7badf729f2965aec613c04b902",
+      "blob": "e15fdbf1aa9ba68c2f58705de627d6178e5b228e"
+    },
+    {
+      "name": "app-disconnect-full-context-catalog.stdout",
+      "bytes": 3294917,
+      "sha256": "00fc38c7ac704092f801f975f23dc3d119c982caf34096cc2fe123f05d2dd153",
+      "blob": "c61e227f1731f7ec451d308f5ef1437e72cc66ea"
+    },
+    {
+      "name": "app-disconnect-original-diagnostic-command.json",
+      "bytes": 694,
+      "sha256": "17bcbfbccc0710854a5a669a767dda3d77b6b75d7922292efe9aeb2a0f85fb85",
+      "blob": "536868916620422294c3045fdbb501f87660c404"
+    },
+    {
+      "name": "app-disconnect-original-diagnostic-status.json",
+      "bytes": 1456,
+      "sha256": "fff78c77769e0803266458e83d8121fbf131d354f23659733929b63666e574d9",
+      "blob": "f9e071c370294f2691448aaf9d3695e1f87a7368"
+    },
+    {
+      "name": "app-disconnect-original-diagnostic.junit.xml",
+      "bytes": 2919,
+      "sha256": "fd185d7966d707c3cc5bc62bb40fc8e918f78369c91b53f4c927f4af44a56acd",
+      "blob": "cd778408b59aa263d85feee67bf5a9dbe238b5d7"
+    },
+    {
+      "name": "app-disconnect-original-diagnostic.log",
+      "bytes": 10868,
+      "sha256": "b5d871bf80db9b9c8407f66b1197ab1854b9434109b7f6c9a1b896f03eaa3fea",
+      "blob": "efb11da42736b9ff6cdbffa97f97d33a99f43471"
+    },
+    {
+      "name": "apply-parent-observation-source-change.json",
+      "bytes": 1291,
+      "sha256": "631a73343ccf08f16a9e65307a4d279eeb50a9e17edea0585ad1b21ea795865a",
+      "blob": "bcab5aade240dd4e207067d58b0a01785689c451"
+    },
+    {
+      "name": "approved-diagnostic-guard.json",
+      "bytes": 13966,
+      "sha256": "1b5c9f32282ba0dc81cbe96e6f3943ae901c25799a39571e229b8540f1ec54b7",
+      "blob": "961ec3880199c1a2ee367d6291bcee393436f169"
+    },
+    {
+      "name": "full-workspace-feature-graph-binding.json",
+      "bytes": 708,
+      "sha256": "da3904a79c515b6e052ebe96c779301c82ff9bfc7ab08379be1320d49bf16fa3",
+      "blob": "c365e11a3475b53292b78d699b1f0b7850fc940e"
+    },
+    {
+      "name": "native-host.json",
+      "bytes": 480,
+      "sha256": "666b1eeadbccfed89ce6d5bed3b220fb3311bcbcaaefa9dd99bb23c4b6fb3613",
+      "blob": "057a89145dd811e98e35bff8460decb2c75f1e62"
+    },
+    {
+      "name": "new-epoch-identity-binding.json",
+      "bytes": 18518,
+      "sha256": "486a5732310807e4b19c15614eee91862db2fa941e769d3888fc3e6bd6cf5c05",
+      "blob": "a278a480c1d7d11094c8e787418915ad6f392b55"
+    },
+    {
+      "name": "normal-six-helper-build-epoch2-command.json",
+      "bytes": 919,
+      "sha256": "8caba2b20c7067c031ec48dd7c70e25ff4341ca4a41f4e024aae261a077ab3dd",
+      "blob": "6b195d1b0ddba4bab4b4b19bdbe87ab5c2ee8b07"
+    },
+    {
+      "name": "normal-six-helper-build-epoch2-receipt.json",
+      "bytes": 7407,
+      "sha256": "18361156750f51260bcb6a49bf2900adaee98c15140cae2a5b3a4074842f733e",
+      "blob": "01ca5dcc8d8a0239f6b7aec04830f2ee1eb37a81"
+    },
+    {
+      "name": "normal-six-helper-build-epoch2-status.json",
+      "bytes": 10628,
+      "sha256": "84b2ef90b8fdd02902a0c959e29291b49cad2013517b01bf4dcfce31ceff88ce",
+      "blob": "b5cd3c8a6a669747015c8b498741b461c312448b"
+    },
+    {
+      "name": "normal-six-helper-build-epoch2.stderr",
+      "bytes": 10263,
+      "sha256": "78c60b8da80efab73cc780757ed8f7a2ef0cbcd48efa77f84d2ca31e3152bd9b",
+      "blob": "7bf3ac38cc2c631bac6b202eb35aede4fc61a6a8"
+    },
+    {
+      "name": "normal-six-helper-build-epoch2.stdout",
+      "bytes": 1129355,
+      "sha256": "ae13b94486f64ed67bc00fddde76aaaaefeae66d853d7a68cc2560f23f84381a",
+      "blob": "8764e75a2e4c1abc10deb98319822494d5f310a8"
+    },
+    {
+      "name": "owned-process-observation-summary.json",
+      "bytes": 3285,
+      "sha256": "6841121a531cd7cc3d9d68baa52a300a588e9f3f315e670484bc9f078261cfab",
+      "blob": "c9c17719db2513813d25c68af71cbd0a382b19f7"
+    },
+    {
+      "name": "owned-process-observations.jsonl",
+      "bytes": 74782,
+      "sha256": "1fa33b7c25d28646507e3c47961f50e08b7bef74df42830ac9c39e4a63d34a3f",
+      "blob": "6f7132c44c5f83ffa1dd57c75721f0f2a01915a1"
+    },
+    {
+      "name": "parent-lifecycle-probe-observations.json",
+      "bytes": 2554,
+      "sha256": "c8e544947d1488c8b14b02819b9187d0398a9d73e3494338a36c260794bc7b87",
+      "blob": "cd36dc75154c33c5f741a4fd756b53059b270a17"
+    },
+    {
+      "name": "pre-execution-checkpoint.json",
+      "bytes": 2624,
+      "sha256": "f143cbd5eb40c331f151903600bdf3479d2307278f1a708fb683438d9e904664",
+      "blob": "63df1ab6fef51af2c753012699022e45b4d54a30"
+    },
+    {
+      "name": "restore-parent-observation-source-change.json",
+      "bytes": 1158,
+      "sha256": "e44956057e9e799810f8e5f997f8752b780cb6d2868a2c8fb2f3d8b12dbf9eae",
+      "blob": "7001924b03dfc66244d5245ce4281133142d16cf"
+    },
+    {
+      "name": "runner.py",
+      "bytes": 29284,
+      "sha256": "cd8a926469d7583021cbc49b22f42526ff354d7938d01e3919f86cb6c43aee46",
+      "blob": "55bbe3e4512eeeba6b27c3bc2061cde572c8c5ea"
+    },
+    {
+      "name": "selection.json",
+      "bytes": 5894093,
+      "sha256": "70a38d7b3ef3c8198da59fd76e5c11cc214265c94b6c90b0f9ece2614077be47",
+      "blob": "0e0279dc5e6fe863fadbcd5597049bc8d39ddf55"
+    },
+    {
+      "name": "source-map-diagnostic-after-test.json",
+      "bytes": 10838,
+      "sha256": "6068dc0eb669ef6604a6c40cf239b82e07e001508a9ac4cb744d5e0365b268e1",
+      "blob": "f4e12b012b35a819ba76e86e239e3666b9fffd66"
+    },
+    {
+      "name": "source-map-diagnostic-before-build.json",
+      "bytes": 10838,
+      "sha256": "6068dc0eb669ef6604a6c40cf239b82e07e001508a9ac4cb744d5e0365b268e1",
+      "blob": "f4e12b012b35a819ba76e86e239e3666b9fffd66"
+    },
+    {
+      "name": "source-map-initial.json",
+      "bytes": 10059,
+      "sha256": "e1685c6b1122e93a0bc6c264122bc1b540f9b465f6fc4c61fd77e8ecfe533fcf",
+      "blob": "1d8bb948a06415edc30597c3743446c5d811affb"
+    },
+    {
+      "name": "source-map-restored.json",
+      "bytes": 10059,
+      "sha256": "e1685c6b1122e93a0bc6c264122bc1b540f9b465f6fc4c61fd77e8ecfe533fcf",
+      "blob": "1d8bb948a06415edc30597c3743446c5d811affb"
+    },
+    {
+      "name": "temporary-source-restoration.json",
+      "bytes": 1022,
+      "sha256": "875ecd72ed82161b4f0f335ab1023f5bfa4d3cdece3f67bb3589aa79da73a2fb",
+      "blob": "abe8c0f723090a169a63832d7f83d58dfd407534"
+    },
+    {
+      "name": "terminal.json",
+      "bytes": 44166,
+      "sha256": "6faa44df7a0e67f562ef52b94d1bf1cca3e345673d8fda630546e8759b18f38b",
+      "blob": "55b5f9cdd2ad94a85a60e44026bf27b1733b9afb"
+    },
+    {
+      "name": "workspace-metadata-command.json",
+      "bytes": 458,
+      "sha256": "3ce9e0268fba953c2bb3a3cd38f89e09ec15c78a2dc72536a6701ab0678b2fca",
+      "blob": "baa6f22bc4fc3d26602dab528073307c4edd150d"
+    },
+    {
+      "name": "workspace-metadata-status.json",
+      "bytes": 60843,
+      "sha256": "e9ed54ebaeea6b5516dfd90bfcaa70f144ad30b1b9d7af310e01c5addbc4d71d",
+      "blob": "585ab0b35885071bc2346272255596077aef2d9f"
+    },
+    {
+      "name": "workspace-metadata.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "name": "workspace-metadata.stdout",
+      "bytes": 8163658,
+      "sha256": "51ff98c991ea71a7a1be5135acb3c35bd6070b09544306f4b3bbc0fa1ea52e19",
+      "blob": "b93afb4600fc2878e9265af52ecee17dc1a72140"
+    }
+  ],
+  "complete_unique_original_count": 50,
+  "complete_unique_original_bytes": 18873887,
+  "small_bundle_overlap_all_six_byteequal": true,
+  "full_metadata": {
+    "workspace_members": 193,
+    "resolved_nodes": 1501,
+    "every_node_feature_and_dependency_equals_original_full": true,
+    "original": {
+      "bytes": 8163618,
+      "sha256": "959b827393fc6830e8fd6c55a83a519217ab0debb7c033b42e64306bc373fece",
+      "blob": "b89e3c4f0a8907a4edc0b75b451715ba59154cd2"
+    },
+    "current": {
+      "bytes": 8163658,
+      "sha256": "51ff98c991ea71a7a1be5135acb3c35bd6070b09544306f4b3bbc0fa1ea52e19",
+      "blob": "b93afb4600fc2878e9265af52ecee17dc1a72140"
+    }
+  },
+  "fresh_catalog_selection": {
+    "selected": 1,
+    "original_ignored": 56,
+    "filter_unmatched": 19502,
+    "all_original_names_reconstructed_exactly": true,
+    "selected_programs": 1,
+    "helper_roster": 33
+  },
+  "compiler_json_messages": 1313,
+  "normal_helper_artifacts": 6,
+  "all_helper_artifact_package_target_profile_features_fresh_fields_match_original_compiler": true,
+  "all_program_and_helper_identities_stable": true,
+  "all_fifteen_untracked_guards_empty": [
+    "1-initial-untracked-source-paths.json",
+    "10-app-disconnect-original-diagnostic-before-untracked-source-paths.json",
+    "11-app-disconnect-original-diagnostic-after-untracked-source-paths.json",
+    "12-final-untracked-source-paths.json",
+    "13-restoration-eligible-untracked-source-paths.json",
+    "14-restore-parent-observation-before-untracked-source-paths.json",
+    "15-restore-parent-observation-after-untracked-source-paths.json",
+    "2-apply-parent-observation-before-untracked-source-paths.json",
+    "3-apply-parent-observation-after-untracked-source-paths.json",
+    "4-normal-six-helper-build-epoch2-before-untracked-source-paths.json",
+    "5-normal-six-helper-build-epoch2-after-untracked-source-paths.json",
+    "6-workspace-metadata-before-untracked-source-paths.json",
+    "7-workspace-metadata-after-untracked-source-paths.json",
+    "8-app-disconnect-full-context-catalog-before-untracked-source-paths.json",
+    "9-app-disconnect-full-context-catalog-after-untracked-source-paths.json"
+  ],
+  "phases": [
+    {
+      "phase": "normal-six-helper-build-epoch2",
+      "argv": [
+        "cargo",
+        "build",
+        "--locked",
+        "--profile",
+        "dev-small",
+        "--message-format=json-render-diagnostics",
+        "-p",
+        "codex-arg0",
+        "--bin",
+        "test_arg0_preflight",
+        "-p",
+        "codex-code-mode-host",
+        "--bin",
+        "codex-code-mode-host",
+        "-p",
+        "codex-shell-escalation",
+        "--bin",
+        "codex-execve-wrapper",
+        "-p",
+        "codex-rmcp-client",
+        "--bin",
+        "test_stdio_server",
+        "--bin",
+        "test_streamable_http_server",
+        "-p",
+        "codex-exec",
+        "--bin",
+        "codex-exec"
+      ],
+      "exit_code": 0,
+      "started_at": "2026-11-05T02:29:18.903585+00:00",
+      "completed_at": "2026-11-05T02:31:10.880218+00:00",
+      "duration_seconds": 111.97662928100908
+    },
+    {
+      "phase": "workspace-metadata",
+      "argv": [
+        "cargo",
+        "metadata",
+        "--format-version=1",
+        "--locked"
+      ],
+      "exit_code": 0,
+      "started_at": "2026-11-05T02:31:11.561285+00:00",
+      "completed_at": "2026-11-05T02:31:13.144650+00:00",
+      "duration_seconds": 1.583346571016591
+    },
+    {
+      "phase": "app-disconnect-full-context-catalog",
+      "argv": [
+        "cargo",
+        "nextest",
+        "list",
+        "--locked",
+        "--cargo-profile",
+        "dev-small",
+        "--message-format=json",
+        "-E",
+        "test(=suite::v2::command_exec::command_exec_process_ids_are_connection_scoped_and_disconnect_terminates_process)"
+      ],
+      "exit_code": 0,
+      "started_at": "2026-11-05T02:31:13.586527+00:00",
+      "completed_at": "2026-11-05T02:38:38.560790+00:00",
+      "duration_seconds": 444.97487358600483
+    },
+    {
+      "phase": "app-disconnect-original-diagnostic",
+      "argv": [
+        "just",
+        "test",
+        "--locked",
+        "--cargo-profile",
+        "dev-small",
+        "--no-tests",
+        "fail",
+        "--retries",
+        "0",
+        "--success-output",
+        "immediate",
+        "-E",
+        "test(=suite::v2::command_exec::command_exec_process_ids_are_connection_scoped_and_disconnect_terminates_process)"
+      ],
+      "exit_code": 100,
+      "started_at": "2026-11-05T02:38:42.489424+00:00",
+      "completed_at": "2026-11-05T02:38:52.901915+00:00",
+      "duration_seconds": 10.412495316006243
+    }
+  ],
+  "original_case": {
+    "classname": "codex-app-server::all",
+    "name": "suite::v2::command_exec::command_exec_process_ids_are_connection_scoped_and_disconnect_terminates_process",
+    "seconds": "5.575",
+    "result": "FAIL",
+    "failure": "Error: process marker \"codex-command-exec-marker-1793846326945313585\" did not exit before timeout"
+  },
+  "prior_root_terminal_review": "7093f417d39b066208092d3f3447840717423f3e",
+  "interpretation_zh": "完整临时观测编译/graph/catalog/selection/15份source guard及恢复原件现已独立复核，补足前一份6文件回执。原App断连仍FAIL5.575s，未产生修复PASS；旧export模板的source/job/guard描述错误按实际50原件校正，原件保留。",
+  "native_export_metadata_correction": {
+    "cause": "The evidence-only exporter reused three descriptive provenance constants and its schema label from the preceding epoch2 export. It read the correct current probe paths and verified original bytes/hashes. The original export manifest is preserved unchanged; this additive index corrects only its descriptive source/job/guard fields and records the new schema.",
+    "original_values": {
+      "schema": "hepta-app-epoch2-complete-frozen-compressed-export-v1",
+      "source_tree": "f8251e1d14fa8524ab469281296cd4cf708f173c",
+      "original_job": "1a1a967b3ab-fc05-34f6",
+      "root_guard": "6387885b8582939442405fd511b7af9c344869e4"
+    },
+    "correct_values": {
+      "schema": "hepta-app-parent-lifecycle-complete-frozen-compressed-export-v1",
+      "source_tree": "1e936b1ca6df807d8928a4cc6c527f40f92808aa",
+      "original_job": "1a1a98a00bb-fc05-35d8",
+      "root_guard": "961ec3880199c1a2ee367d6291bcee393436f169"
+    },
+    "basis": "Actual terminal.json, original command/status files, diagnostic source maps and original job status; post-test temporary-source-restoration.json separately verifies f825 restoration."
+  },
+  "restored_source_map_byteidentical_to_initial": true,
+  "restored_source_tree": "f8251e1d14fa8524ab469281296cd4cf708f173c",
+  "all_original_blockers_closed": false
+}

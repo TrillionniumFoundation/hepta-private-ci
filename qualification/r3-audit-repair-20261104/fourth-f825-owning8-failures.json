@@ -1,0 +1,107 @@
+{
+  "schema": "hepta.f825-owning-seven-eight-full-failure-texts.v1",
+  "source": "f8251e1d14fa8524ab469281296cd4cf708f173c",
+  "original_job": "1a1a916fc98-fc05-3136",
+  "review_original": {
+    "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-f825-20261105-0025/owning-seven-review.json",
+    "bytes": 1244077,
+    "sha256": "5b8bf13e4cacdc989ee74186a0367873bb7856937dee09a669df1f399e092838"
+  },
+  "review_reassembled_hash_verified": true,
+  "counts": {
+    "PASS": 5408,
+    "FAIL": 8
+  },
+  "exact_roster": true,
+  "binary_stable": true,
+  "helpers_stable": true,
+  "failures": [
+    {
+      "name": "suite::approvals::approving_execpolicy_amendment_persists_policy_and_skips_future_prompts",
+      "classname": "codex-core::all",
+      "seconds": "0.335",
+      "result": "FAIL",
+      "failure": "thread 'suite::approvals::approving_execpolicy_amendment_persists_policy_and_skips_future_prompts' (3971549) panicked at core/tests/suite/approvals.rs:2540:5:\nunexpected stdout: Failed to create stream fd: Operation not permitted\nFailed to create stream fd: Operation not permitted\nFailed to create stream fd: Operation not permitted\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+    },
+    {
+      "name": "suite::request_permissions::partial_request_permissions_grants_do_not_preapprove_new_permissions",
+      "classname": "codex-core::all",
+      "seconds": "0.444",
+      "result": "FAIL",
+      "failure": "thread 'suite::request_permissions::partial_request_permissions_grants_do_not_preapprove_new_permissions' (4077793) panicked at core/tests/suite/request_permissions.rs:1802:5:\nassertion failed: `(left == right)`\n\nDiff < left / right > :\n<Failed to create stream fd: Operation not permitted\n<Failed to create stream fd: Operation not permitted\n<Failed to create stream fd: Operation not permitted\n partial-grant-ok\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+    },
+    {
+      "name": "suite::request_permissions::request_permissions_grants_apply_to_later_exec_command_calls_without_inline_permission_feature",
+      "classname": "codex-core::all",
+      "seconds": "0.449",
+      "result": "FAIL",
+      "failure": "thread 'suite::request_permissions::request_permissions_grants_apply_to_later_exec_command_calls_without_inline_permission_feature' (4077868) panicked at core/tests/suite/request_permissions.rs:1626:5:\nassertion failed: `(left == right)`\n\nDiff < left / right > :\n<Failed to create stream fd: Operation not permitted\n<Failed to create stream fd: Operation not permitted\n<Failed to create stream fd: Operation not permitted\n sticky-shell-feature-independent-ok\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+    },
+    {
+      "name": "suite::request_permissions::request_permissions_grants_apply_to_later_exec_command_calls",
+      "classname": "codex-core::all",
+      "seconds": "0.463",
+      "result": "FAIL",
+      "failure": "thread 'suite::request_permissions::request_permissions_grants_apply_to_later_exec_command_calls' (4077858) panicked at core/tests/suite/request_permissions.rs:1391:5:\nassertion failed: `(left == right)`\n\nDiff < left / right > :\n<Failed to create stream fd: Operation not permitted\n<Failed to create stream fd: Operation not permitted\n<Failed to create stream fd: Operation not permitted\n sticky-grant-ok\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+    },
+    {
+      "name": "suite::request_permissions::request_permissions_preapprove_explicit_exec_permissions_outside_on_request",
+      "classname": "codex-core::all",
+      "seconds": "0.458",
+      "result": "FAIL",
+      "failure": "thread 'suite::request_permissions::request_permissions_preapprove_explicit_exec_permissions_outside_on_request' (4077927) panicked at core/tests/suite/request_permissions.rs:1510:5:\nassertion failed: `(left == right)`\n\nDiff < left / right > :\n<Failed to create stream fd: Operation not permitted\n<Failed to create stream fd: Operation not permitted\n<Failed to create stream fd: Operation not permitted\n sticky-explicit-grant-ok\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+    },
+    {
+      "name": "shell_snapshot_v2_capture_failure_falls_back_and_retries::test_case_3_remote_pipe_recovery",
+      "classname": "codex-exec-server::exec_process",
+      "seconds": "0.299",
+      "result": "FAIL",
+      "failure": "thread 'shell_snapshot_v2_capture_failure_falls_back_and_retries::test_case_3_remote_pipe_recovery' (4117508) panicked at exec-server/tests/exec_process.rs:449:9:\nassertion failed: `(left == right)`\n\nDiff < left / right > :\n (\n     \"original\",\n<    \"Failed to create stream fd: Operation not permitted\\nFailed to create stream fd: Operation not permitted\\nFailed to create stream fd: Operation not permitted\\n\",\n>    \"\",\n     Some(\n         0,\n     ),\n     true,\n )\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+    },
+    {
+      "name": "shell_snapshot_v2_capture_failure_falls_back_and_retries::test_case_4_remote_tty_recovery",
+      "classname": "codex-exec-server::exec_process",
+      "seconds": "0.304",
+      "result": "FAIL",
+      "failure": "thread 'shell_snapshot_v2_capture_failure_falls_back_and_retries::test_case_4_remote_tty_recovery' (4117556) panicked at exec-server/tests/exec_process.rs:449:9:\nassertion failed: `(left == right)`\n\nDiff < left / right > :\n (\n<    \"Failed to create stream fd: Operation not permitted\\r\\nFailed to create stream fd: Operation not permitted\\r\\nFailed to create stream fd: Operation not permitted\\r\\noriginal\",\n>    \"original\",\n     \"\",\n     Some(\n         0,\n     ),\n     true,\n )\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+    },
+    {
+      "name": "shell_snapshot_v2_capture_failure_falls_back_and_retries::test_case_6_remote_retry_budget_exhausted",
+      "classname": "codex-exec-server::exec_process",
+      "seconds": "0.324",
+      "result": "FAIL",
+      "failure": "thread 'shell_snapshot_v2_capture_failure_falls_back_and_retries::test_case_6_remote_retry_budget_exhausted' (4117693) panicked at exec-server/tests/exec_process.rs:449:9:\nassertion failed: `(left == right)`\n\nDiff < left / right > :\n (\n     \"original\",\n<    \"Failed to create stream fd: Operation not permitted\\nFailed to create stream fd: Operation not permitted\\nFailed to create stream fd: Operation not permitted\\n\",\n>    \"\",\n     Some(\n         0,\n     ),\n     true,\n )\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+    }
+  ],
+  "all_skip_observations": [
+    "    Skipping test because it requires a remote test environment.",
+    "    Skipping test because it requires a remote test environment.",
+    "    Skipping test because it requires a remote test environment.",
+    "    Skipping test because it requires a remote test environment.",
+    "    Skipping test because it requires a remote test environment.",
+    "    Skipping test because it requires a remote test environment.",
+    "    Skipping test because it requires a remote test environment.",
+    "    Skipping test because it requires a remote test environment.",
+    "    Skipping test because it requires a remote test environment.",
+    "    Skipping test because it requires a remote test environment.",
+    "    Skipping test because it requires a remote test environment.",
+    "    Skipping test because it requires a remote test environment.",
+    "    Skipping test because it requires a remote test environment.",
+    "    Skipping test because it requires a remote test environment.",
+    "    Skipping test because it requires a remote test environment.",
+    "    Skipping test because it requires a remote test environment.",
+    "    Skipping test because it requires a remote test environment.",
+    "    Skipping test because it requires a remote test environment.",
+    "    Skipping test because it requires a remote test environment.",
+    "    Skipping test because it requires a remote test environment.",
+    "    Skipping test because it requires a remote test environment.",
+    "    Skipping test because it requires a remote test environment.",
+    "    Skipping test because it requires a remote test environment.",
+    "    2026-11-05T00:24:21.315593Z  WARN codex_core::session: skipping subagent thread analytics: missing inherited client metadata",
+    "    2026-11-05T00:24:21.321054Z  WARN codex_core::session: skipping subagent thread analytics: missing inherited client metadata",
+    "    2026-11-05T00:24:21.333090Z  WARN codex_core::session: skipping subagent thread analytics: missing inherited client metadata",
+    "    2026-11-05T00:24:21.335981Z  WARN codex_core::session: skipping subagent thread analytics: missing inherited client metadata",
+    "    Skipping test because it requires a remote test environment."
+  ],
+  "limits": "Full review content reassembled from all29 original byte-bound parts. Raw per-case contexts and complete fresh XML transfer in progress. Empty XML-derived early-return table does not mean none: original raw skip observations include24 remote-environment notices."
+}

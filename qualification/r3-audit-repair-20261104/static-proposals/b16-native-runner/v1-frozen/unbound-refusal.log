@@ -1,0 +1,11 @@
+Traceback (most recent call last):
+  File "/workspace/scratch/07dd58cc9630/architecture-audit/b16-guarded-native-runner-20261105/b16_runner.py", line 232, in <module>
+    sys.exit(main())
+             ^^^^^^
+  File "/workspace/scratch/07dd58cc9630/architecture-audit/b16-guarded-native-runner-20261105/b16_runner.py", line 117, in main
+    validate_binding(binding, manifest_sha)
+  File "/workspace/scratch/07dd58cc9630/architecture-audit/b16-guarded-native-runner-20261105/b16_guard.py", line 51, in validate_binding
+    need(isinstance(value, str) and len(value) == 40 and all(c in "0123456789abcdef" for c in value),
+  File "/workspace/scratch/07dd58cc9630/architecture-audit/b16-guarded-native-runner-20261105/b16_guard.py", line 14, in need
+    raise RuntimeError(message)
+RuntimeError: explicit reviewed final_A_tree is required; the unbound template cannot run

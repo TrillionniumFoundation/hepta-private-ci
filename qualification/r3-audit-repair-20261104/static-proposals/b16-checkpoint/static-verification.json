@@ -1,0 +1,268 @@
+{
+  "schema": "checkpoint-custody-static-reconstruction.v1",
+  "status": "STATIC_CHECK_AND_EXACT_FIVE_POSTIMAGES_PASS_UNEXECUTED",
+  "phases": [
+    {
+      "patch": "production-custody.patch",
+      "blob": "e5334f2c317dd79221edfcd82529efa52b69a2e7",
+      "bytes": 1880,
+      "sha256": "b6ed8fde7f84f2e02b851fae0f1c7be4762366ea66774c74e5dc7cada5cab8f2",
+      "commands": [
+        {
+          "argv": [
+            "git",
+            "apply",
+            "--whitespace=error-all",
+            "--check",
+            "/workspace/scratch/07dd58cc9630/research-audit/b16-recovery-checkpoint-custody/production-custody.patch"
+          ],
+          "exit_code": 0,
+          "stdout": "",
+          "stderr": ""
+        },
+        {
+          "argv": [
+            "git",
+            "apply",
+            "--whitespace=error-all",
+            "/workspace/scratch/07dd58cc9630/research-audit/b16-recovery-checkpoint-custody/production-custody.patch"
+          ],
+          "exit_code": 0,
+          "stdout": "",
+          "stderr": ""
+        }
+      ],
+      "full_source_map_matches": true,
+      "source_map": {
+        "codex-rs/hepta-memory/Cargo.toml": "048e31020125843c2265a8bc0db256fa504d92af",
+        "codex-rs/state/src/sqlite.rs": "85984c8c0fb1f699ad761de7383f920decad4808",
+        "codex-rs/hepta-memory/src/cognitive_store_recovery.rs": "fe9f45abbb87393994f7e006db0705de164a9380",
+        "codex-rs/hepta-memory/src/cognitive_store_recovery_tests.rs": "20e743f2921ad15399aa6318e6809486daf05f41"
+      }
+    },
+    {
+      "patch": "memory-physical-control.patch",
+      "blob": "5cc2b66cca5c8e598c3f632472faa63163f01a8a",
+      "bytes": 13664,
+      "sha256": "20d8449179281e43717cdda614f2ab588f31a8db56a98a96e1a691c423cfad9f",
+      "commands": [
+        {
+          "argv": [
+            "git",
+            "apply",
+            "--whitespace=error-all",
+            "--check",
+            "/workspace/scratch/07dd58cc9630/research-audit/b16-recovery-checkpoint-custody/memory-physical-control.patch"
+          ],
+          "exit_code": 0,
+          "stdout": "",
+          "stderr": ""
+        },
+        {
+          "argv": [
+            "git",
+            "apply",
+            "--whitespace=error-all",
+            "/workspace/scratch/07dd58cc9630/research-audit/b16-recovery-checkpoint-custody/memory-physical-control.patch"
+          ],
+          "exit_code": 0,
+          "stdout": "",
+          "stderr": ""
+        }
+      ],
+      "full_source_map_matches": true,
+      "source_map": {
+        "codex-rs/hepta-memory/Cargo.toml": "6a6c2ad82f7ffe72db8b6c8703414f9885119bd8",
+        "codex-rs/state/src/sqlite.rs": "85984c8c0fb1f699ad761de7383f920decad4808",
+        "codex-rs/hepta-memory/src/cognitive_store_recovery.rs": "fe9f45abbb87393994f7e006db0705de164a9380",
+        "codex-rs/hepta-memory/src/cognitive_store_recovery_tests.rs": "9b4767fae6cf319fc99b1e12237d57af1a6566a9",
+        "codex-rs/hepta-memory/src/cognitive_store_recovery_custody_tests.rs": "377b8227ff9ae33493467527130092415e2a08e0"
+      }
+    },
+    {
+      "patch": "negative-checkpoint-native-binding.patch",
+      "blob": "46f21a20bbaeb8100ae56ff9f04068e65feeb3f6",
+      "bytes": 612,
+      "sha256": "25a096aedc53c0b76177f9bbce58b6f7a3d26c2383bf319f28f7554cca7fc9eb",
+      "commands": [
+        {
+          "argv": [
+            "git",
+            "apply",
+            "--whitespace=error-all",
+            "--check",
+            "/workspace/scratch/07dd58cc9630/research-audit/b16-recovery-checkpoint-custody/negative-checkpoint-native-binding.patch"
+          ],
+          "exit_code": 0,
+          "stdout": "",
+          "stderr": ""
+        },
+        {
+          "argv": [
+            "git",
+            "apply",
+            "--whitespace=error-all",
+            "/workspace/scratch/07dd58cc9630/research-audit/b16-recovery-checkpoint-custody/negative-checkpoint-native-binding.patch"
+          ],
+          "exit_code": 0,
+          "stdout": "",
+          "stderr": ""
+        }
+      ],
+      "full_source_map_matches": true,
+      "source_map": {
+        "codex-rs/hepta-memory/Cargo.toml": "6a6c2ad82f7ffe72db8b6c8703414f9885119bd8",
+        "codex-rs/state/src/sqlite.rs": "6133170ba4e2a27c05aa32263b2f3fa5c2697d43",
+        "codex-rs/hepta-memory/src/cognitive_store_recovery.rs": "fe9f45abbb87393994f7e006db0705de164a9380",
+        "codex-rs/hepta-memory/src/cognitive_store_recovery_tests.rs": "9b4767fae6cf319fc99b1e12237d57af1a6566a9",
+        "codex-rs/hepta-memory/src/cognitive_store_recovery_custody_tests.rs": "377b8227ff9ae33493467527130092415e2a08e0"
+      }
+    },
+    {
+      "patch": "restore-checkpoint-native-binding.patch",
+      "blob": "4f2a33948557226afa92371eab433431afd70a64",
+      "bytes": 612,
+      "sha256": "905411deac3005b0d0f3d0f1e63e0f4ee3a94f5b86e9f479e8c54bff015c142d",
+      "commands": [
+        {
+          "argv": [
+            "git",
+            "apply",
+            "--whitespace=error-all",
+            "--check",
+            "/workspace/scratch/07dd58cc9630/research-audit/b16-recovery-checkpoint-custody/restore-checkpoint-native-binding.patch"
+          ],
+          "exit_code": 0,
+          "stdout": "",
+          "stderr": ""
+        },
+        {
+          "argv": [
+            "git",
+            "apply",
+            "--whitespace=error-all",
+            "/workspace/scratch/07dd58cc9630/research-audit/b16-recovery-checkpoint-custody/restore-checkpoint-native-binding.patch"
+          ],
+          "exit_code": 0,
+          "stdout": "",
+          "stderr": ""
+        }
+      ],
+      "full_source_map_matches": true,
+      "source_map": {
+        "codex-rs/hepta-memory/Cargo.toml": "6a6c2ad82f7ffe72db8b6c8703414f9885119bd8",
+        "codex-rs/state/src/sqlite.rs": "85984c8c0fb1f699ad761de7383f920decad4808",
+        "codex-rs/hepta-memory/src/cognitive_store_recovery.rs": "fe9f45abbb87393994f7e006db0705de164a9380",
+        "codex-rs/hepta-memory/src/cognitive_store_recovery_tests.rs": "9b4767fae6cf319fc99b1e12237d57af1a6566a9",
+        "codex-rs/hepta-memory/src/cognitive_store_recovery_custody_tests.rs": "377b8227ff9ae33493467527130092415e2a08e0"
+      }
+    }
+  ],
+  "context_hashes": [
+    {
+      "path": "source/codex-rs/hepta-memory/src/cognitive_store_recovery_tests.rs",
+      "blob": "20e743f2921ad15399aa6318e6809486daf05f41",
+      "bytes": 21602,
+      "sha256": "a9b9aa9bb6cabea8ef38998ad5392c7275e9a362a44cf14343511161e06e4c7a"
+    },
+    {
+      "path": "source/codex-rs/hepta-memory/src/cognitive_store_recovery_read_only.rs",
+      "blob": "0e8dd0d0f147ee75baba3a613a28f51d8bdd5cb8",
+      "bytes": 5300,
+      "sha256": "930050a22cf813f23163a78299afbeecb7957e5a80517f0b1c83cff412a0e305"
+    },
+    {
+      "path": "source/codex-rs/hepta-memory/src/cognitive_store_recovery_read_only_tests.rs",
+      "blob": "da72483192728ae45824bd0febe14c86806d2bd8",
+      "bytes": 8390,
+      "sha256": "b2752c6116989c481f9566ffbc6c6f53834bdcb489c30c13771a7cf22a73a93f"
+    },
+    {
+      "path": "source/codex-rs/hepta-memory/src/cognitive_test_support.rs",
+      "blob": "11306805bca685a18758b50c16659a75092e0077",
+      "bytes": 1710,
+      "sha256": "a23027d9f04293a0830ebd76a315f8f8a7a6b4844f072519be1c2d33402cf151"
+    },
+    {
+      "path": "source/codex-rs/hepta-memory/Cargo.toml",
+      "blob": "048e31020125843c2265a8bc0db256fa504d92af",
+      "bytes": 1477,
+      "sha256": "beb9e85b2326099cc2f3542e9fc012a5cf5bf9436caef903c718c98a1fdea373"
+    },
+    {
+      "path": "source/codex-rs/hepta-memory/BUILD.bazel",
+      "blob": "75dda822f4ef6eac1e15366974f722edf5332781",
+      "bytes": 468,
+      "sha256": "854978f8b89813ce1f9ddf45a06adc1f14fe00f2c989b2465e4e3ece73600ed0"
+    },
+    {
+      "path": "source/codex-rs/Cargo.toml",
+      "blob": "4713741651affd053bb8ae5aa8b5d76831c15c0e",
+      "bytes": 22548,
+      "sha256": "5e19cb310c4bcabc082619d64a028358d5d629e26c179fb38a00432be8f54a6a"
+    },
+    {
+      "path": "source/codex-rs/hepta-agentd/src/production_writer_host.rs",
+      "blob": "f881d7c4d20a189d781977da09237f8c82dc4012",
+      "bytes": 24439,
+      "sha256": "9cbf7ebd1be6c93bbee336c56a020861f85e295778683a729aa8eceaddbd1ecb"
+    },
+    {
+      "path": "source/codex-rs/state/src/sqlite_recovery_tests.rs",
+      "blob": "c039a1b56cfbb53ff4d90d0fe1fbd6018f4be370",
+      "bytes": 13637,
+      "sha256": "14d85fca2a4ebf0aee13c9cc0bc4bf3a010c6c286973a383a476d0f7b4045e16"
+    },
+    {
+      "path": "context/libsqlite3_sys_bindgen_bundled_v0_37.rs.txt",
+      "blob": "c892eefa6d15577af6379e39872420b9829903b7",
+      "bytes": 123641,
+      "sha256": "3640b99203cb2c2dfa5797043cf01dc8dcee8cef62c6b88e937e364a8614744b"
+    },
+    {
+      "path": "context/libsqlite3_sys_v0_37_Cargo.toml.txt",
+      "blob": "0c5c19c5985edfd4f5a1b8ac29b6f64dc7d8ef5d",
+      "bytes": 2084,
+      "sha256": "e0f5f73f6a36336b53d0e4321f48e852aa2fff8f8d2e0033025a4bdc6c5625ed"
+    }
+  ],
+  "unchanged_checkpoint_queries_close_and_error_priority": {
+    "blob": "8e25cba2e4b450371710ddc4def6b015117f4562",
+    "bytes": 958,
+    "sha256": "182906ff0180eaaf7fff395484867a8fb74ed8c2fc5e0236990c78f00e855a70"
+  },
+  "original_memory_recovery_test_file_preserved_except_module": {
+    "blob": "20e743f2921ad15399aa6318e6809486daf05f41",
+    "bytes": 21602,
+    "sha256": "a9b9aa9bb6cabea8ef38998ad5392c7275e9a362a44cf14343511161e06e4c7a"
+  },
+  "all_recovery_authority_validation_capture_publish_and_ack_body_preserved": true,
+  "original_recovery_tests": [
+    "exact_current_cut_recovers_writable_generation_and_persists_activation",
+    "graceful_close_retains_store_fence_until_sqlite_connections_finish",
+    "post_rename_publication_failure_is_indeterminate_and_retains_candidate",
+    "writable_recovery_requires_exclusive_store_fence",
+    "predecessor_witness_is_rejected_and_current_witness_recovers",
+    "revoked_owner_profile_and_witness_checks_precede_recovery_admission",
+    "hostile_file_identities_fail_closed_without_additional_mutation",
+    "byte_identical_rename_replacement_can_recover_only_with_current_witness",
+    "recovery_bounds_large_rows_before_loading_payloads_and_rejects_unknown_tables",
+    "corrupt_physical_fts_cannot_obtain_a_witness_or_trigger_recovery_io"
+  ],
+  "original_unix_cold_read_only_tests": [
+    "cold_reopen_reads_canonical_snapshot_without_mutating_source",
+    "cold_recovery_rejects_revision_change_and_forgetting_rollback",
+    "stable_inspection_metadata_cannot_authenticate_changed_content",
+    "crash_reopen_refuses_pending_wal"
+  ],
+  "platform_scope": "Static portable source, no native tests; two of the ten original recovery cases plus all four cold-image cases require Unix. New parent/ignored support are portable source only, uncompiled.",
+  "actions": {
+    "cloud_isolated_patch_check_and_apply": true,
+    "native": false,
+    "compile": false,
+    "formatter": false,
+    "tests": false,
+    "refs_changed": false,
+    "shared_source_changed": false
+  }
+}

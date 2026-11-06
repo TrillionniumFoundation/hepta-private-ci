@@ -1,0 +1,2353 @@
+ts_stale_spawn_generation_before_store_access",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.008",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "production_composition::tests::success_keeps_one_original_writer_and_repeat_assembly_touches_no_inputs",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.360",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "topology_plasticity_host::tests::topology_anchor_store_preserves_fence_and_anchor",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.006",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "state::isolation_tests::missing_local_record_immediately_fences_the_serving_agent",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.007",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "state::isolation_tests::serving_agent_survives_unrelated_registry_corruption",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.008",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "runtime_tasks::tests::shutdown_listener_error_does_not_detach_live_tasks",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.027",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "state::isolation_tests::targeted_read_preserves_lifecycle_and_resource_fences",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.009",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "topology_plasticity_host::tests::topology_real_append_ack_crash_then_registry_rollback_is_rejected_on_restart",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.007",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "runtime_tasks::outcome_tests::timed_out_retirement_aborted_by_shutdown_remains_failed",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.109",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "production_composition::tests::final_metadata_callback_cannot_expire_authority_before_atomic_install",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.650",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "production_composition::objective_control_tests::original_sender_reaches_real_control_admission_history_and_cancellation_once",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.905",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "state::isolation_tests::current_durable_run_start_requires_live_owner_trust",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.173",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "authbus_dispatch::tests::lost_queue_reply_recovers_from_sqlite_using_lookup_only_and_exact_receipt",
+      "classname": "codex-hepta-agentd",
+      "seconds": "1.320",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "production_composition::notes_tests::attached_ack_followed_by_live_refusal_returns_no_identity_and_closes_target",
+      "classname": "codex-hepta-agentd",
+      "seconds": "1.041",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "production_composition::notes_tests::attached_notes_ack_then_checkpoint_refusal_publishes_no_host_and_closes_target",
+      "classname": "codex-hepta-agentd",
+      "seconds": "1.042",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "runtime::tests::runtime_automation_store_failure_stops_only_the_scheduler_plane",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.627",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "automation::service_tests::production_constructor_keeps_retired_timer_absent_after_reopen",
+      "classname": "codex-hepta-agentd",
+      "seconds": "2.046",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "automation::service_tests::production_service_retirement_drains_owner_then_unpublishes_only_automation",
+      "classname": "codex-hepta-agentd",
+      "seconds": "2.048",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "automation::service_tests::unknown_owner_dispatch_prevents_retirement_and_replacement_after_reopen",
+      "classname": "codex-hepta-agentd",
+      "seconds": "2.072",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "notes_channel::tests::lost_retirement_ack_can_retry_the_exact_datagram_and_cannot_send_effects",
+      "classname": "codex-hepta-agentd",
+      "seconds": "2.043",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "production_composition::tests::checkpoint_failures_and_post_ack_live_refusals_never_install_recovered_hosts",
+      "classname": "codex-hepta-agentd",
+      "seconds": "2.197",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "runtime_tasks::retirement_tests::retirement_keeps_observing_unrelated_failures",
+      "classname": "codex-hepta-agentd",
+      "seconds": "2.007",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "runtime::hos2_recovery_tests::notes_tests::notes_recovered_writer_persists_lost_reply_and_retires_without_replay",
+      "classname": "codex-hepta-agentd",
+      "seconds": "2.350",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "runtime_tasks::service_generations::writer_tests::sqlite_writer_rotates_256_times_without_consuming_new_service_identities",
+      "classname": "codex-hepta-agentd",
+      "seconds": "3.720",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "runtime::hos2_recovery_tests::actual_reconciler_asks_original_issuer_for_same_k_d_and_does_not_resend_unknown",
+      "classname": "codex-hepta-agentd",
+      "seconds": "5.405",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "exec_server_defaults_omitted_pipe_stdin_to_closed_stdin",
+      "classname": "codex-exec-server::process",
+      "seconds": "0.064",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "exec_server_starts_process_over_websocket",
+      "classname": "codex-exec-server::process",
+      "seconds": "0.061",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "exec_server_resumes_detached_session_without_killing_processes",
+      "classname": "codex-exec-server::process",
+      "seconds": "0.109",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "exec_server_dedupes_retried_process_write_ids",
+      "classname": "codex-exec-server::process",
+      "seconds": "0.149",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "exec_server_keeps_control_requests_live_during_long_reads_and_queued_requests",
+      "classname": "codex-exec-server::process",
+      "seconds": "0.192",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "exec_server_runs_ordinary_requests_serially_by_default",
+      "classname": "codex-exec-server::process",
+      "seconds": "0.399",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "cognitive_store_unavailable_fails_closed_before_provider",
+      "classname": "codex-hepta-agentd::cognitive_product_e2e",
+      "seconds": "0.038",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "real_agentd_final_use_revalidation_rejects_concurrent_tombstone",
+      "classname": "codex-hepta-agentd::cognitive_product_e2e",
+      "seconds": "0.519",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "unavailable_automation_store_keeps_real_agentd_and_app_server_ready",
+      "classname": "codex-hepta-agentd::cognitive_product_e2e",
+      "seconds": "0.628",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "runtime_automation_store_failure_does_not_end_real_agentd_or_normal_turns",
+      "classname": "codex-hepta-agentd::cognitive_product_e2e",
+      "seconds": "0.706",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "real_agentd_local_memory_review_is_read_only_and_replayable",
+      "classname": "codex-hepta-agentd::cognitive_product_e2e",
+      "seconds": "2.721",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "running_consumer_observes_owner_control_grant_and_revoke_without_restart",
+      "classname": "codex-hepta-agentd::cognitive_product_e2e",
+      "seconds": "2.791",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "five_running_agents_share_only_with_the_explicit_consumer",
+      "classname": "codex-hepta-agentd::cognitive_product_e2e",
+      "seconds": "2.846",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "five_real_agents_survive_one_automation_store_failure_without_peer_stall",
+      "classname": "codex-hepta-agentd::cognitive_product_e2e",
+      "seconds": "2.930",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "real_agentd_local_memory_review_hides_host_tombstone_after_reopen",
+      "classname": "codex-hepta-agentd::cognitive_product_e2e",
+      "seconds": "3.341",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "agentd_calls_authenticated_current_intuition_policy_with_owner_pins",
+      "classname": "codex-hepta-agentd::intuition_policy_product",
+      "seconds": "0.026",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "readiness_reports_exited_child_with_bounded_decoded_output",
+      "classname": "codex-hepta-agentd::fleet_harness_diagnostics",
+      "seconds": "0.037",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "real_agentd_without_explicit_trust_rejects_signed_text",
+      "classname": "codex-hepta-agentd::authbus_text_product",
+      "seconds": "0.548",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "signed_text_crosses_real_queue_once_and_current_trust_rejects_invalid_ingress",
+      "classname": "codex-hepta-agentd::authbus_text_product",
+      "seconds": "2.146",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "signed_recovery_frontier_rejects_valid_older_database_image",
+      "classname": "codex-hepta-agentd::kernel_evidence_product",
+      "seconds": "0.171",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "signed_recovery_frontier_allows_exact_current_database",
+      "classname": "codex-hepta-agentd::kernel_evidence_product",
+      "seconds": "0.522",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "real_agentd_composes_authenticated_evidence_writer_query_verifier_and_terminal_observer",
+      "classname": "codex-hepta-agentd::kernel_evidence_product",
+      "seconds": "0.614",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "already_ready_shutdown_cannot_hide_unobserved_required_failure",
+      "classname": "codex-hepta-agentd::runtime_shutdown_outcomes",
+      "seconds": "0.004",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "normal_host_stop_is_not_permanent_module_retirement",
+      "classname": "codex-hepta-agentd::runtime_shutdown_outcomes",
+      "seconds": "0.004",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "optional_failure_during_shutdown_is_quarantined_exactly_once",
+      "classname": "codex-hepta-agentd::runtime_shutdown_outcomes",
+      "seconds": "0.003",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "optional_shared_fence_during_shutdown_still_stops_the_host",
+      "classname": "codex-hepta-agentd::runtime_shutdown_outcomes",
+      "seconds": "0.005",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "owner_failure_after_cancellation_is_not_a_successful_shutdown",
+      "classname": "codex-hepta-agentd::runtime_shutdown_outcomes",
+      "seconds": "0.004",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "quarantine_rejection_during_shutdown_is_latched",
+      "classname": "codex-hepta-agentd::runtime_shutdown_outcomes",
+      "seconds": "0.004",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "required_panic_during_cleanup_is_not_discarded",
+      "classname": "codex-hepta-agentd::runtime_shutdown_outcomes",
+      "seconds": "0.004",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "forced_abort_never_publishes_retirement_acknowledgement",
+      "classname": "codex-hepta-agentd::runtime_shutdown_outcomes",
+      "seconds": "0.108",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "unfinished_retirement_callback_is_checked_during_final_cleanup",
+      "classname": "codex-hepta-agentd::runtime_shutdown_outcomes",
+      "seconds": "0.108",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "agentd_product_host_recovers_exact_cut_into_fenced_writer_generation",
+      "classname": "codex-hepta-agentd::cognitive_store_product_writer",
+      "seconds": "0.776",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "real_agentd_rejects_redirected_sqlite_and_in_memory_thread_stores",
+      "classname": "codex-hepta-agentd::queue_capacity_product",
+      "seconds": "0.318",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "real_agentd_manifest_capacity_bounds_its_private_app_server_queue",
+      "classname": "codex-hepta-agentd::queue_capacity_product",
+      "seconds": "0.866",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "supervisord_child_entry",
+      "classname": "codex-hepta-agentd::supervisord_product_e2e",
+      "seconds": "0.004",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "five_real_agents_survive_daemon_restart_and_isolate_one_agent_release_changes",
+      "classname": "codex-hepta-agentd::supervisord_product_e2e",
+      "seconds": "4.876",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "supervisor_exec_reconstructs_named_plasticity_owner_from_durable_descriptor",
+      "classname": "codex-hepta-agentd::plasticity_process_e2e",
+      "seconds": "0.420",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "poisoned_request_capture_is_reported_without_counting_a_send",
+      "classname": "codex-hepta-agentd::two_agent_turn_recovery",
+      "seconds": "0.007",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "killed_agent_recovers_same_turn_then_dispatches_queue_once_while_peer_stays_live",
+      "classname": "codex-hepta-agentd::two_agent_turn_recovery",
+      "seconds": "17.135",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "tests::driver_backed_process_can_expose_split_stdout_and_stderr",
+      "classname": "codex-utils-pty",
+      "seconds": "0.003",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "tests::driver_backed_process_can_resize_via_resizer_hook",
+      "classname": "codex-utils-pty",
+      "seconds": "0.003",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "tests::output_collector_waits_for_exit_after_output_closes",
+      "classname": "codex-utils-pty",
+      "seconds": "0.003",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "tests::pipe_drains_stderr_without_stdout_activity",
+      "classname": "codex-utils-pty",
+      "seconds": "0.025",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "tests::pipe_drop_reaps_child",
+      "classname": "codex-utils-pty",
+      "seconds": "0.005",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "tests::pipe_process_can_expose_split_stdout_and_stderr",
+      "classname": "codex-utils-pty",
+      "seconds": "0.005",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "tests::driver_backed_process_drains_output_that_arrives_after_exit_signal",
+      "classname": "codex-utils-pty",
+      "seconds": "0.056",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "tests::pipe_spawn_no_stdin_can_preserve_inherited_fds",
+      "classname": "codex-utils-pty",
+      "seconds": "0.007",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "tests::pipe_and_pty_share_interface",
+      "classname": "codex-utils-pty",
+      "seconds": "0.062",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "tests::pipe_terminate_reaps_child",
+      "classname": "codex-utils-pty",
+      "seconds": "0.006",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "tests::pipe_process_round_trips_stdin",
+      "classname": "codex-utils-pty",
+      "seconds": "0.022",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "tests::pipe_terminate_aborts_detached_readers",
+      "classname": "codex-utils-pty",
+      "seconds": "0.023",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "tests::pty_drop_allows_runtime_shutdown_with_detached_child",
+      "classname": "codex-utils-pty",
+      "seconds": "0.020",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "tests::pty_preserving_fds_drop_allows_runtime_shutdown_with_detached_child",
+      "classname": "codex-utils-pty",
+      "seconds": "0.019",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "tests::pty_preserving_fds_terminate_allows_runtime_shutdown_with_detached_child",
+      "classname": "codex-utils-pty",
+      "seconds": "0.022",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "tests::pty_dropped_output_receiver_keeps_draining_child",
+      "classname": "codex-utils-pty",
+      "seconds": "0.085",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "tests::pty_preserving_inherited_fds_keeps_python_repl_running",
+      "classname": "codex-utils-pty",
+      "seconds": "0.095",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "tests::pty_spawn_with_inherited_fds_reports_exec_failures",
+      "classname": "codex-utils-pty",
+      "seconds": "0.006",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "tests::pty_spawn_can_preserve_inherited_fds",
+      "classname": "codex-utils-pty",
+      "seconds": "0.007",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "tests::pipe_process_detaches_from_parent_session",
+      "classname": "codex-utils-pty",
+      "seconds": "0.208",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "tests::pty_spawn_without_io_driver_returns_error",
+      "classname": "codex-utils-pty",
+      "seconds": "0.004",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "tests::pty_python_repl_emits_output_and_exits",
+      "classname": "codex-utils-pty",
+      "seconds": "0.093",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "tests::pty_spawn_with_inherited_fds_supports_resize",
+      "classname": "codex-utils-pty",
+      "seconds": "0.015",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "tests::pty_terminate_reaps_child_when_waiter_is_queued",
+      "classname": "codex-utils-pty",
+      "seconds": "0.006",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "tests::pty_terminate_allows_runtime_shutdown_with_detached_child",
+      "classname": "codex-utils-pty",
+      "seconds": "0.018",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "tests::pty_terminate_kills_background_children_in_same_process_group",
+      "classname": "codex-utils-pty",
+      "seconds": "0.027",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "tests::pty_close_stdin_preserves_large_input_and_delivers_eof",
+      "classname": "codex-utils-pty",
+      "seconds": "0.261",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "tests::pty_terminate_allows_runtime_shutdown_with_full_output_channel",
+      "classname": "codex-utils-pty",
+      "seconds": "0.099",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "tests::pty_python_repl_readiness_waits_for_execution_after_input_echo",
+      "classname": "codex-utils-pty",
+      "seconds": "0.331",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "clean_agent_recall_replay_training_load_and_source_withdrawal",
+      "classname": "codex-hepta-agentd::terminal_cell_owner",
+      "seconds": "0.282",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "real_owner_decision_outcome_freeze_fit_registry_reload_and_withdrawal",
+      "classname": "codex-hepta-agentd::terminal_cell_owner",
+      "seconds": "0.283",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "context_snapshot::tests::full_text_mode_preserves_unredacted_text",
+      "classname": "core_test_support",
+      "seconds": "0.007",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "context_snapshot::tests::full_text_mode_normalizes_crlf_line_endings",
+      "classname": "core_test_support",
+      "seconds": "0.007",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "context_snapshot::tests::image_only_message_is_rendered_as_non_text_span",
+      "classname": "core_test_support",
+      "seconds": "0.007",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "context_snapshot::tests::mixed_text_and_image_message_keeps_image_span",
+      "classname": "core_test_support",
+      "seconds": "0.006",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "context_snapshot::tests::kind_with_text_prefix_mode_normalizes_crlf_line_endings",
+      "classname": "core_test_support",
+      "seconds": "0.008",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "context_snapshot::tests::redacted_text_mode_keeps_canonical_placeholders",
+      "classname": "core_test_support",
+      "seconds": "0.006",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "context_snapshot::tests::redacted_text_mode_keeps_capability_instruction_placeholders",
+      "classname": "core_test_support",
+      "seconds": "0.007",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "context_snapshot::tests::redacted_text_mode_normalizes_environment_context_with_subagents",
+      "classname": "core_test_support",
+      "seconds": "0.006",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "context_snapshot::tests::redacted_text_mode_normalizes_turn_metadata_dynamic_json_strings",
+      "classname": "core_test_support",
+      "seconds": "0.008",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "context_snapshot::tests::redacted_text_mode_normalizes_system_skill_temp_paths",
+      "classname": "core_test_support",
+      "seconds": "0.009",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "context_snapshot::tests::strip_agents_md_user_context_omits_agents_fragment_from_user_messages",
+      "classname": "core_test_support",
+      "seconds": "0.007",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "context_snapshot::tests::strip_capability_instructions_omits_capability_parts_from_developer_messages",
+      "classname": "core_test_support",
+      "seconds": "0.007",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "responses::tests::call_output_content_and_success_returns_only_single_text_content_item",
+      "classname": "core_test_support",
+      "seconds": "0.008",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "context_snapshot::tests::tools_context_uses_readable_multiline_snapshot_text",
+      "classname": "core_test_support",
+      "seconds": "0.008",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "streaming_sse::tests::malformed_request_returns_400",
+      "classname": "core_test_support",
+      "seconds": "0.007",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "streaming_sse::tests::get_models_returns_empty_list",
+      "classname": "core_test_support",
+      "seconds": "0.013",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "streaming_sse::tests::multiple_responses_are_fifo_and_completion_timestamps_monotonic",
+      "classname": "core_test_support",
+      "seconds": "0.010",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "streaming_sse::tests::none_gate_streams_immediately",
+      "classname": "core_test_support",
+      "seconds": "0.007",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "streaming_sse::tests::parse_request_line_handles_valid_and_invalid",
+      "classname": "core_test_support",
+      "seconds": "0.007",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "streaming_sse::tests::post_responses_streams_in_order_and_closes",
+      "classname": "core_test_support",
+      "seconds": "0.011",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "streaming_sse::tests::read_http_request_returns_after_header_terminator",
+      "classname": "core_test_support",
+      "seconds": "0.008",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "streaming_sse::tests::post_responses_with_no_queue_returns_500",
+      "classname": "core_test_support",
+      "seconds": "0.011",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "streaming_sse::tests::shutdown_terminates_accept_loop",
+      "classname": "core_test_support",
+      "seconds": "0.008",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "streaming_sse::tests::take_next_stream_consumes_in_lockstep",
+      "classname": "core_test_support",
+      "seconds": "0.008",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "streaming_sse::tests::unknown_route_returns_404",
+      "classname": "core_test_support",
+      "seconds": "0.008",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "test_codex::tests::custom_tool_call_output_text_returns_output_text",
+      "classname": "core_test_support",
+      "seconds": "0.007",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "test_codex::tests::custom_tool_call_output_text_panics_when_output_is_missing",
+      "classname": "core_test_support",
+      "seconds": "0.009",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "test_environment::tests::defaults_to_local",
+      "classname": "core_test_support",
+      "seconds": "0.006",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "test_environment::tests::derives_target_operating_system_and_placement",
+      "classname": "core_test_support",
+      "seconds": "0.006",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "test_environment::tests::explicit_docker_accepts_the_legacy_container_value",
+      "classname": "core_test_support",
+      "seconds": "0.007",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "test_environment::tests::explicit_local_ignores_stale_remote_metadata",
+      "classname": "core_test_support",
+      "seconds": "0.006",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "test_environment::tests::parses_each_explicit_environment",
+      "classname": "core_test_support",
+      "seconds": "0.007",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "test_environment::tests::rejects_invalid_or_incomplete_configuration",
+      "classname": "core_test_support",
+      "seconds": "0.006",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "test_environment::tests::treats_the_legacy_remote_value_as_a_docker_container",
+      "classname": "core_test_support",
+      "seconds": "0.006",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "streaming_sse::tests::responses_post_drains_request_body",
+      "classname": "core_test_support",
+      "seconds": "0.041",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "streaming_sse::tests::gated_chunks_wait_for_signal_and_preserve_order",
+      "classname": "core_test_support",
+      "seconds": "0.411",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "runtime_codex_product_caller_commits_one_authorized_terminal_turn",
+      "classname": "codex-hepta-agentd::runtime_codex_product_e2e",
+      "seconds": "0.684",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "forty_first_service_survives_faults_replacement_retirement_and_real_process_restart",
+      "classname": "codex-hepta-agentd::optional_module_restart",
+      "seconds": "0.847",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "two_supervised_real_agentd_processes_are_fault_isolated",
+      "classname": "codex-hepta-agentd::supervised_two_agents",
+      "seconds": "1.216",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "five_real_agentd_processes_roll_one_agent_without_stopping_peers",
+      "classname": "codex-hepta-agentd::five_agent_rolling_upgrade",
+      "seconds": "4.492",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "six_agent_fleet_lifecycle_keeps_peers_fair_and_isolated",
+      "classname": "codex-hepta-agentd::five_agent_rolling_upgrade",
+      "seconds": "4.535",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "forwarder_runs_commands_and_transfers_files",
+      "classname": "codex-exec-server::forward",
+      "seconds": "7.418",
+      "result": "PASS",
+      "failure": ""
+    }
+  ],
+  "counts": {
+    "PASS": 5404,
+    "FAIL": 12
+  },
+  "selected_catalog_count": 5416,
+  "existing_ignored_catalog_count": 19,
+  "existing_unmatched_catalog_count": 0,
+  "exact_executed_roster": true,
+  "missing_roster": [],
+  "unexpected_roster": [],
+  "unexpected_skips": [],
+  "known_missing_prerequisite_early_returns": [],
+  "all_skip_observations": [
+    "    Skipping test because it requires a remote test environment.",
+    "    Skipping test because it requires a remote test environment.",
+    "    Skipping test because it requires a remote test environment.",
+    "    Skipping test because it requires a remote test environment.",
+    "    Skipping test because it requires a remote test environment.",
+    "    Skipping test because it requires a remote test environment.",
+    "    Skipping test because it requires a remote test environment.",
+    "    Skipping test because it requires a remote test environment.",
+    "    Skipping test because it requires a remote test environment.",
+    "    Skipping test because it requires a remote test environment.",
+    "    Skipping test because it requires a remote test environment.",
+    "    Skipping test because it requires a remote test environment.",
+    "    Skipping test because it requires a remote test environment.",
+    "    Skipping test because it requires a remote test environment.",
+    "    Skipping test because it requires a remote test environment.",
+    "    Skipping test because it requires a remote test environment.",
+    "    Skipping test because it requires a remote test environment.",
+    "    Skipping test because it requires a remote test environment.",
+    "    Skipping test because it requires a remote test environment.",
+    "    Skipping test because it requires a remote test environment.",
+    "    Skipping test because it requires a remote test environment.",
+    "    Skipping test because it requires a remote test environment.",
+    "    Skipping test because it requires a remote test environment.",
+    "    2026-11-04T22:46:40.789037Z  WARN codex_core::session: skipping subagent thread analytics: missing inherited client metadata",
+    "    2026-11-04T22:46:40.793366Z  WARN codex_core::session: skipping subagent thread analytics: missing inherited client metadata",
+    "    2026-11-04T22:46:40.792452Z  WARN codex_core::session: skipping subagent thread analytics: missing inherited client metadata",
+    "    2026-11-04T22:46:40.794443Z  WARN codex_core::session: skipping subagent thread analytics: missing inherited client metadata",
+    "    Skipping test because it requires a remote test environment."
+  ],
+  "binary_before": [
+    {
+      "binary_id": "codex-apply-patch",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/codex_apply_patch-d4dcee4a2750355f",
+      "bytes": 33198288,
+      "sha256": "e7ef8dfe924274bf0fcf2179f7bc83dd5314a80cad5eb7753c245ceb15b54640"
+    },
+    {
+      "binary_id": "codex-apply-patch::all",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/all-e840b69b9eeac839",
+      "bytes": 31928808,
+      "sha256": "c4513370c278aba938b7b7edd908fedb4a84f8110afad052fd66001b60b6e469"
+    },
+    {
+      "binary_id": "codex-cli",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/codex_cli-eeacd51710c1ed25",
+      "bytes": 98598832,
+      "sha256": "7dfb2c8e96db009fd1459987664bc2e387e9366088ab09e10a86ab09ba05b3c1"
+    },
+    {
+      "binary_id": "codex-cli::app_server",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/app_server-d793911087817118",
+      "bytes": 43030656,
+      "sha256": "aa0137dac509469b663d662a0a4dfea262fd4851af2d74762bdd99c24cf76cb4"
+    },
+    {
+      "binary_id": "codex-cli::debug_clear_memories",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/debug_clear_memories-ee4a6c3ca3c11849",
+      "bytes": 29107808,
+      "sha256": "37f1ffdcc8638f5a6458068f755d5a4f049de7a5b5cf537d44a18a1b6bf36377"
+    },
+    {
+      "binary_id": "codex-cli::debug_models",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/debug_models-bccbd2099ba86c3b",
+      "bytes": 1750472,
+      "sha256": "9b0597f20f4e5590c78237d999ef20eb3f16892a46a0e2b579f714412a874557"
+    },
+    {
+      "binary_id": "codex-cli::delete",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/delete-15f138a3c271d922",
+      "bytes": 1635672,
+      "sha256": "2e28142b28bdd462d293cbcdb800c87e13cde59ce6facd18c4218228f228acf4"
+    },
+    {
+      "binary_id": "codex-cli::doctor_enterprise_network",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/doctor_enterprise_network-1aecfbc9f0922992",
+      "bytes": 6419576,
+      "sha256": "6c0eae1a23368edb93ddcaf1636cb7e6fca0c7ab2568285a4300638053276026"
+    },
+    {
+      "binary_id": "codex-cli::exec_server",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/exec_server-482337c579e61307",
+      "bytes": 42782216,
+      "sha256": "fd7f92886f0cd705b5a2823c1ff9e5cb6c255dffd7e12b386268d549cb6fc4d0"
+    },
+    {
+      "binary_id": "codex-cli::execpolicy",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/execpolicy-23dad1c5f6ddb5c8",
+      "bytes": 1897912,
+      "sha256": "3976891a65e0589da8a842c1d4187deac44cf07736ac87c9e1cfacca525fca20"
+    },
+    {
+      "binary_id": "codex-cli::features",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/features-73306539f958a0bb",
+      "bytes": 80573024,
+      "sha256": "a2181a3d8e912095ff00676b59275951b4ba007e813d6a3166c4683cc512c064"
+    },
+    {
+      "binary_id": "codex-cli::login",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/login-fd60f0998d6ed1b3",
+      "bytes": 51633744,
+      "sha256": "aa85466633407a364b0bac6b9e3d9264b82ba5bfe76253a50c4f7b809f85d9af"
+    },
+    {
+      "binary_id": "codex-cli::marketplace_add",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/marketplace_add-bfdb8e7d80432f96",
+      "bytes": 31619336,
+      "sha256": "b9bc4ec4c835c688cc29e9c0be3d12e5a80a86f2214d7dbc05d9c9697e68e833"
+    },
+    {
+      "binary_id": "codex-cli::marketplace_remove",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/marketplace_remove-1f2eb2af3294aa48",
+      "bytes": 31705064,
+      "sha256": "fbdc885afe13c84a082b95848a879a1a1cc1ab80a5c7dfa880f0f19f6e9ad256"
+    },
+    {
+      "binary_id": "codex-cli::marketplace_upgrade",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/marketplace_upgrade-a1163d1e154c5870",
+      "bytes": 3021576,
+      "sha256": "6b8708efbe6202d3c1efd17d7ad5c7558804f53a54484cf510fd925883b94595"
+    },
+    {
+      "binary_id": "codex-cli::mcp_add_remove",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/mcp_add_remove-19a31e027405f553",
+      "bytes": 70413264,
+      "sha256": "ae8230d1b865701db7afe78197ec42bc62555713325b3f5a8a457870d4e5addd"
+    },
+    {
+      "binary_id": "codex-cli::mcp_cloud_config",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/mcp_cloud_config-8d94c21f7743b8db",
+      "bytes": 80611248,
+      "sha256": "fefeb403097ad03511918d3647bcebdd00f74fd401e586f1e16797b4dbcba124"
+    },
+    {
+      "binary_id": "codex-cli::mcp_list",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/mcp_list-71050001ace9b3cd",
+      "bytes": 71270096,
+      "sha256": "9dd2124c1cb5cb50cb7a8eac120d5a3c96605525df441a1a156baa2b5694b439"
+    },
+    {
+      "binary_id": "codex-cli::plugin_cli",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/plugin_cli-f224dbc6749b3755",
+      "bytes": 27494104,
+      "sha256": "764dd95dc033238797bf07cf2c985d539ab4012e9bb81ceb1b329a9097319de7"
+    },
+    {
+      "binary_id": "codex-cli::queue",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/queue-48b7ed7623016f07",
+      "bytes": 37188416,
+      "sha256": "7d54fe76e42c0b818c6c07286d6af5c290da87513ccca187b2b2a658b2409429"
+    },
+    {
+      "binary_id": "codex-cli::sandbox_cloud_config",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/sandbox_cloud_config-36b2800407e9e0d1",
+      "bytes": 80306560,
+      "sha256": "77de50c80b6dac54314c688ce9b4a46324b95b16a9494adc77097d8bd5124cf5"
+    },
+    {
+      "binary_id": "codex-cli::sandbox_network_proxy",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/sandbox_network_proxy-5d6751d9e4490e52",
+      "bytes": 1262408,
+      "sha256": "4fda2bacea6dad34cad09a2fea21bbbfbdbeef4290f00c0392970cc66827f6e1"
+    },
+    {
+      "binary_id": "codex-cli::update",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/update-8778a13db0250294",
+      "bytes": 2497304,
+      "sha256": "431fb18dec9ddac79ef59a407b39d6da94ad3040eceb94deff56b42670adb193"
+    },
+    {
+      "binary_id": "codex-cli::bin/codex",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/codex-2774e4caf7b5fc80",
+      "bytes": 117856760,
+      "sha256": "39cbc07a4f78dfc62a28601eb5c7df6cf1db37bde3c47e14a781741b9efc02d6"
+    },
+    {
+      "binary_id": "codex-cli::bin/hepta",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/hepta-8be90a5aa8a36802",
+      "bytes": 117856888,
+      "sha256": "19f0720ad5ef5273525425af3c9fa457cc1e6786b73e807d966b53a6ba63605f"
+    },
+    {
+      "binary_id": "codex-cli::bin/logs_client",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/logs_client-4495938adb3dae37",
+      "bytes": 72744304,
+      "sha256": "5dc02e933c9b5232d47c209d4b0a8a64a8fc6526f8596eb84e55b7a566c35812"
+    },
+    {
+      "binary_id": "codex-core",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/codex_core-3dec403ac3aab761",
+      "bytes": 308563760,
+      "sha256": "d5045d1708d406715060336cb8771df227f52fd7cbac0e1ec95bcc612adee630"
+    },
+    {
+      "binary_id": "codex-core::all",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/all-1345d2bd9be9e06a",
+      "bytes": 284113808,
+      "sha256": "4f576bf605b4e632234575a39fc97bc90c8bca4e5015f066768ddd54f9566e84"
+    },
+    {
+      "binary_id": "codex-core::responses_headers",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/responses_headers-87f21db6090e23d7",
+      "bytes": 231194064,
+      "sha256": "2d83701fd7a2266a2b16f0c581beff081a2c29136a0e50b206ee1172e54a5529"
+    },
+    {
+      "binary_id": "codex-exec-server",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/codex_exec_server-bf13ec590e8a0dc4",
+      "bytes": 101207920,
+      "sha256": "bdd5e0858944a636c3a85cb9ee535d17d062aad3166bf0e97f42d643e14c4527"
+    },
+    {
+      "binary_id": "codex-exec-server::accepted_websocket",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/accepted_websocket-0bdbe9aaa7140c8f",
+      "bytes": 45533528,
+      "sha256": "fb985512d7c10476f9d2d60cdde99ed08f1a20f3ac7a30422d96ca882f56f189"
+    },
+    {
+      "binary_id": "codex-exec-server::authorized_read_rpc",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/authorized_read_rpc-56e30d800965a9cf",
+      "bytes": 88666384,
+      "sha256": "899935095ab78137bf3f082ebc0f8925b4f32235e789a668c45292e9a55c011b"
+    },
+    {
+      "binary_id": "codex-exec-server::capability_discovery",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/capability_discovery-bca6a38e649686d6",
+      "bytes": 86443696,
+      "sha256": "d0fe5c47a7051ea8de80bc554eadcd5731a4eef736f7e1364fe23915ce18fe57"
+    },
+    {
+      "binary_id": "codex-exec-server::chatgpt_cloudflare_affinity",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/chatgpt_cloudflare_affinity-52ae6148641dcb43",
+      "bytes": 86295424,
+      "sha256": "d1541e6f714e44ace1f35192256cb933d82c1298d7e0ca33e6effdcb9f7a8454"
+    },
+    {
+      "binary_id": "codex-exec-server::deferred_environment",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/deferred_environment-a5dad61172373a6d",
+      "bytes": 41015256,
+      "sha256": "827eeb7604da13da2cdf104c3b49c7222f1fdb921ef92fd903508d37375d25a2"
+    },
+    {
+      "binary_id": "codex-exec-server::environment",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/environment-0b48047e0b015ab0",
+      "bytes": 92688304,
+      "sha256": "309ccb8fe20c874bd6956ff11906689f5db8f192404e1cec41a5e167c8143524"
+    },
+    {
+      "binary_id": "codex-exec-server::environment_config",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/environment_config-c2075751d25bb1b6",
+      "bytes": 90925520,
+      "sha256": "6b04aeb7a90bbfd1c25243bbba85c7f8396e9fc7d0a7cd8ca414695606e7f5df"
+    },
+    {
+      "binary_id": "codex-exec-server::exec_process",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/exec_process-5dd59dc85852de58",
+      "bytes": 91869344,
+      "sha256": "8b38554f662d4350b1fc3d21746c22f482628498ddec5ac8c59cc30aec5c63be"
+    },
+    {
+      "binary_id": "codex-exec-server::file_stream",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/file_stream-d0939a0f1d53255e",
+      "bytes": 90888512,
+      "sha256": "67951c01d02761a5bc0ebb45d65d676e650c2e6f90e6ab07a4882cd4c86a46bf"
+    },
+    {
+      "binary_id": "codex-exec-server::file_system_unix",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/file_system_unix-73f944ec2ad16184",
+      "bytes": 91815936,
+      "sha256": "d32c4b325d0575fbd60b439fd8870ec3cc8678a70c6d773df93b013741dbf3d2"
+    },
+    {
+      "binary_id": "codex-exec-server::forward",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/forward-0e9ccd55ddaecd8f",
+      "bytes": 91418896,
+      "sha256": "387264dcc4d945663cc8e30898ee8fc46ef477cb3a925c020a52617d170d7b18"
+    },
+    {
+      "binary_id": "codex-exec-server::health",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/health-8e09482d4380bef8",
+      "bytes": 90908144,
+      "sha256": "683da5168b92f8cd55723f2ee0c763564d740987d1ede364ff5e25614f9fe1d5"
+    },
+    {
+      "binary_id": "codex-exec-server::http_client",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/http_client-a17dbe915f0064e5",
+      "bytes": 40075352,
+      "sha256": "3fb9475497a9d846b30e7918d3d63775ededb2e081eb5bb08c8a045ffb7faeef"
+    },
+    {
+      "binary_id": "codex-exec-server::http_request",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/http_request-80ab48aae1586d58",
+      "bytes": 86584320,
+      "sha256": "ed27be1621ed8b22f0a5e56c11853908aec932baf2958fd2b0ba5afe532f498b"
+    },
+    {
+      "binary_id": "codex-exec-server::http_request_logging",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/http_request_logging-f4f2d6ddd54402ab",
+      "bytes": 40004848,
+      "sha256": "61ed8c30a0302b4b2e239de24d3e0fb0d7d4ec4ff9166ff5f634d38bfa813f35"
+    },
+    {
+      "binary_id": "codex-exec-server::initialize",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/initialize-31757d4183ea03f5",
+      "bytes": 86159824,
+      "sha256": "09d7e38bbe9e1c6da0c83bd94b0b5ec701f6db420ba5542a7d25f3e15400a68e"
+    },
+    {
+      "binary_id": "codex-exec-server::process",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/process-9a6b1ec6f05c892c",
+      "bytes": 86474320,
+      "sha256": "747a31ea2e872958089a250d5c54c85a1bce8ab23e12df89e47f998f93261a7e"
+    },
+    {
+      "binary_id": "codex-exec-server::relay",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/relay-b3ad0a399f2e599a",
+      "bytes": 93778240,
+      "sha256": "66634a55c677c92d65a45b8d0845e477f82a6b68213699e615785bcb9e006493"
+    },
+    {
+      "binary_id": "codex-exec-server::selected_capability_roots",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/selected_capability_roots-0f1cccf280644aec",
+      "bytes": 90925104,
+      "sha256": "7b485783a1547ffa4ed100e0ec38c72fc5fd09989c39d135e970bbda0e1dfdc1"
+    },
+    {
+      "binary_id": "codex-exec-server::websocket",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/websocket-5d2b0b44df708e83",
+      "bytes": 86160336,
+      "sha256": "b2b74c6147e765d6102bda6613b2a0793b9c0079ac120a5fc14c213393adbf1c"
+    },
+    {
+      "binary_id": "codex-hepta-agentd",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/codex_hepta_agentd-41647a392e8fb46f",
+      "bytes": 101033960,
+      "sha256": "61a32f3146de43bec31b6ee9a82ccc55ded3d17b66814b9697ab694ccb9fedd7"
+    },
+    {
+      "binary_id": "codex-hepta-agentd::authbus_text_product",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/authbus_text_product-ec87ba354e565c72",
+      "bytes": 76915808,
+      "sha256": "f51db67d5c9c5717ee5cd7e47861c23fe5499d77261112814f688acfc2e4cded"
+    },
+    {
+      "binary_id": "codex-hepta-agentd::cognitive_product_e2e",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/cognitive_product_e2e-9ae24615f801c8a1",
+      "bytes": 79238720,
+      "sha256": "a8ceea752daa1e6f185a31f9c69ac0e92d5d9d591aeccb33ad7fffd55d52310e"
+    },
+    {
+      "binary_id": "codex-hepta-agentd::cognitive_store_product_writer",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/cognitive_store_product_writer-9c52fad82b36d1a9",
+      "bytes": 44691720,
+      "sha256": "f2014bd9aa96f6479cbaf7e2c9a8d69865e0f7f3c2eaabcf1b1a07c2210891d8"
+    },
+    {
+      "binary_id": "codex-hepta-agentd::five_agent_rolling_upgrade",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/five_agent_rolling_upgrade-ef5a745c9ff97375",
+      "bytes": 72741088,
+      "sha256": "11a36a2f49a6761ac7e0ca4e1248329d8a29a5ed2b38370b6fdceb75965a1fa3"
+    },
+    {
+      "binary_id": "codex-hepta-agentd::fleet_harness_diagnostics",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/fleet_harness_diagnostics-e3cddfbc3dd731dc",
+      "bytes": 41873360,
+      "sha256": "f0c0d3d17b98247b5e79b496cfdc8e446502d019d94c31a3294502f83650aec5"
+    },
+    {
+      "binary_id": "codex-hepta-agentd::intuition_policy_product",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/intuition_policy_product-8365f275d595ebc7",
+      "bytes": 35106240,
+      "sha256": "65046483233e48e7c409051ff6d64e7e5428a13d77c9edada7546abce6decc18"
+    },
+    {
+      "binary_id": "codex-hepta-agentd::kernel_evidence_product",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/kernel_evidence_product-16b7402cfdc0ef57",
+      "bytes": 59637840,
+      "sha256": "413d76abdcb1e0fd44597af55a7a3d449cfe0c1a573c41bd8f795246c7d15e21"
+    },
+    {
+      "binary_id": "codex-hepta-agentd::optional_module_restart",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/optional_module_restart-22348ccca27d9499",
+      "bytes": 42205352,
+      "sha256": "7be633aada5f4ccce4e106e9748bede13ee7337d5a4e81465b62bbafae3fa797"
+    },
+    {
+      "binary_id": "codex-hepta-agentd::plasticity_process_e2e",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/plasticity_process_e2e-03965cf05c700a5b",
+      "bytes": 43894008,
+      "sha256": "4492a3008ba5dcc39fca0e5ea0f6f2daad8b6215fb68bb4848fdc769af7f8f84"
+    },
+    {
+      "binary_id": "codex-hepta-agentd::queue_capacity_product",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/queue_capacity_product-d089c082067af006",
+      "bytes": 71787696,
+      "sha256": "eb61692af26e4081643a1dfb65b17587dd5ae2992fdc9b38501a90f7f2fe869d"
+    },
+    {
+      "binary_id": "codex-hepta-agentd::runtime_codex_product_e2e",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/runtime_codex_product_e2e-6eee10bbfdacb931",
+      "bytes": 73983152,
+      "sha256": "f39696d0a002cbfd085160bbe0cc1f11d668bfc18577676c283e28589296e1e6"
+    },
+    {
+      "binary_id": "codex-hepta-agentd::runtime_shutdown_outcomes",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/runtime_shutdown_outcomes-e4adf62d0945ccf6",
+      "bytes": 36119696,
+      "sha256": "9fa8923825d1811f19a1561c6cf4f2fcb7e09fcd5786092183349c00c4748f03"
+    },
+    {
+      "binary_id": "codex-hepta-agentd::supervised_two_agents",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/supervised_two_agents-a969554ac18097ac",
+      "bytes": 66558248,
+      "sha256": "57ad494cb317bffd082ba6d49d9c464acb546f8d5e83c9d9916730249eac1a4d"
+    },
+    {
+      "binary_id": "codex-hepta-agentd::supervisord_product_e2e",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/supervisord_product_e2e-a206405b8e456b7d",
+      "bytes": 56606544,
+      "sha256": "c239d09e774fd5077abcc9018928de26ffaa85226967dbbc09219226a6d68bf2"
+    },
+    {
+      "binary_id": "codex-hepta-agentd::terminal_cell_owner",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/terminal_cell_owner-171aacf8225fe677",
+      "bytes": 43942832,
+      "sha256": "1cb66dce0f7d7649c50050e6d0f262068b2de12c8485058dcc404459753871e6"
+    },
+    {
+      "binary_id": "codex-hepta-agentd::two_agent_turn_recovery",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/two_agent_turn_recovery-e3bfc7c82793bcef",
+      "bytes": 72231312,
+      "sha256": "f9210d6f2736eaa2b095651d0d75a9cca49b99f1a8107f8b1fb71f93fb247a3e"
+    },
+    {
+      "binary_id": "codex-utils-pty",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/codex_utils_pty-e3b68e979f6e961a",
+      "bytes": 4489336,
+      "sha256": "02a3e39441ac163bc9da0413d5c160b8f18a7c991bca2e5ec44bd0842ee1e358"
+    },
+    {
+      "binary_id": "core_test_support",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/core_test_support-66fe2cad6f23b100",
+      "bytes": 55482992,
+      "sha256": "5ed2745e43d4688883eced31b4f57cee00aa54f4f52895fa6398e9f63d04205e"
+    }
+  ],
+  "binary_after": [
+    {
+      "binary_id": "codex-apply-patch",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/codex_apply_patch-d4dcee4a2750355f",
+      "bytes": 33198288,
+      "sha256": "e7ef8dfe924274bf0fcf2179f7bc83dd5314a80cad5eb7753c245ceb15b54640"
+    },
+    {
+      "binary_id": "codex-apply-patch::all",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/all-e840b69b9eeac839",
+      "bytes": 31928808,
+      "sha256": "c4513370c278aba938b7b7edd908fedb4a84f8110afad052fd66001b60b6e469"
+    },
+    {
+      "binary_id": "codex-cli",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/codex_cli-eeacd51710c1ed25",
+      "bytes": 98598832,
+      "sha256": "7dfb2c8e96db009fd1459987664bc2e387e9366088ab09e10a86ab09ba05b3c1"
+    },
+    {
+      "binary_id": "codex-cli::app_server",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/app_server-d793911087817118",
+      "bytes": 43030656,
+      "sha256": "aa0137dac509469b663d662a0a4dfea262fd4851af2d74762bdd99c24cf76cb4"
+    },
+    {
+      "binary_id": "codex-cli::debug_clear_memories",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/debug_clear_memories-ee4a6c3ca3c11849",
+      "bytes": 29107808,
+      "sha256": "37f1ffdcc8638f5a6458068f755d5a4f049de7a5b5cf537d44a18a1b6bf36377"
+    },
+    {
+      "binary_id": "codex-cli::debug_models",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/debug_models-bccbd2099ba86c3b",
+      "bytes": 1750472,
+      "sha256": "9b0597f20f4e5590c78237d999ef20eb3f16892a46a0e2b579f714412a874557"
+    },
+    {
+      "binary_id": "codex-cli::delete",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/delete-15f138a3c271d922",
+      "bytes": 1635672,
+      "sha256": "2e28142b28bdd462d293cbcdb800c87e13cde59ce6facd18c4218228f228acf4"
+    },
+    {
+      "binary_id": "codex-cli::doctor_enterprise_network",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/doctor_enterprise_network-1aecfbc9f0922992",
+      "bytes": 6419576,
+      "sha256": "6c0eae1a23368edb93ddcaf1636cb7e6fca0c7ab2568285a4300638053276026"
+    },
+    {
+      "binary_id": "codex-cli::exec_server",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/exec_server-482337c579e61307",
+      "bytes": 42782216,
+      "sha256": "fd7f92886f0cd705b5a2823c1ff9e5cb6c255dffd7e12b386268d549cb6fc4d0"
+    },
+    {
+      "binary_id": "codex-cli::execpolicy",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/execpolicy-23dad1c5f6ddb5c8",
+      "bytes": 1897912,
+      "sha256": "3976891a65e0589da8a842c1d4187deac44cf07736ac87c9e1cfacca525fca20"
+    },
+    {
+      "binary_id": "codex-cli::features",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/features-73306539f958a0bb",
+      "bytes": 80573024,
+      "sha256": "a2181a3d8e912095ff00676b59275951b4ba007e813d6a3166c4683cc512c064"
+    },
+    {
+      "binary_id": "codex-cli::login",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/login-fd60f0998d6ed1b3",
+      "bytes": 51633744,
+      "sha256": "aa85466633407a364b0bac6b9e3d9264b82ba5bfe76253a50c4f7b809f85d9af"
+    },
+    {
+      "binary_id": "codex-cli::marketplace_add",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/marketplace_add-bfdb8e7d80432f96",
+      "bytes": 31619336,
+      "sha256": "b9bc4ec4c835c688cc29e9c0be3d12e5a80a86f2214d7dbc05d9c9697e68e833"
+    },
+    {
+      "binary_id": "codex-cli::marketplace_remove",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/marketplace_remove-1f2eb2af3294aa48",
+      "bytes": 31705064,
+      "sha256": "fbdc885afe13c84a082b95848a879a1a1cc1ab80a5c7dfa880f0f19f6e9ad256"
+    },
+    {
+      "binary_id": "codex-cli::marketplace_upgrade",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/marketplace_upgrade-a1163d1e154c5870",
+      "bytes": 3021576,
+      "sha256": "6b8708efbe6202d3c1efd17d7ad5c7558804f53a54484cf510fd925883b94595"
+    },
+    {
+      "binary_id": "codex-cli::mcp_add_remove",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/mcp_add_remove-19a31e027405f553",
+      "bytes": 70413264,
+      "sha256": "ae8230d1b865701db7afe78197ec42bc62555713325b3f5a8a457870d4e5addd"
+    },
+    {
+      "binary_id": "codex-cli::mcp_cloud_config",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/mcp_cloud_config-8d94c21f7743b8db",
+      "bytes": 80611248,
+      "sha256": "fefeb403097ad03511918d3647bcebdd00f74fd401e586f1e16797b4dbcba124"
+    },
+    {
+      "binary_id": "codex-cli::mcp_list",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/mcp_list-71050001ace9b3cd",
+      "bytes": 71270096,
+      "sha256": "9dd2124c1cb5cb50cb7a8eac120d5a3c96605525df441a1a156baa2b5694b439"
+    },
+    {
+      "binary_id": "codex-cli::plugin_cli",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/plugin_cli-f224dbc6749b3755",
+      "bytes": 27494104,
+      "sha256": "764dd95dc033238797bf07cf2c985d539ab4012e9bb81ceb1b329a9097319de7"
+    },
+    {
+      "binary_id": "codex-cli::queue",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/queue-48b7ed7623016f07",
+      "bytes": 37188416,
+      "sha256": "7d54fe76e42c0b818c6c07286d6af5c290da87513ccca187b2b2a658b2409429"
+    },
+    {
+      "binary_id": "codex-cli::sandbox_cloud_config",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/sandbox_cloud_config-36b2800407e9e0d1",
+      "bytes": 80306560,
+      "sha256": "77de50c80b6dac54314c688ce9b4a46324b95b16a9494adc77097d8bd5124cf5"
+    },
+    {
+      "binary_id": "codex-cli::sandbox_network_proxy",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/sandbox_network_proxy-5d6751d9e4490e52",
+      "bytes": 1262408,
+      "sha256": "4fda2bacea6dad34cad09a2fea21bbbfbdbeef4290f00c0392970cc66827f6e1"
+    },
+    {
+      "binary_id": "codex-cli::update",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/update-8778a13db0250294",
+      "bytes": 2497304,
+      "sha256": "431fb18dec9ddac79ef59a407b39d6da94ad3040eceb94deff56b42670adb193"
+    },
+    {
+      "binary_id": "codex-cli::bin/codex",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/codex-2774e4caf7b5fc80",
+      "bytes": 117856760,
+      "sha256": "39cbc07a4f78dfc62a28601eb5c7df6cf1db37bde3c47e14a781741b9efc02d6"
+    },
+    {
+      "binary_id": "codex-cli::bin/hepta",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/hepta-8be90a5aa8a36802",
+      "bytes": 117856888,
+      "sha256": "19f0720ad5ef5273525425af3c9fa457cc1e6786b73e807d966b53a6ba63605f"
+    },
+    {
+      "binary_id": "codex-cli::bin/logs_client",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/logs_client-4495938adb3dae37",
+      "bytes": 72744304,
+      "sha256": "5dc02e933c9b5232d47c209d4b0a8a64a8fc6526f8596eb84e55b7a566c35812"
+    },
+    {
+      "binary_id": "codex-core",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/codex_core-3dec403ac3aab761",
+      "bytes": 308563760,
+      "sha256": "d5045d1708d406715060336cb8771df227f52fd7cbac0e1ec95bcc612adee630"
+    },
+    {
+      "binary_id": "codex-core::all",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/all-1345d2bd9be9e06a",
+      "bytes": 284113808,
+      "sha256": "4f576bf605b4e632234575a39fc97bc90c8bca4e5015f066768ddd54f9566e84"
+    },
+    {
+      "binary_id": "codex-core::responses_headers",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/responses_headers-87f21db6090e23d7",
+      "bytes": 231194064,
+      "sha256": "2d83701fd7a2266a2b16f0c581beff081a2c29136a0e50b206ee1172e54a5529"
+    },
+    {
+      "binary_id": "codex-exec-server",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/codex_exec_server-bf13ec590e8a0dc4",
+      "bytes": 101207920,
+      "sha256": "bdd5e0858944a636c3a85cb9ee535d17d062aad3166bf0e97f42d643e14c4527"
+    },
+    {
+      "binary_id": "codex-exec-server::accepted_websocket",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/accepted_websocket-0bdbe9aaa7140c8f",
+      "bytes": 45533528,
+      "sha256": "fb985512d7c10476f9d2d60cdde99ed08f1a20f3ac7a30422d96ca882f56f189"
+    },
+    {
+      "binary_id": "codex-exec-server::authorized_read_rpc",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/authorized_read_rpc-56e30d800965a9cf",
+      "bytes": 88666384,
+      "sha256": "899935095ab78137bf3f082ebc0f8925b4f32235e789a668c45292e9a55c011b"
+    },
+    {
+      "binary_id": "codex-exec-server::capability_discovery",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/capability_discovery-bca6a38e649686d6",
+      "bytes": 86443696,
+      "sha256": "d0fe5c47a7051ea8de80bc554eadcd5731a4eef736f7e1364fe23915ce18fe57"
+    },
+    {
+      "binary_id": "codex-exec-server::chatgpt_cloudflare_affinity",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/chatgpt_cloudflare_affinity-52ae6148641dcb43",
+      "bytes": 86295424,
+      "sha256": "d1541e6f714e44ace1f35192256cb933d82c1298d7e0ca33e6effdcb9f7a8454"
+    },
+    {
+      "binary_id": "codex-exec-server::deferred_environment",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/deferred_environment-a5dad61172373a6d",
+      "bytes": 41015256,
+      "sha256": "827eeb7604da13da2cdf104c3b49c7222f1fdb921ef92fd903508d37375d25a2"
+    },
+    {
+      "binary_id": "codex-exec-server::environment",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/environment-0b48047e0b015ab0",
+      "bytes": 92688304,
+      "sha256": "309ccb8fe20c874bd6956ff11906689f5db8f192404e1cec41a5e167c8143524"
+    },
+    {
+      "binary_id": "codex-exec-server::environment_config",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/environment_config-c2075751d25bb1b6",
+      "bytes": 90925520,
+      "sha256": "6b04aeb7a90bbfd1c25243bbba85c7f8396e9fc7d0a7cd8ca414695606e7f5df"
+    },
+    {
+      "binary_id": "codex-exec-server::exec_process",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/exec_process-5dd59dc85852de58",
+      "bytes": 91869344,
+      "sha256": "8b38554f662d4350b1fc3d21746c22f482628498ddec5ac8c59cc30aec5c63be"
+    },
+    {
+      "binary_id": "codex-exec-server::file_stream",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/file_stream-d0939a0f1d53255e",
+      "bytes": 90888512,
+      "sha256": "67951c01d02761a5bc0ebb45d65d676e650c2e6f90e6ab07a4882cd4c86a46bf"
+    },
+    {
+      "binary_id": "codex-exec-server::file_system_unix",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/file_system_unix-73f944ec2ad16184",
+      "bytes": 91815936,
+      "sha256": "d32c4b325d0575fbd60b439fd8870ec3cc8678a70c6d773df93b013741dbf3d2"
+    },
+    {
+      "binary_id": "codex-exec-server::forward",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/forward-0e9ccd55ddaecd8f",
+      "bytes": 91418896,
+      "sha256": "387264dcc4d945663cc8e30898ee8fc46ef477cb3a925c020a52617d170d7b18"
+    },
+    {
+      "binary_id": "codex-exec-server::health",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/health-8e09482d4380bef8",
+      "bytes": 90908144,
+      "sha256": "683da5168b92f8cd55723f2ee0c763564d740987d1ede364ff5e25614f9fe1d5"
+    },
+    {
+      "binary_id": "codex-exec-server::http_client",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/http_client-a17dbe915f0064e5",
+      "bytes": 40075352,
+      "sha256": "3fb9475497a9d846b30e7918d3d63775ededb2e081eb5bb08c8a045ffb7faeef"
+    },
+    {
+      "binary_id": "codex-exec-server::http_request",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/http_request-80ab48aae1586d58",
+      "bytes": 86584320,
+      "sha256": "ed27be1621ed8b22f0a5e56c11853908aec932baf2958fd2b0ba5afe532f498b"
+    },
+    {
+      "binary_id": "codex-exec-server::http_request_logging",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/http_request_logging-f4f2d6ddd54402ab",
+      "bytes": 40004848,
+      "sha256": "61ed8c30a0302b4b2e239de24d3e0fb0d7d4ec4ff9166ff5f634d38bfa813f35"
+    },
+    {
+      "binary_id": "codex-exec-server::initialize",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/initialize-31757d4183ea03f5",
+      "bytes": 86159824,
+      "sha256": "09d7e38bbe9e1c6da0c83bd94b0b5ec701f6db420ba5542a7d25f3e15400a68e"
+    },
+    {
+      "binary_id": "codex-exec-server::process",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/process-9a6b1ec6f05c892c",
+      "bytes": 86474320,
+      "sha256": "747a31ea2e872958089a250d5c54c85a1bce8ab23e12df89e47f998f93261a7e"
+    },
+    {
+      "binary_id": "codex-exec-server::relay",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/relay-b3ad0a399f2e599a",
+      "bytes": 93778240,
+      "sha256": "66634a55c677c92d65a45b8d0845e477f82a6b68213699e615785bcb9e006493"
+    },
+    {
+      "binary_id": "codex-exec-server::selected_capability_roots",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/selected_capability_roots-0f1cccf280644aec",
+      "bytes": 90925104,
+      "sha256": "7b485783a1547ffa4ed100e0ec38c72fc5fd09989c39d135e970bbda0e1dfdc1"
+    },
+    {
+      "binary_id": "codex-exec-server::websocket",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/websocket-5d2b0b44df708e83",
+      "bytes": 86160336,
+      "sha256": "b2b74c6147e765d6102bda6613b2a0793b9c0079ac120a5fc14c213393adbf1c"
+    },
+    {
+      "binary_id": "codex-hepta-agentd",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/codex_hepta_agentd-41647a392e8fb46f",
+      "bytes": 101033960,
+      "sha256": "61a32f3146de43bec31b6ee9a82ccc55ded3d17b66814b9697ab694ccb9fedd7"
+    },
+    {
+      "binary_id": "codex-hepta-agentd::authbus_text_product",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/authbus_text_product-ec87ba354e565c72",
+      "bytes": 76915808,
+      "sha256": "f51db67d5c9c5717ee5cd7e47861c23fe5499d77261112814f688acfc2e4cded"
+    },
+    {
+      "binary_id": "codex-hepta-agentd::cognitive_product_e2e",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/cognitive_product_e2e-9ae24615f801c8a1",
+      "bytes": 79238720,
+      "sha256": "a8ceea752daa1e6f185a31f9c69ac0e92d5d9d591aeccb33ad7fffd55d52310e"
+    },
+    {
+      "binary_id": "codex-hepta-agentd::cognitive_store_product_writer",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/cognitive_store_product_writer-9c52fad82b36d1a9",
+      "bytes": 44691720,
+      "sha256": "f2014bd9aa96f6479cbaf7e2c9a8d69865e0f7f3c2eaabcf1b1a07c2210891d8"
+    },
+    {
+      "binary_id": "codex-hepta-agentd::five_agent_rolling_upgrade",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/five_agent_rolling_upgrade-ef5a745c9ff97375",
+      "bytes": 72741088,
+      "sha256": "11a36a2f49a6761ac7e0ca4e1248329d8a29a5ed2b38370b6fdceb75965a1fa3"
+    },
+    {
+      "binary_id": "codex-hepta-agentd::fleet_harness_diagnostics",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/fleet_harness_diagnostics-e3cddfbc3dd731dc",
+      "bytes": 41873360,
+      "sha256": "f0c0d3d17b98247b5e79b496cfdc8e446502d019d94c31a3294502f83650aec5"
+    },
+    {
+      "binary_id": "codex-hepta-agentd::intuition_policy_product",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/intuition_policy_product-8365f275d595ebc7",
+      "bytes": 35106240,
+      "sha256": "65046483233e48e7c409051ff6d64e7e5428a13d77c9edada7546abce6decc18"
+    },
+    {
+      "binary_id": "codex-hepta-agentd::kernel_evidence_product",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/kernel_evidence_product-16b7402cfdc0ef57",
+      "bytes": 59637840,
+      "sha256": "413d76abdcb1e0fd44597af55a7a3d449cfe0c1a573c41bd8f795246c7d15e21"
+    },
+    {
+      "binary_id": "codex-hepta-agentd::optional_module_restart",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/optional_module_restart-22348ccca27d9499",
+      "bytes": 42205352,
+      "sha256": "7be633aada5f4ccce4e106e9748bede13ee7337d5a4e81465b62bbafae3fa797"
+    },
+    {
+      "binary_id": "codex-hepta-agentd::plasticity_process_e2e",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/plasticity_process_e2e-03965cf05c700a5b",
+      "bytes": 43894008,
+      "sha256": "4492a3008ba5dcc39fca0e5ea0f6f2daad8b6215fb68bb4848fdc769af7f8f84"
+    },
+    {
+      "binary_id": "codex-hepta-agentd::queue_capacity_product",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/queue_capacity_product-d089c082067af006",
+      "bytes": 71787696,
+      "sha256": "eb61692af26e4081643a1dfb65b17587dd5ae2992fdc9b38501a90f7f2fe869d"
+    },
+    {
+      "binary_id": "codex-hepta-agentd::runtime_codex_product_e2e",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/runtime_codex_product_e2e-6eee10bbfdacb931",
+      "bytes": 73983152,
+      "sha256": "f39696d0a002cbfd085160bbe0cc1f11d668bfc18577676c283e28589296e1e6"
+    },
+    {
+      "binary_id": "codex-hepta-agentd::runtime_shutdown_outcomes",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/runtime_shutdown_outcomes-e4adf62d0945ccf6",
+      "bytes": 36119696,
+      "sha256": "9fa8923825d1811f19a1561c6cf4f2fcb7e09fcd5786092183349c00c4748f03"
+    },
+    {
+      "binary_id": "codex-hepta-agentd::supervised_two_agents",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/supervised_two_agents-a969554ac18097ac",
+      "bytes": 66558248,
+      "sha256": "57ad494cb317bffd082ba6d49d9c464acb546f8d5e83c9d9916730249eac1a4d"
+    },
+    {
+      "binary_id": "codex-hepta-agentd::supervisord_product_e2e",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/supervisord_product_e2e-a206405b8e456b7d",
+      "bytes": 56606544,
+      "sha256": "c239d09e774fd5077abcc9018928de26ffaa85226967dbbc09219226a6d68bf2"
+    },
+    {
+      "binary_id": "codex-hepta-agentd::terminal_cell_owner",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/terminal_cell_owner-171aacf8225fe677",
+      "bytes": 43942832,
+      "sha256": "1cb66dce0f7d7649c50050e6d0f262068b2de12c8485058dcc404459753871e6"
+    },
+    {
+      "binary_id": "codex-hepta-agentd::two_agent_turn_recovery",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/two_agent_turn_recovery-e3bfc7c82793bcef",
+      "bytes": 72231312,
+      "sha256": "f9210d6f2736eaa2b095651d0d75a9cca49b99f1a8107f8b1fb71f93fb247a3e"
+    },
+    {
+      "binary_id": "codex-utils-pty",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/codex_utils_pty-e3b68e979f6e961a",
+      "bytes": 4489336,
+      "sha256": "02a3e39441ac163bc9da0413d5c160b8f18a7c991bca2e5ec44bd0842ee1e358"
+    },
+    {
+      "binary_id": "core_test_support",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/core_test_support-66fe2cad6f23b100",
+      "bytes": 55482992,
+      "sha256": "5ed2745e43d4688883eced31b4f57cee00aa54f4f52895fa6398e9f63d04205e"
+    }
+  ],
+  "binary_stable": true,
+  "helpers_before": [
+    {
+      "origins": [
+        {
+          "origin": "nextest-catalog",
+          "catalog_entry": {
+            "name": "apply_patch",
+            "kind": "bin-exe",
+            "path": "dev-small/apply_patch"
+          }
+        }
+      ],
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/apply_patch",
+      "bytes": 30094056,
+      "sha256": "d22b999aa99eaecccbec5855ae55f03ecf1a2fcdd17d46b99d2683b76497f1f6"
+    },
+    {
+      "origins": [
+        {
+          "origin": "nextest-catalog",
+          "catalog_entry": {
+            "name": "codex",
+            "kind": "bin-exe",
+            "path": "dev-small/codex"
+          }
+        }
+      ],
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/codex",
+      "bytes": 377709600,
+      "sha256": "7a412865b678fe1ded3c0745461e3c2c6c7a3f46f830dfff080c61f3aefd2ef8"
+    },
+    {
+      "origins": [
+        {
+          "origin": "source-bound-helper-build",
+          "target_name": "codex-code-mode-host",
+          "build_receipt_sha256": "83e28f8aab8b47a38521c1dca489f365d04746aa10d87ab2a839c234534c1f5f"
+        }
+      ],
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/codex-code-mode-host",
+      "bytes": 82166456,
+      "sha256": "5b6e7c745b0af4538fee7e246ea00675c433a6273c9349ac3c415867856c9859"
+    },
+    {
+      "origins": [
+        {
+          "origin": "source-bound-helper-build",
+          "target_name": "codex-execve-wrapper",
+          "build_receipt_sha256": "83e28f8aab8b47a38521c1dca489f365d04746aa10d87ab2a839c234534c1f5f"
+        }
+      ],
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/codex-execve-wrapper",
+      "bytes": 26103616,
+      "sha256": "5529974e631d716d30a424e49cec1beada259386227a2d0b1f2e71e652417500"
+    },
+    {
+      "origins": [
+        {
+          "origin": "nextest-catalog",
+          "catalog_entry": {
+            "name": "codex-hepta-agentd",
+            "kind": "bin-exe",
+            "path": "dev-small/codex-hepta-agentd"
+          }
+        }
+      ],
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/codex-hepta-agentd",
+      "bytes": 329463776,
+      "sha256": "47b50bf414c43af6788f8c0d9961c4e7a769d7b941a29c59b618115a7e1bad3c"
+    },
+    {
+      "origins": [
+        {
+          "origin": "nextest-catalog",
+          "catalog_entry": {
+            "name": "codex-write-config-schema",
+            "kind": "bin-exe",
+            "path": "dev-small/codex-write-config-schema"
+          }
+        }
+      ],
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/codex-write-config-schema",
+      "bytes": 29513512,
+      "sha256": "6d706de83d063dbe864040894f38388dcc9a70f6da9086cca0e530b6fdd15510"
+    },
+    {
+      "origins": [
+        {
+          "origin": "nextest-catalog",
+          "catalog_entry": {
+            "name": "hepta",
+            "kind": "bin-exe",
+            "path": "dev-small/hepta"
+          }
+        }
+      ],
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/hepta",
+      "bytes": 377709536,
+      "sha256": "2617ca789b0b92bae00d39a2684c74fa6c906d256e68acdada34470c424963ce"
+    },
+    {
+      "origins": [
+        {
+          "origin": "nextest-catalog",
+          "catalog_entry": {
+            "name": "hepta-agentd-browser",
+            "kind": "bin-exe",
+            "path": "dev-small/hepta-agentd-browser"
+          }
+        }
+      ],
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/hepta-agentd-browser",
+      "bytes": 35434176,
+      "sha256": "607f9ee4afe10301d6925e15b9b5cd3ef8dc6a2133198e32090dc83541eccb99"
+    },
+    {
+      "origins": [
+        {
+          "origin": "nextest-catalog",
+          "catalog_entry": {
+            "name": "logs_client",
+            "kind": "bin-exe",
+            "path": "dev-small/logs_client"
+          }
+        }
+      ],
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/logs_client",
+      "bytes": 76277544,
+      "sha256": "9dc30436d209a4239a3511b3ad9bc91510a91a913fbad41333cbff83e210b6a1"
+    },
+    {
+      "origins": [
+        {
+          "origin": "source-bound-helper-build",
+          "target_name": "test_arg0_preflight",
+          "build_receipt_sha256": "83e28f8aab8b47a38521c1dca489f365d04746aa10d87ab2a839c234534c1f5f"
+        }
+      ],
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/test_arg0_preflight",
+      "bytes": 35724016,
+      "sha256": "6c8582aba6129188f6a2986d098ae65fd3328c3903fac567ab214908f303e3c4"
+    },
+    {
+      "origins": [
+        {
+          "origin": "source-bound-helper-build",
+          "target_name": "test_stdio_server",
+          "build_receipt_sha256": "83e28f8aab8b47a38521c1dca489f365d04746aa10d87ab2a839c234534c1f5f"
+        }
+      ],
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/test_stdio_server",
+      "bytes": 6903600,
+      "sha256": "aa9392d4c41ff2ee7f3545d48ac58739d33ac6d30624c775afee81b4e08cb744"
+    },
+    {
+      "origins": [
+        {
+          "origin": "source-bound-helper-build",
+          "target_name": "test_streamable_http_server",
+          "build_receipt_sha256": "83e28f8aab8b47a38521c1dca489f365d04746aa10d87ab2a839c234534c1f5f"
+        }
+      ],
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/test_streamable_http_server",
+      "bytes": 12311208,
+      "sha256": "6aca12454b3e30750c6ad2c6e62cc4d85b0974ed359e035c284dc3ea6f6a6c72"
+    }
+  ],
+  "helpers_after": [
+    {
+      "origins": [
+        {
+          "origin": "nextest-catalog",
+          "catalog_entry": {
+            "name": "apply_patch",
+            "kind": "bin-exe",
+            "path": "dev-small/apply_patch"
+          }
+        }
+      ],
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/apply_patch",
+      "bytes": 30094056,
+      "sha256": "d22b999aa99eaecccbec5855ae55f03ecf1a2fcdd17d46b99d2683b76497f1f6"
+    },
+    {
+      "origins": [
+        {
+          "origin": "nextest-catalog",
+          "catalog_entry": {
+            "name": "codex",
+            "kind": "bin-exe",
+            "path": "dev-small/codex"
+          }
+        }
+      ],
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/codex",
+      "bytes": 377709600,
+      "sha256": "7a412865b678fe1ded3c0745461e3c2c6c7a3f46f830dfff080c61f3aefd2ef8"
+    },
+    {
+      "origins": [
+        {
+          "origin": "source-bound-helper-build",
+          "target_name": "codex-code-mode-host",
+          "build_receipt_sha256": "83e28f8aab8b47a38521c1dca489f365d04746aa10d87ab2a839c234534c1f5f"
+        }
+      ],
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/codex-code-mode-host",
+      "bytes": 82166456,
+      "sha256": "5b6e7c745b0af4538fee7e246ea00675c433a6273c9349ac3c415867856c9859"
+    },
+    {
+      "origins": [
+        {
+          "origin": "source-bound-helper-build",
+          "target_name": "codex-execve-wrapper",
+          "build_receipt_sha256": "83e28f8aab8b47a38521c1dca489f365d04746aa10d87ab2a839c234534c1f5f"
+        }
+      ],
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/codex-execve-wrapper",
+      "bytes": 26103616,
+      "sha256": "5529974e631d716d30a424e49cec1beada259386227a2d0b1f2e71e652417500"
+    },
+    {
+      "origins": [
+        {
+          "origin": "nextest-catalog",
+          "catalog_entry": {
+            "name": "codex-hepta-agentd",
+            "kind": "bin-exe",
+            "path": "dev-small/codex-hepta-agentd"
+          }
+        }
+      ],
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/codex-hepta-agentd",
+      "bytes": 329463776,
+      "sha256": "47b50bf414c43af6788f8c0d9961c4e7a769d7b941a29c59b618115a7e1bad3c"
+    },
+    {
+      "origins": [
+        {
+          "origin": "nextest-catalog",
+          "catalog_entry": {
+            "name": "codex-write-config-schema",
+            "kind": "bin-exe",
+            "path": "dev-small/codex-write-config-schema"
+          }
+        }
+      ],
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/codex-write-config-schema",
+      "bytes": 29513512,
+      "sha256": "6d706de83d063dbe864040894f38388dcc9a70f6da9086cca0e530b6fdd15510"
+    },
+    {
+      "origins": [
+        {
+          "origin": "nextest-catalog",
+          "catalog_entry": {
+            "name": "hepta",
+            "kind": "bin-exe",
+            "path": "dev-small/hepta"
+          }
+        }
+      ],
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/hepta",
+      "bytes": 377709536,
+      "sha256": "2617ca789b0b92bae00d39a2684c74fa6c906d256e68acdada34470c424963ce"
+    },
+    {
+      "origins": [
+        {
+          "origin": "nextest-catalog",
+          "catalog_entry": {
+            "name": "hepta-agentd-browser",
+            "kind": "bin-exe",
+            "path": "dev-small/hepta-agentd-browser"
+          }
+        }
+      ],
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/hepta-agentd-browser",
+      "bytes": 35434176,
+      "sha256": "607f9ee4afe10301d6925e15b9b5cd3ef8dc6a2133198e32090dc83541eccb99"
+    },
+    {
+      "origins": [
+        {
+          "origin": "nextest-catalog",
+          "catalog_entry": {
+            "name": "logs_client",
+            "kind": "bin-exe",
+            "path": "dev-small/logs_client"
+          }
+        }
+      ],
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/logs_client",
+      "bytes": 76277544,
+      "sha256": "9dc30436d209a4239a3511b3ad9bc91510a91a913fbad41333cbff83e210b6a1"
+    },
+    {
+      "origins": [
+        {
+          "origin": "source-bound-helper-build",
+          "target_name": "test_arg0_preflight",
+          "build_receipt_sha256": "83e28f8aab8b47a38521c1dca489f365d04746aa10d87ab2a839c234534c1f5f"
+        }
+      ],
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/test_arg0_preflight",
+      "bytes": 35724016,
+      "sha256": "6c8582aba6129188f6a2986d098ae65fd3328c3903fac567ab214908f303e3c4"
+    },
+    {
+      "origins": [
+        {
+          "origin": "source-bound-helper-build",
+          "target_name": "test_stdio_server",
+          "build_receipt_sha256": "83e28f8aab8b47a38521c1dca489f365d04746aa10d87ab2a839c234534c1f5f"
+        }
+      ],
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/test_stdio_server",
+      "bytes": 6903600,
+      "sha256": "aa9392d4c41ff2ee7f3545d48ac58739d33ac6d30624c775afee81b4e08cb744"
+    },
+    {
+      "origins": [
+        {
+          "origin": "source-bound-helper-build",
+          "target_name": "test_streamable_http_server",
+          "build_receipt_sha256": "83e28f8aab8b47a38521c1dca489f365d04746aa10d87ab2a839c234534c1f5f"
+        }
+      ],
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/test_streamable_http_server",
+      "bytes": 12311208,
+      "sha256": "6aca12454b3e30750c6ad2c6e62cc4d85b0974ed359e035c284dc3ea6f6a6c72"
+    }
+  ],
+  "helpers_stable": true,
+  "source_unchanged": true,
+  "junit": {
+    "full": {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/owning-seven.junit.xml",
+      "bytes": 1155445,
+      "sha256": "0cd59b4942ccbefc3225f34457991b1193d96a622da80a7cea98371f701c7df1"
+    },
+    "parts": [
+      {
+        "offset": 0,
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/parts/junit/0000.txt",
+        "bytes": 44000,
+        "sha256": "845e8f3f1bf8eae750ed021b14d7b0e99f0fb16b0a3274e14dbbd130dfa2b93f"
+      },
+      {
+        "offset": 44000,
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/parts/junit/0001.txt",
+        "bytes": 44000,
+        "sha256": "b8be5e26114acbd9fd71d238bbdfeebc345b938b1da73385b70047b0d00999b5"
+      },
+      {
+        "offset": 88000,
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/parts/junit/0002.txt",
+        "bytes": 44000,
+        "sha256": "e5739d8b15a93b7e27ffb3030bed52dbac57391061a44819b80ab99d7aa6fd9b"
+      },
+      {
+        "offset": 132000,
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/parts/junit/0003.txt",
+        "bytes": 44000,
+        "sha256": "584fcddf283a792e375bd69de9d496301b90cccf8ff1b1f213d5c9692380d383"
+      },
+      {
+        "offset": 176000,
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/parts/junit/0004.txt",
+        "bytes": 44000,
+        "sha256": "ef45f2754dc5a41c6e784900e30a8a3d9e115c83d96b080337a3835014938530"
+      },
+      {
+        "offset": 220000,
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/parts/junit/0005.txt",
+        "bytes": 44000,
+        "sha256": "ed79c63cbb3f5fdb09d4582409da7f96ad2c0448b01a4649f2ca54a903826809"
+      },
+      {
+        "offset": 264000,
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/parts/junit/0006.txt",
+        "bytes": 44000,
+        "sha256": "67aa43578e1e6f159eb44de79314a424ec5b072725e967fa66065d3d05b00180"
+      },
+      {
+        "offset": 308000,
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/parts/junit/0007.txt",
+        "bytes": 44000,
+        "sha256": "40ad3a2e5c95ccd1825359ab1f8d4ebba41388052a1f05e6e64a5205c18502aa"
+      },
+      {
+        "offset": 352000,
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/parts/junit/0008.txt",
+        "bytes": 44000,
+        "sha256": "49ead3e27a95d0b5643765c40c711ab8e683a474421129eae7f4db50095f795f"
+      },
+      {
+        "offset": 396000,
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/parts/junit/0009.txt",
+        "bytes": 44000,
+        "sha256": "52e9baef1354969d63ff0e1a357888d255467e141635306a2674c37183685140"
+      },
+      {
+        "offset": 440000,
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/parts/junit/0010.txt",
+        "bytes": 44000,
+        "sha256": "750cd543b1e6c2591e715c19a91349e3de2dd76d3049d96cd917ba484f28707b"
+      },
+      {
+        "offset": 484000,
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/parts/junit/0011.txt",
+        "bytes": 44000,
+        "sha256": "e8407afc9fb519f379607886d22f4604094cfc828ea7be9a7cb28562620ea681"
+      },
+      {
+        "offset": 528000,
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/parts/junit/0012.txt",
+        "bytes": 44000,
+        "sha256": "1f01aff669da86516e03f955464dd712d243b149a1401796594700e963f8fef0"
+      },
+      {
+        "offset": 572000,
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/parts/junit/0013.txt",
+        "bytes": 44000,
+        "sha256": "f28ff72b7693fe1fd611adc49eb6020dcdc3c15279f3122529364aadddc89e76"
+      },
+      {
+        "offset": 616000,
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/parts/junit/0014.txt",
+        "bytes": 44000,
+        "sha256": "e7a43dd5e5a79ea38bcc23f48484fe6b5d1de24a7a034a9d6a0328f4da976b01"
+      },
+      {
+        "offset": 660000,
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/parts/junit/0015.txt",
+        "bytes": 44000,
+        "sha256": "157e3a2760841560796eb9505bc7baadd89854f06d3bbd3c4a9fbb05bde1e17e"
+      },
+      {
+        "offset": 704000,
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/parts/junit/0016.txt",
+        "bytes": 44000,
+        "sha256": "955a64a2606003a72e426aaa0a792c831f17a8d52c1ee2d5ed17c7e076560cad"
+      },
+      {
+        "offset": 748000,
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/parts/junit/0017.txt",
+        "bytes": 44000,
+        "sha256": "90f9fe4d7e8015a0812360588bef21c8642db0427025bc8d3e477f9b274c868b"
+      },
+      {
+        "offset": 792000,
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/parts/junit/0018.txt",
+        "bytes": 44000,
+        "sha256": "dd85d5e9983db4e7362482d71f2bd3e689bc394ca9ba25494e37416c7ed72b34"
+      },
+      {
+        "offset": 836000,
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/parts/junit/0019.txt",
+        "bytes": 44000,
+        "sha256": "3f09befe10e9d629de842f0f57f04605c2d480347aea394d50ae1a31f26dcf40"
+      },
+      {
+        "offset": 880000,
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/parts/junit/0020.txt",
+        "bytes": 44000,
+        "sha256": "be68d62b28220cf2c86493d3bd4b06900035f624e20ba7a0f58be9727bb03186"
+      },
+      {
+        "offset": 924000,
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/parts/junit/0021.txt",
+        "bytes": 44000,
+        "sha256": "d5c9dd66ac3e7141f76b88077b6fc2af7d80950db6d06c11e6d226be5775cdee"
+      },
+      {
+        "offset": 968000,
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/parts/junit/0022.txt",
+        "bytes": 44000,
+        "sha256": "772ffe361abfafc4143c005aafb825c236e4fa88a228b827a21ea06b2845b78b"
+      },
+      {
+        "offset": 1012000,
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/parts/junit/0023.txt",
+        "bytes": 44000,
+        "sha256": "7f8471ce41a0cbe569d11401eaa2bbd211dc67e04b9be03d645c569ceddc8839"
+      },
+      {
+        "offset": 1056000,
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/parts/junit/0024.txt",
+        "bytes": 44000,
+        "sha256": "aaa2b4fb59a18354e0a2f936cd9ac53b945671c9cd919c0c5c594fe1e4adbc61"
+      },
+      {
+        "offset": 1100000,
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/parts/junit/0025.txt",
+        "bytes": 44000,
+        "sha256": "72581e3fddc6b2c92a79580a0b2adaed0890c3f48a161477e2e977251984cb36"
+      },
+      {
+        "offset": 1144000,
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/parts/junit/0026.txt",
+        "bytes": 11445,
+        "sha256": "7188ab5ef6e25f8255d50185d97ec323d97c00c9f0e4376dcf9eba0fad1ee91b"
+      }
+    ]
+  },
+  "prior_junit": {
+    "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/source/codex-rs/target/nextest/local/junit.xml",
+    "bytes": 525,
+    "sha256": "4830e90800474f4290cea1f8891945aeb88052c5c0eacb9a7d2f3565dbeaac49"
+  },
+  "exit_code": 100,
+  "nextest_summaries": [
+    "    Starting 5416 tests across 73 binaries (19 tests skipped)",
+    "     Summary [  54.920s] 5416 tests run: 5404 passed, 12 failed, 19 skipped"
+  ],
+  "passed": false
+}

@@ -1535,12 +1535,14 @@ fn mcp_tool_call_thread_id_meta_is_added_to_request_meta() {
             Some(serde_json::json!({
                 "source": "test-client",
                 "threadId": "stale-thread",
+                "x-codex-turn-metadata": { "turn_id": "turn-live" },
             })),
             "thread-live",
         ),
         Some(serde_json::json!({
             "source": "test-client",
             "threadId": "thread-live",
+            "x-codex-turn-metadata": { "turn_id": "turn-live" },
         }))
     );
 

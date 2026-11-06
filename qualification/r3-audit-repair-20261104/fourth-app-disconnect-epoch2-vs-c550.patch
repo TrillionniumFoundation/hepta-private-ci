@@ -1,0 +1,111 @@
+--- c550-original.py
++++ epoch2.py
+@@ -2,7 +2,7 @@
+ request=json.load(sys.stdin);root=pathlib.Path("/home/qian-qi/work/hepta-audit-r3-fullgate-20261104");tree=root/"source";out=root/"evidence"/request["evidence_name"];out.mkdir(exist_ok=False)
+ source=request["source_tree"];counter=0;phases=[]
+ env=dict(os.environ);env["PATH"]=str(root/"tools/uv-venv/bin")+":"+str(root/"tools/bin")+":/home/qian-qi/.cargo/bin:/home/qian-qi/.local/bin:"+env.get("PATH","")
+-env.update(CARGO_TARGET_DIR=str(root/"target"),CARGO_INCREMENTAL="0",CARGO_BUILD_JOBS="4",RUSTUP_TOOLCHAIN="1.95.0",CARGO_NET_GIT_FETCH_WITH_CLI="true",PYTHONDONTWRITEBYTECODE="1",DOTSLASH_CACHE=str(root/"tools/dotslash-cache"),NEXTEST_PROFILE="local",UV_CACHE_DIR=str(out/"uv-cache"),UV_PYTHON_DOWNLOADS="never",
++env.update(CARGO_TARGET_DIR=str(root/"target-app-epoch2-20261105"),CARGO_INCREMENTAL="0",CARGO_BUILD_JOBS="4",RUSTUP_TOOLCHAIN="1.95.0",CARGO_NET_GIT_FETCH_WITH_CLI="true",PYTHONDONTWRITEBYTECODE="1",DOTSLASH_CACHE=str(root/"tools/dotslash-cache"),NEXTEST_PROFILE="local",UV_CACHE_DIR=str(out/"uv-cache"),UV_PYTHON_DOWNLOADS="never",
+ RUSTY_V8_ARCHIVE=str(root/"tools/rusty-v8/librusty_v8_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.a.gz"),RUSTY_V8_SRC_BINDING_PATH=str(root/"tools/rusty-v8/src_binding_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.rs"))
+ def now():return datetime.datetime.now(datetime.timezone.utc).isoformat()
+ def sha(b):return hashlib.sha256(b).hexdigest()
+@@ -17,6 +17,9 @@
+ def guard(label):
+  global counter
+  counter+=1;e=dict(env);e["GIT_INDEX_FILE"]=str(out/(str(counter)+"-"+label+".index"));git(["read-tree",source],e);git(["add","-u","--","."],e);actual=git(["write-tree"],e).decode().strip()
++ untracked=[os.fsdecode(p) for p in git(["ls-files","--others","--exclude-standard","-z"],e).split(b"\0") if p]
++ save(str(counter)+"-"+label+"-untracked-source-paths.json",{"expected_tree":source,"private_index_seed":source,"paths":untracked,"allowed_paths":request["guard"]["allowed_untracked_source_paths"]})
++ if any(p not in request["guard"]["allowed_untracked_source_paths"] for p in untracked):raise RuntimeError("unreviewed untracked source paths: "+repr(untracked))
+  if actual!=source:raise RuntimeError("source drift "+label+": "+actual)
+  if git(["rev-parse","HEAD"]).decode().strip()!="cabcb40d36e116beaa65750e1f674c52035da785":raise RuntimeError("ordinary HEAD changed")
+  ordinary_check=pathlib.Path(git(["rev-parse","--git-path","index"]).decode().strip());ordinary_check=ordinary_check if ordinary_check.is_absolute() else tree/ordinary_check
+@@ -140,7 +143,11 @@
+  assert re.fullmatch("[0-9a-f]{40}",request["root_guard_blob"])
+  (out/"runner.py").write_text(request["runner_source"])
+  save("approved-diagnostic-guard.json",request["guard"])
+- guard("initial")
++ guard("initial");export()
++ epoch_target=root/"target-app-epoch2-20261105"
++ assert request["guard"]["new_target_directory"]==str(epoch_target)
++ assert not epoch_target.exists() and not epoch_target.is_symlink(),"new target epoch already exists; not changing it"
++ assert shutil.disk_usage(tree).free>=64_000_000_000,"insufficient space for independent epoch"
+  index_path=pathlib.Path(git(["rev-parse","--git-path","index"]).decode().strip())
+  index_path=index_path if index_path.is_absolute() else tree/index_path
+  initial_index=rec(index_path);initial_locks={p:rec(tree/p) for p in ("codex-rs/Cargo.lock","MODULE.bazel.lock")}
+@@ -159,11 +166,28 @@
+   prior[filename]=json.loads(p.read_text())
+  previous_selection=prior["full-workspace-selection.json"]
+  original_helpers=previous_selection["helpers_after_catalog_before_just"]
+- helpers_before=[{"origins":h["origins"],**rec(pathlib.Path(h["path"]))} for h in original_helpers]
+- assert helpers_before==original_helpers
+- save("pre-execution-checkpoint.json",{"source":source,"ordinary_index":initial_index,"locks":initial_locks,"root_guard_blob":request["root_guard_blob"],"original_fixture":fixture,"original_helpers":helpers_before,"prior_full_binding":required_prior})
++ historical_helper_names=sorted(pathlib.Path(h["path"]).name for h in original_helpers)
++ assert len(historical_helper_names)==33 and len(set(historical_helper_names))==33
++ save("pre-execution-checkpoint.json",{"source":source,"ordinary_index":initial_index,"locks":initial_locks,"root_guard_blob":request["root_guard_blob"],"original_fixture":fixture,"historical_helper_basename_roster":historical_helper_names,"prior_full_binding":required_prior,"new_target_epoch":str(epoch_target),"old_target_untouched":str(root/"target")})
+  save("native-host.json",{"observed_at":now(),"uname":subprocess.run(["uname","-srm"],capture_output=True,text=True,check=True).stdout,"rustc_vv":subprocess.run(["rustc","-vV"],env=env,capture_output=True,text=True,check=True).stdout,"cargo_profile":"dev-small","nextest_profile":"local","disk":dict(zip(("total","used","free"),shutil.disk_usage(tree)))})
+- assert shutil.disk_usage(tree).free>=8_000_000_000
++ epoch_target.mkdir(exist_ok=False)
++ helper_argv=["cargo","build","--locked","--profile","dev-small","--message-format=json-render-diagnostics","-p","codex-arg0","--bin","test_arg0_preflight","-p","codex-code-mode-host","--bin","codex-code-mode-host","-p","codex-shell-escalation","--bin","codex-execve-wrapper","-p","codex-rmcp-client","--bin","test_stdio_server","--bin","test_streamable_http_server","-p","codex-exec","--bin","codex-exec"]
++ assert helper_argv==request["guard"]["normal_helper_build"]
++ hb=phase("normal-six-helper-build-epoch2",helper_argv,True)
++ assert hb["exit_code"]==0,"normal source-bound helper build failed"
++ assert hb["disk_after"]["free"]>=8_000_000_000,"space below 8GB after helper build"
++ expected_helpers={"test_arg0_preflight","codex-code-mode-host","codex-execve-wrapper","test_stdio_server","test_streamable_http_server","codex-exec"}
++ helper_artifacts=[];finished=[];compiler_messages=[]
++ for line in (out/"normal-six-helper-build-epoch2.stdout").read_text().splitlines():
++  if not line.strip():continue
++  message=json.loads(line);compiler_messages.append(message)
++  if message.get("reason")=="build-finished":finished.append(message)
++  if message.get("reason")=="compiler-artifact" and message.get("executable") and message["target"]["name"] in expected_helpers:
++   artifact=pathlib.Path(message["executable"]);assert artifact.resolve().is_relative_to(epoch_target.resolve())
++   helper_artifacts.append({"package_id":message["package_id"],"target":message["target"],"profile":message["profile"],"features":message["features"],"fresh":message["fresh"],**rec(artifact)})
++ assert finished==[{"reason":"build-finished","success":True}]
++ assert len(helper_artifacts)==6 and {h["target"]["name"] for h in helper_artifacts}==expected_helpers
++ save("normal-six-helper-build-epoch2-receipt.json",{"source":source,"epoch_target":str(epoch_target),"command":helper_argv,"compiler_message_count":len(compiler_messages),"artifacts":helper_artifacts,"build_finished":finished,"stdout":rec(out/"normal-six-helper-build-epoch2.stdout"),"stderr":rec(out/"normal-six-helper-build-epoch2.stderr"),"limit":"New source-bound build epoch; no old executable hash is used as new execution evidence."})
+  metadata_argv=["cargo","metadata","--format-version=1","--locked"]
+  catalog_argv=["cargo","nextest","list","--locked","--cargo-profile","dev-small","--message-format=json","-E",expression]
+  test_argv=["just","test","--locked","--cargo-profile","dev-small","--no-tests","fail","--retries","0","--success-output","immediate","-E",expression]
+@@ -178,6 +202,7 @@
+  save("full-workspace-feature-graph-binding.json",{"source":source,"workspace_members":len(graph_now["workspace_members"]),"resolved_nodes":len(graph_now["nodes"]),"exact_original_full_graph":True,"original":rec(prior_dir/"workspace-metadata.stdout"),"current":rec(out/"workspace-metadata.stdout"),"package_filter":None})
+  cat=phase("app-disconnect-full-context-catalog",catalog_argv,True)
+  assert cat["exit_code"]==0
++ assert cat["disk_after"]["free"]>=8_000_000_000,"space below 8GB after catalog build"
+  catalog=json.loads((out/"app-disconnect-full-context-catalog.stdout").read_text())
+  selected=[];ignored=[];unmatched=[];programs=[]
+  for sid,suite in catalog["rust-suites"].items():
+@@ -190,9 +215,16 @@
+   if matched:programs.append({"binary_id":sid,**rec(pathlib.Path(suite["binary-path"]))})
+  assert [(r["classname"],r["name"]) for r in selected]==[("codex-app-server::all",expected_case)]
+  original_programs={p["binary_id"]:p for p in previous_selection["test_binaries_after_catalog_before_just"]}
+- assert all(p==original_programs[p["binary_id"]] for p in programs),"selected program differs from original full"
+- after_catalog_helpers=[{"origins":h["origins"],**rec(pathlib.Path(h["path"]))} for h in original_helpers]
+- assert after_catalog_helpers==helpers_before,"original full helpers changed before diagnostic"
++ assert all(p["binary_id"] in original_programs and pathlib.Path(p["path"]).resolve().is_relative_to(epoch_target.resolve()) for p in programs)
++ rows=package_artifacts(catalog)
++ for h in helper_artifacts:rows.append({"origin":"normal-six-helper-build-epoch2","target_name":h["target"]["name"],**rec(pathlib.Path(h["path"]))})
++ helper_paths={}
++ for row in rows:helper_paths.setdefault(row["path"],[]).append({k:v for k,v in row.items() if k not in ("path","bytes","sha256")})
++ helpers_before=[{"origins":origins,**rec(pathlib.Path(path))} for path,origins in sorted(helper_paths.items())]
++ assert sorted(pathlib.Path(h["path"]).name for h in helpers_before)==historical_helper_names,"new epoch helper roster mismatch"
++ assert all(pathlib.Path(h["path"]).resolve().is_relative_to(epoch_target.resolve()) for h in helpers_before)
++ after_catalog_helpers=helpers_before
++ save("new-epoch-identity-binding.json",{"source":source,"new_target":str(epoch_target),"historical_programs":[original_programs[p["binary_id"]] for p in programs],"new_programs":programs,"historical_helper_roster":historical_helper_names,"new_helpers":helpers_before,"old_hashes_are_not_new_qualification":True})
+  save("selection.json",{"source":source,"selected":selected,"original_ignored":ignored,"filter_unmatched":unmatched,"test_programs_after_catalog_before_just":programs,"helpers_after_catalog_before_just":after_catalog_helpers,"catalog_non_test_binaries":catalog["rust-build-meta"]["non-test-binaries"],"exact_full_workspace_graph":True})
+  junit=tree/"codex-rs/target/nextest/local/junit.xml";prior_junit=rec(junit) if junit.exists() else None;started=time.time_ns()
+  test=phase("app-disconnect-original-diagnostic",test_argv)
+@@ -205,13 +237,13 @@
+   cases.append({"classname":c.attrib.get("classname"),"name":c.attrib.get("name"),"seconds":c.attrib.get("time"),"result":result,"failure":"\n".join(x.text or "" for x in c if x.tag in ("failure","error"))})
+  assert len(cases)==1 and cases[0]["classname"]=="codex-app-server::all" and cases[0]["name"]==expected_case and cases[0]["result"]!="SKIP"
+  programs_after=[{"binary_id":p["binary_id"],**rec(pathlib.Path(p["path"]))} for p in programs]
+- helpers_after=[{"origins":h["origins"],**rec(pathlib.Path(h["path"]))} for h in original_helpers]
++ helpers_after=[{"origins":h["origins"],**rec(pathlib.Path(h["path"]))} for h in helpers_before]
+  raw=(out/"app-disconnect-original-diagnostic.log").read_text()
+  skip_notices=[l for l in raw.splitlines() if re.search(r"\bskipping\b",l,re.I)]
+  observation=json.loads((out/"owned-process-observation-summary.json").read_text())
+  guard("final");export()
+  complete=programs==programs_after and helpers_after==helpers_before and not observation["observer_errors"] and len(observation["known_fixture_markers"])==1 and not skip_notices
+- result={"source":source,"root_guard_blob":request["root_guard_blob"],"host":"rog","cargo_profile":"dev-small","nextest_profile":"local","retries":0,"cases":cases,"selected_count":1,"original_ignored_count":len(ignored),"filter_unmatched_count":len(unmatched),"exact_full_feature_graph":True,"programs_before":programs,"programs_after":programs_after,"programs_stable":programs==programs_after,"helpers_before":helpers_before,"helpers_after":helpers_after,"helpers_stable":helpers_before==helpers_after,"ordinary_index_before":initial_index,"ordinary_index_after":rec(index_path),"locks_before":initial_locks,"locks_after":{p:rec(tree/p) for p in initial_locks},"source_unchanged":True,"original_just_exit":test["exit_code"],"original_raw":rec(out/"app-disconnect-original-diagnostic.log"),"fresh_junit":rec(copy),"skip_notices":skip_notices,"process_observation":observation,"observation_complete":complete,"test_passed":test["exit_code"]==0 and cases[0]["result"]=="PASS","limit":"Diagnostic attempt only. A changed outcome is not a production repair. The original full failure remains preserved. No source or test budget changed.","next_step":"Stop for root review; no hygiene or subsequent tests."}
++ result={"source":source,"new_target_epoch":str(epoch_target),"old_target_untouched":str(root/"target"),"old_hashes_are_not_new_qualification":True,"normal_helper_build_receipt":rec(out/"normal-six-helper-build-epoch2-receipt.json"),"root_guard_blob":request["root_guard_blob"],"host":"rog","cargo_profile":"dev-small","nextest_profile":"local","retries":0,"cases":cases,"selected_count":1,"original_ignored_count":len(ignored),"filter_unmatched_count":len(unmatched),"exact_full_feature_graph":True,"programs_before":programs,"programs_after":programs_after,"programs_stable":programs==programs_after,"helpers_before":helpers_before,"helpers_after":helpers_after,"helpers_stable":helpers_before==helpers_after,"ordinary_index_before":initial_index,"ordinary_index_after":rec(index_path),"locks_before":initial_locks,"locks_after":{p:rec(tree/p) for p in initial_locks},"source_unchanged":True,"original_just_exit":test["exit_code"],"original_raw":rec(out/"app-disconnect-original-diagnostic.log"),"fresh_junit":rec(copy),"skip_notices":skip_notices,"process_observation":observation,"observation_complete":complete,"test_passed":test["exit_code"]==0 and cases[0]["result"]=="PASS","limit":"Diagnostic attempt only. A changed outcome is not a production repair. The original full failure remains preserved. No source or test budget changed.","next_step":"Stop for root review; no hygiene or subsequent tests."}
+  save("terminal.json",result)
+  for name in ("terminal.json","selection.json","owned-process-observation-summary.json","owned-process-observations.jsonl"):
+   save(name+".parts.json",split(out/name,name.replace(".","-")))

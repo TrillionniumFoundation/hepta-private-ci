@@ -1,0 +1,314 @@
+import tomllib,collections,datetime,hashlib,json,os,pathlib,re,shutil,subprocess,sys,time,traceback,xml.etree.ElementTree as ET
+request=json.load(sys.stdin);root=pathlib.Path("/home/qian-qi/work/hepta-audit-r3-fullgate-20261104");tree=root/"source";out=root/"evidence"/request["evidence_name"];out.mkdir(exist_ok=False)
+source=request["source_tree"];counter=0;phases=[];temporary_applied=False
+env=dict(os.environ);env["PATH"]=str(root/"tools/uv-venv/bin")+":"+str(root/"tools/bin")+":/home/qian-qi/.cargo/bin:/home/qian-qi/.local/bin:"+env.get("PATH","")
+env.update(CARGO_TARGET_DIR=str(root/"target-app-epoch2-20261105"),CARGO_INCREMENTAL="0",CARGO_BUILD_JOBS="4",RUSTUP_TOOLCHAIN="1.95.0",CARGO_NET_GIT_FETCH_WITH_CLI="true",PYTHONDONTWRITEBYTECODE="1",DOTSLASH_CACHE=str(root/"tools/dotslash-cache"),NEXTEST_PROFILE="local",UV_CACHE_DIR=str(out/"uv-cache"),UV_PYTHON_DOWNLOADS="never",
+RUSTY_V8_ARCHIVE=str(root/"tools/rusty-v8/librusty_v8_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.a.gz"),RUSTY_V8_SRC_BINDING_PATH=str(root/"tools/rusty-v8/src_binding_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.rs"))
+def now():return datetime.datetime.now(datetime.timezone.utc).isoformat()
+def sha(b):return hashlib.sha256(b).hexdigest()
+def rec(p):
+ h=hashlib.sha256();size=0
+ with p.open("rb") as f:
+  while b:=f.read(1024*1024):h.update(b);size+=len(b)
+ return {"path":str(p),"bytes":size,"sha256":h.hexdigest()}
+def save(name,obj):
+ p=out/name;p.parent.mkdir(parents=True,exist_ok=True);p.write_text(json.dumps(obj,indent=2)+"\n");return p
+def git(args,e=None):return subprocess.run(["git"]+args,cwd=tree,env=e or env,capture_output=True,check=True).stdout
+def guard(label,expected=None):
+ global counter
+ expected=source if expected is None else expected
+ counter+=1;e=dict(env);e["GIT_INDEX_FILE"]=str(out/(str(counter)+"-"+label+".index"));git(["read-tree",source],e);git(["add","-u","--","."],e);actual=git(["write-tree"],e).decode().strip()
+ untracked=[os.fsdecode(p) for p in git(["ls-files","--others","--exclude-standard","-z"],e).split(b"\0") if p]
+ save(str(counter)+"-"+label+"-untracked-source-paths.json",{"expected_tree":expected,"private_index_seed":source,"paths":untracked,"allowed_paths":request["guard"]["allowed_untracked_source_paths"]})
+ if any(p not in request["guard"]["allowed_untracked_source_paths"] for p in untracked):raise RuntimeError("unreviewed untracked source paths: "+repr(untracked))
+ if actual!=expected:raise RuntimeError("source drift "+label+": "+actual)
+ if git(["rev-parse","HEAD"]).decode().strip()!="cabcb40d36e116beaa65750e1f674c52035da785":raise RuntimeError("ordinary HEAD changed")
+ ordinary_check=pathlib.Path(git(["rev-parse","--git-path","index"]).decode().strip());ordinary_check=ordinary_check if ordinary_check.is_absolute() else tree/ordinary_check
+ actual_index=rec(ordinary_check)
+ if any(actual_index[k]!=request["guard"]["ordinary_index"][k] for k in ("bytes","sha256")):raise RuntimeError("ordinary index drift "+label)
+ for lock_path,lock_expected in request["guard"]["locks"].items():
+  actual_lock=rec(tree/lock_path)
+  if any(actual_lock[k]!=lock_expected[k] for k in ("bytes","sha256")):raise RuntimeError("lock drift "+label+": "+lock_path)
+
+ return actual
+def split(p,label):
+ data=p.read_bytes();directory=out/"parts"/label;directory.mkdir(parents=True,exist_ok=True);rows=[];offset=0
+ while offset<len(data):
+  end=min(offset+44000,len(data))
+  while end<len(data) and data[end]&0xc0==0x80:end-=1
+  q=directory/(str(len(rows)).zfill(4)+".txt");q.write_bytes(data[offset:end]);rows.append({"offset":offset,**rec(q)});offset=end
+ return {"full":rec(p),"parts":rows}
+def phase(name,argv,streams=False):
+ guard(name+"-before");started=now();t=time.monotonic();stdout=out/(name+(".stdout" if streams else ".log"));stderr=out/(name+".stderr")
+ save(name+"-command.json",{"argv":argv,"cwd":str(tree/"codex-rs"),"source":source,"started_at":started,"attempt":1,"cargo_profile":"dev-small","nextest_profile":"local","disk_before":dict(zip(("total","used","free"),shutil.disk_usage(tree)))})
+ print(json.dumps({"phase_start":name,"source":source,"argv":argv}),flush=True)
+ with stdout.open("wb") as so:
+  if streams:
+   with stderr.open("wb") as se:r=subprocess.run(argv,cwd=tree/"codex-rs",env=env,stdout=so,stderr=se)
+  else:r=observe_owned_command(argv,so)
+ actual=guard(name+"-after");result={"name":name,"argv":argv,"source_before":source,"source_after":actual,"source_unchanged":True,"exit_code":r.returncode,"started_at":started,"completed_at":now(),"duration_seconds":time.monotonic()-t,"stdout":split(stdout,name+"-stdout"),"disk_after":dict(zip(("total","used","free"),shutil.disk_usage(tree)))}
+ if streams:result["stderr"]=split(stderr,name+"-stderr")
+ phases.append(result);save(name+"-status.json",result);print(json.dumps({"phase_terminal":name,"source":source,"exit_code":r.returncode,"seconds":result["duration_seconds"],"disk_after":result["disk_after"]}),flush=True);return result
+def package_artifacts(parsed):
+ rows=[]
+ def visit(value):
+  if isinstance(value,dict):
+   if value.get("kind")=="bin-exe" and isinstance(value.get("path"),str):
+    p=pathlib.Path(value["path"]);p=p if p.is_absolute() else pathlib.Path(parsed["rust-build-meta"]["target-directory"])/p;rows.append({"origin":"nextest-catalog","catalog_entry":value,**rec(p)})
+   for child in value.values():visit(child)
+  elif isinstance(value,list):
+   for child in value:visit(child)
+ visit(parsed["rust-build-meta"]["non-test-binaries"]);return rows
+def export(name):
+ rows=[]
+ for value in git(["diff","--name-only","-z","b2d7f038d6d88156bc6a4cb29c8703f69b808f29",source]).split(b"\0"):
+  if not value:continue
+  path=value.decode();mode,kind,oid=git(["ls-tree",source,"--",path]).decode().split("\t")[0].split();rows.append({"path":path,"mode":mode,"git_blob":oid,**{k:v for k,v in rec(tree/path).items() if k!="path"}})
+ save(name,{"base_tree":"b2d7f038d6d88156bc6a4cb29c8703f69b808f29","final_tree":source,"files":rows})
+
+def apply_source_files(label,files,expected):
+ global source
+ guard(label+"-before");before=source;changes=[]
+ for f in files:
+  p=tree/f["path"];b=request["sources"][f["after_blob"]].encode()
+  assert p.is_file() and not p.is_symlink()
+  assert git(["hash-object","--",f["path"]]).decode().strip()==f["before_blob"]
+  assert ("100755" if p.stat().st_mode&0o111 else "100644")==f["mode"]
+  assert len(b)==f["bytes"] and sha(b)==f["sha256"] and hashlib.sha1(b"blob "+str(len(b)).encode()+b"\0"+b).hexdigest()==f["after_blob"]
+  changes.append((p,b))
+ for p,b in changes:
+  with p.open("wb") as stream:assert stream.write(b)==len(b)
+  assert p.read_bytes()==b
+ e=dict(env);e["GIT_INDEX_FILE"]=str(out/(label+"-apply.index"));git(["read-tree",source],e);git(["add","-u","--","."],e)
+ actual=git(["write-tree"],e).decode().strip()
+ assert actual==expected,"temporary source postimage mismatch"
+ source=actual;guard(label+"-after");save(label+"-source-change.json",{"before_tree":before,"after_tree":source,"files":files,"temporary_diagnostic_only":True})
+def read_parent_probes(raw):
+ observations=[];offset=0
+ for number,line in enumerate(raw.splitlines(keepends=True),1):
+  prefix=line.find("hepta_owned_lifecycle_probe ")
+  if prefix>=0:
+   body=line[prefix:].strip();row={"raw_line_number":number,"raw_byte_offset":offset,"raw_line":line,"probe":body,"parsed":False}
+   inner=re.fullmatch(r"hepta_owned_lifecycle_probe phase=(inner_entry|inner_after_restrictions) pid=(-?\d+) ppid=(-?\d+) pgid=(-?\d+) sid=(-?\d+) pdeath_rc=(-?\d+) pdeath_signal=(-?\d+) error=(.+)",body)
+   kill=re.fullmatch(r"hepta_owned_lifecycle_probe phase=original_killpg_return pgid=(-?\d+) result=(.+)",body)
+   if inner:
+    phase,pid,ppid,pgid,sid,rc,signal,error=inner.groups()
+    row.update(parsed=True,phase=phase,pid=int(pid),ppid=int(ppid),pgid=int(pgid),sid=int(sid),pdeath_rc=int(rc),observed_parent_death_signal=int(signal) if int(rc)==0 else None,raw_signal_output=int(signal),error=error)
+   elif kill:row.update(parsed=True,phase="original_killpg_return",pgid=int(kill.group(1)),result=kill.group(2))
+   observations.append(row)
+  offset+=len(line.encode())
+ phases_seen=sorted(set(row.get("phase") for row in observations if row.get("phase")))
+ required={"inner_entry","inner_after_restrictions","original_killpg_return"}
+ complete=required.issubset(phases_seen) and all(row["parsed"] for row in observations)
+ result={"source":source,"raw":rec(out/"app-disconnect-original-diagnostic.log"),"observations":observations,"phases_seen":phases_seen,"required_phases":sorted(required),"all_probe_phases_complete":complete,"pdeath_reads_succeeded":complete and all(row["pdeath_rc"]==0 for row in observations if row.get("phase") in ("inner_entry","inner_after_restrictions")),"interpretation":"A missing or failed PR_GET_PDEATHSIG read is not signal zero. Namespace-local inner identifiers and original host group-kill observations are retained separately for root correlation with the owned-process trace."}
+ save("parent-lifecycle-probe-observations.json",result);return result
+
+def read_proc_stat(pid):
+ try:
+  data=(pathlib.Path("/proc")/str(pid)/"stat").read_text()
+  end=data.rfind(")");parts=data[end+2:].split()
+  return {"pid":pid,"comm":data[data.find("(")+1:end],"state":parts[0],"ppid":int(parts[1]),"pgid":int(parts[2]),"sid":int(parts[3]),"starttime_ticks":int(parts[19])}
+ except (FileNotFoundError,ProcessLookupError,PermissionError,ValueError,IndexError):return None
+def observe_owned_command(argv,stream):
+ proc=subprocess.Popen(argv,cwd=tree/"codex-rs",env=env,stdout=stream,stderr=subprocess.STDOUT)
+ started=time.monotonic();owned={};previous={};markers=set();events=0;samples=0;errors=[];last=[]
+ root_stat=read_proc_stat(proc.pid)
+ root_identity=(proc.pid,root_stat["starttime_ticks"]) if root_stat is not None else None
+ if root_identity is None:errors.append({"type":"RootIdentityUnavailable","message":"Initial owned command PID/starttime could not be observed."})
+ log_path=out/"owned-process-observations.jsonl"
+ # The dynamic marker is never inserted into any observer subprocess argv.
+ # Read all structural /proc stat records, but read cmdline/exe only for this
+ # command's observed descendants or the same already-owned PID/starttime pair.
+ with log_path.open("w") as log:
+  def emit(event):
+   nonlocal events
+   log.write(json.dumps({"observed_at":now(),"elapsed_seconds":time.monotonic()-started,**event})+"\n");log.flush();events+=1
+  def sample():
+   nonlocal previous,samples,last
+   samples+=1;table={}
+   for entry in pathlib.Path("/proc").iterdir():
+    if not entry.name.isdigit():continue
+    st=read_proc_stat(int(entry.name))
+    if st is not None:table[st["pid"]]=st
+   root_current=table.get(proc.pid)
+   root_matches=root_identity is not None and root_current is not None and root_current["starttime_ticks"]==root_identity[1]
+   descendants={proc.pid} if root_matches else set();changed=True
+   while changed:
+    changed=False
+    for pid,st in table.items():
+     if st["ppid"] in descendants and pid not in descendants:descendants.add(pid);changed=True
+   for pid in descendants:
+    if pid in table:owned[(pid,table[pid]["starttime_ticks"])]=True
+   observed={}
+   for identity in owned:
+    pid,starttime=identity;st=table.get(pid)
+    if st is None or st["starttime_ticks"]!=starttime:continue
+    row=dict(st)
+    row["scope"]="current-descendant" if pid in descendants else "previously-observed-owned-identity"
+    path=pathlib.Path("/proc")/str(pid)
+    try:
+     with (path/"cmdline").open("rb") as f:cmd=f.read(16385)
+     row["cmdline_truncated"]=len(cmd)>16384;cmd=cmd[:16384]
+     row["cmdline_bytes_observed"]=len(cmd);row["cmdline_sha256"]=sha(cmd)
+     row["cmdline"]=[arg.decode("utf-8","replace") for arg in cmd.rstrip(b"\0").split(b"\0")] if cmd else []
+     found=sorted(set(re.findall(r"codex-command-exec-marker-[0-9]+",cmd.decode("utf-8","replace"))))
+     row["exact_fixture_markers"]=found;markers.update(found)
+    except (FileNotFoundError,ProcessLookupError,PermissionError) as e:row["cmdline_read_error"]=type(e).__name__
+    try:row["exe"]=os.readlink(path/"exe")
+    except (FileNotFoundError,ProcessLookupError,PermissionError) as e:row["exe_read_error"]=type(e).__name__
+    observed[identity]=row
+    if previous.get(identity)!=row:emit({"event":"owned-process-state","process":row})
+   for identity in previous:
+    if identity not in observed:emit({"event":"owned-identity-no-longer-observed","pid":identity[0],"starttime_ticks":identity[1]})
+   previous=observed;last=list(observed.values())
+  emit({"event":"observer-start","command_pid":proc.pid,"command_starttime_ticks":root_identity[1] if root_identity is not None else None,"observer_pid":os.getpid(),"sampling_interval_seconds":0.05,"no_observer_marker_subprocess":True})
+  try:
+   while proc.poll() is None:sample();time.sleep(0.05)
+   sample()
+  except Exception as e:
+   errors.append({"type":type(e).__name__,"message":str(e)})
+   emit({"event":"observer-error","error":errors[-1],"original_test_is_not_cancelled":True})
+  returncode=proc.wait()
+  emit({"event":"observer-terminal","original_command_exit":returncode,"samples":samples,"known_fixture_markers":sorted(markers)})
+ save("owned-process-observation-summary.json",{"source":source,"command":argv,"command_pid":proc.pid,"command_starttime_ticks":root_identity[1] if root_identity is not None else None,"exit_code":returncode,"samples":samples,"events":events,"known_fixture_markers":sorted(markers),"observer_errors":errors,"last_observed_owned_processes":last,"trace":rec(log_path),"limit":"Only observed descendants and identical previously-owned PID/starttime pairs were read. A process that detached before the first observation can be missed. No global cmdline or environment dump, process signal, strace, test deadline change or source change was performed."})
+ return subprocess.CompletedProcess(argv,returncode)
+
+
+try:
+ expected_case="suite::v2::command_exec::command_exec_process_ids_are_connection_scoped_and_disconnect_terminates_process"
+ expression="test(="+expected_case+")"
+ assert source=="f8251e1d14fa8524ab469281296cd4cf708f173c"
+ assert re.fullmatch("[0-9a-f]{40}",request["root_guard_blob"])
+ (out/"runner.py").write_text(request["runner_source"])
+ save("approved-diagnostic-guard.json",request["guard"])
+ guard("initial");export("source-map-initial.json")
+ epoch_target=root/"target-app-epoch2-20261105"
+ assert request["guard"]["new_target_directory"]==str(epoch_target)
+ assert epoch_target.is_dir() and not epoch_target.is_symlink(),"approved existing target epoch is missing"
+ assert shutil.disk_usage(tree).free>=8_000_000_000,"space below 8GB before diagnostic build"
+ index_path=pathlib.Path(git(["rev-parse","--git-path","index"]).decode().strip())
+ index_path=index_path if index_path.is_absolute() else tree/index_path
+ initial_index=rec(index_path);initial_locks={p:rec(tree/p) for p in ("codex-rs/Cargo.lock","MODULE.bazel.lock")}
+ fixture=rec(tree/"codex-rs/app-server/tests/suite/v2/command_exec.rs")
+ assert fixture["bytes"]==50345 and fixture["sha256"]=="d964c52c2f4f75388b7dc468d30c689d9b0e8e5620fd25ef46b65697a4e70d93"
+ assert not any(k in os.environ for k in ("CODEX_SANDBOX_NETWORK_DISABLED","CODEX_SANDBOX"))
+ apply_source_files("apply-parent-observation",request["guard"]["temporary_files"],request["guard"]["diagnostic_tree"]);temporary_applied=True
+ export("source-map-diagnostic-before-build.json")
+ prior_dir=root/"evidence/full-workspace-f825-20261105-0040"
+ required_prior={
+  "workspace-metadata.stdout":(8163618,"959b827393fc6830e8fd6c55a83a519217ab0debb7c033b42e64306bc373fece"),
+  "full-workspace-selection.json":(5357276,"5f2118b2def8bb6aac31a78bb08bd1d355033a826d4fadfe0c305ff37ae662be"),
+  "full-workspace-catalog.stdout":(2839091,"af962c86ba44b1e4931ca61319597cc8c9557cafaaf70dd8cfe8664c6e3815ef")
+ }
+ prior={}
+ for filename,(size,digest) in required_prior.items():
+  p=prior_dir/filename;r=rec(p);assert r["bytes"]==size and r["sha256"]==digest
+  prior[filename]=json.loads(p.read_text())
+ previous_selection=prior["full-workspace-selection.json"]
+ original_helpers=previous_selection["helpers_after_catalog_before_just"]
+ historical_helper_names=sorted(pathlib.Path(h["path"]).name for h in original_helpers)
+ assert len(historical_helper_names)==33 and len(set(historical_helper_names))==33
+ save("pre-execution-checkpoint.json",{"source":source,"ordinary_index":initial_index,"locks":initial_locks,"root_guard_blob":request["root_guard_blob"],"original_fixture":fixture,"historical_helper_basename_roster":historical_helper_names,"prior_full_binding":required_prior,"new_target_epoch":str(epoch_target),"old_target_untouched":str(root/"target")})
+ save("native-host.json",{"observed_at":now(),"uname":subprocess.run(["uname","-srm"],capture_output=True,text=True,check=True).stdout,"rustc_vv":subprocess.run(["rustc","-vV"],env=env,capture_output=True,text=True,check=True).stdout,"cargo_profile":"dev-small","nextest_profile":"local","disk":dict(zip(("total","used","free"),shutil.disk_usage(tree)))})
+ helper_argv=["cargo","build","--locked","--profile","dev-small","--message-format=json-render-diagnostics","-p","codex-arg0","--bin","test_arg0_preflight","-p","codex-code-mode-host","--bin","codex-code-mode-host","-p","codex-shell-escalation","--bin","codex-execve-wrapper","-p","codex-rmcp-client","--bin","test_stdio_server","--bin","test_streamable_http_server","-p","codex-exec","--bin","codex-exec"]
+ assert helper_argv==request["guard"]["normal_helper_build"]
+ hb=phase("normal-six-helper-build-epoch2",helper_argv,True)
+ assert hb["exit_code"]==0,"normal source-bound helper build failed"
+ assert hb["disk_after"]["free"]>=8_000_000_000,"space below 8GB after helper build"
+ expected_helpers={"test_arg0_preflight","codex-code-mode-host","codex-execve-wrapper","test_stdio_server","test_streamable_http_server","codex-exec"}
+ helper_artifacts=[];finished=[];compiler_messages=[]
+ for line in (out/"normal-six-helper-build-epoch2.stdout").read_text().splitlines():
+  if not line.strip():continue
+  message=json.loads(line);compiler_messages.append(message)
+  if message.get("reason")=="build-finished":finished.append(message)
+  if message.get("reason")=="compiler-artifact" and message.get("executable") and message["target"]["name"] in expected_helpers:
+   artifact=pathlib.Path(message["executable"]);assert artifact.resolve().is_relative_to(epoch_target.resolve())
+   helper_artifacts.append({"package_id":message["package_id"],"target":message["target"],"profile":message["profile"],"features":message["features"],"fresh":message["fresh"],**rec(artifact)})
+ assert finished==[{"reason":"build-finished","success":True}]
+ assert len(helper_artifacts)==6 and {h["target"]["name"] for h in helper_artifacts}==expected_helpers
+ save("normal-six-helper-build-epoch2-receipt.json",{"source":source,"epoch_target":str(epoch_target),"command":helper_argv,"compiler_message_count":len(compiler_messages),"artifacts":helper_artifacts,"build_finished":finished,"stdout":rec(out/"normal-six-helper-build-epoch2.stdout"),"stderr":rec(out/"normal-six-helper-build-epoch2.stderr"),"limit":"New source-bound build epoch; no old executable hash is used as new execution evidence."})
+ metadata_argv=["cargo","metadata","--format-version=1","--locked"]
+ catalog_argv=["cargo","nextest","list","--locked","--cargo-profile","dev-small","--message-format=json","-E",expression]
+ test_argv=["just","test","--locked","--cargo-profile","dev-small","--no-tests","fail","--retries","0","--success-output","immediate","-E",expression]
+ assert request["guard"]["commands"]=={"metadata":metadata_argv,"catalog":catalog_argv,"test":test_argv}
+ meta=phase("workspace-metadata",metadata_argv,True)
+ assert meta["exit_code"]==0
+ current_metadata=json.loads((out/"workspace-metadata.stdout").read_text())
+ def feature_graph(m):
+  return {"workspace_members":sorted(m["workspace_members"]),"nodes":sorted(({"id":n["id"],"features":sorted(n["features"]),"deps":n.get("deps",[])} for n in m["resolve"]["nodes"]),key=lambda n:n["id"])}
+ graph_before=feature_graph(prior["workspace-metadata.stdout"]);graph_now=feature_graph(current_metadata)
+ assert graph_now==graph_before,"full workspace resolved feature graph changed"
+ save("full-workspace-feature-graph-binding.json",{"source":source,"workspace_members":len(graph_now["workspace_members"]),"resolved_nodes":len(graph_now["nodes"]),"exact_original_full_graph":True,"original":rec(prior_dir/"workspace-metadata.stdout"),"current":rec(out/"workspace-metadata.stdout"),"package_filter":None})
+ cat=phase("app-disconnect-full-context-catalog",catalog_argv,True)
+ assert cat["exit_code"]==0
+ assert cat["disk_after"]["free"]>=8_000_000_000,"space below 8GB after catalog build"
+ catalog=json.loads((out/"app-disconnect-full-context-catalog.stdout").read_text())
+ selected=[];ignored=[];unmatched=[];programs=[]
+ for sid,suite in catalog["rust-suites"].items():
+  matched=False
+  for name,item in suite["testcases"].items():
+   row={"classname":sid,"name":name,"package":suite["package-name"],"ignored":item["ignored"],"filter_match":item["filter-match"]}
+   if item["filter-match"]["status"]=="matches" and not item["ignored"]:selected.append(row);matched=True
+   elif item["ignored"]:ignored.append(row)
+   else:unmatched.append(row)
+  if matched:programs.append({"binary_id":sid,**rec(pathlib.Path(suite["binary-path"]))})
+ assert [(r["classname"],r["name"]) for r in selected]==[("codex-app-server::all",expected_case)]
+ original_programs={p["binary_id"]:p for p in previous_selection["test_binaries_after_catalog_before_just"]}
+ assert all(p["binary_id"] in original_programs and pathlib.Path(p["path"]).resolve().is_relative_to(epoch_target.resolve()) for p in programs)
+ rows=package_artifacts(catalog)
+ for h in helper_artifacts:rows.append({"origin":"normal-six-helper-build-epoch2","target_name":h["target"]["name"],**rec(pathlib.Path(h["path"]))})
+ helper_paths={}
+ for row in rows:helper_paths.setdefault(row["path"],[]).append({k:v for k,v in row.items() if k not in ("path","bytes","sha256")})
+ helpers_before=[{"origins":origins,**rec(pathlib.Path(path))} for path,origins in sorted(helper_paths.items())]
+ assert sorted(pathlib.Path(h["path"]).name for h in helpers_before)==historical_helper_names,"new epoch helper roster mismatch"
+ assert all(pathlib.Path(h["path"]).resolve().is_relative_to(epoch_target.resolve()) for h in helpers_before)
+ after_catalog_helpers=helpers_before
+ save("new-epoch-identity-binding.json",{"source":source,"new_target":str(epoch_target),"historical_programs":[original_programs[p["binary_id"]] for p in programs],"new_programs":programs,"historical_helper_roster":historical_helper_names,"new_helpers":helpers_before,"old_hashes_are_not_new_qualification":True})
+ save("selection.json",{"source":source,"selected":selected,"original_ignored":ignored,"filter_unmatched":unmatched,"test_programs_after_catalog_before_just":programs,"helpers_after_catalog_before_just":after_catalog_helpers,"catalog_non_test_binaries":catalog["rust-build-meta"]["non-test-binaries"],"exact_full_workspace_graph":True})
+ junit=tree/"codex-rs/target/nextest/local/junit.xml";prior_junit=rec(junit) if junit.exists() else None;started=time.time_ns()
+ test=phase("app-disconnect-original-diagnostic",test_argv)
+ assert junit.is_file() and junit.stat().st_mtime_ns>=started-2_000_000_000
+ assert prior_junit is None or rec(junit)["sha256"]!=prior_junit["sha256"]
+ copy=out/"app-disconnect-original-diagnostic.junit.xml";copy.write_bytes(junit.read_bytes())
+ cases=[]
+ for c in ET.parse(copy).getroot().iter("testcase"):
+  result="FAIL" if c.find("failure") is not None else "ERROR" if c.find("error") is not None else "SKIP" if c.find("skipped") is not None else "PASS"
+  cases.append({"classname":c.attrib.get("classname"),"name":c.attrib.get("name"),"seconds":c.attrib.get("time"),"result":result,"failure":"\n".join(x.text or "" for x in c if x.tag in ("failure","error"))})
+ assert len(cases)==1 and cases[0]["classname"]=="codex-app-server::all" and cases[0]["name"]==expected_case and cases[0]["result"]!="SKIP"
+ programs_after=[{"binary_id":p["binary_id"],**rec(pathlib.Path(p["path"]))} for p in programs]
+ helpers_after=[{"origins":h["origins"],**rec(pathlib.Path(h["path"]))} for h in helpers_before]
+ raw=(out/"app-disconnect-original-diagnostic.log").read_text()
+ skip_notices=[l for l in raw.splitlines() if re.search(r"\bskipping\b",l,re.I)]
+ observation=json.loads((out/"owned-process-observation-summary.json").read_text())
+ guard("final");export("source-map-diagnostic-after-test.json")
+ probes=read_parent_probes(raw)
+ complete=programs==programs_after and helpers_after==helpers_before and not observation["observer_errors"] and len(observation["known_fixture_markers"])==1 and not skip_notices and probes["all_probe_phases_complete"]
+ result={"source":source,"new_target_epoch":str(epoch_target),"old_target_untouched":str(root/"target"),"old_hashes_are_not_new_qualification":True,"normal_helper_build_receipt":rec(out/"normal-six-helper-build-epoch2-receipt.json"),"root_guard_blob":request["root_guard_blob"],"host":"rog","cargo_profile":"dev-small","nextest_profile":"local","retries":0,"cases":cases,"selected_count":1,"original_ignored_count":len(ignored),"filter_unmatched_count":len(unmatched),"exact_full_feature_graph":True,"programs_before":programs,"programs_after":programs_after,"programs_stable":programs==programs_after,"helpers_before":helpers_before,"helpers_after":helpers_after,"helpers_stable":helpers_before==helpers_after,"ordinary_index_before":initial_index,"ordinary_index_after":rec(index_path),"locks_before":initial_locks,"locks_after":{p:rec(tree/p) for p in initial_locks},"source_unchanged":True,"original_just_exit":test["exit_code"],"original_raw":rec(out/"app-disconnect-original-diagnostic.log"),"fresh_junit":rec(copy),"skip_notices":skip_notices,"process_observation":observation,"parent_lifecycle_probes":probes,"observation_complete":complete,"test_passed":test["exit_code"]==0 and cases[0]["result"]=="PASS","limit":"Diagnostic attempt only. A changed outcome is not a production repair. The original full failure remains preserved. No source or test budget changed.","next_step":"Stop for root review; no hygiene or subsequent tests."}
+ save("terminal.json",result)
+ for name in ("terminal.json","selection.json","owned-process-observation-summary.json","owned-process-observations.jsonl","parent-lifecycle-probe-observations.json"):
+  save(name+".parts.json",split(out/name,name.replace(".","-")))
+ print(json.dumps({"terminal":result["test_passed"],"source":source,"cases":cases,"observation_complete":complete,"markers":observation["known_fixture_markers"],"helpers_stable":result["helpers_stable"],"programs_stable":result["programs_stable"]}),flush=True)
+ if not result["test_passed"] or not complete:raise SystemExit(1)
+except Exception as e:
+ save("driver-error.json",{"source":source,"error_type":type(e).__name__,"error":str(e),"traceback":traceback.format_exc(),"phases":phases})
+ print(json.dumps({"terminal":False,"source":source,"driver_error":str(e)}),flush=True)
+ raise
+finally:
+ original_type,original_value,original_traceback=sys.exc_info();restored=False;baseline_already_exact=False;restore_error=None;eligibility_error=None
+ try:
+  try:
+   guard("restoration-eligible",request["guard"]["diagnostic_tree"])
+  except BaseException as e:
+   eligibility_error={"type":type(e).__name__,"message":str(e)}
+   guard("original-source-already-exact",request["guard"]["before_tree"])
+   source=request["guard"]["before_tree"];baseline_already_exact=True
+  else:
+   source=request["guard"]["diagnostic_tree"]
+   apply_source_files("restore-parent-observation",request["guard"]["restore_files"],request["guard"]["before_tree"])
+   restored=True;export("source-map-restored.json")
+ except BaseException as e:
+  restore_error={"type":type(e).__name__,"message":str(e),"traceback":"".join(traceback.format_exception(type(e),e,e.__traceback__))}
+ finally:
+  save("temporary-source-restoration.json",{"temporary_applied":temporary_applied,"diagnostic_tree":request["guard"]["diagnostic_tree"],"expected_restored_tree":request["guard"]["before_tree"],"source_variable_at_terminal":source,"restored_exact_original":restored,"original_source_already_exact":baseline_already_exact,"diagnostic_eligibility_error":eligibility_error,"restoration_error":restore_error,"original_exception":{"type":original_type.__name__,"message":str(original_value),"traceback":"".join(traceback.format_exception(original_type,original_value,original_traceback))} if original_type is not None else None,"limit":"Only the exact owned temporary tree with unchanged ordinary index, locks and reviewed untracked inputs may be restored. Existing target executables remain bound to the diagnostic build until a later source-bound rebuild; restoration is not a production fix or binary qualification."})
+  print(json.dumps({"restoration_terminal":restored,"original_source_already_exact":baseline_already_exact,"source":source,"restoration_error":restore_error}),flush=True)
+ if restore_error is not None and original_type is None:raise RuntimeError("temporary diagnostic source restoration failed")

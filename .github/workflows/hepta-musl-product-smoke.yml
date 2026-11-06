@@ -1,0 +1,451 @@
+name: Hepta musl product smoke
+
+# Explicit product build/process evidence; independent of the existing blocking matrix.
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/hepta-musl-product-smoke.yml"
+      - ".github/actions/prepare-bazel-ci/**"
+      - ".github/actions/setup-bazel-ci/**"
+      - ".github/actions/setup-ci/**"
+      - ".github/scripts/run_bazel_with_buildbuddy.py"
+      - "codex-rs/**"
+      - "bazel/**"
+      - "third_party/**"
+      - "patches/**"
+      - "MODULE.bazel"
+      - "MODULE.bazel.lock"
+      - "BUILD.bazel"
+      - "defs.bzl"
+      - ".bazelrc"
+      - ".bazelversion"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-musl-product-smoke::${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  musl-product-smoke:
+    name: Static x86_64 musl Hepta CLI build and process smoke
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    environment:
+      name: bazel
+      deployment: false
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+
+      - name: Record exact checkout and runner
+        env:
+          QUALIFICATION_PR_HEAD: ${{ github.event.pull_request.head.sha }}
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import json
+          import os
+          import platform
+          import subprocess
+          from pathlib import Path
+
+          out = Path(os.environ["RUNNER_TEMP"]) / "hepta-musl-product-smoke"
+          out.mkdir(parents=True, exist_ok=True)
+          def git(*args):
+              return subprocess.check_output(["git", *args], text=True).strip()
+
+          source = {
+              "schema_version": 1,
+              "repository": os.environ["GITHUB_REPOSITORY"],
+              "event": os.environ["GITHUB_EVENT_NAME"],
+              "run_id": os.environ["GITHUB_RUN_ID"],
+              "run_attempt": os.environ["GITHUB_RUN_ATTEMPT"],
+              "workflow_ref": os.environ["GITHUB_WORKFLOW_REF"],
+              "workflow_sha": os.environ["GITHUB_WORKFLOW_SHA"],
+              "expected_checkout": os.environ["GITHUB_SHA"],
+              "pr_head": os.environ.get("QUALIFICATION_PR_HEAD") or None,
+              "checkout": git("rev-parse", "HEAD"),
+              "tree": git("rev-parse", "HEAD^{tree}"),
+              "parents": [line.split(" ", 1)[1] for line in
+                          git("cat-file", "-p", "HEAD").split("\n\n", 1)[0].splitlines()
+                          if line.startswith("parent ")],
+              "tracked_changes_before": git("status", "--porcelain", "--untracked-files=no"),
+              "runner": {"os": platform.system(), "machine": platform.machine(),
+                         "kernel": platform.release(), "image_os": os.environ.get("ImageOS"),
+                         "image_version": os.environ.get("ImageVersion")},
+              "inputs": {path: git("rev-parse", "HEAD:" + path) for path in (
+                  ".github/workflows/hepta-musl-product-smoke.yml",
+                  ".github/actions/prepare-bazel-ci/action.yml",
+                  ".github/actions/setup-bazel-ci/action.yml",
+                  ".github/scripts/run_bazel_with_buildbuddy.py",
+                  ".bazelrc", ".bazelversion", "MODULE.bazel", "MODULE.bazel.lock",
+                  "BUILD.bazel", "defs.bzl", "bazel/platforms/release_binaries.bzl",
+                  "codex-rs/Cargo.lock", "codex-rs/cli/BUILD.bazel",
+                  "codex-rs/cli/src/main_impl.rs")},
+          }
+          (out / "source.json").write_text(json.dumps(source, indent=2) + "\n")
+          if source["checkout"] != source["expected_checkout"] or source["tracked_changes_before"]:
+              raise SystemExit("checkout identity or tracked source cleanliness mismatch")
+          if source["runner"]["os"] != "Linux" or source["runner"]["machine"] != "x86_64":
+              raise SystemExit("this qualification requires the declared native Linux x86_64 runner")
+          PY
+
+      - name: Prepare existing Bazel CI tools and cache
+        uses: ./.github/actions/prepare-bazel-ci
+        with:
+          target: x86_64-unknown-linux-musl
+          cache-scope: hepta-musl-product-smoke
+
+      - name: Build explicit musl product and run those exact bytes
+        timeout-minutes: 110
+        env:
+          BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_API_KEY }}
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import ast
+          import hashlib
+          import json
+          import os
+          import re
+          import shutil
+          import struct
+          import subprocess
+          import sys
+          import time
+          from pathlib import Path
+
+          out = Path(os.environ["RUNNER_TEMP"]) / "hepta-musl-product-smoke"
+          source = json.loads((out / "source.json").read_text())
+          target = "//codex-rs/cli:hepta_linux_amd64_musl"
+          inner_target = "//codex-rs/cli:hepta"
+          target_platform = "@rules_rs//rs/platforms:x86_64-unknown-linux-musl"
+          wrapper = [sys.executable, ".github/scripts/run_bazel_with_buildbuddy.py"]
+          # The explicit target platform follows ci-linux; GNU host/exec platforms are unchanged.
+          # Keep ci when the existing wrapper removes credentialed ci-linux in keyless mode.
+          options = ["--config=ci-linux", "--config=ci", "-c", "opt",
+                     "--platforms=" + target_platform, "--lockfile_mode=error",
+                     "--remote_download_toplevel"]
+          receipt = {
+              "schema_version": 1, "status": "running", "qualified": False,
+              "scope": "existing static x86_64 musl Hepta CLI build and two CLI process smokes on Ubuntu",
+              "full_musl_behavior_qualified": False, "alpine_deployment_qualified": False,
+              "target": target, "target_platform": target_platform,
+              "source": source["checkout"], "tree": source["tree"],
+              "buildbuddy_key_present": bool(os.environ.get("BUILDBUDDY_API_KEY")),
+              "cache_policy": "existing CI cache policy; no fresh-compilation claim",
+              "commands": [],
+          }
+
+          def save():
+              (out / "receipt.json").write_text(json.dumps(receipt, indent=2) + "\n")
+
+          def digest(path):
+              value = hashlib.sha256()
+              with path.open("rb") as stream:
+                  for chunk in iter(lambda: stream.read(1024 * 1024), b""):
+                      value.update(chunk)
+              return value.hexdigest()
+
+          def run(name, argv, *, timeout=None, env=None):
+              entry = {"name": name, "argv": argv, "timeout_seconds": timeout,
+                       "attempt": 1, "timed_out": False, "exit_code": None}
+              receipt["commands"].append(entry)
+              save()
+              print("Starting " + name, flush=True)
+              start = time.monotonic()
+              try:
+                  with (out / (name + ".stdout")).open("wb") as stdout:
+                      with (out / (name + ".stderr")).open("wb") as stderr:
+                          result = subprocess.run(argv, stdout=stdout, stderr=stderr,
+                                                  stdin=subprocess.DEVNULL, env=env,
+                                                  timeout=timeout, check=False)
+                  entry["exit_code"] = result.returncode
+              except subprocess.TimeoutExpired:
+                  entry["timed_out"] = True
+                  raise
+              finally:
+                  entry["elapsed_seconds"] = time.monotonic() - start
+                  save()
+                  print(name + " finished: " + str(entry["exit_code"]), flush=True)
+              if entry["exit_code"] != 0:
+                  raise RuntimeError(name + " returned nonzero; see its retained logs")
+              return (out / (name + ".stdout")).read_bytes()
+
+          try:
+              for program in ("readelf", "file"):
+                  if shutil.which(program) is None:
+                      raise RuntimeError("required runner tool is unavailable: " + program)
+              run("bazel-version", ["bazel", "--version"])
+              expression = (
+                  'str({"label": str(target.label), '
+                  '"platforms": [str(p) for p in build_options(target)["//command_line_option:platforms"]], '
+                  '"executable": providers(target)["DefaultInfo"].files_to_run.executable.path})'
+              )
+              platform_raw = run("cquery-platform", [*wrapper, "cquery", *options,
+                                 "--output=starlark", "--starlark:expr=str(target.label)",
+                                 target_platform])
+              platform_rows = [line.strip() for line in platform_raw.decode().splitlines() if line.strip()]
+              platform_rows = sorted(set(platform_rows))
+              if len(platform_rows) != 1:
+                  raise RuntimeError("expected one resolved explicit musl platform")
+              resolved_platform = platform_rows[0]
+              receipt["resolved_target_platform"] = resolved_platform
+              records = []
+              for name, label in (("outer", target), ("inner", inner_target)):
+                  raw = run("cquery-" + name, [*wrapper, "cquery", *options,
+                            "--universe_scope=" + target, "--output=starlark",
+                            "--starlark:expr=" + expression, label])
+                  rows = [ast.literal_eval(line) for line in raw.decode().splitlines() if line.strip()]
+                  if len(rows) != 1:
+                      raise RuntimeError("expected one configured target for " + label)
+                  row = rows[0]
+                  if row["label"] not in (label, "@@" + label):
+                      raise RuntimeError("configured label mismatch")
+                  if row["platforms"] != [resolved_platform]:
+                      raise RuntimeError("configured product platform differs from the resolved musl platform")
+                  path = Path(row["executable"])
+                  if path.is_absolute() or ".." in path.parts or not path.parts or path.parts[0] != "bazel-out":
+                      raise RuntimeError("configured executable is not a relative Bazel output")
+                  records.append(row)
+              receipt["configured_targets"] = records
+              # Inspect the configured Rust actions before executing the build.
+              # Platform labels alone do not establish the Rust target ABI.
+              rust_expression = (
+                  'str({"label": str(target.label), '
+                  '"platforms": [str(p) for p in build_options(target)["//command_line_option:platforms"]], '
+                  '"actions": [{"mnemonic": a.mnemonic, '
+                  '"rust_target_flags": [v for v in a.argv if v.startswith("--target=")], '
+                  '"linker_target_flags": [v for v in a.argv if v.startswith("--codegen=link-arg=") and v.endswith("-linux-musl")], '
+                  '"stdlib_search_paths": [v for v in a.argv if "/lib/rustlib/" in v and v.endswith("/lib")], '
+                  '"compiler_paths": [v for v in a.argv if v.endswith("/bin/rustc")]} '
+                  'for a in target.actions if a.mnemonic == "Rustc"]})'
+              )
+              rust_records = []
+              for name, label in (("product", inner_target), ("bwrap", "//codex-rs/bwrap:bwrap")):
+                  raw = run("cquery-rust-" + name, [*wrapper, "cquery", *options,
+                            "--universe_scope=" + target, "--output=starlark",
+                            "--starlark:expr=" + rust_expression, label])
+                  rows = [ast.literal_eval(line) for line in raw.decode().splitlines() if line.strip()]
+                  selected = [row for row in rows if row["platforms"] == [resolved_platform]]
+                  if len(selected) != 1 or selected[0]["label"] not in (label, "@@" + label):
+                      raise RuntimeError("expected one product-configured Rust target for " + label)
+                  row = selected[0]
+                  if len(row["actions"]) != 1:
+                      raise RuntimeError("expected one Rustc action for " + label)
+                  action = row["actions"][0]
+                  if action["rust_target_flags"] != ["--target=x86_64-unknown-linux-musl"]:
+                      raise RuntimeError("Rust action does not target musl: " + label)
+                  if action["linker_target_flags"] != ["--codegen=link-arg=x86_64-linux-musl"]:
+                      raise RuntimeError("Rust action does not use the musl C linker target: " + label)
+                  expected_stdlib = "/lib/rustlib/x86_64-unknown-linux-musl/lib"
+                  if not action["stdlib_search_paths"] or any(
+                      not path.endswith(expected_stdlib) for path in action["stdlib_search_paths"]
+                  ):
+                      raise RuntimeError("Rust action does not use the musl standard library: " + label)
+                  if len(action["compiler_paths"]) != 1:
+                      raise RuntimeError("expected one configured Rust compiler for " + label)
+                  rust_records.append(row)
+              receipt["rust_target_actions"] = rust_records
+              receipt["rust_action_graph_qualified"] = True
+              save()
+              bep = Path(os.environ["RUNNER_TEMP"]) / "hepta-musl-product-build.bep.json"
+              run("build", [*wrapper, "build", *options,
+                            "--build_metadata=COMMIT_SHA=" + source["checkout"],
+                            "--build_metadata=REPO_URL=https://github.com/TrillionniumFoundation/hepta-private-ci",
+                            "--build_metadata=TAG_workflow=hepta-musl-product-smoke",
+                            "--build_event_json_file=" + str(bep), target])
+              execroot = Path(run("execution-root", [*wrapper, "info", "execution_root"]).decode().strip()).resolve(strict=True)
+              output_base = Path(run("output-base", [*wrapper, "info", "output_base"]).decode().strip()).resolve(strict=True)
+              if not execroot.is_relative_to(output_base):
+                  raise RuntimeError("execution root is outside the reported Bazel output base")
+              outer = execroot / records[0]["executable"]
+              inner = execroot / records[1]["executable"]
+              if not outer.samefile(inner):
+                  raise RuntimeError("platform wrapper and musl product do not resolve to the same file")
+              actual = inner.resolve(strict=True)
+              if not actual.is_relative_to(execroot):
+                  raise RuntimeError("resolved product is outside the reported Bazel execution root")
+              if not actual.is_file() or not os.access(actual, os.X_OK):
+                  raise RuntimeError("configured product is not a materialized executable")
+              binary_dir = out / "binary"
+              binary_dir.mkdir()
+              binary = binary_dir / "hepta"
+              shutil.copy2(actual, binary)
+              before = digest(actual)
+              if digest(binary) != before:
+                  raise RuntimeError("staged product differs from the configured build output")
+              with binary.open("rb") as stream:
+                  header = stream.read(64)
+              if len(header) != 64 or header[:6] != b"\x7fELF\x02\x01":
+                  raise RuntimeError("expected an ELF64 little-endian product")
+              elf_type, machine = struct.unpack_from("<HH", header, 16)
+              if machine != 62 or elf_type not in (2, 3):
+                  raise RuntimeError("expected an x86_64 ELF executable or PIE")
+              run("file", ["file", "--brief", str(binary)])
+              elf = run("readelf", ["readelf", "--wide", "--file-header",
+                                   "--program-headers", "--dynamic", str(binary)]).decode()
+              has_interpreter = bool(re.search(r"^\s*INTERP\s", elf, re.MULTILINE))
+              has_needed = "(NEEDED)" in elf
+              receipt["product"] = {
+                  "configured_executable": str(actual), "wrapper_executable": str(outer),
+                  "artifact": "binary/hepta", "bytes": binary.stat().st_size, "sha256": before,
+                  "elf_class": 64, "elf_endian": "little", "elf_machine": machine,
+                  "elf_type": elf_type, "has_pt_interp": has_interpreter, "has_dt_needed": has_needed,
+              }
+              save()
+              if has_interpreter or has_needed:
+                  raise RuntimeError("the selected musl product is not static; no GNU-loader fallback is accepted")
+              smoke_env = os.environ.copy()
+              smoke_env.pop("BUILDBUDDY_API_KEY", None)
+              product_home = Path(os.environ["RUNNER_TEMP"]) / "hepta-musl-smoke-home"
+              product_home.mkdir(exist_ok=True)
+              smoke_env["HEPTA_HOME"] = str(product_home)
+              for name, flag in (("version", "--version"), ("help", "--help")):
+                  if digest(binary) != before:
+                      raise RuntimeError("staged product changed before smoke")
+                  output = run(name, [str(binary), flag], timeout=30, env=smoke_env).decode()
+                  receipt["commands"][-1]["executed_sha256"] = before
+                  receipt["commands"][-1]["post_sha256"] = digest(binary)
+                  save()
+                  if receipt["commands"][-1]["post_sha256"] != before:
+                      raise RuntimeError("staged product changed during smoke")
+                  if name == "version" and not output.startswith("hepta "):
+                      raise RuntimeError("Hepta version output was not observed")
+                  if name == "help" and ("Hepta CLI" not in output or "Usage: hepta " not in output):
+                      raise RuntimeError("Hepta help output was not observed")
+              receipt["status"] = "passed"
+              receipt["qualified"] = True
+          except BaseException as error:
+              receipt["status"] = "failed"
+              receipt["failure_type"] = type(error).__name__
+              raise
+          finally:
+              save()
+          PY
+
+      - name: Finalize source and bounded-scope artifact evidence
+        id: finalize
+        if: always() && !cancelled()
+        env:
+          BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_API_KEY }}
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import hashlib
+          import json
+          import os
+          import subprocess
+          from pathlib import Path
+
+          out = Path(os.environ["RUNNER_TEMP"]) / "hepta-musl-product-smoke"
+          out.mkdir(exist_ok=True)
+          secret = os.environ.get("BUILDBUDDY_API_KEY", "").encode()
+          def digest(path):
+              value = hashlib.sha256()
+              with path.open("rb") as stream:
+                  for chunk in iter(lambda: stream.read(1024 * 1024), b""):
+                      value.update(chunk)
+              return value.hexdigest()
+
+          # BEP options/client environment can contain credentials. Retain only the
+          # event/metric projection below, never the raw options, command lines or environment.
+          raw_bep = Path(os.environ["RUNNER_TEMP"]) / "hepta-musl-product-build.bep.json"
+          projection = []
+          malformed_lines = 0
+          if raw_bep.exists():
+              for line in raw_bep.read_text().splitlines():
+                  try:
+                      event = json.loads(line)
+                  except json.JSONDecodeError:
+                      malformed_lines += 1
+                      continue
+                  selected = {}
+                  if "started" in event:
+                      selected["started"] = {k: event["started"][k] for k in
+                                            ("uuid", "buildToolVersion", "command") if k in event["started"]}
+                  if "finished" in event:
+                      selected["finished"] = {k: event["finished"][k] for k in
+                                             ("overallSuccess", "exitCode") if k in event["finished"]}
+                  if "completed" in event:
+                      selected["target"] = event.get("id", {}).get("targetCompleted")
+                      selected["completed"] = {k: event["completed"][k] for k in
+                                              ("success", "targetKind") if k in event["completed"]}
+                  if "buildMetrics" in event:
+                      selected["buildMetrics"] = {k: event["buildMetrics"][k] for k in
+                                                 ("actionSummary", "targetMetrics", "timingMetrics")
+                                                 if k in event["buildMetrics"]}
+                  if selected:
+                      projection.append(selected)
+          (out / "build-events-projection.json").write_text(json.dumps({
+              "raw_bep_present": raw_bep.exists(), "malformed_lines": malformed_lines,
+              "raw_bep_sha256": digest(raw_bep) if raw_bep.exists() else None,
+              "raw_options_environment_and_command_lines_retained": False, "events": projection,
+          }, indent=2) + "\n")
+          # Redact the sole workflow-provided credential in textual logs before upload.
+          for path in out.rglob("*"):
+              if path.is_file() and "binary" not in path.relative_to(out).parts:
+                  data = path.read_bytes()
+                  if secret:
+                      data = data.replace(secret, b"[REDACTED_BUILDBUDDY_API_KEY]")
+                  path.write_bytes(data)
+          source_path = out / "source.json"
+          source = json.loads(source_path.read_text()) if source_path.exists() else {}
+          head = subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip()
+          tree = subprocess.check_output(["git", "rev-parse", "HEAD^{tree}"], text=True).strip()
+          changes = subprocess.check_output(
+              ["git", "status", "--porcelain", "--untracked-files=no"], text=True).strip()
+          receipt_path = out / "receipt.json"
+          receipt = json.loads(receipt_path.read_text()) if receipt_path.exists() else {
+              "status": "not_executed", "qualified": False,
+          }
+          receipt["terminal_source"] = {"checkout": head, "tree": tree, "tracked_changes": changes}
+          receipt["source_unchanged"] = head == source.get("checkout") and tree == source.get("tree") and not changes
+          binary = out / "binary" / "hepta"
+          receipt["terminal_product_sha256"] = digest(binary) if binary.is_file() else None
+          receipt["product_unchanged"] = (
+              receipt["terminal_product_sha256"] is not None
+              and receipt["terminal_product_sha256"] == receipt.get("product", {}).get("sha256"))
+          receipt["qualified"] = bool(receipt.get("qualified") and receipt.get("rust_action_graph_qualified")
+                                      and receipt["source_unchanged"]
+                                      and receipt["product_unchanged"])
+          receipt_path.write_text(json.dumps(receipt, indent=2) + "\n")
+          manifest = []
+          for path in sorted(out.rglob("*")):
+              if path.is_file():
+                  manifest.append({"path": str(path.relative_to(out)),
+                                   "bytes": path.stat().st_size, "sha256": digest(path)})
+          (out / "artifact-manifest.json").write_text(json.dumps(manifest, indent=2) + "\n")
+          PY
+
+      - name: Require the narrow qualification receipt
+        if: always() && !cancelled() && steps.finalize.outcome == 'success'
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+          path = Path(os.environ["RUNNER_TEMP"]) / "hepta-musl-product-smoke" / "receipt.json"
+          receipt = json.loads(path.read_text())
+          if not receipt.get("qualified"):
+              raise SystemExit("musl product build/process qualification did not pass")
+          PY
+
+      - name: Upload product bytes and qualification evidence
+        if: always() && !cancelled() && steps.finalize.outcome == 'success'
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+        with:
+          name: hepta-musl-product-smoke-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/hepta-musl-product-smoke
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Check for a clean worktree
+        if: always() && !cancelled()
+        uses: ./.github/actions/check-clean-worktree

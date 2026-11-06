@@ -1,0 +1,21 @@
+{
+  "source_tree": "f8251e1d14fa8524ab469281296cd4cf708f173c",
+  "original_raw": {
+    "path": "/workspace/scratch/07dd58cc9630/ci-audit/recovered-20261105/full-f825-original.log",
+    "bytes": 34360967,
+    "sha256": "75cd2cd5c89ce70781781c3b8c3e1bb168720b83bf6961c206720b3c08efe15c"
+  },
+  "test": "suite::v2::command_exec::command_exec_process_ids_are_connection_scoped_and_disconnect_terminates_process",
+  "blocks": [
+    {
+      "raw_path": "/workspace/scratch/07dd58cc9630/ci-audit/recovered-20261105/full-f825-app-disconnect-0.log",
+      "start_line": 63482,
+      "end_line": 63507,
+      "byte_offset": 6858334,
+      "bytes": 1821,
+      "sha256": "6a785cbd30a6fa9dfe2a6a14d752a45f80bbd467c9cd056870b5ff46a85933c1",
+      "content": "        FAIL [   5.706s] codex-app-server::all suite::v2::command_exec::command_exec_process_ids_are_connection_scoped_and_disconnect_terminates_process\n  stdout \u2500\u2500\u2500\n\n    running 1 test\n    test suite::v2::command_exec::command_exec_process_ids_are_connection_scoped_and_disconnect_terminates_process ... FAILED\n\n    failures:\n\n    failures:\n        suite::v2::command_exec::command_exec_process_ids_are_connection_scoped_and_disconnect_terminates_process\n\n    test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1018 filtered out; finished in 5.69s\n\n  stderr \u2500\u2500\u2500\n    [websocket app-server stderr] 2026-11-05T00:52:22.150193Z ERROR codex_app_server: Project-local config, hooks, and exec policies are disabled in the following folders until the project is trusted, but skills still load.\n    [websocket app-server stderr]     1. /home/qian-qi/work/hepta-audit-r3-fullgate-20261104/source/.codex\n    [websocket app-server stderr]        To load project-local config, hooks, and exec policies, add /home/qian-qi/work/hepta-audit-r3-fullgate-20261104/source as a trusted project in /tmp/.tmp5i23lL/config.toml.\n    [websocket app-server stderr] \n    [websocket app-server stderr] codex app-server (WebSockets)\n    [websocket app-server stderr]   listening on: ws://127.0.0.1:46803\n    [websocket app-server stderr]   readyz: http://127.0.0.1:46803/readyz\n    [websocket app-server stderr]   healthz: http://127.0.0.1:46803/healthz\n    [websocket app-server stderr]   note: binds localhost only (use SSH port-forwarding for remote access)\n    [websocket app-server stderr] 2026-11-05T00:52:24.622972Z  WARN codex_app_server::transport: dropping message for disconnected connection: ConnectionId(0)\n    Error: process marker \"codex-command-exec-marker-1793839941980771310\" did not exit before timeout\n\n"
+    }
+  ],
+  "new_execution": false
+}

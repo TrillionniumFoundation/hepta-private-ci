@@ -1,0 +1,33 @@
+{
+  "schema": "hepta.sqlx.published-crate-transfer-verification.v1",
+  "status": "EXACT_READ_ONLY_ARCHIVE_TRANSFER_VERIFIED",
+  "bytes": 93440,
+  "sha256": "488e99c397a62007e4229aec669a179816339afc6d2620ca6fa420dbee2e982c",
+  "git_blob": "ba066c6090be2051481fb746326fcc2017dd8de4",
+  "source_receipt": "93b99eb2fc88c5b8fd4b48f7efc0db8057e24d47",
+  "version": "66306:27837092:93440:1793830934258845695:1793830934258845695",
+  "chunks": [
+    {
+      "offset": 0,
+      "next_offset": 65536,
+      "eof": false,
+      "size": 93440,
+      "chunk_sha256": "bf3a2c1710f13870863a325f869c4d8461dca75d54c8f52a9a68be550ff6d189"
+    },
+    {
+      "offset": 65536,
+      "next_offset": 93440,
+      "eof": true,
+      "size": 93440,
+      "chunk_sha256": "f16718d8b4dd73857c52cdb6b012115e8758b4378c04d95d9f5be2fd78674d50"
+    }
+  ],
+  "host": "rog",
+  "native_operations": [
+    "binary_read offset=0 limit=65536",
+    "binary_read offset=65536 limit=65536 expected_version=first.version"
+  ],
+  "no_native_process_or_mutation": true,
+  "full_archive_transferred": true,
+  "extraction_or_patch_not_yet_qualified": true
+}

@@ -1,0 +1,42 @@
+{
+  "scope": "Static candidate only; original assertions execute unchanged in a private child with an actual local Git clone of the inferred official URL.",
+  "path": "codex-rs/external-agent-migration/src/service_tests/plugins/marketplaces.rs",
+  "before": {
+    "bytes": 27353,
+    "sha256": "a0899f521c2e3eb2a65d012c65a9d9e6531928e4ee692786085ed36131c27d5b",
+    "git_blob": "682000381ac7da7d5c4022a83ee6aaf991aa4df5"
+  },
+  "after": {
+    "bytes": 30695,
+    "sha256": "1900d0dcab3fb4a5bc3c24dd277c2da249d2b917cc6bd10a31bc103f5a37c5d3",
+    "git_blob": "5894278bdfb88d5272180651d1a66123cd105200"
+  },
+  "patch": {
+    "bytes": 3932,
+    "sha256": "6313ea3a32d2fcf1f170739548b8bb86312be6274e56e00705ddf5e37e5ceb07",
+    "git_blob": "d357eaeda4c184cf31da39d0f2292cc75d9081ca"
+  },
+  "original_body_preserved": true,
+  "compile_or_test_execution": false,
+  "negative_control_proposed": "Remove only the official marketplace inference tuple in source_cla.rs; the same child must reach the original succeeded_marketplaces assertion and fail; then restore exact production bytes.",
+  "limits": [
+    "No remote marketplace freshness or network connectivity claim.",
+    "Child inherits all security environment; only a private Git global config and reexecution marker are passed explicitly.",
+    "Original parent deadline, original test name and every original result/error assertion remain unchanged."
+  ],
+  "independent_root_patch_apply_reverse_exact": true,
+  "causal_negative_objects": [
+    {
+      "kind": "negative_source",
+      "bytes": 13202,
+      "sha256": "eae19dcc7d235addac73c9f97ca20592aed80eeb8350d3aa2362cd99386d4335",
+      "git_blob": "54e2051499f2726bf52436e45c046529210de6b0"
+    },
+    {
+      "kind": "negative_patch",
+      "bytes": 422,
+      "sha256": "ca6c29846fdc013908a3a9a1036f8326a201ed789970bfededf712e9e4247a15",
+      "git_blob": "abd5fba712f305292ad0bacf0daedf898891f8e7"
+    }
+  ]
+}

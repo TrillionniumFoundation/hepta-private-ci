@@ -1,0 +1,171 @@
+{
+  "schema": "hepta.fourth-doctor-three.root-review.v1",
+  "created_at_utc": "2026-11-04 22:13:37 UTC",
+  "reviewer": "root",
+  "source_tree": "1c2aa1263d4087fb3432b7b900080a6af7215b14",
+  "full_original_bundle": "f02bf4f1256722f9f04a5154cd47f58f76bd9a42",
+  "verdict": "THREE_SELECTED_PASS_CONTROLLER_RESOURCE_STOP_REMAINS_EXACT_WINDOWS_PENDING",
+  "artifact_integrity": [
+    {
+      "name": "terminal.json",
+      "bytes": 15559,
+      "sha256": "c8933458d12c1e900586a00c6d5080592d2238c1bf918ecf65e7f51f7115f8c3",
+      "matches": true
+    },
+    {
+      "name": "doctor-three-review.json",
+      "bytes": 4598,
+      "sha256": "2ee5ae8ac669f73e23c24a2a54fc187a8db84edd4fdcc084732ef670fc5f7076",
+      "matches": true
+    },
+    {
+      "name": "doctor-three.junit.xml",
+      "bytes": 928,
+      "sha256": "8d24fa0b82569f3a805e96059c5d03568ef01eccba57b6eb1ae6e76eb5813454",
+      "matches": true
+    },
+    {
+      "name": "doctor-three.log",
+      "bytes": 20401,
+      "sha256": "44f2eede972762078c7e8aa185b50a7e15c5c73865f377b391cfd18eb7dbc393",
+      "matches": true
+    },
+    {
+      "name": "doctor-three-catalog.stdout",
+      "bytes": 43666,
+      "sha256": "1635f48fa8cae5dc8d019a7aa7794e026482742a703c21dbfabcd9bba2f6af30",
+      "matches": true
+    },
+    {
+      "name": "doctor-three-catalog.stderr",
+      "bytes": 27896,
+      "sha256": "092ce99307c72f79cb9b96b55b49bd093821e09c1e2d1352c295e76fd326bc59",
+      "matches": true
+    },
+    {
+      "name": "doctor-three-selection.json",
+      "bytes": 1627,
+      "sha256": "99cc72b52a01cc95c06ec11d56974d28e189a3ea182ebb2d7e2b8adc1aa8b82b",
+      "matches": true
+    },
+    {
+      "name": "native-host.json",
+      "bytes": 1483,
+      "sha256": "5f1632415b35516eb9aa1d35e54dbbb339604e9f1bb1274b152c996e8fbd679d",
+      "matches": true
+    },
+    {
+      "name": "pty-original-lib-plus-control-capacity-before-catalog.json",
+      "bytes": 73,
+      "sha256": "bd126abdfe835cdc1a1b2657a42dadd13101a6167af6bcc0a0f06c624b42063e",
+      "matches": true
+    }
+  ],
+  "actual_controller": {
+    "job_id": "1a1a8939f83-fc05-2f2b",
+    "state": "failed",
+    "exit_code": 1,
+    "error": "resource gate below 1.5GB before pty-original-lib-plus-control catalog",
+    "started_remaining_scopes": false
+  },
+  "actual_test": {
+    "command": [
+      "just",
+      "test",
+      "--locked",
+      "--offline",
+      "-p",
+      "codex-cli",
+      "--bin",
+      "hepta",
+      "-E",
+      "test(=doctor::tests::mcp_http_probe_falls_back_to_get_when_head_times_out) | test(=doctor::tests::mcp_http_probe_reports_both_timeouts_when_get_is_also_held) | test(=doctor::tests::http_probe_treats_http_status_as_reachable)",
+      "--no-tests",
+      "fail",
+      "--retries",
+      "0",
+      "--success-output",
+      "immediate"
+    ],
+    "seconds": 3.3751777269644663,
+    "exact_testcases": [
+      {
+        "name": "doctor::tests::http_probe_treats_http_status_as_reachable",
+        "classname": "codex-cli::bin/hepta",
+        "seconds": "0.109",
+        "result": "PASS",
+        "failure_text": ""
+      },
+      {
+        "name": "doctor::tests::mcp_http_probe_falls_back_to_get_when_head_times_out",
+        "classname": "codex-cli::bin/hepta",
+        "seconds": "0.208",
+        "result": "PASS",
+        "failure_text": ""
+      },
+      {
+        "name": "doctor::tests::mcp_http_probe_reports_both_timeouts_when_get_is_also_held",
+        "classname": "codex-cli::bin/hepta",
+        "seconds": "0.246",
+        "result": "PASS",
+        "failure_text": ""
+      }
+    ],
+    "xml_testcases": [
+      "doctor::tests::http_probe_treats_http_status_as_reachable",
+      "doctor::tests::mcp_http_probe_falls_back_to_get_when_head_times_out",
+      "doctor::tests::mcp_http_probe_reports_both_timeouts_when_get_is_also_held"
+    ],
+    "xml_failure_or_error_elements": false,
+    "raw_summaries": [
+      "    Starting 3 tests across 1 binary (263 tests skipped)",
+      "     Summary [   0.251s] 3 tests run: 3 passed, 263 skipped"
+    ],
+    "selected": 3,
+    "pass": 3,
+    "retries": 0,
+    "filtered_out": 263
+  },
+  "identity": {
+    "fresh_catalog_seconds": 233.19899116898887,
+    "after_catalog": [
+      {
+        "binary_id": "codex-cli::bin/hepta",
+        "path": "/home/qian-qi/work/hepta-audit-native-target-20261103/debug/deps/hepta-066e3ad5ff4f625a",
+        "bytes": 1038221504,
+        "sha256": "07379bed8bbb14fe7660d4060c2181e27716b67440ed84d87b93d6f22184c052"
+      }
+    ],
+    "before_just": [
+      {
+        "binary_id": "codex-cli::bin/hepta",
+        "path": "/home/qian-qi/work/hepta-audit-native-target-20261103/debug/deps/hepta-066e3ad5ff4f625a",
+        "bytes": 1038221504,
+        "sha256": "07379bed8bbb14fe7660d4060c2181e27716b67440ed84d87b93d6f22184c052"
+      }
+    ],
+    "after": [
+      {
+        "binary_id": "codex-cli::bin/hepta",
+        "path": "/home/qian-qi/work/hepta-audit-native-target-20261103/debug/deps/hepta-066e3ad5ff4f625a",
+        "bytes": 1038221504,
+        "sha256": "07379bed8bbb14fe7660d4060c2181e27716b67440ed84d87b93d6f22184c052"
+      }
+    ],
+    "matching": true,
+    "catalog_declared_non_test_helpers": {},
+    "phases_source_stable": true
+  },
+  "actual_http_observations": [
+    "    mcp_http_timeout_fixture get_response=RespondMethodNotAllowed client_started_us=221 client_returned_us=192703 server_result=(accept_errors,[(method,[(phase,us)],request_line_or_error)]):Ok(([], [(\"HEAD\", [(\"accepted\", 95600), (\"request_read_started\", 95666), (\"request_arrived\", 95908), (\"headers_arrived\", 95912), (\"hold_started\", 95913), (\"hold_finished\", 191965), (\"handler_returned\", 192018)], Ok(\"HEAD /mcp HTTP/1.1\\r\\n\")), (\"GET\", [(\"accepted\", 191934), (\"request_read_started\", 192061), (\"request_arrived\", 192264), (\"headers_arrived\", 192268), (\"response_write_started\", 192268), (\"response_sent\", 192296), (\"handler_returned\", 192318)], Ok(\"GET /mcp HTTP/1.1\\r\\n\"))]))",
+    "    mcp_http_timeout_fixture get_response=HoldWithoutResponse client_started_us=119 client_returned_us=187738 server_result=(accept_errors,[(method,[(phase,us)],request_line_or_error)]):Ok(([], [(\"HEAD\", [(\"accepted\", 88662), (\"request_read_started\", 88729), (\"request_arrived\", 88963), (\"headers_arrived\", 88967), (\"hold_started\", 88967), (\"hold_finished\", 177286), (\"handler_returned\", 177334)], Ok(\"HEAD /mcp HTTP/1.1\\r\\n\")), (\"GET\", [(\"accepted\", 177258), (\"request_read_started\", 177369), (\"request_arrived\", 177543), (\"headers_arrived\", 177547), (\"hold_started\", 177547), (\"hold_finished\", 228108), (\"handler_returned\", 228210)], Ok(\"GET /mcp HTTP/1.1\\r\\n\"))]))"
+  ],
+  "raw_contains_observations": true,
+  "interpretation": [
+    "Actual HEAD and GET request lines, response/hold outcomes and timings were preserved from the real TCP fixtures. Production test assertions and the configured 10ms test deadlines were not expanded.",
+    "Observed wall times include runtime/scheduler/connection overhead and must not be represented as exactly 10ms timeout latency.",
+    "The next PTY catalog did not start because the recorded free space was below the existing 1.5GB guard; the controller exit1 is preserved separately from the test PASS.",
+    "The 263 omitted cases are filter exclusions, not 263 passed tests; no full CLI, Windows or workspace acceptance is inferred.",
+    "No optional rerun is needed to repair counts. Remaining scopes move to an independent host and a separately recorded build profile."
+  ]
+}

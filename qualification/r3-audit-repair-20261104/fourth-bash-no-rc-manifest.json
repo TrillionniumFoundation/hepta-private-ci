@@ -1,0 +1,47 @@
+{
+  "schema": "hepta.fourth.bash-snapshot-no-rc-candidate.v1",
+  "status": "STATIC_CANDIDATE_NOT_APPLIED",
+  "path": "codex-rs/exec-server/src/shell_snapshot.rs",
+  "preimage": {
+    "blob": "e352d63641c9aba6f201ebb34ebb6d433f24c080",
+    "bytes": 11746,
+    "sha256": "bae797689be9f48fc85572ff9ebd09bc9d6f3e5b171caa4bdd9f8637c695298c"
+  },
+  "postimage": {
+    "blob": "ef1156328fa36ed41fb54f74f481b26196f4a118",
+    "bytes": 12086,
+    "sha256": "7f00a3d7cfc71376545ff4eea0cc3be8cc6303dc81a9484979d39984d9fd1170"
+  },
+  "patch": {
+    "blob": "cd3f8230cd714bcce2029d9c84b982fa901c7675",
+    "bytes": 788,
+    "sha256": "e40a6918cb323b7610b0930e3f8ce794c4a8505a6500ad3e52d81a5d108f182e"
+  },
+  "negative_tree": "c270ab7afca8d91c6b579f133fdf04af79300c9b",
+  "fixed_tree": "da60f29b6789434c394edeff3c79f59191ad932c",
+  "actual_baselines": [
+    "bcc3c856c6029bc03db15355c2705dd864f6fb4c",
+    "a82cf7b55f456a9b8c6820deaa701b6c27cf7584",
+    "263a23cecb280f02fc52873de8040f27abf1c99e"
+  ],
+  "observed": "The real readonly remote Bash process fails its first original full tuple with exit41. Bounded unset diagnostics locate the function in the actual test .bashrc, line2 of the actual snapshot restoration string beginning set +o privileged; BASH_ENV is absent. Therefore .bashrc has been executed before the restoration eval, despite -pc. The key-counterfactual has not yet reached its poison phase.",
+  "change": "Only after successful snapshot capture and restoration command construction, insert Bash --norc before the existing -pc. Preserve existing set +o privileged before user restoration/body. Do not alter capture command, fallback command, caching, environment filtering, permissions, seccomp, launchers, or any other shell.",
+  "primary_manual": [
+    {
+      "url": "https://www.gnu.org/software/bash/manual/html_node/Bash-Startup-Files",
+      "fact": "Bash can read .bashrc when it believes it is a noninteractive remote shell; --norc inhibits that path."
+    },
+    {
+      "url": "https://www.gnu.org/s/bash/manual/html_node/The-Set-Builtin.html",
+      "fact": "Privileged mode suppresses BASH_ENV/ENV and inherited functions; it is not a blanket documented suppression of the remote-shell .bashrc branch."
+    }
+  ],
+  "inference_limit": "The exact getpeername syscall leading to Bash remote-shell detection in this execution has not been traced. The fix does not depend on relaxing that syscall or assuming a specific errno; observed pre-restoration .bashrc execution is independently recorded.",
+  "qualification": "Remove both temporary unset diagnostics by restoring exact7027153 negative fixture; run the original single-key negative under same owning7 context. First full tuple + poison marker must now succeed, and second full tuple must fail. Restore only exact7794052 positive fixture, then original13 selected cases/all8 Linux snapshot matrix. Original test assertions, retries0 and deadlines remain.",
+  "limits": [
+    "No previously failed first tuple is counted as a valid cache-key counterfactual.",
+    "This is a product restoration fix in addition to the two test-only readonly fixture corrections; those fixture corrections alone did not pass.",
+    "--norc is used only for restoring an already captured snapshot. Original -lc capture and fallback still process their original startup behavior, including known host startup noise in other8 failures.",
+    "No Windows security boundary or new shell permission is changed. Fixed source has not executed."
+  ]
+}

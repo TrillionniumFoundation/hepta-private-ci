@@ -1,0 +1,135 @@
+{
+  "schema": "hepta.state.native-token-binding.static-roundtrip.v1",
+  "status": "STATIC_GIT_APPLY_AND_POSTIMAGE_PASS",
+  "uncompiled_unexecuted": true,
+  "native_worktree_target_or_ref_changed": false,
+  "phases": [
+    {
+      "name": "state-native-token-binding.patch",
+      "identity": {
+        "blob": "223ce97fbdeec446f8baf1f44831954041026321",
+        "bytes": 17656,
+        "sha256": "e5c9a1822ecd3d6b4f46709b356e10881d6f9a440cb6f1286807f67c02489e2d"
+      },
+      "commands": [
+        {
+          "argv": [
+            "git",
+            "apply",
+            "--whitespace=error-all",
+            "--check",
+            "state-native-token-binding.patch"
+          ],
+          "exit_code": 0,
+          "stdout": "",
+          "stderr": ""
+        },
+        {
+          "argv": [
+            "git",
+            "apply",
+            "--whitespace=error-all",
+            "state-native-token-binding.patch"
+          ],
+          "exit_code": 0,
+          "stdout": "",
+          "stderr": ""
+        }
+      ],
+      "actual_source_map": {
+        "codex-rs/hepta-memory/src/cognitive_store.rs": "1cb023504fa3b871e9c60d60b8ed84047c058072",
+        "codex-rs/hepta-memory/src/objective_sender_connection_custody_tests.rs": "6b8e88296507a8fe302aa45cd9015ce602465b56",
+        "codex-rs/state/src/sqlite.rs": "27b123f6862ca4355da74ed4d1b21c7047b3b2df",
+        "codex-rs/state/src/sqlite_native_custody_tests.rs": "469db639ae19cb89263089045c2f05814000d5a0"
+      },
+      "exact_expected_map": true
+    },
+    {
+      "name": "negative-no-options-binding.patch",
+      "identity": {
+        "blob": "842177e235d729e92e73e82c1ebd4fac2ede7fb2",
+        "bytes": 1125,
+        "sha256": "bd4041c7d8515df786812715f27b5a909727d49fde2057ce2a6775c9938800ba"
+      },
+      "commands": [
+        {
+          "argv": [
+            "git",
+            "apply",
+            "--whitespace=error-all",
+            "--check",
+            "negative-no-options-binding.patch"
+          ],
+          "exit_code": 0,
+          "stdout": "",
+          "stderr": ""
+        },
+        {
+          "argv": [
+            "git",
+            "apply",
+            "--whitespace=error-all",
+            "negative-no-options-binding.patch"
+          ],
+          "exit_code": 0,
+          "stdout": "",
+          "stderr": ""
+        }
+      ],
+      "actual_source_map": {
+        "codex-rs/hepta-memory/src/cognitive_store.rs": "1cb023504fa3b871e9c60d60b8ed84047c058072",
+        "codex-rs/hepta-memory/src/objective_sender_connection_custody_tests.rs": "6b8e88296507a8fe302aa45cd9015ce602465b56",
+        "codex-rs/state/src/sqlite.rs": "8a3e727c312815829975f8bcb455982b1a972b04",
+        "codex-rs/state/src/sqlite_native_custody_tests.rs": "469db639ae19cb89263089045c2f05814000d5a0"
+      },
+      "exact_expected_map": true
+    },
+    {
+      "name": "restore-options-binding.patch",
+      "identity": {
+        "blob": "40e559a07abbe39d4d796311b09252fc07e43a9d",
+        "bytes": 1125,
+        "sha256": "28866cf8b2305ff6e75c079fceddaca8584eac3a8be3fcc8846b2d81d4a42501"
+      },
+      "commands": [
+        {
+          "argv": [
+            "git",
+            "apply",
+            "--whitespace=error-all",
+            "--check",
+            "restore-options-binding.patch"
+          ],
+          "exit_code": 0,
+          "stdout": "",
+          "stderr": ""
+        },
+        {
+          "argv": [
+            "git",
+            "apply",
+            "--whitespace=error-all",
+            "restore-options-binding.patch"
+          ],
+          "exit_code": 0,
+          "stdout": "",
+          "stderr": ""
+        }
+      ],
+      "actual_source_map": {
+        "codex-rs/hepta-memory/src/cognitive_store.rs": "1cb023504fa3b871e9c60d60b8ed84047c058072",
+        "codex-rs/hepta-memory/src/objective_sender_connection_custody_tests.rs": "6b8e88296507a8fe302aa45cd9015ce602465b56",
+        "codex-rs/state/src/sqlite.rs": "27b123f6862ca4355da74ed4d1b21c7047b3b2df",
+        "codex-rs/state/src/sqlite_native_custody_tests.rs": "469db639ae19cb89263089045c2f05814000d5a0"
+      },
+      "exact_expected_map": true
+    }
+  ],
+  "final_source_map": {
+    "codex-rs/hepta-memory/src/cognitive_store.rs": "1cb023504fa3b871e9c60d60b8ed84047c058072",
+    "codex-rs/hepta-memory/src/objective_sender_connection_custody_tests.rs": "6b8e88296507a8fe302aa45cd9015ce602465b56",
+    "codex-rs/state/src/sqlite.rs": "27b123f6862ca4355da74ed4d1b21c7047b3b2df",
+    "codex-rs/state/src/sqlite_native_custody_tests.rs": "469db639ae19cb89263089045c2f05814000d5a0"
+  },
+  "meaning": "Exact static source reconstruction only; no Rust compile or physical SQLite/lock control has run."
+}

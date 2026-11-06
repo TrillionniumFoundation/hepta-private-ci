@@ -1,3 +1,7 @@
+#[cfg(windows)]
+use std::io::Write;
+#[cfg(windows)]
+use std::path::Path;
 use std::process::Command;
 
 use anyhow::Context;
@@ -11,6 +15,8 @@ use codex_utils_absolute_path::AbsolutePathBuf;
 use pretty_assertions::assert_eq;
 use serde_json::Value;
 use serde_json::json;
+#[cfg(windows)]
+use tempfile::NamedTempFile;
 use tempfile::TempDir;
 use wiremock::Mock;
 use wiremock::MockServer;
@@ -99,6 +105,8 @@ async fn sandbox_fetches_and_enforces_cloud_managed_permission_profile() -> Resu
         .await;
 
     let codex = codex_utils_cargo_bin::cargo_bin("codex")?;
+    #[cfg(windows)]
+    stage_windows_sandbox_helpers(&codex)?;
     let chatgpt_base_url_override = format!("chatgpt_base_url=\"{chatgpt_base_url}\"");
     let output = Command::new(&codex)
         .current_dir(codex_home.path())
@@ -164,5 +172,66 @@ async fn sandbox_fetches_and_enforces_cloud_managed_permission_profile() -> Resu
     );
     server.verify().await;
 
+    Ok(())
+}
+
+#[cfg(windows)]
+fn stage_windows_sandbox_helpers(executable: &Path) -> anyhow::Result<()> {
+    let resources_dir = executable
+        .parent()
+        .context("Codex executable should have a parent directory")?
+        .join("codex-resources");
+    std::fs::create_dir_all(&resources_dir)
+        .with_context(|| format!("create resources directory {}", resources_dir.display()))?;
+
+    for helper_name in ["codex-windows-sandbox-setup", "codex-command-runner"] {
+        // Resolve only this test run's declared binary, then use the existing
+        // production package layout for the wrapper's helper lookup.
+        let source = codex_utils_cargo_bin::cargo_bin(helper_name)?;
+        let expected = std::fs::read(&source)
+            .with_context(|| format!("read declared Windows helper {}", source.display()))?;
+        let destination = resources_dir.join(Path::new(helper_name).with_extension("exe"));
+        match std::fs::read(&destination) {
+            Ok(existing) => {
+                anyhow::ensure!(
+                    existing == expected,
+                    "staged Windows helper {} differs from declared source {}",
+                    destination.display(),
+                    source.display()
+                );
+                continue;
+            }
+            Err(error) if error.kind() == std::io::ErrorKind::NotFound => {}
+            Err(error) => {
+                return Err(error).with_context(|| {
+                    format!("read staged Windows helper {}", destination.display())
+                });
+            }
+        }
+
+        let mut staged = NamedTempFile::new_in(&resources_dir)
+            .with_context(|| format!("stage Windows helper in {}", resources_dir.display()))?;
+        staged
+            .write_all(&expected)
+            .with_context(|| format!("write staged Windows helper {}", source.display()))?;
+        match staged.persist_noclobber(&destination) {
+            Ok(_) => {}
+            Err(error) if error.error.kind() == std::io::ErrorKind::AlreadyExists => {
+                let existing = std::fs::read(&destination).with_context(|| {
+                    format!("read concurrently staged helper {}", destination.display())
+                })?;
+                anyhow::ensure!(
+                    existing == expected,
+                    "concurrently staged Windows helper {} differs from declared source {}",
+                    destination.display(),
+                    source.display()
+                );
+            }
+            Err(error) => {
+                return Err(error.error)
+                    .with_context(|| format!("publish Windows helper {}", destination.display()));
+            }
+        }
+    }
     Ok(())
 }

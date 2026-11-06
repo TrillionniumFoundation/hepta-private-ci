@@ -1,0 +1,653 @@
+{
+  "schema": "hepta-b16-foundation-binding-readiness-v1",
+  "status": "SOURCE_ONLY_PREPARATION_PENDING_FINAL_A_AND_EXPLICIT_AUTHORIZATION",
+  "internal_stage_ids_are_not_original_blocker_ids": true,
+  "display_namespace": "B16/phase",
+  "authorized_epoch_proposal": "foundation",
+  "runner_v3_review": {
+    "blob": "0386b554e5a396330e4ddee83a0cc903647b9f2b",
+    "map_blob": "240122fa2895525e8f95e6b3490a23e9bc5bd105"
+  },
+  "independent_v3_static_review_blob": "1dc4b57dc1b8ef6b9b66d9c9739358efbe2f797d",
+  "frozen_runner_integrity": {
+    "path": "architecture-audit/b16-guarded-native-runner-20261105/runner-integrity.json",
+    "bytes": 4331,
+    "sha256": "dacf3296af381bee42fcf7bafb7796aac8cb558ea8a0df078d325e919344780a",
+    "blob": "135a66c21f78053accbd450a275847d2825e6178"
+  },
+  "frozen_payload": {
+    "path": "architecture-audit/b16-guarded-native-runner-20261105/payload-manifest.json",
+    "bytes": 62667,
+    "sha256": "a34cd6c5400deff4fedfffcb1f4f170eecabbb6bbfab1916829ab3911e986237",
+    "blob": "64db580beabe2642eb8611184dac4fc686fe34e1"
+  },
+  "frozen_foundation_epoch": {
+    "path": "architecture-audit/b16-guarded-native-runner-20261105/epoch-foundation.json",
+    "bytes": 11472,
+    "sha256": "a8ac8886ec02230d5004dc8b608e0a33c0b89d5fdfabc1032569a13ee812fabd",
+    "blob": "6cc71ef831549fbe54f26c9bbe080e53effc59fa"
+  },
+  "actual_last_tested_A_tree": "fb9e131272f7e7a138d6c0d1af2b048b9a6ab7ff",
+  "final_A_tree": null,
+  "last_tested_A_artifact": {
+    "path": "ci-audit/recovered-20261105/full-fb9-complete-archive/decoded-verified-v1/full-workspace-selection.json",
+    "bytes": 5364870,
+    "sha256": "48dcb2b104793c7dac9699803e4746d6d8145bcc66701de167de57cbf6bd3c6c",
+    "blob": "cfe723c534fab7be981a38aa64e5ca99de412bc2"
+  },
+  "archive_index_blob": "87873969544e952a8fcff9ad771f834ffc856537",
+  "archive_strict_decode_review_blob": "6296d695a50d3344387d2c2b48fc081871356448",
+  "foundation_source_frontier": [
+    {
+      "path": "codex-rs/state/src/sqlite.rs",
+      "mode": "100644",
+      "required_initial_blob": "9f5c491e1ba85d88cd03d8bfafc1671494b7ac96",
+      "required_initial_state": "EXACT_EXISTING",
+      "observed_at_last_tested_fb9": true,
+      "final_A_match": null,
+      "foundation_final_blob": "b9fb565cadd14f6541bfc8421164897e2907e2ad"
+    },
+    {
+      "path": "codex-rs/state/src/sqlite_commit_gate_tests.rs",
+      "mode": "100644",
+      "required_initial_blob": null,
+      "required_initial_state": "ABSENT",
+      "observed_at_last_tested_fb9": true,
+      "final_A_match": null,
+      "foundation_final_blob": "31b26a78bffe40815aa8a5b55e61b5139e7bca96"
+    },
+    {
+      "path": "codex-rs/state/src/lib.rs",
+      "mode": "100644",
+      "required_initial_blob": "83a333ab206c9f9396b794058cd94bd28cedd52a",
+      "required_initial_state": "EXACT_EXISTING",
+      "observed_at_last_tested_fb9": true,
+      "final_A_match": null,
+      "foundation_final_blob": "50775acff67c99b80c779c8b94f9c2f0db07b175"
+    },
+    {
+      "path": "codex-rs/state/src/sqlite_read_barrier.rs",
+      "mode": "100644",
+      "required_initial_blob": null,
+      "required_initial_state": "ABSENT",
+      "observed_at_last_tested_fb9": true,
+      "final_A_match": null,
+      "foundation_final_blob": "98ed5528e76b948c965def714994d67ecb3e0457"
+    },
+    {
+      "path": "codex-rs/state/src/sqlite_read_barrier_tests.rs",
+      "mode": "100644",
+      "required_initial_blob": null,
+      "required_initial_state": "ABSENT",
+      "observed_at_last_tested_fb9": true,
+      "final_A_match": null,
+      "foundation_final_blob": "dc73d453b2bc5b34fca584c31fbdd56db9b165fd"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/objective_sender.rs",
+      "mode": "100644",
+      "required_initial_blob": "fe3be44196377039070c62c228d5c2e642560ac0",
+      "required_initial_state": "EXACT_EXISTING",
+      "observed_at_last_tested_fb9": true,
+      "final_A_match": null,
+      "foundation_final_blob": "e3789436918efae898ecaac96d49e6ac73b37f76"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/objective_sender_commit_interlock_tests.rs",
+      "mode": "100644",
+      "required_initial_blob": null,
+      "required_initial_state": "ABSENT",
+      "observed_at_last_tested_fb9": true,
+      "final_A_match": null,
+      "foundation_final_blob": "62d85c330446b7b5059016d7501bcd85af2e556a"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_store.rs",
+      "mode": "100644",
+      "required_initial_blob": "03f469dcdc0b44754e92a855fcbabf7c21059899",
+      "required_initial_state": "EXACT_EXISTING",
+      "observed_at_last_tested_fb9": true,
+      "final_A_match": null,
+      "foundation_final_blob": "5c0704c4e70ffdf2f65864a42da5e6e48bf79006"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_store_gate.rs",
+      "mode": "100644",
+      "required_initial_blob": null,
+      "required_initial_state": "ABSENT",
+      "observed_at_last_tested_fb9": true,
+      "final_A_match": null,
+      "foundation_final_blob": "f351700e3a7f382217db9f11f164871e7b2a09e4"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_store_recovery.rs",
+      "mode": "100644",
+      "required_initial_blob": "5639d61d6d0f97d12058a3e5eed90332864983f4",
+      "required_initial_state": "EXACT_EXISTING",
+      "observed_at_last_tested_fb9": true,
+      "final_A_match": null,
+      "foundation_final_blob": "54e917f45520f6b0e31fcd6a2f57ac3a00d8ae6c"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/objective_sender_store.rs",
+      "mode": "100644",
+      "required_initial_blob": "3e4e477eced86fd0b99c33c7b147ef0be874c75e",
+      "required_initial_state": "EXACT_EXISTING",
+      "observed_at_last_tested_fb9": true,
+      "final_A_match": null,
+      "foundation_final_blob": "378243e46d48df099d69b494b8879381221b3964"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_checkpoint_codec.rs",
+      "mode": "100644",
+      "required_initial_blob": null,
+      "required_initial_state": "ABSENT",
+      "observed_at_last_tested_fb9": true,
+      "final_A_match": null,
+      "foundation_final_blob": "3a6b75875c7e265ba71e7948b70e7e3fcd608c0f"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_checkpoint_codec_tests.rs",
+      "mode": "100644",
+      "required_initial_blob": null,
+      "required_initial_state": "ABSENT",
+      "observed_at_last_tested_fb9": true,
+      "final_A_match": null,
+      "foundation_final_blob": "60a9fafef10f77d2ae85f3d8f8c1c22d60e27eb1"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_checkpoint_wire.rs",
+      "mode": "100644",
+      "required_initial_blob": null,
+      "required_initial_state": "ABSENT",
+      "observed_at_last_tested_fb9": true,
+      "final_A_match": null,
+      "foundation_final_blob": "c6bada509bf9108a2dffad91288b1432c136ef20"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/lib.rs",
+      "mode": "100644",
+      "required_initial_blob": "65fb9b4dcf09083a7b9562296fc05f3ed3b227d8",
+      "required_initial_state": "EXACT_EXISTING",
+      "observed_at_last_tested_fb9": true,
+      "final_A_match": null,
+      "foundation_final_blob": "d8c5fd3d36bf3fbca4ba33ecf80ba6ae46756f33"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/objective_sender_connection_custody_tests.rs",
+      "mode": "100644",
+      "required_initial_blob": null,
+      "required_initial_state": "ABSENT",
+      "observed_at_last_tested_fb9": true,
+      "final_A_match": null,
+      "foundation_final_blob": "09a61b69e8cd34f27a0c968433b2b29df9c95380"
+    }
+  ],
+  "last_tested_subtree_proof": [
+    {
+      "path": "codex-rs/state",
+      "fb9_tree": "cea0fd676bf8bb9771aea2a8c16f3d746dac42dd",
+      "same_as_cabc_tree": true,
+      "final_A_tree_not_observed": true
+    },
+    {
+      "path": "codex-rs/hepta-memory",
+      "fb9_tree": "34e3ebcde71af34b16a606aede989a6385fa6f03",
+      "same_as_cabc_tree": true,
+      "final_A_tree_not_observed": true
+    }
+  ],
+  "frozen_projection_context_not_changed_by_foundation": {
+    "codex-rs/Cargo.toml": "4713741651affd053bb8ae5aa8b5d76831c15c0e",
+    "codex-rs/hepta-memory/Cargo.toml": "048e31020125843c2265a8bc0db256fa504d92af",
+    "codex-rs/hepta-memory/src/cognitive_store_recovery_tests.rs": "20e743f2921ad15399aa6318e6809486daf05f41"
+  },
+  "source_frontier_limit": "All 16 preimages match last-tested fb9 via complete matching crate subtrees, not yet final A. A changed existing blob or a new-path collision must stop for a reviewed delta; never overwrite with a cabc donor.",
+  "foundation_counts": {
+    "source_paths": 16,
+    "existing_exact_preimages": 7,
+    "new_paths_requiring_absence": 9,
+    "distinct_positive_cases": 24,
+    "positive_case_executions": 27,
+    "negative_case_executions": 10
+  },
+  "delta_order_including_finally": [
+    "r2c-v3-full",
+    "r2d-full",
+    "r2d-without-close-on-drop",
+    "r2d-restore-close-on-drop",
+    "r2e1-test-only-baseline",
+    "r2e1-repair-after-baseline",
+    "r2e2a-full",
+    "r2e2b-full",
+    "r2e3-test-only-baseline",
+    "r2e3-repair-after-baseline",
+    "r2e3-without-native-anchor",
+    "r2e3-restore-native-anchor"
+  ],
+  "exact_stages": [
+    {
+      "display_label": "B16/phase/B01_R2c_V3",
+      "kind": "scopes",
+      "before": [
+        "r2c-v3-full"
+      ],
+      "restore": null,
+      "scopes": [
+        {
+          "label": "B01_R2c_V3",
+          "package": "codex-state",
+          "exact_names": [
+            "sqlite::commit_gate_tests::commit_gate_rejects_explicit_transaction_after_revocation",
+            "sqlite::commit_gate_tests::commit_gate_covers_pool_growth_and_replacement",
+            "sqlite::commit_gate_tests::checkout_callback_blocks_initial_connect_and_reused_connection",
+            "sqlite::commit_gate_tests::cancelled_checkout_does_not_release_uncoordinated_connection"
+          ],
+          "authored_argv": [
+            "just",
+            "test",
+            "-p",
+            "codex-state",
+            "--lib",
+            "-E",
+            "test(sqlite::commit_gate_tests::)",
+            "--retries",
+            "0",
+            "--no-fail-fast"
+          ],
+          "oracle": null,
+          "supports": []
+        }
+      ]
+    },
+    {
+      "display_label": "B16/phase/B02_R2d_counterfactual",
+      "kind": "negative",
+      "before": [
+        "r2d-without-close-on-drop"
+      ],
+      "restore": "r2d-restore-close-on-drop",
+      "scopes": [
+        {
+          "label": "B02_R2d_counterfactual",
+          "package": "codex-state",
+          "exact_names": [
+            "sqlite_read_barrier::tests::cancelled_barrier_transition_discards_changed_connection"
+          ],
+          "authored_argv": [
+            "just",
+            "test",
+            "-p",
+            "codex-state",
+            "--lib",
+            "-E",
+            "test(sqlite_read_barrier::tests::cancelled_barrier_transition_discards_changed_connection)",
+            "--retries",
+            "0"
+          ],
+          "oracle": "barrier",
+          "supports": []
+        }
+      ]
+    },
+    {
+      "display_label": "B16/phase/B03_R2d_final",
+      "kind": "scopes",
+      "before": [],
+      "restore": null,
+      "scopes": [
+        {
+          "label": "B03_R2d_final",
+          "package": "codex-state",
+          "exact_names": [
+            "sqlite_read_barrier::tests::observation_pool_is_read_only_and_does_not_create_missing_database",
+            "sqlite_read_barrier::tests::barrier_excludes_real_writer_while_observer_reads",
+            "sqlite_read_barrier::tests::barrier_commit_hook_rejects_writes_if_query_only_is_disabled",
+            "sqlite_read_barrier::tests::barrier_rejects_read_only_connection",
+            "sqlite_read_barrier::tests::cancelled_barrier_transition_discards_changed_connection"
+          ],
+          "authored_argv": [
+            "just",
+            "test",
+            "-p",
+            "codex-state",
+            "--lib",
+            "-E",
+            "test(sqlite_read_barrier::tests::)",
+            "--retries",
+            "0",
+            "--no-fail-fast"
+          ],
+          "oracle": null,
+          "supports": []
+        }
+      ]
+    },
+    {
+      "display_label": "B16/phase/B04_R2e1_baseline",
+      "kind": "negative",
+      "before": [
+        "r2e1-test-only-baseline"
+      ],
+      "restore": "r2e1-repair-after-baseline",
+      "scopes": [
+        {
+          "label": "B04_R2e1_baseline",
+          "package": "codex-hepta-memory",
+          "exact_names": [
+            "production_writer::objective_sender::commit_interlock_tests::cancelled_checkpoint_vetoes_a_preexisting_read_transaction",
+            "production_writer::objective_sender::commit_interlock_tests::cancelled_checkpoint_vetoes_a_preexisting_connection_waiting_for_sqlite",
+            "production_writer::objective_sender::commit_interlock_tests::refused_checkpoint_vetoes_growth_replacement_and_writes_after_read_ack",
+            "production_writer::objective_sender::commit_interlock_tests::recovered_pool_vetoes_commits_and_retains_its_exclusive_open_guard"
+          ],
+          "authored_argv": [
+            "just",
+            "test",
+            "-p",
+            "codex-hepta-memory",
+            "--lib",
+            "-E",
+            "test(/production_writer::objective_sender::commit_interlock_tests::/)",
+            "--retries",
+            "0"
+          ],
+          "oracle": "interlock",
+          "supports": []
+        }
+      ]
+    },
+    {
+      "display_label": "B16/phase/B05_R2e1_final",
+      "kind": "scopes",
+      "before": [],
+      "restore": null,
+      "scopes": [
+        {
+          "label": "B05_R2e1_final",
+          "package": "codex-hepta-memory",
+          "exact_names": [
+            "production_writer::objective_sender::commit_interlock_tests::cancelled_checkpoint_vetoes_a_preexisting_read_transaction",
+            "production_writer::objective_sender::commit_interlock_tests::cancelled_checkpoint_vetoes_a_preexisting_connection_waiting_for_sqlite",
+            "production_writer::objective_sender::commit_interlock_tests::refused_checkpoint_vetoes_growth_replacement_and_writes_after_read_ack",
+            "production_writer::objective_sender::commit_interlock_tests::recovered_pool_vetoes_commits_and_retains_its_exclusive_open_guard"
+          ],
+          "authored_argv": [
+            "just",
+            "test",
+            "-p",
+            "codex-hepta-memory",
+            "--lib",
+            "-E",
+            "test(/production_writer::objective_sender::commit_interlock_tests::/)",
+            "--retries",
+            "0"
+          ],
+          "oracle": null,
+          "supports": []
+        }
+      ]
+    },
+    {
+      "display_label": "B16/phase/B06_R2e2a",
+      "kind": "scopes",
+      "before": [
+        "r2e2a-full"
+      ],
+      "restore": null,
+      "scopes": [
+        {
+          "label": "B06_R2e2a",
+          "package": "codex-hepta-memory",
+          "exact_names": [
+            "cognitive_checkpoint_codec::tests::bounded_ack_preserves_the_opaque_token_and_complete_head",
+            "cognitive_checkpoint_codec::tests::malformed_or_misbound_ack_is_refused",
+            "cognitive_checkpoint_codec::tests::request_validation_rejects_bad_ids_shapes_and_oversized_frames"
+          ],
+          "authored_argv": [
+            "just",
+            "test",
+            "-p",
+            "codex-hepta-memory",
+            "--lib",
+            "--retries",
+            "0",
+            "-E",
+            "test(=cognitive_checkpoint_codec::tests::bounded_ack_preserves_the_opaque_token_and_complete_head) | test(=cognitive_checkpoint_codec::tests::malformed_or_misbound_ack_is_refused) | test(=cognitive_checkpoint_codec::tests::request_validation_rejects_bad_ids_shapes_and_oversized_frames)"
+          ],
+          "oracle": null,
+          "supports": []
+        }
+      ]
+    },
+    {
+      "display_label": "B16/phase/B07_R2e2b",
+      "kind": "scopes",
+      "before": [
+        "r2e2b-full"
+      ],
+      "restore": null,
+      "scopes": [
+        {
+          "label": "B07_R2e2b",
+          "package": "codex-hepta-memory",
+          "exact_names": [
+            "cognitive_checkpoint_codec::tests::bounded_ack_preserves_the_opaque_token_and_complete_head",
+            "cognitive_checkpoint_codec::tests::malformed_or_misbound_ack_is_refused",
+            "cognitive_checkpoint_codec::tests::request_validation_rejects_bad_ids_shapes_and_oversized_frames",
+            "cognitive_checkpoint_codec::tests::complete_current_dirty_publishing_current_transcript_is_required",
+            "cognitive_checkpoint_codec::tests::matching_counters_do_not_accept_tampered_successor_heads",
+            "cognitive_checkpoint_codec::tests::predecessor_cas_replay_phase_and_writer_mismatch_are_refused",
+            "cognitive_checkpoint_codec::tests::read_head_checks_identity_and_monotonicity_without_granting_current"
+          ],
+          "authored_argv": [
+            "just",
+            "test",
+            "-p",
+            "codex-hepta-memory",
+            "--lib",
+            "--retries",
+            "0",
+            "-E",
+            "test(cognitive_checkpoint_codec::tests::)"
+          ],
+          "oracle": null,
+          "supports": []
+        }
+      ]
+    },
+    {
+      "display_label": "B16/phase/B08_R2e3_baseline",
+      "kind": "negative",
+      "before": [
+        "r2e3-test-only-baseline"
+      ],
+      "restore": "r2e3-repair-after-baseline",
+      "scopes": [
+        {
+          "label": "B08_R2e3_baseline",
+          "package": "codex-hepta-memory",
+          "exact_names": [
+            "production_writer::objective_sender::connection_custody_tests::detached_shared_connection_retains_original_file_lock_until_close",
+            "production_writer::objective_sender::connection_custody_tests::recovered_connection_retains_exclusive_custody_after_store_close",
+            "production_writer::objective_sender::connection_custody_tests::cancelled_close_retains_custody_after_a_cancelled_checkpoint",
+            "production_writer::objective_sender::connection_custody_tests::commit_hook_teardown_keeps_custody_until_native_connection_close"
+          ],
+          "authored_argv": [
+            "just",
+            "test",
+            "-p",
+            "codex-hepta-memory",
+            "--lib",
+            "-E",
+            "test(/production_writer::objective_sender::connection_custody_tests::/)",
+            "--retries",
+            "0"
+          ],
+          "oracle": "custody",
+          "supports": []
+        }
+      ]
+    },
+    {
+      "display_label": "B16/phase/B09_R2e3_anchor_counterfactual",
+      "kind": "negative",
+      "before": [
+        "r2e3-without-native-anchor"
+      ],
+      "restore": "r2e3-restore-native-anchor",
+      "scopes": [
+        {
+          "label": "B09_R2e3_anchor_counterfactual",
+          "package": "codex-hepta-memory",
+          "exact_names": [
+            "production_writer::objective_sender::connection_custody_tests::commit_hook_teardown_keeps_custody_until_native_connection_close"
+          ],
+          "authored_argv": [
+            "just",
+            "test",
+            "-p",
+            "codex-hepta-memory",
+            "--lib",
+            "-E",
+            "test(=production_writer::objective_sender::connection_custody_tests::commit_hook_teardown_keeps_custody_until_native_connection_close)",
+            "--retries",
+            "0"
+          ],
+          "oracle": "anchor",
+          "supports": []
+        }
+      ]
+    },
+    {
+      "display_label": "B16/phase/B10_R2e3_final",
+      "kind": "scopes",
+      "before": [],
+      "restore": null,
+      "scopes": [
+        {
+          "label": "B10_R2e3_final",
+          "package": "codex-hepta-memory",
+          "exact_names": [
+            "production_writer::objective_sender::connection_custody_tests::detached_shared_connection_retains_original_file_lock_until_close",
+            "production_writer::objective_sender::connection_custody_tests::recovered_connection_retains_exclusive_custody_after_store_close",
+            "production_writer::objective_sender::connection_custody_tests::cancelled_close_retains_custody_after_a_cancelled_checkpoint",
+            "production_writer::objective_sender::connection_custody_tests::commit_hook_teardown_keeps_custody_until_native_connection_close"
+          ],
+          "authored_argv": [
+            "just",
+            "test",
+            "-p",
+            "codex-hepta-memory",
+            "--lib",
+            "-E",
+            "test(/production_writer::objective_sender::connection_custody_tests::/)",
+            "--retries",
+            "0"
+          ],
+          "oracle": null,
+          "supports": []
+        }
+      ]
+    }
+  ],
+  "separation_guards": [
+    "No SQLx vendor/native lifetime-token adoption in foundation; otherwise the old missing-custody negatives could be masked.",
+    "No Cargo.toml, BUILD.bazel, Cargo.lock or MODULE.bazel.lock changes in foundation.",
+    "No Bazel dependency generation/build/test operations in foundation; the unchanged runner still checks the pinned Bazel version.",
+    "No changed original SQLite/physical assertion, timeout, retry, ignored-support accounting, or phase ordering.",
+    "Only ordinary JUnit exit 101 plus the frozen exact physical endpoint can qualify a negative. Timeout/leak/error/early-return remains invalid."
+  ],
+  "capacity_proposal": {
+    "binding_capacity_plan": {
+      "additional_executable_families": 1,
+      "other_cargo_growth_bytes": 12000000000,
+      "bazel_growth_bytes": 0,
+      "evidence_growth_bytes": 2000000000,
+      "estimate_review_reference": null
+    },
+    "min_free_bytes": 8000000000,
+    "observed_last_tested_executable_bytes": 18122997968,
+    "proposed_required_free_bytes": 40122997968,
+    "root_reported_current_free_bytes": 47045021696,
+    "root_reported_free_decimal_GB": 47.045021696,
+    "arithmetic_headroom_bytes": 6922023728,
+    "root_free_provenance": "Root message citing actual A hygiene-manifest observation; this author has not independently reread that host free-space receipt.",
+    "same_V3_runner_supports_epoch_specific_budget_without_runtime_change": true,
+    "driver_would_require_new_review": true,
+    "driver_old_8GB_Bazel_allowance_required_if_other_values_unchanged": 48122997968,
+    "limits": [
+      "This is a conditional planning estimate, not a demonstrated compiler/linker peak or a hard upper bound.",
+      "A fresh same-filesystem free-byte reading and explicit root budget review are still required at actual launch.",
+      "The runner checks the original 8 GB reserve before and after commands; this does not prove an in-flight build never drops below it.",
+      "No cache deletion, scope reduction, retry, profile change, or inherited executable qualification is authorized.",
+      "Driver has a new dependency/workspace edge and real Bazel lock generation; it must use the actual foundation terminal state and a newly reviewed remaining-growth plan."
+    ]
+  },
+  "binding_checklist": [
+    {
+      "item": "final_A_tree and initial_tree",
+      "state": "PENDING",
+      "requirement": "Actual independently reviewed full source after A fix/fmt. Both must be exactly equal for foundation."
+    },
+    {
+      "item": "last_tested_A versus final_A relation",
+      "state": "PENDING",
+      "requirement": "Retain fb9 full artifacts under fb9. Review exact hygiene delta; do not relabel old program hashes or rerun A after hygiene solely for this field."
+    },
+    {
+      "item": "16 source preimages and absent paths",
+      "state": "PENDING_FINAL_A",
+      "requirement": "Check all frontier rows against the full final-A tree and working files. Known fb9 equality is only prior evidence."
+    },
+    {
+      "item": "ordinary HEAD and ordinary index",
+      "state": "PENDING",
+      "requirement": "Pin the actual final A bytes and HEAD; do not reuse the earlier pre-Python index identity. Require no unreviewed untracked source."
+    },
+    {
+      "item": "two active lock files",
+      "state": "PENDING",
+      "requirement": "Pin both actual final-A Cargo.lock and MODULE.bazel.lock. Foundation must leave them byte-identical."
+    },
+    {
+      "item": "baseline full no-p metadata",
+      "state": "PENDING",
+      "requirement": "Bind actual metadata to final_A/initial_tree, with its complete graph and source relationship; no old source retagging."
+    },
+    {
+      "item": "last tested complete helpers",
+      "state": "OBSERVED_FB9",
+      "requirement": "Bind the immutable full-selection receipt and all 33 basenames. Each B scope must build the six normal helpers and catalogue the full workspace, then record actual current 33 identities."
+    },
+    {
+      "item": "target/cache ownership and disk",
+      "state": "PENDING",
+      "requirement": "Reuse the root-bound existing dev-small A target, no cache copy or deletion. Bind a future B-only Bazel-cache identity without creating it during foundation; driver creates it after separate approval. All measured locations share the actual filesystem."
+    },
+    {
+      "item": "tools, recipes and environment",
+      "state": "PENDING",
+      "requirement": "Pin all six actual tools, original recipe hashes, Rust 1.95.0, dev-small/local, actual helper inputs and allowed environment. Do not inherit a missing prerequisite as zero tests."
+    },
+    {
+      "item": "explicit launch authorization",
+      "state": "PENDING",
+      "requirement": "Root separately binds epoch foundation only, source/runner/payload identities and reviewed capacity. This artifact is not an execution guard."
+    }
+  ],
+  "prepared_binding": {
+    "path": "architecture-audit/b16-guarded-native-runner-20261105/foundation-readiness-v1/foundation-binding-UNBOUND.json",
+    "bytes": 4198,
+    "sha256": "1db45d7e7f98cab58b5e4cc7e5d621530e4e81d574b1ffb904674009b03748d8",
+    "blob": "5d446082b37d2bee4120abd9bb0aaa608e63e423"
+  },
+  "helper_contract": {
+    "path": "architecture-audit/b16-guarded-native-runner-20261105/foundation-readiness-v1/last-tested-fb9-helper-contract.json",
+    "bytes": 7349,
+    "sha256": "89e4c46a2c54063344c6db9f172d2b21f7c58c376f4a1b53821a5a5e3dd56b5b",
+    "blob": "ed308a0a9048dbd0e5b3ed72c76a717136faf265"
+  },
+  "no_native_commands_run": true,
+  "no_runner_or_source_payload_edits": true,
+  "no_blocker_exit_or_status_changes": true
+}

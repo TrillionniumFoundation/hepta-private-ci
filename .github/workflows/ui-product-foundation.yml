@@ -36,6 +36,7 @@ on:
       - .github/workflows/ui-product-foundation.yml
       - .github/actions/hepta-synthetic-merge/**
       - scripts/test_ui_product_foundation_ci.py
+      - scripts/fetch_ui_ci_history.py
 permissions:
   contents: read
 concurrency:
@@ -62,7 +63,14 @@ jobs:
         with:
           ref: ${{ github.event.pull_request.head.sha }}
           persist-credentials: false
-          fetch-depth: 0
+          fetch-depth: 1
+      - name: Fetch only the immutable PR histories
+        env:
+          HEPTA_UI_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEPTA_UI_SOURCE_SHA: ${{ github.event.pull_request.head.sha }}
+          HEPTA_UI_REPOSITORY: ${{ github.repository }}
+          HEPTA_UI_CHECKOUT_TOKEN: ${{ github.token }}
+        run: python3 scripts/fetch_ui_ci_history.py
       - name: Construct separately identified product merge
         if: matrix.lane == 'base-merge'
         uses: ./.github/actions/hepta-synthetic-merge
@@ -149,15 +157,21 @@ jobs:
           node --test apps/hepta-control-ui/test/font-diagnostic-browser-identity.test.mjs
           node --test apps/hepta-control-ui/test/product-status-pixels.test.mjs apps/hepta-control-ui/test/product-console-audit.test.mjs
           node --test apps/hepta-control-ui/test/static-makepad-bridge.test.mjs apps/hepta-control-ui/test/makepad-dsl.test.mjs apps/hepta-control-ui/test/visual-theme-contract.test.mjs apps/hepta-control-ui/test/robrix-font-readiness.test.mjs
-      - id: default_build
-        name: Build canonical strict-CSP no-threads artifact
+      - name: Install JavaScript product inputs
+        run: npm ci --prefix apps/hepta-control-ui --ignore-scripts --no-audit --no-fund
+      - name: Build canonical strict-CSP no-threads artifact
+        run: npm run build --prefix apps/hepta-control-ui
+      - name: Verify packaged resource and bridge contracts
         run: |
-          npm ci --prefix apps/hepta-control-ui --ignore-scripts --no-audit --no-fund
-          npm run build --prefix apps/hepta-control-ui
           node --test apps/hepta-control-ui/test/packaged-resource-set.test.mjs
           node --test apps/hepta-control-ui/test/http-boundary-sdk.test.mjs
           node --test apps/hepta-control-ui/test/makepad-font-patch.test.mjs apps/hepta-control-ui/test/makepad-instance-layout.test.mjs apps/hepta-control-ui/test/makepad-ime-bridge.test.mjs apps/hepta-control-ui/test/makepad-network-memory.test.mjs apps/hepta-control-ui/test/makepad-widget-borrow.test.mjs apps/hepta-control-ui/test/makepad-ime-router.test.mjs apps/hepta-control-ui/test/makepad-cjk-font.test.mjs
           python3 apps/hepta-control-ui/test/check-makepad-ime-dto.py
+      # Keep the browser environment write and remaining commands in one shell.
+      # This id gates success of the complete original build and readiness group.
+      - id: default_build
+        name: Install browser and pixel inputs and complete readiness checks
+        run: |
           cd apps/hepta-control-ui
           npx playwright install --with-deps chromium firefox webkit
           python3 tools/install-font-diagnostic-browser.py "$RUNNER_TEMP/robrix-chromium"

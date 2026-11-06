@@ -1,0 +1,11 @@
+diff --git a/sqlx-sqlite/src/connection/handle.rs b/sqlx-sqlite/src/connection/handle.rs
+--- a/sqlx-sqlite/src/connection/handle.rs
++++ b/sqlx-sqlite/src/connection/handle.rs
+@@ -152,6 +152,7 @@
+             if status != SQLITE_OK {
+                 // Native SQLite may still be live. Keep custody even if the
+                 // original panic unwinds the rest of this Rust object.
++                std::mem::forget(self.1.take());
+                 // this should *only* happen due to an internal bug in SQLite where we left
+                 // SQLite handles open
+                 panic!("{}", SqliteError::new(self.0.as_ptr()));

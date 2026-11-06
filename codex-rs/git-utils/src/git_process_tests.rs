@@ -1,7 +1,5 @@
 use super::spawn_git_command;
 use super::wait_for_git_command_with_timeout_output;
-#[cfg(windows)]
-use base64::Engine as _;
 use pretty_assertions::assert_eq;
 #[cfg(windows)]
 use std::process::Stdio;
@@ -39,39 +37,14 @@ async fn assert_timed_out_git_wrapper_does_not_leave_child_process_running(
     };
     #[cfg(windows)]
     let mut command = {
-        let mut command = Command::new("powershell.exe");
-        let child_command = "Set-Content -LiteralPath $env:CHILD_READY_FILE -Value ready; while (-not (Test-Path $env:RELEASE_CHILD_FILE)) { Start-Sleep -Milliseconds 25 }; Start-Sleep -Seconds 1; Set-Content -LiteralPath $env:CHILD_SURVIVED_FILE -Value survived; Start-Sleep -Seconds 60";
-        // Start-Process joins -ArgumentList into one command line. Quoting a
-        // multiword -Command script is not preserved on Windows; use a single
-        // space-free UTF-16LE -EncodedCommand argument for the child.
-        let encoded_child = base64::engine::general_purpose::STANDARD.encode(
-            child_command
-                .encode_utf16()
-                .flat_map(u16::to_le_bytes)
-                .collect::<Vec<_>>(),
-        );
-        let launch_child = format!(
-            "$child = Start-Process -FilePath powershell.exe -ArgumentList @('-NoProfile', '-NonInteractive', '-EncodedCommand', '{encoded_child}') -PassThru -NoNewWindow; [System.IO.File]::WriteAllText($env:CHILD_PID_FILE, [string]$child.Id); "
-        );
-        let wrapper_command = match wrapper_lifetime {
-            GitWrapperLifetime::WaitForChild => {
-                format!("{launch_child}Wait-Process -Id $child.Id")
-            }
-            GitWrapperLifetime::ExitBeforeTimeout => format!(
-                "{launch_child}while (-not (Test-Path $env:RELEASE_WRAPPER_FILE)) {{ Start-Sleep -Milliseconds 25 }}"
-            ),
-        };
-        // Encode the parent as well: its child-launch expression contains
-        // quotes and must survive Rust's native Windows argv serialization.
-        let encoded_wrapper = base64::engine::general_purpose::STANDARD.encode(
-            wrapper_command
-                .encode_utf16()
-                .flat_map(u16::to_le_bytes)
-                .collect::<Vec<_>>(),
-        );
+        let mut command =
+            Command::new(std::env::current_exe().expect("resolve native Git fixture executable"));
         command
-            .args(["-NoProfile", "-NonInteractive", "-EncodedCommand"])
-            .arg(encoded_wrapper);
+            .arg(GIT_PROCESS_FIXTURE_ARG)
+            .arg(match wrapper_lifetime {
+                GitWrapperLifetime::WaitForChild => "wait-for-child",
+                GitWrapperLifetime::ExitBeforeTimeout => "exit-before-timeout",
+            });
         command
     };
     command
@@ -185,4 +158,73 @@ async fn timed_out_exited_git_wrapper_does_not_leave_child_process_running() {
         GitWrapperLifetime::ExitBeforeTimeout,
     )
     .await;
+}
+
+#[cfg(windows)]
+const GIT_PROCESS_FIXTURE_ARG: &str = "--codex-test-git-process-tree";
+
+// Run the real wrapper and descendant before libtest starts. Their lifetime and
+// inherited output pipes are the subject of these tests, not shell startup.
+#[cfg(windows)]
+#[ctor::ctor]
+fn dispatch_git_process_fixture() {
+    if std::env::args_os().nth(1).as_deref() != Some(std::ffi::OsStr::new(GIT_PROCESS_FIXTURE_ARG))
+    {
+        return;
+    }
+    if let Err(error) = run_git_process_fixture() {
+        eprintln!("native Git process fixture failed: {error}");
+        std::process::exit(1);
+    }
+    std::process::exit(0);
+}
+
+#[cfg(windows)]
+fn run_git_process_fixture() -> std::io::Result<()> {
+    let path = |name: &str| {
+        std::env::var_os(name)
+            .map(std::path::PathBuf::from)
+            .ok_or_else(|| std::io::Error::other(format!("missing fixture path {name}")))
+    };
+    let mode = std::env::args_os().nth(2);
+    match mode.as_deref().and_then(std::ffi::OsStr::to_str) {
+        Some("child") => {
+            std::fs::write(path("CHILD_READY_FILE")?, "ready")?;
+            let release_child_file = path("RELEASE_CHILD_FILE")?;
+            while !release_child_file.try_exists()? {
+                std::thread::sleep(Duration::from_millis(25));
+            }
+            std::thread::sleep(Duration::from_secs(1));
+            std::fs::write(path("CHILD_SURVIVED_FILE")?, "survived")?;
+            std::thread::sleep(Duration::from_secs(60));
+        }
+        Some(mode @ ("wait-for-child" | "exit-before-timeout")) => {
+            let mut child = std::process::Command::new(std::env::current_exe()?)
+                .args([GIT_PROCESS_FIXTURE_ARG, "child"])
+                .stdin(Stdio::null())
+                .stdout(Stdio::inherit())
+                .stderr(Stdio::inherit())
+                .spawn()?;
+            std::fs::write(path("CHILD_PID_FILE")?, child.id().to_string())?;
+            if mode == "wait-for-child" {
+                let status = child.wait()?;
+                if !status.success() {
+                    return Err(std::io::Error::other(format!(
+                        "Git fixture descendant exited with {status}"
+                    )));
+                }
+            } else {
+                let release_wrapper_file = path("RELEASE_WRAPPER_FILE")?;
+                while !release_wrapper_file.try_exists()? {
+                    std::thread::sleep(Duration::from_millis(25));
+                }
+            }
+        }
+        _ => {
+            return Err(std::io::Error::other(format!(
+                "invalid Git process fixture mode: {mode:?}"
+            )));
+        }
+    }
+    Ok(())
 }

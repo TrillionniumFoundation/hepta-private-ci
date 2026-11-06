@@ -19,6 +19,7 @@ required_boundary_ids = [
   "provider_effect_coordinator",
   "http_provider_effect_adapter",
   "final_use_open_state",
+  "final_use_keyring_open_state",
   "final_use_claim",
   "final_use_claim_raw",
   "final_use_delivery",
@@ -152,6 +153,15 @@ definition_path = "codex-rs/hepta-contracts/src/final_use.rs"
 definition_markers = ["pub fn open_state_dir(", "pub fn open_state_dir_with_issuer_keys(", "InvalidTrust", "Store::open"]
 product_callers = ["codex-rs/hepta-agentd/src/automation_effect_host.rs", "codex-rs/hepta-agentd/src/bin/hepta-agentd-browser.rs", "codex-rs/hepta-infer-worker-host/src/final_use_authorizer.rs"]
 caller_markers = ["FinalUseAuthority", "verifying_key"]
+
+[[boundary]]
+id = "final_use_keyring_open_state"
+symbol = "FinalUseAuthority::open_state_dir_with_issuer_keys"
+call_pattern = 'FinalUseAuthority\s*::\s*open_state_dir_with_issuer_keys\s*\('
+definition_path = "codex-rs/hepta-contracts/src/final_use.rs"
+definition_markers = ["pub fn open_state_dir_with_issuer_keys(", "clock.now_unix_ms()", "pin_issuer_keys(issuer_keys)", "Store::open_key_ring_exact", "frontier_store.load(&signer_id)", "FinalUseError::AntiRollbackViolation"]
+product_callers = ["codex-rs/hepta-agentd/src/production_authority.rs"]
+caller_markers = ["AgentdFinalUseHostInputs", "self.issuer_keys", "self.revocations", "self.clock", "self.frontier_store"]
 
 [[boundary]]
 id = "final_use_claim"

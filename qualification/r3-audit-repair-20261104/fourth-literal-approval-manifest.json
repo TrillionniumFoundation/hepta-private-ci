@@ -1,0 +1,473 @@
+{
+  "schema": "hepta_denied_read_parent_approval_repair_v1",
+  "status": "STATIC_CANDIDATE_NOT_EXECUTED",
+  "prepared_at_utc_date": "2026-11-05",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "source_baseline": {
+    "published_commit": "cabcb40d36e116beaa65750e1f674c52035da785",
+    "published_tree": "b2d7f038d6d88156bc6a4cb29c8703f69b808f29",
+    "native_combined_tree": "da60f29b6789434c394edeff3c79f59191ad932c",
+    "evidence_bundle": {
+      "name": "baseline_bundle",
+      "blob": "f488fe2819ce0e63fad7dbae5f8386b9e4aac99f",
+      "bytes": 167654,
+      "sha256": "2630f7d60fb28a5c0bafef984501e27b38f6cdf3e9dabbda85571f984fedab9b"
+    },
+    "scope": "The da60 source-map binds the frozen combined tree to b2d7 and lists its changed paths; the production file in this patch and the production call-chain files are unchanged from cabcb. The integration test remains the reviewed literal Path fixture 7d7546. This is not an unmodified cabcb execution.",
+    "root_constructed_candidate_tree": "f8251e1d14fa8524ab469281296cd4cf708f173c",
+    "candidate_tree_provenance": "Parent root independently applied the exact two-hunk patch against da60 and created this tree; this author did not mutate a ref or native tree."
+  },
+  "patch": {
+    "path": "codex-rs/core/src/tools/runtimes/zsh_fork/unix_escalation.rs",
+    "mode": "100644",
+    "pre": {
+      "name": "unix_escalation",
+      "blob": "631bf4c6db2876fe32f653c73e386c253ffc939d",
+      "bytes": 33515,
+      "sha256": "c4dbf8d0c3fdd572e20aacaf9a91a7bc9f75742bd4ff75dd08a685b6d79bbc31"
+    },
+    "post": {
+      "blob": "94d24836406cda58de7fb5e8f3a54bc09c9e3eae",
+      "bytes": 33906,
+      "sha256": "f8c5a99315714a8a145ee27a6c05b7730b97eaf9a31a9ce2ad74ef3fecc2ff37"
+    },
+    "patch": {
+      "blob": "af3ce8c4c5e4c9e6a96af9d67eaefdcfbf5bcbd2",
+      "bytes": 1433,
+      "sha256": "def4c1c1b23f8d33a4eb8a5ac61d2fc387a07e209028cd4d46be9359e38c7865"
+    },
+    "additions": 7,
+    "deletions": 1,
+    "hunks": 2,
+    "roundtrip": true
+  },
+  "changes": [
+    {
+      "site": "CoreShellActionProvider construction inside prepare_unified_exec_zsh_fork",
+      "effect": "Normalize only approval_sandbox_permissions through the existing sandbox_permissions_preserving_denied_reads helper before the unchanged additional_permissions_preapproved handling.",
+      "unchanged": [
+        "raw sandbox_permissions: req.sandbox_permissions",
+        "permission_profile and the actual execution sandbox",
+        "approval_sandbox_permissions helper implementation",
+        "evaluate_intercepted_exec_policy and explicit rule precedence",
+        "process_decision and approval rejection gates",
+        "needs_escalation and all execution selection branches",
+        "all original unit/integration source, assertions, skip conditions, time budgets",
+        "Cargo/BUILD/dependencies/locks",
+        "Windows production token, ACL, loader, DLL, and IPC boundaries"
+      ]
+    }
+  ],
+  "cause": {
+    "observed": "After the original parent command was approved, the original no-second-approval oracle received an intercepted /usr/bin/cat approval and failed. No successful denied read or leaked secret was observed.",
+    "source_explanation": "A denied-read policy must remain Restricted after parent approval. The launch path already normalizes RequireEscalated to UseDefault to retain its sandbox, while the child provider incorrectly reused the raw RequireEscalated for unmatched-command approval evaluation. Restricted + requests_sandbox_override therefore produced Prompt again. The non-denied path can have an unrestricted execution profile after parent approval, which does not take this fallback.",
+    "proposed_behavior": "At the already-admitted parent execution boundary, use the actual launch permissions for child fallback. A non-dangerous unmatched child remains inside the current sandbox and runs once, allowing the original filesystem denial to occur; it does not request ineffective elevation again.",
+    "security_scope": "Explicit Prompt and Forbidden rules still evaluate normally. Dangerous-command heuristics and UnlessTrusted still prompt/reject according to their existing code. The parent approval/Forbidden/granular gates run before provider construction. Direct provider granular-denial controls are unchanged; the patch does not globally normalize fresh escalation requests."
+  },
+  "baseline": {
+    "source_tree": "da60f29b6789434c394edeff3c79f59191ad932c",
+    "controller_job": "1a1a8f5d546-fc05-301b",
+    "controller_exit_code": 1,
+    "test_process_exit_code": 100,
+    "controller_timed_out": false,
+    "controller_automatic_retry": false,
+    "profile": "dev-small",
+    "nextest_profile": "local",
+    "host": "Linux 7.0.0-42-generic x86_64",
+    "rustc": "1.95.0 (59807616e 2026-04-14)",
+    "original_command_argv": [
+      "just",
+      "test",
+      "--locked",
+      "--cargo-profile",
+      "dev-small",
+      "-p",
+      "codex-core",
+      "-p",
+      "core_test_support",
+      "-p",
+      "codex-cli",
+      "-p",
+      "codex-utils-pty",
+      "-p",
+      "codex-exec-server",
+      "-p",
+      "codex-hepta-agentd",
+      "-p",
+      "codex-apply-patch",
+      "-E",
+      "test(=suite::hooks::async_hook_context_is_injected_into_the_active_turn) | test(=suite::hooks::async_hook_finishing_while_idle_waits_for_the_next_turn) | test(=suite::skill_approval::shell_zsh_fork_skill_scripts_ignore_declared_permissions) | test(=suite::skill_approval::shell_zsh_fork_still_enforces_workspace_write_sandbox) | test(=suite::unified_exec_zsh_fork_approvals::unified_exec_zsh_fork_parent_approval_preserves_denied_reads) | test(shell_snapshot_v2_filters_profile_exports_and_stays_in_memory)",
+      "--no-tests",
+      "fail",
+      "--retries",
+      "0",
+      "--success-output",
+      "immediate"
+    ],
+    "selected": 13,
+    "passed": 12,
+    "failed": 1,
+    "selected_skipped": 0,
+    "nextest_reported_skipped": 5422,
+    "existing_ignored": 19,
+    "existing_unmatched": 5403,
+    "retries": 0,
+    "early_returns": [],
+    "source_unchanged": true,
+    "binaries_and_helpers_stable": true,
+    "failed_case": "suite::unified_exec_zsh_fork_approvals::unified_exec_zsh_fork_parent_approval_preserves_denied_reads",
+    "failure_seconds": 0.408,
+    "failure_location": "core/tests/suite/unified_exec_zsh_fork_approvals.rs:893:13",
+    "failure_summary_sanitized": "unexpected approval request: [\"/usr/bin/cat\", \"<owned temporary directory>/secret.env\"]",
+    "failure_not_file_read_proof": true,
+    "junit": {
+      "file": "original-four-fixture-regression.junit.xml",
+      "bytes": 4953,
+      "sha256": "559a2ccb22942e8e41e6f5a38733cab65518919765798eb040dcf8c9372330a7",
+      "uuid": "954b6c54-ea11-4584-8959-3700ce8f80a9"
+    },
+    "raw": {
+      "file": "original-four-fixture-regression.log",
+      "bytes": 27060,
+      "sha256": "2a8ed980393a50aae15590143fb4c697fa85a864991725c3b6d9e3484e419915"
+    },
+    "all_bundle_members_exact_hash_verified": true,
+    "bundle_member_count": 15,
+    "native_not_restarted_by_author": true
+  },
+  "source_anchors": [
+    {
+      "name": "unix_escalation",
+      "blob": "631bf4c6db2876fe32f653c73e386c253ffc939d",
+      "bytes": 33515,
+      "sha256": "c4dbf8d0c3fdd572e20aacaf9a91a7bc9f75742bd4ff75dd08a685b6d79bbc31",
+      "path": "codex-rs/core/src/tools/runtimes/zsh_fork/unix_escalation.rs",
+      "repository": "TrillionniumFoundation/hepta-private-ci",
+      "ref": "cabcb40d36e116beaa65750e1f674c52035da785",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/cabcb40d36e116beaa65750e1f674c52035da785/codex-rs/core/src/tools/runtimes/zsh_fork/unix_escalation.rs"
+    },
+    {
+      "name": "orchestrator",
+      "blob": "184757bb146da53bf93a5ef848ab96a0d826087c",
+      "bytes": 23923,
+      "sha256": "dd744d39c62ca6dcf10f107b8163617a1e536fddf60d22d328489410af7efcf1",
+      "path": "codex-rs/core/src/tools/orchestrator.rs",
+      "repository": "TrillionniumFoundation/hepta-private-ci",
+      "ref": "cabcb40d36e116beaa65750e1f674c52035da785",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/cabcb40d36e116beaa65750e1f674c52035da785/codex-rs/core/src/tools/orchestrator.rs"
+    },
+    {
+      "name": "sandboxing",
+      "blob": "0ec30aa9fb6b4141d31cc95c9459fe97f61737b8",
+      "bytes": 18296,
+      "sha256": "cfb40b7ab43826d5fa40047b93c6ca1fc438c54df3da025ed5dac5f7ed5858ce",
+      "path": "codex-rs/core/src/tools/sandboxing.rs",
+      "repository": "TrillionniumFoundation/hepta-private-ci",
+      "ref": "cabcb40d36e116beaa65750e1f674c52035da785",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/cabcb40d36e116beaa65750e1f674c52035da785/codex-rs/core/src/tools/sandboxing.rs"
+    },
+    {
+      "name": "unit_tests",
+      "blob": "05facffdb473397a81748af4f84044875ede7b72",
+      "bytes": 35558,
+      "sha256": "e361b5f09b92a8e853635c717b9077780ffb350ebb7558ca179c9e30ce1802c2",
+      "path": "codex-rs/core/src/tools/runtimes/zsh_fork/unix_escalation_tests.rs",
+      "repository": "TrillionniumFoundation/hepta-private-ci",
+      "ref": "cabcb40d36e116beaa65750e1f674c52035da785",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/cabcb40d36e116beaa65750e1f674c52035da785/codex-rs/core/src/tools/runtimes/zsh_fork/unix_escalation_tests.rs"
+    },
+    {
+      "name": "integration",
+      "blob": "7d7546cd5312dcc681ba8c0788e18923624b532d",
+      "bytes": 31444,
+      "sha256": "f5a339182dab1b052a726b8052e3b831a330cfe9b5208b400e0ed4b599bebdd7",
+      "path": "codex-rs/core/tests/suite/unified_exec_zsh_fork_approvals.rs",
+      "repository": "TrillionniumFoundation/hepta-private-ci",
+      "ref": "cabcb40d36e116beaa65750e1f674c52035da785",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/cabcb40d36e116beaa65750e1f674c52035da785/codex-rs/core/tests/suite/unified_exec_zsh_fork_approvals.rs"
+    },
+    {
+      "name": "exec_policy",
+      "blob": "f24b062469d579929739c2cb4221661499ca9248",
+      "bytes": 39414,
+      "sha256": "876e42cd25f8bab1b494328ceb1bbe04d87d25003b43db2e8d9d64cf1b53bdff",
+      "path": "codex-rs/core/src/exec_policy.rs",
+      "repository": "TrillionniumFoundation/hepta-private-ci",
+      "ref": "cabcb40d36e116beaa65750e1f674c52035da785",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/cabcb40d36e116beaa65750e1f674c52035da785/codex-rs/core/src/exec_policy.rs"
+    },
+    {
+      "name": "unified_exec",
+      "blob": "84144f674d37cb4474c01cb4d25c4aa07b16f5a8",
+      "bytes": 30496,
+      "sha256": "4567c379d9c3f444c78987c14636d6fddbcd98b2ccf47a4a006aef61a856dd1f",
+      "path": "codex-rs/core/src/tools/runtimes/unified_exec.rs",
+      "repository": "TrillionniumFoundation/hepta-private-ci",
+      "ref": "cabcb40d36e116beaa65750e1f674c52035da785",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/cabcb40d36e116beaa65750e1f674c52035da785/codex-rs/core/src/tools/runtimes/unified_exec.rs"
+    },
+    {
+      "name": "zsh_fork",
+      "blob": "4daa0f18b0c76075027cd38b3ceb6727546edf7e",
+      "bytes": 3381,
+      "sha256": "05da9ad627feea279f959ec0977a47d82759da650dec4c573edabd08ac9459b4",
+      "path": "codex-rs/core/src/tools/runtimes/zsh_fork.rs",
+      "repository": "TrillionniumFoundation/hepta-private-ci",
+      "ref": "cabcb40d36e116beaa65750e1f674c52035da785",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/cabcb40d36e116beaa65750e1f674c52035da785/codex-rs/core/src/tools/runtimes/zsh_fork.rs"
+    },
+    {
+      "name": "justfile",
+      "blob": "a215a76cf407ace9715bca39c20497014e7dd4dc",
+      "bytes": 7838,
+      "sha256": "74f869224eba12fc4212b043428e7f5b35b551d26f5b06161c25d8aca525f124",
+      "path": "codex-rs/justfile",
+      "repository": "TrillionniumFoundation/hepta-private-ci",
+      "ref": "cabcb40d36e116beaa65750e1f674c52035da785",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/cabcb40d36e116beaa65750e1f674c52035da785/codex-rs/justfile"
+    }
+  ],
+  "call_chain": [
+    {
+      "path": "codex-rs/core/src/tools/orchestrator.rs",
+      "blob": "184757bb146da53bf93a5ef848ab96a0d826087c",
+      "start_line": 169,
+      "end_line": 243,
+      "claim": "Parent permission requirement is resolved; Forbidden returns and NeedsApproval awaits request_approval before sandbox selection. Denied reads prevent bypass.",
+      "text": "        let requirement = tool.exec_approval_requirement(req).unwrap_or_else(|| {\n            default_exec_approval_requirement(approval_policy, &file_system_sandbox_policy)\n        });\n        match &requirement {\n            ExecApprovalRequirement::Skip { .. } => {\n                if strict_auto_review {\n                    let action = tool\n                        .approval_action(req, &tool_ctx.call_id)\n                        .map_err(|err| {\n                            ToolError::Rejected(format!(\"could not prepare approval action: {err}\"))\n                        })?;\n                    let approval_ctx = ApprovalContext {\n                        review_context: GuardianReviewContext::from(&tool_ctx.step_context),\n                        cancellation_token: Some(tool_ctx.cancellation_token.clone()),\n                        call_id: tool_ctx.call_id.clone(),\n                        tool_name: tool_ctx.tool_name.clone(),\n                        strict_auto_review,\n                        approval_reason: None,\n                        retry_reason: None,\n                        network_approval_context: None,\n                    };\n                    tool_ctx\n                        .session\n                        .request_approval(action, approval_ctx)\n                        .await?;\n                    already_approved = true;\n                } else {\n                    otel.tool_decision(\n                        &tool_ctx.tool_name,\n                        otel_ci,\n                        &ReviewDecision::Approved,\n                        Some(ToolDecisionSource::Config),\n                    );\n                }\n            }\n            ExecApprovalRequirement::Forbidden { reason } => {\n                return Err(ToolError::Rejected(reason.clone()));\n            }\n            ExecApprovalRequirement::NeedsApproval { reason, .. } => {\n                let action = tool\n                    .approval_action(req, &tool_ctx.call_id)\n                    .map_err(|err| {\n                        ToolError::Rejected(format!(\"could not prepare approval action: {err}\"))\n                    })?;\n                let approval_ctx = ApprovalContext {\n                    review_context: GuardianReviewContext::from(&tool_ctx.step_context),\n                    cancellation_token: Some(tool_ctx.cancellation_token.clone()),\n                    call_id: tool_ctx.call_id.clone(),\n                    tool_name: tool_ctx.tool_name.clone(),\n                    strict_auto_review,\n                    approval_reason: reason.clone(),\n                    retry_reason: None,\n                    network_approval_context: None,\n                };\n                tool_ctx\n                    .session\n                    .request_approval(action, approval_ctx)\n                    .await?;\n                already_approved = true;\n            }\n        }\n\n        // 2) First attempt under the selected sandbox.\n        let unsandboxed_allowed =\n            !owner_network_policy && unsandboxed_execution_allowed(&file_system_sandbox_policy);\n        let sandbox_override = if unsandboxed_allowed {\n            sandbox_override_for_first_attempt(\n                tool.sandbox_permissions(req),\n                &requirement,\n                &file_system_sandbox_policy,\n            )\n        } else {\n            SandboxOverride::NoOverride\n        };\n        let network_approval_spec = tool.network_approval_spec(req, tool_ctx);"
+    },
+    {
+      "path": "codex-rs/core/src/tools/orchestrator.rs",
+      "blob": "184757bb146da53bf93a5ef848ab96a0d826087c",
+      "start_line": 309,
+      "end_line": 311,
+      "claim": "Only after that parent approval gate does run_attempt invoke the tool runtime.",
+      "text": "        let initial_attempt_start = Instant::now();\n        let (first_result, first_deferred_network_approval) =\n            Self::run_attempt(tool, req, tool_ctx, &initial_attempt, network_approval_spec).await;"
+    },
+    {
+      "path": "codex-rs/core/src/tools/orchestrator.rs",
+      "blob": "184757bb146da53bf93a5ef848ab96a0d826087c",
+      "start_line": 102,
+      "end_line": 108,
+      "claim": "run_attempt forwards to the runtime's run implementation.",
+      "text": "                .as_ref()\n                .map(ActiveNetworkApproval::execution_proxy),\n        };\n        let run_result = tool\n            .run(req, &attempt_with_network_approval, &attempt_tool_ctx)\n            .await;\n"
+    },
+    {
+      "path": "codex-rs/core/src/tools/runtimes/unified_exec.rs",
+      "blob": "84144f674d37cb4474c01cb4d25c4aa07b16f5a8",
+      "start_line": 277,
+      "end_line": 286,
+      "claim": "Actual launch permissions already use the existing denied-read normalization.",
+      "text": "        let (file_system_sandbox_policy, _) = attempt.permissions.to_runtime_permissions();\n        let launch_sandbox_permissions = sandbox_permissions_preserving_denied_reads(\n            req.sandbox_permissions,\n            &file_system_sandbox_policy,\n        );\n        let managed_network = attempt.network_proxy(managed_network_for_sandbox_permissions(\n            req.network.as_ref(),\n            launch_sandbox_permissions,\n        ));\n        let env = exec_env_for_sandbox_permissions(&req.env, launch_sandbox_permissions);"
+    },
+    {
+      "path": "codex-rs/core/src/tools/runtimes/unified_exec.rs",
+      "blob": "84144f674d37cb4474c01cb4d25c4aa07b16f5a8",
+      "start_line": 432,
+      "end_line": 445,
+      "claim": "The actual sandbox transform precedes the zsh-fork preparation call.",
+      "text": "            let options = unified_exec_options(attempt.network_denial_cancellation_token.clone());\n            let mut exec_env = attempt\n                .env_for(\n                    command,\n                    options,\n                    managed_network,\n                    Some(&req.turn_environment.selection.environment_id),\n                )\n                .map_err(ToolError::Codex)?;\n            exec_env.exec_server_env_config = req.exec_server_env_config.clone();\n            match zsh_fork::maybe_prepare_unified_exec(req, attempt, ctx, exec_env, zsh_fork_config)\n                .await?\n            {\n                Some(prepared) => {"
+    },
+    {
+      "path": "codex-rs/core/src/tools/runtimes/zsh_fork.rs",
+      "blob": "4daa0f18b0c76075027cd38b3ceb6727546edf7e",
+      "start_line": 61,
+      "end_line": 80,
+      "claim": "Unix adapter calls the provider constructor using the already-prepared execution request.",
+      "text": "\n    pub(super) async fn maybe_prepare_unified_exec(\n        req: &UnifiedExecRequest,\n        attempt: &SandboxAttempt<'_>,\n        ctx: &ToolCtx,\n        exec_request: ExecRequest,\n        zsh_fork_config: &ZshForkConfig,\n    ) -> Result<Option<PreparedUnifiedExecSpawn>, ToolError> {\n        let Some(prepared) = unix_escalation::prepare_unified_exec_zsh_fork(\n            req,\n            attempt,\n            ctx,\n            exec_request,\n            zsh_fork_config.shell_zsh_path.as_path(),\n            zsh_fork_config.main_execve_wrapper_exe.as_path(),\n        )\n        .await?\n        else {\n            return Ok(None);\n        };"
+    },
+    {
+      "path": "codex-rs/core/src/tools/runtimes/zsh_fork/unix_escalation.rs",
+      "blob": "631bf4c6db2876fe32f653c73e386c253ffc939d",
+      "start_line": 145,
+      "end_line": 162,
+      "claim": "Preimage reuses raw RequireEscalated specifically in child approval_sandbox_permissions.",
+      "text": "    let escalation_policy = CoreShellActionProvider {\n        policy: Arc::clone(&exec_policy),\n        session: Arc::clone(&ctx.session),\n        review_context: GuardianReviewContext::from(&ctx.step_context),\n        call_id: ctx.call_id.clone(),\n        environment_id: req.turn_environment.selection.environment_id.clone(),\n        source: GuardianCommandSource::UnifiedExec,\n        tool_name: ctx.tool_name.clone(),\n        approval_policy: ctx.step_context.turn.approval_policy(),\n        permission_profile: exec_request.permission_profile.clone(),\n        sandbox_permissions: req.sandbox_permissions,\n        approval_sandbox_permissions: approval_sandbox_permissions(\n            req.sandbox_permissions,\n            req.additional_permissions_preapproved,\n        ),\n        prompt_permissions: req.additional_permissions.clone(),\n        stopwatch: Stopwatch::unlimited(),\n    };"
+    },
+    {
+      "path": "codex-rs/core/src/tools/sandboxing.rs",
+      "blob": "0ec30aa9fb6b4141d31cc95c9459fe97f61737b8",
+      "start_line": 275,
+      "end_line": 294,
+      "claim": "The reused helper changes only RequireEscalated when denied reads cannot be represented unsandboxed.",
+      "text": "pub(crate) fn unsandboxed_execution_allowed(\n    file_system_sandbox_policy: &FileSystemSandboxPolicy,\n) -> bool {\n    !file_system_sandbox_policy.has_denied_read_restrictions()\n}\n\npub(crate) fn sandbox_permissions_preserving_denied_reads(\n    sandbox_permissions: SandboxPermissions,\n    file_system_sandbox_policy: &FileSystemSandboxPolicy,\n) -> SandboxPermissions {\n    if sandbox_permissions.requires_escalated_permissions()\n        && !unsandboxed_execution_allowed(file_system_sandbox_policy)\n    {\n        // `RequireEscalated` normally asks the executor to bypass the sandbox.\n        // When denied reads are active, that would drop the only mechanism that\n        // enforces them, so fall back to the default sandboxed attempt instead.\n        SandboxPermissions::UseDefault\n    } else {\n        sandbox_permissions\n    }"
+    },
+    {
+      "path": "codex-rs/core/src/exec_policy.rs",
+      "blob": "f24b062469d579929739c2cb4221661499ca9248",
+      "start_line": 749,
+      "end_line": 814,
+      "claim": "Dangerous/Windows checks and UnlessTrusted precede or remain separate from the Restricted override fallback.",
+      "text": "    let windows_managed_fs_restrictions_without_sandbox_backend = cfg!(windows)\n        && windows_sandbox_level == WindowsSandboxLevel::Disabled\n        && profile_has_managed_filesystem_restrictions(permission_profile);\n\n    // If the command is flagged as dangerous or we have no sandbox protection,\n    // we should never allow it to run without approval.\n    //\n    // We prefer to prompt the user rather than outright forbid the command,\n    // but if the user has explicitly disabled prompts, we must\n    // forbid the command.\n    if dangerous_command_match.is_some() || windows_managed_fs_restrictions_without_sandbox_backend\n    {\n        return match approval_policy {\n            AskForApproval::Never => Decision::Forbidden,\n            AskForApproval::OnRequest\n            | AskForApproval::UnlessTrusted\n            | AskForApproval::Granular(_) => Decision::Prompt,\n        };\n    }\n\n    match approval_policy {\n        AskForApproval::Never => {\n            // We allow the command to run, relying on the sandbox for\n            // protection.\n            Decision::Allow\n        }\n        AskForApproval::UnlessTrusted => {\n            // Projects marked untrusted require approval for every command\n            // that is not explicitly allowed by an exec policy rule.\n            Decision::Prompt\n        }\n        AskForApproval::OnRequest => {\n            match file_system_sandbox_policy.kind {\n                FileSystemSandboxKind::Unrestricted | FileSystemSandboxKind::ExternalSandbox => {\n                    // The user has indicated we should \"just run\" commands\n                    // in their unrestricted environment, so we do so since the\n                    // command has not been flagged as dangerous.\n                    Decision::Allow\n                }\n                FileSystemSandboxKind::Restricted => {\n                    // In restricted sandboxes, do not prompt for non-escalated,\n                    // non-dangerous commands; let the sandbox enforce\n                    // restrictions without a user prompt.\n                    if sandbox_permissions.requests_sandbox_override() {\n                        Decision::Prompt\n                    } else {\n                        Decision::Allow\n                    }\n                }\n            }\n        }\n        AskForApproval::Granular(_) => match file_system_sandbox_policy.kind {\n            FileSystemSandboxKind::Unrestricted | FileSystemSandboxKind::ExternalSandbox => {\n                // Mirror on-request behavior for unmatched commands; prompt-vs-reject is handled\n                // by `prompt_is_rejected_by_policy`.\n                Decision::Allow\n            }\n            FileSystemSandboxKind::Restricted => {\n                if sandbox_permissions.requests_sandbox_override() {\n                    Decision::Prompt\n                } else {\n                    Decision::Allow\n                }\n            }\n        },\n    }"
+    },
+    {
+      "path": "codex-rs/core/src/tools/runtimes/zsh_fork/unix_escalation.rs",
+      "blob": "631bf4c6db2876fe32f653c73e386c253ffc939d",
+      "start_line": 416,
+      "end_line": 468,
+      "claim": "Explicit policy rules are evaluated first; raw sandbox_permissions still controls execution, and denied reads make needs_escalation false.",
+      "text": "        let evaluation = {\n            let policy = self.policy.read().await;\n            evaluate_intercepted_exec_policy(\n                &policy,\n                program,\n                argv,\n                InterceptedExecPolicyContext {\n                    approval_policy: self.approval_policy,\n                    permission_profile: self.permission_profile.clone(),\n                    windows_sandbox_level: self.review_context.turn().windows_sandbox_level,\n                    sandbox_permissions: self.approval_sandbox_permissions,\n                    enable_shell_wrapper_parsing:\n                        ENABLE_INTERCEPTED_EXEC_POLICY_SHELL_WRAPPER_PARSING,\n                },\n            )\n        };\n        // When true, means the Evaluation was due to *.rules, not the\n        // fallback function.\n        let decision_driven_by_policy =\n            Self::decision_driven_by_policy(&evaluation.matched_rules, evaluation.decision);\n        let unsandboxed_allowed =\n            unsandboxed_execution_allowed(&self.permission_profile.file_system_sandbox_policy());\n        let needs_escalation = match self.sandbox_permissions {\n            SandboxPermissions::UseDefault => unsandboxed_allowed && decision_driven_by_policy,\n            SandboxPermissions::RequireEscalated => unsandboxed_allowed,\n            SandboxPermissions::WithAdditionalPermissions => true,\n        };\n\n        let decision_source = if decision_driven_by_policy {\n            DecisionSource::PrefixRule\n        } else {\n            DecisionSource::UnmatchedCommandFallback\n        };\n        let escalation_execution = match decision_source {\n            DecisionSource::PrefixRule if unsandboxed_allowed => EscalationExecution::Unsandboxed,\n            DecisionSource::PrefixRule => EscalationExecution::TurnDefault,\n            DecisionSource::UnmatchedCommandFallback => Self::shell_request_escalation_execution(\n                self.sandbox_permissions,\n                &self.permission_profile,\n                self.prompt_permissions.as_ref(),\n            ),\n        };\n        self.process_decision(\n            evaluation.decision,\n            needs_escalation,\n            program,\n            argv,\n            workdir,\n            self.prompt_permissions.clone(),\n            escalation_execution,\n            decision_source,\n        )\n        .await"
+    },
+    {
+      "path": "codex-rs/core/src/tools/runtimes/zsh_fork/unix_escalation.rs",
+      "blob": "631bf4c6db2876fe32f653c73e386c253ffc939d",
+      "start_line": 326,
+      "end_line": 346,
+      "claim": "Forbidden still denies; Prompt still passes original rejection/approval handling.",
+      "text": "        let action = match decision {\n            Decision::Forbidden => {\n                EscalationDecision::deny(Some(\"Execution forbidden by policy\".to_string()))\n            }\n            Decision::Prompt => {\n                if execve_prompt_is_rejected_by_policy(self.approval_policy, &decision_source)\n                    .is_some()\n                {\n                    EscalationDecision::deny(Some(\"Execution forbidden by policy\".to_string()))\n                } else {\n                    let decision = self\n                        .prompt(program, argv, workdir, &self.stopwatch, prompt_permissions)\n                        .await?;\n                    match decision {\n                        ReviewDecision::Approved\n                        | ReviewDecision::ApprovedForSession\n                        | ReviewDecision::ApprovedExecpolicyAmendment { .. } => {\n                            if needs_escalation {\n                                EscalationDecision::escalate(escalation_execution.clone())\n                            } else {\n                                EscalationDecision::run()"
+    },
+    {
+      "path": "codex-rs/core/tests/suite/unified_exec_zsh_fork_approvals.rs",
+      "blob": "7d7546cd5312dcc681ba8c0788e18923624b532d",
+      "start_line": 100,
+      "end_line": 116,
+      "claim": "The original parent approval, no-second-approval wait, nonzero exit and no-secret assertions are unchanged.",
+      "text": "    )\n    .await?;\n    approve_expected_exec(&test, &command).await?;\n    wait_for_completion_without_approval(&test).await;\n\n    let result = command_result(&results, call_id);\n    assert_ne!(\n        result.exit_code.unwrap_or(0),\n        0,\n        \"denied-read command should stay sandboxed after parent approval\"\n    );\n    assert!(\n        !result.stdout.contains(secret),\n        \"denied-read command unexpectedly printed the secret: {}\",\n        result.stdout\n    );\n"
+    },
+    {
+      "path": "codex-rs/core/src/tools/runtimes/zsh_fork/unix_escalation_tests.rs",
+      "blob": "05facffdb473397a81748af4f84044875ede7b72",
+      "start_line": 852,
+      "end_line": 896,
+      "claim": "Existing granular sandbox rejection remains an unchanged direct-provider regression control.",
+      "text": "async fn denied_reads_keep_granular_sandbox_rejection_for_escalation() -> anyhow::Result<()> {\n    let (session, turn_context) = make_session_and_context().await;\n    let file_system_sandbox_policy = denied_read_file_system_sandbox_policy();\n    let permission_profile = PermissionProfile::from_runtime_permissions(\n        &file_system_sandbox_policy,\n        NetworkSandboxPolicy::Restricted,\n    );\n    let workdir = test_sandbox_cwd();\n    let provider = CoreShellActionProvider {\n        policy: Arc::new(RwLock::new(PolicyParser::new().build())),\n        session: Arc::new(session),\n        review_context: GuardianReviewContext::from(Arc::new(turn_context)),\n        call_id: \"deny-read-granular-sandbox-reject\".to_string(),\n        environment_id: \"local\".to_string(),\n        source: GuardianCommandSource::UnifiedExec,\n        tool_name: ToolName::plain(\"exec_command\"),\n        approval_policy: AskForApproval::Granular(GranularApprovalConfig {\n            sandbox_approval: false,\n            rules: true,\n            skill_approval: true,\n            request_permissions: true,\n            mcp_elicitations: true,\n        }),\n        permission_profile,\n        sandbox_permissions: SandboxPermissions::RequireEscalated,\n        approval_sandbox_permissions: SandboxPermissions::RequireEscalated,\n        prompt_permissions: None,\n        stopwatch: codex_shell_escalation::Stopwatch::new(Duration::from_secs(1)),\n    };\n\n    let action = codex_shell_escalation::EscalationPolicy::determine_action(\n        &provider,\n        &AbsolutePathBuf::try_from(host_absolute_path(&[\"usr\", \"bin\", \"printf\"])).unwrap(),\n        &[\"printf\".to_string(), \"hello\".to_string()],\n        &workdir,\n    )\n    .await?;\n\n    assert_eq!(\n        action,\n        codex_shell_escalation::EscalationDecision::Deny {\n            reason: Some(\"Execution forbidden by policy\".to_string())\n        }\n    );\n    Ok(())"
+    }
+  ],
+  "validation": {
+    "author_static": {
+      "independent_git_blob_hashes_verified": true,
+      "sha256_verified": true,
+      "hash_function_empty_and_abc_vectors_verified": true,
+      "one_source_path_only": true,
+      "full_unified_diff_apply_exact": true,
+      "inverse_exact_preimage": true,
+      "integration_and_unit_source_unmodified": true,
+      "formatting_executed": false,
+      "compilation_executed": false,
+      "tests_executed": false
+    },
+    "baseline_negative": {
+      "kind": "existing actual original-case failure",
+      "bundle_blob": "f488fe2819ce0e63fad7dbae5f8386b9e4aac99f",
+      "required_observation": "Parent approve_expected_exec completed, then wait_for_completion_without_approval received /usr/bin/cat. This observed original failure suffices as the baseline; do not rerun merely to duplicate it."
+    },
+    "proposed_single_native_gate": {
+      "status": "PENDING_ROOT_REVIEW_AND_SOLE_NATIVE_EXECUTION",
+      "argv": [
+        "just",
+        "test",
+        "--locked",
+        "--cargo-profile",
+        "dev-small",
+        "-p",
+        "codex-core",
+        "-p",
+        "core_test_support",
+        "-p",
+        "codex-cli",
+        "-p",
+        "codex-utils-pty",
+        "-p",
+        "codex-exec-server",
+        "-p",
+        "codex-hepta-agentd",
+        "-p",
+        "codex-apply-patch",
+        "-E",
+        "test(/^suite::unified_exec_zsh_fork_approvals::/) | test(/^tools::runtimes::zsh_fork::unix_escalation::tests::/)",
+        "--no-tests",
+        "fail",
+        "--retries",
+        "0",
+        "--success-output",
+        "immediate"
+      ],
+      "working_directory": "repository codex-rs directory",
+      "original_recipe_blob": "a215a76cf407ace9715bca39c20497014e7dd4dc",
+      "packages": [
+        "codex-core",
+        "core_test_support",
+        "codex-cli",
+        "codex-utils-pty",
+        "codex-exec-server",
+        "codex-hepta-agentd",
+        "codex-apply-patch"
+      ],
+      "features": "Retain the existing seven-package Cargo feature-unification context; no new feature/dependency or tool override.",
+      "expected_selected": 25,
+      "expected_integration_suite": [
+        "suite::unified_exec_zsh_fork_approvals::unified_exec_zsh_fork_parent_approval_preserves_denied_reads",
+        "suite::unified_exec_zsh_fork_approvals::unified_exec_zsh_fork_parent_approval_escalates_intercepted_exec",
+        "suite::unified_exec_zsh_fork_approvals::unified_exec_zsh_fork_parent_approval_keeps_explicit_prompt_rule",
+        "suite::unified_exec_zsh_fork_approvals::unified_exec_zsh_fork_guardian_reviews_intercepted_execve",
+        "suite::unified_exec_zsh_fork_approvals::unified_exec_zsh_fork_guardian_reviews_persistent_terminal_in_current_turn"
+      ],
+      "expected_original_unit_module": [
+        "tools::runtimes::zsh_fork::unix_escalation::tests::execve_prompt_rejection_keeps_prefix_rules_on_rules_flag",
+        "tools::runtimes::zsh_fork::unix_escalation::tests::execve_prompt_rejection_keeps_unmatched_commands_on_sandbox_flag",
+        "tools::runtimes::zsh_fork::unix_escalation::tests::approval_sandbox_permissions_only_downgrades_preapproved_additional_permissions",
+        "tools::runtimes::zsh_fork::unix_escalation::tests::extract_shell_script_preserves_login_flag",
+        "tools::runtimes::zsh_fork::unix_escalation::tests::extract_shell_script_supports_wrapped_command_prefixes",
+        "tools::runtimes::zsh_fork::unix_escalation::tests::extract_shell_script_rejects_unsupported_shell_invocation",
+        "tools::runtimes::zsh_fork::unix_escalation::tests::join_program_and_argv_replaces_original_argv_zero",
+        "tools::runtimes::zsh_fork::unix_escalation::tests::commands_for_intercepted_exec_policy_parses_plain_shell_wrappers",
+        "tools::runtimes::zsh_fork::unix_escalation::tests::commands_for_intercepted_exec_policy_preserves_unparsed_shell_wrappers",
+        "tools::runtimes::zsh_fork::unix_escalation::tests::shell_request_escalation_execution_is_explicit",
+        "tools::runtimes::zsh_fork::unix_escalation::tests::unsandboxed_intercepted_exec_strips_managed_network_env",
+        "tools::runtimes::zsh_fork::unix_escalation::tests::preapproved_additional_permissions_escalate_intercepted_exec",
+        "tools::runtimes::zsh_fork::unix_escalation::tests::execve_permission_request_hook_short_circuits_prompt",
+        "tools::runtimes::zsh_fork::unix_escalation::tests::evaluate_intercepted_exec_policy_uses_wrapper_command_when_shell_wrapper_parsing_disabled",
+        "tools::runtimes::zsh_fork::unix_escalation::tests::evaluate_intercepted_exec_policy_matches_inner_shell_commands_when_enabled",
+        "tools::runtimes::zsh_fork::unix_escalation::tests::intercepted_exec_policy_uses_host_executable_mappings",
+        "tools::runtimes::zsh_fork::unix_escalation::tests::denied_reads_keep_prefix_rule_allow_inside_sandbox",
+        "tools::runtimes::zsh_fork::unix_escalation::tests::denied_reads_keep_granular_sandbox_rejection_for_escalation",
+        "tools::runtimes::zsh_fork::unix_escalation::tests::intercepted_exec_policy_treats_preapproved_additional_permissions_as_default",
+        "tools::runtimes::zsh_fork::unix_escalation::tests::intercepted_exec_policy_rejects_disallowed_host_executable_mapping"
+      ],
+      "expected_complete_case_names": [
+        "suite::unified_exec_zsh_fork_approvals::unified_exec_zsh_fork_guardian_reviews_intercepted_execve",
+        "suite::unified_exec_zsh_fork_approvals::unified_exec_zsh_fork_guardian_reviews_persistent_terminal_in_current_turn",
+        "suite::unified_exec_zsh_fork_approvals::unified_exec_zsh_fork_parent_approval_escalates_intercepted_exec",
+        "suite::unified_exec_zsh_fork_approvals::unified_exec_zsh_fork_parent_approval_keeps_explicit_prompt_rule",
+        "suite::unified_exec_zsh_fork_approvals::unified_exec_zsh_fork_parent_approval_preserves_denied_reads",
+        "tools::runtimes::zsh_fork::unix_escalation::tests::approval_sandbox_permissions_only_downgrades_preapproved_additional_permissions",
+        "tools::runtimes::zsh_fork::unix_escalation::tests::commands_for_intercepted_exec_policy_parses_plain_shell_wrappers",
+        "tools::runtimes::zsh_fork::unix_escalation::tests::commands_for_intercepted_exec_policy_preserves_unparsed_shell_wrappers",
+        "tools::runtimes::zsh_fork::unix_escalation::tests::denied_reads_keep_granular_sandbox_rejection_for_escalation",
+        "tools::runtimes::zsh_fork::unix_escalation::tests::denied_reads_keep_prefix_rule_allow_inside_sandbox",
+        "tools::runtimes::zsh_fork::unix_escalation::tests::evaluate_intercepted_exec_policy_matches_inner_shell_commands_when_enabled",
+        "tools::runtimes::zsh_fork::unix_escalation::tests::evaluate_intercepted_exec_policy_uses_wrapper_command_when_shell_wrapper_parsing_disabled",
+        "tools::runtimes::zsh_fork::unix_escalation::tests::execve_permission_request_hook_short_circuits_prompt",
+        "tools::runtimes::zsh_fork::unix_escalation::tests::execve_prompt_rejection_keeps_prefix_rules_on_rules_flag",
+        "tools::runtimes::zsh_fork::unix_escalation::tests::execve_prompt_rejection_keeps_unmatched_commands_on_sandbox_flag",
+        "tools::runtimes::zsh_fork::unix_escalation::tests::extract_shell_script_preserves_login_flag",
+        "tools::runtimes::zsh_fork::unix_escalation::tests::extract_shell_script_rejects_unsupported_shell_invocation",
+        "tools::runtimes::zsh_fork::unix_escalation::tests::extract_shell_script_supports_wrapped_command_prefixes",
+        "tools::runtimes::zsh_fork::unix_escalation::tests::intercepted_exec_policy_rejects_disallowed_host_executable_mapping",
+        "tools::runtimes::zsh_fork::unix_escalation::tests::intercepted_exec_policy_treats_preapproved_additional_permissions_as_default",
+        "tools::runtimes::zsh_fork::unix_escalation::tests::intercepted_exec_policy_uses_host_executable_mappings",
+        "tools::runtimes::zsh_fork::unix_escalation::tests::join_program_and_argv_replaces_original_argv_zero",
+        "tools::runtimes::zsh_fork::unix_escalation::tests::preapproved_additional_permissions_escalate_intercepted_exec",
+        "tools::runtimes::zsh_fork::unix_escalation::tests::shell_request_escalation_execution_is_explicit",
+        "tools::runtimes::zsh_fork::unix_escalation::tests::unsandboxed_intercepted_exec_strips_managed_network_env"
+      ],
+      "selection_requirement": "Catalog first; require exactly the stated 25 executed names, no selected ignored cases or early-return skips, original no-tests=fail, retries=0, and fresh full JUnit/raw output. Preserve reported filtered/ignored totals separately.",
+      "helper_requirement": "Use the real already-qualified zsh/execve-wrapper/codex helper artifacts; record stable pre/post hashes. Missing helper or network early return cannot satisfy the gate.",
+      "success_requirement": "All original denial/nonzero/no-secret/one-parent-no-second-approval assertions and all original explicit-rule, Guardian, denied-read/granular, network stripping and additional-permission controls must execute successfully. A unit-only result cannot close the real filesystem oracle.",
+      "source_requirement": "Exact source tree and pre/post file identities; freeze source throughout execution; disclose any native formatting change before qualification."
+    },
+    "lock_gate": "No Cargo.toml, Cargo.lock, BUILD, MODULE or dependency change is included; no new lock generation is required by this single existing-helper call.",
+    "remaining_gates": [
+      "Root independent review",
+      "Sole native execution of original selected cases with complete fresh evidence",
+      "Owning/full workspace gates and original platform CI remain separate; this candidate is not yet qualified or published"
+    ],
+    "original13_reference": "The 13-case da60 run is retained in baseline evidence. The immediate root-requested regression gate is the original 5-case integration suite plus 20-case unit module, with the original seven-package feature context preserved; broader owning/full gates remain independently required."
+  },
+  "artifact_publication": {
+    "unreachable_blobs_only": true,
+    "git_refs_changed": false,
+    "native_or_shared_tree_mutated": false,
+    "production_safety_boundary": "No Windows permission implementation changes; no new sandbox allowances; no approval policy edits."
+  }
+}

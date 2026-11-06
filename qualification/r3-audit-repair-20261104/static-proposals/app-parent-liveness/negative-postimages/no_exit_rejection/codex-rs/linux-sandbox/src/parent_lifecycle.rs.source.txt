@@ -1,0 +1,150 @@
+//! Bind the inner reaper to the original bubblewrap monitor across exec.
+
+use std::fs::File;
+use std::io;
+use std::io::Read;
+use std::mem::MaybeUninit;
+use std::os::fd::AsRawFd;
+use std::os::fd::FromRawFd;
+use std::os::fd::RawFd;
+use std::os::unix::fs::MetadataExt;
+
+// Linux /proc/PID/stat field 9 exposes task flags, including PF_EXITING.
+// It is set before children are reparented, unlike the later zombie state.
+const PF_EXITING: u64 = 0x0000_0004;
+const MAX_STAT_BYTES: u64 = 4096;
+
+pub(crate) struct ParentLiveness(File);
+
+impl ParentLiveness {
+    /// Capture only this process, after the cleanup supervisor's optional fork.
+    /// Do not read this file before the inner reaper arms its death signal:
+    /// seq_file could otherwise retain a pre-exit record across exec.
+    pub(crate) fn capture_current_process() -> io::Result<Self> {
+        let file = File::open("/proc/self/stat")?;
+        if file.as_raw_fd() > libc::STDERR_FILENO {
+            return Ok(Self(file));
+        }
+        // SAFETY: duplicate our owned, unread file above the standard FDs.
+        // Dropping file restores the originally closed standard descriptor.
+        let fd = unsafe { libc::fcntl(file.as_raw_fd(), libc::F_DUPFD_CLOEXEC, libc::STDERR_FILENO + 1) };
+        if fd < 0 {
+            return Err(io::Error::last_os_error());
+        }
+        // SAFETY: fcntl returned a new owned descriptor with CLOEXEC set.
+        Ok(Self(unsafe { File::from_raw_fd(fd) }))
+    }
+
+    pub(crate) fn inheritance_argument(&self) -> io::Result<String> {
+        let metadata = self.0.metadata()?;
+        let fd = self.0.as_raw_fd();
+        Ok(format!("{fd}:{}:{}", metadata.dev(), metadata.ino()))
+    }
+
+    pub(crate) fn into_file(self) -> File {
+        self.0
+    }
+
+    /// Consume the descriptor created by the private SandboxReaper launch role.
+    /// The device/inode check rejects descriptor reuse during launcher setup;
+    /// it is not an authentication scheme for arbitrary caller-supplied FDs.
+    pub(crate) fn from_inherited(argument: &str) -> io::Result<Self> {
+        let invalid = || io::Error::new(io::ErrorKind::InvalidInput, "invalid parent liveness descriptor");
+        let mut fields = argument.split(':');
+        let fd: RawFd = fields.next().ok_or_else(invalid)?.parse().map_err(|_| invalid())?;
+        let device: u64 = fields.next().ok_or_else(invalid)?.parse().map_err(|_| invalid())?;
+        let inode: u64 = fields.next().ok_or_else(invalid)?.parse().map_err(|_| invalid())?;
+        if fields.next().is_some() || fd <= libc::STDERR_FILENO {
+            return Err(invalid());
+        }
+        // SAFETY: fcntl validates the inherited numeric descriptor before it
+        // is adopted; no Rust owner exists for this private handoff in inner.
+        let descriptor_flags = unsafe { libc::fcntl(fd, libc::F_GETFD) };
+        if descriptor_flags < 0 {
+            return Err(io::Error::last_os_error());
+        }
+        // SAFETY: this valid inherited FD is consumed exactly once. Standard
+        // descriptors are excluded above; the launcher retained its own copy.
+        let file = unsafe { File::from_raw_fd(fd) };
+        // SAFETY: the File owns fd, and all existing descriptor flags remain.
+        if unsafe { libc::fcntl(fd, libc::F_SETFD, descriptor_flags | libc::FD_CLOEXEC) } < 0 {
+            return Err(io::Error::last_os_error());
+        }
+        let metadata = file.metadata()?;
+        if (metadata.dev(), metadata.ino()) != (device, inode) {
+            return Err(io::Error::new(io::ErrorKind::InvalidData, "parent liveness descriptor identity changed"));
+        }
+        let mut filesystem = MaybeUninit::<libc::statfs>::uninit();
+        // SAFETY: fd is valid, and fstatfs initializes the output on success.
+        if unsafe { libc::fstatfs(fd, filesystem.as_mut_ptr()) } < 0 {
+            return Err(io::Error::last_os_error());
+        }
+        // SAFETY: fstatfs succeeded above.
+        let filesystem = unsafe { filesystem.assume_init() };
+        // SAFETY: fd is owned and valid. These operations do not read or
+        // populate the procfs seq_file.
+        let status_flags = unsafe { libc::fcntl(fd, libc::F_GETFL) };
+        if status_flags < 0 {
+            return Err(io::Error::last_os_error());
+        }
+        // SAFETY: querying the valid file's current offset changes no data.
+        let position = unsafe { libc::lseek(fd, 0, libc::SEEK_CUR) };
+        if position < 0 {
+            return Err(io::Error::last_os_error());
+        }
+        if !metadata.is_file()
+            || filesystem.f_type != libc::PROC_SUPER_MAGIC
+            || status_flags & (libc::O_PATH | libc::O_ACCMODE) != libc::O_RDONLY
+            || position != 0
+        {
+            return Err(io::Error::new(io::ErrorKind::InvalidInput, "parent liveness descriptor must be an unread read-only procfs file"));
+        }
+        Ok(Self(file))
+    }
+
+    /// Call after all reaper restrictions, before forking the user command.
+    /// The first read is tied to the original proc inode, including after PID
+    /// reuse. Checking PF_EXITING also covers reparent-before-EXIT_ZOMBIE.
+    /// Consuming self closes the descriptor on every return, before user fork.
+    pub(crate) fn arm_and_check(mut self) -> io::Result<()> {
+        // SAFETY: PR_SET_PDEATHSIG takes a signal number, no pointer arguments.
+        if unsafe {
+            libc::prctl(libc::PR_SET_PDEATHSIG, libc::SIGKILL as libc::c_ulong,
+                0 as libc::c_ulong, 0 as libc::c_ulong, 0 as libc::c_ulong)
+        } < 0 {
+            return Err(io::Error::last_os_error());
+        }
+        let mut record = Vec::new();
+        (&mut self.0).take(MAX_STAT_BYTES + 1).read_to_end(&mut record)?;
+        let malformed = || io::Error::new(io::ErrorKind::InvalidData, "malformed original parent proc stat");
+        if record.is_empty() || record.len() as u64 > MAX_STAT_BYTES {
+            return Err(malformed());
+        }
+        // comm can contain spaces, parentheses and non-UTF8 bytes. The final
+        // ')' precedes the fixed numeric fields, so never split comm on spaces.
+        let closing = record.iter().rposition(|byte| *byte == b')').ok_or_else(malformed)?;
+        let opening = record.iter().position(|byte| *byte == b'(').ok_or_else(malformed)?;
+        if opening >= closing {
+            return Err(malformed());
+        }
+        let pid = std::str::from_utf8(&record[..opening]).map_err(|_| malformed())?
+            .trim().parse::<u64>().map_err(|_| malformed())?;
+        if pid == 0 || record.get(closing + 1) != Some(&b' ') {
+            return Err(malformed());
+        }
+        let mut fields = record[closing + 1..].split(u8::is_ascii_whitespace)
+            .filter(|field| !field.is_empty());
+        let state = fields.next().ok_or_else(malformed)?;
+        let flags = std::str::from_utf8(fields.nth(5).ok_or_else(malformed)?)
+            .map_err(|_| malformed())?.parse::<u64>().map_err(|_| malformed())?;
+        match state {
+            b"R" | b"S" | b"D" | b"T" | b"t" | b"W" | b"K" | b"P" | b"I" | b"Z" | b"X" | b"x" => {}
+            _ => return Err(malformed()),
+        }
+        Ok(())
+    }
+}
+
+#[cfg(test)]
+#[path = "parent_lifecycle_tests.rs"]
+mod tests;

@@ -1,0 +1,438 @@
+{
+  "schema": "hepta-b16-all-negative-terminal-contract-v3",
+  "internal_stage_ids_are_not_original_blocker_ids": true,
+  "source_payload_blob": "64db580beabe2642eb8611184dac4fc686fe34e1",
+  "occurrences": 17,
+  "distinct_test_names": 16,
+  "foundation_occurrences": 10,
+  "observed_B_native_runs": 0,
+  "nextest_type_source": "junit-terminal-evidence-v3.json; exact real normal failure type examples, separately typed timeout, and fixed official writer. No assertion that the official source commit is the native binary build version.",
+  "no_failure_text_requirement": true,
+  "additional_required_physical_gate": "All unchanged marker order and exact panic-source predicates still execute only after accepted terminal type and exact selected roster; ordinary 101 alone never qualifies a negative.",
+  "refused_terminals": [
+    "missing type",
+    "unknown type",
+    "test timeout",
+    "test failure with exit code 101 (leaked handles)",
+    "error",
+    "skip",
+    "multiple terminal nodes",
+    "wrong selected cases/exit vector"
+  ],
+  "cases": [
+    {
+      "display_phase": "B16/phase/B02_R2d_counterfactual",
+      "internal_phase_id": "B02_R2d_counterfactual",
+      "epoch": "foundation",
+      "package": "codex-state",
+      "name": "sqlite_read_barrier::tests::cancelled_barrier_transition_discards_changed_connection",
+      "physical_oracle": "barrier",
+      "exact_source_panic_anchors": [
+        {
+          "path": "codex-rs/state/src/sqlite_read_barrier_tests.rs",
+          "blob": "dc73d453b2bc5b34fca584c31fbdd56db9b165fd",
+          "needle": "assert_eq!(query_only, 1,",
+          "first_macro_line": 264
+        },
+        {
+          "path": "codex-rs/state/src/sqlite_read_barrier_tests.rs",
+          "blob": "dc73d453b2bc5b34fca584c31fbdd56db9b165fd",
+          "needle": "assert_eq!(busy_timeout, 5_000,",
+          "first_macro_line": 265
+        }
+      ],
+      "expected_junit_terminal": {
+        "tag": "failure",
+        "type": "test failure with exit code 101",
+        "count": 1
+      },
+      "expected_nextest_process_exit_code": 100,
+      "observed_B_native_result": null,
+      "status": "UNEXECUTED_EXPECTATION_FROM_EXACT_RUST_ASSERTION_SOURCE_AND_ACTUAL_RUNNER_XML_FORMAT"
+    },
+    {
+      "display_phase": "B16/phase/B04_R2e1_baseline",
+      "internal_phase_id": "B04_R2e1_baseline",
+      "epoch": "foundation",
+      "package": "codex-hepta-memory",
+      "name": "production_writer::objective_sender::commit_interlock_tests::cancelled_checkpoint_vetoes_a_preexisting_read_transaction",
+      "physical_oracle": "interlock",
+      "exact_source_panic_anchors": [
+        {
+          "path": "codex-rs/hepta-memory/src/objective_sender_commit_interlock_tests.rs",
+          "blob": "62d85c330446b7b5059016d7501bcd85af2e556a",
+          "needle": "assert_eq!(code.as_deref(), Some(\"531\"))",
+          "first_macro_line": 16
+        }
+      ],
+      "expected_junit_terminal": {
+        "tag": "failure",
+        "type": "test failure with exit code 101",
+        "count": 1
+      },
+      "expected_nextest_process_exit_code": 100,
+      "observed_B_native_result": null,
+      "status": "UNEXECUTED_EXPECTATION_FROM_EXACT_RUST_ASSERTION_SOURCE_AND_ACTUAL_RUNNER_XML_FORMAT"
+    },
+    {
+      "display_phase": "B16/phase/B04_R2e1_baseline",
+      "internal_phase_id": "B04_R2e1_baseline",
+      "epoch": "foundation",
+      "package": "codex-hepta-memory",
+      "name": "production_writer::objective_sender::commit_interlock_tests::cancelled_checkpoint_vetoes_a_preexisting_connection_waiting_for_sqlite",
+      "physical_oracle": "interlock",
+      "exact_source_panic_anchors": [
+        {
+          "path": "codex-rs/hepta-memory/src/objective_sender_commit_interlock_tests.rs",
+          "blob": "62d85c330446b7b5059016d7501bcd85af2e556a",
+          "needle": "assert_eq!(code.as_deref(), Some(\"531\"))",
+          "first_macro_line": 16
+        }
+      ],
+      "expected_junit_terminal": {
+        "tag": "failure",
+        "type": "test failure with exit code 101",
+        "count": 1
+      },
+      "expected_nextest_process_exit_code": 100,
+      "observed_B_native_result": null,
+      "status": "UNEXECUTED_EXPECTATION_FROM_EXACT_RUST_ASSERTION_SOURCE_AND_ACTUAL_RUNNER_XML_FORMAT"
+    },
+    {
+      "display_phase": "B16/phase/B04_R2e1_baseline",
+      "internal_phase_id": "B04_R2e1_baseline",
+      "epoch": "foundation",
+      "package": "codex-hepta-memory",
+      "name": "production_writer::objective_sender::commit_interlock_tests::refused_checkpoint_vetoes_growth_replacement_and_writes_after_read_ack",
+      "physical_oracle": "interlock",
+      "exact_source_panic_anchors": [
+        {
+          "path": "codex-rs/hepta-memory/src/objective_sender_commit_interlock_tests.rs",
+          "blob": "62d85c330446b7b5059016d7501bcd85af2e556a",
+          "needle": "assert_eq!(code.as_deref(), Some(\"531\"))",
+          "first_macro_line": 16
+        }
+      ],
+      "expected_junit_terminal": {
+        "tag": "failure",
+        "type": "test failure with exit code 101",
+        "count": 1
+      },
+      "expected_nextest_process_exit_code": 100,
+      "observed_B_native_result": null,
+      "status": "UNEXECUTED_EXPECTATION_FROM_EXACT_RUST_ASSERTION_SOURCE_AND_ACTUAL_RUNNER_XML_FORMAT"
+    },
+    {
+      "display_phase": "B16/phase/B04_R2e1_baseline",
+      "internal_phase_id": "B04_R2e1_baseline",
+      "epoch": "foundation",
+      "package": "codex-hepta-memory",
+      "name": "production_writer::objective_sender::commit_interlock_tests::recovered_pool_vetoes_commits_and_retains_its_exclusive_open_guard",
+      "physical_oracle": "interlock",
+      "exact_source_panic_anchors": [
+        {
+          "path": "codex-rs/hepta-memory/src/objective_sender_commit_interlock_tests.rs",
+          "blob": "62d85c330446b7b5059016d7501bcd85af2e556a",
+          "needle": "assert_eq!(code.as_deref(), Some(\"531\"))",
+          "first_macro_line": 16
+        }
+      ],
+      "expected_junit_terminal": {
+        "tag": "failure",
+        "type": "test failure with exit code 101",
+        "count": 1
+      },
+      "expected_nextest_process_exit_code": 100,
+      "observed_B_native_result": null,
+      "status": "UNEXECUTED_EXPECTATION_FROM_EXACT_RUST_ASSERTION_SOURCE_AND_ACTUAL_RUNNER_XML_FORMAT"
+    },
+    {
+      "display_phase": "B16/phase/B08_R2e3_baseline",
+      "internal_phase_id": "B08_R2e3_baseline",
+      "epoch": "foundation",
+      "package": "codex-hepta-memory",
+      "name": "production_writer::objective_sender::connection_custody_tests::detached_shared_connection_retains_original_file_lock_until_close",
+      "physical_oracle": "custody",
+      "exact_source_panic_anchors": [
+        {
+          "path": "codex-rs/hepta-memory/src/objective_sender_connection_custody_tests.rs",
+          "blob": "09a61b69e8cd34f27a0c968433b2b29df9c95380",
+          "needle": "assert!(matches!(\n        competing,",
+          "first_macro_line": 20
+        }
+      ],
+      "expected_junit_terminal": {
+        "tag": "failure",
+        "type": "test failure with exit code 101",
+        "count": 1
+      },
+      "expected_nextest_process_exit_code": 100,
+      "observed_B_native_result": null,
+      "status": "UNEXECUTED_EXPECTATION_FROM_EXACT_RUST_ASSERTION_SOURCE_AND_ACTUAL_RUNNER_XML_FORMAT"
+    },
+    {
+      "display_phase": "B16/phase/B08_R2e3_baseline",
+      "internal_phase_id": "B08_R2e3_baseline",
+      "epoch": "foundation",
+      "package": "codex-hepta-memory",
+      "name": "production_writer::objective_sender::connection_custody_tests::recovered_connection_retains_exclusive_custody_after_store_close",
+      "physical_oracle": "custody",
+      "exact_source_panic_anchors": [
+        {
+          "path": "codex-rs/hepta-memory/src/objective_sender_connection_custody_tests.rs",
+          "blob": "09a61b69e8cd34f27a0c968433b2b29df9c95380",
+          "needle": "assert!(matches!(\n        competing,",
+          "first_macro_line": 20
+        }
+      ],
+      "expected_junit_terminal": {
+        "tag": "failure",
+        "type": "test failure with exit code 101",
+        "count": 1
+      },
+      "expected_nextest_process_exit_code": 100,
+      "observed_B_native_result": null,
+      "status": "UNEXECUTED_EXPECTATION_FROM_EXACT_RUST_ASSERTION_SOURCE_AND_ACTUAL_RUNNER_XML_FORMAT"
+    },
+    {
+      "display_phase": "B16/phase/B08_R2e3_baseline",
+      "internal_phase_id": "B08_R2e3_baseline",
+      "epoch": "foundation",
+      "package": "codex-hepta-memory",
+      "name": "production_writer::objective_sender::connection_custody_tests::cancelled_close_retains_custody_after_a_cancelled_checkpoint",
+      "physical_oracle": "custody",
+      "exact_source_panic_anchors": [
+        {
+          "path": "codex-rs/hepta-memory/src/objective_sender_connection_custody_tests.rs",
+          "blob": "09a61b69e8cd34f27a0c968433b2b29df9c95380",
+          "needle": "assert!(matches!(\n        competing,",
+          "first_macro_line": 20
+        }
+      ],
+      "expected_junit_terminal": {
+        "tag": "failure",
+        "type": "test failure with exit code 101",
+        "count": 1
+      },
+      "expected_nextest_process_exit_code": 100,
+      "observed_B_native_result": null,
+      "status": "UNEXECUTED_EXPECTATION_FROM_EXACT_RUST_ASSERTION_SOURCE_AND_ACTUAL_RUNNER_XML_FORMAT"
+    },
+    {
+      "display_phase": "B16/phase/B08_R2e3_baseline",
+      "internal_phase_id": "B08_R2e3_baseline",
+      "epoch": "foundation",
+      "package": "codex-hepta-memory",
+      "name": "production_writer::objective_sender::connection_custody_tests::commit_hook_teardown_keeps_custody_until_native_connection_close",
+      "physical_oracle": "custody",
+      "exact_source_panic_anchors": [
+        {
+          "path": "codex-rs/hepta-memory/src/objective_sender_connection_custody_tests.rs",
+          "blob": "09a61b69e8cd34f27a0c968433b2b29df9c95380",
+          "needle": "assert!(matches!(\n        competing,",
+          "first_macro_line": 20
+        }
+      ],
+      "expected_junit_terminal": {
+        "tag": "failure",
+        "type": "test failure with exit code 101",
+        "count": 1
+      },
+      "expected_nextest_process_exit_code": 100,
+      "observed_B_native_result": null,
+      "status": "UNEXECUTED_EXPECTATION_FROM_EXACT_RUST_ASSERTION_SOURCE_AND_ACTUAL_RUNNER_XML_FORMAT"
+    },
+    {
+      "display_phase": "B16/phase/B09_R2e3_anchor_counterfactual",
+      "internal_phase_id": "B09_R2e3_anchor_counterfactual",
+      "epoch": "foundation",
+      "package": "codex-hepta-memory",
+      "name": "production_writer::objective_sender::connection_custody_tests::commit_hook_teardown_keeps_custody_until_native_connection_close",
+      "physical_oracle": "anchor",
+      "exact_source_panic_anchors": [
+        {
+          "path": "codex-rs/hepta-memory/src/objective_sender_connection_custody_tests.rs",
+          "blob": "09a61b69e8cd34f27a0c968433b2b29df9c95380",
+          "needle": "assert!(matches!(\n        competing,",
+          "first_macro_line": 20
+        }
+      ],
+      "expected_junit_terminal": {
+        "tag": "failure",
+        "type": "test failure with exit code 101",
+        "count": 1
+      },
+      "expected_nextest_process_exit_code": 100,
+      "observed_B_native_result": null,
+      "status": "UNEXECUTED_EXPECTATION_FROM_EXACT_RUST_ASSERTION_SOURCE_AND_ACTUAL_RUNNER_XML_FORMAT"
+    },
+    {
+      "display_phase": "B16/phase/B12_driver_no_worker_token",
+      "internal_phase_id": "B12_driver_no_worker_token",
+      "epoch": "driver",
+      "package": "sqlx-sqlite",
+      "name": "options::connection_lifetime::tests::cancellation_during_native_open_keeps_resource_custody",
+      "physical_oracle": "driver-worker",
+      "exact_source_panic_anchors": [
+        {
+          "path": "codex-rs/third_party/sqlx-sqlite-0.9.0/src/options/connection_lifetime_tests.rs",
+          "blob": "15b4ac44e4f3cee8ddca8731a0af1063e4dafe89",
+          "needle": "panic!(\"unexpected physical lock result:",
+          "first_macro_line": 114
+        }
+      ],
+      "expected_junit_terminal": {
+        "tag": "failure",
+        "type": "test failure with exit code 101",
+        "count": 1
+      },
+      "expected_nextest_process_exit_code": 100,
+      "observed_B_native_result": null,
+      "status": "UNEXECUTED_EXPECTATION_FROM_EXACT_RUST_ASSERTION_SOURCE_AND_ACTUAL_RUNNER_XML_FORMAT"
+    },
+    {
+      "display_phase": "B16/phase/B12_driver_no_worker_token",
+      "internal_phase_id": "B12_driver_no_worker_token",
+      "epoch": "driver",
+      "package": "sqlx-sqlite",
+      "name": "options::connection_lifetime::tests::cancellation_during_initial_pragmas_keeps_resource_custody",
+      "physical_oracle": "driver-worker",
+      "exact_source_panic_anchors": [
+        {
+          "path": "codex-rs/third_party/sqlx-sqlite-0.9.0/src/options/connection_lifetime_tests.rs",
+          "blob": "15b4ac44e4f3cee8ddca8731a0af1063e4dafe89",
+          "needle": "panic!(\"unexpected physical lock result:",
+          "first_macro_line": 114
+        }
+      ],
+      "expected_junit_terminal": {
+        "tag": "failure",
+        "type": "test failure with exit code 101",
+        "count": 1
+      },
+      "expected_nextest_process_exit_code": 100,
+      "observed_B_native_result": null,
+      "status": "UNEXECUTED_EXPECTATION_FROM_EXACT_RUST_ASSERTION_SOURCE_AND_ACTUAL_RUNNER_XML_FORMAT"
+    },
+    {
+      "display_phase": "B16/phase/B13_driver_unwind_releases",
+      "internal_phase_id": "B13_driver_unwind_releases",
+      "epoch": "driver",
+      "package": "sqlx-sqlite",
+      "name": "options::connection_lifetime::tests::initialization_error_releases_but_failed_native_close_retains_custody",
+      "physical_oracle": "driver-close",
+      "exact_source_panic_anchors": [
+        {
+          "path": "codex-rs/third_party/sqlx-sqlite-0.9.0/src/options/connection_lifetime_tests.rs",
+          "blob": "15b4ac44e4f3cee8ddca8731a0af1063e4dafe89",
+          "needle": "panic!(\"unexpected physical lock result:",
+          "first_macro_line": 114
+        }
+      ],
+      "expected_junit_terminal": {
+        "tag": "failure",
+        "type": "test failure with exit code 101",
+        "count": 1
+      },
+      "expected_nextest_process_exit_code": 100,
+      "observed_B_native_result": null,
+      "status": "UNEXECUTED_EXPECTATION_FROM_EXACT_RUST_ASSERTION_SOURCE_AND_ACTUAL_RUNNER_XML_FORMAT"
+    },
+    {
+      "display_phase": "B16/phase/B16_pool_binding_negative",
+      "internal_phase_id": "B16_pool_binding_negative",
+      "epoch": "pool",
+      "package": "codex-state",
+      "name": "sqlite::native_custody_tests::guarded_pool_retains_custody_when_native_open_is_cancelled",
+      "physical_oracle": "pool",
+      "exact_source_panic_anchors": [
+        {
+          "path": "codex-rs/state/src/sqlite_native_custody_tests.rs",
+          "blob": "469db639ae19cb89263089045c2f05814000d5a0",
+          "needle": "panic!(\"unexpected physical lock result:",
+          "first_macro_line": 107
+        }
+      ],
+      "expected_junit_terminal": {
+        "tag": "failure",
+        "type": "test failure with exit code 101",
+        "count": 1
+      },
+      "expected_nextest_process_exit_code": 100,
+      "observed_B_native_result": null,
+      "status": "UNEXECUTED_EXPECTATION_FROM_EXACT_RUST_ASSERTION_SOURCE_AND_ACTUAL_RUNNER_XML_FORMAT"
+    },
+    {
+      "display_phase": "B16/phase/B16_pool_binding_negative",
+      "internal_phase_id": "B16_pool_binding_negative",
+      "epoch": "pool",
+      "package": "codex-state",
+      "name": "sqlite::native_custody_tests::coordinated_pool_retains_custody_when_initial_pragma_is_cancelled",
+      "physical_oracle": "pool",
+      "exact_source_panic_anchors": [
+        {
+          "path": "codex-rs/state/src/sqlite_native_custody_tests.rs",
+          "blob": "469db639ae19cb89263089045c2f05814000d5a0",
+          "needle": "panic!(\"unexpected physical lock result:",
+          "first_macro_line": 107
+        }
+      ],
+      "expected_junit_terminal": {
+        "tag": "failure",
+        "type": "test failure with exit code 101",
+        "count": 1
+      },
+      "expected_nextest_process_exit_code": 100,
+      "observed_B_native_result": null,
+      "status": "UNEXECUTED_EXPECTATION_FROM_EXACT_RUST_ASSERTION_SOURCE_AND_ACTUAL_RUNNER_XML_FORMAT"
+    },
+    {
+      "display_phase": "B16/phase/B16_pool_binding_negative",
+      "internal_phase_id": "B16_pool_binding_negative",
+      "epoch": "pool",
+      "package": "codex-hepta-memory",
+      "name": "production_writer::objective_sender::connection_custody_tests::native_custody_survives_removal_of_both_registered_anchors",
+      "physical_oracle": "pool",
+      "exact_source_panic_anchors": [
+        {
+          "path": "codex-rs/hepta-memory/src/objective_sender_connection_custody_tests.rs",
+          "blob": "6b8e88296507a8fe302aa45cd9015ce602465b56",
+          "needle": "assert!(matches!(\n        competing,",
+          "first_macro_line": 20
+        }
+      ],
+      "expected_junit_terminal": {
+        "tag": "failure",
+        "type": "test failure with exit code 101",
+        "count": 1
+      },
+      "expected_nextest_process_exit_code": 100,
+      "observed_B_native_result": null,
+      "status": "UNEXECUTED_EXPECTATION_FROM_EXACT_RUST_ASSERTION_SOURCE_AND_ACTUAL_RUNNER_XML_FORMAT"
+    },
+    {
+      "display_phase": "B16/phase/B18_checkpoint_negative",
+      "internal_phase_id": "B18_checkpoint_negative",
+      "epoch": "checkpoint",
+      "package": "codex-hepta-memory",
+      "name": "cognitive_store::recovery::tests::checkpoint_custody::cancelled_private_checkpoint_keeps_actual_recovery_fence_until_native_close",
+      "physical_oracle": "checkpoint",
+      "exact_source_panic_anchors": [
+        {
+          "path": "codex-rs/hepta-memory/src/cognitive_store_recovery_custody_tests.rs",
+          "blob": "377b8227ff9ae33493467527130092415e2a08e0",
+          "needle": "assert!(matches!(actual, Err(TryLockError::WouldBlock))",
+          "first_macro_line": 159
+        }
+      ],
+      "expected_junit_terminal": {
+        "tag": "failure",
+        "type": "test failure with exit code 101",
+        "count": 1
+      },
+      "expected_nextest_process_exit_code": 100,
+      "observed_B_native_result": null,
+      "status": "UNEXECUTED_EXPECTATION_FROM_EXACT_RUST_ASSERTION_SOURCE_AND_ACTUAL_RUNNER_XML_FORMAT"
+    }
+  ]
+}

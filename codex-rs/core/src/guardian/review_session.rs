@@ -938,13 +938,19 @@ async fn run_review_on_session(
             guardian_model_provider_id: params.spawn_config.model_provider_id.clone(),
             had_prior_review_context: had_prior_review_context(&prompt_mode),
         });
-    if send_followup_reminder {
-        append_guardian_followup_reminder(review_session).await;
-    }
     let prompt_items = run_before_review_deadline(
         deadline,
         params.external_cancel.as_ref(),
         Box::pin(async {
+            // TurnComplete is published before the previous terminalizer drops
+            // its admission fence. Wait before injecting any follow-up context,
+            // under the same original review deadline and cancellation token.
+            if let Some(completion) = review_session.session.pending_turn_terminalization() {
+                completion.await;
+            }
+            if send_followup_reminder {
+                append_guardian_followup_reminder(review_session).await?;
+            }
             params
                 .parent_session
                 .services
@@ -1253,12 +1259,17 @@ async fn run_review_on_session(
     (outcome.0, outcome.1, analytics_result)
 }
 
-async fn append_guardian_followup_reminder(review_session: &GuardianReviewSession) {
+async fn append_guardian_followup_reminder(
+    review_session: &GuardianReviewSession,
+) -> codex_protocol::error::Result<()> {
     let reminder: ResponseItem = ContextualUserFragment::into(GuardianFollowupReviewReminder);
+    let turn_context = review_session.session.new_default_turn().await;
+    // Preserve the idle/terminalizing admission fence and propagate refusal.
+    // A failed reminder must not silently become a completed review without it.
     review_session
         .session
-        .inject_no_new_turn(vec![reminder], /*current_turn_context*/ None)
-        .await;
+        .inject_client_response_items(vec![reminder], turn_context.as_ref())
+        .await
 }
 
 async fn load_rollout_items_for_fork(
@@ -1473,9 +1484,18 @@ async fn run_before_review_deadline<T>(
     external_cancel: Option<&CancellationToken>,
     future: impl Future<Output = T>,
 ) -> Result<T, GuardianReviewSessionOutcome> {
+    // Admission is bounded by the review deadline even if this task was not
+    // scheduled until several branches were ready.
+    if tokio::time::Instant::now() >= deadline {
+        return Err(GuardianReviewSessionOutcome::TimedOut);
+    }
+    if external_cancel.is_some_and(CancellationToken::is_cancelled) {
+        return Err(GuardianReviewSessionOutcome::Aborted);
+    }
+
     tokio::select! {
+        biased;
         _ = tokio::time::sleep_until(deadline) => Err(GuardianReviewSessionOutcome::TimedOut),
-        result = future => Ok(result),
         _ = async {
             if let Some(cancel_token) = external_cancel {
                 cancel_token.cancelled().await;
@@ -1483,6 +1503,17 @@ async fn run_before_review_deadline<T>(
                 std::future::pending::<()>().await;
             }
         } => Err(GuardianReviewSessionOutcome::Aborted),
+        result = future => {
+            // Polling the future can itself cross the deadline or observe
+            // cancellation. Reject and drop that result before admitting it.
+            if tokio::time::Instant::now() >= deadline {
+                Err(GuardianReviewSessionOutcome::TimedOut)
+            } else if external_cancel.is_some_and(CancellationToken::is_cancelled) {
+                Err(GuardianReviewSessionOutcome::Aborted)
+            } else {
+                Ok(result)
+            }
+        },
     }
 }
 
@@ -2511,3 +2542,7 @@ mod tests {
         assert!(review_session.io.rx_event.try_recv().is_err());
     }
 }
+
+#[cfg(test)]
+#[path = "review_deadline_tests.rs"]
+mod review_deadline_tests;

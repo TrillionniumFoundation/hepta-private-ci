@@ -1,0 +1,246 @@
+diff --git a/codex-rs/hepta-memory/src/objective_sender.rs b/codex-rs/hepta-memory/src/objective_sender.rs
+--- a/codex-rs/hepta-memory/src/objective_sender.rs
++++ b/codex-rs/hepta-memory/src/objective_sender.rs
+@@ -487,3 +487,7 @@
+ #[cfg(all(test, unix))]
+ #[path = "objective_sender_crash_tests.rs"]
+ mod crash_tests;
++
++#[cfg(test)]
++#[path = "objective_sender_commit_interlock_tests.rs"]
++mod commit_interlock_tests;
+diff --git a/codex-rs/hepta-memory/src/objective_sender_commit_interlock_tests.rs b/codex-rs/hepta-memory/src/objective_sender_commit_interlock_tests.rs
+new file mode 100644
+--- /dev/null
++++ b/codex-rs/hepta-memory/src/objective_sender_commit_interlock_tests.rs
+@@ -0,0 +1,230 @@
++use super::test_support::*;
++use super::*;
++use pretty_assertions::assert_eq;
++
++fn require_commit_veto(result: Result<sqlx::sqlite::SqliteQueryResult, sqlx::Error>) {
++    let code = result
++        .as_ref()
++        .err()
++        .and_then(|error| error.as_database_error())
++        .and_then(|error| error.code())
++        .map(|code| code.into_owned());
++    eprintln!(
++        "commit_interlock: commit_succeeded={} sqlite_code={code:?}",
++        result.is_ok()
++    );
++    assert_eq!(code.as_deref(), Some("531"));
++}
++
++#[tokio::test]
++async fn cancelled_checkpoint_vetoes_a_preexisting_read_transaction() {
++    let fixture = Fixture::new().await;
++    let before = fixture.store.recovery_anchor().await.unwrap();
++    let mut connection = fixture.store.pool.acquire().await.unwrap();
++    sqlx::query("BEGIN")
++        .execute(&mut *connection)
++        .await
++        .unwrap();
++    let metadata_rows: i64 = sqlx::query_scalar("SELECT count(*) FROM cognitive_meta")
++        .fetch_one(&mut *connection)
++        .await
++        .unwrap();
++    assert_eq!(metadata_rows, 1);
++    *fixture.checkpoint.mode.lock().unwrap() = CheckpointMode::Hold;
++    let mut checkpoint = Box::pin(
++        fixture
++            .writer
++            .checkpoint_current(fixture.checkpoint.as_ref(), Duration::from_secs(2)),
++    );
++    tokio::time::timeout(Duration::from_secs(2), async {
++        tokio::select! {
++            result = &mut checkpoint => panic!("checkpoint completed before hold: {result:?}"),
++            () = fixture.checkpoint.entered.notified() => {}
++        }
++    })
++    .await
++    .unwrap();
++    drop(checkpoint);
++    // Await a real writer-lock handoff; dropping the future only queues SQLx's
++    // rollback. This transaction writes nothing and cannot change the snapshot.
++    let released = fixture
++        .store
++        .pool
++        .begin_with("BEGIN IMMEDIATE")
++        .await
++        .unwrap();
++    released.rollback().await.unwrap();
++
++    // This real read transaction predates the checkpoint. SQLite permits only
++    // one writer, so it upgrades after the cancelled owner releases its lock.
++    sqlx::query("CREATE TABLE checkpoint_held_transaction_probe (value INTEGER)")
++        .execute(&mut *connection)
++        .await
++        .unwrap();
++    require_commit_veto(sqlx::query("COMMIT").execute(&mut *connection).await);
++    drop(connection);
++    assert_eq!(fixture.store.recovery_anchor().await.unwrap(), before);
++}
++
++#[tokio::test]
++async fn cancelled_checkpoint_vetoes_a_preexisting_connection_waiting_for_sqlite() {
++    let fixture = Fixture::new().await;
++    let before = fixture.store.recovery_anchor().await.unwrap();
++    let mut connection = fixture.store.pool.acquire().await.unwrap();
++    *fixture.checkpoint.mode.lock().unwrap() = CheckpointMode::Hold;
++    let mut checkpoint = Box::pin(
++        fixture
++            .writer
++            .checkpoint_current(fixture.checkpoint.as_ref(), Duration::from_secs(2)),
++    );
++    tokio::time::timeout(Duration::from_secs(2), async {
++        tokio::select! {
++            result = &mut checkpoint => panic!("checkpoint completed before hold: {result:?}"),
++            () = fixture.checkpoint.entered.notified() => {}
++        }
++    })
++    .await
++    .unwrap();
++
++    // This physical connection predates the checkpoint. Its BEGIN is actually
++    // polled while the original checkpoint holds SQLite's writer lock.
++    let mut waiting = Box::pin(sqlx::query("BEGIN IMMEDIATE").execute(&mut *connection));
++    assert!(
++        tokio::time::timeout(Duration::from_millis(20), &mut waiting)
++            .await
++            .is_err()
++    );
++    drop(checkpoint);
++    tokio::time::timeout(Duration::from_secs(2), waiting)
++        .await
++        .unwrap()
++        .unwrap();
++    sqlx::query("CREATE TABLE checkpoint_interlock_probe (value INTEGER)")
++        .execute(&mut *connection)
++        .await
++        .unwrap();
++    require_commit_veto(sqlx::query("COMMIT").execute(&mut *connection).await);
++    let tables: i64 = sqlx::query_scalar(
++        "SELECT count(*) FROM sqlite_schema WHERE name = 'checkpoint_interlock_probe'",
++    )
++    .fetch_one(&mut *connection)
++    .await
++    .unwrap();
++    assert_eq!(tables, 0);
++    drop(connection);
++    assert_eq!(fixture.store.recovery_anchor().await.unwrap(), before);
++    assert!(
++        fixture
++            .writer
++            .admit("interlock-after-cancellation", "test", "{}")
++            .await
++            .is_err()
++    );
++    assert_eq!(fixture.store.recovery_anchor().await.unwrap(), before);
++}
++
++#[tokio::test]
++async fn refused_checkpoint_vetoes_growth_replacement_and_writes_after_read_ack() {
++    let fixture = Fixture::new().await;
++    let before = fixture.store.recovery_anchor().await.unwrap();
++    *fixture.checkpoint.mode.lock().unwrap() = CheckpointMode::Refuse;
++    assert!(matches!(
++        fixture
++            .writer
++            .checkpoint_current(fixture.checkpoint.as_ref(), Duration::from_secs(2))
++            .await,
++        Err(ObjectiveSenderError::AcknowledgementUnknown)
++    ));
++
++    let mut connections = Vec::new();
++    for _ in 0..5 {
++        connections.push(fixture.store.pool.acquire().await.unwrap());
++    }
++    for mut connection in connections {
++        require_commit_veto(
++            sqlx::query("CREATE TABLE checkpoint_growth_probe (value INTEGER)")
++                .execute(&mut *connection)
++                .await,
++        );
++        connection.close().await.unwrap();
++    }
++    let clone = fixture.store.clone();
++    require_commit_veto(
++        sqlx::query("CREATE TABLE checkpoint_replacement_probe (value INTEGER)")
++            .execute(&clone.pool)
++            .await,
++    );
++    assert_eq!(clone.recovery_anchor().await.unwrap(), before);
++
++    // A successful independent read ACK remains available but cannot reopen
++    // this pool's monotonic interlock.
++    *fixture.checkpoint.mode.lock().unwrap() = CheckpointMode::Accept;
++    assert_eq!(
++        fixture
++            .writer
++            .checkpoint_current(fixture.checkpoint.as_ref(), Duration::from_secs(2))
++            .await
++            .unwrap(),
++        before
++    );
++    require_commit_veto(
++        sqlx::query("CREATE TABLE checkpoint_after_read_ack_probe (value INTEGER)")
++            .execute(&clone.pool)
++            .await,
++    );
++    assert_eq!(clone.recovery_anchor().await.unwrap(), before);
++}
++
++#[tokio::test]
++async fn recovered_pool_vetoes_commits_and_retains_its_exclusive_open_guard() {
++    let temp = tempfile::TempDir::new().unwrap();
++    let owner = crate::cognitive_test_support::agent_id(OWNER);
++    let layout = crate::cognitive_test_support::layout(&temp, &owner);
++    let initial = crate::CognitiveStore::open(&layout).await.unwrap();
++    let cut = initial.recovery_anchor().await.unwrap();
++    initial.close().await;
++    let verifier = Arc::new(TestVerifier::new());
++    let store = crate::CognitiveStore::open_with_recovery(
++        &layout,
++        crate::CognitiveRecoveryRequirement::ExactCurrentCut(&cut),
++        &authority(&owner, 87),
++        verifier.as_ref(),
++    )
++    .await
++    .unwrap();
++    let writer = ProductionDurableWriter::open_with_live_verifier(
++        store.clone(),
++        authority(&owner, 87),
++        verifier.clone(),
++        LEASE,
++        1,
++    )
++    .await
++    .unwrap();
++    let checkpoint = TestCheckpoint::new(verifier);
++    let before = store.recovery_anchor().await.unwrap();
++    *checkpoint.mode.lock().unwrap() = CheckpointMode::Refuse;
++    assert!(matches!(
++        writer
++            .checkpoint_current(&checkpoint, Duration::from_secs(2))
++            .await,
++        Err(ObjectiveSenderError::AcknowledgementUnknown)
++    ));
++    require_commit_veto(
++        sqlx::query("CREATE TABLE checkpoint_recovered_probe (value INTEGER)")
++            .execute(&store.pool)
++            .await,
++    );
++    assert_eq!(store.recovery_anchor().await.unwrap(), before);
++    assert!(crate::CognitiveStore::open(&layout).await.is_err());
++    assert!(
++        crate::CognitiveStore::open_with_recovery(
++            &layout,
++            crate::CognitiveRecoveryRequirement::ExactCurrentCut(&before),
++            &authority(&owner, 87),
++            &TestVerifier::new(),
++        )
++        .await
++        .is_err()
++    );
++}

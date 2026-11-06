@@ -9,6 +9,55 @@ use codex_utils_absolute_path::AbsolutePathBuf;
 use pretty_assertions::assert_eq;
 use tempfile::TempDir;
 
+#[cfg(windows)]
+#[tokio::test]
+async fn windows_native_temp_and_case_aliases_share_store_identity_and_source_replay() {
+    let temp = TempDir::new().expect("temporary directory");
+    // Keep the actual native TEMP spelling, including any 8.3 ancestor. The
+    // existing canonical-root control deliberately normalizes it first.
+    let native = temp.path().join("MiXeD-Fleet-Identity");
+    std::fs::create_dir(&native).expect("native fleet");
+    let case_alias = temp.path().join("mixed-fleet-identity");
+    let canonical = native.canonicalize().expect("actual canonical fleet");
+    eprintln!("native={native:?} case_alias={case_alias:?} canonical={canonical:?}");
+    for path in [&native, &case_alias, &canonical] {
+        assert_eq!(
+            canonical_path_without_redirection(path).expect("actual object identity"),
+            Some(canonical.clone())
+        );
+    }
+    let owner = agent_id(/*suffix*/ 232);
+    let first = CognitiveStore::open(
+        &HeptaFleetRoot::parse(&native)
+            .expect("native root")
+            .layout()
+            .agent(&owner),
+    )
+    .await
+    .expect("open native root");
+    let second = CognitiveStore::open(
+        &HeptaFleetRoot::parse(&case_alias)
+            .expect("case alias")
+            .layout()
+            .agent(&owner),
+    )
+    .await
+    .expect("open same actual root");
+    assert_eq!(first.path(), second.path());
+    assert!(first.is_same_local_store(&second));
+    let access = CognitiveAccess::agent_private(owner);
+    let draft = source(
+        CognitiveScope::AgentPrivate,
+        "native-alias-replay",
+        "one fact",
+    );
+    let receipt = first.append_source(&access, &draft).await.expect("append");
+    assert_eq!(
+        second.append_source(&access, &draft).await.expect("replay"),
+        receipt
+    );
+}
+
 #[tokio::test]
 async fn native_and_os_canonical_roots_share_store_identity_and_source_replay() {
     let temp = TempDir::new().expect("temporary directory");

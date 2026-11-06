@@ -1,0 +1,693 @@
+{
+  "schema": "hepta.fourth.owning7.root-complete-execution-review.v1",
+  "observed_at_utc": "2026-11-04 23:20:12 UTC",
+  "evidence_blob": "b865a749262162d0d2042deaa2bd48ceaaeb5e2b",
+  "evidence_identity": {
+    "bytes": 230267,
+    "sha256": "e8b73ded59041c5440edeca13e1c3950a7d5371f96b139fe1e2af677a87e2887"
+  },
+  "source": "e84c2f12e39022701c8a942343b3913faa62cf31",
+  "disposition": "ORIGINAL_OWNING_GATE_ACTUAL_FAIL_12_OF_5416",
+  "full_file_checks": [
+    {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/owning-seven.junit.xml",
+      "bytes": 1155445,
+      "sha256": "0cd59b4942ccbefc3225f34457991b1193d96a622da80a7cea98371f701c7df1",
+      "chunks": 4,
+      "ok": true
+    },
+    {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/owning-seven-review.json",
+      "bytes": 1245743,
+      "sha256": "718248dd1fe8cc0af880e4b4bb107c8ff9e90ad3c9294029135e0f1820f76b37",
+      "chunks": 4,
+      "ok": true
+    },
+    {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/owning-seven-selection.json",
+      "bytes": 1459926,
+      "sha256": "e8ff181f010bb40de09f0c872e7199b3b18a22ceb42cbf46b556511805a6fb77",
+      "chunks": 4,
+      "ok": true
+    },
+    {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/owning-seven-catalog.stdout",
+      "bytes": 778676,
+      "sha256": "b8c5cf49f723d7ec527e69ca19e5d86bd45b9760ec1650c13b2cbeaf8178056e",
+      "chunks": 3,
+      "ok": true
+    }
+  ],
+  "embedded_record_checks": [
+    {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/terminal.json",
+      "bytes": 110023,
+      "sha256": "1ccaa79b4b3cd7ec4c13eabe3a170db183e2f3b3200d325d1a90599dc6b6ead0",
+      "ok": true
+    },
+    {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/source-map.json",
+      "bytes": 7921,
+      "sha256": "da6a687ede42ff7df000fc0b2ec29e84c8a32950d43d02dd7aea9128d190889c",
+      "ok": true
+    },
+    {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/native-host.json",
+      "bytes": 1621,
+      "sha256": "ef5262cfabe295f321378d401ab883033e73e940181927f181f260a7fcff962d",
+      "ok": true
+    },
+    {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/owning-seven-catalog.stderr",
+      "bytes": 49121,
+      "sha256": "9075aacf527255c53b639dd11fea17f2e4d1b73bddc5104ea5f2424f1b44e9c1",
+      "ok": true
+    },
+    {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/owning-seven-command.json",
+      "bytes": 793,
+      "sha256": "7c650256703a3986b6aa66171321bb065316bbdab89d75ab68feb5821b07759b",
+      "ok": true
+    },
+    {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/owning-seven-catalog-command.json",
+      "bytes": 903,
+      "sha256": "13efa0f968c468522e795d9b034c499cec9b76235e96974141c4a03ac11fc9b0",
+      "ok": true
+    },
+    {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/workspace-metadata-command.json",
+      "bytes": 475,
+      "sha256": "ca5d897119d1f3230ee3a1f0ffae5908e5a26f64c0f21734ac0f2286b01b1bbb",
+      "ok": true
+    },
+    {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/runner.py",
+      "bytes": 15414,
+      "sha256": "842613ccc098af3043d79fad254ecf07b7b3077f1920aab5572102d65350eeb1",
+      "ok": true
+    },
+    {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/remote-early-return-attribution.json",
+      "bytes": 22758,
+      "sha256": "4e3dfd4da8c46279b473f5873524530ddcbe0b7571de21d80261c84eb3d4d9c6",
+      "ok": true
+    }
+  ],
+  "execution_checks": {
+    "junit_count": 5416,
+    "unique_junit_count": 5416,
+    "actual_counts": {
+      "PASS": 5404,
+      "FAIL": 12
+    },
+    "expected_count": 5416,
+    "exact_catalog_roster": true,
+    "review_rows_equal": true,
+    "source": "e84c2f12e39022701c8a942343b3913faa62cf31",
+    "binary_count": 69,
+    "helpers_count": 12,
+    "all_test_binary_identities_stable": true,
+    "all_helper_identities_stable": true,
+    "original_ignored": 19,
+    "original_unmatched": 0,
+    "unexpected_skips": [],
+    "early_return_case_links": [
+      {
+        "line": 29519,
+        "case": {
+          "result": "PASS",
+          "classname": "codex-core",
+          "name": "unified_exec::tests::remote_exec_server_rejects_inherited_fd_launches",
+          "line": 29510
+        },
+        "junit_pass": true,
+        "actual_case_context": true
+      },
+      {
+        "line": 29593,
+        "case": {
+          "result": "PASS",
+          "classname": "codex-core",
+          "name": "unified_exec::tests::unified_exec_uses_remote_exec_server_when_configured",
+          "line": 29584
+        },
+        "junit_pass": true,
+        "actual_case_context": true
+      },
+      {
+        "line": 30149,
+        "case": {
+          "result": "PASS",
+          "classname": "codex-core::all",
+          "name": "suite::agents_md::multi_environment_project_instructions_share_one_byte_budget",
+          "line": 30140
+        },
+        "junit_pass": true,
+        "actual_case_context": true
+      },
+      {
+        "line": 30160,
+        "case": {
+          "result": "PASS",
+          "classname": "codex-core::all",
+          "name": "suite::agents_md::multi_environment_thread_loads_every_project_and_keeps_creation_snapshot",
+          "line": 30151
+        },
+        "junit_pass": true,
+        "actual_case_context": true
+      },
+      {
+        "line": 36065,
+        "case": {
+          "result": "PASS",
+          "classname": "codex-core::all",
+          "name": "suite::apply_patch_cli::apply_patch_turn_diff_emits_portable_paths_for_remote_cwd",
+          "line": 36056
+        },
+        "junit_pass": true,
+        "actual_case_context": true
+      },
+      {
+        "line": 36934,
+        "case": {
+          "result": "PASS",
+          "classname": "codex-core::all",
+          "name": "suite::network_approval::approved_network_host_for_one_environment_still_prompts_in_another",
+          "line": 36925
+        },
+        "junit_pass": true,
+        "actual_case_context": true
+      },
+      {
+        "line": 37026,
+        "case": {
+          "result": "PASS",
+          "classname": "codex-core::all",
+          "name": "suite::network_approval::owner_network_policy_follows_the_selected_remote_command",
+          "line": 37017
+        },
+        "junit_pass": true,
+        "actual_case_context": true
+      },
+      {
+        "line": 37046,
+        "case": {
+          "result": "PASS",
+          "classname": "codex-core::all",
+          "name": "suite::network_approval::remote_guardian_network_decisions_are_scoped_to_each_request_and_environment",
+          "line": 37037
+        },
+        "junit_pass": true,
+        "actual_case_context": true
+      },
+      {
+        "line": 37181,
+        "case": {
+          "result": "PASS",
+          "classname": "codex-core::all",
+          "name": "suite::apply_patch_cli::apply_patch_turn_diff_tracks_local_and_remote_environment_paths",
+          "line": 37172
+        },
+        "junit_pass": true,
+        "actual_case_context": true
+      },
+      {
+        "line": 51307,
+        "case": {
+          "result": "PASS",
+          "classname": "codex-core::all",
+          "name": "suite::remote_env::apply_patch_approvals_are_remembered_per_environment",
+          "line": 51298
+        },
+        "junit_pass": true,
+        "actual_case_context": true
+      },
+      {
+        "line": 51318,
+        "case": {
+          "result": "PASS",
+          "classname": "codex-core::all",
+          "name": "suite::remote_env::apply_patch_freeform_routes_to_selected_remote_environment",
+          "line": 51309
+        },
+        "junit_pass": true,
+        "actual_case_context": true
+      },
+      {
+        "line": 51338,
+        "case": {
+          "result": "PASS",
+          "classname": "codex-core::all",
+          "name": "suite::remote_env::apply_patch_intercepted_exec_command_routes_to_selected_remote_environment",
+          "line": 51329
+        },
+        "junit_pass": true,
+        "actual_case_context": true
+      },
+      {
+        "line": 51430,
+        "case": {
+          "result": "PASS",
+          "classname": "codex-core::all",
+          "name": "suite::remote_env::exec_command_routes_to_selected_remote_environment",
+          "line": 51421
+        },
+        "junit_pass": true,
+        "actual_case_context": true
+      },
+      {
+        "line": 51450,
+        "case": {
+          "result": "PASS",
+          "classname": "codex-core::all",
+          "name": "suite::remote_env::explicit_remote_shell_runs_in_remote_cwd",
+          "line": 51441
+        },
+        "junit_pass": true,
+        "actual_case_context": true
+      },
+      {
+        "line": 51486,
+        "case": {
+          "result": "PASS",
+          "classname": "codex-core::all",
+          "name": "suite::remote_env::remote_exec_materializes_target_roots_before_sandbox_selection",
+          "line": 51477
+        },
+        "junit_pass": true,
+        "actual_case_context": true
+      },
+      {
+        "line": 51513,
+        "case": {
+          "result": "PASS",
+          "classname": "codex-core::all",
+          "name": "suite::remote_env::remote_request_permissions_grant_unblocks_later_remote_exec",
+          "line": 51504
+        },
+        "junit_pass": true,
+        "actual_case_context": true
+      },
+      {
+        "line": 51524,
+        "case": {
+          "result": "PASS",
+          "classname": "codex-core::all",
+          "name": "suite::remote_env::remote_test_env_can_connect_and_use_filesystem",
+          "line": 51515
+        },
+        "junit_pass": true,
+        "actual_case_context": true
+      },
+      {
+        "line": 51535,
+        "case": {
+          "result": "PASS",
+          "classname": "codex-core::all",
+          "name": "suite::remote_env::remote_test_env_copy_preserves_symlink_source",
+          "line": 51526
+        },
+        "junit_pass": true,
+        "actual_case_context": true
+      },
+      {
+        "line": 51546,
+        "case": {
+          "result": "PASS",
+          "classname": "codex-core::all",
+          "name": "suite::remote_env::remote_test_env_exposes_target_shell_to_model",
+          "line": 51537
+        },
+        "junit_pass": true,
+        "actual_case_context": true
+      },
+      {
+        "line": 51557,
+        "case": {
+          "result": "PASS",
+          "classname": "codex-core::all",
+          "name": "suite::remote_env::remote_test_env_sandboxed_read_allows_readable_root",
+          "line": 51548
+        },
+        "junit_pass": true,
+        "actual_case_context": true
+      },
+      {
+        "line": 51568,
+        "case": {
+          "result": "PASS",
+          "classname": "codex-core::all",
+          "name": "suite::remote_env::remote_test_env_remove_removes_symlink_not_target",
+          "line": 51559
+        },
+        "junit_pass": true,
+        "actual_case_context": true
+      },
+      {
+        "line": 51579,
+        "case": {
+          "result": "PASS",
+          "classname": "codex-core::all",
+          "name": "suite::remote_env::remote_test_env_sandboxed_read_rejects_symlink_parent_dotdot_escape",
+          "line": 51570
+        },
+        "junit_pass": true,
+        "actual_case_context": true
+      },
+      {
+        "line": 52745,
+        "case": {
+          "result": "PASS",
+          "classname": "codex-core::all",
+          "name": "suite::rmcp_client::remote_stdio_env_var_source_does_not_copy_local_env",
+          "line": 52736
+        },
+        "junit_pass": true,
+        "actual_case_context": true
+      },
+      {
+        "line": 56382,
+        "case": {
+          "result": "PASS",
+          "classname": "codex-core::all",
+          "name": "suite::view_image::view_image_routes_to_selected_remote_environment",
+          "line": 56373
+        },
+        "junit_pass": true,
+        "actual_case_context": true
+      }
+    ],
+    "catalog_keys": [
+      "codex-apply-patch",
+      "codex-apply-patch::all",
+      "codex-apply-patch::bin/apply_patch",
+      "codex-cli",
+      "codex-cli::app_server",
+      "codex-cli::debug_clear_memories",
+      "codex-cli::debug_models",
+      "codex-cli::delete",
+      "codex-cli::doctor_enterprise_network",
+      "codex-cli::exec_server",
+      "codex-cli::execpolicy",
+      "codex-cli::features",
+      "codex-cli::login",
+      "codex-cli::marketplace_add",
+      "codex-cli::marketplace_remove",
+      "codex-cli::marketplace_upgrade",
+      "codex-cli::mcp_add_remove",
+      "codex-cli::mcp_cloud_config",
+      "codex-cli::mcp_list",
+      "codex-cli::plugin_cli",
+      "codex-cli::queue",
+      "codex-cli::sandbox_cloud_config",
+      "codex-cli::sandbox_network_proxy",
+      "codex-cli::update",
+      "codex-cli::bin/codex",
+      "codex-cli::bin/hepta",
+      "codex-cli::bin/logs_client",
+      "codex-core",
+      "codex-core::all",
+      "codex-core::responses_headers",
+      "codex-core::bin/codex-write-config-schema",
+      "codex-exec-server",
+      "codex-exec-server::accepted_websocket",
+      "codex-exec-server::authorized_read_rpc",
+      "codex-exec-server::capability_discovery",
+      "codex-exec-server::chatgpt_cloudflare_affinity",
+      "codex-exec-server::deferred_environment",
+      "codex-exec-server::environment",
+      "codex-exec-server::environment_config",
+      "codex-exec-server::exec_process",
+      "codex-exec-server::file_stream",
+      "codex-exec-server::file_system_unix",
+      "codex-exec-server::file_system_windows",
+      "codex-exec-server::forward",
+      "codex-exec-server::health",
+      "codex-exec-server::http_client",
+      "codex-exec-server::http_request",
+      "codex-exec-server::http_request_logging",
+      "codex-exec-server::initialize",
+      "codex-exec-server::process",
+      "codex-exec-server::relay",
+      "codex-exec-server::selected_capability_roots",
+      "codex-exec-server::websocket",
+      "codex-hepta-agentd",
+      "codex-hepta-agentd::authbus_text_product",
+      "codex-hepta-agentd::cognitive_product_e2e",
+      "codex-hepta-agentd::cognitive_store_product_writer",
+      "codex-hepta-agentd::five_agent_rolling_upgrade",
+      "codex-hepta-agentd::fleet_harness_diagnostics",
+      "codex-hepta-agentd::intuition_policy_product",
+      "codex-hepta-agentd::kernel_evidence_product",
+      "codex-hepta-agentd::optional_module_restart",
+      "codex-hepta-agentd::plasticity_process_e2e",
+      "codex-hepta-agentd::queue_capacity_product",
+      "codex-hepta-agentd::runtime_codex_product_e2e",
+      "codex-hepta-agentd::runtime_shutdown_outcomes",
+      "codex-hepta-agentd::supervised_two_agents",
+      "codex-hepta-agentd::supervisord_product_e2e",
+      "codex-hepta-agentd::terminal_cell_owner",
+      "codex-hepta-agentd::two_agent_turn_recovery",
+      "codex-utils-pty",
+      "codex-utils-pty::conpty_search_path",
+      "core_test_support"
+    ],
+    "counts_reported": {
+      "PASS": 5404,
+      "FAIL": 12
+    },
+    "just_exit": 100,
+    "nextest_summary": [
+      "    Starting 5416 tests across 73 binaries (19 tests skipped)",
+      "     Summary [  54.920s] 5416 tests run: 5404 passed, 12 failed, 19 skipped"
+    ],
+    "failed_cases": [
+      {
+        "name": "suite::approvals::approving_execpolicy_amendment_persists_policy_and_skips_future_prompts",
+        "classname": "codex-core::all",
+        "result": "FAIL"
+      },
+      {
+        "name": "suite::hooks::async_hook_finishing_while_idle_waits_for_the_next_turn",
+        "classname": "codex-core::all",
+        "result": "FAIL"
+      },
+      {
+        "name": "suite::request_permissions::partial_request_permissions_grants_do_not_preapprove_new_permissions",
+        "classname": "codex-core::all",
+        "result": "FAIL"
+      },
+      {
+        "name": "suite::request_permissions::request_permissions_grants_apply_to_later_exec_command_calls",
+        "classname": "codex-core::all",
+        "result": "FAIL"
+      },
+      {
+        "name": "suite::request_permissions::request_permissions_grants_apply_to_later_exec_command_calls_without_inline_permission_feature",
+        "classname": "codex-core::all",
+        "result": "FAIL"
+      },
+      {
+        "name": "suite::request_permissions::request_permissions_preapprove_explicit_exec_permissions_outside_on_request",
+        "classname": "codex-core::all",
+        "result": "FAIL"
+      },
+      {
+        "name": "suite::unified_exec_zsh_fork_approvals::unified_exec_zsh_fork_parent_approval_preserves_denied_reads",
+        "classname": "codex-core::all",
+        "result": "FAIL"
+      },
+      {
+        "name": "suite::skill_approval::shell_zsh_fork_skill_scripts_ignore_declared_permissions",
+        "classname": "codex-core::all",
+        "result": "FAIL"
+      },
+      {
+        "name": "shell_snapshot_v2_capture_failure_falls_back_and_retries::test_case_3_remote_pipe_recovery",
+        "classname": "codex-exec-server::exec_process",
+        "result": "FAIL"
+      },
+      {
+        "name": "shell_snapshot_v2_capture_failure_falls_back_and_retries::test_case_4_remote_tty_recovery",
+        "classname": "codex-exec-server::exec_process",
+        "result": "FAIL"
+      },
+      {
+        "name": "shell_snapshot_v2_filters_profile_exports_and_stays_in_memory::test_case_5_remote_sandbox",
+        "classname": "codex-exec-server::exec_process",
+        "result": "FAIL"
+      },
+      {
+        "name": "shell_snapshot_v2_capture_failure_falls_back_and_retries::test_case_6_remote_retry_budget_exhausted",
+        "classname": "codex-exec-server::exec_process",
+        "result": "FAIL"
+      }
+    ]
+  },
+  "complete_manifest_full_files": [
+    {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/owning-seven.junit.xml",
+      "sha256": "0cd59b4942ccbefc3225f34457991b1193d96a622da80a7cea98371f701c7df1",
+      "bytes": 1155445,
+      "chunks": [
+        {
+          "sequence": 0,
+          "offset": 0,
+          "sha256": "06840b1283a2256a2ff6f40c8a5c22a2d805e32dccbf1a198b87f6f1e5e82c42",
+          "bytes": 384000,
+          "git_blob": "9708b06e324f7404d30111483809bbb5abc4f2e5"
+        },
+        {
+          "sequence": 1,
+          "offset": 384000,
+          "sha256": "56b44813621fc7d072baf83b9e42fd689c004d8a4bbb91a9a110ae5f3b028b9f",
+          "bytes": 384000,
+          "git_blob": "0c9e9e34883f8e87d33198f72d77835ea5364f70"
+        },
+        {
+          "sequence": 2,
+          "offset": 768000,
+          "sha256": "3cf486a18fbd9360573cd04fe92fad2e063730a81b71615ce8c0a9277c287852",
+          "bytes": 384000,
+          "git_blob": "b07aebb3649485043d3ee32696455a2455c6c5b3"
+        },
+        {
+          "sequence": 3,
+          "offset": 1152000,
+          "sha256": "61ae36ee061985e0a8e619656b375d15cdfa2036a12863191c9c86595671cfa7",
+          "bytes": 3445,
+          "git_blob": "856a819339592f9ff787ef517b6802557ceb5ffd"
+        }
+      ],
+      "reassemble": "Fetch each raw UTF-8 blob in increasing sequence and concatenate exact bytes; validate entire length and SHA256. Splitting only, no original content changes."
+    },
+    {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/owning-seven-review.json",
+      "sha256": "718248dd1fe8cc0af880e4b4bb107c8ff9e90ad3c9294029135e0f1820f76b37",
+      "bytes": 1245743,
+      "chunks": [
+        {
+          "sequence": 0,
+          "offset": 0,
+          "sha256": "8b5833e06f262826d4f450327cefbf07a98f85b386f056ba8bfaece16c503730",
+          "bytes": 384000,
+          "git_blob": "87b1db54e7ca4f02ae9ae770a99b6c8417dbaf0c"
+        },
+        {
+          "sequence": 1,
+          "offset": 384000,
+          "sha256": "ed096b2d33c50d05c50def8777915647dc7f64ad7f687c935fa2fa3e2d506539",
+          "bytes": 384000,
+          "git_blob": "1ce01c176efd365a9e31eb00f41118a3a8567887"
+        },
+        {
+          "sequence": 2,
+          "offset": 768000,
+          "sha256": "a1236e6ef960c415c56cdec0c33698b5245a0c426b1a55d7a67e1cdde4bdf953",
+          "bytes": 384000,
+          "git_blob": "839ad0d41fb856179a81ea2633a6542bd3cc6c4d"
+        },
+        {
+          "sequence": 3,
+          "offset": 1152000,
+          "sha256": "4eda9aee3ad750e1cd627913b638299e5b77f4a7a8b50d08425b39291930550f",
+          "bytes": 93743,
+          "git_blob": "30cb26489cc6e7da8e7f900e810dc70d03b8ed3e"
+        }
+      ],
+      "reassemble": "Fetch each raw UTF-8 blob in increasing sequence and concatenate exact bytes; validate entire length and SHA256. Splitting only, no original content changes."
+    },
+    {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/owning-seven-selection.json",
+      "sha256": "e8ff181f010bb40de09f0c872e7199b3b18a22ceb42cbf46b556511805a6fb77",
+      "bytes": 1459926,
+      "chunks": [
+        {
+          "sequence": 0,
+          "offset": 0,
+          "sha256": "21a8af36839724ce2eae5aeeca1a3bbbe7f045c1e40d1e2e9c53aac804ff5391",
+          "bytes": 384000,
+          "git_blob": "7dd4459746a6ba5329172b07a5b336c8e161ac85"
+        },
+        {
+          "sequence": 1,
+          "offset": 384000,
+          "sha256": "53f14108cd1aba96f293239a77656c4d5a61f39dbb33fc5a2cd4c2f99aa9cd92",
+          "bytes": 384000,
+          "git_blob": "53614b29b28f4f303e9dfb4daa555954d1695f43"
+        },
+        {
+          "sequence": 2,
+          "offset": 768000,
+          "sha256": "e54e55050c4e3ff43bd7992bfa857ab556b6bee8a5d47b3f4e9ad5f0989557b2",
+          "bytes": 384000,
+          "git_blob": "a00cc3a27d1c29f5fa20e126a1527babd63c8d77"
+        },
+        {
+          "sequence": 3,
+          "offset": 1152000,
+          "sha256": "3191144a99205aa375076938bc36d0a379a65d26cfa5b44e6de5f77569984fce",
+          "bytes": 307926,
+          "git_blob": "13a041f0bf782f3a590a16f8505a85491ce79121"
+        }
+      ],
+      "reassemble": "Fetch each raw UTF-8 blob in increasing sequence and concatenate exact bytes; validate entire length and SHA256. Splitting only, no original content changes."
+    },
+    {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/owning-seven-catalog.stdout",
+      "sha256": "b8c5cf49f723d7ec527e69ca19e5d86bd45b9760ec1650c13b2cbeaf8178056e",
+      "bytes": 778676,
+      "chunks": [
+        {
+          "sequence": 0,
+          "offset": 0,
+          "sha256": "517e8880d477b8a0e68a35ac5525d9643d6c465bcffc3f17253b1f1f866ce0bf",
+          "bytes": 384000,
+          "git_blob": "ea75fd575b194d3f63f8b097566aad9cce461508"
+        },
+        {
+          "sequence": 1,
+          "offset": 384000,
+          "sha256": "0fbcfdd3303729fc11778d367f4f0b261e4989422e02a8535b8f5c83421796db",
+          "bytes": 384000,
+          "git_blob": "77ae1547d59463c5e4eef15fb83498fe3e2af7ec"
+        },
+        {
+          "sequence": 2,
+          "offset": 768000,
+          "sha256": "5fa867d40c6139143f9dc4e8e534c78750e0a6fc31c5d9bb2a03109cc2e17ab4",
+          "bytes": 10676,
+          "git_blob": "9a8433859f181defe757358a6bca4fb03f2ad8e4"
+        }
+      ],
+      "reassemble": "Fetch each raw UTF-8 blob in increasing sequence and concatenate exact bytes; validate entire length and SHA256. Splitting only, no original content changes."
+    }
+  ],
+  "controller": {
+    "job_id": "1a1a8baa3a0-fc05-2f94",
+    "state": "failed",
+    "exit_code": 1,
+    "automatic_retry": false,
+    "output_complete": true,
+    "log_truncated": {
+      "stderr": false,
+      "stdout": false
+    }
+  },
+  "raw_log_preserved": {
+    "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/owning-seven.log",
+    "bytes": 11676772,
+    "sha256": "73f4c625c46606ec042889e39e92fe39d0670d62d763b4d3bd1ecd85ec315d23"
+  },
+  "original_failures_projection": "023d6a14b4e8ad37157dc9162d820dc3d6cd6473",
+  "original_failure_root_review": "895f4d0fd9bf901c414e87ca93016f9426f22d13",
+  "qualification_limits": [
+    "Root fetched and reassembled all15 original chunks into the complete fresh JUnit, selection, review and catalog, verifying each chunk and every whole-file SHA256. Root independently projected5416 XML testcases, matched every exact class/name against the selection and every outcome against the review.",
+    "Original19 ignored catalog entries are outside the5416 executed cases. There are no unmatched, unexpected-executed or XML-skipped entries in this gate.",
+    "24 original requires-remote messages are bound to exact raw-case headers and JUnit PASS entries; each exact case text was present in retained context. These are original early returns, not qualified remote behavior. Four other lines contain ordinary diagnostic wording, not four further skips.",
+    "All69 selected test binary identities and all12 actual helper identities remained identical across execution. Nextest reports73 total binaries because its catalog includes binaries without selected testcases.",
+    "Root reviewed all12 full failure captures earlier and now all24 early-return contexts; the entire11,676,772-byte raw log remains on native task-owned storage with length/hash. This review does not claim root independently reread every byte of that whole raw log.",
+    "The original just100/controller1 is retained. No retry, resource stop, final hygiene or full-workspace qualification is asserted. Later fixture fixes do not rewrite this historical result."
+  ]
+}

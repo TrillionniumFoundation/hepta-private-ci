@@ -1,0 +1,301 @@
+{
+  "schema": "hepta-app-parent-lifecycle-temporary-observation-native-proposal-v1",
+  "status": "ROOT_AUTHORIZED_TEMPORARY_DIAGNOSTIC_ONCE_AND_EXACT_RESTORE",
+  "expected_tree": "1e936b1ca6df807d8928a4cc6c527f40f92808aa",
+  "source_changes": [
+    {
+      "path": "codex-rs/linux-sandbox/src/linux_run_main.rs",
+      "mode": "100644",
+      "before_blob": "b50f19732bc0a4744c62f7300f955b9f9d17bf08",
+      "after_blob": "c2a2178d7bd290e8a68ac98722e56c5e39e6b1ba",
+      "bytes": 56293,
+      "sha256": "17d0992010ddf7798db83d9a6564e8a770a83b851b748ebe8a8b9c9c2f294406",
+      "additions": 19,
+      "deletions": 0
+    },
+    {
+      "path": "codex-rs/utils/pty/src/pipe.rs",
+      "mode": "100644",
+      "before_blob": "3715ba72a404c94f8d20a0ae34978baa5694c6b4",
+      "after_blob": "69586ccac9c02e133c36ec07fdca1842c3cc0731",
+      "bytes": 10840,
+      "sha256": "e9005838982937f2b4622289b91100c56be74a28b22b4c069c8c6f9d1f8ec2d7",
+      "additions": 6,
+      "deletions": 1
+    },
+    {
+      "path": "codex-rs/app-server/src/command_exec.rs",
+      "mode": "100644",
+      "before_blob": "53449ac092bf676ce1cfb3f0e125c4ab65e1407c",
+      "after_blob": "b4c353f3d793cfb431d79ec73887d8d7ba6b3fb2",
+      "bytes": 38797,
+      "sha256": "5954d9cec76840c74e425216769ad40106bcd3cf6a367a42a04e7b53124d119d",
+      "additions": 7,
+      "deletions": 0
+    }
+  ],
+  "runner": {
+    "git_blob": "55bbe3e4512eeeba6b27c3bc2061cde572c8c5ea",
+    "bytes": 29284,
+    "sha256": "cd8a926469d7583021cbc49b22f42526ff354d7938d01e3919f86cb6c43aee46",
+    "local_path": "/workspace/scratch/07dd58cc9630/ci-audit/recovered-20261105/app-parent-lifecycle-diagnostic-runner-final.py",
+    "ast_parse_pass": true
+  },
+  "ordinary_index": {
+    "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/source/.git/index",
+    "bytes": 1222758,
+    "sha256": "8ccf08bcd5b633a38fa81be4814ae264365f1a2cdd1ed81e1633fbcc0ac31502"
+  },
+  "locks": {
+    "codex-rs/Cargo.lock": {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/source/codex-rs/Cargo.lock",
+      "bytes": 413768,
+      "sha256": "4a7a5535cf045089458468411e126b5f59bc6bbf34fc0deead9b0c1b8d84000a"
+    },
+    "MODULE.bazel.lock": {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/source/MODULE.bazel.lock",
+      "bytes": 1738619,
+      "sha256": "11f8a421224b9b05f32c4c14054e8868083d989fc497310c8d51e1156f189ca3"
+    }
+  },
+  "commands": {
+    "metadata": [
+      "cargo",
+      "metadata",
+      "--format-version=1",
+      "--locked"
+    ],
+    "catalog": [
+      "cargo",
+      "nextest",
+      "list",
+      "--locked",
+      "--cargo-profile",
+      "dev-small",
+      "--message-format=json",
+      "-E",
+      "test(=suite::v2::command_exec::command_exec_process_ids_are_connection_scoped_and_disconnect_terminates_process)"
+    ],
+    "test": [
+      "just",
+      "test",
+      "--locked",
+      "--cargo-profile",
+      "dev-small",
+      "--no-tests",
+      "fail",
+      "--retries",
+      "0",
+      "--success-output",
+      "immediate",
+      "-E",
+      "test(=suite::v2::command_exec::command_exec_process_ids_are_connection_scoped_and_disconnect_terminates_process)"
+    ]
+  },
+  "selected_case": {
+    "classname": "codex-app-server::all",
+    "name": "suite::v2::command_exec::command_exec_process_ids_are_connection_scoped_and_disconnect_terminates_process"
+  },
+  "original_fixture": {
+    "path": "codex-rs/app-server/tests/suite/v2/command_exec.rs",
+    "git_blob": "ea833ea2113346d30eeb64999e31351d3c11031a",
+    "bytes": 50345,
+    "sha256": "d964c52c2f4f75388b7dc468d30c689d9b0e8e5620fd25ef46b65697a4e70d93",
+    "native_file_info_verified": true,
+    "marker_child": "python3 -c \"import time; print('ready', flush=True); time.sleep(30)\" <dynamic-marker>",
+    "original_wait_seconds": 5,
+    "original_poll_milliseconds": 50
+  },
+  "provenance": {
+    "full_evidence_archive": "4fbfb3d05586f87b449a9ec14097982072917934",
+    "original_failure_block": "3a969dedeeb3ac1030fc3061fe2af975a055a169",
+    "full_metadata_sha256": "959b827393fc6830e8fd6c55a83a519217ab0debb7c033b42e64306bc373fece",
+    "full_selection_sha256": "5f2118b2def8bb6aac31a78bb08bd1d355033a826d4fadfe0c305ff37ae662be",
+    "full_catalog_sha256": "af962c86ba44b1e4931ca61319597cc8c9557cafaaf70dd8cfe8664c6e3815ef",
+    "stopped_original_diagnostic_bundle": "8e1e5d051fe4401670972391149e03862042b9c0",
+    "previous_runner": "c55030b2cabbeb4a7e8e217126a78160063e3925"
+  },
+  "feature_graph_contract": "Apply only the three reviewed temporary source postimages to exact f825; build original6 normal helpers in the existing epoch2 target. Full normal metadata/catalog without package filter must match the original193 workspace members and full resolved dependency/feature graph. Bind all33 original helper basenames and the original App binary ID to diagnostic-source identities, stable before/after the one original case. No equality with historical executable hashes is required or borrowed.",
+  "observation": {
+    "root": "Actual original just test PID+starttime recorded immediately after Popen. Seed descendant traversal only while that exact identity still matches; observer PID excluded.",
+    "sampling_seconds": 0.05,
+    "structural_proc_stat": "Read pid/comm/state/ppid/pgid/sid/starttime for ancestry; persist only this command's observed descendants.",
+    "cmdline_scope": "Read bounded 16384B cmdline/exe only for current descendants or identical previously-owned PID/starttime pairs; never read env.",
+    "marker_policy": "Learn exact codex-command-exec-marker-[0-9]+ only from owned argv. No external ps/pgrep/observer command receives a dynamic marker, avoiding contamination of the original ps oracle.",
+    "recorded_fields": [
+      "UTC time",
+      "monotonic elapsed",
+      "pid",
+      "ppid",
+      "pgid",
+      "sid",
+      "state",
+      "starttime_ticks",
+      "comm",
+      "bounded cmdline",
+      "exe",
+      "exact markers",
+      "disappearance"
+    ],
+    "control": "No signal/kill/strace/policy or sandbox changes. Observer failure is recorded; it does not cancel original test.",
+    "limitation": "A child that detached before first observation can be missed. An isolated PASS is not a fix; preserve the original full failure.",
+    "completeness": "Requires exactly one actually observed dynamic fixture marker, no observer errors, exact selected JUnit name, and stable source/helpers/program; no marker or multiple markers retain the original test result but diagnose incomplete observation.",
+    "read_only_source_probes": [
+      "inner_entry: actual PR_GET_PDEATHSIG return, signal only when rc=0, own pid/ppid/pgid/sid",
+      "inner_after_restrictions: same actual read at the existing boundary",
+      "original_killpg_return: original unchanged group-kill result; no added signal or retry"
+    ],
+    "probe_completeness": "Retain raw line numbers and byte offsets. Require each of the three complete parsed probe phases for full diagnostic observation. A failed GET produces observed_parent_death_signal=null, not zero; a missing/malformed phase remains incomplete. Namespace inner IDs and host group IDs remain separate for root correlation."
+  },
+  "stop_conditions": [
+    "Initial f825/index/locks/untracked/fixture guard must pass.",
+    "Existing target-app-epoch2-20261105 must be a non-symlink directory and free space at least8GB; no new target or old target cleanup.",
+    "Only exact guarded3-file temporary tree1e936b may be built.",
+    "Original6 helpers/full normal metadata/catalog/33 basename roster/one unchanged5s App case with0retry and same owned observer.",
+    "Retain original result and complete raw/XML/process trace/probe records; missing or denied probe is not zero.",
+    "Finally restore only exact owned diagnostic bytes under full guards; preserve any drift and both exception records.",
+    "Stop after restoration and report to root; no three-repair stage, hygiene or other test."
+  ],
+  "suggested_runtime_timeout_seconds": 7200,
+  "suggested_disk_guard_bytes": 8000000000,
+  "authorization": {
+    "authorized_by": "root",
+    "reviewed_manifest": "a64a4d0cec6264b4b421011d7e01e7c3ebf5a6db",
+    "reviewed_runner": "da0f50b09930ca7b79d1cd01760b2fa495d301a3",
+    "reviewed_delta": "8ff257392f0ae2cbc0eaa94c713fab550b34fd1d",
+    "only_post_review_change": {
+      "from": "No source or test budget changed.",
+      "to": "Only the three reviewed temporary source probes changed; the original test and its budget are unchanged.",
+      "description_only": true
+    },
+    "launch_instruction": "Root authorized immediate launch after this exact descriptive-only correction, with no further confirmation. Same3 source postimages, original6helpers/full193graph/33roster/one original case/0retry/finally restore contract."
+  },
+  "supersedes": {
+    "prior_actual_epoch2_job": "1a1a967b3ab-fc05-34f6",
+    "prior_terminal_bundle": "106cf2684ee66709db063d714c5d31f86d42fd45",
+    "prior_actual_failure_preserved": true
+  },
+  "review_tightening": [
+    "All prior owned PID/starttime and single-marker observer checks remain.",
+    "Source untracked paths checked against the complete private f825 index; no untracked path is pre-authorized.",
+    "New build epoch records its own program identity; original missing binary evidence remains unchanged."
+  ],
+  "new_target_directory": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target-app-epoch2-20261105",
+  "allowed_untracked_source_paths": [],
+  "normal_helper_build": [
+    "cargo",
+    "build",
+    "--locked",
+    "--profile",
+    "dev-small",
+    "--message-format=json-render-diagnostics",
+    "-p",
+    "codex-arg0",
+    "--bin",
+    "test_arg0_preflight",
+    "-p",
+    "codex-code-mode-host",
+    "--bin",
+    "codex-code-mode-host",
+    "-p",
+    "codex-shell-escalation",
+    "--bin",
+    "codex-execve-wrapper",
+    "-p",
+    "codex-rmcp-client",
+    "--bin",
+    "test_stdio_server",
+    "--bin",
+    "test_streamable_http_server",
+    "-p",
+    "codex-exec",
+    "--bin",
+    "codex-exec"
+  ],
+  "disk_guards": {
+    "before_first_build_free_bytes": 8000000000,
+    "after_each_build_free_bytes": 8000000000
+  },
+  "before_tree": "f8251e1d14fa8524ab469281296cd4cf708f173c",
+  "diagnostic_tree": "1e936b1ca6df807d8928a4cc6c527f40f92808aa",
+  "temporary_files": [
+    {
+      "path": "codex-rs/linux-sandbox/src/linux_run_main.rs",
+      "mode": "100644",
+      "before_blob": "b50f19732bc0a4744c62f7300f955b9f9d17bf08",
+      "after_blob": "c2a2178d7bd290e8a68ac98722e56c5e39e6b1ba",
+      "bytes": 56293,
+      "sha256": "17d0992010ddf7798db83d9a6564e8a770a83b851b748ebe8a8b9c9c2f294406",
+      "additions": 19,
+      "deletions": 0
+    },
+    {
+      "path": "codex-rs/utils/pty/src/pipe.rs",
+      "mode": "100644",
+      "before_blob": "3715ba72a404c94f8d20a0ae34978baa5694c6b4",
+      "after_blob": "69586ccac9c02e133c36ec07fdca1842c3cc0731",
+      "bytes": 10840,
+      "sha256": "e9005838982937f2b4622289b91100c56be74a28b22b4c069c8c6f9d1f8ec2d7",
+      "additions": 6,
+      "deletions": 1
+    },
+    {
+      "path": "codex-rs/app-server/src/command_exec.rs",
+      "mode": "100644",
+      "before_blob": "53449ac092bf676ce1cfb3f0e125c4ab65e1407c",
+      "after_blob": "b4c353f3d793cfb431d79ec73887d8d7ba6b3fb2",
+      "bytes": 38797,
+      "sha256": "5954d9cec76840c74e425216769ad40106bcd3cf6a367a42a04e7b53124d119d",
+      "additions": 7,
+      "deletions": 0
+    }
+  ],
+  "restore_files": [
+    {
+      "path": "codex-rs/linux-sandbox/src/linux_run_main.rs",
+      "mode": "100644",
+      "before_blob": "c2a2178d7bd290e8a68ac98722e56c5e39e6b1ba",
+      "after_blob": "b50f19732bc0a4744c62f7300f955b9f9d17bf08",
+      "bytes": 55308,
+      "sha256": "3be631c566fbd4cbd08eea042cf425164d01002951b0dcad927c674beb571134"
+    },
+    {
+      "path": "codex-rs/utils/pty/src/pipe.rs",
+      "mode": "100644",
+      "before_blob": "69586ccac9c02e133c36ec07fdca1842c3cc0731",
+      "after_blob": "3715ba72a404c94f8d20a0ae34978baa5694c6b4",
+      "bytes": 10629,
+      "sha256": "ce78d972bb162d5a54c47214aa4c83777f895dd316f6b32b75493c608e0654ab"
+    },
+    {
+      "path": "codex-rs/app-server/src/command_exec.rs",
+      "mode": "100644",
+      "before_blob": "b4c353f3d793cfb431d79ec73887d8d7ba6b3fb2",
+      "after_blob": "53449ac092bf676ce1cfb3f0e125c4ab65e1407c",
+      "bytes": 38489,
+      "sha256": "f305f03fdeac1a6b41cc153ead06577ba14dbac2d788f298cb93efee12212b6e"
+    }
+  ],
+  "source_manifest_blob": "01976692603f7c52b3edb93f6f4e922de577d24f",
+  "source_patch_blob": "b8fd274928353fc28f79ef5bb653b4466d48b439",
+  "relative_to_epoch2": {
+    "runner": "0ffac5c2e4c1ece9a737e442dffdfc3fcecd7225",
+    "delta_blob": "8ff257392f0ae2cbc0eaa94c713fab550b34fd1d",
+    "bytes": 16796,
+    "sha256": "7c3e0969a3faf2149f74a03eb8be448c4e8b9d5b7502c70f40d9f79a6c3d4f4c",
+    "unchanged_observer_functions": {
+      "read_proc_stat": {
+        "bytes": 403,
+        "sha256": "e8f1c08c2b66fdf361c41324e51c883bc97d9ece5b94d49de2d1cfe594d75b4c",
+        "unchanged": true
+      },
+      "observe_owned_command": {
+        "bytes": 4443,
+        "sha256": "e993fe1b28fc4f6e68fc24d0d602c2f6e77be346abffb4201b723f579cd198c1",
+        "unchanged": true
+      }
+    }
+  },
+  "restoration_contract": "A finally block runs on every normal Python terminal path, including failed build/test/probe. First require exact diagnostic tree with ordinary-index/two-lock/untracked guards; only then restore the three exact baseline preimages and verify whole f825. If diagnostic guard fails, accept only an already-exact baseline under the same complete guards; otherwise preserve source drift without overwrite. Record original and restoration exceptions independently. Compiled diagnostic binaries remain diagnostic until later normal rebuild; no production repair or restored-binary qualification is claimed.",
+  "evidence_directory": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-lifecycle-probe-f825-1e936-20261105"
+}

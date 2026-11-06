@@ -197,6 +197,39 @@ class ScopeTests(unittest.TestCase):
                 paths = changed_paths(base, head)
             finally:
                 os.chdir(previous)
+            # CI fetches the exact base and head independently at depth one.
+            with tempfile.TemporaryDirectory() as checkout:
+
+                def shallow_git(*args):
+                    return (
+                        subprocess.check_output(
+                            ["git", "-C", checkout, *args],
+                            stderr=subprocess.DEVNULL,
+                        )
+                        .decode()
+                        .strip()
+                    )
+
+                shallow_git("init", "-q")
+                for commit in (base, head):
+                    shallow_git(
+                        "fetch",
+                        "-q",
+                        "--no-tags",
+                        "--depth=1",
+                        root.as_uri(),
+                        commit,
+                    )
+                shallow_git("checkout", "-q", "--detach", head)
+                self.assertEqual(shallow_git("rev-parse", "HEAD"), head)
+                self.assertEqual(
+                    shallow_git("rev-parse", "--is-shallow-repository"), "true"
+                )
+                try:
+                    os.chdir(checkout)
+                    self.assertEqual(changed_paths(base, head), paths)
+                finally:
+                    os.chdir(previous)
             self.assertIn("codex-rs/hepta-infer-core/src/old.rs", paths)
             self.assertIn("docs/new name.md", paths)
             self.assertTrue(select(paths)["inference"])

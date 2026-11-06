@@ -1,0 +1,328 @@
+{
+  "schema": "hepta_owning_scope_binary_prerequisites_review_v1",
+  "status": "READ_ONLY_SOURCE_REVIEW_NO_BUILD_OR_TEST_RUN",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "fixed_source": "cabcb40d36e116beaa65750e1f674c52035da785",
+  "candidate_context": {
+    "expected_tree": "e84c2f12e39022701c8a942343b3913faa62cf31",
+    "source_guard_blob": "1db75e5a79a5ffeb6c2fe7d976c0428d4dc1ab38",
+    "binding": "Sole native executor reports all inspected package/BUILD manifests unchanged from cabc except reviewed R1 arg0 additions. This review independently reads/hashes the fixed cabc sources and R1 manifest; it does not claim a rebuilt native e84 tree or native artifact hashes."
+  },
+  "scope": [
+    "codex-core",
+    "codex-cli",
+    "codex-utils-pty",
+    "codex-exec-server",
+    "codex-hepta-agentd",
+    "codex-apply-patch",
+    "core_test_support"
+  ],
+  "sources": [
+    {
+      "path": "codex-rs/core/Cargo.toml",
+      "blob": "df43645d3ca5e18e4ba526479a4c59cb103d3a5d",
+      "bytes": 6185,
+      "sha256": "3a2576956d2844516f1e38554a207c50e44503dd0c49cd8612fb630d3c6eb5f4",
+      "independently_hashed": true
+    },
+    {
+      "path": "codex-rs/cli/Cargo.toml",
+      "blob": "d2360ef42c5a8c8a9ffe3231f85220597847f0ab",
+      "bytes": 4239,
+      "sha256": "967fd38c5e9fd05c50f19fbcbde5271e5a786f07436ab05310679fba736a947d",
+      "independently_hashed": true
+    },
+    {
+      "path": "codex-rs/exec-server/Cargo.toml",
+      "blob": "455df9eedc14b77ac3779899087cd8391b153b37",
+      "bytes": 2741,
+      "sha256": "c45429a966e8d087144085598cac8c63e6e9b285fad97a5700294b409665ee14",
+      "independently_hashed": true
+    },
+    {
+      "path": "codex-rs/utils/pty/Cargo.toml",
+      "blob": "2a27ab72ea290862887abfc857c86efe6fad12c1",
+      "bytes": 860,
+      "sha256": "3333e26a50a65111ea1c961fa0eec59661196a88e1b2bf51ab647b8cc50ab08f",
+      "independently_hashed": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/Cargo.toml",
+      "blob": "d94042bddf8fcf785e2963a3acc90afcab3dbd69",
+      "bytes": 4837,
+      "sha256": "01695336f08194ee7c0fd991266ed0f05adcab6413af173501ceee18209aa8b9",
+      "independently_hashed": true
+    },
+    {
+      "path": "codex-rs/apply-patch/Cargo.toml",
+      "blob": "8e1d7f651f47a76de2a6ed6226aa2ec1a55cf5d6",
+      "bytes": 846,
+      "sha256": "388b18e13d8e3f8aa419e30385e33fe58748b2bd972df32eb66aa1484ab3d54a",
+      "independently_hashed": true
+    },
+    {
+      "path": "codex-rs/core/tests/common/Cargo.toml",
+      "blob": "a4851eb1d9ef3f9bc0d1535f84e937bfb82aaf93",
+      "bytes": 1677,
+      "sha256": "f96f988488fa3b982ae33ab11365b534a1d4d542d5b0cb1140eb3a43e3d4e5ef",
+      "independently_hashed": true
+    },
+    {
+      "path": "codex-rs/core/BUILD.bazel",
+      "blob": "e0e99847ce29d3ce54437215d5f34ca64c14fb3c",
+      "bytes": 2229,
+      "sha256": "7e4426b0956a9aedb523098a87378492e6cbfa34a4773ec9e52127039b2a0567",
+      "independently_hashed": true
+    },
+    {
+      "path": "codex-rs/core/tests/common/lib.rs",
+      "blob": "29ed4875e0674d534efc39a23b96995eb3790ce6",
+      "bytes": 22506,
+      "sha256": "5418ece8bb498ed07b87e99e1faa9a8c86944a40cfe20d519e4d60ecbec54f24",
+      "independently_hashed": true
+    },
+    {
+      "path": "codex-rs/core/tests/common/test_codex.rs",
+      "blob": "efaaf61844b49a1e42e9d630b306733d06647094",
+      "bytes": 49262,
+      "sha256": "318fb9469c3f65839f7384c29414b14f9f3617400e65829a47de9ad964fd28da",
+      "independently_hashed": true
+    },
+    {
+      "path": "codex-rs/core/tests/common/zsh_fork.rs",
+      "blob": "225867d8c72283b57540a38c97d6c44106eef33e",
+      "bytes": 4047,
+      "sha256": "c8ec104fe613f1b0695e9c0cc35120540a223a57f3cd5b0ac1c56699b631531f",
+      "independently_hashed": true
+    },
+    {
+      "path": "codex-rs/core/tests/suite/rmcp_client.rs",
+      "blob": "3897f4396696ba94ce93c7be8f29b3c65a0f5de8",
+      "bytes": 146845,
+      "sha256": "78fbb2b9cef8a4dd64dab34123e28524c0964ee11058fef8bb2f4fa1dcff04ee",
+      "independently_hashed": true
+    },
+    {
+      "path": "codex-rs/code-mode-host/Cargo.toml",
+      "blob": "685397aadfa0a681dcad1b2f84f3b9ae8964186a",
+      "bytes": 1256,
+      "sha256": "d2c65381ca88b25e30059524490a507c6b682a467148ee32414ce50b250a84c0",
+      "independently_hashed": true
+    },
+    {
+      "path": "codex-rs/shell-escalation/Cargo.toml",
+      "blob": "92ae8b033f3c38edb1609e6347084be6dd9fdc47",
+      "bytes": 976,
+      "sha256": "154cd9240a02ee6c9075d5ab9543ff98a54768babb91d00e190c590ad3237dc2",
+      "independently_hashed": true
+    },
+    {
+      "path": "codex-rs/rmcp-client/Cargo.toml",
+      "blob": "ca861a7e8b1cc6dbb81ca510853afd4dae27f6d2",
+      "bytes": 2564,
+      "sha256": "4c39846e156e542e63f7a94a5560eca107907209d65f36c1bb41c52cf8af925d",
+      "independently_hashed": true
+    },
+    {
+      "path": "codex-rs/rmcp-client/src/bin/test_stdio_server.rs",
+      "blob": "5ebd161921b9064444841d631835d4f51f78813e",
+      "bytes": 40654,
+      "sha256": "ea08de179afeb0a8ca089497ed790a108044414e7ca455ab955c0e50191700ba",
+      "independently_hashed": true
+    },
+    {
+      "path": "codex-rs/rmcp-client/src/bin/test_streamable_http_server.rs",
+      "blob": "a0fc7b4f7cbbd0443a1df12a91fa7c8edc341a2e",
+      "bytes": 20133,
+      "sha256": "48bf75f2461902a2b5df293ed7538dbe4035e0962c8555fc9713f1b97f9b04b9",
+      "independently_hashed": true
+    },
+    {
+      "path": "codex-rs/exec-server/tests/common/mod.rs",
+      "blob": "e95aa5563976b289f026168d7499bfd89fd97662",
+      "bytes": 8583,
+      "sha256": "22b4dc7f835e38ad22e71262183f0158c8449901e58166a3df7c678256f046ec",
+      "independently_hashed": true
+    },
+    {
+      "path": "codex-rs/exec-server/tests/common/exec_server.rs",
+      "blob": "98bb544e1ba70a44c4ece9dd7d46caecc4d8e906",
+      "bytes": 15955,
+      "sha256": "b2107193d5acbdcd345f28ce167ffe42d2e642de4f013e06ad7332a40d63dda6",
+      "independently_hashed": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/tests/support/fleet.rs",
+      "blob": "425ef256756698823c5fe17a1d4472049bf89d74",
+      "bytes": 16030,
+      "sha256": "59645c49bad0e5a2aad3bda84ef4c66bd3b29e239fb6884b331c5badca62357e",
+      "independently_hashed": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/tests/supervisord_product_e2e.rs",
+      "blob": "1c2e25e878b679839eec372525b213e66b81aa59",
+      "bytes": 32986,
+      "sha256": "d84927ce8108f8062cc12ba30d38e34642fb6a1b639f2c22a1f595f00c5fb827",
+      "independently_hashed": true
+    },
+    {
+      "path": "codex-rs/cli/tests/sandbox_cloud_config.rs",
+      "blob": "59f5e95058985857df3f7604f320861f0db22f8b",
+      "bytes": 8755,
+      "sha256": "85c638b37cbbd21fde7d63eaadc93210d244d26c15ea3914d75e8aaf387d1fa6",
+      "independently_hashed": true
+    },
+    {
+      "path": "codex-rs/apply-patch/tests/suite/cli.rs",
+      "blob": "c982c7aa864ffe80ba8f797439379ada50a20ad2",
+      "bytes": 2256,
+      "sha256": "0c847c8407f2aa3bdd0d41aade65a50f2a688598252ae6cee53a0f075015de91",
+      "independently_hashed": true
+    },
+    {
+      "path": "codex-rs/core/tests/common/test_codex_exec.rs",
+      "blob": "371d18c31623c9a4df6e1d7faee75b0b8c66d22a",
+      "bytes": 1585,
+      "sha256": "12744bb8393650019beeba2a3997f47abbff33693b14737b3d1af03b68719bb6",
+      "independently_hashed": true
+    },
+    {
+      "path": "codex-rs/exec/Cargo.toml",
+      "blob": "eebecc9ff1bb3b0cd3e914f510fce599e1cf3cf0",
+      "bytes": 2194,
+      "sha256": "5e335b1b617fdf4b59aadf3d70e3296758f85757e9bc374abf80f4a9767f32ac",
+      "independently_hashed": true
+    },
+    {
+      "path": "codex-rs/linux-sandbox/src/launcher.rs",
+      "blob": "d4e9b521bf93f0861cf497c3153a9efdc6e3c67b",
+      "bytes": 16007,
+      "sha256": "bf1d23f8020d4e73f7a3e235165f0953154170256a92cf0c8254e5ab32578f91",
+      "independently_hashed": true
+    },
+    {
+      "path": "codex-rs/linux-sandbox/src/bazel_bwrap.rs",
+      "blob": "90e41c38496a62d62cd7965f39fe02c836cd4858",
+      "bytes": 2007,
+      "sha256": "63446fa2e9999474235867059d26eef74990505f13e84266677389c4e4f207eb",
+      "independently_hashed": true
+    }
+  ],
+  "explicit_cross_package_prerequisites": [
+    {
+      "package": "codex-code-mode-host",
+      "bin": "codex-code-mode-host",
+      "manifest": "685397aadfa0a681dcad1b2f84f3b9ae8964186a",
+      "caller": {
+        "path": "codex-rs/core/tests/common/test_codex.rs",
+        "blob": "efaaf61844b49a1e42e9d630b306733d06647094",
+        "lines": "703-710"
+      },
+      "reason": "cargo_bin result becomes .ok(); a missing real binary can bypass intended host injection. Build and bind exact compiler artifact."
+    },
+    {
+      "package": "codex-shell-escalation",
+      "bin": "codex-execve-wrapper",
+      "manifest": "92ae8b033f3c38edb1609e6347084be6dd9fdc47",
+      "caller": {
+        "path": "codex-rs/core/tests/common/zsh_fork.rs",
+        "blob": "225867d8c72283b57540a38c97d6c44106eef33e",
+        "lines": "59-63"
+      },
+      "reason": "Missing cargo_bin prints skipping and returns Ok(None). This is not a crate named execve-wrapper; actual manifest is shell-escalation."
+    },
+    {
+      "package": "codex-rmcp-client",
+      "bin": "test_stdio_server",
+      "manifest": "ca861a7e8b1cc6dbb81ca510853afd4dae27f6d2",
+      "bin_source": "5ebd161921b9064444841d631835d4f51f78813e",
+      "caller": {
+        "path": "codex-rs/core/tests/common/lib.rs",
+        "blob": "29ed4875e0674d534efc39a23b96995eb3790ce6",
+        "lines": "389-390"
+      },
+      "reason": "Real Cargo default src/bin target used by Core MCP cases; Core BUILD explicitly declares it."
+    },
+    {
+      "package": "codex-rmcp-client",
+      "bin": "test_streamable_http_server",
+      "manifest": "ca861a7e8b1cc6dbb81ca510853afd4dae27f6d2",
+      "bin_source": "a0fc7b4f7cbbd0443a1df12a91fa7c8edc341a2e",
+      "caller": {
+        "path": "codex-rs/core/tests/suite/rmcp_client.rs",
+        "blob": "3897f4396696ba94ce93c7be8f29b3c65a0f5de8",
+        "lines": "3741-3746"
+      },
+      "reason": "Missing real binary prints skipping test and returns Ok(None)."
+    },
+    {
+      "package": "codex-arg0",
+      "bin": "test_arg0_preflight",
+      "manifest": "a28f6a0bbd75e744e13ad9af22713192f6e6802d",
+      "reason": "Reviewed R1 normal-main helper is explicitly test=false/bench=false; a lib-only unit invocation cannot be treated as evidence of its normal executable build. Preserve the prior exact helper-build requirement."
+    }
+  ],
+  "owning_artifacts_to_verify_after_catalog": [
+    {
+      "package": "codex-cli",
+      "bin": "codex",
+      "caller": "codex-rs/cli/tests/sandbox_cloud_config.rs:107, also Core common config resolver at test_codex.rs:834",
+      "qualification": "Verify the actual owning-catalog executable; do not treat the codex test harness as the normal codex program."
+    },
+    {
+      "package": "codex-hepta-agentd",
+      "bin": "codex-hepta-agentd",
+      "caller": "tests/support/fleet.rs:408-409 and supervisord_product_e2e.rs:99",
+      "qualification": "test=false; default production-cognitive-write. Preserve actual feature selection and pre/post artifact hashes. An integration catalog may build normal binaries; do not assert Cargo never does so. A later feature-unified package build can replace the path, as already observed in earlier Fleet receipts."
+    },
+    {
+      "package": "codex-apply-patch",
+      "bin": "apply_patch",
+      "caller": "tests/suite/cli.rs:5-8",
+      "qualification": "Normal owning-package executable, not the libtest harness."
+    }
+  ],
+  "not_required_as_extra_in_this_bounded_review": [
+    {
+      "item": "A separate codex-exec-server daemon",
+      "proof": "exec-server tests/common/mod.rs uses current_exe + test binary dispatch for the actual daemon/helper commands."
+    },
+    {
+      "item": "A separate codex-linux-sandbox binary for default native Core/exec-server fixtures",
+      "proof": "Core common/lib.rs:245-259 first uses real arg0 alias, then current_exe. Exec-server common/mod.rs:55-65 likewise uses its current test executable. This does not replace Bazel's declared helper or Windows qualification."
+    },
+    {
+      "item": "Cargo bwrap solely to replace a passing system bwrap",
+      "proof": "linux-sandbox/src/launcher.rs:126-138 first validates/selects actual system bwrap. The sole executor's observed system probe remains its own receipt. Full-workspace compilation may still build codex-bwrap normally; no fake launcher or bypass proposed."
+    },
+    {
+      "item": "Windows setup/command-runner binaries in the present Linux owning scope",
+      "proof": "Existing CLI/exec-server strict staging is #[cfg(windows)]; original Windows targets still need both actual helpers and byte-equal staging."
+    },
+    {
+      "item": "Additional PTY Cargo helper",
+      "proof": "PTY crate has no extra_binaries declaration; its native shell/Python/current-test-exe controls are separate host/process requirements, not an additional workspace helper binary."
+    }
+  ],
+  "full_workspace_followup": {
+    "package": "codex-exec",
+    "bin": "codex-exec",
+    "manifest": "eebecc9ff1bb3b0cd3e914f510fce599e1cf3cf0",
+    "caller": {
+      "path": "codex-rs/core/tests/common/test_codex_exec.rs",
+      "blob": "371d18c31623c9a4df6e1d7faee75b0b8c66d22a",
+      "lines": "12-16"
+    },
+    "scope": "Hard normal-executable dependency when Exec integration cases use that shared helper. Source search only located its call sites in exec/tests; the owning7 above does not establish an extra mandatory use. Recheck actual full-workspace catalog/artifacts."
+  },
+  "execution_advice": [
+    "Use the sole executor's existing --locked --profile dev-small configuration and target directory; no alternate production loader, PATH expansion or fake binary.",
+    "Retain compiler-artifact JSON with exact package/target/features/executable and hash of the actual resolved helper. Hash again after owning catalog compilation and before tests, and retain changes rather than reusing initial provenance silently.",
+    "Capture complete raw output as well as JUnit so existing eprintln skipping/unavailable branches cannot masquerade as positive qualification.",
+    "This review is bounded to the declared helpers and inspected actual callers. It is not a complete search of every workspace runtime dependency, and it is not passing test evidence."
+  ],
+  "not_done": [
+    "No builds, downloads, native commands or source/ref mutations.",
+    "No changes to original local profile, selections, retries, timeouts, assertions or permission boundaries."
+  ]
+}

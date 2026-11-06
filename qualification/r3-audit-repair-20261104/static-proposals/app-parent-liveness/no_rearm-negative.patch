@@ -1,0 +1,17 @@
+diff --git a/codex-rs/linux-sandbox/src/parent_lifecycle.rs b/codex-rs/linux-sandbox/src/parent_lifecycle.rs
+--- a/codex-rs/linux-sandbox/src/parent_lifecycle.rs
++++ b/codex-rs/linux-sandbox/src/parent_lifecycle.rs
+@@ -107,13 +107,6 @@
+     /// reuse. Checking PF_EXITING also covers reparent-before-EXIT_ZOMBIE.
+     /// Consuming self closes the descriptor on every return, before user fork.
+     pub(crate) fn arm_and_check(mut self) -> io::Result<()> {
+-        // SAFETY: PR_SET_PDEATHSIG takes a signal number, no pointer arguments.
+-        if unsafe {
+-            libc::prctl(libc::PR_SET_PDEATHSIG, libc::SIGKILL as libc::c_ulong,
+-                0 as libc::c_ulong, 0 as libc::c_ulong, 0 as libc::c_ulong)
+-        } < 0 {
+-            return Err(io::Error::last_os_error());
+-        }
+         let mut record = Vec::new();
+         (&mut self.0).take(MAX_STAT_BYTES + 1).read_to_end(&mut record)?;
+         let malformed = || io::Error::new(io::ErrorKind::InvalidData, "malformed original parent proc stat");

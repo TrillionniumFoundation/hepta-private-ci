@@ -1,0 +1,1167 @@
+{
+  "schema": "hepta.b16.static-sequence-verification.v1",
+  "created_at_utc": "2026-11-05T00:34:51.914700+00:00",
+  "status": "STATIC_GIT_APPLY_AND_EXACT_BYTE_RECONSTRUCTION_PASS",
+  "native_or_rust_executed": false,
+  "shared_worktree_or_target_accessed": false,
+  "git_commits_or_refs_created": false,
+  "observed_a_partial_source_base_tree": "f8251e1d14fa8524ab469281296cd4cf708f173c",
+  "scope": "Only the 16 listed B paths, not a complete product tree.",
+  "source_objects_verified": 51,
+  "source_bytes_verified": 838542,
+  "full_patch_stages": [
+    "r2c",
+    "r2d",
+    "r2e1",
+    "r2e2a",
+    "r2e2b",
+    "r2e3"
+  ],
+  "events": [
+    {
+      "label": "r2c:full",
+      "isolated_copy": "static-full-patches",
+      "patch_blob": "62a94bf93569570daace6cf80972f8909b3f8736",
+      "commands": [
+        {
+          "argv": [
+            "git",
+            "apply",
+            "--whitespace=error-all",
+            "--check",
+            "objects/62a94bf93569570daace6cf80972f8909b3f8736.txt"
+          ],
+          "exit_code": 0,
+          "stdout": "",
+          "stderr": ""
+        },
+        {
+          "argv": [
+            "git",
+            "apply",
+            "--whitespace=error-all",
+            "objects/62a94bf93569570daace6cf80972f8909b3f8736.txt"
+          ],
+          "exit_code": 0,
+          "stdout": "",
+          "stderr": ""
+        }
+      ],
+      "changed_files": {
+        "codex-rs/state/src/sqlite.rs": {
+          "before_blob": "9f5c491e1ba85d88cd03d8bfafc1671494b7ac96",
+          "after_blob": "4a147f593ef580de5d79b1dd47b0234437c629ca"
+        },
+        "codex-rs/state/src/sqlite_commit_gate_tests.rs": {
+          "before_blob": null,
+          "after_blob": "31b26a78bffe40815aa8a5b55e61b5139e7bca96"
+        }
+      },
+      "source_map_after": {
+        "codex-rs/hepta-memory/src/cognitive_store.rs": "03f469dcdc0b44754e92a855fcbabf7c21059899",
+        "codex-rs/hepta-memory/src/cognitive_store_recovery.rs": "5639d61d6d0f97d12058a3e5eed90332864983f4",
+        "codex-rs/hepta-memory/src/lib.rs": "65fb9b4dcf09083a7b9562296fc05f3ed3b227d8",
+        "codex-rs/hepta-memory/src/objective_sender.rs": "fe3be44196377039070c62c228d5c2e642560ac0",
+        "codex-rs/hepta-memory/src/objective_sender_store.rs": "3e4e477eced86fd0b99c33c7b147ef0be874c75e",
+        "codex-rs/state/src/lib.rs": "83a333ab206c9f9396b794058cd94bd28cedd52a",
+        "codex-rs/state/src/sqlite.rs": "4a147f593ef580de5d79b1dd47b0234437c629ca",
+        "codex-rs/state/src/sqlite_commit_gate_tests.rs": "31b26a78bffe40815aa8a5b55e61b5139e7bca96"
+      },
+      "r2c_v3_preserved": true
+    },
+    {
+      "label": "r2d:full",
+      "isolated_copy": "static-full-patches",
+      "patch_blob": "4582d6909dd0eb18e0f8f8a12d71c791a14c95a2",
+      "commands": [
+        {
+          "argv": [
+            "git",
+            "apply",
+            "--whitespace=error-all",
+            "--check",
+            "objects/4582d6909dd0eb18e0f8f8a12d71c791a14c95a2.txt"
+          ],
+          "exit_code": 0,
+          "stdout": "",
+          "stderr": ""
+        },
+        {
+          "argv": [
+            "git",
+            "apply",
+            "--whitespace=error-all",
+            "objects/4582d6909dd0eb18e0f8f8a12d71c791a14c95a2.txt"
+          ],
+          "exit_code": 0,
+          "stdout": "",
+          "stderr": ""
+        }
+      ],
+      "changed_files": {
+        "codex-rs/state/src/lib.rs": {
+          "before_blob": "83a333ab206c9f9396b794058cd94bd28cedd52a",
+          "after_blob": "50775acff67c99b80c779c8b94f9c2f0db07b175"
+        },
+        "codex-rs/state/src/sqlite.rs": {
+          "before_blob": "4a147f593ef580de5d79b1dd47b0234437c629ca",
+          "after_blob": "eb73bc3c24ae6bd64a35be1187f83d5655350bbe"
+        },
+        "codex-rs/state/src/sqlite_read_barrier.rs": {
+          "before_blob": null,
+          "after_blob": "98ed5528e76b948c965def714994d67ecb3e0457"
+        },
+        "codex-rs/state/src/sqlite_read_barrier_tests.rs": {
+          "before_blob": null,
+          "after_blob": "dc73d453b2bc5b34fca584c31fbdd56db9b165fd"
+        }
+      },
+      "source_map_after": {
+        "codex-rs/hepta-memory/src/cognitive_store.rs": "03f469dcdc0b44754e92a855fcbabf7c21059899",
+        "codex-rs/hepta-memory/src/cognitive_store_recovery.rs": "5639d61d6d0f97d12058a3e5eed90332864983f4",
+        "codex-rs/hepta-memory/src/lib.rs": "65fb9b4dcf09083a7b9562296fc05f3ed3b227d8",
+        "codex-rs/hepta-memory/src/objective_sender.rs": "fe3be44196377039070c62c228d5c2e642560ac0",
+        "codex-rs/hepta-memory/src/objective_sender_store.rs": "3e4e477eced86fd0b99c33c7b147ef0be874c75e",
+        "codex-rs/state/src/lib.rs": "50775acff67c99b80c779c8b94f9c2f0db07b175",
+        "codex-rs/state/src/sqlite.rs": "eb73bc3c24ae6bd64a35be1187f83d5655350bbe",
+        "codex-rs/state/src/sqlite_commit_gate_tests.rs": "31b26a78bffe40815aa8a5b55e61b5139e7bca96",
+        "codex-rs/state/src/sqlite_read_barrier.rs": "98ed5528e76b948c965def714994d67ecb3e0457",
+        "codex-rs/state/src/sqlite_read_barrier_tests.rs": "dc73d453b2bc5b34fca584c31fbdd56db9b165fd"
+      },
+      "r2c_v3_preserved": true
+    },
+    {
+      "label": "r2e1:full",
+      "isolated_copy": "static-full-patches",
+      "patch_blob": "6ddf11215e309b3fcb7e19d521c8d2651a3a0726",
+      "commands": [
+        {
+          "argv": [
+            "git",
+            "apply",
+            "--whitespace=error-all",
+            "--check",
+            "objects/6ddf11215e309b3fcb7e19d521c8d2651a3a0726.txt"
+          ],
+          "exit_code": 0,
+          "stdout": "",
+          "stderr": ""
+        },
+        {
+          "argv": [
+            "git",
+            "apply",
+            "--whitespace=error-all",
+            "objects/6ddf11215e309b3fcb7e19d521c8d2651a3a0726.txt"
+          ],
+          "exit_code": 0,
+          "stdout": "",
+          "stderr": ""
+        }
+      ],
+      "changed_files": {
+        "codex-rs/hepta-memory/src/cognitive_store.rs": {
+          "before_blob": "03f469dcdc0b44754e92a855fcbabf7c21059899",
+          "after_blob": "f670ec69480bc8960c7a3f90a9dc80e4ebd9763c"
+        },
+        "codex-rs/hepta-memory/src/cognitive_store_gate.rs": {
+          "before_blob": null,
+          "after_blob": "f69a43e09aa1864dda3e208ffb7a53b41e05d9d7"
+        },
+        "codex-rs/hepta-memory/src/cognitive_store_recovery.rs": {
+          "before_blob": "5639d61d6d0f97d12058a3e5eed90332864983f4",
+          "after_blob": "994230252cf0992b811c0aba08f5e4d97565c923"
+        },
+        "codex-rs/hepta-memory/src/objective_sender.rs": {
+          "before_blob": "fe3be44196377039070c62c228d5c2e642560ac0",
+          "after_blob": "6b3102c0ec4422b3658415df2372a7480990c6e2"
+        },
+        "codex-rs/hepta-memory/src/objective_sender_commit_interlock_tests.rs": {
+          "before_blob": null,
+          "after_blob": "62d85c330446b7b5059016d7501bcd85af2e556a"
+        },
+        "codex-rs/hepta-memory/src/objective_sender_store.rs": {
+          "before_blob": "3e4e477eced86fd0b99c33c7b147ef0be874c75e",
+          "after_blob": "378243e46d48df099d69b494b8879381221b3964"
+        },
+        "codex-rs/state/src/sqlite.rs": {
+          "before_blob": "eb73bc3c24ae6bd64a35be1187f83d5655350bbe",
+          "after_blob": "7b9ee0117d7425e20e4f08255aa0fe3e319f26ea"
+        }
+      },
+      "source_map_after": {
+        "codex-rs/hepta-memory/src/cognitive_store.rs": "f670ec69480bc8960c7a3f90a9dc80e4ebd9763c",
+        "codex-rs/hepta-memory/src/cognitive_store_gate.rs": "f69a43e09aa1864dda3e208ffb7a53b41e05d9d7",
+        "codex-rs/hepta-memory/src/cognitive_store_recovery.rs": "994230252cf0992b811c0aba08f5e4d97565c923",
+        "codex-rs/hepta-memory/src/lib.rs": "65fb9b4dcf09083a7b9562296fc05f3ed3b227d8",
+        "codex-rs/hepta-memory/src/objective_sender.rs": "6b3102c0ec4422b3658415df2372a7480990c6e2",
+        "codex-rs/hepta-memory/src/objective_sender_commit_interlock_tests.rs": "62d85c330446b7b5059016d7501bcd85af2e556a",
+        "codex-rs/hepta-memory/src/objective_sender_store.rs": "378243e46d48df099d69b494b8879381221b3964",
+        "codex-rs/state/src/lib.rs": "50775acff67c99b80c779c8b94f9c2f0db07b175",
+        "codex-rs/state/src/sqlite.rs": "7b9ee0117d7425e20e4f08255aa0fe3e319f26ea",
+        "codex-rs/state/src/sqlite_commit_gate_tests.rs": "31b26a78bffe40815aa8a5b55e61b5139e7bca96",
+        "codex-rs/state/src/sqlite_read_barrier.rs": "98ed5528e76b948c965def714994d67ecb3e0457",
+        "codex-rs/state/src/sqlite_read_barrier_tests.rs": "dc73d453b2bc5b34fca584c31fbdd56db9b165fd"
+      },
+      "r2c_v3_preserved": true
+    },
+    {
+      "label": "r2e2a:full",
+      "isolated_copy": "static-full-patches",
+      "patch_blob": "9743a504dc5993a5d7b47dac49e94e64e158a252",
+      "commands": [
+        {
+          "argv": [
+            "git",
+            "apply",
+            "--whitespace=error-all",
+            "--check",
+            "objects/9743a504dc5993a5d7b47dac49e94e64e158a252.txt"
+          ],
+          "exit_code": 0,
+          "stdout": "",
+          "stderr": ""
+        },
+        {
+          "argv": [
+            "git",
+            "apply",
+            "--whitespace=error-all",
+            "objects/9743a504dc5993a5d7b47dac49e94e64e158a252.txt"
+          ],
+          "exit_code": 0,
+          "stdout": "",
+          "stderr": ""
+        }
+      ],
+      "changed_files": {
+        "codex-rs/hepta-memory/src/cognitive_checkpoint_codec.rs": {
+          "before_blob": null,
+          "after_blob": "ea998b49788062dea8d9d93d786e771a76a8e937"
+        },
+        "codex-rs/hepta-memory/src/cognitive_checkpoint_codec_tests.rs": {
+          "before_blob": null,
+          "after_blob": "04647377829ad94baddc8fef1e92538902e60385"
+        },
+        "codex-rs/hepta-memory/src/cognitive_checkpoint_wire.rs": {
+          "before_blob": null,
+          "after_blob": "c6bada509bf9108a2dffad91288b1432c136ef20"
+        },
+        "codex-rs/hepta-memory/src/lib.rs": {
+          "before_blob": "65fb9b4dcf09083a7b9562296fc05f3ed3b227d8",
+          "after_blob": "d8c5fd3d36bf3fbca4ba33ecf80ba6ae46756f33"
+        }
+      },
+      "source_map_after": {
+        "codex-rs/hepta-memory/src/cognitive_checkpoint_codec.rs": "ea998b49788062dea8d9d93d786e771a76a8e937",
+        "codex-rs/hepta-memory/src/cognitive_checkpoint_codec_tests.rs": "04647377829ad94baddc8fef1e92538902e60385",
+        "codex-rs/hepta-memory/src/cognitive_checkpoint_wire.rs": "c6bada509bf9108a2dffad91288b1432c136ef20",
+        "codex-rs/hepta-memory/src/cognitive_store.rs": "f670ec69480bc8960c7a3f90a9dc80e4ebd9763c",
+        "codex-rs/hepta-memory/src/cognitive_store_gate.rs": "f69a43e09aa1864dda3e208ffb7a53b41e05d9d7",
+        "codex-rs/hepta-memory/src/cognitive_store_recovery.rs": "994230252cf0992b811c0aba08f5e4d97565c923",
+        "codex-rs/hepta-memory/src/lib.rs": "d8c5fd3d36bf3fbca4ba33ecf80ba6ae46756f33",
+        "codex-rs/hepta-memory/src/objective_sender.rs": "6b3102c0ec4422b3658415df2372a7480990c6e2",
+        "codex-rs/hepta-memory/src/objective_sender_commit_interlock_tests.rs": "62d85c330446b7b5059016d7501bcd85af2e556a",
+        "codex-rs/hepta-memory/src/objective_sender_store.rs": "378243e46d48df099d69b494b8879381221b3964",
+        "codex-rs/state/src/lib.rs": "50775acff67c99b80c779c8b94f9c2f0db07b175",
+        "codex-rs/state/src/sqlite.rs": "7b9ee0117d7425e20e4f08255aa0fe3e319f26ea",
+        "codex-rs/state/src/sqlite_commit_gate_tests.rs": "31b26a78bffe40815aa8a5b55e61b5139e7bca96",
+        "codex-rs/state/src/sqlite_read_barrier.rs": "98ed5528e76b948c965def714994d67ecb3e0457",
+        "codex-rs/state/src/sqlite_read_barrier_tests.rs": "dc73d453b2bc5b34fca584c31fbdd56db9b165fd"
+      },
+      "r2c_v3_preserved": true
+    },
+    {
+      "label": "r2e2b:full",
+      "isolated_copy": "static-full-patches",
+      "patch_blob": "cbeca259e8fe571e8926c6331df6fa67dfbffa0b",
+      "commands": [
+        {
+          "argv": [
+            "git",
+            "apply",
+            "--whitespace=error-all",
+            "--check",
+            "objects/cbeca259e8fe571e8926c6331df6fa67dfbffa0b.txt"
+          ],
+          "exit_code": 0,
+          "stdout": "",
+          "stderr": ""
+        },
+        {
+          "argv": [
+            "git",
+            "apply",
+            "--whitespace=error-all",
+            "objects/cbeca259e8fe571e8926c6331df6fa67dfbffa0b.txt"
+          ],
+          "exit_code": 0,
+          "stdout": "",
+          "stderr": ""
+        }
+      ],
+      "changed_files": {
+        "codex-rs/hepta-memory/src/cognitive_checkpoint_codec.rs": {
+          "before_blob": "ea998b49788062dea8d9d93d786e771a76a8e937",
+          "after_blob": "3a6b75875c7e265ba71e7948b70e7e3fcd608c0f"
+        },
+        "codex-rs/hepta-memory/src/cognitive_checkpoint_codec_tests.rs": {
+          "before_blob": "04647377829ad94baddc8fef1e92538902e60385",
+          "after_blob": "60a9fafef10f77d2ae85f3d8f8c1c22d60e27eb1"
+        }
+      },
+      "source_map_after": {
+        "codex-rs/hepta-memory/src/cognitive_checkpoint_codec.rs": "3a6b75875c7e265ba71e7948b70e7e3fcd608c0f",
+        "codex-rs/hepta-memory/src/cognitive_checkpoint_codec_tests.rs": "60a9fafef10f77d2ae85f3d8f8c1c22d60e27eb1",
+        "codex-rs/hepta-memory/src/cognitive_checkpoint_wire.rs": "c6bada509bf9108a2dffad91288b1432c136ef20",
+        "codex-rs/hepta-memory/src/cognitive_store.rs": "f670ec69480bc8960c7a3f90a9dc80e4ebd9763c",
+        "codex-rs/hepta-memory/src/cognitive_store_gate.rs": "f69a43e09aa1864dda3e208ffb7a53b41e05d9d7",
+        "codex-rs/hepta-memory/src/cognitive_store_recovery.rs": "994230252cf0992b811c0aba08f5e4d97565c923",
+        "codex-rs/hepta-memory/src/lib.rs": "d8c5fd3d36bf3fbca4ba33ecf80ba6ae46756f33",
+        "codex-rs/hepta-memory/src/objective_sender.rs": "6b3102c0ec4422b3658415df2372a7480990c6e2",
+        "codex-rs/hepta-memory/src/objective_sender_commit_interlock_tests.rs": "62d85c330446b7b5059016d7501bcd85af2e556a",
+        "codex-rs/hepta-memory/src/objective_sender_store.rs": "378243e46d48df099d69b494b8879381221b3964",
+        "codex-rs/state/src/lib.rs": "50775acff67c99b80c779c8b94f9c2f0db07b175",
+        "codex-rs/state/src/sqlite.rs": "7b9ee0117d7425e20e4f08255aa0fe3e319f26ea",
+        "codex-rs/state/src/sqlite_commit_gate_tests.rs": "31b26a78bffe40815aa8a5b55e61b5139e7bca96",
+        "codex-rs/state/src/sqlite_read_barrier.rs": "98ed5528e76b948c965def714994d67ecb3e0457",
+        "codex-rs/state/src/sqlite_read_barrier_tests.rs": "dc73d453b2bc5b34fca584c31fbdd56db9b165fd"
+      },
+      "r2c_v3_preserved": true
+    },
+    {
+      "label": "r2e3:full",
+      "isolated_copy": "static-full-patches",
+      "patch_blob": "5b5a2dee4b33b5946ec21825ed7fc916487a0bf9",
+      "commands": [
+        {
+          "argv": [
+            "git",
+            "apply",
+            "--whitespace=error-all",
+            "--check",
+            "objects/5b5a2dee4b33b5946ec21825ed7fc916487a0bf9.txt"
+          ],
+          "exit_code": 0,
+          "stdout": "",
+          "stderr": ""
+        },
+        {
+          "argv": [
+            "git",
+            "apply",
+            "--whitespace=error-all",
+            "objects/5b5a2dee4b33b5946ec21825ed7fc916487a0bf9.txt"
+          ],
+          "exit_code": 0,
+          "stdout": "",
+          "stderr": ""
+        }
+      ],
+      "changed_files": {
+        "codex-rs/hepta-memory/src/cognitive_store.rs": {
+          "before_blob": "f670ec69480bc8960c7a3f90a9dc80e4ebd9763c",
+          "after_blob": "5c0704c4e70ffdf2f65864a42da5e6e48bf79006"
+        },
+        "codex-rs/hepta-memory/src/cognitive_store_gate.rs": {
+          "before_blob": "f69a43e09aa1864dda3e208ffb7a53b41e05d9d7",
+          "after_blob": "f351700e3a7f382217db9f11f164871e7b2a09e4"
+        },
+        "codex-rs/hepta-memory/src/cognitive_store_recovery.rs": {
+          "before_blob": "994230252cf0992b811c0aba08f5e4d97565c923",
+          "after_blob": "54e917f45520f6b0e31fcd6a2f57ac3a00d8ae6c"
+        },
+        "codex-rs/hepta-memory/src/objective_sender.rs": {
+          "before_blob": "6b3102c0ec4422b3658415df2372a7480990c6e2",
+          "after_blob": "e3789436918efae898ecaac96d49e6ac73b37f76"
+        },
+        "codex-rs/hepta-memory/src/objective_sender_connection_custody_tests.rs": {
+          "before_blob": null,
+          "after_blob": "09a61b69e8cd34f27a0c968433b2b29df9c95380"
+        },
+        "codex-rs/state/src/sqlite.rs": {
+          "before_blob": "7b9ee0117d7425e20e4f08255aa0fe3e319f26ea",
+          "after_blob": "b9fb565cadd14f6541bfc8421164897e2907e2ad"
+        }
+      },
+      "source_map_after": {
+        "codex-rs/hepta-memory/src/cognitive_checkpoint_codec.rs": "3a6b75875c7e265ba71e7948b70e7e3fcd608c0f",
+        "codex-rs/hepta-memory/src/cognitive_checkpoint_codec_tests.rs": "60a9fafef10f77d2ae85f3d8f8c1c22d60e27eb1",
+        "codex-rs/hepta-memory/src/cognitive_checkpoint_wire.rs": "c6bada509bf9108a2dffad91288b1432c136ef20",
+        "codex-rs/hepta-memory/src/cognitive_store.rs": "5c0704c4e70ffdf2f65864a42da5e6e48bf79006",
+        "codex-rs/hepta-memory/src/cognitive_store_gate.rs": "f351700e3a7f382217db9f11f164871e7b2a09e4",
+        "codex-rs/hepta-memory/src/cognitive_store_recovery.rs": "54e917f45520f6b0e31fcd6a2f57ac3a00d8ae6c",
+        "codex-rs/hepta-memory/src/lib.rs": "d8c5fd3d36bf3fbca4ba33ecf80ba6ae46756f33",
+        "codex-rs/hepta-memory/src/objective_sender.rs": "e3789436918efae898ecaac96d49e6ac73b37f76",
+        "codex-rs/hepta-memory/src/objective_sender_commit_interlock_tests.rs": "62d85c330446b7b5059016d7501bcd85af2e556a",
+        "codex-rs/hepta-memory/src/objective_sender_connection_custody_tests.rs": "09a61b69e8cd34f27a0c968433b2b29df9c95380",
+        "codex-rs/hepta-memory/src/objective_sender_store.rs": "378243e46d48df099d69b494b8879381221b3964",
+        "codex-rs/state/src/lib.rs": "50775acff67c99b80c779c8b94f9c2f0db07b175",
+        "codex-rs/state/src/sqlite.rs": "b9fb565cadd14f6541bfc8421164897e2907e2ad",
+        "codex-rs/state/src/sqlite_commit_gate_tests.rs": "31b26a78bffe40815aa8a5b55e61b5139e7bca96",
+        "codex-rs/state/src/sqlite_read_barrier.rs": "98ed5528e76b948c965def714994d67ecb3e0457",
+        "codex-rs/state/src/sqlite_read_barrier_tests.rs": "dc73d453b2bc5b34fca584c31fbdd56db9b165fd"
+      },
+      "r2c_v3_preserved": true
+    },
+    {
+      "label": "r2c:v3-full",
+      "isolated_copy": "static-causal-sequence",
+      "patch_blob": "62a94bf93569570daace6cf80972f8909b3f8736",
+      "commands": [
+        {
+          "argv": [
+            "git",
+            "apply",
+            "--whitespace=error-all",
+            "--check",
+            "objects/62a94bf93569570daace6cf80972f8909b3f8736.txt"
+          ],
+          "exit_code": 0,
+          "stdout": "",
+          "stderr": ""
+        },
+        {
+          "argv": [
+            "git",
+            "apply",
+            "--whitespace=error-all",
+            "objects/62a94bf93569570daace6cf80972f8909b3f8736.txt"
+          ],
+          "exit_code": 0,
+          "stdout": "",
+          "stderr": ""
+        }
+      ],
+      "changed_files": {
+        "codex-rs/state/src/sqlite.rs": {
+          "before_blob": "9f5c491e1ba85d88cd03d8bfafc1671494b7ac96",
+          "after_blob": "4a147f593ef580de5d79b1dd47b0234437c629ca"
+        },
+        "codex-rs/state/src/sqlite_commit_gate_tests.rs": {
+          "before_blob": null,
+          "after_blob": "31b26a78bffe40815aa8a5b55e61b5139e7bca96"
+        }
+      },
+      "source_map_after": {
+        "codex-rs/hepta-memory/src/cognitive_store.rs": "03f469dcdc0b44754e92a855fcbabf7c21059899",
+        "codex-rs/hepta-memory/src/cognitive_store_recovery.rs": "5639d61d6d0f97d12058a3e5eed90332864983f4",
+        "codex-rs/hepta-memory/src/lib.rs": "65fb9b4dcf09083a7b9562296fc05f3ed3b227d8",
+        "codex-rs/hepta-memory/src/objective_sender.rs": "fe3be44196377039070c62c228d5c2e642560ac0",
+        "codex-rs/hepta-memory/src/objective_sender_store.rs": "3e4e477eced86fd0b99c33c7b147ef0be874c75e",
+        "codex-rs/state/src/lib.rs": "83a333ab206c9f9396b794058cd94bd28cedd52a",
+        "codex-rs/state/src/sqlite.rs": "4a147f593ef580de5d79b1dd47b0234437c629ca",
+        "codex-rs/state/src/sqlite_commit_gate_tests.rs": "31b26a78bffe40815aa8a5b55e61b5139e7bca96"
+      },
+      "r2c_v3_preserved": true
+    },
+    {
+      "label": "r2d:full",
+      "isolated_copy": "static-causal-sequence",
+      "patch_blob": "4582d6909dd0eb18e0f8f8a12d71c791a14c95a2",
+      "commands": [
+        {
+          "argv": [
+            "git",
+            "apply",
+            "--whitespace=error-all",
+            "--check",
+            "objects/4582d6909dd0eb18e0f8f8a12d71c791a14c95a2.txt"
+          ],
+          "exit_code": 0,
+          "stdout": "",
+          "stderr": ""
+        },
+        {
+          "argv": [
+            "git",
+            "apply",
+            "--whitespace=error-all",
+            "objects/4582d6909dd0eb18e0f8f8a12d71c791a14c95a2.txt"
+          ],
+          "exit_code": 0,
+          "stdout": "",
+          "stderr": ""
+        }
+      ],
+      "changed_files": {
+        "codex-rs/state/src/lib.rs": {
+          "before_blob": "83a333ab206c9f9396b794058cd94bd28cedd52a",
+          "after_blob": "50775acff67c99b80c779c8b94f9c2f0db07b175"
+        },
+        "codex-rs/state/src/sqlite.rs": {
+          "before_blob": "4a147f593ef580de5d79b1dd47b0234437c629ca",
+          "after_blob": "eb73bc3c24ae6bd64a35be1187f83d5655350bbe"
+        },
+        "codex-rs/state/src/sqlite_read_barrier.rs": {
+          "before_blob": null,
+          "after_blob": "98ed5528e76b948c965def714994d67ecb3e0457"
+        },
+        "codex-rs/state/src/sqlite_read_barrier_tests.rs": {
+          "before_blob": null,
+          "after_blob": "dc73d453b2bc5b34fca584c31fbdd56db9b165fd"
+        }
+      },
+      "source_map_after": {
+        "codex-rs/hepta-memory/src/cognitive_store.rs": "03f469dcdc0b44754e92a855fcbabf7c21059899",
+        "codex-rs/hepta-memory/src/cognitive_store_recovery.rs": "5639d61d6d0f97d12058a3e5eed90332864983f4",
+        "codex-rs/hepta-memory/src/lib.rs": "65fb9b4dcf09083a7b9562296fc05f3ed3b227d8",
+        "codex-rs/hepta-memory/src/objective_sender.rs": "fe3be44196377039070c62c228d5c2e642560ac0",
+        "codex-rs/hepta-memory/src/objective_sender_store.rs": "3e4e477eced86fd0b99c33c7b147ef0be874c75e",
+        "codex-rs/state/src/lib.rs": "50775acff67c99b80c779c8b94f9c2f0db07b175",
+        "codex-rs/state/src/sqlite.rs": "eb73bc3c24ae6bd64a35be1187f83d5655350bbe",
+        "codex-rs/state/src/sqlite_commit_gate_tests.rs": "31b26a78bffe40815aa8a5b55e61b5139e7bca96",
+        "codex-rs/state/src/sqlite_read_barrier.rs": "98ed5528e76b948c965def714994d67ecb3e0457",
+        "codex-rs/state/src/sqlite_read_barrier_tests.rs": "dc73d453b2bc5b34fca584c31fbdd56db9b165fd"
+      },
+      "r2c_v3_preserved": true
+    },
+    {
+      "label": "r2d:without-close-on-drop",
+      "isolated_copy": "static-causal-sequence",
+      "patch_blob": "4f6b0999e4a38e60c97fdbe60d47d85de928b797",
+      "commands": [
+        {
+          "argv": [
+            "git",
+            "apply",
+            "--whitespace=error-all",
+            "--check",
+            "objects/4f6b0999e4a38e60c97fdbe60d47d85de928b797.txt"
+          ],
+          "exit_code": 0,
+          "stdout": "",
+          "stderr": ""
+        },
+        {
+          "argv": [
+            "git",
+            "apply",
+            "--whitespace=error-all",
+            "objects/4f6b0999e4a38e60c97fdbe60d47d85de928b797.txt"
+          ],
+          "exit_code": 0,
+          "stdout": "",
+          "stderr": ""
+        }
+      ],
+      "changed_files": {
+        "codex-rs/state/src/sqlite_read_barrier.rs": {
+          "before_blob": "98ed5528e76b948c965def714994d67ecb3e0457",
+          "after_blob": "6b0909f7909eb323d7ecf11fc292598aee8f2405"
+        }
+      },
+      "source_map_after": {
+        "codex-rs/hepta-memory/src/cognitive_store.rs": "03f469dcdc0b44754e92a855fcbabf7c21059899",
+        "codex-rs/hepta-memory/src/cognitive_store_recovery.rs": "5639d61d6d0f97d12058a3e5eed90332864983f4",
+        "codex-rs/hepta-memory/src/lib.rs": "65fb9b4dcf09083a7b9562296fc05f3ed3b227d8",
+        "codex-rs/hepta-memory/src/objective_sender.rs": "fe3be44196377039070c62c228d5c2e642560ac0",
+        "codex-rs/hepta-memory/src/objective_sender_store.rs": "3e4e477eced86fd0b99c33c7b147ef0be874c75e",
+        "codex-rs/state/src/lib.rs": "50775acff67c99b80c779c8b94f9c2f0db07b175",
+        "codex-rs/state/src/sqlite.rs": "eb73bc3c24ae6bd64a35be1187f83d5655350bbe",
+        "codex-rs/state/src/sqlite_commit_gate_tests.rs": "31b26a78bffe40815aa8a5b55e61b5139e7bca96",
+        "codex-rs/state/src/sqlite_read_barrier.rs": "6b0909f7909eb323d7ecf11fc292598aee8f2405",
+        "codex-rs/state/src/sqlite_read_barrier_tests.rs": "dc73d453b2bc5b34fca584c31fbdd56db9b165fd"
+      },
+      "r2c_v3_preserved": true
+    },
+    {
+      "label": "r2d:restore-close-on-drop",
+      "isolated_copy": "static-causal-sequence",
+      "patch_blob": "1a2fefb5e147a6beec23104ac45eb881a3ca0f42",
+      "commands": [
+        {
+          "argv": [
+            "git",
+            "apply",
+            "--whitespace=error-all",
+            "--check",
+            "objects/1a2fefb5e147a6beec23104ac45eb881a3ca0f42.txt"
+          ],
+          "exit_code": 0,
+          "stdout": "",
+          "stderr": ""
+        },
+        {
+          "argv": [
+            "git",
+            "apply",
+            "--whitespace=error-all",
+            "objects/1a2fefb5e147a6beec23104ac45eb881a3ca0f42.txt"
+          ],
+          "exit_code": 0,
+          "stdout": "",
+          "stderr": ""
+        }
+      ],
+      "changed_files": {
+        "codex-rs/state/src/sqlite_read_barrier.rs": {
+          "before_blob": "6b0909f7909eb323d7ecf11fc292598aee8f2405",
+          "after_blob": "98ed5528e76b948c965def714994d67ecb3e0457"
+        }
+      },
+      "source_map_after": {
+        "codex-rs/hepta-memory/src/cognitive_store.rs": "03f469dcdc0b44754e92a855fcbabf7c21059899",
+        "codex-rs/hepta-memory/src/cognitive_store_recovery.rs": "5639d61d6d0f97d12058a3e5eed90332864983f4",
+        "codex-rs/hepta-memory/src/lib.rs": "65fb9b4dcf09083a7b9562296fc05f3ed3b227d8",
+        "codex-rs/hepta-memory/src/objective_sender.rs": "fe3be44196377039070c62c228d5c2e642560ac0",
+        "codex-rs/hepta-memory/src/objective_sender_store.rs": "3e4e477eced86fd0b99c33c7b147ef0be874c75e",
+        "codex-rs/state/src/lib.rs": "50775acff67c99b80c779c8b94f9c2f0db07b175",
+        "codex-rs/state/src/sqlite.rs": "eb73bc3c24ae6bd64a35be1187f83d5655350bbe",
+        "codex-rs/state/src/sqlite_commit_gate_tests.rs": "31b26a78bffe40815aa8a5b55e61b5139e7bca96",
+        "codex-rs/state/src/sqlite_read_barrier.rs": "98ed5528e76b948c965def714994d67ecb3e0457",
+        "codex-rs/state/src/sqlite_read_barrier_tests.rs": "dc73d453b2bc5b34fca584c31fbdd56db9b165fd"
+      },
+      "r2c_v3_preserved": true
+    },
+    {
+      "label": "r2e1:test-only-baseline",
+      "isolated_copy": "static-causal-sequence",
+      "patch_blob": "2909207b49983944e5b5c1e021975b64b1d0ff6a",
+      "commands": [
+        {
+          "argv": [
+            "git",
+            "apply",
+            "--whitespace=error-all",
+            "--check",
+            "objects/2909207b49983944e5b5c1e021975b64b1d0ff6a.txt"
+          ],
+          "exit_code": 0,
+          "stdout": "",
+          "stderr": ""
+        },
+        {
+          "argv": [
+            "git",
+            "apply",
+            "--whitespace=error-all",
+            "objects/2909207b49983944e5b5c1e021975b64b1d0ff6a.txt"
+          ],
+          "exit_code": 0,
+          "stdout": "",
+          "stderr": ""
+        }
+      ],
+      "changed_files": {
+        "codex-rs/hepta-memory/src/objective_sender.rs": {
+          "before_blob": "fe3be44196377039070c62c228d5c2e642560ac0",
+          "after_blob": "36105804909ecccfb02e039a10dfa43a5a6f5ba7"
+        },
+        "codex-rs/hepta-memory/src/objective_sender_commit_interlock_tests.rs": {
+          "before_blob": null,
+          "after_blob": "62d85c330446b7b5059016d7501bcd85af2e556a"
+        }
+      },
+      "source_map_after": {
+        "codex-rs/hepta-memory/src/cognitive_store.rs": "03f469dcdc0b44754e92a855fcbabf7c21059899",
+        "codex-rs/hepta-memory/src/cognitive_store_recovery.rs": "5639d61d6d0f97d12058a3e5eed90332864983f4",
+        "codex-rs/hepta-memory/src/lib.rs": "65fb9b4dcf09083a7b9562296fc05f3ed3b227d8",
+        "codex-rs/hepta-memory/src/objective_sender.rs": "36105804909ecccfb02e039a10dfa43a5a6f5ba7",
+        "codex-rs/hepta-memory/src/objective_sender_commit_interlock_tests.rs": "62d85c330446b7b5059016d7501bcd85af2e556a",
+        "codex-rs/hepta-memory/src/objective_sender_store.rs": "3e4e477eced86fd0b99c33c7b147ef0be874c75e",
+        "codex-rs/state/src/lib.rs": "50775acff67c99b80c779c8b94f9c2f0db07b175",
+        "codex-rs/state/src/sqlite.rs": "eb73bc3c24ae6bd64a35be1187f83d5655350bbe",
+        "codex-rs/state/src/sqlite_commit_gate_tests.rs": "31b26a78bffe40815aa8a5b55e61b5139e7bca96",
+        "codex-rs/state/src/sqlite_read_barrier.rs": "98ed5528e76b948c965def714994d67ecb3e0457",
+        "codex-rs/state/src/sqlite_read_barrier_tests.rs": "dc73d453b2bc5b34fca584c31fbdd56db9b165fd"
+      },
+      "r2c_v3_preserved": true
+    },
+    {
+      "label": "r2e1:repair-after-baseline",
+      "isolated_copy": "static-causal-sequence",
+      "patch_blob": "69c4991b024b0db7e0e49b65fdf685864a12c64c",
+      "commands": [
+        {
+          "argv": [
+            "git",
+            "apply",
+            "--whitespace=error-all",
+            "--check",
+            "objects/69c4991b024b0db7e0e49b65fdf685864a12c64c.txt"
+          ],
+          "exit_code": 0,
+          "stdout": "",
+          "stderr": ""
+        },
+        {
+          "argv": [
+            "git",
+            "apply",
+            "--whitespace=error-all",
+            "objects/69c4991b024b0db7e0e49b65fdf685864a12c64c.txt"
+          ],
+          "exit_code": 0,
+          "stdout": "",
+          "stderr": ""
+        }
+      ],
+      "changed_files": {
+        "codex-rs/hepta-memory/src/cognitive_store.rs": {
+          "before_blob": "03f469dcdc0b44754e92a855fcbabf7c21059899",
+          "after_blob": "f670ec69480bc8960c7a3f90a9dc80e4ebd9763c"
+        },
+        "codex-rs/hepta-memory/src/cognitive_store_gate.rs": {
+          "before_blob": null,
+          "after_blob": "f69a43e09aa1864dda3e208ffb7a53b41e05d9d7"
+        },
+        "codex-rs/hepta-memory/src/cognitive_store_recovery.rs": {
+          "before_blob": "5639d61d6d0f97d12058a3e5eed90332864983f4",
+          "after_blob": "994230252cf0992b811c0aba08f5e4d97565c923"
+        },
+        "codex-rs/hepta-memory/src/objective_sender.rs": {
+          "before_blob": "36105804909ecccfb02e039a10dfa43a5a6f5ba7",
+          "after_blob": "6b3102c0ec4422b3658415df2372a7480990c6e2"
+        },
+        "codex-rs/hepta-memory/src/objective_sender_store.rs": {
+          "before_blob": "3e4e477eced86fd0b99c33c7b147ef0be874c75e",
+          "after_blob": "378243e46d48df099d69b494b8879381221b3964"
+        },
+        "codex-rs/state/src/sqlite.rs": {
+          "before_blob": "eb73bc3c24ae6bd64a35be1187f83d5655350bbe",
+          "after_blob": "7b9ee0117d7425e20e4f08255aa0fe3e319f26ea"
+        }
+      },
+      "source_map_after": {
+        "codex-rs/hepta-memory/src/cognitive_store.rs": "f670ec69480bc8960c7a3f90a9dc80e4ebd9763c",
+        "codex-rs/hepta-memory/src/cognitive_store_gate.rs": "f69a43e09aa1864dda3e208ffb7a53b41e05d9d7",
+        "codex-rs/hepta-memory/src/cognitive_store_recovery.rs": "994230252cf0992b811c0aba08f5e4d97565c923",
+        "codex-rs/hepta-memory/src/lib.rs": "65fb9b4dcf09083a7b9562296fc05f3ed3b227d8",
+        "codex-rs/hepta-memory/src/objective_sender.rs": "6b3102c0ec4422b3658415df2372a7480990c6e2",
+        "codex-rs/hepta-memory/src/objective_sender_commit_interlock_tests.rs": "62d85c330446b7b5059016d7501bcd85af2e556a",
+        "codex-rs/hepta-memory/src/objective_sender_store.rs": "378243e46d48df099d69b494b8879381221b3964",
+        "codex-rs/state/src/lib.rs": "50775acff67c99b80c779c8b94f9c2f0db07b175",
+        "codex-rs/state/src/sqlite.rs": "7b9ee0117d7425e20e4f08255aa0fe3e319f26ea",
+        "codex-rs/state/src/sqlite_commit_gate_tests.rs": "31b26a78bffe40815aa8a5b55e61b5139e7bca96",
+        "codex-rs/state/src/sqlite_read_barrier.rs": "98ed5528e76b948c965def714994d67ecb3e0457",
+        "codex-rs/state/src/sqlite_read_barrier_tests.rs": "dc73d453b2bc5b34fca584c31fbdd56db9b165fd"
+      },
+      "r2c_v3_preserved": true
+    },
+    {
+      "label": "r2e2a:full",
+      "isolated_copy": "static-causal-sequence",
+      "patch_blob": "9743a504dc5993a5d7b47dac49e94e64e158a252",
+      "commands": [
+        {
+          "argv": [
+            "git",
+            "apply",
+            "--whitespace=error-all",
+            "--check",
+            "objects/9743a504dc5993a5d7b47dac49e94e64e158a252.txt"
+          ],
+          "exit_code": 0,
+          "stdout": "",
+          "stderr": ""
+        },
+        {
+          "argv": [
+            "git",
+            "apply",
+            "--whitespace=error-all",
+            "objects/9743a504dc5993a5d7b47dac49e94e64e158a252.txt"
+          ],
+          "exit_code": 0,
+          "stdout": "",
+          "stderr": ""
+        }
+      ],
+      "changed_files": {
+        "codex-rs/hepta-memory/src/cognitive_checkpoint_codec.rs": {
+          "before_blob": null,
+          "after_blob": "ea998b49788062dea8d9d93d786e771a76a8e937"
+        },
+        "codex-rs/hepta-memory/src/cognitive_checkpoint_codec_tests.rs": {
+          "before_blob": null,
+          "after_blob": "04647377829ad94baddc8fef1e92538902e60385"
+        },
+        "codex-rs/hepta-memory/src/cognitive_checkpoint_wire.rs": {
+          "before_blob": null,
+          "after_blob": "c6bada509bf9108a2dffad91288b1432c136ef20"
+        },
+        "codex-rs/hepta-memory/src/lib.rs": {
+          "before_blob": "65fb9b4dcf09083a7b9562296fc05f3ed3b227d8",
+          "after_blob": "d8c5fd3d36bf3fbca4ba33ecf80ba6ae46756f33"
+        }
+      },
+      "source_map_after": {
+        "codex-rs/hepta-memory/src/cognitive_checkpoint_codec.rs": "ea998b49788062dea8d9d93d786e771a76a8e937",
+        "codex-rs/hepta-memory/src/cognitive_checkpoint_codec_tests.rs": "04647377829ad94baddc8fef1e92538902e60385",
+        "codex-rs/hepta-memory/src/cognitive_checkpoint_wire.rs": "c6bada509bf9108a2dffad91288b1432c136ef20",
+        "codex-rs/hepta-memory/src/cognitive_store.rs": "f670ec69480bc8960c7a3f90a9dc80e4ebd9763c",
+        "codex-rs/hepta-memory/src/cognitive_store_gate.rs": "f69a43e09aa1864dda3e208ffb7a53b41e05d9d7",
+        "codex-rs/hepta-memory/src/cognitive_store_recovery.rs": "994230252cf0992b811c0aba08f5e4d97565c923",
+        "codex-rs/hepta-memory/src/lib.rs": "d8c5fd3d36bf3fbca4ba33ecf80ba6ae46756f33",
+        "codex-rs/hepta-memory/src/objective_sender.rs": "6b3102c0ec4422b3658415df2372a7480990c6e2",
+        "codex-rs/hepta-memory/src/objective_sender_commit_interlock_tests.rs": "62d85c330446b7b5059016d7501bcd85af2e556a",
+        "codex-rs/hepta-memory/src/objective_sender_store.rs": "378243e46d48df099d69b494b8879381221b3964",
+        "codex-rs/state/src/lib.rs": "50775acff67c99b80c779c8b94f9c2f0db07b175",
+        "codex-rs/state/src/sqlite.rs": "7b9ee0117d7425e20e4f08255aa0fe3e319f26ea",
+        "codex-rs/state/src/sqlite_commit_gate_tests.rs": "31b26a78bffe40815aa8a5b55e61b5139e7bca96",
+        "codex-rs/state/src/sqlite_read_barrier.rs": "98ed5528e76b948c965def714994d67ecb3e0457",
+        "codex-rs/state/src/sqlite_read_barrier_tests.rs": "dc73d453b2bc5b34fca584c31fbdd56db9b165fd"
+      },
+      "r2c_v3_preserved": true
+    },
+    {
+      "label": "r2e2b:full",
+      "isolated_copy": "static-causal-sequence",
+      "patch_blob": "cbeca259e8fe571e8926c6331df6fa67dfbffa0b",
+      "commands": [
+        {
+          "argv": [
+            "git",
+            "apply",
+            "--whitespace=error-all",
+            "--check",
+            "objects/cbeca259e8fe571e8926c6331df6fa67dfbffa0b.txt"
+          ],
+          "exit_code": 0,
+          "stdout": "",
+          "stderr": ""
+        },
+        {
+          "argv": [
+            "git",
+            "apply",
+            "--whitespace=error-all",
+            "objects/cbeca259e8fe571e8926c6331df6fa67dfbffa0b.txt"
+          ],
+          "exit_code": 0,
+          "stdout": "",
+          "stderr": ""
+        }
+      ],
+      "changed_files": {
+        "codex-rs/hepta-memory/src/cognitive_checkpoint_codec.rs": {
+          "before_blob": "ea998b49788062dea8d9d93d786e771a76a8e937",
+          "after_blob": "3a6b75875c7e265ba71e7948b70e7e3fcd608c0f"
+        },
+        "codex-rs/hepta-memory/src/cognitive_checkpoint_codec_tests.rs": {
+          "before_blob": "04647377829ad94baddc8fef1e92538902e60385",
+          "after_blob": "60a9fafef10f77d2ae85f3d8f8c1c22d60e27eb1"
+        }
+      },
+      "source_map_after": {
+        "codex-rs/hepta-memory/src/cognitive_checkpoint_codec.rs": "3a6b75875c7e265ba71e7948b70e7e3fcd608c0f",
+        "codex-rs/hepta-memory/src/cognitive_checkpoint_codec_tests.rs": "60a9fafef10f77d2ae85f3d8f8c1c22d60e27eb1",
+        "codex-rs/hepta-memory/src/cognitive_checkpoint_wire.rs": "c6bada509bf9108a2dffad91288b1432c136ef20",
+        "codex-rs/hepta-memory/src/cognitive_store.rs": "f670ec69480bc8960c7a3f90a9dc80e4ebd9763c",
+        "codex-rs/hepta-memory/src/cognitive_store_gate.rs": "f69a43e09aa1864dda3e208ffb7a53b41e05d9d7",
+        "codex-rs/hepta-memory/src/cognitive_store_recovery.rs": "994230252cf0992b811c0aba08f5e4d97565c923",
+        "codex-rs/hepta-memory/src/lib.rs": "d8c5fd3d36bf3fbca4ba33ecf80ba6ae46756f33",
+        "codex-rs/hepta-memory/src/objective_sender.rs": "6b3102c0ec4422b3658415df2372a7480990c6e2",
+        "codex-rs/hepta-memory/src/objective_sender_commit_interlock_tests.rs": "62d85c330446b7b5059016d7501bcd85af2e556a",
+        "codex-rs/hepta-memory/src/objective_sender_store.rs": "378243e46d48df099d69b494b8879381221b3964",
+        "codex-rs/state/src/lib.rs": "50775acff67c99b80c779c8b94f9c2f0db07b175",
+        "codex-rs/state/src/sqlite.rs": "7b9ee0117d7425e20e4f08255aa0fe3e319f26ea",
+        "codex-rs/state/src/sqlite_commit_gate_tests.rs": "31b26a78bffe40815aa8a5b55e61b5139e7bca96",
+        "codex-rs/state/src/sqlite_read_barrier.rs": "98ed5528e76b948c965def714994d67ecb3e0457",
+        "codex-rs/state/src/sqlite_read_barrier_tests.rs": "dc73d453b2bc5b34fca584c31fbdd56db9b165fd"
+      },
+      "r2c_v3_preserved": true
+    },
+    {
+      "label": "r2e3:test-only-baseline",
+      "isolated_copy": "static-causal-sequence",
+      "patch_blob": "d6d9de20165a61736ae033f3e5fd65c14e3170e1",
+      "commands": [
+        {
+          "argv": [
+            "git",
+            "apply",
+            "--whitespace=error-all",
+            "--check",
+            "objects/d6d9de20165a61736ae033f3e5fd65c14e3170e1.txt"
+          ],
+          "exit_code": 0,
+          "stdout": "",
+          "stderr": ""
+        },
+        {
+          "argv": [
+            "git",
+            "apply",
+            "--whitespace=error-all",
+            "objects/d6d9de20165a61736ae033f3e5fd65c14e3170e1.txt"
+          ],
+          "exit_code": 0,
+          "stdout": "",
+          "stderr": ""
+        }
+      ],
+      "changed_files": {
+        "codex-rs/hepta-memory/src/objective_sender.rs": {
+          "before_blob": "6b3102c0ec4422b3658415df2372a7480990c6e2",
+          "after_blob": "e3789436918efae898ecaac96d49e6ac73b37f76"
+        },
+        "codex-rs/hepta-memory/src/objective_sender_connection_custody_tests.rs": {
+          "before_blob": null,
+          "after_blob": "09a61b69e8cd34f27a0c968433b2b29df9c95380"
+        }
+      },
+      "source_map_after": {
+        "codex-rs/hepta-memory/src/cognitive_checkpoint_codec.rs": "3a6b75875c7e265ba71e7948b70e7e3fcd608c0f",
+        "codex-rs/hepta-memory/src/cognitive_checkpoint_codec_tests.rs": "60a9fafef10f77d2ae85f3d8f8c1c22d60e27eb1",
+        "codex-rs/hepta-memory/src/cognitive_checkpoint_wire.rs": "c6bada509bf9108a2dffad91288b1432c136ef20",
+        "codex-rs/hepta-memory/src/cognitive_store.rs": "f670ec69480bc8960c7a3f90a9dc80e4ebd9763c",
+        "codex-rs/hepta-memory/src/cognitive_store_gate.rs": "f69a43e09aa1864dda3e208ffb7a53b41e05d9d7",
+        "codex-rs/hepta-memory/src/cognitive_store_recovery.rs": "994230252cf0992b811c0aba08f5e4d97565c923",
+        "codex-rs/hepta-memory/src/lib.rs": "d8c5fd3d36bf3fbca4ba33ecf80ba6ae46756f33",
+        "codex-rs/hepta-memory/src/objective_sender.rs": "e3789436918efae898ecaac96d49e6ac73b37f76",
+        "codex-rs/hepta-memory/src/objective_sender_commit_interlock_tests.rs": "62d85c330446b7b5059016d7501bcd85af2e556a",
+        "codex-rs/hepta-memory/src/objective_sender_connection_custody_tests.rs": "09a61b69e8cd34f27a0c968433b2b29df9c95380",
+        "codex-rs/hepta-memory/src/objective_sender_store.rs": "378243e46d48df099d69b494b8879381221b3964",
+        "codex-rs/state/src/lib.rs": "50775acff67c99b80c779c8b94f9c2f0db07b175",
+        "codex-rs/state/src/sqlite.rs": "7b9ee0117d7425e20e4f08255aa0fe3e319f26ea",
+        "codex-rs/state/src/sqlite_commit_gate_tests.rs": "31b26a78bffe40815aa8a5b55e61b5139e7bca96",
+        "codex-rs/state/src/sqlite_read_barrier.rs": "98ed5528e76b948c965def714994d67ecb3e0457",
+        "codex-rs/state/src/sqlite_read_barrier_tests.rs": "dc73d453b2bc5b34fca584c31fbdd56db9b165fd"
+      },
+      "r2c_v3_preserved": true
+    },
+    {
+      "label": "r2e3:repair-after-baseline",
+      "isolated_copy": "static-causal-sequence",
+      "patch_blob": "e9653333486372ba9d949ca26052af66873ecd34",
+      "commands": [
+        {
+          "argv": [
+            "git",
+            "apply",
+            "--whitespace=error-all",
+            "--check",
+            "objects/e9653333486372ba9d949ca26052af66873ecd34.txt"
+          ],
+          "exit_code": 0,
+          "stdout": "",
+          "stderr": ""
+        },
+        {
+          "argv": [
+            "git",
+            "apply",
+            "--whitespace=error-all",
+            "objects/e9653333486372ba9d949ca26052af66873ecd34.txt"
+          ],
+          "exit_code": 0,
+          "stdout": "",
+          "stderr": ""
+        }
+      ],
+      "changed_files": {
+        "codex-rs/hepta-memory/src/cognitive_store.rs": {
+          "before_blob": "f670ec69480bc8960c7a3f90a9dc80e4ebd9763c",
+          "after_blob": "5c0704c4e70ffdf2f65864a42da5e6e48bf79006"
+        },
+        "codex-rs/hepta-memory/src/cognitive_store_gate.rs": {
+          "before_blob": "f69a43e09aa1864dda3e208ffb7a53b41e05d9d7",
+          "after_blob": "f351700e3a7f382217db9f11f164871e7b2a09e4"
+        },
+        "codex-rs/hepta-memory/src/cognitive_store_recovery.rs": {
+          "before_blob": "994230252cf0992b811c0aba08f5e4d97565c923",
+          "after_blob": "54e917f45520f6b0e31fcd6a2f57ac3a00d8ae6c"
+        },
+        "codex-rs/state/src/sqlite.rs": {
+          "before_blob": "7b9ee0117d7425e20e4f08255aa0fe3e319f26ea",
+          "after_blob": "b9fb565cadd14f6541bfc8421164897e2907e2ad"
+        }
+      },
+      "source_map_after": {
+        "codex-rs/hepta-memory/src/cognitive_checkpoint_codec.rs": "3a6b75875c7e265ba71e7948b70e7e3fcd608c0f",
+        "codex-rs/hepta-memory/src/cognitive_checkpoint_codec_tests.rs": "60a9fafef10f77d2ae85f3d8f8c1c22d60e27eb1",
+        "codex-rs/hepta-memory/src/cognitive_checkpoint_wire.rs": "c6bada509bf9108a2dffad91288b1432c136ef20",
+        "codex-rs/hepta-memory/src/cognitive_store.rs": "5c0704c4e70ffdf2f65864a42da5e6e48bf79006",
+        "codex-rs/hepta-memory/src/cognitive_store_gate.rs": "f351700e3a7f382217db9f11f164871e7b2a09e4",
+        "codex-rs/hepta-memory/src/cognitive_store_recovery.rs": "54e917f45520f6b0e31fcd6a2f57ac3a00d8ae6c",
+        "codex-rs/hepta-memory/src/lib.rs": "d8c5fd3d36bf3fbca4ba33ecf80ba6ae46756f33",
+        "codex-rs/hepta-memory/src/objective_sender.rs": "e3789436918efae898ecaac96d49e6ac73b37f76",
+        "codex-rs/hepta-memory/src/objective_sender_commit_interlock_tests.rs": "62d85c330446b7b5059016d7501bcd85af2e556a",
+        "codex-rs/hepta-memory/src/objective_sender_connection_custody_tests.rs": "09a61b69e8cd34f27a0c968433b2b29df9c95380",
+        "codex-rs/hepta-memory/src/objective_sender_store.rs": "378243e46d48df099d69b494b8879381221b3964",
+        "codex-rs/state/src/lib.rs": "50775acff67c99b80c779c8b94f9c2f0db07b175",
+        "codex-rs/state/src/sqlite.rs": "b9fb565cadd14f6541bfc8421164897e2907e2ad",
+        "codex-rs/state/src/sqlite_commit_gate_tests.rs": "31b26a78bffe40815aa8a5b55e61b5139e7bca96",
+        "codex-rs/state/src/sqlite_read_barrier.rs": "98ed5528e76b948c965def714994d67ecb3e0457",
+        "codex-rs/state/src/sqlite_read_barrier_tests.rs": "dc73d453b2bc5b34fca584c31fbdd56db9b165fd"
+      },
+      "r2c_v3_preserved": true
+    },
+    {
+      "label": "r2e3:without-native-anchor",
+      "isolated_copy": "static-causal-sequence",
+      "patch_blob": "7b931b638dce1e8a8496b1898f9ff0a0fb9abe61",
+      "commands": [
+        {
+          "argv": [
+            "git",
+            "apply",
+            "--whitespace=error-all",
+            "--check",
+            "objects/7b931b638dce1e8a8496b1898f9ff0a0fb9abe61.txt"
+          ],
+          "exit_code": 0,
+          "stdout": "",
+          "stderr": ""
+        },
+        {
+          "argv": [
+            "git",
+            "apply",
+            "--whitespace=error-all",
+            "objects/7b931b638dce1e8a8496b1898f9ff0a0fb9abe61.txt"
+          ],
+          "exit_code": 0,
+          "stdout": "",
+          "stderr": ""
+        }
+      ],
+      "changed_files": {
+        "codex-rs/state/src/sqlite.rs": {
+          "before_blob": "b9fb565cadd14f6541bfc8421164897e2907e2ad",
+          "after_blob": "3c2278650ac27398a24c893465090f5cea57ca3d"
+        }
+      },
+      "source_map_after": {
+        "codex-rs/hepta-memory/src/cognitive_checkpoint_codec.rs": "3a6b75875c7e265ba71e7948b70e7e3fcd608c0f",
+        "codex-rs/hepta-memory/src/cognitive_checkpoint_codec_tests.rs": "60a9fafef10f77d2ae85f3d8f8c1c22d60e27eb1",
+        "codex-rs/hepta-memory/src/cognitive_checkpoint_wire.rs": "c6bada509bf9108a2dffad91288b1432c136ef20",
+        "codex-rs/hepta-memory/src/cognitive_store.rs": "5c0704c4e70ffdf2f65864a42da5e6e48bf79006",
+        "codex-rs/hepta-memory/src/cognitive_store_gate.rs": "f351700e3a7f382217db9f11f164871e7b2a09e4",
+        "codex-rs/hepta-memory/src/cognitive_store_recovery.rs": "54e917f45520f6b0e31fcd6a2f57ac3a00d8ae6c",
+        "codex-rs/hepta-memory/src/lib.rs": "d8c5fd3d36bf3fbca4ba33ecf80ba6ae46756f33",
+        "codex-rs/hepta-memory/src/objective_sender.rs": "e3789436918efae898ecaac96d49e6ac73b37f76",
+        "codex-rs/hepta-memory/src/objective_sender_commit_interlock_tests.rs": "62d85c330446b7b5059016d7501bcd85af2e556a",
+        "codex-rs/hepta-memory/src/objective_sender_connection_custody_tests.rs": "09a61b69e8cd34f27a0c968433b2b29df9c95380",
+        "codex-rs/hepta-memory/src/objective_sender_store.rs": "378243e46d48df099d69b494b8879381221b3964",
+        "codex-rs/state/src/lib.rs": "50775acff67c99b80c779c8b94f9c2f0db07b175",
+        "codex-rs/state/src/sqlite.rs": "3c2278650ac27398a24c893465090f5cea57ca3d",
+        "codex-rs/state/src/sqlite_commit_gate_tests.rs": "31b26a78bffe40815aa8a5b55e61b5139e7bca96",
+        "codex-rs/state/src/sqlite_read_barrier.rs": "98ed5528e76b948c965def714994d67ecb3e0457",
+        "codex-rs/state/src/sqlite_read_barrier_tests.rs": "dc73d453b2bc5b34fca584c31fbdd56db9b165fd"
+      },
+      "r2c_v3_preserved": true
+    },
+    {
+      "label": "r2e3:restore-native-anchor",
+      "isolated_copy": "static-causal-sequence",
+      "patch_blob": "e14e90930772b7a75580f55e7975439f6750d58f",
+      "commands": [
+        {
+          "argv": [
+            "git",
+            "apply",
+            "--whitespace=error-all",
+            "--check",
+            "objects/e14e90930772b7a75580f55e7975439f6750d58f.txt"
+          ],
+          "exit_code": 0,
+          "stdout": "",
+          "stderr": ""
+        },
+        {
+          "argv": [
+            "git",
+            "apply",
+            "--whitespace=error-all",
+            "objects/e14e90930772b7a75580f55e7975439f6750d58f.txt"
+          ],
+          "exit_code": 0,
+          "stdout": "",
+          "stderr": ""
+        }
+      ],
+      "changed_files": {
+        "codex-rs/state/src/sqlite.rs": {
+          "before_blob": "3c2278650ac27398a24c893465090f5cea57ca3d",
+          "after_blob": "b9fb565cadd14f6541bfc8421164897e2907e2ad"
+        }
+      },
+      "source_map_after": {
+        "codex-rs/hepta-memory/src/cognitive_checkpoint_codec.rs": "3a6b75875c7e265ba71e7948b70e7e3fcd608c0f",
+        "codex-rs/hepta-memory/src/cognitive_checkpoint_codec_tests.rs": "60a9fafef10f77d2ae85f3d8f8c1c22d60e27eb1",
+        "codex-rs/hepta-memory/src/cognitive_checkpoint_wire.rs": "c6bada509bf9108a2dffad91288b1432c136ef20",
+        "codex-rs/hepta-memory/src/cognitive_store.rs": "5c0704c4e70ffdf2f65864a42da5e6e48bf79006",
+        "codex-rs/hepta-memory/src/cognitive_store_gate.rs": "f351700e3a7f382217db9f11f164871e7b2a09e4",
+        "codex-rs/hepta-memory/src/cognitive_store_recovery.rs": "54e917f45520f6b0e31fcd6a2f57ac3a00d8ae6c",
+        "codex-rs/hepta-memory/src/lib.rs": "d8c5fd3d36bf3fbca4ba33ecf80ba6ae46756f33",
+        "codex-rs/hepta-memory/src/objective_sender.rs": "e3789436918efae898ecaac96d49e6ac73b37f76",
+        "codex-rs/hepta-memory/src/objective_sender_commit_interlock_tests.rs": "62d85c330446b7b5059016d7501bcd85af2e556a",
+        "codex-rs/hepta-memory/src/objective_sender_connection_custody_tests.rs": "09a61b69e8cd34f27a0c968433b2b29df9c95380",
+        "codex-rs/hepta-memory/src/objective_sender_store.rs": "378243e46d48df099d69b494b8879381221b3964",
+        "codex-rs/state/src/lib.rs": "50775acff67c99b80c779c8b94f9c2f0db07b175",
+        "codex-rs/state/src/sqlite.rs": "b9fb565cadd14f6541bfc8421164897e2907e2ad",
+        "codex-rs/state/src/sqlite_commit_gate_tests.rs": "31b26a78bffe40815aa8a5b55e61b5139e7bca96",
+        "codex-rs/state/src/sqlite_read_barrier.rs": "98ed5528e76b948c965def714994d67ecb3e0457",
+        "codex-rs/state/src/sqlite_read_barrier_tests.rs": "dc73d453b2bc5b34fca584c31fbdd56db9b165fd"
+      },
+      "r2c_v3_preserved": true
+    },
+    {
+      "label": "r2c:v2-to-v3-observation",
+      "isolated_copy": "static-v3-observation-delta",
+      "patch_blob": "ccd3ff82ae33fd44b4f1ca625d853a4a5f5061ec",
+      "commands": [
+        {
+          "argv": [
+            "git",
+            "apply",
+            "--whitespace=error-all",
+            "--check",
+            "objects/ccd3ff82ae33fd44b4f1ca625d853a4a5f5061ec.txt"
+          ],
+          "exit_code": 0,
+          "stdout": "",
+          "stderr": ""
+        },
+        {
+          "argv": [
+            "git",
+            "apply",
+            "--whitespace=error-all",
+            "objects/ccd3ff82ae33fd44b4f1ca625d853a4a5f5061ec.txt"
+          ],
+          "exit_code": 0,
+          "stdout": "",
+          "stderr": ""
+        }
+      ],
+      "changed_files": {
+        "codex-rs/state/src/sqlite_commit_gate_tests.rs": {
+          "before_blob": "e1ea6dcb1c7911d42e0e892c2697dedf4a56f665",
+          "after_blob": "31b26a78bffe40815aa8a5b55e61b5139e7bca96"
+        }
+      },
+      "source_map_after": {
+        "codex-rs/state/src/sqlite_commit_gate_tests.rs": "31b26a78bffe40815aa8a5b55e61b5139e7bca96"
+      },
+      "r2c_v3_preserved": true
+    }
+  ],
+  "final_source_map": {
+    "codex-rs/hepta-memory/src/cognitive_checkpoint_codec.rs": "3a6b75875c7e265ba71e7948b70e7e3fcd608c0f",
+    "codex-rs/hepta-memory/src/cognitive_checkpoint_codec_tests.rs": "60a9fafef10f77d2ae85f3d8f8c1c22d60e27eb1",
+    "codex-rs/hepta-memory/src/cognitive_checkpoint_wire.rs": "c6bada509bf9108a2dffad91288b1432c136ef20",
+    "codex-rs/hepta-memory/src/cognitive_store.rs": "5c0704c4e70ffdf2f65864a42da5e6e48bf79006",
+    "codex-rs/hepta-memory/src/cognitive_store_gate.rs": "f351700e3a7f382217db9f11f164871e7b2a09e4",
+    "codex-rs/hepta-memory/src/cognitive_store_recovery.rs": "54e917f45520f6b0e31fcd6a2f57ac3a00d8ae6c",
+    "codex-rs/hepta-memory/src/lib.rs": "d8c5fd3d36bf3fbca4ba33ecf80ba6ae46756f33",
+    "codex-rs/hepta-memory/src/objective_sender.rs": "e3789436918efae898ecaac96d49e6ac73b37f76",
+    "codex-rs/hepta-memory/src/objective_sender_commit_interlock_tests.rs": "62d85c330446b7b5059016d7501bcd85af2e556a",
+    "codex-rs/hepta-memory/src/objective_sender_connection_custody_tests.rs": "09a61b69e8cd34f27a0c968433b2b29df9c95380",
+    "codex-rs/hepta-memory/src/objective_sender_store.rs": "378243e46d48df099d69b494b8879381221b3964",
+    "codex-rs/state/src/lib.rs": "50775acff67c99b80c779c8b94f9c2f0db07b175",
+    "codex-rs/state/src/sqlite.rs": "b9fb565cadd14f6541bfc8421164897e2907e2ad",
+    "codex-rs/state/src/sqlite_commit_gate_tests.rs": "31b26a78bffe40815aa8a5b55e61b5139e7bca96",
+    "codex-rs/state/src/sqlite_read_barrier.rs": "98ed5528e76b948c965def714994d67ecb3e0457",
+    "codex-rs/state/src/sqlite_read_barrier_tests.rs": "dc73d453b2bc5b34fca584c31fbdd56db9b165fd"
+  },
+  "r2c_v3_test_preserved_through_every_serial_step": true,
+  "notes": [
+    "R2d/R2e1 old R2c manifest references are metadata-only; no patch rewrites the V3 test.",
+    "Negative/restore patches rebuilt exact bytes. Their predicted test outcomes were not executed.",
+    "A final native source gate must recheck these preimages after A terminates; f825 is the observed snapshot, not an authorization to mutate its worktree."
+  ]
+}

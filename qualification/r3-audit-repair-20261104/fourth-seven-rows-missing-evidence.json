@@ -1,0 +1,3664 @@
+{
+  "schema": "hepta.round4-seven-scope-minimal-evidence-plan.v1",
+  "status": "PLAN_AND_READ_ONLY_EVIDENCE_RECONCILIATION_NO_NEW_BLOCKER_CLOSURE",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "created_at": {
+    "current_time": "2026-11-04 23:32:08 UTC"
+  },
+  "frozen_product": {
+    "head": "cabcb40d36e116beaa65750e1f674c52035da785",
+    "tree": "b2d7f038d6d88156bc6a4cb29c8703f69b808f29",
+    "actual_ordinary_merge": "28af7f705fa1024b9a6d2ef751fec116002260eb"
+  },
+  "evidence_inputs": {
+    "original_ledger": "63518e970668e3a77ade10ae0230b99bc728f726",
+    "original_map": "c9265a2edc78d3e78e6ef137cf90498194a5bf5c",
+    "full_projection": "37a93aba1fb93023262caf5f51d43960c5acc83d",
+    "projection_review": "203d8eab0dd003f272c09f962e16ca9505da4f2a",
+    "previous_short_addendum": "54d86d274df5ea72c080bdbf928a38d29139a06d",
+    "targeted_pr_refresh": "d302cad4ead462c17258c8fce33eac0c21f5ad37"
+  },
+  "counts": {
+    "original_case_index": 97,
+    "by_blocker": {
+      "B07": 28,
+      "B09": 19,
+      "B13": 9,
+      "B20": 19,
+      "B22": 13,
+      "B23": 5,
+      "B08": 4
+    },
+    "context_names": 8,
+    "requested_search_names": 105,
+    "distinct_observed_requested_names": 72,
+    "distinct_observed_ledger_names": 64,
+    "total_result_rows": 406,
+    "ledger_result_rows": 331,
+    "context_result_rows": 75,
+    "archives": 7,
+    "members": 243,
+    "xml_members": 39,
+    "exact_case_matches_in_xml": 0,
+    "missing_queries": 10,
+    "distinct_names_missing_at_least_one_applicable_platform": 73,
+    "unique_target_platform_pairs": 33,
+    "currently_closed_blockers": 0
+  },
+  "extra_context_names": [
+    {
+      "test": "agent::control::tests::resume_agent_from_paginated_rollout_loads_model_context",
+      "owner": "windows_isolated_lifecycle_context",
+      "source_scope": "Original Windows lifecycle isolated controls plus repeated full-unit shard observations",
+      "rows": 9,
+      "count_in_original_seven_ledger_index": false
+    },
+    {
+      "test": "agent::control::tests::resume_agent_from_rollout_reads_archived_rollout_path",
+      "owner": "windows_isolated_lifecycle_context",
+      "source_scope": "Original Windows lifecycle isolated controls plus repeated full-unit shard observations",
+      "rows": 9,
+      "count_in_original_seven_ledger_index": false
+    },
+    {
+      "test": "agent::control::tests::shutdown_tests::cold_close_waits_for_cancelled_reload_then_releases_ownership",
+      "owner": "windows_isolated_lifecycle_context",
+      "source_scope": "Original Windows lifecycle isolated controls plus repeated full-unit shard observations",
+      "rows": 10,
+      "count_in_original_seven_ledger_index": false
+    },
+    {
+      "test": "agent::control::tests::shutdown_tests::delayed_shutdown_preserves_replacement_runtime_and_ownership",
+      "owner": "windows_isolated_lifecycle_context",
+      "source_scope": "Original Windows lifecycle isolated controls plus repeated full-unit shard observations",
+      "rows": 10,
+      "count_in_original_seven_ledger_index": false
+    },
+    {
+      "test": "agent::control::tests::spawn_agent_can_fork_parent_thread_history_with_sanitized_items",
+      "owner": "windows_isolated_lifecycle_context",
+      "source_scope": "Original Windows lifecycle isolated controls plus repeated full-unit shard observations",
+      "rows": 9,
+      "count_in_original_seven_ledger_index": false
+    },
+    {
+      "test": "agent::control::tests::spawn_agent_fork_last_n_turns_strips_parent_usage_hints",
+      "owner": "windows_isolated_lifecycle_context",
+      "source_scope": "Original Windows lifecycle isolated controls plus repeated full-unit shard observations",
+      "rows": 9,
+      "count_in_original_seven_ledger_index": false
+    },
+    {
+      "test": "agent::registry::tests::replacement_registration_rejects_stale_release_and_preserves_budget",
+      "owner": "windows_isolated_lifecycle_context",
+      "source_scope": "Original Windows lifecycle isolated controls plus repeated full-unit shard observations",
+      "rows": 10,
+      "count_in_original_seven_ledger_index": false
+    },
+    {
+      "test": "environment_selection::tests::blocking_snapshot_waits_for_starting_environment",
+      "owner": "windows_isolated_lifecycle_context",
+      "source_scope": "Original Windows lifecycle isolated controls plus repeated full-unit shard observations",
+      "rows": 9,
+      "count_in_original_seven_ledger_index": false
+    }
+  ],
+  "source_and_evidence_limits": [
+    "243 indexed members were fully CRC/byte/hash validated; 39 Mac XML members are target-wrapper XML, not39 exact case results. Their fields remain nested in each member record.",
+    "The two Linux labels have54 corresponding target-relative member bodies byte-equal under the same GNU RBE configuration. They do not provide independent musl compile/runtime qualification.",
+    "406 rows are observations, including repeated full-unit files and attempts; they are not406 independent cases.",
+    "Full Windows Core unit shard4 retains its actual agent fork-last-n failure; the24 recorder/wire and72 terminal/steer successful rows do not make the full unit target green.",
+    "Cabc receipts remain valid for the frozen cabc inputs and observed variants. They do not qualify df74, e84, the unpublished final head, or unrelated donor branches.",
+    "No failed, ignored, filtered, absent, unreported, cached-without-case-provenance, or different-source result is promoted to exact fresh execution."
+  ],
+  "original_exit_conditions": [
+    {
+      "id": "B07",
+      "name": "Hook 元数据与工具可见性",
+      "frozen_ledger_exit_condition_zh": "binding、原 Hook executor、MCP、TokenBudget 用例通过；未配置 server、allow/deny list、环境错配和陈旧目录负控均拒绝。",
+      "budget_contract": "Existing executor hook wait10s and negative5s; MCP configured hook5s/server startup10s, specific existing waits5/15s. Keep all original helper/harness budgets. No universal invented Hook deadline."
+    },
+    {
+      "id": "B08",
+      "name": "私有 attempted tool 元数据",
+      "frozen_ledger_exit_condition_zh": "实际 prompt 已附加的内部 retained calls 与真实 output 对应、原 exact calls 断言通过；非官方 wire 无私有字段；不改变生产持久化。",
+      "budget_contract": "Retain existing case and submit helper deadlines; no new timeout/retry or production persistence change."
+    },
+    {
+      "id": "B09",
+      "name": "终态清理与恢复",
+      "frozen_ledger_exit_condition_zh": "原注入、idle-steer、suspension、8 个 turn_recover 原用例（含特性门负控）和 panic/cancel/watchdog 负控通过。",
+      "budget_contract": "TurnRecover READ_TIMEOUT10s, STARTUP_TIMEOUT25s, intentional first provider delay30s; current terminal controls retain existing1/2/4s waits and100ms fail-closed observation. Windows lifecycle job60min and its original no-retry selection unchanged."
+    },
+    {
+      "id": "B13",
+      "name": "Lease / Queue 时序夹具",
+      "frozen_ledger_exit_condition_zh": "原过期、quarantine、guardian、release=0、单发送及重启不重放断言全保留并在原平台通过。",
+      "budget_contract": "Lease real setup TTL30s then sleep until its actual expiry; Queue original10s acknowledgement waits and existing400/300ms delays unchanged. Existing DB-ack/externally-changed fixture25s waits and real1/11/11s observation sleeps unchanged."
+    },
+    {
+      "id": "B20",
+      "name": "远程控制握手夹具",
+      "frozen_ledger_exit_condition_zh": "确定性旧源同握手错误、新源对照及原真实AppServer关闭/断连断言全部通过。",
+      "budget_contract": "DEFAULT_TIMEOUT10s and existing STARTUP_TIMEOUT30s/negative100ms windows remain intact. The stdioEOF/shutdown/disconnect awaits each retain original10s."
+    },
+    {
+      "id": "B22",
+      "name": "TUI 中断与退出顺序",
+      "frozen_ledger_exit_condition_zh": "定位真实turn/interrupt与关闭顺序，保留原断言和时间预算，以固定修复源的原用例/有效负控及原WindowsCI验收。",
+      "budget_contract": "Existing readiness5s waits for matching turn/item and real stdout marker; intentional shell sleep30s. Keep all original interrupt/shutdown assertions and cases. No deadline/retry/ignore change."
+    },
+    {
+      "id": "B23",
+      "name": "App Server Unix关闭信号生命周期",
+      "frozen_ledger_exit_condition_zh": "真实baseline丢信号窗口成立；修后3个单信号父测试与2个原drain用例通过；配置关闭/stdio及平台语义不变，最终原CI验收。",
+      "budget_contract": "Owned child parent absolute deadline10s; child internal deadline5s. Retain existing disabled/stdio behavior and two drain assertions. No new signal send/retry or timeout."
+    }
+  ],
+  "wire_contract_precision": {
+    "source_path": "codex-rs/core/src/client_tests.rs",
+    "blob": "ff91f479aa615f56ae26d910894598a4e51895ae",
+    "note": "The existing wire matrix distinguishes resolved endpoints: ChatGPT Codex strips local metadata; first-party OpenAI keeps it even under a custom friendly name; a non-standard endpoint strips it even when called OpenAI. Preserve this matrix; do not replace it with a blanket all-provider statement."
+  },
+  "old_scope_sufficiency": [
+    {
+      "id": "B07",
+      "finding": "All original22 have exact ok rows in the ordinary and Wine-exec Core targets of each Linux label, plus ordinary Mac ARM and Intel Core. Windows token-budget3 are ok, code-mode1 is the existing explicit ignore, and hooks_executor3+hooks_mcp15 are not compiled on Windows by the original module cfg. The six binding controls remain missing case-level evidence."
+    },
+    {
+      "id": "B08",
+      "finding": "Windows full unit logs each contain the actual2 recorder and1 wire names with ok (24 rows across8 shard files,3 distinct cases). Unix ordinary/Wine Core logs contain the exact namespace/replay case. Its entire tools.rs file excludes Windows. No third recorder unit was invented."
+    },
+    {
+      "id": "B09",
+      "finding": "Linux Wine-exec AppServer logs contain all8 exact turn_recover controls, including turn_recover_requires_hepta_turn_recovery_feature. Windows full unit logs contain all9 requested terminalization/steer controls (72 rows across8 shard files). Original Unix integration exclusions remain distinct; ordinary AppServer successful logs are still absent."
+    },
+    {
+      "id": "B13",
+      "finding": "No requested Queue/Lease case body is present in these seven archives; original target-level successes cannot be promoted."
+    },
+    {
+      "id": "B20",
+      "finding": "All19 exact remote-control controls are ok in Linux Wine-exec and Windows AppServer logs. The Linux archive also retains2 matching ok rows in an earlier attempt; Windows retains3. No selected B20 failure/ignore row is hidden by the target's overall FLAKY result, which belongs to other cases. This does not supply ordinary Linux/Mac target receipts."
+    },
+    {
+      "id": "B22",
+      "finding": "No TUI exact success log was in these original failure archives. One uploaded-file identity remains inference; the retention candidate is future evidence plumbing, not historical test evidence."
+    },
+    {
+      "id": "B23",
+      "finding": "Current exact signal/drain unit bodies remain absent. Earlier native5-case qualification stays attached to its original source; Unix signal parents remain inapplicable as Windows cases."
+    }
+  ],
+  "no_extra_test_execution_for_already_evidenced_frozen_scopes": [
+    {
+      "blocker_id": "B07",
+      "test": "suite::hooks_executor::executor_stop_hook_stops_after_disconnection",
+      "binary": "codex-core::all",
+      "scope": "old cabc and observed applicable target variants only; no separate historical rerun",
+      "original_index_pointer": {
+        "blob": "203d8eab0dd003f272c09f962e16ca9505da4f2a",
+        "json_pointer": "/case_index/B07/0"
+      }
+    },
+    {
+      "blocker_id": "B07",
+      "test": "suite::hooks_executor::executor_stop_hook_runs_after_attachment",
+      "binary": "codex-core::all",
+      "scope": "old cabc and observed applicable target variants only; no separate historical rerun",
+      "original_index_pointer": {
+        "blob": "203d8eab0dd003f272c09f962e16ca9505da4f2a",
+        "json_pointer": "/case_index/B07/1"
+      }
+    },
+    {
+      "blocker_id": "B07",
+      "test": "suite::code_mode::code_mode_exec_surfaces_handler_errors_as_exceptions",
+      "binary": "codex-core::all",
+      "scope": "old cabc and observed applicable target variants only; no separate historical rerun",
+      "original_index_pointer": {
+        "blob": "203d8eab0dd003f272c09f962e16ca9505da4f2a",
+        "json_pointer": "/case_index/B07/2"
+      }
+    },
+    {
+      "blocker_id": "B07",
+      "test": "suite::hooks_mcp::active_tool_policy_disables_mcp_tool_hooks_before_transport",
+      "binary": "codex-core::all",
+      "scope": "old cabc and observed applicable target variants only; no separate historical rerun",
+      "original_index_pointer": {
+        "blob": "203d8eab0dd003f272c09f962e16ca9505da4f2a",
+        "json_pointer": "/case_index/B07/3"
+      }
+    },
+    {
+      "blocker_id": "B07",
+      "test": "suite::hooks_mcp::hepta_feature_disables_mcp_tool_hooks_before_transport",
+      "binary": "codex-core::all",
+      "scope": "old cabc and observed applicable target variants only; no separate historical rerun",
+      "original_index_pointer": {
+        "blob": "203d8eab0dd003f272c09f962e16ca9505da4f2a",
+        "json_pointer": "/case_index/B07/4"
+      }
+    },
+    {
+      "blocker_id": "B07",
+      "test": "suite::hooks_mcp::mcp_tool_hook_blocks_model_tool_without_recursive_hooks_or_approval",
+      "binary": "codex-core::all",
+      "scope": "old cabc and observed applicable target variants only; no separate historical rerun",
+      "original_index_pointer": {
+        "blob": "203d8eab0dd003f272c09f962e16ca9505da4f2a",
+        "json_pointer": "/case_index/B07/5"
+      }
+    },
+    {
+      "blocker_id": "B07",
+      "test": "suite::hooks_mcp::mcp_tool_hook_fails_open_when_server_is_unavailable",
+      "binary": "codex-core::all",
+      "scope": "old cabc and observed applicable target variants only; no separate historical rerun",
+      "original_index_pointer": {
+        "blob": "203d8eab0dd003f272c09f962e16ca9505da4f2a",
+        "json_pointer": "/case_index/B07/6"
+      }
+    },
+    {
+      "blocker_id": "B07",
+      "test": "suite::hooks_mcp::mcp_tool_hook_interpolates_prompt_and_runs_without_tool_approval",
+      "binary": "codex-core::all",
+      "scope": "old cabc and observed applicable target variants only; no separate historical rerun",
+      "original_index_pointer": {
+        "blob": "203d8eab0dd003f272c09f962e16ca9505da4f2a",
+        "json_pointer": "/case_index/B07/7"
+      }
+    },
+    {
+      "blocker_id": "B07",
+      "test": "suite::hooks_executor::executor_stop_hook_rejects_mismatched_environment",
+      "binary": "codex-core::all",
+      "scope": "old cabc and observed applicable target variants only; no separate historical rerun",
+      "original_index_pointer": {
+        "blob": "203d8eab0dd003f272c09f962e16ca9505da4f2a",
+        "json_pointer": "/case_index/B07/8"
+      }
+    },
+    {
+      "blocker_id": "B07",
+      "test": "suite::hooks_mcp::mcp_tool_hook_cannot_call_tools_excluded_by_server_filters",
+      "binary": "codex-core::all",
+      "scope": "old cabc and observed applicable target variants only; no separate historical rerun",
+      "original_index_pointer": {
+        "blob": "203d8eab0dd003f272c09f962e16ca9505da4f2a",
+        "json_pointer": "/case_index/B07/9"
+      }
+    },
+    {
+      "blocker_id": "B07",
+      "test": "suite::hooks_mcp::mcp_tool_hook_marks_thread_memory_mode_polluted_when_configured",
+      "binary": "codex-core::all",
+      "scope": "old cabc and observed applicable target variants only; no separate historical rerun",
+      "original_index_pointer": {
+        "blob": "203d8eab0dd003f272c09f962e16ca9505da4f2a",
+        "json_pointer": "/case_index/B07/10"
+      }
+    },
+    {
+      "blocker_id": "B07",
+      "test": "suite::hooks_mcp::mcp_tool_hook_passes_thread_metadata_to_model_hidden_tools",
+      "binary": "codex-core::all",
+      "scope": "old cabc and observed applicable target variants only; no separate historical rerun",
+      "original_index_pointer": {
+        "blob": "203d8eab0dd003f272c09f962e16ca9505da4f2a",
+        "json_pointer": "/case_index/B07/11"
+      }
+    },
+    {
+      "blocker_id": "B07",
+      "test": "suite::hooks_mcp::permission_request_hook_allows_mcp_tool_without_user_or_guardian_review",
+      "binary": "codex-core::all",
+      "scope": "old cabc and observed applicable target variants only; no separate historical rerun",
+      "original_index_pointer": {
+        "blob": "203d8eab0dd003f272c09f962e16ca9505da4f2a",
+        "json_pointer": "/case_index/B07/12"
+      }
+    },
+    {
+      "blocker_id": "B07",
+      "test": "suite::hooks_mcp::permission_request_hook_denies_mcp_tool_without_user_or_guardian_review",
+      "binary": "codex-core::all",
+      "scope": "old cabc and observed applicable target variants only; no separate historical rerun",
+      "original_index_pointer": {
+        "blob": "203d8eab0dd003f272c09f962e16ca9505da4f2a",
+        "json_pointer": "/case_index/B07/13"
+      }
+    },
+    {
+      "blocker_id": "B07",
+      "test": "suite::hooks_mcp::post_tool_use_records_mcp_tool_payload_and_context_with_legacy_prefixed_names",
+      "binary": "codex-core::all",
+      "scope": "old cabc and observed applicable target variants only; no separate historical rerun",
+      "original_index_pointer": {
+        "blob": "203d8eab0dd003f272c09f962e16ca9505da4f2a",
+        "json_pointer": "/case_index/B07/14"
+      }
+    },
+    {
+      "blocker_id": "B07",
+      "test": "suite::hooks_mcp::post_tool_use_records_mcp_tool_payload_and_context_with_non_prefixed_names",
+      "binary": "codex-core::all",
+      "scope": "old cabc and observed applicable target variants only; no separate historical rerun",
+      "original_index_pointer": {
+        "blob": "203d8eab0dd003f272c09f962e16ca9505da4f2a",
+        "json_pointer": "/case_index/B07/15"
+      }
+    },
+    {
+      "blocker_id": "B07",
+      "test": "suite::hooks_mcp::pre_tool_use_blocks_mcp_tool_before_execution_with_legacy_prefixed_names",
+      "binary": "codex-core::all",
+      "scope": "old cabc and observed applicable target variants only; no separate historical rerun",
+      "original_index_pointer": {
+        "blob": "203d8eab0dd003f272c09f962e16ca9505da4f2a",
+        "json_pointer": "/case_index/B07/16"
+      }
+    },
+    {
+      "blocker_id": "B07",
+      "test": "suite::hooks_mcp::pre_tool_use_rewrites_mcp_tool_before_execution",
+      "binary": "codex-core::all",
+      "scope": "old cabc and observed applicable target variants only; no separate historical rerun",
+      "original_index_pointer": {
+        "blob": "203d8eab0dd003f272c09f962e16ca9505da4f2a",
+        "json_pointer": "/case_index/B07/17"
+      }
+    },
+    {
+      "blocker_id": "B07",
+      "test": "suite::hooks_mcp::pre_tool_use_blocks_mcp_tool_before_execution_with_non_prefixed_names",
+      "binary": "codex-core::all",
+      "scope": "old cabc and observed applicable target variants only; no separate historical rerun",
+      "original_index_pointer": {
+        "blob": "203d8eab0dd003f272c09f962e16ca9505da4f2a",
+        "json_pointer": "/case_index/B07/18"
+      }
+    },
+    {
+      "blocker_id": "B07",
+      "test": "suite::token_budget::active_tool_policy_skips_notes_thread_hint_without_calling_server",
+      "binary": "codex-core::all",
+      "scope": "old cabc and observed applicable target variants only; no separate historical rerun",
+      "original_index_pointer": {
+        "blob": "203d8eab0dd003f272c09f962e16ca9505da4f2a",
+        "json_pointer": "/case_index/B07/19"
+      }
+    },
+    {
+      "blocker_id": "B07",
+      "test": "suite::token_budget::hepta_token_budget_skips_notes_thread_hint_without_calling_server",
+      "binary": "codex-core::all",
+      "scope": "old cabc and observed applicable target variants only; no separate historical rerun",
+      "original_index_pointer": {
+        "blob": "203d8eab0dd003f272c09f962e16ca9505da4f2a",
+        "json_pointer": "/case_index/B07/20"
+      }
+    },
+    {
+      "blocker_id": "B07",
+      "test": "suite::token_budget::token_budget_context_injects_plain_thread_hint_text",
+      "binary": "codex-core::all",
+      "scope": "old cabc and observed applicable target variants only; no separate historical rerun",
+      "original_index_pointer": {
+        "blob": "203d8eab0dd003f272c09f962e16ca9505da4f2a",
+        "json_pointer": "/case_index/B07/21"
+      }
+    },
+    {
+      "blocker_id": "B09",
+      "test": "suite::abort_tasks::root_turn_suspension_preserves_unfinished_turn_history",
+      "binary": "codex-core::all",
+      "scope": "old cabc and observed applicable target variants only; no separate historical rerun",
+      "original_index_pointer": {
+        "blob": "203d8eab0dd003f272c09f962e16ca9505da4f2a",
+        "json_pointer": "/case_index/B09/9"
+      }
+    },
+    {
+      "blocker_id": "B08",
+      "test": "suite::tools::namespaced_custom_tool_call_preserves_namespace_through_dispatch_and_replay",
+      "binary": "codex-core::all",
+      "scope": "old cabc and observed applicable target variants only; no separate historical rerun",
+      "original_index_pointer": {
+        "blob": "203d8eab0dd003f272c09f962e16ca9505da4f2a",
+        "json_pointer": "/case_index/B08/3"
+      }
+    }
+  ],
+  "case_index": {
+    "B07": [
+      {
+        "test": "suite::hooks_executor::executor_stop_hook_stops_after_disconnection",
+        "binary": "codex-core::all",
+        "platform_cfg": {
+          "rule": "cfg(not(target_os = \"windows\"))",
+          "windows": "NOT_COMPILED_NOT_PASS",
+          "proofs": [
+            {
+              "path": "codex-rs/core/tests/suite/mod.rs",
+              "blob": "17145f671a76a894ab374ca299a67cf1a43e9c55",
+              "lines": [
+                78,
+                79,
+                80,
+                81,
+                82,
+                83,
+                84
+              ]
+            }
+          ]
+        },
+        "old_cabc_exact_observation_count": 6,
+        "original_observations": {
+          "blob": "203d8eab0dd003f272c09f962e16ca9505da4f2a",
+          "json_pointer": "/case_index/B07/0/observations"
+        },
+        "still_missing_query_ids": []
+      },
+      {
+        "test": "suite::hooks_executor::executor_stop_hook_runs_after_attachment",
+        "binary": "codex-core::all",
+        "platform_cfg": {
+          "rule": "cfg(not(target_os = \"windows\"))",
+          "windows": "NOT_COMPILED_NOT_PASS",
+          "proofs": [
+            {
+              "path": "codex-rs/core/tests/suite/mod.rs",
+              "blob": "17145f671a76a894ab374ca299a67cf1a43e9c55",
+              "lines": [
+                78,
+                79,
+                80,
+                81,
+                82,
+                83,
+                84
+              ]
+            }
+          ]
+        },
+        "old_cabc_exact_observation_count": 6,
+        "original_observations": {
+          "blob": "203d8eab0dd003f272c09f962e16ca9505da4f2a",
+          "json_pointer": "/case_index/B07/1/observations"
+        },
+        "still_missing_query_ids": []
+      },
+      {
+        "test": "suite::code_mode::code_mode_exec_surfaces_handler_errors_as_exceptions",
+        "binary": "codex-core::all",
+        "platform_cfg": {
+          "rule": "cfg_attr(windows, ignore = \"no exec_command on Windows\")",
+          "windows": "ORIGINAL_IGNORED_NOT_PASS",
+          "proofs": [
+            {
+              "path": "codex-rs/core/tests/suite/code_mode.rs",
+              "blob": "d1970f7853bcd5777ef96881b457525b7abfa92a",
+              "lines": [
+                2046,
+                2047,
+                2048,
+                2049
+              ]
+            }
+          ]
+        },
+        "old_cabc_exact_observation_count": 7,
+        "original_observations": {
+          "blob": "203d8eab0dd003f272c09f962e16ca9505da4f2a",
+          "json_pointer": "/case_index/B07/2/observations"
+        },
+        "still_missing_query_ids": []
+      },
+      {
+        "test": "suite::hooks_mcp::active_tool_policy_disables_mcp_tool_hooks_before_transport",
+        "binary": "codex-core::all",
+        "platform_cfg": {
+          "rule": "cfg(not(target_os = \"windows\"))",
+          "windows": "NOT_COMPILED_NOT_PASS",
+          "proofs": [
+            {
+              "path": "codex-rs/core/tests/suite/mod.rs",
+              "blob": "17145f671a76a894ab374ca299a67cf1a43e9c55",
+              "lines": [
+                78,
+                79,
+                80,
+                81,
+                82,
+                83,
+                84
+              ]
+            }
+          ]
+        },
+        "old_cabc_exact_observation_count": 6,
+        "original_observations": {
+          "blob": "203d8eab0dd003f272c09f962e16ca9505da4f2a",
+          "json_pointer": "/case_index/B07/3/observations"
+        },
+        "still_missing_query_ids": []
+      },
+      {
+        "test": "suite::hooks_mcp::hepta_feature_disables_mcp_tool_hooks_before_transport",
+        "binary": "codex-core::all",
+        "platform_cfg": {
+          "rule": "cfg(not(target_os = \"windows\"))",
+          "windows": "NOT_COMPILED_NOT_PASS",
+          "proofs": [
+            {
+              "path": "codex-rs/core/tests/suite/mod.rs",
+              "blob": "17145f671a76a894ab374ca299a67cf1a43e9c55",
+              "lines": [
+                78,
+                79,
+                80,
+                81,
+                82,
+                83,
+                84
+              ]
+            }
+          ]
+        },
+        "old_cabc_exact_observation_count": 6,
+        "original_observations": {
+          "blob": "203d8eab0dd003f272c09f962e16ca9505da4f2a",
+          "json_pointer": "/case_index/B07/4/observations"
+        },
+        "still_missing_query_ids": []
+      },
+      {
+        "test": "suite::hooks_mcp::mcp_tool_hook_blocks_model_tool_without_recursive_hooks_or_approval",
+        "binary": "codex-core::all",
+        "platform_cfg": {
+          "rule": "cfg(not(target_os = \"windows\"))",
+          "windows": "NOT_COMPILED_NOT_PASS",
+          "proofs": [
+            {
+              "path": "codex-rs/core/tests/suite/mod.rs",
+              "blob": "17145f671a76a894ab374ca299a67cf1a43e9c55",
+              "lines": [
+                78,
+                79,
+                80,
+                81,
+                82,
+                83,
+                84
+              ]
+            }
+          ]
+        },
+        "old_cabc_exact_observation_count": 6,
+        "original_observations": {
+          "blob": "203d8eab0dd003f272c09f962e16ca9505da4f2a",
+          "json_pointer": "/case_index/B07/5/observations"
+        },
+        "still_missing_query_ids": []
+      },
+      {
+        "test": "suite::hooks_mcp::mcp_tool_hook_fails_open_when_server_is_unavailable",
+        "binary": "codex-core::all",
+        "platform_cfg": {
+          "rule": "cfg(not(target_os = \"windows\"))",
+          "windows": "NOT_COMPILED_NOT_PASS",
+          "proofs": [
+            {
+              "path": "codex-rs/core/tests/suite/mod.rs",
+              "blob": "17145f671a76a894ab374ca299a67cf1a43e9c55",
+              "lines": [
+                78,
+                79,
+                80,
+                81,
+                82,
+                83,
+                84
+              ]
+            }
+          ]
+        },
+        "old_cabc_exact_observation_count": 6,
+        "original_observations": {
+          "blob": "203d8eab0dd003f272c09f962e16ca9505da4f2a",
+          "json_pointer": "/case_index/B07/6/observations"
+        },
+        "still_missing_query_ids": []
+      },
+      {
+        "test": "suite::hooks_mcp::mcp_tool_hook_interpolates_prompt_and_runs_without_tool_approval",
+        "binary": "codex-core::all",
+        "platform_cfg": {
+          "rule": "cfg(not(target_os = \"windows\"))",
+          "windows": "NOT_COMPILED_NOT_PASS",
+          "proofs": [
+            {
+              "path": "codex-rs/core/tests/suite/mod.rs",
+              "blob": "17145f671a76a894ab374ca299a67cf1a43e9c55",
+              "lines": [
+                78,
+                79,
+                80,
+                81,
+                82,
+                83,
+                84
+              ]
+            }
+          ]
+        },
+        "old_cabc_exact_observation_count": 6,
+        "original_observations": {
+          "blob": "203d8eab0dd003f272c09f962e16ca9505da4f2a",
+          "json_pointer": "/case_index/B07/7/observations"
+        },
+        "still_missing_query_ids": []
+      },
+      {
+        "test": "suite::hooks_executor::executor_stop_hook_rejects_mismatched_environment",
+        "binary": "codex-core::all",
+        "platform_cfg": {
+          "rule": "cfg(not(target_os = \"windows\"))",
+          "windows": "NOT_COMPILED_NOT_PASS",
+          "proofs": [
+            {
+              "path": "codex-rs/core/tests/suite/mod.rs",
+              "blob": "17145f671a76a894ab374ca299a67cf1a43e9c55",
+              "lines": [
+                78,
+                79,
+                80,
+                81,
+                82,
+                83,
+                84
+              ]
+            }
+          ]
+        },
+        "old_cabc_exact_observation_count": 6,
+        "original_observations": {
+          "blob": "203d8eab0dd003f272c09f962e16ca9505da4f2a",
+          "json_pointer": "/case_index/B07/8/observations"
+        },
+        "still_missing_query_ids": []
+      },
+      {
+        "test": "suite::hooks_mcp::mcp_tool_hook_cannot_call_tools_excluded_by_server_filters",
+        "binary": "codex-core::all",
+        "platform_cfg": {
+          "rule": "cfg(not(target_os = \"windows\"))",
+          "windows": "NOT_COMPILED_NOT_PASS",
+          "proofs": [
+            {
+              "path": "codex-rs/core/tests/suite/mod.rs",
+              "blob": "17145f671a76a894ab374ca299a67cf1a43e9c55",
+              "lines": [
+                78,
+                79,
+                80,
+                81,
+                82,
+                83,
+                84
+              ]
+            }
+          ]
+        },
+        "old_cabc_exact_observation_count": 6,
+        "original_observations": {
+          "blob": "203d8eab0dd003f272c09f962e16ca9505da4f2a",
+          "json_pointer": "/case_index/B07/9/observations"
+        },
+        "still_missing_query_ids": []
+      },
+      {
+        "test": "suite::hooks_mcp::mcp_tool_hook_marks_thread_memory_mode_polluted_when_configured",
+        "binary": "codex-core::all",
+        "platform_cfg": {
+          "rule": "cfg(not(target_os = \"windows\"))",
+          "windows": "NOT_COMPILED_NOT_PASS",
+          "proofs": [
+            {
+              "path": "codex-rs/core/tests/suite/mod.rs",
+              "blob": "17145f671a76a894ab374ca299a67cf1a43e9c55",
+              "lines": [
+                78,
+                79,
+                80,
+                81,
+                82,
+                83,
+                84
+              ]
+            }
+          ]
+        },
+        "old_cabc_exact_observation_count": 6,
+        "original_observations": {
+          "blob": "203d8eab0dd003f272c09f962e16ca9505da4f2a",
+          "json_pointer": "/case_index/B07/10/observations"
+        },
+        "still_missing_query_ids": []
+      },
+      {
+        "test": "suite::hooks_mcp::mcp_tool_hook_passes_thread_metadata_to_model_hidden_tools",
+        "binary": "codex-core::all",
+        "platform_cfg": {
+          "rule": "cfg(not(target_os = \"windows\"))",
+          "windows": "NOT_COMPILED_NOT_PASS",
+          "proofs": [
+            {
+              "path": "codex-rs/core/tests/suite/mod.rs",
+              "blob": "17145f671a76a894ab374ca299a67cf1a43e9c55",
+              "lines": [
+                78,
+                79,
+                80,
+                81,
+                82,
+                83,
+                84
+              ]
+            }
+          ]
+        },
+        "old_cabc_exact_observation_count": 6,
+        "original_observations": {
+          "blob": "203d8eab0dd003f272c09f962e16ca9505da4f2a",
+          "json_pointer": "/case_index/B07/11/observations"
+        },
+        "still_missing_query_ids": []
+      },
+      {
+        "test": "suite::hooks_mcp::permission_request_hook_allows_mcp_tool_without_user_or_guardian_review",
+        "binary": "codex-core::all",
+        "platform_cfg": {
+          "rule": "cfg(not(target_os = \"windows\"))",
+          "windows": "NOT_COMPILED_NOT_PASS",
+          "proofs": [
+            {
+              "path": "codex-rs/core/tests/suite/mod.rs",
+              "blob": "17145f671a76a894ab374ca299a67cf1a43e9c55",
+              "lines": [
+                78,
+                79,
+                80,
+                81,
+                82,
+                83,
+                84
+              ]
+            }
+          ]
+        },
+        "old_cabc_exact_observation_count": 6,
+        "original_observations": {
+          "blob": "203d8eab0dd003f272c09f962e16ca9505da4f2a",
+          "json_pointer": "/case_index/B07/12/observations"
+        },
+        "still_missing_query_ids": []
+      },
+      {
+        "test": "suite::hooks_mcp::permission_request_hook_denies_mcp_tool_without_user_or_guardian_review",
+        "binary": "codex-core::all",
+        "platform_cfg": {
+          "rule": "cfg(not(target_os = \"windows\"))",
+          "windows": "NOT_COMPILED_NOT_PASS",
+          "proofs": [
+            {
+              "path": "codex-rs/core/tests/suite/mod.rs",
+              "blob": "17145f671a76a894ab374ca299a67cf1a43e9c55",
+              "lines": [
+                78,
+                79,
+                80,
+                81,
+                82,
+                83,
+                84
+              ]
+            }
+          ]
+        },
+        "old_cabc_exact_observation_count": 6,
+        "original_observations": {
+          "blob": "203d8eab0dd003f272c09f962e16ca9505da4f2a",
+          "json_pointer": "/case_index/B07/13/observations"
+        },
+        "still_missing_query_ids": []
+      },
+      {
+        "test": "suite::hooks_mcp::post_tool_use_records_mcp_tool_payload_and_context_with_legacy_prefixed_names",
+        "binary": "codex-core::all",
+        "platform_cfg": {
+          "rule": "cfg(not(target_os = \"windows\"))",
+          "windows": "NOT_COMPILED_NOT_PASS",
+          "proofs": [
+            {
+              "path": "codex-rs/core/tests/suite/mod.rs",
+              "blob": "17145f671a76a894ab374ca299a67cf1a43e9c55",
+              "lines": [
+                78,
+                79,
+                80,
+                81,
+                82,
+                83,
+                84
+              ]
+            }
+          ]
+        },
+        "old_cabc_exact_observation_count": 6,
+        "original_observations": {
+          "blob": "203d8eab0dd003f272c09f962e16ca9505da4f2a",
+          "json_pointer": "/case_index/B07/14/observations"
+        },
+        "still_missing_query_ids": []
+      },
+      {
+        "test": "suite::hooks_mcp::post_tool_use_records_mcp_tool_payload_and_context_with_non_prefixed_names",
+        "binary": "codex-core::all",
+        "platform_cfg": {
+          "rule": "cfg(not(target_os = \"windows\"))",
+          "windows": "NOT_COMPILED_NOT_PASS",
+          "proofs": [
+            {
+              "path": "codex-rs/core/tests/suite/mod.rs",
+              "blob": "17145f671a76a894ab374ca299a67cf1a43e9c55",
+              "lines": [
+                78,
+                79,
+                80,
+                81,
+                82,
+                83,
+                84
+              ]
+            }
+          ]
+        },
+        "old_cabc_exact_observation_count": 6,
+        "original_observations": {
+          "blob": "203d8eab0dd003f272c09f962e16ca9505da4f2a",
+          "json_pointer": "/case_index/B07/15/observations"
+        },
+        "still_missing_query_ids": []
+      },
+      {
+        "test": "suite::hooks_mcp::pre_tool_use_blocks_mcp_tool_before_execution_with_legacy_prefixed_names",
+        "binary": "codex-core::all",
+        "platform_cfg": {
+          "rule": "cfg(not(target_os = \"windows\"))",
+          "windows": "NOT_COMPILED_NOT_PASS",
+          "proofs": [
+            {
+              "path": "codex-rs/core/tests/suite/mod.rs",
+              "blob": "17145f671a76a894ab374ca299a67cf1a43e9c55",
+              "lines": [
+                78,
+                79,
+                80,
+                81,
+                82,
+                83,
+                84
+              ]
+            }
+          ]
+        },
+        "old_cabc_exact_observation_count": 6,
+        "original_observations": {
+          "blob": "203d8eab0dd003f272c09f962e16ca9505da4f2a",
+          "json_pointer": "/case_index/B07/16/observations"
+        },
+        "still_missing_query_ids": []
+      },
+      {
+        "test": "suite::hooks_mcp::pre_tool_use_rewrites_mcp_tool_before_execution",
+        "binary": "codex-core::all",
+        "platform_cfg": {
+          "rule": "cfg(not(target_os = \"windows\"))",
+          "windows": "NOT_COMPILED_NOT_PASS",
+          "proofs": [
+            {
+              "path": "codex-rs/core/tests/suite/mod.rs",
+              "blob": "17145f671a76a894ab374ca299a67cf1a43e9c55",
+              "lines": [
+                78,
+                79,
+                80,
+                81,
+                82,
+                83,
+                84
+              ]
+            }
+          ]
+        },
+        "old_cabc_exact_observation_count": 6,
+        "original_observations": {
+          "blob": "203d8eab0dd003f272c09f962e16ca9505da4f2a",
+          "json_pointer": "/case_index/B07/17/observations"
+        },
+        "still_missing_query_ids": []
+      },
+      {
+        "test": "suite::hooks_mcp::pre_tool_use_blocks_mcp_tool_before_execution_with_non_prefixed_names",
+        "binary": "codex-core::all",
+        "platform_cfg": {
+          "rule": "cfg(not(target_os = \"windows\"))",
+          "windows": "NOT_COMPILED_NOT_PASS",
+          "proofs": [
+            {
+              "path": "codex-rs/core/tests/suite/mod.rs",
+              "blob": "17145f671a76a894ab374ca299a67cf1a43e9c55",
+              "lines": [
+                78,
+                79,
+                80,
+                81,
+                82,
+                83,
+                84
+              ]
+            }
+          ]
+        },
+        "old_cabc_exact_observation_count": 6,
+        "original_observations": {
+          "blob": "203d8eab0dd003f272c09f962e16ca9505da4f2a",
+          "json_pointer": "/case_index/B07/18/observations"
+        },
+        "still_missing_query_ids": []
+      },
+      {
+        "test": "suite::token_budget::active_tool_policy_skips_notes_thread_hint_without_calling_server",
+        "binary": "codex-core::all",
+        "platform_cfg": {
+          "rule": "original target/default cfg",
+          "windows": "original compiled roster; no new skip",
+          "proofs": []
+        },
+        "old_cabc_exact_observation_count": 9,
+        "original_observations": {
+          "blob": "203d8eab0dd003f272c09f962e16ca9505da4f2a",
+          "json_pointer": "/case_index/B07/19/observations"
+        },
+        "still_missing_query_ids": []
+      },
+      {
+        "test": "suite::token_budget::hepta_token_budget_skips_notes_thread_hint_without_calling_server",
+        "binary": "codex-core::all",
+        "platform_cfg": {
+          "rule": "original target/default cfg",
+          "windows": "original compiled roster; no new skip",
+          "proofs": []
+        },
+        "old_cabc_exact_observation_count": 7,
+        "original_observations": {
+          "blob": "203d8eab0dd003f272c09f962e16ca9505da4f2a",
+          "json_pointer": "/case_index/B07/20/observations"
+        },
+        "still_missing_query_ids": []
+      },
+      {
+        "test": "suite::token_budget::token_budget_context_injects_plain_thread_hint_text",
+        "binary": "codex-core::all",
+        "platform_cfg": {
+          "rule": "original target/default cfg",
+          "windows": "original compiled roster; no new skip",
+          "proofs": []
+        },
+        "old_cabc_exact_observation_count": 9,
+        "original_observations": {
+          "blob": "203d8eab0dd003f272c09f962e16ca9505da4f2a",
+          "json_pointer": "/case_index/B07/21/observations"
+        },
+        "still_missing_query_ids": []
+      },
+      {
+        "test": "binding::tests::configured_hook_call_preserves_model_and_environment_boundaries",
+        "binary": "codex-mcp",
+        "platform_cfg": {
+          "rule": "original target/default cfg",
+          "windows": "original compiled roster; no new skip",
+          "proofs": []
+        },
+        "old_cabc_exact_observation_count": 0,
+        "original_observations": {
+          "blob": "203d8eab0dd003f272c09f962e16ca9505da4f2a",
+          "json_pointer": "/case_index/B07/22/observations"
+        },
+        "still_missing_query_ids": [
+          "Q01"
+        ]
+      },
+      {
+        "test": "binding::tests::prepared_call_keeps_captured_connection_and_authority_after_refresh",
+        "binary": "codex-mcp",
+        "platform_cfg": {
+          "rule": "original target/default cfg",
+          "windows": "original compiled roster; no new skip",
+          "proofs": []
+        },
+        "old_cabc_exact_observation_count": 0,
+        "original_observations": {
+          "blob": "203d8eab0dd003f272c09f962e16ca9505da4f2a",
+          "json_pointer": "/case_index/B07/23/observations"
+        },
+        "still_missing_query_ids": [
+          "Q01"
+        ]
+      },
+      {
+        "test": "binding::tests::prepared_call_does_not_reroute_after_captured_connection_closes",
+        "binary": "codex-mcp",
+        "platform_cfg": {
+          "rule": "original target/default cfg",
+          "windows": "original compiled roster; no new skip",
+          "proofs": []
+        },
+        "old_cabc_exact_observation_count": 0,
+        "original_observations": {
+          "blob": "203d8eab0dd003f272c09f962e16ca9505da4f2a",
+          "json_pointer": "/case_index/B07/24/observations"
+        },
+        "still_missing_query_ids": [
+          "Q01"
+        ]
+      },
+      {
+        "test": "binding::tests::prepared_call_is_rejected_after_catalog_refresh",
+        "binary": "codex-mcp",
+        "platform_cfg": {
+          "rule": "original target/default cfg",
+          "windows": "original compiled roster; no new skip",
+          "proofs": []
+        },
+        "old_cabc_exact_observation_count": 0,
+        "original_observations": {
+          "blob": "203d8eab0dd003f272c09f962e16ca9505da4f2a",
+          "json_pointer": "/case_index/B07/25/observations"
+        },
+        "still_missing_query_ids": [
+          "Q01"
+        ]
+      },
+      {
+        "test": "binding::tests::stale_prepared_call_does_not_run_preparation",
+        "binary": "codex-mcp",
+        "platform_cfg": {
+          "rule": "original target/default cfg",
+          "windows": "original compiled roster; no new skip",
+          "proofs": []
+        },
+        "old_cabc_exact_observation_count": 0,
+        "original_observations": {
+          "blob": "203d8eab0dd003f272c09f962e16ca9505da4f2a",
+          "json_pointer": "/case_index/B07/26/observations"
+        },
+        "still_missing_query_ids": [
+          "Q01"
+        ]
+      },
+      {
+        "test": "binding::tests::preparation_holds_catalog_authority_until_it_finishes",
+        "binary": "codex-mcp",
+        "platform_cfg": {
+          "rule": "original target/default cfg",
+          "windows": "original compiled roster; no new skip",
+          "proofs": []
+        },
+        "old_cabc_exact_observation_count": 0,
+        "original_observations": {
+          "blob": "203d8eab0dd003f272c09f962e16ca9505da4f2a",
+          "json_pointer": "/case_index/B07/27/observations"
+        },
+        "still_missing_query_ids": [
+          "Q01"
+        ]
+      }
+    ],
+    "B09": [
+      {
+        "test": "suite::v2::thread_inject_items::thread_inject_items_adds_raw_response_items_after_a_turn",
+        "binary": "codex-app-server::all",
+        "platform_cfg": {
+          "rule": "original target/default cfg",
+          "windows": "original compiled roster; no new skip",
+          "proofs": []
+        },
+        "old_cabc_exact_observation_count": 3,
+        "original_observations": {
+          "blob": "203d8eab0dd003f272c09f962e16ca9505da4f2a",
+          "json_pointer": "/case_index/B09/0/observations"
+        },
+        "still_missing_query_ids": [
+          "Q03"
+        ]
+      },
+      {
+        "test": "suite::v2::turn_recover::cold_resume_explicit_cwd_override_is_fail_closed_for_recovery",
+        "binary": "codex-app-server::all",
+        "platform_cfg": {
+          "rule": "file cfg(unix)",
+          "windows": "NOT_COMPILED_NOT_PASS",
+          "proofs": [
+            {
+              "path": "codex-rs/app-server/tests/suite/v2/turn_recover.rs",
+              "blob": "43cd9b0c2d1ba3a6560ade3f3a85616674fcd4c8",
+              "lines": [
+                1,
+                2
+              ]
+            }
+          ]
+        },
+        "old_cabc_exact_observation_count": 2,
+        "original_observations": {
+          "blob": "203d8eab0dd003f272c09f962e16ca9505da4f2a",
+          "json_pointer": "/case_index/B09/1/observations"
+        },
+        "still_missing_query_ids": [
+          "Q03"
+        ]
+      },
+      {
+        "test": "suite::v2::turn_recover::cold_paginated_sigkill_recovery_uses_canonical_context_tail",
+        "binary": "codex-app-server::all",
+        "platform_cfg": {
+          "rule": "file cfg(unix)",
+          "windows": "NOT_COMPILED_NOT_PASS",
+          "proofs": [
+            {
+              "path": "codex-rs/app-server/tests/suite/v2/turn_recover.rs",
+              "blob": "43cd9b0c2d1ba3a6560ade3f3a85616674fcd4c8",
+              "lines": [
+                1,
+                2
+              ]
+            }
+          ]
+        },
+        "old_cabc_exact_observation_count": 2,
+        "original_observations": {
+          "blob": "203d8eab0dd003f272c09f962e16ca9505da4f2a",
+          "json_pointer": "/case_index/B09/2/observations"
+        },
+        "still_missing_query_ids": [
+          "Q03"
+        ]
+      },
+      {
+        "test": "suite::v2::turn_recover::cold_resume_explicit_workspace_roots_override_is_fail_closed_for_recovery",
+        "binary": "codex-app-server::all",
+        "platform_cfg": {
+          "rule": "file cfg(unix)",
+          "windows": "NOT_COMPILED_NOT_PASS",
+          "proofs": [
+            {
+              "path": "codex-rs/app-server/tests/suite/v2/turn_recover.rs",
+              "blob": "43cd9b0c2d1ba3a6560ade3f3a85616674fcd4c8",
+              "lines": [
+                1,
+                2
+              ]
+            }
+          ]
+        },
+        "old_cabc_exact_observation_count": 2,
+        "original_observations": {
+          "blob": "203d8eab0dd003f272c09f962e16ca9505da4f2a",
+          "json_pointer": "/case_index/B09/3/observations"
+        },
+        "still_missing_query_ids": [
+          "Q03"
+        ]
+      },
+      {
+        "test": "suite::v2::turn_recover::cold_sigkill_after_provider_output_is_not_recoverable",
+        "binary": "codex-app-server::all",
+        "platform_cfg": {
+          "rule": "file cfg(unix)",
+          "windows": "NOT_COMPILED_NOT_PASS",
+          "proofs": [
+            {
+              "path": "codex-rs/app-server/tests/suite/v2/turn_recover.rs",
+              "blob": "43cd9b0c2d1ba3a6560ade3f3a85616674fcd4c8",
+              "lines": [
+                1,
+                2
+              ]
+            }
+          ]
+        },
+        "old_cabc_exact_observation_count": 2,
+        "original_observations": {
+          "blob": "203d8eab0dd003f272c09f962e16ca9505da4f2a",
+          "json_pointer": "/case_index/B09/4/observations"
+        },
+        "still_missing_query_ids": [
+          "Q03"
+        ]
+      },
+      {
+        "test": "suite::v2::turn_recover::recover_rejects_busy_completed_and_cross_thread_turns",
+        "binary": "codex-app-server::all",
+        "platform_cfg": {
+          "rule": "file cfg(unix)",
+          "windows": "NOT_COMPILED_NOT_PASS",
+          "proofs": [
+            {
+              "path": "codex-rs/app-server/tests/suite/v2/turn_recover.rs",
+              "blob": "43cd9b0c2d1ba3a6560ade3f3a85616674fcd4c8",
+              "lines": [
+                1,
+                2
+              ]
+            }
+          ]
+        },
+        "old_cabc_exact_observation_count": 2,
+        "original_observations": {
+          "blob": "203d8eab0dd003f272c09f962e16ca9505da4f2a",
+          "json_pointer": "/case_index/B09/5/observations"
+        },
+        "still_missing_query_ids": [
+          "Q03"
+        ]
+      },
+      {
+        "test": "suite::v2::turn_recover::same_process_ephemeral_interrupted_turn_recovers_from_listener_state",
+        "binary": "codex-app-server::all",
+        "platform_cfg": {
+          "rule": "file cfg(unix)",
+          "windows": "NOT_COMPILED_NOT_PASS",
+          "proofs": [
+            {
+              "path": "codex-rs/app-server/tests/suite/v2/turn_recover.rs",
+              "blob": "43cd9b0c2d1ba3a6560ade3f3a85616674fcd4c8",
+              "lines": [
+                1,
+                2
+              ]
+            }
+          ]
+        },
+        "old_cabc_exact_observation_count": 2,
+        "original_observations": {
+          "blob": "203d8eab0dd003f272c09f962e16ca9505da4f2a",
+          "json_pointer": "/case_index/B09/6/observations"
+        },
+        "still_missing_query_ids": [
+          "Q03"
+        ]
+      },
+      {
+        "test": "suite::v2::turn_recover::turn_recover_requires_hepta_turn_recovery_feature",
+        "binary": "codex-app-server::all",
+        "platform_cfg": {
+          "rule": "file cfg(unix)",
+          "windows": "NOT_COMPILED_NOT_PASS",
+          "proofs": [
+            {
+              "path": "codex-rs/app-server/tests/suite/v2/turn_recover.rs",
+              "blob": "43cd9b0c2d1ba3a6560ade3f3a85616674fcd4c8",
+              "lines": [
+                1,
+                2
+              ]
+            }
+          ]
+        },
+        "old_cabc_exact_observation_count": 2,
+        "original_observations": {
+          "blob": "203d8eab0dd003f272c09f962e16ca9505da4f2a",
+          "json_pointer": "/case_index/B09/7/observations"
+        },
+        "still_missing_query_ids": [
+          "Q03"
+        ]
+      },
+      {
+        "test": "suite::v2::turn_recover::cold_sigkill_recovery_preserves_turn_and_deduplicates_stable_queue_input",
+        "binary": "codex-app-server::all",
+        "platform_cfg": {
+          "rule": "file cfg(unix)",
+          "windows": "NOT_COMPILED_NOT_PASS",
+          "proofs": [
+            {
+              "path": "codex-rs/app-server/tests/suite/v2/turn_recover.rs",
+              "blob": "43cd9b0c2d1ba3a6560ade3f3a85616674fcd4c8",
+              "lines": [
+                1,
+                2
+              ]
+            }
+          ]
+        },
+        "old_cabc_exact_observation_count": 2,
+        "original_observations": {
+          "blob": "203d8eab0dd003f272c09f962e16ca9505da4f2a",
+          "json_pointer": "/case_index/B09/8/observations"
+        },
+        "still_missing_query_ids": [
+          "Q03"
+        ]
+      },
+      {
+        "test": "suite::abort_tasks::root_turn_suspension_preserves_unfinished_turn_history",
+        "binary": "codex-core::all",
+        "platform_cfg": {
+          "rule": "module cfg(not(target_os = \"windows\"))",
+          "windows": "NOT_COMPILED_NOT_PASS",
+          "proofs": [
+            {
+              "path": "codex-rs/core/tests/suite/mod.rs",
+              "blob": "17145f671a76a894ab374ca299a67cf1a43e9c55",
+              "lines": [
+                35,
+                36,
+                37
+              ]
+            }
+          ]
+        },
+        "old_cabc_exact_observation_count": 6,
+        "original_observations": {
+          "blob": "203d8eab0dd003f272c09f962e16ca9505da4f2a",
+          "json_pointer": "/case_index/B09/9/observations"
+        },
+        "still_missing_query_ids": []
+      },
+      {
+        "test": "session::tests::panicking_session_task_is_converted_to_terminal_error_and_releases_slot",
+        "binary": "codex-core",
+        "platform_cfg": {
+          "rule": "original target/default cfg",
+          "windows": "original compiled roster; no new skip",
+          "proofs": []
+        },
+        "old_cabc_exact_observation_count": 8,
+        "original_observations": {
+          "blob": "203d8eab0dd003f272c09f962e16ca9505da4f2a",
+          "json_pointer": "/case_index/B09/10/observations"
+        },
+        "still_missing_query_ids": [
+          "Q04"
+        ]
+      },
+      {
+        "test": "session::tests::cancelled_finish_owner_keeps_terminalizer_alive",
+        "binary": "codex-core",
+        "platform_cfg": {
+          "rule": "original target/default cfg",
+          "windows": "original compiled roster; no new skip",
+          "proofs": []
+        },
+        "old_cabc_exact_observation_count": 8,
+        "original_observations": {
+          "blob": "203d8eab0dd003f272c09f962e16ca9505da4f2a",
+          "json_pointer": "/case_index/B09/11/observations"
+        },
+        "still_missing_query_ids": [
+          "Q04"
+        ]
+      },
+      {
+        "test": "session::tests::panicking_finish_terminalizer_retains_fence",
+        "binary": "codex-core",
+        "platform_cfg": {
+          "rule": "original target/default cfg",
+          "windows": "original compiled roster; no new skip",
+          "proofs": []
+        },
+        "old_cabc_exact_observation_count": 8,
+        "original_observations": {
+          "blob": "203d8eab0dd003f272c09f962e16ca9505da4f2a",
+          "json_pointer": "/case_index/B09/12/observations"
+        },
+        "still_missing_query_ids": [
+          "Q04"
+        ]
+      },
+      {
+        "test": "session::tests::hung_finish_terminalizer_watchdog_retains_fence",
+        "binary": "codex-core",
+        "platform_cfg": {
+          "rule": "original target/default cfg",
+          "windows": "original compiled roster; no new skip",
+          "proofs": []
+        },
+        "old_cabc_exact_observation_count": 8,
+        "original_observations": {
+          "blob": "203d8eab0dd003f272c09f962e16ca9505da4f2a",
+          "json_pointer": "/case_index/B09/13/observations"
+        },
+        "still_missing_query_ids": [
+          "Q04"
+        ]
+      },
+      {
+        "test": "session::tests::cancelled_abort_owner_keeps_terminalizer_alive",
+        "binary": "codex-core",
+        "platform_cfg": {
+          "rule": "original target/default cfg",
+          "windows": "original compiled roster; no new skip",
+          "proofs": []
+        },
+        "old_cabc_exact_observation_count": 8,
+        "original_observations": {
+          "blob": "203d8eab0dd003f272c09f962e16ca9505da4f2a",
+          "json_pointer": "/case_index/B09/14/observations"
+        },
+        "still_missing_query_ids": [
+          "Q04"
+        ]
+      },
+      {
+        "test": "session::tests::panicking_abort_terminalizer_retains_fence",
+        "binary": "codex-core",
+        "platform_cfg": {
+          "rule": "original target/default cfg",
+          "windows": "original compiled roster; no new skip",
+          "proofs": []
+        },
+        "old_cabc_exact_observation_count": 8,
+        "original_observations": {
+          "blob": "203d8eab0dd003f272c09f962e16ca9505da4f2a",
+          "json_pointer": "/case_index/B09/15/observations"
+        },
+        "still_missing_query_ids": [
+          "Q04"
+        ]
+      },
+      {
+        "test": "session::tests::cancelled_suspend_caller_keeps_writer_handoff_alive",
+        "binary": "codex-core",
+        "platform_cfg": {
+          "rule": "original target/default cfg",
+          "windows": "original compiled roster; no new skip",
+          "proofs": []
+        },
+        "old_cabc_exact_observation_count": 8,
+        "original_observations": {
+          "blob": "203d8eab0dd003f272c09f962e16ca9505da4f2a",
+          "json_pointer": "/case_index/B09/16/observations"
+        },
+        "still_missing_query_ids": [
+          "Q04"
+        ]
+      },
+      {
+        "test": "session::turn_input::tests::steer_only_requires_active_turn",
+        "binary": "codex-core",
+        "platform_cfg": {
+          "rule": "original target/default cfg",
+          "windows": "original compiled roster; no new skip",
+          "proofs": []
+        },
+        "old_cabc_exact_observation_count": 8,
+        "original_observations": {
+          "blob": "203d8eab0dd003f272c09f962e16ca9505da4f2a",
+          "json_pointer": "/case_index/B09/17/observations"
+        },
+        "still_missing_query_ids": [
+          "Q04"
+        ]
+      },
+      {
+        "test": "session::turn_input::tests::steer_only_enforces_expected_turn_id",
+        "binary": "codex-core",
+        "platform_cfg": {
+          "rule": "original target/default cfg",
+          "windows": "original compiled roster; no new skip",
+          "proofs": []
+        },
+        "old_cabc_exact_observation_count": 8,
+        "original_observations": {
+          "blob": "203d8eab0dd003f272c09f962e16ca9505da4f2a",
+          "json_pointer": "/case_index/B09/18/observations"
+        },
+        "still_missing_query_ids": [
+          "Q04"
+        ]
+      }
+    ],
+    "B13": [
+      {
+        "test": "runtime::tests::qualification_prepare_quarantines_expired_registry_attempt_with_h7_evidence",
+        "binary": "codex-hepta-agentd",
+        "platform_cfg": {
+          "rule": "original target/default cfg",
+          "windows": "original compiled roster; no new skip",
+          "proofs": []
+        },
+        "old_cabc_exact_observation_count": 0,
+        "original_observations": {
+          "blob": "203d8eab0dd003f272c09f962e16ca9505da4f2a",
+          "json_pointer": "/case_index/B13/0/observations"
+        },
+        "still_missing_query_ids": [
+          "Q06"
+        ]
+      },
+      {
+        "test": "caller_abort_after_core_started_keeps_exact_authority_until_persistence",
+        "binary": "codex-queue-extension::queue_service",
+        "platform_cfg": {
+          "rule": "original target/default cfg",
+          "windows": "original compiled roster; no new skip",
+          "proofs": []
+        },
+        "old_cabc_exact_observation_count": 0,
+        "original_observations": {
+          "blob": "203d8eab0dd003f272c09f962e16ca9505da4f2a",
+          "json_pointer": "/case_index/B13/1/observations"
+        },
+        "still_missing_query_ids": [
+          "Q05"
+        ]
+      },
+      {
+        "test": "completion_panic_retains_exact_authority_in_settlement_guardian",
+        "binary": "codex-queue-extension::queue_service",
+        "platform_cfg": {
+          "rule": "original target/default cfg",
+          "windows": "original compiled roster; no new skip",
+          "proofs": []
+        },
+        "old_cabc_exact_observation_count": 0,
+        "original_observations": {
+          "blob": "203d8eab0dd003f272c09f962e16ca9505da4f2a",
+          "json_pointer": "/case_index/B13/2/observations"
+        },
+        "still_missing_query_ids": [
+          "Q05"
+        ]
+      },
+      {
+        "test": "core_error_after_started_never_releases_ambiguous_dispatch",
+        "binary": "codex-queue-extension::queue_service",
+        "platform_cfg": {
+          "rule": "original target/default cfg",
+          "windows": "original compiled roster; no new skip",
+          "proofs": []
+        },
+        "old_cabc_exact_observation_count": 0,
+        "original_observations": {
+          "blob": "203d8eab0dd003f272c09f962e16ca9505da4f2a",
+          "json_pointer": "/case_index/B13/3/observations"
+        },
+        "still_missing_query_ids": [
+          "Q05"
+        ]
+      },
+      {
+        "test": "rollout_flush_before_dispatch_db_completion_recovers_without_resubmit",
+        "binary": "codex-queue-extension::queue_service",
+        "platform_cfg": {
+          "rule": "original target/default cfg",
+          "windows": "original compiled roster; no new skip",
+          "proofs": []
+        },
+        "old_cabc_exact_observation_count": 0,
+        "original_observations": {
+          "blob": "203d8eab0dd003f272c09f962e16ca9505da4f2a",
+          "json_pointer": "/case_index/B13/4/observations"
+        },
+        "still_missing_query_ids": [
+          "Q05"
+        ]
+      },
+      {
+        "test": "queued_input_and_unique_event_ids_round_trip",
+        "binary": "codex-queue-extension::queue_service",
+        "platform_cfg": {
+          "rule": "original target/default cfg",
+          "windows": "original compiled roster; no new skip",
+          "proofs": []
+        },
+        "old_cabc_exact_observation_count": 0,
+        "original_observations": {
+          "blob": "203d8eab0dd003f272c09f962e16ca9505da4f2a",
+          "json_pointer": "/case_index/B13/5/observations"
+        },
+        "still_missing_query_ids": [
+          "Q05"
+        ]
+      },
+      {
+        "test": "reserved_to_persisted_legacy_row_deletion_emits_queue_changed",
+        "binary": "codex-queue-extension::queue_service",
+        "platform_cfg": {
+          "rule": "original target/default cfg",
+          "windows": "original compiled roster; no new skip",
+          "proofs": []
+        },
+        "old_cabc_exact_observation_count": 0,
+        "original_observations": {
+          "blob": "203d8eab0dd003f272c09f962e16ca9505da4f2a",
+          "json_pointer": "/case_index/B13/6/observations"
+        },
+        "still_missing_query_ids": [
+          "Q05"
+        ]
+      },
+      {
+        "test": "queue_empty_observer_waits_for_owned_database_ack_after_turn_complete",
+        "binary": "codex-queue-extension::queue_service",
+        "platform_cfg": {
+          "rule": "original target/default cfg",
+          "windows": "original compiled roster; no new skip",
+          "proofs": []
+        },
+        "old_cabc_exact_observation_count": 0,
+        "original_observations": {
+          "blob": "203d8eab0dd003f272c09f962e16ca9505da4f2a",
+          "json_pointer": "/case_index/B13/7/observations"
+        },
+        "still_missing_query_ids": [
+          "Q05"
+        ]
+      },
+      {
+        "test": "externally_changed_queues_dispatch_independently_and_retry_failed_wakes",
+        "binary": "codex-queue-extension::queue_service",
+        "platform_cfg": {
+          "rule": "original target/default cfg",
+          "windows": "original compiled roster; no new skip",
+          "proofs": []
+        },
+        "old_cabc_exact_observation_count": 0,
+        "original_observations": {
+          "blob": "203d8eab0dd003f272c09f962e16ca9505da4f2a",
+          "json_pointer": "/case_index/B13/8/observations"
+        },
+        "still_missing_query_ids": [
+          "Q05"
+        ]
+      }
+    ],
+    "B20": [
+      {
+        "test": "suite::v2::remote_control::connected_backend_handles_models_lookup_before_websocket_initialize",
+        "binary": "codex-app-server::all",
+        "platform_cfg": {
+          "rule": "original target/default cfg",
+          "windows": "original compiled roster; no new skip",
+          "proofs": []
+        },
+        "old_cabc_exact_observation_count": 4,
+        "original_observations": {
+          "blob": "203d8eab0dd003f272c09f962e16ca9505da4f2a",
+          "json_pointer": "/case_index/B20/0/observations"
+        },
+        "still_missing_query_ids": [
+          "Q07"
+        ]
+      },
+      {
+        "test": "suite::v2::remote_control::http_fixture_rejects_eof_before_request_headers_complete",
+        "binary": "codex-app-server::all",
+        "platform_cfg": {
+          "rule": "original target/default cfg",
+          "windows": "original compiled roster; no new skip",
+          "proofs": []
+        },
+        "old_cabc_exact_observation_count": 4,
+        "original_observations": {
+          "blob": "203d8eab0dd003f272c09f962e16ca9505da4f2a",
+          "json_pointer": "/case_index/B20/1/observations"
+        },
+        "still_missing_query_ids": [
+          "Q07"
+        ]
+      },
+      {
+        "test": "suite::v2::remote_control::explicit_remote_control_startup_fails_when_disabled_by_requirements",
+        "binary": "codex-app-server::all",
+        "platform_cfg": {
+          "rule": "original target/default cfg",
+          "windows": "original compiled roster; no new skip",
+          "proofs": []
+        },
+        "old_cabc_exact_observation_count": 3,
+        "original_observations": {
+          "blob": "203d8eab0dd003f272c09f962e16ca9505da4f2a",
+          "json_pointer": "/case_index/B20/2/observations"
+        },
+        "still_missing_query_ids": [
+          "Q07"
+        ]
+      },
+      {
+        "test": "suite::v2::remote_control::disable_waits_for_in_flight_durable_enable",
+        "binary": "codex-app-server::all",
+        "platform_cfg": {
+          "rule": "original target/default cfg",
+          "windows": "original compiled roster; no new skip",
+          "proofs": []
+        },
+        "old_cabc_exact_observation_count": 3,
+        "original_observations": {
+          "blob": "203d8eab0dd003f272c09f962e16ca9505da4f2a",
+          "json_pointer": "/case_index/B20/3/observations"
+        },
+        "still_missing_query_ids": [
+          "Q07"
+        ]
+      },
+      {
+        "test": "suite::v2::remote_control::listen_off_honors_persisted_remote_control_enable",
+        "binary": "codex-app-server::all",
+        "platform_cfg": {
+          "rule": "original target/default cfg",
+          "windows": "original compiled roster; no new skip",
+          "proofs": []
+        },
+        "old_cabc_exact_observation_count": 3,
+        "original_observations": {
+          "blob": "203d8eab0dd003f272c09f962e16ca9505da4f2a",
+          "json_pointer": "/case_index/B20/4/observations"
+        },
+        "still_missing_query_ids": [
+          "Q07"
+        ]
+      },
+      {
+        "test": "suite::v2::remote_control::listen_off_ignores_persisted_enable_when_disabled_by_requirements",
+        "binary": "codex-app-server::all",
+        "platform_cfg": {
+          "rule": "original target/default cfg",
+          "windows": "original compiled roster; no new skip",
+          "proofs": []
+        },
+        "old_cabc_exact_observation_count": 3,
+        "original_observations": {
+          "blob": "203d8eab0dd003f272c09f962e16ca9505da4f2a",
+          "json_pointer": "/case_index/B20/5/observations"
+        },
+        "still_missing_query_ids": [
+          "Q07"
+        ]
+      },
+      {
+        "test": "suite::v2::remote_control::models_http_request_is_not_a_websocket_upgrade",
+        "binary": "codex-app-server::all",
+        "platform_cfg": {
+          "rule": "original target/default cfg",
+          "windows": "original compiled roster; no new skip",
+          "proofs": []
+        },
+        "old_cabc_exact_observation_count": 3,
+        "original_observations": {
+          "blob": "203d8eab0dd003f272c09f962e16ca9505da4f2a",
+          "json_pointer": "/case_index/B20/6/observations"
+        },
+        "still_missing_query_ids": [
+          "Q07"
+        ]
+      },
+      {
+        "test": "suite::v2::remote_control::listen_off_exits_without_persisted_remote_control_enable",
+        "binary": "codex-app-server::all",
+        "platform_cfg": {
+          "rule": "original target/default cfg",
+          "windows": "original compiled roster; no new skip",
+          "proofs": []
+        },
+        "old_cabc_exact_observation_count": 3,
+        "original_observations": {
+          "blob": "203d8eab0dd003f272c09f962e16ca9505da4f2a",
+          "json_pointer": "/case_index/B20/7/observations"
+        },
+        "still_missing_query_ids": [
+          "Q07"
+        ]
+      },
+      {
+        "test": "suite::v2::remote_control::managed_requirements_allow_remote_control_true_does_not_enable_or_block_it",
+        "binary": "codex-app-server::all",
+        "platform_cfg": {
+          "rule": "original target/default cfg",
+          "windows": "original compiled roster; no new skip",
+          "proofs": []
+        },
+        "old_cabc_exact_observation_count": 3,
+        "original_observations": {
+          "blob": "203d8eab0dd003f272c09f962e16ca9505da4f2a",
+          "json_pointer": "/case_index/B20/8/observations"
+        },
+        "still_missing_query_ids": [
+          "Q07"
+        ]
+      },
+      {
+        "test": "suite::v2::remote_control::managed_requirements_reject_all_remote_control_rpcs",
+        "binary": "codex-app-server::all",
+        "platform_cfg": {
+          "rule": "original target/default cfg",
+          "windows": "original compiled roster; no new skip",
+          "proofs": []
+        },
+        "old_cabc_exact_observation_count": 3,
+        "original_observations": {
+          "blob": "203d8eab0dd003f272c09f962e16ca9505da4f2a",
+          "json_pointer": "/case_index/B20/9/observations"
+        },
+        "still_missing_query_ids": [
+          "Q07"
+        ]
+      },
+      {
+        "test": "suite::v2::remote_control::pairing_start_works_after_ephemeral_enable",
+        "binary": "codex-app-server::all",
+        "platform_cfg": {
+          "rule": "original target/default cfg",
+          "windows": "original compiled roster; no new skip",
+          "proofs": []
+        },
+        "old_cabc_exact_observation_count": 3,
+        "original_observations": {
+          "blob": "203d8eab0dd003f272c09f962e16ca9505da4f2a",
+          "json_pointer": "/case_index/B20/10/observations"
+        },
+        "still_missing_query_ids": [
+          "Q07"
+        ]
+      },
+      {
+        "test": "suite::v2::remote_control::remote_control_client_management_works_while_disabled",
+        "binary": "codex-app-server::all",
+        "platform_cfg": {
+          "rule": "original target/default cfg",
+          "windows": "original compiled roster; no new skip",
+          "proofs": []
+        },
+        "old_cabc_exact_observation_count": 3,
+        "original_observations": {
+          "blob": "203d8eab0dd003f272c09f962e16ca9505da4f2a",
+          "json_pointer": "/case_index/B20/11/observations"
+        },
+        "still_missing_query_ids": [
+          "Q07"
+        ]
+      },
+      {
+        "test": "suite::v2::remote_control::remote_control_disable_returns_disabled_status",
+        "binary": "codex-app-server::all",
+        "platform_cfg": {
+          "rule": "original target/default cfg",
+          "windows": "original compiled roster; no new skip",
+          "proofs": []
+        },
+        "old_cabc_exact_observation_count": 3,
+        "original_observations": {
+          "blob": "203d8eab0dd003f272c09f962e16ca9505da4f2a",
+          "json_pointer": "/case_index/B20/12/observations"
+        },
+        "still_missing_query_ids": [
+          "Q07"
+        ]
+      },
+      {
+        "test": "suite::v2::remote_control::remote_control_enable_returns_connecting_status",
+        "binary": "codex-app-server::all",
+        "platform_cfg": {
+          "rule": "original target/default cfg",
+          "windows": "original compiled roster; no new skip",
+          "proofs": []
+        },
+        "old_cabc_exact_observation_count": 5,
+        "original_observations": {
+          "blob": "203d8eab0dd003f272c09f962e16ca9505da4f2a",
+          "json_pointer": "/case_index/B20/13/observations"
+        },
+        "still_missing_query_ids": [
+          "Q07"
+        ]
+      },
+      {
+        "test": "suite::v2::remote_control::remote_control_status_read_returns_disabled_status",
+        "binary": "codex-app-server::all",
+        "platform_cfg": {
+          "rule": "original target/default cfg",
+          "windows": "original compiled roster; no new skip",
+          "proofs": []
+        },
+        "old_cabc_exact_observation_count": 3,
+        "original_observations": {
+          "blob": "203d8eab0dd003f272c09f962e16ca9505da4f2a",
+          "json_pointer": "/case_index/B20/14/observations"
+        },
+        "still_missing_query_ids": [
+          "Q07"
+        ]
+      },
+      {
+        "test": "suite::v2::remote_control::remote_control_status_read_returns_connecting_status_after_enable",
+        "binary": "codex-app-server::all",
+        "platform_cfg": {
+          "rule": "original target/default cfg",
+          "windows": "original compiled roster; no new skip",
+          "proofs": []
+        },
+        "old_cabc_exact_observation_count": 3,
+        "original_observations": {
+          "blob": "203d8eab0dd003f272c09f962e16ca9505da4f2a",
+          "json_pointer": "/case_index/B20/15/observations"
+        },
+        "still_missing_query_ids": [
+          "Q07"
+        ]
+      },
+      {
+        "test": "suite::v2::remote_control::remote_control_pairing_start_returns_pairing_artifacts",
+        "binary": "codex-app-server::all",
+        "platform_cfg": {
+          "rule": "original target/default cfg",
+          "windows": "original compiled roster; no new skip",
+          "proofs": []
+        },
+        "old_cabc_exact_observation_count": 3,
+        "original_observations": {
+          "blob": "203d8eab0dd003f272c09f962e16ca9505da4f2a",
+          "json_pointer": "/case_index/B20/16/observations"
+        },
+        "still_missing_query_ids": [
+          "Q07"
+        ]
+      },
+      {
+        "test": "suite::v2::remote_control::rpc_updates_durable_preference_but_ephemeral_does_not",
+        "binary": "codex-app-server::all",
+        "platform_cfg": {
+          "rule": "original target/default cfg",
+          "windows": "original compiled roster; no new skip",
+          "proofs": []
+        },
+        "old_cabc_exact_observation_count": 5,
+        "original_observations": {
+          "blob": "203d8eab0dd003f272c09f962e16ca9505da4f2a",
+          "json_pointer": "/case_index/B20/17/observations"
+        },
+        "still_missing_query_ids": [
+          "Q07"
+        ]
+      },
+      {
+        "test": "suite::v2::remote_control::stdio_eof_exits_with_remote_control_connection",
+        "binary": "codex-app-server::all",
+        "platform_cfg": {
+          "rule": "original target/default cfg",
+          "windows": "original compiled roster; no new skip",
+          "proofs": []
+        },
+        "old_cabc_exact_observation_count": 4,
+        "original_observations": {
+          "blob": "203d8eab0dd003f272c09f962e16ca9505da4f2a",
+          "json_pointer": "/case_index/B20/18/observations"
+        },
+        "still_missing_query_ids": [
+          "Q07"
+        ]
+      }
+    ],
+    "B22": [
+      {
+        "test": "tests::embedded_state_db_corruption_preserves_failed_database_for_cli_recovery",
+        "binary": "codex-tui",
+        "platform_cfg": {
+          "rule": "original target/default cfg",
+          "windows": "original compiled roster; no new skip",
+          "proofs": []
+        },
+        "old_cabc_exact_observation_count": 0,
+        "original_observations": {
+          "blob": "203d8eab0dd003f272c09f962e16ca9505da4f2a",
+          "json_pointer": "/case_index/B22/0/observations"
+        },
+        "still_missing_query_ids": [
+          "Q08"
+        ]
+      },
+      {
+        "test": "app::tests::background_exit_tests::daemon_ctrl_c_during_mcp_startup_does_not_show_background_exit_menu",
+        "binary": "codex-tui",
+        "platform_cfg": {
+          "rule": "original target/default cfg",
+          "windows": "original compiled roster; no new skip",
+          "proofs": []
+        },
+        "old_cabc_exact_observation_count": 0,
+        "original_observations": {
+          "blob": "203d8eab0dd003f272c09f962e16ca9505da4f2a",
+          "json_pointer": "/case_index/B22/1/observations"
+        },
+        "still_missing_query_ids": [
+          "Q08"
+        ]
+      },
+      {
+        "test": "app::tests::background_exit_tests::cancel_task_interrupts_without_exiting",
+        "binary": "codex-tui",
+        "platform_cfg": {
+          "rule": "original target/default cfg",
+          "windows": "original compiled roster; no new skip",
+          "proofs": []
+        },
+        "old_cabc_exact_observation_count": 0,
+        "original_observations": {
+          "blob": "203d8eab0dd003f272c09f962e16ca9505da4f2a",
+          "json_pointer": "/case_index/B22/2/observations"
+        },
+        "still_missing_query_ids": [
+          "Q08"
+        ]
+      },
+      {
+        "test": "app::tests::background_exit_tests::daemon_ctrl_c_during_paste_burst_does_not_show_exit_menu",
+        "binary": "codex-tui",
+        "platform_cfg": {
+          "rule": "original target/default cfg",
+          "windows": "original compiled roster; no new skip",
+          "proofs": []
+        },
+        "old_cabc_exact_observation_count": 0,
+        "original_observations": {
+          "blob": "203d8eab0dd003f272c09f962e16ca9505da4f2a",
+          "json_pointer": "/case_index/B22/3/observations"
+        },
+        "still_missing_query_ids": [
+          "Q08"
+        ]
+      },
+      {
+        "test": "app::tests::background_exit_tests::daemon_ctrl_c_hides_background_exit_for_running_background_side_thread",
+        "binary": "codex-tui",
+        "platform_cfg": {
+          "rule": "original target/default cfg",
+          "windows": "original compiled roster; no new skip",
+          "proofs": []
+        },
+        "old_cabc_exact_observation_count": 0,
+        "original_observations": {
+          "blob": "203d8eab0dd003f272c09f962e16ca9505da4f2a",
+          "json_pointer": "/case_index/B22/4/observations"
+        },
+        "still_missing_query_ids": [
+          "Q08"
+        ]
+      },
+      {
+        "test": "app::tests::background_exit_tests::daemon_ctrl_c_shows_background_exit_menu_and_escape_dismisses_it",
+        "binary": "codex-tui",
+        "platform_cfg": {
+          "rule": "original target/default cfg",
+          "windows": "original compiled roster; no new skip",
+          "proofs": []
+        },
+        "old_cabc_exact_observation_count": 0,
+        "original_observations": {
+          "blob": "203d8eab0dd003f272c09f962e16ca9505da4f2a",
+          "json_pointer": "/case_index/B22/5/observations"
+        },
+        "still_missing_query_ids": [
+          "Q08"
+        ]
+      },
+      {
+        "test": "app::tests::background_exit_tests::daemon_ctrl_c_hides_background_exit_with_queued_follow_up",
+        "binary": "codex-tui",
+        "platform_cfg": {
+          "rule": "original target/default cfg",
+          "windows": "original compiled roster; no new skip",
+          "proofs": []
+        },
+        "old_cabc_exact_observation_count": 0,
+        "original_observations": {
+          "blob": "203d8eab0dd003f272c09f962e16ca9505da4f2a",
+          "json_pointer": "/case_index/B22/6/observations"
+        },
+        "still_missing_query_ids": [
+          "Q08"
+        ]
+      },
+      {
+        "test": "app::tests::background_exit_tests::daemon_ctrl_c_with_draft_preserves_composer_cancellation",
+        "binary": "codex-tui",
+        "platform_cfg": {
+          "rule": "original target/default cfg",
+          "windows": "original compiled roster; no new skip",
+          "proofs": []
+        },
+        "old_cabc_exact_observation_count": 0,
+        "original_observations": {
+          "blob": "203d8eab0dd003f272c09f962e16ca9505da4f2a",
+          "json_pointer": "/case_index/B22/7/observations"
+        },
+        "still_missing_query_ids": [
+          "Q08"
+        ]
+      },
+      {
+        "test": "app::tests::background_exit_tests::non_daemon_ctrl_c_keeps_interrupt_behavior",
+        "binary": "codex-tui",
+        "platform_cfg": {
+          "rule": "original target/default cfg",
+          "windows": "original compiled roster; no new skip",
+          "proofs": []
+        },
+        "old_cabc_exact_observation_count": 0,
+        "original_observations": {
+          "blob": "203d8eab0dd003f272c09f962e16ca9505da4f2a",
+          "json_pointer": "/case_index/B22/8/observations"
+        },
+        "still_missing_query_ids": [
+          "Q08"
+        ]
+      },
+      {
+        "test": "app::tests::background_exit_tests::run_in_background_detaches_without_interrupting_main_or_side_threads",
+        "binary": "codex-tui",
+        "platform_cfg": {
+          "rule": "original target/default cfg",
+          "windows": "original compiled roster; no new skip",
+          "proofs": []
+        },
+        "old_cabc_exact_observation_count": 0,
+        "original_observations": {
+          "blob": "203d8eab0dd003f272c09f962e16ca9505da4f2a",
+          "json_pointer": "/case_index/B22/9/observations"
+        },
+        "still_missing_query_ids": [
+          "Q08"
+        ]
+      },
+      {
+        "test": "app::tests::background_exit_tests::background_exit_shell_readiness_rejects_failed_start",
+        "binary": "codex-tui",
+        "platform_cfg": {
+          "rule": "original target/default cfg",
+          "windows": "original compiled roster; no new skip",
+          "proofs": []
+        },
+        "old_cabc_exact_observation_count": 0,
+        "original_observations": {
+          "blob": "203d8eab0dd003f272c09f962e16ca9505da4f2a",
+          "json_pointer": "/case_index/B22/10/observations"
+        },
+        "still_missing_query_ids": [
+          "Q08"
+        ]
+      },
+      {
+        "test": "app::tests::background_exit_tests::daemon_ctrl_c_closes_running_side_thread_and_returns_to_parent",
+        "binary": "codex-tui",
+        "platform_cfg": {
+          "rule": "original target/default cfg",
+          "windows": "original compiled roster; no new skip",
+          "proofs": []
+        },
+        "old_cabc_exact_observation_count": 0,
+        "original_observations": {
+          "blob": "203d8eab0dd003f272c09f962e16ca9505da4f2a",
+          "json_pointer": "/case_index/B22/11/observations"
+        },
+        "still_missing_query_ids": [
+          "Q08"
+        ]
+      },
+      {
+        "test": "app::tests::background_exit_tests::exit_interrupts_before_requesting_shutdown",
+        "binary": "codex-tui",
+        "platform_cfg": {
+          "rule": "original target/default cfg",
+          "windows": "original compiled roster; no new skip",
+          "proofs": []
+        },
+        "old_cabc_exact_observation_count": 0,
+        "original_observations": {
+          "blob": "203d8eab0dd003f272c09f962e16ca9505da4f2a",
+          "json_pointer": "/case_index/B22/12/observations"
+        },
+        "still_missing_query_ids": [
+          "Q08"
+        ]
+      }
+    ],
+    "B23": [
+      {
+        "test": "drain_handle_tests::repeated_drain_requests_preserve_the_real_completion_acknowledgement",
+        "binary": "codex-app-server",
+        "platform_cfg": {
+          "rule": "original target/default cfg",
+          "windows": "original compiled roster; no new skip",
+          "proofs": []
+        },
+        "old_cabc_exact_observation_count": 0,
+        "original_observations": {
+          "blob": "203d8eab0dd003f272c09f962e16ca9505da4f2a",
+          "json_pointer": "/case_index/B23/0/observations"
+        },
+        "still_missing_query_ids": [
+          "Q09",
+          "Q10"
+        ]
+      },
+      {
+        "test": "drain_handle_tests::requesting_drain_does_not_acknowledge_outstanding_turns",
+        "binary": "codex-app-server",
+        "platform_cfg": {
+          "rule": "original target/default cfg",
+          "windows": "original compiled roster; no new skip",
+          "proofs": []
+        },
+        "old_cabc_exact_observation_count": 0,
+        "original_observations": {
+          "blob": "203d8eab0dd003f272c09f962e16ca9505da4f2a",
+          "json_pointer": "/case_index/B23/1/observations"
+        },
+        "still_missing_query_ids": [
+          "Q09",
+          "Q10"
+        ]
+      },
+      {
+        "test": "shutdown_signals::tests::first_sigint_survives_cancelled_receive",
+        "binary": "codex-app-server",
+        "platform_cfg": {
+          "rule": "original Unix shutdown_signals module",
+          "windows": "NOT_APPLICABLE_NOT_PASS",
+          "proofs": [
+            {
+              "path": "codex-rs/app-server/src/shutdown_signals_tests.rs",
+              "blob": "cf2f370bf35fc7cbb8d3b339f92f7da25b87cb51",
+              "basis": "frozen seven-scope source/roster audit; no new Windows signal semantics"
+            }
+          ]
+        },
+        "old_cabc_exact_observation_count": 0,
+        "original_observations": {
+          "blob": "203d8eab0dd003f272c09f962e16ca9505da4f2a",
+          "json_pointer": "/case_index/B23/2/observations"
+        },
+        "still_missing_query_ids": [
+          "Q09"
+        ]
+      },
+      {
+        "test": "shutdown_signals::tests::first_sighup_survives_cancelled_receive",
+        "binary": "codex-app-server",
+        "platform_cfg": {
+          "rule": "original Unix shutdown_signals module",
+          "windows": "NOT_APPLICABLE_NOT_PASS",
+          "proofs": [
+            {
+              "path": "codex-rs/app-server/src/shutdown_signals_tests.rs",
+              "blob": "cf2f370bf35fc7cbb8d3b339f92f7da25b87cb51",
+              "basis": "frozen seven-scope source/roster audit; no new Windows signal semantics"
+            }
+          ]
+        },
+        "old_cabc_exact_observation_count": 0,
+        "original_observations": {
+          "blob": "203d8eab0dd003f272c09f962e16ca9505da4f2a",
+          "json_pointer": "/case_index/B23/3/observations"
+        },
+        "still_missing_query_ids": [
+          "Q09"
+        ]
+      },
+      {
+        "test": "shutdown_signals::tests::first_sigterm_survives_cancelled_receive",
+        "binary": "codex-app-server",
+        "platform_cfg": {
+          "rule": "original Unix shutdown_signals module",
+          "windows": "NOT_APPLICABLE_NOT_PASS",
+          "proofs": [
+            {
+              "path": "codex-rs/app-server/src/shutdown_signals_tests.rs",
+              "blob": "cf2f370bf35fc7cbb8d3b339f92f7da25b87cb51",
+              "basis": "frozen seven-scope source/roster audit; no new Windows signal semantics"
+            }
+          ]
+        },
+        "old_cabc_exact_observation_count": 0,
+        "original_observations": {
+          "blob": "203d8eab0dd003f272c09f962e16ca9505da4f2a",
+          "json_pointer": "/case_index/B23/4/observations"
+        },
+        "still_missing_query_ids": [
+          "Q09"
+        ]
+      }
+    ],
+    "B08": [
+      {
+        "test": "tools::executed_tool_calls::tests::executed_tool_call_recorder_bounds_pending_calls_and_preserves_overflow",
+        "binary": "codex-core",
+        "platform_cfg": {
+          "rule": "original target/default cfg",
+          "windows": "original compiled roster; no new skip",
+          "proofs": []
+        },
+        "old_cabc_exact_observation_count": 8,
+        "original_observations": {
+          "blob": "203d8eab0dd003f272c09f962e16ca9505da4f2a",
+          "json_pointer": "/case_index/B08/0/observations"
+        },
+        "still_missing_query_ids": [
+          "Q02"
+        ]
+      },
+      {
+        "test": "tools::executed_tool_calls::tests::executed_tool_call_recorder_bounds_retained_history_and_reports_omissions",
+        "binary": "codex-core",
+        "platform_cfg": {
+          "rule": "original target/default cfg",
+          "windows": "original compiled roster; no new skip",
+          "proofs": []
+        },
+        "old_cabc_exact_observation_count": 8,
+        "original_observations": {
+          "blob": "203d8eab0dd003f272c09f962e16ca9505da4f2a",
+          "json_pointer": "/case_index/B08/1/observations"
+        },
+        "still_missing_query_ids": [
+          "Q02"
+        ]
+      },
+      {
+        "test": "client::tests::chatgpt_codex_wire_strips_local_content_metadata_but_openai_wire_keeps_it",
+        "binary": "codex-core",
+        "platform_cfg": {
+          "rule": "original target/default cfg",
+          "windows": "original compiled roster; no new skip",
+          "proofs": []
+        },
+        "old_cabc_exact_observation_count": 8,
+        "original_observations": {
+          "blob": "203d8eab0dd003f272c09f962e16ca9505da4f2a",
+          "json_pointer": "/case_index/B08/2/observations"
+        },
+        "still_missing_query_ids": [
+          "Q02"
+        ]
+      },
+      {
+        "test": "suite::tools::namespaced_custom_tool_call_preserves_namespace_through_dispatch_and_replay",
+        "binary": "codex-core::all",
+        "platform_cfg": {
+          "rule": "file cfg(not(target_os = \"windows\"))",
+          "windows": "NOT_COMPILED_NOT_PASS",
+          "proofs": [
+            {
+              "path": "codex-rs/core/tests/suite/tools.rs",
+              "blob": "1fc4b08dd39ec30085d38cc3b5b661e2bdc6775e",
+              "lines": [
+                1,
+                2
+              ]
+            }
+          ]
+        },
+        "old_cabc_exact_observation_count": 6,
+        "original_observations": {
+          "blob": "203d8eab0dd003f272c09f962e16ca9505da4f2a",
+          "json_pointer": "/case_index/B08/3/observations"
+        },
+        "still_missing_query_ids": []
+      }
+    ]
+  },
+  "minimal_missing_evidence_queries": [
+    {
+      "query_id": "Q01",
+      "blocker_id": "B07",
+      "action": "PROJECT_EXISTING_ORIGINAL_CI_ARTIFACTS_ONLY",
+      "target": "//codex-rs/codex-mcp:codex-mcp-unit-tests",
+      "platforms": [
+        "linux_gnu_rbe",
+        "linux_musl_label_same_gnu_rbe",
+        "macos_arm64",
+        "macos_x86_64",
+        "windows_msvc"
+      ],
+      "test_names": [
+        "binding::tests::configured_hook_call_preserves_model_and_environment_boundaries",
+        "binding::tests::prepared_call_keeps_captured_connection_and_authority_after_refresh",
+        "binding::tests::prepared_call_does_not_reroute_after_captured_connection_closes",
+        "binding::tests::prepared_call_is_rejected_after_catalog_refresh",
+        "binding::tests::stale_prepared_call_does_not_run_preparation",
+        "binding::tests::preparation_holds_catalog_authority_until_it_finishes"
+      ],
+      "required_name_count": 6,
+      "test_name_match": "EXACT",
+      "original_deadline_contract": "Existing executor hook wait10s and negative5s; MCP configured hook5s/server startup10s, specific existing waits5/15s. Keep all original helper/harness budgets. No universal invented Hook deadline.",
+      "original_budgets_must_not_change": true,
+      "original_case_source_references": [
+        {
+          "path": "codex-rs/codex-mcp/BUILD.bazel",
+          "blob": "fbae63201a7fd49a060f614ee4589daab806cc19"
+        },
+        {
+          "path": "codex-rs/codex-mcp/src/binding.rs",
+          "blob": "de0238af78e06046a110877513ff172a3a44ff85"
+        },
+        {
+          "path": "codex-rs/codex-mcp/src/binding_tests.rs",
+          "blob": "a95d1913cd11a8426e56c3b1d030641d9c287220"
+        }
+      ],
+      "prior_missing_reason": "Six existing binding positive/rejection controls still have only target/cache evidence; the successful unit logs were outside these archives.",
+      "expected_cfg": "original target and source cfg; no new filters, skips, or ignores",
+      "acceptance": {
+        "source_binding": "FINAL_HEAD_OR_ACTUAL_MERGE_WITH_EQUAL_FINAL_TREE_AND_KNOWN_TEST_CONFIGURATION",
+        "all_names_must_have_final_result": "ok",
+        "all_available_attempt_rows_retained": true,
+        "selected_failure_or_timeout_must_remain_open": true,
+        "selected_ignored_or_filtered_cannot_count_as_pass": true,
+        "cached_success_requires": "original action/result provenance and exact case bodies bound to the declared inputs; target marker or mtime alone is insufficient",
+        "absent_logs_state": "EVIDENCE_MISSING",
+        "not_reported_state": "NOT_REPORTED_DO_NOT_READ_OLD_DIRECTORY"
+      }
+    },
+    {
+      "query_id": "Q02",
+      "blocker_id": "B08",
+      "action": "PROJECT_EXISTING_ORIGINAL_CI_ARTIFACTS_ONLY",
+      "target": "//codex-rs/core:core-unit-tests",
+      "platforms": [
+        "linux_gnu_rbe",
+        "linux_musl_label_same_gnu_rbe",
+        "macos_arm64",
+        "macos_x86_64"
+      ],
+      "test_names": [
+        "tools::executed_tool_calls::tests::executed_tool_call_recorder_bounds_pending_calls_and_preserves_overflow",
+        "tools::executed_tool_calls::tests::executed_tool_call_recorder_bounds_retained_history_and_reports_omissions",
+        "client::tests::chatgpt_codex_wire_strips_local_content_metadata_but_openai_wire_keeps_it"
+      ],
+      "required_name_count": 3,
+      "test_name_match": "EXACT",
+      "original_deadline_contract": "Retain existing case and submit helper deadlines; no new timeout/retry or production persistence change.",
+      "original_budgets_must_not_change": true,
+      "original_case_source_references": [
+        {
+          "path": "codex-rs/core/BUILD.bazel",
+          "blob": "e0e99847ce29d3ce54437215d5f34ca64c14fb3c"
+        },
+        {
+          "path": "codex-rs/core/src/tools/executed_tool_calls_tests.rs",
+          "blob": "5f6000efaf34116e40abae14797df8fac30e4824"
+        },
+        {
+          "path": "codex-rs/core/src/client_tests.rs",
+          "blob": "ff91f479aa615f56ae26d910894598a4e51895ae"
+        },
+        {
+          "path": "codex-rs/core/tests/suite/tools.rs",
+          "blob": "1fc4b08dd39ec30085d38cc3b5b661e2bdc6775e"
+        }
+      ],
+      "prior_missing_reason": "The two recorder units and wire matrix now have exact Windows rows, but the Linux/Mac unit targets were successful/cached and unarchived.",
+      "expected_cfg": "original target and source cfg; no new filters, skips, or ignores",
+      "acceptance": {
+        "source_binding": "FINAL_HEAD_OR_ACTUAL_MERGE_WITH_EQUAL_FINAL_TREE_AND_KNOWN_TEST_CONFIGURATION",
+        "all_names_must_have_final_result": "ok",
+        "all_available_attempt_rows_retained": true,
+        "selected_failure_or_timeout_must_remain_open": true,
+        "selected_ignored_or_filtered_cannot_count_as_pass": true,
+        "cached_success_requires": "original action/result provenance and exact case bodies bound to the declared inputs; target marker or mtime alone is insufficient",
+        "absent_logs_state": "EVIDENCE_MISSING",
+        "not_reported_state": "NOT_REPORTED_DO_NOT_READ_OLD_DIRECTORY"
+      }
+    },
+    {
+      "query_id": "Q03",
+      "blocker_id": "B09",
+      "action": "PROJECT_EXISTING_ORIGINAL_CI_ARTIFACTS_ONLY",
+      "target": "//codex-rs/app-server:app-server-all-test",
+      "platforms": [
+        "linux_gnu_rbe",
+        "linux_musl_label_same_gnu_rbe",
+        "macos_arm64",
+        "macos_x86_64"
+      ],
+      "test_names": [
+        "suite::v2::thread_inject_items::thread_inject_items_adds_raw_response_items_after_a_turn",
+        "suite::v2::turn_recover::cold_resume_explicit_cwd_override_is_fail_closed_for_recovery",
+        "suite::v2::turn_recover::cold_paginated_sigkill_recovery_uses_canonical_context_tail",
+        "suite::v2::turn_recover::cold_resume_explicit_workspace_roots_override_is_fail_closed_for_recovery",
+        "suite::v2::turn_recover::cold_sigkill_after_provider_output_is_not_recoverable",
+        "suite::v2::turn_recover::recover_rejects_busy_completed_and_cross_thread_turns",
+        "suite::v2::turn_recover::same_process_ephemeral_interrupted_turn_recovers_from_listener_state",
+        "suite::v2::turn_recover::turn_recover_requires_hepta_turn_recovery_feature",
+        "suite::v2::turn_recover::cold_sigkill_recovery_preserves_turn_and_deduplicates_stable_queue_input"
+      ],
+      "required_name_count": 9,
+      "test_name_match": "EXACT",
+      "original_deadline_contract": "TurnRecover READ_TIMEOUT10s, STARTUP_TIMEOUT25s, intentional first provider delay30s; current terminal controls retain existing1/2/4s waits and100ms fail-closed observation. Windows lifecycle job60min and its original no-retry selection unchanged.",
+      "original_budgets_must_not_change": true,
+      "original_case_source_references": [
+        {
+          "path": "codex-rs/core/BUILD.bazel",
+          "blob": "e0e99847ce29d3ce54437215d5f34ca64c14fb3c"
+        },
+        {
+          "path": "codex-rs/app-server/BUILD.bazel",
+          "blob": "a3c8ba463f34b031cc517501f41d67b60f2b9feb"
+        },
+        {
+          "path": "codex-rs/core/src/session/mod.rs",
+          "blob": "b71bc56687973debf2b8615da036e60a436e3c08"
+        },
+        {
+          "path": "codex-rs/core/src/session/tests.rs",
+          "blob": "e8be921f4bd2194559f2c55051a3a2201e5d4789"
+        },
+        {
+          "path": "codex-rs/core/src/session/turn_input.rs",
+          "blob": "215af4dd2a36cf07915e2451040c19527bac3c9a"
+        },
+        {
+          "path": "codex-rs/core/src/session/turn_input_tests.rs",
+          "blob": "d7d9b493ac07c79d0e2c935c7a6df6c0ebada6d0"
+        },
+        {
+          "path": "codex-rs/app-server/tests/suite/v2/turn_recover.rs",
+          "blob": "43cd9b0c2d1ba3a6560ade3f3a85616674fcd4c8"
+        }
+      ],
+      "prior_missing_reason": "The8 turn_recover controls and the thread_inject_items control are observed in the Linux Wine-exec variant only for Linux. Ordinary Linux and Mac successful AppServer logs remain absent. The8 turn_recover cases are cfg(unix); the separate injection case is actually observed ok on Windows.",
+      "expected_cfg": "turn_recover eight are cfg(unix); thread_inject_items is separate",
+      "acceptance": {
+        "source_binding": "FINAL_HEAD_OR_ACTUAL_MERGE_WITH_EQUAL_FINAL_TREE_AND_KNOWN_TEST_CONFIGURATION",
+        "all_names_must_have_final_result": "ok",
+        "all_available_attempt_rows_retained": true,
+        "selected_failure_or_timeout_must_remain_open": true,
+        "selected_ignored_or_filtered_cannot_count_as_pass": true,
+        "cached_success_requires": "original action/result provenance and exact case bodies bound to the declared inputs; target marker or mtime alone is insufficient",
+        "absent_logs_state": "EVIDENCE_MISSING",
+        "not_reported_state": "NOT_REPORTED_DO_NOT_READ_OLD_DIRECTORY"
+      }
+    },
+    {
+      "query_id": "Q04",
+      "blocker_id": "B09",
+      "action": "PROJECT_EXISTING_ORIGINAL_CI_ARTIFACTS_ONLY",
+      "target": "//codex-rs/core:core-unit-tests",
+      "platforms": [
+        "linux_gnu_rbe",
+        "linux_musl_label_same_gnu_rbe",
+        "macos_arm64",
+        "macos_x86_64"
+      ],
+      "test_names": [
+        "session::tests::panicking_session_task_is_converted_to_terminal_error_and_releases_slot",
+        "session::tests::cancelled_finish_owner_keeps_terminalizer_alive",
+        "session::tests::panicking_finish_terminalizer_retains_fence",
+        "session::tests::hung_finish_terminalizer_watchdog_retains_fence",
+        "session::tests::cancelled_abort_owner_keeps_terminalizer_alive",
+        "session::tests::panicking_abort_terminalizer_retains_fence",
+        "session::tests::cancelled_suspend_caller_keeps_writer_handoff_alive",
+        "session::turn_input::tests::steer_only_requires_active_turn",
+        "session::turn_input::tests::steer_only_enforces_expected_turn_id"
+      ],
+      "required_name_count": 9,
+      "test_name_match": "EXACT",
+      "original_deadline_contract": "TurnRecover READ_TIMEOUT10s, STARTUP_TIMEOUT25s, intentional first provider delay30s; current terminal controls retain existing1/2/4s waits and100ms fail-closed observation. Windows lifecycle job60min and its original no-retry selection unchanged.",
+      "original_budgets_must_not_change": true,
+      "original_case_source_references": [
+        {
+          "path": "codex-rs/core/BUILD.bazel",
+          "blob": "e0e99847ce29d3ce54437215d5f34ca64c14fb3c"
+        },
+        {
+          "path": "codex-rs/app-server/BUILD.bazel",
+          "blob": "a3c8ba463f34b031cc517501f41d67b60f2b9feb"
+        },
+        {
+          "path": "codex-rs/core/src/session/mod.rs",
+          "blob": "b71bc56687973debf2b8615da036e60a436e3c08"
+        },
+        {
+          "path": "codex-rs/core/src/session/tests.rs",
+          "blob": "e8be921f4bd2194559f2c55051a3a2201e5d4789"
+        },
+        {
+          "path": "codex-rs/core/src/session/turn_input.rs",
+          "blob": "215af4dd2a36cf07915e2451040c19527bac3c9a"
+        },
+        {
+          "path": "codex-rs/core/src/session/turn_input_tests.rs",
+          "blob": "d7d9b493ac07c79d0e2c935c7a6df6c0ebada6d0"
+        },
+        {
+          "path": "codex-rs/app-server/tests/suite/v2/turn_recover.rs",
+          "blob": "43cd9b0c2d1ba3a6560ade3f3a85616674fcd4c8"
+        }
+      ],
+      "prior_missing_reason": "Nine exact terminalization/steer controls now have actual Windows unit result rows, but no successful Linux/Mac unit body was archived.",
+      "expected_cfg": "original target and source cfg; no new filters, skips, or ignores",
+      "acceptance": {
+        "source_binding": "FINAL_HEAD_OR_ACTUAL_MERGE_WITH_EQUAL_FINAL_TREE_AND_KNOWN_TEST_CONFIGURATION",
+        "all_names_must_have_final_result": "ok",
+        "all_available_attempt_rows_retained": true,
+        "selected_failure_or_timeout_must_remain_open": true,
+        "selected_ignored_or_filtered_cannot_count_as_pass": true,
+        "cached_success_requires": "original action/result provenance and exact case bodies bound to the declared inputs; target marker or mtime alone is insufficient",
+        "absent_logs_state": "EVIDENCE_MISSING",
+        "not_reported_state": "NOT_REPORTED_DO_NOT_READ_OLD_DIRECTORY"
+      }
+    },
+    {
+      "query_id": "Q05",
+      "blocker_id": "B13",
+      "action": "PROJECT_EXISTING_ORIGINAL_CI_ARTIFACTS_ONLY",
+      "target": "//codex-rs/ext/queue:queue-queue_service-test",
+      "platforms": [
+        "linux_gnu_rbe",
+        "linux_musl_label_same_gnu_rbe",
+        "macos_arm64",
+        "macos_x86_64",
+        "windows_msvc"
+      ],
+      "test_names": [
+        "caller_abort_after_core_started_keeps_exact_authority_until_persistence",
+        "completion_panic_retains_exact_authority_in_settlement_guardian",
+        "core_error_after_started_never_releases_ambiguous_dispatch",
+        "rollout_flush_before_dispatch_db_completion_recovers_without_resubmit",
+        "queued_input_and_unique_event_ids_round_trip",
+        "reserved_to_persisted_legacy_row_deletion_emits_queue_changed",
+        "queue_empty_observer_waits_for_owned_database_ack_after_turn_complete",
+        "externally_changed_queues_dispatch_independently_and_retry_failed_wakes"
+      ],
+      "required_name_count": 8,
+      "test_name_match": "EXACT",
+      "original_deadline_contract": "Lease real setup TTL30s then sleep until its actual expiry; Queue original10s acknowledgement waits and existing400/300ms delays unchanged. Existing DB-ack/externally-changed fixture25s waits and real1/11/11s observation sleeps unchanged.",
+      "original_budgets_must_not_change": true,
+      "original_case_source_references": [
+        {
+          "path": "codex-rs/ext/queue/BUILD.bazel",
+          "blob": "ece6922f7b389aa7b23336c34567955cf2755a89"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/BUILD.bazel",
+          "blob": "f9354d8ecab6b3d026468301af83238493b09cb3"
+        },
+        {
+          "path": "codex-rs/ext/queue/tests/queue_service.rs",
+          "blob": "13afd7f2c536c5622fc7f8cc3fe68c0cc1a59cc1"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/runtime_tests.rs",
+          "blob": "31a41d8cad53ee3f04a1106e245dc5c3f4392a5b"
+        }
+      ],
+      "prior_missing_reason": "Target-level passes do not provide the eight exact queue guard/ack result rows; no target logs occur in the existing failure archives.",
+      "expected_cfg": "original target and source cfg; no new filters, skips, or ignores",
+      "acceptance": {
+        "source_binding": "FINAL_HEAD_OR_ACTUAL_MERGE_WITH_EQUAL_FINAL_TREE_AND_KNOWN_TEST_CONFIGURATION",
+        "all_names_must_have_final_result": "ok",
+        "all_available_attempt_rows_retained": true,
+        "selected_failure_or_timeout_must_remain_open": true,
+        "selected_ignored_or_filtered_cannot_count_as_pass": true,
+        "cached_success_requires": "original action/result provenance and exact case bodies bound to the declared inputs; target marker or mtime alone is insufficient",
+        "absent_logs_state": "EVIDENCE_MISSING",
+        "not_reported_state": "NOT_REPORTED_DO_NOT_READ_OLD_DIRECTORY"
+      }
+    },
+    {
+      "query_id": "Q06",
+      "blocker_id": "B13",
+      "action": "PROJECT_EXISTING_ORIGINAL_CI_ARTIFACTS_ONLY",
+      "target": "//codex-rs/hepta-agentd:hepta-agentd-cognitive-write-qualification-test",
+      "platforms": [
+        "linux_gnu_rbe",
+        "linux_musl_label_same_gnu_rbe",
+        "macos_arm64",
+        "macos_x86_64",
+        "windows_msvc"
+      ],
+      "test_names": [
+        "runtime::tests::qualification_prepare_quarantines_expired_registry_attempt_with_h7_evidence"
+      ],
+      "required_name_count": 1,
+      "test_name_match": "EXACT",
+      "original_deadline_contract": "Lease real setup TTL30s then sleep until its actual expiry; Queue original10s acknowledgement waits and existing400/300ms delays unchanged. Existing DB-ack/externally-changed fixture25s waits and real1/11/11s observation sleeps unchanged.",
+      "original_budgets_must_not_change": true,
+      "original_case_source_references": [
+        {
+          "path": "codex-rs/ext/queue/BUILD.bazel",
+          "blob": "ece6922f7b389aa7b23336c34567955cf2755a89"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/BUILD.bazel",
+          "blob": "f9354d8ecab6b3d026468301af83238493b09cb3"
+        },
+        {
+          "path": "codex-rs/ext/queue/tests/queue_service.rs",
+          "blob": "13afd7f2c536c5622fc7f8cc3fe68c0cc1a59cc1"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/runtime_tests.rs",
+          "blob": "31a41d8cad53ee3f04a1106e245dc5c3f4392a5b"
+        }
+      ],
+      "prior_missing_reason": "The exact lease/expiry qualification name remains target-only/cached or executed-marker evidence, with no case body in the existing archives.",
+      "expected_cfg": "original target and source cfg; no new filters, skips, or ignores",
+      "acceptance": {
+        "source_binding": "FINAL_HEAD_OR_ACTUAL_MERGE_WITH_EQUAL_FINAL_TREE_AND_KNOWN_TEST_CONFIGURATION",
+        "all_names_must_have_final_result": "ok",
+        "all_available_attempt_rows_retained": true,
+        "selected_failure_or_timeout_must_remain_open": true,
+        "selected_ignored_or_filtered_cannot_count_as_pass": true,
+        "cached_success_requires": "original action/result provenance and exact case bodies bound to the declared inputs; target marker or mtime alone is insufficient",
+        "absent_logs_state": "EVIDENCE_MISSING",
+        "not_reported_state": "NOT_REPORTED_DO_NOT_READ_OLD_DIRECTORY"
+      }
+    },
+    {
+      "query_id": "Q07",
+      "blocker_id": "B20",
+      "action": "PROJECT_EXISTING_ORIGINAL_CI_ARTIFACTS_ONLY",
+      "target": "//codex-rs/app-server:app-server-all-test",
+      "platforms": [
+        "linux_gnu_rbe",
+        "linux_musl_label_same_gnu_rbe",
+        "macos_arm64",
+        "macos_x86_64"
+      ],
+      "test_names": [
+        "suite::v2::remote_control::connected_backend_handles_models_lookup_before_websocket_initialize",
+        "suite::v2::remote_control::http_fixture_rejects_eof_before_request_headers_complete",
+        "suite::v2::remote_control::explicit_remote_control_startup_fails_when_disabled_by_requirements",
+        "suite::v2::remote_control::disable_waits_for_in_flight_durable_enable",
+        "suite::v2::remote_control::listen_off_honors_persisted_remote_control_enable",
+        "suite::v2::remote_control::listen_off_ignores_persisted_enable_when_disabled_by_requirements",
+        "suite::v2::remote_control::models_http_request_is_not_a_websocket_upgrade",
+        "suite::v2::remote_control::listen_off_exits_without_persisted_remote_control_enable",
+        "suite::v2::remote_control::managed_requirements_allow_remote_control_true_does_not_enable_or_block_it",
+        "suite::v2::remote_control::managed_requirements_reject_all_remote_control_rpcs",
+        "suite::v2::remote_control::pairing_start_works_after_ephemeral_enable",
+        "suite::v2::remote_control::remote_control_client_management_works_while_disabled",
+        "suite::v2::remote_control::remote_control_disable_returns_disabled_status",
+        "suite::v2::remote_control::remote_control_enable_returns_connecting_status",
+        "suite::v2::remote_control::remote_control_status_read_returns_disabled_status",
+        "suite::v2::remote_control::remote_control_status_read_returns_connecting_status_after_enable",
+        "suite::v2::remote_control::remote_control_pairing_start_returns_pairing_artifacts",
+        "suite::v2::remote_control::rpc_updates_durable_preference_but_ephemeral_does_not",
+        "suite::v2::remote_control::stdio_eof_exits_with_remote_control_connection"
+      ],
+      "required_name_count": 19,
+      "test_name_match": "EXACT",
+      "original_deadline_contract": "DEFAULT_TIMEOUT10s and existing STARTUP_TIMEOUT30s/negative100ms windows remain intact. The stdioEOF/shutdown/disconnect awaits each retain original10s.",
+      "original_budgets_must_not_change": true,
+      "original_case_source_references": [
+        {
+          "path": "codex-rs/app-server/BUILD.bazel",
+          "blob": "a3c8ba463f34b031cc517501f41d67b60f2b9feb"
+        },
+        {
+          "path": "codex-rs/app-server/tests/suite/v2/remote_control.rs",
+          "blob": "10a523727b458839c4c2899596f01338e871248e"
+        }
+      ],
+      "prior_missing_reason": "All nineteen exact original controls are now observed in Windows and Linux Wine-exec logs. The ordinary successful Linux/Mac AppServer logs were not archived; do not transfer the variant result.",
+      "expected_cfg": "original target and source cfg; no new filters, skips, or ignores",
+      "acceptance": {
+        "source_binding": "FINAL_HEAD_OR_ACTUAL_MERGE_WITH_EQUAL_FINAL_TREE_AND_KNOWN_TEST_CONFIGURATION",
+        "all_names_must_have_final_result": "ok",
+        "all_available_attempt_rows_retained": true,
+        "selected_failure_or_timeout_must_remain_open": true,
+        "selected_ignored_or_filtered_cannot_count_as_pass": true,
+        "cached_success_requires": "original action/result provenance and exact case bodies bound to the declared inputs; target marker or mtime alone is insufficient",
+        "absent_logs_state": "EVIDENCE_MISSING",
+        "not_reported_state": "NOT_REPORTED_DO_NOT_READ_OLD_DIRECTORY"
+      }
+    },
+    {
+      "query_id": "Q08",
+      "blocker_id": "B22",
+      "action": "PROJECT_EXISTING_ORIGINAL_CI_ARTIFACTS_ONLY",
+      "target": "//codex-rs/tui:tui-unit-tests",
+      "platforms": [
+        "linux_gnu_rbe",
+        "linux_musl_label_same_gnu_rbe",
+        "macos_arm64",
+        "macos_x86_64",
+        "windows_msvc"
+      ],
+      "test_names": [
+        "tests::embedded_state_db_corruption_preserves_failed_database_for_cli_recovery",
+        "app::tests::background_exit_tests::daemon_ctrl_c_during_mcp_startup_does_not_show_background_exit_menu",
+        "app::tests::background_exit_tests::cancel_task_interrupts_without_exiting",
+        "app::tests::background_exit_tests::daemon_ctrl_c_during_paste_burst_does_not_show_exit_menu",
+        "app::tests::background_exit_tests::daemon_ctrl_c_hides_background_exit_for_running_background_side_thread",
+        "app::tests::background_exit_tests::daemon_ctrl_c_shows_background_exit_menu_and_escape_dismisses_it",
+        "app::tests::background_exit_tests::daemon_ctrl_c_hides_background_exit_with_queued_follow_up",
+        "app::tests::background_exit_tests::daemon_ctrl_c_with_draft_preserves_composer_cancellation",
+        "app::tests::background_exit_tests::non_daemon_ctrl_c_keeps_interrupt_behavior",
+        "app::tests::background_exit_tests::run_in_background_detaches_without_interrupting_main_or_side_threads",
+        "app::tests::background_exit_tests::background_exit_shell_readiness_rejects_failed_start",
+        "app::tests::background_exit_tests::daemon_ctrl_c_closes_running_side_thread_and_returns_to_parent",
+        "app::tests::background_exit_tests::exit_interrupts_before_requesting_shutdown"
+      ],
+      "required_name_count": 13,
+      "test_name_match": "EXACT",
+      "original_deadline_contract": "Existing readiness5s waits for matching turn/item and real stdout marker; intentional shell sleep30s. Keep all original interrupt/shutdown assertions and cases. No deadline/retry/ignore change.",
+      "original_budgets_must_not_change": true,
+      "original_case_source_references": [
+        {
+          "path": "codex-rs/tui/BUILD.bazel",
+          "blob": "b6e67fcf5634805ca21371c652f5464da546094d"
+        },
+        {
+          "path": "codex-rs/tui/src/app/tests/background_exit_tests.rs",
+          "blob": "d7d9ed4435b3fb7cb7d8303e94cbb223b5ced438"
+        }
+      ],
+      "prior_missing_reason": "No exact TUI success body in these archives. Windows TUI target PASS29.4s is real but does not supply the missing original case output. The identity of shard3's single uploaded file remains a source/count inference.",
+      "expected_cfg": "original target and source cfg; no new filters, skips, or ignores",
+      "acceptance": {
+        "source_binding": "FINAL_HEAD_OR_ACTUAL_MERGE_WITH_EQUAL_FINAL_TREE_AND_KNOWN_TEST_CONFIGURATION",
+        "all_names_must_have_final_result": "ok",
+        "all_available_attempt_rows_retained": true,
+        "selected_failure_or_timeout_must_remain_open": true,
+        "selected_ignored_or_filtered_cannot_count_as_pass": true,
+        "cached_success_requires": "original action/result provenance and exact case bodies bound to the declared inputs; target marker or mtime alone is insufficient",
+        "absent_logs_state": "EVIDENCE_MISSING",
+        "not_reported_state": "NOT_REPORTED_DO_NOT_READ_OLD_DIRECTORY"
+      }
+    },
+    {
+      "query_id": "Q09",
+      "blocker_id": "B23",
+      "action": "PROJECT_EXISTING_ORIGINAL_CI_ARTIFACTS_ONLY",
+      "target": "//codex-rs/app-server:app-server-unit-tests",
+      "platforms": [
+        "linux_gnu_rbe",
+        "linux_musl_label_same_gnu_rbe",
+        "macos_arm64",
+        "macos_x86_64"
+      ],
+      "test_names": [
+        "drain_handle_tests::repeated_drain_requests_preserve_the_real_completion_acknowledgement",
+        "drain_handle_tests::requesting_drain_does_not_acknowledge_outstanding_turns",
+        "shutdown_signals::tests::first_sigint_survives_cancelled_receive",
+        "shutdown_signals::tests::first_sighup_survives_cancelled_receive",
+        "shutdown_signals::tests::first_sigterm_survives_cancelled_receive"
+      ],
+      "required_name_count": 5,
+      "test_name_match": "EXACT",
+      "original_deadline_contract": "Owned child parent absolute deadline10s; child internal deadline5s. Retain existing disabled/stdio behavior and two drain assertions. No new signal send/retry or timeout.",
+      "original_budgets_must_not_change": true,
+      "original_case_source_references": [
+        {
+          "path": "codex-rs/app-server/BUILD.bazel",
+          "blob": "a3c8ba463f34b031cc517501f41d67b60f2b9feb"
+        },
+        {
+          "path": "codex-rs/app-server/src/shutdown_signals_tests.rs",
+          "blob": "cf2f370bf35fc7cbb8d3b339f92f7da25b87cb51"
+        }
+      ],
+      "prior_missing_reason": "Original five-case native causal evidence was a different source tree; current target/cache success lacks exact signal/drain bodies.",
+      "expected_cfg": "Unix signal parents plus portable drain controls",
+      "acceptance": {
+        "source_binding": "FINAL_HEAD_OR_ACTUAL_MERGE_WITH_EQUAL_FINAL_TREE_AND_KNOWN_TEST_CONFIGURATION",
+        "all_names_must_have_final_result": "ok",
+        "all_available_attempt_rows_retained": true,
+        "selected_failure_or_timeout_must_remain_open": true,
+        "selected_ignored_or_filtered_cannot_count_as_pass": true,
+        "cached_success_requires": "original action/result provenance and exact case bodies bound to the declared inputs; target marker or mtime alone is insufficient",
+        "absent_logs_state": "EVIDENCE_MISSING",
+        "not_reported_state": "NOT_REPORTED_DO_NOT_READ_OLD_DIRECTORY"
+      }
+    },
+    {
+      "query_id": "Q10",
+      "blocker_id": "B23",
+      "action": "PROJECT_EXISTING_ORIGINAL_CI_ARTIFACTS_ONLY",
+      "target": "//codex-rs/app-server:app-server-unit-tests",
+      "platforms": [
+        "windows_msvc"
+      ],
+      "test_names": [
+        "drain_handle_tests::repeated_drain_requests_preserve_the_real_completion_acknowledgement",
+        "drain_handle_tests::requesting_drain_does_not_acknowledge_outstanding_turns"
+      ],
+      "required_name_count": 2,
+      "test_name_match": "EXACT",
+      "original_deadline_contract": "Owned child parent absolute deadline10s; child internal deadline5s. Retain existing disabled/stdio behavior and two drain assertions. No new signal send/retry or timeout.",
+      "original_budgets_must_not_change": true,
+      "original_case_source_references": [
+        {
+          "path": "codex-rs/app-server/BUILD.bazel",
+          "blob": "a3c8ba463f34b031cc517501f41d67b60f2b9feb"
+        },
+        {
+          "path": "codex-rs/app-server/src/shutdown_signals_tests.rs",
+          "blob": "cf2f370bf35fc7cbb8d3b339f92f7da25b87cb51"
+        }
+      ],
+      "prior_missing_reason": "Only the portable drain controls are applicable here; the three Unix signal parents are original cfg exclusions, not Windows passes.",
+      "expected_cfg": "portable drain controls only; original Unix signal parents excluded",
+      "acceptance": {
+        "source_binding": "FINAL_HEAD_OR_ACTUAL_MERGE_WITH_EQUAL_FINAL_TREE_AND_KNOWN_TEST_CONFIGURATION",
+        "all_names_must_have_final_result": "ok",
+        "all_available_attempt_rows_retained": true,
+        "selected_failure_or_timeout_must_remain_open": true,
+        "selected_ignored_or_filtered_cannot_count_as_pass": true,
+        "cached_success_requires": "original action/result provenance and exact case bodies bound to the declared inputs; target marker or mtime alone is insufficient",
+        "absent_logs_state": "EVIDENCE_MISSING",
+        "not_reported_state": "NOT_REPORTED_DO_NOT_READ_OLD_DIRECTORY"
+      }
+    }
+  ],
+  "final_head_binding": {
+    "state": "AWAIT_FINAL_PUBLISHED_SOURCE_AND_ORIGINAL_CI_ARTIFACTS",
+    "final_head": null,
+    "final_tree": null,
+    "actual_merge": null,
+    "actual_merge_tree": null,
+    "required": "Freeze full40hex head/tree, actual checkout commit+parents, modes, testtarget/configuration and artifact ids/digests; only actual source receipts bind new evidence. A pending/null field cannot be accepted."
+  },
+  "original_ci_only_actions": [
+    {
+      "order": 1,
+      "action": "Freeze the final published product head/tree and actual CI checkout/merge parents/tree. Keep source and merge receipts separately even if tree-equal."
+    },
+    {
+      "order": 2,
+      "action": "Use the original already-required platform CI commands and filters once. Do not add duplicate test selections, change budgets/retries, disable cache, or rerun old qualified scopes for this evidence plan."
+    },
+    {
+      "order": 3,
+      "action": "Read the selected-target manifest and available original final/attempt test.log/XML for the ten already-approved target labels; verify ZIPsize/digest/CRC and eachmember hash. If remote success logs are not present, report the manifest's exactmissing reason."
+    },
+    {
+      "order": 4,
+      "action": "Apply these exact-name queries to bound final-source artifact bodies. Preserve all attempts, originalcfg/ignore and cache/execution markers. Missing selectedcase evidence staysmissing; targets not reported are not read from leftover directories."
+    }
+  ],
+  "retention_candidate": {
+    "source_tree": "df74afac9e4e31b61a94725d9689b5d0e40eddfe",
+    "patch": "08813bc3453b331056c2fb1a1b16f90aed88720e",
+    "manifest": "00869f84b429c93e8006a248faf57af80012d5e7",
+    "collector": "e7745ee2a1b8b230119027c0faf56e58462d97ed",
+    "wrapper": "204c0ac2481f70cc977f777eb2299b740f7ddc17",
+    "tests": "045457bb4d7f5e54d4429a93615970a223bb48db",
+    "native_bundle": "e30e254b712f868ec0c21ecf272cbaa294cde8ef",
+    "root_native_review": "ca33e423db6f2bf7aa9e552b6a468af6ed484484",
+    "native_independent_verification": {
+      "bundle_blob": "e30e254b712f868ec0c21ecf272cbaa294cde8ef",
+      "bundle_sha256": "dc3144e49d0c4444cd6149a769f9c136973930f7662e598452b57b02126201fd",
+      "all11_record_bytes_and_sha256_verified": true,
+      "actual_verbose_ok_count": 57,
+      "phases": [
+        {
+          "name": "shell-syntax",
+          "argv": [
+            "bash",
+            "-n",
+            ".github/scripts/run-bazel-ci.sh"
+          ],
+          "exit_code": 0,
+          "duration_seconds": 0.22922825498972088,
+          "source_unchanged": true
+        },
+        {
+          "name": "python-compile",
+          "argv": [
+            "python3",
+            "-m",
+            "py_compile",
+            ".github/scripts/collect_bazel_failed_test_logs.py",
+            ".github/scripts/test_run_bazel_ci.py"
+          ],
+          "exit_code": 0,
+          "duration_seconds": 0.3402715119882487,
+          "source_unchanged": true
+        },
+        {
+          "name": "original-unittest-discover",
+          "argv": [
+            "python3",
+            "-m",
+            "unittest",
+            "discover",
+            "-s",
+            ".github/scripts",
+            "-p",
+            "test_run_bazel*.py",
+            "-v"
+          ],
+          "exit_code": 0,
+          "duration_seconds": 6.288070931012044,
+          "source_unchanged": true
+        }
+      ],
+      "controller_job": "1a1a8d22180-fc05-2fcc",
+      "controller_state": "succeeded",
+      "controller_exit": 0,
+      "no_junit": true,
+      "expanded_proof_in": "ec5e080fd157890349a1e49c4dc1a94a49d08764"
+    },
+    "labels": [
+      "//codex-rs/tui:tui-unit-tests",
+      "//codex-rs/ext/queue:queue-queue_service-test",
+      "//codex-rs/app-server:app-server-all-test",
+      "//codex-rs/app-server:app-server-unit-tests",
+      "//codex-rs/app-server:app-server-all-wine-exec-test",
+      "//codex-rs/codex-mcp:codex-mcp-unit-tests",
+      "//codex-rs/core:core-unit-tests",
+      "//codex-rs/core:core-all-test",
+      "//codex-rs/core:core-all-wine-exec-test",
+      "//codex-rs/hepta-agentd:hepta-agentd-cognitive-write-qualification-test"
+    ],
+    "successful_native_scope": "Linux script qualification only: bash-n, two py_compile files, original unittest discover57/57ok,0skip, no retry,6.288s. Full verbose roster, noJUnit.",
+    "remaining_gate": "Actual hosted success-log retention and Windows script execution at finalsource remain unproven until originalCI. This patch changes neither producttestcommands nor originalfilters/timeout/retries/cache/skip/exitstatus."
+  },
+  "machine_execution": {
+    "mode": "READ_ONLY_PROJECTION_FROM_VERIFIED_ARTIFACT_INPUTS",
+    "existing_projector_blob": "bbe91c8941ebe2736c6ef62fe7edea89e1acb6b6",
+    "argv": [
+      "python3",
+      "exact_case_projection.py"
+    ],
+    "stdin_contract": "JSON equivalent to the existing input schema, with final frozen head/tree and verified original artifact/member manifests. No test/build command is part of this plan.",
+    "required_bindings": [
+      "expected_product_head",
+      "expected_tree",
+      "output_dir (new evidence-only directory)",
+      "archives[].path",
+      "archives[].expected_bytes",
+      "archives[].expected_sha256",
+      "archives[].source",
+      "archives[].members[].member",
+      "archives[].members[].bytes",
+      "archives[].members[].sha256",
+      "archives[].members[].target",
+      "archives[].members[].attempt_record"
+    ],
+    "input_template": {
+      "schema": "hepta.final-seven-scope-existing-artifact-projection.v1",
+      "output_dir": null,
+      "expected_product_head": null,
+      "expected_tree": null,
+      "evidence_map": "203d8eab0dd003f272c09f962e16ca9505da4f2a",
+      "groups": {
+        "B07": [
+          {
+            "test": "suite::hooks_executor::executor_stop_hook_stops_after_disconnection",
+            "binary": "codex-core::all"
+          },
+          {
+            "test": "suite::hooks_executor::executor_stop_hook_runs_after_attachment",
+            "binary": "codex-core::all"
+          },
+          {
+            "test": "suite::code_mode::code_mode_exec_surfaces_handler_errors_as_exceptions",
+            "binary": "codex-core::all"
+          },
+          {
+            "test": "suite::hooks_mcp::active_tool_policy_disables_mcp_tool_hooks_before_transport",
+            "binary": "codex-core::all"
+          },
+          {
+            "test": "suite::hooks_mcp::hepta_feature_disables_mcp_tool_hooks_before_transport",
+            "binary": "codex-core::all"
+          },
+          {
+            "test": "suite::hooks_mcp::mcp_tool_hook_blocks_model_tool_without_recursive_hooks_or_approval",
+            "binary": "codex-core::all"
+          },
+          {
+            "test": "suite::hooks_mcp::mcp_tool_hook_fails_open_when_server_is_unavailable",
+            "binary": "codex-core::all"
+          },
+          {
+            "test": "suite::hooks_mcp::mcp_tool_hook_interpolates_prompt_and_runs_without_tool_approval",
+            "binary": "codex-core::all"
+          },
+          {
+            "test": "suite::hooks_executor::executor_stop_hook_rejects_mismatched_environment",
+            "binary": "codex-core::all"
+          },
+          {
+            "test": "suite::hooks_mcp::mcp_tool_hook_cannot_call_tools_excluded_by_server_filters",
+            "binary": "codex-core::all"
+          },
+          {
+            "test": "suite::hooks_mcp::mcp_tool_hook_marks_thread_memory_mode_polluted_when_configured",
+            "binary": "codex-core::all"
+          },
+          {
+            "test": "suite::hooks_mcp::mcp_tool_hook_passes_thread_metadata_to_model_hidden_tools",
+            "binary": "codex-core::all"
+          },
+          {
+            "test": "suite::hooks_mcp::permission_request_hook_allows_mcp_tool_without_user_or_guardian_review",
+            "binary": "codex-core::all"
+          },
+          {
+            "test": "suite::hooks_mcp::permission_request_hook_denies_mcp_tool_without_user_or_guardian_review",
+            "binary": "codex-core::all"
+          },
+          {
+            "test": "suite::hooks_mcp::post_tool_use_records_mcp_tool_payload_and_context_with_legacy_prefixed_names",
+            "binary": "codex-core::all"
+          },
+          {
+            "test": "suite::hooks_mcp::post_tool_use_records_mcp_tool_payload_and_context_with_non_prefixed_names",
+            "binary": "codex-core::all"
+          },
+          {
+            "test": "suite::hooks_mcp::pre_tool_use_blocks_mcp_tool_before_execution_with_legacy_prefixed_names",
+            "binary": "codex-core::all"
+          },
+          {
+            "test": "suite::hooks_mcp::pre_tool_use_rewrites_mcp_tool_before_execution",
+            "binary": "codex-core::all"
+          },
+          {
+            "test": "suite::hooks_mcp::pre_tool_use_blocks_mcp_tool_before_execution_with_non_prefixed_names",
+            "binary": "codex-core::all"
+          },
+          {
+            "test": "suite::token_budget::active_tool_policy_skips_notes_thread_hint_without_calling_server",
+            "binary": "codex-core::all"
+          },
+          {
+            "test": "suite::token_budget::hepta_token_budget_skips_notes_thread_hint_without_calling_server",
+            "binary": "codex-core::all"
+          },
+          {
+            "test": "suite::token_budget::token_budget_context_injects_plain_thread_hint_text",
+            "binary": "codex-core::all"
+          },
+          {
+            "test": "binding::tests::configured_hook_call_preserves_model_and_environment_boundaries",
+            "binary": "codex-mcp"
+          },
+          {
+            "test": "binding::tests::prepared_call_keeps_captured_connection_and_authority_after_refresh",
+            "binary": "codex-mcp"
+          },
+          {
+            "test": "binding::tests::prepared_call_does_not_reroute_after_captured_connection_closes",
+            "binary": "codex-mcp"
+          },
+          {
+            "test": "binding::tests::prepared_call_is_rejected_after_catalog_refresh",
+            "binary": "codex-mcp"
+          },
+          {
+            "test": "binding::tests::stale_prepared_call_does_not_run_preparation",
+            "binary": "codex-mcp"
+          },
+          {
+            "test": "binding::tests::preparation_holds_catalog_authority_until_it_finishes",
+            "binary": "codex-mcp"
+          }
+        ],
+        "B09": [
+          {
+            "test": "suite::v2::thread_inject_items::thread_inject_items_adds_raw_response_items_after_a_turn",
+            "binary": "codex-app-server::all"
+          },
+          {
+            "test": "suite::v2::turn_recover::cold_resume_explicit_cwd_override_is_fail_closed_for_recovery",
+            "binary": "codex-app-server::all"
+          },
+          {
+            "test": "suite::v2::turn_recover::cold_paginated_sigkill_recovery_uses_canonical_context_tail",
+            "binary": "codex-app-server::all"
+          },
+          {
+            "test": "suite::v2::turn_recover::cold_resume_explicit_workspace_roots_override_is_fail_closed_for_recovery",
+            "binary": "codex-app-server::all"
+          },
+          {
+            "test": "suite::v2::turn_recover::cold_sigkill_after_provider_output_is_not_recoverable",
+            "binary": "codex-app-server::all"
+          },
+          {
+            "test": "suite::v2::turn_recover::recover_rejects_busy_completed_and_cross_thread_turns",
+            "binary": "codex-app-server::all"
+          },
+          {
+            "test": "suite::v2::turn_recover::same_process_ephemeral_interrupted_turn_recovers_from_listener_state",
+            "binary": "codex-app-server::all"
+          },
+          {
+            "test": "suite::v2::turn_recover::turn_recover_requires_hepta_turn_recovery_feature",
+            "binary": "codex-app-server::all"
+          },
+          {
+            "test": "suite::v2::turn_recover::cold_sigkill_recovery_preserves_turn_and_deduplicates_stable_queue_input",
+            "binary": "codex-app-server::all"
+          },
+          {
+            "test": "suite::abort_tasks::root_turn_suspension_preserves_unfinished_turn_history",
+            "binary": "codex-core::all"
+          },
+          {
+            "test": "session::tests::panicking_session_task_is_converted_to_terminal_error_and_releases_slot",
+            "binary": "codex-core"
+          },
+          {
+            "test": "session::tests::cancelled_finish_owner_keeps_terminalizer_alive",
+            "binary": "codex-core"
+          },
+          {
+            "test": "session::tests::panicking_finish_terminalizer_retains_fence",
+            "binary": "codex-core"
+          },
+          {
+            "test": "session::tests::hung_finish_terminalizer_watchdog_retains_fence",
+            "binary": "codex-core"
+          },
+          {
+            "test": "session::tests::cancelled_abort_owner_keeps_terminalizer_alive",
+            "binary": "codex-core"
+          },
+          {
+            "test": "session::tests::panicking_abort_terminalizer_retains_fence",
+            "binary": "codex-core"
+          },
+          {
+            "test": "session::tests::cancelled_suspend_caller_keeps_writer_handoff_alive",
+            "binary": "codex-core"
+          },
+          {
+            "test": "session::turn_input::tests::steer_only_requires_active_turn",
+            "binary": "codex-core"
+          },
+          {
+            "test": "session::turn_input::tests::steer_only_enforces_expected_turn_id",
+            "binary": "codex-core"
+          }
+        ],
+        "B13": [
+          {
+            "test": "runtime::tests::qualification_prepare_quarantines_expired_registry_attempt_with_h7_evidence",
+            "binary": "codex-hepta-agentd"
+          },
+          {
+            "test": "caller_abort_after_core_started_keeps_exact_authority_until_persistence",
+            "binary": "codex-queue-extension::queue_service"
+          },
+          {
+            "test": "completion_panic_retains_exact_authority_in_settlement_guardian",
+            "binary": "codex-queue-extension::queue_service"
+          },
+          {
+            "test": "core_error_after_started_never_releases_ambiguous_dispatch",
+            "binary": "codex-queue-extension::queue_service"
+          },
+          {
+            "test": "rollout_flush_before_dispatch_db_completion_recovers_without_resubmit",
+            "binary": "codex-queue-extension::queue_service"
+          },
+          {
+            "test": "queued_input_and_unique_event_ids_round_trip",
+            "binary": "codex-queue-extension::queue_service"
+          },
+          {
+            "test": "reserved_to_persisted_legacy_row_deletion_emits_queue_changed",
+            "binary": "codex-queue-extension::queue_service"
+          },
+          {
+            "test": "queue_empty_observer_waits_for_owned_database_ack_after_turn_complete",
+            "binary": "codex-queue-extension::queue_service"
+          },
+          {
+            "test": "externally_changed_queues_dispatch_independently_and_retry_failed_wakes",
+            "binary": "codex-queue-extension::queue_service"
+          }
+        ],
+        "B20": [
+          {
+            "test": "suite::v2::remote_control::connected_backend_handles_models_lookup_before_websocket_initialize",
+            "binary": "codex-app-server::all"
+          },
+          {
+            "test": "suite::v2::remote_control::http_fixture_rejects_eof_before_request_headers_complete",
+            "binary": "codex-app-server::all"
+          },
+          {
+            "test": "suite::v2::remote_control::explicit_remote_control_startup_fails_when_disabled_by_requirements",
+            "binary": "codex-app-server::all"
+          },
+          {
+            "test": "suite::v2::remote_control::disable_waits_for_in_flight_durable_enable",
+            "binary": "codex-app-server::all"
+          },
+          {
+            "test": "suite::v2::remote_control::listen_off_honors_persisted_remote_control_enable",
+            "binary": "codex-app-server::all"
+          },
+          {
+            "test": "suite::v2::remote_control::listen_off_ignores_persisted_enable_when_disabled_by_requirements",
+            "binary": "codex-app-server::all"
+          },
+          {
+            "test": "suite::v2::remote_control::models_http_request_is_not_a_websocket_upgrade",
+            "binary": "codex-app-server::all"
+          },
+          {
+            "test": "suite::v2::remote_control::listen_off_exits_without_persisted_remote_control_enable",
+            "binary": "codex-app-server::all"
+          },
+          {
+            "test": "suite::v2::remote_control::managed_requirements_allow_remote_control_true_does_not_enable_or_block_it",
+            "binary": "codex-app-server::all"
+          },
+          {
+            "test": "suite::v2::remote_control::managed_requirements_reject_all_remote_control_rpcs",
+            "binary": "codex-app-server::all"
+          },
+          {
+            "test": "suite::v2::remote_control::pairing_start_works_after_ephemeral_enable",
+            "binary": "codex-app-server::all"
+          },
+          {
+            "test": "suite::v2::remote_control::remote_control_client_management_works_while_disabled",
+            "binary": "codex-app-server::all"
+          },
+          {
+            "test": "suite::v2::remote_control::remote_control_disable_returns_disabled_status",
+            "binary": "codex-app-server::all"
+          },
+          {
+            "test": "suite::v2::remote_control::remote_control_enable_returns_connecting_status",
+            "binary": "codex-app-server::all"
+          },
+          {
+            "test": "suite::v2::remote_control::remote_control_status_read_returns_disabled_status",
+            "binary": "codex-app-server::all"
+          },
+          {
+            "test": "suite::v2::remote_control::remote_control_status_read_returns_connecting_status_after_enable",
+            "binary": "codex-app-server::all"
+          },
+          {
+            "test": "suite::v2::remote_control::remote_control_pairing_start_returns_pairing_artifacts",
+            "binary": "codex-app-server::all"
+          },
+          {
+            "test": "suite::v2::remote_control::rpc_updates_durable_preference_but_ephemeral_does_not",
+            "binary": "codex-app-server::all"
+          },
+          {
+            "test": "suite::v2::remote_control::stdio_eof_exits_with_remote_control_connection",
+            "binary": "codex-app-server::all"
+          }
+        ],
+        "B22": [
+          {
+            "test": "tests::embedded_state_db_corruption_preserves_failed_database_for_cli_recovery",
+            "binary": "codex-tui"
+          },
+          {
+            "test": "app::tests::background_exit_tests::daemon_ctrl_c_during_mcp_startup_does_not_show_background_exit_menu",
+            "binary": "codex-tui"
+          },
+          {
+            "test": "app::tests::background_exit_tests::cancel_task_interrupts_without_exiting",
+            "binary": "codex-tui"
+          },
+          {
+            "test": "app::tests::background_exit_tests::daemon_ctrl_c_during_paste_burst_does_not_show_exit_menu",
+            "binary": "codex-tui"
+          },
+          {
+            "test": "app::tests::background_exit_tests::daemon_ctrl_c_hides_background_exit_for_running_background_side_thread",
+            "binary": "codex-tui"
+          },
+          {
+            "test": "app::tests::background_exit_tests::daemon_ctrl_c_shows_background_exit_menu_and_escape_dismisses_it",
+            "binary": "codex-tui"
+          },
+          {
+            "test": "app::tests::background_exit_tests::daemon_ctrl_c_hides_background_exit_with_queued_follow_up",
+            "binary": "codex-tui"
+          },
+          {
+            "test": "app::tests::background_exit_tests::daemon_ctrl_c_with_draft_preserves_composer_cancellation",
+            "binary": "codex-tui"
+          },
+          {
+            "test": "app::tests::background_exit_tests::non_daemon_ctrl_c_keeps_interrupt_behavior",
+            "binary": "codex-tui"
+          },
+          {
+            "test": "app::tests::background_exit_tests::run_in_background_detaches_without_interrupting_main_or_side_threads",
+            "binary": "codex-tui"
+          },
+          {
+            "test": "app::tests::background_exit_tests::background_exit_shell_readiness_rejects_failed_start",
+            "binary": "codex-tui"
+          },
+          {
+            "test": "app::tests::background_exit_tests::daemon_ctrl_c_closes_running_side_thread_and_returns_to_parent",
+            "binary": "codex-tui"
+          },
+          {
+            "test": "app::tests::background_exit_tests::exit_interrupts_before_requesting_shutdown",
+            "binary": "codex-tui"
+          }
+        ],
+        "B23": [
+          {
+            "test": "drain_handle_tests::repeated_drain_requests_preserve_the_real_completion_acknowledgement",
+            "binary": "codex-app-server"
+          },
+          {
+            "test": "drain_handle_tests::requesting_drain_does_not_acknowledge_outstanding_turns",
+            "binary": "codex-app-server"
+          },
+          {
+            "test": "shutdown_signals::tests::first_sigint_survives_cancelled_receive",
+            "binary": "codex-app-server"
+          },
+          {
+            "test": "shutdown_signals::tests::first_sighup_survives_cancelled_receive",
+            "binary": "codex-app-server"
+          },
+          {
+            "test": "shutdown_signals::tests::first_sigterm_survives_cancelled_receive",
+            "binary": "codex-app-server"
+          }
+        ],
+        "B08": [
+          {
+            "test": "tools::executed_tool_calls::tests::executed_tool_call_recorder_bounds_pending_calls_and_preserves_overflow",
+            "binary": "codex-core"
+          },
+          {
+            "test": "tools::executed_tool_calls::tests::executed_tool_call_recorder_bounds_retained_history_and_reports_omissions",
+            "binary": "codex-core"
+          },
+          {
+            "test": "client::tests::chatgpt_codex_wire_strips_local_content_metadata_but_openai_wire_keeps_it",
+            "binary": "codex-core"
+          },
+          {
+            "test": "suite::tools::namespaced_custom_tool_call_preserves_namespace_through_dispatch_and_replay",
+            "binary": "codex-core::all"
+          }
+        ]
+      },
+      "additional_lifecycle_names": [],
+      "archives": []
+    },
+    "gate_evaluation_order": [
+      "source binding exact",
+      "artifact and member identity/complete",
+      "originaltarget/config/cfg",
+      "exact finalresult for each query name",
+      "allavailableattempt outcomes",
+      "cached/executed provenance",
+      "fulltarget failures and scopedcase results kept separate"
+    ],
+    "result_states": [
+      "EXACT_CASE_OK_BOUND_SOURCE",
+      "SELECTED_FAILURE_OR_TIMEOUT_OPEN",
+      "ORIGINAL_CFG_NOT_APPLICABLE",
+      "ORIGINAL_IGNORED_NOT_PASS",
+      "FILTERED_NOT_EXECUTED",
+      "CACHED_CASE_PROVENANCE_PENDING",
+      "SOURCE_BINDING_PENDING",
+      "EVIDENCE_MISSING",
+      "NOT_REPORTED"
+    ],
+    "forbidden_shortcuts": [
+      "No inferredPASS from target/cache/summary alone",
+      "No reading oldtargetdirectories after NOT_REPORTED or ambiguity",
+      "No counting target-wrapperXML as exactcaseXML",
+      "No sourcehead-to-merge or donor-to-product transfer",
+      "No automatic all-green if query set is empty or a compiled originalname is absent"
+    ]
+  },
+  "historical_causal_controls_do_not_repeat_for_counts": [
+    {
+      "id": "B20",
+      "meaning": "Prior deterministic old/new HTTP-to-WebSocket fixture causal controls remain frozen on their original source; finalplatform result collection is the pending positive gate."
+    },
+    {
+      "id": "B23",
+      "meaning": "Prior native baseline3signal-fail+2drain-pass and fixed5pass remain on their original tree. Do not rerun that historicalbaseline solely to fill the new report."
+    }
+  ],
+  "new_closed_ids": [],
+  "no_mutations_or_reruns": true,
+  "expanded_machine_appendix": {
+    "blob": "ec5e080fd157890349a1e49c4dc1a94a49d08764",
+    "purpose": "Full repeated observation/proof objects; compact checklist references immutable original projections instead."
+  },
+  "platform_cfg_proof_catalog": [
+    {
+      "path": "codex-rs/core/tests/suite/mod.rs",
+      "blob": "17145f671a76a894ab374ca299a67cf1a43e9c55",
+      "fixed_ref": "cabcb40d36e116beaa65750e1f674c52035da785",
+      "lines": [
+        {
+          "line": 78,
+          "text": "mod guardian_subagent_authorization;"
+        },
+        {
+          "line": 79,
+          "text": "#[cfg(not(target_os = \"windows\"))]"
+        },
+        {
+          "line": 80,
+          "text": "mod hooks;"
+        },
+        {
+          "line": 81,
+          "text": "#[cfg(not(target_os = \"windows\"))]"
+        },
+        {
+          "line": 82,
+          "text": "mod hooks_executor;"
+        },
+        {
+          "line": 83,
+          "text": "#[cfg(not(target_os = \"windows\"))]"
+        },
+        {
+          "line": 84,
+          "text": "mod hooks_mcp;"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/core/tests/suite/mod.rs",
+      "blob": "17145f671a76a894ab374ca299a67cf1a43e9c55",
+      "fixed_ref": "cabcb40d36e116beaa65750e1f674c52035da785",
+      "lines": [
+        {
+          "line": 35,
+          "text": ""
+        },
+        {
+          "line": 36,
+          "text": "#[cfg(not(target_os = \"windows\"))]"
+        },
+        {
+          "line": 37,
+          "text": "mod abort_tasks;"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/core/tests/suite/tools.rs",
+      "blob": "1fc4b08dd39ec30085d38cc3b5b661e2bdc6775e",
+      "fixed_ref": "cabcb40d36e116beaa65750e1f674c52035da785",
+      "lines": [
+        {
+          "line": 1,
+          "text": "#![cfg(not(target_os = \"windows\"))]"
+        },
+        {
+          "line": 2,
+          "text": "#![allow(clippy::unwrap_used)]"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/app-server/tests/suite/v2/turn_recover.rs",
+      "blob": "43cd9b0c2d1ba3a6560ade3f3a85616674fcd4c8",
+      "fixed_ref": "cabcb40d36e116beaa65750e1f674c52035da785",
+      "lines": [
+        {
+          "line": 1,
+          "text": "#![cfg(unix)]"
+        },
+        {
+          "line": 2,
+          "text": ""
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/core/tests/suite/code_mode.rs",
+      "blob": "d1970f7853bcd5777ef96881b457525b7abfa92a",
+      "fixed_ref": "cabcb40d36e116beaa65750e1f674c52035da785",
+      "lines": [
+        {
+          "line": 2046,
+          "text": "#[cfg_attr(windows, ignore = \"no exec_command on Windows\")]"
+        },
+        {
+          "line": 2047,
+          "text": "#[tokio::test(flavor = \"multi_thread\", worker_threads = 2)]"
+        },
+        {
+          "line": 2048,
+          "text": "async fn code_mode_exec_surfaces_handler_errors_as_exceptions() -> Result<()> {"
+        },
+        {
+          "line": 2049,
+          "text": "    skip_if_no_network!(Ok(()));"
+        }
+      ]
+    }
+  ]
+}

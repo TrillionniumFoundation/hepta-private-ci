@@ -1,0 +1,38 @@
+{
+  "schema": "hepta-app-parent-liveness-native-launch-receipt-v1",
+  "host": "rog",
+  "job_id": "1a1a9bd0f35-fc05-3714",
+  "reused": false,
+  "launch": {
+    "backend": "systemd",
+    "launcher_pid": null,
+    "ok": true,
+    "unit": "hepta-runtime-job-1a1a9bd0f35-fc05-3714"
+  },
+  "created_unix_ms": 1793849102133,
+  "launch_state": "launched",
+  "remote_job_dir": "/home/qian-qi/.local/state/hepta-runtime-mac-worker/jobs/1a1a9bd0f35-fc05-3714",
+  "idempotency_key": "hepta-rog-app-parent-liveness-three-causal-eight-exact-20261105-v1",
+  "executable": "/usr/bin/python3",
+  "cwd": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/source/codex-rs",
+  "timeout_seconds": 7200,
+  "argv_runner": {
+    "bytes": 29370,
+    "sha256": "9ee2ae01565bfede3984ee2390ef5bf16cca5e504667397ce665945d67c82040"
+  },
+  "stdin": {
+    "bytes": 165899,
+    "sha256": "dbdc4d94de11c8d0825de77a0dd299560e2be8dd0fe95cd376de4db837a7aa52"
+  },
+  "request_digest": "2d4aaba68d99a456c3a9a9abc904089f49c750f0b0a3ea0d38a202f49bfdc48f",
+  "request_fingerprint": 3263609611811923000,
+  "runner_blob": "7b4fce92dfe624f046c1cb022b7f9618d7dcb09d",
+  "root_guard_blob": "104a43936267d8b28b00cc54df90013c6f7ecccc",
+  "manifest_blob": "39bbc1032d3b703ea0b21d1e0e290d39512e06a3",
+  "payload_blob": "fddba666639121780e7c8d999ed58b7738340707",
+  "initial_observed_phase": {
+    "source": "7e1bb54a24c240287c7f4f6a2b85fed008509cff",
+    "name": "no_exit_rejection-negative-normal-six-helper-build"
+  },
+  "pending": true
+}

@@ -1,0 +1,269 @@
+{
+  "schema_version": 1,
+  "prepared_at_utc": "2026-11-04T19:23:32Z",
+  "kind": "SOURCE_ONLY_NONPUBLISHING_QUALIFICATION_CANDIDATE",
+  "audited_source": {
+    "repository": "TrillionniumFoundation/hepta-private-ci",
+    "head": "ff72d462d74f9eb856aa9edbc368caad9c466708",
+    "merge": "8e20cb5ec8261053ea472f06f79a0def072f3dce",
+    "tree": "f780fe13946102a33b329898af48810be9c7bf0c"
+  },
+  "file": {
+    "path": ".github/workflows/hepta-musl-product-smoke.yml",
+    "operation": "add",
+    "old_blob": null,
+    "new_blob": "6aad46b1fe0edcf315ef8b1a5546225c59efe235",
+    "bytes": 21599,
+    "sha256": "0b980fc83ac32bba15b9f4b6708426d7b182e3c84b6768183dbbdd3fc9091f36",
+    "lines": 410
+  },
+  "prior_unexecuted_drafts": [
+    "427598b270c64b5df8e63fca400d84c80ba96142",
+    "9cf2ba422514335f3cc9fc0dbd068024db188dbf"
+  ],
+  "purpose": "Obtain a real current-source musl Hepta CLI build and exact-product process receipt; this is not an existing pass or complete musl business qualification.",
+  "selected_target": "//codex-rs/cli:hepta_linux_amd64_musl",
+  "inner_target": "//codex-rs/cli:hepta",
+  "existing_platform_alias": "@llvm//platforms:linux_amd64_musl",
+  "events": [
+    "pull_request with explicit source/build-path filters",
+    "workflow_dispatch on the selected workflow ref"
+  ],
+  "permissions": {
+    "contents": "read",
+    "new_secrets": [],
+    "release_publish_signing_tag_commands": [],
+    "checkout_persist_credentials": false
+  },
+  "source_contract": [
+    "Checkout github.sha explicitly. PR head and actual checkout/merge are recorded separately.",
+    "Record real Git object parents from git cat-file -p HEAD headers; shallow checkout does not invent zero parents.",
+    "Record current commit/tree, source-input blobs, workflow identity, runner/kernel/image, and tracked source cleanliness before/after.",
+    "A later product commit incorporating this workflow is qualified by its own actual checkout SHA/tree, not automatically by ff72."
+  ],
+  "execution_contract": {
+    "build_runner": "ubuntu-24.04, verified Linux x86_64",
+    "job_timeout_minutes": 120,
+    "build_and_smoke_step_timeout_minutes": 110,
+    "original_workflow_and_test_budgets_changed": false,
+    "preparation": "Unmodified prepare-bazel-ci -> setup-bazel-ci -> setup-ci.",
+    "common_bazel_arguments": [
+      "--config=ci-linux",
+      "--config=ci",
+      "-c",
+      "opt",
+      "--platforms=@llvm//platforms:linux_amd64_musl",
+      "--lockfile_mode=error",
+      "--remote_download_toplevel"
+    ],
+    "build": "python3 .github/scripts/run_bazel_with_buildbuddy.py build <common options> --build_metadata=COMMIT_SHA=<actual checkout> --build_metadata=REPO_URL=https://github.com/TrillionniumFoundation/hepta-private-ci --build_metadata=TAG_workflow=hepta-musl-product-smoke --build_event_json_file=<job temporary file> //codex-rs/cli:hepta_linux_amd64_musl",
+    "platform_cquery": "Same common options; query the explicit platform alias with --starlark:expr=str(target.label), without restricting its universe to the product. Require one result and record the resolved canonical label.",
+    "product_cqueries": "Same common options and --universe_scope=//codex-rs/cli:hepta_linux_amd64_musl; query outer wrapper and inner //codex-rs/cli:hepta separately. Obtain label, build_options platforms and DefaultInfo.files_to_run.executable.path.",
+    "configured_target_checks": [
+      "Exactly one row each",
+      "Main repository label exact, accepting only //... or @@//...",
+      "Both platforms exactly equal the actually resolved platform label, no guessed canonical repo regex",
+      "Relative bazel-out paths with no ..",
+      "Resolved execution root inside actual Bazel output_base",
+      "Wrapper and inner samefile; inner actual executable resolves within that execution root"
+    ],
+    "byte_and_elf_checks": [
+      "Copy the configured executable, preserve executable mode, compare exact SHA256",
+      "ELF64 little endian, x86_64 machine 62, executable or PIE",
+      "Record full file/readelf outputs; reject PT_INTERP or DT_NEEDED for this static-musl qualification",
+      "Hash before each smoke, after each smoke and at terminal artifact collection"
+    ],
+    "smokes": [
+      {
+        "argv": [
+          "<staged exact product>",
+          "--version"
+        ],
+        "timeout_seconds": 30,
+        "attempts": 1,
+        "expect": "exit 0 and output begins 'hepta '"
+      },
+      {
+        "argv": [
+          "<staged exact product>",
+          "--help"
+        ],
+        "timeout_seconds": 30,
+        "attempts": 1,
+        "expect": "exit 0 and original 'Hepta CLI' / 'Usage: hepta ' output"
+      }
+    ],
+    "product_home": "Existing HEPTA_HOME override to a job-temporary empty directory; not uploaded, no fabricated trusted attachment/signature.",
+    "credential_scope": "Existing BuildBuddy key used only by the Bazel steps/final text redaction; removed from smoke child environment.",
+    "build_cache": "Existing remote/local cache settings are retained. Receipt does not claim fresh full recompilation; build stdout/stderr and safe BEP metrics describe actual cache use."
+  },
+  "evidence": {
+    "artifact_name": "hepta-musl-product-smoke-<run_id>-<run_attempt>",
+    "retention_days": 14,
+    "contents": [
+      "source.json",
+      "receipt.json with per-command argv, return code, elapsed, timeout/attempt and exact executed binary hash",
+      "configured platform/product cquery stdout/stderr",
+      "full build stdout/stderr with literal BuildBuddy key redacted if present",
+      "actual binary/hepta bytes",
+      "file/readelf outputs",
+      "safe BEP event/metric projection and raw input SHA256, with raw options/client environment/command lines excluded",
+      "artifact-manifest.json with actual per-member size/SHA256"
+    ],
+    "partial_failure": "No retry, skip-success or pass manufacture. Job failure/step timeout retains whatever receipt/logs were actually written if finalization succeeds. Cancellation or failed safe finalization may leave only original GitHub job logs.",
+    "raw_bep_uploaded": false,
+    "source_and_binary_unchanged_required": true
+  },
+  "acceptance_after_actual_run": [
+    "Workflow/job terminal success, exact expected commit or explicitly tree-equal synthetic merge, no source changes.",
+    "Inspect per-command receipt: exactly one successful build, one successful version and one successful help; no timeout/retry.",
+    "Inspect resolved canonical target platform and both configured executable identities.",
+    "Independently download artifact, verify GitHub ZIP size/digest/CRC and per-member manifest; compare actual ELF bytes/hash to both executed-smoke hashes.",
+    "Read original logs and cache metrics; retain cache hits as cache-backed build, never as a fresh compiler run.",
+    "Close only the explicit static-musl CLI build/process gap. Full integration/behavior, sandbox/security, networking, Alpine deployment and ARM musl remain separate gates."
+  ],
+  "source_evidence": [
+    {
+      "path": "codex-rs/cli/BUILD.bazel",
+      "blob": "a64e4a8d12045dcd4f83e2a02c262e52e87ef4c8",
+      "lines": "17-24",
+      "meaning": "Defines codex and hepta multiplatform binaries; the selected Hepta musl target already exists.",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/ff72d462d74f9eb856aa9edbc368caad9c466708/codex-rs/cli/BUILD.bazel"
+    },
+    {
+      "path": "bazel/platforms/release_binaries.bzl",
+      "blob": "7ac59c2b5e1f670d1653c2b3efdd8a82f2963bdc",
+      "lines": "5-26",
+      "meaning": "platform_data maps the existing target to @llvm//platforms:linux_amd64_musl; it is tagged manual.",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/ff72d462d74f9eb856aa9edbc368caad9c466708/bazel/platforms/release_binaries.bzl"
+    },
+    {
+      "path": "defs.bzl",
+      "blob": "6f588ec3057fddfea35170e28e74036162ce6a23",
+      "lines": "438-462",
+      "meaning": "The inner target is a real rust_binary with CARGO_BIN_NAME=hepta and the existing stamped source identity.",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/ff72d462d74f9eb856aa9edbc368caad9c466708/defs.bzl"
+    },
+    {
+      "path": "MODULE.bazel",
+      "blob": "a21061a8b741fc724edb580e229eb86d9debdc4f",
+      "lines": "8-22,86,154-165,286-305,323-337",
+      "meaning": "Pins LLVM 0.8.11, rules_platform 0.1.0, rules_rs 0.0.96 and Rust 1.95.0; registers the existing toolchain and both Linux musl target triples.",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/ff72d462d74f9eb856aa9edbc368caad9c466708/MODULE.bazel"
+    },
+    {
+      "path": "BUILD.bazel",
+      "blob": "1f9970fdbd25413e7a4e9a98519ba44a735158d4",
+      "lines": "5-15,91-94",
+      "meaning": "GNU/glibc local Linux execution platform remains necessary for host-loaded proc macros; the existing RBE alias remains unchanged.",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/ff72d462d74f9eb856aa9edbc368caad9c466708/BUILD.bazel"
+    },
+    {
+      "path": ".bazelrc",
+      "blob": "3d5877b283b887091af507f3672003f84c500687",
+      "lines": "25-26,108-125,189-200",
+      "meaning": "ci-linux defaults the outer platform to RBE and ci enables remote_download_minimal. The new explicit per-command platform and download_toplevel follow these configs; no existing config is edited.",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/ff72d462d74f9eb856aa9edbc368caad9c466708/.bazelrc"
+    },
+    {
+      "path": ".bazelversion",
+      "blob": "b13d146a7b02b96e4c30340e69388d539c9721be",
+      "lines": "1",
+      "meaning": "Existing pinned Bazel version is 9.3.0.",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/ff72d462d74f9eb856aa9edbc368caad9c466708/.bazelversion"
+    },
+    {
+      "path": ".github/scripts/run_bazel_with_buildbuddy.py",
+      "blob": "21a5fdf0e7afcde4b6141229e95fcff8f6a7e763",
+      "lines": "117-124,140-166,227-289,344-371",
+      "meaning": "Reuses existing authenticated remote configuration or keyless fallback and startup/cache settings. Explicit ci is retained when keyless fallback removes ci-linux. No credentials are copied to new stores.",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/ff72d462d74f9eb856aa9edbc368caad9c466708/.github/scripts/run_bazel_with_buildbuddy.py"
+    },
+    {
+      "path": ".github/actions/prepare-bazel-ci/action.yml",
+      "blob": "f9508a1659e5f2c54a6ae5b263bb9328095438d7",
+      "lines": "1-79",
+      "meaning": "Existing setup/repository-cache restoration; target input is a setup/cache namespace, not the proof of target compilation.",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/ff72d462d74f9eb856aa9edbc368caad9c466708/.github/actions/prepare-bazel-ci/action.yml"
+    },
+    {
+      "path": ".github/actions/setup-bazel-ci/action.yml",
+      "blob": "ea3f3a6521b970484ac60d1cebf788092753555a",
+      "lines": "1-30",
+      "meaning": "Existing Bazelisk 1.28.1 and setup-ci are reused.",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/ff72d462d74f9eb856aa9edbc368caad9c466708/.github/actions/setup-bazel-ci/action.yml"
+    },
+    {
+      "path": ".github/actions/setup-ci/action.yml",
+      "blob": "8abd2dbd5f09585734f8213011a9ed540a2ee88e",
+      "lines": "1-115",
+      "meaning": "Existing hosted-runner tools/build paths; no new platform installation or Cargo lane.",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/ff72d462d74f9eb856aa9edbc368caad9c466708/.github/actions/setup-ci/action.yml"
+    },
+    {
+      "path": ".github/scripts/rusty_v8_bazel.py",
+      "blob": "6150aff5af12120afad7767cf992157444523523",
+      "lines": "29-79",
+      "meaning": "Existing repository precedent uses the same Python wrapper for cquery output resolution and bazel info execution_root/output_base.",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/ff72d462d74f9eb856aa9edbc368caad9c466708/.github/scripts/rusty_v8_bazel.py"
+    },
+    {
+      "path": "codex-rs/cli/src/main_impl.rs",
+      "blob": "1bd3eb0bfb183f6a436ba56220906f91b49f0679",
+      "lines": "101-112,117-127,1078-1103,2919-2935",
+      "meaning": "The Hepta entry uses the common real CLI, product_name/version, 'Hepta CLI' and 'Usage: hepta' help contract.",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/ff72d462d74f9eb856aa9edbc368caad9c466708/codex-rs/cli/src/main_impl.rs"
+    },
+    {
+      "path": "codex-rs/utils/home-dir/src/lib.rs",
+      "blob": "66267ce6e358fb2859cf9667b4bc9dc761f61be6",
+      "lines": "26-37,88-106",
+      "meaning": "HEPTA_HOME is the existing supported product-home override. The smoke uses a job-temporary empty home, does not change HOME/CODEX_HOME or create authority inputs.",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/ff72d462d74f9eb856aa9edbc368caad9c466708/codex-rs/utils/home-dir/src/lib.rs"
+    }
+  ],
+  "upstream_api_evidence": [
+    {
+      "repository": "bazelbuild/rules_platform",
+      "ref": "0.1.0",
+      "path": "platform_data/defs.bzl",
+      "blob": "02f8b3402c0192491a54ba28137b0e25aabed62d",
+      "meaning": "Transitions target platform; DefaultInfo has an executable symlink and transitive original binary files, so choosing first --output=files entry would be unsound."
+    },
+    {
+      "repository": "hermeticbuild/hermetic-llvm",
+      "ref": "v0.8.11",
+      "path": "platforms/declare_platforms.bzl",
+      "blob": "81641339b1d0b6c1810cb360841d934c253d8934",
+      "meaning": "Existing libc-aware platform declarations provide musl constraints."
+    },
+    {
+      "url": "https://bazel.build/query/cquery",
+      "meaning": "Primary API documents providers(target), build_options(target), --universe_scope, configured-target ambiguity and executable file paths relative to execroot."
+    }
+  ],
+  "validation": {
+    "status": "STATIC_ARCH_ACCEPTED; PENDING_ROOT_FINAL_ACCEPTANCE_AND_SYNTAX_CHECK; NOT_EXECUTED",
+    "read_complete_fixed_sources": true,
+    "independent_architecture_v1_api_review": "Read full v1 plus Bazel 9.3.0 API; requested exact labels and output-root anchoring, incorporated.",
+    "root_v1_review": "Requested raw commit parent headers and actual resolved platform identity; both incorporated. Final publication approval remains root-owned.",
+    "yaml_parser_run": false,
+    "python_ast_compile_run": false,
+    "workflow_run_started": false,
+    "native_cargo_or_bazel_started": false,
+    "ref_changed": false,
+    "limitations": [
+      "Actual registered-toolchain resolution, product link, hosted-runner inspection-tool availability and process behavior remain unqualified until the workflow executes.",
+      "The source comment about Linux cross-build/libc complexity is not ignored; genuine analysis/link failure is retained, without changing libraries, platform definitions or filters to obtain green.",
+      "New workflow budgets apply only to this new qualification; no original timeout/assertion/required job is modified."
+    ],
+    "independent_architecture_final_review": {
+      "blob": "1bf22c996098bfc0e6ac29a460ba17f7bf13c121",
+      "bytes": 7862,
+      "sha256": "dc02a3b37cd41d5ef56698607a6be4161d922b57b4ff462d9d45286abcf47daa",
+      "verdict": "STATIC_ACCEPT_FOR_SYNTAX_CHECK_AND_EXACT_SOURCE_HOSTED_EXECUTION",
+      "final_workflow_blob": "6aad46b1fe0edcf315ef8b1a5546225c59efe235",
+      "basis": "Complete final candidate and pinned Bazel 9.3.0 provider/Label Java sources read; no execution."
+    }
+  }
+}

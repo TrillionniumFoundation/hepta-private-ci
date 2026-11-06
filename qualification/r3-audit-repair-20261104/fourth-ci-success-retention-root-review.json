@@ -1,0 +1,182 @@
+{
+  "schema": "hepta.fourth.ci-success-retention.root-native-review.v1",
+  "observed_at_utc": "2026-11-04 23:17:19 UTC",
+  "evidence_blob": "e30e254b712f868ec0c21ecf272cbaa294cde8ef",
+  "evidence_identity": {
+    "bytes": 54266,
+    "sha256": "dc3144e49d0c4444cd6149a769f9c136973930f7662e598452b57b02126201fd"
+  },
+  "source": "df74afac9e4e31b61a94725d9689b5d0e40eddfe",
+  "root_static_review": "0ff3886fbd3e22ac8ea9709284e0380d28dd4af7",
+  "independent_static_review": "2542b3f69b62aa8844fa56bc7fa094ce5656f391",
+  "file_checks": [
+    {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/ci-success-retention-df74-20261104-2330/terminal.json",
+      "expected_bytes": 4280,
+      "actual_bytes": 4280,
+      "sha256": "d2ed6d49b9f5cc0afc36a83970ab8b918eeead24407de5adeffe1f45f44d727f",
+      "ok": true
+    },
+    {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/ci-success-retention-df74-20261104-2330/unittest-roster.json",
+      "expected_bytes": 15211,
+      "actual_bytes": 15211,
+      "sha256": "e8eb0d7eda4d913825c361a2acb6eed6732d68b76546d9a60ff4f44039069234",
+      "ok": true
+    },
+    {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/ci-success-retention-df74-20261104-2330/native-host.json",
+      "expected_bytes": 394,
+      "actual_bytes": 394,
+      "sha256": "486419aa0433246e18b8a2f2de1fcd5a6986dd0beda14ac82c1b8ce35699d7a1",
+      "ok": true
+    },
+    {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/ci-success-retention-df74-20261104-2330/source-map.json",
+      "expected_bytes": 8966,
+      "actual_bytes": 8966,
+      "sha256": "3f13d922ca7e6134f2444bc52f46487f8b2af04007759ae05819222d386dd8c3",
+      "ok": true
+    },
+    {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/ci-success-retention-df74-20261104-2330/apply.json",
+      "expected_bytes": 1124,
+      "actual_bytes": 1124,
+      "sha256": "871d425647de544731761b1ff292ed3acbd418eaf445ea6627ff08e8b3a2de5e",
+      "ok": true
+    },
+    {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/ci-success-retention-df74-20261104-2330/shell-syntax.stdout",
+      "expected_bytes": 0,
+      "actual_bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "ok": true
+    },
+    {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/ci-success-retention-df74-20261104-2330/shell-syntax.stderr",
+      "expected_bytes": 0,
+      "actual_bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "ok": true
+    },
+    {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/ci-success-retention-df74-20261104-2330/python-compile.stdout",
+      "expected_bytes": 0,
+      "actual_bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "ok": true
+    },
+    {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/ci-success-retention-df74-20261104-2330/python-compile.stderr",
+      "expected_bytes": 0,
+      "actual_bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "ok": true
+    },
+    {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/ci-success-retention-df74-20261104-2330/original-unittest-discover.stdout",
+      "expected_bytes": 0,
+      "actual_bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "ok": true
+    },
+    {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/ci-success-retention-df74-20261104-2330/original-unittest-discover.stderr",
+      "expected_bytes": 10418,
+      "actual_bytes": 10418,
+      "sha256": "11debc8ad4f34fe2b720befa7eeb8b9faf4a1a2a2efffc028260f6864cf56cec",
+      "ok": true
+    }
+  ],
+  "findings": {
+    "all_records_integrity": true,
+    "actual_roster_count": 57,
+    "unique_names": 57,
+    "raw_and_roster_equal": true,
+    "all_outcomes_ok": true,
+    "raw_summary": true,
+    "actual_source": "df74afac9e4e31b61a94725d9689b5d0e40eddfe",
+    "source_changed_paths": 34,
+    "phases": [
+      {
+        "name": "shell-syntax",
+        "argv": [
+          "bash",
+          "-n",
+          ".github/scripts/run-bazel-ci.sh"
+        ],
+        "exit_code": 0,
+        "source_unchanged": true,
+        "duration_seconds": 0.22922825498972088,
+        "started_at": "2026-11-04T23:08:27.975589+00:00",
+        "completed_at": "2026-11-04T23:08:28.204792+00:00"
+      },
+      {
+        "name": "python-compile",
+        "argv": [
+          "python3",
+          "-m",
+          "py_compile",
+          ".github/scripts/collect_bazel_failed_test_logs.py",
+          ".github/scripts/test_run_bazel_ci.py"
+        ],
+        "exit_code": 0,
+        "source_unchanged": true,
+        "duration_seconds": 0.3402715119882487,
+        "started_at": "2026-11-04T23:08:28.430228+00:00",
+        "completed_at": "2026-11-04T23:08:28.770468+00:00"
+      },
+      {
+        "name": "original-unittest-discover",
+        "argv": [
+          "python3",
+          "-m",
+          "unittest",
+          "discover",
+          "-s",
+          ".github/scripts",
+          "-p",
+          "test_run_bazel*.py",
+          "-v"
+        ],
+        "exit_code": 0,
+        "source_unchanged": true,
+        "duration_seconds": 6.288070931012044,
+        "started_at": "2026-11-04T23:08:29.000483+00:00",
+        "completed_at": "2026-11-04T23:08:35.288523+00:00"
+      }
+    ],
+    "index_stable": true,
+    "no_rust_or_hygiene": true,
+    "controller": {
+      "state": "succeeded",
+      "exit_code": 0,
+      "job_id": "1a1a8d22180-fc05-2fcc",
+      "output_complete": true,
+      "log_truncated": {
+        "stderr": false,
+        "stdout": false
+      }
+    },
+    "approved_postimages": [
+      {
+        "path": ".github/scripts/collect_bazel_failed_test_logs.py",
+        "ok": true
+      },
+      {
+        "path": ".github/scripts/run-bazel-ci.sh",
+        "ok": true
+      },
+      {
+        "path": ".github/scripts/test_run_bazel_ci.py",
+        "ok": true
+      }
+    ]
+  },
+  "disposition": "ORIGINAL_LINUX_CI_SCRIPT_GATE_ACTUAL_57_PASS",
+  "limits": [
+    "Actual original discover scope test_run_bazel*.py retained; -v only exposes complete names. All 57 exact unique raw identities equal the structured roster, with no skip/error/failure.",
+    "The three new controls are real temporary-file/argument/status probes. Original13 collector/wrapper test method bodies were separately verified unchanged.",
+    "No Rust/Cargo, workspace gate, formatting, Windows native qualification or hosted artifact-retention execution is asserted. The passing Python gate does not establish remote/local cache freshness or complete platform evidence."
+  ]
+}

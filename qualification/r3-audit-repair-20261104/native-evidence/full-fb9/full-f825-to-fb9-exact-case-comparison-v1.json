@@ -1,0 +1,616 @@
+{
+  "schema": "hepta-full-f825-to-fb9-exact-case-comparison-v1",
+  "old_source": "f8251e1d14fa8524ab469281296cd4cf708f173c",
+  "new_source": "fb9e131272f7e7a138d6c0d1af2b048b9a6ab7ff",
+  "old_archive": "4fbfb3d05586f87b449a9ec14097982072917934",
+  "old_review": {
+    "path": "/workspace/scratch/07dd58cc9630/ci-audit/recovered-20261105/full-owning-compressed-archive/full-review.original",
+    "bytes": 4612052,
+    "sha256": "bafcd1f099ea219d29055c1694ad9b61b73ab123da5415f7b8e31b8473ba4b0c"
+  },
+  "old_junit": {
+    "path": "/workspace/scratch/07dd58cc9630/ci-audit/recovered-20261105/full-owning-compressed-archive/full-junit.original",
+    "bytes": 4149275,
+    "sha256": "afdf124cb8cb44e65808b71f824c880875253378588ccaffc9b4783857fc18ed"
+  },
+  "new_review": {
+    "path": "/workspace/scratch/07dd58cc9630/ci-audit/recovered-20261105/full-fb9-complete-archive/priority-decoded-v1/full-workspace-review.json",
+    "bytes": 4625796,
+    "sha256": "8ba22d57c10ea80ac35603cdafeac538f1c13b83a83afd3cb03f792ee5b052bb"
+  },
+  "new_junit": {
+    "path": "/workspace/scratch/07dd58cc9630/ci-audit/recovered-20261105/full-fb9-complete-archive/priority-decoded-v1/full-workspace.junit.xml",
+    "bytes": 4147101,
+    "sha256": "a64ad0f88d187caa6dd0fa7c2dedd2f816a8366bedb1a93d026c169a16cf7ac8"
+  },
+  "old_counts": {
+    "PASS": 19485,
+    "FAIL": 18
+  },
+  "new_counts": {
+    "PASS": 19490,
+    "FAIL": 16
+  },
+  "new_selected": 19506,
+  "new_existing_ignored": 57,
+  "new_existing_unmatched": 0,
+  "new_roster_exact": true,
+  "old_programs_stable": true,
+  "new_programs_stable": true,
+  "old_helpers_stable": true,
+  "new_helpers_stable": true,
+  "old_retries": 0,
+  "new_retries": 0,
+  "same_fourteen_failures": [
+    {
+      "classname": "codex-app-server::all",
+      "name": "suite::v2::command_exec::command_exec_accepts_permission_profile",
+      "old": {
+        "name": "suite::v2::command_exec::command_exec_accepts_permission_profile",
+        "classname": "codex-app-server::all",
+        "seconds": "0.487",
+        "result": "FAIL",
+        "failure": "thread 'suite::v2::command_exec::command_exec_accepts_permission_profile' (157332) panicked at app-server/tests/suite/v2/command_exec.rs:321:5:\nassertion failed: `(left == right)`\n\nDiff < left / right > :\n CommandExecResponse {\n     exit_code: 0,\n     stdout: \"profile\",\n<    stderr: \"Failed to create stream fd: Operation not permitted\\nFailed to create stream fd: Operation not permitted\\nFailed to create stream fd: Operation not permitted\\n\",\n>    stderr: \"\",\n }\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+      },
+      "new": {
+        "name": "suite::v2::command_exec::command_exec_accepts_permission_profile",
+        "classname": "codex-app-server::all",
+        "seconds": "0.530",
+        "result": "FAIL",
+        "failure": "thread 'suite::v2::command_exec::command_exec_accepts_permission_profile' (1182049) panicked at app-server/tests/suite/v2/command_exec.rs:321:5:\nassertion failed: `(left == right)`\n\nDiff < left / right > :\n CommandExecResponse {\n     exit_code: 0,\n     stdout: \"profile\",\n<    stderr: \"Failed to create stream fd: Operation not permitted\\nFailed to create stream fd: Operation not permitted\\nFailed to create stream fd: Operation not permitted\\n\",\n>    stderr: \"\",\n }\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+      },
+      "failure_equal_after_only_panic_thread_id_normalization": true,
+      "new_stream_fd_eperm_explicit": true,
+      "cause_limit": "Names and failure text compared; no host-policy waiver or new cause is inferred."
+    },
+    {
+      "classname": "codex-app-server::all",
+      "name": "suite::v2::command_exec::command_exec_env_overrides_merge_with_server_environment_and_support_unset",
+      "old": {
+        "name": "suite::v2::command_exec::command_exec_env_overrides_merge_with_server_environment_and_support_unset",
+        "classname": "codex-app-server::all",
+        "seconds": "0.466",
+        "result": "FAIL",
+        "failure": "thread 'suite::v2::command_exec::command_exec_env_overrides_merge_with_server_environment_and_support_unset' (160570) panicked at app-server/tests/suite/v2/command_exec.rs:190:5:\nassertion failed: `(left == right)`\n\nDiff < left / right > :\n CommandExecResponse {\n     exit_code: 0,\n     stdout: \"request|added|unset|/tmp/.tmpi3Qf17||\",\n<    stderr: \"Failed to create stream fd: Operation not permitted\\nFailed to create stream fd: Operation not permitted\\nFailed to create stream fd: Operation not permitted\\n\",\n>    stderr: \"\",\n }\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+      },
+      "new": {
+        "name": "suite::v2::command_exec::command_exec_env_overrides_merge_with_server_environment_and_support_unset",
+        "classname": "codex-app-server::all",
+        "seconds": "0.579",
+        "result": "FAIL",
+        "failure": "thread 'suite::v2::command_exec::command_exec_env_overrides_merge_with_server_environment_and_support_unset' (1184430) panicked at app-server/tests/suite/v2/command_exec.rs:190:5:\nassertion failed: `(left == right)`\n\nDiff < left / right > :\n CommandExecResponse {\n     exit_code: 0,\n     stdout: \"request|added|unset|/tmp/.tmpt0QjYi||\",\n<    stderr: \"Failed to create stream fd: Operation not permitted\\nFailed to create stream fd: Operation not permitted\\nFailed to create stream fd: Operation not permitted\\n\",\n>    stderr: \"\",\n }\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+      },
+      "failure_equal_after_only_panic_thread_id_normalization": false,
+      "new_stream_fd_eperm_explicit": true,
+      "cause_limit": "Names and failure text compared; no host-policy waiver or new cause is inferred."
+    },
+    {
+      "classname": "codex-app-server::all",
+      "name": "suite::v2::command_exec::command_exec_non_streaming_respects_output_cap",
+      "old": {
+        "name": "suite::v2::command_exec::command_exec_non_streaming_respects_output_cap",
+        "classname": "codex-app-server::all",
+        "seconds": "0.421",
+        "result": "FAIL",
+        "failure": "thread 'suite::v2::command_exec::command_exec_non_streaming_respects_output_cap' (161632) panicked at app-server/tests/suite/v2/command_exec.rs:886:5:\nassertion failed: `(left == right)`\n\nDiff < left / right > :\n CommandExecResponse {\n     exit_code: 0,\n     stdout: \"abcde\",\n<    stderr: \"Faile\",\n>    stderr: \"uvwxy\",\n }\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+      },
+      "new": {
+        "name": "suite::v2::command_exec::command_exec_non_streaming_respects_output_cap",
+        "classname": "codex-app-server::all",
+        "seconds": "0.557",
+        "result": "FAIL",
+        "failure": "thread 'suite::v2::command_exec::command_exec_non_streaming_respects_output_cap' (1185757) panicked at app-server/tests/suite/v2/command_exec.rs:886:5:\nassertion failed: `(left == right)`\n\nDiff < left / right > :\n CommandExecResponse {\n     exit_code: 0,\n     stdout: \"abcde\",\n<    stderr: \"Faile\",\n>    stderr: \"uvwxy\",\n }\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+      },
+      "failure_equal_after_only_panic_thread_id_normalization": true,
+      "new_stream_fd_eperm_explicit": false,
+      "cause_limit": "Names and failure text compared; no host-policy waiver or new cause is inferred."
+    },
+    {
+      "classname": "codex-app-server::all",
+      "name": "suite::v2::command_exec::command_exec_permission_profile_does_not_reuse_default_network_proxy",
+      "old": {
+        "name": "suite::v2::command_exec::command_exec_permission_profile_does_not_reuse_default_network_proxy",
+        "classname": "codex-app-server::all",
+        "seconds": "0.395",
+        "result": "FAIL",
+        "failure": "thread 'suite::v2::command_exec::command_exec_permission_profile_does_not_reuse_default_network_proxy' (162375) panicked at app-server/tests/suite/v2/command_exec.rs:533:5:\nassertion failed: `(left == right)`\n\nDiff < left / right > :\n CommandExecResponse {\n     exit_code: 0,\n     stdout: \"unset\",\n<    stderr: \"Failed to create stream fd: Operation not permitted\\nFailed to create stream fd: Operation not permitted\\nFailed to create stream fd: Operation not permitted\\n\",\n>    stderr: \"\",\n }\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+      },
+      "new": {
+        "name": "suite::v2::command_exec::command_exec_permission_profile_does_not_reuse_default_network_proxy",
+        "classname": "codex-app-server::all",
+        "seconds": "0.611",
+        "result": "FAIL",
+        "failure": "thread 'suite::v2::command_exec::command_exec_permission_profile_does_not_reuse_default_network_proxy' (1186116) panicked at app-server/tests/suite/v2/command_exec.rs:533:5:\nassertion failed: `(left == right)`\n\nDiff < left / right > :\n CommandExecResponse {\n     exit_code: 0,\n     stdout: \"unset\",\n<    stderr: \"Failed to create stream fd: Operation not permitted\\nFailed to create stream fd: Operation not permitted\\nFailed to create stream fd: Operation not permitted\\n\",\n>    stderr: \"\",\n }\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+      },
+      "failure_equal_after_only_panic_thread_id_normalization": true,
+      "new_stream_fd_eperm_explicit": true,
+      "cause_limit": "Names and failure text compared; no host-policy waiver or new cause is inferred."
+    },
+    {
+      "classname": "codex-app-server::all",
+      "name": "suite::v2::command_exec::command_exec_permission_profile_starts_selected_network_proxy",
+      "old": {
+        "name": "suite::v2::command_exec::command_exec_permission_profile_starts_selected_network_proxy",
+        "classname": "codex-app-server::all",
+        "seconds": "0.402",
+        "result": "FAIL",
+        "failure": "thread 'suite::v2::command_exec::command_exec_permission_profile_starts_selected_network_proxy' (163434) panicked at app-server/tests/suite/v2/command_exec.rs:485:5:\nassertion failed: `(left == right)`\n\nDiff < left / right > :\n CommandExecResponse {\n     exit_code: 0,\n     stdout: \"1\",\n<    stderr: \"Failed to create stream fd: Operation not permitted\\nFailed to create stream fd: Operation not permitted\\nFailed to create stream fd: Operation not permitted\\n\",\n>    stderr: \"\",\n }\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+      },
+      "new": {
+        "name": "suite::v2::command_exec::command_exec_permission_profile_starts_selected_network_proxy",
+        "classname": "codex-app-server::all",
+        "seconds": "0.689",
+        "result": "FAIL",
+        "failure": "thread 'suite::v2::command_exec::command_exec_permission_profile_starts_selected_network_proxy' (1188037) panicked at app-server/tests/suite/v2/command_exec.rs:485:5:\nassertion failed: `(left == right)`\n\nDiff < left / right > :\n CommandExecResponse {\n     exit_code: 0,\n     stdout: \"1\",\n<    stderr: \"Failed to create stream fd: Operation not permitted\\nFailed to create stream fd: Operation not permitted\\nFailed to create stream fd: Operation not permitted\\n\",\n>    stderr: \"\",\n }\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+      },
+      "failure_equal_after_only_panic_thread_id_normalization": true,
+      "new_stream_fd_eperm_explicit": true,
+      "cause_limit": "Names and failure text compared; no host-policy waiver or new cause is inferred."
+    },
+    {
+      "classname": "codex-app-server::all",
+      "name": "suite::v2::command_exec::command_exec_without_process_id_keeps_buffered_compatibility",
+      "old": {
+        "name": "suite::v2::command_exec::command_exec_without_process_id_keeps_buffered_compatibility",
+        "classname": "codex-app-server::all",
+        "seconds": "0.383",
+        "result": "FAIL",
+        "failure": "thread 'suite::v2::command_exec::command_exec_without_process_id_keeps_buffered_compatibility' (171342) panicked at app-server/tests/suite/v2/command_exec.rs:126:5:\nassertion failed: `(left == right)`\n\nDiff < left / right > :\n CommandExecResponse {\n     exit_code: 0,\n     stdout: \"legacy-out\",\n<    stderr: \"Failed to create stream fd: Operation not permitted\\nFailed to create stream fd: Operation not permitted\\nFailed to create stream fd: Operation not permitted\\nlegacy-err\",\n>    stderr: \"legacy-err\",\n }\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+      },
+      "new": {
+        "name": "suite::v2::command_exec::command_exec_without_process_id_keeps_buffered_compatibility",
+        "classname": "codex-app-server::all",
+        "seconds": "0.613",
+        "result": "FAIL",
+        "failure": "thread 'suite::v2::command_exec::command_exec_without_process_id_keeps_buffered_compatibility' (1196652) panicked at app-server/tests/suite/v2/command_exec.rs:126:5:\nassertion failed: `(left == right)`\n\nDiff < left / right > :\n CommandExecResponse {\n     exit_code: 0,\n     stdout: \"legacy-out\",\n<    stderr: \"Failed to create stream fd: Operation not permitted\\nFailed to create stream fd: Operation not permitted\\nFailed to create stream fd: Operation not permitted\\nlegacy-err\",\n>    stderr: \"legacy-err\",\n }\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+      },
+      "failure_equal_after_only_panic_thread_id_normalization": true,
+      "new_stream_fd_eperm_explicit": true,
+      "cause_limit": "Names and failure text compared; no host-policy waiver or new cause is inferred."
+    },
+    {
+      "classname": "codex-core::all",
+      "name": "suite::approvals::approving_execpolicy_amendment_persists_policy_and_skips_future_prompts",
+      "old": {
+        "name": "suite::approvals::approving_execpolicy_amendment_persists_policy_and_skips_future_prompts",
+        "classname": "codex-core::all",
+        "seconds": "0.441",
+        "result": "FAIL",
+        "failure": "thread 'suite::approvals::approving_execpolicy_amendment_persists_policy_and_skips_future_prompts' (82121) panicked at core/tests/suite/approvals.rs:2540:5:\nunexpected stdout: Failed to create stream fd: Operation not permitted\nFailed to create stream fd: Operation not permitted\nFailed to create stream fd: Operation not permitted\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+      },
+      "new": {
+        "name": "suite::approvals::approving_execpolicy_amendment_persists_policy_and_skips_future_prompts",
+        "classname": "codex-core::all",
+        "seconds": "0.677",
+        "result": "FAIL",
+        "failure": "thread 'suite::approvals::approving_execpolicy_amendment_persists_policy_and_skips_future_prompts' (1116655) panicked at core/tests/suite/approvals.rs:2540:5:\nunexpected stdout: Failed to create stream fd: Operation not permitted\nFailed to create stream fd: Operation not permitted\nFailed to create stream fd: Operation not permitted\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+      },
+      "failure_equal_after_only_panic_thread_id_normalization": true,
+      "new_stream_fd_eperm_explicit": true,
+      "cause_limit": "Names and failure text compared; no host-policy waiver or new cause is inferred."
+    },
+    {
+      "classname": "codex-core::all",
+      "name": "suite::request_permissions::partial_request_permissions_grants_do_not_preapprove_new_permissions",
+      "old": {
+        "name": "suite::request_permissions::partial_request_permissions_grants_do_not_preapprove_new_permissions",
+        "classname": "codex-core::all",
+        "seconds": "0.489",
+        "result": "FAIL",
+        "failure": "thread 'suite::request_permissions::partial_request_permissions_grants_do_not_preapprove_new_permissions' (209054) panicked at core/tests/suite/request_permissions.rs:1802:5:\nassertion failed: `(left == right)`\n\nDiff < left / right > :\n<Failed to create stream fd: Operation not permitted\n<Failed to create stream fd: Operation not permitted\n<Failed to create stream fd: Operation not permitted\n partial-grant-ok\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+      },
+      "new": {
+        "name": "suite::request_permissions::partial_request_permissions_grants_do_not_preapprove_new_permissions",
+        "classname": "codex-core::all",
+        "seconds": "0.633",
+        "result": "FAIL",
+        "failure": "thread 'suite::request_permissions::partial_request_permissions_grants_do_not_preapprove_new_permissions' (1243109) panicked at core/tests/suite/request_permissions.rs:1802:5:\nassertion failed: `(left == right)`\n\nDiff < left / right > :\n<Failed to create stream fd: Operation not permitted\n<Failed to create stream fd: Operation not permitted\n<Failed to create stream fd: Operation not permitted\n partial-grant-ok\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+      },
+      "failure_equal_after_only_panic_thread_id_normalization": true,
+      "new_stream_fd_eperm_explicit": true,
+      "cause_limit": "Names and failure text compared; no host-policy waiver or new cause is inferred."
+    },
+    {
+      "classname": "codex-core::all",
+      "name": "suite::request_permissions::request_permissions_grants_apply_to_later_exec_command_calls",
+      "old": {
+        "name": "suite::request_permissions::request_permissions_grants_apply_to_later_exec_command_calls",
+        "classname": "codex-core::all",
+        "seconds": "0.482",
+        "result": "FAIL",
+        "failure": "thread 'suite::request_permissions::request_permissions_grants_apply_to_later_exec_command_calls' (209491) panicked at core/tests/suite/request_permissions.rs:1391:5:\nassertion failed: `(left == right)`\n\nDiff < left / right > :\n<Failed to create stream fd: Operation not permitted\n<Failed to create stream fd: Operation not permitted\n<Failed to create stream fd: Operation not permitted\n sticky-grant-ok\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+      },
+      "new": {
+        "name": "suite::request_permissions::request_permissions_grants_apply_to_later_exec_command_calls",
+        "classname": "codex-core::all",
+        "seconds": "0.739",
+        "result": "FAIL",
+        "failure": "thread 'suite::request_permissions::request_permissions_grants_apply_to_later_exec_command_calls' (1243269) panicked at core/tests/suite/request_permissions.rs:1391:5:\nassertion failed: `(left == right)`\n\nDiff < left / right > :\n<Failed to create stream fd: Operation not permitted\n<Failed to create stream fd: Operation not permitted\n<Failed to create stream fd: Operation not permitted\n sticky-grant-ok\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+      },
+      "failure_equal_after_only_panic_thread_id_normalization": true,
+      "new_stream_fd_eperm_explicit": true,
+      "cause_limit": "Names and failure text compared; no host-policy waiver or new cause is inferred."
+    },
+    {
+      "classname": "codex-core::all",
+      "name": "suite::request_permissions::request_permissions_grants_apply_to_later_exec_command_calls_without_inline_permission_feature",
+      "old": {
+        "name": "suite::request_permissions::request_permissions_grants_apply_to_later_exec_command_calls_without_inline_permission_feature",
+        "classname": "codex-core::all",
+        "seconds": "0.481",
+        "result": "FAIL",
+        "failure": "thread 'suite::request_permissions::request_permissions_grants_apply_to_later_exec_command_calls_without_inline_permission_feature' (209621) panicked at core/tests/suite/request_permissions.rs:1626:5:\nassertion failed: `(left == right)`\n\nDiff < left / right > :\n<Failed to create stream fd: Operation not permitted\n<Failed to create stream fd: Operation not permitted\n<Failed to create stream fd: Operation not permitted\n sticky-shell-feature-independent-ok\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+      },
+      "new": {
+        "name": "suite::request_permissions::request_permissions_grants_apply_to_later_exec_command_calls_without_inline_permission_feature",
+        "classname": "codex-core::all",
+        "seconds": "0.604",
+        "result": "FAIL",
+        "failure": "thread 'suite::request_permissions::request_permissions_grants_apply_to_later_exec_command_calls_without_inline_permission_feature' (1243353) panicked at core/tests/suite/request_permissions.rs:1626:5:\nassertion failed: `(left == right)`\n\nDiff < left / right > :\n<Failed to create stream fd: Operation not permitted\n<Failed to create stream fd: Operation not permitted\n<Failed to create stream fd: Operation not permitted\n sticky-shell-feature-independent-ok\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+      },
+      "failure_equal_after_only_panic_thread_id_normalization": true,
+      "new_stream_fd_eperm_explicit": true,
+      "cause_limit": "Names and failure text compared; no host-policy waiver or new cause is inferred."
+    },
+    {
+      "classname": "codex-core::all",
+      "name": "suite::request_permissions::request_permissions_preapprove_explicit_exec_permissions_outside_on_request",
+      "old": {
+        "name": "suite::request_permissions::request_permissions_preapprove_explicit_exec_permissions_outside_on_request",
+        "classname": "codex-core::all",
+        "seconds": "0.509",
+        "result": "FAIL",
+        "failure": "thread 'suite::request_permissions::request_permissions_preapprove_explicit_exec_permissions_outside_on_request' (209934) panicked at core/tests/suite/request_permissions.rs:1510:5:\nassertion failed: `(left == right)`\n\nDiff < left / right > :\n<Failed to create stream fd: Operation not permitted\n<Failed to create stream fd: Operation not permitted\n<Failed to create stream fd: Operation not permitted\n sticky-explicit-grant-ok\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+      },
+      "new": {
+        "name": "suite::request_permissions::request_permissions_preapprove_explicit_exec_permissions_outside_on_request",
+        "classname": "codex-core::all",
+        "seconds": "0.721",
+        "result": "FAIL",
+        "failure": "thread 'suite::request_permissions::request_permissions_preapprove_explicit_exec_permissions_outside_on_request' (1243845) panicked at core/tests/suite/request_permissions.rs:1510:5:\nassertion failed: `(left == right)`\n\nDiff < left / right > :\n<Failed to create stream fd: Operation not permitted\n<Failed to create stream fd: Operation not permitted\n<Failed to create stream fd: Operation not permitted\n sticky-explicit-grant-ok\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+      },
+      "failure_equal_after_only_panic_thread_id_normalization": true,
+      "new_stream_fd_eperm_explicit": true,
+      "cause_limit": "Names and failure text compared; no host-policy waiver or new cause is inferred."
+    },
+    {
+      "classname": "codex-exec-server::exec_process",
+      "name": "shell_snapshot_v2_capture_failure_falls_back_and_retries::test_case_3_remote_pipe_recovery",
+      "old": {
+        "name": "shell_snapshot_v2_capture_failure_falls_back_and_retries::test_case_3_remote_pipe_recovery",
+        "classname": "codex-exec-server::exec_process",
+        "seconds": "0.328",
+        "result": "FAIL",
+        "failure": "thread 'shell_snapshot_v2_capture_failure_falls_back_and_retries::test_case_3_remote_pipe_recovery' (282161) panicked at exec-server/tests/exec_process.rs:449:9:\nassertion failed: `(left == right)`\n\nDiff < left / right > :\n (\n     \"original\",\n<    \"Failed to create stream fd: Operation not permitted\\nFailed to create stream fd: Operation not permitted\\nFailed to create stream fd: Operation not permitted\\n\",\n>    \"\",\n     Some(\n         0,\n     ),\n     true,\n )\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+      },
+      "new": {
+        "name": "shell_snapshot_v2_capture_failure_falls_back_and_retries::test_case_3_remote_pipe_recovery",
+        "classname": "codex-exec-server::exec_process",
+        "seconds": "0.470",
+        "result": "FAIL",
+        "failure": "thread 'shell_snapshot_v2_capture_failure_falls_back_and_retries::test_case_3_remote_pipe_recovery' (1316040) panicked at exec-server/tests/exec_process.rs:449:9:\nassertion failed: `(left == right)`\n\nDiff < left / right > :\n (\n     \"original\",\n<    \"Failed to create stream fd: Operation not permitted\\nFailed to create stream fd: Operation not permitted\\nFailed to create stream fd: Operation not permitted\\n\",\n>    \"\",\n     Some(\n         0,\n     ),\n     true,\n )\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+      },
+      "failure_equal_after_only_panic_thread_id_normalization": true,
+      "new_stream_fd_eperm_explicit": true,
+      "cause_limit": "Names and failure text compared; no host-policy waiver or new cause is inferred."
+    },
+    {
+      "classname": "codex-exec-server::exec_process",
+      "name": "shell_snapshot_v2_capture_failure_falls_back_and_retries::test_case_4_remote_tty_recovery",
+      "old": {
+        "name": "shell_snapshot_v2_capture_failure_falls_back_and_retries::test_case_4_remote_tty_recovery",
+        "classname": "codex-exec-server::exec_process",
+        "seconds": "0.328",
+        "result": "FAIL",
+        "failure": "thread 'shell_snapshot_v2_capture_failure_falls_back_and_retries::test_case_4_remote_tty_recovery' (282167) panicked at exec-server/tests/exec_process.rs:449:9:\nassertion failed: `(left == right)`\n\nDiff < left / right > :\n (\n<    \"Failed to create stream fd: Operation not permitted\\r\\nFailed to create stream fd: Operation not permitted\\r\\nFailed to create stream fd: Operation not permitted\\r\\noriginal\",\n>    \"original\",\n     \"\",\n     Some(\n         0,\n     ),\n     true,\n )\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+      },
+      "new": {
+        "name": "shell_snapshot_v2_capture_failure_falls_back_and_retries::test_case_4_remote_tty_recovery",
+        "classname": "codex-exec-server::exec_process",
+        "seconds": "0.458",
+        "result": "FAIL",
+        "failure": "thread 'shell_snapshot_v2_capture_failure_falls_back_and_retries::test_case_4_remote_tty_recovery' (1316080) panicked at exec-server/tests/exec_process.rs:449:9:\nassertion failed: `(left == right)`\n\nDiff < left / right > :\n (\n<    \"Failed to create stream fd: Operation not permitted\\r\\nFailed to create stream fd: Operation not permitted\\r\\nFailed to create stream fd: Operation not permitted\\r\\noriginal\",\n>    \"original\",\n     \"\",\n     Some(\n         0,\n     ),\n     true,\n )\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+      },
+      "failure_equal_after_only_panic_thread_id_normalization": true,
+      "new_stream_fd_eperm_explicit": true,
+      "cause_limit": "Names and failure text compared; no host-policy waiver or new cause is inferred."
+    },
+    {
+      "classname": "codex-exec-server::exec_process",
+      "name": "shell_snapshot_v2_capture_failure_falls_back_and_retries::test_case_6_remote_retry_budget_exhausted",
+      "old": {
+        "name": "shell_snapshot_v2_capture_failure_falls_back_and_retries::test_case_6_remote_retry_budget_exhausted",
+        "classname": "codex-exec-server::exec_process",
+        "seconds": "0.320",
+        "result": "FAIL",
+        "failure": "thread 'shell_snapshot_v2_capture_failure_falls_back_and_retries::test_case_6_remote_retry_budget_exhausted' (282286) panicked at exec-server/tests/exec_process.rs:449:9:\nassertion failed: `(left == right)`\n\nDiff < left / right > :\n (\n     \"original\",\n<    \"Failed to create stream fd: Operation not permitted\\nFailed to create stream fd: Operation not permitted\\nFailed to create stream fd: Operation not permitted\\n\",\n>    \"\",\n     Some(\n         0,\n     ),\n     true,\n )\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+      },
+      "new": {
+        "name": "shell_snapshot_v2_capture_failure_falls_back_and_retries::test_case_6_remote_retry_budget_exhausted",
+        "classname": "codex-exec-server::exec_process",
+        "seconds": "0.455",
+        "result": "FAIL",
+        "failure": "thread 'shell_snapshot_v2_capture_failure_falls_back_and_retries::test_case_6_remote_retry_budget_exhausted' (1316466) panicked at exec-server/tests/exec_process.rs:449:9:\nassertion failed: `(left == right)`\n\nDiff < left / right > :\n (\n     \"original\",\n<    \"Failed to create stream fd: Operation not permitted\\nFailed to create stream fd: Operation not permitted\\nFailed to create stream fd: Operation not permitted\\n\",\n>    \"\",\n     Some(\n         0,\n     ),\n     true,\n )\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+      },
+      "failure_equal_after_only_panic_thread_id_normalization": true,
+      "new_stream_fd_eperm_explicit": true,
+      "cause_limit": "Names and failure text compared; no host-policy waiver or new cause is inferred."
+    }
+  ],
+  "two_new_failures": [
+    {
+      "classname": "codex-core::all",
+      "name": "suite::multi_agent_resume::cold_root_resume_restores_agent_identity_and_role_on_followup",
+      "old_case": {
+        "name": "suite::multi_agent_resume::cold_root_resume_restores_agent_identity_and_role_on_followup",
+        "classname": "codex-core::all",
+        "seconds": "8.780",
+        "result": "PASS",
+        "failure": ""
+      },
+      "new_case": {
+        "name": "suite::multi_agent_resume::cold_root_resume_restores_agent_identity_and_role_on_followup",
+        "classname": "codex-core::all",
+        "seconds": "8.209",
+        "result": "FAIL",
+        "failure": "Error: thread 01a1a9fe-9432-7365-982c-7a0f11490eee not found"
+      },
+      "old_xml": "<testcase name=\"suite::multi_agent_resume::cold_root_resume_restores_agent_identity_and_role_on_followup\" classname=\"codex-core::all\" timestamp=\"2026-11-04T19:52:26.136-05:00\" time=\"8.780\">\n        </testcase>\n        ",
+      "new_xml": "<testcase name=\"suite::multi_agent_resume::cold_root_resume_restores_agent_identity_and_role_on_followup\" classname=\"codex-core::all\" timestamp=\"2026-11-04T23:36:35.632-05:00\" time=\"8.209\">\n            <failure message=\"Error: thread 01a1a9fe-9432-7365-982c-7a0f11490eee not found\" type=\"test failure with exit code 101\">Error: thread 01a1a9fe-9432-7365-982c-7a0f11490eee not found</failure>\n            <system-out>\nrunning 1 test\ntest suite::multi_agent_resume::cold_root_resume_restores_agent_identity_and_role_on_followup ... FAILED\n\nfailures:\n\nfailures:\n    suite::multi_agent_resume::cold_root_resume_restores_agent_identity_and_role_on_followup\n\ntest result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1432 filtered out; finished in 8.19s\n\n</system-out>\n            <system-err>Error: thread 01a1a9fe-9432-7365-982c-7a0f11490eee not found\n</system-err>\n        </testcase>\n        ",
+      "old_programs": {
+        "before": [
+          {
+            "binary_id": "codex-core::all",
+            "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/all-916220dd7febbd0c",
+            "bytes": 284353072,
+            "sha256": "fd184542d7c329087374bae331f30eb187206d5d065f452a0feb7df74bdaa47c"
+          }
+        ],
+        "after": [
+          {
+            "binary_id": "codex-core::all",
+            "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/all-916220dd7febbd0c",
+            "bytes": 284353072,
+            "sha256": "fd184542d7c329087374bae331f30eb187206d5d065f452a0feb7df74bdaa47c"
+          }
+        ]
+      },
+      "new_programs": {
+        "before": [
+          {
+            "binary_id": "codex-core::all",
+            "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target-app-epoch2-20261105/dev-small/deps/all-916220dd7febbd0c",
+            "bytes": 284376560,
+            "sha256": "4c62e88f00028e2e9b08cf22ad8a848e7fc8aab3a889c370da9e77dd74d35b01"
+          }
+        ],
+        "after": [
+          {
+            "binary_id": "codex-core::all",
+            "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target-app-epoch2-20261105/dev-small/deps/all-916220dd7febbd0c",
+            "bytes": 284376560,
+            "sha256": "4c62e88f00028e2e9b08cf22ad8a848e7fc8aab3a889c370da9e77dd74d35b01"
+          }
+        ]
+      }
+    },
+    {
+      "classname": "codex-exec-server",
+      "name": "process_sandbox::tests::native_request_handles_remote_proxy_config_for_platform",
+      "old_case": {
+        "name": "process_sandbox::tests::native_request_handles_remote_proxy_config_for_platform",
+        "classname": "codex-exec-server",
+        "seconds": "0.501",
+        "result": "PASS",
+        "failure": ""
+      },
+      "new_case": {
+        "name": "process_sandbox::tests::native_request_handles_remote_proxy_config_for_platform",
+        "classname": "codex-exec-server",
+        "seconds": "10.514",
+        "result": "FAIL",
+        "failure": "thread 'process_sandbox::tests::native_request_handles_remote_proxy_config_for_platform' (1312423) panicked at exec-server/src/process_sandbox_tests.rs:338:10:\nproxy response timeout: Elapsed(())\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+      },
+      "old_xml": "<testcase name=\"process_sandbox::tests::native_request_handles_remote_proxy_config_for_platform\" classname=\"codex-exec-server\" timestamp=\"2026-11-04T19:52:49.798-05:00\" time=\"0.501\">\n        </testcase>\n        ",
+      "new_xml": "<testcase name=\"process_sandbox::tests::native_request_handles_remote_proxy_config_for_platform\" classname=\"codex-exec-server\" timestamp=\"2026-11-04T23:37:03.447-05:00\" time=\"10.514\">\n            <failure message=\"thread 'process_sandbox::tests::native_request_handles_remote_proxy_config_for_platform' (1312423) panicked at exec-server/src/process_sandbox_tests.rs:338:10\" type=\"test failure with exit code 101\">thread 'process_sandbox::tests::native_request_handles_remote_proxy_config_for_platform' (1312423) panicked at exec-server/src/process_sandbox_tests.rs:338:10:\nproxy response timeout: Elapsed(())\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace</failure>\n            <system-out>\nrunning 1 test\ntest process_sandbox::tests::native_request_handles_remote_proxy_config_for_platform ... FAILED\n\nfailures:\n\nfailures:\n    process_sandbox::tests::native_request_handles_remote_proxy_config_for_platform\n\ntest result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 262 filtered out; finished in 10.51s\n\n</system-out>\n            <system-err>\nthread 'process_sandbox::tests::native_request_handles_remote_proxy_config_for_platform' (1312423) panicked at exec-server/src/process_sandbox_tests.rs:338:10:\nproxy response timeout: Elapsed(())\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n</system-err>\n        </testcase>\n    ",
+      "old_programs": {
+        "before": [
+          {
+            "binary_id": "codex-exec-server",
+            "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/codex_exec_server-5e8aed7259016d31",
+            "bytes": 101294112,
+            "sha256": "af426ae542baefa24ccdd7da998d4f5b414ecacd6ce7fdceed44786d56a13ce1"
+          }
+        ],
+        "after": [
+          {
+            "binary_id": "codex-exec-server",
+            "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/codex_exec_server-5e8aed7259016d31",
+            "bytes": 101294112,
+            "sha256": "af426ae542baefa24ccdd7da998d4f5b414ecacd6ce7fdceed44786d56a13ce1"
+          }
+        ]
+      },
+      "new_programs": {
+        "before": [
+          {
+            "binary_id": "codex-exec-server",
+            "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target-app-epoch2-20261105/dev-small/deps/codex_exec_server-5e8aed7259016d31",
+            "bytes": 101294112,
+            "sha256": "af426ae542baefa24ccdd7da998d4f5b414ecacd6ce7fdceed44786d56a13ce1"
+          }
+        ],
+        "after": [
+          {
+            "binary_id": "codex-exec-server",
+            "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target-app-epoch2-20261105/dev-small/deps/codex_exec_server-5e8aed7259016d31",
+            "bytes": 101294112,
+            "sha256": "af426ae542baefa24ccdd7da998d4f5b414ecacd6ce7fdceed44786d56a13ce1"
+          }
+        ]
+      }
+    }
+  ],
+  "four_repaired_original_cases_now_exact_pass": [
+    {
+      "classname": "codex-app-server::all",
+      "name": "suite::v2::command_exec::command_exec_process_ids_are_connection_scoped_and_disconnect_terminates_process",
+      "old_case": {
+        "name": "suite::v2::command_exec::command_exec_process_ids_are_connection_scoped_and_disconnect_terminates_process",
+        "classname": "codex-app-server::all",
+        "seconds": "5.706",
+        "result": "FAIL",
+        "failure": "Error: process marker \"codex-command-exec-marker-1793839941980771310\" did not exit before timeout"
+      },
+      "new_case": {
+        "name": "suite::v2::command_exec::command_exec_process_ids_are_connection_scoped_and_disconnect_terminates_process",
+        "classname": "codex-app-server::all",
+        "seconds": "1.216",
+        "result": "PASS",
+        "failure": ""
+      },
+      "new_xml": "<testcase name=\"suite::v2::command_exec::command_exec_process_ids_are_connection_scoped_and_disconnect_terminates_process\" classname=\"codex-app-server::all\" timestamp=\"2026-11-04T23:36:27.732-05:00\" time=\"1.216\">\n        </testcase>\n        ",
+      "new_programs": {
+        "before": [
+          {
+            "binary_id": "codex-app-server::all",
+            "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target-app-epoch2-20261105/dev-small/deps/all-828a7c4f37edd91e",
+            "bytes": 365292176,
+            "sha256": "e710363d62d17f65cbc6ad8e789b1289002597c9a8bb98daf08d5c57fa9ced12"
+          }
+        ],
+        "after": [
+          {
+            "binary_id": "codex-app-server::all",
+            "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target-app-epoch2-20261105/dev-small/deps/all-828a7c4f37edd91e",
+            "bytes": 365292176,
+            "sha256": "e710363d62d17f65cbc6ad8e789b1289002597c9a8bb98daf08d5c57fa9ced12"
+          }
+        ]
+      },
+      "no_observed_bound_early_return": true
+    },
+    {
+      "classname": "codex-external-agent-migration",
+      "name": "service::tests::plugins::marketplaces::import_plugins_infers_external_official_marketplace_when_missing_from_settings",
+      "old_case": {
+        "name": "service::tests::plugins::marketplaces::import_plugins_infers_external_official_marketplace_when_missing_from_settings",
+        "classname": "codex-external-agent-migration",
+        "seconds": "60.004",
+        "result": "FAIL",
+        "failure": ""
+      },
+      "new_case": {
+        "name": "service::tests::plugins::marketplaces::import_plugins_infers_external_official_marketplace_when_missing_from_settings",
+        "classname": "codex-external-agent-migration",
+        "seconds": "0.060",
+        "result": "PASS",
+        "failure": ""
+      },
+      "new_xml": "<testcase name=\"service::tests::plugins::marketplaces::import_plugins_infers_external_official_marketplace_when_missing_from_settings\" classname=\"codex-external-agent-migration\" timestamp=\"2026-11-04T23:37:07.038-05:00\" time=\"0.060\">\n        </testcase>\n        ",
+      "new_programs": {
+        "before": [
+          {
+            "binary_id": "codex-external-agent-migration",
+            "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target-app-epoch2-20261105/dev-small/deps/codex_external_agent_migration-07c33eefbb3fe629",
+            "bytes": 107654808,
+            "sha256": "6821fc12963c478a711ed50bc653bee6bc38743c66666e98c63a10841987de00"
+          }
+        ],
+        "after": [
+          {
+            "binary_id": "codex-external-agent-migration",
+            "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target-app-epoch2-20261105/dev-small/deps/codex_external_agent_migration-07c33eefbb3fe629",
+            "bytes": 107654808,
+            "sha256": "6821fc12963c478a711ed50bc653bee6bc38743c66666e98c63a10841987de00"
+          }
+        ]
+      },
+      "no_observed_bound_early_return": true
+    },
+    {
+      "classname": "codex-skills-extension",
+      "name": "host_roots::tests::repo_ancestry_without_project_marker_does_not_walk_parents",
+      "old_case": {
+        "name": "host_roots::tests::repo_ancestry_without_project_marker_does_not_walk_parents",
+        "classname": "codex-skills-extension",
+        "seconds": "0.008",
+        "result": "FAIL",
+        "failure": "thread 'host_roots::tests::repo_ancestry_without_project_marker_does_not_walk_parents' (351158) panicked at ext/skills/src/host_roots_tests.rs:415:5:\nassertion failed: `(left == right)`\n\nDiff < left / right > :\n [\n     AbsolutePathBuf(\n<        \"/tmp/.tmpkvHiR0/outer/.agents/skills\",\n<    ),\n<    AbsolutePathBuf(\n         \"/tmp/.tmpkvHiR0/outer/nested/inner/.agents/skills\",\n     ),\n ]\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+      },
+      "new_case": {
+        "name": "host_roots::tests::repo_ancestry_without_project_marker_does_not_walk_parents",
+        "classname": "codex-skills-extension",
+        "seconds": "0.006",
+        "result": "PASS",
+        "failure": ""
+      },
+      "new_xml": "<testcase name=\"host_roots::tests::repo_ancestry_without_project_marker_does_not_walk_parents\" classname=\"codex-skills-extension\" timestamp=\"2026-11-04T23:37:36.035-05:00\" time=\"0.006\">\n        </testcase>\n        ",
+      "new_programs": {
+        "before": [
+          {
+            "binary_id": "codex-skills-extension",
+            "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target-app-epoch2-20261105/dev-small/deps/codex_skills_extension-ac58db844d67647e",
+            "bytes": 45625344,
+            "sha256": "2503dd002c3ae2edd29e53f6dd0f017a9feaa489f8cea579692d3e82362df54a"
+          }
+        ],
+        "after": [
+          {
+            "binary_id": "codex-skills-extension",
+            "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target-app-epoch2-20261105/dev-small/deps/codex_skills_extension-ac58db844d67647e",
+            "bytes": 45625344,
+            "sha256": "2503dd002c3ae2edd29e53f6dd0f017a9feaa489f8cea579692d3e82362df54a"
+          }
+        ]
+      },
+      "no_observed_bound_early_return": true
+    },
+    {
+      "classname": "codex-v8-poc",
+      "name": "tests::sandbox_feature_matches_linked_v8",
+      "old_case": {
+        "name": "tests::sandbox_feature_matches_linked_v8",
+        "classname": "codex-v8-poc",
+        "seconds": "0.004",
+        "result": "FAIL",
+        "failure": "thread 'tests::sandbox_feature_matches_linked_v8' (406503) panicked at v8-poc/src/lib.rs:69:9:\nassertion failed: `(left == right)`\n\nDiff < left / right > :\n<true\n>false\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+      },
+      "new_case": {
+        "name": "tests::sandbox_feature_matches_linked_v8",
+        "classname": "codex-v8-poc",
+        "seconds": "0.010",
+        "result": "PASS",
+        "failure": ""
+      },
+      "new_xml": "<testcase name=\"tests::sandbox_feature_matches_linked_v8\" classname=\"codex-v8-poc\" timestamp=\"2026-11-04T23:37:54.412-05:00\" time=\"0.010\">\n        </testcase>\n        ",
+      "new_programs": {
+        "before": [
+          {
+            "binary_id": "codex-v8-poc",
+            "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target-app-epoch2-20261105/dev-small/deps/codex_v8_poc-d27574dc14ac07a9",
+            "bytes": 35362112,
+            "sha256": "7a05fc40219d0c4509a90bdbec2ba6d486575fd0bbe57d08721ec73d68f49c7d"
+          }
+        ],
+        "after": [
+          {
+            "binary_id": "codex-v8-poc",
+            "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target-app-epoch2-20261105/dev-small/deps/codex_v8_poc-d27574dc14ac07a9",
+            "bytes": 35362112,
+            "sha256": "7a05fc40219d0c4509a90bdbec2ba6d486575fd0bbe57d08721ec73d68f49c7d"
+          }
+        ]
+      },
+      "no_observed_bound_early_return": true
+    }
+  ],
+  "new_bound_early_return_count": 25,
+  "new_unbound_early_return_count": 0,
+  "limits": [
+    "Different source and target epoch identities are retained; old binary hashes are not borrowed as current qualification.",
+    "14 same-name failures are not waived; one output-cap failure exposes only the truncated Faile stderr prefix.",
+    "The two newly failing cases are not attributed to host noise or load.",
+    "JUnit PASS and omitted capability/remote behavior remain distinct."
+  ]
+}

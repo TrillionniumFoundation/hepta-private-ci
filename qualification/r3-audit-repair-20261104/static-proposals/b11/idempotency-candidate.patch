@@ -1,0 +1,430 @@
+--- a/codex-rs/windows-sandbox-rs/src/acl.rs
++++ b/codex-rs/windows-sandbox-rs/src/acl.rs
+@@ -607,69 +607,9 @@
+     }
+ }
+ 
+-unsafe fn add_deny_ace(path: &Path, psid: *mut c_void, kind: DenyAceKind) -> Result<bool> {
+-    let mut p_sd: *mut c_void = std::ptr::null_mut();
+-    let mut p_dacl: *mut ACL = std::ptr::null_mut();
+-    let code = GetNamedSecurityInfoW(
+-        to_wide(path).as_ptr(),
+-        1,
+-        DACL_SECURITY_INFORMATION,
+-        std::ptr::null_mut(),
+-        std::ptr::null_mut(),
+-        &mut p_dacl,
+-        std::ptr::null_mut(),
+-        &mut p_sd,
+-    );
+-    if code != ERROR_SUCCESS {
+-        if !p_sd.is_null() {
+-            LocalFree(p_sd as HLOCAL);
+-        }
+-        return Err(anyhow!(
+-            "GetNamedSecurityInfoW failed for {}: {code}",
+-            path.display()
+-        ));
+-    }
+-    let result = if kind.already_present(p_dacl, psid) {
+-        Ok(false)
+-    } else {
+-        let trustee = TRUSTEE_W {
+-            pMultipleTrustee: std::ptr::null_mut(),
+-            MultipleTrusteeOperation: 0,
+-            TrusteeForm: TRUSTEE_IS_SID,
+-            TrusteeType: TRUSTEE_IS_UNKNOWN,
+-            ptstrName: psid as *mut u16,
+-        };
+-        let mut explicit: EXPLICIT_ACCESS_W = std::mem::zeroed();
+-        explicit.grfAccessPermissions = kind.mask();
+-        explicit.grfAccessMode = DENY_ACCESS;
+-        explicit.grfInheritance = CONTAINER_INHERIT_ACE | OBJECT_INHERIT_ACE;
+-        explicit.Trustee = trustee;
+-        let mut p_new_dacl: *mut ACL = std::ptr::null_mut();
+-        let code2 = SetEntriesInAclW(1, &explicit, p_dacl, &mut p_new_dacl);
+-        let result = if let Err(err) = acl_api_result(path, "SetEntriesInAclW", code2) {
+-            Err(err)
+-        } else {
+-            let code3 = SetNamedSecurityInfoW(
+-                to_wide(path).as_ptr() as *mut u16,
+-                1,
+-                DACL_SECURITY_INFORMATION,
+-                std::ptr::null_mut(),
+-                std::ptr::null_mut(),
+-                p_new_dacl,
+-                std::ptr::null_mut(),
+-            );
+-            acl_api_result(path, "SetNamedSecurityInfoW", code3).map(|()| true)
+-        };
+-        if !p_new_dacl.is_null() {
+-            LocalFree(p_new_dacl as HLOCAL);
+-        }
+-        result
+-    };
+-    if !p_sd.is_null() {
+-        LocalFree(p_sd as HLOCAL);
+-    }
+-    result
+-}
++#[path = "acl_deny.rs"]
++mod deny;
++use deny::add_deny_ace;
+ 
+ /// Adds a deny ACE to prevent reads for the given SID on the target path.
+ ///
+--- /dev/null
++++ b/codex-rs/windows-sandbox-rs/src/acl_deny.rs
+@@ -0,0 +1,196 @@
++//! Recognize the native file/directory deny representation on the queried object.
++//!
++//! The query and optional update retain the same filesystem object. This does not
++//! serialize other DACL writers or establish custody of its pathname/ancestors.
++
++use super::*;
++use anyhow::Context;
++use std::os::windows::io::AsRawHandle;
++use std::os::windows::io::FromRawHandle;
++use std::os::windows::io::OwnedHandle;
++use windows_sys::Win32::Foundation::HANDLE;
++use windows_sys::Win32::Security::Authorization::SE_FILE_OBJECT;
++use windows_sys::Win32::Storage::FileSystem::FILE_STANDARD_INFO;
++use windows_sys::Win32::Storage::FileSystem::FileStandardInfo;
++use windows_sys::Win32::Storage::FileSystem::GetFileInformationByHandleEx;
++use windows_sys::Win32::Storage::FileSystem::ReOpenFile;
++use windows_sys::Win32::Storage::FileSystem::WRITE_DAC;
++
++#[derive(Clone, Copy)]
++pub(super) enum DenyObjectScope {
++    File,
++    Directory,
++}
++
++struct LocalAllocation(*mut c_void);
++
++impl Drop for LocalAllocation {
++    fn drop(&mut self) {
++        if !self.0.is_null() {
++            // SAFETY: this guard owns only allocations returned by the ACL APIs.
++            unsafe { LocalFree(self.0 as HLOCAL) };
++        }
++    }
++}
++
++// SAFETY: both pointers remain valid throughout the query. The scope must come
++// from the same object whose DACL was retrieved, not a separate path lookup.
++pub(super) unsafe fn dacl_has_complete_deny_for_object(
++    p_dacl: *mut ACL,
++    psid: *mut c_void,
++    kind: DenyAceKind,
++    scope: DenyObjectScope,
++) -> bool {
++    // Keep the existing strict, recursively effective public query unchanged.
++    if kind.already_present(p_dacl, psid) {
++        return true;
++    }
++    if p_dacl.is_null() {
++        return false;
++    }
++    let mut info: ACL_SIZE_INFORMATION = std::mem::zeroed();
++    if GetAclInformation(
++        p_dacl,
++        &mut info as *mut _ as *mut c_void,
++        std::mem::size_of::<ACL_SIZE_INFORMATION>() as u32,
++        AclSizeInformation,
++    ) == 0
++    {
++        return false;
++    }
++    let mapping = GENERIC_MAPPING {
++        GenericRead: FILE_GENERIC_READ,
++        GenericWrite: FILE_GENERIC_WRITE,
++        GenericExecute: FILE_GENERIC_EXECUTE,
++        GenericAll: FILE_ALL_ACCESS,
++    };
++    let mut required_mask = kind.mask();
++    MapGenericMask(&mut required_mask, &mapping);
++    let mut effective = false;
++    let mut descendants = false;
++    let inherited_scope = (OBJECT_INHERIT_ACE | CONTAINER_INHERIT_ACE) as u8 | INHERIT_ONLY_ACE;
++    for i in 0..info.AceCount {
++        let mut p_ace = std::ptr::null_mut();
++        if GetAce(p_dacl, i, &mut p_ace) == 0 {
++            return false;
++        }
++        let header = &*(p_ace as *const ACE_HEADER);
++        if header.AceType != ACCESS_DENIED_ACE_TYPE || header.AceFlags & INHERITED_ACE != 0 {
++            return false;
++        }
++        let ace = &*(p_ace as *const ACCESS_DENIED_ACE);
++        let sid = std::ptr::addr_of!(ace.SidStart).cast_mut().cast();
++        let mut mask = ace.Mask;
++        MapGenericMask(&mut mask, &mapping);
++        if EqualSid(sid, psid) == 0 || mask & required_mask != required_mask {
++            continue;
++        }
++        // Each half must independently cover the whole mask for this same SID.
++        // Never accumulate partial rights, inherited entries, or no-propagate.
++        if header.AceFlags == 0 {
++            effective = true;
++        } else if header.AceFlags == inherited_scope {
++            descendants = true;
++        }
++        match scope {
++            DenyObjectScope::File if effective => return true,
++            DenyObjectScope::Directory if effective && descendants => return true,
++            DenyObjectScope::File | DenyObjectScope::Directory => {}
++        }
++    }
++    false
++}
++
++pub(super) unsafe fn add_deny_ace(
++    path: &Path,
++    psid: *mut c_void,
++    kind: DenyAceKind,
++) -> Result<bool> {
++    let raw = CreateFileW(
++        to_wide(path).as_ptr(),
++        READ_CONTROL,
++        FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE,
++        std::ptr::null_mut(),
++        OPEN_EXISTING,
++        FILE_FLAG_BACKUP_SEMANTICS,
++        /*htemplatefile*/ 0,
++    );
++    if raw == INVALID_HANDLE_VALUE {
++        return Err(std::io::Error::last_os_error())
++            .with_context(|| format!("CreateFileW for deny query failed for {}", path.display()));
++    }
++    let object = OwnedHandle::from_raw_handle(raw as _);
++    let handle = object.as_raw_handle() as HANDLE;
++    let mut info: FILE_STANDARD_INFO = std::mem::zeroed();
++    if GetFileInformationByHandleEx(
++        handle,
++        FileStandardInfo,
++        &mut info as *mut _ as *mut c_void,
++        std::mem::size_of::<FILE_STANDARD_INFO>() as u32,
++    ) == 0
++    {
++        return Err(std::io::Error::last_os_error()).with_context(|| {
++            format!("GetFileInformationByHandleEx failed for {}", path.display())
++        });
++    }
++    let scope = if info.Directory != 0 {
++        DenyObjectScope::Directory
++    } else {
++        DenyObjectScope::File
++    };
++    let mut descriptor = LocalAllocation(std::ptr::null_mut());
++    let mut dacl = std::ptr::null_mut();
++    let code = GetSecurityInfo(
++        handle,
++        SE_FILE_OBJECT,
++        DACL_SECURITY_INFORMATION,
++        std::ptr::null_mut(),
++        std::ptr::null_mut(),
++        &mut dacl,
++        std::ptr::null_mut(),
++        &mut descriptor.0,
++    );
++    acl_api_result(path, "GetSecurityInfo", code)?;
++    if dacl_has_complete_deny_for_object(dacl, psid, kind, scope) {
++        return Ok(false);
++    }
++
++    // Reopen this object, not its path. No-op callers never require WRITE_DAC.
++    let raw_write = ReOpenFile(
++        handle,
++        WRITE_DAC,
++        FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE,
++        FILE_FLAG_BACKUP_SEMANTICS,
++    );
++    if raw_write == INVALID_HANDLE_VALUE {
++        return Err(std::io::Error::last_os_error())
++            .with_context(|| format!("ReOpenFile for deny repair failed for {}", path.display()));
++    }
++    let writable = OwnedHandle::from_raw_handle(raw_write as _);
++    let entry = EXPLICIT_ACCESS_W {
++        grfAccessPermissions: kind.mask(),
++        grfAccessMode: DENY_ACCESS,
++        grfInheritance: CONTAINER_INHERIT_ACE | OBJECT_INHERIT_ACE,
++        Trustee: TRUSTEE_W {
++            pMultipleTrustee: std::ptr::null_mut(),
++            MultipleTrusteeOperation: 0,
++            TrusteeForm: TRUSTEE_IS_SID,
++            TrusteeType: TRUSTEE_IS_UNKNOWN,
++            ptstrName: psid.cast(),
++        },
++    };
++    let mut new_dacl = std::ptr::null_mut();
++    let code = SetEntriesInAclW(/*ccountofexplicitentries*/ 1, &entry, dacl, &mut new_dacl);
++    let allocation = LocalAllocation(new_dacl.cast());
++    acl_api_result(path, "SetEntriesInAclW", code)?;
++    let code = SetSecurityInfo(
++        writable.as_raw_handle() as HANDLE,
++        SE_FILE_OBJECT,
++        DACL_SECURITY_INFORMATION,
++        std::ptr::null_mut(),
++        std::ptr::null_mut(),
++        allocation.0.cast(),
++        std::ptr::null_mut(),
++    );
++    acl_api_result(path, "SetSecurityInfo", code).map(|()| true)
++}
+--- a/codex-rs/windows-sandbox-rs/src/acl_tests.rs
++++ b/codex-rs/windows-sandbox-rs/src/acl_tests.rs
+@@ -245,3 +245,153 @@
+         r"SetNamedSecurityInfoW failed for C:\world-writable: 5"
+     );
+ }
++
++
++#[test]
++fn normalized_denies_require_same_sid_complete_masks_and_both_directory_scopes() -> Result<()> {
++    use super::deny::DenyObjectScope;
++    use super::deny::dacl_has_complete_deny_for_object;
++    let sid = LocalSid::from_string("S-1-5-21-181-282-383-484")?;
++    let other = LocalSid::from_string("S-1-5-21-181-282-383-485")?;
++    let recursive = OBJECT_INHERIT_ACE | CONTAINER_INHERIT_ACE | u32::from(INHERIT_ONLY_ACE);
++    for kind in [DenyAceKind::Read, DenyAceKind::Write] {
++        let mut full = kind.mask();
++        let mapping = GENERIC_MAPPING {
++            GenericRead: FILE_GENERIC_READ,
++            GenericWrite: FILE_GENERIC_WRITE,
++            GenericExecute: FILE_GENERIC_EXECUTE,
++            GenericAll: FILE_ALL_ACCESS,
++        };
++        unsafe { MapGenericMask(&mut full, &mapping) };
++        for (effective, inherited, inherited_sid, flags, expected) in [
++            (full, full, &sid, recursive, (true, true)),
++            (full, full, &other, recursive, (true, false)),
++            (full, full & !READ_CONTROL, &sid, recursive, (true, false)),
++            (full & !READ_CONTROL, full, &sid, recursive, (false, false)),
++            (full, full, &sid, recursive | NO_PROPAGATE_INHERIT_ACE, (true, false)),
++            (full, full, &sid, recursive | u32::from(INHERITED_ACE), (true, false)),
++            (full, full, &sid, OBJECT_INHERIT_ACE | u32::from(INHERIT_ONLY_ACE), (true, false)),
++            (full, full, &sid, CONTAINER_INHERIT_ACE | u32::from(INHERIT_ONLY_ACE), (true, false)),
++        ] {
++            let mut acl = NativeAcl::new()?;
++            acl.deny(&sid, effective, /*flags*/ 0)?;
++            acl.deny(inherited_sid, inherited, flags)?;
++            // SAFETY: these initialized native ACLs/SIDs outlive both queries.
++            let actual = unsafe {
++                (
++                    dacl_has_complete_deny_for_object(acl.as_ptr(), sid.as_ptr(), kind, DenyObjectScope::File),
++                    dacl_has_complete_deny_for_object(acl.as_ptr(), sid.as_ptr(), kind, DenyObjectScope::Directory),
++                )
++            };
++            assert_eq!(actual, expected, "flags={flags:#x}");
++            // The original public recursive query still requires its single ACE.
++            assert!(!unsafe { kind.already_present(acl.as_ptr(), sid.as_ptr()) });
++        }
++        let mut acl = NativeAcl::new()?;
++        unsafe {
++            assert_ne!(AddAccessAllowedAceEx(acl.as_ptr(), ACL_REVISION, /*aceflags*/ 0, FILE_ALL_ACCESS, sid.as_ptr()), 0);
++        }
++        acl.deny(&sid, full, /*flags*/ 0)?;
++        acl.deny(&sid, full, recursive)?;
++        for scope in [DenyObjectScope::File, DenyObjectScope::Directory] {
++            assert!(!unsafe { dacl_has_complete_deny_for_object(acl.as_ptr(), sid.as_ptr(), kind, scope) });
++        }
++    }
++    Ok(())
++}
++
++fn native_dacl_bytes(path: &Path) -> Result<Vec<u8>> {
++    // SAFETY: the descriptor owns the native ACL until its bytes are copied.
++    unsafe {
++        let (dacl, descriptor) = fetch_dacl_handle(path)?;
++        let bytes = if dacl.is_null() {
++            Vec::new()
++        } else {
++            std::slice::from_raw_parts(dacl.cast::<u8>(), usize::from((*dacl).AclSize)).to_vec()
++        };
++        LocalFree(descriptor as HLOCAL);
++        Ok(bytes)
++    }
++}
++
++#[test]
++fn native_file_and_directory_repairs_are_idempotent_for_read_and_write() -> Result<()> {
++    let fixture = tempfile::tempdir()?;
++    let sid = LocalSid::from_string("S-1-5-21-191-292-393-494")?;
++    for kind in [DenyAceKind::Read, DenyAceKind::Write] {
++        let directory = tempfile::tempdir_in(fixture.path())?;
++        let path = directory.path().join("retained.txt");
++        std::fs::write(&path, "retained")?;
++        for object in [directory.path(), path.as_path()] {
++            // SAFETY: the owned fixture paths and valid non-host SID are live.
++            assert!(unsafe { add_deny_ace(object, sid.as_ptr(), kind)? });
++            let first = native_dacl_bytes(object)?;
++            assert!(!unsafe { add_deny_ace(object, sid.as_ptr(), kind)? });
++            assert_eq!(native_dacl_bytes(object)?, first);
++        }
++        assert_eq!(std::fs::read_to_string(&path)?, "retained");
++    }
++    Ok(())
++}
++
++#[test]
++fn existing_native_deny_does_not_require_write_dac() -> Result<()> {
++    let fixture = tempfile::tempdir()?;
++    let path = fixture.path().join("read-control-only.txt");
++    std::fs::write(&path, "retained")?;
++    let file = OpenOptions::new().access_mode(READ_CONTROL | WRITE_DAC).open(&path)?;
++    let (dacl, descriptor) = unsafe { fetch_dacl_handle(&path)? };
++    let restore = RestoreDacl { file, dacl, descriptor };
++    let sid = LocalSid::from_string("S-1-5-21-201-302-403-504")?;
++    let owner_rights = LocalSid::from_string("S-1-3-4")?;
++    unsafe {
++        assert!(add_deny_write_ace(&path, sid.as_ptr())?);
++        assert!(add_deny_read_ace(&path, sid.as_ptr())?);
++        let (current, current_descriptor) = fetch_dacl_handle(&path)?;
++        let entry = EXPLICIT_ACCESS_W {
++            grfAccessPermissions: WRITE_DAC,
++            grfAccessMode: DENY_ACCESS,
++            grfInheritance: 0,
++            Trustee: TRUSTEE_W {
++                pMultipleTrustee: std::ptr::null_mut(), MultipleTrusteeOperation: 0,
++                TrusteeForm: TRUSTEE_IS_SID, TrusteeType: TRUSTEE_IS_UNKNOWN,
++                ptstrName: owner_rights.as_ptr().cast(),
++            },
++        };
++        let mut protected = std::ptr::null_mut();
++        let code = SetEntriesInAclW(/*ccountofexplicitentries*/ 1, &entry, current, &mut protected);
++        let code = if code == ERROR_SUCCESS {
++            SetSecurityInfo(restore.file.as_raw_handle() as HANDLE, SE_FILE_OBJECT, DACL_SECURITY_INFORMATION,
++                std::ptr::null_mut(), std::ptr::null_mut(), protected, std::ptr::null_mut())
++        } else { code };
++        if !protected.is_null() { LocalFree(protected as HLOCAL); }
++        LocalFree(current_descriptor as HLOCAL);
++        acl_api_result(&path, "seed owner WRITE_DAC denial", code)?;
++    }
++    let query = OpenOptions::new().access_mode(READ_CONTROL).open(&path)?;
++    // Use the same rights/flags as a real repair; an unexpected granted handle
++    // is closed before the host-control assertion fails.
++    let write_denied = unsafe {
++        let raw = windows_sys::Win32::Storage::FileSystem::ReOpenFile(
++            query.as_raw_handle() as HANDLE, WRITE_DAC,
++            FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE,
++            FILE_FLAG_BACKUP_SEMANTICS,
++        );
++        if raw == INVALID_HANDLE_VALUE {
++            std::io::Error::last_os_error().raw_os_error()
++        } else {
++            CloseHandle(raw);
++            None
++        }
++    };
++    assert_eq!(write_denied, Some(ERROR_ACCESS_DENIED as i32), "host control must really lack WRITE_DAC");
++    let before = native_dacl_bytes(&path)?;
++    let noops = unsafe {
++        (add_deny_write_ace(&path, sid.as_ptr())?, add_deny_read_ace(&path, sid.as_ptr())?)
++    };
++    assert_eq!(noops, (false, false));
++    assert_eq!(native_dacl_bytes(&path)?, before);
++    drop(restore);
++    assert_eq!(std::fs::read_to_string(&path)?, "retained");
++    Ok(())
++}

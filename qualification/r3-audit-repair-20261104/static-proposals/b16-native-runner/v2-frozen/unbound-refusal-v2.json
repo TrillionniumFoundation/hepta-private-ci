@@ -1,0 +1,28 @@
+{
+  "schema": "hepta-b16-unbound-refusal-v2",
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+    "b16_runner.py",
+    "--binding",
+    "binding-template-UNBOUND.json",
+    "--epoch",
+    "foundation"
+  ],
+  "exit_code": 1,
+  "duration_seconds": 0.12400916299884557,
+  "expected_refusal": "explicit reviewed final_A_tree is required",
+  "native_commands_started": false,
+  "refusal_site": "validate_binding, before integrity reads/source paths/cache inspection/subprocesses/evidence creation",
+  "raw": {
+    "path": "unbound-refusal-v2.log",
+    "bytes": 868,
+    "sha256": "b03190cbfeaf080d9ef8d5cb04c6228111207d0dda6bbfffb160ce7b541c21ba",
+    "blob": "2b64caa3c2b979e3a457765151b71f9ec84402f2"
+  },
+  "binding": {
+    "path": "binding-template-UNBOUND.json",
+    "bytes": 3229,
+    "sha256": "0621cabbb6edd65c90d587f237105c070c02f5026b05e2e515af4eed19807c12",
+    "blob": "676d731d0059b35d9004e1c23b8a09b26e4927b7"
+  }
+}

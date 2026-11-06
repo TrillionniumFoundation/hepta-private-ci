@@ -1,0 +1,369 @@
+2026-11-04T20:13:59.8387200Z ==================== Test output for //codex-rs/windows-sandbox-rs:windows-sandbox-rs-unit-tests:
+2026-11-04T20:13:59.8432744Z 
+2026-11-04T20:13:59.8435163Z running 92 tests
+2026-11-04T20:13:59.8644998Z test acl::tests::complete_denies_compare_mapped_masks_and_require_every_right ... ok
+2026-11-04T20:13:59.8781633Z test acl::tests::complete_denies_require_effective_recursive_scope_and_precede_allows ... ok
+2026-11-04T20:13:59.8920522Z test acl::tests::deny_ace_update_failure_is_an_error ... ok
+2026-11-04T20:13:59.9656235Z test acl::tests::partial_read_deny_is_repaired_before_native_file_data_access ... ok
+2026-11-04T20:13:59.9940467Z test allow::tests::excludes_tmp_env_vars_when_requested ... ok
+2026-11-04T20:14:00.0400866Z test allow::tests::denies_git_file_inside_writable_root ... ok
+2026-11-04T20:14:00.0495142Z test allow::tests::denies_codex_and_agents_inside_writable_root ... ok
+2026-11-04T20:14:00.0748588Z test allow::tests::denies_git_dir_inside_writable_root ... ok
+2026-11-04T20:14:00.1194421Z test allow::tests::ignores_unix_slash_tmp_for_windows_allow_roots ... ok
+2026-11-04T20:14:00.1241575Z test allow::tests::includes_tmp_env_vars_when_requested ... ok
+2026-11-04T20:14:00.1404179Z test allow::tests::includes_additional_writable_roots ... ok
+2026-11-04T20:14:00.1572080Z test allow::tests::uses_runtime_workspace_roots_for_workspace_root ... ok
+2026-11-04T20:14:00.1576101Z test audit::tests::gathers_path_entries_by_list_separator ... ok
+2026-11-04T20:14:00.1582886Z test audit::tests::deny_ace_failure_is_propagated_after_other_paths_are_attempted ... ok
+2026-11-04T20:14:00.1584374Z test allow::tests::skips_protected_subdirs_when_missing ... ok
+2026-11-04T20:14:00.1585462Z test deny_read_acl::tests::plan_preserves_missing_paths ... ok
+2026-11-04T20:14:00.1586594Z test deny_read_acl::tests::plan_includes_existing_canonical_targets ... ok
+2026-11-04T20:14:00.1587774Z test cap::tests::equivalent_cwd_spellings_share_workspace_sid_key ... ok
+2026-11-04T20:14:00.1589187Z test cap::tests::write_roots_get_path_scoped_sids ... ok
+2026-11-04T20:14:00.1590638Z test deny_read_resolver::tests::configured_depth_caps_recursive_glob_scans ... ok
+2026-11-04T20:14:00.1591871Z test deny_read_resolver::tests::exact_missing_paths_are_preserved ... ok
+2026-11-04T20:14:00.1593108Z test deny_read_resolver::tests::configured_depth_bounds_root_recursive_glob_scans ... ok
+2026-11-04T20:14:00.1594404Z test deny_read_resolver::tests::glob_patterns_expand_to_existing_matches ... ok
+2026-11-04T20:14:00.1595746Z test deny_read_resolver::tests::invalid_glob_patterns_fail_before_expansion ... ok
+2026-11-04T20:14:00.1597097Z test deny_read_resolver::tests::root_recursive_globs_without_depth_fail_before_expansion ... ok
+2026-11-04T20:14:00.1598630Z test deny_read_resolver::tests::non_recursive_globs_do_not_expand_nested_matches ... ok
+2026-11-04T20:14:00.1604170Z test deny_read_resolver::tests::scan_root_uses_literal_prefix_before_glob ... ok
+2026-11-04T20:14:00.1605864Z test deny_read_resolver::tests::scan_depth_is_bounded_for_non_recursive_globs ... ok
+2026-11-04T20:14:00.1607162Z test desktop::tests::desktop_rejects_unrestricted_and_invalid_tokens ... ok
+2026-11-04T20:14:00.1608457Z test desktop::tests::readonly_preserves_private_and_default_desktop_access ... ok
+2026-11-04T20:14:00.1610139Z test desktop::tests::workspace_private_desktop_checks_the_exact_capability ... ok
+2026-11-04T20:14:00.1611731Z test elevated::runner_client::tests::refreshable_sandbox_creds_error_recognizes_credential_and_child_start_failures ... ok
+2026-11-04T20:14:00.1613357Z test elevated::ipc_framed::tests::error_payload_serializes_stage_and_windows_error_code ... ok
+2026-11-04T20:14:00.1614680Z test elevated::ipc_framed::tests::framed_round_trip ... ok
+2026-11-04T20:14:00.1615842Z test elevated::ipc_framed::tests::spawn_request_serializes_permission_profile ... ok
+2026-11-04T20:14:00.1617216Z test helper_materialization::tests::copy_from_source_if_needed_reuses_fresh_destination ... ok
+2026-11-04T20:14:00.1618607Z test helper_materialization::tests::copy_runner_into_shared_bin_dir ... ok
+2026-11-04T20:14:00.1620243Z test helper_materialization::tests::copy_from_source_if_needed_copies_missing_destination ... ok
+2026-11-04T20:14:00.1621687Z test helper_materialization::tests::helper_bin_dir_is_under_sandbox_bin ... ok
+2026-11-04T20:14:00.1623619Z test helper_materialization::tests::helper_source_lookup_checks_resource_dir ... ok
+2026-11-04T20:14:00.1624852Z test helper_materialization::tests::helper_source_lookup_checks_package_resource_dir_for_bin_exe ... ok
+2026-11-04T20:14:00.1626194Z test helper_materialization::tests::helper_source_lookup_prefers_direct_sibling_over_resource_dir ... ok
+2026-11-04T20:14:00.1627560Z test helper_materialization::tests::helper_source_lookup_prefers_package_resource_dir_over_bin_resource_dir ... ok
+2026-11-04T20:14:00.1628991Z test helper_materialization::tests::materialized_file_name_adds_suffix_before_extension ... ok
+2026-11-04T20:14:00.1630442Z test helper_materialization::tests::helper_version_suffix_uses_cli_version_or_dev_build_metadata ... ok
+2026-11-04T20:14:00.1631683Z test helper_materialization::tests::helper_source_lookup_resolves_bin_junctions ... ok
+2026-11-04T20:14:00.1632814Z test identity::tests::guardian_preserve_mode_does_not_churn_marker_with_empty_proxy_ports ... ok
+2026-11-04T20:14:00.1633944Z test identity::tests::preserving_proxy_settings_uses_the_existing_marker ... ok
+2026-11-04T20:14:00.1635004Z test logging::tests::current_log_file_path_for_codex_home_uses_sandbox_dir ... ok
+2026-11-04T20:14:00.1635941Z test identity::tests::remove_sandbox_users_file_ignores_missing_file ... ok
+2026-11-04T20:14:00.1636901Z test identity::tests::remove_sandbox_users_file_deletes_existing_file ... ok
+2026-11-04T20:14:00.1637917Z test logging::tests::log_file_path_for_utc_date_matches_rolling_appender_name ... ok
+2026-11-04T20:14:00.1638886Z test logging::tests::preview_does_not_panic_on_utf8_boundary ... ok
+2026-11-04T20:14:00.1640446Z test path_normalization::tests::canonical_path_key_normalizes_case_and_separators ... ok
+2026-11-04T20:14:00.1641737Z test resolved_permissions::tests::permission_profile_rejects_unrestricted_managed_filesystem ... ok
+2026-11-04T20:14:00.1642903Z test resolved_permissions::tests::permission_profile_rejects_disabled_profiles ... ok
+2026-11-04T20:14:00.1644216Z test resolved_permissions::tests::permission_profile_workspace_roots_expand_all_runtime_workspace_roots ... ok
+2026-11-04T20:14:00.1645378Z test logging::tests::log_note_writes_to_daily_rolling_log ... ok
+2026-11-04T20:14:00.1646527Z test resolved_permissions::tests::permission_profile_workspace_root_uses_runtime_workspace_roots ... ok
+2026-11-04T20:14:00.1647985Z test resolved_permissions::tests::token_mode_for_profile_without_writable_roots_uses_readonly_capability ... ok
+2026-11-04T20:14:00.1650026Z test resolved_permissions::tests::permission_profile_workspace_write_uses_windows_temp_env_vars ... ok
+2026-11-04T20:14:00.1651425Z test resolved_permissions::tests::token_mode_for_profile_with_writable_roots_uses_write_capabilities ... ok
+2026-11-04T20:14:00.1652518Z test sandbox_utils::tests::injects_worktree_root_for_gitfile ... ok
+2026-11-04T20:14:00.1653465Z test sandbox_utils::tests::injects_safe_directory_for_git_directory ... ok
+2026-11-04T20:14:00.1654467Z test resolved_permissions::tests::token_mode_rejects_full_disk_write_entries ... ok
+2026-11-04T20:14:00.1655508Z test setup::tests::build_payload_deny_read_paths_preserves_explicit_paths ... ok
+2026-11-04T20:14:00.1656643Z test setup::tests::build_payload_roots_replaces_full_read_policy_when_read_override_is_provided ... ok
+2026-11-04T20:14:00.1657907Z test setup::tests::build_payload_roots_preserves_helper_roots_when_read_override_is_provided ... ok
+2026-11-04T20:14:00.1659101Z test setup::tests::expand_user_profile_root_for_replaces_profile_root_with_children ... ok
+2026-11-04T20:14:00.1660469Z test setup::tests::effective_write_roots_use_runtime_workspace_roots_for_workspace_root ... ok
+2026-11-04T20:14:00.1661584Z test setup::tests::expanded_write_roots_still_drop_protected_codex_home ... ok
+2026-11-04T20:14:00.1662555Z test setup::tests::full_read_roots_preserve_legacy_platform_defaults ... ok
+2026-11-04T20:14:00.1663461Z test setup::tests::gather_read_roots_includes_helper_bin_dir ... ok
+2026-11-04T20:14:00.1664434Z test setup::tests::is_ssh_config_dependency_root_blocks_config_dependencies ... ok
+2026-11-04T20:14:00.1665466Z test setup::tests::is_user_profile_root_exclusion_blocks_configured_children ... ok
+2026-11-04T20:14:00.1666543Z test setup::tests::loopback_proxy_url_parsing_rejects_non_loopback_and_zero_port ... ok
+2026-11-04T20:14:00.1667564Z test setup::tests::identical_setup_requests_share_one_in_flight_run ... ok
+2026-11-04T20:14:00.1668473Z test setup::tests::loopback_proxy_url_parsing_supports_common_forms ... ok
+2026-11-04T20:14:00.1669725Z test setup::tests::offline_proxy_settings_ignore_proxy_env_when_online_identity_selected ... ok
+2026-11-04T20:14:00.1671095Z test setup::tests::offline_proxy_settings_capture_proxy_ports_and_local_binding_for_offline_identity ... ok
+2026-11-04T20:14:00.1672372Z test setup::tests::effective_write_roots_match_payload_filtering_for_overrides ... ok
+2026-11-04T20:14:00.1673384Z test setup::tests::profile_read_roots_excludes_configured_top_level_entries ... ok
+2026-11-04T20:14:00.1674319Z test setup::tests::proxy_ports_from_env_dedupes_and_sorts ... ok
+2026-11-04T20:14:00.1675270Z test setup::tests::payload_deny_write_paths_merge_explicit_and_protected_children ... ok
+2026-11-04T20:14:00.1676401Z test setup::tests::profile_read_roots_falls_back_to_profile_root_when_enumeration_fails ... ok
+2026-11-04T20:14:00.1677426Z test setup::tests::setup_completion_requires_ready_artifacts ... ok
+2026-11-04T20:14:00.1678445Z test setup::tests::report_helper_failure_uses_setup_error_report_when_clear_succeeded ... ok
+2026-11-04T20:14:00.1679803Z test setup::tests::report_helper_failure_ignores_setup_error_report_when_clear_failed ... ok
+2026-11-04T20:14:00.1681234Z test setup::tests::setup_marker_request_mismatch_reason_ignores_proxy_drift_for_online_identity ... ok
+2026-11-04T20:14:00.1682486Z test setup::tests::setup_marker_request_mismatch_reason_reports_offline_firewall_drift ... ok
+2026-11-04T20:14:00.1683526Z test setup::tests::setup_exe_lookup_checks_package_resource_dir_for_bin_exe ... ok
+2026-11-04T20:14:00.1684522Z test helper_materialization::tests::destination_is_fresh_uses_size_and_mtime ... ok
+2026-11-04T20:14:00.1685146Z 
+2026-11-04T20:14:00.1685574Z test result: ok. 92 passed; 0 failed; 0 ignored; 0 measured; 57 filtered out; finished in 1.35s
+2026-11-04T20:14:00.1686221Z 
+2026-11-04T20:14:00.1686227Z 
+2026-11-04T20:14:00.1686398Z running 57 tests
+2026-11-04T20:14:00.1687106Z test setup::tests::setup_refresh_skips_profiles_without_managed_filesystem_permissions ... ok
+2026-11-04T20:14:00.1688312Z test setup::tests::setup_refresh_rejects_invalid_deny_read_globs ... ok
+2026-11-04T20:14:00.1689165Z test setup::tests::setup_request_prefers_explicit_proxy_settings ... ok
+2026-11-04T20:14:00.1690291Z test setup::tests::setup_refresh_preserves_workspace_scoped_deny_read_paths ... ok
+2026-11-04T20:14:00.1691244Z test setup_error::tests::sanitize_tag_value_leaves_unknown_segments ... ok
+2026-11-04T20:14:00.1692274Z test setup_error::tests::sanitize_tag_value_redacts_multiple_occurrences ... ok
+2026-11-04T20:14:00.1693217Z test setup_error::tests::sanitize_tag_value_redacts_username_segments ... ok
+2026-11-04T20:14:00.1694054Z test setup::tests::workspace_write_roots_remain_readable ... ok
+2026-11-04T20:14:00.1694884Z test spawn_prep::tests::common_spawn_env_keeps_network_env_unchanged ... ok
+2026-11-04T20:14:00.1695801Z test spawn_prep::tests::legacy_deny_path_includes_nested_active_root_sid ... ok
+2026-11-04T20:14:00.1696821Z test spawn_prep::tests::no_network_env_rewrite_applies_for_workspace_write ... ok
+2026-11-04T20:14:00.1697973Z test spawn_prep::tests::legacy_session_capability_roots_use_runtime_workspace_roots_for_workspace_root ... ok
+2026-11-04T20:14:00.1699127Z test spawn_prep::tests::legacy_spawn_env_applies_offline_network_rewrite ... ok
+2026-11-04T20:14:00.1700381Z test spawn_prep::tests::no_network_env_rewrite_skips_when_network_access_is_allowed ... ok
+2026-11-04T20:14:00.1701494Z test ssh_config_dependencies::tests::collects_path_directive_profile_entries ... ok
+2026-11-04T20:14:00.1702586Z test spawn_prep::tests::root_capability_sids_only_include_active_roots ... ok
+2026-11-04T20:14:00.1703594Z test spawn_prep::tests::legacy_capability_roots_use_effective_write_roots ... ok
+2026-11-04T20:14:00.1704605Z test ssh_config_dependencies::tests::recursively_collects_include_dependencies ... ok
+2026-11-04T20:14:00.1705658Z test stdio_bridge::tests::input_forwarder_sends_chunks_and_reports_eof ... ok
+2026-11-04T20:14:00.1706599Z test stdio_bridge::tests::output_forwarder_writes_all_chunks ... ok
+2026-11-04T20:14:00.1707535Z test token::tests::elevated_token_includes_network_proxy_restricting_sid ... ok
+2026-11-04T20:14:00.1708841Z windows_boundary_diag dacl=partial_directory_before_repair path="D:\\tmp\\.tmpsgxtXZ" bytes=272 ace_count=10 truncated=false
+2026-11-04T20:14:00.1711304Z windows_boundary_diag dacl=partial_directory_before_repair ace=0 type=1 flags=0x03 size=36 mask=Some(65536) truncated=false raw=[01, 03, 24, 00, 00, 00, 01, 00, 01, 05, 00, 00, 00, 00, 00, 05, 15, 00, 00, 00, ab, 00, 00, 00, 10, 01, 00, 00, 75, 01, 00, 00, da, 01, 00, 00]
+2026-11-04T20:14:00.2126877Z windows_boundary_diag dacl=partial_directory_before_repair ace=1 type=0 flags=0x03 size=36 mask=Some(1245631) truncated=false raw=[00, 03, 24, 00, bf, 01, 13, 00, 01, 05, 00, 00, 00, 00, 00, 05, 15, 00, 00, 00, ab, 00, 00, 00, 10, 01, 00, 00, 75, 01, 00, 00, da, 01, 00, 00]
+2026-11-04T20:14:00.2129821Z windows_boundary_diag dacl=partial_directory_before_repair ace=2 type=0 flags=0x03 size=20 mask=Some(2032127) truncated=false raw=[00, 03, 14, 00, ff, 01, 1f, 00, 01, 01, 00, 00, 00, 00, 00, 01, 00, 00, 00, 00]
+2026-11-04T20:14:00.2132558Z windows_boundary_diag dacl=partial_directory_before_repair ace=3 type=0 flags=0x13 size=24 mask=Some(2032127) truncated=false raw=[00, 13, 18, 00, ff, 01, 1f, 00, 01, 02, 00, 00, 00, 00, 00, 05, 20, 00, 00, 00, 20, 02, 00, 00]
+2026-11-04T20:14:00.2135140Z windows_boundary_diag dacl=partial_directory_before_repair ace=4 type=0 flags=0x13 size=20 mask=Some(2032127) truncated=false raw=[00, 13, 14, 00, ff, 01, 1f, 00, 01, 01, 00, 00, 00, 00, 00, 05, 12, 00, 00, 00]
+2026-11-04T20:14:00.2137627Z windows_boundary_diag dacl=partial_directory_before_repair ace=5 type=0 flags=0x10 size=36 mask=Some(2032127) truncated=false raw=[00, 10, 24, 00, ff, 01, 1f, 00, 01, 05, 00, 00, 00, 00, 00, 05, 15, 00, 00, 00, 39, b5, 6e, b7, 72, b8, 43, da, 70, 08, a7, f7, f4, 01, 00, 00]
+2026-11-04T20:14:00.2140091Z windows_boundary_diag dacl=partial_directory_before_repair ace=6 type=0 flags=0x1b size=20 mask=Some(268435456) truncated=false raw=[00, 1b, 14, 00, 00, 00, 00, 10, 01, 01, 00, 00, 00, 00, 00, 03, 00, 00, 00, 00]
+2026-11-04T20:14:00.2141953Z windows_boundary_diag dacl=partial_directory_before_repair ace=7 type=0 flags=0x13 size=24 mask=Some(1179817) truncated=false raw=[00, 13, 18, 00test unified_exec::backend_selection_tests::explicit_elevated_level_always_uses_elevated_broker ... ok
+2026-11-04T20:14:00.2143536Z , a9, 00, 12, 00, 01, 02, 00, 00, 00, 00, 00, 05, 20, test unified_exec::backend_selection_tests::deny_write_override_is_forced_through_elevated_broker ... ok
+2026-11-04T20:14:00.2144413Z 00, 00, 00, 21, 02, 00, 00]
+2026-11-04T20:14:00.2145198Z windows_boundary_diag dacl=partial_directory_before_repair ace=8 type=0 flags=0x12 size=24 mask=Some(4) truncated=false raw=[00, 12, 18, 00, 04, 00, 00, 00, 01, 02, 00, 00, 00, 00, 00, 05, 20, 00, 00, 00, 21, 02, 00, 00]
+2026-11-04T20:14:00.2146767Z windows_boundary_diag dacl=partial_directory_before_repair ace=9 type=0 flags=0x12 size=24 mask=Some(2) truncated=false raw=[00, 12, 18, 00, 02, 00, 00, 00, 01, 02, 00, 00, 00, 00, 00, 05, 20, 00, 00, 00, 21, 02, 00, 00]
+2026-11-04T20:14:00.2147736Z windows_boundary_diag dacl=partial_directory_before_repair observation_us=4807
+2026-11-04T20:14:00.2148695Z windows_boundary_diag dacl=partial_file_before_repair path="D:\\tmp\\.tmpsgxtXZ\\existing.txt" bytes=204 ace_count=7 truncated=false
+2026-11-04T20:14:00.2150514Z windows_boundary_diag dacl=partial_file_before_repair ace=0 type=1 flags=0x10 size=36 mask=Some(65536) truncated=false raw=[01, 10, 24, 00, 00, 00, 01, 00, 01, 05, 00, 00, 00, 00, 00, 05, 15, 00, 00, 00, ab, 00, 00, 00, 10, 01, 00, 00, 75, 01, 00, 00, da, 01, 00, 00]
+2026-11-04T20:14:00.2152058Z windows_boundary_diag dacl=partial_file_before_repair ace=1 type=0 flags=0x10 size=36 mask=Some(1245631) truncated=false raw=[00, 10, 24, 00, bf, 01, 13, 00, 01, 05, 00, 00, 00, 00, 00, 05, 15, 00, 00, 00, ab, 00, 00, 00, 10, 01, 00, 00, 75, 01, 00, 00, da, 01, 00, 00]
+2026-11-04T20:14:00.2153680Z windows_boundary_diag dacl=partial_file_before_repair ace=2 type=0 flags=0x10 size=20 mask=Some(2032127) truncated=false raw=[00, 10, 14, 00, ff, 01, 1f, 00, 01, 01, 00, 00, 00, 00, 00, 01, 00, 00, 00, 00]
+2026-11-04T20:14:00.2155185Z windows_boundary_diag dacl=partial_file_before_repair ace=3 type=0 flags=0x10 size=24 mask=Some(2032127) truncated=false raw=[00, 10, 18, 00, ff, 01, 1f, 00, 01, 02, 00, 00, 00, 00, 00, 05, 20, 00, 00, 00, 20, 02, 00, 00]
+2026-11-04T20:14:00.2561352Z windows_boundary_diag dacl=partial_file_before_repair ace=4 type=0 flags=0x10 size=20 mask=Some(2032127) truncated=false raw=[00, 10, 14, 00, ff, 01, 1f, 00, 01, 01, 00, 00, 00, 00, 00, 05, 12, 00, 00, 00]
+2026-11-04T20:14:00.2563848Z windows_boundary_diag dacl=partial_file_before_repair ace=5 type=0 flags=0x10 size=36 mask=Some(2032127) truncated=false raw=[00, 10, 24, 00, ff, 01, 1f, 00, 01, 05, 00, 00, 00, 00, 00, 05, 15, 00, 00, 00, 39, b5, 6e, b7, 72, b8, 43, da, 70, 08, a7, f7, f4, 01, 00, 00]
+2026-11-04T20:14:00.2566959Z windows_boundary_diag dacl=partial_file_before_repair ace=6 type=0 flags=0x10 size=24 mask=Some(1179817) truncated=false raw=[00, 10, 18, 00, a9, 00, 12, 00, 01, 02, 00, 00, 00, 00, 00, 05, 20, 00, 00, 00, 21, 02, 00, 00]
+2026-11-04T20:14:00.2568610Z windows_boundary_diag dacl=partial_file_before_repair observation_us=2756
+2026-11-04T20:14:00.2569953Z windows_boundary_diag dacl=partial_directory_after_first_repair path="D:\\tmp\\.tmpsgxtXZ" bytes=308 ace_count=11 truncated=false
+2026-11-04T20:14:00.2572186Z windows_boundary_diag dacl=partial_directory_after_first_repair ace=0 type=1 flags=0x00 size=36 mask=Some(1245526) truncated=false raw=[01, 00, 24, 00, 56, 01, 13, 00, 01, 05, 00, 00, 00, 00, 00, 05, 15, 00, 00, 00, ab, 00, 00, 00, 10, 01, 00, 00, 75, 01, 00, 00, da, 01, 00, 00]
+2026-11-04T20:14:00.2575375Z windows_boundary_diag dacl=partial_directory_after_first_repair ace=1 type=1 flags=0x0b size=36 mask=Some(1074987350) truncated=false raw=[01, 0b, 24, 00, 56, 01, 13, 40, 01, 05, 00, 00, 00, 00, 00, 05, 15, 00, 00, 00, ab, 00, 00, 00, 10, 01, 00, 00, 75, 01, 00, 00, da, 01, 00, 00]
+2026-11-04T20:14:00.2579473Z windows_boundary_diag dacl=partial_directory_after_first_repair ace=2 type=0 flags=0x03 size=36 mask=Some(1245631) truncated=false raw=[00, 03, 24, 00, bf, 01, 13, 00, 01, 05, 00, 00, 00, 00, 00, 05, 15, 00, 00, 00, ab, 00, 00, 00, 10, 01, 00, 00, 75, 01, 00, 00, da, 01, 00, 00]
+2026-11-04T20:14:00.2582010Z windows_boundary_diag dacl=partial_directory_after_first_repair ace=3 type=0 flags=0x03 size=20 mask=Some(2032127) truncated=false raw=[00, 03, 14, 00, ff, 01, 1f, 00, 01, 01, 00, 00, 00, 00, 00, 01, 00, 00, 00, 00]
+2026-11-04T20:14:00.2584266Z windows_boundary_diag dacl=partial_directory_after_first_repair ace=4 type=0 flags=0x13 size=24 mask=Some(2032127) truncated=false raw=[00, 13, 18, 00, ff, 01, 1f, 00, 01, 02, 00, 00, 00, 00, 00, 05, 20, 00, 00, 00, 20, 02, 00, 00]
+2026-11-04T20:14:00.2587036Z windows_boundary_diag dacl=partial_directory_after_first_repair ace=5 type=0 flags=0x13 size=20 mask=Some(2032127) truncated=false raw=[00, 13, 14, 00, ff, 01, 1f, 00, 01, 01, 00, 00, 00, 00, 00, 05, 12, 00, 00, 00]
+2026-11-04T20:14:00.2590189Z windows_boundary_diag dacl=partial_directory_after_first_repair ace=6 type=0 flags=0x10 size=36 mask=Some(2032127) truncated=false raw=[00, 10, 24, 00, ff, 01, 1f, 00, 01, 05, 00, 00, 00, 00, 00, 05, 15, 00, 00, 00, 39, b5, 6e, b7, 72, b8, 43, da, 70, 08, a7, f7, f4, 01, 00, 00]
+2026-11-04T20:14:00.2593236Z windows_boundary_diag dacl=partial_directory_after_first_repair ace=7 type=0 flags=0x1b size=20 mask=Some(268435456) truncated=false raw=[00, 1b, 14, 00, 00, 00, 00, 10, 01, 01, 00, 00, 00, 00, 00, 03, 00, 00, 00, 00]
+2026-11-04T20:14:00.2595988Z windows_boundary_diag dacl=partial_directory_after_first_repair ace=8 type=0 flags=0x13 size=24 mask=Some(1179817) truncated=false raw=[00, 13, 18, 00, a9, 00, 12, 00, 01, 02, 00, 00, 00, 00, 00, 05, 20, 00, 00, 00, 21, 02, 00, 00]
+2026-11-04T20:14:00.2598512Z windows_boundary_diag dacl=partial_directory_after_first_repair ace=9 type=0 flags=0x12 size=24 mask=Some(4) truncated=false raw=[00, 12, 18, 00, 04, 00, 00, 00, 01, 02, 00, 00, 00, 00, 00, 05, 20, 00, 00, 00, 21, 02, 00, 00]
+2026-11-04T20:14:00.2601028Z windows_boundary_diag dacl=partial_directory_after_first_repair ace=10 type=0 flags=0x12 size=24 mask=Some(2) truncated=false raw=[00, 12, 18, 00, 02, 00, 00, 00, 01, 02, 00, 00, 00, 00, 00, 05, 20, 00, 00, 00, 21, 02, 00, 00]
+2026-11-04T20:14:00.2602853Z windows_boundary_diag dacl=partial_directory_after_first_repair observation_us=3853
+2026-11-04T20:14:00.2604265Z windows_boundary_diag dacl=partial_file_after_directory_repair path="D:\\tmp\\.tmpsgxtXZ\\existing.txt" bytes=204 ace_count=7 truncated=false
+2026-11-04T20:14:00.2606919Z windows_boundary_diag dacl=partial_file_after_directory_repair ace=0 type=1 flags=0x10 size=36 mask=Some(1245526) truncated=false raw=[01, 10, 24, 00, 56, 01, 13, 00, 01, 05, 00, 00, 00, 00, 00, 05, 15, 00, 00, 00, ab, 00, 00, 00, 10, 01, 00, 00, 75, 01, 00, 00, da, 01, 00, 00]
+2026-11-04T20:14:00.2610083Z windows_boundary_diag dacl=partial_file_after_directory_repair ace=1 type=0 flags=0x10 size=36 mask=Some(1245631) truncated=false raw=[00, 10, 24, 00, bf, 01, 13, 00, 01, 05, 00, 00, 00, 00, 00, 05, 15, 00, 00, 00, ab, 00, 00, 00, 10, 01, 00, 00, 75, 01, 00, 00, da, 01, 00, 00]
+2026-11-04T20:14:00.2612745Z windows_boundary_diag dacl=partial_file_after_directory_repair ace=2 type=0 flags=0x10 size=20 mask=Some(2032127) truncated=false raw=[00, 10, 14, 00, ff, 01, 1f, 00, 01, 01, 00, 00, 00, 00, 00, 01, 00, 00, 00, 00]
+2026-11-04T20:14:00.2615651Z windows_boundary_diag dacl=partial_file_after_directory_repair ace=3 type=0 flags=0x10 size=24 mask=Some(2032127) truncated=false raw=[00, 10, 18, 00, ff, 01, 1f, 00, 01, 02, 00, 00, 00, 00, 00, 05, 20, 00, 00, 00, 20, 02, 00, 00]
+2026-11-04T20:14:00.2618120Z windows_boundary_diag dacl=partial_file_after_directory_repair ace=4 type=0 flags=0x10 size=20 mask=Some(2032127) truncated=false raw=[00, 10, 14, 00, ff, 01, 1f, 00, 01, 01, 00, 00, 00, 00, 00, 05, 12, 00, 00, 00]
+2026-11-04T20:14:00.2621430Z windows_boundary_diag dacl=partial_file_after_directory_repair ace=5 type=0 flags=0x10 size=36 mask=Some(2032127) truncated=false raw=[00, 10, 24, 00, ff, 01, 1f, 00, 01, 05, 00, 00, 00, 00, 00, 05, 15, 00, 00, 00, 39, b5, 6e, b7, 72, b8, 43, da, 70, 08, a7, f7, f4, 01, 00, 00]
+2026-11-04T20:14:00.2624027Z windows_boundary_diag dacl=partial_file_after_directory_repair ace=6 type=0 flags=0x10 size=24 mask=Some(1179817) truncated=false raw=[00, 10, 18, 00, a9, 00, 12, 00, 01, 02, 00, 00, 00, 00, 00, 05, 20, 00, 00, 00, 21, 02, 00, 00]
+2026-11-04T20:14:00.2625986Z windows_boundary_diag dacl=partial_file_after_directory_repair observation_us=2614
+2026-11-04T20:14:00.2627327Z windows_boundary_diag dacl=partial_directory_after_repeat path="D:\\tmp\\.tmpsgxtXZ" bytes=380 ace_count=13 truncated=false
+2026-11-04T20:14:00.2629548Z windows_boundary_diag dacl=partial_directory_after_repeat ace=0 type=1 flags=0x00 size=36 mask=Some(1245526) truncated=false raw=[01, 00, 24, 00, 56, 01, 13, 00, 01, 05, 00, 00, 00, 00, 00, 05, 15, 00, 00, 00, ab, 00, 00, 00, 10, 01, 00, 00, 75, 01, 00, 00, da, 01, 00, 00]
+2026-11-04T20:14:00.2632340Z windows_boundary_diag dacl=partial_directory_after_repeat ace=1 type=1 flags=0x0b size=36 mask=Some(1074987350) truncated=false raw=[01, 0b, 24, 00, 56, 01, 13, 40, 01, 05, 00, 00, 00, 00, 00, 05, 15, 00, 00, 00, ab, 00, 00, 00, 10, 01, 00, 00, 75, 01, 00, 00, da, 01, 00, 00]
+2026-11-04T20:14:00.2635403Z windows_boundary_diag dacl=partial_directory_after_repeat ace=2 type=1 flags=0x00 size=36 mask=Some(1245526) truncated=false raw=[01, 00, 24, 00, 56, 01, 13, 00, 01, 05, 00, 00, 00, 00, 00, 05, 15, 00, 00, 00, ab, 00, 00, 00, 10, 01, 00, 00, 75, 01, 00, 00, da, 01, 00, 00]
+2026-11-04T20:14:00.2638045Z windows_boundary_diag dacl=partial_directory_after_repeat ace=3 type=1 flags=0x0b size=36 mask=Some(1074987350) truncated=false raw=[01, 0b, 24, 00, 56, 01, 13, 40, 01, 05, 00, 00, 00, 00, 00, 05, 15, 00, 00, 00, ab, 00, 00, 00, 10, 01, 00, 00, 75, 01, 00, 00, da, 01, 00, 00]
+2026-11-04T20:14:00.2640785Z windows_boundary_diag dacl=partial_directory_after_repeat ace=4 type=0 flags=0x03 size=36 mask=Some(1245631) truncated=false raw=[00, 03, 24, 00, bf, 01, 13, 00, 01, 05, 00, 00, 00, 00, 00, 05, 15, 00, 00, 00, ab, 00, 00, 00, 10, 01, 00, 00, 75, 01, 00, 00, da, 01, 00, 00]
+2026-11-04T20:14:00.2643223Z windows_boundary_diag dacl=partial_directory_after_repeat ace=5 type=0 flags=0x03 size=20 mask=Some(2032127) truncated=false raw=[00, 03, 14, 00, ff, 01, 1f, 00, 01, 01, 00, 00, 00, 00, 00, 01, 00, 00, 00, 00]
+2026-11-04T20:14:00.2645656Z windows_boundary_diag dacl=partial_directory_after_repeat ace=6 type=0 flags=0x13 size=24 mask=Some(2032127) truncated=false raw=[00, 13, 18, 00, ff, 01, 1f, 00, 01, 02, 00, 00, 00, 00, 00, 05, 20, 00, 00, 00, 20, 02, 00, 00]
+2026-11-04T20:14:00.2648333Z windows_boundary_diag dacl=partial_directory_after_repeat ace=7 type=0 flags=0x13 size=20 mask=Some(2032127) truncated=false raw=[00, 13, 14, 00, ff, 01, 1f, 00, 01, 01, 00, 00, 00, 00, 00, 05, 12, 00, 00, 00]
+2026-11-04T20:14:00.2651147Z windows_boundary_diag dacl=partial_directory_after_repeat ace=8 type=0 flags=0x10 size=36 mask=Some(2032127) truncated=false raw=[00, 10, 24, 00, ff, 01, 1f, 00, 01, 05, 00, 00, 00, 00, 00, 05, 15, 00, 00, 00, 39, b5, 6e, b7, 72, b8, 43, da, 70, 08, a7, f7, f4, 01, 00, 00]
+2026-11-04T20:14:00.2653657Z windows_boundary_diag dacl=partial_directory_after_repeat ace=9 type=0 flags=0x1b size=20 mask=Some(268435456) truncated=false raw=[00, 1b, 14, 00, 00, 00, 00, 10, 01, 01, 00, 00, 00, 00, 00, 03, 00, 00, 00, 00]
+2026-11-04T20:14:00.2656165Z windows_boundary_diag dacl=partial_directory_after_repeat ace=10 type=0 flags=0x13 size=24 mask=Some(1179817) truncated=false raw=[00, 13, 18, 00, a9, 00, 12, 00, 01, 02, 00, 00, 00, 00, 00, 05, 20, 00, 00, 00, 21, 02, 00, 00]
+2026-11-04T20:14:00.2658527Z windows_boundary_diag dacl=partial_directory_after_repeat ace=11 type=0 flags=0x12 size=24 mask=Some(4) truncated=false raw=[00, 12, 18, 00, 04, 00, 00, 00, 01, 02, 00, 00, 00, 00, 00, 05, 20, 00, 00, 00, 21, 02, 00, 00]
+2026-11-04T20:14:00.2661587Z windows_boundary_diag dacl=partial_directory_after_repeat ace=12 type=0 flags=0x12 size=24 mask=Some(2) truncated=false raw=[00, 12, 18, 00, 02, 00, 00, 00, 01, 02, 00, 00, 00, 00, 00, 05, 20, 00, 00, 00, 21, 02, 00, 00]
+2026-11-04T20:14:00.2663211Z windows_boundary_diag dacl=partial_directory_after_repeat observation_us=4633
+2026-11-04T20:14:00.2664671Z windows_boundary_diag dacl=partial_file_after_first_direct_repair path="D:\\tmp\\.tmpsgxtXZ\\existing.txt" bytes=240 ace_count=8 truncated=false
+2026-11-04T20:14:00.2667287Z windows_boundary_diag dacl=partial_file_after_first_direct_repair ace=0 type=1 flags=0x00 size=36 mask=Some(1245526) truncated=false raw=[01, 00, 24, 00, 56, 01, 13, 00, 01, 05, 00, 00, 00, 00, 00, 05, 15, 00, 00, 00, ab, 00, 00, 00, 10, 01, 00, 00, 75, 01, 00, 00, da, 01, 00, 00]
+2026-11-04T20:14:00.2670189Z windows_boundary_diag dacl=partial_file_after_first_direct_repair ace=1 type=1 flags=0x10 size=36 mask=Some(1245526) truncated=false raw=[01, 10, 24, 00, 56, 01, 13, 00, 01, 05, 00, 00, 00, 00, 00, 05, 15, 00, 00, 00, ab, 00, 00, 00, 10, 01, 00, 00, 75, 01, 00, 00, da, 01, 00, 00]
+2026-11-04T20:14:00.2678539Z windows_boundary_diag dacl=partial_file_after_first_direct_repair ace=2 type=0 flags=0x10 size=36 mask=Some(1245631) truncated=false raw=[00, 10, 24, 00, bf, 01, 13, 00, 01, 05, 00, 00, 00, 00, 00, 05, 15, 00, 00, 00, ab, 00, 00, 00, 10, 01, 00, 00, 75, 01, 00, 00, da, 01, 00, 00]
+2026-11-04T20:14:00.2684257Z windows_boundary_diag dacl=partial_file_after_first_direct_repair ace=3 type=0 flags=0x10 size=20 mask=Some(2032127) truncated=false raw=[00, 10, 14, 00, ff, 01, 1f, 00, 01, 01, 00, 00, 00, 00, 00, 01, 00, 00, 00, 00]
+2026-11-04T20:14:00.2687081Z windows_boundary_diag dacl=partial_file_after_first_direct_repair ace=4 type=0 flags=0x10 size=24 mask=Some(2032127) truncated=false raw=[00, 10, 18, 00, ff, 01, 1f, 00, 01, 02, 00, 00, 00, 00, 00, 05, 20, 00, 00, 00, 20, 02, 00, 00]
+2026-11-04T20:14:00.2689962Z windows_boundary_diag dacl=partial_file_after_first_direct_repair ace=5 type=0 flags=0x10 size=20 mask=Some(2032127) truncated=false raw=[00, 10, 14, 00, ff, 01, 1f, 00, 01, 01, 00, 00, 00, 00, 00, 05, 12, 00, 00, 00]
+2026-11-04T20:14:00.2692711Z windows_boundary_diag dacl=partial_file_after_first_direct_repair ace=6 type=0 flags=0x10 size=36 mask=Some(2032127) truncated=false raw=[00, 10, 24, 00, ff, 01, 1f, 00, 01, 05, 00, 00, 00, 00, 00, 05, 15, 00, 00, 00, 39, b5, 6e, b7, 72, b8, 43, da, 70, 08, a7, f7, f4, 01, 00, 00]
+2026-11-04T20:14:00.2695730Z windows_boundary_diag dacl=partial_file_after_first_direct_repair ace=7 type=0 flags=0x10 size=24 mask=Some(1179817) truncated=false raw=[00, 10, 18, 00, a9, 00, 12, 00, 01, 02, 00, 00, 00, 00, 00, 05, 20, 00, 00, 00, 21, 02, 00, 00]
+2026-11-04T20:14:00.2697562Z windows_boundary_diag dacl=partial_file_after_first_direct_repair observation_us=2888
+2026-11-04T20:14:00.2698983Z windows_boundary_diag dacl=partial_file_after_repeat path="D:\\tmp\\.tmpsgxtXZ\\existing.txt" bytes=276 ace_count=9 truncated=false
+2026-11-04T20:14:00.2701432Z windows_boundary_diag dacl=partial_file_after_repeat ace=0 type=1 flags=0x00 size=36 mask=Some(1245526) truncated=false raw=[01, 00, 24, 00, 56, 01, 13, 00, 01, 05, 00, 00, 00, 00, 00, 05, 15, 00, 00, 00, ab, 00, 00, 00, 10, 01, 00, 00, 75, 01, 00, 00, da, 01, 00, 00]
+2026-11-04T20:14:00.2704096Z windows_boundary_diag dacl=partial_file_after_repeat ace=1 type=1 flags=0x00 size=36 mask=Some(1245526) truncated=false raw=[01, 00, 24, 00, 56, 01, 13, 00, 01, 05, 00, 00, 00, 00, 00, 05, 15, 00, 00, 00, ab, 00, 00, 00, 10, 01, 00, 00, 75, 01, 00, 00, da, 01, 00, 00]
+2026-11-04T20:14:00.2707027Z windows_boundary_diag dacl=partial_file_after_repeat ace=2 type=1 flags=0x10 size=36 mask=Some(1245526) truncated=false raw=[01, 10, 24, 00, 56, 01, 13, 00, 01, 05, 00, 00, 00, 00, 00, 05, 15, 00, 00, 00, ab, 00, 00, 00, 10, 01, 00, 00, 75, 01, 00, 00, da, 01, 00, 00]
+2026-11-04T20:14:00.2710416Z windows_boundary_diag dacl=partial_file_after_repeat ace=3 type=0 flags=0x10 size=36 mask=Some(1245631) truncated=false raw=[00, 10, 24, 00, bf, 01, 13, 00, 01, 05, 00, 00, 00, 00, 00, 05, 15, 00, 00, 00, ab, 00, 00, 00, 10, 01, 00, 00, 75, 01, 00, 00, da, 01, 00, 00]
+2026-11-04T20:14:00.2712901Z windows_boundary_diag dacl=partial_file_after_repeat ace=4 type=0 flags=0x10 size=20 mask=Some(2032127) truncated=false raw=[00, 10, 14, 00, ff, 01, 1f, 00, 01, 01, 00, 00, 00, 00, 00, 01, 00, 00, 00, 00]
+2026-11-04T20:14:00.2715404Z windows_boundary_diag dacl=partial_file_after_repeat ace=5 type=0 flags=0x10 size=24 mask=Some(2032127) truncated=false raw=[00, 10, 18, 00, ff, 01, 1f, 00, 01, 02, 00, 00, 00, 00, 00, 05, 20, 00, 00, 00, 20, 02, 00, 00]
+2026-11-04T20:14:00.2717636Z windows_boundary_diag dacl=partial_file_after_repeat ace=6 type=0 flags=0x10 size=20 mask=Some(2032127) truncated=false raw=[00, 10, 14, 00, ff, 01, 1f, 00, 01, 01, 00, 00, 00, 00, 00, 05, 12, 00, 00, 00]
+2026-11-04T20:14:00.2720016Z windows_boundary_diag dacl=partial_file_after_repeat ace=7 type=0 flags=0x10 size=36 mask=Some(2032127) truncated=false raw=[00, 10, 24, 00, ff, 01, 1f, 00, 01, 05, 00, 00, 00, 00, 00, 05, 15, 00, 00, 00, 39, b5, 6e, b7, 72, b8, 43, da, 70, 08, a7, f7, f4, 01, 00, 00]
+2026-11-04T20:14:00.2722398Z windows_boundary_diag dacl=partial_file_after_repeat ace=8 type=0 flags=0x10 size=24 mask=Some(1179817) truncated=false raw=[00, 10, 18, 00, a9, 00, 12, 00, 01, 02, 00, 00, 00, 00, 00, 05, 20, 00, 00, 00, 21, 02, 00, 00]
+2026-11-04T20:14:00.2723983Z windows_boundary_diag dacl=partial_file_after_repeat observation_us=3460
+2026-11-04T20:14:00.2724851Z windows_boundary_diag restricted_sid=allowed_cap_a member=Ok(true)
+2026-11-04T20:14:00.2725925Z windows_boundary_diag restricted_sid=allowed_cap_b member=Ok(true)
+2026-11-04T20:14:00.2726750Z windows_boundary_diag restricted_sid=unrelated_cap member=Ok(false)
+2026-11-04T20:14:00.2727590Z windows_boundary_diag restricted_sid=logon_identity member=Ok(false)
+2026-11-04T20:14:00.2728475Z windows_boundary_diag restricted_sid=everyone_identity member=Ok(false)
+2026-11-04T20:14:00.2729681Z windows_boundary_diag dacl=broad_parent path="D:\\tmp\\.tmpbaYUaI" bytes=228 ace_count=9 truncated=false
+2026-11-04T20:14:00.2731420Z windows_boundary_diag dacl=broad_parenttest unified_exec::backend_selection_tests::managed_networking_still_requires_explicit_elevated_configuration ...  ace=0 type=ok
+2026-11-04T20:14:00.2733237Z 0 flags=0x03 size=28 mask=Some(2032127) truncated=false raw=[00, 03, 1c, 00, ff, 01, 1f, 00, 01, 03, 00, 00, 00, 00, 00, 05, 05, 00, 00, 00, 00, 00, 00, 00, 97, 32, 0b, 00]
+2026-11-04T20:14:00.2735232Z windows_boundary_diag dacl=broad_parent ace=1 type=0 flags=0x03 size=20 mask=Some(2032127) truncated=false raw=[00, 03, 14, 00, ff, 01, 1f, 00, 01, 01, 00, 00, 00, 00, 00, 01, 00, 00, 00, 00]
+2026-11-04T20:14:00.2737311Z windows_boundary_diag dacl=broad_parent ace=2 type=0 flags=0x13 size=24 mask=Some(2032127) truncated=false raw=[00, 13, 18, 00, ff, 01, 1f, 00, 01, 02, 00, 00, 00, 00, 00, 05, 20, 00, 00, 00, 20, 02, 00, 00]
+2026-11-04T20:14:00.2739590Z windows_boundary_diag dacl=broad_parent ace=3 type=0 flags=0x13 size=20 mask=Some(2032127) truncated=false raw=[00, 13, 14, 00, ff, 01, 1f, 00, 01, 01, 00, 00, 00, 00, 00, 05, 12, 00, 00, 00]
+2026-11-04T20:14:00.2742066Z windows_boundary_diag dacl=broad_parent ace=4 type=0 flags=0x10 size=36 mask=Some(2032127) truncated=false raw=[00, 10, 24, 00, ff, 01, 1ftest unified_exec::backend_selection_tests::explicit_write_root_override_is_forced_through_elevated_broker ... , 0ok0
+2026-11-04T20:14:00.2743998Z , 01, 05, 00, 00, 00, 00, 00, 05, 15, 00, 00, 00, 39, b5, 6e, b7, 72, b8, 43, da, 70, 08, a7, f7, f4, 01, 00, 00]
+2026-11-04T20:14:00.2745718Z windows_boundary_diag dacl=broad_parent ace=5 type=0 flags=0x1b size=20 mask=Some(268435456) truncated=false raw=[00, 1b, 14, 00, 00, 00, 00, 10, 01, 01, 00, 00, 00, 00, 00, 03, 00, 00, 00, 00]
+2026-11-04T20:14:00.2748401Z windows_boundary_diag dacl=broad_parent ace=6 type=0 flags=0x13 size=24 mask=Some(1179817) truncated=false raw=[00, 13, 18, 00, a9, 00, 12, 00, 01, 02, 00, 00, 00, 00, 00, 05, 20, 00, 00, 00, 21, 02, 00, 00]
+2026-11-04T20:14:00.2750455Z windows_boundary_diag dacl=broad_parent ace=7 type=0 flags=0x12 size=24 mask=Some(4) truncated=false raw=[00, 12, 18, 00, 04, 00, 00, 00, 01, 02, 00, 00, 00, 00, 00, 05, 20, 00, 00, 00, 21, 02, 00, 00]
+2026-11-04T20:14:00.2752508Z windows_boundary_diag dacl=broad_parent ace=8 type=0 flags=0x12 size=24 mask=Some(2) truncated=false raw=[00, 12, 18, 00, 02, 00, 00, 00, 01, 02, 00, 00, 00, 00, 00, 05, 20, 00, 00, 00, 21, 02, 00, 00]
+2026-11-04T20:14:00.2753869Z windows_boundary_diag dacl=broad_parent observation_us=3473
+2026-11-04T20:14:00.2754960Z windows_boundary_diag dacl=outside_parent_before path="D:\\tmp\\.tmpbaYUaI\\outside" bytes=264 ace_count=10 truncated=false
+2026-11-04T20:14:00.2757246Z windows_boundary_diag dacl=outside_parent_before ace=0 type=0 flags=0x03 size=36 mask=Some(1245631) truncated=false raw=[00, 03, 24, 00, bf, 01, 13, 00, 01, 05, 00, 00, 00, 00, 00, 05, 15, 00, 00, 00, 79, 00, 00, 00, e8, 00, 00, 00, 57, 01, 00, 00, c6, 01, 00, 00]
+2026-11-04T20:14:00.2759694Z windows_boundary_diag dacl=outside_parent_before ace=1 type=0 flags=0x13 size=28 mask=Some(2032127) truncated=false raw=[00, 13, 1c, 00, ff, 01, 1f, 00, 01, 03, 00, 00, 00, 00, 00, 05, 05, 00, 00, 00, 00, 00, 00, 00, 97, 32, 0b, 00]
+2026-11-04T20:14:00.2761899Z windows_boundary_diag dacl=outside_parent_before ace=2 type=0 flags=0x13 size=20 mask=Some(2032127) truncated=false raw=[00, 13, 14, 00, ff, 01, 1f, 00, 01, 01, 00, 00, 00, 00, 00, 01, 00, 00, 00, 00]
+2026-11-04T20:14:00.2764195Z windows_boundary_diag dacl=outside_parent_before ace=3 type=0 flags=0x13 size=24 mask=Some(2032127) truncated=false raw=[00, 13, 18, 00, ff, 01, 1f, 00, 01, 02, 00, 00, 00, 00, 00, 05, 20, 00, 00, 00, 20, 02, 00, 00]
+2026-11-04T20:14:00.2766646Z windows_boundary_diag dacl=outside_parent_before ace=4 type=0 flags=0x13 size=20 mask=Some(2032127) truncated=false raw=[00, 13, 14, 00, ff, 01, 1f, 00, 01, 01, 00, 00, 00, 00, 00, 05, 12, 00, 00, 00]
+2026-11-04T20:14:00.2769027Z windows_boundary_diag dacl=outside_parent_before ace=5 type=0 flags=0x10 size=36 mask=Some(2032127) truncated=false raw=[00, 10, 24, 00, ff, 01, 1f, 00, 01, 05, 00, 00, 00, 00, 00, 05, 15, 00, 00, 00, 39, b5, 6e, b7, 72, b8, 43, da, 70, 08, a7, f7, f4, 01, 00, 00]
+2026-11-04T20:14:00.2771340Z windows_boundary_diag dacl=outside_parent_before ace=6 type=0 flags=0x1b size=20 mask=Some(268435456) truncated=false raw=[00, 1b, 14, 00, 00, 00, 00, 10, 01, 01, 00, 00, 00, 00, 00, 03, 00, 00, 00, 00]
+2026-11-04T20:14:00.2773555Z windows_boundary_diag dacl=outside_parent_before ace=7 type=0 flags=0x13 size=24 mask=Some(1179817) truncated=false raw=[00, 13, 18, 00, a9, 00, 12, 00, 01, 02, 00, 00, 00, 00, 00, 05, 20, 00, 00, 00, 21, 02, 00, 00]
+2026-11-04T20:14:00.2775999Z windows_boundary_diag dacl=outside_parent_before ace=8 type=0 flags=0x12 size=24 mask=Some(4) truncated=false raw=[00, 12, 18, 00, 04, 00, 00, 00, 01, 02, 00, 00, 00, 00, 00, 05, 20, 00, 00, 00, 21, 02, 00, 00]
+2026-11-04T20:14:00.2778473Z windows_boundary_diag dacl=outside_parent_before ace=9 type=0 flags=0x12 size=24 mask=Some(2) truncated=false raw=[00, 12, 18, 00, 02, 00, 00, 00, 01, 02, 00, 00, 00, 00, 00, 05, 20, 00, 00, 00, 21, 02, 00, 00]
+2026-11-04T20:14:00.2780016Z windows_boundary_diag dacl=outside_parent_before observation_us=3461
+2026-11-04T20:14:00.2781232Z windows_boundary_diag dacl=outside_file_before path="D:\\tmp\\.tmpbaYUaI\\outside\\keep.txt" bytes=196 ace_count=7 truncated=false
+2026-11-04T20:14:00.2783256Z windows_boundary_diag dacl=outside_file_before ace=0 type=0 flags=0x10 size=36 mask=Some(1245631) truncated=false raw=[00, 10, 24, 00, bf, 01, 13, 00, 01, 05, 00, 00, 00, 00, 00, 05, 15, 00, 00, 00, 79, 00, 00, 00, e8, 00, 00, 00, 57, 01, 00, 00, c6, 01, 00, 00]
+2026-11-04T20:14:00.2785839Z windows_boundary_diag dacl=outside_file_before ace=1 type=0 flags=0x10 size=28 mask=Some(2032127) truncated=false raw=[00, 10, 1c, 00, ff, 01, 1f, 00, 01, 03, 00, 00, 00, 00, 00, 05, 05, 00, 00, 00, 00, 00, 00, 00, 97, 32, 0b, 00]
+2026-11-04T20:14:00.2788556Z windows_boundary_diag dacl=outside_file_before ace=2 type=0 flags=0x10 size=20 mask=Some(2032127) truncated=false raw=[00, 10, 14, 00, ff, 01, 1f, 00, 01, 01, 00, 00, 00, 00, 00, 01, 00, 00, 00, 00]
+2026-11-04T20:14:00.2790670Z windows_boundary_diag dacl=outside_file_before ace=3 type=0 flags=0x10 size=24 mask=Some(2032127) truncated=false raw=[00, 10, 18, 00, ff, 01, 1f, 00, 01, 02, 00, 00, 00, 00, 00, 05, 20, 00, 00, 00, 20, 02, 00, 00]
+2026-11-04T20:14:00.2792944Z windows_boundary_diag dacl=outside_file_beforetest token::tests::partial_delete_deny_is_repaired_before_native_workspace_writes ...  ace=4 type=FAILED0 flags=0x10 size=20 mask=Some(
+2026-11-04T20:14:00.2795175Z 2032127) truncated=false raw=[00, 10, 14, 00, ff, 01, 1f, 00, 01, 01, 00, 00, 00, 00, 00, 05, 12, 00, 00, 00]
+2026-11-04T20:14:00.2797018Z windows_boundary_diag dacl=outside_file_before ace=5 type=0 flags=0x10 size=36 mask=Some(2032127) truncated=false raw=[00, 10, 24, 00, ff, 01, 1f, 00, 01, 05, 00, 00, 00, 00, 00, 05, 15, 00, 00, 00, 39, b5, 6e, b7, 72, b8, 43, da, 70, 08, a7, f7, f4, 01, 00, 00]
+2026-11-04T20:14:00.2799401Z windows_boundary_diag dacl=outside_file_before ace=6 type=0 flags=0x10 size=24 mask=Some(1179817) truncated=false raw=[00, 10, 18, 00, a9, 00, 12, 00, 01, 02, 00, 00, 00, 00, 00, 05, 20, 00, 00, 00, 21, 02, 00, 00]
+2026-11-04T20:14:00.2800895Z windows_boundary_diag dacl=outside_file_before observation_us=2352
+2026-11-04T20:14:00.2802139Z windows_boundary_diag dacl=outside_directory_before path="D:\\tmp\\.tmpbaYUaI\\outside\\keep-dir" bytes=264 ace_count=10 truncated=false
+2026-11-04T20:14:00.2804292Z windows_boundary_diag dacl=outside_directory_before ace=0 type=0 flags=0x13 size=36 mask=Some(1245631) truncated=false raw=[00, 13, 24, 00, bf, 01, 13, 00, 01, 05, 00, 00, 00, 00, 00, 05, 15, 00, 00, 00, 79, 00, 00, 00, e8, 00, 00, 00, 57, 01, 00, 00, c6, 01, 00, 00]
+2026-11-04T20:14:00.2807054Z windows_boundary_diag dacl=outside_directory_before ace=1 type=0 flags=0x13 size=28 mask=Some(2032127) truncated=false raw=[00, 13, 1c, 00, ff, 01, 1f, 00, 01, 03, 00, 00, 00, 00, 00, 05, 05, 00, 00, 00, 00, 00, 00, 00, 97, 32, 0b, 00]
+2026-11-04T20:14:00.2809297Z windows_boundary_diag dacl=outside_directory_before ace=2 type=0 flags=0x13 size=20 mask=Some(2032127) truncated=false raw=[00, 13, 14, 00, ff, 01, 1f, 00, 01, 01, 00, 00, 00, 00, 00, 01, 00, 00, 00, 00]
+2026-11-04T20:14:00.2811509Z windows_boundary_diag dacl=outside_directory_before ace=3 type=0 flags=0x13 size=24 mask=Some(2032127) truncated=false raw=[00, 13, 18, 00, ff, 01, 1f, 00, 01, 02, 00, 00, 00, 00, 00, 05, 20, 00, 00, 00, 20, 02, 00, 00]
+2026-11-04T20:14:00.2813703Z windows_boundary_diag dacl=outside_directory_before ace=4 type=0 flags=0x13 size=20 mask=Some(2032127) truncated=false raw=[00, 13, 14, 00, ff, 01, 1f, 00, 01, 01, 00, 00, 00, 00, 00, 05, 12, 00, 00, 00]
+2026-11-04T20:14:00.2947918Z windows_boundary_diag dacl=outside_directory_before ace=5 type=0 flags=0x10 size=36 mask=Some(2032127) truncated=false raw=[00, 10, 24, 00, ff, 01, 1f, 00, 01, 05, 00, 00, 00, 00, 00, 05, 15, 00, 00, 00, 39, b5, 6e, b7, 72, b8, 43, da, 70, 08, a7, f7, f4, 01, 00, 00]
+2026-11-04T20:14:00.2951458Z windows_boundary_diag dacl=outside_directory_before ace=6 type=0 flags=0x1b size=20 mask=Some(268435456) truncated=false raw=[00, 1b, 14, 00, 00, 00, 00, 10, 01, 01, 00, 00, 00, 00, 00, 03, 00, 00, 00, 00]
+2026-11-04T20:14:00.2953714Z windows_boundary_diag dacl=outside_directory_before ace=7 type=0 flags=0x13 size=24 mask=Some(1179817) truncated=false raw=[00, 13, 18, 00, a9, 00, 12, 00, 01, 02, 00, 00, 00, 00, 00, 05, 20, 00, 00, 00, 21, 02, 00, 00]
+2026-11-04T20:14:00.3021123Z windows_boundary_diag dacl=outside_directory_before ace=8 type=0 flags=0x12 size=24 mask=Some(4) truncated=false raw=[00, 12, 18, 00, 04, 00, 00, 00, 01, 02, 00, 00, 00, 00, 00, 05, 20, 00, 00, 00, 21, 02, 00, 00]
+2026-11-04T20:14:00.3024320Z windows_boundary_diag dacl=outside_directory_before ace=9 type=0 flags=0x12 size=24 mask=Some(2) truncated=false raw=[00, 12, 18, 00, 02, 00, 00, 00, 01, 02, 00, 00, 00, 00, 00, 05, 20, 00, 00, 00, 21, 02, 00, 00]
+2026-11-04T20:14:00.3026728Z windows_boundary_diag dacl=outside_directory_before observation_us=2665
+2026-11-04T20:14:00.3028765Z windows_boundary_diag outside_operations=[overwrite,create,remove_file,remove_dir] native_errors=[Some((PermissionDenied, Some(5))), Some((PermissionDenied, Some(5))), None, None]
+2026-11-04T20:14:00.3031356Z windows_boundary_diag metadata=outside_file_after path="D:\\tmp\\.tmpbaYUaI\\outside\\keep.txt" state=Err((NotFound, Some(2)))
+2026-11-04T20:14:00.3032989Z windows_boundary_diag metadata=outside_directory_after path="D:\\tmp\\.tmpbaYUaI\\outside\\keep-dir" state=Err((NotFound, Some(2)))
+2026-11-04T20:14:00.3035220Z test token::tests::workspace_capabilities_deny_writes_and_deletes_under_broad_identity_aces ... FAILED
+2026-11-04T20:14:00.3040785Z test unified_exec::backends::elevated::tests::retry_uses_original_unified_exec_request_and_stops_after_second_failure ... ok
+2026-11-04T20:14:00.3042692Z test unified_exec::backend_selection_tests::workspace_write_profile_is_forced_through_elevated_broker ... ok
+2026-11-04T20:14:00.3044050Z test unified_exec::tests::acl_setup_tests::legacy_capture_rejects_deny_acl_setup_failure_before_spawn ... ok
+2026-11-04T20:14:00.3045543Z test unified_exec::backend_selection_tests::read_only_profile_without_overrides_keeps_restricted_token_backend ... ok
+2026-11-04T20:14:00.3047356Z test unified_exec::tests::acl_setup_tests::legacy_session_rejects_deny_acl_setup_failure_before_spawn ... ok
+2026-11-04T20:14:00.3048721Z test unified_exec::tests::legacy_capture_cancellation_terminates_descendants_without_timeout ... ok
+2026-11-04T20:14:00.3049940Z test unified_exec::tests::finish_driver_spawn_keeps_stdin_open_when_requested ... ok
+2026-11-04T20:14:00.3051089Z test unified_exec::tests::finish_driver_spawn_closes_stdin_when_not_requested ... ok
+2026-11-04T20:14:00.3052331Z test unified_exec::tests::legacy_capture_emits_output_and_preserves_descendant_after_normal_exit ... ok
+2026-11-04T20:14:00.3053588Z test unified_exec::tests::legacy_non_tty_powershell_interrupt_terminates_process ... ok
+2026-11-04T20:14:00.3055299Z test unified_exec::tests::legacy_tty_cmd_default_desktop_emits_output_and_accepts_input ... ignored, TODO: legacy ConPTY cmd.exe exits with STATUS_DLL_INIT_FAILED in CI
+2026-11-04T20:14:00.3057861Z test unified_exec::tests::legacy_tty_cmd_emits_output_and_accepts_input ... ignored, TODO: legacy ConPTY cmd.exe exits with STATUS_DLL_INIT_FAILED in CI
+2026-11-04T20:14:00.3059355Z test unified_exec::tests::legacy_tty_job_terminates_and_preserves_descendants ... ok
+2026-11-04T20:14:00.3060421Z test unified_exec::tests::legacy_tty_powershell_emits_output_and_accepts_input ... ok
+2026-11-04T20:14:00.3061595Z test unified_exec::tests::elevated_non_tty_cmd_forwards_env_output_and_exit ... ok
+2026-11-04T20:14:00.3070357Z test unified_exec::tests::restricted_token_rejects_managed_network_before_spawn ... ok
+2026-11-04T20:14:00.3078544Z test unified_exec::tests::runner_resizer_sends_resize_frame ... ok
+2026-11-04T20:14:00.3079577Z test unified_exec::tests::runner_stdin_writer_sends_close_stdin_after_input_eof ... ok
+2026-11-04T20:14:00.3080774Z test wfp::tests::filter_keys_are_unique ... ok
+2026-11-04T20:14:00.3081494Z test wfp::tests::filter_names_are_unique ... ok
+2026-11-04T20:14:00.3082260Z test windows_impl::tests::applies_network_block_for_read_only ... ok
+2026-11-04T20:14:00.3083231Z test windows_impl::tests::applies_network_block_when_access_is_disabled ... ok
+2026-11-04T20:14:00.3084433Z test windows_impl::tests::legacy_preflight_skips_profiles_without_managed_filesystem_permissions ... ok
+2026-11-04T20:14:00.3089505Z test windows_impl::tests::skips_network_block_when_access_is_allowed ... ok
+2026-11-04T20:14:00.3093821Z test winutil::tests::argv_to_command_line_quotes_each_argument_independently ... ok
+2026-11-04T20:14:00.3094927Z test winutil::tests::argv_to_command_line_quotes_regular_program_args ... ok
+2026-11-04T20:14:00.3095811Z test wrapper::tests::windows_wrapper_args_round_trip ... ok
+2026-11-04T20:14:00.3096646Z test unified_exec::tests::legacy_non_tty_cmd_emits_output ... ok
+2026-11-04T20:14:00.3109626Z test unified_exec::tests::legacy_non_tty_cmd_rejects_deny_read_overrides ... ok
+2026-11-04T20:14:00.3111682Z windows_boundary_diag legacy_metadata=outside_file path="D:\\a\\hepta-private-ci\\hepta-private-ci\\codex-rs\\.tmpmx028K\\outside\\outside-delete.txt" state=Err((NotFound, Some(2)))
+2026-11-04T20:14:00.3115034Z windows_boundary_diag legacy_metadata=protected_git_directory path="D:\\a\\hepta-private-ci\\hepta-private-ci\\codex-rs\\.tmpmx028K\\workspace\\.git" state=Err((NotFound, Some(2)))
+2026-11-04T20:14:00.3116720Z windows_boundary_diag legacy_outside_readback=Err((NotFound, Some(2)))
+2026-11-04T20:14:00.3118232Z test unified_exec::tests::legacy_workspace_write_delete_is_limited_to_writable_roots ... FAILED
+2026-11-04T20:14:00.3118992Z 
+2026-11-04T20:14:00.3119154Z failures:
+2026-11-04T20:14:00.3119409Z 
+2026-11-04T20:14:00.3150016Z ---- token::tests::partial_delete_deny_is_repaired_before_native_workspace_writes stdout ----
+2026-11-04T20:14:00.3153966Z 
+2026-11-04T20:14:00.3162407Z thread 'token::tests::partial_delete_deny_is_repaired_before_native_workspace_writes' (6044) panicked at windows-sandbox-rs/src\token_tests.rs:338:5:
+2026-11-04T20:14:00.3163660Z assertion failed: `(left == right)`
+2026-11-04T20:14:00.3164053Z 
+2026-11-04T20:14:00.3164218Z Diff < left / right > :
+2026-11-04T20:14:00.3168376Z  (
+2026-11-04T20:14:00.3168765Z >    false,
+2026-11-04T20:14:00.3169183Z      true,
+2026-11-04T20:14:00.3169564Z <    true,
+2026-11-04T20:14:00.3169923Z <    true,
+2026-11-04T20:14:00.3170281Z >    false,
+2026-11-04T20:14:00.3170946Z  )
+2026-11-04T20:14:00.3171182Z 
+2026-11-04T20:14:00.3171207Z 
+2026-11-04T20:14:00.3171589Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+2026-11-04T20:14:00.3172186Z 
+2026-11-04T20:14:00.3172832Z ---- token::tests::workspace_capabilities_deny_writes_and_deletes_under_broad_identity_aces stdout ----
+2026-11-04T20:14:00.3173615Z 
+2026-11-04T20:14:00.3174521Z thread 'token::tests::workspace_capabilities_deny_writes_and_deletes_under_broad_identity_aces' (880) panicked at windows-sandbox-rs/src\token_tests.rs:434:5:
+2026-11-04T20:14:00.3175749Z assertion failed: `(left == right)`
+2026-11-04T20:14:00.3176085Z 
+2026-11-04T20:14:00.3176223Z Diff < left / right > :
+2026-11-04T20:14:00.3176596Z  [
+2026-11-04T20:14:00.3176961Z      Some(
+2026-11-04T20:14:00.3177331Z          PermissionDenied,
+2026-11-04T20:14:00.3177739Z      ),
+2026-11-04T20:14:00.3178054Z      Some(
+2026-11-04T20:14:00.3178403Z          PermissionDenied,
+2026-11-04T20:14:00.3178791Z      ),
+2026-11-04T20:14:00.3179119Z <    None,
+2026-11-04T20:14:00.3179492Z <    None,
+2026-11-04T20:14:00.3179822Z >    Some(
+2026-11-04T20:14:00.3180160Z >        PermissionDenied,
+2026-11-04T20:14:00.3180991Z >    ),
+2026-11-04T20:14:00.3181336Z >    Some(
+2026-11-04T20:14:00.3181952Z >        PermissionDenied,
+2026-11-04T20:14:00.3182386Z >    ),
+2026-11-04T20:14:00.3182760Z  ]
+2026-11-04T20:14:00.3182924Z 
+2026-11-04T20:14:00.3182930Z 
+2026-11-04T20:14:00.3182936Z 
+2026-11-04T20:14:00.3183460Z ---- unified_exec::tests::legacy_workspace_write_delete_is_limited_to_writable_roots stdout ----
+2026-11-04T20:14:00.3184114Z 
+2026-11-04T20:14:00.3185009Z thread 'unified_exec::tests::legacy_workspace_write_delete_is_limited_to_writable_roots' (8916) panicked at windows-sandbox-rs/src\unified_exec\tests.rs:801:9:
+2026-11-04T20:14:00.3186273Z assertion failed: `(left == right)`: stdout=""
+2026-11-04T20:14:00.3187827Z [2026-11-04 20:12:09.201 windows-sandbox-rs-unit-tests-bin.exe] START: C:\Windows\System32\cmd.exe /d /c D:\a\hepta-private-ci\hepta-private-ci\codex-rs\.tmpmx028K\workspace\delete-fixtures.cmd
+2026-11-04T20:14:00.3190337Z [2026-11-04 20:12:09.272 windows-sandbox-rs-unit-tests-bin.exe] SUCCESS: C:\Windows\System32\cmd.exe /d /c D:\a\hepta-private-ci\hepta-private-ci\codex-rs\.tmpmx028K\workspace\delete-fixtures.cmd
+2026-11-04T20:14:00.3191834Z 
+2026-11-04T20:14:00.3191875Z 
+2026-11-04T20:14:00.3192030Z Diff < left / right > :
+2026-11-04T20:14:00.3192418Z  (
+2026-11-04T20:14:00.3192745Z      0,
+2026-11-04T20:14:00.3193101Z      false,
+2026-11-04T20:14:00.3193443Z      false,
+2026-11-04T20:14:00.3193782Z      false,
+2026-11-04T20:14:00.3194106Z <    None,
+2026-11-04T20:14:00.3194450Z <    false,
+2026-11-04T20:14:00.3194773Z >    Some(
+2026-11-04T20:14:00.3195124Z >        "outside",
+2026-11-04T20:14:00.3195526Z >    ),
+2026-11-04T20:14:00.3195880Z >    true,
+2026-11-04T20:14:00.3196231Z  )
+2026-11-04T20:14:00.3196408Z 
+2026-11-04T20:14:00.3196414Z 
+2026-11-04T20:14:00.3196418Z 
+2026-11-04T20:14:00.3196461Z 
+2026-11-04T20:14:00.3196619Z failures:
+2026-11-04T20:14:00.3197254Z     token::tests::partial_delete_deny_is_repaired_before_native_workspace_writes
+2026-11-04T20:14:00.3198396Z     token::tests::workspace_capabilities_deny_writes_and_deletes_under_broad_identity_aces
+2026-11-04T20:14:00.3199578Z     unified_exec::tests::legacy_workspace_write_delete_is_limited_to_writable_roots
+2026-11-04T20:14:00.3200202Z 
+2026-11-04T20:14:00.3201011Z test result: FAILED. 52 passed; 3 failed; 2 ignored; 0 measured; 92 filtered out; finished in 6.22s
+2026-11-04T20:14:00.3201764Z 
+2026-11-04T20:14:00.3201988Z ================================================================================

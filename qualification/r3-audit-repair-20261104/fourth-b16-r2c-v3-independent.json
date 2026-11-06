@@ -1,0 +1,31 @@
+{
+  "schema": "hepta_independent_review_v1",
+  "status": "STATIC_PASS_RUNTIME_UNEXECUTED",
+  "reviewer": "architecture_audit",
+  "manifest_blob": "a33a305d001eed9b2aa2a3d3c916dfd5a9924a47",
+  "delta_blob": "ccd3ff82ae33fd44b4f1ca625d853a4a5f5061ec",
+  "path": "codex-rs/state/src/sqlite_commit_gate_tests.rs",
+  "before_blob": "e1ea6dcb1c7911d42e0e892c2697dedf4a56f665",
+  "after_blob": "31b26a78bffe40815aa8a5b55e61b5139e7bca96",
+  "independent_roundtrip": [
+    {
+      "path": "codex-rs/state/src/sqlite_commit_gate_tests.rs",
+      "hunks": 1,
+      "exact_reconstructed": true
+    }
+  ],
+  "findings": [
+    "Exactly four added lines query SELECT sqlite_version() through the already-open real guarded pool in the first existing control, before its original BEGIN.",
+    "The result is read from the same actual SQLx pool under qualification, not host Python or an unrelated executable.",
+    "Original four test definitions, assertions, deadlines, state mutations and production source are unchanged; no new dependency, helper, case, skip or retry.",
+    "The extra SELECT checks out an already-coordinated connection with ready gate before the test's original transaction; it neither changes the transaction order nor replaces an assertion."
+  ],
+  "limitations": [
+    "No native execution or runtime version observed by this review.",
+    "Parent's future receipt must retain actual stdout and exact source; this source addition alone does not establish SQLite version or passing runtime behavior."
+  ],
+  "review_revision": {
+    "supersedes": "a20cc776d8dbc499e463c9c4254b5826b22ed4ac",
+    "reason": "Remove unsupported linkage wording. The SELECT observes the actual qualified SQLx pool, without claiming dynamic or static linkage."
+  }
+}

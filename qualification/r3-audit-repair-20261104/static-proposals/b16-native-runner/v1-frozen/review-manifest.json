@@ -1,0 +1,333 @@
+{
+  "schema": "hepta-b16-guarded-native-runner-review-v1",
+  "status": "STATIC_PREPARATION_UNBOUND_NOT_LAUNCHED",
+  "created_at_utc": "2026-11-05T04:17:31.738115+00:00",
+  "frozen_plan": "dc12d596172c4f24c1ec4216e05b4662aed590b8",
+  "actual_final_A_tree": null,
+  "native_or_Cargo_Bazel_run": false,
+  "shared_source_target_cache_or_project_refs_modified": false,
+  "isolated_validation_note": "Pure guard tests create and delete their own temporary Git fixture repositories; they never access the native checkout. The static reconstruction uses an independent directory. No Rust tests are implied.",
+  "entrypoint": "b16_runner.py",
+  "binding": "binding-template-UNBOUND.json",
+  "runtime_integrity": {
+    "path": "runner-integrity.json",
+    "bytes": 3727,
+    "sha256": "c1b41ab8c3caf696e84c335cdbb542923509038d0d89807f29102d1889c545e7",
+    "blob": "7db21a0086cb3ebe5c7e1b83f9de7ecb3bc66075"
+  },
+  "payload": {
+    "path": "payload-manifest.json",
+    "bytes": 62667,
+    "sha256": "a34cd6c5400deff4fedfffcb1f4f170eecabbb6bbfab1916829ab3911e986237",
+    "blob": "64db580beabe2642eb8611184dac4fc686fe34e1"
+  },
+  "critical_review_files": [
+    {
+      "path": "b16_guard.py",
+      "review": "Explicit final A/ref/index/locks; safe preimages; expected full tree computed before working writes; only permitted generated-lock paths."
+    },
+    {
+      "path": "b16_runner.py",
+      "review": "One authorized epoch; prior receipt chain; exact-owned negative finally restoration; no later stage on causal/setup mismatch."
+    },
+    {
+      "path": "b16_oracles.py",
+      "review": "Exact per-case physical marker order and original panic source anchor; no failure-vector-only causal claim."
+    },
+    {
+      "path": "b16_native.py",
+      "review": "Normal six real helper builds, full no-p metadata/catalog, actual postcatalog helper hashes, fresh exact JUnit/UUID, retries0 and complete raw."
+    },
+    {
+      "path": "b16_locks.py",
+      "review": "Two actual Cargo resolutions/original Bazel lock gates, package/feature delta constraints, actual generated DEP_DATA, original host-config Bazel registration/build."
+    }
+  ],
+  "epoch_order": [
+    "foundation",
+    "driver",
+    "pool",
+    "checkpoint",
+    "owning"
+  ],
+  "counts": [
+    {
+      "epoch": "foundation",
+      "selected_case_executions": {
+        "scopes": 27,
+        "negative": 10
+      },
+      "distinct_selected_names_in_epoch": 24
+    },
+    {
+      "epoch": "driver",
+      "selected_case_executions": {
+        "negative": 3,
+        "scopes": 12
+      },
+      "distinct_selected_names_in_epoch": 12
+    },
+    {
+      "epoch": "pool",
+      "selected_case_executions": {
+        "negative": 3,
+        "scopes": 3
+      },
+      "distinct_selected_names_in_epoch": 3
+    },
+    {
+      "epoch": "checkpoint",
+      "selected_case_executions": {
+        "negative": 1,
+        "scopes": 15
+      },
+      "distinct_selected_names_in_epoch": 15
+    },
+    {
+      "epoch": "owning",
+      "selected_case_executions": {},
+      "distinct_selected_names_in_epoch": 0
+    }
+  ],
+  "causal_isolation": "Foundation24/10negative case executions complete before driver source/registry patch/native options binding; driver12 before pool3; checkpoint dev-edge then second locks before checkpoint1+original14. Supports ignored, repeated cases and owning cases separated.",
+  "source_guards": {
+    "preimages": "all original known bytes required at final A, else stop for rebase/review; do not overwrite",
+    "source_objects": 112,
+    "exact_deltas": 24,
+    "final_static_paths": 81,
+    "full_product_tree_precomputed": false,
+    "dynamic_generated_lock_tree": "Only real allowed generator writes can form the next tree; originals/diff/metadata recorded. Unknown resolver upgrades stop."
+  },
+  "intentional_executor_adaptations": {
+    "authored_commands": "Every exact original package/lib argv is retained in epoch JSON.",
+    "actual_catalog_and_test": "No -p Cargo limitation. Full workspace feature graph + exact nextest package/ kind(lib)/case filters.",
+    "failure_collection": "--no-fail-fast collects complete selected negative vectors; --no-tests fail; retries0; original budgets and physical assertions unchanged.",
+    "success_output": "--success-output immediate preserves positive runtime observations.",
+    "bazel": "B15 is actual original plain-host query/dependency/compilation, not claimed Bazel test execution or hosted-matrix acceptance. B14 runs the original 12 driver cases through just test."
+  },
+  "tool_and_recipe_binding": "Caller must pin actual final A metadata/tools/original recipe sources and a new private per-epoch cache. No install, download script or new credential path is included.",
+  "validation": {
+    "pure_guard_tests": {
+      "path": "pure-guard-validation.json",
+      "bytes": 2630,
+      "sha256": "83f6a06691df80b0f3e06ddd720671d84b4f90275be6d43317a35ab63e1a0945",
+      "blob": "de752ea51250b8333902c765ef822a375f89e88b"
+    },
+    "unbound_real_cli_refusal": {
+      "path": "unbound-refusal.json",
+      "bytes": 442,
+      "sha256": "dcac7cb85c8234daa879424ee5a92e49e3b1b8e31993ad3efd9701c0e53dbffe",
+      "blob": "322f2af5a8276b7b05b045148f9a8f3b705f0583"
+    },
+    "operation_order": {
+      "path": "operation-order-validation.json",
+      "bytes": 1826,
+      "sha256": "2064dd3ecbbccc6e7bf5540a185e33880b7c0e68b4b86d211217e3200e8ab789",
+      "blob": "538e344537d745f3c9d8ddd0372d41cf540da3fd"
+    },
+    "source_reconstruction": {
+      "path": "payload-reconstruction.json",
+      "bytes": 167264,
+      "sha256": "fdc677b722a8459c3b726be102fe47e11f7cd69d334d9dc908fe1314fb5e5426",
+      "blob": "ae55de8214fe54793624034ccbcbbb9221c26b4e"
+    },
+    "unit_history": "First Python attempt 9/10 due repr(None) string instead of JSON null in cleanup receipt; final 10/10. No guard/oracle weakening."
+  },
+  "primary_sources": [
+    {
+      "repository": "TrillionniumFoundation/hepta-private-ci",
+      "ref": "cabcb40d36e116beaa65750e1f674c52035da785",
+      "path": ".bazelrc",
+      "blob": "3d5877b283b887091af507f3672003f84c500687",
+      "direct_read": true,
+      "finding": "Plain Bazel does not opt into remote endpoints; existing Linux host policy and final user override import retained."
+    },
+    {
+      "repository": "TrillionniumFoundation/hepta-private-ci",
+      "path": "defs.bzl",
+      "blob": "6f588ec3057fddfea35170e28e74036162ce6a23",
+      "direct_read": true,
+      "finding": "Macro reads DEP_DATA[native.package_name()] and binaries; unit test deps include normal/dev graph, original source glob."
+    },
+    {
+      "url": "https://nexte.st/docs/filtersets/reference/",
+      "observed": "2026-11-05",
+      "finding": "package equality, kind(lib), exact test equality; binary exclusions and supported predicate semantics checked."
+    }
+  ],
+  "open": [
+    "Actual independent authority peer and Current three-pool binder",
+    "Normal Root signed producer/lease/revocation/FinalUse acceptance",
+    "Independent non-opt-in opens and any unbound caller not covered by these exact APIs",
+    "All original required CI platform qualification",
+    "No B16 closure merely from a DTO, native token API or selected tests",
+    "No native invocation, resolver result, new Bazel artifact or final A qualification exists for B yet.",
+    "Generated DEP_DATA location and current helper/catalog schemas must be observed successfully; a mismatch stops, never invents a path or roster.",
+    "Final owning hygiene is always AWAITING_HYGIENE_DIFF_REVIEW; no post-hygiene test rerun is claimed."
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "bytes": 8552,
+      "sha256": "3f95f967d13791010ac1b55fa4121124e7becf206a97a89fd54a4796051fbbbc",
+      "blob": "a82874494ab5ea1bc6ffc8d5f4fea47116d18c5a"
+    },
+    {
+      "path": "b16_guard.py",
+      "bytes": 9964,
+      "sha256": "7489a68d7537a8343d3b7a62d05ce3dfaaf2d9020035facde75f270186723d5b",
+      "blob": "9c8caa0993dac4c57c1f88e142f1e6f31b907e50"
+    },
+    {
+      "path": "b16_locks.py",
+      "bytes": 12310,
+      "sha256": "33b9dbf9893d2be615e6e80332ed047f4fc89e4c3e8bb83a88b8678c70ebf869",
+      "blob": "f484c2bb30669c3ab1a22533ca4fc9a6876b1fd2"
+    },
+    {
+      "path": "b16_native.py",
+      "bytes": 15146,
+      "sha256": "c2627d054ec82187ecc81ea7607f49684bc816617476399199678c8b5e36e821",
+      "blob": "9c98e5716b399dcecb90032d3bb55ed89933f416"
+    },
+    {
+      "path": "b16_oracles.py",
+      "bytes": 7454,
+      "sha256": "1e56eff59ddcf83895605e7545c4db38393273dc27b9b04505cb23707626f3ca",
+      "blob": "b8dce12b4a6fbd8979003ca9216522941cc04f07"
+    },
+    {
+      "path": "b16_runner.py",
+      "bytes": 13912,
+      "sha256": "566e471a18ee0b04dd7560d55dd23f2fc1e6b2d6cb4643356ed94421815f2039",
+      "blob": "6125db4e7102c226f2c2deee45459fa1202e5894"
+    },
+    {
+      "path": "binding-template-UNBOUND.json",
+      "bytes": 2610,
+      "sha256": "fcb4eeda842b3ede071d2c730a7bb12b9be98a8f7619bc3709860d5565eba182",
+      "blob": "0b0642ed0d60af9bbdee9f137beae20d0811df6e"
+    },
+    {
+      "path": "build_payload.py",
+      "bytes": 11192,
+      "sha256": "35b05b1ae777ec4f3b6bd94a7fc59145c415702eb65df34f3269c1ae744258fa",
+      "blob": "bf7a3e53781fe4dbc97af905a2d87952d8c9f38c"
+    },
+    {
+      "path": "epoch-checkpoint.json",
+      "bytes": 3938,
+      "sha256": "0a9d2e32fe5aa16ef6dd490383fd4f7cc6ef10400a5a94a7bd5e97719b8780f8",
+      "blob": "7fb7a81cacd734e395f63d93938f9f4c94ba3468"
+    },
+    {
+      "path": "epoch-driver.json",
+      "bytes": 4348,
+      "sha256": "d28c2e9faa1cc0e3272d6aba88bfc3a49b062a484b6df530cca2ef2cf95a189f",
+      "blob": "5bd1014173766cb3599439e6a202514916286a5e"
+    },
+    {
+      "path": "epoch-foundation.json",
+      "bytes": 11472,
+      "sha256": "a8ac8886ec02230d5004dc8b608e0a33c0b89d5fdfabc1032569a13ee812fabd",
+      "blob": "6cc71ef831549fbe54f26c9bbe080e53effc59fa"
+    },
+    {
+      "path": "epoch-owning.json",
+      "bytes": 265,
+      "sha256": "87c7e1c517d3d601884a7555a7c677cec7490743dd2b5f7c0f1e2c45131efbe5",
+      "blob": "ce08a93c32f41135139b858d3bc22c6b224fec12"
+    },
+    {
+      "path": "epoch-pool.json",
+      "bytes": 3807,
+      "sha256": "19e1a06c6c97e20d1f1ef097222f6f7c2877850502223f16ed939848e228bf64",
+      "blob": "6d686ead86ef2c83f3b32f8bbd1b73e662d26093"
+    },
+    {
+      "path": "operation-order-validation.json",
+      "bytes": 1826,
+      "sha256": "2064dd3ecbbccc6e7bf5540a185e33880b7c0e68b4b86d211217e3200e8ab789",
+      "blob": "538e344537d745f3c9d8ddd0372d41cf540da3fd"
+    },
+    {
+      "path": "payload-manifest.json",
+      "bytes": 62667,
+      "sha256": "a34cd6c5400deff4fedfffcb1f4f170eecabbb6bbfab1916829ab3911e986237",
+      "blob": "64db580beabe2642eb8611184dac4fc686fe34e1"
+    },
+    {
+      "path": "payload-reconstruction.json",
+      "bytes": 167264,
+      "sha256": "fdc677b722a8459c3b726be102fe47e11f7cd69d334d9dc908fe1314fb5e5426",
+      "blob": "ae55de8214fe54793624034ccbcbbb9221c26b4e"
+    },
+    {
+      "path": "pure-guard-validation.json",
+      "bytes": 2630,
+      "sha256": "83f6a06691df80b0f3e06ddd720671d84b4f90275be6d43317a35ab63e1a0945",
+      "blob": "de752ea51250b8333902c765ef822a375f89e88b"
+    },
+    {
+      "path": "pure-guard-validation.log",
+      "bytes": 1473,
+      "sha256": "5a353c15e28db87b6dd7b231a1e317236113a6b492f2facaa91561e6b58ae4ce",
+      "blob": "7fb56af72b154d8f1bc2ecd39315f82575729f7b"
+    },
+    {
+      "path": "runner-integrity.json",
+      "bytes": 3727,
+      "sha256": "c1b41ab8c3caf696e84c335cdbb542923509038d0d89807f29102d1889c545e7",
+      "blob": "7db21a0086cb3ebe5c7e1b83f9de7ecb3bc66075"
+    },
+    {
+      "path": "source-payload-00.json",
+      "bytes": 350291,
+      "sha256": "44299f93d8cfc2cd6a264a1df985052d8c7c4eb16e62c9bd8614b70cb9564f78",
+      "blob": "8e5ed16eca037384b17830f3625489ddf69f7d7a"
+    },
+    {
+      "path": "source-payload-01.json",
+      "bytes": 333825,
+      "sha256": "85adc1e88702b4fb8c9d417a936d665519fa56386cb434bbc6ef55d5f9cdf07d",
+      "blob": "e621574b496731997af604b8e4b138851c8be3d0"
+    },
+    {
+      "path": "source-payload-02.json",
+      "bytes": 342693,
+      "sha256": "563074644cce7c3e63f92e5b5e346e09d24ff4ca03e90cea4ca1b001347186ce",
+      "blob": "3bb4615120935560dd4bff326795b68e03cfb31a"
+    },
+    {
+      "path": "source-payload-03.json",
+      "bytes": 345962,
+      "sha256": "8a633ff6916a8b543e8aca196c54a41cc180d8f68c2cd2a26f2fe0e87ca57f55",
+      "blob": "819cfab8bf8a410d944e7d2c8c185d07a1eea886"
+    },
+    {
+      "path": "source-payload-04.json",
+      "bytes": 135857,
+      "sha256": "5d43327e7379cca4e6502973efd7ba6a3f67fb464c3bf41ebbaf1f88c6132bba",
+      "blob": "e5a287d7ae1f8a0c77cec32ce1113a48e94f8daa"
+    },
+    {
+      "path": "test_runner_guards.py",
+      "bytes": 9266,
+      "sha256": "74758744d7fc2f0598466661bf779756ed1f70ad7bb20a52b3d92578aa2e6781",
+      "blob": "af782ede2efd32bc4e437b341c395bfa8c826a4a"
+    },
+    {
+      "path": "unbound-refusal.json",
+      "bytes": 442,
+      "sha256": "dcac7cb85c8234daa879424ee5a92e49e3b1b8e31993ad3efd9701c0e53dbffe",
+      "blob": "322f2af5a8276b7b05b045148f9a8f3b705f0583"
+    },
+    {
+      "path": "unbound-refusal.log",
+      "bytes": 868,
+      "sha256": "12d41d0bf7c8284a09ca5c8305f9d9d8e13dd426ddd45d3e190d0c05f4c21a01",
+      "blob": "4b9de1f7f68757ced77de1ed4c062fec038fcd42"
+    }
+  ],
+  "unreachable_git_upload": "Pending separate create/readback map; hashes here are calculated identities, not a claim that each object has already been uploaded."
+}

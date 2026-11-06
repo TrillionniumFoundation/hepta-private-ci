@@ -1,0 +1,564 @@
+{
+  "schema": "hepta.fleet.complete-bundle.root-addendum.v1",
+  "created_at_utc": "2026-11-04 22:23:38 UTC",
+  "reviewer": "root",
+  "prior_physical_unit_review": "b82599ee5a7fa28bfe604a10f5f2df1fefcdabad",
+  "prior_original_fleet_review": "85a1a85aa8e2ef95eff79fc086d63b643d812143",
+  "complete_bundle": "de89251365f5b5387b904ebde9ba249aa335b5d1",
+  "native_job": "1a1a87e573d-fc05-2eda",
+  "controller_state": "succeeded",
+  "controller_exit_code": 0,
+  "source_trees": {
+    "base": "c0c8e9e386b63ef1872750f9c0e70b9fad318461",
+    "baseline": "200afe4dc44888a3b9fc039f76975d7d406971b6",
+    "fixed": "05c0493573628ed32ebecfce7e846b6a345e3694",
+    "final": "c058953879b13a687163d0038a6031dfdb3c725f"
+  },
+  "selected_results": {
+    "baseline": {
+      "pass": 1,
+      "failure": 1,
+      "qualified_linux_kernel_enotconn": true
+    },
+    "fixed_drain": {
+      "pass": 5,
+      "failure": 0
+    },
+    "original_fleet": {
+      "pass": 2,
+      "failure": 0
+    }
+  },
+  "integrity": {
+    "records": 74,
+    "embedded_complete_files": 71,
+    "all_embedded_bytes_and_sha256_match": true,
+    "metadata_index_only": [
+      {
+        "path": "drain-enotconn-baseline-two-metadata.stdout",
+        "embedded": false,
+        "bytes": 960295,
+        "sha256": "b618f7a6514ec952edff55e8a6267314ac07cf3f1a703b06359e1cbe2531f758"
+      },
+      {
+        "path": "drain-enotconn-fixed-five-metadata.stdout",
+        "embedded": false,
+        "bytes": 960295,
+        "sha256": "b618f7a6514ec952edff55e8a6267314ac07cf3f1a703b06359e1cbe2531f758"
+      },
+      {
+        "path": "original-agentd-fleet-two-metadata.stdout",
+        "embedded": false,
+        "bytes": 960295,
+        "sha256": "b618f7a6514ec952edff55e8a6267314ac07cf3f1a703b06359e1cbe2531f758"
+      }
+    ],
+    "files": [
+      {
+        "path": "approved-payload.json",
+        "embedded": true,
+        "bytes": 6097,
+        "sha256": "7a9de7a5b84df25f46ea84d4807a9322501b73e50984da4e3d5f2e322fe65163",
+        "match": true
+      },
+      {
+        "path": "baseline-source-guard.json",
+        "embedded": true,
+        "bytes": 811,
+        "sha256": "fcd2766a95e91adfe46b829e1c6eb8a788d661b8462c3743b2a6af684f83206a",
+        "match": true
+      },
+      {
+        "path": "diff-check-command.json",
+        "embedded": true,
+        "bytes": 256,
+        "sha256": "28b6bde39a69a720c99e2351425bdfc64c0ac584d3689f879e3f8eefe629f74d",
+        "match": true
+      },
+      {
+        "path": "diff-check-source.diff",
+        "embedded": true,
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "match": true
+      },
+      {
+        "path": "diff-check-status.json",
+        "embedded": true,
+        "bytes": 1107,
+        "sha256": "8849e9ea428c6e25bd25470593728635cd9a815719e1e47ce2a780cdf5b1c8fb",
+        "match": true
+      },
+      {
+        "path": "diff-check.log",
+        "embedded": true,
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "match": true
+      },
+      {
+        "path": "drain-enotconn-baseline-two-catalog-command.json",
+        "embedded": true,
+        "bytes": 738,
+        "sha256": "e96cf9ef48e8ba9a4a9291e1b611c274b064eb209be4ddb342cd47df63311a58",
+        "match": true
+      },
+      {
+        "path": "drain-enotconn-baseline-two-catalog-source.diff",
+        "embedded": true,
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "match": true
+      },
+      {
+        "path": "drain-enotconn-baseline-two-catalog-status.json",
+        "embedded": true,
+        "bytes": 2675,
+        "sha256": "eb0ef5571da6d7a44065d34813e8eae9fa3a819aa77a0c280a6f8eb18db1bd11",
+        "match": true
+      },
+      {
+        "path": "drain-enotconn-baseline-two-catalog.stderr",
+        "embedded": true,
+        "bytes": 18517,
+        "sha256": "381a37c335ae78d33da9152fb8caab7587f186dfe4095ac142dd61071cc5796f",
+        "match": true
+      },
+      {
+        "path": "drain-enotconn-baseline-two-catalog.stdout",
+        "embedded": true,
+        "bytes": 19397,
+        "sha256": "cd9dcdf5705b29498a321803750cf39597fd72aff70233d76ee95414c47f93e7",
+        "match": true
+      },
+      {
+        "path": "drain-enotconn-baseline-two-command.json",
+        "embedded": true,
+        "bytes": 606,
+        "sha256": "34a79f206ee33885aba879e9b9e9ce8791640c0ce42f95e84b81259e07d57afc",
+        "match": true
+      },
+      {
+        "path": "drain-enotconn-baseline-two-metadata-command.json",
+        "embedded": true,
+        "bytes": 332,
+        "sha256": "f82c972e57c3a10f16209d2df94fe0d011742061aea48be03f9761aa630aaad0",
+        "match": true
+      },
+      {
+        "path": "drain-enotconn-baseline-two-metadata-source.diff",
+        "embedded": true,
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "match": true
+      },
+      {
+        "path": "drain-enotconn-baseline-two-metadata-status.json",
+        "embedded": true,
+        "bytes": 9050,
+        "sha256": "40f5312cebccbb7549f3d400f3151bcb6c2f3467b2962b2db1943a6c34ad1954",
+        "match": true
+      },
+      {
+        "path": "drain-enotconn-baseline-two-metadata.stderr",
+        "embedded": true,
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "match": true
+      },
+      {
+        "path": "drain-enotconn-baseline-two-review.json",
+        "embedded": true,
+        "bytes": 3264,
+        "sha256": "8eb94d563e45a8a180f2085ed9a2095bd93a9104240c7530d2ded9061b372c9c",
+        "match": true
+      },
+      {
+        "path": "drain-enotconn-baseline-two-selection.json",
+        "embedded": true,
+        "bytes": 1086,
+        "sha256": "cd5da34c91a5f5c09759bdb9505675c5a405ce2592ccea2d1e1559372ee3e16a",
+        "match": true
+      },
+      {
+        "path": "drain-enotconn-baseline-two-source.diff",
+        "embedded": true,
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "match": true
+      },
+      {
+        "path": "drain-enotconn-baseline-two-status.json",
+        "embedded": true,
+        "bytes": 1842,
+        "sha256": "bdef0041eeedec06bd27c2eeece8548acb53ad2223661169607edf20c78e6460",
+        "match": true
+      },
+      {
+        "path": "drain-enotconn-baseline-two.junit.xml",
+        "embedded": true,
+        "bytes": 2358,
+        "sha256": "1dcce37f2ce52190579cf0b4837c68e3aaac740b7af776482f9d234aa71ef199",
+        "match": true
+      },
+      {
+        "path": "drain-enotconn-baseline-two.log",
+        "embedded": true,
+        "bytes": 12223,
+        "sha256": "36b76fe1ec82c6841120e70ac2ae1aced22a572a3d9c98dd73d6e9f568bc28fe",
+        "match": true
+      },
+      {
+        "path": "drain-enotconn-fixed-five-catalog-command.json",
+        "embedded": true,
+        "bytes": 591,
+        "sha256": "6f57aa4ce7e29f30234200d720191afdeedff1ebdb09688f19be33d7e27ae888",
+        "match": true
+      },
+      {
+        "path": "drain-enotconn-fixed-five-catalog-source.diff",
+        "embedded": true,
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "match": true
+      },
+      {
+        "path": "drain-enotconn-fixed-five-catalog-status.json",
+        "embedded": true,
+        "bytes": 2515,
+        "sha256": "1536f457e0074461a3aa7f1a89a9c04a066de2d4a710bbaf2404c95d2db96cc0",
+        "match": true
+      },
+      {
+        "path": "drain-enotconn-fixed-five-catalog.stderr",
+        "embedded": true,
+        "bytes": 10353,
+        "sha256": "36bef3913bed512abe4487178e18f5ae58a2dc83efc361ba3d22ac8a57d9b482",
+        "match": true
+      },
+      {
+        "path": "drain-enotconn-fixed-five-catalog.stdout",
+        "embedded": true,
+        "bytes": 18936,
+        "sha256": "e1ffd364e26b2a4d55e6cab4e3cb045305f4f2114810dca6482a92246fc54b6f",
+        "match": true
+      },
+      {
+        "path": "drain-enotconn-fixed-five-command.json",
+        "embedded": true,
+        "bytes": 461,
+        "sha256": "bd339003a2f71f82b9e5f321a72f9041c52ef07b528d5cc75fc40447e2c5a5c8",
+        "match": true
+      },
+      {
+        "path": "drain-enotconn-fixed-five-metadata-command.json",
+        "embedded": true,
+        "bytes": 332,
+        "sha256": "f7a5225433a14074983c1abccff1f54353f1954cb7c91197fd04cdb05d44946d",
+        "match": true
+      },
+      {
+        "path": "drain-enotconn-fixed-five-metadata-source.diff",
+        "embedded": true,
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "match": true
+      },
+      {
+        "path": "drain-enotconn-fixed-five-metadata-status.json",
+        "embedded": true,
+        "bytes": 8999,
+        "sha256": "7caaaf7e7f11883a2ef0c8bd65174e2a6a274579d1822c0c27ced975d9c0f403",
+        "match": true
+      },
+      {
+        "path": "drain-enotconn-fixed-five-metadata.stderr",
+        "embedded": true,
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "match": true
+      },
+      {
+        "path": "drain-enotconn-fixed-five-review.json",
+        "embedded": true,
+        "bytes": 3726,
+        "sha256": "3df029968620d460d03dbe26e51a50699df7461cb606377f873f9741bedcb2f5",
+        "match": true
+      },
+      {
+        "path": "drain-enotconn-fixed-five-selection.json",
+        "embedded": true,
+        "bytes": 1624,
+        "sha256": "6cbbb5aead2ac7837a95d1633fa2a0cccce150c3179081ec6f4d33907af3cbb6",
+        "match": true
+      },
+      {
+        "path": "drain-enotconn-fixed-five-source.diff",
+        "embedded": true,
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "match": true
+      },
+      {
+        "path": "drain-enotconn-fixed-five-status.json",
+        "embedded": true,
+        "bytes": 1687,
+        "sha256": "f0ed1b5e25fc8feda8a4834cf069d9af5a04d96e200002e2d7a68e6813ece6c3",
+        "match": true
+      },
+      {
+        "path": "drain-enotconn-fixed-five.junit.xml",
+        "embedded": true,
+        "bytes": 1384,
+        "sha256": "3df9dc8a6744385e6d8e6aa3692d4c01d38a045dc780918683c5d27dcbb2eba7",
+        "match": true
+      },
+      {
+        "path": "drain-enotconn-fixed-five.log",
+        "embedded": true,
+        "bytes": 12524,
+        "sha256": "fa02f49d172791b127b99b8e8fcaa54389b9db7ca34d058468a7cef0e549e6dd",
+        "match": true
+      },
+      {
+        "path": "fixed-source-guard.json",
+        "embedded": true,
+        "bytes": 503,
+        "sha256": "bae67beefd5b21b45fb0244c181b0757cd53c6969ee6ef860fa07769a027a997",
+        "match": true
+      },
+      {
+        "path": "native-host.json",
+        "embedded": true,
+        "bytes": 590,
+        "sha256": "ebad18b3e3e2b097da6ef1c2319ac7620e2978b9bc58528a063cebdc25f5f914",
+        "match": true
+      },
+      {
+        "path": "original-agentd-fleet-two-catalog-command.json",
+        "embedded": true,
+        "bytes": 595,
+        "sha256": "38b5a3256741b78cc85690c732d987127fab69baad586930a8d261a422c9c69e",
+        "match": true
+      },
+      {
+        "path": "original-agentd-fleet-two-catalog-source.diff",
+        "embedded": true,
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "match": true
+      },
+      {
+        "path": "original-agentd-fleet-two-catalog-status.json",
+        "embedded": true,
+        "bytes": 2518,
+        "sha256": "1671d5b55d1ba92c1e286c1ccbcfc37c4f834ea42708c77bf5f7ace08ff998be",
+        "match": true
+      },
+      {
+        "path": "original-agentd-fleet-two-catalog.stderr",
+        "embedded": true,
+        "bytes": 25935,
+        "sha256": "95e6b2a105f49ba64e9d258c2a9a393c5580bfc7b573dcc8b3f257faf8235c15",
+        "match": true
+      },
+      {
+        "path": "original-agentd-fleet-two-catalog.stdout",
+        "embedded": true,
+        "bytes": 2333,
+        "sha256": "a057d24f57cbe1561319c0c049c5e554aa602e2f89784e735dafa3b1161dd7cf",
+        "match": true
+      },
+      {
+        "path": "original-agentd-fleet-two-command.json",
+        "embedded": true,
+        "bytes": 465,
+        "sha256": "f00c7e5391a429cd09f39d7592013b666d4997ac899e91c1d2105992f8c05fc0",
+        "match": true
+      },
+      {
+        "path": "original-agentd-fleet-two-metadata-command.json",
+        "embedded": true,
+        "bytes": 332,
+        "sha256": "8e9faf96d24ad564545952323c40ee08354e3418b426fcd7be55d7223cbd45dd",
+        "match": true
+      },
+      {
+        "path": "original-agentd-fleet-two-metadata-source.diff",
+        "embedded": true,
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "match": true
+      },
+      {
+        "path": "original-agentd-fleet-two-metadata-status.json",
+        "embedded": true,
+        "bytes": 8999,
+        "sha256": "6f96ab1d37722dc6dd18456c52a944b5d0f1c96f1630ca7b4dd44bde12af5023",
+        "match": true
+      },
+      {
+        "path": "original-agentd-fleet-two-metadata.stderr",
+        "embedded": true,
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "match": true
+      },
+      {
+        "path": "original-agentd-fleet-two-review.json",
+        "embedded": true,
+        "bytes": 6628,
+        "sha256": "39474cbbcce66f6cf0dc52987d86f566e82a4ea6b1b2c88639b5ad164f50406f",
+        "match": true
+      },
+      {
+        "path": "original-agentd-fleet-two-selection.json",
+        "embedded": true,
+        "bytes": 2435,
+        "sha256": "f9df4d3cffab8b2fef158223bcaff7b3c23ac65010ad88cf1f54030d58892831",
+        "match": true
+      },
+      {
+        "path": "original-agentd-fleet-two-source.diff",
+        "embedded": true,
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "match": true
+      },
+      {
+        "path": "original-agentd-fleet-two-status.json",
+        "embedded": true,
+        "bytes": 1692,
+        "sha256": "e48dbb95d08030f2e4ba1e92740e69706b02ab065cb3c9c92023ae2a32575a4c",
+        "match": true
+      },
+      {
+        "path": "original-agentd-fleet-two.junit.xml",
+        "embedded": true,
+        "bytes": 796,
+        "sha256": "695e3c76451efdf86a5b9a0ee10077ca8691554aa0965f2d2c64d6cdbf2aab0f",
+        "match": true
+      },
+      {
+        "path": "original-agentd-fleet-two.log",
+        "embedded": true,
+        "bytes": 39390,
+        "sha256": "ca0dfe056eea49ec568b8296f7435d550953c7d20259f9b937b3ee78df7eaf11",
+        "match": true
+      },
+      {
+        "path": "original-fmt-command.json",
+        "embedded": true,
+        "bytes": 250,
+        "sha256": "dcdb1c04c50777f76c7b63b2b72179a4430d70ae3b351a476ec738115c13ce88",
+        "match": true
+      },
+      {
+        "path": "original-fmt-source.diff",
+        "embedded": true,
+        "bytes": 631,
+        "sha256": "673ba6c1fcb3595a42d307eac4f90f35bea6c31130cc2de467549f3f7a848540",
+        "match": true
+      },
+      {
+        "path": "original-fmt-status.json",
+        "embedded": true,
+        "bytes": 1473,
+        "sha256": "8fb47e0f78d7a958a226fef9ee163cc22dba382d40969fd9a03ecf500494760a",
+        "match": true
+      },
+      {
+        "path": "original-fmt.log",
+        "embedded": true,
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "match": true
+      },
+      {
+        "path": "runner.py",
+        "embedded": true,
+        "bytes": 17110,
+        "sha256": "ffd38ffe168cea196507f120aac85a37a44c6c7659bdd84ed16018779574328d",
+        "match": true
+      },
+      {
+        "path": "scoped-fix-command.json",
+        "embedded": true,
+        "bytes": 290,
+        "sha256": "297686c860fa73ea96cba0f631b9b169f5be71a8e521e947e19a2978b05ecc50",
+        "match": true
+      },
+      {
+        "path": "scoped-fix-source.diff",
+        "embedded": true,
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "match": true
+      },
+      {
+        "path": "scoped-fix-status.json",
+        "embedded": true,
+        "bytes": 1454,
+        "sha256": "57905367ee34bbd613b566fa1a69d970a1cc49dd7e4b356e3511cfb87718958c",
+        "match": true
+      },
+      {
+        "path": "scoped-fix.log",
+        "embedded": true,
+        "bytes": 8732,
+        "sha256": "48f98b1799e104c9b32cf7de510f09836f7217e566c6964869f5bd9bda19f605",
+        "match": true
+      },
+      {
+        "path": "source-map-index.json",
+        "embedded": true,
+        "bytes": 567,
+        "sha256": "2ea09301c1fdf299a376224531e4b8bfbdc3f52db1131fcc58b24bcc4a278684",
+        "match": true
+      },
+      {
+        "path": "source-map.json",
+        "embedded": true,
+        "bytes": 17999,
+        "sha256": "9433ab2653798cd27099ef5a7fe375c23c1edec92926001bbf85a5be9226e7e3",
+        "match": true
+      },
+      {
+        "path": "terminal-index.json",
+        "embedded": true,
+        "bytes": 853,
+        "sha256": "c30ef9d86fc7ee53fd188a4129ba94809bb82401e9473aec1e16ee9df7a47b35",
+        "match": true
+      },
+      {
+        "path": "terminal.json",
+        "embedded": true,
+        "bytes": 50228,
+        "sha256": "02ad6b7d64428193dc20faa8ded77afd7aacc58301a25ab84795732394617b9c",
+        "match": true
+      },
+      {
+        "path": "unix.rs",
+        "embedded": true,
+        "bytes": 32095,
+        "sha256": "29e61a38c98eae99d1eea5cce2701d7c9e8c0587f0d727865f4a85025206a8e0",
+        "match": true
+      },
+      {
+        "path": "unix_drain_tests.rs",
+        "embedded": true,
+        "bytes": 6580,
+        "sha256": "6ad31f5fccd0dd5fcee66e610fef3dfec91ceb55f85e5576d6b4db5ffdff1c74",
+        "match": true
+      }
+    ]
+  },
+  "qualification_limits": [
+    "Baseline mechanically extracts the old classifier; it is not byte-identical unmodified cabcb.",
+    "Linux actual ENOTCONN from getpeername qualifies classification, not Darwin shutdown timing.",
+    "Original ARM CI exact candidate remains pending.",
+    "No tests after scoped fix/fmt; final difference is only formatted call wrapping.",
+    "Actual declared Agentd executable after catalogue/prejust/postjust path and SHA are equal; no old combined-build identity substituted."
+  ],
+  "scope": "This addendum extends root's prior complete XML/raw/binary/source review with independent integrity verification of all71 embedded files. Three960295B workspace metadata records are indexed, not embedded or newly inspected here. Baseline1FAIL/1PASS is preserved; it proves Linux getpeername ENOTCONN handling and does not reproduce a Darwin shutdown race."
+}

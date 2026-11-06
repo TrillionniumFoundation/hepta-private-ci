@@ -1,0 +1,168 @@
+{
+  "schema": "sqlx-native-lifetime-independent-static-review/v1",
+  "verdict": "STATIC_PASS_WITH_EXPLICIT_UNEXECUTED_ADOPTION_GATES",
+  "reviewer": "/root/research_audit",
+  "manifest": {
+    "bytes": 25087,
+    "sha256": "5f30a0779d0a5f098d95ced624c5abc781dc3d838465d3b81fed7b3fe3a3833e",
+    "blob": "9262807373267fe42587a36a50721aa08b60c56b"
+  },
+  "full_patch": {
+    "bytes": 23537,
+    "sha256": "c733c2eb50ea35aea18981bba478af2f7dbea369acaf563398f9b0e887c5cc75",
+    "blob": "abe067bc6f2ca9601eef83b0cd4e0db4811827ac"
+  },
+  "actual_registry_vcs": "003b698e99e024f3621b8043a2426fde5b741171",
+  "prior_tag_vcs": "75bc0487eb661da811bb7a3c5d158f1bd463fef4",
+  "identity_scope": "Local exact original/candidate bodies independently rehashed and patch reconstructed. The actual crate archive extraction is the existing CI receipt93b99 + author alignment246b, not newly performed by this reviewer.",
+  "source_files": [
+    {
+      "path": "sqlx-sqlite/src/options/mod.rs",
+      "before": {
+        "bytes": 28010,
+        "sha256": "ff5005abc6408f2df073d95bf3440c2a3ee96c1a312d73468bf66123f8ab2f1e",
+        "blob": "0cafc4d08c4c63c342685fedbcc43222dd38d2f1"
+      },
+      "after": {
+        "bytes": 28204,
+        "sha256": "ab2ad89bc9a6b84fce35fb108744343cf364ce121330657477ecdcb2ed8a2fdf",
+        "blob": "a9da93a72c7840f98dd9b53181c28f7fae5807ae"
+      },
+      "independent_patch_reconstruction_byteequal": true
+    },
+    {
+      "path": "sqlx-sqlite/src/options/connection_lifetime.rs",
+      "before": null,
+      "after": {
+        "bytes": 1591,
+        "sha256": "b0d7e000af86e4e698b1453e3cc01e5d5cce08cce32022eab45a1708420aee5e",
+        "blob": "ea1b6007e9ac8ed14328f3cac79fb909183cb5dc"
+      },
+      "independent_patch_reconstruction_byteequal": true
+    },
+    {
+      "path": "sqlx-sqlite/src/connection/establish.rs",
+      "before": {
+        "bytes": 10033,
+        "sha256": "447d5067838ec05c713a53b381df4b8ae16652917b4206c553cdea6d3a1fe92a",
+        "blob": "cedf752e6adef404b6f7d537f521045cb8342b5a"
+      },
+      "after": {
+        "bytes": 10287,
+        "sha256": "3052fcc3047592fbb9b2d56030b39065fa3e77e1b9de69630671f1fa07d62dbe",
+        "blob": "7bf04f3f06165371bfbe525c61cbaafa0c46667f"
+      },
+      "independent_patch_reconstruction_byteequal": true
+    },
+    {
+      "path": "sqlx-sqlite/src/connection/handle.rs",
+      "before": {
+        "bytes": 5320,
+        "sha256": "63d9b11374ebd453f3f7d0be95a728030f05997d5ccdc756fd8057ee0d31dc6f",
+        "blob": "e89179b30ed489bf831e56575d1269f223a368ac"
+      },
+      "after": {
+        "bytes": 5735,
+        "sha256": "d1e809bb28d216bc0b84c6381adcbb6f89d123754c66a4b4498412295c0a2240",
+        "blob": "ed7f2a0798a30f4e3574d0e6e685ac9b41aae1a6"
+      },
+      "independent_patch_reconstruction_byteequal": true
+    },
+    {
+      "path": "sqlx-sqlite/src/options/connection_lifetime_tests.rs",
+      "before": null,
+      "after": {
+        "bytes": 15437,
+        "sha256": "7428bfddb31e81922c921ba7ae7237926d5332631a43f34a1bedf40477c00cb9",
+        "blob": "15b4ac44e4f3cee8ddca8731a0af1063e4dafe89"
+      },
+      "independent_patch_reconstruction_byteequal": true
+    }
+  ],
+  "unchanged_context_files": [
+    {
+      "path": "sqlx-sqlite/src/connection/worker.rs",
+      "bytes": 22317,
+      "sha256": "b66aafc56f0e287eac3b09111c5d4997d350ab61294c5cc576ce359bc18cebe4",
+      "blob": "2585dc1312210d9eb18c15f6df1158656d3c6b2c"
+    },
+    {
+      "path": "sqlx-sqlite/src/connection/mod.rs",
+      "bytes": 20337,
+      "sha256": "a20c2e51a1505e298fd897b378f9032c89b82850838aa6e5d9409f612fb1e7fd",
+      "blob": "218c747143fe80b344bca3405d4b0b38da2bd932"
+    },
+    {
+      "path": "sqlx-sqlite/src/options/connect.rs",
+      "bytes": 2305,
+      "sha256": "6eab2d3914a2c9f35c60bd8b324e46790eca39a23c30a0d4101e35be52b04253",
+      "blob": "cfa25872b2c118cc955ac4e2f9cfb64e19e4a0ee"
+    }
+  ],
+  "findings": [
+    {
+      "topic": "before native open",
+      "verdict": "PASS_STATIC",
+      "evidence": "EstablishParams clones the explicit owner in from_options. Unchanged ConnectionWorker::establish moves params into the existing thread closure before params.establish. ConnectionHandle::open receives an owned clone before sqlite3_open_v2 executes. No extra worker/task is introduced.",
+      "limit": "Actual cancellation checkpoints and physical cross-process file lock remain unexecuted."
+    },
+    {
+      "topic": "NULL open result",
+      "verdict": "PASS_STATIC",
+      "evidence": "If sqlite3_open_v2 returns a null handle, the original OutOfMemory branch remains. The owned parameter is still live throughout FFI and drops on return after the native call; no non-null SQLite object is discarded before custody is attached.",
+      "limit": "No injected allocation-failure runtime control is claimed."
+    },
+    {
+      "topic": "non-NULL open error",
+      "verdict": "PASS_STATIC",
+      "evidence": "The returned handle receives the owner before status != SQLITE_OK handling. Original expect_error and Error::Database are unchanged; handle cleanup retains the token during sqlite3_close, including error unwinding."
+    },
+    {
+      "topic": "successful physical close",
+      "verdict": "PASS_STATIC",
+      "evidence": "The owner lives inside ConnectionHandle. Its Drop body calls sqlite3_close first; only after that returns SQLITE_OK and Drop returns do ordinary field destructors release the optional owner. Earlier ConnectionState hook removal does not own or release this handle field.",
+      "limit": "This is independent of commit-hook authority and does not claim transaction admission."
+    },
+    {
+      "topic": "failed physical close",
+      "verdict": "PASS_STATIC",
+      "evidence": "On any non-OK sqlite3_close return, take+forget removes the owner from automatic field destruction before the pre-existing panic/error formatting. Unwinding cannot release that retained Arc while native SQLite may remain live.",
+      "limit": "Intentional leak until process exit reduces availability; a later unsafe manual successful close does not recover that leaked owner. This is stated in the proposal."
+    },
+    {
+      "topic": "default None and API shape",
+      "verdict": "PASS_STATIC",
+      "evidence": "Default options initialize None; no token or new SQL/permission/close-order operation is added for ordinary users. Existing signatures remain public-compatible; only private handle constructor has the extra owned argument. Opaque Debug avoids printing the resource.",
+      "limit": "Private Debug shape changes; the current five-source patch is not dependency adoption, and compile/API coverage of the full crate remains a required gate."
+    },
+    {
+      "topic": "Arc ownership/cycles",
+      "verdict": "PASS_STATIC",
+      "evidence": "The Arc requires Send+Sync+static. Options/pools/connection handles may hold independent clones, so release may occur after any individual connection ends. Replacing an option cannot strip already-moved clones.",
+      "limit": "The API does not validate that the supplied token is a real resource owner; callers must avoid cycles through their own options/pools. Unopted independent instances are not covered."
+    },
+    {
+      "topic": "physical control design",
+      "verdict": "STATIC_ACCEPT_PENDING_EXECUTION",
+      "evidence": "The four selected parents use a normal libtest child, actual File locks from an independent process, native open/progress callbacks, real TEMP-table replacement, original initialization error, real SQLITE_BUSY, original WorkerCrashed and a still-running SQLITE_ROW statement. The revised select keeps driving connect until the real callback fires.",
+      "limit": "No native controls or negative outcomes were run by this reviewer. The one ignored child support entry is explicitly invoked, not counted as a fifth passed control. Setup/timeout/build failures cannot substitute for the specified physical causal negatives."
+    }
+  ],
+  "required_remaining_gates": [
+    "Choose and freeze actual registry-normalized dependency adoption and licenses; preserve source identities and generate original Cargo/Bazel locks, not hand-edited locks.",
+    "Compile and format the exact driver with its existing normal dependencies and intended bundled/core runtime features; run exact original driver tests.",
+    "Run both specified counterfactuals with full physical causal receipts, restore exact source, then all four positive parents with zero retries.",
+    "Record actual Rust/SQLite/runtime identities, original source/lock bytes and full logs/JUnit with support-entry scope.",
+    "Run original state/Memory ownership regressions on the same adopted source.",
+    "Separately wire a legitimate current store caller to the real OpenGuard. No Current/Root authority, FinalUse, WAN acceptance or whole B16 closure follows from this driver API alone."
+  ],
+  "review_actions": {
+    "cloud_local_read_and_hash": true,
+    "git_refs_changed": false,
+    "shared_source_changed": false,
+    "native_executed": false,
+    "compile": false,
+    "formatter": false,
+    "tests": false
+  }
+}

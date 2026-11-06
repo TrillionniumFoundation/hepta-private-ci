@@ -1,4 +1,6 @@
 [workspace]
+# Vendored backports remain dependencies, not new workspace members.
+exclude = ["third_party/aws-smithy-http-0.64.1", "third_party/aws-smithy-runtime-1.16.0", "third_party/aws-smithy-types-1.8.1", "third_party/loom-0.7.2"]
 members = [
     "aws-auth",
     "analytics",
@@ -665,6 +667,11 @@ inherits = "test"
 opt-level = 0
 
 [patch.crates-io]
+# Pin-only private backports; retain the four existing crate versions.
+aws-smithy-http = { path = "third_party/aws-smithy-http-0.64.1" }
+aws-smithy-runtime = { path = "third_party/aws-smithy-runtime-1.16.0" }
+aws-smithy-types = { path = "third_party/aws-smithy-types-1.8.1" }
+loom = { path = "third_party/loom-0.7.2" }
 # Preserve AWS login while using the maintained constant-time P-256 dependency chain.
 aws-config = { path = "third_party/aws-config-1.12.0" }
 # Backport maintained TOML parsing for age's i18n-config dependency.

@@ -31,3 +31,6 @@ scopeguard = { workspace = true }
 
 [lints]
 workspace = true
+
+[target.'cfg(windows)'.dependencies]
+codex-utils-path = { workspace = true }

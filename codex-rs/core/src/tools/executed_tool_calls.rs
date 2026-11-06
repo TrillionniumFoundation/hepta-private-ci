@@ -174,6 +174,32 @@ impl ExecutedToolCallRecorder {
         state.pending_nested_calls += 1;
     }
 
+    /// Reads only calls already attached by production prompt construction.
+    /// Test observers must not consume pending calls or populate this cache.
+    pub(crate) fn retained_calls_for_output(
+        &self,
+        item: &ResponseItem,
+    ) -> Option<Vec<ExecutedToolCall>> {
+        let call_id = match item {
+            ResponseItem::FunctionCallOutput {
+                call_id: Some(call_id),
+                ..
+            }
+            | ResponseItem::CustomToolCallOutput { call_id, .. }
+            | ResponseItem::ToolSearchOutput {
+                call_id: Some(call_id),
+                ..
+            } => call_id,
+            _ => return None,
+        };
+        self.state
+            .lock()
+            .unwrap_or_else(std::sync::PoisonError::into_inner)
+            .retained_calls
+            .get(&(std::mem::discriminant(item), call_id.clone()))
+            .cloned()
+    }
+
     pub(crate) fn attach_pending_to_prompt(
         &self,
         items: &mut [ResponseItem],

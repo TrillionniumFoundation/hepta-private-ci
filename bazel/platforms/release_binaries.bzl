@@ -11,11 +11,18 @@ PLATFORMS = [
     "windows_arm64",
 ]
 
+# rules_rs has an independent Linux libc constraint. These published platforms
+# select matching Rust and LLVM musl targets, including Rust's non-PIE contract.
+_MUSL_PLATFORMS = {
+    "linux_arm64_musl": "@rules_rs//rs/platforms:aarch64-unknown-linux-musl",
+    "linux_amd64_musl": "@rules_rs//rs/platforms:x86_64-unknown-linux-musl",
+}
+
 def multiplatform_binaries(name, platforms = PLATFORMS, release_group_name = "release_binaries"):
     for platform in platforms:
         platform_data(
             name = name + "_" + platform,
-            platform = "@llvm//platforms:" + platform,
+            platform = _MUSL_PLATFORMS.get(platform, "@llvm//platforms:" + platform),
             target = name,
             tags = ["manual"],
         )

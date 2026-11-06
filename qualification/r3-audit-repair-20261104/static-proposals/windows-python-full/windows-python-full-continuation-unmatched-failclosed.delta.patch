@@ -1,0 +1,10 @@
+--- a/windows-python-full-continuation-runner-v1.py
++++ b/windows-python-full-continuation-runner-v2.py
+@@ -220,6 +220,7 @@
+   if matched:
+    actual_packages.add(suite["package-name"]);binaries.append({"binary_id":sid,**rec(pathlib.Path(suite["binary-path"]))})
+  if not expected:raise RuntimeError("empty full-workspace roster")
++ if unmatched:raise RuntimeError("full-workspace catalog has unexpected unmatched cases")
+  if not actual_packages.issubset(workspace_names):raise RuntimeError("non-workspace package in full catalog")
+  empty_packages=sorted(workspace_names-actual_packages)
+  packages=sorted(workspace_names)

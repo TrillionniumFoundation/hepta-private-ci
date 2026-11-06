@@ -1,0 +1,50 @@
+{
+  "schema": "hepta-epoch2-readonly-source-input-guard-v1",
+  "observed_at": "2026-11-05T01:49:43.105409+00:00",
+  "source_root": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/source",
+  "expected_tree": "f8251e1d14fa8524ab469281296cd4cf708f173c",
+  "actual_tree": "f8251e1d14fa8524ab469281296cd4cf708f173c",
+  "head": "cabcb40d36e116beaa65750e1f674c52035da785",
+  "ordinary_index_before": {
+    "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/source/.git/index",
+    "bytes": 1222758,
+    "sha256": "8ccf08bcd5b633a38fa81be4814ae264365f1a2cdd1ed81e1633fbcc0ac31502"
+  },
+  "ordinary_index_after": {
+    "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/source/.git/index",
+    "bytes": 1222758,
+    "sha256": "8ccf08bcd5b633a38fa81be4814ae264365f1a2cdd1ed81e1633fbcc0ac31502"
+  },
+  "locks": {
+    "codex-rs/Cargo.lock": {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/source/codex-rs/Cargo.lock",
+      "bytes": 413768,
+      "sha256": "4a7a5535cf045089458468411e126b5f59bc6bbf34fc0deead9b0c1b8d84000a"
+    },
+    "MODULE.bazel.lock": {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/source/MODULE.bazel.lock",
+      "bytes": 1738619,
+      "sha256": "11f8a421224b9b05f32c4c14054e8868083d989fc497310c8d51e1156f189ca3"
+    }
+  },
+  "untracked_command": [
+    "git",
+    "ls-files",
+    "--others",
+    "--exclude-standard",
+    "-z"
+  ],
+  "private_index_seed": "f8251e1d14fa8524ab469281296cd4cf708f173c",
+  "untracked_source_paths": [],
+  "allowed_untracked_source_paths": [],
+  "new_target_path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target-app-epoch2-20261105",
+  "new_target_exists": false,
+  "new_target_is_symlink": false,
+  "disk": {
+    "total": 1005867986944,
+    "used": 910837395456,
+    "free": 84783017984
+  },
+  "scope": "Only source Git/file reads and task-owned private evidence index; no source/ordinary-index/target modification and no Cargo.",
+  "guards_pass": true
+}

@@ -1,0 +1,75 @@
+{
+  "schema": "hepta.fourth.complete-inventory-exact-chunks.v1",
+  "original_blob": "0db12ef5efcb2df620def35407a3076f1af8aa2b",
+  "original": {
+    "bytes": 1600034,
+    "sha256": "cce019aa8702e53b59f6a888eb598471eb136b336dc3dec897447580784cc22e"
+  },
+  "snapshot": {
+    "started_at_utc": "2026-11-04 22:27:25 UTC",
+    "read_finished_at_utc": "2026-11-04 22:27:27 UTC",
+    "final_anchor_at_utc": "2026-11-04 22:27:38 UTC",
+    "reason_for_fresh_pagination": "PR4808 was created at22:24:34 after first complete PR/branch collection finished22:24:22; a first-page anchor caught the addition. The second complete12-page PR pass and final anchor agree."
+  },
+  "counts": {
+    "open_prs": 1088,
+    "draft": 1064,
+    "non_draft": 24,
+    "branches": 5163,
+    "base_main": 154,
+    "base_non_main": 934,
+    "open_issues": 0,
+    "published_releases": 0,
+    "repo_open_issues_including_pr": 1088
+  },
+  "chunks": [
+    {
+      "sequence": 0,
+      "offset": 0,
+      "path": "fourth-inventory-original/snapshot.part-000.txt",
+      "blob": "9ec4b505207f34f7383266a1146c8fe2a29e0c4b",
+      "bytes": 384000,
+      "sha256": "0cf8ae3694f1ae7e6fdc9ddec97970205a41a603b6ca7779aec75aaea20fe5b9"
+    },
+    {
+      "sequence": 1,
+      "offset": 384000,
+      "path": "fourth-inventory-original/snapshot.part-001.txt",
+      "blob": "425e27dbaf5892c2ac65b98507cbf6304223c9f6",
+      "bytes": 384000,
+      "sha256": "bbd1a963f46aab14d1167d5a4851da53fc79333da6808c677d63d1ee5b36a2ed"
+    },
+    {
+      "sequence": 2,
+      "offset": 768000,
+      "path": "fourth-inventory-original/snapshot.part-002.txt",
+      "blob": "3b2163f56d849d541b57d0246efa9a445d1c6db8",
+      "bytes": 384000,
+      "sha256": "24648447f65a48fe8dd2d67103573bcdecd9506a200cb1c1e432ff3f7c03f85f"
+    },
+    {
+      "sequence": 3,
+      "offset": 1152000,
+      "path": "fourth-inventory-original/snapshot.part-003.txt",
+      "blob": "9d99c8d3a5855b812c7b85b2463a89eba7a47ee1",
+      "bytes": 384000,
+      "sha256": "be1412f08192d87ee28fa6023c779f39d4b7265b5e28a0c3d98460f5853952b4"
+    },
+    {
+      "sequence": 4,
+      "offset": 1536000,
+      "path": "fourth-inventory-original/snapshot.part-004.txt",
+      "blob": "624afcf57fe865d79d74a6cc9056f79411b6cd77",
+      "bytes": 64034,
+      "sha256": "df135c900914f4ed7ab383cd320d70409073757549a7b1bc4f671ecb5a13d2b7"
+    }
+  ],
+  "reassemble": "Concatenate raw UTF-8 chunks in sequence. Verify the entire original byte count and SHA256 before JSON parsing. No inventory content was modified.",
+  "limits": [
+    "Complete pagination inventories open PR and branch metadata during this bounded observation, not every historical closed PR or every code line.",
+    "API pagination is not an atomic repository snapshot; final anchor rereads and drift checks are recorded separately.",
+    "Draft/non-Draft labels, branch depth, file counts and workflow counts are not production readiness or delivered-feature counts.",
+    "PR metadata base.sha differs from the observed current base-ref tip in the recorded cases; that alone is not a merge conflict or simultaneous mutation. Integration must pin its actual target SHA independently.",
+    "The1087-PR first pass remains historical; it is not silently relabeled as the refreshed1088 inventory. Branch and PR observation intervals are separately recorded."
+  ]
+}

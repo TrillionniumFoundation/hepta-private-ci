@@ -1,0 +1,62 @@
+{
+  "scope": "isolated cloud Git only",
+  "commands": [
+    {
+      "argv": [
+        "git",
+        "init",
+        "-q"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "--reverse",
+        "--check",
+        "/workspace/scratch/07dd58cc9630/ci-audit/recovered-20261105/final-A-fmt-complete-v1/large-decoded/original-fmt.patch"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "--reverse",
+        "/workspace/scratch/07dd58cc9630/ci-audit/recovered-20261105/final-A-fmt-complete-v1/large-decoded/original-fmt.patch"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "--check",
+        "/workspace/scratch/07dd58cc9630/ci-audit/recovered-20261105/final-A-fmt-complete-v1/large-decoded/original-fmt.patch"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "/workspace/scratch/07dd58cc9630/ci-audit/recovered-20261105/final-A-fmt-complete-v1/large-decoded/original-fmt.patch"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  ],
+  "pre_tree": "b2901e2beb8171f125fe5906d585fbe134802423",
+  "post_tree": "4a3374e22e16ce5c764288ad018cd9affadf94ea",
+  "17_preimages_and_postimages_exact": true
+}

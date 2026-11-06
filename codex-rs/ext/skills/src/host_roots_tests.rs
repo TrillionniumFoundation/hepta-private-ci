@@ -406,7 +406,38 @@ async fn repo_ancestry_without_project_marker_does_not_walk_parents() {
     fs::create_dir_all(outer.join(".agents/skills")).expect("create outer skills");
     fs::create_dir_all(cwd.join(".agents/skills")).expect("create cwd skills");
 
-    let roots = repo_agents_skill_roots(Some(Arc::clone(&LOCAL_FS)), &stack(Vec::new()), &cwd)
+    // An ambient .git above the temp directory is a valid project marker.
+    // Keep real nonempty marker discovery, but isolate this no-marker premise.
+    let marker = format!(
+        ".codex-test-project-marker-{}",
+        temp_dir
+            .path()
+            .file_name()
+            .expect("temp dir name")
+            .to_string_lossy()
+    );
+    for ancestor in cwd.ancestors() {
+        let marker_path = ancestor.join(&marker);
+        assert_eq!(
+            fs::symlink_metadata(&marker_path)
+                .err()
+                .map(|error| error.kind()),
+            Some(std::io::ErrorKind::NotFound),
+            "test marker must be absent at {}",
+            marker_path.display(),
+        );
+    }
+    let mut config = empty_config();
+    config.as_table_mut().expect("empty config table").insert(
+        "project_root_markers".to_string(),
+        toml::Value::Array(vec![toml::Value::String(marker.clone())]),
+    );
+    let config_stack = stack(vec![ConfigLayerEntry::new(
+        ConfigLayerSource::SessionFlags,
+        config,
+    )]);
+
+    let roots = repo_agents_skill_roots(Some(Arc::clone(&LOCAL_FS)), &config_stack, &cwd)
         .await
         .into_iter()
         .map(|root| root.path)

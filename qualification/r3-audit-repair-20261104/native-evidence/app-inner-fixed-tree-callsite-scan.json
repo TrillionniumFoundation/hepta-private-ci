@@ -1,0 +1,42 @@
+{
+  "job": "1a1a99f9d3c-fc05-3664",
+  "status": {
+    "at_unix_ms": 1793847173696,
+    "audit_recorded": true,
+    "automatic_retry": false,
+    "cancelled": false,
+    "exit_code": 0,
+    "job_id": "1a1a99f9d3c-fc05-3664",
+    "launch_nonce": "af1d137eb65a957705df60f45dbe0a9e",
+    "log_bytes": {
+      "stderr": {
+        "seen": 0,
+        "stored": 0
+      },
+      "stdout": {
+        "seen": 2581,
+        "stored": 2581
+      }
+    },
+    "log_errors": {
+      "stderr": null,
+      "stdout": null
+    },
+    "log_synced": {
+      "stderr": true,
+      "stdout": true
+    },
+    "log_truncated": {
+      "stderr": false,
+      "stdout": false
+    },
+    "output_complete": true,
+    "output_durable": true,
+    "state": "succeeded",
+    "terminal_publication_confirmed": true,
+    "terminal_publication_protocol": 1,
+    "timed_out": false
+  },
+  "original_stdout": "{\"schema\": \"hepta-fixed-tree-landlock-call-sites-readonly-v1\", \"host\": \"rog\", \"cwd\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/source\", \"source_tree\": \"1125d197cf798176bea6dcc2c0b0c499eb22cf44\", \"observed_at\": \"2026-11-05T02:52:53.664325+00:00\", \"commands\": [{\"argv\": [\"git\", \"rev-parse\", \"1125d197cf798176bea6dcc2c0b0c499eb22cf44^{tree}\"], \"exit_code\": 0, \"stdout\": \"1125d197cf798176bea6dcc2c0b0c499eb22cf44\\n\", \"stderr\": \"\"}, {\"argv\": [\"git\", \"grep\", \"-n\", \"-F\", \"-e\", \"--apply-seccomp-then-exec\", \"1125d197cf798176bea6dcc2c0b0c499eb22cf44\", \"--\"], \"exit_code\": 0, \"stdout\": \"1125d197cf798176bea6dcc2c0b0c499eb22cf44:codex-rs/linux-sandbox/src/launcher.rs:118:        .any(|argument| argument == \\\"--apply-seccomp-then-exec\\\")\\n1125d197cf798176bea6dcc2c0b0c499eb22cf44:codex-rs/linux-sandbox/src/launcher.rs:332:            \\\"--apply-seccomp-then-exec\\\".to_string(),\\n1125d197cf798176bea6dcc2c0b0c499eb22cf44:codex-rs/linux-sandbox/src/launcher.rs:351:                \\\"--apply-seccomp-then-exec\\\".to_string(),\\n1125d197cf798176bea6dcc2c0b0c499eb22cf44:codex-rs/linux-sandbox/src/launcher.rs:371:            \\\"--apply-seccomp-then-exec\\\".to_string(),\\n1125d197cf798176bea6dcc2c0b0c499eb22cf44:codex-rs/linux-sandbox/src/launcher.rs:394:                \\\"--apply-seccomp-then-exec\\\".to_string(),\\n1125d197cf798176bea6dcc2c0b0c499eb22cf44:codex-rs/linux-sandbox/src/launcher.rs:431:            \\\"--apply-seccomp-then-exec\\\".to_string(),\\n1125d197cf798176bea6dcc2c0b0c499eb22cf44:codex-rs/linux-sandbox/src/linux_run_main.rs:377:        panic!(\\\"--apply-seccomp-then-exec is incompatible with --use-legacy-landlock\\\");\\n1125d197cf798176bea6dcc2c0b0c499eb22cf44:codex-rs/linux-sandbox/src/linux_run_main.rs:1544:        \\\"--apply-seccomp-then-exec\\\".to_string(),\\n1125d197cf798176bea6dcc2c0b0c499eb22cf44:codex-rs/linux-sandbox/tests/suite/landlock.rs:478:            \\\"--apply-seccomp-then-exec\\\",\\n\", \"stderr\": \"\"}, {\"argv\": [\"git\", \"grep\", \"-n\", \"-E\", \"LandlockCommand[[:space:]]*\\\\{\", \"1125d197cf798176bea6dcc2c0b0c499eb22cf44\", \"--\"], \"exit_code\": 0, \"stdout\": \"1125d197cf798176bea6dcc2c0b0c499eb22cf44:codex-rs/cli/src/debug_sandbox.rs:100:    let LandlockCommand {\\n1125d197cf798176bea6dcc2c0b0c499eb22cf44:codex-rs/cli/src/lib.rs:109:pub struct LandlockCommand {\\n1125d197cf798176bea6dcc2c0b0c499eb22cf44:codex-rs/linux-sandbox/src/linux_run_main.rs:88:pub struct LandlockCommand {\\n1125d197cf798176bea6dcc2c0b0c499eb22cf44:codex-rs/linux-sandbox/src/linux_run_main.rs:160:    let LandlockCommand {\\n\", \"stderr\": \"\"}], \"source_target_environment_unchanged\": true}\n",
+  "original_stderr": ""
+}

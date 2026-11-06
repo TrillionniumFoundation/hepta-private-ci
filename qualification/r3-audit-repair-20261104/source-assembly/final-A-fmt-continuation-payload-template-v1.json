@@ -1,0 +1,218 @@
+{
+  "evidence_name": "final-A-fmt-after-reviewed-fix-b290-20261105-v1",
+  "guard": {
+    "schema": "hepta-final-A-fmt-continuation-guard-template-v1",
+    "authorized_after_full_triage": false,
+    "root_full_triage_review": "0b4205090db60b218c225db0e6d695d2bd79067d",
+    "host": "rog",
+    "initial_tree": "b2901e2beb8171f125fe5906d585fbe134802423",
+    "tested_tree": "fb9e131272f7e7a138d6c0d1af2b048b9a6ab7ff",
+    "ordinary_head": "cabcb40d36e116beaa65750e1f674c52035da785",
+    "ordinary_index": {
+      "bytes": 1222758,
+      "sha256": "c41b4d7645b2b88431ed024e9cc683e31d43fafe7290280eaf0bae656fd6a922"
+    },
+    "locks": {
+      "codex-rs/Cargo.lock": {
+        "bytes": 413768,
+        "sha256": "4a7a5535cf045089458468411e126b5f59bc6bbf34fc0deead9b0c1b8d84000a"
+      },
+      "MODULE.bazel.lock": {
+        "bytes": 1738619,
+        "sha256": "11f8a421224b9b05f32c4c14054e8868083d989fc497310c8d51e1156f189ca3"
+      }
+    },
+    "allowed_untracked_source_paths": [],
+    "publication_base_tree": "b2d7f038d6d88156bc6a4cb29c8703f69b808f29",
+    "owners": [
+      "codex-apply-patch",
+      "codex-arg0",
+      "codex-cli",
+      "codex-core",
+      "core_test_support",
+      "codex-exec-server",
+      "codex-skills-extension",
+      "codex-external-agent-migration",
+      "codex-hepta-agentd",
+      "codex-hepta-contracts",
+      "codex-hepta-supervisor",
+      "codex-linux-sandbox",
+      "codex-uds",
+      "codex-utils-pty",
+      "codex-v8-poc",
+      "codex-windows-sandbox"
+    ],
+    "commands": [
+      [
+        "just",
+        "fix",
+        "--locked",
+        "--profile",
+        "dev-small",
+        "-p",
+        "codex-apply-patch",
+        "-p",
+        "codex-arg0",
+        "-p",
+        "codex-cli",
+        "-p",
+        "codex-core",
+        "-p",
+        "core_test_support",
+        "-p",
+        "codex-exec-server",
+        "-p",
+        "codex-skills-extension",
+        "-p",
+        "codex-external-agent-migration",
+        "-p",
+        "codex-hepta-agentd",
+        "-p",
+        "codex-hepta-contracts",
+        "-p",
+        "codex-hepta-supervisor",
+        "-p",
+        "codex-linux-sandbox",
+        "-p",
+        "codex-uds",
+        "-p",
+        "codex-utils-pty",
+        "-p",
+        "codex-v8-poc",
+        "-p",
+        "codex-windows-sandbox"
+      ],
+      [
+        "just",
+        "fmt"
+      ],
+      [
+        "git",
+        "diff",
+        "--check"
+      ]
+    ],
+    "start_stage": 1,
+    "full_result_files": {
+      "review": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/windows-full-after-index-continuation-20261105-v1/full-workspace-review.json",
+        "bytes": 4625796,
+        "sha256": "8ba22d57c10ea80ac35603cdafeac538f1c13b83a83afd3cb03f792ee5b052bb"
+      },
+      "terminal": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/windows-full-after-index-continuation-20261105-v1/terminal.json",
+        "bytes": 369147,
+        "sha256": "b02cfd1fd44fc0aad5cd759608e663bc2917ce95cf3de429f7f24697d4fa7e82"
+      },
+      "metadata": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/windows-full-after-index-continuation-20261105-v1/workspace-metadata.stdout",
+        "bytes": 8163699,
+        "sha256": "3a53323eae920e2e53dcb3e334128a4aff63cfb51840793e9150d617d2c9ba18"
+      },
+      "catalog": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/windows-full-after-index-continuation-20261105-v1/full-workspace-catalog.stdout",
+        "bytes": 2846923,
+        "sha256": "37aa98bace85dfa81d9c729820de24912d913bd85c3a10b60243f4dba67e4001"
+      },
+      "junit": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/windows-full-after-index-continuation-20261105-v1/full-workspace.junit.xml",
+        "bytes": 4147101,
+        "sha256": "a64ad0f88d187caa6dd0fa7c2dedd2f816a8366bedb1a93d026c169a16cf7ac8"
+      }
+    },
+    "full_selected_count": 19506,
+    "full_actual_counts": {
+      "PASS": 19490,
+      "FAIL": 16
+    },
+    "recipe_files": [
+      {
+        "relative_path": "justfile",
+        "bytes": 7838,
+        "sha256": "74f869224eba12fc4212b043428e7f5b35b551d26f5b06161c25d8aca525f124"
+      },
+      {
+        "relative_path": "codex-rs/Cargo.toml",
+        "bytes": 22548,
+        "sha256": "5e19cb310c4bcabc082619d64a028358d5d629e26c179fb38a00432be8f54a6a"
+      },
+      {
+        "relative_path": "scripts/format.py",
+        "bytes": 16599,
+        "sha256": "8d93d7a6261bbe5f2b9fceea228154f0be29f721015d05b4f538c30076dd80b3"
+      },
+      {
+        "relative_path": "scripts/just-shell.py",
+        "bytes": 2030,
+        "sha256": "444d6b328d44abf6453b77b6acce2a0c881fc162ff30b20f352c85067797fbe9"
+      }
+    ],
+    "limits": [
+      "Authorized original final hygiene of the reviewed WIP source. Full16FAIL and25early-return omissions remain open; this is not a gate waiver or closure.",
+      "The 14 same-name host-related failures, 25 early-return cases and original full just100/controller1 remain in their original evidence; hygiene cannot change their status.",
+      "Any automatic source change stops before the next hygiene stage for root review, even if the original command succeeded.",
+      "Any original command failure, index byte change, unexpected source path, lock drift or resource guard stops without reset, cleanup, retry or skipped commands.",
+      "Linux scoped lint/format does not establish native Windows security or platform qualification.",
+      "No local A tests or ref changes follow hygiene in this runner.",
+      "This continuation executes only original fmt and two diff checks; the successful original scoped fix is bound from complete prior evidence and is not repeated.",
+      "The full tested tree remains fb9; the reviewed first-fix tree is separately b290, with the exact one-file postimage and original exit3 stop preserved."
+    ],
+    "root_automatic_source_change_review": null,
+    "reviewed_fix_tree": "b2901e2beb8171f125fe5906d585fbe134802423",
+    "reviewed_fix_postimage_blob": "58eff73120448cb122c3e6d22ea60a7ee1899844",
+    "completed_fix_root_guard": "2764c93d3e0d7067b93b5a2f31bb398a85aaf755",
+    "completed_fix_files": {
+      "status": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/final-A-hygiene-after-full-fb9-20261105-v1/scoped-fix-status.json",
+        "bytes": 4852,
+        "sha256": "d28aa777b9ae2ab25daac0f78808abba56ee6414e9d6b36a4008f0f18983a2cf"
+      },
+      "terminal": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/final-A-hygiene-after-full-fb9-20261105-v1/terminal.json",
+        "bytes": 44565,
+        "sha256": "a6e2660add23bc3ad01392c7c4d98d4be42c3d1cb2042a8d99fbe6a4e25a5bab"
+      },
+      "source_guard": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/final-A-hygiene-after-full-fb9-20261105-v1/3-scoped-fix-after-source-guard.json",
+        "bytes": 3604,
+        "sha256": "e8a8735ec1f1bdce1cfc1b2384a7b5e39083f8a310053f47ed0ea5652172673b"
+      },
+      "changes": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/final-A-hygiene-after-full-fb9-20261105-v1/scoped-fix-changes.json",
+        "bytes": 1043,
+        "sha256": "86863345d62d0c996572a6e53477d177a1e34e79ce2a90a4ce949395ae747948"
+      },
+      "patch": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/final-A-hygiene-after-full-fb9-20261105-v1/scoped-fix.patch",
+        "bytes": 875,
+        "sha256": "3041dac86b27f1a87eba186ceed5bd165c8fa004a7e44bd5ec693781b214abbb"
+      },
+      "postimage": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/final-A-hygiene-after-full-fb9-20261105-v1/postimages/scoped-fix/codex-rs/linux-sandbox/src/parent_lifecycle_tests.rs",
+        "bytes": 12754,
+        "sha256": "dc61d2f17ad7131d5c49584f95f332af9cb1ee4776960607e831e6544f727458"
+      },
+      "command": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/final-A-hygiene-after-full-fb9-20261105-v1/scoped-fix-command.json",
+        "bytes": 1402,
+        "sha256": "ffba90f96801563c2f6fbcb0d7925500f95cd934ebc7f23b6a55f12303033a4e"
+      },
+      "stdout": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/final-A-hygiene-after-full-fb9-20261105-v1/scoped-fix.stdout",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/final-A-hygiene-after-full-fb9-20261105-v1/scoped-fix.stderr",
+        "bytes": 67762,
+        "sha256": "9e2be20e7223ce2ae88925b5974dd41d8cdf6757019ec8efaf193eb385e9ad7c"
+      }
+    }
+  },
+  "root_guard_blob": null,
+  "runner": {
+    "blob": "655349b2bd6e9035de963e6c355941d00af8acfe",
+    "bytes": 14235,
+    "sha256": "42056aa0ff22d061dfa25e3d71a2857d0ee65af1b222c097a540f5b43156e1c8"
+  }
+}

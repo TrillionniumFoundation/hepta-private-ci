@@ -1,0 +1,26 @@
+{
+  "schema": "hepta.pty-progress-diagnostic-independent-review.v1",
+  "pre_reviewed_blob": "4e01d3e34fca2c34b719af5d1431a149f9c81bfb",
+  "combined_blob": "c7f12dde042d887613a28cfca7de9408cae0570e",
+  "combined_sha256": "9f9f4a9c819a406df61eed983b9bd1847c8a359e54ca4b5c30243a4901a8962c",
+  "verdict": "STATIC_PASS_DIAGNOSTIC_ONLY_FOR_DRAIN",
+  "scope": "Only the existing dropped-output test differs from the already reviewed probe fix.",
+  "other_source_byte_equal": true,
+  "checks": {
+    "original_two_backends_preserved": true,
+    "original_4MiB_payload_preserved": true,
+    "original_alarm_10s_preserved": true,
+    "receiver_drop_before_exit_wait": true,
+    "original_exit_timeout_2s_preserved": true,
+    "original_exit_code_zero_assertion_preserved": true,
+    "parent_creates_unique_owned_file_with_create_new": true,
+    "phase_reads_after_original_wait_outcome": true,
+    "cleanup_errors_do_not_mask_original_exit_result": true,
+    "no_production_change": true
+  },
+  "limitations": [
+    "Two small child file writes add diagnostic I/O inside the original budget; they do not increase that budget.",
+    "Phase markers distinguish interpreter startup from write completion, but neither identifies the ultimate cause of a timeout alone.",
+    "Original Intel exact-head execution is still required."
+  ]
+}

@@ -1,0 +1,73 @@
+{
+  "schema": "hepta-b16-runner-pure-validation-v1",
+  "at_utc": "2026-11-05T04:15:03.038711+00:00",
+  "exit_code": 0,
+  "duration_seconds": 0.7313914550013578,
+  "tests": 10,
+  "native_commands_executed": false,
+  "scope": "Only independent temporary Git repositories and Python classifier/guard tests; no Rust/Cargo/Bazel or remote host access. Synthetic oracle strings are parser controls, not native causal evidence.",
+  "initial_attempt": {
+    "observed_tests": 10,
+    "observed_pass": 9,
+    "observed_fail": 1,
+    "failure": "receipt restore_error was repr(None) string, not JSON null; exact source restoration succeeded",
+    "fix": "Serialize absent primary/restore/cleanup errors as JSON null. No source guard or physical oracle was relaxed."
+  },
+  "files": [
+    {
+      "path": "b16_guard.py",
+      "bytes": 9964,
+      "sha256": "7489a68d7537a8343d3b7a62d05ce3dfaaf2d9020035facde75f270186723d5b",
+      "blob": "9c8caa0993dac4c57c1f88e142f1e6f31b907e50",
+      "ast_parsed": true
+    },
+    {
+      "path": "b16_locks.py",
+      "bytes": 12310,
+      "sha256": "33b9dbf9893d2be615e6e80332ed047f4fc89e4c3e8bb83a88b8678c70ebf869",
+      "blob": "f484c2bb30669c3ab1a22533ca4fc9a6876b1fd2",
+      "ast_parsed": true
+    },
+    {
+      "path": "b16_native.py",
+      "bytes": 15146,
+      "sha256": "c2627d054ec82187ecc81ea7607f49684bc816617476399199678c8b5e36e821",
+      "blob": "9c98e5716b399dcecb90032d3bb55ed89933f416",
+      "ast_parsed": true
+    },
+    {
+      "path": "b16_oracles.py",
+      "bytes": 7454,
+      "sha256": "1e56eff59ddcf83895605e7545c4db38393273dc27b9b04505cb23707626f3ca",
+      "blob": "b8dce12b4a6fbd8979003ca9216522941cc04f07",
+      "ast_parsed": true
+    },
+    {
+      "path": "b16_runner.py",
+      "bytes": 13912,
+      "sha256": "566e471a18ee0b04dd7560d55dd23f2fc1e6b2d6cb4643356ed94421815f2039",
+      "blob": "6125db4e7102c226f2c2deee45459fa1202e5894",
+      "ast_parsed": true
+    },
+    {
+      "path": "build_payload.py",
+      "bytes": 11192,
+      "sha256": "35b05b1ae777ec4f3b6bd94a7fc59145c415702eb65df34f3269c1ae744258fa",
+      "blob": "bf7a3e53781fe4dbc97af905a2d87952d8c9f38c",
+      "ast_parsed": true
+    },
+    {
+      "path": "test_runner_guards.py",
+      "bytes": 9266,
+      "sha256": "74758744d7fc2f0598466661bf779756ed1f70ad7bb20a52b3d92578aa2e6781",
+      "blob": "af782ede2efd32bc4e437b341c395bfa8c826a4a",
+      "ast_parsed": true
+    }
+  ],
+  "raw": {
+    "path": "pure-guard-validation.log",
+    "bytes": 1473,
+    "sha256": "5a353c15e28db87b6dd7b231a1e317236113a6b492f2facaa91561e6b58ae4ce",
+    "blob": "7fb56af72b154d8f1bc2ecd39315f82575729f7b"
+  }
+}

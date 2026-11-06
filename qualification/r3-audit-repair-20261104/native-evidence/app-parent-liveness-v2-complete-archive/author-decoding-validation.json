@@ -1,0 +1,1332 @@
+{
+  "schema": "hepta-app-parent-liveness-v2-complete-cloud-decoding-validation-v1",
+  "native_source": "c6fbcfa0d1ba3b1556f601dc4ca3a7734328b9f7",
+  "original_job": "1a1a9cf9300-fc05-3823",
+  "native_export_original_files": 156,
+  "additional_owned_observer_original": {
+    "path": "/workspace/scratch/07dd58cc9630/ci-audit/recovered-20261105/app-parent-liveness-v2-owned-process-observations.jsonl",
+    "bytes": 78092,
+    "sha256": "2f9005b861dce5aec3e317b744d71e3d035f126dd296b31a36e8dc3b43a40cde",
+    "git_blob": "474964238e26cbef7b07a85e025c6970be02f892",
+    "jsonl_records": 169
+  },
+  "total_original_files": 157,
+  "strict_assets": [
+    {
+      "name": "driver-error.json",
+      "original": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/driver-error.json",
+        "bytes": 622668,
+        "sha256": "dbb95f8da343ac31fb816335834a83e177ac9c66d658e49ddcad9ca4cbff45b7"
+      },
+      "gzip": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-v2-frozen-export-20261105/driver-error.json.gz",
+        "bytes": 73757,
+        "sha256": "a95278c3a08129c071e1e2bfbe3696e023da95736ecfda205d646bb4b671bc02"
+      },
+      "strict_base64": true,
+      "gzip_mtime_zero": true,
+      "raw_hash_matches": true,
+      "reopened_equal": true
+    },
+    {
+      "name": "execution-request.json",
+      "original": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/execution-request.json",
+        "bytes": 91498,
+        "sha256": "f8c7d2002b7fead1a7d9ec3e1cee26b720912eedf73c1f02c496a31aef5e0053"
+      },
+      "gzip": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-v2-frozen-export-20261105/execution-request.json.gz",
+        "bytes": 20841,
+        "sha256": "22ff605137aad90123b6533d16e292ac69994e3a49eb8412b281adf222090368"
+      },
+      "strict_base64": true,
+      "gzip_mtime_zero": true,
+      "raw_hash_matches": true,
+      "reopened_equal": true
+    },
+    {
+      "name": "leaked_parent_fd-negative-catalog.stdout",
+      "original": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/leaked_parent_fd-negative-catalog.stdout",
+        "bytes": 3295538,
+        "sha256": "70e0011b3bce6ab5132d720c614bc8ab51575350e8b52232968ec42d9df49109"
+      },
+      "gzip": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-v2-frozen-export-20261105/leaked_parent_fd-negative-catalog.stdout.gz",
+        "bytes": 378718,
+        "sha256": "fa9ef2ef48e4d4398d9a1f9cfa50603d72b40af33a9a2c9b7b0eba973f7d262a"
+      },
+      "strict_base64": true,
+      "gzip_mtime_zero": true,
+      "raw_hash_matches": true,
+      "reopened_equal": true
+    },
+    {
+      "name": "leaked_parent_fd-negative-metadata-status.json",
+      "original": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/leaked_parent_fd-negative-metadata-status.json",
+        "bytes": 65748,
+        "sha256": "0335a18e8555c97dbea9030048117221fa66324fd0d77765b9705478bd4d641f"
+      },
+      "gzip": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-v2-frozen-export-20261105/leaked_parent_fd-negative-metadata-status.json.gz",
+        "bytes": 9676,
+        "sha256": "8fe8d5be6a969ec72d0663359c2b6a7c78f74e84e9f11c2b6cd6a9bbf33b4109"
+      },
+      "strict_base64": true,
+      "gzip_mtime_zero": true,
+      "raw_hash_matches": true,
+      "reopened_equal": true
+    },
+    {
+      "name": "leaked_parent_fd-negative-metadata.stdout",
+      "original": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/leaked_parent_fd-negative-metadata.stdout",
+        "bytes": 8163699,
+        "sha256": "3a53323eae920e2e53dcb3e334128a4aff63cfb51840793e9150d617d2c9ba18"
+      },
+      "gzip": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-v2-frozen-export-20261105/leaked_parent_fd-negative-metadata.stdout.gz",
+        "bytes": 596975,
+        "sha256": "2bfdeb1b46c29492c9af1a154f7a6ef9c2dca853991dc92d66704244fd23553d"
+      },
+      "strict_base64": true,
+      "gzip_mtime_zero": true,
+      "raw_hash_matches": true,
+      "reopened_equal": true
+    },
+    {
+      "name": "leaked_parent_fd-negative-normal-six-helper-build.stdout",
+      "original": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/leaked_parent_fd-negative-normal-six-helper-build.stdout",
+        "bytes": 1129294,
+        "sha256": "db8aa03e15fe091690bb4faa43d59ca9ed30ff5a8a6ba6d2428147e8ce3a12d6"
+      },
+      "gzip": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-v2-frozen-export-20261105/leaked_parent_fd-negative-normal-six-helper-build.stdout.gz",
+        "bytes": 74780,
+        "sha256": "1e3da768642adee6866cd1a17958f163ca5feb63f6d569851947735dae89b599"
+      },
+      "strict_base64": true,
+      "gzip_mtime_zero": true,
+      "raw_hash_matches": true,
+      "reopened_equal": true
+    },
+    {
+      "name": "leaked_parent_fd-negative-selection.json",
+      "original": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/leaked_parent_fd-negative-selection.json",
+        "bytes": 5903823,
+        "sha256": "9193b18cab2e600709a4f164df0e476b3b1a10b337fcc40426c9c27f1f139116"
+      },
+      "gzip": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-v2-frozen-export-20261105/leaked_parent_fd-negative-selection.json.gz",
+        "bytes": 395346,
+        "sha256": "a6e977d194e3edced76aacd039649d8e82f8b778c9ccb2557eac23c3544d336e"
+      },
+      "strict_base64": true,
+      "gzip_mtime_zero": true,
+      "raw_hash_matches": true,
+      "reopened_equal": true
+    },
+    {
+      "name": "no_exit_rejection-negative-catalog.stdout",
+      "original": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/no_exit_rejection-negative-catalog.stdout",
+        "bytes": 3295538,
+        "sha256": "d32340eb7632d30b33f6f01a827f6c871b2792f1135b1816ddf730c04a660f29"
+      },
+      "gzip": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-v2-frozen-export-20261105/no_exit_rejection-negative-catalog.stdout.gz",
+        "bytes": 378716,
+        "sha256": "8e5cd3fad6d9af104f9d3ca3cb9201146a3cef53634777541695fe160aaefcbc"
+      },
+      "strict_base64": true,
+      "gzip_mtime_zero": true,
+      "raw_hash_matches": true,
+      "reopened_equal": true
+    },
+    {
+      "name": "no_exit_rejection-negative-metadata-status.json",
+      "original": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/no_exit_rejection-negative-metadata-status.json",
+        "bytes": 65937,
+        "sha256": "4730295ac83498a8b8b844af4f2379d8466f29985b40375a310194e84da8fdb1"
+      },
+      "gzip": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-v2-frozen-export-20261105/no_exit_rejection-negative-metadata-status.json.gz",
+        "bytes": 9674,
+        "sha256": "fd946ff47d414969c65000f83ec20a53a14ad8e66d9eaa6746f14cf95d359746"
+      },
+      "strict_base64": true,
+      "gzip_mtime_zero": true,
+      "raw_hash_matches": true,
+      "reopened_equal": true
+    },
+    {
+      "name": "no_exit_rejection-negative-metadata.stdout",
+      "original": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/no_exit_rejection-negative-metadata.stdout",
+        "bytes": 8163699,
+        "sha256": "3a53323eae920e2e53dcb3e334128a4aff63cfb51840793e9150d617d2c9ba18"
+      },
+      "gzip": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-v2-frozen-export-20261105/no_exit_rejection-negative-metadata.stdout.gz",
+        "bytes": 596975,
+        "sha256": "2bfdeb1b46c29492c9af1a154f7a6ef9c2dca853991dc92d66704244fd23553d"
+      },
+      "strict_base64": true,
+      "gzip_mtime_zero": true,
+      "raw_hash_matches": true,
+      "reopened_equal": true
+    },
+    {
+      "name": "no_exit_rejection-negative-normal-six-helper-build.stdout",
+      "original": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/no_exit_rejection-negative-normal-six-helper-build.stdout",
+        "bytes": 1129294,
+        "sha256": "d2ccfdfe670a4456709a382c38caa3698b655bf769ecffba0524f370073a7253"
+      },
+      "gzip": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-v2-frozen-export-20261105/no_exit_rejection-negative-normal-six-helper-build.stdout.gz",
+        "bytes": 74762,
+        "sha256": "d43209a5c03463df77400614c9694b48d9616d65b14f15ab2524e361c37a3c27"
+      },
+      "strict_base64": true,
+      "gzip_mtime_zero": true,
+      "raw_hash_matches": true,
+      "reopened_equal": true
+    },
+    {
+      "name": "no_exit_rejection-negative-selection.json",
+      "original": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/no_exit_rejection-negative-selection.json",
+        "bytes": 5903806,
+        "sha256": "820e32684a49297444508a73c9691183dfcf89c235f79373599fdec8ff02eeab"
+      },
+      "gzip": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-v2-frozen-export-20261105/no_exit_rejection-negative-selection.json.gz",
+        "bytes": 395334,
+        "sha256": "9baa2a574191e58950fc4c227c88d4632956f7faf2a676a01ff33f4131b18fa4"
+      },
+      "strict_base64": true,
+      "gzip_mtime_zero": true,
+      "raw_hash_matches": true,
+      "reopened_equal": true
+    },
+    {
+      "name": "no_rearm-negative-catalog.stdout",
+      "original": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/no_rearm-negative-catalog.stdout",
+        "bytes": 3295538,
+        "sha256": "70e0011b3bce6ab5132d720c614bc8ab51575350e8b52232968ec42d9df49109"
+      },
+      "gzip": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-v2-frozen-export-20261105/no_rearm-negative-catalog.stdout.gz",
+        "bytes": 378718,
+        "sha256": "fa9ef2ef48e4d4398d9a1f9cfa50603d72b40af33a9a2c9b7b0eba973f7d262a"
+      },
+      "strict_base64": true,
+      "gzip_mtime_zero": true,
+      "raw_hash_matches": true,
+      "reopened_equal": true
+    },
+    {
+      "name": "no_rearm-negative-metadata.stdout",
+      "original": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/no_rearm-negative-metadata.stdout",
+        "bytes": 8163699,
+        "sha256": "3a53323eae920e2e53dcb3e334128a4aff63cfb51840793e9150d617d2c9ba18"
+      },
+      "gzip": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-v2-frozen-export-20261105/no_rearm-negative-metadata.stdout.gz",
+        "bytes": 596975,
+        "sha256": "2bfdeb1b46c29492c9af1a154f7a6ef9c2dca853991dc92d66704244fd23553d"
+      },
+      "strict_base64": true,
+      "gzip_mtime_zero": true,
+      "raw_hash_matches": true,
+      "reopened_equal": true
+    },
+    {
+      "name": "no_rearm-negative-normal-six-helper-build.stdout",
+      "original": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/no_rearm-negative-normal-six-helper-build.stdout",
+        "bytes": 1129294,
+        "sha256": "37bf1374ac1a9471365ef94ee0cabb8c4a53719cdab6d3eee7a3bee110e9a770"
+      },
+      "gzip": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-v2-frozen-export-20261105/no_rearm-negative-normal-six-helper-build.stdout.gz",
+        "bytes": 74786,
+        "sha256": "2c8ca3046811070d70b31c1be34ebc25d1d34b33c150a0c90128936b8f9c8f22"
+      },
+      "strict_base64": true,
+      "gzip_mtime_zero": true,
+      "raw_hash_matches": true,
+      "reopened_equal": true
+    },
+    {
+      "name": "no_rearm-negative-selection.json",
+      "original": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/no_rearm-negative-selection.json",
+        "bytes": 5903815,
+        "sha256": "de3e23247f3b39f67bfb3210c492ec0d6a7255dd3e77fc3ad0a728e6cd3fea7b"
+      },
+      "gzip": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-v2-frozen-export-20261105/no_rearm-negative-selection.json.gz",
+        "bytes": 395334,
+        "sha256": "66de328a4a9381542c7a54dd449babc37c48afeff4445ade25ef3e2a65140d98"
+      },
+      "strict_base64": true,
+      "gzip_mtime_zero": true,
+      "raw_hash_matches": true,
+      "reopened_equal": true
+    },
+    {
+      "name": "parent-liveness-final-eight-catalog.stdout",
+      "original": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/parent-liveness-final-eight-catalog.stdout",
+        "bytes": 3295377,
+        "sha256": "e35bd57f1f6e7f89a72e55392659478a628fd10e5061b1fad2f5649272754e30"
+      },
+      "gzip": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-v2-frozen-export-20261105/parent-liveness-final-eight-catalog.stdout.gz",
+        "bytes": 378737,
+        "sha256": "2094375f18e2530ca70e92870f680d48ff10c600925df380e32c4ed0753c6a86"
+      },
+      "strict_base64": true,
+      "gzip_mtime_zero": true,
+      "raw_hash_matches": true,
+      "reopened_equal": true
+    },
+    {
+      "name": "parent-liveness-final-eight-metadata-status.json",
+      "original": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/parent-liveness-final-eight-metadata-status.json",
+        "bytes": 66126,
+        "sha256": "c05f651ca2c48ba1f95948d25593892e5a2df9e54ed2fc1978da0035f66320cf"
+      },
+      "gzip": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-v2-frozen-export-20261105/parent-liveness-final-eight-metadata-status.json.gz",
+        "bytes": 9659,
+        "sha256": "13030566a457905adc7fe65f11c0b03403865306219317bcea1e2c175b2f67b5"
+      },
+      "strict_base64": true,
+      "gzip_mtime_zero": true,
+      "raw_hash_matches": true,
+      "reopened_equal": true
+    },
+    {
+      "name": "parent-liveness-final-eight-metadata.stdout",
+      "original": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/parent-liveness-final-eight-metadata.stdout",
+        "bytes": 8163699,
+        "sha256": "3a53323eae920e2e53dcb3e334128a4aff63cfb51840793e9150d617d2c9ba18"
+      },
+      "gzip": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-v2-frozen-export-20261105/parent-liveness-final-eight-metadata.stdout.gz",
+        "bytes": 596975,
+        "sha256": "2bfdeb1b46c29492c9af1a154f7a6ef9c2dca853991dc92d66704244fd23553d"
+      },
+      "strict_base64": true,
+      "gzip_mtime_zero": true,
+      "raw_hash_matches": true,
+      "reopened_equal": true
+    },
+    {
+      "name": "parent-liveness-final-eight-normal-six-helper-build.stdout",
+      "original": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/parent-liveness-final-eight-normal-six-helper-build.stdout",
+        "bytes": 1129294,
+        "sha256": "b0db284b8f275434fbdaca73b5245ee7d42429815fa01cb880234c69dfa00de7"
+      },
+      "gzip": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-v2-frozen-export-20261105/parent-liveness-final-eight-normal-six-helper-build.stdout.gz",
+        "bytes": 74751,
+        "sha256": "cb154b1f0cfc699419a9b5178f8d2b0dab9c05d25cc0e0cfd796a2d3cb5b09c1"
+      },
+      "strict_base64": true,
+      "gzip_mtime_zero": true,
+      "raw_hash_matches": true,
+      "reopened_equal": true
+    },
+    {
+      "name": "parent-liveness-final-eight-selection.json",
+      "original": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/parent-liveness-final-eight-selection.json",
+        "bytes": 5905981,
+        "sha256": "f8953fd5b340703415a8d1659a81be4d7b4c7679212412d182e951ed9c972f8d"
+      },
+      "gzip": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-v2-frozen-export-20261105/parent-liveness-final-eight-selection.json.gz",
+        "bytes": 395637,
+        "sha256": "9d635d23ecaf73c51233120eb15ed651e51d3540bac2263a1647565f751c8de5"
+      },
+      "strict_base64": true,
+      "gzip_mtime_zero": true,
+      "raw_hash_matches": true,
+      "reopened_equal": true
+    },
+    {
+      "name": "complete-small-originals.json",
+      "original": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-v2-frozen-export-20261105/complete-small-originals.json",
+        "bytes": 887161,
+        "sha256": "d5921f17f6081713b69992aab28de3ad3f5cb390c4d5775b14572b73f81ea0fb"
+      },
+      "gzip": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-v2-frozen-export-20261105/complete-small-originals.json.gz",
+        "bytes": 122213,
+        "sha256": "b82ccccd5d83acd4b9ac964d4cfb5fb289819b8b19814db6d77bda5952204e65"
+      },
+      "strict_base64": true,
+      "gzip_mtime_zero": true,
+      "raw_hash_matches": true,
+      "reopened_equal": true
+    }
+  ],
+  "originals": [
+    {
+      "name": "driver-error.json",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/driver-error.json",
+      "bytes": 622668,
+      "sha256": "dbb95f8da343ac31fb816335834a83e177ac9c66d658e49ddcad9ca4cbff45b7"
+    },
+    {
+      "name": "execution-request.json",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/execution-request.json",
+      "bytes": 91498,
+      "sha256": "f8c7d2002b7fead1a7d9ec3e1cee26b720912eedf73c1f02c496a31aef5e0053"
+    },
+    {
+      "name": "leaked_parent_fd-negative-catalog.stdout",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/leaked_parent_fd-negative-catalog.stdout",
+      "bytes": 3295538,
+      "sha256": "70e0011b3bce6ab5132d720c614bc8ab51575350e8b52232968ec42d9df49109"
+    },
+    {
+      "name": "leaked_parent_fd-negative-metadata-status.json",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/leaked_parent_fd-negative-metadata-status.json",
+      "bytes": 65748,
+      "sha256": "0335a18e8555c97dbea9030048117221fa66324fd0d77765b9705478bd4d641f"
+    },
+    {
+      "name": "leaked_parent_fd-negative-metadata.stdout",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/leaked_parent_fd-negative-metadata.stdout",
+      "bytes": 8163699,
+      "sha256": "3a53323eae920e2e53dcb3e334128a4aff63cfb51840793e9150d617d2c9ba18"
+    },
+    {
+      "name": "leaked_parent_fd-negative-normal-six-helper-build.stdout",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/leaked_parent_fd-negative-normal-six-helper-build.stdout",
+      "bytes": 1129294,
+      "sha256": "db8aa03e15fe091690bb4faa43d59ca9ed30ff5a8a6ba6d2428147e8ce3a12d6"
+    },
+    {
+      "name": "leaked_parent_fd-negative-selection.json",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/leaked_parent_fd-negative-selection.json",
+      "bytes": 5903823,
+      "sha256": "9193b18cab2e600709a4f164df0e476b3b1a10b337fcc40426c9c27f1f139116"
+    },
+    {
+      "name": "no_exit_rejection-negative-catalog.stdout",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/no_exit_rejection-negative-catalog.stdout",
+      "bytes": 3295538,
+      "sha256": "d32340eb7632d30b33f6f01a827f6c871b2792f1135b1816ddf730c04a660f29"
+    },
+    {
+      "name": "no_exit_rejection-negative-metadata-status.json",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/no_exit_rejection-negative-metadata-status.json",
+      "bytes": 65937,
+      "sha256": "4730295ac83498a8b8b844af4f2379d8466f29985b40375a310194e84da8fdb1"
+    },
+    {
+      "name": "no_exit_rejection-negative-metadata.stdout",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/no_exit_rejection-negative-metadata.stdout",
+      "bytes": 8163699,
+      "sha256": "3a53323eae920e2e53dcb3e334128a4aff63cfb51840793e9150d617d2c9ba18"
+    },
+    {
+      "name": "no_exit_rejection-negative-normal-six-helper-build.stdout",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/no_exit_rejection-negative-normal-six-helper-build.stdout",
+      "bytes": 1129294,
+      "sha256": "d2ccfdfe670a4456709a382c38caa3698b655bf769ecffba0524f370073a7253"
+    },
+    {
+      "name": "no_exit_rejection-negative-selection.json",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/no_exit_rejection-negative-selection.json",
+      "bytes": 5903806,
+      "sha256": "820e32684a49297444508a73c9691183dfcf89c235f79373599fdec8ff02eeab"
+    },
+    {
+      "name": "no_rearm-negative-catalog.stdout",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/no_rearm-negative-catalog.stdout",
+      "bytes": 3295538,
+      "sha256": "70e0011b3bce6ab5132d720c614bc8ab51575350e8b52232968ec42d9df49109"
+    },
+    {
+      "name": "no_rearm-negative-metadata.stdout",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/no_rearm-negative-metadata.stdout",
+      "bytes": 8163699,
+      "sha256": "3a53323eae920e2e53dcb3e334128a4aff63cfb51840793e9150d617d2c9ba18"
+    },
+    {
+      "name": "no_rearm-negative-normal-six-helper-build.stdout",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/no_rearm-negative-normal-six-helper-build.stdout",
+      "bytes": 1129294,
+      "sha256": "37bf1374ac1a9471365ef94ee0cabb8c4a53719cdab6d3eee7a3bee110e9a770"
+    },
+    {
+      "name": "no_rearm-negative-selection.json",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/no_rearm-negative-selection.json",
+      "bytes": 5903815,
+      "sha256": "de3e23247f3b39f67bfb3210c492ec0d6a7255dd3e77fc3ad0a728e6cd3fea7b"
+    },
+    {
+      "name": "parent-liveness-final-eight-catalog.stdout",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/parent-liveness-final-eight-catalog.stdout",
+      "bytes": 3295377,
+      "sha256": "e35bd57f1f6e7f89a72e55392659478a628fd10e5061b1fad2f5649272754e30"
+    },
+    {
+      "name": "parent-liveness-final-eight-metadata-status.json",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/parent-liveness-final-eight-metadata-status.json",
+      "bytes": 66126,
+      "sha256": "c05f651ca2c48ba1f95948d25593892e5a2df9e54ed2fc1978da0035f66320cf"
+    },
+    {
+      "name": "parent-liveness-final-eight-metadata.stdout",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/parent-liveness-final-eight-metadata.stdout",
+      "bytes": 8163699,
+      "sha256": "3a53323eae920e2e53dcb3e334128a4aff63cfb51840793e9150d617d2c9ba18"
+    },
+    {
+      "name": "parent-liveness-final-eight-normal-six-helper-build.stdout",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/parent-liveness-final-eight-normal-six-helper-build.stdout",
+      "bytes": 1129294,
+      "sha256": "b0db284b8f275434fbdaca73b5245ee7d42429815fa01cb880234c69dfa00de7"
+    },
+    {
+      "name": "parent-liveness-final-eight-selection.json",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/parent-liveness-final-eight-selection.json",
+      "bytes": 5905981,
+      "sha256": "f8953fd5b340703415a8d1659a81be4d7b4c7679212412d182e951ed9c972f8d"
+    },
+    {
+      "name": "1-initial-source-guard.json",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/1-initial-source-guard.json",
+      "bytes": 962,
+      "sha256": "00c3beff0ceb47813f1c3ade44102b0ff3a839e6134779b9086f57ee16e24fab"
+    },
+    {
+      "name": "10-no_exit_rejection-negative-catalog-before-source-guard.json",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/10-no_exit_rejection-negative-catalog-before-source-guard.json",
+      "bytes": 962,
+      "sha256": "245c2b92c8fe600f974a2dae5236aade3500a102ce42418e5bf18d5678b106c9"
+    },
+    {
+      "name": "11-no_exit_rejection-negative-catalog-after-source-guard.json",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/11-no_exit_rejection-negative-catalog-after-source-guard.json",
+      "bytes": 962,
+      "sha256": "245c2b92c8fe600f974a2dae5236aade3500a102ce42418e5bf18d5678b106c9"
+    },
+    {
+      "name": "12-no_exit_rejection-negative-before-source-guard.json",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/12-no_exit_rejection-negative-before-source-guard.json",
+      "bytes": 962,
+      "sha256": "245c2b92c8fe600f974a2dae5236aade3500a102ce42418e5bf18d5678b106c9"
+    },
+    {
+      "name": "13-no_exit_rejection-negative-after-source-guard.json",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/13-no_exit_rejection-negative-after-source-guard.json",
+      "bytes": 962,
+      "sha256": "245c2b92c8fe600f974a2dae5236aade3500a102ce42418e5bf18d5678b106c9"
+    },
+    {
+      "name": "14-no_exit_rejection-finally-restore-eligible-source-guard.json",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/14-no_exit_rejection-finally-restore-eligible-source-guard.json",
+      "bytes": 962,
+      "sha256": "245c2b92c8fe600f974a2dae5236aade3500a102ce42418e5bf18d5678b106c9"
+    },
+    {
+      "name": "15-no_exit_rejection-restore-positive-before-source-guard.json",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/15-no_exit_rejection-restore-positive-before-source-guard.json",
+      "bytes": 962,
+      "sha256": "245c2b92c8fe600f974a2dae5236aade3500a102ce42418e5bf18d5678b106c9"
+    },
+    {
+      "name": "16-no_exit_rejection-restore-positive-after-source-guard.json",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/16-no_exit_rejection-restore-positive-after-source-guard.json",
+      "bytes": 962,
+      "sha256": "089b933c4a8ee89bd47146771830c48284e6945a9a8ece94cfc40e4624a1208e"
+    },
+    {
+      "name": "17-no_rearm-apply-negative-before-source-guard.json",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/17-no_rearm-apply-negative-before-source-guard.json",
+      "bytes": 962,
+      "sha256": "089b933c4a8ee89bd47146771830c48284e6945a9a8ece94cfc40e4624a1208e"
+    },
+    {
+      "name": "18-no_rearm-apply-negative-after-source-guard.json",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/18-no_rearm-apply-negative-after-source-guard.json",
+      "bytes": 962,
+      "sha256": "1a05ae6f4898c781b9ec14013940f6f4c6cc4413d9526ab2e047aeee287a46c6"
+    },
+    {
+      "name": "19-no_rearm-negative-normal-six-helper-build-before-source-guard.json",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/19-no_rearm-negative-normal-six-helper-build-before-source-guard.json",
+      "bytes": 962,
+      "sha256": "1a05ae6f4898c781b9ec14013940f6f4c6cc4413d9526ab2e047aeee287a46c6"
+    },
+    {
+      "name": "2-apply-owned-libtest-output-separator-before-source-guard.json",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/2-apply-owned-libtest-output-separator-before-source-guard.json",
+      "bytes": 962,
+      "sha256": "00c3beff0ceb47813f1c3ade44102b0ff3a839e6134779b9086f57ee16e24fab"
+    },
+    {
+      "name": "20-no_rearm-negative-normal-six-helper-build-after-source-guard.json",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/20-no_rearm-negative-normal-six-helper-build-after-source-guard.json",
+      "bytes": 962,
+      "sha256": "1a05ae6f4898c781b9ec14013940f6f4c6cc4413d9526ab2e047aeee287a46c6"
+    },
+    {
+      "name": "21-no_rearm-negative-metadata-before-source-guard.json",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/21-no_rearm-negative-metadata-before-source-guard.json",
+      "bytes": 962,
+      "sha256": "1a05ae6f4898c781b9ec14013940f6f4c6cc4413d9526ab2e047aeee287a46c6"
+    },
+    {
+      "name": "22-no_rearm-negative-metadata-after-source-guard.json",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/22-no_rearm-negative-metadata-after-source-guard.json",
+      "bytes": 962,
+      "sha256": "1a05ae6f4898c781b9ec14013940f6f4c6cc4413d9526ab2e047aeee287a46c6"
+    },
+    {
+      "name": "23-no_rearm-negative-catalog-before-source-guard.json",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/23-no_rearm-negative-catalog-before-source-guard.json",
+      "bytes": 962,
+      "sha256": "1a05ae6f4898c781b9ec14013940f6f4c6cc4413d9526ab2e047aeee287a46c6"
+    },
+    {
+      "name": "24-no_rearm-negative-catalog-after-source-guard.json",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/24-no_rearm-negative-catalog-after-source-guard.json",
+      "bytes": 962,
+      "sha256": "1a05ae6f4898c781b9ec14013940f6f4c6cc4413d9526ab2e047aeee287a46c6"
+    },
+    {
+      "name": "25-no_rearm-negative-before-source-guard.json",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/25-no_rearm-negative-before-source-guard.json",
+      "bytes": 962,
+      "sha256": "1a05ae6f4898c781b9ec14013940f6f4c6cc4413d9526ab2e047aeee287a46c6"
+    },
+    {
+      "name": "26-no_rearm-negative-after-source-guard.json",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/26-no_rearm-negative-after-source-guard.json",
+      "bytes": 962,
+      "sha256": "1a05ae6f4898c781b9ec14013940f6f4c6cc4413d9526ab2e047aeee287a46c6"
+    },
+    {
+      "name": "27-no_rearm-finally-restore-eligible-source-guard.json",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/27-no_rearm-finally-restore-eligible-source-guard.json",
+      "bytes": 962,
+      "sha256": "1a05ae6f4898c781b9ec14013940f6f4c6cc4413d9526ab2e047aeee287a46c6"
+    },
+    {
+      "name": "28-no_rearm-restore-positive-before-source-guard.json",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/28-no_rearm-restore-positive-before-source-guard.json",
+      "bytes": 962,
+      "sha256": "1a05ae6f4898c781b9ec14013940f6f4c6cc4413d9526ab2e047aeee287a46c6"
+    },
+    {
+      "name": "29-no_rearm-restore-positive-after-source-guard.json",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/29-no_rearm-restore-positive-after-source-guard.json",
+      "bytes": 962,
+      "sha256": "089b933c4a8ee89bd47146771830c48284e6945a9a8ece94cfc40e4624a1208e"
+    },
+    {
+      "name": "3-apply-owned-libtest-output-separator-after-source-guard.json",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/3-apply-owned-libtest-output-separator-after-source-guard.json",
+      "bytes": 962,
+      "sha256": "089b933c4a8ee89bd47146771830c48284e6945a9a8ece94cfc40e4624a1208e"
+    },
+    {
+      "name": "30-leaked_parent_fd-apply-negative-before-source-guard.json",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/30-leaked_parent_fd-apply-negative-before-source-guard.json",
+      "bytes": 962,
+      "sha256": "089b933c4a8ee89bd47146771830c48284e6945a9a8ece94cfc40e4624a1208e"
+    },
+    {
+      "name": "31-leaked_parent_fd-apply-negative-after-source-guard.json",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/31-leaked_parent_fd-apply-negative-after-source-guard.json",
+      "bytes": 962,
+      "sha256": "62e583fbf24417876009124015c2d7faa3482cf172898e576937a621165ff3fe"
+    },
+    {
+      "name": "32-leaked_parent_fd-negative-normal-six-helper-build-before-source-guard.json",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/32-leaked_parent_fd-negative-normal-six-helper-build-before-source-guard.json",
+      "bytes": 962,
+      "sha256": "62e583fbf24417876009124015c2d7faa3482cf172898e576937a621165ff3fe"
+    },
+    {
+      "name": "33-leaked_parent_fd-negative-normal-six-helper-build-after-source-guard.json",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/33-leaked_parent_fd-negative-normal-six-helper-build-after-source-guard.json",
+      "bytes": 962,
+      "sha256": "62e583fbf24417876009124015c2d7faa3482cf172898e576937a621165ff3fe"
+    },
+    {
+      "name": "34-leaked_parent_fd-negative-metadata-before-source-guard.json",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/34-leaked_parent_fd-negative-metadata-before-source-guard.json",
+      "bytes": 962,
+      "sha256": "62e583fbf24417876009124015c2d7faa3482cf172898e576937a621165ff3fe"
+    },
+    {
+      "name": "35-leaked_parent_fd-negative-metadata-after-source-guard.json",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/35-leaked_parent_fd-negative-metadata-after-source-guard.json",
+      "bytes": 962,
+      "sha256": "62e583fbf24417876009124015c2d7faa3482cf172898e576937a621165ff3fe"
+    },
+    {
+      "name": "36-leaked_parent_fd-negative-catalog-before-source-guard.json",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/36-leaked_parent_fd-negative-catalog-before-source-guard.json",
+      "bytes": 962,
+      "sha256": "62e583fbf24417876009124015c2d7faa3482cf172898e576937a621165ff3fe"
+    },
+    {
+      "name": "37-leaked_parent_fd-negative-catalog-after-source-guard.json",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/37-leaked_parent_fd-negative-catalog-after-source-guard.json",
+      "bytes": 962,
+      "sha256": "62e583fbf24417876009124015c2d7faa3482cf172898e576937a621165ff3fe"
+    },
+    {
+      "name": "38-leaked_parent_fd-negative-before-source-guard.json",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/38-leaked_parent_fd-negative-before-source-guard.json",
+      "bytes": 962,
+      "sha256": "62e583fbf24417876009124015c2d7faa3482cf172898e576937a621165ff3fe"
+    },
+    {
+      "name": "39-leaked_parent_fd-negative-after-source-guard.json",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/39-leaked_parent_fd-negative-after-source-guard.json",
+      "bytes": 962,
+      "sha256": "62e583fbf24417876009124015c2d7faa3482cf172898e576937a621165ff3fe"
+    },
+    {
+      "name": "4-no_exit_rejection-apply-negative-before-source-guard.json",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/4-no_exit_rejection-apply-negative-before-source-guard.json",
+      "bytes": 962,
+      "sha256": "089b933c4a8ee89bd47146771830c48284e6945a9a8ece94cfc40e4624a1208e"
+    },
+    {
+      "name": "40-leaked_parent_fd-finally-restore-eligible-source-guard.json",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/40-leaked_parent_fd-finally-restore-eligible-source-guard.json",
+      "bytes": 962,
+      "sha256": "62e583fbf24417876009124015c2d7faa3482cf172898e576937a621165ff3fe"
+    },
+    {
+      "name": "41-leaked_parent_fd-restore-positive-before-source-guard.json",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/41-leaked_parent_fd-restore-positive-before-source-guard.json",
+      "bytes": 962,
+      "sha256": "62e583fbf24417876009124015c2d7faa3482cf172898e576937a621165ff3fe"
+    },
+    {
+      "name": "42-leaked_parent_fd-restore-positive-after-source-guard.json",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/42-leaked_parent_fd-restore-positive-after-source-guard.json",
+      "bytes": 962,
+      "sha256": "089b933c4a8ee89bd47146771830c48284e6945a9a8ece94cfc40e4624a1208e"
+    },
+    {
+      "name": "43-parent-liveness-final-eight-normal-six-helper-build-before-source-guard.json",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/43-parent-liveness-final-eight-normal-six-helper-build-before-source-guard.json",
+      "bytes": 962,
+      "sha256": "089b933c4a8ee89bd47146771830c48284e6945a9a8ece94cfc40e4624a1208e"
+    },
+    {
+      "name": "44-parent-liveness-final-eight-normal-six-helper-build-after-source-guard.json",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/44-parent-liveness-final-eight-normal-six-helper-build-after-source-guard.json",
+      "bytes": 962,
+      "sha256": "089b933c4a8ee89bd47146771830c48284e6945a9a8ece94cfc40e4624a1208e"
+    },
+    {
+      "name": "45-parent-liveness-final-eight-metadata-before-source-guard.json",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/45-parent-liveness-final-eight-metadata-before-source-guard.json",
+      "bytes": 962,
+      "sha256": "089b933c4a8ee89bd47146771830c48284e6945a9a8ece94cfc40e4624a1208e"
+    },
+    {
+      "name": "46-parent-liveness-final-eight-metadata-after-source-guard.json",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/46-parent-liveness-final-eight-metadata-after-source-guard.json",
+      "bytes": 962,
+      "sha256": "089b933c4a8ee89bd47146771830c48284e6945a9a8ece94cfc40e4624a1208e"
+    },
+    {
+      "name": "47-parent-liveness-final-eight-catalog-before-source-guard.json",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/47-parent-liveness-final-eight-catalog-before-source-guard.json",
+      "bytes": 962,
+      "sha256": "089b933c4a8ee89bd47146771830c48284e6945a9a8ece94cfc40e4624a1208e"
+    },
+    {
+      "name": "48-parent-liveness-final-eight-catalog-after-source-guard.json",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/48-parent-liveness-final-eight-catalog-after-source-guard.json",
+      "bytes": 962,
+      "sha256": "089b933c4a8ee89bd47146771830c48284e6945a9a8ece94cfc40e4624a1208e"
+    },
+    {
+      "name": "49-parent-liveness-final-eight-before-source-guard.json",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/49-parent-liveness-final-eight-before-source-guard.json",
+      "bytes": 962,
+      "sha256": "089b933c4a8ee89bd47146771830c48284e6945a9a8ece94cfc40e4624a1208e"
+    },
+    {
+      "name": "5-no_exit_rejection-apply-negative-after-source-guard.json",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/5-no_exit_rejection-apply-negative-after-source-guard.json",
+      "bytes": 962,
+      "sha256": "245c2b92c8fe600f974a2dae5236aade3500a102ce42418e5bf18d5678b106c9"
+    },
+    {
+      "name": "50-parent-liveness-final-eight-after-source-guard.json",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/50-parent-liveness-final-eight-after-source-guard.json",
+      "bytes": 962,
+      "sha256": "089b933c4a8ee89bd47146771830c48284e6945a9a8ece94cfc40e4624a1208e"
+    },
+    {
+      "name": "6-no_exit_rejection-negative-normal-six-helper-build-before-source-guard.json",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/6-no_exit_rejection-negative-normal-six-helper-build-before-source-guard.json",
+      "bytes": 962,
+      "sha256": "245c2b92c8fe600f974a2dae5236aade3500a102ce42418e5bf18d5678b106c9"
+    },
+    {
+      "name": "7-no_exit_rejection-negative-normal-six-helper-build-after-source-guard.json",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/7-no_exit_rejection-negative-normal-six-helper-build-after-source-guard.json",
+      "bytes": 962,
+      "sha256": "245c2b92c8fe600f974a2dae5236aade3500a102ce42418e5bf18d5678b106c9"
+    },
+    {
+      "name": "8-no_exit_rejection-negative-metadata-before-source-guard.json",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/8-no_exit_rejection-negative-metadata-before-source-guard.json",
+      "bytes": 962,
+      "sha256": "245c2b92c8fe600f974a2dae5236aade3500a102ce42418e5bf18d5678b106c9"
+    },
+    {
+      "name": "9-no_exit_rejection-negative-metadata-after-source-guard.json",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/9-no_exit_rejection-negative-metadata-after-source-guard.json",
+      "bytes": 962,
+      "sha256": "245c2b92c8fe600f974a2dae5236aade3500a102ce42418e5bf18d5678b106c9"
+    },
+    {
+      "name": "apply-owned-libtest-output-separator-apply.json",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/apply-owned-libtest-output-separator-apply.json",
+      "bytes": 533,
+      "sha256": "74c06f67dd785f4d062170ceb42ee69992ad7f440e72011059a09b09d69b1aff"
+    },
+    {
+      "name": "driver-error.parts.json",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/driver-error.parts.json",
+      "bytes": 4857,
+      "sha256": "efac25fe2d01c6f5a02a453056765da3e1cef90ac9b6698355b3f40329308466"
+    },
+    {
+      "name": "leaked_parent_fd-apply-negative-apply.json",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/leaked_parent_fd-apply-negative-apply.json",
+      "bytes": 521,
+      "sha256": "60a0dc73f5bda69ae5b5f8a28a9aadbcc72f657e1a2295f851a9e84e1012265d"
+    },
+    {
+      "name": "leaked_parent_fd-causal-negative.json",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/leaked_parent_fd-causal-negative.json",
+      "bytes": 2980,
+      "sha256": "452eaf0e7d7f0076046510d8d00868ab18b522606838f36578411b9932ea06d6"
+    },
+    {
+      "name": "leaked_parent_fd-finally-restore.json",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/leaked_parent_fd-finally-restore.json",
+      "bytes": 588,
+      "sha256": "c93db233ecfb9c6d9bb29977b3f834f51777b1e297df9440394d7cc9750e90f5"
+    },
+    {
+      "name": "leaked_parent_fd-negative-catalog-command.json",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/leaked_parent_fd-negative-catalog-command.json",
+      "bytes": 630,
+      "sha256": "25b34327f857675ffe7ce9b371af0e00b3d23908e0a0392668e3c40a0362c915"
+    },
+    {
+      "name": "leaked_parent_fd-negative-catalog-status.json",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/leaked_parent_fd-negative-catalog-status.json",
+      "bytes": 27672,
+      "sha256": "bf40bfada2e7c0538b2a4e091036b66eb929165f72515560e28a419428164e42"
+    },
+    {
+      "name": "leaked_parent_fd-negative-catalog.stderr",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/leaked_parent_fd-negative-catalog.stderr",
+      "bytes": 11186,
+      "sha256": "052a28c73fc77a903bf0bdbe104fff3216a83b9b57accd38c0ebfa517cd1ad2b"
+    },
+    {
+      "name": "leaked_parent_fd-negative-command.json",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/leaked_parent_fd-negative-command.json",
+      "bytes": 682,
+      "sha256": "d437f2e5e90ddebf7efc8be60f60bd7580c0161531caad7e7140ad5e9b5b2ed2"
+    },
+    {
+      "name": "leaked_parent_fd-negative-feature-graph-binding.json",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/leaked_parent_fd-negative-feature-graph-binding.json",
+      "bytes": 932,
+      "sha256": "b2b36c454af09eab957c0fca393ea8c492a14c95d6c0c62964afdd4e8a5050b9"
+    },
+    {
+      "name": "leaked_parent_fd-negative-metadata-command.json",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/leaked_parent_fd-negative-metadata-command.json",
+      "bytes": 458,
+      "sha256": "fbf8b70a1931ebe02278e8bd59c54e52aa81835feba4cc6edff800077866df0c"
+    },
+    {
+      "name": "leaked_parent_fd-negative-metadata.stderr",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/leaked_parent_fd-negative-metadata.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "leaked_parent_fd-negative-normal-six-helper-build-command.json",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/leaked_parent_fd-negative-normal-six-helper-build-command.json",
+      "bytes": 919,
+      "sha256": "8203b22a4fb596c670eb6b47b3d026bcf504d3e0c9c5d7bb713c9b2d762bee38"
+    },
+    {
+      "name": "leaked_parent_fd-negative-normal-six-helper-build-status.json",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/leaked_parent_fd-negative-normal-six-helper-build-status.json",
+      "bytes": 11485,
+      "sha256": "2440f01f1a1a07cd1c48375892b0de4b98aab72f2ae7b1bc79e55adf1731c6a0"
+    },
+    {
+      "name": "leaked_parent_fd-negative-normal-six-helper-build.stderr",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/leaked_parent_fd-negative-normal-six-helper-build.stderr",
+      "bytes": 3041,
+      "sha256": "a13f4455213fcd9c1a12742d3004722f47b5ad9a00bbcc8a11b0043275955742"
+    },
+    {
+      "name": "leaked_parent_fd-negative-normal-six-helper-receipt.json",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/leaked_parent_fd-negative-normal-six-helper-receipt.json",
+      "bytes": 7443,
+      "sha256": "e5ec37882c410c5cdc8f60d782e73cfd768da085fda4bba36c65eb2bead90181"
+    },
+    {
+      "name": "leaked_parent_fd-negative-review.json",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/leaked_parent_fd-negative-review.json",
+      "bytes": 35920,
+      "sha256": "6a6f9a226fd8fc3c4e92224fbd9c1094b0ec93f545de1309b88b24dda85d98c0"
+    },
+    {
+      "name": "leaked_parent_fd-negative-review.parts.json",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/leaked_parent_fd-negative-review.parts.json",
+      "bytes": 629,
+      "sha256": "425bd5cd395df5734af2f0f867a33bbb584f91a50ffecdcf485478c56b5c2693"
+    },
+    {
+      "name": "leaked_parent_fd-negative-selection.parts.json",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/leaked_parent_fd-negative-selection.parts.json",
+      "bytes": 44698,
+      "sha256": "32a5798906258b006b6c5e54875d9a971779c5a1493984dc722517105e46b94f"
+    },
+    {
+      "name": "leaked_parent_fd-negative-status.json",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/leaked_parent_fd-negative-status.json",
+      "bytes": 1437,
+      "sha256": "4c5a916a6a9dab5a0622561296ecdca9ac618b57fd772c0af6dabb828b818d3b"
+    },
+    {
+      "name": "leaked_parent_fd-negative.junit.xml",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/leaked_parent_fd-negative.junit.xml",
+      "bytes": 3490,
+      "sha256": "00643a8d9b9d055bae60e36e8f06065477f69584830fd8fd270f0ecfda68864d"
+    },
+    {
+      "name": "leaked_parent_fd-negative.log",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/leaked_parent_fd-negative.log",
+      "bytes": 11206,
+      "sha256": "24cb2e10a7dbc0a8fb2cae0f63068ea311ea067eaee1da60d4b0cb4365353d14"
+    },
+    {
+      "name": "leaked_parent_fd-restore-positive-apply.json",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/leaked_parent_fd-restore-positive-apply.json",
+      "bytes": 523,
+      "sha256": "3c582f4b44f07f9be701da25a6bed0eecbbb9ca0649b04846341f6c5e9a4d2c5"
+    },
+    {
+      "name": "native-host.json",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/native-host.json",
+      "bytes": 610,
+      "sha256": "8796ab6563a78cd3006c1c107a2a6540d0124acb390fe7b67b2eaa97bdffce42"
+    },
+    {
+      "name": "no_exit_rejection-apply-negative-apply.json",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/no_exit_rejection-apply-negative-apply.json",
+      "bytes": 522,
+      "sha256": "84fb988ff95d4bd72fb8becf4387c3e9ba8168e10007bd25e0c95988d7df12a7"
+    },
+    {
+      "name": "no_exit_rejection-causal-negative.json",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/no_exit_rejection-causal-negative.json",
+      "bytes": 1804,
+      "sha256": "ba2740b08bd4939799b27c4da986604169dc79a18f7780b4e821f623cac338ca"
+    },
+    {
+      "name": "no_exit_rejection-finally-restore.json",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/no_exit_rejection-finally-restore.json",
+      "bytes": 588,
+      "sha256": "7cf370b058844543cb46e120285c0850d446b4a2b41e8c50589cfa7e4e470ffd"
+    },
+    {
+      "name": "no_exit_rejection-negative-catalog-command.json",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/no_exit_rejection-negative-catalog-command.json",
+      "bytes": 621,
+      "sha256": "15356573d0598dd87bf0c3503e8b79823f46298bdaabf6aa41a85f75f844fa33"
+    },
+    {
+      "name": "no_exit_rejection-negative-catalog-status.json",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/no_exit_rejection-negative-catalog-status.json",
+      "bytes": 27743,
+      "sha256": "7273ae4d578b8dc340c1ca42455d38a17926c7410b6c538c8d2c4144e790d72a"
+    },
+    {
+      "name": "no_exit_rejection-negative-catalog.stderr",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/no_exit_rejection-negative-catalog.stderr",
+      "bytes": 11992,
+      "sha256": "e1a1cc1340c3d9053f5a3bbb88c9b5a8443b5bef8873407beb38ed2ea9ff7c1f"
+    },
+    {
+      "name": "no_exit_rejection-negative-command.json",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/no_exit_rejection-negative-command.json",
+      "bytes": 673,
+      "sha256": "4a132f830fd86ec01b166607fd23d67b6772bb3bc0cd7e77cd676efed2259b4d"
+    },
+    {
+      "name": "no_exit_rejection-negative-feature-graph-binding.json",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/no_exit_rejection-negative-feature-graph-binding.json",
+      "bytes": 933,
+      "sha256": "0587b7193a12c79e40edc45e223880216c42c9f2978387ccc78e629eb24fe953"
+    },
+    {
+      "name": "no_exit_rejection-negative-metadata-command.json",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/no_exit_rejection-negative-metadata-command.json",
+      "bytes": 458,
+      "sha256": "b04e13686ce553eca2a458b256f139658d14efb56793652faddded95f6b75b6a"
+    },
+    {
+      "name": "no_exit_rejection-negative-metadata.stderr",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/no_exit_rejection-negative-metadata.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "no_exit_rejection-negative-normal-six-helper-build-command.json",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/no_exit_rejection-negative-normal-six-helper-build-command.json",
+      "bytes": 919,
+      "sha256": "7424b3a3134b63c71192cae8fad5ff6e6118ee65b24b87db1a92ea5a0650f5cf"
+    },
+    {
+      "name": "no_exit_rejection-negative-normal-six-helper-build-status.json",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/no_exit_rejection-negative-normal-six-helper-build-status.json",
+      "bytes": 11515,
+      "sha256": "b70c31920ee03aed5da02dc5cfef63f8a3e5191cfe561c5498aafebbed298e36"
+    },
+    {
+      "name": "no_exit_rejection-negative-normal-six-helper-build.stderr",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/no_exit_rejection-negative-normal-six-helper-build.stderr",
+      "bytes": 3769,
+      "sha256": "d1f5eba72dca40f2fcfff6865884ad51572abf54103449fa8f6cde5d672b8948"
+    },
+    {
+      "name": "no_exit_rejection-negative-normal-six-helper-receipt.json",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/no_exit_rejection-negative-normal-six-helper-receipt.json",
+      "bytes": 7445,
+      "sha256": "ef38d5c36546cc67bfebe176523f493745e325083cf583e4e8f580f064bf16de"
+    },
+    {
+      "name": "no_exit_rejection-negative-review.json",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/no_exit_rejection-negative-review.json",
+      "bytes": 35905,
+      "sha256": "039a001ecc7705026e8879355ba93f78e62be69d3398cfe7efbd14db2477683f"
+    },
+    {
+      "name": "no_exit_rejection-negative-review.parts.json",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/no_exit_rejection-negative-review.parts.json",
+      "bytes": 631,
+      "sha256": "c1d8bf7faa8003036c7f7bd54f8dd3e61976948679b13d718337998629b703c4"
+    },
+    {
+      "name": "no_exit_rejection-negative-selection.parts.json",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/no_exit_rejection-negative-selection.parts.json",
+      "bytes": 44834,
+      "sha256": "2383ec59a5d8463fe5d7f1e1175a95154bf6f86e1209cb25dc11fcd53883efbb"
+    },
+    {
+      "name": "no_exit_rejection-negative-status.json",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/no_exit_rejection-negative-status.json",
+      "bytes": 1431,
+      "sha256": "368da314da60640260f60ca8c59dc5466815821981eb787adf1b51c919fd7b5a"
+    },
+    {
+      "name": "no_exit_rejection-negative.junit.xml",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/no_exit_rejection-negative.junit.xml",
+      "bytes": 2769,
+      "sha256": "0f2cd050757518e575a0b0cf5387582e55a347cfba9a101d5485bccd6856e81c"
+    },
+    {
+      "name": "no_exit_rejection-negative.log",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/no_exit_rejection-negative.log",
+      "bytes": 11248,
+      "sha256": "678f21a37f96be19b61d8e18e6cd18c31374ab04577f27c85402c976566f31ce"
+    },
+    {
+      "name": "no_exit_rejection-restore-positive-apply.json",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/no_exit_rejection-restore-positive-apply.json",
+      "bytes": 524,
+      "sha256": "0ecac1d735de7a4364d4ea0e830d25906254e19a8f40c0ecd7fdddcb6aea5733"
+    },
+    {
+      "name": "no_rearm-apply-negative-apply.json",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/no_rearm-apply-negative-apply.json",
+      "bytes": 513,
+      "sha256": "4b1227806668c53e96ad9d5f3112787f3e6c1fc31ef812e6de3d1b209947e0b2"
+    },
+    {
+      "name": "no_rearm-causal-negative.json",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/no_rearm-causal-negative.json",
+      "bytes": 2023,
+      "sha256": "6ed88625ed7a2f34a99786b78570faa4e7fbb980f097df5ca52c146b8a57da94"
+    },
+    {
+      "name": "no_rearm-finally-restore.json",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/no_rearm-finally-restore.json",
+      "bytes": 588,
+      "sha256": "d268568d697894c83e432e8c3afcaa83f1b91a5d1d574a426d9b82f82033d8de"
+    },
+    {
+      "name": "no_rearm-negative-catalog-command.json",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/no_rearm-negative-catalog-command.json",
+      "bytes": 630,
+      "sha256": "92e9e529d62235b195956846a1fe113ca4f93de4c375ce8b0cf2cb45b01ae592"
+    },
+    {
+      "name": "no_rearm-negative-catalog-status.json",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/no_rearm-negative-catalog-status.json",
+      "bytes": 27041,
+      "sha256": "27f22e98162e24e0aa0652f43ed69b5068e946976c99a9e528b82bc77dfb50f3"
+    },
+    {
+      "name": "no_rearm-negative-catalog.stderr",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/no_rearm-negative-catalog.stderr",
+      "bytes": 11186,
+      "sha256": "b24933e927282c2f7cebc8a8d7a1766a330ede8dd228f8ad5dbd7479ac3c2aa0"
+    },
+    {
+      "name": "no_rearm-negative-command.json",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/no_rearm-negative-command.json",
+      "bytes": 682,
+      "sha256": "dc94e21285708817c2ff6ca23bec82148a4bc0ec623201035f8763bf2a8457f6"
+    },
+    {
+      "name": "no_rearm-negative-feature-graph-binding.json",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/no_rearm-negative-feature-graph-binding.json",
+      "bytes": 924,
+      "sha256": "f4663459facd14c14b3da72bad8c43d6c9b2af090f4b095c6835ef75f9d75625"
+    },
+    {
+      "name": "no_rearm-negative-metadata-command.json",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/no_rearm-negative-metadata-command.json",
+      "bytes": 458,
+      "sha256": "6b9a2e3f0092e7ff922a43e719c00f21f3dcd01eacd89ec9a6e501701c0a5b20"
+    },
+    {
+      "name": "no_rearm-negative-metadata-status.json",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/no_rearm-negative-metadata-status.json",
+      "bytes": 64236,
+      "sha256": "85606a8ee3df8f6f99c4a5034def1af0db6c287d9cc4f055b189549e608fa9e7"
+    },
+    {
+      "name": "no_rearm-negative-metadata.stderr",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/no_rearm-negative-metadata.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "no_rearm-negative-normal-six-helper-build-command.json",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/no_rearm-negative-normal-six-helper-build-command.json",
+      "bytes": 919,
+      "sha256": "ea3bc157cca260216c061d6ab9314d2aca51a68598b4405f15b559fc8441cb81"
+    },
+    {
+      "name": "no_rearm-negative-normal-six-helper-build-status.json",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/no_rearm-negative-normal-six-helper-build-status.json",
+      "bytes": 11245,
+      "sha256": "682648858c0ee4792bda51cbc318a2ef8362700c28e1bc45d9f345f195ac8250"
+    },
+    {
+      "name": "no_rearm-negative-normal-six-helper-build.stderr",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/no_rearm-negative-normal-six-helper-build.stderr",
+      "bytes": 3041,
+      "sha256": "2b57660d1291e87ab1b38fbc2edd4e77935cd6e06cb54bc4d4e93a0809b3103d"
+    },
+    {
+      "name": "no_rearm-negative-normal-six-helper-receipt.json",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/no_rearm-negative-normal-six-helper-receipt.json",
+      "bytes": 7427,
+      "sha256": "616f79f0e83a0f01e879d0694d5359c24f0374ea54424f2e0778ee21539af541"
+    },
+    {
+      "name": "no_rearm-negative-review.json",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/no_rearm-negative-review.json",
+      "bytes": 35868,
+      "sha256": "7c2b24e0fdcfa93af031fc2f0a6adf468cd74593355021f2ccb16cd5dc6f7e87"
+    },
+    {
+      "name": "no_rearm-negative-review.parts.json",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/no_rearm-negative-review.parts.json",
+      "bytes": 613,
+      "sha256": "a21baa873d1a49e36b4bb19716694d91df0000fa83c6b38218145de7fb20ff87"
+    },
+    {
+      "name": "no_rearm-negative-selection.parts.json",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/no_rearm-negative-selection.parts.json",
+      "bytes": 43610,
+      "sha256": "593301dfc89101c386a6137dd1642204832fd4a9e52eab93b0e55d1aab7b2ed4"
+    },
+    {
+      "name": "no_rearm-negative-status.json",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/no_rearm-negative-status.json",
+      "bytes": 1412,
+      "sha256": "be8279fab64e1a02cb8e7137917160b545c3ef2f33baf51a15bc4d94031688fe"
+    },
+    {
+      "name": "no_rearm-negative.junit.xml",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/no_rearm-negative.junit.xml",
+      "bytes": 2612,
+      "sha256": "2bd7deea69a1467079d5dc3781b15ce1a3cc1fd9fd70b96d35b27ab0934869f7"
+    },
+    {
+      "name": "no_rearm-negative.log",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/no_rearm-negative.log",
+      "bytes": 10301,
+      "sha256": "d9eec2232a03a145defab00bba57c22944520a8d57fd2b5238d2b1613c7a55d9"
+    },
+    {
+      "name": "no_rearm-restore-positive-apply.json",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/no_rearm-restore-positive-apply.json",
+      "bytes": 515,
+      "sha256": "bad1bcae9d565df9814130ab22fee433f058065b57bcd777eec12b48a386a5ed"
+    },
+    {
+      "name": "owned-process-observation-summary.json",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/owned-process-observation-summary.json",
+      "bytes": 1849,
+      "sha256": "12576ea91f3a561433cf2992975936f384a2035c87b48427b030d4025fe5bde3"
+    },
+    {
+      "name": "parent-liveness-final-eight-catalog-command.json",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/parent-liveness-final-eight-catalog-command.json",
+      "bytes": 1269,
+      "sha256": "9b04cbd1c31510c2cf5b56b02e611a765aa18aecb7951b0e9d5ae333b733be2a"
+    },
+    {
+      "name": "parent-liveness-final-eight-catalog-status.json",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/parent-liveness-final-eight-catalog-status.json",
+      "bytes": 28469,
+      "sha256": "2e0b707c1169e5d4c3660341556f156d095ca1c64b412de80327ee13230d8f22"
+    },
+    {
+      "name": "parent-liveness-final-eight-catalog.stderr",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/parent-liveness-final-eight-catalog.stderr",
+      "bytes": 11186,
+      "sha256": "805862bb233147d34cb2fbd6c65a38c22ea394c27cdee5f5478c2a0173975b75"
+    },
+    {
+      "name": "parent-liveness-final-eight-command.json",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/parent-liveness-final-eight-command.json",
+      "bytes": 1321,
+      "sha256": "41fc1dd747f6a671bb461703f9ae79c7486a5acbdb4bd107d9e00b2adddfac69"
+    },
+    {
+      "name": "parent-liveness-final-eight-feature-graph-binding.json",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/parent-liveness-final-eight-feature-graph-binding.json",
+      "bytes": 934,
+      "sha256": "9a519506c37d460cc1f2e661e55357299f25b21c8719363d3b6c8a19629110e4"
+    },
+    {
+      "name": "parent-liveness-final-eight-metadata-command.json",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/parent-liveness-final-eight-metadata-command.json",
+      "bytes": 458,
+      "sha256": "ba40c6c69c9d534d852865c0e175adc69f7728503ae3875180992efca099fe94"
+    },
+    {
+      "name": "parent-liveness-final-eight-metadata.stderr",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/parent-liveness-final-eight-metadata.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "parent-liveness-final-eight-normal-six-helper-build-command.json",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/parent-liveness-final-eight-normal-six-helper-build-command.json",
+      "bytes": 919,
+      "sha256": "f54ff31f5f22c9d7fb1bc6cf89d40fac3ecd18850baf10bf1a8b56d284bd7df7"
+    },
+    {
+      "name": "parent-liveness-final-eight-normal-six-helper-build-status.json",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/parent-liveness-final-eight-normal-six-helper-build-status.json",
+      "bytes": 11545,
+      "sha256": "e7cb877f76cb7fa20853e712e1f52f7b52b558f98ba8c4b9d380eec8d3a94f95"
+    },
+    {
+      "name": "parent-liveness-final-eight-normal-six-helper-build.stderr",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/parent-liveness-final-eight-normal-six-helper-build.stderr",
+      "bytes": 3041,
+      "sha256": "6bb88d840afac80e338cefc952acab4d2aeaa4bc44618c17310726b932200722"
+    },
+    {
+      "name": "parent-liveness-final-eight-normal-six-helper-receipt.json",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/parent-liveness-final-eight-normal-six-helper-receipt.json",
+      "bytes": 7447,
+      "sha256": "8094bc3b0655a26c1724c0e1fc131e8cdb81b664fbf9f586c730808aa71b2aa2"
+    },
+    {
+      "name": "parent-liveness-final-eight-review.json",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/parent-liveness-final-eight-review.json",
+      "bytes": 40725,
+      "sha256": "a87f7c2538cf67f9953cf3589173727bfd29fe9726be2dc65f5fff26a5cfa30d"
+    },
+    {
+      "name": "parent-liveness-final-eight-review.parts.json",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/parent-liveness-final-eight-review.parts.json",
+      "bytes": 633,
+      "sha256": "c12490877d6499152f6c8a75c846b1846e5bba1f8cd03704a6e1073182c432d5"
+    },
+    {
+      "name": "parent-liveness-final-eight-selection.parts.json",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/parent-liveness-final-eight-selection.parts.json",
+      "bytes": 44970,
+      "sha256": "cc41a4add7b217f7a9b846fa069b34aeb3da9f00da2d8875e12e4b513d71d262"
+    },
+    {
+      "name": "parent-liveness-final-eight-status.json",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/parent-liveness-final-eight-status.json",
+      "bytes": 2079,
+      "sha256": "128115c8cf6025ee6b34e6b8b6e5caaa53a4373e233033e47407e43f7b016853"
+    },
+    {
+      "name": "parent-liveness-final-eight.junit.xml",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/parent-liveness-final-eight.junit.xml",
+      "bytes": 2302,
+      "sha256": "1b70fd2c2ae8187672fe3a9ed95f41faf52c4bbf7833a25f84f7bdf42774fa50"
+    },
+    {
+      "name": "parent-liveness-final-eight.log",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/parent-liveness-final-eight.log",
+      "bytes": 14176,
+      "sha256": "f09618b7bf75906e4053d4924e5a6dfb8e410d88b698cec1aae6921442f1fbbb"
+    }
+  ],
+  "limits": [
+    "This transport proof preserves the original controller failure; it does not change test outcomes.",
+    "The retained-capability case explicitly returned early, so 8 JUnit PASS is 7 observed behavior PASS plus 1 omitted capability body."
+  ]
+}

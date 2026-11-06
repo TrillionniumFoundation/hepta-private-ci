@@ -1,0 +1,279 @@
+{
+  "schema": "hepta-windows-python-full-native-continuation-review-v4",
+  "status": "STATIC_PREPARATION_ONLY_NOT_LAUNCHED",
+  "runner": {
+    "bytes": 28735,
+    "sha256": "e32da3b0334f7a85ecb72fe8bf5b0baf10dfdc6f3ff73a0ae85f800c654638c2",
+    "blob": "bd0461a2c99364a62bbbc5aa525ad25c85a17f40"
+  },
+  "source_payload": {
+    "bytes": 198629,
+    "sha256": "0d48638ac65a9ec2c0f759d64811fe8b54f11dcb6709c654483e7ed72f1a3fe5",
+    "blob": "85f29bdddd1cc2d1a4b171205e80ee40783bc032"
+  },
+  "initial_tree": "c6fbcfa0d1ba3b1556f601dc4ca3a7734328b9f7",
+  "final_tree": "fb9e131272f7e7a138d6c0d1af2b048b9a6ab7ff",
+  "stages": [
+    {
+      "label": "WindowsAclIdempotency",
+      "before_tree": "c6fbcfa0d1ba3b1556f601dc4ca3a7734328b9f7",
+      "after_tree": "ef96589ba7bed90ebb600c0132af67c5cc03f635",
+      "files": [
+        {
+          "path": "codex-rs/windows-sandbox-rs/src/acl.rs",
+          "mode": "100644",
+          "before_blob": "755083dd97ef25065692028405412326e4e2ac49",
+          "after_blob": "53c7053c5880da13640f3bd777998b6998da6d47",
+          "bytes": 25821,
+          "sha256": "c6507c81014e82a7d968530e72b6f8534e5eb62040222fefd226e90060713eb7"
+        },
+        {
+          "path": "codex-rs/windows-sandbox-rs/src/acl_deny.rs",
+          "mode": "100644",
+          "before_blob": null,
+          "after_blob": "3aeb65179f1a8bc77f0314974efdcf8940e5a1f6",
+          "bytes": 6999,
+          "sha256": "0808a06e71bca59f3807f9efde0ebc0e2c4847d8de22c98cb68b9de1ef2f1c56"
+        },
+        {
+          "path": "codex-rs/windows-sandbox-rs/src/acl_tests.rs",
+          "mode": "100644",
+          "before_blob": "a27ce6bde8a5a8ec68b005d6fc10cc4abf261d59",
+          "after_blob": "31db071d8a2fe2de3e9e9f37cb245a0757ecb973",
+          "bytes": 15843,
+          "sha256": "efb7d60719fbea616518081bc125dca03901c56d2712a4e689d8b01772634851"
+        }
+      ]
+    },
+    {
+      "label": "token-matrix",
+      "before_tree": "ef96589ba7bed90ebb600c0132af67c5cc03f635",
+      "after_tree": "deaefe6c6e0c68b64bc4b505e9dc8347bde4dd3e",
+      "files": [
+        {
+          "path": "codex-rs/windows-sandbox-rs/src/lib.rs",
+          "mode": "100644",
+          "before_blob": "43d3e5c935db4579809525e58f33718e8a250005",
+          "after_blob": "f7b90d6f2d3ecad07f487e05932431c979450c77",
+          "bytes": 30379,
+          "sha256": "51f901eb825ee60491aff7fffae23e90b9987de900c81774abdb15e3e63c807e"
+        },
+        {
+          "path": "codex-rs/windows-sandbox-rs/src/delete_permission_matrix_tests.rs",
+          "mode": "100644",
+          "before_blob": null,
+          "after_blob": "e3c999e68382837bde16e2621de94bcb83509bc8",
+          "bytes": 14651,
+          "sha256": "c4f985e1e89e5915cab13955bd26af2a1a79802f635f4c0b974a09eb24275f9e"
+        },
+        {
+          "path": "codex-rs/windows-sandbox-rs/src/token_tests.rs",
+          "mode": "100644",
+          "before_blob": "140f141bc0a5807856ceb1068c9fbf423d5ce543",
+          "after_blob": "d406532fd3b69bc4a3635963022365aaec93280e",
+          "bytes": 21983,
+          "sha256": "471403c4500ef70a4f12ce3fa7af75cec4d314a2718129b8d08334c74edf33ea"
+        }
+      ]
+    },
+    {
+      "label": "legacy-matrix",
+      "before_tree": "deaefe6c6e0c68b64bc4b505e9dc8347bde4dd3e",
+      "after_tree": "5b84397a61f79279875d268c0e2f2f19f4d7e30e",
+      "files": [
+        {
+          "path": "codex-rs/windows-sandbox-rs/src/unified_exec/tests.rs",
+          "mode": "100644",
+          "before_blob": "694db339514d08efb54c05d82f2e58026b673998",
+          "after_blob": "aea1ff8476ab8ce33642677a36b1609054888a4e",
+          "bytes": 43106,
+          "sha256": "f6b49b35c8c0aed98dc621ae179faa2ec6d5d33858c09223a38bf4784fa2b940"
+        },
+        {
+          "path": "codex-rs/windows-sandbox-rs/src/unified_exec/delete_permission_tests.rs",
+          "mode": "100644",
+          "before_blob": null,
+          "after_blob": "4727675e9b85d75bfbe1de175571bcc481906353",
+          "bytes": 6737,
+          "sha256": "996b47813dde5e21ed6ca33f8764a6249957d2f3ace93b50c36d3d622895f775"
+        }
+      ]
+    },
+    {
+      "label": "WindowsSuccessRetention",
+      "before_tree": "5b84397a61f79279875d268c0e2f2f19f4d7e30e",
+      "after_tree": "fb9e131272f7e7a138d6c0d1af2b048b9a6ab7ff",
+      "files": [
+        {
+          "path": ".github/scripts/collect_bazel_failed_test_logs.py",
+          "mode": "100644",
+          "before_blob": "e7745ee2a1b8b230119027c0faf56e58462d97ed",
+          "after_blob": "5427be6c1f37bd7c302d808c2e4f194727abe700",
+          "bytes": 16238,
+          "sha256": "867d2b315dbb37b5b33c0869281c41fc5586a366f0cd1c19a1703f57d40fda9d"
+        }
+      ]
+    }
+  ],
+  "original_gates": {
+    "python_roster_count": 57,
+    "bash_argv": [
+      "bash",
+      "-n",
+      ".github/scripts/run-bazel-ci.sh"
+    ],
+    "python_compile_argv": [
+      "python3",
+      "-m",
+      "py_compile",
+      ".github/scripts/collect_bazel_failed_test_logs.py",
+      ".github/scripts/test_run_bazel_ci.py"
+    ],
+    "python_test_argv": [
+      "python3",
+      "-m",
+      "unittest",
+      "discover",
+      "-s",
+      ".github/scripts",
+      "-p",
+      "test_run_bazel*.py"
+    ],
+    "full_metadata_argv": [
+      "cargo",
+      "metadata",
+      "--format-version=1",
+      "--locked"
+    ],
+    "full_catalog_argv": [
+      "cargo",
+      "nextest",
+      "list",
+      "--locked",
+      "--cargo-profile",
+      "dev-small",
+      "--message-format=json"
+    ],
+    "full_workspace_argv": [
+      "just",
+      "test",
+      "--locked",
+      "--cargo-profile",
+      "dev-small",
+      "--no-tests",
+      "fail",
+      "--retries",
+      "0",
+      "--success-output",
+      "immediate"
+    ]
+  },
+  "baseline_metadata": {
+    "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full18-three-repairs-v3-20261105-0254/v8-and-runtime-original-metadata.stdout",
+    "bytes": 8163699,
+    "sha256": "3a53323eae920e2e53dcb3e334128a4aff63cfb51840793e9150d617d2c9ba18",
+    "source": "7d703610ae4f778ad305ebc139860d276f416e8c"
+  },
+  "required_prior_app_outcome": {
+    "root_authorization_required": true,
+    "app_source": "c6fbcfa0d1ba3b1556f601dc4ca3a7734328b9f7",
+    "app_counterfactuals": 3,
+    "app_positive_cases": 8,
+    "all_counterfactuals_valid_and_positive_pass_required": true,
+    "actual_receipt_will_be_bound_by_execution_guard": true
+  },
+  "source_file_count": 9,
+  "source_cohorts": 4,
+  "provenance": {
+    "tree_plan": "11da59fc2b97560a972c4ce6da6af1f654a13d47",
+    "acl_patch": "a7b977f79547249bc253c0bc915d7e85f13480dc",
+    "matrix_manifest": "fa0ab271828530e277bfd76ff1793c03de184b9d",
+    "matrix_full_patch": "ba0f8c1dddb24e0309f1ebfd810f2537f7210a7e",
+    "retention_manifest": "5fdf6461ee9bf40df992371534802e9d43eea6dd",
+    "retention_patch": "cabb73ed9054b88cbb039f63876fa1dbdde217a0",
+    "original_full_runner": "full-workspace-f825-runner-final.py",
+    "guarded_common_runner": "6fd0636bdc81848f757893192021aede12129915"
+  },
+  "limits": [
+    "Linux builds do not qualify Windows cfg branches or native token/ACL behavior.",
+    "The original full-workspace selection has no package or expression filter; ignored support and original early-return notices are reported separately.",
+    "JUnit PASS is distinct from execution of omitted remote/prerequisite-dependent behavior.",
+    "No tests, lint, fmt or ref mutation follows the complete full result inside this runner. Root reviews actual results before hygiene."
+  ],
+  "guard_contract": {
+    "ordinary_head": "cabcb40d36e116beaa65750e1f674c52035da785",
+    "ordinary_index": {
+      "bytes": 1222758,
+      "sha256": "8ccf08bcd5b633a38fa81be4814ae264365f1a2cdd1ed81e1633fbcc0ac31502"
+    },
+    "locks": {
+      "codex-rs/Cargo.lock": {
+        "bytes": 413768,
+        "sha256": "4a7a5535cf045089458468411e126b5f59bc6bbf34fc0deead9b0c1b8d84000a"
+      },
+      "MODULE.bazel.lock": {
+        "bytes": 1738619,
+        "sha256": "11f8a421224b9b05f32c4c14054e8868083d989fc497310c8d51e1156f189ca3"
+      }
+    },
+    "untracked_source_paths": [],
+    "whole_tree_before_and_after_each_phase": true,
+    "normal_six_helpers_built_on_actual_final_source": true,
+    "catalog_before_just_and_after_just_program_and_33_helper_identity": true,
+    "original_full_workspace_no_p_no_E": true,
+    "actual_ignored_and_early_returns_separate": true,
+    "full_catalog_unmatched_must_equal_zero": true,
+    "frozen_App_full_roster_compared_with_multiplicity": true
+  },
+  "reuse": {
+    "byteequal_common_functions": [
+      "now",
+      "sha",
+      "oid",
+      "rec",
+      "save",
+      "git",
+      "source_snapshot",
+      "guard",
+      "split",
+      "clean_ansi",
+      "apply_stage",
+      "feature_graph",
+      "normal_helpers",
+      "helper_records",
+      "export_source"
+    ],
+    "common_function_source_blob": "6fd0636bdc81848f757893192021aede12129915",
+    "full_case_early_return_parser": "Original reviewed full-workspace-f825-runner-final.py raw block association retained unchanged",
+    "new_work": "Only guarded Windows source application, original Python suite with separate catalog, and normal helper/full workspace composition. Root must bind the completed App prerequisite before launch."
+  },
+  "previous_unexecuted_runner": {
+    "bytes": 28707,
+    "sha256": "5f2173caf73f39b899f85221f899897f6d4e3503ba74cfec6f4ae2fd1d6b1545",
+    "blob": "5a7a50f68988f2b6858bd1ee05f798634d5cf6d1"
+  },
+  "exact_runner_delta": {
+    "bytes": 1278,
+    "sha256": "2cce03a177d0c7539971c22c063496889d5e9b9787b9739f35bdc400a50b6cd8",
+    "blob": "48984203d6b48d36c773691ce6d135bb42d1cb60"
+  },
+  "actual_full_roster_binding": {
+    "request_field": "full_roster_reference",
+    "required_fields": [
+      "path",
+      "bytes",
+      "sha256",
+      "source"
+    ],
+    "provided_by": "Root final execution guard after App actual three causal negatives and eight positives (five existing and three new).",
+    "source_must_equal_initial_tree": "c6fbcfa0d1ba3b1556f601dc4ca3a7734328b9f7",
+    "logic": "Read exact frozen App final8 full catalog. Ignore its App-only filter-match, compare every (classname,name,ignored) with multiplicity against the new unfiltered full catalog; unmatched must be zero. Verify bytes/SHA and task-evidence path. No count-only or set acceptance."
+  },
+  "v2_independent_static_review": "b8493a298a2ae63542fc99375c95609ce615f20f",
+  "observed_capability_early_return": {
+    "evidence": "c4c34185b748ad25dccd7ce1d3d180869d9a7a64",
+    "actual_message": "skipping capability test: unprivileged user namespaces are unavailable",
+    "change": "Only add the observed exact prefix to derived raw case-block association. Original test, command, selected roster, timeouts and suite outcome calculation are unchanged. This retains the capability behavior as unexecuted when the original case returns early.",
+    "source": "c6fbcfa0d1ba3b1556f601dc4ca3a7734328b9f7"
+  }
+}

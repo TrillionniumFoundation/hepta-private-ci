@@ -1,0 +1,53 @@
+{
+  "schema": "hepta-private-pin-backport-v1",
+  "crate": {
+    "name": "aws-smithy-http",
+    "version": "0.64.1",
+    "archive_bytes": 31772,
+    "checksum": "639b4d8f8555f24a9be649811c3eb0b4d4616f4d61daf0c32e28873bc1ea9af1",
+    "url": "https://static.crates.io/crates/aws-smithy-http/aws-smithy-http-0.64.1.crate",
+    "vendor": "codex-rs/third_party/aws-smithy-http-0.64.1",
+    "archive_regular_files": 23,
+    "licenses": {
+      "LICENSE": {
+        "bytes": 10142,
+        "sha256": "09e8a9bcec8067104652c168685ab0931e7868f9c8284b66f5ae6edae5f1130b",
+        "git_blob": "67db8588217f266eb561f75fae738656325deac9"
+      }
+    },
+    "edits": [
+      {
+        "path": "Cargo.toml",
+        "before_sha256": "9226e403fa8da1bf8e25702ba275298afe7e94f2ee94c248f8c9316de8f67ff8",
+        "after_sha256": "bbc28424b12c6762175c9466ac71d019681b53ac4d206a56b871612e1803fd06",
+        "replace": [
+          [
+            "[dependencies.pin-utils]\nversion = \"0.1.0\"\n\n",
+            "",
+            1
+          ]
+        ]
+      },
+      {
+        "path": "Cargo.toml.orig",
+        "before_sha256": "9cef7888df63d609c75ef91ebaf0324d6ad9fa0648f00568538b88e8a86d1e70",
+        "after_sha256": "2476cad959011ac479a3e1c2a6e0ff7ffbbca324fb6a0827bf79b0a3e8499006",
+        "replace": [
+          [
+            "pin-utils = \"0.1.0\"\n",
+            "",
+            1
+          ]
+        ]
+      }
+    ],
+    "source_scope": "Exact upstream pin-only Rust changes from aws-sdk-rust b3bdfffc to b964fc77; all other source and dependency versions retained."
+  },
+  "upstream": {
+    "aws_before_commit": "b3bdfffc8dbbaf115b572079d7f170ec78ec939c",
+    "aws_after_commit": "b964fc77de60b0a492ff788c40bb66524fd26a44",
+    "loom_before_commit": "a7033ee06a97c52eb2f8131c095fbea6c6eecba3",
+    "rust_pin_macro_stable_since": "1.68.0",
+    "source_note": "AWS full compatibility-line upgrade is deliberately not proposed; existing local aws-config crypto maintenance patch and all other original leaves must remain unchanged."
+  }
+}

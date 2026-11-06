@@ -1,0 +1,131 @@
+# Fourth batch qualification: source-specific outcomes
+
+This is an audit checkpoint for the continuing repair of PR #4797. The branch remains Draft. The published head is cabcb40d36e116beaa65750e1f674c52035da785; the three-repair terminal source tree is 7d703610ae4f778ad305ebc139860d276f416e8c; App V2 is bound to c6fbcfa0d1ba3b1556f601dc4ca3a7734328b9f7 and the Windows source continuation to fb9e131272f7e7a138d6c0d1af2b048b9a6ab7ff, with their incomplete gates separately recorded below. The original owning7 and full-workspace results remain bound to f8251e1d14fa8524ab469281296cd4cf708f173c. The fourth-batch source commits below are not yet a published or fully qualified product. No main, release, activation or external acceptance is claimed.
+
+## Source and tool contract
+
+ROG is the sole native Cargo/source mutation lane at /home/qian-qi/work/hepta-audit-r3-fullgate-20261104. Ordinary HEAD remains cabc. The original index snapshot had 1,222,758 bytes/SHA256 8ccf08bcd5b633a38fa81be4814ae264365f1a2cdd1ed81e1633fbcc0ac31502. After the actual Python57 PASS, a byte guard detected a changed index. Read-only reconciliation proved all9,575 path/mode/OID/stage entries still exactly match cabc, without special flags; the accepted new snapshot is the same length/SHA256 c41b4d7645b2b88431ed024e9cc683e31d43fafe7290280eaf0bae656fd6a922. The old binary is unavailable, so the exact changed fields and cause remain unknown. No reset or staging was used. Source snapshots use a separate complete index. Cargo.lock remains413,768 bytes/SHA256 4a7a5535cf045089458468411e126b5f59bc6bbf34fc0deead9b0c1b8d84000a; MODULE.bazel.lock remains1,738,619 bytes/SHA256 11f8a421224b9b05f32c4c14054e8868083d989fc497310c8d51e1156f189ca3. [Python/index review](fourth-windows-python-index-root-review.json)
+
+The actual Linux toolchain uses Rust1.95, original just test, locked dependencies, dev-small and local nextest profile. Selected retries remain zero; original ignore, filtered cases, cache and remote early returns are recorded separately. No cargo test, all-features expansion or enlarged product deadlines were substituted. B10 intentionally corrects the stable WebSocket fixture's expected total from 3 to 4 requests: one real prewarm plus three turn requests. It does not claim that every original assertion was unchanged.
+
+The original normal-helper build resolves test_arg0_preflight, codex-code-mode-host, codex-execve-wrapper, test_stdio_server and test_streamable_http_server. The complete c270 build emitted964 compiler JSON records and one successful build-finished; three helpers were rebuilt and two were fresh=true cache hits. Actual helper/test-program hashes are collected again after the original seven-package catalog and immediately before/after test execution. Cached compilation is not represented as new compilation. [Complete helper bytes](fourth-helper-c270-complete.json)
+
+## Actual native sequence
+
+| Scope | Exact tested tree or checkpoint | Actual outcome | Qualification boundary |
+|---|---|---|---|
+| R1 preflight | original test snapshot5fc; formatteda5e96b7e10c6d6f9c5fd3ec6a4cbad47448aa323 | 10 arg0 PASS;54 Python PASS | Pre-runtime entry checks and preserved helper dispatch only |
+| R2b authority clock | baseline7d32; fixed6eafed3863a36f9f5a1f28034e098dd195331334 | 3 original FAIL; fixed18 PASS | Time captured after owner mutex; not whole Current |
+| R2a inherited listener | testedfb518; formattedc0c8e9e386b63ef1872750f9c0e70b9fad318461 | Real-exec leak baselineFAIL; fixed15 PASS | Actual inherited FD present before exec/absent after; Unix validation only |
+| Fleet | baseline200; fixed05c; formattedc058953879b13a687163d0038a6031dfdb3c725f | Original ENOTCONN FAIL; fixed5 unit+2 product PASS | NotConnected only becomes bounded no-ACK; Darwin os57 pending |
+| Core four-path | 5d8a5db90c83c12b19cbcd24b2d49d94542f73a1 | 6 selected PASS,0retry | Real EOF/identity/configuration/prompt contracts; original platforms pending |
+| Runtime diagnostics | 1c2aa1263d4087fb3432b7b900080a6af7215b14 | 31 selected PASS plus separate Doctor3 PASS | PTY29/13MiB forward/Supervisor on ROG; Intel/Windows not inherited |
+| ApplyPatch cause | baseline60c509; fixede84c2f12e39022701c8a942343b3913faa62cf31 | Same real I/O error control FAIL→PASS | Original Error and filesystem assertions preserved |
+| Original owning7 | e84c2f12e39022701c8a942343b3913faa62cf31 | 5416 selected:5404 JUnit PASS/12FAIL;19 original ignored | 24 remote prerequisite early returns within JUnit PASS are not behavior execution |
+| Hook/Skill event diagnosis | 073bc9fbcd958d0281eedc52f330c9847a0961d5 | 2 actual FAIL | Complete event sequence explains third response request and already-consumed TurnComplete |
+| Successful target evidence scripts | df74afac9e4e31b61a94725d9689b5d0e40eddfe | Original57 Python PASS,0skip;bash/Python parsePASS | Original Bazel argv/PIPESTATUS preserved; no new hosted result inferred |
+| Readonly fixture initial counterfactual | d64d090142508bbb00449b151ba63e62be57bd87 | 1 FAIL before first tuple, no poison marker | INVALID causal negative; preserved, not counted as qualification |
+| Bounded unset and command diagnostics | 9d5f656250d400a90137e0dcc75137d071442cb0;19ecb32bb92429ef9019ae3d4720e46dbdd9a7b0 | Each original1FAIL | Actual .bashrc unset executes before original restore command; BASH_ENV absent |
+| Bash --norc key counterfactual | c270ab7afca8d91c6b579f133fdf04af79300c9b | 1 intended original FAIL after first tuple and actual profile-poison marker | VALID changed-second-scope causal negative; actual second exit0, no assumed42 |
+| Exact positive restoration and original13 | da60f29b6789434c394edeff3c79f59191ad932c | 12PASS/1FAIL,0retry/selectedskip/earlyreturn | All8 snapshot+2Hook+2Skill PASS; literal-deny repeated child approval still FAIL |
+| Effective child approval | f8251e1d14fa8524ab469281296cd4cf708f173c | Original5 integration+20unit:25PASS,0retry/selectedskip/earlyreturn | 2 selected binaries/12helpers stable; all5 current normal helpers fresh=true, not new compilation |
+| Original owning7 continuation | f8251e1d14fa8524ab469281296cd4cf708f173c | 5416 selected:5408 JUnit PASS/8FAIL;19 ignored,0 unmatched; just100/controller1 | Same8 original host-output failures;24 remote early-return messages are not behavior passes |
+| Full workspace preparation | Same f825 source | Original6 normal helpers actually rebuilt, all fresh=false; build0/129.402s | Full catalog rehashes feature-unified programs; earlier helper hashes not reused |
+| Original full workspace | Same f825 source | 19503 selected:19485 JUnit PASS/17FAIL/1TIMEOUT;56 ignored,0 unmatched,0retry; just100/228.919s | 321 test programs/33 helpers stable;24 remote early returns plus one subsequently confirmed original capability early return are not executed behaviors |
+| App parent-signal observation | Temporary1e936b1ca6df807d8928a4cc6c527f40f92808aa; exact restoration to f825 | Original1FAIL/5.575s; both PR_GET reads rc0/signal0; original killpg Ok(()) | Original5s deadline unchanged;50 originals reviewed; observation is not a repair PASS |
+| Skills marker fixture | Negative59fa1100c2ad24328e7841611092132ca08942ad → positive51673d30d34674faeac6bb17e565fc9d04aec8f1 | Valid original whole-vector FAIL → original9PASS,0retry | Table.insert fixes both variants; prior setup panic remains INVALID |
+| Marketplace migration fixture | Negativef9bfef21d511a3e9ee25fb67802d240c691f62ec → positiveb2cee2e56d32199dc67d362ec15b796b2814ee7e | Original child assertion FAIL → original166PASS,0retry | Positive raw contains both nested same-name successes; not merely a parent process result |
+| V8 default feature alignment | 7d703610ae4f778ad305ebc139860d276f416e8c | Original76PASS,0retry: runtime68+poc6+jit1+parallel_initialization1 | Both original integration targets included; four test-program identities stable |
+| Original Bazel lock gates | Same7d703 source before/after | update0/111.734s;check0/0.493s; no generated lock diff | Existing cache retained; Cargo/MODULE lock identities unchanged |
+| Final fix/fmt | Original scoped flow after fb9 full | Execution and any automatic source delta are tracked by the current root receipt; no terminal success claimed here | No final code-tree qualification |
+
+The c270 controller's TypeError happened in the first restoration guard after the valid negative, before writing source. Its failed exit1 remains unchanged. The continuation revalidated all seven original evidence files, exact source, prior helper/test-program identities, ordinary index and both locks; only the one approved test-file restoration proceeded. The valid negative was not repeated. [Native source/control review](fourth-bash-no-rc-native-root-review.json)
+
+Eight owning7 failures contain im-config/systemd-cat host startup output. The complete public host files and fixed systemd sources were inspected. No actual syscall trace identifies which stream setup operation returned EPERM; no profile, security environment, sandbox or output normalization change was made. [Attribution](fourth-host-startup-root-review.json)
+
+## Reviewed code cohorts
+
+Each row is an actual commit/tree pair. Comparison with its parent returned ahead1/behind0 and complete changed paths. All non-lock source cohorts remain below500 changed lines before final hygiene; the last hygiene diff must still be inspected. These commits do not update the candidate ref.
+
+| Cohort | Commit | Tree | Changed lines excluding locks |
+|---|---|---|---:|
+| R1 | 03c5d693de306daf52b6a6d13261c2e00b5e4b63 | a5e96b7e10c6d6f9c5fd3ec6a4cbad47448aa323 | 425 |
+| R2b | e01a3f9face6e4c81b0fd9805465aa922e02f685 | 6eafed3863a36f9f5a1f28034e098dd195331334 | 136 |
+| R2a | 4c8979e3bc9baf6e75326270cd46d4e3c0c58fa3 | c0c8e9e386b63ef1872750f9c0e70b9fad318461 | 429 |
+| Fleet | d12cf0ad91ee5da6d116cbe4a0024269345d9d43 | c058953879b13a687163d0038a6031dfdb3c725f | 84 |
+| CoreLifecycle | 2250e5fecfb2c2d5ce889fd66a495a7c8739b148 | 5d8a5db90c83c12b19cbcd24b2d49d94542f73a1 | 472 |
+| RuntimeDiagnostics | b5f899e49c98ac5fc387c33848b9bdbe34396e2d | 1c2aa1263d4087fb3432b7b900080a6af7215b14 | 410 |
+| MuslAndLifecycleCI | c8f5d3c7b96e9d649cf34f6cfcac3d7b1912ed5e | c90d537a743cf39ed92286b6ba1b3a25b014c989 | 69 |
+| ApplyPatchCause | 42410fe3c080c01655ba1dc6970a05632969ecc6 | e84c2f12e39022701c8a942343b3913faa62cf31 | 133 |
+| HookSkillDiagnostics | fdeb9fda5df70e12917bb6bf2a77bc56e4b868e5 | 073bc9fbcd958d0281eedc52f330c9847a0961d5 | 16 |
+| SuccessfulTargetEvidence | 6f9c32e8d4fc5e5d23c2b28d72b484794d3528ab | df74afac9e4e31b61a94725d9689b5d0e40eddfe | 446 |
+| OwningRegressionFixtures | dbfba62e08ee1b22c9f873260f9fa79faebd58bf | a0e8dc2df02c7c7b9d3a41be5997d2ccb37f9ed2 | 46 |
+| BashSnapshotRestoration | 03e4945876cfd44ff886aea35bcc5576cbd0055d | da60f29b6789434c394edeff3c79f59191ad932c | 7 |
+| EffectiveChildApproval | 7bc267096f23159605c0b6563374e697f8a0bd1f | f8251e1d14fa8524ab469281296cd4cf708f173c | 8 |
+| SkillsFixtureIsolationV2 | 1175e9b91528db4ab9426fe0bec92aa34a1013d2 | 51673d30d34674faeac6bb17e565fc9d04aec8f1 | 30 |
+| MigrationOfflineOfficialFixture | d09b54495a364170859a28d1656dc9fe4286c216 | b2cee2e56d32199dc67d362ec15b796b2814ee7e | 75 |
+| V8DefaultSandboxAlignment | bd7631e98f295fefad7654865cea497ceacf7d06 | 7d703610ae4f778ad305ebc139860d276f416e8c | 1 |
+| AppParentLiveness | b141e287b7c1c581b7e57bf7f3a5722f8bd42b79 | c6fbcfa0d1ba3b1556f601dc4ca3a7734328b9f7 | 497 |
+| WindowsAclIdempotency | bb5d1316a84a710898156ffcb862ba07267c7af7 | ef96589ba7bed90ebb600c0132af67c5cc03f635 | 412 |
+| WindowsTokenDeleteMatrix | fec05bab68c2de0472f6d9bd73727b4a48dc8a96 | deaefe6c6e0c68b64bc4b505e9dc8347bde4dd3e | 377 |
+| WindowsLegacyDeleteMatrix | 104d2b187457897f595aab7a70559a85b499339f | 5b84397a61f79279875d268c0e2f2f19f4d7e30e | 109 |
+| WindowsSuccessRetention | ccf0f78ce84caf5dde40e639d45a91a737096df6 | fb9e131272f7e7a138d6c0d1af2b048b9a6ab7ff | 1 |
+
+Temporary invalid counterfactual and diagnostic-only source variants are evidence, not production commits. The fourth fixture commit constructs the exact positive test tree; the separate seven-line production Bash commit reachesda60. The source-bound normal-helper build and original feature-unified catalog determine executable identity.
+
+## Original hosted CI remains independent
+
+Cabc19 workflows:14success/3failure/2skipped. Original blocking37jobs:22success/11failure/4skipped. Ordinary merge28af7f705fa1024b9a6d2ef751fec116002260eb has the sameb2d7f038d6d88156bc6a4cb29c8703f69b808f29 source tree. UI uses its independently observed merge checkout. No fourth-batch local result replaces an original platform failure or supplies final-head CI. [Full terminal snapshot](fourth-cabc-ci-terminal.json)
+
+The genuine musl lane failed before ELF/smoke; GNU/musl-labelled blocking logs share GNU/RBE content. Original Intel, Windows strict boundary, lifecycle and donor failures remain in the complete failure index. Selected successful-target logging fixes retention only; test selection and qualification rules are unchanged.
+
+## B16 static foundation boundary
+
+R2cV3, R2d, R2e1, R2e2a/b and R2e3 are exact reviewed source proposals, uncompiled and unexecuted in this fourth-batch checkpoint. Their predicted negative and positive controls must not be listed as passed. R2e3 retains actual lock custody through native cleanup only after successful registration; before-registration establishment/PRAGMA cancellation, raw replacement, unrelated openers, Current/expiry/FinalUse and normal Root/UI acceptance remain open. [R2e3 source and scope](fourth-b16-r2e3-manifest.json)
+
+## Evidence retention and interpretation
+
+The fourth evidence index links exact blobs through repository files. Original owning7 full JUnit/catalog/selection/review and inventory are split without modification into bounded UTF-8 parts. Concatenate in declared sequence and verify the complete byte count and SHA256 before parsing. Fragment files are not independent test runs.
+
+A PASS label always belongs to its source, original case, platform, actual executable and selected scope. JUnit early returns, ignored cases, filtered cases, cached compilations, flaky attempts, controller failures, static reviews and external acceptance are separately recorded. No whole blocker ID was newly closed by relabeling these partial results.
+
+### Full-workspace failure expansion
+
+The original full invocation retained all193 workspace members, normal complete Cargo metadata and the original unfiltered just test command. Eighteen failures include the eight owning7 host-output failures, six additional App command/exec output assertions, one App disconnect/process-lifetime failure, one external-agent migration timeout, one skills ancestry boundary failure and one V8 sandbox feature mismatch. The complete failure projection and24 raw-bound early-return blocks are preserved in [the source-bound projection](fourth-full-f825-failures-and-early-returns.json). Independent root reconstruction is complete: all33 encoded parts reconstruct18 original artifacts totaling74,867,442 bytes. Every decoded file was reopened and hash-verified; original raw/JUnit/catalog/selection rosters and outcomes were reconciled by exact name. One short redundant cloud copy is retained as a transport discrepancy; intact native/compressed originals and the independently decoded complete files are not replaced by that copy. [Complete root review](fourth-f825-full-owning-complete-root-review.json) / [Reconstruction index](fourth-f825-full-owning-compressed-index.json) / [Companion discrepancy](fourth-f825-export-companion-copy-addendum.json)
+
+
+### Three scoped repairs passed; App lifecycle remains open
+
+The skills positive and negative fixtures now use Table.insert instead of indexing a missing key in an empty table. The valid negative reaches the original roots assertion at line446 with outer+cwd, then exact restoration passes all9 original cases; the first line425 setup panic remains invalid evidence. Migration reaches the original child assertion at marketplaces.rs:588 with [] versus ["claude-plugins-official"], then exact restoration passes all166 original package cases. Positive raw lines1613–1627 show both nested same-name test successes. The V8 scope passes all76 original cases, including jit and parallel_initialization integrations. The real original Bazel update/check both exit0 without changing either lock identity. Complete raw/JUnit/frozen rosters and executable identities are reconciled in [the source-specific root review](fourth-three-repairs-v3-root-review.json). These passes do not replace the earlier full-workspace failure or establish final-head hosted qualification.
+
+The App disconnect observation job1a1a951380e-fc05-342f stopped before any Cargo or test command because the original target/dev-small helper directory was absent. All33 original helpers were absent in a subsequent read-only probe. This is a preflight failure, not an execution of the original App case. Initial source/index/lock/fixture guards passed; no final source guard ran after the exception. The cause remains undetermined. The later isolated rebuild binds new executable identities; it does not inherit the vanished binaries' identity. [Original stopped attempt](fourth-app-disconnect-preflight-stopped.json)
+
+A separate epoch2 completed as job1a1a967b3ab-fc05-34f6 after an independent fresh source/index/lock/untracked guard. It rebuilt in a new exclusive target, compared the full original193-member resolved graph, and bound the original33 helper roster to new executable hashes. The original one-case5s oracle and0retry remain. The original single case terminated as FAIL in 5.491s. That observation found the outer bwrap gone while the inner sandbox helper and Python remained alive; it did not establish a signal cause. The stopped attempt and original full failure remain unchanged. [Epoch2 terminal evidence](fourth-app-epoch2-terminal-diagnostic.json) / [Independent root review](fourth-app-epoch2-root-terminal-review.json) / [Exact system bwrap identity](fourth-app-bwrap-exact-readonly.json)
+
+A later observation-only tree1e936b1ca6df807d8928a4cc6c527f40f92808aa ran the same original App case and failed in5.575s with its original5s deadline. PR_GET_PDEATHSIG succeeded with signal0 at both inner_entry and inner_after_restrictions; the original killpg returned Ok(()). These observations do not identify which transition cleared the signal. All50 original files were independently verified and source was restored exactly to f825, including the initial source map. The first native parent-liveness negative ran and failed in5.005s before kill/reparent/arm because the nested libtest banner and first marker shared one line. It is INVALID_FIXTURE_BEFORE_CAUSAL_STAGE, not a valid counterfactual. Finally restored exactly to d8a5e94af06b9555fc8256af1337e9f28f7c7fa8. The first attempt remains invalid and all47 originals are now independently reconstructed. After the one-line println! fixture correction, V2 completed three valid causal negatives and eight selected positive cases (five original plus three new), with the exact scope below. [Complete observation and restoration review](fourth-app-parent-probe-complete-root-review.json) / [Invalid first negative and exact restore](fourth-app-parent-liveness-invalid-negative-root-review.json)
+
+App V2 job1a1a9cf9300-fc05-3823 produced three valid causal negatives: no-exit rejection fails at the owned child line259 after actual reparenting (0.018s); no-rearm reaches the original reaper-survived oracle at line111 (5.022s); the leaked descriptor reaches the pre-user-fork FD oracle at line269 (0.010s). Every guarded finally restored c6 exactly. The final original just command exits0 and fresh JUnit records8 PASS. Seven behavior bodies executed successfully: original App disconnect0.606s, three original namespace-reaper cases, and three new parent controls. The original retained-capability case explicitly early-returned because unprivileged user namespaces are unavailable; selection_valid=false/controller1 are preserved. Original deadlines, strict marker equality and retries0 remain unchanged. [Causal review](fourth-app-parent-liveness-three-negatives-root-review.json) / [Exact final-eight scope and historical capability correction](fourth-app-parent-liveness-final-eight-root-review.json)
+
+The independently authorized Windows/Python/full WIP job1a1a9ea52e8-fc05-399a applied four exact cohorts to fb9 and passed the original57 Python cases with zero skips. Its subsequent index-byte-guard failure/controller1 is preserved. After read-only index reconciliation, continuation job1a1a9f68261-fc05-3a71 reused the exact source without reapplying it or rerunning Python. Normal helpers, the193-member/1501-node graph and the full19,506-eligible/57-ignored case Counter matched their frozen references. The unfiltered original just test command actually finished with exit100:19,490 JUnit PASS/16 FAIL,0retry and25 bound early-return cases. All16 serialized failure nodes have ordinary Rust exit101 types;14 names overlap the old failures, while cold_root_resume and native_request_handles_remote_proxy are newly nonpassing and their causes remain open. The root independently reconstructed all42 current originals totaling60,915,164 bytes and reconciled every selected raw/JUnit/catalogue key, all10 source/index/lock guards and the321-program/33-helper records. Original fix/fmt has begun with mandatory review before continuing past any automatic source change; fresh original hosted CI remains outstanding. [Complete current root review](fourth-full-fb9-complete-root-review.json) [Continuation guard](source-assembly/windows-full-after-index-root-execution-guard.json) / [Nonpass root review](fourth-full-fb9-nonpass-root-review.json)
+
+The Windows narrow ACL, four-cell original-token/legacy controls and target-log retention are now applied to the exact fb9 composition; native Windows compilation and execution remain pending. The App V2 original disconnect passed in its stated scope; the omitted original capability behavior, final composition full engineering gates, fix/fmt and new-head hosted CI remain pending. The original23 ledger remains8 scoped closed/14OPEN/B18HOLD. [Windows matrix V2](static-proposals/b11-delete-matrix/repair-manifest.json)
+
+The B16 two-pool caller binding has a separate static review and three proposed parent controls. The two state controls include runtime shutdown plus opening cancellation. A separate private recovery checkpoint connection is unbound in the current source. Its distinct static proposal now contains two production paths with 15 additions/3 deletions and three control paths with 324 additions; these are source-line counts, not executed cases. It has not been applied, compiled or run, and does not change checkpoint, ACK, publication or Current authorization. Do not generalize pool custody to the whole recovery flow. [Caller review](fourth-b16-native-caller-independent-review.json) / [Checkpoint static proposal](static-proposals/b16-checkpoint/repair-manifest.json)
+
+## New inventory and separate donor qualification
+
+The full API interval03:16–03:24 UTC on2026-11-05 enumerated1103 open PRs (1079Draft/24nonDraft;155main-base/948other-base),5193branches,0non-PR issues and0releases. Complete pagination, terminal empty pages and final anchors were checked; these are not an atomic snapshot. The previous1088/5163 snapshot remains historical. Published4797/cabc and research4798/77b244 are unchanged. [New inventory](fourth-repository-inventory-20261105.json)
+
+| Donor | Independently observed scope | Qualification limit |
+|---|---|---|
+|4810 / c2243df|20changed paths; selected6production postimages reconstructed; current9runs=3success/4failure/2skipped|No current-product Windows closure; separate lock success belongs to44a466|
+|4812 /3a8e50|43changed paths; selected7production postimages reconstructed; current head0Actions|Native record binds1993db, delivered733563 NOT_RUN, explicitHOLD; no Memory/state/SQLx change|
+|4817 /379c21|33Python/evidence/workflow paths; exact386f7a job53ok/0skip read in full;386→379 onlyREADME+4evidence files|Same-host protocol and historical receipt verification; no repeated remote execution, Rust integration or scientific efficacy; current blocking failed|
+
+The23 original exit conditions and status values remain unchanged. #4821 claims retain their fixed-body scope. #4823 now has an independent452-file review at scientific source9f2d00f, including root recalculation of the four fit-level intervals: the limited J-minus-C IID/OOD lower bounds exceed0.005; all15 weight-edit candidates were rejected at validation, so the two zero gated-D results are rollback outcomes. The5 existing fitted checkpoints, exposed OOD validation distribution, changed planning computation and incomplete cost ledger limit interpretation. No new model execution, independent holdout or production adoption is claimed, and original B18 remains HOLD. [Scientific review](scientific-pr4823/INDEPENDENT_REVIEW.zh-CN.md) / [Root interval recalculation](fourth-pr4823-root-review.json) / [Historical donor scope](FOURTH_DONOR_PROGRESS_20261105.zh-CN.md) / [Original23 delta index](fourth-blocker-external-progress-20261105.json)
+
+## Passive source evidence and B16 preparation
+
+The19 standalone proposal/diagnostic/counterfactual Rust postimages are stored byte-exact as `.rs.source.txt` evidence, with their original logical paths and Git identities in [the layout map](source-evidence-repository-layout.json). They are not active product modules; the original formatter and source payloads are unchanged.
+
+The B16 V3 execution bundle has independent static review, preserved V1/V2 versions and an explicit unbound template. It distinguishes the actual post-hygiene A tree from the last-tested A artifact source and rejects JUnit timeout/leak/unknown failures before physical negative qualification. Current capacity and actual A bindings remain prerequisites; B has not run. [Bundle](static-proposals/b16-native-runner/README.md) / [Root static review](fourth-b16-runner-v3-root-static-review.json)

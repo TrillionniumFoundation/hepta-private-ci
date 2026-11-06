@@ -1,0 +1,410 @@
+{
+  "schema": "hepta-app-parent-liveness-native-validation-manifest-v1",
+  "status": "PREPARED_NOT_LAUNCHED",
+  "runner": {
+    "path": "/workspace/scratch/07dd58cc9630/ci-audit/recovered-20261105/app-parent-liveness-validation-runner.py",
+    "bytes": 29370,
+    "sha256": "9ee2ae01565bfede3984ee2390ef5bf16cca5e504667397ce665945d67c82040",
+    "git_blob": "7b4fce92dfe624f046c1cb022b7f9618d7dcb09d"
+  },
+  "guard": {
+    "schema": "hepta-app-parent-liveness-native-exact-serial-guard-draft-v1",
+    "host": "rog",
+    "initial_tree": "7d703610ae4f778ad305ebc139860d276f416e8c",
+    "positive_tree": "d8a5e94af06b9555fc8256af1337e9f28f7c7fa8",
+    "ordinary_head": "cabcb40d36e116beaa65750e1f674c52035da785",
+    "ordinary_index": {
+      "bytes": 1222758,
+      "sha256": "8ccf08bcd5b633a38fa81be4814ae264365f1a2cdd1ed81e1633fbcc0ac31502"
+    },
+    "locks": {
+      "codex-rs/Cargo.lock": {
+        "bytes": 413768,
+        "sha256": "4a7a5535cf045089458468411e126b5f59bc6bbf34fc0deead9b0c1b8d84000a"
+      },
+      "MODULE.bazel.lock": {
+        "bytes": 1738619,
+        "sha256": "11f8a421224b9b05f32c4c14054e8868083d989fc497310c8d51e1156f189ca3"
+      }
+    },
+    "allowed_untracked_source_paths": [],
+    "normal_helper_build": [
+      "cargo",
+      "build",
+      "--locked",
+      "--profile",
+      "dev-small",
+      "--message-format=json-render-diagnostics",
+      "-p",
+      "codex-arg0",
+      "--bin",
+      "test_arg0_preflight",
+      "-p",
+      "codex-code-mode-host",
+      "--bin",
+      "codex-code-mode-host",
+      "-p",
+      "codex-shell-escalation",
+      "--bin",
+      "codex-execve-wrapper",
+      "-p",
+      "codex-rmcp-client",
+      "--bin",
+      "test_stdio_server",
+      "--bin",
+      "test_streamable_http_server",
+      "-p",
+      "codex-exec",
+      "--bin",
+      "codex-exec"
+    ],
+    "historical_helper_basename_roster": [
+      "apply_patch",
+      "codex",
+      "codex-app-server",
+      "codex-app-server-test-notify-capture",
+      "codex-code-mode-host",
+      "codex-command-runner",
+      "codex-exec",
+      "codex-execpolicy",
+      "codex-execve-wrapper",
+      "codex-hepta-agentd",
+      "codex-linux-sandbox",
+      "codex-mcp-server",
+      "codex-stdio-to-uds",
+      "codex-tui",
+      "codex-windows-sandbox-setup",
+      "codex-write-config-schema",
+      "custom_ca_probe",
+      "exec-server",
+      "hepta",
+      "hepta-agentd-browser",
+      "hepta-shadow-live-trial",
+      "hepta-supervisor-intent-recovery",
+      "hepta-supervisord",
+      "hepta-taskflow-runtime",
+      "logs_client",
+      "md-events",
+      "rmcp_test_server",
+      "test_arg0_preflight",
+      "test_mcp_2026_discovery_stdio_server",
+      "test_mcp_2026_stdio_server",
+      "test_notify_capture",
+      "test_stdio_server",
+      "test_streamable_http_server"
+    ],
+    "baseline_metadata": {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full18-three-repairs-v3-20261105-0254/v8-and-runtime-original-metadata.stdout",
+      "bytes": 8163699,
+      "sha256": "3a53323eae920e2e53dcb3e334128a4aff63cfb51840793e9150d617d2c9ba18",
+      "source": "7d703610ae4f778ad305ebc139860d276f416e8c"
+    },
+    "control_source": {
+      "path": "codex-rs/linux-sandbox/src/parent_lifecycle_tests.rs",
+      "mode": "100644",
+      "before_blob": null,
+      "after_blob": "0293bce3c08720952fd3413c92c4e9a033da3d03",
+      "bytes": 12752,
+      "sha256": "cbd431000c30fa687422dbed660235edb16c4ce50b6f62c87def5e2957b2487e"
+    },
+    "causal_source_anchors": {
+      "no_exit_rejection": {
+        "parent": "145-152; kill_launcher_without_reaping precedes release",
+        "child": "242 original parent; 245-247 PR_GET=0; 249 inherited marker; 253 go; 255 actual reparenting; 257 actual result; 258-259 exact BrokenPipe assertion",
+        "raw_does_not_print_waitid_result": true
+      },
+      "no_rearm": {
+        "parent": "156-163; 160 armed marker; 161 synchronous kill/WNOWAIT; 162 finish",
+        "waitid": "80 owned child kill; 86-94 WEXITED|WNOHANG|WNOWAIT returns only exact owned si_pid; 97 separate deadline error",
+        "oracle": "111 own five-second survived assertion while stdin writer remains held",
+        "child": "264 arm; 268 descriptor closed; 269-276 successful inspect exec; 277 armed flush; 280 stdin block",
+        "raw_does_not_print_waitid_result": true
+      },
+      "leaked_parent_fd": {
+        "child": "264 arm_and_check unwrap; 266 F_GETFD; 267 errno; 268 exact pre-fork tuple assertion",
+        "required_actual_left": "F_GETFD nonnegative, expected right is (-1, EBADF)",
+        "later_exec_marker_is_not_a_substitute": true
+      }
+    },
+    "apply_fixed": {
+      "label": "apply-five-file-parent-liveness",
+      "before_tree": "7d703610ae4f778ad305ebc139860d276f416e8c",
+      "after_tree": "d8a5e94af06b9555fc8256af1337e9f28f7c7fa8",
+      "files": [
+        {
+          "path": "codex-rs/linux-sandbox/src/launcher.rs",
+          "mode": "100644",
+          "before_blob": "d4e9b521bf93f0861cf497c3153a9efdc6e3c67b",
+          "after_blob": "a1d761fba56d6b1653598e82f5d5d81207719ef5",
+          "bytes": 17189,
+          "sha256": "4c8c80c86477b6bbfdc002eee06c3d70ea09829a92eb079f8d309a13d22ea8bf"
+        },
+        {
+          "path": "codex-rs/linux-sandbox/src/lib.rs",
+          "mode": "100644",
+          "before_blob": "ad442168227e5d52c440f5fc740bbd8cb2746fe7",
+          "after_blob": "8f704a3156998d169ceee6bd5e93bf549da9c5c0",
+          "bytes": 1074,
+          "sha256": "35302eb707a300f974f3fa6873f82a29a4f1c15fb250b10f57c2b4f5ccd99aba"
+        },
+        {
+          "path": "codex-rs/linux-sandbox/src/linux_run_main.rs",
+          "mode": "100644",
+          "before_blob": "b50f19732bc0a4744c62f7300f955b9f9d17bf08",
+          "after_blob": "e8eab2ed1b8221c75a366e0cc93851cf98d6f490",
+          "bytes": 56541,
+          "sha256": "c62b0014d1a539bb0343048fffa5283816f66dd17abcfb089ba3bce60eb247ca"
+        },
+        {
+          "path": "codex-rs/linux-sandbox/src/parent_lifecycle.rs",
+          "mode": "100644",
+          "before_blob": null,
+          "after_blob": "ffc5774508ab4a069a6bcb70f27950300b86fbfe",
+          "bytes": 7437,
+          "sha256": "2568b9008d8b6db84b40ace134c5aef6b493d316bfe1d977aab8290b58b64db6"
+        },
+        {
+          "path": "codex-rs/linux-sandbox/src/parent_lifecycle_tests.rs",
+          "mode": "100644",
+          "before_blob": null,
+          "after_blob": "0293bce3c08720952fd3413c92c4e9a033da3d03",
+          "bytes": 12752,
+          "sha256": "cbd431000c30fa687422dbed660235edb16c4ce50b6f62c87def5e2957b2487e"
+        }
+      ]
+    },
+    "counterfactual_stages": [
+      {
+        "kind": "no_exit_rejection",
+        "apply": {
+          "label": "no_exit_rejection-apply-negative",
+          "before_tree": "d8a5e94af06b9555fc8256af1337e9f28f7c7fa8",
+          "after_tree": "7e1bb54a24c240287c7f4f6a2b85fed008509cff",
+          "files": [
+            {
+              "path": "codex-rs/linux-sandbox/src/parent_lifecycle.rs",
+              "mode": "100644",
+              "before_blob": "ffc5774508ab4a069a6bcb70f27950300b86fbfe",
+              "after_blob": "4b395cc9faa7f10dbd5d4efef8036b0170164ec0",
+              "bytes": 7234,
+              "sha256": "eb552931c2cb8515d577df020196ace5ce5b7e4970775b7b54e8e170539382f1"
+            }
+          ]
+        },
+        "scope": {
+          "label": "no_exit_rejection-negative",
+          "expression": "test(=parent_lifecycle::tests::exited_original_parent_is_rejected_after_actual_reparenting)",
+          "expected_cases": [
+            {
+              "classname": "codex-linux-sandbox",
+              "name": "parent_lifecycle::tests::exited_original_parent_is_rejected_after_actual_reparenting"
+            }
+          ],
+          "package_filter": null,
+          "full_workspace_metadata_and_catalog": true,
+          "observe_original_app": false
+        },
+        "restore": {
+          "label": "no_exit_rejection-restore-positive",
+          "before_tree": "7e1bb54a24c240287c7f4f6a2b85fed008509cff",
+          "after_tree": "d8a5e94af06b9555fc8256af1337e9f28f7c7fa8",
+          "files": [
+            {
+              "path": "codex-rs/linux-sandbox/src/parent_lifecycle.rs",
+              "mode": "100644",
+              "before_blob": "4b395cc9faa7f10dbd5d4efef8036b0170164ec0",
+              "after_blob": "ffc5774508ab4a069a6bcb70f27950300b86fbfe",
+              "bytes": 7437,
+              "sha256": "2568b9008d8b6db84b40ace134c5aef6b493d316bfe1d977aab8290b58b64db6"
+            }
+          ]
+        },
+        "required_actual_evidence": [
+          "inherited_unread_parent reached",
+          "owned original launcher killed and waitid WNOWAIT observed its exit",
+          "probe getppid differs from original launcher",
+          "actual reparented liveness result=Ok(())",
+          "owned child assertion: exited original parent was admitted"
+        ],
+        "invalid_evidence": [
+          "parent RecvError alone",
+          "setup failure",
+          "generic timeout"
+        ]
+      },
+      {
+        "kind": "no_rearm",
+        "apply": {
+          "label": "no_rearm-apply-negative",
+          "before_tree": "d8a5e94af06b9555fc8256af1337e9f28f7c7fa8",
+          "after_tree": "7be28ab9a7389fb869c9700263b6e2d1fc62d2cf",
+          "files": [
+            {
+              "path": "codex-rs/linux-sandbox/src/parent_lifecycle.rs",
+              "mode": "100644",
+              "before_blob": "ffc5774508ab4a069a6bcb70f27950300b86fbfe",
+              "after_blob": "eab9c5023d6f688bfbda563348490e9bb39a6aee",
+              "bytes": 7102,
+              "sha256": "a83ed718ca4171673e56eb9c6421b5abb158ab9ff2ea10cdc98670d5cec199a8"
+            }
+          ]
+        },
+        "scope": {
+          "label": "no_rearm-negative",
+          "expression": "test(=parent_lifecycle::tests::rearmed_parent_death_terminates_probe_and_closes_fd_before_user_fork)",
+          "expected_cases": [
+            {
+              "classname": "codex-linux-sandbox",
+              "name": "parent_lifecycle::tests::rearmed_parent_death_terminates_probe_and_closes_fd_before_user_fork"
+            }
+          ],
+          "package_filter": null,
+          "full_workspace_metadata_and_catalog": true,
+          "observe_original_app": false
+        },
+        "restore": {
+          "label": "no_rearm-restore-positive",
+          "before_tree": "7be28ab9a7389fb869c9700263b6e2d1fc62d2cf",
+          "after_tree": "d8a5e94af06b9555fc8256af1337e9f28f7c7fa8",
+          "files": [
+            {
+              "path": "codex-rs/linux-sandbox/src/parent_lifecycle.rs",
+              "mode": "100644",
+              "before_blob": "eab9c5023d6f688bfbda563348490e9bb39a6aee",
+              "after_blob": "ffc5774508ab4a069a6bcb70f27950300b86fbfe",
+              "bytes": 7437,
+              "sha256": "2568b9008d8b6db84b40ace134c5aef6b493d316bfe1d977aab8290b58b64db6"
+            }
+          ]
+        },
+        "required_actual_evidence": [
+          "inherited_unread_parent reached",
+          "armed_with_fd_closed_before_fork_and_exec reached",
+          "owned original launcher killed and waitid WNOWAIT observed its exit",
+          "test's own five-second reaper survived original launcher exit assertion while stdin writer is still held"
+        ],
+        "invalid_evidence": [
+          "nextest timeout",
+          "missing stage marker",
+          "setup or early child failure"
+        ]
+      },
+      {
+        "kind": "leaked_parent_fd",
+        "apply": {
+          "label": "leaked_parent_fd-apply-negative",
+          "before_tree": "d8a5e94af06b9555fc8256af1337e9f28f7c7fa8",
+          "after_tree": "bd8525ee61cf9ef3f687e8ffd6db60b7396de998",
+          "files": [
+            {
+              "path": "codex-rs/linux-sandbox/src/parent_lifecycle.rs",
+              "mode": "100644",
+              "before_blob": "ffc5774508ab4a069a6bcb70f27950300b86fbfe",
+              "after_blob": "63df209d8ebda1776b5526123ff08b3382982804",
+              "bytes": 7469,
+              "sha256": "e339d9e553715f27655c5386fcc1d386e8d84477ff92cb325966889cf03a409b"
+            }
+          ]
+        },
+        "scope": {
+          "label": "leaked_parent_fd-negative",
+          "expression": "test(=parent_lifecycle::tests::rearmed_parent_death_terminates_probe_and_closes_fd_before_user_fork)",
+          "expected_cases": [
+            {
+              "classname": "codex-linux-sandbox",
+              "name": "parent_lifecycle::tests::rearmed_parent_death_terminates_probe_and_closes_fd_before_user_fork"
+            }
+          ],
+          "package_filter": null,
+          "full_workspace_metadata_and_catalog": true,
+          "observe_original_app": false
+        },
+        "restore": {
+          "label": "leaked_parent_fd-restore-positive",
+          "before_tree": "bd8525ee61cf9ef3f687e8ffd6db60b7396de998",
+          "after_tree": "d8a5e94af06b9555fc8256af1337e9f28f7c7fa8",
+          "files": [
+            {
+              "path": "codex-rs/linux-sandbox/src/parent_lifecycle.rs",
+              "mode": "100644",
+              "before_blob": "63df209d8ebda1776b5526123ff08b3382982804",
+              "after_blob": "ffc5774508ab4a069a6bcb70f27950300b86fbfe",
+              "bytes": 7437,
+              "sha256": "2568b9008d8b6db84b40ace134c5aef6b493d316bfe1d977aab8290b58b64db6"
+            }
+          ]
+        },
+        "required_actual_evidence": [
+          "inherited_unread_parent reached",
+          "arm_and_check returned success in owned probe",
+          "original descriptor F_GETFD is still open and original pre-fork EBADF assertion fails"
+        ],
+        "invalid_evidence": [
+          "post-exec-only result",
+          "setup failure",
+          "generic timeout"
+        ]
+      }
+    ],
+    "positive_scope": {
+      "label": "parent-liveness-final-eight",
+      "expression": "test(=parent_lifecycle::tests::exited_original_parent_is_rejected_after_actual_reparenting) | test(=parent_lifecycle::tests::rearmed_parent_death_terminates_probe_and_closes_fd_before_user_fork) | test(=parent_lifecycle::tests::ordinary_file_and_pre_read_proc_descriptor_are_rejected) | test(=suite::v2::command_exec::command_exec_process_ids_are_connection_scoped_and_disconnect_terminates_process) | test(=suite::managed_proxy::sandboxed_commands_have_a_seccomp_filtered_namespace_reaper) | test(=suite::managed_proxy::managed_proxy_commands_have_a_seccomp_filtered_namespace_reaper) | test(=suite::managed_proxy::namespace_reaper_collects_orphaned_descendants) | test(=suite::landlock::sandbox_inner_stage_rejects_retained_capabilities)",
+      "expected_cases": [
+        {
+          "classname": "codex-linux-sandbox",
+          "name": "parent_lifecycle::tests::exited_original_parent_is_rejected_after_actual_reparenting"
+        },
+        {
+          "classname": "codex-linux-sandbox",
+          "name": "parent_lifecycle::tests::rearmed_parent_death_terminates_probe_and_closes_fd_before_user_fork"
+        },
+        {
+          "classname": "codex-linux-sandbox",
+          "name": "parent_lifecycle::tests::ordinary_file_and_pre_read_proc_descriptor_are_rejected"
+        },
+        {
+          "classname": "codex-app-server::all",
+          "name": "suite::v2::command_exec::command_exec_process_ids_are_connection_scoped_and_disconnect_terminates_process"
+        },
+        {
+          "classname": "codex-linux-sandbox::all",
+          "name": "suite::managed_proxy::sandboxed_commands_have_a_seccomp_filtered_namespace_reaper"
+        },
+        {
+          "classname": "codex-linux-sandbox::all",
+          "name": "suite::managed_proxy::managed_proxy_commands_have_a_seccomp_filtered_namespace_reaper"
+        },
+        {
+          "classname": "codex-linux-sandbox::all",
+          "name": "suite::managed_proxy::namespace_reaper_collects_orphaned_descendants"
+        },
+        {
+          "classname": "codex-linux-sandbox::all",
+          "name": "suite::landlock::sandbox_inner_stage_rejects_retained_capabilities"
+        }
+      ],
+      "package_filter": null,
+      "full_workspace_metadata_and_catalog": true,
+      "observe_original_app": true
+    },
+    "budgets": "All original nextest-local and test-internal budgets retained; original App five seconds and liveness BOUND five seconds; retries zero. No all-features/package narrowing or retry is introduced.",
+    "resource_guard": {
+      "before_each_phase_free_bytes": 8000000000,
+      "after_each_phase_free_bytes": 8000000000,
+      "target": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target-app-epoch2-20261105",
+      "existing_target_reused": true,
+      "no_cleanup": true
+    },
+    "finally_contract": "Restore each exact owned counterfactual to d8a5 only after source/index/locks/untracked guards; invalid negatives remain invalid and stop after restoration; external drift is never overwritten.",
+    "observer_contract": "Final eight use the exact previously reviewed read-only owned process observer functions. Marker/trace completeness is separate from the original product test oracle; no missing trace is represented as proof of termination.",
+    "stop_after": "Final eight actual outcomes and complete source/helper/program receipts; no Windows mutation, whole-workspace tests, fix, fmt, publication or ref changes.",
+    "provenance": {
+      "author_manifest": "014cd58cb83cb04bbf9329486f42cfe22b30182a",
+      "source_map": "e8dc1d43488e90c77c2e2b017f79da7ec3c6e93c",
+      "negative_source_map": "7220f059499b5a30c6f4dc459f84bd7847a819f9",
+      "full_patch": "5847179e988ea0719766cd25be293e09efd882c3",
+      "tree_input": "/workspace/scratch/07dd58cc9630/hepta-audit-fourth/inputs/app-parent-liveness-native-trees.json"
+    }
+  },
+  "original_counterfactual_fixture_budgets_and_assertions_unchanged": true
+}

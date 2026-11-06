@@ -1,0 +1,64 @@
+{
+  "schema_version": 1,
+  "artifact_kind": "historical_evidence_index_v1",
+  "scope": "Index to immutable previously published evidence. The linked JSON is the retained complete record; this current file is not the raw generator receipt or raw source-input manifest.",
+  "historical_record": {
+    "repository": "TrillionniumFoundation/hepta-private-ci",
+    "record_commit": "ff72d462d74f9eb856aa9edbc368caad9c466708",
+    "path": "qualification/r3-audit-repair-20261104/windows-helper-source-inputs.json",
+    "git_blob": "93cd6aaab78f17e035bd1ae85439cfe82433bbdb",
+    "bytes": 102192,
+    "sha256": "a6365524801a037af3e6b10344922e9972d1b812331037e6ecc6da7dc7406e17",
+    "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/ff72d462d74f9eb856aa9edbc368caad9c466708/qualification/r3-audit-repair-20261104/windows-helper-source-inputs.json",
+    "unchanged_original_bytes_available": true
+  },
+  "execution_source": {
+    "commit": "ea84b04d25fbb40662414239d4836c0c161900aa",
+    "source_base": "e729e6c2becb528e3a6b49c9e5bbea57bd26637a",
+    "run_id": 41851347278,
+    "run_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41851347278",
+    "artifact_id": 13335716337,
+    "source_inputs": 805,
+    "helper_scope": "Four Exec Server helper postimages"
+  },
+  "summary": {
+    "original_record_status": "COMPLETE_SOURCE_INPUT_HASH_MAP",
+    "update_and_check": [
+      {
+        "name": "original-lock-update",
+        "command": [
+          "just",
+          "bazel-lock-update"
+        ],
+        "exit_code": 0,
+        "elapsed_seconds": 21.057151507999997
+      },
+      {
+        "name": "original-lock-check",
+        "command": [
+          "just",
+          "bazel-lock-check"
+        ],
+        "exit_code": 0,
+        "elapsed_seconds": 13.607315039999989
+      }
+    ],
+    "source_inputs_unchanged": true,
+    "generated_lock_matches_committed_lock": true,
+    "module_lock_sha256": "11f8a421224b9b05f32c4c14054e8868083d989fc497310c8d51e1156f189ca3",
+    "module_lock_git_blob": "1904db189003cb0b559f71958518e33a45fb6bb7",
+    "input_inventory": {
+      "entry_count": 805,
+      "before_after_original_bytes_equal": true,
+      "record_phase": "before",
+      "same_original_blob": "93cd6aaab78f17e035bd1ae85439cfe82433bbdb",
+      "same_original_sha256": "a6365524801a037af3e6b10344922e9972d1b812331037e6ecc6da7dc7406e17"
+    }
+  },
+  "interpretation": [
+    "record_commit identifies where the complete retained evidence bytes are published; execution_source.commit identifies the different original source that actually ran.",
+    "Historical generator paths and vendored nested workflow paths remain verbatim in the linked immutable record. They are not current-checkout workflow links.",
+    "The original update/check result and unchanged lock do not qualify the current full product or Windows execution."
+  ],
+  "product_qualification": false
+}

@@ -1,0 +1,164 @@
+{
+  "schema": "hepta-v8-default-real-bazel-lock-gates-complete-phase-v1",
+  "native_job": "1a1a9a0aa93-fc05-3667",
+  "tested_source_tree": "7d703610ae4f778ad305ebc139860d276f416e8c",
+  "manifest": "c09347fa144265745105f1955f36611dadaa211b",
+  "execution_guard": "f9e355f7b7b39749fe64811bb029d2e6d6e3c174",
+  "files": [
+    {
+      "name": "official-bazel-bootstrap.json",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full18-three-repairs-v3-20261105-0254/official-bazel-bootstrap.json",
+      "bytes": 1993,
+      "sha256": "120e846d7a6c38ca763b0488c775f9767eb48bf4f870692cd53fcc4f6375865a",
+      "content": "{\n  \"pin\": {\n    \"version\": \"9.3.0\",\n    \"release_url\": \"https://github.com/bazelbuild/bazel/releases/tag/9.3.0\",\n    \"release_id\": 405972569,\n    \"assets\": [\n      {\n        \"id\": 619248138,\n        \"name\": \"bazel-9.3.0-linux-x86_64\",\n        \"size\": 77023347,\n        \"sha256\": \"d302d22ed77ee5658b87857249baa579db84300ecebe0a1e9a357b5b20f80eb8\",\n        \"url\": \"https://github.com/bazelbuild/bazel/releases/download/9.3.0/bazel-9.3.0-linux-x86_64\"\n      },\n      {\n        \"id\": 619248150,\n        \"name\": \"bazel-9.3.0-linux-x86_64.sha256\",\n        \"size\": 91,\n        \"sha256\": \"92f4bd8ffdbc621d28e97731c61e1c1d09abb5758f0d19dc07b49ee67c7d832c\",\n        \"url\": \"https://github.com/bazelbuild/bazel/releases/download/9.3.0/bazel-9.3.0-linux-x86_64.sha256\"\n      }\n    ]\n  },\n  \"downloads\": [\n    {\n      \"url\": \"https://github.com/bazelbuild/bazel/releases/download/9.3.0/bazel-9.3.0-linux-x86_64\",\n      \"release_asset_id\": 619248138,\n      \"path\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full18-three-repairs-v3-20261105-0254/official-bazel/bazel-9.3.0-linux-x86_64\",\n      \"bytes\": 77023347,\n      \"sha256\": \"d302d22ed77ee5658b87857249baa579db84300ecebe0a1e9a357b5b20f80eb8\"\n    },\n    {\n      \"url\": \"https://github.com/bazelbuild/bazel/releases/download/9.3.0/bazel-9.3.0-linux-x86_64.sha256\",\n      \"release_asset_id\": 619248150,\n      \"path\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full18-three-repairs-v3-20261105-0254/official-bazel/bazel-9.3.0-linux-x86_64.sha256\",\n      \"bytes\": 91,\n      \"sha256\": \"92f4bd8ffdbc621d28e97731c61e1c1d09abb5758f0d19dc07b49ee67c7d832c\"\n    }\n  ],\n  \"checksum_text\": \"d302d22ed77ee5658b87857249baa579db84300ecebe0a1e9a357b5b20f80eb8  bazel-9.3.0-linux-x86_64\",\n  \"installed\": {\n    \"path\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/tools/bin/bazel\",\n    \"bytes\": 77023347,\n    \"sha256\": \"d302d22ed77ee5658b87857249baa579db84300ecebe0a1e9a357b5b20f80eb8\"\n  },\n  \"system_paths_unchanged\": true\n}\n"
+    },
+    {
+      "name": "official-bazel-version-command.json",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full18-three-repairs-v3-20261105-0254/official-bazel-version-command.json",
+      "bytes": 408,
+      "sha256": "bd5b63d8e848c411d803a776d6914486648215692154eadb195eef08d0ed9282",
+      "content": "{\n  \"argv\": [\n    \"bazel\",\n    \"--version\"\n  ],\n  \"cwd\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/source\",\n  \"source\": \"7d703610ae4f778ad305ebc139860d276f416e8c\",\n  \"started_at\": \"2026-11-05T02:57:02.787932+00:00\",\n  \"attempt\": 1,\n  \"cargo_profile\": \"dev-small\",\n  \"nextest_profile\": \"local\",\n  \"disk_before\": {\n    \"total\": 1005867986944,\n    \"used\": 941928030208,\n    \"free\": 53692383232\n  }\n}\n"
+    },
+    {
+      "name": "official-bazel-version-status.json",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full18-three-repairs-v3-20261105-0254/official-bazel-version-status.json",
+      "bytes": 1425,
+      "sha256": "43c3230a1243c6d590a94582d8fa2405f5ddf458b991bce38875430c58e09cc4",
+      "content": "{\n  \"name\": \"official-bazel-version\",\n  \"argv\": [\n    \"bazel\",\n    \"--version\"\n  ],\n  \"source_before\": \"7d703610ae4f778ad305ebc139860d276f416e8c\",\n  \"exit_code\": 0,\n  \"started_at\": \"2026-11-05T02:57:02.787932+00:00\",\n  \"completed_at\": \"2026-11-05T02:57:02.793503+00:00\",\n  \"duration_seconds\": 0.005576606024987996,\n  \"stdout\": {\n    \"full\": {\n      \"path\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full18-three-repairs-v3-20261105-0254/official-bazel-version.stdout\",\n      \"bytes\": 12,\n      \"sha256\": \"975f11fdb2255b8f73742a67a3e471115f829095af0931945a505f8401740e21\"\n    },\n    \"parts\": [\n      {\n        \"offset\": 0,\n        \"path\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full18-three-repairs-v3-20261105-0254/parts/official-bazel-version-stdout/0000.txt\",\n        \"bytes\": 12,\n        \"sha256\": \"975f11fdb2255b8f73742a67a3e471115f829095af0931945a505f8401740e21\"\n      }\n    ]\n  },\n  \"disk_after\": {\n    \"total\": 1005867986944,\n    \"used\": 941928046592,\n    \"free\": 53692366848\n  },\n  \"stderr\": {\n    \"full\": {\n      \"path\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full18-three-repairs-v3-20261105-0254/official-bazel-version.stderr\",\n      \"bytes\": 0,\n      \"sha256\": \"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\"\n    },\n    \"parts\": []\n  },\n  \"source_after\": \"7d703610ae4f778ad305ebc139860d276f416e8c\",\n  \"source_unchanged\": true\n}\n"
+    },
+    {
+      "name": "official-bazel-version.stdout",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full18-three-repairs-v3-20261105-0254/official-bazel-version.stdout",
+      "bytes": 12,
+      "sha256": "975f11fdb2255b8f73742a67a3e471115f829095af0931945a505f8401740e21",
+      "content": "bazel 9.3.0\n"
+    },
+    {
+      "name": "official-bazel-version.stderr",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full18-three-repairs-v3-20261105-0254/official-bazel-version.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "content": ""
+    },
+    {
+      "name": "temporary-task-user-bazelrc.json",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full18-three-repairs-v3-20261105-0254/temporary-task-user-bazelrc.json",
+      "bytes": 937,
+      "sha256": "db1a919f0b1059992b8d6f6227c311df3d7541172884aaa4daf33d12313cfce8",
+      "content": "{\n  \"content\": \"startup --output_user_root=/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/v8-lock-cache-20261105/output-user-root\\ncommon --repo_contents_cache=/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/v8-lock-cache-20261105/repo-contents-cache\\ncommon --repository_cache=/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/v8-lock-cache-20261105/repository-cache\\ncommon --disk_cache=/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/v8-lock-cache-20261105/disk-cache\\n\",\n  \"file\": {\n    \"path\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/source/user.bazelrc\",\n    \"bytes\": 467,\n    \"sha256\": \"964009d0bf9883380629ba6a31aedee4332d68bce8dd5b15031676b67c08e76b\"\n  },\n  \"cache_root\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/v8-lock-cache-20261105\",\n  \"scope\": \"Only this previously absent task source override, through the original try-import; no original security or experimental flags removed.\"\n}\n"
+    },
+    {
+      "name": "temporary-task-user-bazelrc-restored.json",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full18-three-repairs-v3-20261105-0254/temporary-task-user-bazelrc-restored.json",
+      "bytes": 134,
+      "sha256": "f1fb444cb4ea33b393f47034824ff9102f2c16a8e53eccdffdc10de3a3da5672",
+      "content": "{\n  \"path\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/source/user.bazelrc\",\n  \"exists\": false,\n  \"cache_preserved\": true\n}\n"
+    },
+    {
+      "name": "actual-lock-generation.json",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full18-three-repairs-v3-20261105-0254/actual-lock-generation.json",
+      "bytes": 2340,
+      "sha256": "99f56b6c6a5d64193e5a4df44626edd3cb06857cb6105c3844c572cb06b23d43",
+      "content": "{\n  \"name\": \"original-bazel-lock-update\",\n  \"argv\": [\n    \"just\",\n    \"bazel-lock-update\"\n  ],\n  \"source_before\": \"7d703610ae4f778ad305ebc139860d276f416e8c\",\n  \"exit_code\": 0,\n  \"started_at\": \"2026-11-05T02:57:03.423722+00:00\",\n  \"completed_at\": \"2026-11-05T02:58:55.157551+00:00\",\n  \"duration_seconds\": 111.73385336800129,\n  \"stdout\": {\n    \"full\": {\n      \"path\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full18-three-repairs-v3-20261105-0254/original-bazel-lock-update.stdout\",\n      \"bytes\": 18,\n      \"sha256\": \"3e7b29182cce6e36002b75542488111789f464957b5728ab4de90ab2cf4c4fe3\"\n    },\n    \"parts\": [\n      {\n        \"offset\": 0,\n        \"path\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full18-three-repairs-v3-20261105-0254/parts/original-bazel-lock-update-stdout/0000.txt\",\n        \"bytes\": 18,\n        \"sha256\": \"3e7b29182cce6e36002b75542488111789f464957b5728ab4de90ab2cf4c4fe3\"\n      }\n    ]\n  },\n  \"disk_after\": {\n    \"total\": 1005867986944,\n    \"used\": 943378984960,\n    \"free\": 52241428480\n  },\n  \"stderr\": {\n    \"full\": {\n      \"path\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full18-three-repairs-v3-20261105-0254/original-bazel-lock-update.stderr\",\n      \"bytes\": 4718,\n      \"sha256\": \"dea4c5d269d03341689fb6b3929a5c4325afeea0818258e8d91a4d6c5988709d\"\n    },\n    \"parts\": [\n      {\n        \"offset\": 0,\n        \"path\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full18-three-repairs-v3-20261105-0254/parts/original-bazel-lock-update-stderr/0000.txt\",\n        \"bytes\": 4718,\n        \"sha256\": \"dea4c5d269d03341689fb6b3929a5c4325afeea0818258e8d91a4d6c5988709d\"\n      }\n    ]\n  },\n  \"generator_changed_paths\": [],\n  \"generator_after_tree\": \"7d703610ae4f778ad305ebc139860d276f416e8c\",\n  \"actual_module_diff\": {\n    \"path\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full18-three-repairs-v3-20261105-0254/actual-module-generator.patch\",\n    \"bytes\": 0,\n    \"sha256\": \"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\"\n  },\n  \"generated_module_lock\": {\n    \"path\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/source/MODULE.bazel.lock\",\n    \"bytes\": 1738619,\n    \"sha256\": \"11f8a421224b9b05f32c4c14054e8868083d989fc497310c8d51e1156f189ca3\",\n    \"git_blob\": \"1904db189003cb0b559f71958518e33a45fb6bb7\"\n  }\n}\n"
+    },
+    {
+      "name": "actual-module-generator.patch",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full18-three-repairs-v3-20261105-0254/actual-module-generator.patch",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "content": ""
+    },
+    {
+      "name": "original-bazel-lock-update-command.json",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full18-three-repairs-v3-20261105-0254/original-bazel-lock-update-command.json",
+      "bytes": 415,
+      "sha256": "eb8ae3af1a4610f8d35dd80a4ba0f90721471d2858b8c58d3087911920d05230",
+      "content": "{\n  \"argv\": [\n    \"just\",\n    \"bazel-lock-update\"\n  ],\n  \"cwd\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/source\",\n  \"source\": \"7d703610ae4f778ad305ebc139860d276f416e8c\",\n  \"started_at\": \"2026-11-05T02:57:03.423722+00:00\",\n  \"attempt\": 1,\n  \"cargo_profile\": \"dev-small\",\n  \"nextest_profile\": \"local\",\n  \"disk_before\": {\n    \"total\": 1005867986944,\n    \"used\": 941930532864,\n    \"free\": 53689880576\n  }\n}\n"
+    },
+    {
+      "name": "original-bazel-lock-check-command.json",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full18-three-repairs-v3-20261105-0254/original-bazel-lock-check-command.json",
+      "bytes": 414,
+      "sha256": "cd11d9ee21a398a7610e5195bd56dfe3a5844f2ad1fe6f5d92cf55fe9f9e8081",
+      "content": "{\n  \"argv\": [\n    \"just\",\n    \"bazel-lock-check\"\n  ],\n  \"cwd\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/source\",\n  \"source\": \"7d703610ae4f778ad305ebc139860d276f416e8c\",\n  \"started_at\": \"2026-11-05T02:58:56.180267+00:00\",\n  \"attempt\": 1,\n  \"cargo_profile\": \"dev-small\",\n  \"nextest_profile\": \"local\",\n  \"disk_before\": {\n    \"total\": 1005867986944,\n    \"used\": 943382757376,\n    \"free\": 52237656064\n  }\n}\n"
+    },
+    {
+      "name": "original-bazel-lock-check-status.json",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full18-three-repairs-v3-20261105-0254/original-bazel-lock-check-status.json",
+      "bytes": 1758,
+      "sha256": "63fa9780657e0efae0a5c4a7244f650cfe48f0708ff6946fcec79410d9f6fd02",
+      "content": "{\n  \"name\": \"original-bazel-lock-check\",\n  \"argv\": [\n    \"just\",\n    \"bazel-lock-check\"\n  ],\n  \"source_before\": \"7d703610ae4f778ad305ebc139860d276f416e8c\",\n  \"exit_code\": 0,\n  \"started_at\": \"2026-11-05T02:58:56.180267+00:00\",\n  \"completed_at\": \"2026-11-05T02:58:56.673492+00:00\",\n  \"duration_seconds\": 0.4932384639978409,\n  \"stdout\": {\n    \"full\": {\n      \"path\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full18-three-repairs-v3-20261105-0254/original-bazel-lock-check.stdout\",\n      \"bytes\": 18,\n      \"sha256\": \"3e7b29182cce6e36002b75542488111789f464957b5728ab4de90ab2cf4c4fe3\"\n    },\n    \"parts\": [\n      {\n        \"offset\": 0,\n        \"path\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full18-three-repairs-v3-20261105-0254/parts/original-bazel-lock-check-stdout/0000.txt\",\n        \"bytes\": 18,\n        \"sha256\": \"3e7b29182cce6e36002b75542488111789f464957b5728ab4de90ab2cf4c4fe3\"\n      }\n    ]\n  },\n  \"disk_after\": {\n    \"total\": 1005867986944,\n    \"used\": 943382802432,\n    \"free\": 52237611008\n  },\n  \"stderr\": {\n    \"full\": {\n      \"path\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full18-three-repairs-v3-20261105-0254/original-bazel-lock-check.stderr\",\n      \"bytes\": 938,\n      \"sha256\": \"a6d8257aa7027398226ee585d749e8e11462856c9adae29e0713fa880cfa05e4\"\n    },\n    \"parts\": [\n      {\n        \"offset\": 0,\n        \"path\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full18-three-repairs-v3-20261105-0254/parts/original-bazel-lock-check-stderr/0000.txt\",\n        \"bytes\": 938,\n        \"sha256\": \"a6d8257aa7027398226ee585d749e8e11462856c9adae29e0713fa880cfa05e4\"\n      }\n    ]\n  },\n  \"source_after\": \"7d703610ae4f778ad305ebc139860d276f416e8c\",\n  \"source_unchanged\": true\n}\n"
+    },
+    {
+      "name": "task-owned-bazel-shutdown-result.json",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full18-three-repairs-v3-20261105-0254/task-owned-bazel-shutdown-result.json",
+      "bytes": 147,
+      "sha256": "2453cddc1681d601732eb17bb83e69c27152bd08956f547fecac04d70c2702c2",
+      "content": "{\n  \"exit_code\": 0,\n  \"only_cache_root\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/v8-lock-cache-20261105\",\n  \"cache_preserved\": true\n}\n"
+    },
+    {
+      "name": "original-bazel-lock-update.stdout",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full18-three-repairs-v3-20261105-0254/original-bazel-lock-update.stdout",
+      "bytes": 18,
+      "sha256": "3e7b29182cce6e36002b75542488111789f464957b5728ab4de90ab2cf4c4fe3",
+      "content": "<root> (codex@_)\n\n"
+    },
+    {
+      "name": "original-bazel-lock-update.stderr",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full18-three-repairs-v3-20261105-0254/original-bazel-lock-update.stderr",
+      "bytes": 4718,
+      "sha256": "dea4c5d269d03341689fb6b3929a5c4325afeea0818258e8d91a4d6c5988709d",
+      "content": "bazel mod deps --lockfile_mode=update\nExtracting Bazel installation...\nStarting local Bazel server (9.3.0) and connecting to it...\nINFO: Invocation ID: a55329ec-0f45-4470-9873-342d94d1db8c\n no actions running\n no actions running\n no actions running\n no actions running\n no actions running\n no actions running\n no actions running\n no actions running\n no actions running\n no actions running\n no actions running\n no actions running\n no actions running\n no actions running\n no actions running\n no actions running\n no actions running\n no actions running\n no actions running\n no actions running\n no actions running\n no actions running\n no actions running\n no actions running\n no actions running\n no actions running\n no actions running\n no actions running\n no actions running\n no actions running\n no actions running\n no actions running\n no actions running\n no actions running\n no actions running\n no actions running\n no actions running\nWARNING: For repository 'platforms', the root module requires module version platforms@1.0.0, but got platforms@1.1.0 in the resolved dependency graph. Please update the version in your MODULE.bazel or set --check_direct_dependencies=off\nWARNING: For repository 'apple_support', the root module requires module version apple_support@2.1.0, but got apple_support@2.5.2 in the resolved dependency graph. Please update the version in your MODULE.bazel or set --check_direct_dependencies=off\nWARNING: For repository 'rules_cc', the root module requires module version rules_cc@0.2.18, but got rules_cc@0.2.20 in the resolved dependency graph. Please update the version in your MODULE.bazel or set --check_direct_dependencies=off\n no actions running\n no actions running\n no actions running\n no actions running\n no actions running\n no actions running\n no actions running\n no actions running\n no actions running\n no actions running\n no actions running\n no actions running\n no actions running\n no actions running\n no actions running\n no actions running\n no actions running\n no actions running\n no actions running\n no actions running\n no actions running\n no actions running\n no actions running\n no actions running\n no actions running\n no actions running\n no actions running\n no actions running\n no actions running\n no actions running\n no actions running\n no actions running\n no actions running\n no actions running\nDEBUG: /home/qian-qi/work/hepta-audit-r3-fullgate-20261104/v8-lock-cache-20261105/output-user-root/8c2c4d6cc763a7b13511a697623d2906/external/rules_rs+/rs/extensions.bzl:302:18: \nWARNING: A well-known crate annotation exists for zstd-sys! Apply the following to your MODULE.bazel:\n\n```\nbazel_dep(name = \"zstd\", version = \"1.5.7.bcr.1\")\n\ncrate = use_extension(\"@rules_rs//rs:extensions.bzl\", \"crate\")\ncrate.annotation(\n    crate = \"zstd-sys\",\n    gen_build_script = \"off\",\n    deps = [\"@zstd\"],\n)\n```\n\nYou can disable this warning by configuring your MODULE.bazel like so:\n\n```\ncrate.annotation(\n    crate = \"zstd-sys\",\n    gen_build_script = \"on\",\n)\n```\nDEBUG: /home/qian-qi/work/hepta-audit-r3-fullgate-20261104/v8-lock-cache-20261105/output-user-root/8c2c4d6cc763a7b13511a697623d2906/external/rules_rs+/rs/extensions.bzl:302:18: \nWARNING: A well-known crate annotation exists for libgit2-sys! Apply the following to your MODULE.bazel:\n\n```\nbazel_dep(name = \"libgit2\", version = \"1.9.1\")\n\ncrate = use_extension(\"@rules_rs//rs:extensions.bzl\", \"crate\")\ncrate.annotation(\n    crate = \"libgit2-sys\",\n    gen_build_script = \"off\",\n    deps = [\"@libgit2\"],\n)\n```\n\nYou can disable this warning by configuring your MODULE.bazel like so:\n\n```\ncrate.annotation(\n    crate = \"libgit2-sys\",\n    gen_build_script = \"on\",\n)\n```\nDEBUG: /home/qian-qi/work/hepta-audit-r3-fullgate-20261104/v8-lock-cache-20261105/output-user-root/8c2c4d6cc763a7b13511a697623d2906/external/rules_rs+/rs/extensions.bzl:302:18: \nWARNING: A well-known crate annotation exists for libssh2-sys! Apply the following to your MODULE.bazel:\n\n```\nbazel_dep(name = \"libssh2\", version = \"1.11.1.bcr.1\")\n\ncrate = use_extension(\"@rules_rs//rs:extensions.bzl\", \"crate\")\ncrate.annotation(\n    crate = \"libssh2-sys\",\n    gen_build_script = \"off\",\n    deps = [\"@libssh2\"],\n)\n```\n\nYou can disable this warning by configuring your MODULE.bazel like so:\n\n```\ncrate.annotation(\n    crate = \"libssh2-sys\",\n    gen_build_script = \"on\",\n)\n```\n no actions running\n no actions running\n no actions running\n no actions running\n no actions running\n no actions running\n no actions running\n no actions running\n no actions running\n no actions running\n no actions running\n no actions running\n no actions running\n no actions running\n no actions running\n no actions running\n no actions running\n no actions running\n no actions running\n no actions running\n"
+    },
+    {
+      "name": "original-bazel-lock-update-status.json",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full18-three-repairs-v3-20261105-0254/original-bazel-lock-update-status.json",
+      "bytes": 2430,
+      "sha256": "50a1c5529d7840dbbff7ce85ae1b19c766df733c72345a6b4e0c0dce0f70c966",
+      "content": "{\n  \"name\": \"original-bazel-lock-update\",\n  \"argv\": [\n    \"just\",\n    \"bazel-lock-update\"\n  ],\n  \"source_before\": \"7d703610ae4f778ad305ebc139860d276f416e8c\",\n  \"exit_code\": 0,\n  \"started_at\": \"2026-11-05T02:57:03.423722+00:00\",\n  \"completed_at\": \"2026-11-05T02:58:55.157551+00:00\",\n  \"duration_seconds\": 111.73385336800129,\n  \"stdout\": {\n    \"full\": {\n      \"path\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full18-three-repairs-v3-20261105-0254/original-bazel-lock-update.stdout\",\n      \"bytes\": 18,\n      \"sha256\": \"3e7b29182cce6e36002b75542488111789f464957b5728ab4de90ab2cf4c4fe3\"\n    },\n    \"parts\": [\n      {\n        \"offset\": 0,\n        \"path\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full18-three-repairs-v3-20261105-0254/parts/original-bazel-lock-update-stdout/0000.txt\",\n        \"bytes\": 18,\n        \"sha256\": \"3e7b29182cce6e36002b75542488111789f464957b5728ab4de90ab2cf4c4fe3\"\n      }\n    ]\n  },\n  \"disk_after\": {\n    \"total\": 1005867986944,\n    \"used\": 943378984960,\n    \"free\": 52241428480\n  },\n  \"stderr\": {\n    \"full\": {\n      \"path\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full18-three-repairs-v3-20261105-0254/original-bazel-lock-update.stderr\",\n      \"bytes\": 4718,\n      \"sha256\": \"dea4c5d269d03341689fb6b3929a5c4325afeea0818258e8d91a4d6c5988709d\"\n    },\n    \"parts\": [\n      {\n        \"offset\": 0,\n        \"path\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full18-three-repairs-v3-20261105-0254/parts/original-bazel-lock-update-stderr/0000.txt\",\n        \"bytes\": 4718,\n        \"sha256\": \"dea4c5d269d03341689fb6b3929a5c4325afeea0818258e8d91a4d6c5988709d\"\n      }\n    ]\n  },\n  \"generator_changed_paths\": [],\n  \"generator_after_tree\": \"7d703610ae4f778ad305ebc139860d276f416e8c\",\n  \"actual_module_diff\": {\n    \"path\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full18-three-repairs-v3-20261105-0254/actual-module-generator.patch\",\n    \"bytes\": 0,\n    \"sha256\": \"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\"\n  },\n  \"generated_module_lock\": {\n    \"path\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/source/MODULE.bazel.lock\",\n    \"bytes\": 1738619,\n    \"sha256\": \"11f8a421224b9b05f32c4c14054e8868083d989fc497310c8d51e1156f189ca3\",\n    \"git_blob\": \"1904db189003cb0b559f71958518e33a45fb6bb7\"\n  },\n  \"source_after\": \"7d703610ae4f778ad305ebc139860d276f416e8c\",\n  \"source_unchanged\": true\n}\n"
+    },
+    {
+      "name": "original-bazel-lock-check.stdout",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full18-three-repairs-v3-20261105-0254/original-bazel-lock-check.stdout",
+      "bytes": 18,
+      "sha256": "3e7b29182cce6e36002b75542488111789f464957b5728ab4de90ab2cf4c4fe3",
+      "content": "<root> (codex@_)\n\n"
+    },
+    {
+      "name": "original-bazel-lock-check.stderr",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full18-three-repairs-v3-20261105-0254/original-bazel-lock-check.stderr",
+      "bytes": 938,
+      "sha256": "a6d8257aa7027398226ee585d749e8e11462856c9adae29e0713fa880cfa05e4",
+      "content": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/source/scripts/check-module-bazel-lock.sh\nBuildBuddy key unavailable; using local Bazel configuration.\nINFO: Invocation ID: 6a5b440d-10f7-416b-b6c9-59d439e17f59\nWARNING: For repository 'platforms', the root module requires module version platforms@1.0.0, but got platforms@1.1.0 in the resolved dependency graph. Please update the version in your MODULE.bazel or set --check_direct_dependencies=off\nWARNING: For repository 'apple_support', the root module requires module version apple_support@2.1.0, but got apple_support@2.5.2 in the resolved dependency graph. Please update the version in your MODULE.bazel or set --check_direct_dependencies=off\nWARNING: For repository 'rules_cc', the root module requires module version rules_cc@0.2.18, but got rules_cc@0.2.20 in the resolved dependency graph. Please update the version in your MODULE.bazel or set --check_direct_dependencies=off\n"
+    },
+    {
+      "name": "task-owned-bazel-server-shutdown-command.json",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full18-three-repairs-v3-20261105-0254/task-owned-bazel-server-shutdown-command.json",
+      "bytes": 407,
+      "sha256": "15ed9999a3d0c5322223566b672f8bb2a5ac02e2127a0d5985968e92f8ed874e",
+      "content": "{\n  \"argv\": [\n    \"bazel\",\n    \"shutdown\"\n  ],\n  \"cwd\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/source\",\n  \"source\": \"7d703610ae4f778ad305ebc139860d276f416e8c\",\n  \"started_at\": \"2026-11-05T02:58:57.352722+00:00\",\n  \"attempt\": 1,\n  \"cargo_profile\": \"dev-small\",\n  \"nextest_profile\": \"local\",\n  \"disk_before\": {\n    \"total\": 1005867986944,\n    \"used\": 943385280512,\n    \"free\": 52235132928\n  }\n}\n"
+    },
+    {
+      "name": "task-owned-bazel-server-shutdown-status.json",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full18-three-repairs-v3-20261105-0254/task-owned-bazel-server-shutdown-status.json",
+      "bytes": 1462,
+      "sha256": "a60b3513830daa460c03a4e8c25a75cfee665dafd41a53349737bc8c2db0704a",
+      "content": "{\n  \"name\": \"task-owned-bazel-server-shutdown\",\n  \"argv\": [\n    \"bazel\",\n    \"shutdown\"\n  ],\n  \"source_before\": \"7d703610ae4f778ad305ebc139860d276f416e8c\",\n  \"exit_code\": 0,\n  \"started_at\": \"2026-11-05T02:58:57.352722+00:00\",\n  \"completed_at\": \"2026-11-05T02:58:57.886962+00:00\",\n  \"duration_seconds\": 0.5342503729916643,\n  \"stdout\": {\n    \"full\": {\n      \"path\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full18-three-repairs-v3-20261105-0254/task-owned-bazel-server-shutdown.stdout\",\n      \"bytes\": 0,\n      \"sha256\": \"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\"\n    },\n    \"parts\": []\n  },\n  \"disk_after\": {\n    \"total\": 1005867986944,\n    \"used\": 943385288704,\n    \"free\": 52235124736\n  },\n  \"stderr\": {\n    \"full\": {\n      \"path\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full18-three-repairs-v3-20261105-0254/task-owned-bazel-server-shutdown.stderr\",\n      \"bytes\": 58,\n      \"sha256\": \"5b39a9f56c09bbddb2bdf68c9eba5114cf29e200fb93cd6ec20af01b89e9199e\"\n    },\n    \"parts\": [\n      {\n        \"offset\": 0,\n        \"path\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full18-three-repairs-v3-20261105-0254/parts/task-owned-bazel-server-shutdown-stderr/0000.txt\",\n        \"bytes\": 58,\n        \"sha256\": \"5b39a9f56c09bbddb2bdf68c9eba5114cf29e200fb93cd6ec20af01b89e9199e\"\n      }\n    ]\n  },\n  \"source_after\": \"7d703610ae4f778ad305ebc139860d276f416e8c\",\n  \"source_unchanged\": true\n}\n"
+    },
+    {
+      "name": "task-owned-bazel-server-shutdown.stdout",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full18-three-repairs-v3-20261105-0254/task-owned-bazel-server-shutdown.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "content": ""
+    },
+    {
+      "name": "task-owned-bazel-server-shutdown.stderr",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full18-three-repairs-v3-20261105-0254/task-owned-bazel-server-shutdown.stderr",
+      "bytes": 58,
+      "sha256": "5b39a9f56c09bbddb2bdf68c9eba5114cf29e200fb93cd6ec20af01b89e9199e",
+      "content": "INFO: Invocation ID: 4b78325f-e21b-4530-97d7-d029be4d1ad1\n"
+    }
+  ],
+  "qualification_limit": "Actual official Bazel9.3.0 bootstrap and original update/check succeeded; generated MODULE lock byte-identical and Cargo lock unchanged. Task-only server shutdown/previously absent user.bazelrc removal recorded, caches retained. This does not claim V8 Rust tests or actual musl product runtime."
+}

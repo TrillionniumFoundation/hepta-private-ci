@@ -1,0 +1,900 @@
+{
+  "schema": "hepta.fourth.rog-bootstrap-root-review.v1",
+  "observed_at_utc": "2026-11-04 22:50:07 UTC",
+  "reviewer": "root",
+  "bundle": {
+    "git_blob": "efa6c42f28913ede333c5a975c222a8b1c150cfe",
+    "bytes": 109298,
+    "sha256": "50748475d28243402b7da1263c3ff33a828d6a99e952d376c20c66a0bc3d5e4c"
+  },
+  "base_head": "cabcb40d36e116beaa65750e1f674c52035da785",
+  "base_tree": "b2d7f038d6d88156bc6a4cb29c8703f69b808f29",
+  "applied_tree": "1c2aa1263d4087fb3432b7b900080a6af7215b14",
+  "controllers": {
+    "source": {
+      "at_unix_ms": 1793829805080,
+      "audit_recorded": true,
+      "automatic_retry": false,
+      "cancelled": false,
+      "exit_code": 0,
+      "job_id": "1a1a8966cf6-fc05-2f32",
+      "launch_nonce": "e2922f39275509a182a5a2901638e092",
+      "log_bytes": {
+        "stderr": {
+          "seen": 0,
+          "stored": 0
+        },
+        "stdout": {
+          "seen": 4476,
+          "stored": 4476
+        }
+      },
+      "log_errors": {
+        "stderr": null,
+        "stdout": null
+      },
+      "log_synced": {
+        "stderr": true,
+        "stdout": true
+      },
+      "log_truncated": {
+        "stderr": false,
+        "stdout": false
+      },
+      "output_complete": true,
+      "output_durable": true,
+      "state": "succeeded",
+      "terminal_publication_confirmed": true,
+      "terminal_publication_protocol": 1,
+      "timed_out": false
+    },
+    "tools": {
+      "at_unix_ms": 1793830203147,
+      "audit_recorded": true,
+      "automatic_retry": false,
+      "cancelled": false,
+      "exit_code": 0,
+      "job_id": "1a1a89a88e1-fc05-2f3e",
+      "launch_nonce": "a67d7622721ed14541c7b728ee48aad7",
+      "log_bytes": {
+        "stderr": {
+          "seen": 0,
+          "stored": 0
+        },
+        "stdout": {
+          "seen": 2318,
+          "stored": 2318
+        }
+      },
+      "log_errors": {
+        "stderr": null,
+        "stdout": null
+      },
+      "log_synced": {
+        "stderr": true,
+        "stdout": true
+      },
+      "log_truncated": {
+        "stderr": false,
+        "stdout": false
+      },
+      "output_complete": true,
+      "output_durable": true,
+      "state": "succeeded",
+      "terminal_publication_confirmed": true,
+      "terminal_publication_protocol": 1,
+      "timed_out": false
+    },
+    "v8": {
+      "at_unix_ms": 1793830472846,
+      "audit_recorded": true,
+      "automatic_retry": false,
+      "cancelled": false,
+      "exit_code": 0,
+      "job_id": "1a1a8a092a8-fc05-2f46",
+      "launch_nonce": "9b6f2429864f49a09574442977094f55",
+      "log_bytes": {
+        "stderr": {
+          "seen": 0,
+          "stored": 0
+        },
+        "stdout": {
+          "seen": 908,
+          "stored": 908
+        }
+      },
+      "log_errors": {
+        "stderr": null,
+        "stdout": null
+      },
+      "log_synced": {
+        "stderr": true,
+        "stdout": true
+      },
+      "log_truncated": {
+        "stderr": false,
+        "stdout": false
+      },
+      "output_complete": true,
+      "output_durable": true,
+      "state": "succeeded",
+      "terminal_publication_confirmed": true,
+      "terminal_publication_protocol": 1,
+      "timed_out": false
+    },
+    "overlay0": {
+      "at_unix_ms": 1793830558156,
+      "audit_recorded": true,
+      "automatic_retry": false,
+      "cancelled": false,
+      "exit_code": 0,
+      "job_id": "1a1a8a2152d-fc05-2f4b",
+      "launch_nonce": "cf2a91484a92a0006e91291feb2cce6f",
+      "log_bytes": {
+        "stderr": {
+          "seen": 0,
+          "stored": 0
+        },
+        "stdout": {
+          "seen": 42,
+          "stored": 42
+        }
+      },
+      "log_errors": {
+        "stderr": null,
+        "stdout": null
+      },
+      "log_synced": {
+        "stderr": true,
+        "stdout": true
+      },
+      "log_truncated": {
+        "stderr": false,
+        "stdout": false
+      },
+      "output_complete": true,
+      "output_durable": true,
+      "state": "succeeded",
+      "terminal_publication_confirmed": true,
+      "terminal_publication_protocol": 1,
+      "timed_out": false
+    },
+    "overlay1": {
+      "at_unix_ms": 1793830591276,
+      "audit_recorded": true,
+      "automatic_retry": false,
+      "cancelled": false,
+      "exit_code": 0,
+      "job_id": "1a1a8a29504-fc05-2f4e",
+      "launch_nonce": "83c795b35447254b424a916bc5d1f0d7",
+      "log_bytes": {
+        "stderr": {
+          "seen": 0,
+          "stored": 0
+        },
+        "stdout": {
+          "seen": 168,
+          "stored": 168
+        }
+      },
+      "log_errors": {
+        "stderr": null,
+        "stdout": null
+      },
+      "log_synced": {
+        "stderr": true,
+        "stdout": true
+      },
+      "log_truncated": {
+        "stderr": false,
+        "stdout": false
+      },
+      "output_complete": true,
+      "output_durable": true,
+      "state": "succeeded",
+      "terminal_publication_confirmed": true,
+      "terminal_publication_protocol": 1,
+      "timed_out": false
+    }
+  },
+  "file_checks": [
+    {
+      "path": "init.stdout",
+      "bytes": 101,
+      "sha256": "0f3b2f560daf3f34278c08b3be900c850af94aa2d3a7f2f8c73be7c5cf5634e5",
+      "match": true
+    },
+    {
+      "path": "init.stderr",
+      "bytes": 586,
+      "sha256": "3e70934f1909b0f5a846d62237fcc1509d733b9fb0321187024723dfc67176d3",
+      "match": true
+    },
+    {
+      "path": "origin.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "match": true,
+      "content_basis": "Original terminal records zero bytes and SHA256(empty)."
+    },
+    {
+      "path": "origin.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "match": true,
+      "content_basis": "Original terminal records zero bytes and SHA256(empty)."
+    },
+    {
+      "path": "fetch-exact-cabc.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "match": true,
+      "content_basis": "Original terminal records zero bytes and SHA256(empty)."
+    },
+    {
+      "path": "fetch-exact-cabc.stderr",
+      "bytes": 140,
+      "sha256": "90c6b2c594846f402ecc6c780c026b0bc40a089e21408df6630bba52bd276606",
+      "match": true
+    },
+    {
+      "path": "fetched-commit.stdout",
+      "bytes": 41,
+      "sha256": "8ab9b93605942fba7003b66d39c55d96802c3a9c88431ee67a03b37c9e4846f5",
+      "match": true
+    },
+    {
+      "path": "fetched-commit.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "match": true,
+      "content_basis": "Original terminal records zero bytes and SHA256(empty)."
+    },
+    {
+      "path": "fetched-tree.stdout",
+      "bytes": 41,
+      "sha256": "f13a9167dfe238d195cfb1aad17594fbfb55aa47956d308804b3374e220507c2",
+      "match": true
+    },
+    {
+      "path": "fetched-tree.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "match": true,
+      "content_basis": "Original terminal records zero bytes and SHA256(empty)."
+    },
+    {
+      "path": "checkout.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "match": true,
+      "content_basis": "Original terminal records zero bytes and SHA256(empty)."
+    },
+    {
+      "path": "checkout.stderr",
+      "bytes": 99,
+      "sha256": "bff64f6ace86e383568df486c897b87d9345626fe063c32d66e12301230907c8",
+      "match": true
+    },
+    {
+      "path": "worktree-status.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "match": true,
+      "content_basis": "Original terminal records zero bytes and SHA256(empty)."
+    },
+    {
+      "path": "worktree-status.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "match": true,
+      "content_basis": "Original terminal records zero bytes and SHA256(empty)."
+    },
+    {
+      "path": "project-tool-recipes.stdout",
+      "bytes": 32463,
+      "sha256": "8556373e7c9c2c48453dddd53127766b9386dd3a706e6b26e4f0ded42d0b2a1f",
+      "match": true
+    },
+    {
+      "path": "project-tool-recipes.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "match": true,
+      "content_basis": "Original terminal records zero bytes and SHA256(empty)."
+    },
+    {
+      "path": "rust-1.95-existing.stdout",
+      "bytes": 196,
+      "sha256": "4fdff2578428e9c5c08ddd7a0d3079c1a106b1cdaa46e73e46f7cd32b0fb9cad",
+      "match": true
+    },
+    {
+      "path": "rust-1.95-existing.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "match": true,
+      "content_basis": "Original terminal records zero bytes and SHA256(empty)."
+    },
+    {
+      "path": "head-guard.stdout",
+      "bytes": 41,
+      "sha256": "8ab9b93605942fba7003b66d39c55d96802c3a9c88431ee67a03b37c9e4846f5",
+      "match": true
+    },
+    {
+      "path": "head-guard.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "match": true,
+      "content_basis": "Original terminal records zero bytes and SHA256(empty)."
+    },
+    {
+      "path": "tree-guard.stdout",
+      "bytes": 41,
+      "sha256": "f13a9167dfe238d195cfb1aad17594fbfb55aa47956d308804b3374e220507c2",
+      "match": true
+    },
+    {
+      "path": "tree-guard.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "match": true,
+      "content_basis": "Original terminal records zero bytes and SHA256(empty)."
+    },
+    {
+      "path": "initial-clean.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "match": true,
+      "content_basis": "Original terminal records zero bytes and SHA256(empty)."
+    },
+    {
+      "path": "initial-clean.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "match": true,
+      "content_basis": "Original terminal records zero bytes and SHA256(empty)."
+    },
+    {
+      "path": "just-version.stdout",
+      "bytes": 12,
+      "sha256": "4e91345369534015fde1a3e2fed862ad938bcfda47b993eb02536f7b3f095b87",
+      "match": true
+    },
+    {
+      "path": "just-version.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "match": true,
+      "content_basis": "Original terminal records zero bytes and SHA256(empty)."
+    },
+    {
+      "path": "nextest-version.stdout",
+      "bytes": 171,
+      "sha256": "13fae229b3f8485e0d02d80bf3c77e6cd38a2a2f1227d3e70a880cfb49365f61",
+      "match": true
+    },
+    {
+      "path": "nextest-version.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "match": true,
+      "content_basis": "Original terminal records zero bytes and SHA256(empty)."
+    },
+    {
+      "path": "uv-venv.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "match": true,
+      "content_basis": "Original terminal records zero bytes and SHA256(empty)."
+    },
+    {
+      "path": "uv-venv.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "match": true,
+      "content_basis": "Original terminal records zero bytes and SHA256(empty)."
+    },
+    {
+      "path": "uv-install.stdout",
+      "bytes": 434,
+      "sha256": "bdd16b16a36bf446351f17ff3f06e23084d106eb90d9f99b4f95d62d512ca91f",
+      "match": true
+    },
+    {
+      "path": "uv-install.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "match": true,
+      "content_basis": "Original terminal records zero bytes and SHA256(empty)."
+    },
+    {
+      "path": "uv-version.stdout",
+      "bytes": 37,
+      "sha256": "cbaa487aa52e8dacd228992f11a8a49459a06b479806187cb00a93c880b5460e",
+      "match": true
+    },
+    {
+      "path": "uv-version.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "match": true,
+      "content_basis": "Original terminal records zero bytes and SHA256(empty)."
+    },
+    {
+      "path": "installed-rust-components.stdout",
+      "bytes": 161,
+      "sha256": "e8831f6eab33b6dd0f72364237d8f7a00d762711a08608010877e0ce0b7f667b",
+      "match": true
+    },
+    {
+      "path": "installed-rust-components.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "match": true,
+      "content_basis": "Original terminal records zero bytes and SHA256(empty)."
+    },
+    {
+      "path": "rust-version.stdout",
+      "bytes": 196,
+      "sha256": "4fdff2578428e9c5c08ddd7a0d3079c1a106b1cdaa46e73e46f7cd32b0fb9cad",
+      "match": true
+    },
+    {
+      "path": "rust-version.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "match": true,
+      "content_basis": "Original terminal records zero bytes and SHA256(empty)."
+    },
+    {
+      "path": "cargo-version.stdout",
+      "bytes": 36,
+      "sha256": "c10ec31b8c6e6e2693cf65fc1971b41edbc3da1ae7db6f9f3f36c4823f8dcab5",
+      "match": true
+    },
+    {
+      "path": "cargo-version.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "match": true,
+      "content_basis": "Original terminal records zero bytes and SHA256(empty)."
+    },
+    {
+      "path": "protoc-build-usage.stdout",
+      "bytes": 169,
+      "sha256": "3d0a857ab84d37826a5c9a0632a3d2f36a257e354760a74a775656a05e75811a",
+      "match": true
+    },
+    {
+      "path": "protoc-build-usage.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "match": true,
+      "content_basis": "Original terminal records zero bytes and SHA256(empty)."
+    },
+    {
+      "path": "cargo-v8-version.stdout",
+      "bytes": 8,
+      "sha256": "ee7db03d6aad33641791469a5cbec6568b2c05c9112d402008801d9714f7e500",
+      "match": true
+    },
+    {
+      "path": "cargo-v8-version.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "match": true,
+      "content_basis": "Original terminal records zero bytes and SHA256(empty)."
+    },
+    {
+      "path": "normal-runtime-tools.stdout",
+      "bytes": 306,
+      "sha256": "fb673d909e633f689c278a24c145cc150743cbba551f1b541dce7b816f76afe6",
+      "match": true
+    },
+    {
+      "path": "normal-runtime-tools.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "match": true,
+      "content_basis": "Original terminal records zero bytes and SHA256(empty)."
+    },
+    {
+      "path": "final-clean.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "match": true,
+      "content_basis": "Original terminal records zero bytes and SHA256(empty)."
+    },
+    {
+      "path": "final-clean.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "match": true,
+      "content_basis": "Original terminal records zero bytes and SHA256(empty)."
+    },
+    {
+      "path": "resolved-v8-version.stdout",
+      "bytes": 8,
+      "sha256": "ee7db03d6aad33641791469a5cbec6568b2c05c9112d402008801d9714f7e500",
+      "match": true
+    },
+    {
+      "path": "resolved-v8-version.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "match": true,
+      "content_basis": "Original terminal records zero bytes and SHA256(empty)."
+    },
+    {
+      "path": "dotslash-static-usage.stdout",
+      "bytes": 1749,
+      "sha256": "9c4aec733a3ed0d4e4dbdcd59451734ef898c04f01279611823462ecaec26a55",
+      "match": true
+    },
+    {
+      "path": "dotslash-static-usage.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "match": true,
+      "content_basis": "Original terminal records zero bytes and SHA256(empty)."
+    },
+    {
+      "path": "node-version.stdout",
+      "bytes": 9,
+      "sha256": "33e26f35db6e57ce0c486ddc815fe966867e4f649e418eaf323f75f4720eb8e9",
+      "match": true
+    },
+    {
+      "path": "node-version.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "match": true,
+      "content_basis": "Original terminal records zero bytes and SHA256(empty)."
+    },
+    {
+      "path": "python-version.stdout",
+      "bytes": 14,
+      "sha256": "63990b3ee50c49ab28d70e29c0f967f0c71330e39243ffeb4d3a8d5878c8a978",
+      "match": true
+    },
+    {
+      "path": "python-version.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "match": true,
+      "content_basis": "Original terminal records zero bytes and SHA256(empty)."
+    },
+    {
+      "path": "runtime-host-controls.stdout",
+      "bytes": 115,
+      "sha256": "32befefc23eff5efb6500e48dd980d166ace39a39629e20aa0a708ed7afa15f5",
+      "match": true
+    },
+    {
+      "path": "runtime-host-controls.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "match": true,
+      "content_basis": "Original terminal records zero bytes and SHA256(empty)."
+    },
+    {
+      "path": "source-terminal.json",
+      "bytes": 9528,
+      "sha256": "4be5b041f8c6c594827f7997216e2ccfdd7d0694e8331437c17d34942e7b7437",
+      "match": true
+    },
+    {
+      "path": "terminal.json",
+      "bytes": 15654,
+      "sha256": "65e1688a3c7c56ee710f74ef3cb23ebf3f829aaf0203624f38dcdcd8654d87cf",
+      "match": true
+    },
+    {
+      "path": "terminal.json",
+      "bytes": 6864,
+      "sha256": "9929de3e38709fe80e3c1f3c3961ad6e9206439ed80a3226db0b2102bba756b9",
+      "match": true
+    },
+    {
+      "path": "terminal.json",
+      "bytes": 12176,
+      "sha256": "832abdcf3d95da87593250067015f5c7473409a036b9842e7faad9480a71ccda",
+      "match": true
+    }
+  ],
+  "verified_scope": [
+    "Full original bundle identity and all 62 embedded records verified independently; zero-byte content_basis records retain explicit original empty-file evidence.",
+    "Exact cabc source was fetched with the native host's existing normal Git connection; task-owned tools and target are separate from prior worktrees.",
+    "Existing Rust 1.95 selected for this task; original dev-small profile and project tool recipes retained. Official just/nextest/uv/V8 identities and checksums remain in the original receipts.",
+    "Twenty-four reviewed overlays reached exact tree 1c2aa1263d4087fb3432b7b900080a6af7215b14; ordinary cabc index was preserved."
+  ],
+  "readonly_namespace_probes": [
+    {
+      "host": "ai395",
+      "kind": "unshare",
+      "status": {
+        "at_unix_ms": 1793831368253,
+        "audit_recorded": true,
+        "automatic_retry": false,
+        "cancelled": false,
+        "exit_code": 0,
+        "job_id": "1a1a8ae71ec-fc05-2f73",
+        "launch_nonce": "347649f49580735abce7887675e27177",
+        "log_bytes": {
+          "stderr": {
+            "seen": 0,
+            "stored": 0
+          },
+          "stdout": {
+            "seen": 706,
+            "stored": 706
+          }
+        },
+        "log_errors": {
+          "stderr": null,
+          "stdout": null
+        },
+        "log_synced": {
+          "stderr": true,
+          "stdout": true
+        },
+        "log_truncated": {
+          "stderr": false,
+          "stdout": false
+        },
+        "output_complete": true,
+        "output_durable": true,
+        "state": "succeeded",
+        "terminal_publication_confirmed": true,
+        "terminal_publication_protocol": 1,
+        "timed_out": false
+      },
+      "result": {
+        "disk": {
+          "free": 989846147072,
+          "total": 1966736678912,
+          "used": 876910280704
+        },
+        "home": "/home/qq",
+        "host_platform": "Linux-7.0.0-38-generic-x86_64-with-glibc2.43",
+        "original_namespace_probe": {
+          "argv": [
+            "/usr/bin/unshare",
+            "--user",
+            "--map-root-user",
+            "true"
+          ],
+          "exit_code": 1,
+          "stderr": "unshare: write failed /proc/self/uid_map: Operation not permitted\n",
+          "stdout": ""
+        },
+        "sysctl": {
+          "/proc/sys/kernel/apparmor_restrict_unprivileged_userns": "1",
+          "/proc/sys/kernel/unprivileged_userns_clone": "1"
+        },
+        "tools": {
+          "bwrap": "/usr/bin/bwrap",
+          "clang": null,
+          "cmake": "/usr/bin/cmake",
+          "gcc": "/usr/bin/gcc",
+          "git": "/usr/bin/git",
+          "just": null,
+          "pkg-config": "/usr/bin/pkg-config",
+          "unshare": "/usr/bin/unshare"
+        }
+      }
+    },
+    {
+      "host": "desktop",
+      "kind": "unshare",
+      "status": {
+        "at_unix_ms": 1793831373851,
+        "audit_recorded": true,
+        "automatic_retry": false,
+        "cancelled": false,
+        "exit_code": 0,
+        "job_id": "1a1a8ae85f8-fc05-2f74",
+        "launch_nonce": "1fecfd58a9198f474329547a5ad12281",
+        "log_bytes": {
+          "stderr": {
+            "seen": 0,
+            "stored": 0
+          },
+          "stdout": {
+            "seen": 770,
+            "stored": 770
+          }
+        },
+        "log_errors": {
+          "stderr": null,
+          "stdout": null
+        },
+        "log_synced": {
+          "stderr": true,
+          "stdout": true
+        },
+        "log_truncated": {
+          "stderr": false,
+          "stdout": false
+        },
+        "output_complete": true,
+        "output_durable": true,
+        "state": "succeeded",
+        "terminal_publication_confirmed": true,
+        "terminal_publication_protocol": 1,
+        "timed_out": false
+      },
+      "result": {
+        "disk": {
+          "free": 376401920,
+          "total": 982240026624,
+          "used": 961865351168
+        },
+        "home": "/home/qian-qi",
+        "host_platform": "Linux-7.0.0-38-generic-x86_64-with-glibc2.39",
+        "original_namespace_probe": {
+          "argv": [
+            "/usr/bin/unshare",
+            "--user",
+            "--map-root-user",
+            "true"
+          ],
+          "exit_code": 1,
+          "stderr": "unshare: 写失败：/proc/self/uid_map: 不允许的操作\n",
+          "stdout": ""
+        },
+        "sysctl": {
+          "/proc/sys/kernel/apparmor_restrict_unprivileged_userns": "1",
+          "/proc/sys/kernel/unprivileged_userns_clone": "1"
+        },
+        "tools": {
+          "bwrap": "/usr/bin/bwrap",
+          "clang": "/usr/bin/clang",
+          "cmake": "/usr/bin/cmake",
+          "gcc": "/usr/bin/gcc",
+          "git": "/usr/bin/git",
+          "just": "/home/qian-qi/.cargo/bin/just",
+          "pkg-config": "/usr/bin/pkg-config",
+          "unshare": "/usr/bin/unshare"
+        }
+      }
+    },
+    {
+      "host": "ai395",
+      "kind": "system-bwrap",
+      "status": {
+        "at_unix_ms": 1793831448745,
+        "audit_recorded": true,
+        "automatic_retry": false,
+        "cancelled": false,
+        "exit_code": 0,
+        "job_id": "1a1a8afac57-fc05-2f77",
+        "launch_nonce": "fe7dc5c98b63c3490adb17edbb8c0ba8",
+        "log_bytes": {
+          "stderr": {
+            "seen": 0,
+            "stored": 0
+          },
+          "stdout": {
+            "seen": 321,
+            "stored": 321
+          }
+        },
+        "log_errors": {
+          "stderr": null,
+          "stdout": null
+        },
+        "log_synced": {
+          "stderr": true,
+          "stdout": true
+        },
+        "log_truncated": {
+          "stderr": false,
+          "stdout": false
+        },
+        "output_complete": true,
+        "output_durable": true,
+        "state": "succeeded",
+        "terminal_publication_confirmed": true,
+        "terminal_publication_protocol": 1,
+        "timed_out": false
+      },
+      "result": {
+        "argv": [
+          "/usr/bin/bwrap",
+          "--unshare-user",
+          "--ro-bind",
+          "/",
+          "/",
+          "--proc",
+          "/proc",
+          "--dev",
+          "/dev",
+          "--",
+          "/usr/bin/true"
+        ],
+        "bwrap": "/usr/bin/bwrap",
+        "exit_code": 0,
+        "mode": "0o755",
+        "probe": "existing system bubblewrap with readonly root and private proc/dev, no host policy mutation",
+        "stderr": "",
+        "stdout": ""
+      }
+    },
+    {
+      "host": "rog",
+      "kind": "system-bwrap",
+      "status": {
+        "at_unix_ms": 1793831455814,
+        "audit_recorded": true,
+        "automatic_retry": false,
+        "cancelled": false,
+        "exit_code": 0,
+        "job_id": "1a1a8afc7b6-fc05-2f78",
+        "launch_nonce": "f8d59f34ce8acc9b313919e58ab56635",
+        "log_bytes": {
+          "stderr": {
+            "seen": 0,
+            "stored": 0
+          },
+          "stdout": {
+            "seen": 321,
+            "stored": 321
+          }
+        },
+        "log_errors": {
+          "stderr": null,
+          "stdout": null
+        },
+        "log_synced": {
+          "stderr": true,
+          "stdout": true
+        },
+        "log_truncated": {
+          "stderr": false,
+          "stdout": false
+        },
+        "output_complete": true,
+        "output_durable": true,
+        "state": "succeeded",
+        "terminal_publication_confirmed": true,
+        "terminal_publication_protocol": 1,
+        "timed_out": false
+      },
+      "result": {
+        "argv": [
+          "/usr/bin/bwrap",
+          "--unshare-user",
+          "--ro-bind",
+          "/",
+          "/",
+          "--proc",
+          "/proc",
+          "--dev",
+          "/dev",
+          "--",
+          "/usr/bin/true"
+        ],
+        "bwrap": "/usr/bin/bwrap",
+        "exit_code": 0,
+        "mode": "0o755",
+        "probe": "existing system bubblewrap with readonly root and private proc/dev, no host policy mutation",
+        "stderr": "",
+        "stdout": ""
+      }
+    }
+  ],
+  "interpretation": [
+    "Plain unshare user-map probes fail with EPERM on the sampled hosts; this is retained as a real failure of that exact command.",
+    "The existing system bubblewrap read-only root/private proc-dev probes succeed on ai395 and rog without changing host sysctl/AppArmor or privileges.",
+    "A passing system bubblewrap probe does not qualify the product launcher, a full sandbox policy, or every selected test. Actual product failures must be attributed from their own logs.",
+    "Desktop free space was only 376401920 bytes at its read-only probe. Its retained targets/evidence were preserved; no further Desktop Cargo work was started."
+  ],
+  "limits": [
+    "Bootstrap and read-only probes contain no new product test PASS evidence.",
+    "No production Root/Current/FinalUse, Windows boundary or full-matrix closure.",
+    "Source/code targets, account credentials and system policies were not changed by the root read-only probes."
+  ]
+}

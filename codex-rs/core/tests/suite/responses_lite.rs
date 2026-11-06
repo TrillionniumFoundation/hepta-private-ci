@@ -133,9 +133,6 @@ async fn responses_lite_uses_input_items_for_instructions_and_tools() -> Result<
                 "type": "input_text",
                 "text": "test instructions",
             }],
-            "internal_chat_message_metadata_passthrough": {
-                "content_item_kinds": ["model.base_instructions"],
-            },
         })
     );
 
@@ -271,7 +268,18 @@ async fn responses_lite_prepares_images() -> Result<()> {
     .await;
 
     let request = response_mock.single_request();
-    assert!(request.has_content_kinds(&["user.image", "images.preparation_error"]));
+    request
+        .assert_projected_durable_content_kinds(
+            &test.codex,
+            &["user.image", "images.preparation_error"],
+            &[
+                InputModality::Text,
+                InputModality::Image,
+                InputModality::Audio,
+            ],
+            /*use_responses_lite*/ true,
+        )
+        .await;
     let user_content = request
         .input()
         .into_iter()
@@ -461,7 +469,10 @@ async fn responses_lite_does_not_expose_standalone_web_search_for_bedrock_provid
     );
     let body = request.body_json();
     assert!(body.get("tools").is_none());
-    assert!(!request.has_content_kinds(&["model.base_instructions"]));
+    assert!(request.input().iter().all(|item| {
+        item.get("internal_chat_message_metadata_passthrough")
+            .is_none()
+    }));
     let tools = additional_tools(&body)?;
     assert!(!has_namespaced_tool(tools, "web", "run"));
     assert!(!has_hosted_tool(tools, "web_search"));

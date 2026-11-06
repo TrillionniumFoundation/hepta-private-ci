@@ -1,0 +1,93 @@
+{
+  "schema": "hepta.f825-owning7-eight-failures-root-scope-review.v1",
+  "status": "ORIGINAL_OWNING_GATE_FAILED_SAME_EIGHT_HOST_STARTUP_SYMPTOMS",
+  "reviewed_at_utc": "2026-11-05T00:36:36.811967+00:00",
+  "source_tree": "f8251e1d14fa8524ab469281296cd4cf708f173c",
+  "original_job": "1a1a916fc98-fc05-3136",
+  "reviewed_complete_failure_projection": {
+    "blob": "306b27bc52bb8d6246711235ee85e30467c1acc7",
+    "bytes": 9354,
+    "sha256": "e5d1e3e12e34739bd62efb0c7a9df98d7ff495e2a6c8508d58f764e6a743ead1"
+  },
+  "old_original_failure_bundle": "023d6a14b4e8ad37157dc9162d820dc3d6cd6473",
+  "all_old_embedded_records_rehashed": 25,
+  "exact_same_eight_names_as_old_host_error_cases": true,
+  "each_failure_has_three_original_stream_error_lines": true,
+  "actual_failures": [
+    {
+      "name": "suite::approvals::approving_execpolicy_amendment_persists_policy_and_skips_future_prompts",
+      "classname": "codex-core::all",
+      "seconds": "0.335",
+      "result": "FAIL",
+      "failure": "thread 'suite::approvals::approving_execpolicy_amendment_persists_policy_and_skips_future_prompts' (3971549) panicked at core/tests/suite/approvals.rs:2540:5:\nunexpected stdout: Failed to create stream fd: Operation not permitted\nFailed to create stream fd: Operation not permitted\nFailed to create stream fd: Operation not permitted\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+    },
+    {
+      "name": "suite::request_permissions::partial_request_permissions_grants_do_not_preapprove_new_permissions",
+      "classname": "codex-core::all",
+      "seconds": "0.444",
+      "result": "FAIL",
+      "failure": "thread 'suite::request_permissions::partial_request_permissions_grants_do_not_preapprove_new_permissions' (4077793) panicked at core/tests/suite/request_permissions.rs:1802:5:\nassertion failed: `(left == right)`\n\nDiff < left / right > :\n<Failed to create stream fd: Operation not permitted\n<Failed to create stream fd: Operation not permitted\n<Failed to create stream fd: Operation not permitted\n partial-grant-ok\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+    },
+    {
+      "name": "suite::request_permissions::request_permissions_grants_apply_to_later_exec_command_calls_without_inline_permission_feature",
+      "classname": "codex-core::all",
+      "seconds": "0.449",
+      "result": "FAIL",
+      "failure": "thread 'suite::request_permissions::request_permissions_grants_apply_to_later_exec_command_calls_without_inline_permission_feature' (4077868) panicked at core/tests/suite/request_permissions.rs:1626:5:\nassertion failed: `(left == right)`\n\nDiff < left / right > :\n<Failed to create stream fd: Operation not permitted\n<Failed to create stream fd: Operation not permitted\n<Failed to create stream fd: Operation not permitted\n sticky-shell-feature-independent-ok\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+    },
+    {
+      "name": "suite::request_permissions::request_permissions_grants_apply_to_later_exec_command_calls",
+      "classname": "codex-core::all",
+      "seconds": "0.463",
+      "result": "FAIL",
+      "failure": "thread 'suite::request_permissions::request_permissions_grants_apply_to_later_exec_command_calls' (4077858) panicked at core/tests/suite/request_permissions.rs:1391:5:\nassertion failed: `(left == right)`\n\nDiff < left / right > :\n<Failed to create stream fd: Operation not permitted\n<Failed to create stream fd: Operation not permitted\n<Failed to create stream fd: Operation not permitted\n sticky-grant-ok\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+    },
+    {
+      "name": "suite::request_permissions::request_permissions_preapprove_explicit_exec_permissions_outside_on_request",
+      "classname": "codex-core::all",
+      "seconds": "0.458",
+      "result": "FAIL",
+      "failure": "thread 'suite::request_permissions::request_permissions_preapprove_explicit_exec_permissions_outside_on_request' (4077927) panicked at core/tests/suite/request_permissions.rs:1510:5:\nassertion failed: `(left == right)`\n\nDiff < left / right > :\n<Failed to create stream fd: Operation not permitted\n<Failed to create stream fd: Operation not permitted\n<Failed to create stream fd: Operation not permitted\n sticky-explicit-grant-ok\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+    },
+    {
+      "name": "shell_snapshot_v2_capture_failure_falls_back_and_retries::test_case_3_remote_pipe_recovery",
+      "classname": "codex-exec-server::exec_process",
+      "seconds": "0.299",
+      "result": "FAIL",
+      "failure": "thread 'shell_snapshot_v2_capture_failure_falls_back_and_retries::test_case_3_remote_pipe_recovery' (4117508) panicked at exec-server/tests/exec_process.rs:449:9:\nassertion failed: `(left == right)`\n\nDiff < left / right > :\n (\n     \"original\",\n<    \"Failed to create stream fd: Operation not permitted\\nFailed to create stream fd: Operation not permitted\\nFailed to create stream fd: Operation not permitted\\n\",\n>    \"\",\n     Some(\n         0,\n     ),\n     true,\n )\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+    },
+    {
+      "name": "shell_snapshot_v2_capture_failure_falls_back_and_retries::test_case_4_remote_tty_recovery",
+      "classname": "codex-exec-server::exec_process",
+      "seconds": "0.304",
+      "result": "FAIL",
+      "failure": "thread 'shell_snapshot_v2_capture_failure_falls_back_and_retries::test_case_4_remote_tty_recovery' (4117556) panicked at exec-server/tests/exec_process.rs:449:9:\nassertion failed: `(left == right)`\n\nDiff < left / right > :\n (\n<    \"Failed to create stream fd: Operation not permitted\\r\\nFailed to create stream fd: Operation not permitted\\r\\nFailed to create stream fd: Operation not permitted\\r\\noriginal\",\n>    \"original\",\n     \"\",\n     Some(\n         0,\n     ),\n     true,\n )\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+    },
+    {
+      "name": "shell_snapshot_v2_capture_failure_falls_back_and_retries::test_case_6_remote_retry_budget_exhausted",
+      "classname": "codex-exec-server::exec_process",
+      "seconds": "0.324",
+      "result": "FAIL",
+      "failure": "thread 'shell_snapshot_v2_capture_failure_falls_back_and_retries::test_case_6_remote_retry_budget_exhausted' (4117693) panicked at exec-server/tests/exec_process.rs:449:9:\nassertion failed: `(left == right)`\n\nDiff < left / right > :\n (\n     \"original\",\n<    \"Failed to create stream fd: Operation not permitted\\nFailed to create stream fd: Operation not permitted\\nFailed to create stream fd: Operation not permitted\\n\",\n>    \"\",\n     Some(\n         0,\n     ),\n     true,\n )\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+    }
+  ],
+  "reported_counts": {
+    "PASS": 5408,
+    "FAIL": 8
+  },
+  "early_return_raw_observations": {
+    "requires_remote_notices": 24,
+    "not_zero_despite_empty_xml_output_table": true,
+    "other_skip_wording": "Four subagent analytics warnings are not test early returns."
+  },
+  "remaining_complete_review_work": [
+    "Reassemble complete fresh JUnit/catalog/selection/review bytes and bind full original5416 names independently.",
+    "Attach all original raw failure and24 early-return per-case contexts."
+  ],
+  "decision": "Proceed to the separately required full-workspace diagnostic gate on unchanged f825. The failed owning gate is not waived, reclassified as PASS, or substituted by broader tests.",
+  "limits": [
+    "Same exact case names and same assertion output contamination are established; exact systemd stream syscall causing EPERM is not traced.",
+    "Original tests, host profile, sandbox env, stdout/stderr and deadlines are unchanged.",
+    "Original eight FAIL and24 existing remote prerequisites remain explicit and cannot qualify final head/platform/main."
+  ]
+}

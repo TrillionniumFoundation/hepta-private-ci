@@ -1,0 +1,91 @@
+{
+  "schema": "hepta.fourth.literal-parent-approval-root-review.v1",
+  "observed_at_utc": "2026-11-05 00:12:27 UTC",
+  "status": "STATIC_ACCEPTED_ORIGINAL_NATIVE_GATE_REQUIRED",
+  "manifest": {
+    "blob": "7b25405ed36e2d16edfd18f2d53becb8f5d11698",
+    "bytes": 43245,
+    "sha256": "6800143e499c7169e2bb6115adf2daade486c6c56615b4d75a76c2758b131aa8"
+  },
+  "source": {
+    "before_tree": "da60f29b6789434c394edeff3c79f59191ad932c",
+    "after_tree": "f8251e1d14fa8524ab469281296cd4cf708f173c",
+    "path": "codex-rs/core/src/tools/runtimes/zsh_fork/unix_escalation.rs",
+    "before_blob": "631bf4c6db2876fe32f653c73e386c253ffc939d",
+    "after_blob": "94d24836406cda58de7fb5e8f3a54bc09c9e3eae",
+    "bytes": 33906,
+    "sha256": "f8c5a99315714a8a145ee27a6c05b7730b97eaf9a31a9ce2ad74ef3fecc2ff37",
+    "patch_blob": "af3ce8c4c5e4c9e6a96af9d67eaefdcfbf5bcbd2",
+    "patch_bytes": 1433,
+    "patch_sha256": "def4c1c1b23f8d33a4eb8a5ac61d2fc387a07e209028cd4d46be9359e38c7865",
+    "added": 7,
+    "removed": 1,
+    "root_git_apply_roundtrip_exact": true
+  },
+  "root_primary_reads": [
+    "orchestrator184757bb146da53bf93a5ef848ab96a0d826087c: original Forbidden/approval checks precede run_attempt and tool.run; owned-network refusal remains.",
+    "tools/sandboxing0ec30aa9fb6b4141d31cc95c9459fe97f61737b8: existing normalization converts only RequireEscalated with denied-read restrictions to UseDefault to retain the enforcing sandbox.",
+    "unix_escalation631bf4c6db2876fe32f653c73e386c253ffc939d: action provider receives original raw request and separate fallback approval flag; needs_escalation=false with denied reads.",
+    "exec_policyf24b062469d579929739c2cb4221661499ca9248: Restricted+requests_sandbox_override is the repeated unmatched Prompt; explicit policy and dangerous-command/UnlessTrusted routes remain separate."
+  ],
+  "exact_unchanged_checks": {
+    "process_decision": true,
+    "determine_action_and_following_implementation": true,
+    "raw_sandbox_permissions_field": true,
+    "original_test_sources": true,
+    "windows_token_acl_loader_dll": true,
+    "helper_implementation": true
+  },
+  "behavior": "Only the already-admitted parent runtime's child fallback receives the same denied-read-preserving effective permissions as launch. It does not grant unsandboxed execution, remove deny entries, or disable explicit Prompt/Forbidden/Guardian/dangerous/UnlessTrusted handling.",
+  "baseline": {
+    "blob": "f488fe2819ce0e63fad7dbae5f8386b9e4aac99f",
+    "original_actual_fail": "Parent approval completed, then original no-second-approval check at893 failed with /usr/bin/cat. Original nonzero/no-secret assertions were not reached.",
+    "repeat": false
+  },
+  "gate": {
+    "expected_selected": 25,
+    "case_names": [
+      "suite::unified_exec_zsh_fork_approvals::unified_exec_zsh_fork_guardian_reviews_intercepted_execve",
+      "suite::unified_exec_zsh_fork_approvals::unified_exec_zsh_fork_guardian_reviews_persistent_terminal_in_current_turn",
+      "suite::unified_exec_zsh_fork_approvals::unified_exec_zsh_fork_parent_approval_escalates_intercepted_exec",
+      "suite::unified_exec_zsh_fork_approvals::unified_exec_zsh_fork_parent_approval_keeps_explicit_prompt_rule",
+      "suite::unified_exec_zsh_fork_approvals::unified_exec_zsh_fork_parent_approval_preserves_denied_reads",
+      "tools::runtimes::zsh_fork::unix_escalation::tests::approval_sandbox_permissions_only_downgrades_preapproved_additional_permissions",
+      "tools::runtimes::zsh_fork::unix_escalation::tests::commands_for_intercepted_exec_policy_parses_plain_shell_wrappers",
+      "tools::runtimes::zsh_fork::unix_escalation::tests::commands_for_intercepted_exec_policy_preserves_unparsed_shell_wrappers",
+      "tools::runtimes::zsh_fork::unix_escalation::tests::denied_reads_keep_granular_sandbox_rejection_for_escalation",
+      "tools::runtimes::zsh_fork::unix_escalation::tests::denied_reads_keep_prefix_rule_allow_inside_sandbox",
+      "tools::runtimes::zsh_fork::unix_escalation::tests::evaluate_intercepted_exec_policy_matches_inner_shell_commands_when_enabled",
+      "tools::runtimes::zsh_fork::unix_escalation::tests::evaluate_intercepted_exec_policy_uses_wrapper_command_when_shell_wrapper_parsing_disabled",
+      "tools::runtimes::zsh_fork::unix_escalation::tests::execve_permission_request_hook_short_circuits_prompt",
+      "tools::runtimes::zsh_fork::unix_escalation::tests::execve_prompt_rejection_keeps_prefix_rules_on_rules_flag",
+      "tools::runtimes::zsh_fork::unix_escalation::tests::execve_prompt_rejection_keeps_unmatched_commands_on_sandbox_flag",
+      "tools::runtimes::zsh_fork::unix_escalation::tests::extract_shell_script_preserves_login_flag",
+      "tools::runtimes::zsh_fork::unix_escalation::tests::extract_shell_script_rejects_unsupported_shell_invocation",
+      "tools::runtimes::zsh_fork::unix_escalation::tests::extract_shell_script_supports_wrapped_command_prefixes",
+      "tools::runtimes::zsh_fork::unix_escalation::tests::intercepted_exec_policy_rejects_disallowed_host_executable_mapping",
+      "tools::runtimes::zsh_fork::unix_escalation::tests::intercepted_exec_policy_treats_preapproved_additional_permissions_as_default",
+      "tools::runtimes::zsh_fork::unix_escalation::tests::intercepted_exec_policy_uses_host_executable_mappings",
+      "tools::runtimes::zsh_fork::unix_escalation::tests::join_program_and_argv_replaces_original_argv_zero",
+      "tools::runtimes::zsh_fork::unix_escalation::tests::preapproved_additional_permissions_escalate_intercepted_exec",
+      "tools::runtimes::zsh_fork::unix_escalation::tests::shell_request_escalation_execution_is_explicit",
+      "tools::runtimes::zsh_fork::unix_escalation::tests::unsandboxed_intercepted_exec_strips_managed_network_env"
+    ],
+    "packages": [
+      "codex-core",
+      "core_test_support",
+      "codex-cli",
+      "codex-utils-pty",
+      "codex-exec-server",
+      "codex-hepta-agentd",
+      "codex-apply-patch"
+    ],
+    "retries": 0,
+    "additional_helper_requirement": "Core production source changes: repeat the original five NORMAL helper build on exact f825; do not reuse c270 attribution. Catalog and final pre/post helper identities must reflect current source and original seven-package feature context."
+  },
+  "limits": [
+    "No native build or test performed by root static review.",
+    "Original denial/no-secret plus explicit Prompt/Guardian/granular controls must actually execute.",
+    "Owning7/full/final hygiene and original hosted platforms remain pending."
+  ]
+}

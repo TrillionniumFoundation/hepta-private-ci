@@ -1,0 +1,11 @@
+diff --git a/codex-rs/state/src/sqlite_read_barrier.rs b/codex-rs/state/src/sqlite_read_barrier.rs
+--- a/codex-rs/state/src/sqlite_read_barrier.rs
++++ b/codex-rs/state/src/sqlite_read_barrier.rs
+@@ -62,6 +62,7 @@
+     /// error or cancellation from returning the intermediate state to the pool.
+     pub async fn begin(&self) -> Result<Transaction<'static, Sqlite>, Error> {
+         let mut connection = self.pool.acquire().await?;
++        connection.close_on_drop();
+         {
+             let mut handle = connection.lock_handle().await?;
+             // SAFETY: the SQLx handle lock keeps the connection alive and excludes

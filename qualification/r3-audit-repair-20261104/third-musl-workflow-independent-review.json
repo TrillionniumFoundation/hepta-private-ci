@@ -1,0 +1,153 @@
+{
+  "schema": "hepta_musl_product_smoke_independent_static_review_v1",
+  "reviewer": "architecture_audit",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "candidate": {
+    "path": ".github/workflows/hepta-musl-product-smoke.yml",
+    "blob": "6aad46b1fe0edcf315ef8b1a5546225c59efe235",
+    "bytes": 21599,
+    "sha256": "0b980fc83ac32bba15b9f4b6708426d7b182e3c84b6768183dbbdd3fc9091f36",
+    "changes": "one new workflow; no existing workflow or production-source changes"
+  },
+  "verdict": "STATIC_ACCEPT_FOR_SYNTAX_CHECK_AND_EXACT_SOURCE_HOSTED_EXECUTION",
+  "execution_performed_by_reviewer": false,
+  "qualification_claims": {
+    "bazel_build": false,
+    "product_process_smoke": false,
+    "full_musl_behavior": false,
+    "alpine_deployment": false,
+    "release": false,
+    "original_blocking_matrix_closed": false
+  },
+  "checks": [
+    {
+      "id": "target",
+      "result": "pass",
+      "detail": "The existing release macro constructs the explicitly named manual platform_data target from the existing hepta Cargo binary. Ordinary //... target completion alone does not qualify this explicit product."
+    },
+    {
+      "id": "configuration_order",
+      "result": "pass",
+      "detail": "Direct existing Python wrapper receives ci-linux then ci, explicit opt/musl platform, lockfile_mode=error and remote_download_toplevel. The wrapper inserts keyed remote settings before caller options; keyless fallback removes ci-linux while ci and explicit musl remain. GNU host/exec platforms remain appropriate for host tools; no claim of actual RBE execution before logs."
+    },
+    {
+      "id": "provider_api",
+      "result": "pass",
+      "detail": "Pinned Bazel 9.3.0 cquery formatter returns target provider map; DefaultInfo exposes files_to_run; existing platform_data returns an executable symlink and forwards original output files. Selecting files_to_run.executable avoids ambiguous DefaultInfo.files ordering."
+    },
+    {
+      "id": "canonical_platform",
+      "result": "pass",
+      "detail": "The explicit @llvm musl platform is independently cqueried to its real canonical label. Both outer and inner build_options platforms must equal the single observed canonical label. This replaces a guessed repository-name regex."
+    },
+    {
+      "id": "configured_inner",
+      "result": "pass",
+      "detail": "Both target queries have exact one-row cardinality; the inner hepta query is scoped to the platform wrapper universe. Main-workspace label acceptance is exact //... or @@//..., not suffix-only."
+    },
+    {
+      "id": "artifact_identity",
+      "result": "pass",
+      "detail": "Provider paths must be relative bazel-out paths without parent traversal. Reported execution root must be under output_base; inner resolved executable remains within execution root; outer and inner must be the same file. The copied artifact is executable and byte-hash equal to the selected inner output."
+    },
+    {
+      "id": "elf_and_process",
+      "result": "pass",
+      "detail": "Actual bytes must be ELF64 little-endian x86_64 ET_EXEC or ET_DYN with no PT_INTERP or DT_NEEDED. Exactly one --version and one --help process are executed from the staged hash-bound bytes, each bounded to 30 seconds, with pre/post and terminal artifact hashes. Source defines Hepta CLI and hepta version/help strings before normal product command dispatch."
+    },
+    {
+      "id": "source_fence",
+      "result": "pass",
+      "detail": "Checkout is exact GITHUB_SHA; raw git commit headers preserve true parent IDs under shallow checkout. Initial and terminal HEAD/tree/tracked cleanliness are checked, plus tool/config/source input blobs and native Linux x86_64 runner receipt."
+    },
+    {
+      "id": "credential_and_artifact_scope",
+      "result": "pass",
+      "detail": "Workflow-provided BuildBuddy key is removed from smoke environment and replaced in text artifacts before upload. Raw BEP stays outside upload directory; only allowlisted event/metric projection and raw-BEP digest are retained. Expanded remote-header command lines are not put in the receipt."
+    },
+    {
+      "id": "failure_semantics",
+      "result": "pass",
+      "detail": "Build/query/process nonzero and timeouts remain failures; final qualification requires prior success and unchanged source/product. Failure artifacts can upload after successful sanitization. No retries, ignored tests, release, original CI changes, or original budget extensions are introduced."
+    }
+  ],
+  "remaining_gates": [
+    "Parse the actual final YAML and all inline Python before publication.",
+    "Run the added workflow at the exact published source/merge SHA; retain real build/cquery/ELF/process receipts and original logs.",
+    "Do not promote this narrow build/process smoke to the existing musl integration matrix or deployment qualification."
+  ],
+  "sources": [
+    {
+      "repository": "TrillionniumFoundation/hepta-private-ci",
+      "ref": "ff72d462d74f9eb856aa9edbc368caad9c466708",
+      "path": "codex-rs/cli/BUILD.bazel",
+      "blob": "a64e4a8d12045dcd4f83e2a02c262e52e87ef4c8",
+      "bytes": 802,
+      "sha256": "25bfe4bd6ee523d5859654f34ba3caab21778d3372c239c83f8e07565a03e532"
+    },
+    {
+      "repository": "TrillionniumFoundation/hepta-private-ci",
+      "ref": "ff72d462d74f9eb856aa9edbc368caad9c466708",
+      "path": "bazel/platforms/release_binaries.bzl",
+      "blob": "7ac59c2b5e1f670d1653c2b3efdd8a82f2963bdc",
+      "bytes": 763,
+      "sha256": "0a0f907294980f9bf640a667d332d0445398496978f17d14031971826f4e5c68"
+    },
+    {
+      "repository": "TrillionniumFoundation/hepta-private-ci",
+      "ref": "ff72d462d74f9eb856aa9edbc368caad9c466708",
+      "path": ".bazelrc",
+      "blob": "3d5877b283b887091af507f3672003f84c500687",
+      "bytes": 14926,
+      "sha256": "53a5fd4e65e4e9937b826174520fe1eb642adb79cfe7a6335c871d5fa9db57fa"
+    },
+    {
+      "repository": "TrillionniumFoundation/hepta-private-ci",
+      "ref": "ff72d462d74f9eb856aa9edbc368caad9c466708",
+      "path": ".github/scripts/run_bazel_with_buildbuddy.py",
+      "blob": "21a5fdf0e7afcde4b6141229e95fcff8f6a7e763",
+      "bytes": 14442,
+      "sha256": "656fa9f508bb339da949a359a457f02fa3979449ae1761b0084494cf38e83a0e"
+    },
+    {
+      "repository": "TrillionniumFoundation/hepta-private-ci",
+      "ref": "ff72d462d74f9eb856aa9edbc368caad9c466708",
+      "path": "codex-rs/cli/src/main_impl.rs",
+      "blob": "1bd3eb0bfb183f6a436ba56220906f91b49f0679",
+      "bytes": 176978,
+      "sha256": "097ca019533619d964fa67f018e0a140645779f17a0e9a17212ad5398636a513"
+    },
+    {
+      "repository": "bazelbuild/rules_platform",
+      "ref": "0.1.0",
+      "path": "platform_data/defs.bzl",
+      "blob": "02f8b3402c0192491a54ba28137b0e25aabed62d",
+      "bytes": 2917,
+      "sha256": "4531b4e33b0bb28d2089eb347a4b12f303ec958ed46adba1a01cd15ef565cb12"
+    },
+    {
+      "repository": "bazelbuild/bazel",
+      "ref": "9.3.0",
+      "path": "src/main/java/com/google/devtools/build/lib/query2/cquery/StarlarkOutputFormatterCallback.java",
+      "blob": "3ebf8a31b23e28212e5ae822543a23295c9f09e1",
+      "bytes": 10314,
+      "sha256": "8e86ac48bec5f640b6fb8f6e4dd55bc79a694758db66c6352326e8e73ebeffef"
+    },
+    {
+      "repository": "bazelbuild/bazel",
+      "ref": "9.3.0",
+      "path": "src/main/java/com/google/devtools/build/lib/analysis/DefaultInfo.java",
+      "blob": "da430363fc2fdf0cf6cd913c6288ed3fbe0cfc8b",
+      "bytes": 7518,
+      "sha256": "749a01fa226ffe32990bbafeb00aee470b9196a80ba06e1cbec6b82f0fa7833e"
+    },
+    {
+      "repository": "bazelbuild/bazel",
+      "ref": "9.3.0",
+      "path": "src/main/java/com/google/devtools/build/lib/cmdline/Label.java",
+      "blob": "ffbd4951ed39fce419991445223cdf32393f5c32",
+      "bytes": 37037,
+      "sha256": "9845de146667f32459dd693dd7eb7197e5dc3b640ff497891874c629c7d14417"
+    }
+  ]
+}

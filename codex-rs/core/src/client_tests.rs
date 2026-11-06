@@ -16,12 +16,29 @@ use crate::AttestationProvider;
 use crate::GenerateAttestationFuture;
 use crate::config::Config;
 use crate::model_provider_policy::ModelProviderPolicyContext;
+use crate::model_provider_policy::ProviderWireSemantic;
+use crate::model_provider_policy::canonical_sha256;
+use crate::model_provider_policy::logical_responses_request;
+use crate::model_provider_policy::prepare_model_provider_policy;
+use crate::model_provider_policy::provider_websocket_wire_payload;
 use crate::responses_metadata::CodexResponsesMetadata;
+use crate::responses_metadata::CodexResponsesRequestKind;
+use crate::responses_metadata::CompactionTurnMetadata;
+use crate::responses_metadata::TurnMetadataWorkspace;
+use crate::responses_metadata::TurnToolFunctionInfo;
+use crate::responses_metadata::TurnToolNamespaceInfo;
+use crate::responses_metadata::TurnToolSource;
 use crate::test_support::TestCodexResponsesRequestKind;
 use crate::test_support::responses_metadata as test_responses_metadata;
+use codex_analytics::CompactionImplementation;
+use codex_analytics::CompactionPhase;
+use codex_analytics::CompactionReason;
+use codex_analytics::CompactionTrigger;
 use codex_api::AgentIdentityTelemetry;
 use codex_api::ApiError;
+use codex_api::ResponseCreateWsRequest;
 use codex_api::ResponseEvent;
+use codex_api::ResponsesApiRequest;
 use codex_api::RetryConfig;
 use codex_api::TransportError;
 use codex_extension_api::EphemeralModelInputContributor;
@@ -29,6 +46,7 @@ use codex_extension_api::ExtensionData;
 use codex_extension_api::ExtensionRegistry;
 use codex_extension_api::ExtensionRegistryBuilder;
 use codex_extension_api::ModelProviderRequestKind;
+use codex_extension_api::ModelProviderTransport;
 use codex_http_client::HttpClientFactory;
 use codex_http_client::OutboundProxyPolicy;
 use codex_login::AuthCredentialsStoreMode;
@@ -55,8 +73,6 @@ use codex_protocol::error::CodexErr;
 use codex_protocol::error::CodexErrorDetails;
 use codex_protocol::models::BaseInstructions;
 use codex_protocol::models::ContentItem;
-use codex_protocol::models::ContentItemKind;
-use codex_protocol::models::InternalChatMessageMetadataPassthrough;
 use codex_protocol::models::ResponseItem;
 use codex_protocol::openai_models::ModelInfo;
 use codex_protocol::openai_models::ModelsResponse;
@@ -64,6 +80,7 @@ use codex_protocol::openai_models::ReasoningEffort;
 use codex_protocol::protocol::InternalSessionSource;
 use codex_protocol::protocol::SessionSource;
 use codex_protocol::protocol::SubAgentSource;
+use codex_protocol::protocol::ThreadSource;
 use codex_rollout_trace::CompactionTraceContext;
 use codex_rollout_trace::ExecutionStatus;
 use codex_rollout_trace::InferenceTraceAttempt;
@@ -135,7 +152,7 @@ fn test_model_client_with_thread_id(
 
 #[test]
 fn chatgpt_codex_wire_strips_local_content_metadata_but_openai_wire_keeps_it() {
-    let client = test_model_client(SessionSource::Exec);
+    let mut client = test_model_client(SessionSource::Exec);
     let chatgpt_provider =
         ModelProviderInfo::create_openai_provider(Some(CHATGPT_CODEX_BASE_URL.to_string()))
             .to_api_provider(Some(AuthMode::Chatgpt))
@@ -152,10 +169,14 @@ fn chatgpt_codex_wire_strips_local_content_metadata_but_openai_wire_keeps_it() {
             text: "hello".to_string(),
         }],
         phase: None,
-        internal_chat_message_metadata_passthrough: Some(InternalChatMessageMetadataPassthrough {
-            content_item_kinds: Some(vec![ContentItemKind("user.text".to_string())]),
-            ..Default::default()
-        }),
+        internal_chat_message_metadata_passthrough: Some(
+            serde_json::from_value(serde_json::json!({
+                "content_item_kinds": ["user.text"],
+                "turn_id": "metadata-turn",
+                "create_time": 1.0
+            }))
+            .expect("valid annotated input fixture"),
+        ),
     };
 
     let mut chatgpt_item = item_with_metadata();
@@ -224,6 +245,89 @@ fn chatgpt_codex_wire_strips_local_content_metadata_but_openai_wire_keeps_it() {
             .get("internal_chat_message_metadata_passthrough")
             .is_none()
     );
+
+    // Exercise complete request serialization for both formats and feature states.
+    // No first-party network request is made.
+    let prompt = Prompt {
+        input: vec![item_with_metadata()],
+        base_instructions: codex_protocol::models::BaseInstructions {
+            text: "test instructions".to_string(),
+            ..Default::default()
+        },
+        ..Default::default()
+    };
+    let original_input = serde_json::to_value(&prompt.input).expect("serialize original prompt");
+    let metadata = test_responses_metadata_for_client(
+        &client,
+        Some("metadata-turn"),
+        format!("{}:0", client.state.thread_id),
+        None,
+        TestCodexResponsesRequestKind::Turn,
+    );
+    for content_item_kinds_enabled in [true, false] {
+        Arc::get_mut(&mut client.state)
+            .expect("test owns the model client")
+            .content_item_kinds_enabled = content_item_kinds_enabled;
+        for use_responses_lite in [true, false] {
+            let mut model_info = test_model_info();
+            model_info.use_responses_lite = use_responses_lite;
+            for (provider, keeps_metadata) in [
+                (&chatgpt_provider, false),
+                (&openai_provider, true),
+                (&custom_name_provider, true),
+                (&nonstandard_provider, false),
+            ] {
+                let mut request = client
+                    .build_responses_request(
+                        &prompt,
+                        &model_info,
+                        None,
+                        codex_protocol::config_types::ReasoningSummary::None,
+                        None,
+                        &metadata,
+                        provider,
+                    )
+                    .expect("build actual provider request");
+                client.prepare_response_items_for_request(&mut request.input, provider);
+                let wire = serde_json::to_value(request).expect("serialize actual request");
+                let input = wire["input"].as_array().expect("actual request input");
+                let user_item = input.last().expect("user message remains in request");
+                assert_eq!(
+                    user_item
+                        .get("internal_chat_message_metadata_passthrough")
+                        .is_some(),
+                    keeps_metadata,
+                    "resolved endpoint {}",
+                    provider.base_url
+                );
+                let item_metadata = &user_item["internal_chat_message_metadata_passthrough"];
+                assert_eq!(
+                    item_metadata.get("content_item_kinds").is_some(),
+                    keeps_metadata && content_item_kinds_enabled
+                );
+                if keeps_metadata {
+                    assert_eq!(item_metadata["turn_id"], "metadata-turn");
+                    assert_eq!(item_metadata["create_time"], 1.0);
+                }
+                if use_responses_lite {
+                    assert_eq!(input[0]["type"], "additional_tools");
+                    assert_eq!(input[1]["content"][0]["text"], "test instructions");
+                    let kinds = input[1]
+                        .pointer("/internal_chat_message_metadata_passthrough/content_item_kinds");
+                    if keeps_metadata && content_item_kinds_enabled {
+                        assert_eq!(kinds, Some(&serde_json::json!(["model.base_instructions"])));
+                    } else {
+                        assert!(kinds.is_none());
+                    }
+                }
+                assert_eq!(
+                    serde_json::to_value(&prompt.input).expect("serialize retained prompt"),
+                    original_input,
+                    "provider serialization must not alter local annotations"
+                );
+            }
+        }
+    }
 }
 
 struct TransportSelectionEphemeralContributor {
@@ -329,6 +433,7 @@ fn websocket_connection_identity_binds_provider_and_stable_handshake_semantics()
         "thread-a".to_string(),
         "window-a".to_string(),
     );
+    metadata_a.request_kind = Some(CodexResponsesRequestKind::Turn);
     metadata_a.sandbox_mode = Some("workspace-write".to_string());
     metadata_a.turn_started_at_unix_ms = Some(1);
     let identity_a =
@@ -339,6 +444,9 @@ fn websocket_connection_identity_binds_provider_and_stable_handshake_semantics()
     volatile_metadata.session_id = "session-after-restart".to_string();
     volatile_metadata.window_id = "window-after-restart".to_string();
     volatile_metadata.turn_started_at_unix_ms = Some(2);
+    volatile_metadata.request_kind = Some(CodexResponsesRequestKind::Prewarm);
+    volatile_metadata.parent_turn_id = Some("parent-turn-after-prewarm".to_string());
+    volatile_metadata.root_turn_id = Some("root-turn-after-prewarm".to_string());
     assert_eq!(
         identity_a,
         WebsocketConnectionIdentity::from_provider(
@@ -349,34 +457,248 @@ fn websocket_connection_identity_binds_provider_and_stable_handshake_semantics()
         .expect("volatile identity")
     );
 
-    let mut changed_metadata = metadata_a.clone();
-    changed_metadata.sandbox_mode = Some("danger-full-access".to_string());
-    assert_ne!(
-        identity_a,
-        WebsocketConnectionIdentity::from_provider(
-            &provider,
-            Some("feature-a"),
-            &changed_metadata,
-        )
-        .expect("changed compatibility identity")
-    );
+    let mut changed_sandbox = volatile_metadata.clone();
+    changed_sandbox.sandbox_mode = Some("danger-full-access".to_string());
+    let mut changed_parent = volatile_metadata.clone();
+    changed_parent.parent_thread_id = Some(ThreadId::new());
+    let mut changed_fork = volatile_metadata.clone();
+    changed_fork.forked_from_thread_id = Some(ThreadId::new());
+    let mut changed_source = volatile_metadata.clone();
+    changed_source.thread_source = Some(ThreadSource::GuardianReview);
+    let mut changed_review = volatile_metadata.clone();
+    changed_review.auto_review_enabled = Some(true);
+    let mut changed_request_kind = volatile_metadata.clone();
+    changed_request_kind.request_kind = Some(CodexResponsesRequestKind::Memory);
+    let mut changed_extra = volatile_metadata.clone();
+    changed_extra
+        .extra
+        .insert("fiber_run_id".to_string(), "another-run".to_string());
+    for (field, changed_metadata) in [
+        ("sandbox", changed_sandbox),
+        ("parent thread", changed_parent),
+        ("fork source", changed_fork),
+        ("thread source", changed_source),
+        ("review policy", changed_review),
+        ("non-turn request kind", changed_request_kind),
+        ("client metadata", changed_extra),
+    ] {
+        assert_ne!(
+            identity_a,
+            WebsocketConnectionIdentity::from_provider(
+                &provider,
+                Some("feature-a"),
+                &changed_metadata,
+            )
+            .expect("changed compatibility identity"),
+            "{field} changes must still replace the connection"
+        );
+    }
     assert_ne!(
         identity_a,
         WebsocketConnectionIdentity::from_provider(&provider, Some("feature-b"), &metadata_a,)
             .expect("changed beta identity")
     );
 
-    let mut changed_provider = provider;
-    changed_provider.base_url = "https://other.example.test/v1".to_string();
-    assert_ne!(
-        identity_a,
-        WebsocketConnectionIdentity::from_provider(
-            &changed_provider,
-            Some("feature-a"),
-            &metadata_a,
-        )
-        .expect("changed provider identity")
+    let mut changed_base_url = provider.clone();
+    changed_base_url.base_url = "https://other.example.test/v1".to_string();
+    let mut changed_name = provider.clone();
+    changed_name.name = "provider-b".to_string();
+    let mut changed_query = provider.clone();
+    changed_query
+        .query_params
+        .as_mut()
+        .expect("provider query parameters")
+        .insert("api-version".to_string(), "2026-09-01".to_string());
+    let mut changed_headers = provider;
+    changed_headers.headers.insert(
+        http::header::AUTHORIZATION,
+        http::HeaderValue::from_static("Bearer alternate-test-authority"),
     );
+    for (field, changed_provider) in [
+        ("base URL", changed_base_url),
+        ("provider name", changed_name),
+        ("query parameters", changed_query),
+        ("authorization headers", changed_headers),
+    ] {
+        assert_ne!(
+            identity_a,
+            WebsocketConnectionIdentity::from_provider(
+                &changed_provider,
+                Some("feature-a"),
+                &volatile_metadata,
+            )
+            .expect("changed provider identity"),
+            "{field} changes must still replace the connection"
+        );
+    }
+}
+
+#[test]
+fn websocket_connection_reuse_keeps_dynamic_metadata_in_wire_and_recovery_identity() {
+    let provider = codex_api::Provider {
+        name: "provider-a".to_string(),
+        base_url: "https://deployment.example.test/v1".to_string(),
+        query_params: None,
+        headers: http::HeaderMap::new(),
+        retry: RetryConfig {
+            max_attempts: 1,
+            base_delay: Duration::from_millis(1),
+            retry_429: false,
+            retry_5xx: false,
+            retry_transport: false,
+        },
+        stream_idle_timeout: Duration::from_secs(5),
+    };
+    let mut metadata = CodexResponsesMetadata::new(
+        "installation-a".to_string(),
+        "session-a".to_string(),
+        "thread-1".to_string(),
+        "window-a".to_string(),
+    );
+    metadata.request_kind = Some(CodexResponsesRequestKind::Turn);
+    metadata.turn_id = Some("turn-1".to_string());
+    metadata.sandbox_mode = Some("workspace-write".to_string());
+    metadata.node_repl_auto_review_required = Some(false);
+    metadata.node_repl_disabled = Some(false);
+    let identity =
+        WebsocketConnectionIdentity::from_provider(&provider, Some("feature-a"), &metadata)
+            .expect("initial connection identity");
+
+    let request = ResponsesApiRequest {
+        model: "gpt-test".to_string(),
+        instructions: "follow the prompt".to_string(),
+        input: Vec::new(),
+        tools: None,
+        tool_choice: "auto".to_string(),
+        parallel_tool_calls: false,
+        reasoning: None,
+        store: false,
+        stream: true,
+        stream_options: None,
+        include: Vec::new(),
+        service_tier: None,
+        prompt_cache_key: None,
+        text: None,
+        client_metadata: None,
+    };
+    let wire_payload = |metadata: &CodexResponsesMetadata| {
+        let mut payload = ResponseCreateWsRequest::from(&request);
+        payload.client_metadata = Some(metadata.client_metadata());
+        provider_websocket_wire_payload(&payload).expect("semantic WebSocket payload")
+    };
+    let initial_wire = wire_payload(&metadata);
+    let initial_wire_digest = canonical_sha256(&initial_wire).expect("initial wire digest");
+    let registry = transport_selection_registry(None);
+    let stores = (
+        ExtensionData::new("session-1"),
+        ExtensionData::new("thread-1"),
+        ExtensionData::new("turn-1"),
+    );
+    let context = transport_selection_context(
+        &registry,
+        (&stores.0, &stores.1, &stores.2),
+        ModelProviderRequestKind::Turn,
+    );
+    let logical_request = logical_responses_request(&request);
+    let wire_semantic = ProviderWireSemantic::new(
+        &initial_wire,
+        /*routing_hint*/ None,
+        /*responses_lite*/ false,
+    );
+    let prepared = prepare_model_provider_policy(
+        &context,
+        &provider.name,
+        &request.model,
+        ModelProviderTransport::WebSocket,
+        "wss://deployment.example.test/v1/responses",
+        &logical_request,
+        &wire_semantic,
+        /*previous_response_id*/ None,
+        /*generate*/ true,
+    )
+    .expect("prepared provider request");
+    // Hold all other binding inputs fixed to isolate each metadata field's
+    // contribution to the complete cold-recovery fingerprint.
+    let recovery_fingerprint = |metadata: &CodexResponsesMetadata| {
+        prepared
+            .turn_recovery_fingerprint(
+                &provider.headers,
+                Some("feature-a"),
+                &metadata.turn_recovery_compatibility_projection(),
+                /*routing_hint*/ None,
+                /*responses_lite*/ false,
+            )
+            .expect("cold-recovery fingerprint")
+    };
+    let initial_recovery = recovery_fingerprint(&metadata);
+
+    let mut changed_node_review = metadata.clone();
+    changed_node_review.node_repl_auto_review_required = Some(true);
+    let mut changed_node_availability = metadata.clone();
+    changed_node_availability.node_repl_disabled = Some(true);
+    let mut changed_workspaces = metadata.clone();
+    changed_workspaces.workspaces.insert(
+        "/workspace/project".to_string(),
+        TurnMetadataWorkspace {
+            latest_git_commit_hash: Some("commit-after-prewarm".to_string()),
+            has_changes: Some(true),
+            ..Default::default()
+        },
+    );
+    let mut changed_inventory = metadata.clone();
+    changed_inventory.tool_namespaces_info = Some(BTreeMap::from([(
+        "functions".to_string(),
+        TurnToolNamespaceInfo {
+            name: "functions".to_string(),
+            functions: BTreeMap::from([(
+                "node_repl".to_string(),
+                TurnToolFunctionInfo {
+                    name: "node_repl".to_string(),
+                    direct: false,
+                    code_mode_name: Some("functions.node_repl".to_string()),
+                    deferred: false,
+                    source: TurnToolSource::Harness,
+                },
+            )]),
+        },
+    )]));
+    let mut changed_compaction = metadata;
+    changed_compaction.request_kind = Some(CodexResponsesRequestKind::Compaction(
+        CompactionTurnMetadata::new(
+            CompactionTrigger::Auto,
+            CompactionReason::ContextLimit,
+            CompactionImplementation::ResponsesCompactionV2,
+            CompactionPhase::MidTurn,
+        ),
+    ));
+    for (field, changed_metadata) in [
+        ("model Node REPL review requirement", changed_node_review),
+        ("model Node REPL availability", changed_node_availability),
+        ("Git workspaces", changed_workspaces),
+        ("tool namespace inventory", changed_inventory),
+        ("inline compaction", changed_compaction),
+    ] {
+        assert_eq!(
+            identity,
+            WebsocketConnectionIdentity::from_provider(
+                &provider,
+                Some("feature-a"),
+                &changed_metadata,
+            )
+            .expect("connection identity after request metadata changes"),
+            "{field} must not force a new connection"
+        );
+        assert_ne!(
+            initial_wire_digest,
+            canonical_sha256(&wire_payload(&changed_metadata)).expect("changed wire digest"),
+            "{field} must remain bound in the physical request"
+        );
+        assert_ne!(
+            initial_recovery,
+            recovery_fingerprint(&changed_metadata),
+            "{field} must remain bound in the complete cold-recovery fingerprint"
+        );
+    }
 }
 
 #[tokio::test]

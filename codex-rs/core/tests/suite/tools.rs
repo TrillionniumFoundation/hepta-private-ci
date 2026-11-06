@@ -387,15 +387,62 @@ async fn namespaced_custom_tool_call_preserves_namespace_through_dispatch_and_re
     )
     .await?;
 
+    let retained_calls = |items: &[Value], output_call_id: &str| -> Result<Value> {
+        let output = items
+            .iter()
+            .find(|item| {
+                item["type"] == "custom_tool_call_output" && item["call_id"] == output_call_id
+            })
+            .context("custom tool output must be persisted locally")?;
+        let output = serde_json::from_value(output.clone())?;
+        let calls =
+            codex_core::test_support::retained_executed_tool_calls_for_output(&test.codex, &output)
+                .context("actual prompt output must retain its attempted calls")?;
+        Ok(serde_json::to_value(calls)?)
+    };
+
     let request = mock.single_request();
-    let custom_tool_calls = request.inputs_of_type("custom_tool_call");
+    assert_eq!(
+        (
+            strip_response_item_ids_from_json(Value::Array(
+                request.inputs_of_type("custom_tool_call"),
+            )),
+            strip_response_item_ids_from_json(request.custom_tool_call_output(call_id)),
+        ),
+        (
+            Value::Array(vec![json!({
+                "type": "custom_tool_call",
+                "call_id": call_id,
+                "namespace": namespace,
+                "name": tool_name,
+                "input": input,
+            })]),
+            json!({
+                "type": "custom_tool_call_output",
+                "call_id": call_id,
+                "output": format!("unsupported custom tool call: {namespace}{tool_name}"),
+            }),
+        )
+    );
+    // Match the complete actual request to its ordered durable history. Private
+    // annotations stay local and must be absent from this non-official endpoint.
+    let local_input = request.durable_input(&test.codex).await;
+    let custom_tool_calls = local_input
+        .iter()
+        .filter(|item| item["type"] == "custom_tool_call")
+        .cloned()
+        .collect::<Vec<_>>();
     let turn_id = custom_tool_calls
         .first()
         .and_then(|item| item.pointer("/internal_chat_message_metadata_passthrough/turn_id"))
         .and_then(Value::as_str)
         .map(str::to_string)
         .expect("custom tool call should include turn metadata");
-    let custom_tool_output = request.custom_tool_call_output(call_id);
+    let custom_tool_output = local_input
+        .iter()
+        .find(|item| item["type"] == "custom_tool_call_output" && item["call_id"] == call_id)
+        .cloned()
+        .context("custom tool output must be persisted locally")?;
     let output_create_time = custom_tool_output
         .pointer("/internal_chat_message_metadata_passthrough/create_time")
         .and_then(Value::as_f64)
@@ -423,13 +470,16 @@ async fn namespaced_custom_tool_call_preserves_namespace_through_dispatch_and_re
                 "internal_chat_message_metadata_passthrough": {
                     "turn_id": turn_id,
                     "create_time": output_create_time,
-                    "executed_tool_calls": [{
-                        "name": format!("{namespace}__{tool_name}"),
-                        "arguments": input,
-                    }],
                 },
             }),
         )
+    );
+    assert_eq!(
+        retained_calls(&local_input, call_id)?,
+        json!([{
+            "name": format!("{namespace}__{tool_name}"),
+            "arguments": input,
+        }]),
     );
     let escaped_call_id = "custom-namespaced-escaped";
     let escaped_input = "\\".repeat(4_096);
@@ -463,8 +513,36 @@ async fn namespaced_custom_tool_call_preserves_namespace_through_dispatch_and_re
     .await?;
     let escaped_request = escaped_mock.single_request();
     assert_eq!(
-        escaped_request.custom_tool_call_output(call_id)["internal_chat_message_metadata_passthrough"]
-            ["executed_tool_calls"],
+        (
+            strip_response_item_ids_from_json(
+                escaped_request
+                    .inputs_of_type("custom_tool_call")
+                    .into_iter()
+                    .find(|item| item["call_id"] == escaped_call_id)
+                    .context("escaped custom tool call must reach the provider")?,
+            ),
+            strip_response_item_ids_from_json(
+                escaped_request.custom_tool_call_output(escaped_call_id),
+            ),
+        ),
+        (
+            json!({
+                "type": "custom_tool_call",
+                "call_id": escaped_call_id,
+                "namespace": namespace,
+                "name": tool_name,
+                "input": escaped_input,
+            }),
+            json!({
+                "type": "custom_tool_call_output",
+                "call_id": escaped_call_id,
+                "output": format!("unsupported custom tool call: {namespace}{tool_name}"),
+            }),
+        ),
+    );
+    let escaped_local_input = escaped_request.durable_input(&test.codex).await;
+    assert_eq!(
+        retained_calls(&escaped_local_input, call_id)?,
         json!([{
             "name": format!("{namespace}__{tool_name}"),
             "arguments": input,
@@ -480,8 +558,7 @@ async fn namespaced_custom_tool_call_preserves_namespace_through_dispatch_and_re
         },
     }]);
     assert_eq!(
-        escaped_request.custom_tool_call_output(escaped_call_id)["internal_chat_message_metadata_passthrough"]
-            ["executed_tool_calls"],
+        retained_calls(&escaped_local_input, escaped_call_id)?,
         expected_escaped_calls,
     );
 
@@ -516,17 +593,16 @@ async fn namespaced_custom_tool_call_preserves_namespace_through_dispatch_and_re
     .await?;
 
     let direct_exec_request = direct_exec_mock.single_request();
+    let direct_exec_local_input = direct_exec_request.durable_input(&test.codex).await;
     assert_eq!(
-        direct_exec_request.custom_tool_call_output(call_id)["internal_chat_message_metadata_passthrough"]
-            ["executed_tool_calls"],
+        retained_calls(&direct_exec_local_input, call_id)?,
         json!([{
             "name": format!("{namespace}__{tool_name}"),
             "arguments": input,
         }]),
     );
     assert_eq!(
-        direct_exec_request.custom_tool_call_output(escaped_call_id)["internal_chat_message_metadata_passthrough"]
-            ["executed_tool_calls"],
+        retained_calls(&direct_exec_local_input, escaped_call_id)?,
         expected_escaped_calls,
     );
     let direct_exec_output = direct_exec_request.custom_tool_call_output(direct_exec_call_id);
@@ -535,7 +611,7 @@ async fn namespaced_custom_tool_call_preserves_namespace_through_dispatch_and_re
         json!("unsupported custom tool call: exec"),
     );
     assert_eq!(
-        direct_exec_output["internal_chat_message_metadata_passthrough"]["executed_tool_calls"],
+        retained_calls(&direct_exec_local_input, direct_exec_call_id)?,
         json!([{
             "name": codex_code_mode::PUBLIC_TOOL_NAME,
             "arguments": input,

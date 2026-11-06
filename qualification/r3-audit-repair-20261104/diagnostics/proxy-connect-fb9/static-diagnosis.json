@@ -1,0 +1,508 @@
+{
+  "schema": "hepta-fb9-proxy-connect-source-diagnosis-v1",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "actual_source_tree": "fb9e131272f7e7a138d6c0d1af2b048b9a6ab7ff",
+  "verdict": "OPEN_ACTUAL_CAUSE_UNOBSERVED; STATIC_DNS_DEADLINE_COLLISION_CONFIRMED",
+  "no_native_execution_no_product_patch_no_ref_mutation": true,
+  "source_binding": {
+    "actual_fb9_root": "fb9e131272f7e7a138d6c0d1af2b048b9a6ab7ff",
+    "codex_rs_tree": "0496b679e96b3bd2d1f93bf66ecfc35f814b9d8c",
+    "network_proxy_tree": "553134f61e34565be51840475a93f022b3b4dd0c",
+    "whole_network_proxy_subtree_equals_cabc": true,
+    "cabc_reference_commit": "cabcb40d36e116beaa65750e1f674c52035da785",
+    "cabc_recursive_tree_evidence": {
+      "path": "hepta-audit-fourth/inputs/cabc-tree.json",
+      "bytes": 3703447,
+      "sha256": "25e4f292abeb6e8341e7000e8eac24c7ea281b2163f512f00a53e789ed16fb39",
+      "git_blob": "df0c8aaf483cd5b9f57d25fcea3bc5693e2b542e"
+    },
+    "actual_tree_api_receipts": [
+      {
+        "path": "architecture-audit/fb9-proxy-connect-20261105/fb9-root-tree-api.json",
+        "bytes": 28673,
+        "sha256": "6cff2d7377bfc92b160a7c048620171026a348981561e275e02afc75a1389752",
+        "git_blob": "b700b345c380f0f617dc8c4b22ed9ee7ab435cc9"
+      },
+      {
+        "path": "architecture-audit/fb9-proxy-connect-20261105/fb9-codex-tree-api.json",
+        "bytes": 84901,
+        "sha256": "8bc868c6de9f3c5f435312db7e1e712f371ec93e85199a18bb8db97ace745d48",
+        "git_blob": "7de1b332c307734fec389b5c6978e077e7adfca8"
+      }
+    ],
+    "actual_exec_server_source_receipt": {
+      "path": "research-audit/fb9-new-failures-20261105/source-read-1-verification.json",
+      "bytes": 1102,
+      "sha256": "6f3b15e203ec02f8442c4527d350879ece1246a1104f2a84292bf0ff5b8e47ca",
+      "git_blob": "132fdfc93dd5592be584e93070cbda03add362ca"
+    }
+  },
+  "source_files": [
+    {
+      "path": "architecture-audit/fb9-proxy-connect-20261105/source/codex-rs/exec-server/src/process_sandbox.rs",
+      "bytes": 14720,
+      "sha256": "0bfa0326269aafbd3578e17d3f56eb0c19e73653cd89142a288fc1d45677cd04",
+      "git_blob": "0bf5853a1d82df037d406fdffbe31d6bada1b2b4",
+      "repository_path": "codex-rs/exec-server/src/process_sandbox.rs",
+      "immutable_blob_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/0bf5853a1d82df037d406fdffbe31d6bada1b2b4",
+      "source_binding": "Actual fb9 native typed source read, independently byte-hashed by research; exact file also equals cabc."
+    },
+    {
+      "path": "architecture-audit/fb9-proxy-connect-20261105/source/codex-rs/exec-server/src/process_sandbox_tests.rs",
+      "bytes": 16221,
+      "sha256": "acf2825d8370a77c5f72bb5cd881aadb2bbd43f9046cc5c9d51b799e04266b80",
+      "git_blob": "a66387ee0d892b82ba3fcf45662a13ef6b13c4c3",
+      "repository_path": "codex-rs/exec-server/src/process_sandbox_tests.rs",
+      "immutable_blob_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/a66387ee0d892b82ba3fcf45662a13ef6b13c4c3",
+      "source_binding": "Actual fb9 native typed source read, independently byte-hashed by research; exact file also equals cabc."
+    },
+    {
+      "path": "architecture-audit/fb9-proxy-connect-20261105/source/codex-rs/network-proxy/src/attribution.rs",
+      "bytes": 4608,
+      "sha256": "d15a146aa46407bf66e9a85d93dca11c19a677f2cafb95e4d2fcb1e615092fce",
+      "git_blob": "f526460fd6227aacd7c1db5de5e6bed4fe48f13c",
+      "repository_path": "codex-rs/network-proxy/src/attribution.rs",
+      "immutable_blob_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/f526460fd6227aacd7c1db5de5e6bed4fe48f13c",
+      "source_binding": "Exact fb9 network-proxy subtree equals the fixed cabc subtree; this file matches that tree entry."
+    },
+    {
+      "path": "architecture-audit/fb9-proxy-connect-20261105/source/codex-rs/network-proxy/src/config.rs",
+      "bytes": 31710,
+      "sha256": "d6817eec30fbe76675d1a7a518d54fd08caf7a1d7f8ae5ebd80e5ab12246b0f2",
+      "git_blob": "3e9670434175d85d1076cd6a6ff1c7c8c4beca19",
+      "repository_path": "codex-rs/network-proxy/src/config.rs",
+      "immutable_blob_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/3e9670434175d85d1076cd6a6ff1c7c8c4beca19",
+      "source_binding": "Exact fb9 network-proxy subtree equals the fixed cabc subtree; this file matches that tree entry."
+    },
+    {
+      "path": "architecture-audit/fb9-proxy-connect-20261105/source/codex-rs/network-proxy/src/connect_policy.rs",
+      "bytes": 8268,
+      "sha256": "4fe5ca899c38b425ed6a78a51b372da92e75a69dc7f2c939c19b0cee4622b83b",
+      "git_blob": "53b267595e8ba9873e5566d8af5c59a664226427",
+      "repository_path": "codex-rs/network-proxy/src/connect_policy.rs",
+      "immutable_blob_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/53b267595e8ba9873e5566d8af5c59a664226427",
+      "source_binding": "Exact fb9 network-proxy subtree equals the fixed cabc subtree; this file matches that tree entry."
+    },
+    {
+      "path": "architecture-audit/fb9-proxy-connect-20261105/source/codex-rs/network-proxy/src/http_proxy.rs",
+      "bytes": 65513,
+      "sha256": "a9c82e4f8142a5072a1cf9e8969c580232f5e0fa1d2bf80f96f7f5203ddd1de6",
+      "git_blob": "8d9670a41d6b5f2726f92db3c83075e9cd9efa34",
+      "repository_path": "codex-rs/network-proxy/src/http_proxy.rs",
+      "immutable_blob_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/8d9670a41d6b5f2726f92db3c83075e9cd9efa34",
+      "source_binding": "Exact fb9 network-proxy subtree equals the fixed cabc subtree; this file matches that tree entry."
+    },
+    {
+      "path": "architecture-audit/fb9-proxy-connect-20261105/source/codex-rs/network-proxy/src/network_policy.rs",
+      "bytes": 37311,
+      "sha256": "87fdcffab34867f3e182ed67983fad3298dbfa3aa640e0f79906d8cd02a11dc2",
+      "git_blob": "b5d2d2719ea23c713f6ee2e679bb023ae7bf47b5",
+      "repository_path": "codex-rs/network-proxy/src/network_policy.rs",
+      "immutable_blob_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/b5d2d2719ea23c713f6ee2e679bb023ae7bf47b5",
+      "source_binding": "Exact fb9 network-proxy subtree equals the fixed cabc subtree; this file matches that tree entry."
+    },
+    {
+      "path": "architecture-audit/fb9-proxy-connect-20261105/source/codex-rs/network-proxy/src/policy.rs",
+      "bytes": 17541,
+      "sha256": "2f8183c75e455821a86d3cd20995e6a8a22120b59f9e860594835989fb100a45",
+      "git_blob": "f83863ded6b789ebb3816d4518206e677462eeca",
+      "repository_path": "codex-rs/network-proxy/src/policy.rs",
+      "immutable_blob_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/f83863ded6b789ebb3816d4518206e677462eeca",
+      "source_binding": "Exact fb9 network-proxy subtree equals the fixed cabc subtree; this file matches that tree entry."
+    },
+    {
+      "path": "architecture-audit/fb9-proxy-connect-20261105/source/codex-rs/network-proxy/src/proxy.rs",
+      "bytes": 101540,
+      "sha256": "df2cd838e6f348f8043f4bf603c9aefa5097c54b76aa99736dcabfe09447c5f8",
+      "git_blob": "c723686fed75b1eb8cc3b447af15619543a75432",
+      "repository_path": "codex-rs/network-proxy/src/proxy.rs",
+      "immutable_blob_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/c723686fed75b1eb8cc3b447af15619543a75432",
+      "source_binding": "Exact fb9 network-proxy subtree equals the fixed cabc subtree; this file matches that tree entry."
+    },
+    {
+      "path": "architecture-audit/fb9-proxy-connect-20261105/source/codex-rs/network-proxy/src/remote_config.rs",
+      "bytes": 4351,
+      "sha256": "006073c25a1a87e1afc2ebfa45a2c7d3ac499d4ae5bc864120bafde2e2bcefbc",
+      "git_blob": "3bb5101a616c9cea58d1a7cb3816f63af0b5baf5",
+      "repository_path": "codex-rs/network-proxy/src/remote_config.rs",
+      "immutable_blob_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/3bb5101a616c9cea58d1a7cb3816f63af0b5baf5",
+      "source_binding": "Exact fb9 network-proxy subtree equals the fixed cabc subtree; this file matches that tree entry."
+    },
+    {
+      "path": "architecture-audit/fb9-proxy-connect-20261105/source/codex-rs/network-proxy/src/request_disconnect.rs",
+      "bytes": 1319,
+      "sha256": "0b07cb13d44b8ebd2382332c20cbd113e07c8c09cccbe24fb3e3c72646eba9ac",
+      "git_blob": "b56aa09a87057b7c8a41f88fc5eeadf99203576d",
+      "repository_path": "codex-rs/network-proxy/src/request_disconnect.rs",
+      "immutable_blob_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/b56aa09a87057b7c8a41f88fc5eeadf99203576d",
+      "source_binding": "Exact fb9 network-proxy subtree equals the fixed cabc subtree; this file matches that tree entry."
+    },
+    {
+      "path": "architecture-audit/fb9-proxy-connect-20261105/source/codex-rs/network-proxy/src/responses.rs",
+      "bytes": 4316,
+      "sha256": "784b765351ecfd85e9ef40ef213a36f5dae9aabc437d0e518181d503cc612afa",
+      "git_blob": "d2aeb990e8f9deff4ad56c8b014aba4b7315fe9b",
+      "repository_path": "codex-rs/network-proxy/src/responses.rs",
+      "immutable_blob_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/d2aeb990e8f9deff4ad56c8b014aba4b7315fe9b",
+      "source_binding": "Exact fb9 network-proxy subtree equals the fixed cabc subtree; this file matches that tree entry."
+    },
+    {
+      "path": "architecture-audit/fb9-proxy-connect-20261105/source/codex-rs/network-proxy/src/runtime.rs",
+      "bytes": 75473,
+      "sha256": "3214446d85796e5d1c4a308ba53aab3bf7098fc18cd38cfc6f97a1cbb14d2e4f",
+      "git_blob": "1a449a44381fafa4a5d6a5d0e08753f425f339fc",
+      "repository_path": "codex-rs/network-proxy/src/runtime.rs",
+      "immutable_blob_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/1a449a44381fafa4a5d6a5d0e08753f425f339fc",
+      "source_binding": "Exact fb9 network-proxy subtree equals the fixed cabc subtree; this file matches that tree entry."
+    },
+    {
+      "path": "architecture-audit/fb9-proxy-connect-20261105/source/codex-rs/network-proxy/src/state.rs",
+      "bytes": 16501,
+      "sha256": "c091b59fecd76052e97fecf2443a68ab8a4650732af9c00330dfb92ebd56ee72",
+      "git_blob": "90731a8b4e8103fb2f8e1e60413539949085aac8",
+      "repository_path": "codex-rs/network-proxy/src/state.rs",
+      "immutable_blob_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/90731a8b4e8103fb2f8e1e60413539949085aac8",
+      "source_binding": "Exact fb9 network-proxy subtree equals the fixed cabc subtree; this file matches that tree entry."
+    }
+  ],
+  "exact_native_history": [
+    {
+      "label": "earlier_f825",
+      "source_tree": "f8251e1d14fa8524ab469281296cd4cf708f173c",
+      "whole_junit": {
+        "path": "ci-audit/recovered-20261105/full-owning-compressed-archive/full-junit.original",
+        "bytes": 4149275,
+        "sha256": "afdf124cb8cb44e65808b71f824c880875253378588ccaffc9b4783857fc18ed",
+        "git_blob": "d1778762119d44c5753ea19cdb94bf81e79d222f"
+      },
+      "whole_review": {
+        "path": "ci-audit/recovered-20261105/full-owning-compressed-archive/full-review.original",
+        "bytes": 4612052,
+        "sha256": "bafcd1f099ea219d29055c1694ad9b61b73ab123da5415f7b8e31b8473ba4b0c",
+        "git_blob": "8c0cb95b4022ce8ad0cc6558c1be4bcf61704349"
+      },
+      "exact_case_fragment": {
+        "path": "architecture-audit/fb9-proxy-connect-20261105/earlier_f825-case.xml",
+        "bytes": 212,
+        "sha256": "ab932750f67593ad66aa5a31b3ba3b946b08b615c603344e65e5ea341b4cbe90",
+        "git_blob": "db3d2b1f8a3e9a83875aa6f7a32159ae02876c29"
+      },
+      "fragment_is_xml_serialization_not_claimed_raw_byte_range": true,
+      "case_name": "process_sandbox::tests::native_request_handles_remote_proxy_config_for_platform",
+      "classname": "codex-exec-server",
+      "seconds": "0.501",
+      "status": "PASS",
+      "terminal_nodes": [],
+      "stdout": null,
+      "stderr": null,
+      "retries": 0,
+      "source_unchanged": true,
+      "whole_run_exit_code": 100,
+      "whole_run_counts": {
+        "PASS": 19485,
+        "FAIL": 18
+      }
+    },
+    {
+      "label": "current_fb9",
+      "source_tree": "fb9e131272f7e7a138d6c0d1af2b048b9a6ab7ff",
+      "whole_junit": {
+        "path": "ci-audit/recovered-20261105/full-fb9-complete-archive/priority-decoded-v1/full-workspace.junit.xml",
+        "bytes": 4147101,
+        "sha256": "a64ad0f88d187caa6dd0fa7c2dedd2f816a8366bedb1a93d026c169a16cf7ac8",
+        "git_blob": "b1bec87f2dc96169e79042114df3261ec7cd73fd"
+      },
+      "whole_review": {
+        "path": "ci-audit/recovered-20261105/full-fb9-complete-archive/priority-decoded-v1/full-workspace-review.json",
+        "bytes": 4625796,
+        "sha256": "8ba22d57c10ea80ac35603cdafeac538f1c13b83a83afd3cb03f792ee5b052bb",
+        "git_blob": "f28dcfa7c5bff24e19d273d2f49bdbd6035b53e1"
+      },
+      "exact_case_fragment": {
+        "path": "architecture-audit/fb9-proxy-connect-20261105/current_fb9-case.xml",
+        "bytes": 1394,
+        "sha256": "02c4586647ce7f16a857d5b6898ddd7e657e18dcbde685564d12de62bfe0f367",
+        "git_blob": "63b58404148ca77c1c43979dd731be2832d9e4b6"
+      },
+      "fragment_is_xml_serialization_not_claimed_raw_byte_range": true,
+      "case_name": "process_sandbox::tests::native_request_handles_remote_proxy_config_for_platform",
+      "classname": "codex-exec-server",
+      "seconds": "10.514",
+      "status": "FAIL",
+      "terminal_nodes": [
+        {
+          "tag": "failure",
+          "attributes": {
+            "message": "thread 'process_sandbox::tests::native_request_handles_remote_proxy_config_for_platform' (1312423) panicked at exec-server/src/process_sandbox_tests.rs:338:10",
+            "type": "test failure with exit code 101"
+          },
+          "text": "thread 'process_sandbox::tests::native_request_handles_remote_proxy_config_for_platform' (1312423) panicked at exec-server/src/process_sandbox_tests.rs:338:10:\nproxy response timeout: Elapsed(())\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+        }
+      ],
+      "stdout": "\nrunning 1 test\ntest process_sandbox::tests::native_request_handles_remote_proxy_config_for_platform ... FAILED\n\nfailures:\n\nfailures:\n    process_sandbox::tests::native_request_handles_remote_proxy_config_for_platform\n\ntest result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 262 filtered out; finished in 10.51s\n\n",
+      "stderr": "\nthread 'process_sandbox::tests::native_request_handles_remote_proxy_config_for_platform' (1312423) panicked at exec-server/src/process_sandbox_tests.rs:338:10:\nproxy response timeout: Elapsed(())\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n",
+      "retries": 0,
+      "source_unchanged": true,
+      "whole_run_exit_code": 100,
+      "whole_run_counts": {
+        "PASS": 19490,
+        "FAIL": 16
+      }
+    }
+  ],
+  "original_failure_projection": {
+    "path": "ci-audit/recovered-20261105/full-fb9-nonpass-projection-v1.json",
+    "bytes": 91707,
+    "sha256": "e2c91d696fb32cda9f0983f9b3d45acaea065505ecffac8a4aa0dd50617445f5",
+    "git_blob": "2b0f472449c79f559f85d445d3583f87bc879203"
+  },
+  "findings": [
+    {
+      "id": "P1",
+      "status": "CONFIRMED_SOURCE_AND_ORIGINAL_FAILURE",
+      "finding": "The original Linux test prepared a native request with no sandbox, no policy decider, no audit observer, and an allowlist containing only allowed.example. It connected and wrote CONNECT blocked.example before failing at the unchanged 2-second response read timeout.",
+      "sources": [
+        {
+          "path": "codex-rs/exec-server/src/process_sandbox_tests.rs",
+          "blob": "a66387ee0d892b82ba3fcf45662a13ef6b13c4c3",
+          "lines": [
+            267,
+            349
+          ]
+        },
+        {
+          "path": "codex-rs/exec-server/src/process_sandbox.rs",
+          "blob": "0bf5853a1d82df037d406fdffbe31d6bada1b2b4",
+          "lines": [
+            78,
+            122
+          ]
+        }
+      ],
+      "limit": "A completed TCP connect/write does not establish that the server parsed CONNECT or entered policy evaluation. No child or sandboxed process is executed by this test."
+    },
+    {
+      "id": "P2",
+      "status": "CONFIRMED_SOURCE_RISK_NOT_EXECUTED_CAUSAL_PROOF",
+      "finding": "Implicit allowlist rejection of this hostname reaches the local/private DNS check first. DNS lookup has a 2-second deadline, equal to the original client response deadline. If lookup remains pending until its deadline, the request cannot reliably finish policy, record the rejection, and deliver a response inside the same client deadline.",
+      "sources": [
+        {
+          "path": "codex-rs/network-proxy/src/runtime.rs",
+          "blob": "1a449a44381fafa4a5d6a5d0e08753f425f339fc",
+          "lines": [
+            49,
+            49
+          ],
+          "proposition": "DNS_LOOKUP_TIMEOUT is 2 seconds"
+        },
+        {
+          "path": "codex-rs/network-proxy/src/runtime.rs",
+          "blob": "1a449a44381fafa4a5d6a5d0e08753f425f339fc",
+          "lines": [
+            528,
+            602
+          ],
+          "proposition": "Explicit deny, then local/private check, then allowlist"
+        },
+        {
+          "path": "codex-rs/network-proxy/src/runtime.rs",
+          "blob": "1a449a44381fafa4a5d6a5d0e08753f425f339fc",
+          "lines": [
+            934,
+            973
+          ],
+          "proposition": "DNS error and timeout fail closed as non-public"
+        }
+      ],
+      "limit": "The original failure has no phase timestamps or DNS start/outcome evidence. The 10.514-second total duration is not evidence of load, DNS duration, blocking-pool shutdown, or a specific HTTP ingress stall."
+    },
+    {
+      "id": "P3",
+      "status": "CONFIRMED_CONTRACT_CONSTRAINT",
+      "finding": "Only NotAllowed is eligible for a policy-decider override. NotAllowedLocal and explicit Denied bypass the decider. Moving allowlist rejection in front of the DNS/private check globally would change which requests can be overridden. Restricting such a shortcut to no decider preserves the deny decision but changes denial reason priority for unresolved/private hostnames.",
+      "sources": [
+        {
+          "path": "codex-rs/network-proxy/src/network_policy.rs",
+          "blob": "b5d2d2719ea23c713f6ee2e679bb023ae7bf47b5",
+          "lines": [
+            340,
+            414
+          ],
+          "proposition": "Decider is consulted only for NotAllowed"
+        },
+        {
+          "path": "codex-rs/network-proxy/src/runtime.rs",
+          "blob": "1a449a44381fafa4a5d6a5d0e08753f425f339fc",
+          "lines": [
+            549,
+            602
+          ],
+          "proposition": "Documented priority and exact returns"
+        },
+        {
+          "path": "codex-rs/network-proxy/src/responses.rs",
+          "blob": "d2aeb990e8f9deff4ad56c8b014aba4b7315fe9b",
+          "lines": [
+            52,
+            102
+          ],
+          "proposition": "Both reasons share x-proxy-error but use different response bodies"
+        },
+        {
+          "path": "codex-rs/network-proxy/src/runtime.rs",
+          "blob": "1a449a44381fafa4a5d6a5d0e08753f425f339fc",
+          "lines": [
+            605,
+            641
+          ],
+          "proposition": "BlockedRequest telemetry preserves exact reason"
+        }
+      ],
+      "limit": "No semantics-preserving DNS bypass under the existing reason/approval contract has been demonstrated. This review does not authorize a rejection-priority change."
+    },
+    {
+      "id": "P4",
+      "status": "CONFIRMED_SOURCE_IDENTITY_AND_NARROWING",
+      "finding": "The entire actual fb9 network-proxy subtree equals the cabc subtree. This ingress already uses HttpServer::http1(), not automatic HTTP version sniffing. The attribution preface peeks one byte; an ordinary CONNECT begins with C, so the 3-second attribution-frame branch is not taken once that byte is received. The test uses a static reloader and no policy observer.",
+      "sources": [
+        {
+          "path": "codex-rs/network-proxy/src/http_proxy.rs",
+          "blob": "8d9670a41d6b5f2726f92db3c83075e9cd9efa34",
+          "lines": [
+            144,
+            176
+          ],
+          "proposition": "HTTP/1 service with attribution wrapper"
+        },
+        {
+          "path": "codex-rs/network-proxy/src/attribution.rs",
+          "blob": "f526460fd6227aacd7c1db5de5e6bed4fe48f13c",
+          "lines": [
+            44,
+            112
+          ],
+          "proposition": "Only a leading NUL enters the framed attribution timeout"
+        },
+        {
+          "path": "codex-rs/network-proxy/src/runtime.rs",
+          "blob": "1a449a44381fafa4a5d6a5d0e08753f425f339fc",
+          "lines": [
+            194,
+            208
+          ],
+          "proposition": "Static reloader immediately returns None"
+        },
+        {
+          "path": "codex-rs/network-proxy/src/runtime.rs",
+          "blob": "1a449a44381fafa4a5d6a5d0e08753f425f339fc",
+          "lines": [
+            283,
+            309
+          ],
+          "proposition": "Remote launch uses static reloader"
+        },
+        {
+          "path": "codex-rs/network-proxy/src/network_policy.rs",
+          "blob": "b5d2d2719ea23c713f6ee2e679bb023ae7bf47b5",
+          "lines": [
+            262,
+            309
+          ],
+          "proposition": "Optional synchronous policy audit observer"
+        }
+      ],
+      "limit": "Unchanged source does not prove identical feature graphs, scheduling, resolver state, or a clean current run. An existing earlier exact PASS is retained separately from the new FAIL."
+    },
+    {
+      "id": "P5",
+      "status": "CONFIRMED_SOURCE_LIFECYCLE_LIMIT",
+      "finding": "The managed builder reserves and retains a real loopback listener. run() spawns the HTTP service and returns its handle without a request-processed readiness acknowledgement. Successful TCP connect therefore cannot by itself exclude ingress or task-start latency.",
+      "sources": [
+        {
+          "path": "codex-rs/network-proxy/src/proxy.rs",
+          "blob": "c723686fed75b1eb8cc3b447af15619543a75432",
+          "lines": [
+            200,
+            249
+          ],
+          "proposition": "Managed loopback listener reservation"
+        },
+        {
+          "path": "codex-rs/network-proxy/src/proxy.rs",
+          "blob": "c723686fed75b1eb8cc3b447af15619543a75432",
+          "lines": [
+            1353,
+            1463
+          ],
+          "proposition": "Task spawn and handle return"
+        },
+        {
+          "path": "codex-rs/network-proxy/src/http_proxy.rs",
+          "blob": "8d9670a41d6b5f2726f92db3c83075e9cd9efa34",
+          "lines": [
+            113,
+            140
+          ],
+          "proposition": "Listener conversion and serve entry"
+        }
+      ],
+      "limit": "This is a diagnosis boundary, not evidence that readiness caused the observed failure."
+    }
+  ],
+  "minimal_future_diagnostic_plan": {
+    "status": "PLAN_ONLY_NOT_AUTHORIZED_OR_APPLIED_AS_SOURCE",
+    "target": {
+      "package": "codex-exec-server",
+      "test_kind": "lib",
+      "exact_case": "process_sandbox::tests::native_request_handles_remote_proxy_config_for_platform"
+    },
+    "constraints": [
+      "Original blocked.example CONNECT and implicit deny configuration",
+      "Original 2-second response timeout and all assertions",
+      "No resolver override, explicit deny, IP replacement, skip, retry, or extra response",
+      "No host changes or new cross-platform qualification",
+      "Exact temporary-source guard with finally restoration if later approved"
+    ],
+    "observations": [
+      {
+        "point": "Original test",
+        "fields": "Monotonic elapsed at prepare completion, TCP connect completion, write completion, and the actual read Result before the original expect.",
+        "reason": "Separate setup and request deadline from total libtest/runtime teardown."
+      },
+      {
+        "point": "HTTP CONNECT accept entry and original policy result",
+        "fields": "Fixed diagnostic tag, monotonic elapsed, original decision/reason; no environment or credentials.",
+        "reason": "Establish actual request parsing and whether response policy completed."
+      },
+      {
+        "point": "host_blocked before the existing DNS await and after its original outcome",
+        "fields": "Fixed target host, allowlisted/local-binding/explicit-deny booleans, DNS start and success/error/timeout/cancellation-relevant absence with elapsed.",
+        "reason": "Demonstrate whether DNS was still pending at the client deadline; do not replace the resolver."
+      },
+      {
+        "point": "Original denied-response construction after record_blocked",
+        "fields": "Fixed tag plus monotonic elapsed and original reason.",
+        "reason": "Distinguish completed DNS/policy from later response delivery delay."
+      }
+    ],
+    "decision_rules": [
+      "No CONNECT accept marker before client timeout leaves ingress/readiness/scheduling open.",
+      "CONNECT and DNS-start markers with DNS still pending at the original client timeout establish the deadline collision for that instrumented attempt, not a retrospective proof for the historical run.",
+      "DNS/policy completing before the deadline requires following the existing record/response path; do not label it a DNS timeout.",
+      "A diagnostic PASS does not close the earlier full-run failure or establish all-platform qualification."
+    ]
+  },
+  "corrections": [
+    "The original test has an implicit allowlist denial, not an explicit deny rule.",
+    "The existing response read timeout is 2 seconds; 10.514 seconds is the total exact-case duration.",
+    "NotAllowed and NotAllowedLocal share the x-proxy-error header value blocked-by-allowlist. Their response bodies and telemetry/audit reasons differ. Earlier informal wording suggesting a changed header is corrected.",
+    "The HTTP ingress already uses HTTP/1. The old automatic version-sniffing issue is not established as present in this source."
+  ],
+  "preserved_open_boundaries": [
+    "The original full-run proxy failure remains open; no stage-specific causal observation is available.",
+    "No product permission or rejection-priority change is proposed by this receipt.",
+    "Earlier exact-case PASS does not override the later actual FAIL.",
+    "Native Linux evidence is not Windows, macOS Intel, ARM, or full-matrix qualification.",
+    "B16 runner qualification and the original blocker ledger are unaffected."
+  ]
+}

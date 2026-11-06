@@ -1,0 +1,86 @@
+#!/usr/bin/env python3
+"""Verify the exact caller-binding patch without compiling or running Rust."""
+
+import hashlib
+import json
+import os
+from pathlib import Path
+import subprocess
+
+ROOT = Path(__file__).resolve().parent
+MANIFEST = json.loads((ROOT / "input-manifest.json").read_text())
+WORK = ROOT / "static-reconstruction"
+
+
+def identity(data):
+    return {
+        "blob": hashlib.sha1(b"blob " + str(len(data)).encode() + b"\0" + data).hexdigest(),
+        "bytes": len(data),
+        "sha256": hashlib.sha256(data).hexdigest(),
+    }
+
+
+def inventory():
+    return {
+        str(path.relative_to(WORK)): identity(path.read_bytes())["blob"]
+        for path in sorted(WORK.rglob("*")) if path.is_file()
+    }
+
+
+def main():
+    WORK.mkdir(exist_ok=False)
+    for file in MANIFEST["files"]:
+        if file["before_blob"] is not None:
+            data = (ROOT / "source" / file["path"]).read_bytes()
+            before = identity(data)
+            assert before["blob"] == file["before_blob"]
+            assert before["sha256"] == file["before_sha256"]
+            target = WORK / file["path"]
+            target.parent.mkdir(parents=True, exist_ok=True)
+            target.write_bytes(data)
+        actual = identity((ROOT / "repair-source" / file["path"]).read_bytes())
+        assert actual == {key: file[key] for key in actual}
+    final = {file["path"]: file["blob"] for file in MANIFEST["files"]}
+    phases = []
+    env = os.environ.copy()
+    env["GIT_CEILING_DIRECTORIES"] = str(WORK)
+    env["GIT_CONFIG_NOSYSTEM"] = "1"
+    for name, key in (
+        ("state-native-token-binding.patch", "patch"),
+        ("negative-no-options-binding.patch", "negative"),
+        ("restore-options-binding.patch", "restore"),
+    ):
+        patch = ROOT / name
+        assert identity(patch.read_bytes()) == MANIFEST[key]
+        commands = []
+        for check in (True, False):
+            argv = ["git", "apply", "--whitespace=error-all"]
+            if check:
+                argv.append("--check")
+            result = subprocess.run(argv + [str(patch)], cwd=WORK, env=env, capture_output=True)
+            commands.append({"argv": argv + [name], "exit_code": result.returncode,
+                             "stdout": result.stdout.decode(), "stderr": result.stderr.decode()})
+            assert result.returncode == 0, commands[-1]
+        expected = dict(final)
+        if key == "negative":
+            expected["codex-rs/state/src/sqlite.rs"] = MANIFEST["negative_state"]["blob"]
+        actual = inventory()
+        assert actual == expected, name
+        phases.append({"name": name, "identity": MANIFEST[key], "commands": commands,
+                       "actual_source_map": actual, "exact_expected_map": True})
+    output = {
+        "schema": "hepta.state.native-token-binding.static-roundtrip.v1",
+        "status": "STATIC_GIT_APPLY_AND_POSTIMAGE_PASS",
+        "uncompiled_unexecuted": True,
+        "native_worktree_target_or_ref_changed": False,
+        "phases": phases,
+        "final_source_map": inventory(),
+        "meaning": "Exact static source reconstruction only; no Rust compile or physical SQLite/lock control has run.",
+    }
+    (ROOT / "static-verification.json").write_text(json.dumps(output, indent=2) + "\n")
+    print(json.dumps({"status": output["status"], "phases": len(phases),
+                      "paths": len(final), "uncompiled_unexecuted": True}))
+
+
+if __name__ == "__main__":
+    main()

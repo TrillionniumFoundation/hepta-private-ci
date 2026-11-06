@@ -1,0 +1,218 @@
+{
+  "schema": "hepta.r2e1-physical-commit-interlock.root-static-review.v1",
+  "created_at_utc": "2026-11-04 22:22:16 UTC",
+  "reviewer": "root",
+  "verdict": "ACCEPTED_FOR_ACTUAL_BASELINE_FIXED_AND_ORIGINAL_GATES_PENDING",
+  "candidate_manifest": "3220fc3785f01b45e77a49e71b1d549fd0faea22",
+  "candidate_full_patch": "6ddf11215e309b3fcb7e19d521c8d2651a3a0726",
+  "independent_review": "fe9e15a9884e71b10d80a225898d967996e47c9e",
+  "root_postimage_roundtrip_and_hashes": [
+    {
+      "path": "codex-rs/state/src/sqlite.rs",
+      "before": "eb73bc3c24ae6bd64a35be1187f83d5655350bbe",
+      "after": "7b9ee0117d7425e20e4f08255aa0fe3e319f26ea",
+      "roundtrip": true,
+      "bytes": 18971,
+      "sha256": "110d0be7ae0eb1f6c62e23363c281338109115ddffc04e6ab67da6a6dff74a73",
+      "hash_matches": true
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_store.rs",
+      "before": "03f469dcdc0b44754e92a855fcbabf7c21059899",
+      "after": "f670ec69480bc8960c7a3f90a9dc80e4ebd9763c",
+      "roundtrip": true,
+      "bytes": 73694,
+      "sha256": "41f6496d0176ddf8243e46593ea049b2f48531bbd711f86484811814a9e7f33f",
+      "hash_matches": true
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_store_recovery.rs",
+      "before": "5639d61d6d0f97d12058a3e5eed90332864983f4",
+      "after": "994230252cf0992b811c0aba08f5e4d97565c923",
+      "roundtrip": true,
+      "bytes": 27525,
+      "sha256": "109e7d9e6b46b6e48f203276fbbc1acd6032b89fa21c0c1002b31b438e7ac0bd",
+      "hash_matches": true
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_store_gate.rs",
+      "before": null,
+      "after": "f69a43e09aa1864dda3e208ffb7a53b41e05d9d7",
+      "roundtrip": true,
+      "bytes": 1383,
+      "sha256": "ae68d821c85b454dd6f66447d63996baf9192ac9a25d531a73624b9350135139",
+      "hash_matches": true
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/objective_sender.rs",
+      "before": "fe3be44196377039070c62c228d5c2e642560ac0",
+      "after": "6b3102c0ec4422b3658415df2372a7480990c6e2",
+      "roundtrip": true,
+      "bytes": 20024,
+      "sha256": "63a7d654926630ef8849e4691df6578bce32d2801e0c9391cbbbb9c55fd86295",
+      "hash_matches": true
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/objective_sender_store.rs",
+      "before": "3e4e477eced86fd0b99c33c7b147ef0be874c75e",
+      "after": "378243e46d48df099d69b494b8879381221b3964",
+      "roundtrip": true,
+      "bytes": 10954,
+      "sha256": "e461757c0b44422001c70799c73c97049498d72880ef5cd59f80ff686b044333",
+      "hash_matches": true
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/objective_sender_commit_interlock_tests.rs",
+      "before": null,
+      "after": "62d85c330446b7b5059016d7501bcd85af2e556a",
+      "roundtrip": true,
+      "bytes": 8168,
+      "sha256": "a15602e8946499da789282a2fcd1b26909b34a8c86f5fadd8187aa86c3490bda",
+      "hash_matches": true
+    }
+  ],
+  "size": {
+    "paths": 7,
+    "insertions": 384,
+    "deletions": 18,
+    "by_path": [
+      {
+        "path": "codex-rs/state/src/sqlite.rs",
+        "insertions": 53,
+        "deletions": 4
+      },
+      {
+        "path": "codex-rs/hepta-memory/src/cognitive_store.rs",
+        "insertions": 10,
+        "deletions": 1
+      },
+      {
+        "path": "codex-rs/hepta-memory/src/cognitive_store_recovery.rs",
+        "insertions": 12,
+        "deletions": 3
+      },
+      {
+        "path": "codex-rs/hepta-memory/src/cognitive_store_gate.rs",
+        "insertions": 52,
+        "deletions": 0
+      },
+      {
+        "path": "codex-rs/hepta-memory/src/objective_sender.rs",
+        "insertions": 16,
+        "deletions": 6
+      },
+      {
+        "path": "codex-rs/hepta-memory/src/objective_sender_store.rs",
+        "insertions": 11,
+        "deletions": 4
+      },
+      {
+        "path": "codex-rs/hepta-memory/src/objective_sender_commit_interlock_tests.rs",
+        "insertions": 230,
+        "deletions": 0
+      }
+    ]
+  },
+  "root_primary_reads": [
+    {
+      "repository": "TrillionniumFoundation/hepta-private-ci",
+      "path": "codex-rs/hepta-memory/src/cognitive_store_recovery_read_only.rs",
+      "blob": "0e8dd0d0f147ee75baba3a613a28f51d8bdd5cb8",
+      "bytes": 5300,
+      "sha256": "930050a22cf813f23163a78299afbeecb7957e5a80517f0b1c83cff412a0e305"
+    },
+    {
+      "repository": "TrillionniumFoundation/hepta-private-ci",
+      "path": "codex-rs/state/src/sqlite_recovery_image.rs",
+      "blob": "f36733a73a0660843307b05386b0ac77fb6cd0ca",
+      "bytes": 14254,
+      "sha256": "56e28025dbf49974edf58bebef5c3a699dce48a3f0e1cbddce42b6d1b344ef18"
+    },
+    {
+      "repository": "TrillionniumFoundation/hepta-private-ci",
+      "path": "codex-rs/hepta-memory/src/local_lease_outbox.rs",
+      "blob": "aac82355a64f315d218f0f9bcf373fdaf3c75d39",
+      "bytes": 213835,
+      "sha256": "7d66d0ae95a4661f9b3c2b9217cd463166ebb5768367815c39d1ee70eb77c31c"
+    },
+    {
+      "repository": "transact-rs/sqlx",
+      "commit": "75bc0487eb661da811bb7a3c5d158f1bd463fef4",
+      "path": "sqlx-sqlite/src/connection/mod.rs",
+      "blob": "218c747143fe80b344bca3405d4b0b38da2bd932",
+      "bytes": 20337,
+      "sha256": "a20c2e51a1505e298fd897b378f9032c89b82850838aa6e5d9409f612fb1e7fd"
+    },
+    {
+      "repository": "sqlite/sqlite",
+      "commit": "a5333afb9ad1aa473f8963b92caeaa955f47dc74",
+      "path": "src/vdbeaux.c",
+      "blob": "5368c0c4202b08aeac99913393a74edaf67156cc",
+      "bytes": 178353,
+      "sha256": "2f5313c95ea96782d5af11773e9b1e526a5dd8f7e6925d3e64c74501fa2dd22a"
+    }
+  ],
+  "findings": [
+    {
+      "contract": "Real writer pools",
+      "finding": "Ordinary open, recovery validation pool and final recovery pool install the actual after_connect SQLx native hook. Within each original store instance, physical connections and clones share the same Arc-backed monotonic gate; growth/replacement gets the hook before checkout."
+    },
+    {
+      "contract": "Cancellation ordering",
+      "finding": "Checkpoint attempt is inside the inner future after cut/live validation and immediately before provider invocation. The caller retains the original BEGIN IMMEDIATE transaction. Unacknowledged Drop fences; exact ACK plus final live validation suppresses only that attempt and cannot reopen a previously fenced gate. SQLx rollback is queued, so the four actual lock/commit controls remain mandatory."
+    },
+    {
+      "contract": "No-write paths",
+      "finding": "Root verified append returns Existing after integrity/identity reads but before reserve/INSERT. Current lease validation also only reads the chain. Rolling back this exact duplicate preserves its original subsequent independent ACK. recovery_anchor similarly rolls back its unchanged no-write capture. SQLite primary implementation calls the commit hook for a WRITE transaction even if BEGIN IMMEDIATE made no DML."
+    },
+    {
+      "contract": "Read-only supplied pool",
+      "finding": "from_read_only_pool is production pub(crate), not cfg(test). It does not install a hook or validate readonly by itself. Its inspected actual cold-image caller configures query_only and SQLITE_DESERIALIZE_READONLY/max1 before wrapping, and the public recovered handle only exposes anchor and lane_c_snapshot. Credit physical readonly here, never writer-hook coverage."
+    },
+    {
+      "contract": "Current code preserved",
+      "finding": "All Windows retained-directory/private-state helpers, recovery file/open guards, Agentd bootstrap checkpoint and returned generic original_sender remain unchanged. No whole donor file replacement, migration to another store, default Current, token/ACL/loader/DLL change or dependency change."
+    },
+    {
+      "contract": "Module locality",
+      "finding": "New gate and230-line real-control module are separate. Existing large store and recovery files only gain the constructor fields/hook arguments and existing no-write rollback change; no unrelated legacy module rewrite."
+    }
+  ],
+  "native_acceptance": {
+    "executed": false,
+    "predecessors": "R2c/R2d must complete first on the final A source; root R2c V3 only adds actual sqlite_version() observation to an already required test.",
+    "baseline_patch": {
+      "blob": "2909207b49983944e5b5c1e021975b64b1d0ff6a",
+      "bytes": 9099,
+      "sha256": "54594950c557578fd3ff64fcc0979a1ff991d58d35febd766c18172bdc8ae10e"
+    },
+    "baseline_expected_cases": [
+      "production_writer::objective_sender::commit_interlock_tests::cancelled_checkpoint_vetoes_a_preexisting_read_transaction",
+      "production_writer::objective_sender::commit_interlock_tests::cancelled_checkpoint_vetoes_a_preexisting_connection_waiting_for_sqlite",
+      "production_writer::objective_sender::commit_interlock_tests::refused_checkpoint_vetoes_growth_replacement_and_writes_after_read_ack",
+      "production_writer::objective_sender::commit_interlock_tests::recovered_pool_vetoes_commits_and_retains_its_exclusive_open_guard"
+    ],
+    "baseline_expected": "Each must reach its actual original pool write/COMMIT and then fail the unchanged 531 assertion with commit_succeeded=true/sqlite_code=None. Any compile/setup/timeout/filter error is invalid causal evidence.",
+    "repair_patch": {
+      "blob": "69c4991b024b0db7e0e49b65fdf685864a12c64c",
+      "bytes": 12938,
+      "sha256": "6ebed99ab45c4913970fc6816fa64a7c1081a5d0a299c48a547572f5fc63c5e1"
+    },
+    "fixed_expected": "Same four physical controls return531 and preserve actual data/guard assertions, then complete original Memory and State library gates. Preserve raw/JUnit/rosters and pre/post source/binary identities.",
+    "finishing": "Only after tests, scoped fix Memory+State and original fmt; retain full diff, never relabel an unexecuted source as tested."
+  },
+  "limits": [
+    "This gate does not revalidate deadline, live authority, protected Current, or FinalUse on every COMMIT. Time/state changes between the original final live check and a later COMMIT still require subsequent coordinator/entry work.",
+    "It does not cover independently opened legacy shared instances or other processes/raw connections. Exclusive recovered-owner binding and protected publisher CAS are separate requirements.",
+    "It does not establish an authenticated Current receipt, real Root peer, sealed handoff, credential conversion, normal Root producer, or all external-effect admission behavior.",
+    "R1 preflight must remain single-threaded before Tokio; R2a from_inherited requires entered Tokio. These APIs are not automatically composed by this pool work.",
+    "R2c/R2d and this candidate are still unexecuted in this preparation receipt; no B16 completion or final same-tree production qualification is claimed."
+  ],
+  "scope_correction": "The provided readonly-pool factory itself has no hook; it must not be reused for writable adaptation without a separate construction contract. The known caller check is not a claim that all future/trusted crate callers are mechanically prevented.",
+  "not_performed": [
+    "Native execution",
+    "A source/worktree mutation",
+    "Branch/ref update",
+    "Activation or external effect"
+  ]
+}

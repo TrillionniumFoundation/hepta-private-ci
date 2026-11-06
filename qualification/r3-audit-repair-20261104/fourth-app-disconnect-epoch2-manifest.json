@@ -1,0 +1,217 @@
+{
+  "schema": "hepta-app-disconnect-epoch2-launched-manifest-v1",
+  "status": "LAUNCHED_RESULT_PENDING",
+  "expected_tree": "f8251e1d14fa8524ab469281296cd4cf708f173c",
+  "source_changes": [],
+  "runner": {
+    "git_blob": "0ffac5c2e4c1ece9a737e442dffdfc3fcecd7225",
+    "bytes": 23621,
+    "sha256": "b0c1de63ea63078e8245bf187813bd7451aa33023a2e525b9f67f13e751de585",
+    "local_path": "/workspace/scratch/07dd58cc9630/ci-audit/recovered-20261105/app-disconnect-owned-diagnostic-epoch2.py",
+    "ast_parse_pass": true
+  },
+  "ordinary_index": {
+    "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/source/.git/index",
+    "bytes": 1222758,
+    "sha256": "8ccf08bcd5b633a38fa81be4814ae264365f1a2cdd1ed81e1633fbcc0ac31502"
+  },
+  "locks": {
+    "codex-rs/Cargo.lock": {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/source/codex-rs/Cargo.lock",
+      "bytes": 413768,
+      "sha256": "4a7a5535cf045089458468411e126b5f59bc6bbf34fc0deead9b0c1b8d84000a"
+    },
+    "MODULE.bazel.lock": {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/source/MODULE.bazel.lock",
+      "bytes": 1738619,
+      "sha256": "11f8a421224b9b05f32c4c14054e8868083d989fc497310c8d51e1156f189ca3"
+    }
+  },
+  "commands": {
+    "metadata": [
+      "cargo",
+      "metadata",
+      "--format-version=1",
+      "--locked"
+    ],
+    "catalog": [
+      "cargo",
+      "nextest",
+      "list",
+      "--locked",
+      "--cargo-profile",
+      "dev-small",
+      "--message-format=json",
+      "-E",
+      "test(=suite::v2::command_exec::command_exec_process_ids_are_connection_scoped_and_disconnect_terminates_process)"
+    ],
+    "test": [
+      "just",
+      "test",
+      "--locked",
+      "--cargo-profile",
+      "dev-small",
+      "--no-tests",
+      "fail",
+      "--retries",
+      "0",
+      "--success-output",
+      "immediate",
+      "-E",
+      "test(=suite::v2::command_exec::command_exec_process_ids_are_connection_scoped_and_disconnect_terminates_process)"
+    ]
+  },
+  "selected_case": {
+    "classname": "codex-app-server::all",
+    "name": "suite::v2::command_exec::command_exec_process_ids_are_connection_scoped_and_disconnect_terminates_process"
+  },
+  "original_fixture": {
+    "path": "codex-rs/app-server/tests/suite/v2/command_exec.rs",
+    "git_blob": "ea833ea2113346d30eeb64999e31351d3c11031a",
+    "bytes": 50345,
+    "sha256": "d964c52c2f4f75388b7dc468d30c689d9b0e8e5620fd25ef46b65697a4e70d93",
+    "native_file_info_verified": true,
+    "marker_child": "python3 -c \"import time; print('ready', flush=True); time.sleep(30)\" <dynamic-marker>",
+    "original_wait_seconds": 5,
+    "original_poll_milliseconds": 50
+  },
+  "provenance": {
+    "full_evidence_archive": "4fbfb3d05586f87b449a9ec14097982072917934",
+    "original_failure_block": "3a969dedeeb3ac1030fc3061fe2af975a055a169",
+    "full_metadata_sha256": "959b827393fc6830e8fd6c55a83a519217ab0debb7c033b42e64306bc373fece",
+    "full_selection_sha256": "5f2118b2def8bb6aac31a78bb08bd1d355033a826d4fadfe0c305ff37ae662be",
+    "full_catalog_sha256": "af962c86ba44b1e4931ca61319597cc8c9557cafaaf70dd8cfe8664c6e3815ef",
+    "stopped_original_diagnostic_bundle": "8e1e5d051fe4401670972391149e03862042b9c0",
+    "previous_runner": "c55030b2cabbeb4a7e8e217126a78160063e3925"
+  },
+  "feature_graph_contract": "No package filter in metadata/catalog/test. Compare the original193 workspace-member and resolved feature/dependency graph exactly. Rebuild the original6 normal helpers in a new exclusive target, then use the full catalog to bind all33 original helper basenames and the original selected App test program to fresh epoch-specific hashes. Require those new hashes stable before/after the test; do not require or claim equality with vanished binaries.",
+  "observation": {
+    "root": "Actual original just test PID+starttime recorded immediately after Popen. Seed descendant traversal only while that exact identity still matches; observer PID excluded.",
+    "sampling_seconds": 0.05,
+    "structural_proc_stat": "Read pid/comm/state/ppid/pgid/sid/starttime for ancestry; persist only this command's observed descendants.",
+    "cmdline_scope": "Read bounded 16384B cmdline/exe only for current descendants or identical previously-owned PID/starttime pairs; never read env.",
+    "marker_policy": "Learn exact codex-command-exec-marker-[0-9]+ only from owned argv. No external ps/pgrep/observer command receives a dynamic marker, avoiding contamination of the original ps oracle.",
+    "recorded_fields": [
+      "UTC time",
+      "monotonic elapsed",
+      "pid",
+      "ppid",
+      "pgid",
+      "sid",
+      "state",
+      "starttime_ticks",
+      "comm",
+      "bounded cmdline",
+      "exe",
+      "exact markers",
+      "disappearance"
+    ],
+    "control": "No signal/kill/strace/policy or sandbox changes. Observer failure is recorded; it does not cancel original test.",
+    "limitation": "A child that detached before first observation can be missed. An isolated PASS is not a fix; preserve the original full failure.",
+    "completeness": "Requires exactly one actually observed dynamic fixture marker, no observer errors, exact selected JUnit name, and stable source/helpers/program; no marker or multiple markers retain the original test result but diagnose incomplete observation."
+  },
+  "stop_conditions": [
+    "Any source/index/lock/fixture mismatch or nonempty unreviewed untracked source list stops before building/testing.",
+    "The new target must not exist or be a symlink. Never clean, rename or write the old target.",
+    "Insufficient guarded disk or build/catalog failure stops; retain all actual outputs.",
+    "Full original resolved graph and33 helper basename roster must match; all new paths must resolve within the new target.",
+    "Exactly one original case with fresh JUnit, original5s budget and zero retries; no assertions or policy changed.",
+    "Keep incomplete observation, failed result or child-marker absence as such; an isolated PASS is not a repair.",
+    "Stop after the diagnostic, with no hygiene or subsequent test."
+  ],
+  "suggested_runtime_timeout_seconds": 7200,
+  "suggested_disk_guard_bytes": 8000000000,
+  "authorization": {
+    "authorized_by": "root",
+    "purpose": "Resolve the original full-workspace connection-disconnect process-lifetime failure with read-only observations of this invocation's own processes.",
+    "runner_blob": "0ffac5c2e4c1ece9a737e442dffdfc3fcecd7225",
+    "source_tree": "f8251e1d14fa8524ab469281296cd4cf708f173c",
+    "original_full_and_owning_complete_root_review": "0f55bb1d2ca9fd908ab29bebfd9a9bd903715ebb",
+    "root_reviewed_complete_original_runner": true,
+    "root_reviewed_exact_two_change_diff": true,
+    "scope": "Build only in the new exclusive target after current exact f825/private-index/untracked/ordinary-index/lock/fixture guards. Original6 helper build, full normal metadata/catalog, one original selected App case with unchanged5s oracle and0retry. Observe only this invocation own processes. Keep old target and source unchanged. Stop after terminal for root review.",
+    "root_reviewed_epoch_diff_in_full": true,
+    "previous_exception_read_and_hash_verified": true
+  },
+  "supersedes": {
+    "stopped_guard": "5d6c8354766f137fc434c0360a4f9da650311959",
+    "stopped_job": "1a1a951380e-fc05-342f",
+    "original_case_executed": false,
+    "old_attempt_preserved": true
+  },
+  "review_tightening": [
+    "All prior owned PID/starttime and single-marker observer checks remain.",
+    "Source untracked paths checked against the complete private f825 index; no untracked path is pre-authorized.",
+    "New build epoch records its own program identity; original missing binary evidence remains unchanged."
+  ],
+  "reviewed_at_utc": "2026-11-05T01:50:39.076470+00:00",
+  "new_target_directory": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target-app-epoch2-20261105",
+  "allowed_untracked_source_paths": [],
+  "normal_helper_build": [
+    "cargo",
+    "build",
+    "--locked",
+    "--profile",
+    "dev-small",
+    "--message-format=json-render-diagnostics",
+    "-p",
+    "codex-arg0",
+    "--bin",
+    "test_arg0_preflight",
+    "-p",
+    "codex-code-mode-host",
+    "--bin",
+    "codex-code-mode-host",
+    "-p",
+    "codex-shell-escalation",
+    "--bin",
+    "codex-execve-wrapper",
+    "-p",
+    "codex-rmcp-client",
+    "--bin",
+    "test_stdio_server",
+    "--bin",
+    "test_streamable_http_server",
+    "-p",
+    "codex-exec",
+    "--bin",
+    "codex-exec"
+  ],
+  "disk_guards": {
+    "before_first_build_free_bytes": 64000000000,
+    "after_each_build_free_bytes": 8000000000
+  },
+  "root_guard_blob": "6387885b8582939442405fd511b7af9c344869e4",
+  "native_launch": {
+    "job_id": "1a1a967b3ab-fc05-34f6",
+    "idempotency_key": "hepta-rog-app-disconnect-epoch2-20261105-0152",
+    "evidence_directory": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-disconnect-epoch2-20261105-0152",
+    "backend": "systemd",
+    "launch_ok": true,
+    "controller_timeout_seconds": 7200
+  },
+  "last_readonly_guard": {
+    "git_blob": "623eae00758e8acf2036c4d9b41d50a402e5db54",
+    "bytes": 1977,
+    "sha256": "b12d227af6b8dce8e4b7dfac5b0baa7ddd590bfbe37b8cf5eeeb3dab5f32034a",
+    "job_id": "1a1a965c538-fc05-34ea",
+    "terminal": "succeeded",
+    "exit_code": 0,
+    "source_tree": "f8251e1d14fa8524ab469281296cd4cf708f173c",
+    "untracked_source_paths": [],
+    "free_bytes": 84783017984
+  },
+  "preceding_target_audit": {
+    "git_blob": "912938218a909a9499d4344a7e2545217e3255b5",
+    "bytes": 20700,
+    "sha256": "41ba5747ce1c6d0b461671f7a8693923381132ba9177039a72c083fcbb20f3df",
+    "scope": "24 exact task-owned runner sources and five exact known finished units; no global process or directory scan.",
+    "cause": "UNKNOWN; do not infer cleanup source from absence."
+  },
+  "runner_exact_diff_from_c550": {
+    "git_blob": "76b1bb921429862af20a53c1734eece38bfaaa8d",
+    "bytes": 14554,
+    "sha256": "468ce532f7d5896b626e474e133cb4416c5da7739c3594afea972a441bd7bf65"
+  },
+  "native_result": null
+}

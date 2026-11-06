@@ -1,0 +1,195 @@
+{
+  "schema": "hepta.bash53-remote-startup-source-review.v1",
+  "status": "SOURCE_LOGIC_SUPPORTED_RUNTIME_SYSCALL_CAUSE_NOT_TRACED",
+  "observed_at": {
+    "current_time": "2026-11-04 23:42:11 UTC"
+  },
+  "scope": "Read-only Bash5.3-series source lookup. No native process, trace, test, build, credential, permission, repository source, or ref mutation.",
+  "parent_supplied_inputs_not_independently_retrieved_in_this_subtask": [
+    {
+      "claim": "ROG /bin/bash reports GNU5.3.9(1)-release",
+      "receipt_prefix": "cf6d9577",
+      "full_identity": null
+    },
+    {
+      "claim": "The readonly snapshot diagnostic observed test.bashrc sourced before snapshot restoration under -pc",
+      "receipt_prefix": "263a23ce",
+      "full_identity": null
+    },
+    {
+      "claim": "Current Linux seccomp source denies getpeername with EPERM at the reported193/253 lines",
+      "source_blob_prefix": "c2f9663",
+      "full_source_blob": null
+    },
+    {
+      "claim": "Root's seven-line --norc candidate is statically accepted by architecture; original native validation is pending",
+      "source_prefixes": [
+        "84ea8933",
+        "ef115632"
+      ],
+      "reviewed_here": false
+    }
+  ],
+  "sources": [
+    {
+      "id": "GNU_RELEASE",
+      "type": "official_maintainer_release_announcement",
+      "url": "https://lists.gnu.org/archive/html/bug-bash/2025-07/msg00005.html",
+      "web_ref": "turn46view0",
+      "author": "Chet Ramey",
+      "date": "2025-07-05",
+      "establishes": "Bash5.3 release and GNU/CWRU tar distributions plus upstream master repository."
+    },
+    {
+      "id": "SHELL53",
+      "type": "upstream_source_hosted_by_third_party_mirror",
+      "mirror": "PSI pmodules/bash",
+      "mirror_declared_upstream": "https://https.git.savannah.gnu.org/git/bash.git",
+      "version": "Bash5.3 initial distribution",
+      "commit": "b8c60bc9ca365f8261fa97900b6fa939f6ebc303",
+      "path": "shell.c",
+      "url": "https://gitea.psi.ch/pmodules/bash/src/commit/b8c60bc9ca365f8261fa97900b6fa939f6ebc303/shell.c",
+      "raw_url": "https://gitea.psi.ch/pmodules/bash/raw/commit/b8c60bc9ca365f8261fa97900b6fa939f6ebc303/shell.c",
+      "web_refs": [
+        "turn50view3",
+        "turn51view2",
+        "turn51view3",
+        "turn51view4",
+        "turn53view2",
+        "turn55view1",
+        "turn55view2"
+      ],
+      "representation": "Rendered source and text/plain web extraction, not byte-for-byte downloaded source. Renderer line numbers differ; function names and source conditions are the anchors.",
+      "raw_file_git_blob": null,
+      "raw_file_sha256": null
+    },
+    {
+      "id": "NETCONN53",
+      "type": "upstream_distribution_source_in_third_party_archive_index",
+      "archive": "bash-5.3.tar.gz",
+      "path": "bash-5.3/lib/sh/netconn.c",
+      "reported_archive_member_bytes": 2512,
+      "reported_member_date": "2022-12-29",
+      "url": "https://fossies.org/linux/bash/lib/sh/netconn.c",
+      "web_ref": "turn49search2",
+      "read_method": "Search retrieval exposes the original source with its line numbers; direct open returned403. Not a direct raw download or independently verified tar digest.",
+      "source_lines": "42–54",
+      "commit": null,
+      "raw_file_git_blob": null,
+      "raw_file_sha256": null
+    },
+    {
+      "id": "PATCH9",
+      "type": "upstream_patch_commit_hosted_by_third_party_mirror",
+      "mirror": "PSI pmodules/bash",
+      "version": "Bash5.3 patch9",
+      "commit": "637f5c8696a6adc9b4519f1cd74aa78492266b7f",
+      "url": "https://gitea.psi.ch/pmodules/bash/commit/637f5c8696a6adc9b4519f1cd74aa78492266b7f",
+      "web_refs": [
+        "turn48view3",
+        "turn51view0",
+        "turn55view0"
+      ],
+      "author": "Chet Ramey",
+      "commit_date": "2025-12-10T11:30:51-05:00",
+      "observed_patchlevel_transition": {
+        "before": 8,
+        "after": 9
+      },
+      "changed_paths": [
+        "lib/readline/input.c",
+        "lib/readline/isearch.c",
+        "patchlevel.h"
+      ],
+      "limit": "This authenticates the mirror's patch9 identity and displayed patch, not byte equality of its shell.c/netconn.c with the actualROG binary. Full patch1–8 application history was not independently verified."
+    }
+  ],
+  "source_findings": [
+    {
+      "id": "F1",
+      "source": "SHELL53",
+      "functions": [
+        "main",
+        "uidget"
+      ],
+      "finding": "main runs startup files before evaluating the -c command body. Its outer gate excludes real/effective UID or GID mismatch via running_setuid; this is different from privileged_mode."
+    },
+    {
+      "id": "F2",
+      "source": "SHELL53",
+      "functions": [
+        "run_startup_files"
+      ],
+      "finding": "The early remote-startup path checks noninteractive, no_rc unset, nonlogin, not named sh, a -c command and shell_level below2. It does not check privileged_mode. SSH variables or isnetconn can select execute_bashrc_file."
+    },
+    {
+      "id": "F3",
+      "source": "SHELL53",
+      "functions": [
+        "run_startup_files",
+        "long_args"
+      ],
+      "finding": "The later BASH_ENV path explicitly requires privileged_mode zero. The --norc option sets no_rc, preventing the earlier remote-startup path; -p alone does not impose that check."
+    },
+    {
+      "id": "F4",
+      "source": "NETCONN53",
+      "function": "isnetconn",
+      "compile_guard": {
+        "required": [
+          "HAVE_SYS_SOCKET_H",
+          "HAVE_GETPEERNAME"
+        ],
+        "excluded": [
+          "SVR4_2",
+          "__BEOS__"
+        ]
+      },
+      "finding": "In the getpeername branch, failed calls return false only for ENOTSOCK, ENOTCONN, EINVAL or EBADF. Other errors, including EPERM, classify the descriptor as network-connected.",
+      "not_network_error_names": [
+        "ENOTSOCK",
+        "ENOTCONN",
+        "EINVAL",
+        "EBADF"
+      ],
+      "eperm_return_value": 1
+    }
+  ],
+  "conditional_mechanism": {
+    "status": "INFERENCE_FROM_SOURCE_PLUS_PARENT_OBSERVATION",
+    "prerequisites": [
+      "Actual binary uses the inspected getpeername implementation/configuration",
+      "Actual invocation satisfies the original remote-startup conditions and has no_rc zero",
+      "The active seccomp filter actually intercepts the relevant getpeername call and returnsEPERM"
+    ],
+    "chain": [
+      "getpeername returnsEPERM",
+      "isnetconn evaluates true under the inspected branch",
+      "remote-startup executes the configured/default bashrc before -c contents",
+      "snapshot restoration inside the -c contents cannot prevent the earlier bashrc effects"
+    ],
+    "why_no_norc_is_relevant": "--norc directly prevents that startup branch while retaining -p's separate BASH_ENV behavior. This supports the candidate's direction without changing the sandbox policy.",
+    "unresolved": [
+      "No syscall trace of the actual failing invocation",
+      "No actual compiler/config.h provenance for ROG /bin/bash",
+      "No raw source/binary correspondence or completepatch1–9 verification",
+      "No original native result for the seven-line candidate in this subtask"
+    ],
+    "prohibited_claim": "Do not write that seccomp EPERM was directly observed in the failing Bash process or that the source lookup validates the production fix."
+  },
+  "access_limits": {
+    "official_endpoints_unavailable": [
+      "GNU Savannah cgit/gitweb source views",
+      "GNU FTP patch9 text"
+    ],
+    "other_unavailable": [
+      "bminor/bash GitHub tags API returned404",
+      "Debian Sources5.3-4 direct views/raw",
+      "PSI exactpatch9 shell.c/netconn.c direct source/raw"
+    ],
+    "usable_fallback": "Fixed Bash5.3 source via PSI mirror plus5.3 distribution netconn source in Fossies index;5.3.9 patch commit separately identified.",
+    "native_download_attempted": false,
+    "raw_source_hashes_claimed": false
+  },
+  "recommendation": "Keep the source explanation conditional, retain the actualdiagnostic and candidate source identities separately, and use the alreadyplanned unchanged original native controls for acceptance. Do not add tracing, widen permissions, or create extra test runs for this source audit."
+}

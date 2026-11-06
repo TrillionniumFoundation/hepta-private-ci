@@ -1,0 +1,11 @@
+--- a/windows-python-full-continuation-runner-v3.py
++++ b/windows-python-full-continuation-runner-v4.py
+@@ -268,7 +268,7 @@
+  for i,line in enumerate(plain_lines[:summary_line]):
+   match=re.match(r"^\s*(PASS|FAIL|TIMEOUT|LEAK|SKIP)\s+\[\s*[0-9.]+s\]\s+(\S+)\s+(.+?)\s*$",line)
+   if match:headers.append({"line":i,"result":match.group(1),"classname":match.group(2),"name":match.group(3)})
+- early_patterns=("requires a remote test environment","Skipping test because it cannot execute when network is disabled","python not found; skipping","setsid not available; skipping","skipping zsh-fork test:","unable to resolve \u0060codex-execve-wrapper\u0060 binary","failed to fetch zsh via dotslash","skipping sandbox test:")
++ early_patterns=("requires a remote test environment","Skipping test because it cannot execute when network is disabled","python not found; skipping","setsid not available; skipping","skipping zsh-fork test:","unable to resolve \u0060codex-execve-wrapper\u0060 binary","failed to fetch zsh via dotslash","skipping sandbox test:","skipping capability test:")
+  notice_lines={i for i,line in enumerate(plain_lines) if any(marker in line for marker in early_patterns)}
+  early_case_observations=[];associated_lines=set()
+  for i,header in enumerate(headers):

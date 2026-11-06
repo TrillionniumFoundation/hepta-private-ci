@@ -1,0 +1,267 @@
+{
+  "schema": "hepta.sqlx-actual-crate-root-identity-review.v1",
+  "reviewed_at_utc": "2026-11-05T00:54:47.380644+00:00",
+  "status": "ACTUAL_CRATE_17_FILES_HASHED_11_CRITICAL_SOURCES_EQUAL_PRIOR_FIXED_READS",
+  "native_bundle": {
+    "blob": "93b99eb2fc88c5b8fd4b48f7efc0db8057e24d47",
+    "bytes": 196031,
+    "sha256": "13cff3b686052b69aa26e20c30500ac45765b2e9565a6649d01ea3b6f2057647"
+  },
+  "source_tree": "f8251e1d14fa8524ab469281296cd4cf708f173c",
+  "natural_full_metadata": {
+    "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full-workspace-f825-20261105-0040/workspace-metadata.stdout",
+    "bytes": 8163618,
+    "sha256": "959b827393fc6830e8fd6c55a83a519217ab0debb7c033b42e64306bc373fece"
+  },
+  "packages": [
+    {
+      "name": "sqlx-sqlite",
+      "version": "0.9.0",
+      "rust_version": "1.94.0",
+      "vcs": {
+        "git": {
+          "sha1": "003b698e99e024f3621b8043a2426fde5b741171"
+        },
+        "path_in_vcs": "sqlx-sqlite"
+      },
+      "archive": {
+        "path": "/home/qian-qi/.cargo/registry/cache/index.crates.io-1949cf8c6b5b557f/sqlx-sqlite-0.9.0.crate",
+        "exists": true,
+        "bytes": 93440,
+        "sha256": "488e99c397a62007e4229aec669a179816339afc6d2620ca6fa420dbee2e982c",
+        "matches_cargo_lock_package_checksum": true
+      },
+      "original_cargo_lock_package": {
+        "name": "sqlx-sqlite",
+        "version": "0.9.0",
+        "source": "registry+https://github.com/rust-lang/crates.io-index",
+        "checksum": "488e99c397a62007e4229aec669a179816339afc6d2620ca6fa420dbee2e982c",
+        "dependencies": [
+          "atoi",
+          "chrono",
+          "flume",
+          "form_urlencoded",
+          "futures-channel",
+          "futures-core",
+          "futures-executor",
+          "futures-intrusive",
+          "futures-util",
+          "libsqlite3-sys",
+          "log",
+          "percent-encoding",
+          "serde",
+          "sqlx-core",
+          "thiserror 2.0.21",
+          "time",
+          "tracing",
+          "url",
+          "uuid"
+        ]
+      },
+      "cargo_checksum_json_exists": false
+    },
+    {
+      "name": "sqlx-core",
+      "version": "0.9.0",
+      "rust_version": "1.94.0",
+      "vcs": {
+        "git": {
+          "sha1": "003b698e99e024f3621b8043a2426fde5b741171"
+        },
+        "path_in_vcs": "sqlx-core"
+      },
+      "archive": {
+        "path": "/home/qian-qi/.cargo/registry/cache/index.crates.io-1949cf8c6b5b557f/sqlx-core-0.9.0.crate",
+        "exists": true,
+        "bytes": 154984,
+        "sha256": "05b44e85bf579a8eeb4ceaa77a3a523baf2bf0e9bac7e40f405d537b5d2d5ccb",
+        "matches_cargo_lock_package_checksum": true
+      },
+      "original_cargo_lock_package": {
+        "name": "sqlx-core",
+        "version": "0.9.0",
+        "source": "registry+https://github.com/rust-lang/crates.io-index",
+        "checksum": "05b44e85bf579a8eeb4ceaa77a3a523baf2bf0e9bac7e40f405d537b5d2d5ccb",
+        "dependencies": [
+          "base64 0.22.1",
+          "bytes",
+          "cfg-if",
+          "chrono",
+          "crc",
+          "crossbeam-queue",
+          "either",
+          "event-listener",
+          "futures-core",
+          "futures-intrusive",
+          "futures-io",
+          "futures-util",
+          "hashbrown 0.16.1",
+          "hashlink",
+          "indexmap 2.14.2",
+          "log",
+          "memchr",
+          "percent-encoding",
+          "rustls",
+          "serde",
+          "serde_json",
+          "sha2 0.10.9",
+          "smallvec",
+          "thiserror 2.0.21",
+          "time",
+          "tokio",
+          "tokio-stream",
+          "tracing",
+          "url",
+          "uuid",
+          "webpki-roots"
+        ]
+      },
+      "cargo_checksum_json_exists": false
+    }
+  ],
+  "files": [
+    {
+      "path": "sqlx-sqlite/Cargo.toml",
+      "bytes": 3782,
+      "sha256": "d659405cf1a18299845d699b4ab681a3d341805556c4a837d70f5f1c3589bb9a",
+      "git_blob_identity": "8a8dafdc79c9811494e3b03faca2af0df4515f3c",
+      "actual_registry_equals_original_crate_member": true,
+      "matches_fixed_primary_file": null
+    },
+    {
+      "path": "sqlx-sqlite/Cargo.toml.orig",
+      "bytes": 2829,
+      "sha256": "af4193e1d9d8e9f63c85bf2468cdb24f4e9b7c217bd0745082fecf1a7369b0c6",
+      "git_blob_identity": "ffac1b9d149abd5252fd616ffb714a3b1cd3e68d",
+      "actual_registry_equals_original_crate_member": true,
+      "matches_fixed_primary_file": null
+    },
+    {
+      "path": "sqlx-sqlite/.cargo_vcs_info.json",
+      "bytes": 105,
+      "sha256": "34f4ec6fd11a78aa8ef5214c49a5c2d5dffd80079196c13797887f36a88b9cab",
+      "git_blob_identity": "f133fd70dbc3de37c8faaf09d928ca4e51f42c02",
+      "actual_registry_equals_original_crate_member": true,
+      "matches_fixed_primary_file": null
+    },
+    {
+      "path": "sqlx-sqlite/src/options/mod.rs",
+      "bytes": 28010,
+      "sha256": "ff5005abc6408f2df073d95bf3440c2a3ee96c1a312d73468bf66123f8ab2f1e",
+      "git_blob_identity": "0cafc4d08c4c63c342685fedbcc43222dd38d2f1",
+      "actual_registry_equals_original_crate_member": true,
+      "matches_fixed_primary_file": true
+    },
+    {
+      "path": "sqlx-sqlite/src/options/connect.rs",
+      "bytes": 2305,
+      "sha256": "6eab2d3914a2c9f35c60bd8b324e46790eca39a23c30a0d4101e35be52b04253",
+      "git_blob_identity": "cfa25872b2c118cc955ac4e2f9cfb64e19e4a0ee",
+      "actual_registry_equals_original_crate_member": true,
+      "matches_fixed_primary_file": true
+    },
+    {
+      "path": "sqlx-sqlite/src/connection/establish.rs",
+      "bytes": 10033,
+      "sha256": "447d5067838ec05c713a53b381df4b8ae16652917b4206c553cdea6d3a1fe92a",
+      "git_blob_identity": "cedf752e6adef404b6f7d537f521045cb8342b5a",
+      "actual_registry_equals_original_crate_member": true,
+      "matches_fixed_primary_file": true
+    },
+    {
+      "path": "sqlx-sqlite/src/connection/worker.rs",
+      "bytes": 22317,
+      "sha256": "b66aafc56f0e287eac3b09111c5d4997d350ab61294c5cc576ce359bc18cebe4",
+      "git_blob_identity": "2585dc1312210d9eb18c15f6df1158656d3c6b2c",
+      "actual_registry_equals_original_crate_member": true,
+      "matches_fixed_primary_file": true
+    },
+    {
+      "path": "sqlx-sqlite/src/connection/mod.rs",
+      "bytes": 20337,
+      "sha256": "a20c2e51a1505e298fd897b378f9032c89b82850838aa6e5d9409f612fb1e7fd",
+      "git_blob_identity": "218c747143fe80b344bca3405d4b0b38da2bd932",
+      "actual_registry_equals_original_crate_member": true,
+      "matches_fixed_primary_file": true
+    },
+    {
+      "path": "sqlx-sqlite/src/connection/handle.rs",
+      "bytes": 5320,
+      "sha256": "63d9b11374ebd453f3f7d0be95a728030f05997d5ccdc756fd8057ee0d31dc6f",
+      "git_blob_identity": "e89179b30ed489bf831e56575d1269f223a368ac",
+      "actual_registry_equals_original_crate_member": true,
+      "matches_fixed_primary_file": true
+    },
+    {
+      "path": "sqlx-sqlite/src/connection/collation.rs",
+      "bytes": 4730,
+      "sha256": "d863421fe2f377315ca75c2912e702b13cbb4b978ec3940989ae08c9acf2f752",
+      "git_blob_identity": "229e780adfbdb34ac117cf279e11b70a79a491fc",
+      "actual_registry_equals_original_crate_member": true,
+      "matches_fixed_primary_file": true
+    },
+    {
+      "path": "sqlx-sqlite/src/lib.rs",
+      "bytes": 6797,
+      "sha256": "6e19e45ffc8e018912798e2290527a2a332ecc775b70bd86223efffc06d6e57b",
+      "git_blob_identity": "17b4bed1ca40f112690011dbc3f38b4585ed1001",
+      "actual_registry_equals_original_crate_member": true,
+      "matches_fixed_primary_file": true
+    },
+    {
+      "path": "sqlx-core/Cargo.toml",
+      "bytes": 5594,
+      "sha256": "d62bb81e87b97948b8a24c75d5c17519fb183f1a837085d76ddf30f0ab9b65be",
+      "git_blob_identity": "3090e17c76b027b16047ee1f92a8c91ed0e7f7a6",
+      "actual_registry_equals_original_crate_member": true,
+      "matches_fixed_primary_file": null
+    },
+    {
+      "path": "sqlx-core/Cargo.toml.orig",
+      "bytes": 4283,
+      "sha256": "4830c40ed9af5bc41b3a316eb4347d15941213966a16f4e5e938a5b6e5d74ee3",
+      "git_blob_identity": "5c20bad0503d2b975a40249e00dda1703e896eb9",
+      "actual_registry_equals_original_crate_member": true,
+      "matches_fixed_primary_file": null
+    },
+    {
+      "path": "sqlx-core/.cargo_vcs_info.json",
+      "bytes": 103,
+      "sha256": "a3851597386fb151b4b1ba12343e6945134fe378f77ca6dfdb6f34b3a7b9d96c",
+      "git_blob_identity": "94853d379cfdcc69bbbf39816c6545cdcd6af61f",
+      "actual_registry_equals_original_crate_member": true,
+      "matches_fixed_primary_file": null
+    },
+    {
+      "path": "sqlx-core/src/pool/inner.rs",
+      "bytes": 23376,
+      "sha256": "cba56628f259270dccb2f4a0d7a351dcff34d9239f6e6e1aee187ebe0e39c539",
+      "git_blob_identity": "b698dc9df07fdd763f6b15a171b7b545c6898696",
+      "actual_registry_equals_original_crate_member": true,
+      "matches_fixed_primary_file": true
+    },
+    {
+      "path": "sqlx-core/src/pool/options.rs",
+      "bytes": 25108,
+      "sha256": "924cd57a062328b2e7c6ac55242eabb1706893d80ce1e8cb02fe643a592f4f83",
+      "git_blob_identity": "3d048f179514e992f478f0f854563fad7c0e41dd",
+      "actual_registry_equals_original_crate_member": true,
+      "matches_fixed_primary_file": true
+    },
+    {
+      "path": "sqlx-core/src/connection.rs",
+      "bytes": 10046,
+      "sha256": "a0ea974fb1bfe6ec7891e594333098b3d2fac3b3e27737e733dea461e8dee737",
+      "git_blob_identity": "b5f8138b2bc1b2a9a82a21b4aa8c65fe0e42934f",
+      "actual_registry_equals_original_crate_member": true,
+      "matches_fixed_primary_file": true
+    }
+  ],
+  "scope": [
+    "The actual cached crates identify003b698e, not the previously resolved0.9.0 release-tag commit75bc048. Exact11 SQLite/Core files relevant to initialization, callbacks, native cleanup and pool cancellation are byte-identical to the fixed primary files independently read earlier.",
+    "No whole-upstream-tree equivalence is claimed. Cargo-normalized manifests are used as their actual bytes; Cargo.toml.orig remains separately retained.",
+    "The native reader compared the two existing crate archive SHA256 values to Cargo.lock and all17 extracted members to cache files; root independently rehashed every supplied complete file body and compared the11 critical source hashes/Git identities to its prior independent source reads.",
+    "The absence of .cargo-checksum.json in both cache directories is preserved, not supplied by a fabricated file.",
+    "No dependency change, additional fetch, B16 production patch, compiled B16 control, or Current/product acceptance is represented."
+  ]
+}

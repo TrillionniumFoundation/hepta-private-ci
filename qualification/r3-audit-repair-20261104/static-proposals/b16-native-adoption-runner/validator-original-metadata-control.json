@@ -1,0 +1,12 @@
+{
+  "schema": "hepta-b16-readonly-validator-original-metadata-control-v1",
+  "status": "EXPECTED_STATIC_METADATA_REJECTION_NOT_NATIVE_TEST",
+  "metadata_bytes": 8163618,
+  "metadata_sha256": "959b827393fc6830e8fd6c55a83a519217ab0debb7c033b42e64306bc373fece",
+  "metadata_source_tree": "f8251e1d14fa8524ab469281296cd4cf708f173c",
+  "exit_code": 1,
+  "exact_rejection": "driver is still registry-backed",
+  "stdout": "",
+  "stderr": "Traceback (most recent call last):\n  File \"<reviewed-validator-directory>/check_native_receipts.py\", line 80, in <module>\n    print(json.dumps(metadata_check(args.metadata, args.repository, plan), indent=2))\n                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"<reviewed-validator-directory>/check_native_receipts.py\", line 22, in metadata_check\n    assert driver.get(\"source\") is None, \"driver is still registry-backed\"\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: driver is still registry-backed\n",
+  "scope": "Only existing local metadata and Python receipt checker read. No Cargo, Bazel, source/ref/native mutation."
+}

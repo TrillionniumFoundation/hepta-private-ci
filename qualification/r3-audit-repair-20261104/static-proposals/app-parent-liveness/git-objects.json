@@ -1,0 +1,177 @@
+{
+  "schema": "hepta-app-parent-liveness-unreachable-object-delivery-v2",
+  "scope": "UNREACHABLE_GITHUB_BLOBS_ONLY_NO_REF_OR_NATIVE_MUTATION",
+  "objects": [
+    {
+      "relative": "candidate/codex-rs/linux-sandbox/src/launcher.rs",
+      "expected": "a1d761fba56d6b1653598e82f5d5d81207719ef5",
+      "kind": "source",
+      "repo_path": "codex-rs/linux-sandbox/src/launcher.rs",
+      "blob": "a1d761fba56d6b1653598e82f5d5d81207719ef5",
+      "bytes": 17189,
+      "sha256": "4c8c80c86477b6bbfdc002eee06c3d70ea09829a92eb079f8d309a13d22ea8bf",
+      "created": true,
+      "readback_byteequal": true
+    },
+    {
+      "relative": "candidate/codex-rs/linux-sandbox/src/lib.rs",
+      "expected": "8f704a3156998d169ceee6bd5e93bf549da9c5c0",
+      "kind": "source",
+      "repo_path": "codex-rs/linux-sandbox/src/lib.rs",
+      "blob": "8f704a3156998d169ceee6bd5e93bf549da9c5c0",
+      "bytes": 1074,
+      "sha256": "35302eb707a300f974f3fa6873f82a29a4f1c15fb250b10f57c2b4f5ccd99aba",
+      "created": true,
+      "readback_byteequal": true
+    },
+    {
+      "relative": "candidate/codex-rs/linux-sandbox/src/linux_run_main.rs",
+      "expected": "e8eab2ed1b8221c75a366e0cc93851cf98d6f490",
+      "kind": "source",
+      "repo_path": "codex-rs/linux-sandbox/src/linux_run_main.rs",
+      "blob": "e8eab2ed1b8221c75a366e0cc93851cf98d6f490",
+      "bytes": 56541,
+      "sha256": "c62b0014d1a539bb0343048fffa5283816f66dd17abcfb089ba3bce60eb247ca",
+      "created": true,
+      "readback_byteequal": true
+    },
+    {
+      "relative": "candidate/codex-rs/linux-sandbox/src/parent_lifecycle.rs",
+      "expected": "ffc5774508ab4a069a6bcb70f27950300b86fbfe",
+      "kind": "source",
+      "repo_path": "codex-rs/linux-sandbox/src/parent_lifecycle.rs",
+      "blob": "ffc5774508ab4a069a6bcb70f27950300b86fbfe",
+      "bytes": 7437,
+      "sha256": "2568b9008d8b6db84b40ace134c5aef6b493d316bfe1d977aab8290b58b64db6",
+      "created": true,
+      "readback_byteequal": true
+    },
+    {
+      "relative": "candidate/codex-rs/linux-sandbox/src/parent_lifecycle_tests.rs",
+      "expected": "0293bce3c08720952fd3413c92c4e9a033da3d03",
+      "kind": "source",
+      "repo_path": "codex-rs/linux-sandbox/src/parent_lifecycle_tests.rs",
+      "blob": "0293bce3c08720952fd3413c92c4e9a033da3d03",
+      "bytes": 12752,
+      "sha256": "cbd431000c30fa687422dbed660235edb16c4ce50b6f62c87def5e2957b2487e",
+      "created": true,
+      "readback_byteequal": true
+    },
+    {
+      "relative": "production.patch",
+      "expected": "e2b969abb65142171c003fea64399c7c61363a3a",
+      "kind": "patch",
+      "blob": "e2b969abb65142171c003fea64399c7c61363a3a",
+      "bytes": 14407,
+      "sha256": "b14f75492815dfdbbecd8b1ac28e990d51628eb31b9acb7615f1e73f514f794e",
+      "created": true,
+      "readback_byteequal": true
+    },
+    {
+      "relative": "controls.patch",
+      "expected": "55be7761bbd60171155aa1c60448aa6478ab8e01",
+      "kind": "patch",
+      "blob": "55be7761bbd60171155aa1c60448aa6478ab8e01",
+      "bytes": 13596,
+      "sha256": "d7a89afa5205457194fc42b15f5e80046d30ea3b29a367c1e7e60ca43f7a4d06",
+      "created": true,
+      "readback_byteequal": true
+    },
+    {
+      "relative": "full.patch",
+      "expected": "5847179e988ea0719766cd25be293e09efd882c3",
+      "kind": "patch",
+      "blob": "5847179e988ea0719766cd25be293e09efd882c3",
+      "bytes": 27742,
+      "sha256": "85edd8c88956ed3d27f7a90a5793cdf38f3c61c1c78043fa14ece1028542dd73",
+      "created": true,
+      "readback_byteequal": true
+    },
+    {
+      "relative": "production-v1-to-v2.patch",
+      "expected": "27da1daae65ec0355a1c35a4d32d8a10025dfd66",
+      "kind": "patch",
+      "blob": "27da1daae65ec0355a1c35a4d32d8a10025dfd66",
+      "bytes": 1208,
+      "sha256": "089b017fa18f7900208489e6abe17e3722252af1e6a511549cb79d5bcd26c1ab",
+      "created": true,
+      "readback_byteequal": true
+    },
+    {
+      "relative": "no_exit_rejection-negative.patch",
+      "expected": "19275624147c737e527fbcbff3f2999aecf06535",
+      "kind": "patch",
+      "blob": "19275624147c737e527fbcbff3f2999aecf06535",
+      "bytes": 622,
+      "sha256": "6c73e825c9001cb124676527dde91c934ba9b540a5b0e2e3d29d943edfa97686",
+      "created": true,
+      "readback_byteequal": true
+    },
+    {
+      "relative": "no_exit_rejection-restore.patch",
+      "expected": "2a01dc378463c1b7795ca5ef85b0ace877315ef1",
+      "kind": "patch",
+      "blob": "2a01dc378463c1b7795ca5ef85b0ace877315ef1",
+      "bytes": 622,
+      "sha256": "6188380ae96d1e394f8fb05fb4d3292f57c7272300bffce56228c4749e6e2932",
+      "created": true,
+      "readback_byteequal": true
+    },
+    {
+      "relative": "no_rearm-negative.patch",
+      "expected": "c1caf99376a90eef2e51d6fea5b5f0e2cca649da",
+      "kind": "patch",
+      "blob": "c1caf99376a90eef2e51d6fea5b5f0e2cca649da",
+      "bytes": 1023,
+      "sha256": "cb36816e2bc3878ea3378193702ca38537a1f9c29516a8d786c6c55f70b8f01f",
+      "created": true,
+      "readback_byteequal": true
+    },
+    {
+      "relative": "no_rearm-restore.patch",
+      "expected": "f2370e215698b733338e55bf69f3d7a0bba3cc87",
+      "kind": "patch",
+      "blob": "f2370e215698b733338e55bf69f3d7a0bba3cc87",
+      "bytes": 1023,
+      "sha256": "88ec60f03ce018aadd48095a5707ae24dd375a2cd83d40b11ba96d5e3560815f",
+      "created": true,
+      "readback_byteequal": true
+    },
+    {
+      "relative": "leaked_parent_fd-negative.patch",
+      "expected": "39fafc378c26b4dd2f40e04091db0e480ae95357",
+      "kind": "patch",
+      "blob": "39fafc378c26b4dd2f40e04091db0e480ae95357",
+      "bytes": 500,
+      "sha256": "be18550a11dc1cef87db724c15220c3d4950c3cbc8d6c69ee3f757f6e2dc17d9",
+      "created": true,
+      "readback_byteequal": true
+    },
+    {
+      "relative": "leaked_parent_fd-restore.patch",
+      "expected": "0c6ce826e8267d8ca3a5d0fe812bd92fda0fe2db",
+      "kind": "patch",
+      "blob": "0c6ce826e8267d8ca3a5d0fe812bd92fda0fe2db",
+      "bytes": 500,
+      "sha256": "c86e2d5155aabde973c618dd52bf4e06ce3ed2222a7ea7408a99475d5b85adcd",
+      "created": true,
+      "readback_byteequal": true
+    },
+    {
+      "relative": "repair-manifest.json",
+      "expected": "014cd58cb83cb04bbf9329486f42cfe22b30182a",
+      "kind": "manifest",
+      "blob": "014cd58cb83cb04bbf9329486f42cfe22b30182a",
+      "bytes": 41723,
+      "sha256": "d9d7c3f76614ccf429f7fbe2dbeec343e7642298197aef5928dd99d06665140f",
+      "created": true,
+      "readback_byteequal": true
+    }
+  ],
+  "independent_review": {
+    "blob": "ea366bc37dcf9df49e5564329c62f107f9e4b7a7",
+    "static_git_receipt": "a64364424b4eb940b451ab3c8d0ab79a21524689"
+  },
+  "native_state": "UNFORMATTED_UNCOMPILED_UNEXECUTED",
+  "history": "V1 and V2 pre-header patches retained locally; source scope and runtime limits are in repair-manifest.json"
+}

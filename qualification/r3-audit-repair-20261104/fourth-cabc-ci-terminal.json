@@ -1,0 +1,392 @@
+{
+  "source_head": "cabcb40d36e116beaa65750e1f674c52035da785",
+  "source_tree": "b2d7f038d6d88156bc6a4cb29c8703f69b808f29",
+  "all19RunsTerminal": true,
+  "runCounts": {
+    "skipped": 2,
+    "success": 14,
+    "failure": 3
+  },
+  "blocking37JobCounts": {
+    "success": 22,
+    "failure": 11,
+    "skipped": 4
+  },
+  "blockingJobs": [
+    {
+      "id": 126827729129,
+      "name": "Select blocking CI scope",
+      "conclusion": "success",
+      "started_at": "2026-11-04T20:00:01Z",
+      "completed_at": "2026-11-04T20:00:18Z"
+    },
+    {
+      "id": 126827729827,
+      "name": "Codespell / Check for spelling errors",
+      "conclusion": "failure",
+      "started_at": "2026-11-04T20:00:02Z",
+      "completed_at": "2026-11-04T20:00:36Z"
+    },
+    {
+      "id": 126827729833,
+      "name": "Blob size policy / Blob size policy",
+      "conclusion": "success",
+      "started_at": "2026-11-04T20:00:01Z",
+      "completed_at": "2026-11-04T20:02:33Z"
+    },
+    {
+      "id": 126827930237,
+      "name": "sdk / sdks",
+      "conclusion": "success",
+      "started_at": "2026-11-04T20:00:22Z",
+      "completed_at": "2026-11-04T20:07:05Z"
+    },
+    {
+      "id": 126827930505,
+      "name": "cargo-deny / cargo-deny",
+      "conclusion": "success",
+      "started_at": "2026-11-04T20:00:21Z",
+      "completed_at": "2026-11-04T20:01:02Z"
+    },
+    {
+      "id": 126827930594,
+      "name": "rust-ci / Detect changed areas",
+      "conclusion": "success",
+      "started_at": "2026-11-04T20:00:22Z",
+      "completed_at": "2026-11-04T20:00:34Z"
+    },
+    {
+      "id": 126827930632,
+      "name": "repo-checks / Native Hepta paths on ubuntu-24.04",
+      "conclusion": "success",
+      "started_at": "2026-11-04T20:00:21Z",
+      "completed_at": "2026-11-04T20:01:07Z"
+    },
+    {
+      "id": 126827930647,
+      "name": "repo-checks / build-test",
+      "conclusion": "success",
+      "started_at": "2026-11-04T20:00:22Z",
+      "completed_at": "2026-11-04T20:03:27Z"
+    },
+    {
+      "id": 126827930658,
+      "name": "repo-checks / Native Hepta paths on macos-15",
+      "conclusion": "success",
+      "started_at": "2026-11-04T20:00:22Z",
+      "completed_at": "2026-11-04T20:01:29Z"
+    },
+    {
+      "id": 126827930718,
+      "name": "repo-checks / Native Hepta paths on windows-latest",
+      "conclusion": "failure",
+      "started_at": "2026-11-04T20:00:22Z",
+      "completed_at": "2026-11-04T20:00:54Z"
+    },
+    {
+      "id": 126827930951,
+      "name": "sdk / python-sdk",
+      "conclusion": "success",
+      "started_at": "2026-11-04T20:00:21Z",
+      "completed_at": "2026-11-04T20:01:36Z"
+    },
+    {
+      "id": 126827930995,
+      "name": "Hepta contract gate / Validate canonical branch and contract metadata",
+      "conclusion": "success",
+      "started_at": "2026-11-04T20:00:22Z",
+      "completed_at": "2026-11-04T20:02:29Z"
+    },
+    {
+      "id": 126827931433,
+      "name": "Bazel / Verify release build on windows-latest for x86_64-pc-windows-msvc",
+      "conclusion": "success",
+      "started_at": "2026-11-04T20:00:22Z",
+      "completed_at": "2026-11-04T20:19:44Z"
+    },
+    {
+      "id": 126827931438,
+      "name": "Bazel / Bazel clippy on windows-latest for x86_64-pc-windows-msvc",
+      "conclusion": "success",
+      "started_at": "2026-11-04T20:00:23Z",
+      "completed_at": "2026-11-04T20:16:34Z"
+    },
+    {
+      "id": 126827931458,
+      "name": "Bazel / Bazel test on ubuntu-24.04 for x86_64-unknown-linux-musl",
+      "conclusion": "failure",
+      "started_at": "2026-11-04T20:00:22Z",
+      "completed_at": "2026-11-04T20:13:49Z"
+    },
+    {
+      "id": 126827931463,
+      "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 2/4",
+      "conclusion": "failure",
+      "started_at": "2026-11-04T20:00:23Z",
+      "completed_at": "2026-11-04T20:20:17Z"
+    },
+    {
+      "id": 126827931464,
+      "name": "Bazel / Bazel test on ubuntu-24.04 for x86_64-unknown-linux-gnu",
+      "conclusion": "failure",
+      "started_at": "2026-11-04T20:00:22Z",
+      "completed_at": "2026-11-04T20:13:47Z"
+    },
+    {
+      "id": 126827931465,
+      "name": "Bazel / Bazel clippy on ubuntu-24.04 for x86_64-unknown-linux-gnu",
+      "conclusion": "success",
+      "started_at": "2026-11-04T20:00:22Z",
+      "completed_at": "2026-11-04T20:05:36Z"
+    },
+    {
+      "id": 126827931493,
+      "name": "Bazel / Verify release build on ubuntu-24.04 for x86_64-unknown-linux-gnu",
+      "conclusion": "success",
+      "started_at": "2026-11-04T20:00:22Z",
+      "completed_at": "2026-11-04T20:08:08Z"
+    },
+    {
+      "id": 126827931542,
+      "name": "Bazel / Verify release build on macos-15 for aarch64-apple-darwin",
+      "conclusion": "success",
+      "started_at": "2026-11-04T20:00:26Z",
+      "completed_at": "2026-11-04T20:06:48Z"
+    },
+    {
+      "id": 126827931616,
+      "name": "Bazel / Bazel test on macos-15 for aarch64-apple-darwin",
+      "conclusion": "failure",
+      "started_at": "2026-11-04T20:00:27Z",
+      "completed_at": "2026-11-04T20:32:49Z"
+    },
+    {
+      "id": 126827931619,
+      "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 1/4",
+      "conclusion": "failure",
+      "started_at": "2026-11-04T20:00:22Z",
+      "completed_at": "2026-11-04T20:00:53Z"
+    },
+    {
+      "id": 126827931624,
+      "name": "Bazel / Bazel test on macos-15-intel for x86_64-apple-darwin",
+      "conclusion": "failure",
+      "started_at": "2026-11-04T20:00:23Z",
+      "completed_at": "2026-11-04T20:51:54Z"
+    },
+    {
+      "id": 126827931702,
+      "name": "Bazel / Bazel clippy on macos-15 for aarch64-apple-darwin",
+      "conclusion": "success",
+      "started_at": "2026-11-04T20:00:27Z",
+      "completed_at": "2026-11-04T20:08:08Z"
+    },
+    {
+      "id": 126827931863,
+      "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 4/4",
+      "conclusion": "failure",
+      "started_at": "2026-11-04T20:00:23Z",
+      "completed_at": "2026-11-04T20:27:20Z"
+    },
+    {
+      "id": 126827932003,
+      "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 3/4",
+      "conclusion": "success",
+      "started_at": "2026-11-04T20:00:22Z",
+      "completed_at": "2026-11-04T20:11:18Z"
+    },
+    {
+      "id": 126827932717,
+      "name": "Hepta scoped native checks",
+      "conclusion": "skipped",
+      "started_at": "2026-11-04T20:00:18Z",
+      "completed_at": "2026-11-04T20:00:18Z"
+    },
+    {
+      "id": 126827933143,
+      "name": "Lightweight prose and derived checks",
+      "conclusion": "skipped",
+      "started_at": "2026-11-04T20:00:18Z",
+      "completed_at": "2026-11-04T20:00:18Z"
+    },
+    {
+      "id": 126827934751,
+      "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc (native main)",
+      "conclusion": "skipped",
+      "started_at": "2026-11-04T20:00:19Z",
+      "completed_at": "2026-11-04T20:00:18Z"
+    },
+    {
+      "id": 126828082180,
+      "name": "rust-ci / Rust format",
+      "conclusion": "success",
+      "started_at": "2026-11-04T20:00:37Z",
+      "completed_at": "2026-11-04T20:01:16Z"
+    },
+    {
+      "id": 126828082419,
+      "name": "rust-ci / cargo shear",
+      "conclusion": "success",
+      "started_at": "2026-11-04T20:00:38Z",
+      "completed_at": "2026-11-04T20:01:25Z"
+    },
+    {
+      "id": 126828082455,
+      "name": "rust-ci / Cargo manifest preflight",
+      "conclusion": "success",
+      "started_at": "2026-11-04T20:00:37Z",
+      "completed_at": "2026-11-04T20:00:53Z"
+    },
+    {
+      "id": 126828085239,
+      "name": "rust-ci / Argument comment lint package",
+      "conclusion": "skipped",
+      "started_at": "2026-11-04T20:00:34Z",
+      "completed_at": "2026-11-04T20:00:34Z"
+    },
+    {
+      "id": 126828272196,
+      "name": "rust-ci / Rust benchmark smoke",
+      "conclusion": "success",
+      "started_at": "2026-11-04T20:00:56Z",
+      "completed_at": "2026-11-04T20:01:59Z"
+    },
+    {
+      "id": 126828909034,
+      "name": "rust-ci / CI results (required)",
+      "conclusion": "success",
+      "started_at": "2026-11-04T20:02:02Z",
+      "completed_at": "2026-11-04T20:02:05Z"
+    },
+    {
+      "id": 126843366475,
+      "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc",
+      "conclusion": "failure",
+      "started_at": "2026-11-04T20:27:23Z",
+      "completed_at": "2026-11-04T20:27:26Z"
+    },
+    {
+      "id": 126856902486,
+      "name": "CI required",
+      "conclusion": "failure",
+      "started_at": "2026-11-04T20:51:57Z",
+      "completed_at": "2026-11-04T20:52:09Z"
+    }
+  ],
+  "runSummaries": [
+    {
+      "id": 41902318300,
+      "name": "Production HOS2 owner proposal",
+      "conclusion": "skipped",
+      "updated_at": "2026-11-04T19:59:57Z"
+    },
+    {
+      "id": 41902318290,
+      "name": "App-server schema refresh",
+      "conclusion": "skipped",
+      "updated_at": "2026-11-04T19:59:58Z"
+    },
+    {
+      "id": 41902318344,
+      "name": "Hepta Keyring Sync Security Migration (Draft)",
+      "conclusion": "success",
+      "updated_at": "2026-11-04T20:02:55Z"
+    },
+    {
+      "id": 41902318307,
+      "name": "Native Windows Bazel process environment",
+      "conclusion": "success",
+      "updated_at": "2026-11-04T20:07:18Z"
+    },
+    {
+      "id": 41902318141,
+      "name": "Hepta Memory P0 native regressions",
+      "conclusion": "success",
+      "updated_at": "2026-11-04T20:19:23Z"
+    },
+    {
+      "id": 41902318324,
+      "name": "v8-canary",
+      "conclusion": "success",
+      "updated_at": "2026-11-04T20:16:44Z"
+    },
+    {
+      "id": 41902318446,
+      "name": "Hepta musl product smoke",
+      "conclusion": "failure",
+      "updated_at": "2026-11-04T20:18:32Z"
+    },
+    {
+      "id": 41902318092,
+      "name": "Hepta Supervisor P0 Cross-Platform Restart Qualification",
+      "conclusion": "success",
+      "updated_at": "2026-11-04T20:18:45Z"
+    },
+    {
+      "id": 41902318113,
+      "name": "Hepta Windows private-state native (security qualification only)",
+      "conclusion": "success",
+      "updated_at": "2026-11-04T20:19:01Z"
+    },
+    {
+      "id": 41902318107,
+      "name": "Hepta architecture convergence",
+      "conclusion": "success",
+      "updated_at": "2026-11-04T20:31:25Z"
+    },
+    {
+      "id": 41902318083,
+      "name": "Rust UI product foundation",
+      "conclusion": "success",
+      "updated_at": "2026-11-04T20:29:32Z"
+    },
+    {
+      "id": 41902318372,
+      "name": "Hepta owner-local Matrixd and Agentd native transport",
+      "conclusion": "success",
+      "updated_at": "2026-11-04T20:29:33Z"
+    },
+    {
+      "id": 41902318428,
+      "name": "Hepta operator acceptance native signature verification",
+      "conclusion": "success",
+      "updated_at": "2026-11-04T20:03:28Z"
+    },
+    {
+      "id": 41902318360,
+      "name": "Native Windows ordinary business consumers",
+      "conclusion": "success",
+      "updated_at": "2026-11-04T20:06:24Z"
+    },
+    {
+      "id": 41902318139,
+      "name": "Hepta exec recovery and authorized-read conformance",
+      "conclusion": "success",
+      "updated_at": "2026-11-04T20:38:38Z"
+    },
+    {
+      "id": 41902318133,
+      "name": "Original Objective owner package gates",
+      "conclusion": "success",
+      "updated_at": "2026-11-04T20:51:01Z"
+    },
+    {
+      "id": 41902318286,
+      "name": "blocking-ci",
+      "conclusion": "failure",
+      "updated_at": "2026-11-04T20:52:10Z"
+    },
+    {
+      "id": 41902308082,
+      "name": "Native Windows retained recovery and cognitive owner",
+      "conclusion": "success",
+      "updated_at": "2026-11-04T20:13:37Z"
+    },
+    {
+      "id": 41902308860,
+      "name": "Native Windows Core lifecycle ordering",
+      "conclusion": "failure",
+      "updated_at": "2026-11-04T20:22:44Z"
+    }
+  ]
+}

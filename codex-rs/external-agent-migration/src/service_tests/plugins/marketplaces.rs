@@ -480,6 +480,81 @@ async fn import_plugins_supports_relative_external_agent_plugin_marketplace_path
 
 #[tokio::test]
 async fn import_plugins_infers_external_official_marketplace_when_missing_from_settings() {
+    const FIXTURE_ENV: &str = "CODEX_TEST_OFFICIAL_MARKETPLACE_REEXEC";
+    if std::env::var_os(FIXTURE_ENV).is_none() {
+        // Exercise the real inferred source, Git clone, and install path against a
+        // private repository. Only this child process receives the URL rewrite.
+        let fixture = TempDir::new().expect("create official marketplace fixture");
+        let repository = fixture.path().join("marketplace");
+        fs::create_dir_all(repository.join(EXTERNAL_AGENT_PLUGIN_MANIFEST_DIR))
+            .expect("create official marketplace manifest directory");
+        fs::write(
+            repository
+                .join(EXTERNAL_AGENT_PLUGIN_MANIFEST_DIR)
+                .join("marketplace.json"),
+            serde_json::to_vec(&serde_json::json!({
+                "name": EXTERNAL_OFFICIAL_MARKETPLACE_NAME,
+                "plugins": [],
+            }))
+            .expect("serialize official marketplace manifest"),
+        )
+        .expect("write official marketplace manifest");
+        let git_config = fixture.path().join("gitconfig");
+        fs::write(&git_config, "").expect("create isolated Git config");
+        let rewrite_key = format!("url.{}.insteadOf", repository.display());
+        let official_url = format!(
+            "https://github.com/{}.git",
+            crate::source_cla::OFFICIAL_MARKETPLACE_SOURCE
+        );
+        for args in [
+            vec!["init", "--quiet"],
+            vec!["add", "."],
+            vec![
+                "-c",
+                "user.name=Migration fixture",
+                "-c",
+                "user.email=migration-fixture@example.invalid",
+                "-c",
+                "commit.gpgsign=false",
+                "commit",
+                "--quiet",
+                "-m",
+                "Official marketplace fixture",
+            ],
+            vec!["config", "--global", &rewrite_key, &official_url],
+        ] {
+            let output = std::process::Command::new("git")
+                .args(args)
+                .current_dir(&repository)
+                .env("GIT_CONFIG_GLOBAL", &git_config)
+                .output()
+                .expect("run fixture Git command");
+            assert!(
+                output.status.success(),
+                "fixture Git command failed: {}",
+                String::from_utf8_lossy(&output.stderr)
+            );
+        }
+        let output = std::process::Command::new(std::env::current_exe().expect("locate test binary"))
+            .args([
+                "--exact",
+                "service::tests::plugins::marketplaces::import_plugins_infers_external_official_marketplace_when_missing_from_settings",
+                "--nocapture",
+            ])
+            .env(FIXTURE_ENV, "1")
+            .env("GIT_CONFIG_GLOBAL", git_config)
+            .output()
+            .expect("run isolated official marketplace import");
+        let stdout = String::from_utf8(output.stdout).expect("decode isolated import stdout");
+        print!("{stdout}");
+        eprint!("{}", String::from_utf8_lossy(&output.stderr));
+        assert!(output.status.success(), "isolated import assertions failed");
+        assert!(
+            stdout.contains("test result: ok. 1 passed; 0 failed; 0 ignored;"),
+            "isolated import must execute the original test exactly once"
+        );
+        return;
+    }
     let (_root, external_agent_home, codex_home) = fixture_paths();
     fs::create_dir_all(&external_agent_home).expect("create external agent home");
     fs::create_dir_all(&codex_home).expect("create codex home");

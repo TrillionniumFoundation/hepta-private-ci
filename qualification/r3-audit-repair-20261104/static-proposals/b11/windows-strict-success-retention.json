@@ -1,0 +1,35 @@
+{
+  "schema": "hepta.windows-strict-original-log-retention.v1",
+  "status": "SOURCE_CANDIDATE_NOT_EXECUTED",
+  "path": ".github/scripts/collect_bazel_failed_test_logs.py",
+  "before": {
+    "bytes": 16171,
+    "sha256": "ee091e5af356afb4bb868debf61704290b26d7319ca57e12b2179abf5a1f5147",
+    "blob": "e7745ee2a1b8b230119027c0faf56e58462d97ed"
+  },
+  "after": {
+    "bytes": 16238,
+    "sha256": "867d2b315dbb37b5b33c0869281c41fc5586a366f0cd1c19a1703f57d40fda9d",
+    "blob": "5427be6c1f37bd7c302d808c2e4f194727abe700"
+  },
+  "patch": {
+    "bytes": 494,
+    "sha256": "b449f388490f1866a90c25b04e36259902de27a6f3aba383c472a9aa3f9a22e1",
+    "blob": "cabb73ed9054b88cbb039f63876fa1dbdde217a0"
+  },
+  "change": "Add the existing original Windows sandbox unit target to the existing selected-target evidence retention allowlist.",
+  "additions": 1,
+  "deletions": 0,
+  "unchanged": [
+    "Original Bazel target and case selection",
+    "Original invocation argv and exit status",
+    "Original skip, retry and timeout behavior",
+    "Existing failed target and shard/attempt collection"
+  ],
+  "purpose": "Keep the complete original target log and XML when the original Windows target eventually passes; no rerun or fabricated per-case outcome.",
+  "original_target_source": {
+    "build_blob": "8531cb4d664c25de6fbf200c71cb8042d1d8d865",
+    "defs_blob": "6f588ec3057fddfea35170e28e74036162ce6a23"
+  },
+  "required_validation": "Original Python script suite and final assembled source checks; final-head Windows must independently execute its original target."
+}

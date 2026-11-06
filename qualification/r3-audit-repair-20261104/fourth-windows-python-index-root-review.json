@@ -1,0 +1,294 @@
+{
+  "schema": "hepta-root-windows-python-index-review-v1",
+  "observed_at_utc": "2026-11-05T04:25:28.350133+00:00",
+  "original_native_job": "1a1a9ea52e8-fc05-399a",
+  "original_controller_exit_code": 1,
+  "original_small_bundle": {
+    "bytes": 78305,
+    "sha256": "800f38395d7cb3d2b40b1834532b3d918252bc5369ccd810cf676c38283453e6",
+    "blob": "fdd58c60bc1025ca4ff297254276c6fd29328dcd"
+  },
+  "verified_originals": [
+    {
+      "name": "driver-error.json",
+      "bytes": 6488,
+      "sha256": "46988fc4e6cb5c9dea8a2e4aec2af476a4f06bea31106183110538a91e2458cb"
+    },
+    {
+      "name": "wrapper-python-original-suite-status.json",
+      "bytes": 1235,
+      "sha256": "701ef0978921bb45fd063a197407e8d5909c4fd8900a5510506eeed7e3617f02"
+    },
+    {
+      "name": "wrapper-python-original-suite.log",
+      "bytes": 156,
+      "sha256": "9caabb60f4e71ff4174558d820b9ef2a364958d1f96b5b369d52b488cbc05d54"
+    },
+    {
+      "name": "wrapper-python-catalog.stdout",
+      "bytes": 6631,
+      "sha256": "6492efcc446d9d00b2715234184b662d8a8e6b9fc4dfdbe4bf28fa4ff4c90c8f"
+    },
+    {
+      "name": "1-initial-source-guard.json",
+      "bytes": 962,
+      "sha256": "089b933c4a8ee89bd47146771830c48284e6945a9a8ece94cfc40e4624a1208e"
+    },
+    {
+      "name": "16-wrapper-python-original-suite-before-source-guard.json",
+      "bytes": 962,
+      "sha256": "a8c881387b5ad9f7129885bba9002dbc1126a2c1a6023ef713c88d1a7755cc72"
+    },
+    {
+      "name": "17-wrapper-python-original-suite-after-source-guard.json",
+      "bytes": 962,
+      "sha256": "bd036d63257a24e64c069e916be7e654f3643510223863f73d98fb7486c42e90"
+    },
+    {
+      "name": "wrapper-shell-syntax-command.json",
+      "bytes": 439,
+      "sha256": "05e5e9cfa5bbaa3586339312d43757100008d491dd02cbae5b262db5f6a824f1"
+    },
+    {
+      "name": "wrapper-shell-syntax-status.json",
+      "bytes": 835,
+      "sha256": "9be46efd078a772d113c8feb86c88f4452e2fc94e51bc6b06065a67370067c00"
+    },
+    {
+      "name": "collector-python-compile-command.json",
+      "bytes": 522,
+      "sha256": "e6e6a1de3537bd21d1aa9c58c5bddaf578cdbd114214a523a296ea93e9d5310d"
+    },
+    {
+      "name": "collector-python-compile-status.json",
+      "bytes": 924,
+      "sha256": "57808aea275b4d2deeee3476ca58ed84d2ec185b76bc4e496df3dc522fff7e6c"
+    },
+    {
+      "name": "wrapper-python-catalog-command.json",
+      "bytes": 668,
+      "sha256": "936e0907dc43e462ad3133a6ab21d810ba2c52b25cf4927004466b2606de7cfc"
+    },
+    {
+      "name": "wrapper-python-catalog-status.json",
+      "bytes": 1687,
+      "sha256": "46e46cc46f25189a83d6184a348acc658549e8d86720747c723ca5249abcd0ea"
+    },
+    {
+      "name": "wrapper-python-original-suite-command.json",
+      "bytes": 504,
+      "sha256": "fd7520c3f8721700d5230f3f88292156e43c51dfc60a90623b862564af18249e"
+    },
+    {
+      "name": "wrapper-shell-syntax.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "collector-python-compile.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "wrapper-python-catalog.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "summary.json",
+      "bytes": 8892,
+      "sha256": "e5368e231cb032bd1de76f97f42c27edac85d858743c4a62a58eefcf237a0b13"
+    },
+    {
+      "name": "commands.json",
+      "bytes": 6632,
+      "sha256": "1746b7bceb8747bbbb5c0d628526534b08e90f43ac0530f0b698f87ec9fee5c4"
+    }
+  ],
+  "root_read_full_inspector": {
+    "bytes": 7912,
+    "sha256": "9d388eddf8f08e0170102450cce6cc886a514cc5706b0cc9ab0ddb04978c7c18",
+    "blob": "50ba5cb1aed98218136ac2423324444e6b07879a"
+  },
+  "source": "fb9e131272f7e7a138d6c0d1af2b048b9a6ab7ff",
+  "original_python": {
+    "argv": [
+      "python3",
+      "-m",
+      "unittest",
+      "discover",
+      "-s",
+      ".github/scripts",
+      "-p",
+      "test_run_bazel*.py"
+    ],
+    "selected_catalog_count": 57,
+    "unique_catalog_count": 57,
+    "observed_success_dots": 57,
+    "reported_executed": 57,
+    "literal_terminal": "OK",
+    "command_exit_code": 0,
+    "command_seconds": 8.738489650015254,
+    "unittest_seconds": 8.502,
+    "case_catalog_ids": [
+      "test_run_bazel_ci.RunBazelCiIntegrationTest.test_authenticated_cross_keeps_linux_build_actions_and_windows_tests",
+      "test_run_bazel_ci.RunBazelCiIntegrationTest.test_collector_accepts_root_link_but_refuses_traversal_and_external_links",
+      "test_run_bazel_ci.RunBazelCiIntegrationTest.test_collector_failure_keeps_original_bazel_status_and_tail",
+      "test_run_bazel_ci.RunBazelCiIntegrationTest.test_conflicting_selected_summaries_do_not_read_existing_logs",
+      "test_run_bazel_ci.RunBazelCiIntegrationTest.test_failure_archives_all_selected_shards_and_attempts_without_truncation",
+      "test_run_bazel_ci.RunBazelCiIntegrationTest.test_failure_preserves_status_linker_diagnostics_and_test_log_configuration",
+      "test_run_bazel_ci.RunBazelCiIntegrationTest.test_keyless_cross_uses_msvc_exec_and_gnullvm_target",
+      "test_run_bazel_ci.RunBazelCiIntegrationTest.test_large_windows_build_preserves_all_targets_without_a_large_native_command",
+      "test_run_bazel_ci.RunBazelCiIntegrationTest.test_missing_selected_logs_preserve_success_and_failure_status",
+      "test_run_bazel_ci.RunBazelCiIntegrationTest.test_native_windows_forwards_required_msvc_environment",
+      "test_run_bazel_ci.RunBazelCiIntegrationTest.test_native_windows_rejects_missing_required_msvc_environment",
+      "test_run_bazel_ci.RunBazelCiIntegrationTest.test_success_does_not_collect_failed_test_logs",
+      "test_run_bazel_ci.RunBazelCiIntegrationTest.test_success_retains_reported_targets_and_preserves_status_scope",
+      "test_run_bazel_ci.RunBazelCiIntegrationTest.test_windows_argument_lint_preserves_the_entire_large_crlf_query_roster",
+      "test_run_bazel_ci.RunBazelCiIntegrationTest.test_windows_argument_lint_uses_the_shared_split_abi_wrapper",
+      "test_run_bazel_ci.RunBazelCiIntegrationTest.test_windows_target_files_preserve_test_and_coverage_failures",
+      "test_run_bazel_clippy_targets.ClippyTargetSelectionTests.test_explicit_windows_cross_leg_preserves_cross_helpers",
+      "test_run_bazel_clippy_targets.ClippyTargetSelectionTests.test_failed_query_emits_no_partial_target_list",
+      "test_run_bazel_clippy_targets.ClippyTargetSelectionTests.test_linux_and_native_windows_preserve_native_test_helpers",
+      "test_run_bazel_clippy_targets.ClippyTargetSelectionTests.test_unknown_selector_option_is_rejected",
+      "test_run_bazel_native_msvc_toolchain.NativeWindowsMsvcToolchainTest.test_authenticated_rbe_keeps_remote_compiler_selection",
+      "test_run_bazel_native_msvc_toolchain.NativeWindowsMsvcToolchainTest.test_cache_only_native_msvc_keeps_abi_and_remote_cache",
+      "test_run_bazel_native_msvc_toolchain.NativeWindowsMsvcToolchainTest.test_native_msvc_does_not_duplicate_explicit_toolchain_flags",
+      "test_run_bazel_native_msvc_toolchain.NativeWindowsMsvcToolchainTest.test_native_msvc_keeps_target_and_injects_matching_cc_toolchain",
+      "test_run_bazel_native_msvc_toolchain.NativeWindowsMsvcToolchainTest.test_non_windows_cache_only_keeps_native_arguments",
+      "test_run_bazel_windows_fallback.WindowsLocalFallbackTest.test_arguments_after_separator_are_neither_interpreted_nor_removed",
+      "test_run_bazel_windows_fallback.WindowsLocalFallbackTest.test_authenticated_cross_request_remains_rbe",
+      "test_run_bazel_windows_fallback.WindowsLocalFallbackTest.test_clippy_does_not_hide_required_local_platform_config",
+      "test_run_bazel_windows_fallback.WindowsLocalFallbackTest.test_defaults_precede_explicit_caches_and_preserve_startup_options",
+      "test_run_bazel_windows_fallback.WindowsLocalFallbackTest.test_existing_local_config_is_not_duplicated",
+      "test_run_bazel_windows_fallback.WindowsLocalFallbackTest.test_explicit_compiler_and_detection_setting_take_precedence",
+      "test_run_bazel_windows_fallback.WindowsLocalFallbackTest.test_explicit_host_and_target_platforms_are_preserved",
+      "test_run_bazel_windows_fallback.WindowsLocalFallbackTest.test_explicit_local_split_support_is_not_duplicated",
+      "test_run_bazel_windows_fallback.WindowsLocalFallbackTest.test_explicit_msvc_host_is_not_silently_reinterpreted",
+      "test_run_bazel_windows_fallback.WindowsLocalFallbackTest.test_keyless_cross_fallback_splits_msvc_exec_from_gnullvm_target",
+      "test_run_bazel_windows_fallback.WindowsLocalFallbackTest.test_keyless_windows_invocation_selects_local_ci_config",
+      "test_run_bazel_windows_fallback.WindowsLocalFallbackTest.test_non_build_commands_do_not_gain_ci_flags",
+      "test_run_bazel_windows_fallback.WindowsLocalFallbackTest.test_non_windows_cross_request_does_not_enable_local_msvc",
+      "test_run_bazel_windows_fallback.WindowsLocalFallbackTest.test_non_windows_local_invocation_stays_native",
+      "test_run_bazel_windows_fallback.WindowsLocalFallbackTest.test_repository_declares_the_required_split_abi_contract",
+      "test_run_bazel_windows_fallback.WindowsLocalFallbackTest.test_target_discovery_does_not_inject_build_configuration",
+      "test_run_bazel_with_buildbuddy.RunBazelWithBuildBuddyTest.test_bazel_command_adds_local_caches_before_separator",
+      "test_run_bazel_with_buildbuddy.RunBazelWithBuildBuddyTest.test_bazel_command_normalizes_github_actions_startup_options",
+      "test_run_bazel_with_buildbuddy.RunBazelWithBuildBuddyTest.test_bazel_command_uses_configured_binary_locally",
+      "test_run_bazel_with_buildbuddy.RunBazelWithBuildBuddyTest.test_bazel_command_uses_configured_local_caches",
+      "test_run_bazel_with_buildbuddy.RunBazelWithBuildBuddyTest.test_explicit_pattern_file_is_not_replaced_or_deleted_by_transport",
+      "test_run_bazel_with_buildbuddy.RunBazelWithBuildBuddyTest.test_fork_pull_request_cannot_select_openai_host",
+      "test_run_bazel_with_buildbuddy.RunBazelWithBuildBuddyTest.test_keyless_invocation_drops_remote_ci_configuration",
+      "test_run_bazel_with_buildbuddy.RunBazelWithBuildBuddyTest.test_main_preserves_spaced_argument_and_child_exit_status",
+      "test_run_bazel_with_buildbuddy.RunBazelWithBuildBuddyTest.test_program_arguments_after_separator_do_not_select_or_lose_rbe",
+      "test_run_bazel_with_buildbuddy.RunBazelWithBuildBuddyTest.test_pull_request_without_readable_event_payload_fails_closed",
+      "test_run_bazel_with_buildbuddy.RunBazelWithBuildBuddyTest.test_query_remote_configuration_is_inserted_before_expression",
+      "test_run_bazel_with_buildbuddy.RunBazelWithBuildBuddyTest.test_raw_target_patterns_still_reject_embedded_and_trailing_line_breaks",
+      "test_run_bazel_with_buildbuddy.RunBazelWithBuildBuddyTest.test_run_in_fork_repository_cannot_select_openai_host",
+      "test_run_bazel_with_buildbuddy.RunBazelWithBuildBuddyTest.test_same_repository_pull_request_selects_openai_host",
+      "test_run_bazel_with_buildbuddy.RunBazelWithBuildBuddyTest.test_upstream_push_selects_openai_rbe_before_target_separator",
+      "test_run_bazel_with_buildbuddy.RunBazelWithBuildBuddyTest.test_windows_cross_ci_configuration_follows_remote_configuration"
+    ],
+    "raw_original": {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/windows-python-full-A-WIP-20261105-v1/wrapper-python-original-suite.log",
+      "bytes": 156,
+      "sha256": "9caabb60f4e71ff4174558d820b9ef2a364958d1f96b5b369d52b488cbc05d54"
+    },
+    "status_original": {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/windows-python-full-A-WIP-20261105-v1/wrapper-python-original-suite-status.json",
+      "bytes": 1235,
+      "sha256": "701ef0978921bb45fd063a197407e8d5909c4fd8900a5510506eeed7e3617f02"
+    },
+    "catalog_original": {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/windows-python-full-A-WIP-20261105-v1/wrapper-python-catalog.stdout",
+      "bytes": 6631,
+      "sha256": "6492efcc446d9d00b2715234184b662d8a8e6b9fc4dfdbe4bf28fa4ff4c90c8f"
+    },
+    "limit": "Original unittest discovery and its unchanged source/catalog, 57 success dots, complete summary and actual exit code; individual successful case names are catalog-bound, not printed by this original nonverbose command."
+  },
+  "readonly_index_reconciliation": {
+    "schema": "hepta-ordinary-index-read-only-reconciliation-v1",
+    "started_at": "2026-11-05T04:22:04.160866+00:00",
+    "completed_at": "2026-11-05T04:22:04.320758+00:00",
+    "source": "fb9e131272f7e7a138d6c0d1af2b048b9a6ab7ff",
+    "ordinary_head": "cabcb40d36e116beaa65750e1f674c52035da785",
+    "old_guard_index": {
+      "bytes": 1222758,
+      "sha256": "8ccf08bcd5b633a38fa81be4814ae264365f1a2cdd1ed81e1633fbcc0ac31502"
+    },
+    "actual_ordinary_index": {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/source/.git/index",
+      "bytes": 1222758,
+      "sha256": "c41b4d7645b2b88431ed024e9cc683e31d43fafe7290280eaf0bae656fd6a922"
+    },
+    "ordinary_index_lstat": {
+      "mode": "0o100600",
+      "size": 1222758,
+      "mtime_ns": 1793852077639904041,
+      "ctime_ns": 1793852077640873406,
+      "dev": 66306,
+      "ino": 35943494
+    },
+    "ordinary_index_version": 2,
+    "ordinary_index_entry_count": 9575,
+    "index_semantics_exact_head": true,
+    "semantic_difference_counts": {
+      "missing": 0,
+      "extra": 0
+    },
+    "parsed_index_matches_git_ls_files": true,
+    "flags": {
+      "stage_nonzero": 0,
+      "assume_valid": 0,
+      "extended_nonzero": 0,
+      "skip_worktree": 0,
+      "intent_to_add": 0,
+      "git_ls_files_v_tag_counts": {
+        "H": 9575
+      }
+    },
+    "extensions": [
+      {
+        "signature": "TREE",
+        "bytes": 45222,
+        "sha256": "d51f5ba87d691504ca2c222a069e9aa3f44fd48eb81f76619a20525c62047cb4",
+        "offset": 1177508
+      }
+    ],
+    "private_source_index_before": {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/windows-python-full-A-WIP-20261105-v1/17-wrapper-python-original-suite-after.index",
+      "bytes": 1224180,
+      "sha256": "9fe5b7d5bb3c9a9ed0d10a1fe6058ea5c45f56bf8d98373ee9e86ea568d8a06c"
+    },
+    "private_source_index_after": {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/windows-python-full-A-WIP-20261105-v1/17-wrapper-python-original-suite-after.index",
+      "bytes": 1224180,
+      "sha256": "9fe5b7d5bb3c9a9ed0d10a1fe6058ea5c45f56bf8d98373ee9e86ea568d8a06c"
+    },
+    "private_source_index_exact_candidate": true,
+    "working_tree_raw_diff_empty": true,
+    "untracked_source_paths": [],
+    "locks": {
+      "codex-rs/Cargo.lock": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/source/codex-rs/Cargo.lock",
+        "bytes": 413768,
+        "sha256": "4a7a5535cf045089458468411e126b5f59bc6bbf34fc0deead9b0c1b8d84000a"
+      },
+      "MODULE.bazel.lock": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/source/MODULE.bazel.lock",
+        "bytes": 1738619,
+        "sha256": "11f8a421224b9b05f32c4c14054e8868083d989fc497310c8d51e1156f189ca3"
+      }
+    },
+    "ordinary_index_bytes_stable_during_read": true,
+    "limitations": [
+      "The prior original ordinary-index bytes were not available to this inspector; this does not assert which individual stat fields or extension bytes changed.",
+      "No test, Cargo, source write, ordinary-index refresh/reset or staging operation was performed. Only new evidence files were written."
+    ]
+  },
+  "root_execution_decision": "Accept the observed c41 ordinary-index bytes as the next immutable snapshot for WIP continuation, because the reviewed native read-only parser and independent Git tree/listing paths agree on every original entry and flag, the candidate working tree remains exact fb9, and both real locks are unchanged. Preserve the original strict failed receipt; do not restore, stage, refresh, reset or rerun the original57. Continue only the previously unexecuted normal-helper/full stages after a new root guard.",
+  "causal_limit": "Prior full ordinary-index bytes are unavailable. The Git diff refresh call is an observed source mechanism, not proof which stat or TREE-extension bytes changed in this event.",
+  "large_original_readback_limit": "This review verified all19 small originals and read the complete native inspector. The binary index, parsed9575-entry JSON and full Git listing originals are identity-pinned in the native summary and remain pending separate complete compressed-archive root reconstruction.",
+  "original_capability_behavior_gate": "OPEN",
+  "all_blockers_closed": false
+}

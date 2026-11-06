@@ -483,15 +483,7 @@ fn real_main() -> Result<()> {
     if let Err(err) = &result {
         let _ = log_line(&mut log, &format!("setup error: {err:?}"));
         log_note(&format!("setup error: {err:?}"), Some(sbx_dir.as_path()));
-        let failure = extract_setup_failure(err)
-            .map(|f| SetupFailure::new(f.code, f.message.clone()))
-            .unwrap_or_else(|| {
-                SetupFailure::new(SetupErrorCode::HelperUnknownError, err.to_string())
-            });
-        let report = SetupErrorReport {
-            code: failure.code,
-            message: failure.message,
-        };
+        let report = SetupErrorReport::from_error(err);
         if let Err(write_err) = write_setup_error_report(&payload.codex_home, &report) {
             let _ = log_line(
                 &mut log,

@@ -142,10 +142,114 @@ async fn run_in_background_detaches_without_interrupting_main_or_side_threads() 
     Ok(())
 }
 
+const BACKGROUND_EXIT_SHELL_READY: &str = "__codex_background_exit_shell_ready__";
+
+fn background_exit_shell_command() -> String {
+    if cfg!(windows) {
+        format!("Write-Output '{BACKGROUND_EXIT_SHELL_READY}'; Start-Sleep -Seconds 30")
+    } else {
+        format!("printf '%s\\n' '{BACKGROUND_EXIT_SHELL_READY}'; sleep 30")
+    }
+}
+
+async fn wait_for_background_exit_shell_ready(
+    app_server: &mut AppServerSession,
+    thread_id: ThreadId,
+) -> std::result::Result<String, Box<ServerNotification>> {
+    let thread_id = thread_id.to_string();
+    time::timeout(Duration::from_secs(/*secs*/ 5), async {
+        let mut turn_id = None;
+        let mut command_id = None;
+        let mut output = String::new();
+        loop {
+            let event = app_server
+                .next_event()
+                .await
+                .expect("app-server event stream should remain open during shell setup");
+            let notification = match event {
+                codex_app_server_client::AppServerEvent::ServerNotification(notification) => {
+                    notification
+                }
+                codex_app_server_client::AppServerEvent::Lagged { skipped } => {
+                    panic!("shell setup must not lose {skipped} app-server events");
+                }
+                codex_app_server_client::AppServerEvent::ServerRequest(request) => {
+                    panic!("shell setup received an unexpected request: {request:?}");
+                }
+                codex_app_server_client::AppServerEvent::Disconnected { message } => {
+                    panic!("app-server disconnected during shell setup: {message}");
+                }
+            };
+            match notification.as_ref() {
+                ServerNotification::TurnStarted(started) if started.thread_id == thread_id => {
+                    assert_eq!(started.turn.status, TurnStatus::InProgress);
+                    assert!(turn_id.replace(started.turn.id.clone()).is_none());
+                }
+                ServerNotification::ItemStarted(started) if started.thread_id == thread_id => {
+                    if let ThreadItem::CommandExecution {
+                        id,
+                        source: codex_app_server_protocol::CommandExecutionSource::UserShell,
+                        status: codex_app_server_protocol::CommandExecutionStatus::InProgress,
+                        ..
+                    } = &started.item
+                    {
+                        assert_eq!(turn_id.as_deref(), Some(started.turn_id.as_str()));
+                        assert!(command_id.replace(id.clone()).is_none());
+                    }
+                }
+                ServerNotification::CommandExecutionOutputDelta(delta)
+                    if delta.thread_id == thread_id =>
+                {
+                    assert_eq!(turn_id.as_deref(), Some(delta.turn_id.as_str()));
+                    assert_eq!(command_id.as_deref(), Some(delta.item_id.as_str()));
+                    output.push_str(&delta.delta);
+                    if output
+                        .lines()
+                        .any(|line| line == BACKGROUND_EXIT_SHELL_READY)
+                    {
+                        return Ok(delta.turn_id.clone());
+                    }
+                }
+                ServerNotification::ItemCompleted(completed)
+                    if completed.thread_id == thread_id
+                        && matches!(
+                            &completed.item,
+                            ThreadItem::CommandExecution {
+                                source:
+                                    codex_app_server_protocol::CommandExecutionSource::UserShell,
+                                ..
+                            }
+                        ) =>
+                {
+                    assert_eq!(turn_id.as_deref(), Some(completed.turn_id.as_str()));
+                    return Err(notification);
+                }
+                ServerNotification::TurnCompleted(completed)
+                    if completed.thread_id == thread_id =>
+                {
+                    return Err(notification);
+                }
+                ServerNotification::Error(error) if error.thread_id == thread_id => {
+                    return Err(notification);
+                }
+                _ => {}
+            }
+        }
+    })
+    .await
+    .expect("shell should emit turn/start and real readiness output within five seconds")
+}
+
 #[tokio::test]
 async fn exit_interrupts_before_requesting_shutdown() -> Result<()> {
+    let workspace = tempdir()?;
     let (mut app, mut app_event_rx, mut op_rx) = make_test_app_with_channels().await;
-    prepare_running_local_daemon(&mut app)?;
+    let initial_thread_id = prepare_running_local_daemon(&mut app)?;
+    // The shared UI fixture uses a display-only cwd. This test runs a real child.
+    app.chat_widget.handle_thread_session(test_thread_session(
+        initial_thread_id,
+        dunce::canonicalize(workspace.path())?,
+    ));
     app.chat_widget
         .set_feature_enabled(Feature::Goals, /*enabled*/ true);
     let (mut app_server, mut tui) =
@@ -179,26 +283,14 @@ async fn exit_interrupts_before_requesting_shutdown() -> Result<()> {
         ),
         /*replay_kind*/ None,
     );
-    let command = if cfg!(windows) {
-        "Start-Sleep -Seconds 30"
-    } else {
-        "sleep 30"
-    };
     app_server
-        .thread_shell_command(thread_id, command.to_string())
+        .thread_shell_command(thread_id, background_exit_shell_command())
         .await?;
-    let turn_id = loop {
-        let event = time::timeout(Duration::from_secs(/*secs*/ 5), app_server.next_event())
-            .await
-            .expect("app-server should emit a turn/start event")
-            .expect("app-server event stream should remain open");
-        if let codex_app_server_client::AppServerEvent::ServerNotification(notification) = event
-            && let ServerNotification::TurnStarted(notification) = notification.as_ref()
-            && notification.thread_id == thread_id.to_string()
-        {
-            break notification.turn.id.clone();
-        }
-    };
+    // TurnStarted precedes process creation, so it cannot establish that the task
+    // is still running. Require actual command output before exercising interrupt.
+    let turn_id = wait_for_background_exit_shell_ready(&mut app_server, thread_id)
+        .await
+        .expect("the real shell command should be running before exit is requested");
     app.thread_event_channels.insert(
         thread_id,
         ThreadEventChannel::new_with_session(
@@ -423,5 +515,44 @@ async fn daemon_ctrl_c_during_mcp_startup_does_not_show_background_exit_menu() -
     assert!(app.chat_widget.no_modal_or_popup_active());
     assert_matches!(op_rx.try_recv(), Ok(Op::Interrupt));
     assert!(app_event_rx.try_recv().is_err());
+    Ok(())
+}
+
+#[tokio::test]
+async fn background_exit_shell_readiness_rejects_failed_start() -> Result<()> {
+    let workspace = tempdir()?;
+    let missing_cwd = dunce::canonicalize(workspace.path())?.join("missing-cwd");
+    assert!(!missing_cwd.exists());
+    let (mut app, mut app_event_rx, mut op_rx) = make_test_app_with_channels().await;
+    let initial_thread_id = prepare_running_local_daemon(&mut app)?;
+    app.chat_widget
+        .handle_thread_session(test_thread_session(initial_thread_id, missing_cwd.clone()));
+    let (mut app_server, _tui) =
+        prepare_background_exit_test(&app, &mut app_event_rx, &mut op_rx).await?;
+    let started = app_server
+        .start_thread(app.chat_widget.config_ref())
+        .await?;
+    let thread_id = started.session.thread_id;
+    app_server
+        .thread_shell_command(thread_id, background_exit_shell_command())
+        .await?;
+
+    let failed_start = wait_for_background_exit_shell_ready(&mut app_server, thread_id)
+        .await
+        .expect_err("TurnStarted must not make a failed shell start ready for interrupt");
+    assert_matches!(
+        failed_start.as_ref(),
+        ServerNotification::ItemCompleted(codex_app_server_protocol::ItemCompletedNotification {
+            item: ThreadItem::CommandExecution {
+                source: codex_app_server_protocol::CommandExecutionSource::UserShell,
+                status: codex_app_server_protocol::CommandExecutionStatus::Failed,
+                exit_code: Some(-1),
+                ..
+            },
+            thread_id: observed_thread_id,
+            ..
+        }) if observed_thread_id == &thread_id.to_string()
+    );
+    assert!(!missing_cwd.exists());
     Ok(())
 }

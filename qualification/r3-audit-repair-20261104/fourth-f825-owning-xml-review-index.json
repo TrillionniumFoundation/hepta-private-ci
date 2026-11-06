@@ -1,0 +1,85 @@
+{
+  "schema": "hepta.f825-owning-complete-xml-review-native-bytes.v1",
+  "source": "f8251e1d14fa8524ab469281296cd4cf708f173c",
+  "original_job": "1a1a916fc98-fc05-3136",
+  "files": [
+    {
+      "kind": "review",
+      "original": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-f825-20261105-0025/owning-seven-review.json",
+        "bytes": 1244077,
+        "sha256": "5b8bf13e4cacdc989ee74186a0367873bb7856937dee09a669df1f399e092838"
+      },
+      "chunks": [
+        {
+          "sequence": 0,
+          "offset": 0,
+          "git_blob": "ef544cac797af759a279c13a739eb0213aa307ed",
+          "bytes": 352000,
+          "sha256": "996172811667dfbd3849643cc705752d9060e7f01d0f017086f50bfe427f66c8"
+        },
+        {
+          "sequence": 1,
+          "offset": 352000,
+          "git_blob": "92f2d96876fe30a86fd6082bc8902f7e72ff1915",
+          "bytes": 352000,
+          "sha256": "a347050f67631324462a019458b54d0ab85855395e43b534f469c6eecea5880b"
+        },
+        {
+          "sequence": 2,
+          "offset": 704000,
+          "git_blob": "3793329481b4fb4da6c52da67ba37977593dbde7",
+          "bytes": 352000,
+          "sha256": "36db825816987102177161698ec4ea8095389b58531ae0adfd0f7823745b70f3"
+        },
+        {
+          "sequence": 3,
+          "offset": 1056000,
+          "git_blob": "8b25a2e6bcc98171962fef2c692f017453636de3",
+          "bytes": 188077,
+          "sha256": "30b4e66d14340732e8596f1ec65f375179c30daf9eb0e37e47343fff9f6b66b8"
+        }
+      ]
+    },
+    {
+      "kind": "junit",
+      "original": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-f825-20261105-0025/owning-seven.junit.xml",
+        "bytes": 1149890,
+        "sha256": "956ffd45997a1d77093187e1f212b4634d1d5a55d17893a19e1b8390a02ed65c"
+      },
+      "chunks": [
+        {
+          "sequence": 0,
+          "offset": 0,
+          "git_blob": "ead44ff10610046f777efec6c29cb5fa59d1208e",
+          "bytes": 352000,
+          "sha256": "bdc3d7591edbe5625e2ab975790c0788d6cac7316b601fc449dd850b28334adb"
+        },
+        {
+          "sequence": 1,
+          "offset": 352000,
+          "git_blob": "d933cdb80bb4e45870f04892c23a276f66367ebd",
+          "bytes": 352000,
+          "sha256": "4573f330d12ab4840602eff57c53db79dfc6e760af16666d2cc6c87701936e19"
+        },
+        {
+          "sequence": 2,
+          "offset": 704000,
+          "git_blob": "b9e0cdbb7b7b42ee5d4f5ab1efad3ad04ba38d1d",
+          "bytes": 352000,
+          "sha256": "1dbe6d81edecf466b29e87f27b0cadfaff5f2c16e0729499b2770a04232ff2b4"
+        },
+        {
+          "sequence": 3,
+          "offset": 1056000,
+          "git_blob": "897cb9f2632bfaf6845c37a5b21b797351394699",
+          "bytes": 93890,
+          "sha256": "04c444ed4b18a2960216a2c0291c8841c383d16ad52dbc60b103d11219f6f399"
+        }
+      ]
+    }
+  ],
+  "derived_failure_texts": "306b27bc52bb8d6246711235ee85e30467c1acc7",
+  "limits": "Every source file was fully reassembled and SHA256 checked before archiving. Concatenate each file's UTF-8 chunks in sequence, preserving all bytes. Raw/catalog/selection transfer remains pending separately; this is not a test rerun."
+}

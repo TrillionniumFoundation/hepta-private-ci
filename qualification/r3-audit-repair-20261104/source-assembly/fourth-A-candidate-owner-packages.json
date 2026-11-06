@@ -1,0 +1,95 @@
+{
+  "schema": "hepta-current-A-source-owner-map-v1",
+  "scope": "Actual sixteen source cohorts plus fixed pending App and reviewed pending Windows source; not final hygiene execution.",
+  "metadata_source": "7d703610ae4f778ad305ebc139860d276f416e8c",
+  "owners": {
+    "codex-apply-patch": [
+      "codex-rs/apply-patch/src/error_output_tests.rs",
+      "codex-rs/apply-patch/src/lib.rs"
+    ],
+    "codex-arg0": [
+      "codex-rs/arg0/BUILD.bazel",
+      "codex-rs/arg0/Cargo.toml",
+      "codex-rs/arg0/src/bin/test_arg0_preflight.rs",
+      "codex-rs/arg0/src/lib.rs",
+      "codex-rs/arg0/src/preflight_tests.rs"
+    ],
+    "codex-cli": [
+      "codex-rs/cli/src/doctor.rs"
+    ],
+    "codex-core": [
+      "codex-rs/core/src/tools/runtimes/zsh_fork/unix_escalation.rs",
+      "codex-rs/core/tests/suite/hooks.rs",
+      "codex-rs/core/tests/suite/skill_approval.rs",
+      "codex-rs/core/tests/suite/subagent_notifications.rs",
+      "codex-rs/core/tests/suite/turn_state.rs",
+      "codex-rs/core/tests/suite/unified_exec_zsh_fork_approvals.rs",
+      "codex-rs/core/tests/suite/workspace_roots.rs"
+    ],
+    "core_test_support": [
+      "codex-rs/core/tests/common/responses.rs",
+      "codex-rs/core/tests/common/responses_websocket_concurrent.rs"
+    ],
+    "codex-exec-server": [
+      "codex-rs/exec-server/src/shell_snapshot.rs",
+      "codex-rs/exec-server/tests/common/relay.rs",
+      "codex-rs/exec-server/tests/exec_process.rs",
+      "codex-rs/exec-server/tests/forward.rs"
+    ],
+    "codex-skills-extension": [
+      "codex-rs/ext/skills/src/host_roots_tests.rs"
+    ],
+    "codex-external-agent-migration": [
+      "codex-rs/external-agent-migration/src/service_tests/plugins/marketplaces.rs"
+    ],
+    "codex-hepta-agentd": [
+      "codex-rs/hepta-agentd/tests/supervisord_product_e2e.rs"
+    ],
+    "codex-hepta-contracts": [
+      "codex-rs/hepta-contracts/src/authority_lease.rs",
+      "codex-rs/hepta-contracts/src/authority_lease_entry_clock_tests.rs"
+    ],
+    "codex-hepta-supervisor": [
+      "codex-rs/hepta-supervisor/src/unix.rs",
+      "codex-rs/hepta-supervisor/src/unix_drain_tests.rs"
+    ],
+    "codex-linux-sandbox": [
+      "codex-rs/linux-sandbox/src/launcher.rs",
+      "codex-rs/linux-sandbox/src/lib.rs",
+      "codex-rs/linux-sandbox/src/linux_run_main.rs",
+      "codex-rs/linux-sandbox/src/parent_lifecycle.rs",
+      "codex-rs/linux-sandbox/src/parent_lifecycle_tests.rs"
+    ],
+    "codex-uds": [
+      "codex-rs/uds/src/inherited.rs",
+      "codex-rs/uds/src/inherited_tests.rs",
+      "codex-rs/uds/src/lib.rs"
+    ],
+    "codex-utils-pty": [
+      "codex-rs/utils/pty/src/tests.rs"
+    ],
+    "codex-v8-poc": [
+      "codex-rs/v8-poc/Cargo.toml"
+    ],
+    "codex-windows-sandbox": [
+      "codex-rs/windows-sandbox-rs/src/acl.rs",
+      "codex-rs/windows-sandbox-rs/src/acl_deny.rs",
+      "codex-rs/windows-sandbox-rs/src/acl_tests.rs",
+      "codex-rs/windows-sandbox-rs/src/delete_permission_matrix_tests.rs",
+      "codex-rs/windows-sandbox-rs/src/lib.rs",
+      "codex-rs/windows-sandbox-rs/src/token_tests.rs",
+      "codex-rs/windows-sandbox-rs/src/unified_exec/delete_permission_tests.rs",
+      "codex-rs/windows-sandbox-rs/src/unified_exec/tests.rs"
+    ]
+  },
+  "non_workspace_files": [
+    ".codespellignore",
+    ".github/scripts/collect_bazel_failed_test_logs.py",
+    ".github/scripts/run-bazel-ci.sh",
+    ".github/scripts/test_run_bazel_ci.py",
+    ".github/workflows/hepta-musl-product-smoke.yml",
+    ".github/workflows/windows-core-lifecycle.yml",
+    "bazel/platforms/release_binaries.bzl",
+    "codex-rs/Cargo.lock"
+  ]
+}

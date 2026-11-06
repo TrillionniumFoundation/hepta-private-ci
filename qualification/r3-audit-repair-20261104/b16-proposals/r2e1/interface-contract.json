@@ -1,0 +1,152 @@
+{
+  "schema": "hepta.b16.r2e1.interface-contract.v1",
+  "status": "SOURCE_PREPARATION_ONLY_NO_NATIVE_EXECUTION",
+  "base_commit": "cabcb40d36e116beaa65750e1f674c52035da785",
+  "base_tree": "b2d7f038d6d88156bc6a4cb29c8703f69b808f29",
+  "state_dependency": {
+    "r2c_manifest": "081aa0f20aa3c05c43aa0a3ea48254039321bd92",
+    "r2d_manifest": "526fa18835b0502fd388660ded3884a61fb5a456",
+    "sqlite_preimage": "eb73bc3c24ae6bd64a35be1187f83d5655350bbe",
+    "executed": false
+  },
+  "scope": "A monotonic commit interlock shared by each actual CognitiveStore writer pool and all its clones after an uncertain started Objective checkpoint exchange. This does not install a protected Current coordinator or authenticate a Root.",
+  "interfaces": [
+    {
+      "interface": "SqliteConfig::open_durable_evidence_pool",
+      "change": "None; original default semantics and bytes retained.",
+      "claim": "No new hook is silently applied to unrelated state callers."
+    },
+    {
+      "interface": "New SqliteConfig::open_commit_guarded_durable_evidence_pool",
+      "change": "Explicit caller supplies the real synchronous commit predicate; after_connect installs it on every physical connection. No empty before_checkout callback and no claim of Current coordination.",
+      "gate": "Actual explicit and implicit SQLite commit veto. Same WAL/FULL/foreign-key/max5/busy5s settings."
+    },
+    {
+      "interface": "SqliteConfig::open_coordinated_durable_evidence_pool",
+      "change": "Share only the physical hook-install helper with the new guarded API; retain new/reused async coordination and its existing lock ordering.",
+      "gate": "R2c four physical controls and original state suite remain required."
+    },
+    {
+      "interface": "CognitiveStore::open",
+      "source": {
+        "blob": "03f469dcdc0b44754e92a855fcbabf7c21059899",
+        "lines": [
+          346,
+          375
+        ]
+      },
+      "change": "Create one per-pool gate before opening. Explicitly use guarded pool. Every clone and later physical replacement shares the same gate.",
+      "preserve": "Legacy initialization remains legacy; shared open guard, private Windows directory handle, validation, migration, path and sync helpers retained."
+    },
+    {
+      "interface": "CognitiveStore::open_with_recovery",
+      "source": {
+        "blob": "5639d61d6d0f97d12058a3e5eed90332864983f4",
+        "lines": [
+          158,
+          283
+        ]
+      },
+      "change": "The candidate-validation pool and checkpoint/reopened active pool both receive the same per-attempt gate.",
+      "preserve": "Original retained source, exact current-cut verification, exclusive original open guard, pointer publication, cleanup and Windows helpers stay unchanged."
+    },
+    {
+      "interface": "CognitiveStore::recovery_anchor",
+      "source": {
+        "blob": "5639d61d6d0f97d12058a3e5eed90332864983f4",
+        "lines": [
+          96,
+          107
+        ]
+      },
+      "change": "Release the existing read-only BEGIN IMMEDIATE transaction with rollback after exact capture.",
+      "reason": "The real SQLite commit hook applies to an empty write transaction too; a pure readback must not masquerade as a new commit.",
+      "preserve": "Same original lock, same capture and exact return value; no new witness."
+    },
+    {
+      "interface": "ProductionDurableWriter::checkpoint_current_transaction",
+      "source": {
+        "blob": "fe3be44196377039070c62c228d5c2e642560ac0",
+        "lines": [
+          210,
+          229
+        ]
+      },
+      "change": "Create an RAII attempt after existing cut capture and live checks, immediately before the independent ACK future. A complete exact ACK plus final live check acknowledges the attempt; any error, mismatch, timeout or cancellation thereafter permanently fences pool commits before caller transaction drop.",
+      "preserve": "Invalid deadline, authority failure or cancellation before this point does not newly fence; original error types and at-most-5s cooperative ACK deadline unchanged. Later successful ACK never resets the gate."
+    },
+    {
+      "interface": "ProductionDurableWriter::checkpoint_current and sender snapshot_acknowledged",
+      "source": {
+        "blob": "fe3be44196377039070c62c228d5c2e642560ac0",
+        "lines": [
+          120,
+          153,
+          351,
+          384
+        ]
+      },
+      "change": "No public API deletion or early global fence rejection. Read-only re-acknowledgement uses the same original SQL transaction and independent provider.",
+      "preserve": "Existing refusal/timeout/mismatch/revocation then explicit read-ACK tests remain byte-identical."
+    },
+    {
+      "interface": "ProductionObjectiveSender::retain_before_send",
+      "source": {
+        "blob": "fe3be44196377039070c62c228d5c2e642560ac0",
+        "lines": [
+          237,
+          268
+        ]
+      },
+      "change": "No source behavior change beyond actual pool interlock.",
+      "preserve": "Existing duplicate detection still returns AlreadyRetained before attempted commit. A fresh insertion after fencing cannot actually commit; the existing AcknowledgementUnknown mapping remains."
+    },
+    {
+      "interface": "objective_sender_store::append and append_with_check",
+      "source": {
+        "blob": "3e4e477eced86fd0b99c33c7b147ef0be874c75e",
+        "lines": [
+          193,
+          265
+        ]
+      },
+      "change": "Internal typed Existing/Inserted result; only the original exact duplicate branch returns Existing. Caller rolls back Existing and commits Inserted, then runs the same independent ACK.",
+      "preserve": "All original capacity, exact bytes, event-chain, authority, cancellation and conflict checks remain. Re-acknowledging an existing local cancellation must not invoke an empty COMMIT after fencing or rearm any permission."
+    },
+    {
+      "interface": "Objective sender read / local tickets / production authority",
+      "change": "Read methods, original ticket states, public sender signature and original authority verifier remain unchanged in this first cohort.",
+      "limit": "This cohort does not claim that all external-effect admission paths are protected Current-aware; it proves commits through the retained pool are vetoed. It does not mint/revoke Root authority."
+    }
+  ],
+  "primary": {
+    "sqlite": {
+      "repository": "sqlite/sqlite",
+      "commit": "a5333afb9ad1aa473f8963b92caeaa955f47dc74",
+      "path": "src/vdbeaux.c",
+      "blob": "5368c0c4202b08aeac99913393a74edaf67156cc",
+      "sha256": "2f5313c95ea96782d5af11773e9b1e526a5dd8f7e6925d3e64c74501fa2dd22a",
+      "lines": [
+        2944,
+        2981
+      ],
+      "finding": "Any SQLITE_TXN_WRITE sets needXcommit, including BEGIN IMMEDIATE with no new rows; nonzero callback returns SQLITE_CONSTRAINT_COMMITHOOK."
+    },
+    "sqlx": {
+      "commit": "75bc0487eb661da811bb7a3c5d158f1bd463fef4",
+      "connection_blob": "218c747143fe80b344bca3405d4b0b38da2bd932",
+      "finding": "The locked handle safely installs the actual SQLite commit hook; false means veto."
+    }
+  },
+  "preservation": [
+    "All original Objective sender test files and assertions byte-identical.",
+    "All current Windows retained directory, private-state open/prepare/validate/pointer/sync source preserved.",
+    "No Agentd main, generic AgentdProductionHostAttachment<C>.original_sender, ordinary peer/current-user admission, authority credential conversion, dependencies or refs changed."
+  ],
+  "not_solved": [
+    "Another independently opened legacy shared CognitiveStore instance has its own pool; this interlock is not a cross-process or durable publisher fence.",
+    "Protected Current coordinator, receipt CAS, consuming exclusive binder and all observer/barrier routing remain separate follow-up work.",
+    "R1 synchronous preflight and R2a Tokio registration are separate phases; no caller composition is claimed.",
+    "No new source has been formatted, compiled or executed."
+  ]
+}

@@ -1,0 +1,10 @@
+--- a/codex-rs/external-agent-migration/src/source_cla.rs
++++ b/codex-rs/external-agent-migration/src/source_cla.rs
+@@ -104,7 +104,6 @@
+     }
+ 
+     for (marketplace_name, marketplace_source) in [
+-        (OFFICIAL_MARKETPLACE_NAME, OFFICIAL_MARKETPLACE_SOURCE),
+         (CLAUDE_CODE_MARKETPLACE_NAME, CLAUDE_CODE_MARKETPLACE_SOURCE),
+     ] {
+         if has_enabled_plugin_for_marketplace(settings, marketplace_name)

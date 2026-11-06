@@ -1,0 +1,427 @@
+{
+  "api_observation": {
+    "all_ci_success": false,
+    "base": "2d0120e208ed81515837a7530c9f6943af03e87f",
+    "changed_files": 457,
+    "draft": true,
+    "end": "2026-11-05T04:29:37.932Z",
+    "head": "85f507fb2e1c9e8ad9941451641bb4ec3f1dccb4",
+    "head_tree": "e2eab01335051f0d46eb5d578a52228003d16613",
+    "start": "2026-11-05T04:29:37.153Z",
+    "state": "open",
+    "updated_at": "2026-11-05T03:35:05Z",
+    "workflow_runs": [
+      {
+        "conclusion": "success",
+        "created_at": "2026-11-05T03:26:08Z",
+        "head_sha": "85f507fb2e1c9e8ad9941451641bb4ec3f1dccb4",
+        "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41961577798",
+        "id": 41961577798,
+        "name": "Hepta architecture convergence",
+        "run_attempt": 1,
+        "status": "completed",
+        "updated_at": "2026-11-05T03:54:30Z"
+      },
+      {
+        "conclusion": "success",
+        "created_at": "2026-11-05T03:26:08Z",
+        "head_sha": "85f507fb2e1c9e8ad9941451641bb4ec3f1dccb4",
+        "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41961577572",
+        "id": 41961577572,
+        "name": "v8-canary",
+        "run_attempt": 1,
+        "status": "completed",
+        "updated_at": "2026-11-05T03:28:01Z"
+      },
+      {
+        "conclusion": null,
+        "created_at": "2026-11-05T03:26:08Z",
+        "head_sha": "85f507fb2e1c9e8ad9941451641bb4ec3f1dccb4",
+        "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41961577576",
+        "id": 41961577576,
+        "name": "blocking-ci",
+        "run_attempt": 1,
+        "status": "in_progress",
+        "updated_at": "2026-11-05T03:41:10Z"
+      }
+    ]
+  },
+  "artifacts": [
+    {
+      "bytes": 113855,
+      "git_blob": "00743856625b834a0f4d8ca4a3a2887f7f3c0305",
+      "path": "complete-package-byte-verification.json",
+      "sha256": "7af4a968f6f992251f0f773485e2c7591bc63b28e31e1a9c0c705de6f4b283c1"
+    },
+    {
+      "bytes": 12947,
+      "git_blob": "6827655642e391b97aa856a9a94e43d8ca1729f9",
+      "path": "legacy-acquisition-verified.json",
+      "sha256": "2b771a93966fe94accb08f7ae6229f264a034c764b060d5c2d504f83527e1994"
+    },
+    {
+      "bytes": 46596,
+      "git_blob": "5e18d1ef35060a669399e6d63c0379481e025f05",
+      "path": "independent-record-arithmetic.json",
+      "sha256": "154f35d4c27b93709446a49238984c7009f3ed6a8f16935946eae1401d2c4326"
+    },
+    {
+      "bytes": 27161,
+      "git_blob": "79971bd68b953271dad084a42825fedae6af1dbb",
+      "path": "independent-margin-math.json",
+      "sha256": "d8bd46dffd244e256090ba2128662d1053acaf2d453009d36b37768b75e0fa05"
+    },
+    {
+      "bytes": 71324,
+      "git_blob": "c1210f34fc338a1156d5f21c15923d30305a4983",
+      "path": "independent-replay-comparison.json",
+      "sha256": "d5db50bbb45cbfbee8689e4e2437636f3a8752e0e3b0679b9ad9d89d819580bb"
+    },
+    {
+      "bytes": 109221,
+      "git_blob": "14827828accdbfc99a94fbf6caf711c015f91946",
+      "path": "independent-engineering-records.json",
+      "sha256": "3f85e6701750f2114cbd775bf863431d47187efebdf7cea3df7025c97e5e99bf"
+    },
+    {
+      "bytes": 10769,
+      "git_blob": "827022a725e5d6139b5838efda7b71d769aada3e",
+      "path": "independent-cost-ledger.json",
+      "sha256": "0175bb03e4164b143473e403c2168e29e87637b8a36c99e94eeb2e9280f53e5b"
+    },
+    {
+      "bytes": 16827,
+      "git_blob": "0d0ad0b9ec066798050cdff68d7307e5ac2e2771",
+      "path": "recalculate_frozen_records.py",
+      "sha256": "aa037250de7318fa7390c4a72680db733f44e7f94058c4cf876b64e25af9cb00"
+    },
+    {
+      "bytes": 7813,
+      "git_blob": "de3da9ea65281998164bc2792feb92054918c880",
+      "path": "check_archived_margin_witnesses.py",
+      "sha256": "ea4d221ce822535c7cf528d5f93935fab8667d0c4a27bfeca0e6555acd7f1224"
+    },
+    {
+      "bytes": 3444,
+      "git_blob": "1cf666ce40950f2c926062a752c57dd2b59a8239",
+      "path": "compare_archived_replay.py",
+      "sha256": "a164a15adaea77dcde403f1b76577e171f5599d34582cc55db52f97dcfd97aa0"
+    },
+    {
+      "bytes": 17755,
+      "git_blob": "2bd47b352b04b0101087b79ce236d504b1f2a316",
+      "path": "check_engineering_records_and_costs.py",
+      "sha256": "acc2f0fed6f650b9dec2c2d268dcc073e42d775870d6c13312c778224c93aed4"
+    },
+    {
+      "bytes": 1322,
+      "git_blob": "5ae6e69974c7555096fa356f1e963ada6c9a8961",
+      "path": "audit-tool-preparation-corrections.json",
+      "sha256": "d456bf8c04befebf82e2a326f3fdcedb7a088d0300fe33fcc85c565c9cf13066"
+    },
+    {
+      "bytes": 320361,
+      "git_blob": "3ddaa9c8f087f74f7a08397db2cf476081c6af90",
+      "path": "api-observation.original.json.txt",
+      "sha256": "0450d5807598882b6cae16cc1b15a3b8ac46b6774a395e3d19eca378d7e03e28"
+    },
+    {
+      "bytes": 9760,
+      "git_blob": "096541bd257918c0d8909866ad87ca4a752ac325",
+      "path": "INDEPENDENT_REVIEW.zh-CN.md",
+      "sha256": "d68a5cd1ddb0fc1867769b5641806d3f78fe1cb124115ce34c360bcf13673c12"
+    }
+  ],
+  "authorization_scope": {
+    "frozen_existing_records_review_completed": true,
+    "future_experiments_require_frozen_protocol_and_full_cost_plan": true,
+    "no_new_experiments_started": true
+  },
+  "b18": {
+    "J_minus_C_is_not_D_minus_B": true,
+    "original_D_minus_B_gate_changed": false,
+    "prior_all_quality_gate_entries_passed": 0,
+    "prior_fits": 32,
+    "prior_pr4798_head": "77b24407b9898aa44769502fbb22c24fb7193a58",
+    "prior_primary_benefit_gates_passed": 0,
+    "prior_primary_benefit_gates_total": 4,
+    "prior_quality_entries_total": 256,
+    "status": "HOLD"
+  },
+  "complete_cost_accounting": false,
+  "completed_at": "2026-11-05T04:33:53.050322+00:00",
+  "cost_gaps": [
+    "All agent tokens, source editing, complete environment setup, network transfer, energy and monetary costs are not accounted.",
+    "First native journal compile failure CPU is unknown; official runtime CI runner CPU is unknown.",
+    "Prior trust compatibility/journal-contract CPU appear in summary sources; their original process receipts are outside this 452-file package.",
+    "README public-input recovery 2.702490917 remote + 0.184370975 local is not the 1.438252137 CPU in the packaged acquisition receipt; the extra components lack separately matched receipts here.",
+    "D/G inclusive construction costs share charges and are nested in primary worker; neither sum is a completed equal-quality speedup."
+  ],
+  "frozen_source": {
+    "all_git_sha_bytes_sha256_checked": true,
+    "base": "2d0120e208ed81515837a7530c9f6943af03e87f",
+    "bytes": 39426104,
+    "commit": "9f2d00f79bfe7abc334e51f52a0d16f685656e5d",
+    "files": 452,
+    "old_wsp_subtree_unchanged": "3c44695c6b004328716e85b192e308d4a9c239c0",
+    "path": "tools/hcsn/wsp_followup_20261105",
+    "payload_entries_hash_checked": 451,
+    "scientific_payload_unchanged_at_observed_head": true,
+    "subsequent_changed_paths": [
+      ".codespellrc",
+      "tools/hcsn/wsp_followup_ci_20261105/FIRST_CI_DIAGNOSIS.json",
+      "tools/hcsn/wsp_followup_ci_20261105/FOCUSED_CHECK.json",
+      "tools/hcsn/wsp_followup_ci_20261105/README.md",
+      "tools/hcsn/wsp_followup_ci_20261105/SOURCE_IDENTITY.json"
+    ],
+    "tree": "9dd282a2d645c495de8a94769f63b9349fd31c51"
+  },
+  "full_replay": {
+    "all_exact_except_listed_resource_fields": true,
+    "independent_saved_comparisons": 77,
+    "new_holdout": false,
+    "same_implementation": true
+  },
+  "ledger_state_change": null,
+  "limits": [
+    "Original A public training archive complete bytes were not independently reacquired; published normalized A, published C and fixed original source/receipt identities were checked separately.",
+    "Independent exact TRAIN math uses saved feature/Q/witness values; no feature or environment provenance reexecution.",
+    "Qwen full vocabulary logits are not published, so saved allclose reports cannot be independently recalculated from arrays.",
+    "Protocol/code ordering and recorded times agree; no external pre-result Git timestamp attestation was established.",
+    "No new model, optimization, training, Bellman, trajectory, native, MCP or remote live-state run by this audit.",
+    "Package byte completeness is not a claim every source line or external cited paper received a semantic audit."
+  ],
+  "native_record_scope": "Exact saved request/reference/response/mask/action/value and stored utility equality; no Bellman recurrence, feature, trajectory, Rust or MCP execution by this audit; typed serde commitment only cross-linked, not reserialized by Rust.",
+  "native_saved_records": {
+    "exact_actions": 246160,
+    "exact_masks": 246160,
+    "exact_values": 246160,
+    "legal_q": 928200,
+    "nodes": 246160,
+    "saved_J_utilities_equal": 320,
+    "worlds": 320
+  },
+  "pocket4": {
+    "current_live_state_rechecked": false,
+    "finished_utc": "2026-11-05T02:59:16.280371+00:00",
+    "parameter_count": 2379,
+    "private_raw_stdout_published": false,
+    "scope": "Frozen sanitized read-only observation, no new model/forward/training or task efficacy acceptance.",
+    "snapshot_sha256": "835f9d935d84b50bfa5c4cb7f1794704e9ff039003c1a1ed206496505ea31245",
+    "tensor_count": 6
+  },
+  "pr": 4823,
+  "primary_independent_recalculation": {
+    "D_gated_iid": {
+      "benefit_pass": false,
+      "familywise_95_interval": [
+        0.0,
+        0.0
+      ],
+      "mean": 0.0,
+      "per_fit": {
+        "11": 0.0,
+        "23": 0.0,
+        "37": 0.0,
+        "53": 0.0,
+        "71": 0.0
+      }
+    },
+    "D_gated_ood": {
+      "benefit_pass": false,
+      "familywise_95_interval": [
+        0.0,
+        0.0
+      ],
+      "mean": 0.0,
+      "per_fit": {
+        "11": 0.0,
+        "23": 0.0,
+        "37": 0.0,
+        "53": 0.0,
+        "71": 0.0
+      }
+    },
+    "J_iid": {
+      "benefit_pass": true,
+      "familywise_95_interval": [
+        0.04776707486482772,
+        0.1627864516974913
+      ],
+      "mean": 0.10527676328115952,
+      "per_fit": {
+        "11": 0.0607330243370129,
+        "23": 0.11126113740106072,
+        "37": 0.129912213061558,
+        "53": 0.09187454175064325,
+        "71": 0.13260289985552276
+      }
+    },
+    "J_ood": {
+      "benefit_pass": true,
+      "familywise_95_interval": [
+        0.12035940122243882,
+        0.2839635367327451
+      ],
+      "mean": 0.20216146897759196,
+      "per_fit": {
+        "11": 0.1593398256278178,
+        "23": 0.19437050244688536,
+        "37": 0.22474778440688423,
+        "53": 0.2630344690789142,
+        "71": 0.16931476332745826
+      }
+    }
+  },
+  "qwen": {
+    "logit_arrays_available_for_recalculation": false,
+    "new_model_load_or_forward": false,
+    "original_bf16_vllm_or_capability_qualification": false,
+    "recorded_appended_tokens": 16,
+    "recorded_comparisons": 18,
+    "recorded_forwards": 36,
+    "variants": [
+      {
+        "max_recorded_absolute_logit_difference": 1.239776611328125e-05,
+        "variant": "base"
+      },
+      {
+        "max_recorded_absolute_logit_difference": 1.1920928955078125e-05,
+        "variant": "p50c"
+      }
+    ]
+  },
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "runtime_ci_scope": {
+    "fresh_full_runtime_logs_independently_downloaded": false,
+    "prospective_merge_qualification": false,
+    "recorded_counts_not_relabelled_as_new_actual_execution": true,
+    "source": "archived native/PR92_OFFICIAL_CI.json and native/PR93_OFFICIAL_CI.json"
+  },
+  "schema": "hepta.audit.pr4823.independent-frozen-research-review.v1",
+  "statistical_scope": {
+    "benefit_lower_bound_threshold": 0.005,
+    "family_alpha": 0.05,
+    "family_tests": 4,
+    "fit_ids": [
+      11,
+      23,
+      37,
+      53,
+      71
+    ],
+    "n": 5,
+    "new_refits": false,
+    "ood_distribution_exposed_during_validation": true,
+    "test_worlds": 320,
+    "unit": "existing fitted checkpoint",
+    "unknown_external_history_excluded": false,
+    "validation_worlds": 160
+  },
+  "train_certificate": {
+    "TRAIN_full_rows": 144397,
+    "does_not_prove": [
+      "positive task-value loss lower bound",
+      "absence of all beneficial weight edits",
+      "global full-network impossibility",
+      "new holdout or independent statistical confirmation",
+      "production or external runtime qualification"
+    ],
+    "fits": [
+      {
+        "descriptive_squared_separation_ratio": {
+          "F64_necessary_relaxation": 1.6239346546751368,
+          "ideal_real": 1.6239346555753327
+        },
+        "exact_separation": {
+          "F64_necessary_relaxation": true,
+          "ideal_real": true
+        },
+        "feature_and_Q_reexecution_by_this_audit": false,
+        "fit": 11,
+        "necessary_constraints": 4450,
+        "nonzero_witness_rows": 4437,
+        "rows": 28596,
+        "search_iterations": 3000,
+        "search_success": false
+      },
+      {
+        "descriptive_squared_separation_ratio": {
+          "F64_necessary_relaxation": 1.5632665338360971,
+          "ideal_real": 1.563266534814793
+        },
+        "exact_separation": {
+          "F64_necessary_relaxation": true,
+          "ideal_real": true
+        },
+        "feature_and_Q_reexecution_by_this_audit": false,
+        "fit": 23,
+        "necessary_constraints": 4435,
+        "nonzero_witness_rows": 4427,
+        "rows": 28417,
+        "search_iterations": 3000,
+        "search_success": false
+      },
+      {
+        "descriptive_squared_separation_ratio": {
+          "F64_necessary_relaxation": 1.3536683191433356,
+          "ideal_real": 1.3536683199738926
+        },
+        "exact_separation": {
+          "F64_necessary_relaxation": true,
+          "ideal_real": true
+        },
+        "feature_and_Q_reexecution_by_this_audit": false,
+        "fit": 37,
+        "necessary_constraints": 4161,
+        "nonzero_witness_rows": 4146,
+        "rows": 28433,
+        "search_iterations": 3000,
+        "search_success": false
+      },
+      {
+        "descriptive_squared_separation_ratio": {
+          "F64_necessary_relaxation": 1.6922814787794473,
+          "ideal_real": 1.692281479566201
+        },
+        "exact_separation": {
+          "F64_necessary_relaxation": true,
+          "ideal_real": true
+        },
+        "feature_and_Q_reexecution_by_this_audit": false,
+        "fit": 53,
+        "necessary_constraints": 3910,
+        "nonzero_witness_rows": 3776,
+        "rows": 29215,
+        "search_iterations": 3000,
+        "search_success": false
+      },
+      {
+        "descriptive_squared_separation_ratio": {
+          "F64_necessary_relaxation": 2.0281275234960185,
+          "ideal_real": 2.0281275243335255
+        },
+        "exact_separation": {
+          "F64_necessary_relaxation": true,
+          "ideal_real": true
+        },
+        "feature_and_Q_reexecution_by_this_audit": false,
+        "fit": 71,
+        "necessary_constraints": 4678,
+        "nonzero_witness_rows": 4672,
+        "rows": 29736,
+        "search_iterations": 3000,
+        "search_success": false
+      }
+    ],
+    "necessary_constraints": 21634,
+    "nonzero_witness_rows": 21458
+  },
+  "verdict": "FROZEN_RECORD_REVIEW_PASS_WITH_EXPLICIT_SCOPE_AND_COST_GAPS",
+  "weight_candidates": {
+    "accepted": 0,
+    "all_restored_semantic_records_equal_C": 960,
+    "attempted_validation_candidates": 15,
+    "gated_zero_is_rollback_not_equivalence": true
+  }
+}

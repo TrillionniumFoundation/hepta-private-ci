@@ -1,0 +1,25 @@
+--- first-attempt-runner-7b4fce92
++++ separator-continuation-runner-6fd0636b
+@@ -236,7 +236,7 @@
+  current_metadata = json.loads((out / (name + "-metadata.stdout")).read_text()); current_graph = feature_graph(current_metadata)
+  assert current_graph == baseline_graph, "full workspace feature graph differs from actual 7d source"
+  assert len(current_graph["workspace_members"]) == 193 and len(current_graph["nodes"]) == 1501
+- save(name + "-feature-graph-binding.json", {"source": source, "baseline_source": approved["initial_tree"], "baseline": approved["baseline_metadata"], "current": rec(out / (name + "-metadata.stdout")), "workspace_members": 193, "resolved_nodes": 1501, "full_resolve_and_features_equal": True, "package_filter": None, "default_members_not_used_to_limit_scope": True})
++ save(name + "-feature-graph-binding.json", {"source": source, "baseline_source": approved["baseline_metadata"]["source"], "baseline": approved["baseline_metadata"], "current": rec(out / (name + "-metadata.stdout")), "workspace_members": 193, "resolved_nodes": 1501, "full_resolve_and_features_equal": True, "package_filter": None, "default_members_not_used_to_limit_scope": True})
+  catalog_command = ["cargo", "nextest", "list", "--locked", "--cargo-profile", "dev-small", "--message-format=json", "-E", expression]
+  cat = phase(name + "-catalog", catalog_command, True); assert cat["exit_code"] == 0
+  catalog = json.loads((out / (name + "-catalog.stdout")).read_text()); selected = []; ignored = []; unmatched = []; programs = []
+@@ -290,11 +290,11 @@
+  proof = {"kind": kind, "source": source, "case": review["cases"][0], "raw": review["raw"], "exit_code": review["exit_code"], "test_source": approved["control_source"], "mechanical_source_order": approved["causal_source_anchors"][kind]}
+  conditions = {"inherited_unread_parent_marker": "LIVENESS: inherited_unread_parent" in text, "not_outer_timeout": "TIMEOUT" not in text}
+  if kind == "no_exit_rejection":
+-  conditions.update(actual_reparented_ok="actual reparented liveness result=Ok(())" in text, exact_child_assertion="exited original parent was admitted" in text, exact_assert_location="parent_lifecycle_tests.rs:258:" in text)
++  conditions.update(actual_reparented_ok="actual reparented liveness result=Ok(())" in text, exact_child_assertion="exited original parent was admitted" in text, exact_assert_location="parent_lifecycle_tests.rs:259:" in text)
+  elif kind == "no_rearm":
+   conditions.update(armed_after_fd_close_and_exec="LIVENESS: armed_with_fd_closed_before_fork_and_exec" in text, exact_own_five_second_oracle="reaper survived original launcher exit" in text, exact_oracle_location="parent_lifecycle_tests.rs:111:" in text, no_launcher_waitid_timeout="original launcher did not exit" not in text)
+  elif kind == "leaked_parent_fd":
+-  child_pattern = r"(?m)^[ \t]*thread 'parent_lifecycle::tests::owned_liveness_scenario'(?: \([0-9]+\))? panicked at [^\n]*parent_lifecycle_tests\.rs:268:\d+:\n"
++  child_pattern = r"(?m)^[ \t]*thread 'parent_lifecycle::tests::owned_liveness_scenario'(?: \([0-9]+\))? panicked at [^\n]*parent_lifecycle_tests\.rs:269:\d+:\n"
+   child_starts = list(re.finditer(child_pattern, text)); child_blocks = []
+   for start in child_starts:
+    following = text[start.end():]

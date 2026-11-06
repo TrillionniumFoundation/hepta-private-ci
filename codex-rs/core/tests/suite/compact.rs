@@ -5300,9 +5300,26 @@ async fn remote_v2_compaction_keeps_creation_time_instructions_after_same_path_m
     );
     let resumed_input = requests[3].input();
     assert_eq!(
-        resumed_input.get(..replacement_history.len()),
-        Some(replacement_history.as_slice()),
-        "remote-v2 cold resume should replay persisted replacement history verbatim"
+        replacement_history_from_rollout(&resumed.codex.rollout_path().expect("rollout path"))?,
+        replacement_history,
+        "cold resume must preserve the complete durable replacement history"
+    );
+    // Local content metadata remains durable, while this provider's request copy
+    // excludes that private field. Compare every other field and the full order.
+    assert!(resumed_input.iter().all(|item| {
+        item.get("internal_chat_message_metadata_passthrough")
+            .is_none()
+    }));
+    let mut replacement_wire_history = replacement_history.clone();
+    for item in &mut replacement_wire_history {
+        item.as_object_mut()
+            .expect("replacement response item must be an object")
+            .remove("internal_chat_message_metadata_passthrough");
+    }
+    assert_eq!(
+        resumed_input.get(..replacement_wire_history.len()),
+        Some(replacement_wire_history.as_slice()),
+        "remote-v2 cold resume must replay the complete provider-visible replacement history"
     );
     let post_compact_input = requests[2].input();
     assert_eq!(

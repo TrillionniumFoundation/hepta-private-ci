@@ -3,6 +3,9 @@
 use std::collections::BTreeMap;
 use std::collections::BTreeSet;
 use std::fs::OpenOptions;
+use std::io::Read;
+use std::io::Seek;
+use std::io::SeekFrom;
 use std::os::unix::fs::PermissionsExt;
 use std::path::Path;
 use std::path::PathBuf;
@@ -71,6 +74,12 @@ fn supervisord_child_entry() -> Result<()> {
 #[tokio::test(flavor = "multi_thread", worker_threads = 8)]
 async fn five_real_agents_survive_daemon_restart_and_isolate_one_agent_release_changes()
 -> Result<()> {
+    // Keep the real Darwin control sockets within the existing kernel limit.
+    #[cfg(target_os = "macos")]
+    let temp = tempfile::Builder::new()
+        .prefix("agentd-")
+        .tempdir_in("/tmp")?;
+    #[cfg(not(target_os = "macos"))]
     let temp = tempfile::tempdir()?;
     let root = temp.path().canonicalize()?;
     let fleet_root = HeptaFleetRoot::parse(root.join("fleet"))?;
@@ -85,7 +94,9 @@ async fn five_real_agents_survive_daemon_restart_and_isolate_one_agent_release_c
 
     let sources = root.join("release-sources");
     std::fs::create_dir(&sources)?;
-    let agentd = PathBuf::from(env!("CARGO_BIN_EXE_codex-hepta-agentd"));
+    // Bazel exposes a runfile identifier. Resolve it before the installed
+    // wrapper starts from an Agent workspace with a different working directory.
+    let agentd = codex_utils_cargo_bin::cargo_bin("codex-hepta-agentd")?.canonicalize()?;
     let source_v1 = agentd_wrapper(&sources, "agentd-v1", &agentd)?;
     let source_v2 = agentd_wrapper(&sources, "agentd-v2", &agentd)?;
     let release_v1 = ReleaseId::parse("agentd-v1")?;
@@ -101,23 +112,37 @@ async fn five_real_agents_survive_daemon_restart_and_isolate_one_agent_release_c
     let mut process_guard = AgentProcessGuard::default();
     let mut daemon = DaemonChild::spawn(&fleet_root, &log_path)?;
     let client = wait_for_daemon(&registry, &mut daemon, &log_path).await?;
-    let first_supervisor_epoch = client.health().await?.supervisor_epoch;
+    let first_supervisor_epoch = client
+        .health()
+        .await
+        .with_context(|| format!("client.health RPC failed at {}:{}", file!(), line!()))?
+        .supervisor_epoch;
 
     for agent in &agents[..2] {
-        let before = client.snapshot(agent.agent_id.clone()).await?;
+        let before = client
+            .snapshot(agent.agent_id.clone())
+            .await
+            .with_context(|| format!("client.snapshot RPC failed at {}:{}", file!(), line!()))?;
         let accepted = client
             .start(before.control_fence.clone(), release_v1.clone())
-            .await?;
+            .await
+            .with_context(|| format!("client.start RPC failed at {}:{}", file!(), line!()))?;
         assert_mutation_accepted(SupervisordMutation::Start, &before.control_fence, &accepted)?;
         wait_for_release(&client, agent, &release_v1, None, &mut process_guard).await?;
     }
-    let dual = client.roster(16).await?;
+    let dual = client
+        .roster(16)
+        .await
+        .with_context(|| format!("client.roster RPC failed at {}:{}", file!(), line!()))?;
     ensure!(
         dual.iter().filter(|status| status.healthy).count() == 2,
         "the initial two independent agents did not become healthy: {dual:?}"
     );
 
-    let peer_b_before_rejected_upgrade = client.snapshot(agents[1].agent_id.clone()).await?;
+    let peer_b_before_rejected_upgrade = client
+        .snapshot(agents[1].agent_id.clone())
+        .await
+        .with_context(|| format!("client.snapshot RPC failed at {}:{}", file!(), line!()))?;
     ensure!(
         client
             .upgrade(
@@ -130,7 +155,10 @@ async fn five_real_agents_survive_daemon_restart_and_isolate_one_agent_release_c
     );
     assert_exact_status(
         &peer_b_before_rejected_upgrade,
-        &client.snapshot(agents[1].agent_id.clone()).await?,
+        &client
+            .snapshot(agents[1].agent_id.clone())
+            .await
+            .with_context(|| format!("client.snapshot RPC failed at {}:{}", file!(), line!()))?,
         "Agent B changed after a rejected release",
     )?;
     ensure!(
@@ -145,19 +173,29 @@ async fn five_real_agents_survive_daemon_restart_and_isolate_one_agent_release_c
     );
     assert_exact_status(
         &peer_b_before_rejected_upgrade,
-        &client.snapshot(agents[1].agent_id.clone()).await?,
+        &client
+            .snapshot(agents[1].agent_id.clone())
+            .await
+            .with_context(|| format!("client.snapshot RPC failed at {}:{}", file!(), line!()))?,
         "Agent B changed after an uninstalled release rejection",
     )?;
 
     for agent in &agents[2..] {
-        let before = client.snapshot(agent.agent_id.clone()).await?;
+        let before = client
+            .snapshot(agent.agent_id.clone())
+            .await
+            .with_context(|| format!("client.snapshot RPC failed at {}:{}", file!(), line!()))?;
         let accepted = client
             .start(before.control_fence.clone(), release_v1.clone())
-            .await?;
+            .await
+            .with_context(|| format!("client.start RPC failed at {}:{}", file!(), line!()))?;
         assert_mutation_accepted(SupervisordMutation::Start, &before.control_fence, &accepted)?;
         wait_for_release(&client, agent, &release_v1, None, &mut process_guard).await?;
     }
-    let five = client.roster(16).await?;
+    let five = client
+        .roster(16)
+        .await
+        .with_context(|| format!("client.roster RPC failed at {}:{}", file!(), line!()))?;
     ensure!(
         five.len() == 5 && five.iter().all(|status| status.healthy),
         "the five-Agent fleet did not become independently healthy: {five:?}"
@@ -166,21 +204,38 @@ async fn five_real_agents_survive_daemon_restart_and_isolate_one_agent_release_c
         assert_status_fence_coherent(status)?;
         assert_exact_status(
             status,
-            &client.snapshot(status.agent_id.clone()).await?,
+            &client
+                .snapshot(status.agent_id.clone())
+                .await
+                .with_context(|| {
+                    format!("client.snapshot RPC failed at {}:{}", file!(), line!())
+                })?,
             "roster and point snapshot observed different authority state",
         )?;
     }
 
-    let before_drain = client.snapshot(agents[4].agent_id.clone()).await?;
-    let accepted = client.drain(before_drain.control_fence.clone()).await?;
+    let before_drain = client
+        .snapshot(agents[4].agent_id.clone())
+        .await
+        .with_context(|| format!("client.snapshot RPC failed at {}:{}", file!(), line!()))?;
+    let accepted = client
+        .drain(before_drain.control_fence.clone())
+        .await
+        .with_context(|| format!("client.drain RPC failed at {}:{}", file!(), line!()))?;
     assert_mutation_accepted(
         SupervisordMutation::Drain,
         &before_drain.control_fence,
         &accepted,
     )?;
     wait_for_stopped(&client, &agents[4], &mut process_guard).await?;
-    let stopped = client.snapshot(agents[4].agent_id.clone()).await?;
-    let accepted = client.restart(stopped.control_fence.clone()).await?;
+    let stopped = client
+        .snapshot(agents[4].agent_id.clone())
+        .await
+        .with_context(|| format!("client.snapshot RPC failed at {}:{}", file!(), line!()))?;
+    let accepted = client
+        .restart(stopped.control_fence.clone())
+        .await
+        .with_context(|| format!("client.restart RPC failed at {}:{}", file!(), line!()))?;
     assert_mutation_accepted(
         SupervisordMutation::Restart,
         &stopped.control_fence,
@@ -188,16 +243,28 @@ async fn five_real_agents_survive_daemon_restart_and_isolate_one_agent_release_c
     )?;
     wait_for_release(&client, &agents[4], &release_v1, None, &mut process_guard).await?;
 
-    let before_stop = client.snapshot(agents[3].agent_id.clone()).await?;
-    let accepted = client.stop(before_stop.control_fence.clone()).await?;
+    let before_stop = client
+        .snapshot(agents[3].agent_id.clone())
+        .await
+        .with_context(|| format!("client.snapshot RPC failed at {}:{}", file!(), line!()))?;
+    let accepted = client
+        .stop(before_stop.control_fence.clone())
+        .await
+        .with_context(|| format!("client.stop RPC failed at {}:{}", file!(), line!()))?;
     assert_mutation_accepted(
         SupervisordMutation::Stop,
         &before_stop.control_fence,
         &accepted,
     )?;
     wait_for_stopped(&client, &agents[3], &mut process_guard).await?;
-    let stopped = client.snapshot(agents[3].agent_id.clone()).await?;
-    let accepted = client.restart(stopped.control_fence.clone()).await?;
+    let stopped = client
+        .snapshot(agents[3].agent_id.clone())
+        .await
+        .with_context(|| format!("client.snapshot RPC failed at {}:{}", file!(), line!()))?;
+    let accepted = client
+        .restart(stopped.control_fence.clone())
+        .await
+        .with_context(|| format!("client.restart RPC failed at {}:{}", file!(), line!()))?;
     assert_mutation_accepted(
         SupervisordMutation::Restart,
         &stopped.control_fence,
@@ -206,29 +273,50 @@ async fn five_real_agents_survive_daemon_restart_and_isolate_one_agent_release_c
     wait_for_release(&client, &agents[3], &release_v1, None, &mut process_guard).await?;
 
     let mut peer_status_baseline = peer_baseline(&client, &agents[1..]).await?;
-    let initial_a = client.snapshot(agents[0].agent_id.clone()).await?;
+    let initial_a = client
+        .snapshot(agents[0].agent_id.clone())
+        .await
+        .with_context(|| format!("client.snapshot RPC failed at {}:{}", file!(), line!()))?;
     let initial_a_pid = require_pid(&initial_a)?;
 
-    let accepted = client.kill(initial_a.control_fence.clone()).await?;
+    let accepted = client
+        .kill(initial_a.control_fence.clone())
+        .await
+        .with_context(|| format!("client.kill RPC failed at {}:{}", file!(), line!()))?;
     assert_mutation_accepted(
         SupervisordMutation::Kill,
         &initial_a.control_fence,
         &accepted,
     )?;
     wait_for_stopped(&client, &agents[0], &mut process_guard).await?;
-    assert_peers_unchanged(&client, &agents[1..], &peer_status_baseline).await?;
+    assert_peers_unchanged(
+        &client,
+        &agents[1..],
+        &peer_status_baseline,
+        "after_agent_a_kill",
+    )
+    .await?;
 
-    let stopped_a = client.snapshot(agents[0].agent_id.clone()).await?;
+    let stopped_a = client
+        .snapshot(agents[0].agent_id.clone())
+        .await
+        .with_context(|| format!("client.snapshot RPC failed at {}:{}", file!(), line!()))?;
     ensure!(
         client.drain(stopped_a.control_fence.clone()).await.is_err(),
         "a stopped Agent entered an invalid drain transition"
     );
     assert_exact_status(
         &stopped_a,
-        &client.snapshot(agents[0].agent_id.clone()).await?,
+        &client
+            .snapshot(agents[0].agent_id.clone())
+            .await
+            .with_context(|| format!("client.snapshot RPC failed at {}:{}", file!(), line!()))?,
         "invalid drain changed Agent A control state",
     )?;
-    let accepted = client.restart(stopped_a.control_fence.clone()).await?;
+    let accepted = client
+        .restart(stopped_a.control_fence.clone())
+        .await
+        .with_context(|| format!("client.restart RPC failed at {}:{}", file!(), line!()))?;
     assert_mutation_accepted(
         SupervisordMutation::Restart,
         &stopped_a.control_fence,
@@ -240,7 +328,13 @@ async fn five_real_agents_survive_daemon_restart_and_isolate_one_agent_release_c
         require_pid(&restarted_a)? != initial_a_pid,
         "Agent A restart reused its killed process"
     );
-    assert_peers_unchanged(&client, &agents[1..], &peer_status_baseline).await?;
+    assert_peers_unchanged(
+        &client,
+        &agents[1..],
+        &peer_status_baseline,
+        "after_agent_a_restart",
+    )
+    .await?;
 
     let concurrent_fence = restarted_a.control_fence.clone();
     let (left, right) = tokio::join!(
@@ -268,11 +362,18 @@ async fn five_real_agents_survive_daemon_restart_and_isolate_one_agent_release_c
     )?;
     restarted_a =
         wait_for_release(&client, &agents[0], &release_v1, None, &mut process_guard).await?;
-    assert_peers_unchanged(&client, &agents[1..], &peer_status_baseline).await?;
+    assert_peers_unchanged(
+        &client,
+        &agents[1..],
+        &peer_status_baseline,
+        "after_same_fence_restart",
+    )
+    .await?;
 
     let accepted = client
         .upgrade(restarted_a.control_fence.clone(), release_v2.clone())
-        .await?;
+        .await
+        .with_context(|| format!("client.upgrade RPC failed at {}:{}", file!(), line!()))?;
     assert_mutation_accepted(
         SupervisordMutation::Upgrade,
         &restarted_a.control_fence,
@@ -290,7 +391,13 @@ async fn five_real_agents_survive_daemon_restart_and_isolate_one_agent_release_c
         require_pid(&upgraded_a)? != require_pid(&restarted_a)?,
         "Agent A upgrade did not replace its process"
     );
-    assert_peers_unchanged(&client, &agents[1..], &peer_status_baseline).await?;
+    assert_peers_unchanged(
+        &client,
+        &agents[1..],
+        &peer_status_baseline,
+        "after_agent_a_upgrade",
+    )
+    .await?;
 
     let before_daemon_restart = snapshot_all(&client, &agents).await?;
     assert_agentd_endpoints(&agents, &before_daemon_restart).await?;
@@ -299,7 +406,17 @@ async fn five_real_agents_survive_daemon_restart_and_isolate_one_agent_release_c
 
     let mut restarted_daemon = DaemonChild::spawn(&fleet_root, &log_path)?;
     let restarted_client = wait_for_daemon(&registry, &mut restarted_daemon, &log_path).await?;
-    let restarted_supervisor_epoch = restarted_client.health().await?.supervisor_epoch;
+    let restarted_supervisor_epoch = restarted_client
+        .health()
+        .await
+        .with_context(|| {
+            format!(
+                "restarted_client.health RPC failed at {}:{}",
+                file!(),
+                line!()
+            )
+        })?
+        .supervisor_epoch;
     ensure!(
         restarted_supervisor_epoch != first_supervisor_epoch,
         "supervisord reused its daemon epoch after process restart"
@@ -328,10 +445,24 @@ async fn five_real_agents_survive_daemon_restart_and_isolate_one_agent_release_c
 
     let before_rollback = restarted_client
         .snapshot(agents[0].agent_id.clone())
-        .await?;
+        .await
+        .with_context(|| {
+            format!(
+                "restarted_client.snapshot RPC failed at {}:{}",
+                file!(),
+                line!()
+            )
+        })?;
     let accepted = restarted_client
         .rollback(before_rollback.control_fence.clone())
-        .await?;
+        .await
+        .with_context(|| {
+            format!(
+                "restarted_client.rollback RPC failed at {}:{}",
+                file!(),
+                line!()
+            )
+        })?;
     assert_mutation_accepted(
         SupervisordMutation::Rollback,
         &before_rollback.control_fence,
@@ -349,11 +480,35 @@ async fn five_real_agents_survive_daemon_restart_and_isolate_one_agent_release_c
         require_pid(&rolled_back_a)? != require_pid(&upgraded_a)?,
         "Agent A rollback did not replace its process"
     );
-    assert_peers_unchanged(&restarted_client, &agents[1..], &peer_status_baseline).await?;
+    assert_peers_unchanged(
+        &restarted_client,
+        &agents[1..],
+        &peer_status_baseline,
+        "after_agent_a_rollback",
+    )
+    .await?;
 
     for agent in &agents {
-        let before = restarted_client.snapshot(agent.agent_id.clone()).await?;
-        let accepted = restarted_client.kill(before.control_fence.clone()).await?;
+        let before = restarted_client
+            .snapshot(agent.agent_id.clone())
+            .await
+            .with_context(|| {
+                format!(
+                    "restarted_client.snapshot RPC failed at {}:{}",
+                    file!(),
+                    line!()
+                )
+            })?;
+        let accepted = restarted_client
+            .kill(before.control_fence.clone())
+            .await
+            .with_context(|| {
+                format!(
+                    "restarted_client.kill RPC failed at {}:{}",
+                    file!(),
+                    line!()
+                )
+            })?;
         assert_mutation_accepted(SupervisordMutation::Kill, &before.control_fence, &accepted)?;
     }
     for agent in &agents {
@@ -490,7 +645,9 @@ async fn wait_for_release(
                         .spawn_generation
                         .context("healthy agent has no spawn generation")?,
                 )?;
-                let health = agentd.health().await?;
+                let health = agentd.health().await.with_context(|| {
+                    format!("agentd.health RPC failed at {}:{}", file!(), line!())
+                })?;
                 ensure!(
                     health.ready && u64::from(health.process_id) == require_pid(&status)?,
                     "supervisord status did not match the real agentd endpoint"
@@ -543,7 +700,10 @@ async fn peer_baseline(
 ) -> Result<Vec<SupervisordAgentStatus>> {
     let mut baseline = Vec::new();
     for peer in peers {
-        let status = client.snapshot(peer.agent_id.clone()).await?;
+        let status = client
+            .snapshot(peer.agent_id.clone())
+            .await
+            .with_context(|| format!("client.snapshot RPC failed at {}:{}", file!(), line!()))?;
         ensure!(status.healthy, "peer {} is not healthy", peer.agent_id);
         baseline.push(status);
     }
@@ -554,13 +714,29 @@ async fn assert_peers_unchanged(
     client: &SupervisordClient,
     peers: &[AgentFixture],
     baseline: &[SupervisordAgentStatus],
+    phase: &'static str,
 ) -> Result<()> {
     ensure!(
         peers.len() == baseline.len(),
         "peer baseline length drifted"
     );
     for (peer, expected) in peers.iter().zip(baseline) {
-        let actual = client.snapshot(peer.agent_id.clone()).await?;
+        let started = Instant::now();
+        let snapshot = client.snapshot(peer.agent_id.clone()).await;
+        let elapsed_ms = started.elapsed().as_millis();
+        let outcome = if snapshot.is_ok() { "ok" } else { "error" };
+        eprintln!(
+            "SUPERVISORD_PEER_SNAPSHOT phase={phase} peer={} elapsed_ms={elapsed_ms} outcome={outcome}",
+            peer.agent_id
+        );
+        let actual = snapshot.with_context(|| {
+            format!(
+                "client.snapshot RPC failed phase={phase} peer={} elapsed_ms={elapsed_ms} at {}:{}",
+                peer.agent_id,
+                file!(),
+                line!()
+            )
+        })?;
         assert_exact_status(expected, &actual, "an isolated peer changed")?;
         assert_agentd_endpoint(peer, expected).await?;
     }
@@ -573,7 +749,14 @@ async fn snapshot_all(
 ) -> Result<Vec<SupervisordAgentStatus>> {
     let mut statuses = Vec::new();
     for agent in agents {
-        statuses.push(client.snapshot(agent.agent_id.clone()).await?);
+        statuses.push(
+            client
+                .snapshot(agent.agent_id.clone())
+                .await
+                .with_context(|| {
+                    format!("client.snapshot RPC failed at {}:{}", file!(), line!())
+                })?,
+        );
     }
     Ok(statuses)
 }
@@ -603,7 +786,10 @@ async fn assert_agentd_endpoint(
             .spawn_generation
             .context("running agent has no spawn generation")?,
     )?;
-    let health = client.health().await?;
+    let health = client
+        .health()
+        .await
+        .with_context(|| format!("client.health RPC failed at {}:{}", file!(), line!()))?;
     ensure!(
         health.ready,
         "agent {} endpoint is not ready",
@@ -682,7 +868,10 @@ fn require_pid(status: &SupervisordAgentStatus) -> Result<u64> {
         .context("active agent has no process identity")
 }
 
-struct DaemonChild(Child);
+struct DaemonChild {
+    child: Child,
+    log_path: PathBuf,
+}
 
 impl DaemonChild {
     fn spawn(fleet_root: &HeptaFleetRoot, log_path: &Path) -> Result<Self> {
@@ -701,28 +890,163 @@ impl DaemonChild {
             .stdout(Stdio::from(log.try_clone()?))
             .stderr(Stdio::from(log))
             .spawn()?;
-        Ok(Self(child))
+        Ok(Self {
+            child,
+            log_path: log_path.to_path_buf(),
+        })
     }
 
     fn try_wait(&mut self) -> Result<Option<std::process::ExitStatus>> {
-        Ok(self.0.try_wait()?)
+        Ok(self.child.try_wait()?)
     }
 
     fn kill(&mut self) -> Result<()> {
-        if self.0.try_wait()?.is_none() {
-            self.0.kill()?;
+        if self.child.try_wait()?.is_none() {
+            self.child.kill()?;
         }
-        self.0.wait()?;
+        self.child.wait()?;
         Ok(())
     }
 }
 
 impl Drop for DaemonChild {
     fn drop(&mut self) {
-        if self.0.try_wait().ok().flatten().is_none() {
-            let _ = self.0.kill();
-            let _ = self.0.wait();
+        let observed_exit = self.child.try_wait();
+        #[cfg(target_os = "linux")]
+        if matches!(&observed_exit, Ok(None)) {
+            // The unreaped Child still owns this PID, so observe only its tasks
+            // before the original cleanup removes the diagnostic state.
+            report_owned_daemon_tasks(self.child.id());
         }
+        if observed_exit.ok().flatten().is_none() {
+            let _ = self.child.kill();
+            let _ = self.child.wait();
+        }
+        // Both daemon instances append to this test-owned stream. Its tail
+        // can include either generation and may be reported by both Drops.
+        // Keep the original cleanup and bound both raw and escaped log bytes.
+        let diagnostics = (|| -> std::io::Result<_> {
+            let mut file = std::fs::File::open(&self.log_path)?;
+            let total_bytes = file.metadata()?.len();
+            let start = total_bytes.saturating_sub(64 * 1024);
+            file.seek(SeekFrom::Start(start))?;
+            let mut tail = Vec::new();
+            file.take(64 * 1024).read_to_end(&mut tail)?;
+            Ok((total_bytes, start, tail))
+        })();
+        match diagnostics {
+            Ok((total_bytes, start, tail)) => {
+                let raw_tail_bytes = tail.len();
+                let mut body = format!("{:?}", String::from_utf8_lossy(&tail));
+                let body_truncated = body.len() > 64 * 1024;
+                if body_truncated {
+                    let mut end = 64 * 1024;
+                    while !body.is_char_boundary(end) {
+                        end -= 1;
+                    }
+                    body.truncate(end);
+                }
+                eprintln!(
+                    "SUPERVISORD_OWNED_LOG total_bytes={total_bytes} tail_offset={start} raw_tail_bytes={raw_tail_bytes} body_truncated={body_truncated} contents={body}"
+                );
+            }
+            Err(error) => eprintln!("SUPERVISORD_OWNED_LOG read_error={error}"),
+        }
+    }
+}
+
+#[cfg(target_os = "linux")]
+fn read_owned_proc_text(path: &Path, max_bytes: u64) -> std::io::Result<String> {
+    let mut bytes = Vec::new();
+    std::fs::File::open(path)?
+        .take(max_bytes)
+        .read_to_end(&mut bytes)?;
+    Ok(String::from_utf8_lossy(&bytes).into_owned())
+}
+
+#[cfg(target_os = "linux")]
+fn report_owned_daemon_tasks(process_id: u32) {
+    const MAX_TASKS: usize = 64;
+    const FIELDS: [&str; 10] = [
+        "Name",
+        "State",
+        "Tgid",
+        "Pid",
+        "PPid",
+        "Threads",
+        "VmRSS",
+        "VmSwap",
+        "voluntary_ctxt_switches",
+        "nonvoluntary_ctxt_switches",
+    ];
+    let task_root = PathBuf::from(format!("/proc/{process_id}/task"));
+    let entries = match std::fs::read_dir(&task_root) {
+        Ok(entries) => entries,
+        Err(error) => {
+            eprintln!(
+                "SUPERVISORD_OWNED_TASKS pid={process_id} read_error={:?} os_error={:?}",
+                error.kind(),
+                error.raw_os_error()
+            );
+            return;
+        }
+    };
+    let mut task_ids = Vec::new();
+    for entry in entries.take(MAX_TASKS + 1) {
+        match entry {
+            Ok(entry) => {
+                if let Some(task_id) = entry
+                    .file_name()
+                    .to_str()
+                    .and_then(|name| name.parse::<u32>().ok())
+                {
+                    task_ids.push(task_id);
+                }
+            }
+            Err(error) => eprintln!(
+                "SUPERVISORD_OWNED_TASKS pid={process_id} entry_error={:?} os_error={:?}",
+                error.kind(),
+                error.raw_os_error()
+            ),
+        }
+    }
+    let truncated = task_ids.len() > MAX_TASKS;
+    task_ids.sort_unstable();
+    task_ids.truncate(MAX_TASKS);
+    eprintln!(
+        "SUPERVISORD_OWNED_TASKS pid={process_id} sampled_tasks={} truncated={truncated}",
+        task_ids.len()
+    );
+    for task_id in task_ids {
+        let task = task_root.join(task_id.to_string());
+        let status = match read_owned_proc_text(&task.join("status"), 8 * 1024) {
+            Ok(text) => text
+                .lines()
+                .filter_map(|line| line.split_once(':'))
+                .filter(|(field, _)| FIELDS.contains(field))
+                .map(|(field, value)| {
+                    let value = value.trim().chars().take(128).collect::<String>();
+                    format!("{field}={value}")
+                })
+                .collect::<Vec<_>>()
+                .join("; "),
+            Err(error) => format!(
+                "read_error={:?} os_error={:?}",
+                error.kind(),
+                error.raw_os_error()
+            ),
+        };
+        let wait_channel = match read_owned_proc_text(&task.join("wchan"), 128) {
+            Ok(text) => text.trim().to_string(),
+            Err(error) => format!(
+                "read_error={:?} os_error={:?}",
+                error.kind(),
+                error.raw_os_error()
+            ),
+        };
+        eprintln!(
+            "SUPERVISORD_OWNED_TASK pid={process_id} tid={task_id} status={status:?} wchan={wait_channel:?}"
+        );
     }
 }
 

@@ -390,8 +390,27 @@ impl WebsocketConnectionIdentity {
         beta_features_header: Option<&str>,
         responses_metadata: &CodexResponsesMetadata,
     ) -> std::result::Result<Self, ApiError> {
+        // Prewarm and inline compaction use the turn's transport. Canonical
+        // client_metadata carries the current model flags, Git enrichment and
+        // tool inventory on every response.create, so those request snapshots
+        // do not define the connection. Normalize only this comparison copy;
+        // wire metadata and cold-recovery fingerprints keep their real values.
+        // Provider, sandbox, review, thread source and Memory isolation remain.
+        let mut connection_metadata = responses_metadata.clone();
+        if matches!(
+            connection_metadata.request_kind,
+            Some(CodexResponsesRequestKind::Prewarm | CodexResponsesRequestKind::Compaction(_))
+        ) {
+            connection_metadata.request_kind = Some(CodexResponsesRequestKind::Turn);
+        }
+        connection_metadata.parent_turn_id = None;
+        connection_metadata.root_turn_id = None;
+        connection_metadata.node_repl_auto_review_required = None;
+        connection_metadata.node_repl_disabled = None;
+        connection_metadata.workspaces.clear();
+        connection_metadata.tool_namespaces_info = None;
         let compatibility_projection_json =
-            serde_json::to_vec(&responses_metadata.turn_recovery_compatibility_projection())
+            serde_json::to_vec(&connection_metadata.turn_recovery_compatibility_projection())
                 .map_err(|error| {
                     ApiError::Stream(format!(
                         "failed to bind websocket compatibility identity: {error}"

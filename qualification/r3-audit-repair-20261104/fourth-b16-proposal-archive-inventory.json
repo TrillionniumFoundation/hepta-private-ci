@@ -1,0 +1,1063 @@
+{
+  "schema": "hepta.b16.static-proposal-archive-inventory.v1",
+  "status": "METADATA_EXTRACTION_ONLY_UNEXECUTED_PROPOSALS",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "inputs": [
+    {
+      "stage": "r2c",
+      "path": "/workspace/scratch/07dd58cc9630/hepta-audit-fourth/inputs/r2c-manifest.json",
+      "blob": "a33a305d001eed9b2aa2a3d3c916dfd5a9924a47",
+      "bytes": 18526,
+      "sha256": "270829e249f71389e6a1c60c2e0e4e0735a685da9c1ce88e77ffd87ffe270b68",
+      "schema": "hepta_b16_r2c_sqlite_writer_foundation_candidate_v2",
+      "status": "SOURCE_CANDIDATE_UNEXECUTED"
+    },
+    {
+      "stage": "r2d",
+      "path": "/workspace/scratch/07dd58cc9630/hepta-audit-fourth/inputs/r2d-manifest.json",
+      "blob": "526fa18835b0502fd388660ded3884a61fb5a456",
+      "bytes": 21208,
+      "sha256": "523b51882e7e108fbb5a17b6f4f51c3c8891de2dacc6df82b0e23deb4f188a2c",
+      "schema": "hepta_b16_r2d_sqlite_observation_and_barrier_candidate_v1",
+      "status": "SOURCE_CANDIDATE_UNEXECUTED"
+    },
+    {
+      "stage": "r2e1",
+      "path": "/workspace/scratch/07dd58cc9630/hepta-audit-fourth/inputs/r2e1-manifest.json",
+      "blob": "3220fc3785f01b45e77a49e71b1d549fd0faea22",
+      "bytes": 20429,
+      "sha256": "379e4905b171cb1b2f95ee593971ac080a3fbcf2e189e2c27ff0e04e13167958",
+      "schema": "hepta.b16.r2e1.commit-interlock-candidate.v1",
+      "status": "UNREACHABLE_SOURCE_CANDIDATE_NOT_FORMATTED_COMPILED_OR_EXECUTED"
+    },
+    {
+      "stage": "r2e2a",
+      "path": "/workspace/scratch/07dd58cc9630/hepta-audit-fourth/inputs/r2e2a-manifest.json",
+      "blob": "2fccd651a28b485348aeb8073079663870b4c771",
+      "bytes": 11542,
+      "sha256": "1f93de7cea300e1daf41b3bf4ed2dfc7ba21c4ce20bc762545fa38129616f3be",
+      "schema": "hepta_b16_r2e2a_checkpoint_wire_review_v1",
+      "status": "SOURCE_CANDIDATE_ONLY_NOT_FORMATTED_COMPILED_OR_EXECUTED"
+    },
+    {
+      "stage": "r2e2b",
+      "path": "/workspace/scratch/07dd58cc9630/hepta-audit-fourth/inputs/r2e2b-manifest.json",
+      "blob": "ba53d728a0b893e990fead60055707f84821fc7b",
+      "bytes": 11347,
+      "sha256": "af2b89c8e6c5e6927a05ee471f40a117d1890bb75c9062cfb6b074c0022eac2b",
+      "schema": "hepta_b16_r2e2b_checkpoint_cas_review_v1",
+      "status": "SOURCE_CANDIDATE_ONLY_NOT_FORMATTED_COMPILED_OR_EXECUTED"
+    },
+    {
+      "stage": "r2e3",
+      "path": "/workspace/scratch/07dd58cc9630/hepta-audit-fourth/inputs/r2e3-manifest.json",
+      "blob": "6985c5154f8f6c7ae42f94fd4d569dc6a1dab3b2",
+      "bytes": 32260,
+      "sha256": "4be47d9aed988921e470b86dadec21a5dc6fda65061ce3f2fd4649afb6d37b23",
+      "schema": "hepta.b16.r2e3.registered-connection-custody-candidate.v1",
+      "status": "SOURCE_CANDIDATE_UNAPPLIED_UNFORMATTED_UNEXECUTED"
+    }
+  ],
+  "path_semantics": "Each artifact path is a proposed relative path under the qualification directory chosen by root. It is not the live product source path. Original source paths and manifest JSON pointers are in provenance.",
+  "active_artifacts": [
+    {
+      "stage": "r2c",
+      "path": "b16-proposals/r2c/source/codex-rs/state/src/sqlite.rs",
+      "blob": "4a147f593ef580de5d79b1dd47b0234437c629ca",
+      "bytes": 15999,
+      "sha256": "27c9c58c8a8d1426a2bd026cbdacebd0083243dd4023f117e698149d25eaf057",
+      "role": "source_postimage"
+    },
+    {
+      "stage": "r2c",
+      "path": "b16-proposals/r2c/source/codex-rs/state/src/sqlite_commit_gate_tests.rs",
+      "blob": "31b26a78bffe40815aa8a5b55e61b5139e7bca96",
+      "bytes": 10046,
+      "sha256": "07e66e695078f06768aa951dd5c4f2419fe99657cc90e2e263d111eeafa7ca90",
+      "role": "source_postimage"
+    },
+    {
+      "stage": "r2c",
+      "path": "b16-proposals/r2c/patches/full.patch",
+      "blob": "62a94bf93569570daace6cf80972f8909b3f8736",
+      "bytes": 14383,
+      "sha256": "9cea5e6b67c466177c722069b8e66541b14c34147889914c08e34de1a5a5184b",
+      "role": "full_patch"
+    },
+    {
+      "stage": "r2d",
+      "path": "b16-proposals/r2d/source/codex-rs/state/src/sqlite.rs",
+      "blob": "eb73bc3c24ae6bd64a35be1187f83d5655350bbe",
+      "bytes": 17110,
+      "sha256": "9a7a44d0d6c4564683f6f62f8efbe3dfb6633d40c22bb940e3f78418360fe468",
+      "role": "source_postimage"
+    },
+    {
+      "stage": "r2d",
+      "path": "b16-proposals/r2d/source/codex-rs/state/src/lib.rs",
+      "blob": "50775acff67c99b80c779c8b94f9c2f0db07b175",
+      "bytes": 5199,
+      "sha256": "5c48fe243f95f66e3814a48506b6b163020d8ee275283979dc5ffa3fb4c16013",
+      "role": "source_postimage"
+    },
+    {
+      "stage": "r2d",
+      "path": "b16-proposals/r2d/source/codex-rs/state/src/sqlite_read_barrier.rs",
+      "blob": "98ed5528e76b948c965def714994d67ecb3e0457",
+      "bytes": 3693,
+      "sha256": "c91ee20f033dec15e84ad0cad32619b54d37212a9156ae6fe4fba5077bf70fcc",
+      "role": "source_postimage"
+    },
+    {
+      "stage": "r2d",
+      "path": "b16-proposals/r2d/source/codex-rs/state/src/sqlite_read_barrier_tests.rs",
+      "blob": "dc73d453b2bc5b34fca584c31fbdd56db9b165fd",
+      "bytes": 10249,
+      "sha256": "ae8a7af902d4e6c848e90221ab2dc190b4fe7060bb582dae83452dc2f61d17e7",
+      "role": "source_postimage"
+    },
+    {
+      "stage": "r2d",
+      "path": "b16-proposals/r2d/patches/full.patch",
+      "blob": "4582d6909dd0eb18e0f8f8a12d71c791a14c95a2",
+      "bytes": 16827,
+      "sha256": "2fc72480a7c7ff5b5d6d241818b6df0f84e85ec1653973672a754636498dafbf",
+      "role": "full_patch"
+    },
+    {
+      "stage": "r2e1",
+      "path": "b16-proposals/r2e1/source/codex-rs/state/src/sqlite.rs",
+      "blob": "7b9ee0117d7425e20e4f08255aa0fe3e319f26ea",
+      "bytes": 18971,
+      "sha256": "110d0be7ae0eb1f6c62e23363c281338109115ddffc04e6ab67da6a6dff74a73",
+      "role": "source_postimage"
+    },
+    {
+      "stage": "r2e1",
+      "path": "b16-proposals/r2e1/source/codex-rs/hepta-memory/src/cognitive_store.rs",
+      "blob": "f670ec69480bc8960c7a3f90a9dc80e4ebd9763c",
+      "bytes": 73694,
+      "sha256": "41f6496d0176ddf8243e46593ea049b2f48531bbd711f86484811814a9e7f33f",
+      "role": "source_postimage"
+    },
+    {
+      "stage": "r2e1",
+      "path": "b16-proposals/r2e1/source/codex-rs/hepta-memory/src/cognitive_store_recovery.rs",
+      "blob": "994230252cf0992b811c0aba08f5e4d97565c923",
+      "bytes": 27525,
+      "sha256": "109e7d9e6b46b6e48f203276fbbc1acd6032b89fa21c0c1002b31b438e7ac0bd",
+      "role": "source_postimage"
+    },
+    {
+      "stage": "r2e1",
+      "path": "b16-proposals/r2e1/source/codex-rs/hepta-memory/src/cognitive_store_gate.rs",
+      "blob": "f69a43e09aa1864dda3e208ffb7a53b41e05d9d7",
+      "bytes": 1383,
+      "sha256": "ae68d821c85b454dd6f66447d63996baf9192ac9a25d531a73624b9350135139",
+      "role": "source_postimage"
+    },
+    {
+      "stage": "r2e1",
+      "path": "b16-proposals/r2e1/source/codex-rs/hepta-memory/src/objective_sender.rs",
+      "blob": "6b3102c0ec4422b3658415df2372a7480990c6e2",
+      "bytes": 20024,
+      "sha256": "63a7d654926630ef8849e4691df6578bce32d2801e0c9391cbbbb9c55fd86295",
+      "role": "source_postimage"
+    },
+    {
+      "stage": "r2e1",
+      "path": "b16-proposals/r2e1/source/codex-rs/hepta-memory/src/objective_sender_store.rs",
+      "blob": "378243e46d48df099d69b494b8879381221b3964",
+      "bytes": 10954,
+      "sha256": "e461757c0b44422001c70799c73c97049498d72880ef5cd59f80ff686b044333",
+      "role": "source_postimage"
+    },
+    {
+      "stage": "r2e1",
+      "path": "b16-proposals/r2e1/source/codex-rs/hepta-memory/src/objective_sender_commit_interlock_tests.rs",
+      "blob": "62d85c330446b7b5059016d7501bcd85af2e556a",
+      "bytes": 8168,
+      "sha256": "a15602e8946499da789282a2fcd1b26909b34a8c86f5fadd8187aa86c3490bda",
+      "role": "source_postimage"
+    },
+    {
+      "stage": "r2e1",
+      "path": "b16-proposals/r2e1/patches/full.patch",
+      "blob": "6ddf11215e309b3fcb7e19d521c8d2651a3a0726",
+      "bytes": 21826,
+      "sha256": "bfed033c82b2590eaf42415739c7349cee9dd5d6ab0ac3e6227add57a073605b",
+      "role": "full_patch"
+    },
+    {
+      "stage": "r2e2a",
+      "path": "b16-proposals/r2e2a/source/codex-rs/hepta-memory/src/lib.rs",
+      "blob": "d8c5fd3d36bf3fbca4ba33ecf80ba6ae46756f33",
+      "bytes": 26608,
+      "sha256": "bdaafbdfc78a8ded68676729d401d0b8a74fbeb65bcfd296014a3fa08dae7c86",
+      "role": "source_postimage"
+    },
+    {
+      "stage": "r2e2a",
+      "path": "b16-proposals/r2e2a/source/codex-rs/hepta-memory/src/cognitive_checkpoint_wire.rs",
+      "blob": "c6bada509bf9108a2dffad91288b1432c136ef20",
+      "bytes": 5040,
+      "sha256": "7d88111a6ee92e91af1317f6e00fe5e6cd45b86571853dbeb39777a75df7dd40",
+      "role": "source_postimage"
+    },
+    {
+      "stage": "r2e2a",
+      "path": "b16-proposals/r2e2a/source/codex-rs/hepta-memory/src/cognitive_checkpoint_codec.rs",
+      "blob": "ea998b49788062dea8d9d93d786e771a76a8e937",
+      "bytes": 6187,
+      "sha256": "6605e4ba63809117700e93d343e6e4ebe532c7809edb96a230031420e5656aaa",
+      "role": "source_postimage"
+    },
+    {
+      "stage": "r2e2a",
+      "path": "b16-proposals/r2e2a/source/codex-rs/hepta-memory/src/cognitive_checkpoint_codec_tests.rs",
+      "blob": "04647377829ad94baddc8fef1e92538902e60385",
+      "bytes": 6755,
+      "sha256": "c2fb0dd3dcc42adf47c082a462ab391920c6fcd9e0d28a8d05f61ebc968ca631",
+      "role": "source_postimage"
+    },
+    {
+      "stage": "r2e2a",
+      "path": "b16-proposals/r2e2a/patches/full.patch",
+      "blob": "9743a504dc5993a5d7b47dac49e94e64e158a252",
+      "bytes": 20834,
+      "sha256": "835df1d767cb4f95e4d577072c66c0034978db2d0ce8c51f90163482ecec4d91",
+      "role": "full_patch"
+    },
+    {
+      "stage": "r2e2b",
+      "path": "b16-proposals/r2e2b/source/codex-rs/hepta-memory/src/cognitive_checkpoint_codec.rs",
+      "blob": "3a6b75875c7e265ba71e7948b70e7e3fcd608c0f",
+      "bytes": 11437,
+      "sha256": "bea6cd9ed80d5a04e5cfc7d47707b9313d216509449e0360cbcd4f6ac566b3ae",
+      "role": "source_postimage"
+    },
+    {
+      "stage": "r2e2b",
+      "path": "b16-proposals/r2e2b/source/codex-rs/hepta-memory/src/cognitive_checkpoint_codec_tests.rs",
+      "blob": "60a9fafef10f77d2ae85f3d8f8c1c22d60e27eb1",
+      "bytes": 20212,
+      "sha256": "9e19b65bc67a3b43c87611006b363c5e65a089a6061bfd6bcce01a1819e2b931",
+      "role": "source_postimage"
+    },
+    {
+      "stage": "r2e2b",
+      "path": "b16-proposals/r2e2b/patches/full.patch",
+      "blob": "cbeca259e8fe571e8926c6331df6fa67dfbffa0b",
+      "bytes": 24918,
+      "sha256": "d97257906289e2556fcfd72bb6118ab764a8181303237bac94d62ede910f189c",
+      "role": "full_patch"
+    },
+    {
+      "stage": "r2e3",
+      "path": "b16-proposals/r2e3/source/codex-rs/state/src/sqlite.rs",
+      "blob": "b9fb565cadd14f6541bfc8421164897e2907e2ad",
+      "bytes": 19950,
+      "sha256": "19d676843c5eda7570d88c5ffed08d9428a3527b1048fd3d1ec4ed40fb2a90e1",
+      "role": "source_postimage"
+    },
+    {
+      "stage": "r2e3",
+      "path": "b16-proposals/r2e3/source/codex-rs/hepta-memory/src/cognitive_store.rs",
+      "blob": "5c0704c4e70ffdf2f65864a42da5e6e48bf79006",
+      "bytes": 74300,
+      "sha256": "6c978e972615db308542b53d361edfc68bd77f8e2eac6afb5bde6b40286d7440",
+      "role": "source_postimage"
+    },
+    {
+      "stage": "r2e3",
+      "path": "b16-proposals/r2e3/source/codex-rs/hepta-memory/src/cognitive_store_gate.rs",
+      "blob": "f351700e3a7f382217db9f11f164871e7b2a09e4",
+      "bytes": 1758,
+      "sha256": "216612cbe1d27e3ec75e80e3a54cb54768b3d438667fa69968627cd4d9a9f597",
+      "role": "source_postimage"
+    },
+    {
+      "stage": "r2e3",
+      "path": "b16-proposals/r2e3/source/codex-rs/hepta-memory/src/cognitive_store_recovery.rs",
+      "blob": "54e917f45520f6b0e31fcd6a2f57ac3a00d8ae6c",
+      "bytes": 27552,
+      "sha256": "7271ec690ac9bd1ef7242f44d127c74dd6232fca107ac89548da285466648599",
+      "role": "source_postimage"
+    },
+    {
+      "stage": "r2e3",
+      "path": "b16-proposals/r2e3/source/codex-rs/hepta-memory/src/objective_sender.rs",
+      "blob": "e3789436918efae898ecaac96d49e6ac73b37f76",
+      "bytes": 20125,
+      "sha256": "556f82d57e3a3d28ea741fa64423f4bb0ac42176daf82eaada1d983fb18795f8",
+      "role": "source_postimage"
+    },
+    {
+      "stage": "r2e3",
+      "path": "b16-proposals/r2e3/source/codex-rs/hepta-memory/src/objective_sender_connection_custody_tests.rs",
+      "blob": "09a61b69e8cd34f27a0c968433b2b29df9c95380",
+      "bytes": 8421,
+      "sha256": "6056776c17d1d4f0649ae2936dfad893a16aa52cba175d9859a0e5a8d86f2682",
+      "role": "source_postimage"
+    },
+    {
+      "stage": "r2e3",
+      "path": "b16-proposals/r2e3/patches/full.patch",
+      "blob": "5b5a2dee4b33b5946ec21825ed7fc916487a0bf9",
+      "bytes": 17702,
+      "sha256": "123a287b37d37a791208970e2908fc568e8567d86847f8ef1bb0102704aab974",
+      "role": "full_patch"
+    },
+    {
+      "stage": "r2c",
+      "path": "b16-proposals/r2c/patches/revision-v2-to-v3.patch",
+      "blob": "ccd3ff82ae33fd44b4f1ca625d853a4a5f5061ec",
+      "bytes": 682,
+      "sha256": "e9922dfdd59475d89ffa327cde87621b0cd713102d24fd39af8e71d6779fda60",
+      "role": "revision_delta_patch"
+    },
+    {
+      "stage": "r2d",
+      "path": "b16-proposals/r2d/negative/cancel-close-on-drop/codex-rs/state/src/sqlite_read_barrier.rs",
+      "blob": "6b0909f7909eb323d7ecf11fc292598aee8f2405",
+      "bytes": 3657,
+      "sha256": "0e7c28fad15f1bbe591f0deaa2a6aa8d1336520e35c20e6c6b5444413fef6cd9",
+      "role": "negative_source_postimage"
+    },
+    {
+      "stage": "r2d",
+      "path": "b16-proposals/r2d/patches/final-to-cancel-counterfactual.patch",
+      "blob": "4f6b0999e4a38e60c97fdbe60d47d85de928b797",
+      "bytes": 629,
+      "sha256": "9735a81e65d88aeab3f2dc0ae6cbc88560e4e199ce8f349de59bd53174244666",
+      "role": "negative_patch"
+    },
+    {
+      "stage": "r2d",
+      "path": "b16-proposals/r2d/patches/cancel-counterfactual-to-final.patch",
+      "blob": "1a2fefb5e147a6beec23104ac45eb881a3ca0f42",
+      "bytes": 629,
+      "sha256": "20321f0e1189c5189ffc82aa6295bbc087087883b961f7fe7c0c16ebadd1628d",
+      "role": "restore_patch"
+    },
+    {
+      "stage": "r2e1",
+      "path": "b16-proposals/r2e1/patches/test-only-negative.patch",
+      "blob": "2909207b49983944e5b5c1e021975b64b1d0ff6a",
+      "bytes": 9099,
+      "sha256": "54594950c557578fd3ff64fcc0979a1ff991d58d35febd766c18172bdc8ae10e",
+      "role": "negative_test_only_patch"
+    },
+    {
+      "stage": "r2e1",
+      "path": "b16-proposals/r2e1/negative/test-only/codex-rs/hepta-memory/src/objective_sender.rs",
+      "blob": "36105804909ecccfb02e039a10dfa43a5a6f5ba7",
+      "bytes": 19590,
+      "sha256": "c11c050f86ec4e1c42bfd809a7da5b79877d5173272e0d85a8daade6687f61e5",
+      "role": "negative_source_postimage"
+    },
+    {
+      "stage": "r2e1",
+      "path": "b16-proposals/r2e1/patches/repair-after-negative.patch",
+      "blob": "69c4991b024b0db7e0e49b65fdf685864a12c64c",
+      "bytes": 12938,
+      "sha256": "6ebed99ab45c4913970fc6816fa64a7c1081a5d0a299c48a547572f5fc63c5e1",
+      "role": "repair_after_negative_patch"
+    },
+    {
+      "stage": "r2e3",
+      "path": "b16-proposals/r2e3/patches/test-only-negative.patch",
+      "blob": "d6d9de20165a61736ae033f3e5fd65c14e3170e1",
+      "bytes": 9372,
+      "sha256": "834f9e30e760f48bbbd5a8930c7a74e7ddd89f38af7e143bbaf713f10d8e23e6",
+      "role": "negative_test_only_patch"
+    },
+    {
+      "stage": "r2e3",
+      "path": "b16-proposals/r2e3/patches/repair-after-negative.patch",
+      "blob": "e9653333486372ba9d949ca26052af66873ecd34",
+      "bytes": 8330,
+      "sha256": "c95310545e5d763965b99891005da844d2b06b3645c6b404ac7eaa9d21f8de22",
+      "role": "repair_after_negative_patch"
+    },
+    {
+      "stage": "r2e3",
+      "path": "b16-proposals/r2e3/negative/no-native-anchor/codex-rs/state/src/sqlite.rs",
+      "blob": "3c2278650ac27398a24c893465090f5cea57ca3d",
+      "bytes": 19432,
+      "sha256": "662ee1d4eaaaa92244edb7ea635c0514bf0263c3228592f3576534c79ccfbc9b",
+      "role": "negative_source_postimage"
+    },
+    {
+      "stage": "r2e3",
+      "path": "b16-proposals/r2e3/patches/final-to-no-native-anchor.patch",
+      "blob": "7b931b638dce1e8a8496b1898f9ff0a0fb9abe61",
+      "bytes": 1104,
+      "sha256": "c8b3234ac01c1fa4a66430729201b8c237ad15fc8dd88797737a64d27bcb7cf0",
+      "role": "negative_patch"
+    },
+    {
+      "stage": "r2e3",
+      "path": "b16-proposals/r2e3/patches/no-native-anchor-to-final.patch",
+      "blob": "e14e90930772b7a75580f55e7975439f6750d58f",
+      "bytes": 1104,
+      "sha256": "ba7d339e3059488f68637e72759b93a2ab8ca75448d2d8263c58f6b250ea0c6d",
+      "role": "restore_patch"
+    }
+  ],
+  "superseded_artifacts": [
+    {
+      "stage": "r2c",
+      "path": "b16-proposals/r2c/superseded/source-v2/codex-rs/state/src/sqlite_commit_gate_tests.rs",
+      "blob": "e1ea6dcb1c7911d42e0e892c2697dedf4a56f665",
+      "bytes": 9853,
+      "sha256": "d4a1b642be1a6048cd78dce080e833ce0796e7530f2f7fecd3e9d03b277438b5",
+      "role": "superseded_source_postimage"
+    },
+    {
+      "stage": "r2c",
+      "path": "b16-proposals/r2c/superseded/full-v2.patch",
+      "blob": "d432cbd726a15200ae332b3c9be47a8aa7f69643",
+      "bytes": 14186,
+      "sha256": "add08bf6793829ec628bee2a710086a4201f87d660ad4f203d087bdaf849974e",
+      "role": "superseded_full_patch"
+    },
+    {
+      "stage": "r2c",
+      "path": "b16-proposals/r2c/superseded/source-v1/codex-rs/state/src/sqlite_commit_gate_tests.rs",
+      "blob": "e7ef9d3ff668bdce5fda4dd5317f4d4f5513a110",
+      "bytes": 9742,
+      "sha256": "16eb795d998461cd50b2ec0e42f9f92b1a15b6411d6b4811235145b94a4c8654",
+      "role": "superseded_source_postimage"
+    },
+    {
+      "stage": "r2c",
+      "path": "b16-proposals/r2c/superseded/full-v1.patch",
+      "blob": "cce89886bad5d7f947bb6ab0d529c4e584d9b85b",
+      "bytes": 14069,
+      "sha256": "6a0886980b0cde62ad77578ac10905de7263a54f339ddecf29771c13db175536",
+      "role": "superseded_full_patch"
+    },
+    {
+      "stage": "r2c",
+      "path": "b16-proposals/r2c/superseded/revision-v1-to-v2.patch",
+      "blob": "9b7b8c942dce05a37454a7595918b037d7d6ec6a",
+      "bytes": 2450,
+      "sha256": "dedb512d891b5c7b53593ed71c65bd575bbb0ff3e8fd5db89a0106c600f14587",
+      "role": "superseded_revision_delta_patch"
+    },
+    {
+      "stage": "r2e1",
+      "path": "b16-proposals/r2e1/superseded/full-v1.patch",
+      "blob": "b3738c2aafb6847616060bd93c27a5da64ce2f21",
+      "bytes": 19874,
+      "sha256": "61f1d4fc4894fe213d61368ec90d8606bf400d24cd7af35f3919eb0d2ccc1427",
+      "role": "superseded_full_patch"
+    },
+    {
+      "stage": "r2e1",
+      "path": "b16-proposals/r2e1/superseded/full-v2.patch",
+      "blob": "928b4d71366cb17eba5cc82d611ed6de75af0de6",
+      "bytes": 21487,
+      "sha256": "e8c4a0f2dc9a9f840f9d5eb0f8fc29a601d293f76dcb83df4e4844009c63338a",
+      "role": "superseded_full_patch"
+    },
+    {
+      "stage": "r2e2a",
+      "path": "b16-proposals/r2e2a/superseded/full-draft.patch",
+      "blob": "d2284d4c2c7e878e082c21ea1bcd8fd0c748372e",
+      "bytes": 20906,
+      "sha256": "8bb37dcf7b4c82621ad31e92be32c841877c5bc64e697d4665a8f7f8a6d4e3b1",
+      "role": "superseded_full_patch"
+    },
+    {
+      "stage": "r2e3",
+      "path": "b16-proposals/r2e3/superseded/full-draft.patch",
+      "blob": "42b678d466f81a396fb757703e0c9128b3a4b665",
+      "bytes": 17274,
+      "sha256": "eeda25143e8a45377305edb1a9b402ccda362aaedca600539413cebe0dadb59d",
+      "role": "superseded_full_patch"
+    }
+  ],
+  "supporting_artifacts": [
+    {
+      "stage": "r2e1",
+      "path": "b16-proposals/r2e1/interface-contract.json",
+      "blob": "5b901bc677cea3b3af687bc709f10349ad604372",
+      "bytes": 8001,
+      "sha256": "569617248028b93e28ad31eb34d0581327771433a3ac1736eb11c0522bfb1823",
+      "role": "interface_contract"
+    },
+    {
+      "stage": "r2e2a",
+      "path": "b16-proposals/r2e2a/superseded/manifest-draft.json",
+      "blob": "18e884793c669f4a533aea76bfdf0c28806b39be",
+      "bytes": 11233,
+      "sha256": "5c44961a8b9411873fe33cab754c94cb7c63a2d41f5ed125ef1cd2da55ef5d65",
+      "role": "superseded_manifest"
+    }
+  ],
+  "provenance": [
+    {
+      "stage": "r2c",
+      "archive_path": "b16-proposals/r2c/source/codex-rs/state/src/sqlite.rs",
+      "manifest_json_pointer": "/files/0",
+      "source_path": "codex-rs/state/src/sqlite.rs",
+      "bucket": "active",
+      "metadata_verification": "declared_in_exact_local_manifest_not_refetched_in_this_task",
+      "before_blob": "9f5c491e1ba85d88cd03d8bfafc1671494b7ac96"
+    },
+    {
+      "stage": "r2c",
+      "archive_path": "b16-proposals/r2c/source/codex-rs/state/src/sqlite_commit_gate_tests.rs",
+      "manifest_json_pointer": "/files/1",
+      "source_path": "codex-rs/state/src/sqlite_commit_gate_tests.rs",
+      "bucket": "active",
+      "metadata_verification": "declared_in_exact_local_manifest_not_refetched_in_this_task",
+      "before_blob": null
+    },
+    {
+      "stage": "r2c",
+      "archive_path": "b16-proposals/r2c/patches/full.patch",
+      "manifest_json_pointer": "/patch",
+      "source_path": null,
+      "bucket": "active",
+      "metadata_verification": "declared_in_exact_local_manifest_not_refetched_in_this_task",
+      "before_blob": null
+    },
+    {
+      "stage": "r2d",
+      "archive_path": "b16-proposals/r2d/source/codex-rs/state/src/sqlite.rs",
+      "manifest_json_pointer": "/files/0",
+      "source_path": "codex-rs/state/src/sqlite.rs",
+      "bucket": "active",
+      "metadata_verification": "declared_in_exact_local_manifest_not_refetched_in_this_task",
+      "before_blob": "4a147f593ef580de5d79b1dd47b0234437c629ca"
+    },
+    {
+      "stage": "r2d",
+      "archive_path": "b16-proposals/r2d/source/codex-rs/state/src/lib.rs",
+      "manifest_json_pointer": "/files/1",
+      "source_path": "codex-rs/state/src/lib.rs",
+      "bucket": "active",
+      "metadata_verification": "declared_in_exact_local_manifest_not_refetched_in_this_task",
+      "before_blob": "83a333ab206c9f9396b794058cd94bd28cedd52a"
+    },
+    {
+      "stage": "r2d",
+      "archive_path": "b16-proposals/r2d/source/codex-rs/state/src/sqlite_read_barrier.rs",
+      "manifest_json_pointer": "/files/2",
+      "source_path": "codex-rs/state/src/sqlite_read_barrier.rs",
+      "bucket": "active",
+      "metadata_verification": "declared_in_exact_local_manifest_not_refetched_in_this_task",
+      "before_blob": null
+    },
+    {
+      "stage": "r2d",
+      "archive_path": "b16-proposals/r2d/source/codex-rs/state/src/sqlite_read_barrier_tests.rs",
+      "manifest_json_pointer": "/files/3",
+      "source_path": "codex-rs/state/src/sqlite_read_barrier_tests.rs",
+      "bucket": "active",
+      "metadata_verification": "declared_in_exact_local_manifest_not_refetched_in_this_task",
+      "before_blob": null
+    },
+    {
+      "stage": "r2d",
+      "archive_path": "b16-proposals/r2d/patches/full.patch",
+      "manifest_json_pointer": "/patch",
+      "source_path": null,
+      "bucket": "active",
+      "metadata_verification": "declared_in_exact_local_manifest_not_refetched_in_this_task",
+      "before_blob": null
+    },
+    {
+      "stage": "r2e1",
+      "archive_path": "b16-proposals/r2e1/source/codex-rs/state/src/sqlite.rs",
+      "manifest_json_pointer": "/source_files/0",
+      "source_path": "codex-rs/state/src/sqlite.rs",
+      "bucket": "active",
+      "metadata_verification": "declared_in_exact_local_manifest_not_refetched_in_this_task",
+      "before_blob": "eb73bc3c24ae6bd64a35be1187f83d5655350bbe"
+    },
+    {
+      "stage": "r2e1",
+      "archive_path": "b16-proposals/r2e1/source/codex-rs/hepta-memory/src/cognitive_store.rs",
+      "manifest_json_pointer": "/source_files/1",
+      "source_path": "codex-rs/hepta-memory/src/cognitive_store.rs",
+      "bucket": "active",
+      "metadata_verification": "declared_in_exact_local_manifest_not_refetched_in_this_task",
+      "before_blob": "03f469dcdc0b44754e92a855fcbabf7c21059899"
+    },
+    {
+      "stage": "r2e1",
+      "archive_path": "b16-proposals/r2e1/source/codex-rs/hepta-memory/src/cognitive_store_recovery.rs",
+      "manifest_json_pointer": "/source_files/2",
+      "source_path": "codex-rs/hepta-memory/src/cognitive_store_recovery.rs",
+      "bucket": "active",
+      "metadata_verification": "declared_in_exact_local_manifest_not_refetched_in_this_task",
+      "before_blob": "5639d61d6d0f97d12058a3e5eed90332864983f4"
+    },
+    {
+      "stage": "r2e1",
+      "archive_path": "b16-proposals/r2e1/source/codex-rs/hepta-memory/src/cognitive_store_gate.rs",
+      "manifest_json_pointer": "/source_files/3",
+      "source_path": "codex-rs/hepta-memory/src/cognitive_store_gate.rs",
+      "bucket": "active",
+      "metadata_verification": "declared_in_exact_local_manifest_not_refetched_in_this_task",
+      "before_blob": null
+    },
+    {
+      "stage": "r2e1",
+      "archive_path": "b16-proposals/r2e1/source/codex-rs/hepta-memory/src/objective_sender.rs",
+      "manifest_json_pointer": "/source_files/4",
+      "source_path": "codex-rs/hepta-memory/src/objective_sender.rs",
+      "bucket": "active",
+      "metadata_verification": "declared_in_exact_local_manifest_not_refetched_in_this_task",
+      "before_blob": "fe3be44196377039070c62c228d5c2e642560ac0"
+    },
+    {
+      "stage": "r2e1",
+      "archive_path": "b16-proposals/r2e1/source/codex-rs/hepta-memory/src/objective_sender_store.rs",
+      "manifest_json_pointer": "/source_files/5",
+      "source_path": "codex-rs/hepta-memory/src/objective_sender_store.rs",
+      "bucket": "active",
+      "metadata_verification": "declared_in_exact_local_manifest_not_refetched_in_this_task",
+      "before_blob": "3e4e477eced86fd0b99c33c7b147ef0be874c75e"
+    },
+    {
+      "stage": "r2e1",
+      "archive_path": "b16-proposals/r2e1/source/codex-rs/hepta-memory/src/objective_sender_commit_interlock_tests.rs",
+      "manifest_json_pointer": "/source_files/6",
+      "source_path": "codex-rs/hepta-memory/src/objective_sender_commit_interlock_tests.rs",
+      "bucket": "active",
+      "metadata_verification": "declared_in_exact_local_manifest_not_refetched_in_this_task",
+      "before_blob": null
+    },
+    {
+      "stage": "r2e1",
+      "archive_path": "b16-proposals/r2e1/patches/full.patch",
+      "manifest_json_pointer": "/full_patch",
+      "source_path": null,
+      "bucket": "active",
+      "metadata_verification": "declared_in_exact_local_manifest_not_refetched_in_this_task",
+      "before_blob": null
+    },
+    {
+      "stage": "r2e2a",
+      "archive_path": "b16-proposals/r2e2a/source/codex-rs/hepta-memory/src/lib.rs",
+      "manifest_json_pointer": "/postimages/0",
+      "source_path": "codex-rs/hepta-memory/src/lib.rs",
+      "bucket": "active",
+      "metadata_verification": "declared_in_exact_local_manifest_not_refetched_in_this_task",
+      "before_blob": null
+    },
+    {
+      "stage": "r2e2a",
+      "archive_path": "b16-proposals/r2e2a/source/codex-rs/hepta-memory/src/cognitive_checkpoint_wire.rs",
+      "manifest_json_pointer": "/postimages/1",
+      "source_path": "codex-rs/hepta-memory/src/cognitive_checkpoint_wire.rs",
+      "bucket": "active",
+      "metadata_verification": "declared_in_exact_local_manifest_not_refetched_in_this_task",
+      "before_blob": null
+    },
+    {
+      "stage": "r2e2a",
+      "archive_path": "b16-proposals/r2e2a/source/codex-rs/hepta-memory/src/cognitive_checkpoint_codec.rs",
+      "manifest_json_pointer": "/postimages/2",
+      "source_path": "codex-rs/hepta-memory/src/cognitive_checkpoint_codec.rs",
+      "bucket": "active",
+      "metadata_verification": "declared_in_exact_local_manifest_not_refetched_in_this_task",
+      "before_blob": null
+    },
+    {
+      "stage": "r2e2a",
+      "archive_path": "b16-proposals/r2e2a/source/codex-rs/hepta-memory/src/cognitive_checkpoint_codec_tests.rs",
+      "manifest_json_pointer": "/postimages/3",
+      "source_path": "codex-rs/hepta-memory/src/cognitive_checkpoint_codec_tests.rs",
+      "bucket": "active",
+      "metadata_verification": "declared_in_exact_local_manifest_not_refetched_in_this_task",
+      "before_blob": null
+    },
+    {
+      "stage": "r2e2a",
+      "archive_path": "b16-proposals/r2e2a/patches/full.patch",
+      "manifest_json_pointer": "/patch",
+      "source_path": null,
+      "bucket": "active",
+      "metadata_verification": "declared_in_exact_local_manifest_not_refetched_in_this_task",
+      "before_blob": null
+    },
+    {
+      "stage": "r2e2b",
+      "archive_path": "b16-proposals/r2e2b/source/codex-rs/hepta-memory/src/cognitive_checkpoint_codec.rs",
+      "manifest_json_pointer": "/postimages/0",
+      "source_path": "codex-rs/hepta-memory/src/cognitive_checkpoint_codec.rs",
+      "bucket": "active",
+      "metadata_verification": "declared_in_exact_local_manifest_not_refetched_in_this_task",
+      "before_blob": null
+    },
+    {
+      "stage": "r2e2b",
+      "archive_path": "b16-proposals/r2e2b/source/codex-rs/hepta-memory/src/cognitive_checkpoint_codec_tests.rs",
+      "manifest_json_pointer": "/postimages/1",
+      "source_path": "codex-rs/hepta-memory/src/cognitive_checkpoint_codec_tests.rs",
+      "bucket": "active",
+      "metadata_verification": "declared_in_exact_local_manifest_not_refetched_in_this_task",
+      "before_blob": null
+    },
+    {
+      "stage": "r2e2b",
+      "archive_path": "b16-proposals/r2e2b/patches/full.patch",
+      "manifest_json_pointer": "/patch",
+      "source_path": null,
+      "bucket": "active",
+      "metadata_verification": "declared_in_exact_local_manifest_not_refetched_in_this_task",
+      "before_blob": null
+    },
+    {
+      "stage": "r2e3",
+      "archive_path": "b16-proposals/r2e3/source/codex-rs/state/src/sqlite.rs",
+      "manifest_json_pointer": "/source_files/0",
+      "source_path": "codex-rs/state/src/sqlite.rs",
+      "bucket": "active",
+      "metadata_verification": "declared_in_exact_local_manifest_not_refetched_in_this_task",
+      "before_blob": "7b9ee0117d7425e20e4f08255aa0fe3e319f26ea"
+    },
+    {
+      "stage": "r2e3",
+      "archive_path": "b16-proposals/r2e3/source/codex-rs/hepta-memory/src/cognitive_store.rs",
+      "manifest_json_pointer": "/source_files/1",
+      "source_path": "codex-rs/hepta-memory/src/cognitive_store.rs",
+      "bucket": "active",
+      "metadata_verification": "declared_in_exact_local_manifest_not_refetched_in_this_task",
+      "before_blob": "f670ec69480bc8960c7a3f90a9dc80e4ebd9763c"
+    },
+    {
+      "stage": "r2e3",
+      "archive_path": "b16-proposals/r2e3/source/codex-rs/hepta-memory/src/cognitive_store_gate.rs",
+      "manifest_json_pointer": "/source_files/2",
+      "source_path": "codex-rs/hepta-memory/src/cognitive_store_gate.rs",
+      "bucket": "active",
+      "metadata_verification": "declared_in_exact_local_manifest_not_refetched_in_this_task",
+      "before_blob": "f69a43e09aa1864dda3e208ffb7a53b41e05d9d7"
+    },
+    {
+      "stage": "r2e3",
+      "archive_path": "b16-proposals/r2e3/source/codex-rs/hepta-memory/src/cognitive_store_recovery.rs",
+      "manifest_json_pointer": "/source_files/3",
+      "source_path": "codex-rs/hepta-memory/src/cognitive_store_recovery.rs",
+      "bucket": "active",
+      "metadata_verification": "declared_in_exact_local_manifest_not_refetched_in_this_task",
+      "before_blob": "994230252cf0992b811c0aba08f5e4d97565c923"
+    },
+    {
+      "stage": "r2e3",
+      "archive_path": "b16-proposals/r2e3/source/codex-rs/hepta-memory/src/objective_sender.rs",
+      "manifest_json_pointer": "/source_files/4",
+      "source_path": "codex-rs/hepta-memory/src/objective_sender.rs",
+      "bucket": "active",
+      "metadata_verification": "declared_in_exact_local_manifest_not_refetched_in_this_task",
+      "before_blob": "6b3102c0ec4422b3658415df2372a7480990c6e2"
+    },
+    {
+      "stage": "r2e3",
+      "archive_path": "b16-proposals/r2e3/source/codex-rs/hepta-memory/src/objective_sender_connection_custody_tests.rs",
+      "manifest_json_pointer": "/source_files/5",
+      "source_path": "codex-rs/hepta-memory/src/objective_sender_connection_custody_tests.rs",
+      "bucket": "active",
+      "metadata_verification": "declared_in_exact_local_manifest_not_refetched_in_this_task",
+      "before_blob": null
+    },
+    {
+      "stage": "r2e3",
+      "archive_path": "b16-proposals/r2e3/patches/full.patch",
+      "manifest_json_pointer": "/full_patch",
+      "source_path": null,
+      "bucket": "active",
+      "metadata_verification": "declared_in_exact_local_manifest_not_refetched_in_this_task",
+      "before_blob": null
+    },
+    {
+      "stage": "r2c",
+      "archive_path": "b16-proposals/r2c/patches/revision-v2-to-v3.patch",
+      "manifest_json_pointer": "/review_revision/delta",
+      "source_path": null,
+      "bucket": "active",
+      "metadata_verification": "declared_in_exact_local_manifest_not_refetched_in_this_task",
+      "before_blob": null
+    },
+    {
+      "stage": "r2d",
+      "archive_path": "b16-proposals/r2d/negative/cancel-close-on-drop/codex-rs/state/src/sqlite_read_barrier.rs",
+      "manifest_json_pointer": "/cancellation_counterfactual/counterfactual_source",
+      "source_path": "codex-rs/state/src/sqlite_read_barrier.rs",
+      "bucket": "active",
+      "metadata_verification": "declared_in_exact_local_manifest_not_refetched_in_this_task",
+      "before_blob": null
+    },
+    {
+      "stage": "r2d",
+      "archive_path": "b16-proposals/r2d/patches/final-to-cancel-counterfactual.patch",
+      "manifest_json_pointer": "/cancellation_counterfactual/final_to_counterfactual_patch",
+      "source_path": null,
+      "bucket": "active",
+      "metadata_verification": "declared_in_exact_local_manifest_not_refetched_in_this_task",
+      "before_blob": null
+    },
+    {
+      "stage": "r2d",
+      "archive_path": "b16-proposals/r2d/patches/cancel-counterfactual-to-final.patch",
+      "manifest_json_pointer": "/cancellation_counterfactual/counterfactual_to_final_patch",
+      "source_path": null,
+      "bucket": "active",
+      "metadata_verification": "declared_in_exact_local_manifest_not_refetched_in_this_task",
+      "before_blob": null
+    },
+    {
+      "stage": "r2e1",
+      "archive_path": "b16-proposals/r2e1/patches/test-only-negative.patch",
+      "manifest_json_pointer": "/validation_plan/baseline/patch",
+      "source_path": null,
+      "bucket": "active",
+      "metadata_verification": "declared_in_exact_local_manifest_not_refetched_in_this_task",
+      "before_blob": null
+    },
+    {
+      "stage": "r2e1",
+      "archive_path": "b16-proposals/r2e1/negative/test-only/codex-rs/hepta-memory/src/objective_sender.rs",
+      "manifest_json_pointer": "/validation_plan/baseline/objective_sender_postimage",
+      "source_path": "codex-rs/hepta-memory/src/objective_sender.rs",
+      "bucket": "active",
+      "metadata_verification": "declared_in_exact_local_manifest_not_refetched_in_this_task",
+      "before_blob": null
+    },
+    {
+      "stage": "r2e1",
+      "archive_path": "b16-proposals/r2e1/patches/repair-after-negative.patch",
+      "manifest_json_pointer": "/validation_plan/repair_after_baseline/patch",
+      "source_path": null,
+      "bucket": "active",
+      "metadata_verification": "declared_in_exact_local_manifest_not_refetched_in_this_task",
+      "before_blob": null
+    },
+    {
+      "stage": "r2e3",
+      "archive_path": "b16-proposals/r2e3/patches/test-only-negative.patch",
+      "manifest_json_pointer": "/validation/baseline/patch",
+      "source_path": null,
+      "bucket": "active",
+      "metadata_verification": "declared_in_exact_local_manifest_not_refetched_in_this_task",
+      "before_blob": null
+    },
+    {
+      "stage": "r2e3",
+      "archive_path": "b16-proposals/r2e3/patches/repair-after-negative.patch",
+      "manifest_json_pointer": "/validation/repair_after_baseline/patch",
+      "source_path": null,
+      "bucket": "active",
+      "metadata_verification": "declared_in_exact_local_manifest_not_refetched_in_this_task",
+      "before_blob": null
+    },
+    {
+      "stage": "r2e3",
+      "archive_path": "b16-proposals/r2e3/negative/no-native-anchor/codex-rs/state/src/sqlite.rs",
+      "manifest_json_pointer": "/validation/anchor_only_counterfactual/source",
+      "source_path": "codex-rs/state/src/sqlite.rs",
+      "bucket": "active",
+      "metadata_verification": "declared_in_exact_local_manifest_not_refetched_in_this_task",
+      "before_blob": null
+    },
+    {
+      "stage": "r2e3",
+      "archive_path": "b16-proposals/r2e3/patches/final-to-no-native-anchor.patch",
+      "manifest_json_pointer": "/validation/anchor_only_counterfactual/patch",
+      "source_path": null,
+      "bucket": "active",
+      "metadata_verification": "declared_in_exact_local_manifest_not_refetched_in_this_task",
+      "before_blob": null
+    },
+    {
+      "stage": "r2e3",
+      "archive_path": "b16-proposals/r2e3/patches/no-native-anchor-to-final.patch",
+      "manifest_json_pointer": "/validation/anchor_only_counterfactual/restore",
+      "source_path": null,
+      "bucket": "active",
+      "metadata_verification": "declared_in_exact_local_manifest_not_refetched_in_this_task",
+      "before_blob": null
+    },
+    {
+      "stage": "r2c",
+      "archive_path": "b16-proposals/r2c/superseded/source-v2/codex-rs/state/src/sqlite_commit_gate_tests.rs",
+      "manifest_json_pointer": "/review_revision/superseded_test_blob",
+      "source_path": "codex-rs/state/src/sqlite_commit_gate_tests.rs",
+      "bucket": "history",
+      "metadata_verification": "fetched_exact_blob_bytes_and_both_hashes",
+      "before_blob": null
+    },
+    {
+      "stage": "r2c",
+      "archive_path": "b16-proposals/r2c/superseded/full-v2.patch",
+      "manifest_json_pointer": "/review_revision/superseded_full_patch",
+      "source_path": null,
+      "bucket": "history",
+      "metadata_verification": "fetched_exact_blob_bytes_and_both_hashes",
+      "before_blob": null
+    },
+    {
+      "stage": "r2c",
+      "archive_path": "b16-proposals/r2c/superseded/source-v1/codex-rs/state/src/sqlite_commit_gate_tests.rs",
+      "manifest_json_pointer": "/review_revision_history/0/superseded_test_blob",
+      "source_path": "codex-rs/state/src/sqlite_commit_gate_tests.rs",
+      "bucket": "history",
+      "metadata_verification": "fetched_exact_blob_bytes_and_both_hashes",
+      "before_blob": null
+    },
+    {
+      "stage": "r2c",
+      "archive_path": "b16-proposals/r2c/superseded/full-v1.patch",
+      "manifest_json_pointer": "/review_revision_history/0/superseded_full_patch",
+      "source_path": null,
+      "bucket": "history",
+      "metadata_verification": "fetched_exact_blob_bytes_and_both_hashes",
+      "before_blob": null
+    },
+    {
+      "stage": "r2c",
+      "archive_path": "b16-proposals/r2c/superseded/revision-v1-to-v2.patch",
+      "manifest_json_pointer": "/review_revision_history/0/delta",
+      "source_path": null,
+      "bucket": "history",
+      "metadata_verification": "declared_in_exact_local_manifest_not_refetched_in_this_task",
+      "before_blob": null
+    },
+    {
+      "stage": "r2e1",
+      "archive_path": "b16-proposals/r2e1/superseded/full-v1.patch",
+      "manifest_json_pointer": "/superseded_unexecuted_candidates/0/patch",
+      "source_path": null,
+      "bucket": "history",
+      "metadata_verification": "fetched_exact_blob_bytes_and_both_hashes",
+      "before_blob": null
+    },
+    {
+      "stage": "r2e1",
+      "archive_path": "b16-proposals/r2e1/superseded/full-v2.patch",
+      "manifest_json_pointer": "/superseded_unexecuted_candidates/1/patch",
+      "source_path": null,
+      "bucket": "history",
+      "metadata_verification": "fetched_exact_blob_bytes_and_both_hashes",
+      "before_blob": null
+    },
+    {
+      "stage": "r2e2a",
+      "archive_path": "b16-proposals/r2e2a/superseded/full-draft.patch",
+      "manifest_json_pointer": "/source_revision/unexecuted_drafts_superseded/1",
+      "source_path": null,
+      "bucket": "history",
+      "metadata_verification": "fetched_exact_blob_bytes_and_both_hashes",
+      "before_blob": null
+    },
+    {
+      "stage": "r2e3",
+      "archive_path": "b16-proposals/r2e3/superseded/full-draft.patch",
+      "manifest_json_pointer": "/superseded_draft",
+      "source_path": null,
+      "bucket": "history",
+      "metadata_verification": "fetched_exact_blob_bytes_and_both_hashes",
+      "before_blob": null
+    },
+    {
+      "stage": "r2e1",
+      "archive_path": "b16-proposals/r2e1/interface-contract.json",
+      "manifest_json_pointer": "/interface_contract",
+      "source_path": null,
+      "bucket": "supporting",
+      "metadata_verification": "fetched_exact_blob_bytes_and_both_hashes",
+      "before_blob": null
+    },
+    {
+      "stage": "r2e2a",
+      "archive_path": "b16-proposals/r2e2a/superseded/manifest-draft.json",
+      "manifest_json_pointer": "/source_revision/unexecuted_drafts_superseded/0",
+      "source_path": null,
+      "bucket": "supporting",
+      "metadata_verification": "fetched_exact_blob_bytes_and_both_hashes",
+      "before_blob": null
+    }
+  ],
+  "summary": {
+    "active_artifact_rows": 43,
+    "active_unique_blobs": 43,
+    "active_total_declared_bytes": 654416,
+    "superseded_artifact_rows": 9,
+    "supporting_artifact_rows": 2,
+    "all_unique_blobs": 54,
+    "per_stage_active_roles": {
+      "r2c": {
+        "source_postimage": 2,
+        "full_patch": 1,
+        "revision_delta_patch": 1
+      },
+      "r2d": {
+        "source_postimage": 4,
+        "full_patch": 1,
+        "negative_source_postimage": 1,
+        "negative_patch": 1,
+        "restore_patch": 1
+      },
+      "r2e1": {
+        "source_postimage": 7,
+        "full_patch": 1,
+        "negative_test_only_patch": 1,
+        "negative_source_postimage": 1,
+        "repair_after_negative_patch": 1
+      },
+      "r2e2a": {
+        "source_postimage": 4,
+        "full_patch": 1
+      },
+      "r2e2b": {
+        "source_postimage": 2,
+        "full_patch": 1
+      },
+      "r2e3": {
+        "source_postimage": 6,
+        "full_patch": 1,
+        "negative_test_only_patch": 1,
+        "repair_after_negative_patch": 1,
+        "negative_source_postimage": 1,
+        "negative_patch": 1,
+        "restore_patch": 1
+      }
+    },
+    "direct_sha_references_classified": 238,
+    "reference_dispositions": {
+      "commit_or_tree_identity_not_blob_payload": 26,
+      "existing_donor_contract_recipe_lock_or_review_reference": 44,
+      "source_preimage_reference_not_new_postimage": 10,
+      "selected_active_blob_or_alias": 65,
+      "external_dependency_source_or_commit_excluded": 73,
+      "manifest_reference_not_source_postimage": 8,
+      "selected_superseded_source_or_patch_or_alias": 10,
+      "selected_supporting_contract_or_manifest": 2
+    },
+    "unclassified_output_refs": 0,
+    "external_payloads_in_selected_rows": 0
+  },
+  "dependency_notes": [
+    "R2d's unchanged predecessor annotation names R2c v2 test e1ea6dcb, while the supplied R2c v3 manifest publishes test31b26a78. Its required production sqlite4a147f is unchanged and R2d does not patch that test; preserve both identities, do not silently rewrite the frozen manifests.",
+    "R2e2b's required-predecessor patch9743a504 is already archived under R2e2a and is not duplicated as a new R2e2b patch.",
+    "R2e1 test-only negative reuses final test62d85c33; it is already a source_postimage. The distinct negative objective_sender36105804 is archived separately.",
+    "R2c/R2d/R2e2a/R2e2b new APIs do not acquire an old-product baseline merely because their modules did not exist. Only explicitly defined physical/source or malformed-input controls retain that scope.",
+    "This inventory does not create one combined application tree, alter any required preimage, or imply that six proposal stages were compiled or run."
+  ],
+  "verification_limits": [
+    "Active rows use exact local manifest bytes/sha256 declarations; this task did not independently fetch all43 active bodies.",
+    "Ten supplemental blobs were fetched read-only only to recover missing metadata or identify a JSON draft. Their content Git SHA, UTF-8 byte length and SHA256 were independently calculated.",
+    "The interface contract and directly referenced superseded JSON manifest are supporting artifacts; they are not code postimages.",
+    "Historical lists cover direct references in the six given manifests, not an unbounded recursive archive of every previous manuscript.",
+    "External SQLx/SQLite sources, unchanged locks/recipes, original preimages and donor background sources are excluded from proposal payload lists and classified in reference coverage.",
+    "Root must fetch each desired active body and validate byte length/Git SHA/SHA256 before repository archival. Negative and superseded bytes belong only in qualification, never automatically in live source.",
+    "No native command, tests, permission changes, product source mutation, git ref update or publication is performed by this extraction."
+  ]
+}

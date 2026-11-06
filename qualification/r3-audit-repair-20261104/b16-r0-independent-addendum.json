@@ -1,0 +1,318 @@
+{
+  "schema": "hepta.b16-r0.independent-source-addendum.v1",
+  "reviewed_at_utc": "2026-11-04 19:39:45 UTC",
+  "review_kind": "READ_ONLY_FIXED_SOURCE_REVIEW",
+  "original_plan_unchanged": {
+    "markdown_blob": "dddedf9b0e4662d2126f925c765c6ea73976f729",
+    "json_blob": "0b98a426215dd3b947389587379599bb936b15c5"
+  },
+  "primary_proof": {
+    "blob": "4272a55179316d39863378a53023944dfef1a8d8",
+    "bytes": 34698,
+    "sha256": "3b65220aca69a7b3045fd88c2ecafea235c3483852fdf0f31fd9f346cb2f9565",
+    "author": "architecture_audit",
+    "independent_verdict": "STATIC_SOURCE_CLAIMS_ACCEPTED_WITH_EXPLICIT_SCOPE"
+  },
+  "refs": {
+    "hepta_ff72": {
+      "commit": "ff72d462d74f9eb856aa9edbc368caad9c466708",
+      "tree": "f780fe13946102a33b329898af48810be9c7bf0c",
+      "parents": [
+        "e729e6c2becb528e3a6b49c9e5bbea57bd26637a"
+      ]
+    },
+    "hepta_donor": {
+      "commit": "14e2d89b3367232ec5dbe6187f09feed0f2b68d3",
+      "tree": "0e12d53adf6a13721fdb2feef0e974d903b92e85",
+      "parents": [
+        "a39a0871d9601ffccb5e0d95d8f39d54b3a63360"
+      ]
+    },
+    "desktop_current": {
+      "commit": "c42eccaf8b9b5a163d0c52b1a3c42466fe0f425b",
+      "tree": "6133f7825fd266f47c5546cb1220b25dba5361ff",
+      "parents": [
+        "07116475bf07db624144086af51224590b68fe76"
+      ]
+    },
+    "desktop_old": {
+      "commit": "c2c369836e87e9cf27b4dc9aa8b7446e85efdf90",
+      "tree": "56f2672a7eeca971870e616762b0a730bec2d32b",
+      "parents": [
+        "5a8684cc4591a4163c162f198b4121ca4cfc6ebc"
+      ]
+    }
+  },
+  "independently_verified": {
+    "primary_quoted_blobs": 12,
+    "primary_quoted_ranges": 18,
+    "all_git_sha_and_sha256_matches": true,
+    "all_exact_excerpts_match": true,
+    "complete_recursive_trees": [
+      {
+        "key": "desktop_current_ui",
+        "sha": "008a430cb3122b14b6f4907ed30094b10845d303",
+        "truncated": false,
+        "entries": 110
+      },
+      {
+        "key": "desktop_old_ui",
+        "sha": "d076fbecc6d017d31963520fb34f3b496d58b66a",
+        "truncated": false,
+        "entries": 121
+      },
+      {
+        "key": "desktop_services",
+        "sha": "247dfcc7a451b8bd6926fe2d5013120ace0c984d",
+        "truncated": false,
+        "entries": 117
+      },
+      {
+        "key": "agentd_ff72",
+        "sha": "b47bd855d1e4aec4a0531fa446245408779a8738",
+        "truncated": false,
+        "entries": 150
+      },
+      {
+        "key": "agentd_a69",
+        "sha": "f62527b778f5c36d5e3de6307cf942b1303d495b",
+        "truncated": false,
+        "entries": 150
+      }
+    ],
+    "metadata_only_branch_compare": {
+      "base": "c2c369836e87e9cf27b4dc9aa8b7446e85efdf90",
+      "head": "c42eccaf8b9b5a163d0c52b1a3c42466fe0f425b",
+      "status": "diverged",
+      "ahead_by": 12,
+      "behind_by": 2,
+      "merge_base": "fd8d56c52b971c2d5d0e6430f296803b43ef60a3",
+      "scope": "Compare metadata only; paths independently checked via complete trees, no assumption compare-file pagination complete."
+    },
+    "additional_sources": [
+      {
+        "path": "codex-rs/hepta-agentd/src/main.rs",
+        "blob": "60595420f4bf42089b5745830ac611df1c7ec2c2",
+        "ref_key": "hepta_ff72",
+        "bytes": 9303,
+        "sha256": "00f3134561b2f5773c1f114fba897e369db9f2c4f28192086596a37bf93ba319",
+        "git_hash_verified": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/objective_client.rs",
+        "blob": "2397967d9f47d5cbaf4c701bb89a0c14cd547f80",
+        "ref_key": "hepta_ff72",
+        "bytes": 19182,
+        "sha256": "86adcbb75186f5dbcd7347c372b4ee76b8faa5ada0a86cc85c6ff2c7f7798427",
+        "git_hash_verified": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/objective_client_transport.rs",
+        "blob": "8aa4f0eeb94de4f692280cdb0b81a4450ee72467",
+        "ref_key": "hepta_ff72",
+        "bytes": 4004,
+        "sha256": "80a64e5460474d0c9973f6f8721eaa129abcaf2c2cb793f9811c649e7a1d0496",
+        "git_hash_verified": true
+      },
+      {
+        "path": "codex-rs/app-server-transport/src/transport/unix_socket.rs",
+        "blob": "0cb230d72e799350eef0405deb2f34d4ef8d79ac",
+        "ref_key": "hepta_ff72",
+        "bytes": 6647,
+        "sha256": "bd577d25855a19737d1c283874873add66732f07054b9d469a2cc8ea94aac612",
+        "git_hash_verified": true
+      },
+      {
+        "path": "codex-rs/app-server-transport/src/transport/unix_socket.rs",
+        "blob": "f419409fb1004e1e9e74e4ef0e033e4ba880756b",
+        "ref_key": "hepta_donor",
+        "bytes": 8220,
+        "sha256": "fbd25446ce960b96b2c073ccb446de90f87b9ae373e475a53a40185136a3ec1a",
+        "git_hash_verified": true
+      },
+      {
+        "path": "codex-rs/uds/src/lib.rs",
+        "blob": "1fe59d7df88a6a155e37e36329535231d3c61a86",
+        "ref_key": "hepta_ff72",
+        "bytes": 14863,
+        "sha256": "abb1dfe9b8e7180b680bacb045a7409e24f666a3ef6cca8701a20e78a5f2348e",
+        "git_hash_verified": true
+      }
+    ]
+  },
+  "findings": [
+    {
+      "id": "B16-R0-PRODUCER",
+      "status": "REPOSITORY_CODE_GAP_PROVEN_IN_ACTUAL_NORMAL_PATH",
+      "statement": "Desktop c42 and old c2 have exactly the same services tree. The actual hepta-desktop-root initialize/recover path remains Notes-specific; newer Desktop PR numbering does not supply a joint Notes+Calculator producer.",
+      "evidence": {
+        "services_tree": "247dfcc7a451b8bd6926fe2d5013120ace0c984d",
+        "entry_blob": "7f3acf48ee1f7bead9563742e34486449f7f3a2d",
+        "root_blob": "3c62925cc7e6c7aae2fc6805fa64c2bf11cc196b",
+        "session_blob": "7054223d1c27a66f02da4f487e094fc7029cc0ff",
+        "seed_blob": "64156170baea0436213546da6b710b511a8e79eb",
+        "authority_blob": "0c030f500806c8b7a18c714e328aab10c1a0215e",
+        "actual_contracts": [
+          "--root-production-profile notes",
+          "--notes-root-bootstrap-stdin",
+          "NotesThreadSeedReceipt",
+          "organ.desktop.notes",
+          "HostIssuerRecordProfile::TextRecovery",
+          "hepta.root.notes_launch_profile.v1"
+        ]
+      },
+      "limit": "Absence is scoped to the inspected actual product_root startup path; not a claim that no conceivable external embedding exists."
+    },
+    {
+      "id": "B16-R0-CONSUMER",
+      "status": "CURRENT_DESKTOP_SOURCE_GAP_PROVEN",
+      "statement": "Current c42 does not inherit the old c2 joint consumer set. Its actual session parser accepts only no arguments, Notes direct, and Notes Root-reserved modes.",
+      "evidence": {
+        "current_ui_tree": "008a430cb3122b14b6f4907ed30094b10845d303",
+        "old_ui_tree": "d076fbecc6d017d31963520fb34f3b496d58b66a",
+        "current_parser_blob": "e5fd020369f8ce51c7a4fcf438e95e795e5d0ac8",
+        "old_parser_blob": "ef957ebff5908511ec0a45a924ec085bd27d6310",
+        "named_absences": [
+          {
+            "path": "ui/core/src/desktop_startup.rs",
+            "current": null,
+            "old": "46e10c811042728546ad6060d08cafd54bb3343f"
+          },
+          {
+            "path": "ui/core/src/calculator.rs",
+            "current": null,
+            "old": "9724a2091a753bfc59d6865780b7985baff87275"
+          },
+          {
+            "path": "ui/core/src/calculator_lifetime.rs",
+            "current": null,
+            "old": "91a9bb58d17c64f54e14a712d08cc679fdf6571f"
+          },
+          {
+            "path": "ui/session/src/desktop_bootstrap.rs",
+            "current": null,
+            "old": "0ae04796e17d1a8db85ce5995ef07e5cb9503fdd"
+          },
+          {
+            "path": "ui/app-window/src/calculator_organ.rs",
+            "current": null,
+            "old": "87bd6d7b0c1e1de8299aae7df7d2abdf9fa72fa7"
+          }
+        ]
+      },
+      "limit": "Five exact old modules and the real parser only; not an assertion that all current Desktop features or every possible alternative implementation are absent."
+    },
+    {
+      "id": "B16-R0-DONOR",
+      "status": "EXISTING_STRICT_COMPONENT_NOT_NORMAL_PRODUCT_ACCEPTANCE",
+      "statement": "Donor 14e2 provides a strict joint consumer of a genuine Root/Session reservation. It is not evidence that the inspected Desktop normal producer emits that reservation.",
+      "evidence": {
+        "profile_blob": "4dc5fb941e4e082bb41447d4ec2faaf4cc412bd2",
+        "deployment_blob": "c756a1ac5f22644a9b0b1c012c2dfd5879750a13",
+        "schema": "hepta.root.desktop_launch_profile.v1",
+        "profile": "notes_calculator_v1",
+        "grant_lifetime_ms_min": 1,
+        "grant_lifetime_ms_max": 30000,
+        "serde_deny_unknown_fields": true
+      },
+      "limit": "30,000 ms is this joint grant field's ceiling. It must not be conflated with the historically discussed 300,000 ms Root overall lifetime. Old Notes recovery/renewal does not establish joint recovery or renewal."
+    },
+    {
+      "id": "B16-R0-SENDER",
+      "status": "CURRENT_PRODUCT_CONTRACT_MUST_SURVIVE_MIGRATION",
+      "statement": "Current attach_production_operation_host returns AgentdProductionHostAttachment<C>, including the original sender bound to the same recovered writer and checkpoint Arc. Donor returns only Option<NotesTargetIdentity>; whole-file replacement would discard the current composition contract.",
+      "evidence": {
+        "current_composition_blob": "1464029ba8643aa7a44f3835d0ab700bb3673156",
+        "donor_composition_blob": "3e554d364d992c20ca53628b3f0852d5cb296782",
+        "ui_blob": "88fbf93a7d27f0382143df8caaab8a65591699e2",
+        "client_blob": "2397967d9f47d5cbaf4c701bb89a0c14cd547f80",
+        "transport_blob": "8aa4f0eeb94de4f692280cdb0b81a4450ee72467"
+      },
+      "requirements": [
+        "Keep original signed request, owner/generation/run/expiry/draft bindings.",
+        "Keep actual daemon UID/PID kernel checks on every I/O, bounded frame and lifecycle-generation checks.",
+        "Keep original retention/checkpoint-before-send and one-send/recovered no-resubmit semantics; do not create replacement trust or writer in UI."
+      ]
+    },
+    {
+      "id": "B16-R0-ORDINARY-PEER",
+      "status": "CURRENT_SECURITY_CONTRACT_MUST_SURVIVE_MIGRATION",
+      "statement": "ff72 normal AppServer UDS checks current-user kernel peer identity before every WebSocket upgrade. The inspected donor file checks current-user-or-root only when inherited on Linux. Direct donor replacement would omit the current ordinary-connection gate.",
+      "evidence": {
+        "current_transport_blob": "0cb230d72e799350eef0405deb2f34d4ef8d79ac",
+        "donor_transport_blob": "f419409fb1004e1e9e74e4ef0e033e4ba880756b",
+        "current_uds_exports_blob": "1fe59d7df88a6a155e37e36329535231d3c61a86",
+        "current_gate_lines": [
+          77,
+          84,
+          183,
+          184
+        ],
+        "donor_inherited_gate_lines": [
+          121,
+          125
+        ]
+      },
+      "requirements": [
+        "Retain current ordinary ensure_current_user_peer gate and existing owner_local exports/implementation.",
+        "Any explicitly inherited Root path must preserve its original authenticated handoff contract and remain separate from ordinary acceptance.",
+        "This review adds no trust parser, UID exception or production security edit."
+      ]
+    }
+  ],
+  "a69_source_scope": {
+    "tree": "a69b20c4c3cfee9cf483496742d6bea1469d847a",
+    "agentd_complete_tree_differences": [
+      {
+        "path": "tests/five_agent_rolling_upgrade.rs",
+        "old": "08afc2c6c333974567385a9f5630e0b6b71a6fbd",
+        "new": "61f225f28bfb1be24457868b5822999f5e5e5861"
+      },
+      {
+        "path": "tests/supervisord_product_e2e.rs",
+        "old": "01c7b1cfbaaf08c304ecc9c8983ae26c54a813b0",
+        "new": "3f7a0d264ad081977705dcaa348aa9cc44ea1234"
+      }
+    ],
+    "five_support_crates_identical": [
+      {
+        "crate": "arg0",
+        "ff72": "7d10dc2504e676703f7fb10c592075f4e7b6459d",
+        "a69": "7d10dc2504e676703f7fb10c592075f4e7b6459d"
+      },
+      {
+        "crate": "hepta-memory",
+        "ff72": "34e3ebcde71af34b16a606aede989a6385fa6f03",
+        "a69": "34e3ebcde71af34b16a606aede989a6385fa6f03"
+      },
+      {
+        "crate": "hepta-contracts",
+        "ff72": "5502d4677142ac68a7b7e9fc21c1a9da4272d5e6",
+        "a69": "5502d4677142ac68a7b7e9fc21c1a9da4272d5e6"
+      },
+      {
+        "crate": "hepta-objective",
+        "ff72": "4fe20d6ca8de0e7ea61a5b633f49268c4af9f80a",
+        "a69": "4fe20d6ca8de0e7ea61a5b633f49268c4af9f80a"
+      },
+      {
+        "crate": "hepta-agent-protocol",
+        "ff72": "2a18353c1abbf5d2b2f413dd07b61df6e6b99137",
+        "a69": "2a18353c1abbf5d2b2f413dd07b61df6e6b99137"
+      }
+    ],
+    "conclusion": "Agentd production source/Cargo unchanged from ff72; source gaps therefore remain at a69. This is source identity, not runtime acceptance, and does not automatically cover an unseen later tree."
+  },
+  "disposition": {
+    "B16": "REPOSITORY_INTEGRATION_AND_REAL_ACCEPTANCE_PENDING",
+    "R0_subquestion": "The actual inspected normal producer is now proven Notes-only; this source question is resolved. R0 as a full migration component and B16 remain open.",
+    "next_repository_gate": "Freeze compatible Hepta/Desktop pair; migrate the six interdependent cohorts with real normal Root producer and UI caller, preserving current sender/checkpoint/peer/owner-local contracts. No unused helper or blind 89-file import counts as closure.",
+    "next_real_acceptance_gate": "Only after source integration and same-tree qualification: use genuine operator-provisioned Root/Session/issuer/provider identities and signed objectives for original Core Notes+Calculator acceptance, expiration/revocation/recovery/refusal controls. Do not self-mint authority or substitute test receipts."
+  },
+  "limits": [
+    "No source/ref mutation, Root launch, native build, Cargo lane or runtime acceptance in this review.",
+    "Existing frozen closure plan and original audit snapshots remain unchanged.",
+    "No inference that newer PR number means ancestry or all old features are retained.",
+    "The Windows production-boundary auto-review issue is not expanded into a general prohibition on Root integration."
+  ]
+}

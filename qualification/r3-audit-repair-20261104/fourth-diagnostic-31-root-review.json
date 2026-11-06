@@ -1,0 +1,711 @@
+{
+  "schema": "hepta.rog-three-original-scopes.root-review.v1",
+  "created_at_utc": "2026-11-04 22:35:11 UTC",
+  "reviewer": "root",
+  "verdict": "31_SELECTED_NATIVE_PASS_ORIGINAL_PLATFORM_AND_FULL_SUITE_PENDING",
+  "original_bundle": {
+    "blob": "843a05a880818265f816fca44993c726ca4172b9",
+    "bytes": 310361,
+    "sha256": "7975b51d59aab8f979515d250b345574d65705cfd6903af4a7520c31094d9560"
+  },
+  "controller": {
+    "job_id": "1a1a8a61f1b-fc05-2f5a",
+    "state": "succeeded",
+    "exit_code": 0
+  },
+  "source_tree": "1c2aa1263d4087fb3432b7b900080a6af7215b14",
+  "host": "rog",
+  "cargo_build_profile": "dev-small",
+  "nextest_profile": "local",
+  "source_and_locks": {
+    "all_phases_same_tree": true,
+    "ordinary_index_equal": true,
+    "locks_equal": true,
+    "source_before": "1c2aa1263d4087fb3432b7b900080a6af7215b14",
+    "tested": "1c2aa1263d4087fb3432b7b900080a6af7215b14",
+    "final": "1c2aa1263d4087fb3432b7b900080a6af7215b14",
+    "hygiene": "Deferred to after complete batch A project/full-workspace original just-test gates."
+  },
+  "integrity": {
+    "embedded_records": 31,
+    "all_complete_bytes_and_sha256_match": true,
+    "records": [
+      {
+        "path": "terminal.json",
+        "bytes": 27598,
+        "sha256": "56d4f8ded5bf30335555f99bf273914ff641a639a0394ddb30b2f7924f08928e",
+        "match": true
+      },
+      {
+        "path": "native-host.json",
+        "bytes": 2508,
+        "sha256": "ba4f5b30938932eab0b021d11004968e5f90615035c2ea21818712af92963c75",
+        "match": true
+      },
+      {
+        "path": "pty-original-lib-plus-control-review.json",
+        "bytes": 9742,
+        "sha256": "f05219ec88f6e00d24d7163250c336c72ccbb28df12c071706f15d526ead78bd",
+        "match": true
+      },
+      {
+        "path": "pty-original-lib-plus-control-selection.json",
+        "bytes": 4944,
+        "sha256": "141d123d3ea00de350cb1104d2fe59f7b56c70816ff55370910481cd37bc2026",
+        "match": true
+      },
+      {
+        "path": "pty-original-lib-plus-control.junit.xml",
+        "bytes": 5682,
+        "sha256": "333725ac326721f5da842d26ba3ddf5836e3a34d1b373e85a0debd0625c68958",
+        "match": true
+      },
+      {
+        "path": "pty-original-lib-plus-control.log",
+        "bytes": 13293,
+        "sha256": "ab9f426d4b7be390ec46ef9438cb26cbc77fbbd9f554aead3c148a5bc3ac55be",
+        "match": true
+      },
+      {
+        "path": "forward-original-review.json",
+        "bytes": 2609,
+        "sha256": "3c96ab38373d279918a63ae16260e0678034f9210e9b09652ce2b4010b001a6e",
+        "match": true
+      },
+      {
+        "path": "forward-original-selection.json",
+        "bytes": 1427,
+        "sha256": "ffb9755dbd03ddb77dd6e95e62e851fc0b860ecaa71de9a51481a94609f2c313",
+        "match": true
+      },
+      {
+        "path": "forward-original.junit.xml",
+        "bytes": 516,
+        "sha256": "ad25b5f4b0206f50faffa1e44270cfee185c2596f8803cf2820f5c0e9469e58f",
+        "match": true
+      },
+      {
+        "path": "forward-original.log",
+        "bytes": 11154,
+        "sha256": "225e2863c4c14dd39620c19a551bdfed429b89772799751a80c6d9d88b371d9d",
+        "match": true
+      },
+      {
+        "path": "supervisord-original-review.json",
+        "bytes": 4286,
+        "sha256": "55ed7f1245b89acbfd7281dae8b3077eb652b11b455beaa1338b62759a954d11",
+        "match": true
+      },
+      {
+        "path": "supervisord-original-selection.json",
+        "bytes": 2668,
+        "sha256": "c7a1c9c5d34a05e03c7925509c8cfc4a55f3fd28d7f413f74944894959bfd427",
+        "match": true
+      },
+      {
+        "path": "supervisord-original.junit.xml",
+        "bytes": 584,
+        "sha256": "157365ce8f7660a29e15e41cf63acb74100c4cc86910edaa9638652be8e5e694",
+        "match": true
+      },
+      {
+        "path": "supervisord-original.log",
+        "bytes": 22357,
+        "sha256": "b3866e3f428dd2befe41981403697e481f3645e8087b623371d16d5eefd8a885",
+        "match": true
+      },
+      {
+        "path": "source-map.json",
+        "bytes": 29078,
+        "sha256": "11d2be1fac113bb6bc02749d33bf1cab2baf852ea78f86d82b1b0405d48d48ed",
+        "match": true
+      },
+      {
+        "path": "approved-payload.json",
+        "bytes": 6383,
+        "sha256": "6b5fdf915f014a7ba34843193147d354eed66a0d80b8fb958d943d30307a9b6d",
+        "match": true
+      },
+      {
+        "path": "runner.py",
+        "bytes": 16420,
+        "sha256": "60a89e78021cb6a857949df1c3ec7dddfdbde4ca03535494fc0601fb409ce8e1",
+        "match": true
+      },
+      {
+        "path": "continuation-source.json",
+        "bytes": 330,
+        "sha256": "46ab1e3d202335ff1afbb5136fcf2fe459d44be02c3227a5eb5e38f8eb05573d",
+        "match": true
+      },
+      {
+        "path": "workspace-metadata-command.json",
+        "bytes": 413,
+        "sha256": "8c480a492feb13a2ab45c79e3b15141f7372038b6a124c8096a50323f34fb56f",
+        "match": true
+      },
+      {
+        "path": "pty-original-lib-plus-control-command.json",
+        "bytes": 548,
+        "sha256": "13907c342d6b45125309eb51c6e88a55346bddade13cf19d05a82e2850268fbf",
+        "match": true
+      },
+      {
+        "path": "pty-original-lib-plus-control-catalog-command.json",
+        "bytes": 660,
+        "sha256": "63414d200a45b0210c36f8e73c5cc5af0533f91dd2a28cce942340ab359c6544",
+        "match": true
+      },
+      {
+        "path": "forward-original-command.json",
+        "bytes": 634,
+        "sha256": "071fd6cb5ff7e9fad97d95484665f76d724968b1b7b27e743f5201bdd5ee9d9c",
+        "match": true
+      },
+      {
+        "path": "forward-original-catalog-command.json",
+        "bytes": 746,
+        "sha256": "f3290696cebbed8f849113551fda6cfe5e98b51aeb92816b70cffda92eb07cc5",
+        "match": true
+      },
+      {
+        "path": "supervisord-original-command.json",
+        "bytes": 685,
+        "sha256": "f44afcdb8a84825c6b1c21ab1508869fb39b628f5f5ceeb624e0ce4177a8cdf8",
+        "match": true
+      },
+      {
+        "path": "supervisord-original-catalog-command.json",
+        "bytes": 797,
+        "sha256": "362039e87cd468c0d50bf5b341f9f78bb0d194a6f53dfd045c423a8fc0e051fb",
+        "match": true
+      },
+      {
+        "path": "pty-original-lib-plus-control-catalog.stdout",
+        "bytes": 4375,
+        "sha256": "4c451518eff8f2dfb83470d6ab16b3ad03189072d584f8fb0125350ea023ebeb",
+        "match": true
+      },
+      {
+        "path": "pty-original-lib-plus-control-catalog.stderr",
+        "bytes": 2381,
+        "sha256": "880cee577a7b1f72b7ee38a5cae576f5b1d71a169775bd08e581dcb99533327d",
+        "match": true
+      },
+      {
+        "path": "forward-original-catalog.stdout",
+        "bytes": 1603,
+        "sha256": "ab8eeffb3c137c4fd9109432bf01d9388f9f96788f13fa2332af3054e0916422",
+        "match": true
+      },
+      {
+        "path": "forward-original-catalog.stderr",
+        "bytes": 48983,
+        "sha256": "b972bca1f2174d3f9f1153164a840a6897f455635f0d34f3221be79d443e1958",
+        "match": true
+      },
+      {
+        "path": "supervisord-original-catalog.stdout",
+        "bytes": 2254,
+        "sha256": "8bc0023befa2d8f6e52d19e7e08e36425196403ab1717b42c55d61886853d2e1",
+        "match": true
+      },
+      {
+        "path": "supervisord-original-catalog.stderr",
+        "bytes": 61113,
+        "sha256": "73e8d1b1997cc0622ae4a94a23847fe8080ef57f5b6af7a24228ebef3b98da36",
+        "match": true
+      }
+    ],
+    "index_only": [
+      {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/remaining-diagnostics-dev-small-20261104-2225/workspace-metadata.stdout",
+        "bytes": 950797,
+        "sha256": "5292ffac7b1e1760806f2ddc7c4f7152f82b4faf0d596f8ba8e231b0bd08e205"
+      }
+    ]
+  },
+  "scopes": [
+    {
+      "name": "pty-original-lib-plus-control",
+      "actual_testcases": [
+        {
+          "name": "tests::output_collector_waits_for_exit_after_output_closes",
+          "classname": "codex-utils-pty",
+          "seconds": "0.003",
+          "result": "PASS",
+          "failure_text": ""
+        },
+        {
+          "name": "tests::driver_backed_process_can_resize_via_resizer_hook",
+          "classname": "codex-utils-pty",
+          "seconds": "0.003",
+          "result": "PASS",
+          "failure_text": ""
+        },
+        {
+          "name": "tests::driver_backed_process_can_expose_split_stdout_and_stderr",
+          "classname": "codex-utils-pty",
+          "seconds": "0.004",
+          "result": "PASS",
+          "failure_text": ""
+        },
+        {
+          "name": "tests::pipe_spawn_no_stdin_can_preserve_inherited_fds",
+          "classname": "codex-utils-pty",
+          "seconds": "0.004",
+          "result": "PASS",
+          "failure_text": ""
+        },
+        {
+          "name": "tests::pipe_process_can_expose_split_stdout_and_stderr",
+          "classname": "codex-utils-pty",
+          "seconds": "0.004",
+          "result": "PASS",
+          "failure_text": ""
+        },
+        {
+          "name": "tests::pipe_drop_reaps_child",
+          "classname": "codex-utils-pty",
+          "seconds": "0.004",
+          "result": "PASS",
+          "failure_text": ""
+        },
+        {
+          "name": "tests::pipe_drains_stderr_without_stdout_activity",
+          "classname": "codex-utils-pty",
+          "seconds": "0.012",
+          "result": "PASS",
+          "failure_text": ""
+        },
+        {
+          "name": "tests::pty_terminate_reaps_child_when_waiter_is_queued",
+          "classname": "codex-utils-pty",
+          "seconds": "0.015",
+          "result": "PASS",
+          "failure_text": ""
+        },
+        {
+          "name": "tests::pty_spawn_can_preserve_inherited_fds",
+          "classname": "codex-utils-pty",
+          "seconds": "0.019",
+          "result": "PASS",
+          "failure_text": ""
+        },
+        {
+          "name": "tests::pty_spawn_without_io_driver_returns_error",
+          "classname": "codex-utils-pty",
+          "seconds": "0.019",
+          "result": "PASS",
+          "failure_text": ""
+        },
+        {
+          "name": "tests::pty_spawn_with_inherited_fds_reports_exec_failures",
+          "classname": "codex-utils-pty",
+          "seconds": "0.020",
+          "result": "PASS",
+          "failure_text": ""
+        },
+        {
+          "name": "tests::pipe_terminate_reaps_child",
+          "classname": "codex-utils-pty",
+          "seconds": "0.020",
+          "result": "PASS",
+          "failure_text": ""
+        },
+        {
+          "name": "tests::pipe_terminate_aborts_detached_readers",
+          "classname": "codex-utils-pty",
+          "seconds": "0.005",
+          "result": "PASS",
+          "failure_text": ""
+        },
+        {
+          "name": "tests::pipe_process_round_trips_stdin",
+          "classname": "codex-utils-pty",
+          "seconds": "0.011",
+          "result": "PASS",
+          "failure_text": ""
+        },
+        {
+          "name": "tests::pty_preserving_fds_terminate_allows_runtime_shutdown_with_detached_child",
+          "classname": "codex-utils-pty",
+          "seconds": "0.026",
+          "result": "PASS",
+          "failure_text": ""
+        },
+        {
+          "name": "tests::pty_preserving_fds_drop_allows_runtime_shutdown_with_detached_child",
+          "classname": "codex-utils-pty",
+          "seconds": "0.027",
+          "result": "PASS",
+          "failure_text": ""
+        },
+        {
+          "name": "tests::pty_spawn_with_inherited_fds_supports_resize",
+          "classname": "codex-utils-pty",
+          "seconds": "0.027",
+          "result": "PASS",
+          "failure_text": ""
+        },
+        {
+          "name": "tests::pty_drop_allows_runtime_shutdown_with_detached_child",
+          "classname": "codex-utils-pty",
+          "seconds": "0.027",
+          "result": "PASS",
+          "failure_text": ""
+        },
+        {
+          "name": "tests::pty_terminate_allows_runtime_shutdown_with_detached_child",
+          "classname": "codex-utils-pty",
+          "seconds": "0.028",
+          "result": "PASS",
+          "failure_text": ""
+        },
+        {
+          "name": "tests::pty_dropped_output_receiver_keeps_draining_child",
+          "classname": "codex-utils-pty",
+          "seconds": "0.039",
+          "result": "PASS",
+          "failure_text": ""
+        },
+        {
+          "name": "tests::pty_terminate_kills_background_children_in_same_process_group",
+          "classname": "codex-utils-pty",
+          "seconds": "0.025",
+          "result": "PASS",
+          "failure_text": ""
+        },
+        {
+          "name": "tests::driver_backed_process_drains_output_that_arrives_after_exit_signal",
+          "classname": "codex-utils-pty",
+          "seconds": "0.055",
+          "result": "PASS",
+          "failure_text": ""
+        },
+        {
+          "name": "tests::pipe_and_pty_share_interface",
+          "classname": "codex-utils-pty",
+          "seconds": "0.056",
+          "result": "PASS",
+          "failure_text": ""
+        },
+        {
+          "name": "tests::pty_python_repl_emits_output_and_exits",
+          "classname": "codex-utils-pty",
+          "seconds": "0.057",
+          "result": "PASS",
+          "failure_text": ""
+        },
+        {
+          "name": "tests::pty_preserving_inherited_fds_keeps_python_repl_running",
+          "classname": "codex-utils-pty",
+          "seconds": "0.057",
+          "result": "PASS",
+          "failure_text": ""
+        },
+        {
+          "name": "tests::pty_terminate_allows_runtime_shutdown_with_full_output_channel",
+          "classname": "codex-utils-pty",
+          "seconds": "0.071",
+          "result": "PASS",
+          "failure_text": ""
+        },
+        {
+          "name": "tests::pipe_process_detaches_from_parent_session",
+          "classname": "codex-utils-pty",
+          "seconds": "0.208",
+          "result": "PASS",
+          "failure_text": ""
+        },
+        {
+          "name": "tests::pty_close_stdin_preserves_large_input_and_delivers_eof",
+          "classname": "codex-utils-pty",
+          "seconds": "0.225",
+          "result": "PASS",
+          "failure_text": ""
+        },
+        {
+          "name": "tests::pty_python_repl_readiness_waits_for_execution_after_input_echo",
+          "classname": "codex-utils-pty",
+          "seconds": "0.295",
+          "result": "PASS",
+          "failure_text": ""
+        }
+      ],
+      "selected": 29,
+      "selected_errors_failures_skips": 0,
+      "retries": 0,
+      "filtered_out": 0,
+      "complete_unfiltered_catalog": true,
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "--cargo-profile",
+        "dev-small",
+        "-p",
+        "codex-utils-pty",
+        "--lib",
+        "--no-tests",
+        "fail",
+        "--retries",
+        "0",
+        "--success-output",
+        "immediate"
+      ],
+      "command_seconds": 0.8975295319978613,
+      "catalog_seconds": 10.34767987098894,
+      "test_binary_after_catalog": [
+        {
+          "binary_id": "codex-utils-pty",
+          "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/codex_utils_pty-37f83edc1af90a66",
+          "bytes": 4323416,
+          "sha256": "a0b171ecd444bf7fb15af4b8e902a57556ca1fe598cf4e794377a72a4e01e830"
+        }
+      ],
+      "catalog_declared_helpers": [],
+      "prejust_post_identity_equal": true,
+      "helper_scope": "Original PTY fixtures use actual installed Python/shell. Runtime executable versions are recorded without replacing them.",
+      "raw_summaries": [
+        "    Starting 29 tests across 1 binary",
+        "     Summary [   0.296s] 29 tests run: 29 passed, 0 skipped"
+      ],
+      "actual_observations": [
+        "    PTY dropped receiver: starting backend=portable",
+        "    PTY dropped receiver: backend=portable spawn_elapsed=560.83µs wait_elapsed=19.637388ms outcome=exit_observed has_exited=true exit_code=Some(0)",
+        "    PTY dropped receiver: backend=portable child_phase=Ok(\"output_write_returned\")",
+        "    PTY dropped receiver: starting backend=preserved_fds",
+        "    PTY dropped receiver: backend=preserved_fds spawn_elapsed=534.48µs wait_elapsed=13.900075ms outcome=exit_observed has_exited=true exit_code=Some(0)",
+        "    PTY dropped receiver: backend=preserved_fds child_phase=Ok(\"output_write_returned\")",
+        "    PTY preserved-fd REPL: phase=readiness elapsed=30.944893ms succeeded=true has_exited=false exit_code=None"
+      ],
+      "no_recorded_early_return": true,
+      "raw_metadata_warning_count": 6
+    },
+    {
+      "name": "forward-original",
+      "actual_testcases": [
+        {
+          "name": "forwarder_runs_commands_and_transfers_files",
+          "classname": "codex-exec-server::forward",
+          "seconds": "5.542",
+          "result": "PASS",
+          "failure_text": ""
+        }
+      ],
+      "selected": 1,
+      "selected_errors_failures_skips": 0,
+      "retries": 0,
+      "filtered_out": 0,
+      "complete_unfiltered_catalog": false,
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "--cargo-profile",
+        "dev-small",
+        "-p",
+        "codex-exec-server",
+        "--test",
+        "forward",
+        "-E",
+        "test(=forwarder_runs_commands_and_transfers_files)",
+        "--no-tests",
+        "fail",
+        "--retries",
+        "0",
+        "--success-output",
+        "immediate"
+      ],
+      "command_seconds": 6.290669839014299,
+      "catalog_seconds": 84.38784882600885,
+      "test_binary_after_catalog": [
+        {
+          "binary_id": "codex-exec-server::forward",
+          "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/forward-b17f1119cf918a23",
+          "bytes": 91285872,
+          "sha256": "380fbcefd3856ac9bc4cb47a232188cbcc63a33f1f6bfb8e04e5942285ac1e36"
+        }
+      ],
+      "catalog_declared_helpers": [],
+      "prejust_post_identity_equal": true,
+      "helper_scope": "Original common fixture dispatches current_exe as real exec-server and Linux helper; selected test binary hash is the helper identity.",
+      "raw_summaries": [
+        "    Starting 1 test across 1 binary",
+        "     Summary [   5.543s] 1 test run: 1 passed, 0 skipped"
+      ],
+      "actual_observations": [],
+      "no_recorded_early_return": true,
+      "raw_metadata_warning_count": 71
+    },
+    {
+      "name": "supervisord-original",
+      "actual_testcases": [
+        {
+          "name": "five_real_agents_survive_daemon_restart_and_isolate_one_agent_release_changes",
+          "classname": "codex-hepta-agentd::supervisord_product_e2e",
+          "seconds": "4.314",
+          "result": "PASS",
+          "failure_text": ""
+        }
+      ],
+      "selected": 1,
+      "selected_errors_failures_skips": 0,
+      "retries": 0,
+      "filtered_out": 1,
+      "complete_unfiltered_catalog": false,
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "--cargo-profile",
+        "dev-small",
+        "-p",
+        "codex-hepta-agentd",
+        "--test",
+        "supervisord_product_e2e",
+        "-E",
+        "test(=five_real_agents_survive_daemon_restart_and_isolate_one_agent_release_changes)",
+        "--no-tests",
+        "fail",
+        "--retries",
+        "0",
+        "--success-output",
+        "immediate"
+      ],
+      "command_seconds": 5.28777435401571,
+      "catalog_seconds": 196.32154640500084,
+      "test_binary_after_catalog": [
+        {
+          "binary_id": "codex-hepta-agentd::supervisord_product_e2e",
+          "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/supervisord_product_e2e-6f77b5d073ae0356",
+          "bytes": 55515088,
+          "sha256": "e291a6c26020a7942d6d140498ba3f2423cf16bc32051d19a703959212d9df1e"
+        }
+      ],
+      "catalog_declared_helpers": [
+        {
+          "catalog_entry": {
+            "name": "codex-hepta-agentd",
+            "kind": "bin-exe",
+            "path": "dev-small/codex-hepta-agentd"
+          },
+          "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/codex-hepta-agentd",
+          "bytes": 328168096,
+          "sha256": "b53265647d6a3791063dc0f6878600fb72cc8006147c6990980b539ae4636649"
+        },
+        {
+          "catalog_entry": {
+            "name": "hepta-agentd-browser",
+            "kind": "bin-exe",
+            "path": "dev-small/hepta-agentd-browser"
+          },
+          "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/hepta-agentd-browser",
+          "bytes": 35307120,
+          "sha256": "a5efc5ead13e4e5c476046f610a59564517b393f09d88ba3f6c39f06fde8d9ab"
+        }
+      ],
+      "prejust_post_identity_equal": true,
+      "helper_scope": "Daemon is current_exe supervisord_child_entry; Agentd resolves actual catalog-declared non-test binary.",
+      "raw_summaries": [
+        "    Starting 1 test across 1 binary (1 test skipped)",
+        "     Summary [   4.314s] 1 test run: 1 passed, 1 skipped"
+      ],
+      "actual_observations": [
+        "    SUPERVISORD_PEER_SNAPSHOT phase=after_agent_a_kill peer=019153a4-3088-7e03-a56a-9b1964f75dd3 elapsed_ms=0 outcome=ok",
+        "    SUPERVISORD_PEER_SNAPSHOT phase=after_agent_a_kill peer=019153a4-3088-7e03-a56a-9b1964f75dd4 elapsed_ms=0 outcome=ok",
+        "    SUPERVISORD_PEER_SNAPSHOT phase=after_agent_a_kill peer=019153a4-3088-7e03-a56a-9b1964f75dd5 elapsed_ms=0 outcome=ok",
+        "    SUPERVISORD_PEER_SNAPSHOT phase=after_agent_a_kill peer=019153a4-3088-7e03-a56a-9b1964f75dd6 elapsed_ms=0 outcome=ok",
+        "    SUPERVISORD_PEER_SNAPSHOT phase=after_agent_a_restart peer=019153a4-3088-7e03-a56a-9b1964f75dd3 elapsed_ms=0 outcome=ok",
+        "    SUPERVISORD_PEER_SNAPSHOT phase=after_agent_a_restart peer=019153a4-3088-7e03-a56a-9b1964f75dd4 elapsed_ms=0 outcome=ok",
+        "    SUPERVISORD_PEER_SNAPSHOT phase=after_agent_a_restart peer=019153a4-3088-7e03-a56a-9b1964f75dd5 elapsed_ms=0 outcome=ok",
+        "    SUPERVISORD_PEER_SNAPSHOT phase=after_agent_a_restart peer=019153a4-3088-7e03-a56a-9b1964f75dd6 elapsed_ms=0 outcome=ok",
+        "    SUPERVISORD_PEER_SNAPSHOT phase=after_same_fence_restart peer=019153a4-3088-7e03-a56a-9b1964f75dd3 elapsed_ms=5 outcome=ok",
+        "    SUPERVISORD_PEER_SNAPSHOT phase=after_same_fence_restart peer=019153a4-3088-7e03-a56a-9b1964f75dd4 elapsed_ms=0 outcome=ok",
+        "    SUPERVISORD_PEER_SNAPSHOT phase=after_same_fence_restart peer=019153a4-3088-7e03-a56a-9b1964f75dd5 elapsed_ms=0 outcome=ok",
+        "    SUPERVISORD_PEER_SNAPSHOT phase=after_same_fence_restart peer=019153a4-3088-7e03-a56a-9b1964f75dd6 elapsed_ms=0 outcome=ok",
+        "    SUPERVISORD_PEER_SNAPSHOT phase=after_agent_a_upgrade peer=019153a4-3088-7e03-a56a-9b1964f75dd3 elapsed_ms=0 outcome=ok",
+        "    SUPERVISORD_PEER_SNAPSHOT phase=after_agent_a_upgrade peer=019153a4-3088-7e03-a56a-9b1964f75dd4 elapsed_ms=0 outcome=ok",
+        "    SUPERVISORD_PEER_SNAPSHOT phase=after_agent_a_upgrade peer=019153a4-3088-7e03-a56a-9b1964f75dd5 elapsed_ms=0 outcome=ok",
+        "    SUPERVISORD_PEER_SNAPSHOT phase=after_agent_a_upgrade peer=019153a4-3088-7e03-a56a-9b1964f75dd6 elapsed_ms=0 outcome=ok",
+        "    SUPERVISORD_PEER_SNAPSHOT phase=after_agent_a_rollback peer=019153a4-3088-7e03-a56a-9b1964f75dd3 elapsed_ms=0 outcome=ok",
+        "    SUPERVISORD_PEER_SNAPSHOT phase=after_agent_a_rollback peer=019153a4-3088-7e03-a56a-9b1964f75dd4 elapsed_ms=0 outcome=ok",
+        "    SUPERVISORD_PEER_SNAPSHOT phase=after_agent_a_rollback peer=019153a4-3088-7e03-a56a-9b1964f75dd5 elapsed_ms=0 outcome=ok",
+        "    SUPERVISORD_PEER_SNAPSHOT phase=after_agent_a_rollback peer=019153a4-3088-7e03-a56a-9b1964f75dd6 elapsed_ms=0 outcome=ok",
+        "    SUPERVISORD_OWNED_LOG total_bytes=98 tail_offset=0 raw_tail_bytes=98 body_truncated=false contents=\"\\nrunning 1 test\\ntest supervisord_child_entry ... \\nrunning 1 test\\ntest supervisord_child_entry ... \"",
+        "    SUPERVISORD_OWNED_LOG total_bytes=98 tail_offset=0 raw_tail_bytes=98 body_truncated=false contents=\"\\nrunning 1 test\\ntest supervisord_child_entry ... \\nrunning 1 test\\ntest supervisord_child_entry ... \""
+      ],
+      "no_recorded_early_return": true,
+      "raw_metadata_warning_count": 95
+    }
+  ],
+  "native_host": {
+    "observed_at": "2026-11-04T22:20:23.054829+00:00",
+    "uname": "Linux 7.0.0-42-generic x86_64\n",
+    "rustc_vv": "rustc 1.95.0 (59807616e 2026-04-14)\nbinary: rustc\ncommit-hash: 59807616e1fa2540724bfbac14d7976d7e4a3860\ncommit-date: 2026-04-14\nhost: x86_64-unknown-linux-gnu\nrelease: 1.95.0\nLLVM version: 22.1.2\n",
+    "cargo_version": "cargo 1.95.0 (f2d3ce0bd 2026-03-21)\n",
+    "disk": {
+      "total": 1005867986944,
+      "used": 926557294592,
+      "free": 69063118848
+    },
+    "cargo_target_dir": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target",
+    "cargo_profile": "dev-small",
+    "nextest_profile": "local via original just recipe",
+    "rust_toolchain_selection": "Existing exact 1.95.0; no system default changed",
+    "prebuilt_v8": {
+      "RUSTY_V8_ARCHIVE": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/tools/rusty-v8/librusty_v8_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.a.gz",
+        "bytes": 29366352,
+        "sha256": "a35c75d1f26e6a983885a45b33490a4ebe54f05050568b32b89cfb421b30b583"
+      },
+      "RUSTY_V8_SRC_BINDING_PATH": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/tools/rusty-v8/src_binding_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.rs",
+        "bytes": 39884,
+        "sha256": "7727826ae479bdb645e807239fb12d1f8e2e23de7a6cf16f5ee592690d1d8506"
+      }
+    },
+    "runtime_tools": {
+      "python3": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/tools/uv-venv/bin/python3",
+        "identity": {
+          "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/tools/uv-venv/bin/python3",
+          "bytes": 7477160,
+          "sha256": "52e0a13e60a981d8c4b6478be2ba5176f69da07948a056bf49cf6f077e30cb41"
+        },
+        "version": "Python 3.14.4"
+      },
+      "python": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/tools/uv-venv/bin/python",
+        "identity": {
+          "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/tools/uv-venv/bin/python",
+          "bytes": 7477160,
+          "sha256": "52e0a13e60a981d8c4b6478be2ba5176f69da07948a056bf49cf6f077e30cb41"
+        },
+        "version": "Python 3.14.4"
+      },
+      "setsid": {
+        "path": "/usr/bin/setsid",
+        "identity": {
+          "path": "/usr/bin/setsid",
+          "bytes": 14800,
+          "sha256": "e0247c69b5966f336155291c00153ee75e980fe526a1371ddf7445788671dc66"
+        },
+        "version": "setsid from util-linux 2.41.3"
+      }
+    },
+    "no_network_skip_environment_key_present": false,
+    "no_environment_key_changed": true
+  },
+  "limits": [
+    "31 selected cases means29PTY+1Forward+1Supervisor. The Supervisor child-entry is1 filter exclusion, not a product test pass.",
+    "Doctor was separately tested on desktop. This host/profile is independent and its binary hashes cannot be substituted for the earlier debug binaries.",
+    "The original Agentd executable used by Supervisord is catalog-declared and stable. hepta-agentd-browser is also catalog-declared/hash-stable but this receipt does not claim the selected case executed it.",
+    "Python and setsid actual identities/versions are recorded. No network skip environment key was present; task PATH/tool/build settings are documented rather than claimed globally unchanged.",
+    "No-deps metadata produces dependency package-ID warnings; full original raw retains them. Tests were actually compiled with locked dependencies and original just, so these warnings are not relabeled as test failures or hidden.",
+    "PTY revised output collection has a real queued-output/exit37 control. Linux pass does not prove an Intel scheduler cause or close either old Intel failure.",
+    "Forward and Supervisord additions are diagnostic only; passing on this Linux host does not establish the cause of old MacIntel transfer or original GNU/RBE Supervisor failures.",
+    "All tests precede the deferred final A fix/fmt. Owning packages, complete original workspace, newhead original CI and main-target qualification remain separate."
+  ]
+}
