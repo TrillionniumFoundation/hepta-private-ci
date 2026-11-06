@@ -44,6 +44,7 @@ fn actual_file_owners_compute_sign_and_publish_only_bound_comparison() {
         plan.record().fixed_expert.manifest.source_digest
     );
     let before = fixture.holdout_bytes();
+    let inputs = fixture.provider.inputs.clone();
     let receipt = checked(fixture.run(&plan));
     assert_ne!(fixture.holdout_bytes(), before);
     assert_eq!((fixture.provider.calls, fixture.provider.releases), (1, 1));
@@ -120,8 +121,17 @@ fn actual_file_owners_compute_sign_and_publish_only_bound_comparison() {
         fence(),
     ));
     fixture.runner = CellEvaluationRunnerV1::new(ProductEvaluationRunnerV1::new(owner));
-    assert!(fixture.run(&plan).is_err());
-    assert_eq!(fixture.provider.releases, 1);
+    // A replenished provider must not make a recovered consumption reusable.
+    fixture.provider.inputs = inputs;
+    assert!(matches!(
+        fixture.run(&plan),
+        Err(CellEvaluationErrorV1::Product(
+            ProductEvaluationError::Binding("final holdout already consumed")
+        ))
+    ));
+    assert_eq!((fixture.provider.calls, fixture.provider.releases), (2, 1));
+    assert!(fixture.provider.inputs.is_some());
+    assert_eq!(fixture.runner.product.holdout_anchor(), anchor);
     assert_eq!(fixture.holdout_bytes(), consumed);
 }
 
@@ -269,13 +279,23 @@ fn different_task_and_unknown_holdout_release_remain_fail_closed() {
     );
     assert_eq!(fixture.holdout_bytes(), before);
     let plan = checked(fixture.freeze());
-    fixture.provider.inputs = None;
+    let inputs = fixture.provider.inputs.take();
     assert!(fixture.run(&plan).is_err());
     let consumed = fixture.holdout_bytes();
     assert_ne!(consumed, before);
     assert_eq!(fixture.provider.releases, 1);
-    assert!(fixture.run(&plan).is_err());
-    assert_eq!(fixture.provider.releases, 1);
+    let anchor = fixture.runner.product.holdout_anchor();
+    // Unknown release outcome stays consumed even if data becomes available.
+    fixture.provider.inputs = inputs;
+    assert!(matches!(
+        fixture.run(&plan),
+        Err(CellEvaluationErrorV1::Product(
+            ProductEvaluationError::Binding("final holdout already consumed")
+        ))
+    ));
+    assert_eq!((fixture.provider.calls, fixture.provider.releases), (2, 1));
+    assert!(fixture.provider.inputs.is_some());
+    assert_eq!(fixture.runner.product.holdout_anchor(), anchor);
     assert_eq!(fixture.holdout_bytes(), consumed);
 }
 
