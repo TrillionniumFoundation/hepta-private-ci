@@ -1210,6 +1210,83 @@ async fn cold_resume_reresolves_persisted_active_permission_profile() -> Result<
 }
 
 #[tokio::test]
+async fn cold_resume_keeps_roots_for_unchanged_profile_or_explicit_selection() -> Result<()> {
+    let server = create_mock_responses_server_repeating_assistant("Done").await;
+    for changed_profile_with_explicit_roots in [false, true] {
+        for history_mode in [ThreadHistoryMode::Legacy, ThreadHistoryMode::Paginated] {
+            let codex_home = TempDir::new()?;
+            let old_root_dir = TempDir::new()?;
+            let new_root_dir = TempDir::new()?;
+            let old_root = AbsolutePathBuf::from_absolute_path(old_root_dir.path())?;
+            let new_root = AbsolutePathBuf::from_absolute_path(new_root_dir.path())?;
+            write_dev_permission_config(&server.uri(), codex_home.path(), ":workspace")?;
+            let thread_id = {
+                let mut mcp = TestAppServer::builder()
+                    .with_codex_home(codex_home.path())
+                    .without_managed_config()
+                    .build_initialized()
+                    .await?;
+                let thread_id = materialize_dev_permission_thread(&mut mcp, history_mode).await?;
+                timeout(
+                    DEFAULT_READ_TIMEOUT,
+                    mcp.start_turn_and_wait_for_completion(TurnStartParams {
+                        thread_id: thread_id.clone(),
+                        runtime_workspace_roots: Some(vec![old_root.clone()]),
+                        input: vec![UserInput::Text {
+                            text: "retain selected runtime roots".to_string(),
+                            text_elements: Vec::new(),
+                        }],
+                        ..Default::default()
+                    }),
+                )
+                .await??;
+                thread_id
+            };
+            let extends = if changed_profile_with_explicit_roots {
+                ":read-only"
+            } else {
+                ":workspace"
+            };
+            write_dev_permission_config(&server.uri(), codex_home.path(), extends)?;
+            let mut mcp = TestAppServer::builder()
+                .with_codex_home(codex_home.path())
+                .without_managed_config()
+                .build_initialized()
+                .await?;
+            let resume_id = mcp
+                .send_thread_resume_request(ThreadResumeParams {
+                    thread_id,
+                    runtime_workspace_roots: changed_profile_with_explicit_roots
+                        .then(|| vec![new_root.clone()]),
+                    ..Default::default()
+                })
+                .await?;
+            let ThreadResumeResponse {
+                sandbox,
+                active_permission_profile,
+                runtime_workspace_roots,
+                ..
+            } = timeout(DEFAULT_READ_TIMEOUT, mcp.read_response(resume_id)).await??;
+            assert_eq!(
+                active_permission_profile,
+                Some(ActivePermissionProfile {
+                    id: "dev".to_string(),
+                    extends: Some(extends.to_string()),
+                })
+            );
+            let expected_roots = if changed_profile_with_explicit_roots {
+                assert!(matches!(sandbox, AppSandboxPolicy::ReadOnly { .. }));
+                vec![new_root]
+            } else {
+                vec![old_root]
+            };
+            assert_eq!(runtime_workspace_roots, expected_roots);
+        }
+    }
+    Ok(())
+}
+
+#[tokio::test]
 async fn cold_resume_with_removed_permission_profile_uses_configured_default() -> Result<()> {
     let server = create_mock_responses_server_repeating_assistant("Done").await;
     for history_mode in [ThreadHistoryMode::Legacy, ThreadHistoryMode::Paginated] {
