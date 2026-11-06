@@ -105,7 +105,9 @@ mod linux {
 
         match mode {
             Mode::Refuse => {
-                let error = result.expect_err("refused preflight must return its original error");
+                let Err(error) = result else {
+                    bail!("refused preflight must return its original error");
+                };
                 ensure!(error.downcast_ref::<RefusedPreflight>().is_some());
                 ensure!(error.to_string() == "owned preflight refusal");
                 ensure!(std::env::var_os("PATH") == path_before);
