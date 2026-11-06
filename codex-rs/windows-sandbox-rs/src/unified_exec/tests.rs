@@ -3,6 +3,9 @@
 #[path = "acl_setup_tests.rs"]
 mod acl_setup_tests;
 
+#[path = "legacy_delete_fixture.rs"]
+mod legacy_delete_fixture;
+
 use super::WindowsSandboxSessionRequest;
 use super::spawn_windows_sandbox_session_elevated_for_permission_profile;
 use super::spawn_windows_sandbox_session_for_level;
@@ -724,6 +727,24 @@ fn legacy_workspace_write_delete_is_limited_to_writable_roots() {
             ),
         )
         .expect("write delete script");
+
+        // The capability boundary must reject outside/.git even when this actual
+        // logon identity has ordinary modify access throughout the owned fixture.
+        legacy_delete_fixture::grant_ordinary_modify(
+            &test_root,
+            &[
+                &workspace,
+                &temp_root,
+                &tmp_root,
+                &outside_root,
+                &protected_git_dir,
+                &workspace_file,
+                &temp_file,
+                &tmp_file,
+                &outside_file,
+                &script,
+            ],
+        );
 
         let env_map = HashMap::from([
             ("TEMP".to_string(), temp_root.to_string_lossy().into_owned()),
