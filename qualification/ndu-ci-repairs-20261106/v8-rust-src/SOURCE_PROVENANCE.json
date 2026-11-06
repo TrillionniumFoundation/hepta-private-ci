@@ -1,0 +1,98 @@
+{
+  "actual_failed_merge": {
+    "commit": "3ef779adacbfa71a62cfa9cc592270de895e7b56",
+    "parents": [
+      "bd4d27029cf3d3cab0f30bef1a6554c1df4aa0e3",
+      "bb726804cbe2244835894cea0ddb441a77f169b1"
+    ],
+    "tree": "125677f210c3e592d0cf5840419d6c304bc5008b"
+  },
+  "baseline": {
+    "bytes": 17348,
+    "commit": "55a534060a4b5e24abbe772e7f0135e9d4f56ace",
+    "git_blob": "bc0bb7a93bd97d422e6b9d9dd5d5e12294fbd6f1",
+    "mode": "100644",
+    "path": ".github/workflows/v8-canary.yml",
+    "sha256": "2516afbaa5538004406c0d92179665aba1b541e68944df53ad71d674ecd89cd4",
+    "tree": "351138a1f6127b0fadeecfd26108a713ab400f08"
+  },
+  "donor": {
+    "bytes": 17689,
+    "commit": "60924e75305083f730deef6af386bd5e0ec569f0",
+    "exact_original_file_and_exact_candidate": true,
+    "git_blob": "8c7826cda87a5cc6a237f11dbb6bc2615a3a53e7",
+    "parent": "639b2a7df47af7be017b1e68c1e127a6e94d2966",
+    "pull_request": 4401,
+    "sha256": "68de7472291fcf5f6b6bf0f9097b78be7a8b1986e220f34c4a72af7f0c222bd9"
+  },
+  "logs": [
+    {
+      "decoded_utf8": {
+        "bytes": 517053,
+        "git_blob": "1852c17d91a2f0bd75b5ef341c3277aad4cb0d43",
+        "sha256": "e02791b3f785c898f6c2d4ef9894724875160e70591215d732da2f8e264d2323"
+      },
+      "file": "job-127923030576.log.gz",
+      "gzip": {
+        "bytes": 54431,
+        "git_blob": "f9e75bac3e01e98cde9e7df8818792a870aae95a",
+        "sha256": "18a676520c23c0f114fcc4f4e43b640c771247a7c23c152a36be40f9656c2b13"
+      },
+      "job_id": 127923030576,
+      "qualification": "original failure; source logs were not trimmed or normalized"
+    },
+    {
+      "decoded_utf8": {
+        "bytes": 518564,
+        "git_blob": "b257ef0bd1e67679816aa601f8645c3d082957dd",
+        "sha256": "86e84749d598c895495e77f38c83a390b7d2a7e58347b2ba56f30aee8cbf557d"
+      },
+      "file": "job-127923030636.log.gz",
+      "gzip": {
+        "bytes": 55364,
+        "git_blob": "c2ae8e5631165c71516662c0db376f5b414a99df",
+        "sha256": "ba8c463833cb3dc04189e6154c54e329a48379689e3cb388d7b82643af15f320"
+      },
+      "job_id": 127923030636,
+      "qualification": "original failure; source logs were not trimmed or normalized"
+    },
+    {
+      "decoded_utf8": {
+        "bytes": 518609,
+        "git_blob": "48148d0033cfcdc88f013ff0fccf70fca136efe5",
+        "sha256": "802491a83aaeb30f5da621f59568c2583b9a0dfa86b87f28d8bb2049d0d0371a"
+      },
+      "file": "job-127923030538.log.gz",
+      "gzip": {
+        "bytes": 55082,
+        "git_blob": "ff7ad9db14c9ce39cacaba80220ca775255be5aa",
+        "sha256": "76875654ac806c4c665986a5d59741b55730cb7e910cfc339457edec26952943"
+      },
+      "job_id": 127923030538,
+      "qualification": "original failure; source logs were not trimmed or normalized"
+    },
+    {
+      "decoded_utf8": {
+        "bytes": 518153,
+        "git_blob": "debfc00f7f1c9d618e60037258676dbe4c4dd9a6",
+        "sha256": "ba008f553a4302eff8f355e50a9405f9dfee200bf0238aab69c432581be817d6"
+      },
+      "file": "job-127923030444.log.gz",
+      "gzip": {
+        "bytes": 54422,
+        "git_blob": "e89078c0cb709c615882e2bbecdf029fa6850290",
+        "sha256": "554ea7bac927bf90dd73214578616691896438789b95d3e83bbf2acea00307e7"
+      },
+      "job_id": 127923030444,
+      "qualification": "original failure; source logs were not trimmed or normalized"
+    }
+  ],
+  "official_action": {
+    "commit": "e081816240890017053eacbb1bdf337761dc5582",
+    "content": "name: rustup toolchain install\nauthor: David Tolnay\ndescription: Install the Rust toolchain\nbranding:\n  icon: activity\n  color: purple\n\ninputs:\n  targets:\n    description: Comma-separated list of target triples to install for this toolchain\n    required: false\n  target:\n    description: Alias for `targets`\n    required: false\n  components:\n    description: Comma-separated list of components to be additionally installed\n    required: false\n\noutputs:\n  cachekey:\n    description: A short hash of the rustc version, appropriate for use as a cache key. \"20220627a831\"\n    value: ${{steps.rustc-version.outputs.cachekey}}\n  name:\n    description: Rustup's name for the selected version of the toolchain. \"1.62.0\"  # suitable for use with `cargo +${{steps.toolchain.outputs.name}}`\n    value: ${{steps.parse.outputs.toolchain}}\n\nruns:\n  using: composite\n  steps:\n    - id: parse\n      run: |\n        : parse toolchain version\n        if [[ -z $toolchain ]]; then\n          # GitHub does not enforce `required: true` inputs itself. https://github.com/actions/runner/issues/1070\n          echo \"'toolchain' is a required input\" >&2\n          exit 1\n        elif [[ $toolchain =~ ^stable' '[0-9]+' '(year|month|week|day)s?' 'ago$ ]]; then\n          if [[ ${{runner.os}} == macOS ]]; then\n            echo \"toolchain=1.$((($(date -v-$(sed 's/stable \\([0-9]*\\) \\(.\\).*/\\1\\2/' <<< $toolchain) +%s)/60/60/24-16569)/7/6))\" >> $GITHUB_OUTPUT\n          else\n            echo \"toolchain=1.$((($(date --date \"${toolchain#stable }\" +%s)/60/60/24-16569)/7/6))\" >> $GITHUB_OUTPUT\n          fi\n        elif [[ $toolchain =~ ^stable' 'minus' '[0-9]+' 'releases?$ ]]; then\n          echo \"toolchain=1.$((($(date +%s)/60/60/24-16569)/7/6-${toolchain//[^0-9]/}))\" >> $GITHUB_OUTPUT\n        elif [[ $toolchain =~ ^1\\.[0-9]+$ ]]; then\n          echo \"toolchain=1.$((i=${toolchain#1.}, c=($(date +%s)/60/60/24-16569)/7/6, i+9*i*(10*i<=c)+90*i*(100*i<=c)))\" >> $GITHUB_OUTPUT\n        else\n          echo \"toolchain=$toolchain\" >> $GITHUB_OUTPUT\n        fi\n      env:\n        toolchain: 1.95.0\n      shell: bash\n\n    - id: flags\n      run: |\n        : construct rustup command line\n        echo \"targets=$(for t in ${targets//,/ }; do echo -n ' --target' $t; done)\" >> $GITHUB_OUTPUT\n        echo \"components=$(for c in ${components//,/ }; do echo -n ' --component' $c; done)\" >> $GITHUB_OUTPUT\n        echo \"downgrade=${{steps.parse.outputs.toolchain == 'nightly' && inputs.components && ' --allow-downgrade' || ''}}\" >> $GITHUB_OUTPUT\n      env:\n        targets: ${{inputs.targets || inputs.target || ''}}\n        components: ${{inputs.components}}\n      shell: bash\n\n    - run: |\n        : set $CARGO_HOME\n        echo CARGO_HOME=${CARGO_HOME:-\"${{runner.os == 'Windows' && '$USERPROFILE\\.cargo' || '$HOME/.cargo'}}\"} >> $GITHUB_ENV\n      shell: bash\n\n    - run: |\n        : install rustup if needed\n        if ! command -v rustup &>/dev/null; then\n          curl --proto '=https' --tlsv1.2 --retry 10 --retry-connrefused --location --silent --show-error --fail https://sh.rustup.rs | sh -s -- --default-toolchain none -y\n          echo \"$CARGO_HOME/bin\" >> $GITHUB_PATH\n        fi\n      if: runner.os != 'Windows'\n      shell: bash\n\n    - run: |\n        : install rustup if needed on windows\n        if ! command -v rustup &>/dev/null; then\n          curl --proto '=https' --tlsv1.2 --retry 10 --retry-connrefused --location --silent --show-error --fail https://win.rustup.rs/${{runner.arch == 'ARM64' && 'aarch64' || 'x86_64'}} --output '${{runner.temp}}\\rustup-init.exe'\n          '${{runner.temp}}\\rustup-init.exe' --default-toolchain none --no-modify-path -y\n          echo \"$CARGO_HOME\\bin\" >> $GITHUB_PATH\n        fi\n      if: runner.os == 'Windows'\n      shell: bash\n\n    - name: rustup toolchain install ${{steps.parse.outputs.toolchain}}\n      run: rustup toolchain install ${{steps.parse.outputs.toolchain}}${{steps.flags.outputs.targets}}${{steps.flags.outputs.components}} --profile minimal${{steps.flags.outputs.downgrade}} --no-self-update\n      env:\n        RUSTUP_PERMIT_COPY_RENAME: 1\n      shell: bash\n\n    - run: rustup default ${{steps.parse.outputs.toolchain}}\n      shell: bash\n      continue-on-error: true  # https://github.com/dtolnay/rust-toolchain/issues/127\n\n    - id: rustc-version\n      run: |\n        : create cachekey\n        DATE=$(rustc +${{steps.parse.outputs.toolchain}} --version --verbose | sed -ne 's/^commit-date: \\(20[0-9][0-9]\\)-\\([01][0-9]\\)-\\([0-3][0-9]\\)$/\\1\\2\\3/p')\n        HASH=$(rustc +${{steps.parse.outputs.toolchain}} --version --verbose | sed -ne 's/^commit-hash: //p')\n        echo \"cachekey=$(echo $DATE$HASH | head -c12)\" >> $GITHUB_OUTPUT\n      shell: bash\n\n    - run: |\n        : disable incremental compilation\n        if [ -z \"${CARGO_INCREMENTAL+set}\" ]; then\n          echo CARGO_INCREMENTAL=0 >> $GITHUB_ENV\n        fi\n      shell: bash\n\n    - run: |\n        : enable colors in Cargo output\n        if [ -z \"${CARGO_TERM_COLOR+set}\" ]; then\n          echo CARGO_TERM_COLOR=always >> $GITHUB_ENV\n        fi\n      shell: bash\n\n    - run: |\n        : enable Cargo sparse registry\n        # implemented in 1.66, stabilized in 1.68, made default in 1.70\n        if [ -z \"${CARGO_REGISTRIES_CRATES_IO_PROTOCOL+set}\" -o -f \"${{runner.temp}}\"/.implicit_cargo_registries_crates_io_protocol ]; then\n          if rustc +${{steps.parse.outputs.toolchain}} --version --verbose | grep -q '^release: 1\\.6[89]\\.'; then\n            touch \"${{runner.temp}}\"/.implicit_cargo_registries_crates_io_protocol || true\n            echo CARGO_REGISTRIES_CRATES_IO_PROTOCOL=sparse >> $GITHUB_ENV\n          elif rustc +${{steps.parse.outputs.toolchain}} --version --verbose | grep -q '^release: 1\\.6[67]\\.'; then\n            touch \"${{runner.temp}}\"/.implicit_cargo_registries_crates_io_protocol || true\n            echo CARGO_REGISTRIES_CRATES_IO_PROTOCOL=git >> $GITHUB_ENV\n          fi\n        fi\n      shell: bash\n\n    - run: |\n        : work around spurious network errors in curl 8.0\n        # https://rust-lang.zulipchat.com/#narrow/stream/246057-t-cargo/topic/timeout.20investigation\n        if rustc +${{steps.parse.outputs.toolchain}} --version --verbose | grep -q '^release: 1\\.7[01]\\.'; then\n          echo CARGO_HTTP_MULTIPLEXING=false >> $GITHUB_ENV\n        fi\n      shell: bash\n\n    - run: rustc +${{steps.parse.outputs.toolchain}} --version --verbose\n      shell: bash\n",
+    "git_blob": "cabbec62b5151edf6026228ca868557d7e8bf6bb",
+    "git_signature_verification": "valid",
+    "path": "action.yml",
+    "repository": "dtolnay/rust-toolchain"
+  }
+}
