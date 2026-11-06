@@ -1,0 +1,403 @@
+{
+  "schema": "hepta-pin-utils-fixed-five-backport-v1",
+  "base_head": "2b1e9f7bcebd741716419fec560152adc83c9cba",
+  "base_tree": "bd1546f6e0a79ba51b84dbc6eac90fd36557bbf5",
+  "base_ref": "research/ndu-i18n-bazel-alias-20261106",
+  "original_product_leaves": 14291,
+  "pin_utils": {
+    "name": "pin-utils",
+    "version": "0.1.0",
+    "source": "registry+https://github.com/rust-lang/crates.io-index",
+    "checksum": "8b870d8c151b6f2fb93e84a13146138f05d02ed11c7e7c54f8826aaaf7c9f184"
+  },
+  "crates": [
+    {
+      "name": "aws-smithy-http",
+      "version": "0.62.6",
+      "checksum": "826141069295752372f8203c17f28e30c464d22899a43a0c9fd9c458d469c88b",
+      "url": "https://static.crates.io/crates/aws-smithy-http/aws-smithy-http-0.62.6.crate",
+      "archive_bytes": 30197,
+      "archive_regular_files": 22,
+      "vendor": "codex-rs/third_party/aws-smithy-http-0.62.6-pin-backport",
+      "source_scope": "Private adaptation of the upstream AWS pin-only change to this exact older archive. The original mutable Pin binding is retained where data()/as_mut() requires it; all other source, versions and APIs remain unchanged.",
+      "edits": [
+        {
+          "path": "Cargo.toml",
+          "before_sha256": "ac7f42768fcb0f8e0dd68f3d8f160ce4ba7d93ae4c36b81e95b158c19343f08b",
+          "after_sha256": "a9dcec4e6e5c9ad0dbe913efec14142c2d412482dee93d08daaba7c324b91cc7",
+          "replace": [
+            [
+              "[dependencies.pin-utils]\nversion = \"0.1.0\"\n\n",
+              "",
+              1
+            ]
+          ]
+        },
+        {
+          "path": "Cargo.toml.orig",
+          "before_sha256": "0c9ebaafa8c7d464abce538c382a7f7139f98f398b9228b7517ca8cd10ec8a7a",
+          "after_sha256": "e0c37008148990fa67de3e23cb9c13fad001a7822aa5d223cec47437fc5068cf",
+          "replace": [
+            [
+              "pin-utils = \"0.1.0\"\n",
+              "",
+              1
+            ]
+          ]
+        }
+      ],
+      "licenses": {
+        "LICENSE": {
+          "bytes": 10142,
+          "sha256": "09e8a9bcec8067104652c168685ab0931e7868f9c8284b66f5ae6edae5f1130b",
+          "git_blob": "67db8588217f266eb561f75fae738656325deac9"
+        }
+      },
+      "original_rust_version": "1.88"
+    },
+    {
+      "name": "aws-smithy-runtime",
+      "version": "1.9.5",
+      "checksum": "a392db6c583ea4a912538afb86b7be7c5d8887d91604f50eb55c262ee1b4a5f5",
+      "url": "https://static.crates.io/crates/aws-smithy-runtime/aws-smithy-runtime-1.9.5.crate",
+      "archive_bytes": 118099,
+      "archive_regular_files": 61,
+      "vendor": "codex-rs/third_party/aws-smithy-runtime-1.9.5-pin-backport",
+      "source_scope": "Private adaptation of the upstream AWS pin-only change to this exact older archive. The original mutable Pin binding is retained where data()/as_mut() requires it; all other source, versions and APIs remain unchanged.",
+      "edits": [
+        {
+          "path": "src/client/orchestrator/http.rs",
+          "before_sha256": "2506e3ae1dabbc897075b9c8d89b3d8b249be66b47c5e539d23a5e9ed48c757b",
+          "after_sha256": "0533b536c05744fe7775c71a747499af318f7076e037d78e9fa52470c527694c",
+          "replace": [
+            [
+              "use pin_utils::pin_mut;\n",
+              "",
+              1
+            ],
+            [
+              "    pin_mut!(body);",
+              "    let mut body = std::pin::pin!(body);",
+              1
+            ]
+          ]
+        },
+        {
+          "path": "tests/stalled_stream_common.rs",
+          "before_sha256": "26a903e37350b0a3c71a7b653bf44380ce6328b72977815a777aa7b4b241055b",
+          "after_sha256": "ed2c24748a4e1143d716725f9029f7b88e17f08446ee33324503e3bf9ea6eded",
+          "replace": [
+            [
+              "pub use pin_utils::pin_mut;\n",
+              "",
+              1
+            ]
+          ]
+        },
+        {
+          "path": "tests/stalled_stream_download.rs",
+          "before_sha256": "8ff88e718f435f14cb3a3131937427bbd324e626b7f1453254bff72ad4656f1e",
+          "after_sha256": "c1ac9be40d5c312cc2dd0d792333b30a9c49fd8c35185eb5d9241eea2fcad9ce",
+          "replace": [
+            [
+              "        pin_mut!(body);",
+              "        let mut body = std::pin::pin!(body);",
+              3
+            ]
+          ]
+        },
+        {
+          "path": "tests/stalled_stream_upload.rs",
+          "before_sha256": "5bcb60b026a73e3ce3c3a10e1ff5f75094356e9ea89cce8f161fe9bfd43c3adf",
+          "after_sha256": "2c4888f9fa07626b10749b472d695a890d9b25e5a7d0d3c1f16ba6a5ad36dc7d",
+          "replace": [
+            [
+              "                            pin_mut!(body);",
+              "                            let body = std::pin::pin!(body);",
+              1
+            ]
+          ]
+        },
+        {
+          "path": "Cargo.toml",
+          "before_sha256": "10c8f8b528d4a61d9788f9b9ad47235905d38527353a4614d78b8fc102f43f62",
+          "after_sha256": "b29dddfe95f879c79e56b0cdece69f1fa89c09842616477639a895a9724c2d42",
+          "replace": [
+            [
+              "[dependencies.pin-utils]\nversion = \"0.1.0\"\n\n",
+              "",
+              1
+            ]
+          ]
+        },
+        {
+          "path": "Cargo.toml.orig",
+          "before_sha256": "e091560b55150e18b129a0bec9043ddcfb73a596a2b9aa0ddd23d4137923f802",
+          "after_sha256": "17f5c1c1595e699fcce86a5cba6662be804f2f09dd65ade4cafa40475cd0177d",
+          "replace": [
+            [
+              "pin-utils = \"0.1.0\"\n",
+              "",
+              1
+            ]
+          ]
+        }
+      ],
+      "licenses": {
+        "LICENSE": {
+          "bytes": 10142,
+          "sha256": "09e8a9bcec8067104652c168685ab0931e7868f9c8284b66f5ae6edae5f1130b",
+          "git_blob": "67db8588217f266eb561f75fae738656325deac9"
+        }
+      },
+      "original_rust_version": "1.88"
+    },
+    {
+      "name": "aws-smithy-types",
+      "version": "1.4.7",
+      "checksum": "9d73dbfbaa8e4bc57b9045137680b958d274823509a360abfd8e1d514d40c95c",
+      "url": "https://static.crates.io/crates/aws-smithy-types/aws-smithy-types-1.4.7.crate",
+      "archive_bytes": 96069,
+      "archive_regular_files": 46,
+      "vendor": "codex-rs/third_party/aws-smithy-types-1.4.7-pin-backport",
+      "source_scope": "Private adaptation of the upstream AWS pin-only change to this exact older archive. The original mutable Pin binding is retained where data()/as_mut() requires it; all other source, versions and APIs remain unchanged.",
+      "edits": [
+        {
+          "path": "src/byte_stream.rs",
+          "before_sha256": "299ad8361e0227face7a0fbe42fab58996c8104c1cbf3b3917463d319eb075a1",
+          "after_sha256": "b74dfcedd604c3e5a40fa42fa97d303f0d6e8e581ff22268e639c24fa93e9191",
+          "replace": [
+            [
+              "        let body = self.body;\n        pin_utils::pin_mut!(body);",
+              "        let mut body = std::pin::pin!(self.body);",
+              1
+            ]
+          ]
+        },
+        {
+          "path": "Cargo.toml",
+          "before_sha256": "65442fa78a0e61da5c76e0664cd5ddd92b896eb6a95de6a9259740c0029c1301",
+          "after_sha256": "09c5bd8433c42ab3123efb1145193ca60fa931cc07330e2d75a07d3c9fae7cf9",
+          "replace": [
+            [
+              "[dependencies.pin-utils]\nversion = \"0.1.0\"\n\n",
+              "",
+              1
+            ]
+          ]
+        },
+        {
+          "path": "Cargo.toml.orig",
+          "before_sha256": "7ee222ff3b06a5775339ad57bb672805f0f7d53aee0aa6bb23876eaa8919755d",
+          "after_sha256": "a72c54e5d5fa6ac26c83c62d2dfb828e403739a213d55e07e8ff0d6da9375575",
+          "replace": [
+            [
+              "pin-utils = \"0.1.0\"\n",
+              "",
+              1
+            ]
+          ]
+        }
+      ],
+      "licenses": {
+        "LICENSE": {
+          "bytes": 10142,
+          "sha256": "09e8a9bcec8067104652c168685ab0931e7868f9c8284b66f5ae6edae5f1130b",
+          "git_blob": "67db8588217f266eb561f75fae738656325deac9"
+        }
+      },
+      "original_rust_version": "1.91.1"
+    },
+    {
+      "name": "hyper",
+      "version": "1.8.1",
+      "checksum": "2ab2d4f250c3d7b1c9fcdff1cece94ea4e2dfbec68614f7b87cb205f24ca9d11",
+      "url": "https://static.crates.io/crates/hyper/hyper-1.8.1.crate",
+      "archive_bytes": 157353,
+      "archive_regular_files": 69,
+      "vendor": "codex-rs/third_party/hyper-1.8.1-pin-backport",
+      "source_scope": "Upstream Hyper #4023 pin-only source and feature change, normalized into both manifests. Uses the existing tokio::pin! macro; no new dependency, feature, API or MSRV increase.",
+      "edits": [
+        {
+          "path": "src/common/task.rs",
+          "before_sha256": "9d027a9c9c65ad7262f1ab4dbb3c7572b2637f2ebe655d17f13bfa5966ff7b3e",
+          "after_sha256": "a85877dfc0d233dacf6df0568d135ee7b0abb1f54873cc237bbdf4e14240edf5",
+          "replace": [
+            [
+              "    // TODO: replace with std::pin::pin! and drop pin-utils once MSRV >= 1.68\n    pin_utils::pin_mut!(fut);",
+              "    // TODO: replace with std::pin::pin! once MSRV >= 1.68\n    tokio::pin!(fut);",
+              1
+            ]
+          ]
+        },
+        {
+          "path": "Cargo.toml",
+          "before_sha256": "802fefc9dbcbfb60e0bf547ea3efde93284840def02f69852a6d0ef15d12c8b1",
+          "after_sha256": "03c7d31d3bf0a956ef05bd1ddb9b93460ad9c5c036fecf32a98fae2caaecfcd0",
+          "replace": [
+            [
+              "[dependencies.pin-utils]\nversion = \"0.1\"\noptional = true\n\n",
+              "",
+              1
+            ],
+            [
+              "    \"dep:pin-utils\",\n",
+              "",
+              1
+            ]
+          ]
+        },
+        {
+          "path": "Cargo.toml.orig",
+          "before_sha256": "8ef7ebe4b1d923d9764f8004e72198059ce123261164be77de7378df1704d406",
+          "after_sha256": "cfe609f4922a2e2558bc6c1ed28f8ee89b1a03d0c798ff0956bdf0a4e36378b2",
+          "replace": [
+            [
+              "pin-utils = { version = \"0.1\", optional = true } # TODO: replace with std::pin::pin! once MSRV >= 1.68\n",
+              "",
+              1
+            ],
+            [
+              ", \"dep:pin-utils\"",
+              "",
+              1
+            ]
+          ]
+        }
+      ],
+      "licenses": {
+        "LICENSE": {
+          "bytes": 1062,
+          "sha256": "8f2eee700f56dd8b381d92dc5b136befe09f90e186f2c1c8414a70c4c7534550",
+          "git_blob": "da8b6ec1b50778306d7d2517b978e1c66077e9a7"
+        }
+      },
+      "original_rust_version": "1.63"
+    },
+    {
+      "name": "loom",
+      "version": "0.7.2",
+      "checksum": "419e0dc8046cb947daa77eb95ae174acfbddb7673b4151f56d1eed8e93fbfaca",
+      "url": "https://static.crates.io/crates/loom/loom-0.7.2.crate",
+      "archive_bytes": 73989,
+      "archive_regular_files": 76,
+      "vendor": "codex-rs/third_party/loom-0.7.2-pin-backport",
+      "source_scope": "Exact same-version Loom pinning change from PR #4931. The old implicit pin-utils feature remains an empty compatibility alias. Private MSRV is 1.68; workspace toolchain is 1.96.0.",
+      "edits": [
+        {
+          "path": "src/future/mod.rs",
+          "before_sha256": "bccc36332d32144bde8f64f1387f3860ec5d98e336eedfc65301b991c5f9bbdd",
+          "after_sha256": "180def4583935f3d8e2da155313342f13c7e62a05f2095671e8712c033935868",
+          "replace": [
+            [
+              "use pin_utils::pin_mut;\n",
+              "",
+              1
+            ],
+            [
+              "    pin_mut!(f);",
+              "    let mut f = std::pin::pin!(f);",
+              1
+            ]
+          ]
+        },
+        {
+          "path": "Cargo.toml",
+          "before_sha256": "e2879b505f6b615b71669d9618039633dbc9d974013d080d6cc9993b0db550f7",
+          "after_sha256": "938af91c97ed586d3188aeeb669d5ae8ece24cd3986101c9fe4a36452a2774b5",
+          "replace": [
+            [
+              "[dependencies.pin-utils]\nversion = \"0.1.0\"\noptional = true\n\n",
+              "",
+              1
+            ],
+            [
+              "futures = [\"pin-utils\"]",
+              "futures = [\"pin-utils\"]\n# Preserve the old implicit feature name without the removed dependency.\npin-utils = []",
+              1
+            ],
+            [
+              "rust-version = \"1.65\"",
+              "rust-version = \"1.68\"",
+              1
+            ]
+          ]
+        },
+        {
+          "path": "Cargo.toml.orig",
+          "before_sha256": "ae3485a5c26b2257e297720b4a8152bc6f05ae02661680e00ecb135ff194eb7f",
+          "after_sha256": "e62000cef5d8af3bd094cf9f6098d54c2ef6f5de0ae846de5730f0ecdeed3fe2",
+          "replace": [
+            [
+              "# Requires for \"futures\" feature\n",
+              "",
+              1
+            ],
+            [
+              "pin-utils = { version = \"0.1.0\", optional = true }\n",
+              "",
+              1
+            ],
+            [
+              "futures = [\"pin-utils\"]",
+              "futures = [\"pin-utils\"]\n# Preserve the old implicit feature name without the removed dependency.\npin-utils = []",
+              1
+            ],
+            [
+              "rust-version = \"1.65\"",
+              "rust-version = \"1.68\"",
+              1
+            ]
+          ]
+        }
+      ],
+      "licenses": {
+        "LICENSE": {
+          "bytes": 1055,
+          "sha256": "8ce0830173fdac609dfb4ea603fdc002c2f4af0dc9b1a005653f5da9cf534b18",
+          "git_blob": "819ce21187da4043f615b816bbd0114a4d9fd782"
+        }
+      },
+      "original_rust_version": "1.65"
+    }
+  ],
+  "baseline_blobs": {
+    ".bazelversion": "f7ee06693c17a06e2a0f51ef7eb2a61866e77b8e",
+    ".github/actions/prepare-bazel-ci/action.yml": "f9508a1659e5f2c54a6ae5b263bb9328095438d7",
+    ".github/actions/setup-bazel-ci/action.yml": "ea3f3a6521b970484ac60d1cebf788092753555a",
+    ".github/actions/setup-ci/action.yml": "8abd2dbd5f09585734f8213011a9ed540a2ee88e",
+    "MODULE.bazel": "cc1b7f627cff8cfccf6d386b25aa01ab758a270c",
+    "MODULE.bazel.lock": "3f9ad840678261729d88a348151b7784e19ccc29",
+    "codex-rs/Cargo.lock": "ccb051d9092fc07d30bb41d850eb79cf17d23592",
+    "codex-rs/Cargo.toml": "f7af2898ff4f9cfff98e19eb7e6c78163f6c6d4d",
+    "codex-rs/deny.toml": "677f941360b2d82ab96aa4d419d97f4616cc2194",
+    "codex-rs/rust-toolchain.toml": "917d2492264a35bc9c0feaef41878d8825870866",
+    "defs.bzl": "5d65039eb66cda368654523230dd7215d5c7194c",
+    "justfile": "a215a76cf407ace9715bca39c20497014e7dd4dc",
+    "scripts/check-module-bazel-lock.sh": "49ddaaef2bfc9a3c568bcd2ab3818cd968ccf6dd"
+  },
+  "fixed_bazel_source_uris": [
+    "git+https://github.com/dzbarsky/rules_rust?rev=b56cbaa8465e74127f1ea216f813cd377295ad81#b56cbaa8465e74127f1ea216f813cd377295ad81_runfiles",
+    "git+https://github.com/helix-editor/nucleo.git?rev=4253de9faabb4e5c6d81d946a5e35a90f87347ee#4253de9faabb4e5c6d81d946a5e35a90f87347ee_nucleo",
+    "git+https://github.com/helix-editor/nucleo.git?rev=4253de9faabb4e5c6d81d946a5e35a90f87347ee#4253de9faabb4e5c6d81d946a5e35a90f87347ee_nucleo-matcher",
+    "git+https://github.com/openai-oss-forks/crossterm?rev=45fecb9508105988f42fe6ff0441783ed3717f92#45fecb9508105988f42fe6ff0441783ed3717f92_crossterm",
+    "git+https://github.com/openai-oss-forks/tokio-tungstenite?rev=0e5b2d73aa18dd9f0a50ee9ff199d5aef7594186#0e5b2d73aa18dd9f0a50ee9ff199d5aef7594186_tokio-tungstenite",
+    "git+https://github.com/openai-oss-forks/tungstenite-rs?rev=4fffad30fe373adbdcffab9545e9e9bf4f2fc19f#4fffad30fe373adbdcffab9545e9e9bf4f2fc19f_tungstenite",
+    "git+https://github.com/rust-lang/rust-clippy?rev=20ce69b9a63bcd2756cd906fe0964d1e901e042a#20ce69b9a63bcd2756cd906fe0964d1e901e042a_clippy_utils"
+  ],
+  "fixed_bazel_source_uri_authority": {
+    "bytes": 1722721,
+    "sha256": "fe4bbfb92aac1eba58fb25357bf3182088d29a09b1838144041c94b03f8218cf",
+    "git_blob": "3f9ad840678261729d88a348151b7784e19ccc29"
+  },
+  "upstream": {
+    "aws_before_commit": "b3bdfffc8dbbaf115b572079d7f170ec78ec939c",
+    "aws_after_commit": "b964fc77de60b0a492ff788c40bb66524fd26a44",
+    "loom_before_commit": "a7033ee06a97c52eb2f8131c095fbea6c6eecba3",
+    "rust_pin_macro_stable_since": "1.68.0",
+    "source_note": "Current five locked versions are retained. Existing workspace patches and unrelated dependency facts must remain unchanged. Hyper reuses upstream tokio::pin!; AWS and Loom use std::pin::pin! with binding mutability required by these exact sources.",
+    "hyper_pin_removal_pr": "https://github.com/hyperium/hyper/pull/4023",
+    "hyper_pin_removal_commit": "8ba900853b0f619b165e8530fc8c310bc13e056b",
+    "workspace_toolchain": "1.96.0"
+  }
+}
