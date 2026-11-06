@@ -1,3 +1,4 @@
+use std::fs::File;
 use std::fs::OpenOptions;
 use std::io::Write;
 use std::os::unix::fs::OpenOptionsExt;
@@ -49,6 +50,7 @@ pub(super) async fn deliver(
         .open(path)?;
     receiver.write_all(&chunk.bytes)?;
     receiver.sync_all()?;
+    File::open(path.parent().context("receiver output has no parent")?)?.sync_all()?;
     let wall_micros = u64::try_from(started.elapsed().as_micros())?;
     let delivery_hash = Digest32::of_bytes(&chunk.bytes);
     let acknowledgement = Digest32::of_parts(&[
