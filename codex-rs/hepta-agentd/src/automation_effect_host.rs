@@ -52,6 +52,10 @@ use crate::AgentdIdentity;
 #[path = "automation_hcsn_host.rs"]
 mod hcsn;
 
+#[cfg(all(test, unix))]
+#[path = "automation_effect_recovery_tests.rs"]
+mod recovery_tests;
+
 #[derive(Clone, Debug)]
 enum EffectProvider {
     Http(HttpProviderEffectAdapter),
