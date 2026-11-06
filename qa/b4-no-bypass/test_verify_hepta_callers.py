@@ -970,5 +970,109 @@ class DeploymentIssuerLeaseCallerBoundaryTests(unittest.TestCase):
         json_rows = {row["id"]: row for row in registry["boundaries"]}
         self.assertIn(path, json_rows["authority_lease_verify_use"]["allowedCallers"])
 
+
+class RegisteredHumanTextReadbackBoundaryTests(unittest.TestCase):
+    def test_registered_human_text_requires_pinned_issuer_readback(self):
+        manifest = tomllib.loads(
+            (ROOT / "CALLERS.toml").read_text(encoding="utf-8")
+        )
+        boundary = next(
+            row
+            for row in manifest["boundary"]
+            if row["id"] == "root_registered_human_text_admission"
+        )
+        self.assertIn(
+            "self.with_issuer_writer_readback(registration, leases,",
+            boundary["definition_markers"],
+        )
+
+        human = (
+            ROOT / "codex-rs/hepta-agentd/src/deployment_text_human.rs"
+        ).read_text(encoding="utf-8")
+        self.assertIn(
+            "self.with_issuer_writer_readback(registration, leases, |parent|",
+            human,
+        )
+        self.assertNotIn("registration.with_live(leases", human)
+
+        cas_boundary = next(
+            row
+            for row in manifest["boundary"]
+            if row["id"] == "root_human_text_same_issuer_cas"
+        )
+        self.assertEqual(
+            cas_boundary["symbol"],
+            "DeploymentFinalUseIssuer::text_until_checked",
+        )
+        self.assertIn("parent: Some(parent)", cas_boundary["caller_markers"])
+
+        human_protected = next(
+            row
+            for row in manifest["protected_file"]
+            if row["path"]
+            == "codex-rs/hepta-agentd/src/deployment_text_human.rs"
+        )
+        self.assertIn("parent: Some(parent)", human_protected["required"])
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root / "human.rs").write_text(
+                human.replace("parent: Some(parent)", "parent: None", 1),
+                encoding="utf-8",
+            )
+            adversarial = {
+                "protected_file": [
+                    {
+                        "path": "human.rs",
+                        "required": human_protected["required"],
+                        "required_order": human_protected["required_order"],
+                        "forbidden": human_protected["forbidden"],
+                    }
+                ]
+            }
+            with self.assertRaises(MODULE.VerificationFailure):
+                MODULE._verify_protected_files(root, adversarial)
+
+        helper_path = (
+            "codex-rs/hepta-agentd/src/deployment_issuer_dependencies.rs"
+        )
+        helper = (ROOT / helper_path).read_text(encoding="utf-8")
+        protected = next(
+            row
+            for row in manifest["protected_file"]
+            if row["path"] == helper_path
+        )
+        required = protected["required"]
+        self.assertEqual(protected["required_order"], [required])
+        for marker in required:
+            self.assertIn(marker, helper)
+
+        mutations = (
+            (
+                ".with_pinned_issuer_readback_boundary(",
+                ".with_pinned_issuer_dispatch_boundary(",
+            ),
+            ("registration.validate()?", "let _registration = registration;"),
+        )
+        for old, new in mutations:
+            with self.subTest(marker=old), tempfile.TemporaryDirectory() as directory:
+                root = Path(directory)
+                (root / "helper.rs").write_text(
+                    helper.replace(old, new, 1), encoding="utf-8"
+                )
+                adversarial = {
+                    "protected_file": [
+                        {
+                            "path": "helper.rs",
+                            "required": required,
+                            "required_order": [required],
+                            "forbidden": [],
+                        }
+                    ]
+                }
+                with self.assertRaises(MODULE.VerificationFailure):
+                    MODULE._verify_protected_files(root, adversarial)
+
+
+
 if __name__ == "__main__":
     unittest.main()
