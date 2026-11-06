@@ -1,0 +1,137 @@
+"""Static source and patch receipt only; does not compile or execute Windows code."""
+from pathlib import Path
+import difflib
+import hashlib
+import json
+import re
+import shutil
+import subprocess
+import tempfile
+
+
+ROOT = Path(__file__).resolve().parent
+WORKSPACE = ROOT.parents[2]
+HEAD = "021a59ff05ccd963bc087918db823aa86af31bb8"
+MERGE = "5ce73498a9e8ee843d156c43593b1bc2fede416f"
+TREE = "36ca349de7f4c7c5a2914cf1960a81d8621350fa"
+PROBE = "codex-rs/windows-sandbox-rs/src/token_integrity_probe_tests.rs"
+NEW = "codex-rs/windows-sandbox-rs/src/token_neither_privilege_observation.rs"
+
+
+def identity(raw):
+    return {"bytes": len(raw), "sha256": hashlib.sha256(raw).hexdigest(),
+            "git_blob": hashlib.sha1(b"blob " + str(len(raw)).encode() + b"\0" + raw).hexdigest()}
+
+
+def record(path):
+    return {"local_file": str(path), **identity(path.read_bytes())}
+
+
+def write(path, value):
+    path.write_bytes((json.dumps(value, ensure_ascii=False, indent=2) + "\n").encode())
+    return record(path)
+
+
+source = (ROOT / "source" / PROBE).read_bytes()
+candidate = (ROOT / "candidate" / PROBE).read_bytes()
+new = (ROOT / "candidate" / NEW).read_bytes()
+assert identity(source)["git_blob"] == "2a384792e8ba88518c26943716e8c3a39a523f9b"
+module_insert = b'\n#[path = "token_neither_privilege_observation.rs"]\nmod neither_privileges;\n'
+call_insert = (b'    // The preceding receipt belongs only to the original eight-row phase.\n'
+               b'    // The separate privilege observation below owns two gated cmd processes.\n'
+               b'    neither_privileges::run()?;\n')
+assert candidate.count(module_insert) == candidate.count(call_insert) == 1
+assert candidate.replace(module_insert, b"", 1).replace(call_insert, b"", 1) == source
+assert source.count(b"#[test]") == candidate.count(b"#[test]") == 1
+assert b"#[test]" not in new and b"#[ignore" not in new
+assert {p.relative_to(ROOT / "candidate").as_posix() for p in (ROOT / "candidate").rglob("*") if p.is_file()} == {PROBE, NEW}
+actual_tree = json.loads((WORKSPACE / "hepta-audit-fifth/b11-env-publication/intended-full-tree.json").read_bytes())
+assert actual_tree["sha"] == TREE
+leaves = {r["path"]: r for r in actual_tree["tree"] if r["type"] != "tree"}
+sources = []
+for path in sorted((ROOT / "source").rglob("*")):
+    if not path.is_file():
+        continue
+    relative = path.relative_to(ROOT / "source").as_posix()
+    value = record(path)
+    assert value["git_blob"] == leaves[relative]["sha"]
+    sources.append({"repository_path": relative, "authority_head": HEAD, "authority_checkout": MERGE,
+                    "authority_tree": TREE, "original_full_blob_GET_performed": True, **value})
+assert len(sources) == 12 and NEW not in leaves
+source_map = write(ROOT / "source-map.json", {"candidate_revision": "v2", "prior_actual_git_map": "ebe01d3d8dbbacbe2240ce4690fe38bc80fd02a4",
+    "head": HEAD, "actual_checkout": MERGE, "actual_tree": TREE,
+    "source_authority": "Full actual Git blob GETs matched the exact published native10 merge tree; this is a candidate based on that source, not its execution result.",
+    "original_sources": sources, "changes": [
+        {"path": PROBE, "before": identity(source), "after": identity(candidate)},
+        {"path": NEW, "before": None, "after": identity(new)}]})
+
+patch = "".join(difflib.unified_diff(source.decode().splitlines(True), candidate.decode().splitlines(True),
+                                    fromfile="a/" + PROBE, tofile="b/" + PROBE))
+patch += "".join(difflib.unified_diff([], new.decode().splitlines(True), fromfile="/dev/null", tofile="b/" + NEW))
+(ROOT / "full.patch").write_bytes(patch.encode())
+git_commands = []
+with tempfile.TemporaryDirectory(prefix="b11-host-neither-patch-") as temp:
+    temp = Path(temp)
+    path = temp / PROBE
+    path.parent.mkdir(parents=True)
+    path.write_bytes(source)
+    for arguments in [["git", "init", "-q"], ["git", "apply", "--check", str(ROOT / "full.patch")],
+                      ["git", "apply", str(ROOT / "full.patch")]]:
+        result = subprocess.run(arguments, cwd=temp, capture_output=True, check=False)
+        assert result.returncode == 0, result.stderr
+        git_commands.append({"argv": arguments, "exit_code": result.returncode,
+                             "stdout": result.stdout.decode(), "stderr": result.stderr.decode()})
+    assert (temp / PROBE).read_bytes() == candidate and (temp / NEW).read_bytes() == new
+    for arguments in [["git", "apply", "--reverse", "--check", str(ROOT / "full.patch")],
+                      ["git", "apply", "--reverse", str(ROOT / "full.patch")]]:
+        result = subprocess.run(arguments, cwd=temp, capture_output=True, check=False)
+        assert result.returncode == 0, result.stderr
+        git_commands.append({"argv": arguments, "exit_code": result.returncode,
+                             "stdout": result.stdout.decode(), "stderr": result.stderr.decode()})
+    assert (temp / PROBE).read_bytes() == source and not (temp / NEW).exists()
+
+api_checks = []
+for alias, module in [("security", "Security"), ("fswin", "Storage-FileSystem"),
+                      ("threading", "System-Threading"), ("jobs", "System-JobObjects")]:
+    primary = ROOT / "primary" / f"windows-sys-0.52.0-{module}.rs.source.txt"
+    declarations = primary.read_text()
+    names = sorted(set(re.findall(r"\b" + alias + r"::([A-Za-z_]\w*)", new.decode())))
+    for name in names:
+        assert re.search(r"\b(?:fn|const|type|struct)\s+" + re.escape(name) + r"\b", declarations), (module, name)
+    api_checks.append({"namespace": alias, "source": record(primary), "all_referenced_names_present": names,
+                       "limit": "Name and primary declaration availability only; not Rust type-checking or native execution."})
+cargo = (ROOT / "source/codex-rs/windows-sandbox-rs/Cargo.toml").read_text()
+for feature in ["Win32_Foundation", "Win32_Security", "Win32_Storage_FileSystem", "Win32_System_Threading",
+                "Win32_System_JobObjects", "Win32_System_Pipes", "Win32_System_IO"]:
+    assert '"' + feature + '"' in cargo
+assert 'native.glob(["src/**/*.rs"]' in (ROOT / "source/defs.bzl").read_text()
+assert 'mod delete_permission_matrix;' in (ROOT / "source/codex-rs/windows-sandbox-rs/src/lib.rs").read_text()
+static = write(ROOT / "static-verification.json", {"schema": "b11-host-neither-observation-static-v2",
+    "role": "UNEXECUTED_DIAGNOSTIC_CANDIDATE_NOT_PRODUCT_FIX_OR_B11_CLOSURE", "source_map": source_map,
+    "patch": record(ROOT / "full.patch"), "exact_original_probe_after_removing_only_two_insertions": True,
+    "only_two_source_paths": [PROBE, NEW], "existing_test_name_unchanged": "token::integrity_probe::integrity_mechanism_probe_observation_only",
+    "original_eight_rows_and_all_assertions_unchanged": True, "new_test_or_ignore_attributes": 0,
+    "original_library_roster_expected_unchanged": 156, "original_exact_filter_count_expected_unchanged": 155,
+    "roster_limit": "These are static preservation expectations, not candidate native counts.",
+    "git_patch_forward_and_reverse_full_bytes_equal": True, "git_commands": git_commands,
+    "primary_windows_sys_0_52_declaration_checks": api_checks, "existing_required_feature_flags_present": True,
+    "existing_Bazel_glob_includes_the_new_module": True,
+    "rust_comparison": ["ordinary-direct process token baseline", "ordinary token impersonated, actual effective thread token queried inside scope",
+                        "disabled token impersonated identically, actual effective thread token queried inside scope"],
+    "rust_matched_fields": ["user", "user attributes", "all groups and attributes", "restricted SIDs", "integrity RID and attributes", "mandatory policy", "session", "app-container bit", "token type", "impersonation level"],
+    "privileges": "Complete LUID, name, attributes and enabled state are emitted for every recorded subject; no SeRestorePrivilege cause is assumed.",
+    "cmd_comparison": "Both subjects use the exact existing CreateProcessAsUser backend; actual child primary token is read before the private stdin release gate.",
+    "cmd_reserved_environment_names_removed_case_insensitively": ["ERRORLEVEL", "B11_RELEASE"]
+        + [f"MATRIX_{kind}_{index}" for index in range(4) for kind in ["FILE", "DIR"]],
+    "cmd_explicit_flags": ["/d", "/e:on", "/v:off", "/c"],
+    "cmd_environment_scope": "Only the new observation's child environment copy is changed, before adding owned fixture values; the existing wrapper and original cmd assertions are untouched.",
+    "owned_processes": 2, "matrix_cohorts": 5, "delete_routes_per_matrix": 4,
+    "process_exit_wait_ms": 5000, "normal_cleanup_wait_ms": 5000, "unwind_cleanup_wait_ms": 5000,
+    "cleanup_scope": "Original owned process and creation-time Job handles only; no PID enumeration or unrelated host process termination. ActiveProcesses must be zero before successful physical readback.",
+    "filesystem": "GetVolumeInformationByHandleW and FILE_ID_INFO use the same live owned fixture root handle; raw file system type, flags and identity are emitted.",
+    "oracle_scope": "Read and Both-route physical success are positive controls. Neither outcomes are observations. Existing strict outside-write/delete and original host precondition assertions remain unchanged.",
+    "local_compiler_available": {name: shutil.which(name) for name in ["rustc", "cargo", "rustfmt", "just"]},
+    "native_compilation_or_execution_performed": False, "independent_review_status": "PENDING",
+    "B11": "OPEN", "publish_or_dispatch_performed": False})
+print(json.dumps({"source_map": source_map, "static": static, "patch": record(ROOT / "full.patch"),
+                  "candidates": [record(ROOT / "candidate" / PROBE), record(ROOT / "candidate" / NEW)]}, indent=2))

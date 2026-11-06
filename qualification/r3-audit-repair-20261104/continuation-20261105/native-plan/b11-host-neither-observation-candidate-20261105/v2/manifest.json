@@ -1,0 +1,79 @@
+{
+  "schema": "b11-host-neither-observation-candidate-v2",
+  "captured_after_review_utc": "2026-11-05T23:50:09.892676+00:00",
+  "role": "ACCEPTED_STATIC_OBSERVATION_CANDIDATE_PUBLISHED_WITHOUT_NATIVE_QUALIFICATION",
+  "base_head": "021a59ff05ccd963bc087918db823aa86af31bb8",
+  "base_checkout": "5ce73498a9e8ee843d156c43593b1bc2fede416f",
+  "base_tree": "36ca349de7f4c7c5a2914cf1960a81d8621350fa",
+  "v1_actual_registry": "ebe01d3d8dbbacbe2240ce4690fe38bc80fd02a4",
+  "changes": [
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/token_integrity_probe_tests.rs",
+      "before": {
+        "bytes": 14475,
+        "sha256": "5fe644714b4180dd4bbb988452a4c8464524149eda1a91af0af8879761f448ab",
+        "git_blob": "2a384792e8ba88518c26943716e8c3a39a523f9b"
+      },
+      "after": {
+        "bytes": 14736,
+        "sha256": "f5da450f9745cbf65947d15810e9973932264b28dfe21e4f7150b62e5081c2f9",
+        "git_blob": "fc9faa6d47ac5fdefa216affceb51a586f8e6b81"
+      }
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/token_neither_privilege_observation.rs",
+      "before": null,
+      "after": {
+        "bytes": 23010,
+        "sha256": "441a000d02c7aab203a270bde951dcb6e98e02845e76314782892b87e6a6a835",
+        "git_blob": "b40b49ce772c402c51ddb16bb98ff73dc78cdb41"
+      }
+    }
+  ],
+  "minimal_v1_delta": {
+    "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/v2/v2-change-proof.json",
+    "bytes": 973,
+    "sha256": "b55bf183d89b11f7dc81cae4076327518ea17a2e40eed05898ae2dde77439245",
+    "git_blob": "fec54aaefa7cfdb10e7c072675d233971a9048fc"
+  },
+  "static_verification": {
+    "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/v2/static-verification.json",
+    "bytes": 8921,
+    "sha256": "2ce267ee95f38e4370a4ae4b3142835b5f7a90864f8f6e4d5b0cf99e04d3d61c",
+    "git_blob": "cc9c99029b1e42a8463b8da923277a70e8c34bee"
+  },
+  "static_and_initial_postimage_pending_fields_are_historical": true,
+  "independent_review_status": "ACCEPT_V2_AS_OBSERVATION_CANDIDATE_ONLY",
+  "independent_review": {
+    "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/v2/independent-review/review.json",
+    "bytes": 11473,
+    "sha256": "abe938d5f596ba1af068a57f9a5fad8ca499fb9376290f5698f9e57b89fbdba6",
+    "git_blob": "a53e8141b1a62532a483f91cc2b7a6d84486f5fb"
+  },
+  "independent_actual_registry": "11bdb1ab0d1b84255a424f95bd6b7d272951ad9a",
+  "publication_by_root": {
+    "head": "2980fa274c599bd07437a2f5915b86d858f89bcc",
+    "actual_merge": "53766cb836b198e2f928b949f148d7a2a10c0d21",
+    "tree": "9cb7302777ce018dd022086041c2225d1dd5c8dd",
+    "triggered_original_workflow_run": 42130823627,
+    "job_id": 127606676952,
+    "execution_checkout_not_established_by_initial_API_snapshot": true,
+    "actual_merge_parents": [
+      "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed",
+      "2980fa274c599bd07437a2f5915b86d858f89bcc"
+    ],
+    "head_parent": "021a59ff05ccd963bc087918db823aa86af31bb8"
+  },
+  "native_performed_by_package_author": false,
+  "source_ref_write_dispatch_rerun_cancel_by_package_author": false,
+  "no_native_compilation_fmt_or_pass_qualification_in_this_package": true,
+  "B11": "OPEN",
+  "scope_limits": [
+    "No native compilation, fmt or execution was performed or accepted.",
+    "No original whole failure or strict token assertion is closed; B11 remains OPEN.",
+    "The all-privilege counterfactual cannot identify SeRestorePrivilege as a single causal factor.",
+    "Read, loader, normal strict-token behavior and general descendants still require their original contracts.",
+    "Actual launch/result/cleanup errors must remain failures or incomplete observations; no missing row may become a passing denial.",
+    "The existing eight-row completion receipt precedes the new phase; actual acceptance of the added phase requires its own final marker and original test outcome."
+  ]
+}

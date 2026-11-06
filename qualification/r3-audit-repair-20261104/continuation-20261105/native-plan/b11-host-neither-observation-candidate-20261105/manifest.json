@@ -1,0 +1,56 @@
+{
+  "schema": "b11-host-neither-observation-candidate-v1",
+  "created_after_static_verification_utc": "2026-11-05T23:27:32.505999+00:00",
+  "role": "UNEXECUTED_DIAGNOSTIC_CANDIDATE_NOT_PRODUCT_FIX_OR_B11_CLOSURE",
+  "source_head": "021a59ff05ccd963bc087918db823aa86af31bb8",
+  "source_checkout": "5ce73498a9e8ee843d156c43593b1bc2fede416f",
+  "source_tree": "36ca349de7f4c7c5a2914cf1960a81d8621350fa",
+  "original_native10_actual_registry": "6930d8ab9054f099c7e08dc6c791c1a670733dfc",
+  "changes": [
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/token_integrity_probe_tests.rs",
+      "before": {
+        "bytes": 14475,
+        "sha256": "5fe644714b4180dd4bbb988452a4c8464524149eda1a91af0af8879761f448ab",
+        "git_blob": "2a384792e8ba88518c26943716e8c3a39a523f9b"
+      },
+      "after": {
+        "bytes": 14736,
+        "sha256": "f5da450f9745cbf65947d15810e9973932264b28dfe21e4f7150b62e5081c2f9",
+        "git_blob": "fc9faa6d47ac5fdefa216affceb51a586f8e6b81"
+      }
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/token_neither_privilege_observation.rs",
+      "before": null,
+      "after": {
+        "bytes": 22651,
+        "sha256": "a8a2d606f3aee9b764df48e8b79e73330b4adaf571a654562ac4578cc5451aa3",
+        "git_blob": "1f08099d13cc0e282c1fa95cf0261990ff28b88b"
+      }
+    }
+  ],
+  "static_verification": {
+    "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/static-verification.json",
+    "bytes": 8352,
+    "sha256": "71f48bbf9439bacfb6349f3e8bad57d265a6cb18d667dca4e401905d1979511d",
+    "git_blob": "9184c15c4a3985eb3aaf59e49f33ddc74a94e9c5"
+  },
+  "review": {
+    "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/REVIEW.zh-CN.md",
+    "bytes": 8512,
+    "sha256": "0c7fc4fa5d8ffd30904c818513b3bdc41fd68d37b9008a910dfdeec563bfd2d6",
+    "git_blob": "40890839e735c525f86cfa4b598c25fb7b7846be"
+  },
+  "native_performed": false,
+  "ref_write_or_dispatch_performed": false,
+  "independent_review_status": "PENDING",
+  "B11": "OPEN",
+  "limits": [
+    "Only a privilege comparison diagnostic; no prior result transfers to the new candidate.",
+    "Existing strict outside and ordinary-host Neither assertions remain unchanged.",
+    "Original native10 has 147 passed, 7 failed and 2 ignored; scoped controls/helper succeeded independently.",
+    "Original eight-row zero-child marker has phase-only scope; added phase owns two gated cmd processes.",
+    "Local Rust compiler and project tools unavailable; exact API declarations and full Git patch roundtrip are static evidence."
+  ]
+}

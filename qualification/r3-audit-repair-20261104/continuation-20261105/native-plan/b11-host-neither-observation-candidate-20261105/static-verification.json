@@ -1,0 +1,216 @@
+{
+  "schema": "b11-host-neither-observation-static-v1",
+  "role": "UNEXECUTED_DIAGNOSTIC_CANDIDATE_NOT_PRODUCT_FIX_OR_B11_CLOSURE",
+  "source_map": {
+    "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/source-map.json",
+    "bytes": 9389,
+    "sha256": "98df8abfc1ab71ec753fad87807a870107a668169fd57da6d8ba911552b74c7e",
+    "git_blob": "4a1f38968cb27555e92df72a43bd0d8ee82b895e"
+  },
+  "patch": {
+    "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/full.patch",
+    "bytes": 23880,
+    "sha256": "ea60ad1a78071a86dfbd93246e3e8360b414ba1f2c17bd22c5ac7303fa417b08",
+    "git_blob": "495c968b7e87f5919b2f9b17029f3a2cd8733bfb"
+  },
+  "exact_original_probe_after_removing_only_two_insertions": true,
+  "only_two_source_paths": [
+    "codex-rs/windows-sandbox-rs/src/token_integrity_probe_tests.rs",
+    "codex-rs/windows-sandbox-rs/src/token_neither_privilege_observation.rs"
+  ],
+  "existing_test_name_unchanged": "token::integrity_probe::integrity_mechanism_probe_observation_only",
+  "original_eight_rows_and_all_assertions_unchanged": true,
+  "new_test_or_ignore_attributes": 0,
+  "original_library_roster_expected_unchanged": 156,
+  "original_exact_filter_count_expected_unchanged": 155,
+  "roster_limit": "These are static preservation expectations, not candidate native counts.",
+  "git_patch_forward_and_reverse_full_bytes_equal": true,
+  "git_commands": [
+    {
+      "argv": [
+        "git",
+        "init",
+        "-q"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "--check",
+        "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/full.patch"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/full.patch"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "--reverse",
+        "--check",
+        "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/full.patch"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "--reverse",
+        "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/full.patch"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  ],
+  "primary_windows_sys_0_52_declaration_checks": [
+    {
+      "namespace": "security",
+      "source": {
+        "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/primary/windows-sys-0.52.0-Security.rs.source.txt",
+        "bytes": 111353,
+        "sha256": "b35db507ad9380695f15b7ba798d0e677e08cc84b905577489d7e63994f00673",
+        "git_blob": "e474d1dfc62b7be1443f2b59eda8370477fdfa74"
+      },
+      "all_referenced_names_present": [
+        "CreateRestrictedToken",
+        "DISABLE_MAX_PRIVILEGE",
+        "GetTokenInformation",
+        "IsValidSid",
+        "LUID_AND_ATTRIBUTES",
+        "LookupPrivilegeNameW",
+        "SE_PRIVILEGE_ENABLED",
+        "SID_AND_ATTRIBUTES",
+        "SecurityImpersonation",
+        "TOKEN_GROUPS",
+        "TOKEN_INFORMATION_CLASS",
+        "TOKEN_PRIVILEGES",
+        "TOKEN_QUERY",
+        "TokenGroups",
+        "TokenImpersonation",
+        "TokenImpersonationLevel",
+        "TokenIsAppContainer",
+        "TokenPrimary",
+        "TokenPrivileges",
+        "TokenRestrictedSids",
+        "TokenSessionId",
+        "TokenType",
+        "TokenUser"
+      ],
+      "limit": "Name and primary declaration availability only; not Rust type-checking or native execution."
+    },
+    {
+      "namespace": "fswin",
+      "source": {
+        "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/primary/windows-sys-0.52.0-Storage-FileSystem.rs.source.txt",
+        "bytes": 296470,
+        "sha256": "62de1e36d41b1efdb8651c887dae8fbfb0ca2dc34e4d3a789e716f50e424630d",
+        "git_blob": "5cb313fe5ba69cbec6eee56b86ec13608744dae4"
+      },
+      "all_referenced_names_present": [
+        "FILE_FLAG_BACKUP_SEMANTICS",
+        "FILE_FLAG_OPEN_REPARSE_POINT",
+        "FILE_ID_INFO",
+        "FILE_SHARE_DELETE",
+        "FILE_SHARE_READ",
+        "FILE_SHARE_WRITE",
+        "FileIdInfo",
+        "GetFileInformationByHandleEx",
+        "GetVolumeInformationByHandleW",
+        "WriteFile"
+      ],
+      "limit": "Name and primary declaration availability only; not Rust type-checking or native execution."
+    },
+    {
+      "namespace": "threading",
+      "source": {
+        "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/primary/windows-sys-0.52.0-System-Threading.rs.source.txt",
+        "bytes": 136501,
+        "sha256": "6258ef99d17078002020644540a608a89cdf20436daefa3970a65348e6793c1c",
+        "git_blob": "6ee2c4ad6120e5a3ad34c87e67d6d9187304d9ac"
+      },
+      "all_referenced_names_present": [
+        "GetCurrentProcess",
+        "GetCurrentThread",
+        "GetExitCodeProcess",
+        "OpenProcessToken",
+        "OpenThreadToken",
+        "WaitForSingleObject"
+      ],
+      "limit": "Name and primary declaration availability only; not Rust type-checking or native execution."
+    },
+    {
+      "namespace": "jobs",
+      "source": {
+        "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/primary/windows-sys-0.52.0-System-JobObjects.rs.source.txt",
+        "bytes": 29414,
+        "sha256": "45410125f4aaec823e36c7d68c86bf40879098cc2a0cebac969d04ba08a1ef58",
+        "git_blob": "c6afbc15920a12c29dc8eb98a0bd2a48c6da7d52"
+      },
+      "all_referenced_names_present": [
+        "JOBOBJECT_BASIC_ACCOUNTING_INFORMATION",
+        "JobObjectBasicAccountingInformation",
+        "QueryInformationJobObject"
+      ],
+      "limit": "Name and primary declaration availability only; not Rust type-checking or native execution."
+    }
+  ],
+  "existing_required_feature_flags_present": true,
+  "existing_Bazel_glob_includes_the_new_module": true,
+  "rust_comparison": [
+    "ordinary-direct process token baseline",
+    "ordinary token impersonated, actual effective thread token queried inside scope",
+    "disabled token impersonated identically, actual effective thread token queried inside scope"
+  ],
+  "rust_matched_fields": [
+    "user",
+    "user attributes",
+    "all groups and attributes",
+    "restricted SIDs",
+    "integrity RID and attributes",
+    "mandatory policy",
+    "session",
+    "app-container bit",
+    "token type",
+    "impersonation level"
+  ],
+  "privileges": "Complete LUID, name, attributes and enabled state are emitted for every recorded subject; no SeRestorePrivilege cause is assumed.",
+  "cmd_comparison": "Both subjects use the exact existing CreateProcessAsUser backend; actual child primary token is read before the private stdin release gate.",
+  "owned_processes": 2,
+  "matrix_cohorts": 5,
+  "delete_routes_per_matrix": 4,
+  "process_exit_wait_ms": 5000,
+  "normal_cleanup_wait_ms": 5000,
+  "unwind_cleanup_wait_ms": 5000,
+  "cleanup_scope": "Original owned process and creation-time Job handles only; no PID enumeration or unrelated host process termination. ActiveProcesses must be zero before successful physical readback.",
+  "filesystem": "GetVolumeInformationByHandleW and FILE_ID_INFO use the same live owned fixture root handle; raw file system type, flags and identity are emitted.",
+  "oracle_scope": "Read and Both-route physical success are positive controls. Neither outcomes are observations. Existing strict outside-write/delete and original host precondition assertions remain unchanged.",
+  "local_compiler_available": {
+    "rustc": null,
+    "cargo": null,
+    "rustfmt": null,
+    "just": null
+  },
+  "native_compilation_or_execution_performed": false,
+  "independent_review_status": "PENDING",
+  "B11": "OPEN",
+  "publish_or_dispatch_performed": false
+}

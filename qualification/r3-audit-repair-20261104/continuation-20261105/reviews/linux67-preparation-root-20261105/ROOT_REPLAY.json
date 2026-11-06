@@ -1,0 +1,36 @@
+{
+  "schema": "linux67-disabled-preparation-root-replay-v1",
+  "verifier": {
+    "bytes": 10621,
+    "sha256": "b3e1ae17ae56d8cf3595804f3c4a94e4b7e97ac75457af9e7fec87b2cd0eae01",
+    "git_blob": "c5a702559dc66aa806d8807436edf7af268f2264"
+  },
+  "exit_code": 0,
+  "complete_stdout": "{\"candidate_delta\": 3, \"decision\": \"PREPARED_DISABLED_FOR_ROOT_REVIEW\", \"full_roster\": {\"eligible\": 19506, \"ignored\": 57, \"total\": 19563}, \"historical_graph_members\": 193, \"historical_graph_nodes\": 1501, \"leaf_count\": 10582, \"native_execution\": false, \"new_head\": \"67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed\", \"new_key\": \"hepta-ai395-core-candidate-67cc5c28-full-20261105-v1\", \"new_tree\": \"3982ba56dc5a3f1da0c1de7ea57992f88125c359\", \"product_qualified\": false, \"transition_delta\": 14}\n",
+  "complete_stderr": "",
+  "result": {
+    "candidate_delta": 3,
+    "decision": "PREPARED_DISABLED_FOR_ROOT_REVIEW",
+    "full_roster": {
+      "eligible": 19506,
+      "ignored": 57,
+      "total": 19563
+    },
+    "historical_graph_members": 193,
+    "historical_graph_nodes": 1501,
+    "leaf_count": 10582,
+    "native_execution": false,
+    "new_head": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed",
+    "new_key": "hepta-ai395-core-candidate-67cc5c28-full-20261105-v1",
+    "new_tree": "3982ba56dc5a3f1da0c1de7ea57992f88125c359",
+    "product_qualified": false,
+    "transition_delta": 14
+  },
+  "root_acceptance": "Prepared disabled packet only; no current capacity evidence or native execution authorized by this receipt.",
+  "resource_floors_unchanged": {
+    "disk_bytes": 64000000000,
+    "available_RAM_bytes": 34359738368,
+    "CARGO_BUILD_JOBS": "4"
+  },
+  "old_B16_UNKNOWN_job_not_replayed": true
+}

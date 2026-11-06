@@ -1,0 +1,201 @@
+{
+  "schema": "b11-host-neither-independent-static-review-v1",
+  "decision": "ACCEPT_V2_AS_OBSERVATION_CANDIDATE_ONLY",
+  "reviewer": "/root/b20_finish",
+  "authority": {
+    "head": "021a59ff05ccd963bc087918db823aa86af31bb8",
+    "actual_checkout": "5ce73498a9e8ee843d156c43593b1bc2fede416f",
+    "actual_tree": "36ca349de7f4c7c5a2914cf1960a81d8621350fa"
+  },
+  "original_probe": {
+    "bytes": 14475,
+    "sha256": "5fe644714b4180dd4bbb988452a4c8464524149eda1a91af0af8879761f448ab",
+    "git_blob": "2a384792e8ba88518c26943716e8c3a39a523f9b"
+  },
+  "candidate_probe": {
+    "bytes": 14736,
+    "sha256": "f5da450f9745cbf65947d15810e9973932264b28dfe21e4f7150b62e5081c2f9",
+    "git_blob": "fc9faa6d47ac5fdefa216affceb51a586f8e6b81"
+  },
+  "prior_module_v1": {
+    "bytes": 22651,
+    "sha256": "a8a2d606f3aee9b764df48e8b79e73330b4adaf571a654562ac4578cc5451aa3",
+    "git_blob": "1f08099d13cc0e282c1fa95cf0261990ff28b88b"
+  },
+  "accepted_module_v2": {
+    "bytes": 23010,
+    "sha256": "441a000d02c7aab203a270bde951dcb6e98e02845e76314782892b87e6a6a835",
+    "git_blob": "b40b49ce772c402c51ddb16bb98ff73dc78cdb41"
+  },
+  "source_map_v2": {
+    "bytes": 9525,
+    "sha256": "93cb52c11df5bdc015ac9a1d620e2eae336d3464e74e11b56e06c5f2d55c0dcd",
+    "git_blob": "38b00b495db1a813a23fb6e5e69373acaf0b1414"
+  },
+  "all_original_probe_bytes_recovered_by_removing_only_two_insertions": true,
+  "original_test_name_unchanged": "integrity_mechanism_probe_observation_only",
+  "new_test_or_ignore_attributes": false,
+  "roster_preservation": {
+    "whole_expected": 156,
+    "exact_filter_expected": 155,
+    "meaning": "Source preservation only; no new catalog or native result was obtained by this reviewer."
+  },
+  "dependencies_checked_against_owner_actual_source_map": [
+    {
+      "repository_path": "codex-rs/utils/pty/src/win/job.rs",
+      "bytes": 8506,
+      "sha256": "3c904bcd4ac33719bb843639c30be39ca6e9ceda350be311f970aaf3d748a476",
+      "git_blob": "b06035f72d227b4069da677e8104617ae5616283",
+      "owner_original_full_GET_attestation": true
+    },
+    {
+      "repository_path": "codex-rs/windows-sandbox-rs/BUILD.bazel",
+      "bytes": 2556,
+      "sha256": "187e93c5a9a244c752dee5ed15202b361d593d9d651f850a1bda5d69969a7702",
+      "git_blob": "8531cb4d664c25de6fbf200c71cb8042d1d8d865",
+      "owner_original_full_GET_attestation": true
+    },
+    {
+      "repository_path": "codex-rs/windows-sandbox-rs/Cargo.toml",
+      "bytes": 2438,
+      "sha256": "183a3691be018640668dfb766f29651d8fd75ab08f7fd526f3d378ae2a86469d",
+      "git_blob": "aa41ed5f08608c0275785b2f5e27ec5db08f50dd",
+      "owner_original_full_GET_attestation": true
+    },
+    {
+      "repository_path": "codex-rs/windows-sandbox-rs/src/delete_permission_matrix_tests.rs",
+      "bytes": 16679,
+      "sha256": "b701ad01169eb9f64b62ad50099dfcda51b014a5c96dbc2080631fd2e6d7ee75",
+      "git_blob": "6f05793ec6ee043a933073ada3a1bf9122de5a73",
+      "owner_original_full_GET_attestation": true
+    },
+    {
+      "repository_path": "codex-rs/windows-sandbox-rs/src/desktop.rs",
+      "bytes": 9710,
+      "sha256": "4e26ba072fada10f6185d16682274022108ef843f8292d1e7f9ed237f7e1a56f",
+      "git_blob": "0b01f011119bef623bc9e46e710caa371520380d",
+      "owner_original_full_GET_attestation": true
+    },
+    {
+      "repository_path": "codex-rs/windows-sandbox-rs/src/lib.rs",
+      "bytes": 30379,
+      "sha256": "6a656c06930bcf07075db8712292bb8040a33667231783dba177e62230982b38",
+      "git_blob": "11778af7beb645b36401807cf3e31a0dd4deddc0",
+      "owner_original_full_GET_attestation": true
+    },
+    {
+      "repository_path": "codex-rs/windows-sandbox-rs/src/proc_thread_attr.rs",
+      "bytes": 4086,
+      "sha256": "e42e26ae546bb7e00639a70de5a8609d631d4d6f33976d32de6f4dbf741bcb8f",
+      "git_blob": "38110a69239e9707a324f2d4cf4a1fad932b4132",
+      "owner_original_full_GET_attestation": true
+    },
+    {
+      "repository_path": "codex-rs/windows-sandbox-rs/src/process.rs",
+      "bytes": 11792,
+      "sha256": "7c7ea19f6fcfa88990cf5582273eede6139a52ccda8212468087276bb50eaca7",
+      "git_blob": "4d4f1d9435aad3cf9cd27a82d51b2be5b7659a4c",
+      "owner_original_full_GET_attestation": true
+    },
+    {
+      "repository_path": "codex-rs/windows-sandbox-rs/src/token.rs",
+      "bytes": 18437,
+      "sha256": "6d7ddb4a84561b28bc134139226f9be444cb0dc03c73038e7988e21e18339a77",
+      "git_blob": "b22acb5556f6af3b4c250a2441f161ee448ea1c1",
+      "owner_original_full_GET_attestation": true
+    },
+    {
+      "repository_path": "codex-rs/windows-sandbox-rs/src/token_integrity_probe_support.rs",
+      "bytes": 17560,
+      "sha256": "986fe8864f789e4bfa876553d99f1949be403f5ed10b9c88fdc8e0fd7331c0d1",
+      "git_blob": "7a7008f9becf09578ca953c849401eda93eb94b2",
+      "owner_original_full_GET_attestation": true
+    },
+    {
+      "repository_path": "codex-rs/windows-sandbox-rs/src/token_integrity_probe_tests.rs",
+      "bytes": 14475,
+      "sha256": "5fe644714b4180dd4bbb988452a4c8464524149eda1a91af0af8879761f448ab",
+      "git_blob": "2a384792e8ba88518c26943716e8c3a39a523f9b",
+      "owner_original_full_GET_attestation": true
+    },
+    {
+      "repository_path": "defs.bzl",
+      "bytes": 34630,
+      "sha256": "f5638a9189632c8d8524a438bbfc6b365bddf7f23dfd2df06a6de3a2ff3f2cfa",
+      "git_blob": "6f588ec3057fddfea35170e28e74036162ce6a23",
+      "owner_original_full_GET_attestation": true
+    }
+  ],
+  "resolved_findings": [
+    {
+      "id": "CMD_ENVIRONMENT_IS_NOT_FULLY_BOUND_V1",
+      "severity": "observation-integrity",
+      "old_condition": "The complete inherited environment could shadow dynamic %ERRORLEVEL%; /d did not fix command extensions or delayed expansion. Mixed-case aliases could compete with newly written owned MATRIX paths.",
+      "v2_change": "Remove ERRORLEVEL, B11_RELEASE and all eight MATRIX variable aliases with eq_ignore_ascii_case before setting owned values; use /d /e:on /v:off /c.",
+      "verification": "Exactly these two replacements turn all 22,651 v1 bytes into all 23,010 v2 bytes. The original probe postimage is unchanged.",
+      "primary_sources": [
+        "https://learn.microsoft.com/en-us/windows-server/administration/windows-commands/if",
+        "https://learn.microsoft.com/en-us/windows-server/administration/windows-commands/cmd",
+        "https://learn.microsoft.com/en-us/windows-server/administration/windows-commands/set_1",
+        "https://devblogs.microsoft.com/oldnewthing/20080926-00/?p=20743"
+      ]
+    }
+  ],
+  "independent_source_reasoning": [
+    {
+      "area": "effective token",
+      "finding": "OpenThreadToken on the current thread is attempted first; only ERROR_NO_TOKEN permits a process-token fallback. The recorded user/SID attributes, complete group and restricting-SID lists, integrity/policy, session, AppContainer flag and privileges are compared, with explicit primary/impersonation type and SecurityImpersonation checks."
+    },
+    {
+      "area": "paired controls",
+      "finding": "Ordinary direct Rust is retained separately. Ordinary and DISABLE_MAX_PRIVILEGE subjects both use the same impersonation path and actual-thread-token query. Derivation changes only an owned token; zero disabled/restricting SID counts and identity equality are checked. RevertToSelf is RAII and aborts on failure."
+    },
+    {
+      "area": "fixture scope",
+      "finding": "All five cohorts are prepared under one owned temporary root before impersonation. Each holds original object identity and byte-exact DACL checks; all cohorts compare ACL bytes. These are different matched objects, not reuse of the same object across subjects. Four delete routes and Both/read positive controls are retained."
+    },
+    {
+      "area": "child gate",
+      "finding": "The actual CreateProcessAsUserW backend supplies the tested primary token. It configures the Job list and explicit stdio handle list before creation. The parent queries the actual child process token while stdin is blocked; only exact identity/privilege/type equality permits the private release string. EOF and unexpected input exit before deletes. This gates fixture operations, not process startup."
+    },
+    {
+      "area": "handle custody",
+      "finding": "The gate writer is checked noninheritable and excluded from the child handle list; only the read pipe and owned combined output handle are inherited. Fixture WRITE_DAC handles are noninheritable. Returned process/thread handles are wrapped immediately; no PID reacquisition or foreign-process action is introduced."
+    },
+    {
+      "area": "normal cleanup",
+      "finding": "After the work closure, release input is closed, the exact owned Job is terminated, the owned process is waited up to 5000ms, and Job active-process accounting must be zero. Every condition is required before matrix.finish and success. The same 5000ms wait applies to execution; neither value changes an existing product test budget."
+    },
+    {
+      "area": "failure cleanup",
+      "finding": "OwnedChild Drop repeats Job termination and a 5000ms owned-handle wait before remaining fields close; errors are logged, not accepted as success. The existing Job is kill-on-close. Restoration and output-read errors propagate. The original helper exposes BREAKAWAY_OK, so this observation does not establish arbitrary-descendant lifetime isolation."
+    },
+    {
+      "area": "physical oracle",
+      "finding": "DeleteMatrix validates retained identity and ACL bytes, checks retained file contents and pending/link state, restores original ACLs when appropriate, then checks pathname disappearance or exact original identity. Actual physical outcomes are required for the Both controls. Cmd ERRORLEVEL observations are command-interpreter values, not Win32 API error codes."
+    },
+    {
+      "area": "bounded native reads and build binding",
+      "finding": "TokenBuffer uses a 65536-byte aligned allocation and bounds-checks returned extents, array arithmetic and SID spans. The actual windows-sys 0.52.0 declarations and existing Cargo features cover the APIs; the source glob includes the test-only module. This is source review, not compilation."
+    }
+  ],
+  "blocking_source_findings_remaining": [],
+  "scope_limits": [
+    "No native compilation, fmt or execution was performed or accepted.",
+    "No original whole failure or strict token assertion is closed; B11 remains OPEN.",
+    "The all-privilege counterfactual cannot identify SeRestorePrivilege as a single causal factor.",
+    "Read, loader, normal strict-token behavior and general descendants still require their original contracts.",
+    "Actual launch/result/cleanup errors must remain failures or incomplete observations; no missing row may become a passing denial.",
+    "The existing eight-row completion receipt precedes the new phase; actual acceptance of the added phase requires its own final marker and original test outcome."
+  ],
+  "primary_api_sources": [
+    "https://learn.microsoft.com/en-us/windows/win32/api/securitybaseapi/nf-securitybaseapi-impersonateloggedonuser",
+    "https://learn.microsoft.com/en-us/windows/win32/api/processthreadsapi/nf-processthreadsapi-createprocessasuserw",
+    "https://learn.microsoft.com/en-us/windows/win32/api/jobapi2/nf-jobapi2-terminatejobobject",
+    "https://learn.microsoft.com/en-us/windows/win32/sysinfo/handle-inheritance"
+  ],
+  "native_calls": 0,
+  "resource_queries": 0,
+  "source_refs_modified": false,
+  "review_status_is_not_B11_closure": true
+}

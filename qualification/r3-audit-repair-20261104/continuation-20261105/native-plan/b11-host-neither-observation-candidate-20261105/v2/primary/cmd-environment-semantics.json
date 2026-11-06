@@ -1,0 +1,21 @@
+{
+  "schema": "cmd-observation-environment-primary-docs-v1",
+  "sources": [
+    {
+      "url": "https://learn.microsoft.com/en-us/windows-server/administration/windows-commands/if",
+      "retrieved_ref": "turn174view0",
+      "finding": "An existing ERRORLEVEL environment entry supplies its own value instead of the dynamic error level."
+    },
+    {
+      "url": "https://learn.microsoft.com/en-us/windows-server/administration/windows-commands/cmd",
+      "retrieved_ref": "turn174view1",
+      "finding": "/d disables AutoRun; /e:on enables extensions and /v:off disables delayed expansion. Command switches take precedence over registry defaults."
+    },
+    {
+      "url": "https://learn.microsoft.com/en-us/windows-server/administration/windows-commands/set_1",
+      "retrieved_ref": "turn174view2",
+      "finding": "The documented set command requires extensions; /p reads a line from input."
+    }
+  ],
+  "candidate_effect": "Remove only ten reserved names in the new child environment using ASCII case-insensitive comparisons, then add owned fixture values; pass explicit command switches. This is a candidate construction decision, not a Windows execution result."
+}

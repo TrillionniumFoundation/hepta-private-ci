@@ -1,0 +1,574 @@
+{
+  "schema": "b11-host-neither-observation-candidate-actual-git-map-v2",
+  "role": "ACCEPTED_STATIC_OBSERVATION_CANDIDATE_PUBLISHED_NO_NATIVE_QUALIFICATION_IN_THIS_MAP",
+  "base_head": "021a59ff05ccd963bc087918db823aa86af31bb8",
+  "base_checkout": "5ce73498a9e8ee843d156c43593b1bc2fede416f",
+  "base_tree": "36ca349de7f4c7c5a2914cf1960a81d8621350fa",
+  "v1_actual_registry": "ebe01d3d8dbbacbe2240ce4690fe38bc80fd02a4",
+  "source_postimages": [
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/token_integrity_probe_tests.rs",
+      "bytes": 14736,
+      "sha256": "f5da450f9745cbf65947d15810e9973932264b28dfe21e4f7150b62e5081c2f9",
+      "git_blob": "fc9faa6d47ac5fdefa216affceb51a586f8e6b81",
+      "actual_create_blob_sha": "fc9faa6d47ac5fdefa216affceb51a586f8e6b81",
+      "create_get_equal": true
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/token_neither_privilege_observation.rs",
+      "bytes": 23010,
+      "sha256": "441a000d02c7aab203a270bde951dcb6e98e02845e76314782892b87e6a6a835",
+      "git_blob": "b40b49ce772c402c51ddb16bb98ff73dc78cdb41",
+      "actual_create_blob_sha": "b40b49ce772c402c51ddb16bb98ff73dc78cdb41",
+      "create_get_equal": true
+    }
+  ],
+  "independent_review_status": "ACCEPT_V2_AS_OBSERVATION_CANDIDATE_ONLY",
+  "independent_review_actual_blob": "a53e8141b1a62532a483f91cc2b7a6d84486f5fb",
+  "independent_actual_registry": "11bdb1ab0d1b84255a424f95bd6b7d272951ad9a",
+  "publication_by_root": {
+    "head": "2980fa274c599bd07437a2f5915b86d858f89bcc",
+    "actual_merge": "53766cb836b198e2f928b949f148d7a2a10c0d21",
+    "tree": "9cb7302777ce018dd022086041c2225d1dd5c8dd",
+    "triggered_original_workflow_run": 42130823627,
+    "job_id": 127606676952,
+    "execution_checkout_not_established_by_initial_API_snapshot": true,
+    "actual_merge_parents": [
+      "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed",
+      "2980fa274c599bd07437a2f5915b86d858f89bcc"
+    ],
+    "head_parent": "021a59ff05ccd963bc087918db823aa86af31bb8"
+  },
+  "items_reused_without_new_create": 25,
+  "new_evidence_objects_created_base64": 11,
+  "all_36_full_GET_equal": true,
+  "source_ref_write_dispatch_rerun_cancel_by_package_author": false,
+  "B11": "OPEN",
+  "items": [
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/v2/REVIEW.zh-CN.md",
+      "bytes": 10209,
+      "sha256": "548fc3227dbc5e111359f00515c3114ff8b4382ca59692b7afddff3d2beee9db",
+      "git_blob": "c4fb44a267ea2a32f8c4312aa33da51f5c1e86dc",
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/b11-host-neither-observation-candidate-20261105/v2/REVIEW.zh-CN.md",
+      "actual_create_blob_sha": "c4fb44a267ea2a32f8c4312aa33da51f5c1e86dc",
+      "create_get_equal": true,
+      "full_GET_repeated_for_v2": true,
+      "materialization": "base64 create_blob"
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/v2/candidate-postimages.actual.json",
+      "bytes": 665,
+      "sha256": "56118b9e8d3c4db19cc5e7887455201ff85d2020332c580be11e8a69696a7cda",
+      "git_blob": "f011d772fc3b415a7a1aca9ea8b1e5822a8b8f13",
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/b11-host-neither-observation-candidate-20261105/v2/candidate-postimages.actual.json",
+      "actual_create_blob_sha": "f011d772fc3b415a7a1aca9ea8b1e5822a8b8f13",
+      "create_get_equal": true,
+      "full_GET_repeated_for_v2": true,
+      "materialization": "base64 create_blob"
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/v2/candidate/codex-rs/windows-sandbox-rs/src/token_integrity_probe_tests.rs",
+      "bytes": 14736,
+      "sha256": "f5da450f9745cbf65947d15810e9973932264b28dfe21e4f7150b62e5081c2f9",
+      "git_blob": "fc9faa6d47ac5fdefa216affceb51a586f8e6b81",
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/b11-host-neither-observation-candidate-20261105/v2/candidate/codex-rs/windows-sandbox-rs/src/token_integrity_probe_tests.rs.source.txt",
+      "reuse_actual_registration": {
+        "origin_registry": "ebe01d3d8dbbacbe2240ce4690fe38bc80fd02a4",
+        "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/candidate/codex-rs/windows-sandbox-rs/src/token_integrity_probe_tests.rs",
+        "actual_create_blob_sha": "fc9faa6d47ac5fdefa216affceb51a586f8e6b81"
+      },
+      "actual_create_blob_sha": "fc9faa6d47ac5fdefa216affceb51a586f8e6b81",
+      "create_get_equal": true,
+      "full_GET_repeated_for_v2": true,
+      "materialization": "reuse existing actual registration, no new create"
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/v2/candidate/codex-rs/windows-sandbox-rs/src/token_neither_privilege_observation.rs",
+      "bytes": 23010,
+      "sha256": "441a000d02c7aab203a270bde951dcb6e98e02845e76314782892b87e6a6a835",
+      "git_blob": "b40b49ce772c402c51ddb16bb98ff73dc78cdb41",
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/b11-host-neither-observation-candidate-20261105/v2/candidate/codex-rs/windows-sandbox-rs/src/token_neither_privilege_observation.rs.source.txt",
+      "reuse_actual_registration": {
+        "origin_receipt": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/v2/candidate-postimages.actual.json",
+        "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/v2/candidate/codex-rs/windows-sandbox-rs/src/token_neither_privilege_observation.rs",
+        "actual_create_blob_sha": "b40b49ce772c402c51ddb16bb98ff73dc78cdb41",
+        "method": "base64 create_blob"
+      },
+      "actual_create_blob_sha": "b40b49ce772c402c51ddb16bb98ff73dc78cdb41",
+      "create_get_equal": true,
+      "full_GET_repeated_for_v2": true,
+      "materialization": "reuse existing actual registration, no new create"
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/v2/freeze-candidate.py",
+      "bytes": 9766,
+      "sha256": "9da0503e9463a6c7552d74f6fdcbc4ec94f824024b7f21f3f984ea8badaf66cd",
+      "git_blob": "eb42d6df737e5f774d11ce47a010d18568739832",
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/b11-host-neither-observation-candidate-20261105/v2/freeze-candidate.py.source.txt",
+      "actual_create_blob_sha": "eb42d6df737e5f774d11ce47a010d18568739832",
+      "create_get_equal": true,
+      "full_GET_repeated_for_v2": true,
+      "materialization": "base64 create_blob"
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/v2/full.patch",
+      "bytes": 24246,
+      "sha256": "cd2f5fa4338fe305f7f51d273f48a59c1bd15d8703deb4b0cd308e3822fa21a6",
+      "git_blob": "6f68547fb907d45c562dfa65dca950bf16797788",
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/b11-host-neither-observation-candidate-20261105/v2/full.patch",
+      "actual_create_blob_sha": "6f68547fb907d45c562dfa65dca950bf16797788",
+      "create_get_equal": true,
+      "full_GET_repeated_for_v2": true,
+      "materialization": "base64 create_blob"
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/v2/independent-review/freeze_review.py",
+      "bytes": 11168,
+      "sha256": "7ac1045fbde356c5defc8ec58aa5b903049cb173f472bc3243d69086ba2cc030",
+      "git_blob": "42c46f16ee853064ba087c7eaebcb852eb0a30b4",
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/b11-host-neither-observation-candidate-20261105/v2/independent-review/freeze_review.py.source.txt",
+      "reuse_actual_registration": {
+        "origin_registry": "11bdb1ab0d1b84255a424f95bd6b7d272951ad9a",
+        "local_file": "/workspace/scratch/07dd58cc9630/ci-audit/b11-host-neither-independent-20261105/freeze_review.py",
+        "actual_create_blob_sha": "42c46f16ee853064ba087c7eaebcb852eb0a30b4",
+        "method": "create_tree(content)"
+      },
+      "actual_create_blob_sha": "42c46f16ee853064ba087c7eaebcb852eb0a30b4",
+      "create_get_equal": true,
+      "full_GET_repeated_for_v2": true,
+      "materialization": "reuse existing actual registration, no new create"
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/v2/independent-review/registry.actual.json",
+      "bytes": 1540,
+      "sha256": "6c88c06d9b024eb126f1ef9e11a4b47c64f6342d1ba59f8eed4530602798c7df",
+      "git_blob": "11bdb1ab0d1b84255a424f95bd6b7d272951ad9a",
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/b11-host-neither-observation-candidate-20261105/v2/independent-review/registry.actual.json",
+      "reuse_actual_registration": {
+        "origin_receipt": "/workspace/scratch/07dd58cc9630/ci-audit/b11-host-neither-independent-20261105/registry.actual.receipt.json",
+        "local_file": "/workspace/scratch/07dd58cc9630/ci-audit/b11-host-neither-independent-20261105/registry.actual.json",
+        "actual_create_blob_sha": "11bdb1ab0d1b84255a424f95bd6b7d272951ad9a",
+        "method": "create_tree(content)"
+      },
+      "actual_create_blob_sha": "11bdb1ab0d1b84255a424f95bd6b7d272951ad9a",
+      "create_get_equal": true,
+      "full_GET_repeated_for_v2": true,
+      "materialization": "reuse existing actual registration, no new create"
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/v2/independent-review/registry.actual.receipt.json",
+      "bytes": 659,
+      "sha256": "e1f1bd8d036c5b0b8199549f8cfdd32687e24b2cfc1060bd4b8ecb1ee3093a9d",
+      "git_blob": "05e31b043816f6854c4f2864f65c94b7d51f61ef",
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/b11-host-neither-observation-candidate-20261105/v2/independent-review/registry.actual.receipt.json",
+      "actual_create_blob_sha": "05e31b043816f6854c4f2864f65c94b7d51f61ef",
+      "create_get_equal": true,
+      "full_GET_repeated_for_v2": true,
+      "materialization": "base64 create_blob"
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/v2/independent-review/review.json",
+      "bytes": 11473,
+      "sha256": "abe938d5f596ba1af068a57f9a5fad8ca499fb9376290f5698f9e57b89fbdba6",
+      "git_blob": "a53e8141b1a62532a483f91cc2b7a6d84486f5fb",
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/b11-host-neither-observation-candidate-20261105/v2/independent-review/review.json",
+      "reuse_actual_registration": {
+        "origin_registry": "11bdb1ab0d1b84255a424f95bd6b7d272951ad9a",
+        "local_file": "/workspace/scratch/07dd58cc9630/ci-audit/b11-host-neither-independent-20261105/review.json",
+        "actual_create_blob_sha": "a53e8141b1a62532a483f91cc2b7a6d84486f5fb",
+        "method": "create_tree(content)"
+      },
+      "actual_create_blob_sha": "a53e8141b1a62532a483f91cc2b7a6d84486f5fb",
+      "create_get_equal": true,
+      "full_GET_repeated_for_v2": true,
+      "materialization": "reuse existing actual registration, no new create"
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/v2/manifest.json",
+      "bytes": 4007,
+      "sha256": "295a87222893c3ad36d7a91bf571a9421e066a5bceb32734bf0943240bc745af",
+      "git_blob": "e3e42b7929ad5a3d2f1ba98fba3e4b338abe8420",
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/b11-host-neither-observation-candidate-20261105/v2/manifest.json",
+      "actual_create_blob_sha": "e3e42b7929ad5a3d2f1ba98fba3e4b338abe8420",
+      "create_get_equal": true,
+      "full_GET_repeated_for_v2": true,
+      "materialization": "base64 create_blob"
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/v2/primary/Security.receipt.json",
+      "bytes": 585,
+      "sha256": "6df9fcdb897d53b34f45dc806b50d52bbd0c564411b0e023f963e190dc9cd697",
+      "git_blob": "a16fe46ed15e857cf776e879b91f389ce0410c63",
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/b11-host-neither-observation-candidate-20261105/v2/primary/Security.receipt.json",
+      "reuse_actual_registration": {
+        "origin_registry": "ebe01d3d8dbbacbe2240ce4690fe38bc80fd02a4",
+        "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/primary/Security.receipt.json",
+        "actual_create_blob_sha": "a16fe46ed15e857cf776e879b91f389ce0410c63"
+      },
+      "actual_create_blob_sha": "a16fe46ed15e857cf776e879b91f389ce0410c63",
+      "create_get_equal": true,
+      "full_GET_repeated_for_v2": true,
+      "materialization": "reuse existing actual registration, no new create"
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/v2/primary/Storage-FileSystem.receipt.json",
+      "bytes": 605,
+      "sha256": "82e47dcc9636c6fe958d629d7d2760d7216468ce283999126e3539b1673bf103",
+      "git_blob": "b73069a6d24fd077c70e8b5ebe6b847d75e9a0c3",
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/b11-host-neither-observation-candidate-20261105/v2/primary/Storage-FileSystem.receipt.json",
+      "reuse_actual_registration": {
+        "origin_registry": "ebe01d3d8dbbacbe2240ce4690fe38bc80fd02a4",
+        "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/primary/Storage-FileSystem.receipt.json",
+        "actual_create_blob_sha": "b73069a6d24fd077c70e8b5ebe6b847d75e9a0c3"
+      },
+      "actual_create_blob_sha": "b73069a6d24fd077c70e8b5ebe6b847d75e9a0c3",
+      "create_get_equal": true,
+      "full_GET_repeated_for_v2": true,
+      "materialization": "reuse existing actual registration, no new create"
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/v2/primary/System-JobObjects.receipt.json",
+      "bytes": 563,
+      "sha256": "f5b5441aca7302ebde4ddcca9d5dea7417853201d69e1a8e0c04ff68ff64379f",
+      "git_blob": "d8328eabc33634e0b34650f0899c9c087faf4813",
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/b11-host-neither-observation-candidate-20261105/v2/primary/System-JobObjects.receipt.json",
+      "reuse_actual_registration": {
+        "origin_registry": "ebe01d3d8dbbacbe2240ce4690fe38bc80fd02a4",
+        "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/primary/System-JobObjects.receipt.json",
+        "actual_create_blob_sha": "d8328eabc33634e0b34650f0899c9c087faf4813"
+      },
+      "actual_create_blob_sha": "d8328eabc33634e0b34650f0899c9c087faf4813",
+      "create_get_equal": true,
+      "full_GET_repeated_for_v2": true,
+      "materialization": "reuse existing actual registration, no new create"
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/v2/primary/System-Threading.receipt.json",
+      "bytes": 601,
+      "sha256": "9a2fc89669d33c568fccaf1c0a318b18f0525c0c5486c3c1be16131cc2e2f61b",
+      "git_blob": "8eed5487d2cbbd361316e179266eeb376ec47101",
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/b11-host-neither-observation-candidate-20261105/v2/primary/System-Threading.receipt.json",
+      "reuse_actual_registration": {
+        "origin_registry": "ebe01d3d8dbbacbe2240ce4690fe38bc80fd02a4",
+        "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/primary/System-Threading.receipt.json",
+        "actual_create_blob_sha": "8eed5487d2cbbd361316e179266eeb376ec47101"
+      },
+      "actual_create_blob_sha": "8eed5487d2cbbd361316e179266eeb376ec47101",
+      "create_get_equal": true,
+      "full_GET_repeated_for_v2": true,
+      "materialization": "reuse existing actual registration, no new create"
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/v2/primary/cmd-environment-semantics.json",
+      "bytes": 1181,
+      "sha256": "6dae06d76b24d4a52cdf61c29ae8b16a93e0c01f9196607892a805f568f1a2f8",
+      "git_blob": "263022b40f2c7ab2621ca91b1563c94e6253e986",
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/b11-host-neither-observation-candidate-20261105/v2/primary/cmd-environment-semantics.json",
+      "actual_create_blob_sha": "263022b40f2c7ab2621ca91b1563c94e6253e986",
+      "create_get_equal": true,
+      "full_GET_repeated_for_v2": true,
+      "materialization": "base64 create_blob"
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/v2/primary/windows-sys-0.52.0-Security.rs.source.txt",
+      "bytes": 111353,
+      "sha256": "b35db507ad9380695f15b7ba798d0e677e08cc84b905577489d7e63994f00673",
+      "git_blob": "e474d1dfc62b7be1443f2b59eda8370477fdfa74",
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/b11-host-neither-observation-candidate-20261105/v2/primary/windows-sys-0.52.0-Security.rs.source.txt",
+      "reuse_actual_registration": {
+        "origin_registry": "ebe01d3d8dbbacbe2240ce4690fe38bc80fd02a4",
+        "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/primary/windows-sys-0.52.0-Security.rs.source.txt",
+        "actual_create_blob_sha": "e474d1dfc62b7be1443f2b59eda8370477fdfa74"
+      },
+      "actual_create_blob_sha": "e474d1dfc62b7be1443f2b59eda8370477fdfa74",
+      "create_get_equal": true,
+      "full_GET_repeated_for_v2": true,
+      "materialization": "reuse existing actual registration, no new create"
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/v2/primary/windows-sys-0.52.0-Storage-FileSystem.rs.source.txt",
+      "bytes": 296470,
+      "sha256": "62de1e36d41b1efdb8651c887dae8fbfb0ca2dc34e4d3a789e716f50e424630d",
+      "git_blob": "5cb313fe5ba69cbec6eee56b86ec13608744dae4",
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/b11-host-neither-observation-candidate-20261105/v2/primary/windows-sys-0.52.0-Storage-FileSystem.rs.source.txt",
+      "reuse_actual_registration": {
+        "origin_registry": "ebe01d3d8dbbacbe2240ce4690fe38bc80fd02a4",
+        "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/primary/windows-sys-0.52.0-Storage-FileSystem.rs.source.txt",
+        "actual_create_blob_sha": "5cb313fe5ba69cbec6eee56b86ec13608744dae4"
+      },
+      "actual_create_blob_sha": "5cb313fe5ba69cbec6eee56b86ec13608744dae4",
+      "create_get_equal": true,
+      "full_GET_repeated_for_v2": true,
+      "materialization": "reuse existing actual registration, no new create"
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/v2/primary/windows-sys-0.52.0-System-JobObjects.rs.source.txt",
+      "bytes": 29414,
+      "sha256": "45410125f4aaec823e36c7d68c86bf40879098cc2a0cebac969d04ba08a1ef58",
+      "git_blob": "c6afbc15920a12c29dc8eb98a0bd2a48c6da7d52",
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/b11-host-neither-observation-candidate-20261105/v2/primary/windows-sys-0.52.0-System-JobObjects.rs.source.txt",
+      "reuse_actual_registration": {
+        "origin_registry": "ebe01d3d8dbbacbe2240ce4690fe38bc80fd02a4",
+        "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/primary/windows-sys-0.52.0-System-JobObjects.rs.source.txt",
+        "actual_create_blob_sha": "c6afbc15920a12c29dc8eb98a0bd2a48c6da7d52"
+      },
+      "actual_create_blob_sha": "c6afbc15920a12c29dc8eb98a0bd2a48c6da7d52",
+      "create_get_equal": true,
+      "full_GET_repeated_for_v2": true,
+      "materialization": "reuse existing actual registration, no new create"
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/v2/primary/windows-sys-0.52.0-System-Threading.rs.source.txt",
+      "bytes": 136501,
+      "sha256": "6258ef99d17078002020644540a608a89cdf20436daefa3970a65348e6793c1c",
+      "git_blob": "6ee2c4ad6120e5a3ad34c87e67d6d9187304d9ac",
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/b11-host-neither-observation-candidate-20261105/v2/primary/windows-sys-0.52.0-System-Threading.rs.source.txt",
+      "reuse_actual_registration": {
+        "origin_registry": "ebe01d3d8dbbacbe2240ce4690fe38bc80fd02a4",
+        "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/primary/windows-sys-0.52.0-System-Threading.rs.source.txt",
+        "actual_create_blob_sha": "6ee2c4ad6120e5a3ad34c87e67d6d9187304d9ac"
+      },
+      "actual_create_blob_sha": "6ee2c4ad6120e5a3ad34c87e67d6d9187304d9ac",
+      "create_get_equal": true,
+      "full_GET_repeated_for_v2": true,
+      "materialization": "reuse existing actual registration, no new create"
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/v2/source-map.json",
+      "bytes": 9525,
+      "sha256": "93cb52c11df5bdc015ac9a1d620e2eae336d3464e74e11b56e06c5f2d55c0dcd",
+      "git_blob": "38b00b495db1a813a23fb6e5e69373acaf0b1414",
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/b11-host-neither-observation-candidate-20261105/v2/source-map.json",
+      "actual_create_blob_sha": "38b00b495db1a813a23fb6e5e69373acaf0b1414",
+      "create_get_equal": true,
+      "full_GET_repeated_for_v2": true,
+      "materialization": "base64 create_blob"
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/v2/source/codex-rs/utils/pty/src/win/job.rs",
+      "bytes": 8506,
+      "sha256": "3c904bcd4ac33719bb843639c30be39ca6e9ceda350be311f970aaf3d748a476",
+      "git_blob": "b06035f72d227b4069da677e8104617ae5616283",
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/b11-host-neither-observation-candidate-20261105/v2/source/codex-rs/utils/pty/src/win/job.rs.source.txt",
+      "reuse_actual_registration": {
+        "origin_registry": "ebe01d3d8dbbacbe2240ce4690fe38bc80fd02a4",
+        "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/source/codex-rs/utils/pty/src/win/job.rs",
+        "actual_create_blob_sha": "b06035f72d227b4069da677e8104617ae5616283"
+      },
+      "actual_create_blob_sha": "b06035f72d227b4069da677e8104617ae5616283",
+      "create_get_equal": true,
+      "full_GET_repeated_for_v2": true,
+      "materialization": "reuse existing actual registration, no new create"
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/v2/source/codex-rs/windows-sandbox-rs/BUILD.bazel",
+      "bytes": 2556,
+      "sha256": "187e93c5a9a244c752dee5ed15202b361d593d9d651f850a1bda5d69969a7702",
+      "git_blob": "8531cb4d664c25de6fbf200c71cb8042d1d8d865",
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/b11-host-neither-observation-candidate-20261105/v2/source/codex-rs/windows-sandbox-rs/BUILD.bazel.source.txt",
+      "reuse_actual_registration": {
+        "origin_registry": "ebe01d3d8dbbacbe2240ce4690fe38bc80fd02a4",
+        "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/source/codex-rs/windows-sandbox-rs/BUILD.bazel",
+        "actual_create_blob_sha": "8531cb4d664c25de6fbf200c71cb8042d1d8d865"
+      },
+      "actual_create_blob_sha": "8531cb4d664c25de6fbf200c71cb8042d1d8d865",
+      "create_get_equal": true,
+      "full_GET_repeated_for_v2": true,
+      "materialization": "reuse existing actual registration, no new create"
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/v2/source/codex-rs/windows-sandbox-rs/Cargo.toml",
+      "bytes": 2438,
+      "sha256": "183a3691be018640668dfb766f29651d8fd75ab08f7fd526f3d378ae2a86469d",
+      "git_blob": "aa41ed5f08608c0275785b2f5e27ec5db08f50dd",
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/b11-host-neither-observation-candidate-20261105/v2/source/codex-rs/windows-sandbox-rs/Cargo.toml.source.txt",
+      "reuse_actual_registration": {
+        "origin_registry": "ebe01d3d8dbbacbe2240ce4690fe38bc80fd02a4",
+        "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/source/codex-rs/windows-sandbox-rs/Cargo.toml",
+        "actual_create_blob_sha": "aa41ed5f08608c0275785b2f5e27ec5db08f50dd"
+      },
+      "actual_create_blob_sha": "aa41ed5f08608c0275785b2f5e27ec5db08f50dd",
+      "create_get_equal": true,
+      "full_GET_repeated_for_v2": true,
+      "materialization": "reuse existing actual registration, no new create"
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/v2/source/codex-rs/windows-sandbox-rs/src/delete_permission_matrix_tests.rs",
+      "bytes": 16679,
+      "sha256": "b701ad01169eb9f64b62ad50099dfcda51b014a5c96dbc2080631fd2e6d7ee75",
+      "git_blob": "6f05793ec6ee043a933073ada3a1bf9122de5a73",
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/b11-host-neither-observation-candidate-20261105/v2/source/codex-rs/windows-sandbox-rs/src/delete_permission_matrix_tests.rs.source.txt",
+      "reuse_actual_registration": {
+        "origin_registry": "ebe01d3d8dbbacbe2240ce4690fe38bc80fd02a4",
+        "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/source/codex-rs/windows-sandbox-rs/src/delete_permission_matrix_tests.rs",
+        "actual_create_blob_sha": "6f05793ec6ee043a933073ada3a1bf9122de5a73"
+      },
+      "actual_create_blob_sha": "6f05793ec6ee043a933073ada3a1bf9122de5a73",
+      "create_get_equal": true,
+      "full_GET_repeated_for_v2": true,
+      "materialization": "reuse existing actual registration, no new create"
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/v2/source/codex-rs/windows-sandbox-rs/src/desktop.rs",
+      "bytes": 9710,
+      "sha256": "4e26ba072fada10f6185d16682274022108ef843f8292d1e7f9ed237f7e1a56f",
+      "git_blob": "0b01f011119bef623bc9e46e710caa371520380d",
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/b11-host-neither-observation-candidate-20261105/v2/source/codex-rs/windows-sandbox-rs/src/desktop.rs.source.txt",
+      "reuse_actual_registration": {
+        "origin_registry": "ebe01d3d8dbbacbe2240ce4690fe38bc80fd02a4",
+        "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/source/codex-rs/windows-sandbox-rs/src/desktop.rs",
+        "actual_create_blob_sha": "0b01f011119bef623bc9e46e710caa371520380d"
+      },
+      "actual_create_blob_sha": "0b01f011119bef623bc9e46e710caa371520380d",
+      "create_get_equal": true,
+      "full_GET_repeated_for_v2": true,
+      "materialization": "reuse existing actual registration, no new create"
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/v2/source/codex-rs/windows-sandbox-rs/src/lib.rs",
+      "bytes": 30379,
+      "sha256": "6a656c06930bcf07075db8712292bb8040a33667231783dba177e62230982b38",
+      "git_blob": "11778af7beb645b36401807cf3e31a0dd4deddc0",
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/b11-host-neither-observation-candidate-20261105/v2/source/codex-rs/windows-sandbox-rs/src/lib.rs.source.txt",
+      "reuse_actual_registration": {
+        "origin_registry": "ebe01d3d8dbbacbe2240ce4690fe38bc80fd02a4",
+        "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/source/codex-rs/windows-sandbox-rs/src/lib.rs",
+        "actual_create_blob_sha": "11778af7beb645b36401807cf3e31a0dd4deddc0"
+      },
+      "actual_create_blob_sha": "11778af7beb645b36401807cf3e31a0dd4deddc0",
+      "create_get_equal": true,
+      "full_GET_repeated_for_v2": true,
+      "materialization": "reuse existing actual registration, no new create"
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/v2/source/codex-rs/windows-sandbox-rs/src/proc_thread_attr.rs",
+      "bytes": 4086,
+      "sha256": "e42e26ae546bb7e00639a70de5a8609d631d4d6f33976d32de6f4dbf741bcb8f",
+      "git_blob": "38110a69239e9707a324f2d4cf4a1fad932b4132",
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/b11-host-neither-observation-candidate-20261105/v2/source/codex-rs/windows-sandbox-rs/src/proc_thread_attr.rs.source.txt",
+      "reuse_actual_registration": {
+        "origin_registry": "ebe01d3d8dbbacbe2240ce4690fe38bc80fd02a4",
+        "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/source/codex-rs/windows-sandbox-rs/src/proc_thread_attr.rs",
+        "actual_create_blob_sha": "38110a69239e9707a324f2d4cf4a1fad932b4132"
+      },
+      "actual_create_blob_sha": "38110a69239e9707a324f2d4cf4a1fad932b4132",
+      "create_get_equal": true,
+      "full_GET_repeated_for_v2": true,
+      "materialization": "reuse existing actual registration, no new create"
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/v2/source/codex-rs/windows-sandbox-rs/src/process.rs",
+      "bytes": 11792,
+      "sha256": "7c7ea19f6fcfa88990cf5582273eede6139a52ccda8212468087276bb50eaca7",
+      "git_blob": "4d4f1d9435aad3cf9cd27a82d51b2be5b7659a4c",
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/b11-host-neither-observation-candidate-20261105/v2/source/codex-rs/windows-sandbox-rs/src/process.rs.source.txt",
+      "reuse_actual_registration": {
+        "origin_registry": "ebe01d3d8dbbacbe2240ce4690fe38bc80fd02a4",
+        "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/source/codex-rs/windows-sandbox-rs/src/process.rs",
+        "actual_create_blob_sha": "4d4f1d9435aad3cf9cd27a82d51b2be5b7659a4c"
+      },
+      "actual_create_blob_sha": "4d4f1d9435aad3cf9cd27a82d51b2be5b7659a4c",
+      "create_get_equal": true,
+      "full_GET_repeated_for_v2": true,
+      "materialization": "reuse existing actual registration, no new create"
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/v2/source/codex-rs/windows-sandbox-rs/src/token.rs",
+      "bytes": 18437,
+      "sha256": "6d7ddb4a84561b28bc134139226f9be444cb0dc03c73038e7988e21e18339a77",
+      "git_blob": "b22acb5556f6af3b4c250a2441f161ee448ea1c1",
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/b11-host-neither-observation-candidate-20261105/v2/source/codex-rs/windows-sandbox-rs/src/token.rs.source.txt",
+      "reuse_actual_registration": {
+        "origin_registry": "ebe01d3d8dbbacbe2240ce4690fe38bc80fd02a4",
+        "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/source/codex-rs/windows-sandbox-rs/src/token.rs",
+        "actual_create_blob_sha": "b22acb5556f6af3b4c250a2441f161ee448ea1c1"
+      },
+      "actual_create_blob_sha": "b22acb5556f6af3b4c250a2441f161ee448ea1c1",
+      "create_get_equal": true,
+      "full_GET_repeated_for_v2": true,
+      "materialization": "reuse existing actual registration, no new create"
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/v2/source/codex-rs/windows-sandbox-rs/src/token_integrity_probe_support.rs",
+      "bytes": 17560,
+      "sha256": "986fe8864f789e4bfa876553d99f1949be403f5ed10b9c88fdc8e0fd7331c0d1",
+      "git_blob": "7a7008f9becf09578ca953c849401eda93eb94b2",
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/b11-host-neither-observation-candidate-20261105/v2/source/codex-rs/windows-sandbox-rs/src/token_integrity_probe_support.rs.source.txt",
+      "reuse_actual_registration": {
+        "origin_registry": "ebe01d3d8dbbacbe2240ce4690fe38bc80fd02a4",
+        "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/source/codex-rs/windows-sandbox-rs/src/token_integrity_probe_support.rs",
+        "actual_create_blob_sha": "7a7008f9becf09578ca953c849401eda93eb94b2"
+      },
+      "actual_create_blob_sha": "7a7008f9becf09578ca953c849401eda93eb94b2",
+      "create_get_equal": true,
+      "full_GET_repeated_for_v2": true,
+      "materialization": "reuse existing actual registration, no new create"
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/v2/source/codex-rs/windows-sandbox-rs/src/token_integrity_probe_tests.rs",
+      "bytes": 14475,
+      "sha256": "5fe644714b4180dd4bbb988452a4c8464524149eda1a91af0af8879761f448ab",
+      "git_blob": "2a384792e8ba88518c26943716e8c3a39a523f9b",
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/b11-host-neither-observation-candidate-20261105/v2/source/codex-rs/windows-sandbox-rs/src/token_integrity_probe_tests.rs.source.txt",
+      "reuse_actual_registration": {
+        "origin_registry": "ebe01d3d8dbbacbe2240ce4690fe38bc80fd02a4",
+        "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/source/codex-rs/windows-sandbox-rs/src/token_integrity_probe_tests.rs",
+        "actual_create_blob_sha": "2a384792e8ba88518c26943716e8c3a39a523f9b"
+      },
+      "actual_create_blob_sha": "2a384792e8ba88518c26943716e8c3a39a523f9b",
+      "create_get_equal": true,
+      "full_GET_repeated_for_v2": true,
+      "materialization": "reuse existing actual registration, no new create"
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/v2/source/defs.bzl",
+      "bytes": 34630,
+      "sha256": "f5638a9189632c8d8524a438bbfc6b365bddf7f23dfd2df06a6de3a2ff3f2cfa",
+      "git_blob": "6f588ec3057fddfea35170e28e74036162ce6a23",
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/b11-host-neither-observation-candidate-20261105/v2/source/defs.bzl.source.txt",
+      "reuse_actual_registration": {
+        "origin_registry": "ebe01d3d8dbbacbe2240ce4690fe38bc80fd02a4",
+        "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/source/defs.bzl",
+        "actual_create_blob_sha": "6f588ec3057fddfea35170e28e74036162ce6a23"
+      },
+      "actual_create_blob_sha": "6f588ec3057fddfea35170e28e74036162ce6a23",
+      "create_get_equal": true,
+      "full_GET_repeated_for_v2": true,
+      "materialization": "reuse existing actual registration, no new create"
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/v2/static-verification.json",
+      "bytes": 8921,
+      "sha256": "2ce267ee95f38e4370a4ae4b3142835b5f7a90864f8f6e4d5b0cf99e04d3d61c",
+      "git_blob": "cc9c99029b1e42a8463b8da923277a70e8c34bee",
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/b11-host-neither-observation-candidate-20261105/v2/static-verification.json",
+      "actual_create_blob_sha": "cc9c99029b1e42a8463b8da923277a70e8c34bee",
+      "create_get_equal": true,
+      "full_GET_repeated_for_v2": true,
+      "materialization": "base64 create_blob"
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/v2/v1-to-v2.patch",
+      "bytes": 1764,
+      "sha256": "cd65219c069f30a73e03f13286d55edc4a6e1ebba29f0f2bb69d247c8773e06f",
+      "git_blob": "84eff293cd299af48cb5271b8bf47045e963ab6b",
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/b11-host-neither-observation-candidate-20261105/v2/v1-to-v2.patch",
+      "actual_create_blob_sha": "84eff293cd299af48cb5271b8bf47045e963ab6b",
+      "create_get_equal": true,
+      "full_GET_repeated_for_v2": true,
+      "materialization": "base64 create_blob"
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/v2/v2-change-proof.json",
+      "bytes": 973,
+      "sha256": "b55bf183d89b11f7dc81cae4076327518ea17a2e40eed05898ae2dde77439245",
+      "git_blob": "fec54aaefa7cfdb10e7c072675d233971a9048fc",
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/b11-host-neither-observation-candidate-20261105/v2/v2-change-proof.json",
+      "actual_create_blob_sha": "fec54aaefa7cfdb10e7c072675d233971a9048fc",
+      "create_get_equal": true,
+      "full_GET_repeated_for_v2": true,
+      "materialization": "base64 create_blob"
+    }
+  ]
+}

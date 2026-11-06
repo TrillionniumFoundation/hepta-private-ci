@@ -1,0 +1,2686 @@
+{
+  "schema": "hepta-v9-postcut-registered-evidence-index-v1",
+  "frozen_utc": "2026-11-06T00:01:05.550352+00:00",
+  "audit_parent": "089c13ab39cedb9fea0f9e9bd03d95317936cd65",
+  "base_tree": "cd5ad6773d53055ae79cf3a5b79703406161eb69",
+  "immutable_core_index": "evidence-index-v9-registered.json",
+  "source_main": {
+    "head": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed",
+    "merge": "b7a57dbb61b00e51c05da9cf5c4bc95b365d85ae",
+    "tree": "3982ba56dc5a3f1da0c1de7ea57992f88125c359"
+  },
+  "B11_diagnostic": {
+    "head": "2980fa274c599bd07437a2f5915b86d858f89bcc",
+    "merge": "53766cb836b198e2f928b949f148d7a2a10c0d21",
+    "tree": "9cb7302777ce018dd022086041c2225d1dd5c8dd",
+    "qualification": "Two-path observation candidate; native10 results belong to its prior source. B11 remains OPEN."
+  },
+  "counts": {
+    "CLOSED_SCOPED": 15,
+    "OPEN": 7,
+    "SCIENTIFIC_HOLD": 1
+  },
+  "original_exit_conditions_and_frozen_V9_documents_unchanged": true,
+  "all_blockers_closed": false,
+  "whole_candidate_qualified": false,
+  "CI_snapshot_semantics": "Every snapshot retains its own observation interval and source/merge identity. API success and prepared packets do not close product gates.",
+  "native_linux67_packet": "Prepared and offline-verified only; execute=false, guard=null, original disk 64000000000 bytes, available RAM 34359738368 bytes, CARGO_BUILD_JOBS=4. No new host capacity evidence or native execution.",
+  "items": [
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/POSTCUT_20261105T2258.zh-CN.md",
+      "local_file": "/workspace/scratch/07dd58cc9630/hepta-audit-fifth/v9/postcut-root/POSTCUT_20261105T2258.zh-CN.md",
+      "bytes": 4480,
+      "sha256": "82967f9aa2f7ae0b9fedbbe36866cf5fb2daea56d2fd99a0b3aa80c88643b881",
+      "git_blob": "30b5665e83828d9807cc8c304192c58fbd9052cf",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "local_file": "/workspace/scratch/07dd58cc9630/hepta-audit-fifth/b11-host-neither-publication/delivery/registry.actual.json",
+        "git_blob": "5a3b08877150615a1d303ed9d443a180c7f2c5df"
+      },
+      "materialization_method": "create_tree(content) without base tree or ref mutation"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-cut-20261105T2258/README.zh-CN.md",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/main67-ci-cut-20261105T2258/README.zh-CN.md",
+      "bytes": 3168,
+      "sha256": "d834ee09fc14b9eae5578b1b6d255439de5e3086f51f7669bc3a40e21048dec3",
+      "git_blob": "ef5c9fb838dcef81b9ffec2ecddb9e551ece2b76",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "local_file": "/workspace/scratch/07dd58cc9630/research-audit/main67-ci-cut-20261105T2258/delivery/registry.actual.json",
+        "git_blob": "bc1a1c95fd32a7b71fa19ef0a1d05ca7b7c2bcb2"
+      },
+      "materialization_method": "create_blob"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-cut-20261105T2258/complete-originals.part-000.base64.txt",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/main67-ci-cut-20261105T2258/delivery/complete-originals.part-000.base64.txt",
+      "bytes": 400000,
+      "sha256": "b99ae9972677abf92165f68df46bb8013b73d2c9ad339de5240add616169aa48",
+      "git_blob": "79a3a878452966a3f8f5602f7e5ca64dcfbc1104",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "local_file": "/workspace/scratch/07dd58cc9630/research-audit/main67-ci-cut-20261105T2258/delivery/registry.actual.json",
+        "git_blob": "bc1a1c95fd32a7b71fa19ef0a1d05ca7b7c2bcb2"
+      },
+      "materialization_method": "create_blob"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-cut-20261105T2258/complete-originals.part-001.base64.txt",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/main67-ci-cut-20261105T2258/delivery/complete-originals.part-001.base64.txt",
+      "bytes": 400000,
+      "sha256": "62424ee53ce720c7617cd5d8d0936de63e1181824cbbd7cad705bd60fa634c1d",
+      "git_blob": "22a1c5b92e965dc81dcf0b37673efb38caf4b74f",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "local_file": "/workspace/scratch/07dd58cc9630/research-audit/main67-ci-cut-20261105T2258/delivery/registry.actual.json",
+        "git_blob": "bc1a1c95fd32a7b71fa19ef0a1d05ca7b7c2bcb2"
+      },
+      "materialization_method": "create_blob"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-cut-20261105T2258/complete-originals.part-002.base64.txt",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/main67-ci-cut-20261105T2258/delivery/complete-originals.part-002.base64.txt",
+      "bytes": 400000,
+      "sha256": "19f1b56e0836c432fa1398dada96198e7ff4f03aa9deadda9a0bf5b5bf7d38a2",
+      "git_blob": "164c7ff3cd7da9b4a0cefc1c4e4384aa00992583",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "local_file": "/workspace/scratch/07dd58cc9630/research-audit/main67-ci-cut-20261105T2258/delivery/registry.actual.json",
+        "git_blob": "bc1a1c95fd32a7b71fa19ef0a1d05ca7b7c2bcb2"
+      },
+      "materialization_method": "create_blob"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-cut-20261105T2258/complete-originals.part-003.base64.txt",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/main67-ci-cut-20261105T2258/delivery/complete-originals.part-003.base64.txt",
+      "bytes": 400000,
+      "sha256": "ec14d7f31e642dba0700aab7e9cdaf61dce137def0236f2f6811b30d100db63c",
+      "git_blob": "5d4b7808a38b1a0b1f6c131eccaf7a6a07ddaba4",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "local_file": "/workspace/scratch/07dd58cc9630/research-audit/main67-ci-cut-20261105T2258/delivery/registry.actual.json",
+        "git_blob": "bc1a1c95fd32a7b71fa19ef0a1d05ca7b7c2bcb2"
+      },
+      "materialization_method": "create_blob"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-cut-20261105T2258/complete-originals.part-004.base64.txt",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/main67-ci-cut-20261105T2258/delivery/complete-originals.part-004.base64.txt",
+      "bytes": 400000,
+      "sha256": "b4056438ed97b7304fa6b338bddd2d0ec604655c3ff33f15ba0a0697278f3b79",
+      "git_blob": "0fa869c1e25569fd5aad0dd98c75feb1d226ee48",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "local_file": "/workspace/scratch/07dd58cc9630/research-audit/main67-ci-cut-20261105T2258/delivery/registry.actual.json",
+        "git_blob": "bc1a1c95fd32a7b71fa19ef0a1d05ca7b7c2bcb2"
+      },
+      "materialization_method": "create_blob"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-cut-20261105T2258/complete-originals.part-005.base64.txt",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/main67-ci-cut-20261105T2258/delivery/complete-originals.part-005.base64.txt",
+      "bytes": 400000,
+      "sha256": "513469312a8ec83fd66a12611165f158b325b398f9a06c44a5b2fcb679f43c43",
+      "git_blob": "6b0dd527b1b4f0577c4a07e1eb11e4e75d8c748e",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "local_file": "/workspace/scratch/07dd58cc9630/research-audit/main67-ci-cut-20261105T2258/delivery/registry.actual.json",
+        "git_blob": "bc1a1c95fd32a7b71fa19ef0a1d05ca7b7c2bcb2"
+      },
+      "materialization_method": "create_blob"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-cut-20261105T2258/complete-originals.part-006.base64.txt",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/main67-ci-cut-20261105T2258/delivery/complete-originals.part-006.base64.txt",
+      "bytes": 400000,
+      "sha256": "74731644ce03470cc899f58c5289e3a62a575c143c661271b2161a225c9f5ffb",
+      "git_blob": "30db2471698e79445f040e679e07059760b36733",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "local_file": "/workspace/scratch/07dd58cc9630/research-audit/main67-ci-cut-20261105T2258/delivery/registry.actual.json",
+        "git_blob": "bc1a1c95fd32a7b71fa19ef0a1d05ca7b7c2bcb2"
+      },
+      "materialization_method": "create_blob"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-cut-20261105T2258/complete-originals.part-007.base64.txt",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/main67-ci-cut-20261105T2258/delivery/complete-originals.part-007.base64.txt",
+      "bytes": 400000,
+      "sha256": "d2ffac3358b86177eb8923db51945fab34d9772cae8fbfef175ba03987ed0913",
+      "git_blob": "431a1dcc3c5ada31ae0e0d69ac974f6f02f481f7",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "local_file": "/workspace/scratch/07dd58cc9630/research-audit/main67-ci-cut-20261105T2258/delivery/registry.actual.json",
+        "git_blob": "bc1a1c95fd32a7b71fa19ef0a1d05ca7b7c2bcb2"
+      },
+      "materialization_method": "create_blob"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-cut-20261105T2258/complete-originals.part-008.base64.txt",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/main67-ci-cut-20261105T2258/delivery/complete-originals.part-008.base64.txt",
+      "bytes": 400000,
+      "sha256": "bb1bbea2e400133a008797e3cc2c579752ba1bd5f6e8c5ec07041bc42b19604d",
+      "git_blob": "6c68efd28196ad38cc5c7b4772dfe2e5c12b014f",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "local_file": "/workspace/scratch/07dd58cc9630/research-audit/main67-ci-cut-20261105T2258/delivery/registry.actual.json",
+        "git_blob": "bc1a1c95fd32a7b71fa19ef0a1d05ca7b7c2bcb2"
+      },
+      "materialization_method": "create_blob"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-cut-20261105T2258/complete-originals.part-009.base64.txt",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/main67-ci-cut-20261105T2258/delivery/complete-originals.part-009.base64.txt",
+      "bytes": 400000,
+      "sha256": "ffe643bb36cdd18c51fc41e4b2001fcfafd851f1eb2f4247da57bce6a32725b0",
+      "git_blob": "26e8e462e2ebe67557c5d527887f1522fb23f886",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "local_file": "/workspace/scratch/07dd58cc9630/research-audit/main67-ci-cut-20261105T2258/delivery/registry.actual.json",
+        "git_blob": "bc1a1c95fd32a7b71fa19ef0a1d05ca7b7c2bcb2"
+      },
+      "materialization_method": "create_blob"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-cut-20261105T2258/complete-originals.part-010.base64.txt",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/main67-ci-cut-20261105T2258/delivery/complete-originals.part-010.base64.txt",
+      "bytes": 400000,
+      "sha256": "64ae9b26c8f68ad3f081f65afa8af86aecd9ce838569e81c41ea6262f68be0f5",
+      "git_blob": "a2f971037c78b42f9404d88a8f5aa11d6552634a",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "local_file": "/workspace/scratch/07dd58cc9630/research-audit/main67-ci-cut-20261105T2258/delivery/registry.actual.json",
+        "git_blob": "bc1a1c95fd32a7b71fa19ef0a1d05ca7b7c2bcb2"
+      },
+      "materialization_method": "create_blob"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-cut-20261105T2258/complete-originals.part-011.base64.txt",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/main67-ci-cut-20261105T2258/delivery/complete-originals.part-011.base64.txt",
+      "bytes": 400000,
+      "sha256": "1a5c6096b83f7c8815c55011fb15f8bae81eb3c960e6787b77e92fb797868570",
+      "git_blob": "4dcf89fc500629d184945ef1243fd9ec412e800d",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "local_file": "/workspace/scratch/07dd58cc9630/research-audit/main67-ci-cut-20261105T2258/delivery/registry.actual.json",
+        "git_blob": "bc1a1c95fd32a7b71fa19ef0a1d05ca7b7c2bcb2"
+      },
+      "materialization_method": "create_blob"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-cut-20261105T2258/complete-originals.part-012.base64.txt",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/main67-ci-cut-20261105T2258/delivery/complete-originals.part-012.base64.txt",
+      "bytes": 400000,
+      "sha256": "fb7980b956b98cca5f234e34cccf5113b883ab1775285075a5756418bafcd9a6",
+      "git_blob": "60fd3fdb690b4bbfd0fa2ba4455b4a971276f5d8",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "local_file": "/workspace/scratch/07dd58cc9630/research-audit/main67-ci-cut-20261105T2258/delivery/registry.actual.json",
+        "git_blob": "bc1a1c95fd32a7b71fa19ef0a1d05ca7b7c2bcb2"
+      },
+      "materialization_method": "create_blob"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-cut-20261105T2258/complete-originals.part-013.base64.txt",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/main67-ci-cut-20261105T2258/delivery/complete-originals.part-013.base64.txt",
+      "bytes": 400000,
+      "sha256": "01602042068dab21714b5f3c03723b603ccd05a468646d65b91ef321c01d7317",
+      "git_blob": "bf37f3454b6e8329cdd2ef75c9161005479d9a30",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "local_file": "/workspace/scratch/07dd58cc9630/research-audit/main67-ci-cut-20261105T2258/delivery/registry.actual.json",
+        "git_blob": "bc1a1c95fd32a7b71fa19ef0a1d05ca7b7c2bcb2"
+      },
+      "materialization_method": "create_blob"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-cut-20261105T2258/complete-originals.part-014.base64.txt",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/main67-ci-cut-20261105T2258/delivery/complete-originals.part-014.base64.txt",
+      "bytes": 400000,
+      "sha256": "a7f6e2a0c5981c64be13b0079e2ab8e454ea83417e6c03ceb9a13ea6c9387324",
+      "git_blob": "5c68df6573b731ae4f897dd9cca5aeaff0f41d0b",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "local_file": "/workspace/scratch/07dd58cc9630/research-audit/main67-ci-cut-20261105T2258/delivery/registry.actual.json",
+        "git_blob": "bc1a1c95fd32a7b71fa19ef0a1d05ca7b7c2bcb2"
+      },
+      "materialization_method": "create_tree(content)"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-cut-20261105T2258/complete-originals.part-015.base64.txt",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/main67-ci-cut-20261105T2258/delivery/complete-originals.part-015.base64.txt",
+      "bytes": 400000,
+      "sha256": "de9d541f28a121d5374885a2565215e0030ea58bbf38d8f3e25c31f0980ac562",
+      "git_blob": "c4a61e01b9d043b5bce91e13d71e81d848c5f3f2",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "local_file": "/workspace/scratch/07dd58cc9630/research-audit/main67-ci-cut-20261105T2258/delivery/registry.actual.json",
+        "git_blob": "bc1a1c95fd32a7b71fa19ef0a1d05ca7b7c2bcb2"
+      },
+      "materialization_method": "create_tree(content)"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-cut-20261105T2258/complete-originals.part-016.base64.txt",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/main67-ci-cut-20261105T2258/delivery/complete-originals.part-016.base64.txt",
+      "bytes": 400000,
+      "sha256": "9677bffa3ae2c6d2996611b581f0ddcc8b4256ce6fde820f63df89d3b930f83e",
+      "git_blob": "0a48c7c9658339e72b43de72cfaa498c82d00825",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "local_file": "/workspace/scratch/07dd58cc9630/research-audit/main67-ci-cut-20261105T2258/delivery/registry.actual.json",
+        "git_blob": "bc1a1c95fd32a7b71fa19ef0a1d05ca7b7c2bcb2"
+      },
+      "materialization_method": "create_tree(content)"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-cut-20261105T2258/complete-originals.part-017.base64.txt",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/main67-ci-cut-20261105T2258/delivery/complete-originals.part-017.base64.txt",
+      "bytes": 400000,
+      "sha256": "179532cbd9281107664b7252e277a6f5090f74abcefa400e19939b956d678673",
+      "git_blob": "02c1113418f8213d9b066293e3d1adffc9ec573b",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "local_file": "/workspace/scratch/07dd58cc9630/research-audit/main67-ci-cut-20261105T2258/delivery/registry.actual.json",
+        "git_blob": "bc1a1c95fd32a7b71fa19ef0a1d05ca7b7c2bcb2"
+      },
+      "materialization_method": "create_tree(content)"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-cut-20261105T2258/complete-originals.part-018.base64.txt",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/main67-ci-cut-20261105T2258/delivery/complete-originals.part-018.base64.txt",
+      "bytes": 400000,
+      "sha256": "08c9416ba2f5253582bb1272d55dff133e9e9cfde0b5e7fa4a57db4f140726aa",
+      "git_blob": "dae0cfd886f103ddcbef8177e9da13f6c6456c17",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "local_file": "/workspace/scratch/07dd58cc9630/research-audit/main67-ci-cut-20261105T2258/delivery/registry.actual.json",
+        "git_blob": "bc1a1c95fd32a7b71fa19ef0a1d05ca7b7c2bcb2"
+      },
+      "materialization_method": "create_tree(content)"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-cut-20261105T2258/complete-originals.part-019.base64.txt",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/main67-ci-cut-20261105T2258/delivery/complete-originals.part-019.base64.txt",
+      "bytes": 400000,
+      "sha256": "9f029de8b0d48f45cc6f865a77f8952257cb4e331e9f1caf905014305c2b6716",
+      "git_blob": "27a334dfacea3d384af96b8973ba2d1453fa6b25",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "local_file": "/workspace/scratch/07dd58cc9630/research-audit/main67-ci-cut-20261105T2258/delivery/registry.actual.json",
+        "git_blob": "bc1a1c95fd32a7b71fa19ef0a1d05ca7b7c2bcb2"
+      },
+      "materialization_method": "create_tree(content)"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-cut-20261105T2258/complete-originals.part-020.base64.txt",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/main67-ci-cut-20261105T2258/delivery/complete-originals.part-020.base64.txt",
+      "bytes": 400000,
+      "sha256": "6b7608b7138b8e1b4c0af300363acd1532dc8245abec9c7360075fdc9fa3ea6b",
+      "git_blob": "e39a37908adfa0b12d8acb6f3edaed0b4f3ce4d1",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "local_file": "/workspace/scratch/07dd58cc9630/research-audit/main67-ci-cut-20261105T2258/delivery/registry.actual.json",
+        "git_blob": "bc1a1c95fd32a7b71fa19ef0a1d05ca7b7c2bcb2"
+      },
+      "materialization_method": "create_tree(content)"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-cut-20261105T2258/complete-originals.part-021.base64.txt",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/main67-ci-cut-20261105T2258/delivery/complete-originals.part-021.base64.txt",
+      "bytes": 400000,
+      "sha256": "b250b28d81a883c7d3a6ffc23012e6c93aaed60ab973928c36042c6376e576a0",
+      "git_blob": "b42b6c76c2f6c2efd6c464b972e0adf75f690711",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "local_file": "/workspace/scratch/07dd58cc9630/research-audit/main67-ci-cut-20261105T2258/delivery/registry.actual.json",
+        "git_blob": "bc1a1c95fd32a7b71fa19ef0a1d05ca7b7c2bcb2"
+      },
+      "materialization_method": "create_tree(content)"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-cut-20261105T2258/complete-originals.part-022.base64.txt",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/main67-ci-cut-20261105T2258/delivery/complete-originals.part-022.base64.txt",
+      "bytes": 400000,
+      "sha256": "96f8455a0fda2275304dbbbe6a7c49bc7d7c545327c0226caf7eccddfc6ab897",
+      "git_blob": "c9909c744e0ebcf00df9c6bbc8bcd63d6a304345",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "local_file": "/workspace/scratch/07dd58cc9630/research-audit/main67-ci-cut-20261105T2258/delivery/registry.actual.json",
+        "git_blob": "bc1a1c95fd32a7b71fa19ef0a1d05ca7b7c2bcb2"
+      },
+      "materialization_method": "create_tree(content)"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-cut-20261105T2258/complete-originals.part-023.base64.txt",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/main67-ci-cut-20261105T2258/delivery/complete-originals.part-023.base64.txt",
+      "bytes": 400000,
+      "sha256": "41250584bce109588028780171053735219beddd370258918028e25ca27e93da",
+      "git_blob": "ff7ef42b1133cf3a806b5d846af010849e181ac5",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "local_file": "/workspace/scratch/07dd58cc9630/research-audit/main67-ci-cut-20261105T2258/delivery/registry.actual.json",
+        "git_blob": "bc1a1c95fd32a7b71fa19ef0a1d05ca7b7c2bcb2"
+      },
+      "materialization_method": "create_tree(content)"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-cut-20261105T2258/complete-originals.part-024.base64.txt",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/main67-ci-cut-20261105T2258/delivery/complete-originals.part-024.base64.txt",
+      "bytes": 400000,
+      "sha256": "febb0b5406a057a6d78a0e96f1391fbb89421b76bf881da842dd44fb6542013e",
+      "git_blob": "7f62e39db80f93b29063964db5b72f3b46e6cfe8",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "local_file": "/workspace/scratch/07dd58cc9630/research-audit/main67-ci-cut-20261105T2258/delivery/registry.actual.json",
+        "git_blob": "bc1a1c95fd32a7b71fa19ef0a1d05ca7b7c2bcb2"
+      },
+      "materialization_method": "create_tree(content)"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-cut-20261105T2258/complete-originals.part-025.base64.txt",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/main67-ci-cut-20261105T2258/delivery/complete-originals.part-025.base64.txt",
+      "bytes": 400000,
+      "sha256": "48331749186890e0cfa2daa4392dbd8d788ccea4effdb4ad11635126fefd985f",
+      "git_blob": "9bacafaf05d834e288dbc3ed544e192031910e14",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "local_file": "/workspace/scratch/07dd58cc9630/research-audit/main67-ci-cut-20261105T2258/delivery/registry.actual.json",
+        "git_blob": "bc1a1c95fd32a7b71fa19ef0a1d05ca7b7c2bcb2"
+      },
+      "materialization_method": "create_tree(content)"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-cut-20261105T2258/complete-originals.part-026.base64.txt",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/main67-ci-cut-20261105T2258/delivery/complete-originals.part-026.base64.txt",
+      "bytes": 400000,
+      "sha256": "bc40dcb5cb574ec891d04092873acc56ab150ff8a589d55e39993d6e2f524cfe",
+      "git_blob": "2182abe6e693879fc3fee3f649e6220b0d9c06d8",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "local_file": "/workspace/scratch/07dd58cc9630/research-audit/main67-ci-cut-20261105T2258/delivery/registry.actual.json",
+        "git_blob": "bc1a1c95fd32a7b71fa19ef0a1d05ca7b7c2bcb2"
+      },
+      "materialization_method": "create_tree(content)"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-cut-20261105T2258/complete-originals.part-027.base64.txt",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/main67-ci-cut-20261105T2258/delivery/complete-originals.part-027.base64.txt",
+      "bytes": 400000,
+      "sha256": "789e4341b10182236e86216f913ef46477a48e6263fb436ad5430ae59e737699",
+      "git_blob": "a019b9d6f3f764e8b55646f15479559067e34084",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "local_file": "/workspace/scratch/07dd58cc9630/research-audit/main67-ci-cut-20261105T2258/delivery/registry.actual.json",
+        "git_blob": "bc1a1c95fd32a7b71fa19ef0a1d05ca7b7c2bcb2"
+      },
+      "materialization_method": "create_tree(content)"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-cut-20261105T2258/complete-originals.part-028.base64.txt",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/main67-ci-cut-20261105T2258/delivery/complete-originals.part-028.base64.txt",
+      "bytes": 400000,
+      "sha256": "5443ee43fffead7f53794b24437a4465b3df0564c838fa081ec56f3425683e7b",
+      "git_blob": "2ff9881fdb2cf7219b8c3011753df9e5b82a54c9",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "local_file": "/workspace/scratch/07dd58cc9630/research-audit/main67-ci-cut-20261105T2258/delivery/registry.actual.json",
+        "git_blob": "bc1a1c95fd32a7b71fa19ef0a1d05ca7b7c2bcb2"
+      },
+      "materialization_method": "create_tree(content)"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-cut-20261105T2258/complete-originals.part-029.base64.txt",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/main67-ci-cut-20261105T2258/delivery/complete-originals.part-029.base64.txt",
+      "bytes": 400000,
+      "sha256": "f274a2413183dbf04f68e187dd8832812a0e46d27ed488aefc07798cf962e0ae",
+      "git_blob": "ae31b666cf9193a202a0d18a6ecd2d1b856092cd",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "local_file": "/workspace/scratch/07dd58cc9630/research-audit/main67-ci-cut-20261105T2258/delivery/registry.actual.json",
+        "git_blob": "bc1a1c95fd32a7b71fa19ef0a1d05ca7b7c2bcb2"
+      },
+      "materialization_method": "create_tree(content)"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-cut-20261105T2258/complete-originals.part-030.base64.txt",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/main67-ci-cut-20261105T2258/delivery/complete-originals.part-030.base64.txt",
+      "bytes": 400000,
+      "sha256": "faca3c959d7049d983b130f3bfdfe8d4865405ef1e337c07a59aca6b952813d6",
+      "git_blob": "f09579fcea43674a16f7dd4cddbedc1645c0689d",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "local_file": "/workspace/scratch/07dd58cc9630/research-audit/main67-ci-cut-20261105T2258/delivery/registry.actual.json",
+        "git_blob": "bc1a1c95fd32a7b71fa19ef0a1d05ca7b7c2bcb2"
+      },
+      "materialization_method": "create_tree(content)"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-cut-20261105T2258/complete-originals.part-031.base64.txt",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/main67-ci-cut-20261105T2258/delivery/complete-originals.part-031.base64.txt",
+      "bytes": 400000,
+      "sha256": "96bb416b4bcdc8aba56b32b1ef034e1b50eb4c59610c4a03b612a32743bd3be6",
+      "git_blob": "d604de466b1e6333c872ed758da5465a403fc025",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "local_file": "/workspace/scratch/07dd58cc9630/research-audit/main67-ci-cut-20261105T2258/delivery/registry.actual.json",
+        "git_blob": "bc1a1c95fd32a7b71fa19ef0a1d05ca7b7c2bcb2"
+      },
+      "materialization_method": "create_tree(content)"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-cut-20261105T2258/complete-originals.part-032.base64.txt",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/main67-ci-cut-20261105T2258/delivery/complete-originals.part-032.base64.txt",
+      "bytes": 400000,
+      "sha256": "311bcb2522b01bed35770c5fa651a0aa6b09dea5a621dfdefac91a18c28575cd",
+      "git_blob": "a1a9e966fbd808b725c434e4deb32d7c973e52dc",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "local_file": "/workspace/scratch/07dd58cc9630/research-audit/main67-ci-cut-20261105T2258/delivery/registry.actual.json",
+        "git_blob": "bc1a1c95fd32a7b71fa19ef0a1d05ca7b7c2bcb2"
+      },
+      "materialization_method": "create_tree(content)"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-cut-20261105T2258/complete-originals.part-033.base64.txt",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/main67-ci-cut-20261105T2258/delivery/complete-originals.part-033.base64.txt",
+      "bytes": 400000,
+      "sha256": "c4f32fa25cb95ebe43ada2fa28ac1519079645bc10c4f5615fc0bdadea9258c3",
+      "git_blob": "ed96f8082f431d058861a4f828ef2f8850389bd3",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "local_file": "/workspace/scratch/07dd58cc9630/research-audit/main67-ci-cut-20261105T2258/delivery/registry.actual.json",
+        "git_blob": "bc1a1c95fd32a7b71fa19ef0a1d05ca7b7c2bcb2"
+      },
+      "materialization_method": "create_tree(content)"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-cut-20261105T2258/complete-originals.part-034.base64.txt",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/main67-ci-cut-20261105T2258/delivery/complete-originals.part-034.base64.txt",
+      "bytes": 400000,
+      "sha256": "c775d0268ce55a29f2af76b2b979cdc125f63e91e7dd49345d7681206a1cbf0d",
+      "git_blob": "768c782f426937740cb62a67aed2e707403beb7a",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "local_file": "/workspace/scratch/07dd58cc9630/research-audit/main67-ci-cut-20261105T2258/delivery/registry.actual.json",
+        "git_blob": "bc1a1c95fd32a7b71fa19ef0a1d05ca7b7c2bcb2"
+      },
+      "materialization_method": "create_tree(content)"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-cut-20261105T2258/complete-originals.part-035.base64.txt",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/main67-ci-cut-20261105T2258/delivery/complete-originals.part-035.base64.txt",
+      "bytes": 400000,
+      "sha256": "8b3fb00e2ef7c948f3a3bd1a7a3490b691a534f2c28617a273fc9853f9e3ba00",
+      "git_blob": "5ca48263c66138b0cf114b6c805106ca4a8fc695",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "local_file": "/workspace/scratch/07dd58cc9630/research-audit/main67-ci-cut-20261105T2258/delivery/registry.actual.json",
+        "git_blob": "bc1a1c95fd32a7b71fa19ef0a1d05ca7b7c2bcb2"
+      },
+      "materialization_method": "create_tree(content)"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-cut-20261105T2258/complete-originals.part-036.base64.txt",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/main67-ci-cut-20261105T2258/delivery/complete-originals.part-036.base64.txt",
+      "bytes": 400000,
+      "sha256": "7ab5eb3ef706ebe7984e450e2768833b8f12f7c06c0bf9e9efaa75a9b4c9b50d",
+      "git_blob": "0087e65bae68ca0ffb7e8319b658bfa0e4171677",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "local_file": "/workspace/scratch/07dd58cc9630/research-audit/main67-ci-cut-20261105T2258/delivery/registry.actual.json",
+        "git_blob": "bc1a1c95fd32a7b71fa19ef0a1d05ca7b7c2bcb2"
+      },
+      "materialization_method": "create_tree(content)"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-cut-20261105T2258/complete-originals.part-037.base64.txt",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/main67-ci-cut-20261105T2258/delivery/complete-originals.part-037.base64.txt",
+      "bytes": 400000,
+      "sha256": "ba1e838268230b83f96887381c1ea0703bef5637ab8061fbcafcb47a746eb1cc",
+      "git_blob": "15aff2587039c6d788e390207e7b124405e20790",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "local_file": "/workspace/scratch/07dd58cc9630/research-audit/main67-ci-cut-20261105T2258/delivery/registry.actual.json",
+        "git_blob": "bc1a1c95fd32a7b71fa19ef0a1d05ca7b7c2bcb2"
+      },
+      "materialization_method": "create_tree(content)"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-cut-20261105T2258/complete-originals.part-038.base64.txt",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/main67-ci-cut-20261105T2258/delivery/complete-originals.part-038.base64.txt",
+      "bytes": 400000,
+      "sha256": "536b5296958166df977d8ced3dbd4cdedc2b29452e0fb818e6a4aae233a5d3f8",
+      "git_blob": "013563093624188d306916899da32ccd48e966f7",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "local_file": "/workspace/scratch/07dd58cc9630/research-audit/main67-ci-cut-20261105T2258/delivery/registry.actual.json",
+        "git_blob": "bc1a1c95fd32a7b71fa19ef0a1d05ca7b7c2bcb2"
+      },
+      "materialization_method": "create_tree(content)"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-cut-20261105T2258/complete-originals.part-039.base64.txt",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/main67-ci-cut-20261105T2258/delivery/complete-originals.part-039.base64.txt",
+      "bytes": 400000,
+      "sha256": "92244909620072460e98c4e1a9a9099fc6fda1b76fefd11d1a83dfcd0c78b38c",
+      "git_blob": "a10cbbcd1628cd75ab5ed9b18a2d9a2f1c71f004",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "local_file": "/workspace/scratch/07dd58cc9630/research-audit/main67-ci-cut-20261105T2258/delivery/registry.actual.json",
+        "git_blob": "bc1a1c95fd32a7b71fa19ef0a1d05ca7b7c2bcb2"
+      },
+      "materialization_method": "create_tree(content)"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-cut-20261105T2258/complete-originals.part-040.base64.txt",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/main67-ci-cut-20261105T2258/delivery/complete-originals.part-040.base64.txt",
+      "bytes": 400000,
+      "sha256": "0eb5822ef70a22e68d8a8fe04a3b5b5bced8224b99e020e7491e877980d3a411",
+      "git_blob": "47c36579d20c299ea63f422c1692f846af9838b9",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "local_file": "/workspace/scratch/07dd58cc9630/research-audit/main67-ci-cut-20261105T2258/delivery/registry.actual.json",
+        "git_blob": "bc1a1c95fd32a7b71fa19ef0a1d05ca7b7c2bcb2"
+      },
+      "materialization_method": "create_tree(content)"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-cut-20261105T2258/complete-originals.part-041.base64.txt",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/main67-ci-cut-20261105T2258/delivery/complete-originals.part-041.base64.txt",
+      "bytes": 400000,
+      "sha256": "56283181a6f4a3972a7c652acea11618955aee9bbf0af001689f1957d131275e",
+      "git_blob": "f774d8dc5b08f1e58149e9dfb57932ec952f2418",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "local_file": "/workspace/scratch/07dd58cc9630/research-audit/main67-ci-cut-20261105T2258/delivery/registry.actual.json",
+        "git_blob": "bc1a1c95fd32a7b71fa19ef0a1d05ca7b7c2bcb2"
+      },
+      "materialization_method": "create_tree(content)"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-cut-20261105T2258/complete-originals.part-042.base64.txt",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/main67-ci-cut-20261105T2258/delivery/complete-originals.part-042.base64.txt",
+      "bytes": 400000,
+      "sha256": "a60748817a4ec235e30325d0204d53e94b62d97aafbe7c2315c5b124fb623c15",
+      "git_blob": "96f6cef6899dece995ff5d13a670b72d325187cf",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "local_file": "/workspace/scratch/07dd58cc9630/research-audit/main67-ci-cut-20261105T2258/delivery/registry.actual.json",
+        "git_blob": "bc1a1c95fd32a7b71fa19ef0a1d05ca7b7c2bcb2"
+      },
+      "materialization_method": "create_tree(content)"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-cut-20261105T2258/complete-originals.part-043.base64.txt",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/main67-ci-cut-20261105T2258/delivery/complete-originals.part-043.base64.txt",
+      "bytes": 400000,
+      "sha256": "e74b8ee43eb8f58f67f8a53482fcb6fc41b3a62938f3be43c06ea363837163ac",
+      "git_blob": "c7b6e447d8ae444217df587ce7a001cc5c5c1aba",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "local_file": "/workspace/scratch/07dd58cc9630/research-audit/main67-ci-cut-20261105T2258/delivery/registry.actual.json",
+        "git_blob": "bc1a1c95fd32a7b71fa19ef0a1d05ca7b7c2bcb2"
+      },
+      "materialization_method": "create_tree(content)"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-cut-20261105T2258/complete-originals.part-044.base64.txt",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/main67-ci-cut-20261105T2258/delivery/complete-originals.part-044.base64.txt",
+      "bytes": 400000,
+      "sha256": "46c83ae6cce4199edabaf51bd37c311226032796b9115fcb4252e7b0fd89f819",
+      "git_blob": "f8b5e3ccbc2a305efec617fe8d4425a2a474d994",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "local_file": "/workspace/scratch/07dd58cc9630/research-audit/main67-ci-cut-20261105T2258/delivery/registry.actual.json",
+        "git_blob": "bc1a1c95fd32a7b71fa19ef0a1d05ca7b7c2bcb2"
+      },
+      "materialization_method": "create_tree(content)"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-cut-20261105T2258/complete-originals.part-045.base64.txt",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/main67-ci-cut-20261105T2258/delivery/complete-originals.part-045.base64.txt",
+      "bytes": 400000,
+      "sha256": "381027bfcba9ddf3ba550e13af4aaec320122d06f2d9c67dc0242c9a9c2d2731",
+      "git_blob": "328cf4ef44cf369f317496bd5ea63ed80bab0052",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "local_file": "/workspace/scratch/07dd58cc9630/research-audit/main67-ci-cut-20261105T2258/delivery/registry.actual.json",
+        "git_blob": "bc1a1c95fd32a7b71fa19ef0a1d05ca7b7c2bcb2"
+      },
+      "materialization_method": "create_tree(content)"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-cut-20261105T2258/complete-originals.part-046.base64.txt",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/main67-ci-cut-20261105T2258/delivery/complete-originals.part-046.base64.txt",
+      "bytes": 400000,
+      "sha256": "cc7c930abdff0119c993b0f1d6fee74da391962ddd376fb7f9c4833ce334e11b",
+      "git_blob": "ed286f03b570b32fd2cbe14d8fd8148fff58a37e",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "local_file": "/workspace/scratch/07dd58cc9630/research-audit/main67-ci-cut-20261105T2258/delivery/registry.actual.json",
+        "git_blob": "bc1a1c95fd32a7b71fa19ef0a1d05ca7b7c2bcb2"
+      },
+      "materialization_method": "create_tree(content)"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-cut-20261105T2258/complete-originals.part-047.base64.txt",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/main67-ci-cut-20261105T2258/delivery/complete-originals.part-047.base64.txt",
+      "bytes": 400000,
+      "sha256": "0e94d76524f6fb95d97f7cb8d8ac81278418f81700e6008d613d7bcc8cd95359",
+      "git_blob": "1d3399c5dd871b82d9f668fd784a33508e6dfc2b",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "local_file": "/workspace/scratch/07dd58cc9630/research-audit/main67-ci-cut-20261105T2258/delivery/registry.actual.json",
+        "git_blob": "bc1a1c95fd32a7b71fa19ef0a1d05ca7b7c2bcb2"
+      },
+      "materialization_method": "create_tree(content)"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-cut-20261105T2258/complete-originals.part-048.base64.txt",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/main67-ci-cut-20261105T2258/delivery/complete-originals.part-048.base64.txt",
+      "bytes": 400000,
+      "sha256": "1ea4c60f1e6e4742147f92c02b9e519d7fd2bc938b40c3aabef0b93832294816",
+      "git_blob": "e78f7bb642a9d767be6b5bbdd920c5704c979944",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "local_file": "/workspace/scratch/07dd58cc9630/research-audit/main67-ci-cut-20261105T2258/delivery/registry.actual.json",
+        "git_blob": "bc1a1c95fd32a7b71fa19ef0a1d05ca7b7c2bcb2"
+      },
+      "materialization_method": "create_tree(content)"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-cut-20261105T2258/complete-originals.part-049.base64.txt",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/main67-ci-cut-20261105T2258/delivery/complete-originals.part-049.base64.txt",
+      "bytes": 400000,
+      "sha256": "25c1862ee4d4d24a1bdf5c5515d75b0b5378075bf96a46cd2ddf7a535745cb31",
+      "git_blob": "7fbc7f310deee58e886bf75af04c6ade7581ce8f",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "local_file": "/workspace/scratch/07dd58cc9630/research-audit/main67-ci-cut-20261105T2258/delivery/registry.actual.json",
+        "git_blob": "bc1a1c95fd32a7b71fa19ef0a1d05ca7b7c2bcb2"
+      },
+      "materialization_method": "create_tree(content)"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-cut-20261105T2258/complete-originals.part-050.base64.txt",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/main67-ci-cut-20261105T2258/delivery/complete-originals.part-050.base64.txt",
+      "bytes": 400000,
+      "sha256": "77c973c64ef98800a4b88080cd8f9b9cd6ebba20ddc2adda20fd6c2da335bb17",
+      "git_blob": "df2428d7be385185bb169ba1ef6d56c5314a733b",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "local_file": "/workspace/scratch/07dd58cc9630/research-audit/main67-ci-cut-20261105T2258/delivery/registry.actual.json",
+        "git_blob": "bc1a1c95fd32a7b71fa19ef0a1d05ca7b7c2bcb2"
+      },
+      "materialization_method": "create_tree(content)"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-cut-20261105T2258/complete-originals.part-051.base64.txt",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/main67-ci-cut-20261105T2258/delivery/complete-originals.part-051.base64.txt",
+      "bytes": 400000,
+      "sha256": "a439adf7f09417f081abe11bf37ceb1c5f0a598481d4be25fd0c004f80adf134",
+      "git_blob": "de81ed7fc0c61bae171c92deb92666e3cd810247",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "local_file": "/workspace/scratch/07dd58cc9630/research-audit/main67-ci-cut-20261105T2258/delivery/registry.actual.json",
+        "git_blob": "bc1a1c95fd32a7b71fa19ef0a1d05ca7b7c2bcb2"
+      },
+      "materialization_method": "create_tree(content)"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-cut-20261105T2258/complete-originals.part-052.base64.txt",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/main67-ci-cut-20261105T2258/delivery/complete-originals.part-052.base64.txt",
+      "bytes": 400000,
+      "sha256": "2dab7391d05c806d75ac8639ec45ead7ef095fb5c00a9576ee3484d71d579d4a",
+      "git_blob": "5ba99dfff35c070530403d2930ed4bd169b811de",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "local_file": "/workspace/scratch/07dd58cc9630/research-audit/main67-ci-cut-20261105T2258/delivery/registry.actual.json",
+        "git_blob": "bc1a1c95fd32a7b71fa19ef0a1d05ca7b7c2bcb2"
+      },
+      "materialization_method": "create_tree(content)"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-cut-20261105T2258/complete-originals.part-053.base64.txt",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/main67-ci-cut-20261105T2258/delivery/complete-originals.part-053.base64.txt",
+      "bytes": 400000,
+      "sha256": "364dce3c15b87d44ea3f78037e1bc1778a327188e5ecc02ac69815ddc92ed9c4",
+      "git_blob": "b7539cdafbe4860395e0f6d66ec5b3ff251f4380",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "local_file": "/workspace/scratch/07dd58cc9630/research-audit/main67-ci-cut-20261105T2258/delivery/registry.actual.json",
+        "git_blob": "bc1a1c95fd32a7b71fa19ef0a1d05ca7b7c2bcb2"
+      },
+      "materialization_method": "create_tree(content)"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-cut-20261105T2258/complete-originals.part-054.base64.txt",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/main67-ci-cut-20261105T2258/delivery/complete-originals.part-054.base64.txt",
+      "bytes": 400000,
+      "sha256": "7656c2d313404da00ee67d5981bae641c0f87c0df740ba77f2d6c47a378259e7",
+      "git_blob": "e054e92697a02e9d46ff2796dc5ad051fe5d497e",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "local_file": "/workspace/scratch/07dd58cc9630/research-audit/main67-ci-cut-20261105T2258/delivery/registry.actual.json",
+        "git_blob": "bc1a1c95fd32a7b71fa19ef0a1d05ca7b7c2bcb2"
+      },
+      "materialization_method": "create_tree(content)"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-cut-20261105T2258/complete-originals.part-055.base64.txt",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/main67-ci-cut-20261105T2258/delivery/complete-originals.part-055.base64.txt",
+      "bytes": 400000,
+      "sha256": "5c56eb4c844132dd435f4ab158e6554a4a840e924d4c48dbdc643f5640ef5a23",
+      "git_blob": "84956ce4cd8aeb54d3abad97135ec13c6a546fd7",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "local_file": "/workspace/scratch/07dd58cc9630/research-audit/main67-ci-cut-20261105T2258/delivery/registry.actual.json",
+        "git_blob": "bc1a1c95fd32a7b71fa19ef0a1d05ca7b7c2bcb2"
+      },
+      "materialization_method": "create_tree(content)"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-cut-20261105T2258/complete-originals.part-056.base64.txt",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/main67-ci-cut-20261105T2258/delivery/complete-originals.part-056.base64.txt",
+      "bytes": 400000,
+      "sha256": "3abfe9a82a705d624ecddc532b10bfb2d73335c930d8dec8c0a3b4722b5b182b",
+      "git_blob": "902b08f7fb5204fab7fb11f8812873a6f86b3902",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "local_file": "/workspace/scratch/07dd58cc9630/research-audit/main67-ci-cut-20261105T2258/delivery/registry.actual.json",
+        "git_blob": "bc1a1c95fd32a7b71fa19ef0a1d05ca7b7c2bcb2"
+      },
+      "materialization_method": "create_tree(content)"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-cut-20261105T2258/complete-originals.part-057.base64.txt",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/main67-ci-cut-20261105T2258/delivery/complete-originals.part-057.base64.txt",
+      "bytes": 400000,
+      "sha256": "ec5bfe345ca57e7ebe641e7323ac1ad48b36a9e2b96845b0506e95eb02599624",
+      "git_blob": "945755842172a104857ff32399bfef9326784bc0",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "local_file": "/workspace/scratch/07dd58cc9630/research-audit/main67-ci-cut-20261105T2258/delivery/registry.actual.json",
+        "git_blob": "bc1a1c95fd32a7b71fa19ef0a1d05ca7b7c2bcb2"
+      },
+      "materialization_method": "create_tree(content)"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-cut-20261105T2258/complete-originals.part-058.base64.txt",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/main67-ci-cut-20261105T2258/delivery/complete-originals.part-058.base64.txt",
+      "bytes": 400000,
+      "sha256": "65a5f37393a2a2fe7ff0877ff972596701e8fb6297d22ad6d607a50c6816cd17",
+      "git_blob": "ddbe017587765f64698331457160ef98f1b10260",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "local_file": "/workspace/scratch/07dd58cc9630/research-audit/main67-ci-cut-20261105T2258/delivery/registry.actual.json",
+        "git_blob": "bc1a1c95fd32a7b71fa19ef0a1d05ca7b7c2bcb2"
+      },
+      "materialization_method": "create_tree(content)"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-cut-20261105T2258/complete-originals.part-059.base64.txt",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/main67-ci-cut-20261105T2258/delivery/complete-originals.part-059.base64.txt",
+      "bytes": 400000,
+      "sha256": "5e67382451ab81b092de82448aa9b1e075e92c760d60a0649b221b726f2145e7",
+      "git_blob": "50b83b29541aa484934452e76a0857279a16795f",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "local_file": "/workspace/scratch/07dd58cc9630/research-audit/main67-ci-cut-20261105T2258/delivery/registry.actual.json",
+        "git_blob": "bc1a1c95fd32a7b71fa19ef0a1d05ca7b7c2bcb2"
+      },
+      "materialization_method": "create_tree(content)"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-cut-20261105T2258/complete-originals.part-060.base64.txt",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/main67-ci-cut-20261105T2258/delivery/complete-originals.part-060.base64.txt",
+      "bytes": 400000,
+      "sha256": "c73d7de9a2149c348c987cd134633e7daa0740423e3d2092799115cb14f5aa21",
+      "git_blob": "bf3aaa0962fd940a92bfd10c84da5ae51e356667",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "local_file": "/workspace/scratch/07dd58cc9630/research-audit/main67-ci-cut-20261105T2258/delivery/registry.actual.json",
+        "git_blob": "bc1a1c95fd32a7b71fa19ef0a1d05ca7b7c2bcb2"
+      },
+      "materialization_method": "create_tree(content)"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-cut-20261105T2258/complete-originals.part-061.base64.txt",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/main67-ci-cut-20261105T2258/delivery/complete-originals.part-061.base64.txt",
+      "bytes": 359984,
+      "sha256": "1dacd7f240fdfd2075c59bb60f4923b8138a6ed75365064f03546be03739ab9c",
+      "git_blob": "daa90bdfcd1212e12b6bbd85bae478980bcd45af",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "local_file": "/workspace/scratch/07dd58cc9630/research-audit/main67-ci-cut-20261105T2258/delivery/registry.actual.json",
+        "git_blob": "bc1a1c95fd32a7b71fa19ef0a1d05ca7b7c2bcb2"
+      },
+      "materialization_method": "create_tree(content)"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-cut-20261105T2258/core-originals/artifact-verification.json",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/main67-ci-cut-20261105T2258/core-originals/artifact-verification.json",
+      "bytes": 5514,
+      "sha256": "3327fb42bff11f82e426e0aa41ff68c0ac47a7cf37ca7167837e34e727d0e118",
+      "git_blob": "bcad8ab66917cc86685e1ab4078ec7cbad5b8648",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "local_file": "/workspace/scratch/07dd58cc9630/research-audit/main67-ci-cut-20261105T2258/delivery/registry.actual.json",
+        "git_blob": "bc1a1c95fd32a7b71fa19ef0a1d05ca7b7c2bcb2"
+      },
+      "materialization_method": "create_blob"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-cut-20261105T2258/custody-roundtrip.json",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/main67-ci-cut-20261105T2258/delivery/custody-roundtrip.json",
+      "bytes": 270,
+      "sha256": "241ad3e8d9b40d4c62d66b14b5154a0dd5ab2580ca99a99ed33d58fd10eefdaf",
+      "git_blob": "b0c7cec27b57ac162f779528ddb758efd708d9d7",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "local_file": "/workspace/scratch/07dd58cc9630/research-audit/main67-ci-cut-20261105T2258/delivery/registry.actual.json",
+        "git_blob": "bc1a1c95fd32a7b71fa19ef0a1d05ca7b7c2bcb2"
+      },
+      "materialization_method": "create_blob"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-cut-20261105T2258/log-retrieval-full-readbacks.json",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/main67-ci-cut-20261105T2258/log-retrieval-full-readbacks.json",
+      "bytes": 3017,
+      "sha256": "6cad8ab5b84a63f10f43dc1eb8f8e8254aa9b3b33e7936d6ee2b93bbd98bc125",
+      "git_blob": "835536a4b9277c31f162275e9d5f317917c6867d",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "local_file": "/workspace/scratch/07dd58cc9630/research-audit/main67-ci-cut-20261105T2258/delivery/registry.actual.json",
+        "git_blob": "bc1a1c95fd32a7b71fa19ef0a1d05ca7b7c2bcb2"
+      },
+      "materialization_method": "create_blob"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-cut-20261105T2258/members-manifest.json",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/main67-ci-cut-20261105T2258/delivery/members-manifest.json",
+      "bytes": 14371,
+      "sha256": "8f132013f2a2e0aa4302a191eb9d4be2c27f087fdbafa0cee4f007413c79b3c9",
+      "git_blob": "0663fdf559c86d626d24b31de20e697463bb9202",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "local_file": "/workspace/scratch/07dd58cc9630/research-audit/main67-ci-cut-20261105T2258/delivery/registry.actual.json",
+        "git_blob": "bc1a1c95fd32a7b71fa19ef0a1d05ca7b7c2bcb2"
+      },
+      "materialization_method": "create_blob"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-cut-20261105T2258/other-originals/artifact-verification.json",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/main67-ci-cut-20261105T2258/other-originals/artifact-verification.json",
+      "bytes": 19669,
+      "sha256": "f992b54535aacc1288f1c4c5a89119215534caa85260b62bb15541419eafa56c",
+      "git_blob": "1d19ccda25894cbf4367d0072995cf4fdc78e2c4",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "local_file": "/workspace/scratch/07dd58cc9630/research-audit/main67-ci-cut-20261105T2258/delivery/registry.actual.json",
+        "git_blob": "bc1a1c95fd32a7b71fa19ef0a1d05ca7b7c2bcb2"
+      },
+      "materialization_method": "create_blob"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-cut-20261105T2258/registry.actual.json",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/main67-ci-cut-20261105T2258/delivery/registry.actual.json",
+      "bytes": 57571,
+      "sha256": "7fd81791c45e31ae33509c3c55f714c4eafb5a6a1ddae66e3b3965756eca7dca",
+      "git_blob": "bc1a1c95fd32a7b71fa19ef0a1d05ca7b7c2bcb2",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "source": "Actual registry self readback",
+        "git_blob": "bc1a1c95fd32a7b71fa19ef0a1d05ca7b7c2bcb2"
+      },
+      "materialization_method": "As recorded in source registry"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-cut-20261105T2258/summary.json",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/main67-ci-cut-20261105T2258/summary.json",
+      "bytes": 21212,
+      "sha256": "9db3fe6018e923c6e4461b00a81d0fa9d0899e13bec55b167a15c95e0d7c862f",
+      "git_blob": "9577255f69c23daa76f8fbaf5b45503a8b423b1d",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "local_file": "/workspace/scratch/07dd58cc9630/research-audit/main67-ci-cut-20261105T2258/delivery/registry.actual.json",
+        "git_blob": "bc1a1c95fd32a7b71fa19ef0a1d05ca7b7c2bcb2"
+      },
+      "materialization_method": "create_blob"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-cut-20261105T2258/transport-manifest.json",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/main67-ci-cut-20261105T2258/delivery/transport-manifest.json",
+      "bytes": 17146,
+      "sha256": "e855c93f53d6492458d47568fb13261fcccf977d3e553491778e1c76fd080bb4",
+      "git_blob": "5d4d1964651d9f1a36f694c4fac97912fb44f2f5",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "local_file": "/workspace/scratch/07dd58cc9630/research-audit/main67-ci-cut-20261105T2258/delivery/registry.actual.json",
+        "git_blob": "bc1a1c95fd32a7b71fa19ef0a1d05ca7b7c2bcb2"
+      },
+      "materialization_method": "create_blob"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-cut-20261105T2258/verify_current_cut.py",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/main67-ci-cut-20261105T2258/verify_current_cut.py",
+      "bytes": 16766,
+      "sha256": "73c648a48e2a7900bb068d68c2f651aacd19b994654d33f25c14151e4748a9ed",
+      "git_blob": "87e1e41f648fff83f917804fb997c57537362ca6",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "local_file": "/workspace/scratch/07dd58cc9630/research-audit/main67-ci-cut-20261105T2258/delivery/registry.actual.json",
+        "git_blob": "bc1a1c95fd32a7b71fa19ef0a1d05ca7b7c2bcb2"
+      },
+      "materialization_method": "create_blob"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-cut-20261105T2334/README-v2.zh-CN.md",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/main67-ci-cut-20261105T2334/README-v2.zh-CN.md",
+      "bytes": 4957,
+      "sha256": "9a7838e58be43ff356334f4ea0e071f817c64c92a96de3c9446da25c069a4e27",
+      "git_blob": "103f90d8b865b712839b35c5a9928f4e2365f46c",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "local_file": "/workspace/scratch/07dd58cc9630/research-audit/main67-ci-cut-20261105T2334/delivery-v2/registry.actual.json",
+        "git_blob": "b6d3abdf724f1d581b0e7f7d905c39053f25cdf5"
+      },
+      "materialization_method": "create_tree(content)"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-cut-20261105T2334/complete-originals.part-000.base64.txt",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/main67-ci-cut-20261105T2334/delivery-v2/complete-originals.part-000.base64.txt",
+      "bytes": 400000,
+      "sha256": "70803cf29e5b9aa4ed3b6626229df927da71c2815806d73ececbdf9553e73e55",
+      "git_blob": "505ebd2d09a169f467b40450e0baca5f5e459351",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "local_file": "/workspace/scratch/07dd58cc9630/research-audit/main67-ci-cut-20261105T2334/delivery-v2/registry.actual.json",
+        "git_blob": "b6d3abdf724f1d581b0e7f7d905c39053f25cdf5"
+      },
+      "materialization_method": "create_tree(content)"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-cut-20261105T2334/complete-originals.part-001.base64.txt",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/main67-ci-cut-20261105T2334/delivery-v2/complete-originals.part-001.base64.txt",
+      "bytes": 400000,
+      "sha256": "b5ebf1ad15c6f833c69d5bb1d4c3e38ee404d85d3f3aecc7270048c94922e8f0",
+      "git_blob": "e77f8eeb6b75b2fecefe778fa40715fe0f94028f",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "local_file": "/workspace/scratch/07dd58cc9630/research-audit/main67-ci-cut-20261105T2334/delivery-v2/registry.actual.json",
+        "git_blob": "b6d3abdf724f1d581b0e7f7d905c39053f25cdf5"
+      },
+      "materialization_method": "create_tree(content)"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-cut-20261105T2334/complete-originals.part-002.base64.txt",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/main67-ci-cut-20261105T2334/delivery-v2/complete-originals.part-002.base64.txt",
+      "bytes": 400000,
+      "sha256": "d2895bb33a7cd4e09471b459ca9610eda41d58512ad1f14ebf4167e5168276e1",
+      "git_blob": "b53bb3412c3447629970146b293f9f633d92f82f",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "local_file": "/workspace/scratch/07dd58cc9630/research-audit/main67-ci-cut-20261105T2334/delivery-v2/registry.actual.json",
+        "git_blob": "b6d3abdf724f1d581b0e7f7d905c39053f25cdf5"
+      },
+      "materialization_method": "create_tree(content)"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-cut-20261105T2334/complete-originals.part-003.base64.txt",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/main67-ci-cut-20261105T2334/delivery-v2/complete-originals.part-003.base64.txt",
+      "bytes": 400000,
+      "sha256": "e87f6c790d823ed229d3b2a472d3c01007de728b91d3c6ae705cc1e18c0045ab",
+      "git_blob": "92521e2853b745f786559661018d1fbd5cde1065",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "local_file": "/workspace/scratch/07dd58cc9630/research-audit/main67-ci-cut-20261105T2334/delivery-v2/registry.actual.json",
+        "git_blob": "b6d3abdf724f1d581b0e7f7d905c39053f25cdf5"
+      },
+      "materialization_method": "create_tree(content)"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-cut-20261105T2334/complete-originals.part-004.base64.txt",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/main67-ci-cut-20261105T2334/delivery-v2/complete-originals.part-004.base64.txt",
+      "bytes": 400000,
+      "sha256": "49794b0617eab57cfe4ae082b5670f4b86d6e99a45d03c3f3fbd281e49ad2de5",
+      "git_blob": "8c6ce59955c4b342ab99d58e31e35c4f04ae5032",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "local_file": "/workspace/scratch/07dd58cc9630/research-audit/main67-ci-cut-20261105T2334/delivery-v2/registry.actual.json",
+        "git_blob": "b6d3abdf724f1d581b0e7f7d905c39053f25cdf5"
+      },
+      "materialization_method": "create_tree(content)"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-cut-20261105T2334/complete-originals.part-005.base64.txt",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/main67-ci-cut-20261105T2334/delivery-v2/complete-originals.part-005.base64.txt",
+      "bytes": 400000,
+      "sha256": "fbe7475f798928f0b1a0eea5220d4c5f4d9cdb03fb298ff997f745deb83f1d9f",
+      "git_blob": "3a5fdf1c297dbf62307d5f5fe1819b42866a417e",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "local_file": "/workspace/scratch/07dd58cc9630/research-audit/main67-ci-cut-20261105T2334/delivery-v2/registry.actual.json",
+        "git_blob": "b6d3abdf724f1d581b0e7f7d905c39053f25cdf5"
+      },
+      "materialization_method": "create_tree(content)"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-cut-20261105T2334/complete-originals.part-006.base64.txt",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/main67-ci-cut-20261105T2334/delivery-v2/complete-originals.part-006.base64.txt",
+      "bytes": 96972,
+      "sha256": "6d8a612e28c71bb47b4ee2a0bee0645d00b02531d1e5da986fb47b99b55e1daa",
+      "git_blob": "d741bc6690e02fb3346f1ede67eec938a5cb4128",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "local_file": "/workspace/scratch/07dd58cc9630/research-audit/main67-ci-cut-20261105T2334/delivery-v2/registry.actual.json",
+        "git_blob": "b6d3abdf724f1d581b0e7f7d905c39053f25cdf5"
+      },
+      "materialization_method": "create_tree(content)"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-cut-20261105T2334/custody-roundtrip.json",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/main67-ci-cut-20261105T2334/delivery-v2/custody-roundtrip.json",
+      "bytes": 270,
+      "sha256": "9a09ab6b636786d19dde0ab29ba6b7f80ae6c195e5620b244bb5366e96700520",
+      "git_blob": "85def669acd844889791fc42895dc66362cc17e8",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "local_file": "/workspace/scratch/07dd58cc9630/research-audit/main67-ci-cut-20261105T2334/delivery-v2/registry.actual.json",
+        "git_blob": "b6d3abdf724f1d581b0e7f7d905c39053f25cdf5"
+      },
+      "materialization_method": "create_tree(content)"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-cut-20261105T2334/members-manifest.json",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/main67-ci-cut-20261105T2334/delivery-v2/members-manifest.json",
+      "bytes": 15288,
+      "sha256": "400b275c333815c63b412e588e8f50aee65ac60a04dbc7ecc1b9cde9a5805ead",
+      "git_blob": "4f0c0c6bcf1bdd4859341d23a12060b8cc243783",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "local_file": "/workspace/scratch/07dd58cc9630/research-audit/main67-ci-cut-20261105T2334/delivery-v2/registry.actual.json",
+        "git_blob": "b6d3abdf724f1d581b0e7f7d905c39053f25cdf5"
+      },
+      "materialization_method": "create_tree(content)"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-cut-20261105T2334/registry.actual.json",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/main67-ci-cut-20261105T2334/delivery-v2/registry.actual.json",
+      "bytes": 13864,
+      "sha256": "c2a805564632a1fbce16b9c67933286748b7a2ae1b04458f1d778d5ff10360e8",
+      "git_blob": "b6d3abdf724f1d581b0e7f7d905c39053f25cdf5",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "source": "Actual registry self readback",
+        "git_blob": "b6d3abdf724f1d581b0e7f7d905c39053f25cdf5"
+      },
+      "materialization_method": "As recorded in source registry"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-cut-20261105T2334/summary-v2.json",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/main67-ci-cut-20261105T2334/summary-v2.json",
+      "bytes": 73760,
+      "sha256": "e116d2b1a40fe646ebe3645e0fe3f170664e0f605e7e2111e8c0d2c2d5c8f206",
+      "git_blob": "91bc343ec3741d1ae5fca817d5074fe2ab53719a",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "local_file": "/workspace/scratch/07dd58cc9630/research-audit/main67-ci-cut-20261105T2334/delivery-v2/registry.actual.json",
+        "git_blob": "b6d3abdf724f1d581b0e7f7d905c39053f25cdf5"
+      },
+      "materialization_method": "create_tree(content)"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-cut-20261105T2334/terminal-originals/download-receipts.json",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/main67-ci-cut-20261105T2334/terminal-originals/download-receipts.json",
+      "bytes": 4109,
+      "sha256": "e8b339e93ecaf4a037bb228927d86e192ccc84ab3383c87f921f93b2fe3ec21a",
+      "git_blob": "37d202b8ed73e2170fb9e77ca985890c71dc97e6",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "local_file": "/workspace/scratch/07dd58cc9630/research-audit/main67-ci-cut-20261105T2334/delivery-v2/registry.actual.json",
+        "git_blob": "b6d3abdf724f1d581b0e7f7d905c39053f25cdf5"
+      },
+      "materialization_method": "create_tree(content)"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-cut-20261105T2334/terminal-originals/full-original-readbacks.final.json",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/main67-ci-cut-20261105T2334/terminal-originals/full-original-readbacks.final.json",
+      "bytes": 5093,
+      "sha256": "675df9787737fcc7d53db30d9c13a550cd06ff5f772051357af9d59213c71367",
+      "git_blob": "1dbaf7bf9e026b6d1223b66ed7f343b91c885f59",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "local_file": "/workspace/scratch/07dd58cc9630/research-audit/main67-ci-cut-20261105T2334/delivery-v2/registry.actual.json",
+        "git_blob": "b6d3abdf724f1d581b0e7f7d905c39053f25cdf5"
+      },
+      "materialization_method": "create_tree(content)"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-cut-20261105T2334/transport-manifest.json",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/main67-ci-cut-20261105T2334/delivery-v2/transport-manifest.json",
+      "bytes": 2695,
+      "sha256": "ecb9a0fc0632320634cf975ff5e73d89675151b369d47eb9a2cc142df83bd422",
+      "git_blob": "3cafc9755cead0f647a412b937916d4e6cea9b4f",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "local_file": "/workspace/scratch/07dd58cc9630/research-audit/main67-ci-cut-20261105T2334/delivery-v2/registry.actual.json",
+        "git_blob": "b6d3abdf724f1d581b0e7f7d905c39053f25cdf5"
+      },
+      "materialization_method": "create_tree(content)"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-cut-20261105T2334/verify_current_cut_v2.py",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/main67-ci-cut-20261105T2334/verify_current_cut_v2.py",
+      "bytes": 20382,
+      "sha256": "a4f2e6d89f20b1671929d2e066740e02f0e80b4e56e3ce2e595ea0b2b22434f6",
+      "git_blob": "eae4dc5ac64c6774c79c5a09981501b976fb2058",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "local_file": "/workspace/scratch/07dd58cc9630/research-audit/main67-ci-cut-20261105T2334/delivery-v2/registry.actual.json",
+        "git_blob": "b6d3abdf724f1d581b0e7f7d905c39053f25cdf5"
+      },
+      "materialization_method": "create_tree(content)"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/b11-host-neither-observation-candidate-20261105/REVIEW.zh-CN.md",
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/REVIEW.zh-CN.md",
+      "bytes": 8512,
+      "sha256": "0c7fc4fa5d8ffd30904c818513b3bdc41fd68d37b9008a910dfdeec563bfd2d6",
+      "git_blob": "40890839e735c525f86cfa4b598c25fb7b7846be",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/git-map.json",
+        "git_blob": "ebe01d3d8dbbacbe2240ce4690fe38bc80fd02a4"
+      },
+      "materialization_method": "base64"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/b11-host-neither-observation-candidate-20261105/candidate/codex-rs/windows-sandbox-rs/src/token_integrity_probe_tests.rs.source.txt",
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/candidate/codex-rs/windows-sandbox-rs/src/token_integrity_probe_tests.rs",
+      "bytes": 14736,
+      "sha256": "f5da450f9745cbf65947d15810e9973932264b28dfe21e4f7150b62e5081c2f9",
+      "git_blob": "fc9faa6d47ac5fdefa216affceb51a586f8e6b81",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/git-map.json",
+        "git_blob": "ebe01d3d8dbbacbe2240ce4690fe38bc80fd02a4"
+      },
+      "materialization_method": "base64"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/b11-host-neither-observation-candidate-20261105/candidate/codex-rs/windows-sandbox-rs/src/token_neither_privilege_observation.rs.source.txt",
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/candidate/codex-rs/windows-sandbox-rs/src/token_neither_privilege_observation.rs",
+      "bytes": 22651,
+      "sha256": "a8a2d606f3aee9b764df48e8b79e73330b4adaf571a654562ac4578cc5451aa3",
+      "git_blob": "1f08099d13cc0e282c1fa95cf0261990ff28b88b",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/git-map.json",
+        "git_blob": "ebe01d3d8dbbacbe2240ce4690fe38bc80fd02a4"
+      },
+      "materialization_method": "base64"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/b11-host-neither-observation-candidate-20261105/freeze-candidate.py.source.txt",
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/freeze-candidate.py",
+      "bytes": 9230,
+      "sha256": "e9779b87e3efcd13ca1cdd4fe1aee9f6f4ad35ab2707bb5ce4c6d5f658afbce7",
+      "git_blob": "5a1bae7c6a1fefc2bafd90347d8ecf0c25dc1a49",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/git-map.json",
+        "git_blob": "ebe01d3d8dbbacbe2240ce4690fe38bc80fd02a4"
+      },
+      "materialization_method": "base64"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/b11-host-neither-observation-candidate-20261105/full.patch",
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/full.patch",
+      "bytes": 23880,
+      "sha256": "ea60ad1a78071a86dfbd93246e3e8360b414ba1f2c17bd22c5ac7303fa417b08",
+      "git_blob": "495c968b7e87f5919b2f9b17029f3a2cd8733bfb",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/git-map.json",
+        "git_blob": "ebe01d3d8dbbacbe2240ce4690fe38bc80fd02a4"
+      },
+      "materialization_method": "base64"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/b11-host-neither-observation-candidate-20261105/git-map.json",
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/git-map.json",
+      "bytes": 20791,
+      "sha256": "4b1ced6b06888cbdcc2f8d75171a3a1ed8616b64b4089ef5ff61315cc5d50197",
+      "git_blob": "ebe01d3d8dbbacbe2240ce4690fe38bc80fd02a4",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "source": "Actual registry self readback",
+        "git_blob": "ebe01d3d8dbbacbe2240ce4690fe38bc80fd02a4"
+      },
+      "materialization_method": "As recorded in source registry"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/b11-host-neither-observation-candidate-20261105/manifest.json",
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/manifest.json",
+      "bytes": 2651,
+      "sha256": "1ad9eb3beed0a82a34ad0f2ab4dd1abb3a3165a32d08485f9135a89f83c041e3",
+      "git_blob": "bedbadcfcf444c268a32ce19fa2b889887e16e86",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/git-map.json",
+        "git_blob": "ebe01d3d8dbbacbe2240ce4690fe38bc80fd02a4"
+      },
+      "materialization_method": "base64"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/b11-host-neither-observation-candidate-20261105/primary/Security.receipt.json",
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/primary/Security.receipt.json",
+      "bytes": 585,
+      "sha256": "6df9fcdb897d53b34f45dc806b50d52bbd0c564411b0e023f963e190dc9cd697",
+      "git_blob": "a16fe46ed15e857cf776e879b91f389ce0410c63",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/git-map.json",
+        "git_blob": "ebe01d3d8dbbacbe2240ce4690fe38bc80fd02a4"
+      },
+      "materialization_method": "base64"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/b11-host-neither-observation-candidate-20261105/primary/Storage-FileSystem.receipt.json",
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/primary/Storage-FileSystem.receipt.json",
+      "bytes": 605,
+      "sha256": "82e47dcc9636c6fe958d629d7d2760d7216468ce283999126e3539b1673bf103",
+      "git_blob": "b73069a6d24fd077c70e8b5ebe6b847d75e9a0c3",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/git-map.json",
+        "git_blob": "ebe01d3d8dbbacbe2240ce4690fe38bc80fd02a4"
+      },
+      "materialization_method": "base64"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/b11-host-neither-observation-candidate-20261105/primary/System-JobObjects.receipt.json",
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/primary/System-JobObjects.receipt.json",
+      "bytes": 563,
+      "sha256": "f5b5441aca7302ebde4ddcca9d5dea7417853201d69e1a8e0c04ff68ff64379f",
+      "git_blob": "d8328eabc33634e0b34650f0899c9c087faf4813",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/git-map.json",
+        "git_blob": "ebe01d3d8dbbacbe2240ce4690fe38bc80fd02a4"
+      },
+      "materialization_method": "base64"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/b11-host-neither-observation-candidate-20261105/primary/System-Threading.receipt.json",
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/primary/System-Threading.receipt.json",
+      "bytes": 601,
+      "sha256": "9a2fc89669d33c568fccaf1c0a318b18f0525c0c5486c3c1be16131cc2e2f61b",
+      "git_blob": "8eed5487d2cbbd361316e179266eeb376ec47101",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/git-map.json",
+        "git_blob": "ebe01d3d8dbbacbe2240ce4690fe38bc80fd02a4"
+      },
+      "materialization_method": "base64"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/b11-host-neither-observation-candidate-20261105/primary/windows-sys-0.52.0-Security.rs.source.txt",
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/primary/windows-sys-0.52.0-Security.rs.source.txt",
+      "bytes": 111353,
+      "sha256": "b35db507ad9380695f15b7ba798d0e677e08cc84b905577489d7e63994f00673",
+      "git_blob": "e474d1dfc62b7be1443f2b59eda8370477fdfa74",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/git-map.json",
+        "git_blob": "ebe01d3d8dbbacbe2240ce4690fe38bc80fd02a4"
+      },
+      "materialization_method": "base64"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/b11-host-neither-observation-candidate-20261105/primary/windows-sys-0.52.0-Storage-FileSystem.rs.source.txt",
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/primary/windows-sys-0.52.0-Storage-FileSystem.rs.source.txt",
+      "bytes": 296470,
+      "sha256": "62de1e36d41b1efdb8651c887dae8fbfb0ca2dc34e4d3a789e716f50e424630d",
+      "git_blob": "5cb313fe5ba69cbec6eee56b86ec13608744dae4",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/git-map.json",
+        "git_blob": "ebe01d3d8dbbacbe2240ce4690fe38bc80fd02a4"
+      },
+      "materialization_method": "base64"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/b11-host-neither-observation-candidate-20261105/primary/windows-sys-0.52.0-System-JobObjects.rs.source.txt",
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/primary/windows-sys-0.52.0-System-JobObjects.rs.source.txt",
+      "bytes": 29414,
+      "sha256": "45410125f4aaec823e36c7d68c86bf40879098cc2a0cebac969d04ba08a1ef58",
+      "git_blob": "c6afbc15920a12c29dc8eb98a0bd2a48c6da7d52",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/git-map.json",
+        "git_blob": "ebe01d3d8dbbacbe2240ce4690fe38bc80fd02a4"
+      },
+      "materialization_method": "base64"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/b11-host-neither-observation-candidate-20261105/primary/windows-sys-0.52.0-System-Threading.rs.source.txt",
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/primary/windows-sys-0.52.0-System-Threading.rs.source.txt",
+      "bytes": 136501,
+      "sha256": "6258ef99d17078002020644540a608a89cdf20436daefa3970a65348e6793c1c",
+      "git_blob": "6ee2c4ad6120e5a3ad34c87e67d6d9187304d9ac",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/git-map.json",
+        "git_blob": "ebe01d3d8dbbacbe2240ce4690fe38bc80fd02a4"
+      },
+      "materialization_method": "base64"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/b11-host-neither-observation-candidate-20261105/source-map.json",
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/source-map.json",
+      "bytes": 9389,
+      "sha256": "98df8abfc1ab71ec753fad87807a870107a668169fd57da6d8ba911552b74c7e",
+      "git_blob": "4a1f38968cb27555e92df72a43bd0d8ee82b895e",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/git-map.json",
+        "git_blob": "ebe01d3d8dbbacbe2240ce4690fe38bc80fd02a4"
+      },
+      "materialization_method": "base64"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/b11-host-neither-observation-candidate-20261105/source/codex-rs/utils/pty/src/win/job.rs.source.txt",
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/source/codex-rs/utils/pty/src/win/job.rs",
+      "bytes": 8506,
+      "sha256": "3c904bcd4ac33719bb843639c30be39ca6e9ceda350be311f970aaf3d748a476",
+      "git_blob": "b06035f72d227b4069da677e8104617ae5616283",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/git-map.json",
+        "git_blob": "ebe01d3d8dbbacbe2240ce4690fe38bc80fd02a4"
+      },
+      "materialization_method": "base64"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/b11-host-neither-observation-candidate-20261105/source/codex-rs/windows-sandbox-rs/BUILD.bazel.source.txt",
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/source/codex-rs/windows-sandbox-rs/BUILD.bazel",
+      "bytes": 2556,
+      "sha256": "187e93c5a9a244c752dee5ed15202b361d593d9d651f850a1bda5d69969a7702",
+      "git_blob": "8531cb4d664c25de6fbf200c71cb8042d1d8d865",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/git-map.json",
+        "git_blob": "ebe01d3d8dbbacbe2240ce4690fe38bc80fd02a4"
+      },
+      "materialization_method": "base64"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/b11-host-neither-observation-candidate-20261105/source/codex-rs/windows-sandbox-rs/Cargo.toml.source.txt",
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/source/codex-rs/windows-sandbox-rs/Cargo.toml",
+      "bytes": 2438,
+      "sha256": "183a3691be018640668dfb766f29651d8fd75ab08f7fd526f3d378ae2a86469d",
+      "git_blob": "aa41ed5f08608c0275785b2f5e27ec5db08f50dd",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/git-map.json",
+        "git_blob": "ebe01d3d8dbbacbe2240ce4690fe38bc80fd02a4"
+      },
+      "materialization_method": "base64"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/b11-host-neither-observation-candidate-20261105/source/codex-rs/windows-sandbox-rs/src/delete_permission_matrix_tests.rs.source.txt",
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/source/codex-rs/windows-sandbox-rs/src/delete_permission_matrix_tests.rs",
+      "bytes": 16679,
+      "sha256": "b701ad01169eb9f64b62ad50099dfcda51b014a5c96dbc2080631fd2e6d7ee75",
+      "git_blob": "6f05793ec6ee043a933073ada3a1bf9122de5a73",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/git-map.json",
+        "git_blob": "ebe01d3d8dbbacbe2240ce4690fe38bc80fd02a4"
+      },
+      "materialization_method": "base64"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/b11-host-neither-observation-candidate-20261105/source/codex-rs/windows-sandbox-rs/src/desktop.rs.source.txt",
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/source/codex-rs/windows-sandbox-rs/src/desktop.rs",
+      "bytes": 9710,
+      "sha256": "4e26ba072fada10f6185d16682274022108ef843f8292d1e7f9ed237f7e1a56f",
+      "git_blob": "0b01f011119bef623bc9e46e710caa371520380d",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/git-map.json",
+        "git_blob": "ebe01d3d8dbbacbe2240ce4690fe38bc80fd02a4"
+      },
+      "materialization_method": "base64"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/b11-host-neither-observation-candidate-20261105/source/codex-rs/windows-sandbox-rs/src/lib.rs.source.txt",
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/source/codex-rs/windows-sandbox-rs/src/lib.rs",
+      "bytes": 30379,
+      "sha256": "6a656c06930bcf07075db8712292bb8040a33667231783dba177e62230982b38",
+      "git_blob": "11778af7beb645b36401807cf3e31a0dd4deddc0",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/git-map.json",
+        "git_blob": "ebe01d3d8dbbacbe2240ce4690fe38bc80fd02a4"
+      },
+      "materialization_method": "base64"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/b11-host-neither-observation-candidate-20261105/source/codex-rs/windows-sandbox-rs/src/proc_thread_attr.rs.source.txt",
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/source/codex-rs/windows-sandbox-rs/src/proc_thread_attr.rs",
+      "bytes": 4086,
+      "sha256": "e42e26ae546bb7e00639a70de5a8609d631d4d6f33976d32de6f4dbf741bcb8f",
+      "git_blob": "38110a69239e9707a324f2d4cf4a1fad932b4132",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/git-map.json",
+        "git_blob": "ebe01d3d8dbbacbe2240ce4690fe38bc80fd02a4"
+      },
+      "materialization_method": "base64"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/b11-host-neither-observation-candidate-20261105/source/codex-rs/windows-sandbox-rs/src/process.rs.source.txt",
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/source/codex-rs/windows-sandbox-rs/src/process.rs",
+      "bytes": 11792,
+      "sha256": "7c7ea19f6fcfa88990cf5582273eede6139a52ccda8212468087276bb50eaca7",
+      "git_blob": "4d4f1d9435aad3cf9cd27a82d51b2be5b7659a4c",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/git-map.json",
+        "git_blob": "ebe01d3d8dbbacbe2240ce4690fe38bc80fd02a4"
+      },
+      "materialization_method": "base64"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/b11-host-neither-observation-candidate-20261105/source/codex-rs/windows-sandbox-rs/src/token.rs.source.txt",
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/source/codex-rs/windows-sandbox-rs/src/token.rs",
+      "bytes": 18437,
+      "sha256": "6d7ddb4a84561b28bc134139226f9be444cb0dc03c73038e7988e21e18339a77",
+      "git_blob": "b22acb5556f6af3b4c250a2441f161ee448ea1c1",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/git-map.json",
+        "git_blob": "ebe01d3d8dbbacbe2240ce4690fe38bc80fd02a4"
+      },
+      "materialization_method": "base64"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/b11-host-neither-observation-candidate-20261105/source/codex-rs/windows-sandbox-rs/src/token_integrity_probe_support.rs.source.txt",
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/source/codex-rs/windows-sandbox-rs/src/token_integrity_probe_support.rs",
+      "bytes": 17560,
+      "sha256": "986fe8864f789e4bfa876553d99f1949be403f5ed10b9c88fdc8e0fd7331c0d1",
+      "git_blob": "7a7008f9becf09578ca953c849401eda93eb94b2",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/git-map.json",
+        "git_blob": "ebe01d3d8dbbacbe2240ce4690fe38bc80fd02a4"
+      },
+      "materialization_method": "base64"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/b11-host-neither-observation-candidate-20261105/source/codex-rs/windows-sandbox-rs/src/token_integrity_probe_tests.rs.source.txt",
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/source/codex-rs/windows-sandbox-rs/src/token_integrity_probe_tests.rs",
+      "bytes": 14475,
+      "sha256": "5fe644714b4180dd4bbb988452a4c8464524149eda1a91af0af8879761f448ab",
+      "git_blob": "2a384792e8ba88518c26943716e8c3a39a523f9b",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/git-map.json",
+        "git_blob": "ebe01d3d8dbbacbe2240ce4690fe38bc80fd02a4"
+      },
+      "materialization_method": "base64"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/b11-host-neither-observation-candidate-20261105/source/defs.bzl.source.txt",
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/source/defs.bzl",
+      "bytes": 34630,
+      "sha256": "f5638a9189632c8d8524a438bbfc6b365bddf7f23dfd2df06a6de3a2ff3f2cfa",
+      "git_blob": "6f588ec3057fddfea35170e28e74036162ce6a23",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/git-map.json",
+        "git_blob": "ebe01d3d8dbbacbe2240ce4690fe38bc80fd02a4"
+      },
+      "materialization_method": "base64"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/b11-host-neither-observation-candidate-20261105/static-verification.json",
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/static-verification.json",
+      "bytes": 8352,
+      "sha256": "71f48bbf9439bacfb6349f3e8bad57d265a6cb18d667dca4e401905d1979511d",
+      "git_blob": "9184c15c4a3985eb3aaf59e49f33ddc74a94e9c5",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/git-map.json",
+        "git_blob": "ebe01d3d8dbbacbe2240ce4690fe38bc80fd02a4"
+      },
+      "materialization_method": "base64"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/b11-host-neither-observation-candidate-20261105/v2/REVIEW.zh-CN.md",
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/v2/REVIEW.zh-CN.md",
+      "bytes": 10209,
+      "sha256": "548fc3227dbc5e111359f00515c3114ff8b4382ca59692b7afddff3d2beee9db",
+      "git_blob": "c4fb44a267ea2a32f8c4312aa33da51f5c1e86dc",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/v2/git-map.json",
+        "git_blob": "ae68e53e2fbe08601e2e1a203092eaf556a10b2c"
+      },
+      "materialization_method": "As recorded in source registry"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/b11-host-neither-observation-candidate-20261105/v2/candidate-postimages.actual.json",
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/v2/candidate-postimages.actual.json",
+      "bytes": 665,
+      "sha256": "56118b9e8d3c4db19cc5e7887455201ff85d2020332c580be11e8a69696a7cda",
+      "git_blob": "f011d772fc3b415a7a1aca9ea8b1e5822a8b8f13",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/v2/git-map.json",
+        "git_blob": "ae68e53e2fbe08601e2e1a203092eaf556a10b2c"
+      },
+      "materialization_method": "As recorded in source registry"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/b11-host-neither-observation-candidate-20261105/v2/candidate/codex-rs/windows-sandbox-rs/src/token_integrity_probe_tests.rs.source.txt",
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/v2/candidate/codex-rs/windows-sandbox-rs/src/token_integrity_probe_tests.rs",
+      "bytes": 14736,
+      "sha256": "f5da450f9745cbf65947d15810e9973932264b28dfe21e4f7150b62e5081c2f9",
+      "git_blob": "fc9faa6d47ac5fdefa216affceb51a586f8e6b81",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/v2/git-map.json",
+        "git_blob": "ae68e53e2fbe08601e2e1a203092eaf556a10b2c"
+      },
+      "materialization_method": "As recorded in source registry"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/b11-host-neither-observation-candidate-20261105/v2/candidate/codex-rs/windows-sandbox-rs/src/token_neither_privilege_observation.rs.source.txt",
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/v2/candidate/codex-rs/windows-sandbox-rs/src/token_neither_privilege_observation.rs",
+      "bytes": 23010,
+      "sha256": "441a000d02c7aab203a270bde951dcb6e98e02845e76314782892b87e6a6a835",
+      "git_blob": "b40b49ce772c402c51ddb16bb98ff73dc78cdb41",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/v2/git-map.json",
+        "git_blob": "ae68e53e2fbe08601e2e1a203092eaf556a10b2c"
+      },
+      "materialization_method": "As recorded in source registry"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/b11-host-neither-observation-candidate-20261105/v2/freeze-candidate.py.source.txt",
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/v2/freeze-candidate.py",
+      "bytes": 9766,
+      "sha256": "9da0503e9463a6c7552d74f6fdcbc4ec94f824024b7f21f3f984ea8badaf66cd",
+      "git_blob": "eb42d6df737e5f774d11ce47a010d18568739832",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/v2/git-map.json",
+        "git_blob": "ae68e53e2fbe08601e2e1a203092eaf556a10b2c"
+      },
+      "materialization_method": "As recorded in source registry"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/b11-host-neither-observation-candidate-20261105/v2/full.patch",
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/v2/full.patch",
+      "bytes": 24246,
+      "sha256": "cd2f5fa4338fe305f7f51d273f48a59c1bd15d8703deb4b0cd308e3822fa21a6",
+      "git_blob": "6f68547fb907d45c562dfa65dca950bf16797788",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/v2/git-map.json",
+        "git_blob": "ae68e53e2fbe08601e2e1a203092eaf556a10b2c"
+      },
+      "materialization_method": "As recorded in source registry"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/b11-host-neither-observation-candidate-20261105/v2/git-map.json",
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/v2/git-map.json",
+      "bytes": 39041,
+      "sha256": "351671b0667b1093eb8fb63d5023c67ad93adfd8a93e976f96926e5c6626d34a",
+      "git_blob": "ae68e53e2fbe08601e2e1a203092eaf556a10b2c",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "source": "Actual registry self readback",
+        "git_blob": "ae68e53e2fbe08601e2e1a203092eaf556a10b2c"
+      },
+      "materialization_method": "As recorded in source registry"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/b11-host-neither-observation-candidate-20261105/v2/independent-review/freeze_review.py.source.txt",
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/v2/independent-review/freeze_review.py",
+      "bytes": 11168,
+      "sha256": "7ac1045fbde356c5defc8ec58aa5b903049cb173f472bc3243d69086ba2cc030",
+      "git_blob": "42c46f16ee853064ba087c7eaebcb852eb0a30b4",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/v2/git-map.json",
+        "git_blob": "ae68e53e2fbe08601e2e1a203092eaf556a10b2c"
+      },
+      "materialization_method": "As recorded in source registry"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/b11-host-neither-observation-candidate-20261105/v2/independent-review/registry.actual.json",
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/v2/independent-review/registry.actual.json",
+      "bytes": 1540,
+      "sha256": "6c88c06d9b024eb126f1ef9e11a4b47c64f6342d1ba59f8eed4530602798c7df",
+      "git_blob": "11bdb1ab0d1b84255a424f95bd6b7d272951ad9a",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/v2/git-map.json",
+        "git_blob": "ae68e53e2fbe08601e2e1a203092eaf556a10b2c"
+      },
+      "materialization_method": "As recorded in source registry"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/b11-host-neither-observation-candidate-20261105/v2/independent-review/registry.actual.receipt.json",
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/v2/independent-review/registry.actual.receipt.json",
+      "bytes": 659,
+      "sha256": "e1f1bd8d036c5b0b8199549f8cfdd32687e24b2cfc1060bd4b8ecb1ee3093a9d",
+      "git_blob": "05e31b043816f6854c4f2864f65c94b7d51f61ef",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/v2/git-map.json",
+        "git_blob": "ae68e53e2fbe08601e2e1a203092eaf556a10b2c"
+      },
+      "materialization_method": "As recorded in source registry"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/b11-host-neither-observation-candidate-20261105/v2/independent-review/review.json",
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/v2/independent-review/review.json",
+      "bytes": 11473,
+      "sha256": "abe938d5f596ba1af068a57f9a5fad8ca499fb9376290f5698f9e57b89fbdba6",
+      "git_blob": "a53e8141b1a62532a483f91cc2b7a6d84486f5fb",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/v2/git-map.json",
+        "git_blob": "ae68e53e2fbe08601e2e1a203092eaf556a10b2c"
+      },
+      "materialization_method": "As recorded in source registry"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/b11-host-neither-observation-candidate-20261105/v2/manifest.json",
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/v2/manifest.json",
+      "bytes": 4007,
+      "sha256": "295a87222893c3ad36d7a91bf571a9421e066a5bceb32734bf0943240bc745af",
+      "git_blob": "e3e42b7929ad5a3d2f1ba98fba3e4b338abe8420",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/v2/git-map.json",
+        "git_blob": "ae68e53e2fbe08601e2e1a203092eaf556a10b2c"
+      },
+      "materialization_method": "As recorded in source registry"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/b11-host-neither-observation-candidate-20261105/v2/primary/Security.receipt.json",
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/v2/primary/Security.receipt.json",
+      "bytes": 585,
+      "sha256": "6df9fcdb897d53b34f45dc806b50d52bbd0c564411b0e023f963e190dc9cd697",
+      "git_blob": "a16fe46ed15e857cf776e879b91f389ce0410c63",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/v2/git-map.json",
+        "git_blob": "ae68e53e2fbe08601e2e1a203092eaf556a10b2c"
+      },
+      "materialization_method": "As recorded in source registry"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/b11-host-neither-observation-candidate-20261105/v2/primary/Storage-FileSystem.receipt.json",
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/v2/primary/Storage-FileSystem.receipt.json",
+      "bytes": 605,
+      "sha256": "82e47dcc9636c6fe958d629d7d2760d7216468ce283999126e3539b1673bf103",
+      "git_blob": "b73069a6d24fd077c70e8b5ebe6b847d75e9a0c3",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/v2/git-map.json",
+        "git_blob": "ae68e53e2fbe08601e2e1a203092eaf556a10b2c"
+      },
+      "materialization_method": "As recorded in source registry"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/b11-host-neither-observation-candidate-20261105/v2/primary/System-JobObjects.receipt.json",
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/v2/primary/System-JobObjects.receipt.json",
+      "bytes": 563,
+      "sha256": "f5b5441aca7302ebde4ddcca9d5dea7417853201d69e1a8e0c04ff68ff64379f",
+      "git_blob": "d8328eabc33634e0b34650f0899c9c087faf4813",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/v2/git-map.json",
+        "git_blob": "ae68e53e2fbe08601e2e1a203092eaf556a10b2c"
+      },
+      "materialization_method": "As recorded in source registry"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/b11-host-neither-observation-candidate-20261105/v2/primary/System-Threading.receipt.json",
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/v2/primary/System-Threading.receipt.json",
+      "bytes": 601,
+      "sha256": "9a2fc89669d33c568fccaf1c0a318b18f0525c0c5486c3c1be16131cc2e2f61b",
+      "git_blob": "8eed5487d2cbbd361316e179266eeb376ec47101",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/v2/git-map.json",
+        "git_blob": "ae68e53e2fbe08601e2e1a203092eaf556a10b2c"
+      },
+      "materialization_method": "As recorded in source registry"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/b11-host-neither-observation-candidate-20261105/v2/primary/cmd-environment-semantics.json",
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/v2/primary/cmd-environment-semantics.json",
+      "bytes": 1181,
+      "sha256": "6dae06d76b24d4a52cdf61c29ae8b16a93e0c01f9196607892a805f568f1a2f8",
+      "git_blob": "263022b40f2c7ab2621ca91b1563c94e6253e986",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/v2/git-map.json",
+        "git_blob": "ae68e53e2fbe08601e2e1a203092eaf556a10b2c"
+      },
+      "materialization_method": "As recorded in source registry"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/b11-host-neither-observation-candidate-20261105/v2/primary/windows-sys-0.52.0-Security.rs.source.txt",
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/v2/primary/windows-sys-0.52.0-Security.rs.source.txt",
+      "bytes": 111353,
+      "sha256": "b35db507ad9380695f15b7ba798d0e677e08cc84b905577489d7e63994f00673",
+      "git_blob": "e474d1dfc62b7be1443f2b59eda8370477fdfa74",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/v2/git-map.json",
+        "git_blob": "ae68e53e2fbe08601e2e1a203092eaf556a10b2c"
+      },
+      "materialization_method": "As recorded in source registry"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/b11-host-neither-observation-candidate-20261105/v2/primary/windows-sys-0.52.0-Storage-FileSystem.rs.source.txt",
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/v2/primary/windows-sys-0.52.0-Storage-FileSystem.rs.source.txt",
+      "bytes": 296470,
+      "sha256": "62de1e36d41b1efdb8651c887dae8fbfb0ca2dc34e4d3a789e716f50e424630d",
+      "git_blob": "5cb313fe5ba69cbec6eee56b86ec13608744dae4",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/v2/git-map.json",
+        "git_blob": "ae68e53e2fbe08601e2e1a203092eaf556a10b2c"
+      },
+      "materialization_method": "As recorded in source registry"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/b11-host-neither-observation-candidate-20261105/v2/primary/windows-sys-0.52.0-System-JobObjects.rs.source.txt",
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/v2/primary/windows-sys-0.52.0-System-JobObjects.rs.source.txt",
+      "bytes": 29414,
+      "sha256": "45410125f4aaec823e36c7d68c86bf40879098cc2a0cebac969d04ba08a1ef58",
+      "git_blob": "c6afbc15920a12c29dc8eb98a0bd2a48c6da7d52",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/v2/git-map.json",
+        "git_blob": "ae68e53e2fbe08601e2e1a203092eaf556a10b2c"
+      },
+      "materialization_method": "As recorded in source registry"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/b11-host-neither-observation-candidate-20261105/v2/primary/windows-sys-0.52.0-System-Threading.rs.source.txt",
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/v2/primary/windows-sys-0.52.0-System-Threading.rs.source.txt",
+      "bytes": 136501,
+      "sha256": "6258ef99d17078002020644540a608a89cdf20436daefa3970a65348e6793c1c",
+      "git_blob": "6ee2c4ad6120e5a3ad34c87e67d6d9187304d9ac",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/v2/git-map.json",
+        "git_blob": "ae68e53e2fbe08601e2e1a203092eaf556a10b2c"
+      },
+      "materialization_method": "As recorded in source registry"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/b11-host-neither-observation-candidate-20261105/v2/source-map.json",
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/v2/source-map.json",
+      "bytes": 9525,
+      "sha256": "93cb52c11df5bdc015ac9a1d620e2eae336d3464e74e11b56e06c5f2d55c0dcd",
+      "git_blob": "38b00b495db1a813a23fb6e5e69373acaf0b1414",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/v2/git-map.json",
+        "git_blob": "ae68e53e2fbe08601e2e1a203092eaf556a10b2c"
+      },
+      "materialization_method": "As recorded in source registry"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/b11-host-neither-observation-candidate-20261105/v2/source/codex-rs/utils/pty/src/win/job.rs.source.txt",
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/v2/source/codex-rs/utils/pty/src/win/job.rs",
+      "bytes": 8506,
+      "sha256": "3c904bcd4ac33719bb843639c30be39ca6e9ceda350be311f970aaf3d748a476",
+      "git_blob": "b06035f72d227b4069da677e8104617ae5616283",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/v2/git-map.json",
+        "git_blob": "ae68e53e2fbe08601e2e1a203092eaf556a10b2c"
+      },
+      "materialization_method": "As recorded in source registry"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/b11-host-neither-observation-candidate-20261105/v2/source/codex-rs/windows-sandbox-rs/BUILD.bazel.source.txt",
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/v2/source/codex-rs/windows-sandbox-rs/BUILD.bazel",
+      "bytes": 2556,
+      "sha256": "187e93c5a9a244c752dee5ed15202b361d593d9d651f850a1bda5d69969a7702",
+      "git_blob": "8531cb4d664c25de6fbf200c71cb8042d1d8d865",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/v2/git-map.json",
+        "git_blob": "ae68e53e2fbe08601e2e1a203092eaf556a10b2c"
+      },
+      "materialization_method": "As recorded in source registry"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/b11-host-neither-observation-candidate-20261105/v2/source/codex-rs/windows-sandbox-rs/Cargo.toml.source.txt",
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/v2/source/codex-rs/windows-sandbox-rs/Cargo.toml",
+      "bytes": 2438,
+      "sha256": "183a3691be018640668dfb766f29651d8fd75ab08f7fd526f3d378ae2a86469d",
+      "git_blob": "aa41ed5f08608c0275785b2f5e27ec5db08f50dd",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/v2/git-map.json",
+        "git_blob": "ae68e53e2fbe08601e2e1a203092eaf556a10b2c"
+      },
+      "materialization_method": "As recorded in source registry"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/b11-host-neither-observation-candidate-20261105/v2/source/codex-rs/windows-sandbox-rs/src/delete_permission_matrix_tests.rs.source.txt",
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/v2/source/codex-rs/windows-sandbox-rs/src/delete_permission_matrix_tests.rs",
+      "bytes": 16679,
+      "sha256": "b701ad01169eb9f64b62ad50099dfcda51b014a5c96dbc2080631fd2e6d7ee75",
+      "git_blob": "6f05793ec6ee043a933073ada3a1bf9122de5a73",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/v2/git-map.json",
+        "git_blob": "ae68e53e2fbe08601e2e1a203092eaf556a10b2c"
+      },
+      "materialization_method": "As recorded in source registry"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/b11-host-neither-observation-candidate-20261105/v2/source/codex-rs/windows-sandbox-rs/src/desktop.rs.source.txt",
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/v2/source/codex-rs/windows-sandbox-rs/src/desktop.rs",
+      "bytes": 9710,
+      "sha256": "4e26ba072fada10f6185d16682274022108ef843f8292d1e7f9ed237f7e1a56f",
+      "git_blob": "0b01f011119bef623bc9e46e710caa371520380d",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/v2/git-map.json",
+        "git_blob": "ae68e53e2fbe08601e2e1a203092eaf556a10b2c"
+      },
+      "materialization_method": "As recorded in source registry"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/b11-host-neither-observation-candidate-20261105/v2/source/codex-rs/windows-sandbox-rs/src/lib.rs.source.txt",
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/v2/source/codex-rs/windows-sandbox-rs/src/lib.rs",
+      "bytes": 30379,
+      "sha256": "6a656c06930bcf07075db8712292bb8040a33667231783dba177e62230982b38",
+      "git_blob": "11778af7beb645b36401807cf3e31a0dd4deddc0",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/v2/git-map.json",
+        "git_blob": "ae68e53e2fbe08601e2e1a203092eaf556a10b2c"
+      },
+      "materialization_method": "As recorded in source registry"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/b11-host-neither-observation-candidate-20261105/v2/source/codex-rs/windows-sandbox-rs/src/proc_thread_attr.rs.source.txt",
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/v2/source/codex-rs/windows-sandbox-rs/src/proc_thread_attr.rs",
+      "bytes": 4086,
+      "sha256": "e42e26ae546bb7e00639a70de5a8609d631d4d6f33976d32de6f4dbf741bcb8f",
+      "git_blob": "38110a69239e9707a324f2d4cf4a1fad932b4132",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/v2/git-map.json",
+        "git_blob": "ae68e53e2fbe08601e2e1a203092eaf556a10b2c"
+      },
+      "materialization_method": "As recorded in source registry"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/b11-host-neither-observation-candidate-20261105/v2/source/codex-rs/windows-sandbox-rs/src/process.rs.source.txt",
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/v2/source/codex-rs/windows-sandbox-rs/src/process.rs",
+      "bytes": 11792,
+      "sha256": "7c7ea19f6fcfa88990cf5582273eede6139a52ccda8212468087276bb50eaca7",
+      "git_blob": "4d4f1d9435aad3cf9cd27a82d51b2be5b7659a4c",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/v2/git-map.json",
+        "git_blob": "ae68e53e2fbe08601e2e1a203092eaf556a10b2c"
+      },
+      "materialization_method": "As recorded in source registry"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/b11-host-neither-observation-candidate-20261105/v2/source/codex-rs/windows-sandbox-rs/src/token.rs.source.txt",
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/v2/source/codex-rs/windows-sandbox-rs/src/token.rs",
+      "bytes": 18437,
+      "sha256": "6d7ddb4a84561b28bc134139226f9be444cb0dc03c73038e7988e21e18339a77",
+      "git_blob": "b22acb5556f6af3b4c250a2441f161ee448ea1c1",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/v2/git-map.json",
+        "git_blob": "ae68e53e2fbe08601e2e1a203092eaf556a10b2c"
+      },
+      "materialization_method": "As recorded in source registry"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/b11-host-neither-observation-candidate-20261105/v2/source/codex-rs/windows-sandbox-rs/src/token_integrity_probe_support.rs.source.txt",
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/v2/source/codex-rs/windows-sandbox-rs/src/token_integrity_probe_support.rs",
+      "bytes": 17560,
+      "sha256": "986fe8864f789e4bfa876553d99f1949be403f5ed10b9c88fdc8e0fd7331c0d1",
+      "git_blob": "7a7008f9becf09578ca953c849401eda93eb94b2",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/v2/git-map.json",
+        "git_blob": "ae68e53e2fbe08601e2e1a203092eaf556a10b2c"
+      },
+      "materialization_method": "As recorded in source registry"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/b11-host-neither-observation-candidate-20261105/v2/source/codex-rs/windows-sandbox-rs/src/token_integrity_probe_tests.rs.source.txt",
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/v2/source/codex-rs/windows-sandbox-rs/src/token_integrity_probe_tests.rs",
+      "bytes": 14475,
+      "sha256": "5fe644714b4180dd4bbb988452a4c8464524149eda1a91af0af8879761f448ab",
+      "git_blob": "2a384792e8ba88518c26943716e8c3a39a523f9b",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/v2/git-map.json",
+        "git_blob": "ae68e53e2fbe08601e2e1a203092eaf556a10b2c"
+      },
+      "materialization_method": "As recorded in source registry"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/b11-host-neither-observation-candidate-20261105/v2/source/defs.bzl.source.txt",
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/v2/source/defs.bzl",
+      "bytes": 34630,
+      "sha256": "f5638a9189632c8d8524a438bbfc6b365bddf7f23dfd2df06a6de3a2ff3f2cfa",
+      "git_blob": "6f588ec3057fddfea35170e28e74036162ce6a23",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/v2/git-map.json",
+        "git_blob": "ae68e53e2fbe08601e2e1a203092eaf556a10b2c"
+      },
+      "materialization_method": "As recorded in source registry"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/b11-host-neither-observation-candidate-20261105/v2/static-verification.json",
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/v2/static-verification.json",
+      "bytes": 8921,
+      "sha256": "2ce267ee95f38e4370a4ae4b3142835b5f7a90864f8f6e4d5b0cf99e04d3d61c",
+      "git_blob": "cc9c99029b1e42a8463b8da923277a70e8c34bee",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/v2/git-map.json",
+        "git_blob": "ae68e53e2fbe08601e2e1a203092eaf556a10b2c"
+      },
+      "materialization_method": "As recorded in source registry"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/b11-host-neither-observation-candidate-20261105/v2/v1-to-v2.patch",
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/v2/v1-to-v2.patch",
+      "bytes": 1764,
+      "sha256": "cd65219c069f30a73e03f13286d55edc4a6e1ebba29f0f2bb69d247c8773e06f",
+      "git_blob": "84eff293cd299af48cb5271b8bf47045e963ab6b",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/v2/git-map.json",
+        "git_blob": "ae68e53e2fbe08601e2e1a203092eaf556a10b2c"
+      },
+      "materialization_method": "As recorded in source registry"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/b11-host-neither-observation-candidate-20261105/v2/v2-change-proof.json",
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/v2/v2-change-proof.json",
+      "bytes": 973,
+      "sha256": "b55bf183d89b11f7dc81cae4076327518ea17a2e40eed05898ae2dde77439245",
+      "git_blob": "fec54aaefa7cfdb10e7c072675d233971a9048fc",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/v2/git-map.json",
+        "git_blob": "ae68e53e2fbe08601e2e1a203092eaf556a10b2c"
+      },
+      "materialization_method": "As recorded in source registry"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/linux-full-rebind-67cc-20261105/README.zh-CN.md",
+      "local_file": "/workspace/scratch/07dd58cc9630/ci-audit/linux-full-rebind-67cc-20261105/README.zh-CN.md",
+      "bytes": 2596,
+      "sha256": "c3f7eefd9e37f2929e9e08e24c851a3e339d2e865507b61f4eefa17cb1b71b2e",
+      "git_blob": "8c087e787614f94e2354f9d368d490738830320b",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "local_file": "/workspace/scratch/07dd58cc9630/ci-audit/linux-full-rebind-67cc-20261105/delivery/registry.actual.json",
+        "git_blob": "2d1498010f124aff34b4b457ef9347009b39b6f1"
+      },
+      "materialization_method": "base64"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/linux-full-rebind-67cc-20261105/delivery/archive-base64-part-000.txt",
+      "local_file": "/workspace/scratch/07dd58cc9630/ci-audit/linux-full-rebind-67cc-20261105/delivery/archive-base64-part-000.txt",
+      "bytes": 466669,
+      "sha256": "8e59737fb11dc956047c897acec386b3507250b34e784a1a8bb63e4aa4152fec",
+      "git_blob": "b60887a3d13b7c07a0f8ebcec839291c7b65d061",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "local_file": "/workspace/scratch/07dd58cc9630/ci-audit/linux-full-rebind-67cc-20261105/delivery/registry.actual.json",
+        "git_blob": "2d1498010f124aff34b4b457ef9347009b39b6f1"
+      },
+      "materialization_method": "create_tree(content) without base tree or ref mutation"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/linux-full-rebind-67cc-20261105/delivery/archive-base64-part-001.txt",
+      "local_file": "/workspace/scratch/07dd58cc9630/ci-audit/linux-full-rebind-67cc-20261105/delivery/archive-base64-part-001.txt",
+      "bytes": 466669,
+      "sha256": "dce22c1758c572d9e358ecfc7d22adeb3e5623e45e251324c3edfedbd538dbf1",
+      "git_blob": "fa312855ac7cabbcb70663d007a9b570778c6dc7",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "local_file": "/workspace/scratch/07dd58cc9630/ci-audit/linux-full-rebind-67cc-20261105/delivery/registry.actual.json",
+        "git_blob": "2d1498010f124aff34b4b457ef9347009b39b6f1"
+      },
+      "materialization_method": "create_tree(content) without base tree or ref mutation"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/linux-full-rebind-67cc-20261105/delivery/archive-base64-part-002.txt",
+      "local_file": "/workspace/scratch/07dd58cc9630/ci-audit/linux-full-rebind-67cc-20261105/delivery/archive-base64-part-002.txt",
+      "bytes": 466669,
+      "sha256": "76b1c64b99980e28728cf54e9f1a0e730de320bc8828b5d8421fd60017909841",
+      "git_blob": "946b2706a552a4edcb2caff99a41894e3a0dc3ef",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "local_file": "/workspace/scratch/07dd58cc9630/ci-audit/linux-full-rebind-67cc-20261105/delivery/registry.actual.json",
+        "git_blob": "2d1498010f124aff34b4b457ef9347009b39b6f1"
+      },
+      "materialization_method": "create_tree(content) without base tree or ref mutation"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/linux-full-rebind-67cc-20261105/delivery/archive-base64-part-003.txt",
+      "local_file": "/workspace/scratch/07dd58cc9630/ci-audit/linux-full-rebind-67cc-20261105/delivery/archive-base64-part-003.txt",
+      "bytes": 466669,
+      "sha256": "ace4410d0d20722c5e065810bcdca1720c6c5296dc6dcf57913648c76086c77b",
+      "git_blob": "ad60934e84e733b93239f5d15a51820459b3a7d0",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "local_file": "/workspace/scratch/07dd58cc9630/ci-audit/linux-full-rebind-67cc-20261105/delivery/registry.actual.json",
+        "git_blob": "2d1498010f124aff34b4b457ef9347009b39b6f1"
+      },
+      "materialization_method": "create_tree(content) without base tree or ref mutation"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/linux-full-rebind-67cc-20261105/delivery/archive-base64-part-004.txt",
+      "local_file": "/workspace/scratch/07dd58cc9630/ci-audit/linux-full-rebind-67cc-20261105/delivery/archive-base64-part-004.txt",
+      "bytes": 466669,
+      "sha256": "44585bbb45cd36f321ad8f4e9669dcdcd5a56da6b9045b11ee0b97be1a9d24d7",
+      "git_blob": "6842fb4398d189824b0bc90e903738de9481be99",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "local_file": "/workspace/scratch/07dd58cc9630/ci-audit/linux-full-rebind-67cc-20261105/delivery/registry.actual.json",
+        "git_blob": "2d1498010f124aff34b4b457ef9347009b39b6f1"
+      },
+      "materialization_method": "create_tree(content) without base tree or ref mutation"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/linux-full-rebind-67cc-20261105/delivery/archive-base64-part-005.txt",
+      "local_file": "/workspace/scratch/07dd58cc9630/ci-audit/linux-full-rebind-67cc-20261105/delivery/archive-base64-part-005.txt",
+      "bytes": 466669,
+      "sha256": "17c4774dc4b6bafc1119c52fffab05a2c991676e305ac31dd0a62b1f16270679",
+      "git_blob": "c85d33b640bcf329c21f18d0d3a29111fb4b126b",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "local_file": "/workspace/scratch/07dd58cc9630/ci-audit/linux-full-rebind-67cc-20261105/delivery/registry.actual.json",
+        "git_blob": "2d1498010f124aff34b4b457ef9347009b39b6f1"
+      },
+      "materialization_method": "create_tree(content) without base tree or ref mutation"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/linux-full-rebind-67cc-20261105/delivery/archive-base64-part-006.txt",
+      "local_file": "/workspace/scratch/07dd58cc9630/ci-audit/linux-full-rebind-67cc-20261105/delivery/archive-base64-part-006.txt",
+      "bytes": 466669,
+      "sha256": "8d1685a1bd3701ca105141f8115f9b4397f711d70bfc028a12e5bd1e6f827098",
+      "git_blob": "897b893f95a365e0780494787328aace1ec5d3df",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "local_file": "/workspace/scratch/07dd58cc9630/ci-audit/linux-full-rebind-67cc-20261105/delivery/registry.actual.json",
+        "git_blob": "2d1498010f124aff34b4b457ef9347009b39b6f1"
+      },
+      "materialization_method": "create_tree(content) without base tree or ref mutation"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/linux-full-rebind-67cc-20261105/delivery/archive-base64-part-007.txt",
+      "local_file": "/workspace/scratch/07dd58cc9630/ci-audit/linux-full-rebind-67cc-20261105/delivery/archive-base64-part-007.txt",
+      "bytes": 466669,
+      "sha256": "cfac31c2a65f59a239fd0c058d9c31a5fb2e8f98e3665a10dc5d78770883d48d",
+      "git_blob": "1d29985a60518c004f4d5fb69747f4e282eee480",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "local_file": "/workspace/scratch/07dd58cc9630/ci-audit/linux-full-rebind-67cc-20261105/delivery/registry.actual.json",
+        "git_blob": "2d1498010f124aff34b4b457ef9347009b39b6f1"
+      },
+      "materialization_method": "create_tree(content) without base tree or ref mutation"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/linux-full-rebind-67cc-20261105/delivery/archive-base64-part-008.txt",
+      "local_file": "/workspace/scratch/07dd58cc9630/ci-audit/linux-full-rebind-67cc-20261105/delivery/archive-base64-part-008.txt",
+      "bytes": 466669,
+      "sha256": "a1bf9df49df20e14082a8bae6ad8a3e2408bd8f1f1f385be3b484b4dbb5cdf36",
+      "git_blob": "f13e064dde7017845b30af7578bf1aabc2690175",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "local_file": "/workspace/scratch/07dd58cc9630/ci-audit/linux-full-rebind-67cc-20261105/delivery/registry.actual.json",
+        "git_blob": "2d1498010f124aff34b4b457ef9347009b39b6f1"
+      },
+      "materialization_method": "create_tree(content) without base tree or ref mutation"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/linux-full-rebind-67cc-20261105/delivery/archive-base64-part-009.txt",
+      "local_file": "/workspace/scratch/07dd58cc9630/ci-audit/linux-full-rebind-67cc-20261105/delivery/archive-base64-part-009.txt",
+      "bytes": 466669,
+      "sha256": "3cd18eda4218c47d4b8234e6a6dd320c855da7c05edd8dcb775597bdb9d13554",
+      "git_blob": "3e52a4c7e1828e3a0d84786f10b787f8a2727d74",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "local_file": "/workspace/scratch/07dd58cc9630/ci-audit/linux-full-rebind-67cc-20261105/delivery/registry.actual.json",
+        "git_blob": "2d1498010f124aff34b4b457ef9347009b39b6f1"
+      },
+      "materialization_method": "create_tree(content) without base tree or ref mutation"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/linux-full-rebind-67cc-20261105/delivery/archive-base64-part-010.txt",
+      "local_file": "/workspace/scratch/07dd58cc9630/ci-audit/linux-full-rebind-67cc-20261105/delivery/archive-base64-part-010.txt",
+      "bytes": 466669,
+      "sha256": "1a4505fdf172eb73ee9091d3f75213fb037340782ec1d017d20ff3d206c3ab11",
+      "git_blob": "69ceb6f90bb75d3a1b9f11e1a12369cd3468cfa1",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "local_file": "/workspace/scratch/07dd58cc9630/ci-audit/linux-full-rebind-67cc-20261105/delivery/registry.actual.json",
+        "git_blob": "2d1498010f124aff34b4b457ef9347009b39b6f1"
+      },
+      "materialization_method": "create_tree(content) without base tree or ref mutation"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/linux-full-rebind-67cc-20261105/delivery/archive-base64-part-011.txt",
+      "local_file": "/workspace/scratch/07dd58cc9630/ci-audit/linux-full-rebind-67cc-20261105/delivery/archive-base64-part-011.txt",
+      "bytes": 339889,
+      "sha256": "632a10f3a7dc78df2c84210528cf58a272ead79d99b2241b711992c61448a5bb",
+      "git_blob": "79a8ef45abc8d957df3d927717500cca68235858",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "local_file": "/workspace/scratch/07dd58cc9630/ci-audit/linux-full-rebind-67cc-20261105/delivery/registry.actual.json",
+        "git_blob": "2d1498010f124aff34b4b457ef9347009b39b6f1"
+      },
+      "materialization_method": "create_tree(content) without base tree or ref mutation"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/linux-full-rebind-67cc-20261105/delivery/member-manifest.json",
+      "local_file": "/workspace/scratch/07dd58cc9630/ci-audit/linux-full-rebind-67cc-20261105/delivery/member-manifest.json",
+      "bytes": 8528,
+      "sha256": "dbe7017c3d6d892c52435788bad10e28670b76bf7f0c667bce877d5b85cb264d",
+      "git_blob": "84974684f501f0afea4ef1f8f70da30c6f36e666",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "local_file": "/workspace/scratch/07dd58cc9630/ci-audit/linux-full-rebind-67cc-20261105/delivery/registry.actual.json",
+        "git_blob": "2d1498010f124aff34b4b457ef9347009b39b6f1"
+      },
+      "materialization_method": "create_tree(content) without base tree or ref mutation"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/linux-full-rebind-67cc-20261105/delivery/transport-manifest.json",
+      "local_file": "/workspace/scratch/07dd58cc9630/ci-audit/linux-full-rebind-67cc-20261105/delivery/transport-manifest.json",
+      "bytes": 3864,
+      "sha256": "945f257827b871f8ec450b67f7864e18d7c319473943b821faadd31f342e745a",
+      "git_blob": "c9f2b0b1c8083c9534d570578161d39acbe54b74",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "local_file": "/workspace/scratch/07dd58cc9630/ci-audit/linux-full-rebind-67cc-20261105/delivery/registry.actual.json",
+        "git_blob": "2d1498010f124aff34b4b457ef9347009b39b6f1"
+      },
+      "materialization_method": "create_tree(content) without base tree or ref mutation"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/linux-full-rebind-67cc-20261105/freeze_packet.py",
+      "local_file": "/workspace/scratch/07dd58cc9630/ci-audit/linux-full-rebind-67cc-20261105/freeze_packet.py",
+      "bytes": 3959,
+      "sha256": "c37e5141eaf4906ae084259fb8a3e0c505044b613ba11942e1cb7b6aa98f88b5",
+      "git_blob": "f7a611cf88c7416ddecbee986bca8eeda7eaa3d8",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "local_file": "/workspace/scratch/07dd58cc9630/ci-audit/linux-full-rebind-67cc-20261105/delivery/registry.actual.json",
+        "git_blob": "2d1498010f124aff34b4b457ef9347009b39b6f1"
+      },
+      "materialization_method": "create_tree(content) without base tree or ref mutation"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/linux-full-rebind-67cc-20261105/manifest-DISABLED.json",
+      "local_file": "/workspace/scratch/07dd58cc9630/ci-audit/linux-full-rebind-67cc-20261105/manifest-DISABLED.json",
+      "bytes": 15544,
+      "sha256": "62baa6e8ac82fcdff8412dc2124f63989acc3dcce139fab4d888d7e66ba70a78",
+      "git_blob": "63d02f360ffef67238caf1ef7f013bd789c103d4",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "local_file": "/workspace/scratch/07dd58cc9630/ci-audit/linux-full-rebind-67cc-20261105/delivery/registry.actual.json",
+        "git_blob": "2d1498010f124aff34b4b457ef9347009b39b6f1"
+      },
+      "materialization_method": "create_tree(content) without base tree or ref mutation"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/linux-full-rebind-67cc-20261105/prepare_rebound.py",
+      "local_file": "/workspace/scratch/07dd58cc9630/ci-audit/linux-full-rebind-67cc-20261105/prepare_rebound.py",
+      "bytes": 19739,
+      "sha256": "d3f425c522343f6e0d3c16bd6fff03c48cde5f451e6f6143ee6f430c0178062a",
+      "git_blob": "0a1cbdfd3389a2844c7d9ff84dfc9d13ab27e995",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "local_file": "/workspace/scratch/07dd58cc9630/ci-audit/linux-full-rebind-67cc-20261105/delivery/registry.actual.json",
+        "git_blob": "2d1498010f124aff34b4b457ef9347009b39b6f1"
+      },
+      "materialization_method": "create_tree(content) without base tree or ref mutation"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/linux-full-rebind-67cc-20261105/registry.actual.json",
+      "local_file": "/workspace/scratch/07dd58cc9630/ci-audit/linux-full-rebind-67cc-20261105/delivery/registry.actual.json",
+      "bytes": 16408,
+      "sha256": "23d03d988c9bcb648eb634fe2168da4d8c492f8ae5ceb955938854614d8710e5",
+      "git_blob": "2d1498010f124aff34b4b457ef9347009b39b6f1",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "source": "Actual registry self readback",
+        "git_blob": "2d1498010f124aff34b4b457ef9347009b39b6f1"
+      },
+      "materialization_method": "As recorded in source registry"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/linux-full-rebind-67cc-20261105/run_candidate_default_full.py",
+      "local_file": "/workspace/scratch/07dd58cc9630/ci-audit/linux-full-rebind-67cc-20261105/run_candidate_default_full.py",
+      "bytes": 31802,
+      "sha256": "086649633b25c3a08bdd09b142ece3acf9c1848bcc0fba8028d9ec6c5e71ab84",
+      "git_blob": "3621d1f2a0e9b3f4c7d31a8782d58620cdb8732b",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "local_file": "/workspace/scratch/07dd58cc9630/ci-audit/linux-full-rebind-67cc-20261105/delivery/registry.actual.json",
+        "git_blob": "2d1498010f124aff34b4b457ef9347009b39b6f1"
+      },
+      "materialization_method": "create_tree(content) without base tree or ref mutation"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/linux-full-rebind-67cc-20261105/verification.json",
+      "local_file": "/workspace/scratch/07dd58cc9630/ci-audit/linux-full-rebind-67cc-20261105/verification.json",
+      "bytes": 6874,
+      "sha256": "8fdc0e02f81d008ad286fffb5d6bba678a598314416400fc6794f8700914812e",
+      "git_blob": "409a07279c2caeadae97575f858ea8487df83152",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "local_file": "/workspace/scratch/07dd58cc9630/ci-audit/linux-full-rebind-67cc-20261105/delivery/registry.actual.json",
+        "git_blob": "2d1498010f124aff34b4b457ef9347009b39b6f1"
+      },
+      "materialization_method": "create_tree(content) without base tree or ref mutation"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/linux-full-rebind-67cc-20261105/verify_rebound_packet.py",
+      "local_file": "/workspace/scratch/07dd58cc9630/ci-audit/linux-full-rebind-67cc-20261105/verify_rebound_packet.py",
+      "bytes": 10621,
+      "sha256": "b3e1ae17ae56d8cf3595804f3c4a94e4b7e97ac75457af9e7fec87b2cd0eae01",
+      "git_blob": "c5a702559dc66aa806d8807436edf7af268f2264",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "local_file": "/workspace/scratch/07dd58cc9630/ci-audit/linux-full-rebind-67cc-20261105/delivery/registry.actual.json",
+        "git_blob": "2d1498010f124aff34b4b457ef9347009b39b6f1"
+      },
+      "materialization_method": "create_tree(content) without base tree or ref mutation"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/b11-host-neither-independent-20261105/freeze_review.py",
+      "local_file": "/workspace/scratch/07dd58cc9630/ci-audit/b11-host-neither-independent-20261105/freeze_review.py",
+      "bytes": 11168,
+      "sha256": "7ac1045fbde356c5defc8ec58aa5b903049cb173f472bc3243d69086ba2cc030",
+      "git_blob": "42c46f16ee853064ba087c7eaebcb852eb0a30b4",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "local_file": "/workspace/scratch/07dd58cc9630/ci-audit/b11-host-neither-independent-20261105/registry.actual.json",
+        "git_blob": "11bdb1ab0d1b84255a424f95bd6b7d272951ad9a"
+      },
+      "materialization_method": "create_tree(content) without base tree or ref mutation"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/b11-host-neither-independent-20261105/registry.actual.json",
+      "local_file": "/workspace/scratch/07dd58cc9630/ci-audit/b11-host-neither-independent-20261105/registry.actual.json",
+      "bytes": 1540,
+      "sha256": "6c88c06d9b024eb126f1ef9e11a4b47c64f6342d1ba59f8eed4530602798c7df",
+      "git_blob": "11bdb1ab0d1b84255a424f95bd6b7d272951ad9a",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "source": "Actual registry self readback",
+        "git_blob": "11bdb1ab0d1b84255a424f95bd6b7d272951ad9a"
+      },
+      "materialization_method": "As recorded in source registry"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/b11-host-neither-independent-20261105/review.json",
+      "local_file": "/workspace/scratch/07dd58cc9630/ci-audit/b11-host-neither-independent-20261105/review.json",
+      "bytes": 11473,
+      "sha256": "abe938d5f596ba1af068a57f9a5fad8ca499fb9376290f5698f9e57b89fbdba6",
+      "git_blob": "a53e8141b1a62532a483f91cc2b7a6d84486f5fb",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "local_file": "/workspace/scratch/07dd58cc9630/ci-audit/b11-host-neither-independent-20261105/registry.actual.json",
+        "git_blob": "11bdb1ab0d1b84255a424f95bd6b7d272951ad9a"
+      },
+      "materialization_method": "create_tree(content) without base tree or ref mutation"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/b11-host-neither-publication-20261105/actual-merge-commit.json",
+      "local_file": "/workspace/scratch/07dd58cc9630/hepta-audit-fifth/b11-host-neither-publication/actual-merge-commit.json",
+      "bytes": 3468,
+      "sha256": "cd32bb5dccf297141b2483d918c4d5d348db70e7835b76c956f1b44acaa8f3f7",
+      "git_blob": "5de954f11a4c349efddfd982f55de08d8de3ec3a",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "local_file": "/workspace/scratch/07dd58cc9630/hepta-audit-fifth/b11-host-neither-publication/delivery/registry.actual.json",
+        "git_blob": "5a3b08877150615a1d303ed9d443a180c7f2c5df"
+      },
+      "materialization_method": "create_tree(content) without base tree or ref mutation"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/b11-host-neither-publication-20261105/commit-ref-actual.json",
+      "local_file": "/workspace/scratch/07dd58cc9630/hepta-audit-fifth/b11-host-neither-publication/commit-ref-actual.json",
+      "bytes": 3447,
+      "sha256": "0cb2a8cb60964d62ea141ffc7bfbf2e9923dc5e80558923c5d6e1e1774e368b5",
+      "git_blob": "05e2e2fcd5b49e1ea000c26b382b25faaa44ee4d",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "local_file": "/workspace/scratch/07dd58cc9630/hepta-audit-fifth/b11-host-neither-publication/delivery/registry.actual.json",
+        "git_blob": "5a3b08877150615a1d303ed9d443a180c7f2c5df"
+      },
+      "materialization_method": "create_tree(content) without base tree or ref mutation"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/b11-host-neither-publication-20261105/originals.part-000.base64.txt",
+      "local_file": "/workspace/scratch/07dd58cc9630/hepta-audit-fifth/b11-host-neither-publication/delivery/originals.part-000.base64.txt",
+      "bytes": 400001,
+      "sha256": "55e0cd09c6bad4498b339444a7879a752273b3beb400c173383a92745fb60dc7",
+      "git_blob": "4cf656a5b4860ddde834a4ac0817efd0f00fd3fe",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "local_file": "/workspace/scratch/07dd58cc9630/hepta-audit-fifth/b11-host-neither-publication/delivery/registry.actual.json",
+        "git_blob": "5a3b08877150615a1d303ed9d443a180c7f2c5df"
+      },
+      "materialization_method": "create_tree(content) without base tree or ref mutation"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/b11-host-neither-publication-20261105/originals.part-001.base64.txt",
+      "local_file": "/workspace/scratch/07dd58cc9630/hepta-audit-fifth/b11-host-neither-publication/delivery/originals.part-001.base64.txt",
+      "bytes": 400001,
+      "sha256": "97c8bf584d4929643db02f2a27c26e67d7b0bf45b664be589796b4f0e7d9cb9e",
+      "git_blob": "dca9a48f78f45a2876f908e1a9a7d3d5eea716da",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "local_file": "/workspace/scratch/07dd58cc9630/hepta-audit-fifth/b11-host-neither-publication/delivery/registry.actual.json",
+        "git_blob": "5a3b08877150615a1d303ed9d443a180c7f2c5df"
+      },
+      "materialization_method": "create_tree(content) without base tree or ref mutation"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/b11-host-neither-publication-20261105/originals.part-002.base64.txt",
+      "local_file": "/workspace/scratch/07dd58cc9630/hepta-audit-fifth/b11-host-neither-publication/delivery/originals.part-002.base64.txt",
+      "bytes": 374057,
+      "sha256": "6f1d74f58dcfd52f50585b00feb338fe48623eecc979762a765a04b55b059c7a",
+      "git_blob": "1583fc155ba9c8422a8c1c5a07c6245a1e1e5c12",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "local_file": "/workspace/scratch/07dd58cc9630/hepta-audit-fifth/b11-host-neither-publication/delivery/registry.actual.json",
+        "git_blob": "5a3b08877150615a1d303ed9d443a180c7f2c5df"
+      },
+      "materialization_method": "create_tree(content) without base tree or ref mutation"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/b11-host-neither-publication-20261105/registry.actual.json",
+      "local_file": "/workspace/scratch/07dd58cc9630/hepta-audit-fifth/b11-host-neither-publication/delivery/registry.actual.json",
+      "bytes": 9829,
+      "sha256": "50729c610649ccd39367b6fa724686fa47219ddd493981b79c1c65a279f6eed8",
+      "git_blob": "5a3b08877150615a1d303ed9d443a180c7f2c5df",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "source": "Actual registry self readback",
+        "git_blob": "5a3b08877150615a1d303ed9d443a180c7f2c5df"
+      },
+      "materialization_method": "As recorded in source registry"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/b11-host-neither-publication-20261105/root-tree-proof.json",
+      "local_file": "/workspace/scratch/07dd58cc9630/hepta-audit-fifth/b11-host-neither-publication/root-tree-proof.json",
+      "bytes": 3375,
+      "sha256": "aaa9927e8357724b87c40bd2ef2f9b68b8e89ac925e6b945b957533f9cc9cac2",
+      "git_blob": "94d5e9673548fcf7e46c560a4b1958959b9c63fa",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "local_file": "/workspace/scratch/07dd58cc9630/hepta-audit-fifth/b11-host-neither-publication/delivery/registry.actual.json",
+        "git_blob": "5a3b08877150615a1d303ed9d443a180c7f2c5df"
+      },
+      "materialization_method": "create_tree(content) without base tree or ref mutation"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/b11-host-neither-publication-20261105/source-map.json",
+      "local_file": "/workspace/scratch/07dd58cc9630/hepta-audit-fifth/b11-host-neither-publication/source-map.json",
+      "bytes": 1186,
+      "sha256": "3e5d9ead9623eb7c968df3df0fba2c5eba4d0526ab92ad66ade76c27234e5a19",
+      "git_blob": "d44523f2d836ac4a5a8ac517d66a4941d92c34ed",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "local_file": "/workspace/scratch/07dd58cc9630/hepta-audit-fifth/b11-host-neither-publication/delivery/registry.actual.json",
+        "git_blob": "5a3b08877150615a1d303ed9d443a180c7f2c5df"
+      },
+      "materialization_method": "create_tree(content) without base tree or ref mutation"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/b11-host-neither-publication-20261105/transport-manifest.json",
+      "local_file": "/workspace/scratch/07dd58cc9630/hepta-audit-fifth/b11-host-neither-publication/delivery/transport-manifest.json",
+      "bytes": 7500,
+      "sha256": "69c97a4d150cf4775506587397eb781733e42d7e2ae1127a06aca9d5329d00e2",
+      "git_blob": "075dbe1e8c164879f6f13f2956603ea3b287b13a",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "local_file": "/workspace/scratch/07dd58cc9630/hepta-audit-fifth/b11-host-neither-publication/delivery/registry.actual.json",
+        "git_blob": "5a3b08877150615a1d303ed9d443a180c7f2c5df"
+      },
+      "materialization_method": "create_tree(content) without base tree or ref mutation"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/b11-host-neither-publication-20261105/verify_b11_host_neither_publication.py",
+      "local_file": "/workspace/scratch/07dd58cc9630/hepta-audit-fifth/verify_b11_host_neither_publication.py",
+      "bytes": 7739,
+      "sha256": "6395f152704dbf08676a08615ce858a03a97e4e3bffdccdb9d7a0fac74a26c84",
+      "git_blob": "46f0446c9113b0c9e89caf4bb73d7b2067e6b7e1",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "local_file": "/workspace/scratch/07dd58cc9630/hepta-audit-fifth/b11-host-neither-publication/delivery/registry.actual.json",
+        "git_blob": "5a3b08877150615a1d303ed9d443a180c7f2c5df"
+      },
+      "materialization_method": "create_tree(content) without base tree or ref mutation"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/linux67-preparation-root-20261105/ROOT_REPLAY.json",
+      "local_file": "/workspace/scratch/07dd58cc9630/hepta-audit-fifth/v9/postcut-root/linux67-preparation-root-replay.json",
+      "bytes": 1719,
+      "sha256": "515fec1b49e033c228a11a1725dc8a4a8c65ebce5bb3db28d6f0ace3529ef8c8",
+      "git_blob": "911dbfb8ee85cf5f8f65332f4d1c2e924f7fb6e1",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "local_file": "/workspace/scratch/07dd58cc9630/hepta-audit-fifth/b11-host-neither-publication/delivery/registry.actual.json",
+        "git_blob": "5a3b08877150615a1d303ed9d443a180c7f2c5df"
+      },
+      "materialization_method": "create_tree(content) without base tree or ref mutation"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/main67-2258-root-20261105/ROOT_REPLAY.json",
+      "local_file": "/workspace/scratch/07dd58cc9630/hepta-audit-fifth/v9/postcut-root/main67-2258-root-replay.json",
+      "bytes": 23395,
+      "sha256": "4aeed90338d568de33fefbd21ec5df9ae83f21f9af2814734548b58228972a00",
+      "git_blob": "f23c7290b340458d6a7e2fd727e8464a4e4a2c5c",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "local_file": "hepta-audit-fifth/v9/postcut-root/main67-replay.actual-registration.json"
+      },
+      "materialization_method": "As recorded in source registry"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/main67-2334-root-20261105/ROOT_REPLAY.json",
+      "local_file": "/workspace/scratch/07dd58cc9630/hepta-audit-fifth/v9/postcut-root/main67-2334-root-replay.json",
+      "bytes": 2196,
+      "sha256": "eb28a0978b8005a8f456c37de68c7370a37c32741ec69d4b07c670a2ce21d3ba",
+      "git_blob": "878352750e5aeff69420a1b4972381d5e5eb2157",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "local_file": "hepta-audit-fifth/v9/postcut-root/main67-2334-replay.actual-registration.json"
+      },
+      "materialization_method": "create_tree(content) followed by full fetch_blob"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/v9-core-publication-20261105/PACKAGING_FIRST_OBSERVATION.json",
+      "local_file": "/workspace/scratch/07dd58cc9630/hepta-audit-fifth/v9/publication-receipt/PACKAGING_FIRST_OBSERVATION.json",
+      "bytes": 427,
+      "sha256": "624e821a40373d32100269dc830019247a5c9b27aa34b51ba26c7d4edd550e08",
+      "git_blob": "f3338e610d729ec67461891e057822d6e1c04ee4",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "local_file": "/workspace/scratch/07dd58cc9630/hepta-audit-fifth/v9/publication-receipt/registry.actual.json",
+        "git_blob": "da224199500c59765b2ac485808325ae030c47b4"
+      },
+      "materialization_method": "create_tree(content) then full fetch_blob by computed Git SHA"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/v9-core-publication-20261105/ROOT_PUBLICATION.json",
+      "local_file": "/workspace/scratch/07dd58cc9630/hepta-audit-fifth/v9/publication-receipt/ROOT_PUBLICATION.json",
+      "bytes": 1501,
+      "sha256": "e95e790acc5af344329b7fac1470f3a525dc80dcbcab34c66fe4933cedcc204e",
+      "git_blob": "4866f4e0dd4c2e30396ac64dd0feda0e03990c97",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "local_file": "/workspace/scratch/07dd58cc9630/hepta-audit-fifth/v9/publication-receipt/registry.actual.json",
+        "git_blob": "da224199500c59765b2ac485808325ae030c47b4"
+      },
+      "materialization_method": "create_tree(content) then full fetch_blob by computed Git SHA"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/v9-core-publication-20261105/originals.part-000.base64.txt",
+      "local_file": "/workspace/scratch/07dd58cc9630/hepta-audit-fifth/v9/publication-receipt/originals.part-000.base64.txt",
+      "bytes": 400001,
+      "sha256": "1d87a53fad71beaaf835bec8242cf9050e72d96f265067284639c1338443b00e",
+      "git_blob": "96c3eae1f263aa66a941aacbc0174c7ac64cbf94",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "local_file": "/workspace/scratch/07dd58cc9630/hepta-audit-fifth/v9/publication-receipt/registry.actual.json",
+        "git_blob": "da224199500c59765b2ac485808325ae030c47b4"
+      },
+      "materialization_method": "create_tree(content) then full fetch_blob by computed Git SHA"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/v9-core-publication-20261105/originals.part-001.base64.txt",
+      "local_file": "/workspace/scratch/07dd58cc9630/hepta-audit-fifth/v9/publication-receipt/originals.part-001.base64.txt",
+      "bytes": 400001,
+      "sha256": "592aa6176d612443352649ff6c4c4c61469d76fb808bb2cb56de2230818606a1",
+      "git_blob": "51e9eeb218e3568c1421cd283b021412a020f9d8",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "local_file": "/workspace/scratch/07dd58cc9630/hepta-audit-fifth/v9/publication-receipt/registry.actual.json",
+        "git_blob": "da224199500c59765b2ac485808325ae030c47b4"
+      },
+      "materialization_method": "create_tree(content) then full fetch_blob by computed Git SHA"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/v9-core-publication-20261105/originals.part-002.base64.txt",
+      "local_file": "/workspace/scratch/07dd58cc9630/hepta-audit-fifth/v9/publication-receipt/originals.part-002.base64.txt",
+      "bytes": 400001,
+      "sha256": "9f9af8b60c87f9de18a3f6a28cfc8424c102e419cd38f12642c42df7a014fadf",
+      "git_blob": "28c2082ad4c4d54116fabd2349b455998b19aa8c",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "local_file": "/workspace/scratch/07dd58cc9630/hepta-audit-fifth/v9/publication-receipt/registry.actual.json",
+        "git_blob": "da224199500c59765b2ac485808325ae030c47b4"
+      },
+      "materialization_method": "create_tree(content) then full fetch_blob by computed Git SHA"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/v9-core-publication-20261105/originals.part-003.base64.txt",
+      "local_file": "/workspace/scratch/07dd58cc9630/hepta-audit-fifth/v9/publication-receipt/originals.part-003.base64.txt",
+      "bytes": 400001,
+      "sha256": "c4bff8190dc1fea926778d7bec37bd18637b746c51cf1ed7be2c0b9d48d22ff4",
+      "git_blob": "0c8ca1ecebb404932356a4ea54c255d856ce443c",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "local_file": "/workspace/scratch/07dd58cc9630/hepta-audit-fifth/v9/publication-receipt/registry.actual.json",
+        "git_blob": "da224199500c59765b2ac485808325ae030c47b4"
+      },
+      "materialization_method": "create_tree(content) then full fetch_blob by computed Git SHA"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/v9-core-publication-20261105/originals.part-004.base64.txt",
+      "local_file": "/workspace/scratch/07dd58cc9630/hepta-audit-fifth/v9/publication-receipt/originals.part-004.base64.txt",
+      "bytes": 40245,
+      "sha256": "c60018f99081b445c0ea291e5dd58a37036819de4b3678db6a3a8286d101e7c7",
+      "git_blob": "1c685c64e4f7905622d8f720997789ddf2f8837d",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "local_file": "/workspace/scratch/07dd58cc9630/hepta-audit-fifth/v9/publication-receipt/registry.actual.json",
+        "git_blob": "da224199500c59765b2ac485808325ae030c47b4"
+      },
+      "materialization_method": "create_tree(content) then full fetch_blob by computed Git SHA"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/v9-core-publication-20261105/registry.actual.json",
+      "local_file": "/workspace/scratch/07dd58cc9630/hepta-audit-fifth/v9/publication-receipt/registry.actual.json",
+      "bytes": 6742,
+      "sha256": "9252c3c54cf3ac5022705d1204b30852ae4bd6f981c5b7e58c894dc9636c7350",
+      "git_blob": "da224199500c59765b2ac485808325ae030c47b4",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "source": "Actual registry self readback",
+        "git_blob": "da224199500c59765b2ac485808325ae030c47b4"
+      },
+      "materialization_method": "As recorded in source registry"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/v9-core-publication-20261105/transport-manifest.json",
+      "local_file": "/workspace/scratch/07dd58cc9630/hepta-audit-fifth/v9/publication-receipt/transport-manifest.json",
+      "bytes": 4918,
+      "sha256": "795d155e679db9b62ea199096e1309eaf7f4eed25ae2303336d29dbcc4ed27e4",
+      "git_blob": "c8acad84c66e3196dd26b0aa27635862d6719ae0",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "local_file": "/workspace/scratch/07dd58cc9630/hepta-audit-fifth/v9/publication-receipt/registry.actual.json",
+        "git_blob": "da224199500c59765b2ac485808325ae030c47b4"
+      },
+      "materialization_method": "create_tree(content) then full fetch_blob by computed Git SHA"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/v9-core-publication-20261105/verify_core_publication.py",
+      "local_file": "/workspace/scratch/07dd58cc9630/hepta-audit-fifth/v9/publication-receipt/verify_core_publication.py",
+      "bytes": 6557,
+      "sha256": "fcb43a98574d6a9c562615f4014c1a77137c8efa9e88ba2c58cbe24fcee1310a",
+      "git_blob": "780a16b13b55101bdf064de89e2390d3ef2e5897",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "local_file": "/workspace/scratch/07dd58cc9630/hepta-audit-fifth/v9/publication-receipt/registry.actual.json",
+        "git_blob": "da224199500c59765b2ac485808325ae030c47b4"
+      },
+      "materialization_method": "create_tree(content) then full fetch_blob by computed Git SHA"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/v9-postcut-publication-20261105/prepare_v9_postcut.py",
+      "local_file": "/workspace/scratch/07dd58cc9630/hepta-audit-fifth/prepare_v9_postcut.py",
+      "bytes": 9024,
+      "sha256": "944e8068a103a380a4b7eb851ce52309bbcbd316b3318d94e55e9a7406eb3a7f",
+      "git_blob": "650476cd1470d95d0fee715aded693912b936c8b",
+      "actual_full_GET_verified": true,
+      "registration": {
+        "local_file": "hepta-audit-fifth/v9/postcut-root/postcut-builder.actual-registration.json"
+      },
+      "materialization_method": "create_tree(content) followed by full fetch_blob"
+    }
+  ],
+  "registered_objects": 204,
+  "registered_bytes": 37873009,
+  "index_not_counted_in_its_own_items": true,
+  "link_checks": {
+    "relative_links": 11,
+    "missing": []
+  }
+}

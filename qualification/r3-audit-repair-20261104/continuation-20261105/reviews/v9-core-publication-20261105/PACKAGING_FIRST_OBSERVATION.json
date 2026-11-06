@@ -1,0 +1,7 @@
+{
+  "scope": "Root packaging utility, after full tree/commit/PR receipt verifier exit0",
+  "initial_error": "TypeError: PosixPath object is not subscriptable",
+  "cause": "Transport verification used p[x[file]] instead of p / x[file]",
+  "correction": "Path join only; archive and all parts remained byte identical. Complete base64 roundtrip and every tar member now checked.",
+  "native_execution_or_source_mutation": false
+}

@@ -1,0 +1,19 @@
+{
+  "version": "v2",
+  "source_postimages": [
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/token_integrity_probe_tests.rs",
+      "actual_create_blob_sha": "fc9faa6d47ac5fdefa216affceb51a586f8e6b81",
+      "create_get_equal": true,
+      "create_receipt": "Existing v1 actual create retained; full GET repeated for v2 exact bytes."
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/token_neither_privilege_observation.rs",
+      "actual_create_blob_sha": "b40b49ce772c402c51ddb16bb98ff73dc78cdb41",
+      "create_get_equal": true,
+      "create_encoding": "base64"
+    }
+  ],
+  "native_executed": false,
+  "independent_review_status": "PENDING"
+}

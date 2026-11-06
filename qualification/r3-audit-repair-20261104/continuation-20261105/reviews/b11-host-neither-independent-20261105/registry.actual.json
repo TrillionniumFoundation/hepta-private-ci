@@ -1,0 +1,31 @@
+{
+  "schema": "b11-host-neither-independent-review-actual-registration-v1",
+  "evidence_only": true,
+  "native_execution": false,
+  "files": [
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/ci-audit/b11-host-neither-independent-20261105/review.json",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/b11-host-neither-independent-20261105/review.json",
+      "bytes": 11473,
+      "sha256": "abe938d5f596ba1af068a57f9a5fad8ca499fb9376290f5698f9e57b89fbdba6",
+      "git_blob": "a53e8141b1a62532a483f91cc2b7a6d84486f5fb",
+      "actual_create_and_full_GET_byte_equal": true,
+      "actual_materialization_method": "create_tree(content) without base tree or ref mutation",
+      "actual_create_tree_response": {
+        "sha": "9467322519e3b7b55a1ee15fe2351f203f6fb933"
+      }
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/ci-audit/b11-host-neither-independent-20261105/freeze_review.py",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/b11-host-neither-independent-20261105/freeze_review.py",
+      "bytes": 11168,
+      "sha256": "7ac1045fbde356c5defc8ec58aa5b903049cb173f472bc3243d69086ba2cc030",
+      "git_blob": "42c46f16ee853064ba087c7eaebcb852eb0a30b4",
+      "actual_create_and_full_GET_byte_equal": true,
+      "actual_materialization_method": "create_tree(content) without base tree or ref mutation",
+      "actual_create_tree_response": {
+        "sha": "9467322519e3b7b55a1ee15fe2351f203f6fb933"
+      }
+    }
+  ]
+}

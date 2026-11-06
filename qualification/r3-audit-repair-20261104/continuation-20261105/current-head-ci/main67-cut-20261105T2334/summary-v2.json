@@ -1,0 +1,2056 @@
+{
+  "API_state_not_case_qualification": true,
+  "PTY": {
+    "fresh_explicit_PTY_case_names": [],
+    "limit": "Allowlist retention and dependency compilation do not prove target execution; indirect consumers are not separately qualified PTY target cases.",
+    "new_original_target_qualification": false,
+    "prior_native10_actual_registry": "6930d8ab9054f099c7e08dc6c791c1a670733dfc",
+    "prior_native10_manifest_source": {
+      "commit": "5ce73498a9e8ee843d156c43593b1bc2fede416f",
+      "tracked_worktree_dirty": false,
+      "tree": "36ca349de7f4c7c5a2914cf1960a81d8621350fa"
+    },
+    "prior_native10_target_entry": {
+      "cached_marker": null,
+      "collect_existing_logs": false,
+      "status": "NOT_REPORTED",
+      "summary_lines": []
+    }
+  },
+  "Unix_signal_qualification": "No newly completed original Linux job in this cut; pending Linux scopes are not qualified.",
+  "Windows_Memory": {
+    "JUnit": {
+      "cases": 2,
+      "errors": 0,
+      "failures": 0,
+      "skipped_elements": 0,
+      "suites": [
+        {
+          "disabled": "0",
+          "errors": "0",
+          "failures": "0",
+          "name": "codex-hepta-memory",
+          "tests": "1"
+        },
+        {
+          "disabled": "0",
+          "errors": "0",
+          "failures": "0",
+          "name": "codex-hepta-memory-extension",
+          "tests": "1"
+        }
+      ],
+      "uuid": "31d16f44-05e3-4cae-8d4e-8837289be62a"
+    },
+    "failed": 0,
+    "full_package_qualification": false,
+    "job_id": 127581904898,
+    "passed": 2,
+    "raw_status_rows": {
+      "PASS": 4,
+      "SKIP": 808
+    },
+    "required_cases": [
+      "cognitive::federation::tests::revoke_removes_prepared_federated_context_from_next_physical_send",
+      "cognitive_store::schema_tests::compiled_migrations_match_schema_oracle_and_weakened_trigger_is_rejected"
+    ],
+    "skipped": 404,
+    "summary": "Summary [   1.457s] 2 tests run: 2 passed, 404 skipped",
+    "unique_status_names": {
+      "PASS": 2,
+      "SKIP": 404
+    }
+  },
+  "Windows_Supervisor": {
+    "fmt_command": "cargo +1.95.0 fmt -p codex-hepta-supervisor -- --check",
+    "fmt_scope": "Supervisor package on Windows only; full-workspace Linux fmt remains queued.",
+    "job_id": 127581904781,
+    "protocol": {
+      "cases": 14,
+      "errors": 0,
+      "failures": 0,
+      "skipped_elements": 0,
+      "suites": [
+        {
+          "disabled": "0",
+          "errors": "0",
+          "failures": "0",
+          "name": "codex-hepta-agent-protocol",
+          "tests": "14"
+        }
+      ],
+      "uuid": "c6a71251-a8ab-4cd9-9a1e-68ccc6b84ea5"
+    },
+    "raw_unique_PASS_names_match_both_JUnit_archives": true,
+    "required_supervisor_cases": [
+      "restart_budget_survives_repeated_supervisord_recovery",
+      "unexpected_agent_crashes_back_off_and_stop_after_three_restarts",
+      "unsigned_digest_abort_directive_cannot_clear_signed_production_recovery_fence"
+    ],
+    "strict_Clippy_step": "success",
+    "supervisor": {
+      "cases": 3,
+      "errors": 0,
+      "failures": 0,
+      "skipped_elements": 0,
+      "suites": [
+        {
+          "disabled": "0",
+          "errors": "0",
+          "failures": "0",
+          "name": "codex-hepta-supervisor::signed_intent_recovery",
+          "tests": "1"
+        },
+        {
+          "disabled": "0",
+          "errors": "0",
+          "failures": "0",
+          "name": "codex-hepta-supervisor::restart_budget",
+          "tests": "1"
+        },
+        {
+          "disabled": "0",
+          "errors": "0",
+          "failures": "0",
+          "name": "codex-hepta-supervisor::restart_budget_recovery",
+          "tests": "1"
+        }
+      ],
+      "uuid": "cc50de09-3032-43a4-b85b-dcfd3fd65cee"
+    }
+  },
+  "Windows_exec_recovery": [
+    {
+      "artifact_id": 13463050432,
+      "scopes": [
+        {
+          "JUnit": {
+            "cases": 254,
+            "errors": 0,
+            "failures": 0,
+            "skipped_elements": 0,
+            "suites": [
+              {
+                "disabled": "0",
+                "errors": "0",
+                "failures": "0",
+                "name": "codex-exec-server",
+                "tests": "253"
+              },
+              {
+                "disabled": "0",
+                "errors": "0",
+                "failures": "0",
+                "name": "codex-exec-server::authorized_read_rpc",
+                "tests": "1"
+              }
+            ],
+            "uuid": "4278029e-5a23-4323-9bad-150a19852c6e"
+          },
+          "command": [
+            "just",
+            "test",
+            "--locked",
+            "-p",
+            "codex-exec-server",
+            "--lib",
+            "--test",
+            "authorized_read_rpc",
+            "--no-tests",
+            "fail",
+            "--retries",
+            "0",
+            "--status-level",
+            "all",
+            "--final-status-level",
+            "all"
+          ],
+          "failed": 0,
+          "manifest_log_JUnit_hashes_verified": true,
+          "passed": 254,
+          "raw_status_rows": {
+            "PASS": 508
+          },
+          "raw_unique_PASS_names_equal_JUnit": true,
+          "required_names": [
+            "authorized_read_rpc_is_capability_gated_and_denies_outside_root",
+            "client::tests::connect_stdio_command_initializes_json_rpc_client_on_windows"
+          ],
+          "scope": "server",
+          "skip_limit": "Raw SKIP entries are excluded from the successful JUnit cases.",
+          "skipped": 0,
+          "summary": "Summary [   5.635s] 254 tests run: 254 passed, 0 skipped",
+          "unique_status_names": {
+            "PASS": 254
+          }
+        },
+        {
+          "JUnit": {
+            "cases": 121,
+            "errors": 0,
+            "failures": 0,
+            "skipped_elements": 0,
+            "suites": [
+              {
+                "disabled": "0",
+                "errors": "0",
+                "failures": "0",
+                "name": "codex-rollout",
+                "tests": "121"
+              }
+            ],
+            "uuid": "71ffbd52-e707-4f8b-a0df-fc4c985c80b9"
+          },
+          "command": [
+            "just",
+            "test",
+            "--locked",
+            "-p",
+            "codex-rollout",
+            "--lib",
+            "--no-tests",
+            "fail",
+            "--retries",
+            "0",
+            "--status-level",
+            "all",
+            "--final-status-level",
+            "all"
+          ],
+          "failed": 0,
+          "manifest_log_JUnit_hashes_verified": true,
+          "passed": 121,
+          "raw_status_rows": {
+            "PASS": 242
+          },
+          "raw_unique_PASS_names_equal_JUnit": true,
+          "required_names": [
+            "state_db::tests::list_threads_db_rejects_mismatched_sqlite_config_without_cleanup",
+            "state_db::tests::index_reads_accept_config_before_native_home_canonicalization"
+          ],
+          "scope": "rollout",
+          "skip_limit": "Raw SKIP entries are excluded from the successful JUnit cases.",
+          "skipped": 0,
+          "summary": "Summary [  10.081s] 121 tests run: 121 passed, 0 skipped",
+          "unique_status_names": {
+            "PASS": 121
+          }
+        },
+        {
+          "JUnit": {
+            "cases": 13,
+            "errors": 0,
+            "failures": 0,
+            "skipped_elements": 0,
+            "suites": [
+              {
+                "disabled": "0",
+                "errors": "0",
+                "failures": "0",
+                "name": "codex-exec::all",
+                "tests": "13"
+              }
+            ],
+            "uuid": "0478da47-c6d8-4832-98a4-604567b7bf94"
+          },
+          "command": [
+            "just",
+            "test",
+            "--locked",
+            "-p",
+            "codex-exec",
+            "--test",
+            "all",
+            "-E",
+            "test(suite::resume::)",
+            "--no-tests",
+            "fail",
+            "--retries",
+            "0",
+            "--status-level",
+            "all",
+            "--final-status-level",
+            "all",
+            "--success-output",
+            "final"
+          ],
+          "failed": 0,
+          "manifest_log_JUnit_hashes_verified": true,
+          "passed": 13,
+          "raw_status_rows": {
+            "PASS": 26,
+            "SKIP": 70
+          },
+          "raw_unique_PASS_names_equal_JUnit": true,
+          "required_names": [
+            "suite::resume::exec_resume_last_repairs_rollout_missing_from_state_db",
+            "suite::resume::exec_resume_last_trusts_usable_state_db_candidate",
+            "suite::resume::exec_resume_last_respects_cwd_filter_and_all_flag"
+          ],
+          "scope": "resume",
+          "skip_limit": "Raw SKIP entries are excluded from the successful JUnit cases.",
+          "skipped": 35,
+          "summary": "Summary [ 233.770s] 13 tests run: 13 passed, 35 skipped",
+          "unique_status_names": {
+            "PASS": 13,
+            "SKIP": 35
+          }
+        }
+      ],
+      "source": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed",
+      "tree": "3982ba56dc5a3f1da0c1de7ea57992f88125c359",
+      "unchanged_inputs": true
+    },
+    {
+      "artifact_id": 13462565685,
+      "scopes": [
+        {
+          "JUnit": {
+            "cases": 254,
+            "errors": 0,
+            "failures": 0,
+            "skipped_elements": 0,
+            "suites": [
+              {
+                "disabled": "0",
+                "errors": "0",
+                "failures": "0",
+                "name": "codex-exec-server",
+                "tests": "253"
+              },
+              {
+                "disabled": "0",
+                "errors": "0",
+                "failures": "0",
+                "name": "codex-exec-server::authorized_read_rpc",
+                "tests": "1"
+              }
+            ],
+            "uuid": "50c81bbd-fcec-4558-9ab2-8bc35161fdec"
+          },
+          "command": [
+            "just",
+            "test",
+            "--locked",
+            "-p",
+            "codex-exec-server",
+            "--lib",
+            "--test",
+            "authorized_read_rpc",
+            "--no-tests",
+            "fail",
+            "--retries",
+            "0",
+            "--status-level",
+            "all",
+            "--final-status-level",
+            "all"
+          ],
+          "failed": 0,
+          "manifest_log_JUnit_hashes_verified": true,
+          "passed": 254,
+          "raw_status_rows": {
+            "PASS": 508
+          },
+          "raw_unique_PASS_names_equal_JUnit": true,
+          "required_names": [
+            "authorized_read_rpc_is_capability_gated_and_denies_outside_root",
+            "client::tests::connect_stdio_command_initializes_json_rpc_client_on_windows"
+          ],
+          "scope": "server",
+          "skip_limit": "Raw SKIP entries are excluded from the successful JUnit cases.",
+          "skipped": 0,
+          "summary": "Summary [   5.751s] 254 tests run: 254 passed, 0 skipped",
+          "unique_status_names": {
+            "PASS": 254
+          }
+        },
+        {
+          "JUnit": {
+            "cases": 121,
+            "errors": 0,
+            "failures": 0,
+            "skipped_elements": 0,
+            "suites": [
+              {
+                "disabled": "0",
+                "errors": "0",
+                "failures": "0",
+                "name": "codex-rollout",
+                "tests": "121"
+              }
+            ],
+            "uuid": "bcb84fdf-5638-4894-ad1b-7a13e85c2855"
+          },
+          "command": [
+            "just",
+            "test",
+            "--locked",
+            "-p",
+            "codex-rollout",
+            "--lib",
+            "--no-tests",
+            "fail",
+            "--retries",
+            "0",
+            "--status-level",
+            "all",
+            "--final-status-level",
+            "all"
+          ],
+          "failed": 0,
+          "manifest_log_JUnit_hashes_verified": true,
+          "passed": 121,
+          "raw_status_rows": {
+            "PASS": 242
+          },
+          "raw_unique_PASS_names_equal_JUnit": true,
+          "required_names": [
+            "state_db::tests::list_threads_db_rejects_mismatched_sqlite_config_without_cleanup",
+            "state_db::tests::index_reads_accept_config_before_native_home_canonicalization"
+          ],
+          "scope": "rollout",
+          "skip_limit": "Raw SKIP entries are excluded from the successful JUnit cases.",
+          "skipped": 0,
+          "summary": "Summary [   9.930s] 121 tests run: 121 passed, 0 skipped",
+          "unique_status_names": {
+            "PASS": 121
+          }
+        },
+        {
+          "JUnit": {
+            "cases": 13,
+            "errors": 0,
+            "failures": 0,
+            "skipped_elements": 0,
+            "suites": [
+              {
+                "disabled": "0",
+                "errors": "0",
+                "failures": "0",
+                "name": "codex-exec::all",
+                "tests": "13"
+              }
+            ],
+            "uuid": "ead68a11-8639-478d-a24f-00e2abfb32d5"
+          },
+          "command": [
+            "just",
+            "test",
+            "--locked",
+            "-p",
+            "codex-exec",
+            "--test",
+            "all",
+            "-E",
+            "test(suite::resume::)",
+            "--no-tests",
+            "fail",
+            "--retries",
+            "0",
+            "--status-level",
+            "all",
+            "--final-status-level",
+            "all",
+            "--success-output",
+            "final"
+          ],
+          "failed": 0,
+          "manifest_log_JUnit_hashes_verified": true,
+          "passed": 13,
+          "raw_status_rows": {
+            "PASS": 26,
+            "SKIP": 70
+          },
+          "raw_unique_PASS_names_equal_JUnit": true,
+          "required_names": [
+            "suite::resume::exec_resume_last_repairs_rollout_missing_from_state_db",
+            "suite::resume::exec_resume_last_trusts_usable_state_db_candidate",
+            "suite::resume::exec_resume_last_respects_cwd_filter_and_all_flag"
+          ],
+          "scope": "resume",
+          "skip_limit": "Raw SKIP entries are excluded from the successful JUnit cases.",
+          "skipped": 35,
+          "summary": "Summary [ 188.501s] 13 tests run: 13 passed, 35 skipped",
+          "unique_status_names": {
+            "PASS": 13,
+            "SKIP": 35
+          }
+        }
+      ],
+      "source": "b7a57dbb61b00e51c05da9cf5c4bc95b365d85ae",
+      "tree": "3982ba56dc5a3f1da0c1de7ea57992f88125c359",
+      "unchanged_inputs": true
+    }
+  ],
+  "Windows_owner_local": {
+    "job_id": 127581904496,
+    "packages": {
+      "agentd": {
+        "cases": [
+          [
+            "codex-hepta-agentd",
+            "app_runtime::tests::agentd_forces_explicit_cognitive_write_profile_state"
+          ],
+          [
+            "codex-hepta-agentd",
+            "app_runtime::tests::agentd_forces_hepta_turn_recovery_on"
+          ],
+          [
+            "codex-hepta-agentd",
+            "app_runtime::tests::manifest_queue_capacity_reaches_app_server_runtime_options_exactly"
+          ],
+          [
+            "codex-hepta-agentd",
+            "automation::service_tests::cancellation_preserves_in_flight_queue_ack_before_scheduler_exit"
+          ],
+          [
+            "codex-hepta-agentd",
+            "automation::service_tests::process_shutdown_does_not_turn_into_durable_timer_retirement"
+          ],
+          [
+            "codex-hepta-agentd",
+            "automation::service_tests::production_constructor_keeps_retired_timer_absent_after_reopen"
+          ],
+          [
+            "codex-hepta-agentd",
+            "automation::service_tests::production_constructor_never_resumes_a_draining_owner"
+          ],
+          [
+            "codex-hepta-agentd",
+            "automation::service_tests::production_constructor_rejects_mismatched_identity_before_spawn"
+          ],
+          [
+            "codex-hepta-agentd",
+            "automation::service_tests::production_service_retirement_drains_owner_then_unpublishes_only_automation"
+          ],
+          [
+            "codex-hepta-agentd",
+            "automation::service_tests::unknown_owner_dispatch_prevents_retirement_and_replacement_after_reopen"
+          ],
+          [
+            "codex-hepta-agentd",
+            "automation::tests::automation_reconcile_payload_uses_stable_client_identity"
+          ],
+          [
+            "codex-hepta-agentd",
+            "automation::tests::dispatch_retry_budget_is_bounded_and_progress_resets_it"
+          ],
+          [
+            "codex-hepta-agentd",
+            "automation::tests::queue_failures_after_admission_seam_are_never_dispatch_retries"
+          ],
+          [
+            "codex-hepta-agentd",
+            "browser_servo::tests::challenge_request_digest_must_match_signed_final_use_binding"
+          ],
+          [
+            "codex-hepta-agentd",
+            "browser_servo::tests::final_use_fence_covers_exactly_the_browser_local_dispatch_boundary"
+          ],
+          [
+            "codex-hepta-agentd",
+            "browser_servo::tests::non_effect_calls_never_enter_final_use_authority"
+          ],
+          [
+            "codex-hepta-agentd",
+            "cognitive_context::tests::budget::byte_cut_cannot_hide_an_unsupported_candidate_from_whole_batch_abstention"
+          ],
+          [
+            "codex-hepta-agentd",
+            "cognitive_context::tests::budget::learned_ranker_can_select_a_candidate_outside_legacy_top_four"
+          ],
+          [
+            "codex-hepta-agentd",
+            "cognitive_context::tests::budget::learned_winner_survives_legacy_byte_cut_and_response_stays_bounded"
+          ],
+          [
+            "codex-hepta-agentd",
+            "cognitive_context::tests::budget::oversized_learned_winner_does_not_consume_the_only_result_slot"
+          ],
+          [
+            "codex-hepta-agentd",
+            "cognitive_context::tests::context_reads_real_owner_content_and_removes_committed_tombstones"
+          ],
+          [
+            "codex-hepta-agentd",
+            "cognitive_context::tests::encoded_read_budget_unavailability_is_local_not_store_failure"
+          ],
+          [
+            "codex-hepta-agentd",
+            "cognitive_context::tests::final_use_binds_complete_owner_cut_not_only_memory_snapshot"
+          ],
+          [
+            "codex-hepta-agentd",
+            "cognitive_context::tests::hnmf::changed_hnmf_context_before_publication_fails_closed"
+          ],
+          [
+            "codex-hepta-agentd",
+            "cognitive_context::tests::hnmf::current_hnmf_context_filters_owner_candidates_before_delivery"
+          ],
+          [
+            "codex-hepta-agentd",
+            "cognitive_context::tests::hnmf::final_use_revalidation_rejects_changed_hnmf_context"
+          ],
+          [
+            "codex-hepta-agentd",
+            "cognitive_ranker::tests::current_loaded_model_changes_read_order_and_abstains_on_unseen_or_corrected_records"
+          ],
+          [
+            "codex-hepta-agentd",
+            "cognitive_ranker::tests::missing_or_revoked_current_witness_closes_ranker_without_baseline_fallback"
+          ],
+          [
+            "codex-hepta-agentd",
+            "cognitive_ranker::tests::new_generation_candidate_changes_behavior_and_explicit_predecessor_reload_restores_it"
+          ],
+          [
+            "codex-hepta-agentd",
+            "cognitive_ranker::tests::running_socket_uses_launch_bound_model_and_isolates_ranker_revocation"
+          ],
+          [
+            "codex-hepta-agentd",
+            "cognitive_ranker::tests::sqlite_read_consumer_uses_fitted_order_before_limit_and_rechecks_deletion"
+          ],
+          [
+            "codex-hepta-agentd",
+            "cognitive_retrieval_learning::tests::different_rpc_ids_create_distinct_assignment_records"
+          ],
+          [
+            "codex-hepta-agentd",
+            "cognitive_retrieval_learning::tests::historical_assignment_retry_keeps_original_predecessor_after_later_appends"
+          ],
+          [
+            "codex-hepta-agentd",
+            "cognitive_retrieval_learning::tests::indexed_historical_identity_does_not_accept_changed_assignment"
+          ],
+          [
+            "codex-hepta-agentd",
+            "cognitive_retrieval_learning::tests::same_rpc_and_observation_replays_idempotently"
+          ],
+          [
+            "codex-hepta-agentd",
+            "cognitive_retrieval_learning::tests::same_rpc_with_different_assignment_is_identity_conflict"
+          ],
+          [
+            "codex-hepta-agentd",
+            "config::tests::cognitive_retrieval_process_profile_is_explicit_and_fail_closed"
+          ],
+          [
+            "codex-hepta-agentd",
+            "config::tests::config_binds_exact_registered_agent_roots_and_workspace"
+          ],
+          [
+            "codex-hepta-agentd",
+            "control::native_tests::ordinary_control_preserves_server_identity_and_launch_generation"
+          ],
+          [
+            "codex-hepta-agentd",
+            "control::native_tests::saturated_ordinary_control_returns_original_overload_and_recovers"
+          ],
+          [
+            "codex-hepta-agentd",
+            "control::peer_auth_tests::accept_path_authenticates_before_consuming_a_permit"
+          ],
+          [
+            "codex-hepta-agentd",
+            "control::peer_auth_tests::control_peer_check_runs_before_control_frames"
+          ],
+          [
+            "codex-hepta-agentd",
+            "event_buffer::tests::bounded_buffer_reports_cursor_gap_and_resumes"
+          ],
+          [
+            "codex-hepta-agentd",
+            "grant_provider_worker::tests::cancelled_waiter_does_not_release_capacity_held_by_the_original_worker"
+          ],
+          [
+            "codex-hepta-agentd",
+            "intelligence_product::evaluation_tests::evaluator_key_epoch_expiry_and_signed_metrics_are_not_self_asserted"
+          ],
+          [
+            "codex-hepta-agentd",
+            "intelligence_product::evaluation_tests::signed_candidate_passes_only_with_bound_owner_run_context_and_root_trust"
+          ],
+          [
+            "codex-hepta-agentd",
+            "intelligence_product::evaluation_tests::signed_use_rejects_context_snapshot_candidate_set_and_run_substitution"
+          ],
+          [
+            "codex-hepta-agentd",
+            "intelligence_product::tests::aborted_owner_work_retains_its_budget_until_computation_finishes"
+          ],
+          [
+            "codex-hepta-agentd",
+            "intelligence_product::tests::missing_current_owner_fails_before_product_use"
+          ],
+          [
+            "codex-hepta-agentd",
+            "intelligence_product::tests::signed::signed_evaluation_completes_existing_owner_preparation_and_run_admission"
+          ],
+          [
+            "codex-hepta-agentd",
+            "intelligence_product::tests::signed::signed_input_cannot_install_host_trust_or_change_actual_context"
+          ],
+          [
+            "codex-hepta-agentd",
+            "intelligence_product::tests::total_budget_timeout_never_creates_a_dispatch_or_ledger_capability"
+          ],
+          [
+            "codex-hepta-agentd",
+            "intelligence_product::tests::unsigned_currentness_substitution_fails_before_owner_use"
+          ],
+          [
+            "codex-hepta-agentd",
+            "intuition_policy::tests::host_identity_and_owner_pins_fail_closed_before_policy_admission"
+          ],
+          [
+            "codex-hepta-agentd",
+            "lane_b_runtime::tests::active_run_capacity_is_bound_by_runtime_composition"
+          ],
+          [
+            "codex-hepta-agentd",
+            "lane_b_runtime::tests::cancellation_preserves_the_dispatch_boundary_and_reason"
+          ],
+          [
+            "codex-hepta-agentd",
+            "lane_b_runtime::tests::drain_closes_admission_and_preserves_dispatch_uncertainty"
+          ],
+          [
+            "codex-hepta-agentd",
+            "lane_b_runtime::tests::freezes_the_complete_run_tuple_before_context_attachment"
+          ],
+          [
+            "codex-hepta-agentd",
+            "lane_b_runtime::tests::indeterminate_outcomes_reconcile_without_redispatch_or_leaked_capacity"
+          ],
+          [
+            "codex-hepta-agentd",
+            "lane_b_runtime::tests::lifecycle_deadline_is_enforced_after_admission"
+          ],
+          [
+            "codex-hepta-agentd",
+            "lane_b_runtime::tests::operation_identity_is_idempotent_only_for_equal_semantics"
+          ],
+          [
+            "codex-hepta-agentd",
+            "lane_b_runtime::tests::recovery_rehydrates_only_an_indeterminate_non_redispatchable_run"
+          ],
+          [
+            "codex-hepta-agentd",
+            "lane_b_runtime::tests::revalidated_durable_explicit_abstain_never_enters_runtime_admission"
+          ],
+          [
+            "codex-hepta-agentd",
+            "lane_b_runtime::tests::revalidated_durable_run_start_uses_admitted_source_identity_and_exact_fence"
+          ],
+          [
+            "codex-hepta-agentd",
+            "lane_b_runtime::tests::terminal_observation_is_idempotent_and_only_closed_runs_can_be_removed"
+          ],
+          [
+            "codex-hepta-agentd",
+            "neuron_runtime::tests::agentd_neuron_owner_is_a_compiled_product_surface"
+          ],
+          [
+            "codex-hepta-agentd",
+            "objective_runtime::tests::durable_authentication_frontier_allows_only_exact_replay"
+          ],
+          [
+            "codex-hepta-agentd",
+            "objective_runtime::tests::history::abstention_and_conflict_remain_distinct_historical_publications"
+          ],
+          [
+            "codex-hepta-agentd",
+            "objective_runtime::tests::history::expired_historical_request_matches_after_reopen_without_changing_journal"
+          ],
+          [
+            "codex-hepta-agentd",
+            "objective_runtime::tests::history::history_requires_every_retained_authentication_and_body_field"
+          ],
+          [
+            "codex-hepta-agentd",
+            "objective_runtime::tests::history::trusted_anchor_must_exist_match_and_cover_publication"
+          ],
+          [
+            "codex-hepta-agentd",
+            "objective_runtime::tests::legacy_record_without_protocol_identity_is_rejected_at_final_use"
+          ],
+          [
+            "codex-hepta-agentd",
+            "objective_runtime::tests::runtime_consumes_compiled_record_but_not_explicit_abstain"
+          ],
+          [
+            "codex-hepta-agentd",
+            "plasticity_anchor_journal::tests::journal_never_discards_a_complete_invalid_frame"
+          ],
+          [
+            "codex-hepta-agentd",
+            "plasticity_anchor_journal::tests::journal_preserves_committed_anchor_across_reopen_and_generation_rollover"
+          ],
+          [
+            "codex-hepta-agentd",
+            "plasticity_anchor_journal::tests::journal_repairs_only_an_incomplete_crash_tail"
+          ],
+          [
+            "codex-hepta-agentd",
+            "plasticity_host::tests::anchor_store_fence_is_monotonic_and_reopen_preserves_acknowledged_state"
+          ],
+          [
+            "codex-hepta-agentd",
+            "plasticity_host::tests::owner_evidence_policy_rejects_authenticated_wrong_owner"
+          ],
+          [
+            "codex-hepta-agentd",
+            "plasticity_host::tests::owner_evidence_receipt_is_context_bound"
+          ],
+          [
+            "codex-hepta-agentd",
+            "plasticity_host::tests::owner_evidence_rejects_context_substitution"
+          ],
+          [
+            "codex-hepta-agentd",
+            "plasticity_host::tests::owner_evidence_rejects_parameter_signal_value_substitution"
+          ],
+          [
+            "codex-hepta-agentd",
+            "plasticity_host::tests::owner_evidence_set_includes_mutation_policy_and_canonical_kinds"
+          ],
+          [
+            "codex-hepta-agentd",
+            "plasticity_host::tests::real_append_ack_crash_then_registry_rollback_is_rejected_on_restart"
+          ],
+          [
+            "codex-hepta-agentd",
+            "plasticity_host::tests::retained_external_anchor_blocks_rolled_back_registry_reopen"
+          ],
+          [
+            "codex-hepta-agentd",
+            "plasticity_owner_evidence::tests::concrete_adapters_reject_rollback_frontiers_and_missing_dynamic_owner"
+          ],
+          [
+            "codex-hepta-agentd",
+            "plasticity_owner_evidence::tests::concrete_dataset_and_policy_adapters_bind_live_frontiers"
+          ],
+          [
+            "codex-hepta-agentd",
+            "plasticity_owner_evidence::tests::dynamic_owner_adapters_bind_ndu_neuron_broadcast_and_exact_signal_values"
+          ],
+          [
+            "codex-hepta-agentd",
+            "plasticity_owner_evidence::tests::dynamic_owner_adapters_reject_ndu_rollback_and_unavailable_neuron_owner"
+          ],
+          [
+            "codex-hepta-agentd",
+            "plasticity_owner_evidence::tests::dynamic_owner_adapters_reject_stale_wrong_owner_and_value_substitution"
+          ],
+          [
+            "codex-hepta-agentd",
+            "plasticity_process_bootstrap::tests::descriptor_digest_rejects_byte_substitution"
+          ],
+          [
+            "codex-hepta-agentd",
+            "plasticity_runtime::lifetime_tests::agentd_lifetime_owner_submits_restarts_and_reconciles_idempotently"
+          ],
+          [
+            "codex-hepta-agentd",
+            "plasticity_runtime::tests::runtime_queue_capacity_is_bounded"
+          ],
+          [
+            "codex-hepta-agentd",
+            "prompt_runtime::tests::dispatch_without_terminal_reopens_as_unknown_and_blocks_blind_retry"
+          ],
+          [
+            "codex-hepta-agentd",
+            "prompt_runtime::tests::final_delivered_terminal_releases_staged_turn"
+          ],
+          [
+            "codex-hepta-agentd",
+            "prompt_runtime::tests::indeterminate_terminal_reopens_blocked_and_reconciles_monotonically"
+          ],
+          [
+            "codex-hepta-agentd",
+            "prompt_runtime::tests::named_agentd_pipeline_stages_exact_registry_bytes_for_app_server_host"
+          ],
+          [
+            "codex-hepta-agentd",
+            "prompt_runtime::tests::non_dispatch_terminal_is_idempotent_and_retains_stage_for_retry"
+          ],
+          [
+            "codex-hepta-agentd",
+            "prompt_runtime::tests::not_dispatched_retry_then_final_delivery_reopens_without_stale_stage_requirement"
+          ],
+          [
+            "codex-hepta-agentd",
+            "prompt_runtime::tests::owner_remains_send_sync_with_fault_injection"
+          ],
+          [
+            "codex-hepta-agentd",
+            "prompt_runtime::tests::post_rename_ack_loss_poison_reopens_to_dispatch_claim_not_absent"
+          ],
+          [
+            "codex-hepta-agentd",
+            "prompt_runtime::tests::staged_attachment_is_bound_to_exact_thread_and_turn"
+          ],
+          [
+            "codex-hepta-agentd",
+            "prompt_runtime::tests::windows_prompt_runtime_existing_insecure_directory_is_never_repaired"
+          ],
+          [
+            "codex-hepta-agentd",
+            "prompt_runtime::tests::windows_prompt_runtime_private_owner_reopens_without_reset_or_acl_waiver"
+          ],
+          [
+            "codex-hepta-agentd",
+            "runtime::tests::automation_generation_change_during_open_remains_fail_closed"
+          ],
+          [
+            "codex-hepta-agentd",
+            "runtime::tests::automation_owner_fence_still_terminates_the_runtime_monitor"
+          ],
+          [
+            "codex-hepta-agentd",
+            "runtime::tests::automation_owner_mismatch_remains_fail_closed"
+          ],
+          [
+            "codex-hepta-agentd",
+            "runtime::tests::compatibility_retrieval_mode_does_not_require_hnmf_context"
+          ],
+          [
+            "codex-hepta-agentd",
+            "runtime::tests::compatibility_retrieval_mode_rejects_hnmf_context_without_explicit_profile"
+          ],
+          [
+            "codex-hepta-agentd",
+            "runtime::tests::dispatch_uncertain_tick_stays_live_for_durable_reconciliation"
+          ],
+          [
+            "codex-hepta-agentd",
+            "runtime::tests::drain_runtime_keeps_control_reconciliation_live_until_terminal_observation"
+          ],
+          [
+            "codex-hepta-agentd",
+            "runtime::tests::duplicate_automation_attachment_does_not_replace_the_live_store"
+          ],
+          [
+            "codex-hepta-agentd",
+            "runtime::tests::generation_change_during_open_is_fenced_before_serving"
+          ],
+          [
+            "codex-hepta-agentd",
+            "runtime::tests::generation_monitor_honors_host_cancellation_during_readiness_probe"
+          ],
+          [
+            "codex-hepta-agentd",
+            "runtime::tests::hnmf_required_retrieval_mode_fails_closed_without_current_context"
+          ],
+          [
+            "codex-hepta-agentd",
+            "runtime::tests::product_write_profile_fails_closed_when_cognitive_store_is_unavailable"
+          ],
+          [
+            "codex-hepta-agentd",
+            "runtime::tests::runtime_automation_store_failure_stops_only_the_scheduler_plane"
+          ],
+          [
+            "codex-hepta-agentd",
+            "runtime::tests::stale_generation_is_fenced_before_cognitive_store_open"
+          ],
+          [
+            "codex-hepta-agentd",
+            "runtime::tests::unavailable_automation_store_degrades_without_startup_failure"
+          ],
+          [
+            "codex-hepta-agentd",
+            "runtime::tests::unavailable_cognitive_store_degrades_without_leaking_open_error"
+          ],
+          [
+            "codex-hepta-agentd",
+            "runtime_tasks::failure_latch_tests::observed_required_failure_latches_stop_even_when_caller_handles_error"
+          ],
+          [
+            "codex-hepta-agentd",
+            "runtime_tasks::failure_latch_tests::rejected_or_panicking_retirement_callback_latches_host_failure"
+          ],
+          [
+            "codex-hepta-agentd",
+            "runtime_tasks::failure_latch_tests::retirement_timeout_does_not_masquerade_as_a_shared_fence"
+          ],
+          [
+            "codex-hepta-agentd",
+            "runtime_tasks::failure_latch_tests::retirement_writer_fence_cancels_siblings_and_blocks_fresh_names"
+          ],
+          [
+            "codex-hepta-agentd",
+            "runtime_tasks::failure_latch_tests::successful_optional_quarantine_does_not_latch_host_failure"
+          ],
+          [
+            "codex-hepta-agentd",
+            "runtime_tasks::outcome_tests::dropped_retirement_wait_does_not_erase_an_unacknowledged_abort"
+          ],
+          [
+            "codex-hepta-agentd",
+            "runtime_tasks::outcome_tests::isolated_optional_failure_does_not_poison_healthy_host"
+          ],
+          [
+            "codex-hepta-agentd",
+            "runtime_tasks::outcome_tests::late_owner_acknowledgement_after_timeout_preserves_clean_shutdown"
+          ],
+          [
+            "codex-hepta-agentd",
+            "runtime_tasks::outcome_tests::observed_required_failure_cannot_become_cancelled_success"
+          ],
+          [
+            "codex-hepta-agentd",
+            "runtime_tasks::outcome_tests::ordinary_host_abort_does_not_invent_a_retirement_request"
+          ],
+          [
+            "codex-hepta-agentd",
+            "runtime_tasks::outcome_tests::rejected_quarantine_cannot_be_reclassified_as_normal_shutdown"
+          ],
+          [
+            "codex-hepta-agentd",
+            "runtime_tasks::outcome_tests::rejected_retirement_remains_failed_after_cleanup"
+          ],
+          [
+            "codex-hepta-agentd",
+            "runtime_tasks::outcome_tests::shutdown_listener_failure_is_latched_across_reentry"
+          ],
+          [
+            "codex-hepta-agentd",
+            "runtime_tasks::outcome_tests::successful_optional_retirement_preserves_clean_host_outcome"
+          ],
+          [
+            "codex-hepta-agentd",
+            "runtime_tasks::outcome_tests::timed_out_retirement_aborted_by_shutdown_remains_failed"
+          ],
+          [
+            "codex-hepta-agentd",
+            "runtime_tasks::retirement_tests::a_writer_fence_during_retirement_still_propagates"
+          ],
+          [
+            "codex-hepta-agentd",
+            "runtime_tasks::retirement_tests::failed_drain_is_quarantine_not_retirement"
+          ],
+          [
+            "codex-hepta-agentd",
+            "runtime_tasks::retirement_tests::forty_first_running_service_retires_without_stopping_other_services"
+          ],
+          [
+            "codex-hepta-agentd",
+            "runtime_tasks::retirement_tests::owner_retirement_rejection_or_panic_never_publishes_success"
+          ],
+          [
+            "codex-hepta-agentd",
+            "runtime_tasks::retirement_tests::rejected_service_factory_is_never_invoked"
+          ],
+          [
+            "codex-hepta-agentd",
+            "runtime_tasks::retirement_tests::retirement_cannot_stop_required_or_legacy_uncontracted_tasks"
+          ],
+          [
+            "codex-hepta-agentd",
+            "runtime_tasks::retirement_tests::retirement_keeps_observing_unrelated_failures"
+          ],
+          [
+            "codex-hepta-agentd",
+            "runtime_tasks::retirement_tests::retirement_timeout_never_acknowledges_unfinished_drain"
+          ],
+          [
+            "codex-hepta-agentd",
+            "runtime_tasks::service_generations::abi_tests::abi_bound_replacements_reuse_one_slot_and_reject_stale_retirement"
+          ],
+          [
+            "codex-hepta-agentd",
+            "runtime_tasks::service_generations::abi_tests::incompatible_abi_never_starts_factory_or_consumes_a_slot"
+          ],
+          [
+            "codex-hepta-agentd",
+            "runtime_tasks::service_generations::tests::a_drain_timeout_does_not_free_the_slot_or_acknowledge_retirement"
+          ],
+          [
+            "codex-hepta-agentd",
+            "runtime_tasks::service_generations::tests::failed_retirement_callback_fences_host_without_releasing_identity"
+          ],
+          [
+            "codex-hepta-agentd",
+            "runtime_tasks::service_generations::tests::quarantined_failure_is_not_an_acknowledged_retirement"
+          ],
+          [
+            "codex-hepta-agentd",
+            "runtime_tasks::service_generations::tests::rejected_registration_never_invokes_factory_or_advances_fence"
+          ],
+          [
+            "codex-hepta-agentd",
+            "runtime_tasks::service_generations::tests::replacements_reuse_one_slot_even_at_full_identity_capacity"
+          ],
+          [
+            "codex-hepta-agentd",
+            "runtime_tasks::service_generations::tests::retired_legacy_name_cannot_bypass_its_single_use_contract"
+          ],
+          [
+            "codex-hepta-agentd",
+            "runtime_tasks::service_generations::tests::stale_and_unversioned_requests_cannot_stop_or_resurrect_a_successor"
+          ],
+          [
+            "codex-hepta-agentd",
+            "runtime_tasks::service_generations::writer_tests::sqlite_writer_rotates_256_times_without_consuming_new_service_identities"
+          ],
+          [
+            "codex-hepta-agentd",
+            "runtime_tasks::tests::admission_is_bounded_and_rejects_duplicate_or_invalid_names"
+          ],
+          [
+            "codex-hepta-agentd",
+            "runtime_tasks::tests::cancelled_observation_keeps_completion_identity"
+          ],
+          [
+            "codex-hepta-agentd",
+            "runtime_tasks::tests::cooperative_shutdown_precedes_forced_abort"
+          ],
+          [
+            "codex-hepta-agentd",
+            "runtime_tasks::tests::forty_first_service_executes_and_failure_preserves_required_services"
+          ],
+          [
+            "codex-hepta-agentd",
+            "runtime_tasks::tests::generation_fence_cannot_be_downgraded_to_optional_availability"
+          ],
+          [
+            "codex-hepta-agentd",
+            "runtime_tasks::tests::optional_panic_preserves_registered_identity_and_quarantines_once"
+          ],
+          [
+            "codex-hepta-agentd",
+            "runtime_tasks::tests::quarantine_panic_is_fatal_and_still_drains"
+          ],
+          [
+            "codex-hepta-agentd",
+            "runtime_tasks::tests::quarantine_rejection_is_fatal_and_reaps_other_tasks"
+          ],
+          [
+            "codex-hepta-agentd",
+            "runtime_tasks::tests::required_clean_exit_is_not_misreported_as_success"
+          ],
+          [
+            "codex-hepta-agentd",
+            "runtime_tasks::tests::shutdown_grace_cannot_be_zero_or_unbounded"
+          ],
+          [
+            "codex-hepta-agentd",
+            "runtime_tasks::tests::shutdown_listener_error_does_not_detach_live_tasks"
+          ],
+          [
+            "codex-hepta-agentd",
+            "state::isolation_tests::configured_intelligence_runner_is_not_advertised_without_daemon_ingress"
+          ],
+          [
+            "codex-hepta-agentd",
+            "state::isolation_tests::daemon_control_owns_the_run_lifecycle_and_advertises_it"
+          ],
+          [
+            "codex-hepta-agentd",
+            "state::isolation_tests::final_use_revalidation_rejects_stale_spawn_generation_before_store_access"
+          ],
+          [
+            "codex-hepta-agentd",
+            "state::isolation_tests::missing_local_record_immediately_fences_the_serving_agent"
+          ],
+          [
+            "codex-hepta-agentd",
+            "state::isolation_tests::private_owner_trust_refuses_unsupported_platform_ownership"
+          ],
+          [
+            "codex-hepta-agentd",
+            "state::isolation_tests::serving_agent_survives_unrelated_registry_corruption"
+          ],
+          [
+            "codex-hepta-agentd",
+            "state::isolation_tests::targeted_read_preserves_lifecycle_and_resource_fences"
+          ],
+          [
+            "codex-hepta-agentd",
+            "topology_plasticity_host::tests::topology_anchor_store_preserves_fence_and_anchor"
+          ],
+          [
+            "codex-hepta-agentd",
+            "topology_plasticity_host::tests::topology_real_append_ack_crash_then_registry_rollback_is_rejected_on_restart"
+          ]
+        ],
+        "failed": 0,
+        "passed": 172,
+        "raw_status_rows": {
+          "PASS": 172
+        },
+        "skipped": 0,
+        "summary": "Summary [  30.643s] 172 tests run: 172 passed, 0 skipped",
+        "unique_status_names": {
+          "PASS": 172
+        }
+      },
+      "matrixd": {
+        "cases": [
+          [
+            "codex-hepta-matrixd",
+            "config::tests::config_binds_one_running_spawn_generation_without_exposing_secrets"
+          ],
+          [
+            "codex-hepta-matrixd",
+            "config::tests::config_rejects_a_generation_that_does_not_own_the_running_agentd"
+          ],
+          [
+            "codex-hepta-matrixd",
+            "control::tests::authoritative_resolved_event_may_win_local_completion_race"
+          ],
+          [
+            "codex-hepta-matrixd",
+            "control::tests::cancel_requires_active_pair_and_duplicate_is_safe"
+          ],
+          [
+            "codex-hepta-matrixd",
+            "control::tests::health_tracks_real_task_state_and_owner_uds_serves_exact_identity"
+          ],
+          [
+            "codex-hepta-matrixd",
+            "control::tests::persisted_resolving_decision_is_the_only_crash_retry"
+          ],
+          [
+            "codex-hepta-matrixd",
+            "control::tests::stale_fence_never_reaches_mutation_transport"
+          ],
+          [
+            "codex-hepta-matrixd",
+            "runner::startup_tests::initial_sync_redaction_commits_before_resume_and_inbox_recovery"
+          ],
+          [
+            "codex-hepta-matrixd",
+            "runner::startup_tests::pending_or_failed_initial_sync_cannot_resume_or_dispatch_old_inbox"
+          ],
+          [
+            "codex-hepta-matrixd",
+            "runner::tests::command_approval_summary_is_typed_safe_bounded_and_does_not_echo_hidden_fields"
+          ],
+          [
+            "codex-hepta-matrixd",
+            "runner::tests::file_approval_reason_without_a_concrete_scope_is_not_actionable"
+          ],
+          [
+            "codex-hepta-matrixd",
+            "runner::tests::file_approval_summary_bounds_multibyte_and_strips_control_and_bidi"
+          ],
+          [
+            "codex-hepta-matrixd",
+            "runner::tests::product_runner_has_one_durable_sync_authority"
+          ],
+          [
+            "codex-hepta-matrixd",
+            "runtime::tests::crash_restart_and_duplicate_event_admit_core_exactly_once"
+          ],
+          [
+            "codex-hepta-matrixd",
+            "runtime::tests::queued_recovery_never_recreates_a_missing_core_record"
+          ],
+          [
+            "codex-hepta-matrixd",
+            "runtime::tests::sdk_mentioned_text_reaches_core_exactly_once"
+          ],
+          [
+            "codex-hepta-matrixd",
+            "runtime::tests::unsupported_room_messages_fail_closed_without_core_admission"
+          ],
+          [
+            "codex-hepta-matrixd",
+            "send_observer::tests::failed_send_is_terminal_and_only_identical_replay_is_idempotent"
+          ],
+          [
+            "codex-hepta-matrixd",
+            "send_observer::tests::lost_ack_keeps_transaction_and_reconciles_to_server_event"
+          ],
+          [
+            "codex-hepta-matrixd",
+            "send_observer::tests::payload_drift_and_transaction_reuse_are_rejected"
+          ],
+          [
+            "codex-hepta-matrixd",
+            "send_observer::tests::redacted_send_cannot_be_resurrected_by_delayed_observations"
+          ],
+          [
+            "codex-hepta-matrixd",
+            "send_observer::tests::redaction_replay_is_idempotent_without_replacing_original_evidence"
+          ],
+          [
+            "codex-hepta-matrixd",
+            "send_observer::tests::successful_send_replay_binds_outcome_event_and_terminal_observation"
+          ],
+          [
+            "codex-hepta-matrixd",
+            "tests::durable_thread_identity_rejects_a_different_materialized_thread"
+          ],
+          [
+            "codex-hepta-matrixd",
+            "tests::durable_thread_identity_survives_unmaterialized_thread_list"
+          ],
+          [
+            "codex-hepta-matrixd",
+            "tests::first_message_recovers_thread_after_crash_without_second_thread_start"
+          ],
+          [
+            "codex-hepta-matrixd",
+            "tests::queued_and_persisted_reconcile_outcomes_map_without_client_side_scans"
+          ],
+          [
+            "codex-hepta-matrixd",
+            "tests::reconcile_only_is_forwarded_and_missing_or_cancelled_never_resurrects"
+          ],
+          [
+            "codex-hepta-matrixd",
+            "tests::reconcile_response_identity_and_payload_drift_fail_closed"
+          ],
+          [
+            "codex-hepta-matrixd",
+            "tests::remote_reconcile_mapping_preserves_all_typed_outcomes"
+          ],
+          [
+            "codex-hepta-matrixd",
+            "tests::submission_uses_one_atomic_reconcile_rpc_and_revalidates_the_response"
+          ]
+        ],
+        "failed": 0,
+        "passed": 31,
+        "raw_status_rows": {
+          "PASS": 31
+        },
+        "skipped": 0,
+        "summary": "Summary [   2.653s] 31 tests run: 31 passed, 0 skipped",
+        "unique_status_names": {
+          "PASS": 31
+        }
+      },
+      "uds": {
+        "cases": [
+          [
+            "codex-uds",
+            "lib_tests::bound_listener_path_is_stale_socket_path"
+          ],
+          [
+            "codex-uds",
+            "lib_tests::peer_identity_gate_rejects_on_unsupported_platforms"
+          ],
+          [
+            "codex-uds",
+            "lib_tests::prepare_private_socket_directory_creates_directory"
+          ],
+          [
+            "codex-uds",
+            "lib_tests::stopped_listener_path_can_be_cleaned_and_rebound"
+          ],
+          [
+            "codex-uds",
+            "lib_tests::stream_round_trips_data_between_listener_and_client"
+          ],
+          [
+            "codex-uds",
+            "owner_local::platform::security::tests::owner_local_client_rejects_invalid_transport_acknowledgement"
+          ],
+          [
+            "codex-uds",
+            "owner_local::platform::security::tests::owner_local_compares_the_real_client_token_and_reverts_after_rejection"
+          ],
+          [
+            "codex-uds",
+            "owner_local::platform::security::tests::owner_local_dacl_denies_an_actual_anonymous_client_open"
+          ],
+          [
+            "codex-uds",
+            "owner_local::platform::security::tests::owner_local_pending_handshake_remains_cancellable"
+          ],
+          [
+            "codex-uds",
+            "owner_local::platform::security::tests::owner_local_rejects_an_actual_handle_with_a_foreign_principal_grant"
+          ],
+          [
+            "codex-uds",
+            "owner_local::platform::security::tests::owner_local_rejects_anonymous_and_impersonation_level_clients_without_token_leak"
+          ],
+          [
+            "codex-uds",
+            "owner_local::platform::security::tests::owner_local_rejects_wrong_preface_before_application_io"
+          ],
+          [
+            "codex-uds",
+            "owner_local::tests::authenticated_owner_local_stream_round_trips_application_bytes"
+          ],
+          [
+            "codex-uds",
+            "owner_local::tests::live_owner_local_listener_cannot_be_replaced"
+          ]
+        ],
+        "failed": 0,
+        "passed": 14,
+        "raw_status_rows": {
+          "PASS": 14
+        },
+        "skipped": 0,
+        "summary": "Summary [   0.164s] 14 tests run: 14 passed, 0 skipped",
+        "unique_status_names": {
+          "PASS": 14
+        }
+      }
+    },
+    "source": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed",
+    "tree": "3982ba56dc5a3f1da0c1de7ea57992f88125c359"
+  },
+  "Windows_private_state": {
+    "acquisition_lanes": [
+      {
+        "complete_source_patch_and_log_hashes_verified": true,
+        "exit_code": 0,
+        "failed": 0,
+        "lane": "positive",
+        "passed": 2,
+        "physical_observations": {
+          "creation": "denied=true created=false",
+          "substitution": "swapped=true denied=true redirected=false"
+        },
+        "raw_status_rows": {
+          "PASS": 4,
+          "SKIP": 44
+        },
+        "skipped": 22,
+        "statuses": {
+          "private_state_windows::directory::tests::rejects_ancestor_substitution_at_retained_open": "PASS",
+          "private_state_windows::directory::tests::rejects_junction_before_creating_private_leaf": "PASS"
+        },
+        "summary": "Summary [   0.051s] 2 tests run: 2 passed, 22 skipped",
+        "unique_status_names": {
+          "PASS": 2,
+          "SKIP": 22
+        }
+      },
+      {
+        "complete_source_patch_and_log_hashes_verified": true,
+        "exit_code": 1,
+        "failed": 1,
+        "lane": "unchecked-create",
+        "passed": 1,
+        "physical_observations": {
+          "creation": "denied=true created=true",
+          "substitution": "swapped=true denied=true redirected=false"
+        },
+        "raw_status_rows": {
+          "FAIL": 2,
+          "PASS": 2,
+          "SKIP": 44
+        },
+        "skipped": 22,
+        "statuses": {
+          "private_state_windows::directory::tests::rejects_ancestor_substitution_at_retained_open": "PASS",
+          "private_state_windows::directory::tests::rejects_junction_before_creating_private_leaf": "FAIL"
+        },
+        "summary": "Summary [   0.046s] 2 tests run: 1 passed, 1 failed, 22 skipped",
+        "unique_status_names": {
+          "FAIL": 1,
+          "PASS": 1,
+          "SKIP": 22
+        }
+      },
+      {
+        "complete_source_patch_and_log_hashes_verified": true,
+        "exit_code": 1,
+        "failed": 1,
+        "lane": "path-check-open",
+        "passed": 1,
+        "physical_observations": {
+          "creation": "denied=true created=false",
+          "substitution": "swapped=true denied=false redirected=true"
+        },
+        "raw_status_rows": {
+          "FAIL": 2,
+          "PASS": 2,
+          "SKIP": 44
+        },
+        "skipped": 22,
+        "statuses": {
+          "private_state_windows::directory::tests::rejects_ancestor_substitution_at_retained_open": "FAIL",
+          "private_state_windows::directory::tests::rejects_junction_before_creating_private_leaf": "PASS"
+        },
+        "summary": "Summary [   0.051s] 2 tests run: 1 passed, 1 failed, 22 skipped",
+        "unique_status_names": {
+          "FAIL": 1,
+          "PASS": 1,
+          "SKIP": 22
+        }
+      }
+    ],
+    "job_id": 127581904209,
+    "limit": "The acquisition positive controls overlap the original 19 path cases; do not add them as new unique product cases.",
+    "manifest_restored": true,
+    "negative_exit_1_is_expected": true,
+    "original_positive_unique_cases": 53,
+    "original_scope_summaries": [
+      "Summary [   0.279s] 19 tests run: 19 passed, 5 skipped",
+      "Summary [   0.041s] 2 tests run: 2 passed, 26 skipped",
+      "Summary [   0.093s] 3 tests run: 3 passed, 131 skipped",
+      "Summary [   0.066s] 2 tests run: 2 passed, 132 skipped",
+      "Summary [   0.447s] 11 tests run: 11 passed, 161 skipped",
+      "Summary [   0.261s] 16 tests run: 16 passed, 170 skipped"
+    ]
+  },
+  "actual_failed_jobs": 0,
+  "cancelled_jobs": [
+    {
+      "id": 127581904089,
+      "name": "Owner-local and original Matrixd/Agentd controls (macos-15)",
+      "runner_id": 0,
+      "steps": []
+    },
+    {
+      "id": 127581904379,
+      "name": "Encrypted keyring closure (macos-15, non-authorizing)",
+      "runner_id": 0,
+      "steps": []
+    },
+    {
+      "id": 127581904887,
+      "name": "Original operator controls and independent OpenSSH oracle (macos-15)",
+      "runner_id": 0,
+      "steps": []
+    },
+    {
+      "id": 127581904964,
+      "name": "Original Bazel operator oracle with native placement (aarch64-apple-darwin)",
+      "runner_id": 0,
+      "steps": []
+    },
+    {
+      "id": 127581905247,
+      "name": "Original recovery and authorized-read scopes (macos-15, base-merge)",
+      "runner_id": 0,
+      "steps": []
+    },
+    {
+      "id": 127581905566,
+      "name": "Original recovery and authorized-read scopes (macos-15, source-head)",
+      "runner_id": 0,
+      "steps": []
+    },
+    {
+      "id": 127583368484,
+      "name": "Build release aarch64-apple-darwin",
+      "runner_id": 0,
+      "steps": []
+    },
+    {
+      "id": 127583368519,
+      "name": "Build ptrcomp-sandbox aarch64-apple-darwin",
+      "runner_id": 0,
+      "steps": []
+    }
+  ],
+  "canonical_full_workspace_fmt": {
+    "job_id": 127581905245,
+    "qualified": false,
+    "run_id": 42123581479,
+    "status": "queued",
+    "steps": []
+  },
+  "complete_run_job_API_responses": 20,
+  "head": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed",
+  "in_progress_jobs": [
+    {
+      "id": 127583368359,
+      "name": "Build ptrcomp-sandbox aarch64-pc-windows-msvc from source"
+    },
+    {
+      "id": 127583368517,
+      "name": "Build ptrcomp-sandbox x86_64-pc-windows-msvc from source"
+    }
+  ],
+  "job_states": {
+    "cancelled": 8,
+    "in_progress": 2,
+    "queued": 23,
+    "skipped": 2,
+    "success": 18
+  },
+  "jobs": 53,
+  "new_complete_raw_logs": [
+    {
+      "CRLF_count": 10367,
+      "bytes": 1621491,
+      "characters": 1621393,
+      "complete_original_tool_text_readback_equal": true,
+      "git_blob": "a4065b8c3b18a8f3c83b2e3c6da94c967efb558c",
+      "job_id": 127581904781,
+      "sha256": "2f4449963a38918897a39d935807d5724f9effce0ceb10ccd4d97f40b716496a"
+    },
+    {
+      "CRLF_count": 3255,
+      "bytes": 265912,
+      "characters": 265622,
+      "complete_original_tool_text_readback_equal": true,
+      "git_blob": "740d735603226bfca3792a66456c2ad685710513",
+      "job_id": 127581904209,
+      "sha256": "75de99e0e901a71cc00208b2095d5af7eedecf5c29d75ffe9ad167932bf12846"
+    },
+    {
+      "CRLF_count": 11660,
+      "bytes": 1777045,
+      "characters": 1776995,
+      "complete_original_tool_text_readback_equal": true,
+      "git_blob": "8777007df8d443b28200f5a72ed0f8f8736a8872",
+      "job_id": 127581904898,
+      "sha256": "901bee1b923328c95efae45b0305a8872a4fe01498809bfcfa34b805a6547c89"
+    },
+    {
+      "CRLF_count": 3636,
+      "bytes": 342771,
+      "characters": 342625,
+      "complete_original_tool_text_readback_equal": true,
+      "git_blob": "5921c54e1796ee4a535ba1a0d3836d5f156a3c3b",
+      "job_id": 127581904496,
+      "sha256": "b6e7001cc462e0f3f4cd587f9f9074edcccb347f7b9228e9035fcdcf7e21383e"
+    },
+    {
+      "CRLF_count": 9385,
+      "bytes": 1538972,
+      "characters": 1538970,
+      "complete_original_tool_text_readback_equal": true,
+      "git_blob": "8fa531515fa25617d6aeecf51c85169380172b66",
+      "job_id": 127581905549,
+      "sha256": "d766d88548d39df006502a27e2110e7f7e3adce89be349857ad2058eded6edb3"
+    },
+    {
+      "CRLF_count": 9387,
+      "bytes": 1539437,
+      "characters": 1539435,
+      "complete_original_tool_text_readback_equal": true,
+      "git_blob": "8bc71c9da1a86cb6158bc98cd73fc401e11d28ae",
+      "job_id": 127581905417,
+      "sha256": "71a5cc3fdf48c50972b4024888f3045d0d88547169f3d2e9d01f7041dfe04416"
+    }
+  ],
+  "new_original_artifacts": [
+    {
+      "bytes": 15429,
+      "git_blob": "4da6bac217f45c63b92589d0102dfbcdddfd30a0",
+      "id": 13460552442,
+      "members": [
+        {
+          "CRC": 3805047574,
+          "bytes": 3307,
+          "git_blob": "4f63890ab4f23f1c5af0a02fa9564c277d93698f",
+          "name": "manifest.json",
+          "sha256": "7c2854e27e92338e8b56571fc9eac7d21cf911c5bea38978dfc4e731a7780a28"
+        },
+        {
+          "CRC": 1051073321,
+          "bytes": 962,
+          "git_blob": "e388cf7576b827be199b6fdf8893571f8c7a9e3b",
+          "name": "path-check-open.patch",
+          "sha256": "e57b07ed6fc04bd973d05c4426576cb42253b35ab423ac39f1a3c2f792f2fdd9"
+        },
+        {
+          "CRC": 2162006063,
+          "bytes": 9342,
+          "git_blob": "0b02f1340431cf36fe6c3648df6cebfbd9e7c464",
+          "name": "path-check-open.log",
+          "sha256": "0ed4469cb104bba0067ec294ae18955faa158a4f319b97546ff8757747f8e83c"
+        },
+        {
+          "CRC": 1311514852,
+          "bytes": 8620,
+          "git_blob": "2e8acfe0ede2c41c20812061fca345922d6551e0",
+          "name": "path-check-open.rs",
+          "sha256": "6b082a53058f4c4ebb77aa55407d6cef9952777f9b9f9ddd589c8000991b799d"
+        },
+        {
+          "CRC": 1589979387,
+          "bytes": 8612,
+          "git_blob": "98cda9d834e8c79c7dd838896fa70de2a17f367a",
+          "name": "positive.log",
+          "sha256": "b3edcf8c0705e962ff3c1c002cde4e40a286d58b21cf3fbe8138cb60d2eb0850"
+        },
+        {
+          "CRC": 2060689877,
+          "bytes": 8284,
+          "git_blob": "091a2f80f4e709aaeb750e4f5eb8fa939f7924c1",
+          "name": "positive.rs",
+          "sha256": "66c07bc62a3d808bb980f83ff7ff7faf5d0430f228d3cc8cc696cb6dbeb60f51"
+        },
+        {
+          "CRC": 2225031075,
+          "bytes": 9263,
+          "git_blob": "9e948bd53448a63227599727694e3ee73cad1a04",
+          "name": "unchecked-create.log",
+          "sha256": "52293b912ec715d54cb282cd9e09dec0199f6e5eaef5d3771775c2d954037d4a"
+        },
+        {
+          "CRC": 1294917461,
+          "bytes": 728,
+          "git_blob": "83cdc99550cf514f90875714a2f7629e3948a191",
+          "name": "unchecked-create.patch",
+          "sha256": "c882a2f9798b3aa5318236c6a16b7bd0edde1cd5b88395e3364a2bb831899448"
+        },
+        {
+          "CRC": 95223812,
+          "bytes": 8693,
+          "git_blob": "b3131c625c8f92aec3f8ccda208e00e24aabfcee",
+          "name": "unchecked-create.rs",
+          "sha256": "848702096e73fbd4ee79e5a1ad672efbfe3a0de79fd7274e4643b59f7102fb16"
+        }
+      ],
+      "name": "windows-private-state-acquisition-67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed-42123581231-1",
+      "official_size_digest_and_CRC_verified": true,
+      "run_id": 42123581231,
+      "sha256": "9c455a070a8b640214ba3b6701d19af0b065185c5d876ead3c9f29c122089633"
+    },
+    {
+      "bytes": 815,
+      "git_blob": "94829fc92f9acb75092d4b3146b77e92fd404b66",
+      "id": 13461007387,
+      "members": [
+        {
+          "CRC": 2494488089,
+          "bytes": 3239,
+          "git_blob": "74ec6b2532b94c0057697f8ce255afa54ede8bdc",
+          "name": "junit.xml",
+          "sha256": "81e1f14632b7b889849240e385566f4f747b0fc5ec447b436928d42a70d728e5"
+        }
+      ],
+      "name": "hepta-agent-protocol-windows-latest-67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed",
+      "official_size_digest_and_CRC_verified": true,
+      "run_id": 42123581479,
+      "sha256": "147bfbaed364b43ff9d0f04803df8afee7708d963fb37ce5b2f218db439eeb6b"
+    },
+    {
+      "bytes": 33613,
+      "git_blob": "8be8881a6501a2102c1a6180829f4833aece4297",
+      "id": 13461107605,
+      "members": [
+        {
+          "CRC": 1520990599,
+          "bytes": 65381,
+          "git_blob": "d10f47dd29c07f5fb854a2798a226515928f465f",
+          "name": "agentd.log",
+          "sha256": "09b38a8fce67b405c05e39c29ec5be78e98691e71459f6ac782f790da0cf64ee"
+        },
+        {
+          "CRC": 3800158500,
+          "bytes": 103859,
+          "git_blob": "329d007ceef40573e1b5876babd1c2d70d49def0",
+          "name": "matrixd.log",
+          "sha256": "23d194e13e14819f3cd969c4aa89c0d633fc082b7af61056e9311e5643c2beca"
+        },
+        {
+          "CRC": 1068631525,
+          "bytes": 84,
+          "git_blob": "d3ae61df57fb0656cbea32270447171d8c4159c7",
+          "name": "source.txt",
+          "sha256": "e9e470f178acaec2f5a5fead0ef402d39ff3548794569965f4a6724902488e0f"
+        },
+        {
+          "CRC": 2812114807,
+          "bytes": 201,
+          "git_blob": "f85938d9700919237030ff9cd64002c5ee61d2c7",
+          "name": "toolchain.txt",
+          "sha256": "abdc1bc489c2aeee378732c66ad4b8944a35a36ec49db3aaba933c5143547a6e"
+        },
+        {
+          "CRC": 367075806,
+          "bytes": 6679,
+          "git_blob": "22754129f35773fffe61421579ffc4030c7e7cbb",
+          "name": "uds.log",
+          "sha256": "d0f4d3b4404801518d49c4dcd9b5d99b0e9eaf9ebceaf76a6aa487cf6059969c"
+        }
+      ],
+      "name": "owner-local-windows-2025-67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed-42123581142",
+      "official_size_digest_and_CRC_verified": true,
+      "run_id": 42123581142,
+      "sha256": "171269d6fb4e46d7c4a3f9b091fc62534ecbc5820b0806eabc0a48ccd2f1a2dc"
+    },
+    {
+      "bytes": 534,
+      "git_blob": "5a4e355311b586e0e070b38ec4765587e6cb24fd",
+      "id": 13461481887,
+      "members": [
+        {
+          "CRC": 1248783878,
+          "bytes": 1282,
+          "git_blob": "4abca1087de27f17e1c95e79e2396604769f5a74",
+          "name": "junit.xml",
+          "sha256": "d8ae6d766df2dea3259a46c10cdff667b14c435f43e0f95b07fb1c046d5ea641"
+        }
+      ],
+      "name": "hepta-supervisor-p0-windows-latest-67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed",
+      "official_size_digest_and_CRC_verified": true,
+      "run_id": 42123581479,
+      "sha256": "43acfe549e35586de8ef43cb8f97aaacf0a895ccb55b6c2c6a83c4e4955a041b"
+    },
+    {
+      "bytes": 41243,
+      "git_blob": "d719a3a64ed8fcd046782b3e8e204f202610c7b1",
+      "id": 13461945442,
+      "members": [
+        {
+          "CRC": 841796928,
+          "bytes": 30269,
+          "git_blob": "380154956b88922bc634e34c7b7df1cb0d04acdc",
+          "name": "clippy.log",
+          "sha256": "4802eca78286156d579b7d624ea14722ecd8d6233aa021c6ae9807b6a22eb1f2"
+        },
+        {
+          "CRC": 2873736460,
+          "bytes": 591,
+          "git_blob": "9c34c4c9b744dfa5368d4966fbb5090851f274f0",
+          "name": "native-result.json",
+          "sha256": "767e5c81e9354ef8263c947da93da7603732789621800d51debf50e96bbc98ab"
+        },
+        {
+          "CRC": 2450678111,
+          "bytes": 914,
+          "git_blob": "dd5de10313690caf7767d06a2f4b3adfe62a2793",
+          "name": "junit.xml",
+          "sha256": "cb518524af541360c884480478ec01c4d33561fb7255af026d5a0c43adb19452"
+        },
+        {
+          "CRC": 3321391820,
+          "bytes": 184150,
+          "git_blob": "31ccea8b81e970ac5f2283b7bfd5d8786ede5b53",
+          "name": "native.log",
+          "sha256": "698d1f300bbb1907399dacaad5d66ecc1d795b628b733584609cde2c57f8ec3c"
+        },
+        {
+          "CRC": 1729105916,
+          "bytes": 143,
+          "git_blob": "6393305b072e9185ddd0ca05dc6d0a6218c99c41",
+          "name": "source.txt",
+          "sha256": "a598e6c408edc96504f255f2efc0af7e2bc4e27afbc1f0a35df98ee48f45e944"
+        }
+      ],
+      "name": "hepta-memory-p0-windows-latest-67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed",
+      "official_size_digest_and_CRC_verified": true,
+      "run_id": 42123581393,
+      "sha256": "7be7c780fc95be936e52a4a8406bdfa8657a0bf595b2608880ac08efc43cfbdd"
+    },
+    {
+      "bytes": 48536,
+      "git_blob": "e535c095b7f9d99dffa84397de28781206eea677",
+      "id": 13462565685,
+      "members": [
+        {
+          "CRC": 3351930525,
+          "bytes": 2878,
+          "git_blob": "0fb602afac2e819646aa9d12c38fc58e89d5466b",
+          "name": "resume-junit.xml",
+          "sha256": "e91954c4675b726dc2e1af7dbc2ed4e1c0b6c77429f49c728b312759687c277b"
+        },
+        {
+          "CRC": 499578073,
+          "bytes": 71322,
+          "git_blob": "6677849804c069bc4954bd25bce66a76f6f67f38",
+          "name": "resume.log",
+          "sha256": "fb1948efe1e0c1592d3be3e1d0ae6b98661d55efe0c6cc407e4915f6d29be707"
+        },
+        {
+          "CRC": 1648819618,
+          "bytes": 900,
+          "git_blob": "71716b6e9440154de5c36dc263cbca8a532e3716",
+          "name": "resume.json",
+          "sha256": "afa4ec042ca939dfb22ca324e8a9f9feac24bef77f7460c458a1007aa0fb6cf5"
+        },
+        {
+          "CRC": 3348878239,
+          "bytes": 4849,
+          "git_blob": "8059b88797ca3ffb28ee36977b4acca903d96803",
+          "name": "retained.json",
+          "sha256": "d826f9e296b4b190b2ae904409802ceaf3fd45bbd8f71325e9a878a6aba8e8e5"
+        },
+        {
+          "CRC": 2749141813,
+          "bytes": 24242,
+          "git_blob": "059d5c9b5b3a7cbc5f19ca725b4e5b86f41c284d",
+          "name": "rollout-junit.xml",
+          "sha256": "3845a4bef3a63641eb1070cd56e60b197704d6ee01162ae7b0bbf7afaf61f1ad"
+        },
+        {
+          "CRC": 3380167316,
+          "bytes": 765,
+          "git_blob": "1dea2858d63ee9218670ce5bb28b7c2c03e2b08f",
+          "name": "rollout.json",
+          "sha256": "19dea13c559861d5c0f2903199f55d141e79f5c1dd0177f10afc45ca51b305a9"
+        },
+        {
+          "CRC": 2820365454,
+          "bytes": 47279,
+          "git_blob": "5c23ef23ec8a046bdc6b45592cbf7172e8993194",
+          "name": "rollout.log",
+          "sha256": "a8a23dad814d26446214a314a35194e5a4fe9e5a7bda1e9bac2a11a299022a65"
+        },
+        {
+          "CRC": 1195488464,
+          "bytes": 53113,
+          "git_blob": "efcdaa3f74ffdf2c2702e1626275124f77d10c6b",
+          "name": "server-junit.xml",
+          "sha256": "3f6d131a1ac9a12834022fc0deea36c5be9ce00b8839029a86ddccc8cbcc97af"
+        },
+        {
+          "CRC": 3417909508,
+          "bytes": 780,
+          "git_blob": "ae7694e1c4375e2937cd6b118f84c3fff3e9a717",
+          "name": "server.json",
+          "sha256": "0546c2c9bd01f801610122160512ffe586516cd78461862529947c168c300a0d"
+        },
+        {
+          "CRC": 243380034,
+          "bytes": 99511,
+          "git_blob": "75130c7aec1291a04cfae5d433874b646962300a",
+          "name": "server.log",
+          "sha256": "a975946b9c1d3e196c8b6feee784799a8022d92bbd6262d9d02e20b18a9ed9dc"
+        },
+        {
+          "CRC": 3299887014,
+          "bytes": 3976,
+          "git_blob": "92e85b3ca46360260ee241f9eef046cfe58e8b92",
+          "name": "source.json",
+          "sha256": "13968e82fcd40880421169bc59c26beba7a86aed013a9bdc14e9afd6b253082d"
+        }
+      ],
+      "name": "hepta-exec-native-windows-latest-base-merge-b7a57dbb61b00e51c05da9cf5c4bc95b365d85ae",
+      "official_size_digest_and_CRC_verified": true,
+      "run_id": 42123581270,
+      "sha256": "cc5ba441ebf41487313246759a83af132eca4e3478edf3fc33e4bdafff6a9843"
+    },
+    {
+      "bytes": 48653,
+      "git_blob": "fb91d30ee91debff76a2fb11ad534e6c77b85f92",
+      "id": 13463050432,
+      "members": [
+        {
+          "CRC": 2162766702,
+          "bytes": 2878,
+          "git_blob": "d1167e6517fd253e0e8da090c6792c28ce025b74",
+          "name": "resume-junit.xml",
+          "sha256": "ec30e66f4c40de57a6c77dfc5fc5d46833882bab0ccffbb5b1f61f516c5cfc90"
+        },
+        {
+          "CRC": 2398998229,
+          "bytes": 71341,
+          "git_blob": "032fe0870187e239d50350597ba94f80d9c17d64",
+          "name": "resume.log",
+          "sha256": "6860ee03dc8c5b51c2cd5ff833323e09745c9da6fec018d124feba24183478b0"
+        },
+        {
+          "CRC": 506373248,
+          "bytes": 900,
+          "git_blob": "aec47e677c2e6d0956d23a8e0159e33058109d13",
+          "name": "resume.json",
+          "sha256": "27e037911b24deb5391fb67e9376993b7be81648dec996ace795b36ab6cad1ae"
+        },
+        {
+          "CRC": 4249328065,
+          "bytes": 4861,
+          "git_blob": "a00ba0b3786ceded14046fa8a4c01d93672f4782",
+          "name": "retained.json",
+          "sha256": "0f3bf4e04a748fb97019f122b3ce9d4bc29d287af329f23054cc0fd28898303c"
+        },
+        {
+          "CRC": 3049948342,
+          "bytes": 24243,
+          "git_blob": "78d727c73d0b8639fe692564ff580000c82012de",
+          "name": "rollout-junit.xml",
+          "sha256": "12a4358cf3ed2950f0678a276dfe3a4145f6bb19598687921f84a45e7193cd38"
+        },
+        {
+          "CRC": 926422046,
+          "bytes": 766,
+          "git_blob": "340e659517b1ad3d6ce69771034612f18df8fe31",
+          "name": "rollout.json",
+          "sha256": "30a2e99cf08b26791ca29683726f4ca0f192c2405bccfed0c2ef1339b966d2e3"
+        },
+        {
+          "CRC": 3762584049,
+          "bytes": 47279,
+          "git_blob": "9fb96c21c1de42a440f3ad4452c9805b201ba550",
+          "name": "rollout.log",
+          "sha256": "95910022e6833acc98822dc1cb6a3555c65ca64c3c230a566d9e685824b7434d"
+        },
+        {
+          "CRC": 102602228,
+          "bytes": 53113,
+          "git_blob": "ce14df17bbee3d2323196ad79d88ae8dadfcd7a5",
+          "name": "server-junit.xml",
+          "sha256": "a3d88b9094a1d7f2146d1a76e63a22775d81b292ddeb442f05c37053464762f6"
+        },
+        {
+          "CRC": 3968172248,
+          "bytes": 791,
+          "git_blob": "fb9448bd05af99e2fbc6b38904f37d50a644b2a2",
+          "name": "server.json",
+          "sha256": "a13f14d2465065eeb40d24b05c96b3522fe23b00d6c2b08db03f184d7de92181"
+        },
+        {
+          "CRC": 3611339143,
+          "bytes": 99511,
+          "git_blob": "5c06df08dab603d9d18d3c9587d8f36f17fcf138",
+          "name": "server.log",
+          "sha256": "530d2fbc42e17e75147701eba613c6bc9b19c052fc9f1daa9d64d9a25802a717"
+        },
+        {
+          "CRC": 3932090064,
+          "bytes": 3976,
+          "git_blob": "b98c601c7f03a481bdd82c3ff9b3a16a6ef9b2d0",
+          "name": "source.json",
+          "sha256": "53fd2c1f25f599cc99478e906b977a0ffbc4e3a057655da0f6d28bc43e2188f8"
+        }
+      ],
+      "name": "hepta-exec-native-windows-latest-source-head-67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed",
+      "official_size_digest_and_CRC_verified": true,
+      "run_id": 42123581270,
+      "sha256": "416d368ffa8d5a54dd2073f5c716370fd3dd345a3c99ddab5aabc7687bd7591f"
+    }
+  ],
+  "observed_utc_range": [
+    "2026-11-05T23:34:08.987Z",
+    "2026-11-05T23:34:17.526Z"
+  ],
+  "prior_actual_source_authority": [
+    {
+      "commit": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed",
+      "parents": [
+        "eed4d6bb61b789b19f60facc79f9e031765fa4c9"
+      ],
+      "prior_actual_GET_observed_utc": "2026-11-05T23:12:12.822Z",
+      "tree": "3982ba56dc5a3f1da0c1de7ea57992f88125c359"
+    },
+    {
+      "commit": "b7a57dbb61b00e51c05da9cf5c4bc95b365d85ae",
+      "parents": [
+        "63652be658ebed8d3052eb789b951793384fd5e4",
+        "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed"
+      ],
+      "prior_actual_GET_observed_utc": "2026-11-05T23:12:12.897Z",
+      "tree": "3982ba56dc5a3f1da0c1de7ea57992f88125c359"
+    }
+  ],
+  "run_states": {
+    "pending": 2,
+    "queued": 10,
+    "skipped": 2,
+    "success": 5
+  },
+  "runs": 19,
+  "schema": "main67-2334-complete-original-review-v1",
+  "scope_limits": [
+    "One bounded run/job API collection; no second poll, dispatch, retry, cancel, or native resource query.",
+    "Six new terminal raw logs and seven original ZIPs only; previously frozen terminal originals are not re-fetched.",
+    "Nextest live/final duplicate status rows are deduplicated by binary and exact case name.",
+    "SKIP entries are not PASS and successful JUnit cases do not contain the skipped roster.",
+    "Eight cancelled jobs have no recorded steps; the API alone does not establish why they were cancelled.",
+    "No product source tests, compilation, formatting, or ref changes are performed by this verifier.",
+    "This does not independently audit every successful test for platform-specific early returns.",
+    "Earlier source GETs and the native10 retention manifest retain their original provenance and are not new execution evidence."
+  ],
+  "snapshot_not_atomic": true,
+  "tree": "3982ba56dc5a3f1da0c1de7ea57992f88125c359"
+}

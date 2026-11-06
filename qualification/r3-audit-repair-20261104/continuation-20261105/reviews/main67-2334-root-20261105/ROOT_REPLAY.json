@@ -1,0 +1,52 @@
+{
+  "schema": "main67-2334-root-original-replay-v1",
+  "verifier": {
+    "bytes": 20382,
+    "sha256": "a4f2e6d89f20b1671929d2e066740e02f0e80b4e56e3ce2e595ea0b2b22434f6",
+    "git_blob": "eae4dc5ac64c6774c79c5a09981501b976fb2058"
+  },
+  "frozen_summary": {
+    "bytes": 73760,
+    "sha256": "e116d2b1a40fe646ebe3645e0fe3f170664e0f605e7e2111e8c0d2c2d5c8f206",
+    "git_blob": "91bc343ec3741d1ae5fca817d5074fe2ab53719a"
+  },
+  "registry": {
+    "bytes": 13864,
+    "sha256": "c2a805564632a1fbce16b9c67933286748b7a2ae1b04458f1d778d5ff10360e8",
+    "git_blob": "b6d3abdf724f1d581b0e7f7d905c39053f25cdf5"
+  },
+  "full_verifier_exit_code": 0,
+  "complete_stdout_bytes_equal_to_frozen_summary": true,
+  "complete_stderr": "",
+  "registry_complete_local_bytes_checked": 15,
+  "original_ZIPs": 7,
+  "original_job_logs": 6,
+  "observation_interval": [
+    "2026-11-05T23:34:08.987Z",
+    "2026-11-05T23:34:17.526Z"
+  ],
+  "jobs": 53,
+  "job_states": {
+    "cancelled": 8,
+    "in_progress": 2,
+    "queued": 23,
+    "skipped": 2,
+    "success": 18
+  },
+  "source": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed",
+  "tree": "3982ba56dc5a3f1da0c1de7ea57992f88125c359",
+  "full_workspace_fmt_qualified": false,
+  "new_PTY_target_qualification": false,
+  "whole_candidate_qualified": false,
+  "native_actions_by_replay": false,
+  "limits": [
+    "One bounded run/job API collection; no second poll, dispatch, retry, cancel, or native resource query.",
+    "Six new terminal raw logs and seven original ZIPs only; previously frozen terminal originals are not re-fetched.",
+    "Nextest live/final duplicate status rows are deduplicated by binary and exact case name.",
+    "SKIP entries are not PASS and successful JUnit cases do not contain the skipped roster.",
+    "Eight cancelled jobs have no recorded steps; the API alone does not establish why they were cancelled.",
+    "No product source tests, compilation, formatting, or ref changes are performed by this verifier.",
+    "This does not independently audit every successful test for platform-specific early returns.",
+    "Earlier source GETs and the native10 retention manifest retain their original provenance and are not new execution evidence."
+  ]
+}

@@ -1,0 +1,27 @@
+--- v1/codex-rs/windows-sandbox-rs/src/token_neither_privilege_observation.rs
++++ v2/codex-rs/windows-sandbox-rs/src/token_neither_privilege_observation.rs
+@@ -172,7 +172,14 @@
+         "if not \"%B11_RELEASE%\"==\"release-owned-fixture\" exit /b 87\r\n",
+         "echo NEITHER_INPUT_RELEASED\r\n").to_owned();
+     let mut env: HashMap<String, String> = std::env::vars().collect();
+-    env.remove("B11_RELEASE");
++    env.retain(|name, _| {
++        !name.eq_ignore_ascii_case("ERRORLEVEL")
++            && !name.eq_ignore_ascii_case("B11_RELEASE")
++            && !(0..4).any(|index| {
++                name.eq_ignore_ascii_case(&format!("MATRIX_FILE_{index}"))
++                    || name.eq_ignore_ascii_case(&format!("MATRIX_DIR_{index}"))
++            })
++    });
+     for (index, (file, directory)) in matrix.paths().enumerate() {
+         env.insert(format!("MATRIX_FILE_{index}"), file.to_string_lossy().into_owned());
+         env.insert(format!("MATRIX_DIR_{index}"), directory.to_string_lossy().into_owned());
+@@ -192,7 +199,7 @@
+     ensure!(unsafe { win::GetHandleInformation(release.0, &mut release_flags) } != 0
+         && release_flags & win::HANDLE_FLAG_INHERIT == 0, "release writer must not be inherited");
+     let command = vec![r"C:\Windows\System32\cmd.exe".to_owned(), "/d".to_owned(),
+-        "/c".to_owned(), script_path.to_string_lossy().into_owned()];
++        "/e:on".to_owned(), "/v:off".to_owned(), "/c".to_owned(), script_path.to_string_lossy().into_owned()];
+     // The existing backend assigns its real Job at creation and inherits only
+     // the declared stdio handles. The parent's release writer is not inherited.
+     let created = unsafe { create_process_as_user(token, &command, root, &env, /*logs_base_dir*/ None,

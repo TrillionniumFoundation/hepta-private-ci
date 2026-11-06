@@ -1,0 +1,770 @@
+{
+  "scope": "Read-only complete original ZIP/API replay",
+  "verifier": {
+    "bytes": 16766,
+    "sha256": "73c648a48e2a7900bb068d68c2f651aacd19b994654d33f25c14151e4748a9ed",
+    "git_blob": "87e1e41f648fff83f917804fb997c57537362ca6"
+  },
+  "serialized_report_exactly_equals_frozen_summary": true,
+  "root_first_comparison_observation": "Direct in-memory equality initially differed because regular-expression summary rows were Python tuples but retained JSON rows are arrays; canonical JSON comparison equals every value. No source, log or frozen summary changed.",
+  "registry_complete_local_bytes_checked": 71,
+  "summary": {
+    "schema": "main67-bounded-original-CI-cut-and-terminal-evidence-v1",
+    "head": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed",
+    "tree": "3982ba56dc5a3f1da0c1de7ea57992f88125c359",
+    "observed_utc_range": [
+      "2026-11-05T22:57:59.974Z",
+      "2026-11-05T22:58:09.788Z"
+    ],
+    "original_complete_run_job_API_responses": 20,
+    "runs": 19,
+    "run_states": {
+      "queued": 10,
+      "skipped": 2,
+      "pending": 2,
+      "in_progress": 1,
+      "success": 4
+    },
+    "jobs": 53,
+    "job_states": {
+      "queued": 30,
+      "in_progress": 10,
+      "cancelled": 1,
+      "success": 10,
+      "skipped": 2
+    },
+    "actual_failed_jobs": [],
+    "API_state_not_case_qualification": true,
+    "snapshot_not_atomic": true,
+    "canonical_full_workspace_fmt": {
+      "job_id": 127581905245,
+      "run_id": 42123581479,
+      "status": "queued",
+      "runner_id": 0,
+      "steps": [],
+      "qualified": false
+    },
+    "Windows_Supervisor": {
+      "job_id": 127581904781,
+      "status": "in_progress",
+      "qualified": false
+    },
+    "Core": {
+      "run_id": 42123569750,
+      "job_id": 127581864284,
+      "completed_at": "2026-11-05T22:56:15Z",
+      "actual_head": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed",
+      "actual_tree": "3982ba56dc5a3f1da0c1de7ea57992f88125c359",
+      "full_native_shards": 8,
+      "unique_compiled_case_names": 2343,
+      "unique_passed": 2340,
+      "failed": 0,
+      "ignored": [
+        "agent::role::tests::apply_role_skills_config_disables_skill_for_spawned_agent",
+        "shell_snapshot::tests::windows_powershell_snapshot_includes_sections",
+        "session::tests::configuration_tests::new_default_turn_uses_config_aware_skills_for_role_overrides"
+      ],
+      "owned_child_additional_PASS_row": "environment_selection::tests::blocking_snapshot_waits_for_starting_environment",
+      "separate_controls": {
+        "core-resume.log": {
+          "cases": [
+            "environment_selection::tests::blocking_snapshot_waits_for_starting_environment",
+            "agent::control::tests::resume_agent_from_rollout_reads_archived_rollout_path",
+            "agent::control::tests::spawn_agent_fork_last_n_turns_strips_parent_usage_hints",
+            "agent::control::tests::resume_agent_from_paginated_rollout_loads_model_context"
+          ],
+          "unique_passed": 4,
+          "extra_owned_child_occurrences": 1,
+          "summaries": [
+            [
+              "ok",
+              "1",
+              "0",
+              "0",
+              "0",
+              "2342",
+              "0.02"
+            ],
+            [
+              "ok",
+              "4",
+              "0",
+              "0",
+              "0",
+              "2339",
+              "1.90"
+            ]
+          ]
+        },
+        "core-fork.log": {
+          "cases": [
+            "agent::control::tests::spawn_agent_can_fork_parent_thread_history_with_sanitized_items"
+          ],
+          "unique_passed": 1,
+          "extra_owned_child_occurrences": 0,
+          "summaries": [
+            [
+              "ok",
+              "1",
+              "0",
+              "0",
+              "0",
+              "2342",
+              "1.28"
+            ]
+          ]
+        },
+        "core-ownership.log": {
+          "cases": [
+            "agent::registry::tests::replacement_registration_rejects_stale_release_and_preserves_budget",
+            "agent::control::tests::shutdown_tests::delayed_shutdown_preserves_replacement_runtime_and_ownership",
+            "agent::control::tests::shutdown_tests::cold_close_waits_for_cancelled_reload_then_releases_ownership"
+          ],
+          "unique_passed": 3,
+          "extra_owned_child_occurrences": 0,
+          "summaries": [
+            [
+              "ok",
+              "3",
+              "0",
+              "0",
+              "0",
+              "2340",
+              "0.81"
+            ]
+          ]
+        }
+      },
+      "shards": [
+        {
+          "path": "native-test-logs/codex-rs/core/core-unit-tests/shard_1_of_8/test.log",
+          "bytes": 30780,
+          "sha256": "2626e648da3b2e3463e50f6fac4d03990094f08967112aca28b1feb632cdf019",
+          "git_blob": "b6ba2b74cfea5fc0f1f940ecae11f9c4ab9cce6e",
+          "unique_case_counts": {
+            "ok": 304
+          },
+          "libtest_summaries": [
+            [
+              "ok",
+              "89",
+              "0",
+              "0",
+              "0",
+              "2254",
+              "8.38"
+            ],
+            [
+              "ok",
+              "1",
+              "0",
+              "0",
+              "0",
+              "2342",
+              "0.01"
+            ],
+            [
+              "ok",
+              "79",
+              "0",
+              "0",
+              "0",
+              "2264",
+              "14.00"
+            ],
+            [
+              "ok",
+              "81",
+              "0",
+              "0",
+              "0",
+              "2262",
+              "4.38"
+            ],
+            [
+              "ok",
+              "55",
+              "0",
+              "0",
+              "0",
+              "2288",
+              "1.91"
+            ]
+          ]
+        },
+        {
+          "path": "native-test-logs/codex-rs/core/core-unit-tests/shard_2_of_8/test.log",
+          "bytes": 26810,
+          "sha256": "94dd8d3ba23fd09ee575dfac37e57c2a3bce9cc341446fb6d89630663ee1a5eb",
+          "git_blob": "1543faea72ed331c5bb023d1d8335c5c0158a628",
+          "unique_case_counts": {
+            "ok": 278,
+            "ignored": 1
+          },
+          "libtest_summaries": [
+            [
+              "ok",
+              "86",
+              "0",
+              "1",
+              "0",
+              "2256",
+              "6.44"
+            ],
+            [
+              "ok",
+              "83",
+              "0",
+              "0",
+              "0",
+              "2260",
+              "1.50"
+            ],
+            [
+              "ok",
+              "76",
+              "0",
+              "0",
+              "0",
+              "2267",
+              "15.20"
+            ],
+            [
+              "ok",
+              "33",
+              "0",
+              "0",
+              "0",
+              "2310",
+              "11.92"
+            ]
+          ]
+        },
+        {
+          "path": "native-test-logs/codex-rs/core/core-unit-tests/shard_3_of_8/test.log",
+          "bytes": 26154,
+          "sha256": "eaf98c9e26c284e08f49e1631131c47c4a6e4fe1617f1e8ac9ce1346328daeff",
+          "git_blob": "85a14442c8fd1af5b8a38b22f1d7798dc07ae3ea",
+          "unique_case_counts": {
+            "ok": 270
+          },
+          "libtest_summaries": [
+            [
+              "ok",
+              "84",
+              "0",
+              "0",
+              "0",
+              "2259",
+              "10.60"
+            ],
+            [
+              "ok",
+              "79",
+              "0",
+              "0",
+              "0",
+              "2264",
+              "6.47"
+            ],
+            [
+              "ok",
+              "79",
+              "0",
+              "0",
+              "0",
+              "2264",
+              "9.66"
+            ],
+            [
+              "ok",
+              "28",
+              "0",
+              "0",
+              "0",
+              "2315",
+              "4.37"
+            ]
+          ]
+        },
+        {
+          "path": "native-test-logs/codex-rs/core/core-unit-tests/shard_4_of_8/test.log",
+          "bytes": 30122,
+          "sha256": "97f97bfa017f6b9e524af61c44299ce7065462f2ef7d842c65197db4a245aafd",
+          "git_blob": "4976a6d52d8ea5b82910de25684fd6568034cd7c",
+          "unique_case_counts": {
+            "ok": 313
+          },
+          "libtest_summaries": [
+            [
+              "ok",
+              "87",
+              "0",
+              "0",
+              "0",
+              "2256",
+              "11.83"
+            ],
+            [
+              "ok",
+              "82",
+              "0",
+              "0",
+              "0",
+              "2261",
+              "2.79"
+            ],
+            [
+              "ok",
+              "80",
+              "0",
+              "0",
+              "0",
+              "2263",
+              "9.59"
+            ],
+            [
+              "ok",
+              "64",
+              "0",
+              "0",
+              "0",
+              "2279",
+              "7.25"
+            ]
+          ]
+        },
+        {
+          "path": "native-test-logs/codex-rs/core/core-unit-tests/shard_5_of_8/test.log",
+          "bytes": 28881,
+          "sha256": "6effd6a81c8514d15c2cd00f13913452f05a94b3ca531e739ab9f9d31f199710",
+          "git_blob": "d85fd2956e34b5a6231ee6de166a9df40317beae",
+          "unique_case_counts": {
+            "ok": 296,
+            "ignored": 1
+          },
+          "libtest_summaries": [
+            [
+              "ok",
+              "85",
+              "0",
+              "0",
+              "0",
+              "2258",
+              "9.86"
+            ],
+            [
+              "ok",
+              "83",
+              "0",
+              "0",
+              "0",
+              "2260",
+              "6.48"
+            ],
+            [
+              "ok",
+              "76",
+              "0",
+              "1",
+              "0",
+              "2266",
+              "9.13"
+            ],
+            [
+              "ok",
+              "52",
+              "0",
+              "0",
+              "0",
+              "2291",
+              "4.30"
+            ]
+          ]
+        },
+        {
+          "path": "native-test-logs/codex-rs/core/core-unit-tests/shard_6_of_8/test.log",
+          "bytes": 26297,
+          "sha256": "192613c68c10132f77e96e66232e6d12aec41af134e837ca5c016ae968335ddb",
+          "git_blob": "9a3ac9235a89f93b741c570ab45f733c5e76712a",
+          "unique_case_counts": {
+            "ok": 271,
+            "ignored": 1
+          },
+          "libtest_summaries": [
+            [
+              "ok",
+              "88",
+              "0",
+              "0",
+              "0",
+              "2255",
+              "7.91"
+            ],
+            [
+              "ok",
+              "79",
+              "0",
+              "0",
+              "0",
+              "2264",
+              "33.60"
+            ],
+            [
+              "ok",
+              "75",
+              "0",
+              "1",
+              "0",
+              "2267",
+              "9.66"
+            ],
+            [
+              "ok",
+              "29",
+              "0",
+              "0",
+              "0",
+              "2314",
+              "3.39"
+            ]
+          ]
+        },
+        {
+          "path": "native-test-logs/codex-rs/core/core-unit-tests/shard_7_of_8/test.log",
+          "bytes": 32465,
+          "sha256": "8effe3acd7e691b596e3710925ec0b16af117f88ea18e57ae188545c40533420",
+          "git_blob": "012c81464ee9ee4bf35fa61087c3863a9b72e7f2",
+          "unique_case_counts": {
+            "ok": 326
+          },
+          "libtest_summaries": [
+            [
+              "ok",
+              "85",
+              "0",
+              "0",
+              "0",
+              "2258",
+              "6.46"
+            ],
+            [
+              "ok",
+              "82",
+              "0",
+              "0",
+              "0",
+              "2261",
+              "10.36"
+            ],
+            [
+              "ok",
+              "77",
+              "0",
+              "0",
+              "0",
+              "2266",
+              "8.26"
+            ],
+            [
+              "ok",
+              "76",
+              "0",
+              "0",
+              "0",
+              "2267",
+              "6.99"
+            ],
+            [
+              "ok",
+              "6",
+              "0",
+              "0",
+              "0",
+              "2337",
+              "0.00"
+            ]
+          ]
+        },
+        {
+          "path": "native-test-logs/codex-rs/core/core-unit-tests/shard_8_of_8/test.log",
+          "bytes": 26514,
+          "sha256": "5c8bcf3e13b749d9ea37ed595cf4de1144dedf977841aa11f9efc4168f74aec8",
+          "git_blob": "f6219af14102d86ae7cb091833734f4cbdd8cb70",
+          "unique_case_counts": {
+            "ok": 282
+          },
+          "libtest_summaries": [
+            [
+              "ok",
+              "89",
+              "0",
+              "0",
+              "0",
+              "2254",
+              "9.17"
+            ],
+            [
+              "ok",
+              "81",
+              "0",
+              "0",
+              "0",
+              "2262",
+              "7.38"
+            ],
+            [
+              "ok",
+              "79",
+              "0",
+              "0",
+              "0",
+              "2264",
+              "9.38"
+            ],
+            [
+              "ok",
+              "33",
+              "0",
+              "0",
+              "0",
+              "2310",
+              "3.48"
+            ]
+          ]
+        }
+      ],
+      "stale_unsharded_log": "Exact earlier three-case ownership scope; retained as original evidence and excluded from full-target shard counts.",
+      "XML_or_compact_execution_log_in_Core_artifact": false
+    },
+    "other_original_terminal_scopes": [
+      {
+        "scope": "original Windows business libraries",
+        "artifact_id": 13460796017,
+        "actual_head": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed",
+        "tree": "3982ba56dc5a3f1da0c1de7ea57992f88125c359",
+        "passed_by_target": {
+          "hepta-intelligence": 78,
+          "hepta-bao-adapter": 19,
+          "hepta-codex-adapter": 21
+        },
+        "original_retry_cache_flags_preserved": true,
+        "XML_systemout_equals_each_complete_raw_log": true
+      },
+      {
+        "scope": "original Windows business libraries",
+        "artifact_id": 13460661166,
+        "actual_head": "b7a57dbb61b00e51c05da9cf5c4bc95b365d85ae",
+        "tree": "3982ba56dc5a3f1da0c1de7ea57992f88125c359",
+        "passed_by_target": {
+          "hepta-intelligence": 78,
+          "hepta-bao-adapter": 19,
+          "hepta-codex-adapter": 21
+        },
+        "original_retry_cache_flags_preserved": true,
+        "XML_systemout_equals_each_complete_raw_log": true
+      },
+      {
+        "scope": "original Windows Git and queue controls",
+        "artifact_id": 13461041455,
+        "actual_head": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed",
+        "tree": "3982ba56dc5a3f1da0c1de7ea57992f88125c359",
+        "targets": {
+          "git-utils-unit-tests": {
+            "unique_passed": 35,
+            "owned_child_duplicate_rows": {
+              "info::tests::git_metadata_commands_do_not_inherit_stdin": 2
+            }
+          },
+          "queue-queue_service-test": {
+            "unique_passed": 36,
+            "owned_child_duplicate_rows": {}
+          }
+        },
+        "XML_systemout_equals_each_complete_raw_log": true
+      },
+      {
+        "scope": "original Windows Git and queue controls",
+        "artifact_id": 13459374806,
+        "actual_head": "b7a57dbb61b00e51c05da9cf5c4bc95b365d85ae",
+        "tree": "3982ba56dc5a3f1da0c1de7ea57992f88125c359",
+        "targets": {
+          "git-utils-unit-tests": {
+            "unique_passed": 35,
+            "owned_child_duplicate_rows": {
+              "info::tests::git_metadata_commands_do_not_inherit_stdin": 2
+            }
+          },
+          "queue-queue_service-test": {
+            "unique_passed": 36,
+            "owned_child_duplicate_rows": {}
+          }
+        },
+        "XML_systemout_equals_each_complete_raw_log": true
+      },
+      {
+        "scope": "original Windows retained recovery libraries",
+        "artifact_id": 13460941149,
+        "actual_head": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed",
+        "tree": "3982ba56dc5a3f1da0c1de7ea57992f88125c359",
+        "executed_passed": 532,
+        "passed_by_package": {
+          "codex-hepta-memory": 299,
+          "codex-state": 209,
+          "codex-utils-path": 24
+        },
+        "raw_reported_skipped_not_counted_as_pass": 7,
+        "original_command": [
+          "just",
+          "test",
+          "--locked",
+          "-p",
+          "codex-utils-path",
+          "-p",
+          "codex-state",
+          "-p",
+          "codex-hepta-memory",
+          "--lib",
+          "--no-capture",
+          "--retries",
+          "0"
+        ],
+        "skipped_case_names_not_in_this_JUnit": true
+      },
+      {
+        "scope": "original Windows operator controls",
+        "artifact_id": 13459303585,
+        "actual_head": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed",
+        "tree": "3982ba56dc5a3f1da0c1de7ea57992f88125c359",
+        "executed_passed": 40,
+        "JUnit_raw_summary_agree": true
+      },
+      {
+        "scope": "original native macOS x86_64 operator Bazel target",
+        "artifact_id": 13459049091,
+        "actual_head": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed",
+        "tree": "3982ba56dc5a3f1da0c1de7ea57992f88125c359",
+        "executed_passed": 33,
+        "XML_outer_success": true,
+        "XML_raw_relation": "Original XML adds its displayed Generated test.log prefix and trailing whitespace; all other log text equals the complete retained raw log."
+      }
+    ],
+    "keyring_diagnostic": {
+      "job_id": 127581904534,
+      "artifact_id": 13460316261,
+      "empty_lock_diff": true,
+      "security_product_qualification": false
+    },
+    "artifacts": [
+      {
+        "artifact_id": 13460219641,
+        "run_id": 42123569750,
+        "name": "windows-core-resume-67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed",
+        "bytes": 8344,
+        "sha256": "0d5406e1732a8ada26591b0a22c89edc20177356021ada49237815cf88752440",
+        "git_blob": "eebdc57e85f7d9ef2e28a174bab195dc17e5ddad",
+        "members": 2,
+        "official_digest_and_all_member_CRCs_match": true
+      },
+      {
+        "artifact_id": 13459634435,
+        "run_id": 42123569750,
+        "name": "windows-core-lifecycle-67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed",
+        "bytes": 121728,
+        "sha256": "04bc6fc46fd63a022ac3d3e70dcb8230cf819a95a1617472ddff52dafb36d4be",
+        "git_blob": "8ad49f5616cdf0098bc1472e93da87695770f683",
+        "members": 15,
+        "official_digest_and_all_member_CRCs_match": true
+      },
+      {
+        "artifact_id": 13460941149,
+        "run_id": 42123569559,
+        "name": "windows-retained-recovery-67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed-1",
+        "bytes": 62421,
+        "sha256": "37143531ae874584aeaabc2d1484a2d11516586b1694033e1ccb13cd21aed117",
+        "git_blob": "b59133001154710d584990010579bf9c28a80e73",
+        "members": 4,
+        "official_digest_and_all_member_CRCs_match": true
+      },
+      {
+        "artifact_id": 13460796017,
+        "run_id": 42123581007,
+        "name": "windows-ordinary-consumers-source-head-67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed-42123581007",
+        "bytes": 3616693,
+        "sha256": "c93f4d5e3386709468ea87e53e7739bff0eecfa0bff3057c9a4662f56aa92698",
+        "git_blob": "9f9be805aead1b2076492cf42d8c0cca78c01d52",
+        "members": 10,
+        "official_digest_and_all_member_CRCs_match": true
+      },
+      {
+        "artifact_id": 13460661166,
+        "run_id": 42123581007,
+        "name": "windows-ordinary-consumers-base-merge-b7a57dbb61b00e51c05da9cf5c4bc95b365d85ae-42123581007",
+        "bytes": 3599337,
+        "sha256": "569377769d4f72131359ed2e0b0952554bf3818cd79cfbf675d232b2f31abc4e",
+        "git_blob": "18da928fe90711eb636b17b9f8e7a83a0025e5df",
+        "members": 10,
+        "official_digest_and_all_member_CRCs_match": true
+      },
+      {
+        "artifact_id": 13461041455,
+        "run_id": 42123581050,
+        "name": "windows-bazel-process-source-head-67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed-1",
+        "bytes": 4545939,
+        "sha256": "ca78b8108d13bb42fd50aae8a2ea578820a605e027676a8fd7790d3fbf0d17b3",
+        "git_blob": "03e68ceeaecf5b1801e7945771654c0b966c04dd",
+        "members": 10,
+        "official_digest_and_all_member_CRCs_match": true
+      },
+      {
+        "artifact_id": 13459374806,
+        "run_id": 42123581050,
+        "name": "windows-bazel-process-base-merge-b7a57dbb61b00e51c05da9cf5c4bc95b365d85ae-1",
+        "bytes": 4528699,
+        "sha256": "92b51d3a8f969b6661b338ee03e14cac0b0be4fff6874a3351a553bd0519fa73",
+        "git_blob": "b7ff082a7255d0d0b18bdf0267e8f8b92c3fdbda",
+        "members": 10,
+        "official_digest_and_all_member_CRCs_match": true
+      },
+      {
+        "artifact_id": 13460316261,
+        "run_id": 42123581078,
+        "name": "keyring-sync-cargo-lock-diff-windows-latest",
+        "bytes": 162,
+        "sha256": "5ccd60ec1ae02c52d13092f34b2399a497c0d77efe5f1295f35e84e61e72d9e6",
+        "git_blob": "f4c650bfcbbda5cc0e5592ab12a84650060380d8",
+        "members": 1,
+        "official_digest_and_all_member_CRCs_match": true
+      },
+      {
+        "artifact_id": 13459303585,
+        "run_id": 42123581186,
+        "name": "operator-native-windows-2025-67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed-42123581186",
+        "bytes": 5880,
+        "sha256": "6a8ca1498b05576068d515efabe67487b4d233f1a041f37ed2a8f397bdf4e838",
+        "git_blob": "de10d436467572aa96b4170b86c57d96bb4ce932",
+        "members": 6,
+        "official_digest_and_all_member_CRCs_match": true
+      },
+      {
+        "artifact_id": 13459049091,
+        "run_id": 42123581186,
+        "name": "operator-bazel-x86_64-apple-darwin-67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed-42123581186",
+        "bytes": 1273550,
+        "sha256": "60dd9b6d2b973f0b0a2e02d0717b5afa30ffb1a94207e932347c4eee3bb07478",
+        "git_blob": "de09be664f1c0789cbf45e3d6e8263783f045175",
+        "members": 5,
+        "official_digest_and_all_member_CRCs_match": true
+      }
+    ],
+    "scope_limits": [
+      "All named results are bound to current67 or its actual b7a57dbb merge tree, never transferred from parent eed.",
+      "This is one bounded read-only cut. No rerun, dispatch, cancellation, source mutation or native resource query occurred.",
+      "No assertion of whole-repository or full workspace qualification; the Linux canonical format job remained unstarted at this cut.",
+      "Core artifacts preserve complete raw shard logs but no XML or compact execution log. Runtime early-return behavior of every passing test was not separately audited.",
+      "Bazel compact execution originals for other scopes are retained losslessly but were not decoded in this bounded pass; no new per-action environment or cache/placement proof is claimed.",
+      "API successes, diagnostic-only Cargo work, ignored/skipped cases and duplicate child outputs do not become additional product passes."
+    ]
+  },
+  "additional_native_actions": false
+}

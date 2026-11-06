@@ -1,0 +1,22 @@
+{
+  "schema": "host-neither-v2-minimal-environment-delta-v1",
+  "v1_actual_git_map": "ebe01d3d8dbbacbe2240ce4690fe38bc80fd02a4",
+  "before": {
+    "bytes": 22651,
+    "sha256": "a8a2d606f3aee9b764df48e8b79e73330b4adaf571a654562ac4578cc5451aa3",
+    "git_blob": "1f08099d13cc0e282c1fa95cf0261990ff28b88b"
+  },
+  "after": {
+    "bytes": 23010,
+    "sha256": "441a000d02c7aab203a270bde951dcb6e98e02845e76314782892b87e6a6a835",
+    "git_blob": "b40b49ce772c402c51ddb16bb98ff73dc78cdb41"
+  },
+  "exact_two_replacements_invert_to_entire_v1_module_bytes": true,
+  "source_diff_hunks": 2,
+  "probe_full_bytes_unchanged": {
+    "bytes": 14736,
+    "sha256": "f5da450f9745cbf65947d15810e9973932264b28dfe21e4f7150b62e5081c2f9",
+    "git_blob": "fc9faa6d47ac5fdefa216affceb51a586f8e6b81"
+  },
+  "scope": "New observation child environment and cmd switches only. No original wrapper, product assertion, four exact positive, negative, helper, pin, budget or native operation changed."
+}

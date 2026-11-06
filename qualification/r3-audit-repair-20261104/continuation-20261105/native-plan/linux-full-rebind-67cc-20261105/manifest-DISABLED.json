@@ -1,0 +1,398 @@
+{
+  "schema": "ai395-67cc-rebound-default-full-disabled-manifest-v1",
+  "execute": false,
+  "root_execution_guard": null,
+  "native_actions_performed_by_preparation": 0,
+  "publication_commit": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed",
+  "working_tree_after_transition": "3982ba56dc5a3f1da0c1de7ea57992f88125c359",
+  "ordinary_HEAD_retained": "5b6331250ff459033bd44d1a95daec70131277cc",
+  "ordinary_index_sha256": "b488256c0552f9ff6d6030b3a1738721dec54ffb5d2a2b56d99100943f04ed19",
+  "runner": {
+    "local_path": "/workspace/scratch/07dd58cc9630/ci-audit/linux-full-rebind-67cc-20261105/run_candidate_default_full.py",
+    "bytes": 31802,
+    "sha256": "086649633b25c3a08bdd09b142ece3acf9c1848bcc0fba8028d9ec6c5e71ab84",
+    "git_blob": "3621d1f2a0e9b3f4c7d31a8782d58620cdb8732b"
+  },
+  "request": {
+    "local_path": "/workspace/scratch/07dd58cc9630/ci-audit/linux-full-rebind-67cc-20261105/request-DISABLED.json",
+    "bytes": 617915,
+    "sha256": "f0e0ca249fba7d74f7ce654cb35dce34acaa0c58284abcc3b6efb00aa9b22427",
+    "git_blob": "c5ab304dd860830dba67007863c67ef8302e951b"
+  },
+  "process_start": {
+    "local_path": "/workspace/scratch/07dd58cc9630/ci-audit/linux-full-rebind-67cc-20261105/process-start-DISABLED.json",
+    "bytes": 650895,
+    "sha256": "4e386a3d547b2e293c452249c56e99efc89f38765b9d96aa883e8fd37b91dcb2",
+    "git_blob": "6cf520c4d77f1575f72aa9635c49a7bb7a9ea95d"
+  },
+  "delta": {
+    "local_path": "/workspace/scratch/07dd58cc9630/ci-audit/linux-full-rebind-67cc-20261105/ca1-to-67cc-preparation.delta.patch",
+    "bytes": 2462,
+    "sha256": "e5aeb836526a1b89db0366a51789c1edb58d5166a40cd40e9c96d63f5464fa1c",
+    "git_blob": "32b9e2ff2defab0856c224c758685f4eefb50d05"
+  },
+  "runner_derivation": {
+    "local_path": "/workspace/scratch/07dd58cc9630/ci-audit/linux-full-rebind-67cc-20261105/verification.json",
+    "bytes": 6874,
+    "sha256": "8fdc0e02f81d008ad286fffb5d6bba678a598314416400fc6794f8700914812e",
+    "git_blob": "409a07279c2caeadae97575f858ea8487df83152"
+  },
+  "stage_inputs": {
+    "local_path": "/workspace/scratch/07dd58cc9630/ci-audit/linux-full-rebind-67cc-20261105/candidate-stage-inputs.json",
+    "bytes": 4248284,
+    "sha256": "a66c8570e7058c5e235ae3bcfdbbd3826a9d4846d5b78b2f97419e11527e217f",
+    "git_blob": "eda52d0a38c9916a0c3e1123619c30cb90b29443"
+  },
+  "compressed_input_bytes": 459780,
+  "source_transition": {
+    "from": "e78c819b8b1f435f8b37bea17b4ffdc724961aa2",
+    "to": "3982ba56dc5a3f1da0c1de7ea57992f88125c359",
+    "changed_from_e78": 14,
+    "new_files": 2,
+    "final_leaves": 10582,
+    "changes": [
+      {
+        "path": "codex-rs/core/tests/suite/approvals.rs",
+        "mode": "100644",
+        "before": {
+          "mode": "100644",
+          "sha": "f1ab8e85959c5d4e6653836c424d643dd6b4cfc6"
+        },
+        "identity": {
+          "bytes": 157966,
+          "sha256": "5e3b179c89b4fb5068246f404e3f776843e56ec3305068e5a25ed5dd8cf35614",
+          "git_blob": "10874f8ac6ef743ce1557f2251d0cc631795b0d6"
+        }
+      },
+      {
+        "path": "codex-rs/core/tests/suite/request_permissions.rs",
+        "mode": "100644",
+        "before": {
+          "mode": "100644",
+          "sha": "fa48e01442917eee2a5b91bada0a5af6cacea98d"
+        },
+        "identity": {
+          "bytes": 82442,
+          "sha256": "8ec4541e8d9afe92684cd27a01f00e5e724c9e44ba8a83c75bc44936d323eb92",
+          "git_blob": "18952e04bf41f021ec4c2c38a618b727454ecce1"
+        }
+      },
+      {
+        "path": "codex-rs/core/src/agent/control_tests.rs",
+        "mode": "100644",
+        "before": {
+          "mode": "100644",
+          "sha": "0d2d33f034a333c437deb42764b7dcf657e492a8"
+        },
+        "identity": {
+          "bytes": 173143,
+          "sha256": "7fc685bb6465326bb0d62482a98dac60565539f74ef39cd6f5cbfa2dfad9167c",
+          "git_blob": "6c93451a16f833c0241bdbe55806a6af60fa6195"
+        }
+      },
+      {
+        "path": "codex-rs/windows-sandbox-rs/src/unified_exec/delete_permission_tests.rs",
+        "mode": "100644",
+        "before": {
+          "mode": "100644",
+          "sha": "a0cb1647d95f067fcf135bc9ea2a654ca3e5e7a2"
+        },
+        "identity": {
+          "bytes": 6841,
+          "sha256": "397abb256644d00394b64d0d48cf02b72a32ca835163b1b7aed793617f68dcf3",
+          "git_blob": "d8511f92f9fbd9d58061238dbf3181152c74ccbc"
+        }
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/fourth-repository-inventory-20261105.json",
+        "mode": "100644",
+        "before": {
+          "mode": "100644",
+          "sha": "5fac62f2526a56ebc0cdaa8cfe66531c9a33f912"
+        },
+        "identity": {
+          "bytes": 4366,
+          "sha256": "0bfe1d00ba090d18d7b7604f26887cebfb50784bbcfcb9ec4973863eb541483a",
+          "git_blob": "9db84c745e7f31fd0781e25baa5d03a405aaf13c"
+        }
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/repository-inventory-20261105/restore_inventory.py",
+        "mode": "100644",
+        "before": null,
+        "identity": {
+          "bytes": 5232,
+          "sha256": "9754c5f64731ec188c8c9d32752fb40d7756c679803d826aef74db01b18e60ae",
+          "git_blob": "5495be1a51b14a4a0642d7c09c6bd670f539ef77"
+        }
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/repository-inventory-20261105/RESTORE_INVENTORY.md",
+        "mode": "100644",
+        "before": null,
+        "identity": {
+          "bytes": 2584,
+          "sha256": "6f1b0a15845e412152382ed2fbe0bef3177c94ceac23917111865787c4054141",
+          "git_blob": "2994e990903b7eb9eb51f1ae9ba191932f9efef7"
+        }
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/CURRENT_AUDIT_PROGRESS.zh-CN.md",
+        "mode": "100644",
+        "before": {
+          "mode": "100644",
+          "sha": "2bb40fbc66617fa5a2deb29e00f8dbc8699a6bc2"
+        },
+        "identity": {
+          "bytes": 43254,
+          "sha256": "5f4462b472af63fa78bb05c91a1bf623ebb33a1ab573f420be1f50073edc3fe4",
+          "git_blob": "305094117c7efb9e25ee44df73e37b831b382fda"
+        }
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/PROJECT_DIRECTION_AND_PLAN.zh-CN.md",
+        "mode": "100644",
+        "before": {
+          "mode": "100644",
+          "sha": "f97995096073006673bb587fac3c2754b5e48bfe"
+        },
+        "identity": {
+          "bytes": 21986,
+          "sha256": "e1fde42af9e7eb5557423898b12ec477a49abfc9137f9362e869f5779e9c24b9",
+          "git_blob": "7c06b7f3041a8e4b3df794f00166aa59b369f832"
+        }
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/FOURTH_BATCH_QUALIFICATION.md",
+        "mode": "100644",
+        "before": {
+          "mode": "100644",
+          "sha": "982be059e7d0440ffcfbd35280475b29c88a6f11"
+        },
+        "identity": {
+          "bytes": 28182,
+          "sha256": "0e5f77494728211b87d8d5b9c3401f0e5cdd12e5865fc3c793a4d138f8f77c6f",
+          "git_blob": "bed13a3f5bdde66d36dadbcc5d0233c6884f2d21"
+        }
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/fourth-evidence-index.json",
+        "mode": "100644",
+        "before": {
+          "mode": "100644",
+          "sha": "ed81563ca591ba6a8da7db81923196b5b7e61a5c"
+        },
+        "identity": {
+          "bytes": 459950,
+          "sha256": "3c98f9701d8a3792be0187fdd8e2fbdf6fa4eb3b4bfc156907bd766bea20eaf4",
+          "git_blob": "f9337e344c05cd788a14a0ebb95bbee3d53511d3"
+        }
+      },
+      {
+        "path": "codex-rs/ext/hepta-memory/src/local_development_owner_tests.rs",
+        "mode": "100644",
+        "before": {
+          "mode": "100644",
+          "sha": "41b52d8093610e50932795a18e28d4dc1fc5b813"
+        },
+        "identity": {
+          "bytes": 12665,
+          "sha256": "192e335c4e3dacf12a140512b17bf5acb21cf810b1f11dd887bd38910157cc1c",
+          "git_blob": "a47edda2a96a9d6a02a90e65af1ce071d9c81096"
+        }
+      },
+      {
+        "path": "codex-rs/core/src/environment_selection.rs",
+        "mode": "100644",
+        "before": {
+          "mode": "100644",
+          "sha": "3c08e1620e800c30c47d98cc775cb20d4650ac88"
+        },
+        "identity": {
+          "bytes": 78785,
+          "sha256": "24d081bd8c2891840bd48e4826319a84a1ba3d12f06827c296fa6ee10f9c0eb2",
+          "git_blob": "18aaa1120cc8449246f363105f16acb459a00dfa"
+        }
+      },
+      {
+        "path": ".github/scripts/collect_bazel_failed_test_logs.py",
+        "mode": "100644",
+        "before": {
+          "mode": "100644",
+          "sha": "2142eeb382664d95f77d83ac7ae3da4459601abf"
+        },
+        "identity": {
+          "bytes": 16303,
+          "sha256": "bb25a658988b77ef23517501afb4893a8a5f7960bd7930b6aef6041ba1274c1c",
+          "git_blob": "18701f51e4df1ef6b0fd390d2990114bf971331d"
+        }
+      }
+    ]
+  },
+  "source_mutation_contract": "All mapped preimages and the initial whole tree are checked; existing files use same-filesystem atomic replacement after exact preimage/stat checks, new paths use exclusive link publication. Exact backups and a transition journal are retained. Failure preserves actual working tree; no reset, auto-restore or unrelated overwrite.",
+  "commands": [
+    [
+      "cargo",
+      "build",
+      "--locked",
+      "--profile",
+      "dev-small",
+      "--message-format=json-render-diagnostics",
+      "-p",
+      "codex-arg0",
+      "--bin",
+      "test_arg0_preflight",
+      "-p",
+      "codex-code-mode-host",
+      "--bin",
+      "codex-code-mode-host",
+      "-p",
+      "codex-shell-escalation",
+      "--bin",
+      "codex-execve-wrapper",
+      "-p",
+      "codex-rmcp-client",
+      "--bin",
+      "test_stdio_server",
+      "--bin",
+      "test_streamable_http_server",
+      "-p",
+      "codex-exec",
+      "--bin",
+      "codex-exec",
+      "-p",
+      "codex-cli",
+      "--bin",
+      "codex"
+    ],
+    [
+      "cargo",
+      "metadata",
+      "--locked",
+      "--format-version",
+      "1"
+    ],
+    [
+      "cargo",
+      "nextest",
+      "list",
+      "--locked",
+      "--cargo-profile",
+      "dev-small",
+      "--message-format=json"
+    ],
+    [
+      "just",
+      "test",
+      "--locked",
+      "--cargo-profile",
+      "dev-small",
+      "--no-tests",
+      "fail",
+      "--retries",
+      "0",
+      "--success-output",
+      "immediate"
+    ]
+  ],
+  "complete_default_roster": {
+    "total": 19563,
+    "eligible": 19506,
+    "ignored": 57,
+    "comparison": "Exact Counter(binary_id,name,ignored); only nonignored matches or ignored mismatch/reason ignored."
+  },
+  "metadata_relation": {
+    "historical_source_tree": "4a3374e22e16ce5c764288ad018cd9affadf94ea",
+    "historical_raw_metadata": {
+      "bytes": 8163699,
+      "sha256": "3a53323eae920e2e53dcb3e334128a4aff63cfb51840793e9150d617d2c9ba18",
+      "git_blob": "3d2f7bfbd5fb2fc0fd219045444327e929820fdd"
+    },
+    "historical_graph": {
+      "bytes": 1399807,
+      "sha256": "111dab0f42e15e36d3b2113fcbb2dbca4e9989578e55e6ec695b319f4543132b",
+      "git_blob": "cb4b694994c886270aa7fcaebb2c2f77ad2992d5"
+    },
+    "members": 193,
+    "nodes": 1501,
+    "normalization": "Only explicit old/new source directory prefixes in package IDs: workspace_members, nodes.id, nodes.deps.pkg; all other fields/features/dependencies remain equal."
+  },
+  "guard_reuse": "Original ca1 runner differs only in seven reviewed substitutions: description, output directory, final tree, publication commit, exact14 change count/label, and unique key. All other bytes including capacity/source/tool/catalog/program/JUnit/lock/index/no-retry controls remain unchanged.",
+  "resource_floors": {
+    "disk_bytes_before_after_every_command": 64000000000,
+    "MemAvailable_bytes": 34359738368,
+    "CARGO_BUILD_JOBS": 4,
+    "entry_200GB": "Already completed C0, not a new cold root or a lowered initial floor."
+  },
+  "result_rules": "Keep every actual command exit, raw/JUnit/exact case result and original ignored/early-return distinctions. Final source/SDK/capacity guard error forces nonzero while retaining the prior scope result. No retries, exclusion, all-features, timeout/profile/security adjustment.",
+  "not_automatic": [
+    "Core project/direct-parallel reruns",
+    "Agentd qualification feature scope",
+    "hygiene",
+    "old B16 driver lookup/replay or source/target writes",
+    "cache cleanup",
+    "workflow or Git-ref mutation"
+  ],
+  "later_original_Agentd_scope_DISABLED": {
+    "precondition": "Actual default full results reviewed by root; distinct feature metadata/catalog/binary qualification before hygiene.",
+    "argv": [
+      "just",
+      "test",
+      "--locked",
+      "--cargo-profile",
+      "dev-small",
+      "--no-tests",
+      "fail",
+      "--retries",
+      "0",
+      "-p",
+      "codex-hepta-agentd",
+      "--features",
+      "qualification-cognitive-write",
+      "--lib",
+      "runtime::tests::qualification_",
+      "--test-threads=1"
+    ],
+    "names": [
+      "runtime::tests::qualification_host_binds_one_local_turn_and_replays_exactly_once",
+      "runtime::tests::qualification_prepare_takes_over_expired_registry_head_without_evidence",
+      "runtime::tests::qualification_prepare_quarantines_expired_registry_attempt_with_h7_evidence"
+    ],
+    "limit": "Original3 cases once, distinct feature graph; never borrowed from default243-case Agentd program. Original lease30s/internal waits and local30s x2 timeout remain."
+  },
+  "new_idempotency_key": "hepta-ai395-core-candidate-67cc5c28-full-20261105-v1",
+  "new_output_directory": "/home/qq/work/hepta-core-musl-full-20261105/candidate-67cc5c28-default-full-v1",
+  "previous_disabled_manifest": {
+    "local_path": "/workspace/scratch/07dd58cc9630/ci-audit/core-wait-span-20261105/ai395-candidate-default-full-v1/manifest-DISABLED.json",
+    "bytes": 12583,
+    "sha256": "c7d34eed441fd53995abed1bc7ab134a0f0c38b0d817f210eed4f099aa071a49",
+    "git_blob": "02879741f095329744589ec0e078e7b3e7e11d01"
+  },
+  "complete_prepared_source_identity": {
+    "local_path": "/workspace/scratch/07dd58cc9630/ci-audit/linux-full-rebind-67cc-20261105/current-complete-source-leaves.json",
+    "bytes": 2263652,
+    "sha256": "c923f8f5e2a60ff3d8656659332f25d46eefad1f4c0a20130b2631fd75df26b6",
+    "git_blob": "63b3897b2071467020178397e4f78398e9080be3"
+  },
+  "source_postimages": [
+    {
+      "local_path": "/workspace/scratch/07dd58cc9630/ci-audit/linux-full-rebind-67cc-20261105/source-postimages/codex-rs__core__src__agent__control_tests.rs.source.txt",
+      "bytes": 173143,
+      "sha256": "7fc685bb6465326bb0d62482a98dac60565539f74ef39cd6f5cbfa2dfad9167c",
+      "git_blob": "6c93451a16f833c0241bdbe55806a6af60fa6195"
+    },
+    {
+      "local_path": "/workspace/scratch/07dd58cc9630/ci-audit/linux-full-rebind-67cc-20261105/source-postimages/codex-rs__core__src__environment_selection.rs.source.txt",
+      "bytes": 78785,
+      "sha256": "24d081bd8c2891840bd48e4826319a84a1ba3d12f06827c296fa6ee10f9c0eb2",
+      "git_blob": "18aaa1120cc8449246f363105f16acb459a00dfa"
+    },
+    {
+      "local_path": "/workspace/scratch/07dd58cc9630/ci-audit/linux-full-rebind-67cc-20261105/source-postimages/.github__scripts__collect_bazel_failed_test_logs.py.source.txt",
+      "bytes": 16303,
+      "sha256": "bb25a658988b77ef23517501afb4893a8a5f7960bd7930b6aef6041ba1274c1c",
+      "git_blob": "18701f51e4df1ef6b0fd390d2990114bf971331d"
+    }
+  ],
+  "admission": "DISABLED. No new host/resource query was performed. A concrete new capacity basis and root review are required before any first start; the original runtime capacity and source guards remain mandatory."
+}

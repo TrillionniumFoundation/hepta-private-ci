@@ -1,0 +1,152 @@
+{
+  "schema": "linux-full-67cc-cloud-rebind-verification-v1",
+  "decision": "PREPARED_DISABLED_FOR_ROOT_REVIEW",
+  "native_execution": false,
+  "host_resource_query": false,
+  "product_qualified": false,
+  "source_ref_modified": false,
+  "initial_tree": "e78c819b8b1f435f8b37bea17b4ffdc724961aa2",
+  "prior_candidate": {
+    "commit": "eed4d6bb61b789b19f60facc79f9e031765fa4c9",
+    "tree": "ca1c4671ef6b2773280d01b5d76c6166252f5856"
+  },
+  "new_candidate": {
+    "commit": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed",
+    "tree": "3982ba56dc5a3f1da0c1de7ea57992f88125c359"
+  },
+  "candidate_delta_paths": [
+    ".github/scripts/collect_bazel_failed_test_logs.py",
+    "codex-rs/core/src/agent/control_tests.rs",
+    "codex-rs/core/src/environment_selection.rs"
+  ],
+  "candidate_delta_count": 3,
+  "from_initial_changed_paths": [
+    ".github/scripts/collect_bazel_failed_test_logs.py",
+    "codex-rs/core/src/agent/control_tests.rs",
+    "codex-rs/core/src/environment_selection.rs",
+    "codex-rs/core/tests/suite/approvals.rs",
+    "codex-rs/core/tests/suite/request_permissions.rs",
+    "codex-rs/ext/hepta-memory/src/local_development_owner_tests.rs",
+    "codex-rs/windows-sandbox-rs/src/unified_exec/delete_permission_tests.rs",
+    "qualification/r3-audit-repair-20261104/CURRENT_AUDIT_PROGRESS.zh-CN.md",
+    "qualification/r3-audit-repair-20261104/FOURTH_BATCH_QUALIFICATION.md",
+    "qualification/r3-audit-repair-20261104/PROJECT_DIRECTION_AND_PLAN.zh-CN.md",
+    "qualification/r3-audit-repair-20261104/fourth-evidence-index.json",
+    "qualification/r3-audit-repair-20261104/fourth-repository-inventory-20261105.json",
+    "qualification/r3-audit-repair-20261104/repository-inventory-20261105/RESTORE_INVENTORY.md",
+    "qualification/r3-audit-repair-20261104/repository-inventory-20261105/restore_inventory.py"
+  ],
+  "from_initial_changed_count": 14,
+  "new_files": 2,
+  "leaves": 10582,
+  "complete_derived_tree_equal_to_actual_published_root": true,
+  "original_complete_default_roster": {
+    "total": 19563,
+    "eligible": 19506,
+    "ignored": 57
+  },
+  "historical_graph": {
+    "identity": {
+      "bytes": 1399807,
+      "sha256": "111dab0f42e15e36d3b2113fcbb2dbca4e9989578e55e6ec695b319f4543132b",
+      "git_blob": "cb4b694994c886270aa7fcaebb2c2f77ad2992d5"
+    },
+    "members": 193,
+    "nodes": 1501,
+    "current_native_comparison": "NOT_RUN; unchanged original runner requires fresh complete equality after only source-directory normalization"
+  },
+  "frozen_V3_input_identity": {
+    "bytes": 5555376,
+    "sha256": "4a51c7ecb2288ea403f3f79e221459b1d6b31329fb6fa4a09b5df1937847f43a",
+    "git_blob": "eb836bd1521fd1017c20f4321a8f11b6c67dae48"
+  },
+  "original_V3_runner_identity": {
+    "bytes": 36195,
+    "sha256": "1201a4a2fec8d508f781f8f55f31ef1e60fb67747d08c7ff66794404128e9ed0",
+    "git_blob": "ecc9e19f2722dc6ee668ad5f42a10b6bfa2bfdde"
+  },
+  "runner_replacement_pairs": [
+    [
+      "Only the reviewed12-file e78-to-ca1 transition",
+      "Only the reviewed14-file e78-to-3982 transition"
+    ],
+    [
+      "OUT = ROOT / 'candidate-default-full-v1'",
+      "OUT = ROOT / 'candidate-67cc5c28-default-full-v1'"
+    ],
+    [
+      "FINAL_TREE = 'ca1c4671ef6b2773280d01b5d76c6166252f5856'",
+      "FINAL_TREE = '3982ba56dc5a3f1da0c1de7ea57992f88125c359'"
+    ],
+    [
+      "PUBLICATION_COMMIT = 'eed4d6bb61b789b19f60facc79f9e031765fa4c9'",
+      "PUBLICATION_COMMIT = '67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed'"
+    ],
+    [
+      "len(changes) == 12 and len({row['path'] for row in changes}) == 12",
+      "len(changes) == 14 and len({row['path'] for row in changes}) == 14"
+    ],
+    [
+      "'exact twelve changes from e78'",
+      "'exact fourteen changes from e78'"
+    ],
+    [
+      "hepta-ai395-core-candidate-ca1-full-20261105-v1",
+      "hepta-ai395-core-candidate-67cc5c28-full-20261105-v1"
+    ]
+  ],
+  "all_other_runner_bytes_unchanged": true,
+  "all_other_top_level_functions_byte_equal": [
+    "need",
+    "now",
+    "identity",
+    "stat_id",
+    "read_stable",
+    "pinned",
+    "file_record",
+    "absent",
+    "capacity",
+    "verify_prerequisites",
+    "save",
+    "save_json",
+    "decode_stage_inputs",
+    "normalized_graph",
+    "apply_candidate"
+  ],
+  "original_full_commands_byte_equal": true,
+  "resource_floors": {
+    "disk_bytes_before_after_every_command": 64000000000,
+    "MemAvailable_bytes": 34359738368,
+    "CARGO_BUILD_JOBS": 4,
+    "entry_200GB": "Already completed C0, not a new cold root or a lowered initial floor."
+  },
+  "old_key": "hepta-ai395-core-candidate-ca1-full-20261105-v1",
+  "new_key": "hepta-ai395-core-candidate-67cc5c28-full-20261105-v1",
+  "old_output_directory": "/home/qq/work/hepta-core-musl-full-20261105/candidate-default-full-v1",
+  "new_output_directory": "/home/qq/work/hepta-core-musl-full-20261105/candidate-67cc5c28-default-full-v1",
+  "old_stop": {
+    "terminal": {
+      "local_path": "/workspace/scratch/07dd58cc9630/ci-audit/core-wait-span-20261105/ai395-candidate-default-full-v1/native-first-start/native-originals/candidate-default-full-terminal.json",
+      "bytes": 5417,
+      "sha256": "52451648403f140d1c9b3cef9a51f5992035f30cb9bacb14241a9757783d5a67",
+      "git_blob": "391884633a54f1e296472e8900506a18ae42830a"
+    },
+    "source_guard": {
+      "local_path": "/workspace/scratch/07dd58cc9630/ci-audit/core-wait-span-20261105/ai395-candidate-default-full-v1/native-first-start/native-originals/candidate-default-full-final-source-guard.json",
+      "bytes": 2148,
+      "sha256": "a48495b20a1934ebba5eaba04465e5c645b3885306b0d6b3b9664893b3e13eae",
+      "git_blob": "276dfbae34123cca0655a904069df54ec68198b0"
+    },
+    "no_source_build_catalog_test_or_hygiene_before_stop": true
+  },
+  "source_after_future_full": "Exact new published tree is required; prior source/index/lock/tool/physical guards unchanged.",
+  "later_order": "Original default full first; root reviews actual results; original scoped fixes, then original fmt. This packet does not automatically run hygiene or any separate qualification feature scope.",
+  "limitations": [
+    "No current host memory/disk observation; old RAM stop is not admission evidence.",
+    "No new compilation, metadata command, catalog command or test result.",
+    "Old B16 UNKNOWN driver is not accessed or replayed.",
+    "The ordinary checkout HEAD/index remain 5b and their original bytes; the qualified identity would be the exact controlled working tree 3982, not a fictitious checkout of 67cc.",
+    "The original Agentd qualification feature scope remains a distinct subsequent root review; no default-scope count substitutes for it."
+  ],
+  "preparation_observation": "Initial informal overlap estimate of 13 changes was corrected before generation: environment_selection was already in e78, so old12 + environment + collector =14; only control_tests replaces an existing old-stage row."
+}

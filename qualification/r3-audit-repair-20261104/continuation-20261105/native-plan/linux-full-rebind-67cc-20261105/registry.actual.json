@@ -1,0 +1,298 @@
+{
+  "schema": "linux-full-67cc-preparation-actual-registration-v1",
+  "evidence_only": true,
+  "native_execution": false,
+  "host_resource_query": false,
+  "files": [
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/ci-audit/linux-full-rebind-67cc-20261105/README.zh-CN.md",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/linux-full-rebind-67cc-20261105/README.zh-CN.md",
+      "bytes": 2596,
+      "sha256": "c3f7eefd9e37f2929e9e08e24c851a3e339d2e865507b61f4eefa17cb1b71b2e",
+      "git_blob": "8c087e787614f94e2354f9d368d490738830320b",
+      "actual_create_and_full_GET_byte_equal": true,
+      "actual_create_response": {
+        "sha": "8c087e787614f94e2354f9d368d490738830320b"
+      },
+      "create_encoding": "base64"
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/ci-audit/linux-full-rebind-67cc-20261105/manifest-DISABLED.json",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/linux-full-rebind-67cc-20261105/manifest-DISABLED.json",
+      "bytes": 15544,
+      "sha256": "62baa6e8ac82fcdff8412dc2124f63989acc3dcce139fab4d888d7e66ba70a78",
+      "git_blob": "63d02f360ffef67238caf1ef7f013bd789c103d4",
+      "actual_create_and_full_GET_byte_equal": true,
+      "actual_materialization_method": "create_tree(content) without base tree or ref mutation",
+      "actual_create_tree_response": {
+        "sha": "c3067b521e30433f9ff8e9462f88d99bdaaa28bb"
+      }
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/ci-audit/linux-full-rebind-67cc-20261105/verification.json",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/linux-full-rebind-67cc-20261105/verification.json",
+      "bytes": 6874,
+      "sha256": "8fdc0e02f81d008ad286fffb5d6bba678a598314416400fc6794f8700914812e",
+      "git_blob": "409a07279c2caeadae97575f858ea8487df83152",
+      "actual_create_and_full_GET_byte_equal": true,
+      "actual_materialization_method": "create_tree(content) without base tree or ref mutation",
+      "actual_create_tree_response": {
+        "sha": "c3067b521e30433f9ff8e9462f88d99bdaaa28bb"
+      }
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/ci-audit/linux-full-rebind-67cc-20261105/verify_rebound_packet.py",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/linux-full-rebind-67cc-20261105/verify_rebound_packet.py",
+      "bytes": 10621,
+      "sha256": "b3e1ae17ae56d8cf3595804f3c4a94e4b7e97ac75457af9e7fec87b2cd0eae01",
+      "git_blob": "c5a702559dc66aa806d8807436edf7af268f2264",
+      "actual_create_and_full_GET_byte_equal": true,
+      "actual_materialization_method": "create_tree(content) without base tree or ref mutation",
+      "actual_create_tree_response": {
+        "sha": "c3067b521e30433f9ff8e9462f88d99bdaaa28bb"
+      }
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/ci-audit/linux-full-rebind-67cc-20261105/run_candidate_default_full.py",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/linux-full-rebind-67cc-20261105/run_candidate_default_full.py",
+      "bytes": 31802,
+      "sha256": "086649633b25c3a08bdd09b142ece3acf9c1848bcc0fba8028d9ec6c5e71ab84",
+      "git_blob": "3621d1f2a0e9b3f4c7d31a8782d58620cdb8732b",
+      "actual_create_and_full_GET_byte_equal": true,
+      "actual_materialization_method": "create_tree(content) without base tree or ref mutation",
+      "actual_create_tree_response": {
+        "sha": "c3067b521e30433f9ff8e9462f88d99bdaaa28bb"
+      }
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/ci-audit/linux-full-rebind-67cc-20261105/prepare_rebound.py",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/linux-full-rebind-67cc-20261105/prepare_rebound.py",
+      "bytes": 19739,
+      "sha256": "d3f425c522343f6e0d3c16bd6fff03c48cde5f451e6f6143ee6f430c0178062a",
+      "git_blob": "0a1cbdfd3389a2844c7d9ff84dfc9d13ab27e995",
+      "actual_create_and_full_GET_byte_equal": true,
+      "actual_materialization_method": "create_tree(content) without base tree or ref mutation",
+      "actual_create_tree_response": {
+        "sha": "c3067b521e30433f9ff8e9462f88d99bdaaa28bb"
+      }
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/ci-audit/linux-full-rebind-67cc-20261105/freeze_packet.py",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/linux-full-rebind-67cc-20261105/freeze_packet.py",
+      "bytes": 3959,
+      "sha256": "c37e5141eaf4906ae084259fb8a3e0c505044b613ba11942e1cb7b6aa98f88b5",
+      "git_blob": "f7a611cf88c7416ddecbee986bca8eeda7eaa3d8",
+      "actual_create_and_full_GET_byte_equal": true,
+      "actual_materialization_method": "create_tree(content) without base tree or ref mutation",
+      "actual_create_tree_response": {
+        "sha": "c3067b521e30433f9ff8e9462f88d99bdaaa28bb"
+      }
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/ci-audit/linux-full-rebind-67cc-20261105/delivery/member-manifest.json",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/linux-full-rebind-67cc-20261105/delivery/member-manifest.json",
+      "bytes": 8528,
+      "sha256": "dbe7017c3d6d892c52435788bad10e28670b76bf7f0c667bce877d5b85cb264d",
+      "git_blob": "84974684f501f0afea4ef1f8f70da30c6f36e666",
+      "actual_create_and_full_GET_byte_equal": true,
+      "actual_materialization_method": "create_tree(content) without base tree or ref mutation",
+      "actual_create_tree_response": {
+        "sha": "c3067b521e30433f9ff8e9462f88d99bdaaa28bb"
+      }
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/ci-audit/linux-full-rebind-67cc-20261105/delivery/transport-manifest.json",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/linux-full-rebind-67cc-20261105/delivery/transport-manifest.json",
+      "bytes": 3864,
+      "sha256": "945f257827b871f8ec450b67f7864e18d7c319473943b821faadd31f342e745a",
+      "git_blob": "c9f2b0b1c8083c9534d570578161d39acbe54b74",
+      "actual_create_and_full_GET_byte_equal": true,
+      "actual_materialization_method": "create_tree(content) without base tree or ref mutation",
+      "actual_create_tree_response": {
+        "sha": "c3067b521e30433f9ff8e9462f88d99bdaaa28bb"
+      }
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/ci-audit/linux-full-rebind-67cc-20261105/delivery/archive-base64-part-000.txt",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/linux-full-rebind-67cc-20261105/delivery/archive-base64-part-000.txt",
+      "bytes": 466669,
+      "sha256": "8e59737fb11dc956047c897acec386b3507250b34e784a1a8bb63e4aa4152fec",
+      "git_blob": "b60887a3d13b7c07a0f8ebcec839291c7b65d061",
+      "actual_create_and_full_GET_byte_equal": true,
+      "actual_materialization_method": "create_tree(content) without base tree or ref mutation",
+      "actual_create_tree_response": {
+        "sha": "c667304145737610e8faf17ff3f0b896d37e198d"
+      }
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/ci-audit/linux-full-rebind-67cc-20261105/delivery/archive-base64-part-001.txt",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/linux-full-rebind-67cc-20261105/delivery/archive-base64-part-001.txt",
+      "bytes": 466669,
+      "sha256": "dce22c1758c572d9e358ecfc7d22adeb3e5623e45e251324c3edfedbd538dbf1",
+      "git_blob": "fa312855ac7cabbcb70663d007a9b570778c6dc7",
+      "actual_create_and_full_GET_byte_equal": true,
+      "actual_materialization_method": "create_tree(content) without base tree or ref mutation",
+      "actual_create_tree_response": {
+        "sha": "c667304145737610e8faf17ff3f0b896d37e198d"
+      }
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/ci-audit/linux-full-rebind-67cc-20261105/delivery/archive-base64-part-002.txt",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/linux-full-rebind-67cc-20261105/delivery/archive-base64-part-002.txt",
+      "bytes": 466669,
+      "sha256": "76b1c64b99980e28728cf54e9f1a0e730de320bc8828b5d8421fd60017909841",
+      "git_blob": "946b2706a552a4edcb2caff99a41894e3a0dc3ef",
+      "actual_create_and_full_GET_byte_equal": true,
+      "actual_materialization_method": "create_tree(content) without base tree or ref mutation",
+      "actual_create_tree_response": {
+        "sha": "b55117b89f925fa369c37bf57c45f343948c4e9c"
+      }
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/ci-audit/linux-full-rebind-67cc-20261105/delivery/archive-base64-part-003.txt",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/linux-full-rebind-67cc-20261105/delivery/archive-base64-part-003.txt",
+      "bytes": 466669,
+      "sha256": "ace4410d0d20722c5e065810bcdca1720c6c5296dc6dcf57913648c76086c77b",
+      "git_blob": "ad60934e84e733b93239f5d15a51820459b3a7d0",
+      "actual_create_and_full_GET_byte_equal": true,
+      "actual_materialization_method": "create_tree(content) without base tree or ref mutation",
+      "actual_create_tree_response": {
+        "sha": "b55117b89f925fa369c37bf57c45f343948c4e9c"
+      }
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/ci-audit/linux-full-rebind-67cc-20261105/delivery/archive-base64-part-004.txt",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/linux-full-rebind-67cc-20261105/delivery/archive-base64-part-004.txt",
+      "bytes": 466669,
+      "sha256": "44585bbb45cd36f321ad8f4e9669dcdcd5a56da6b9045b11ee0b97be1a9d24d7",
+      "git_blob": "6842fb4398d189824b0bc90e903738de9481be99",
+      "actual_create_and_full_GET_byte_equal": true,
+      "actual_materialization_method": "create_tree(content) without base tree or ref mutation",
+      "actual_create_tree_response": {
+        "sha": "9d0e33807730369e8e096774b7d88ec6d2ae0bb1"
+      }
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/ci-audit/linux-full-rebind-67cc-20261105/delivery/archive-base64-part-005.txt",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/linux-full-rebind-67cc-20261105/delivery/archive-base64-part-005.txt",
+      "bytes": 466669,
+      "sha256": "17c4774dc4b6bafc1119c52fffab05a2c991676e305ac31dd0a62b1f16270679",
+      "git_blob": "c85d33b640bcf329c21f18d0d3a29111fb4b126b",
+      "actual_create_and_full_GET_byte_equal": true,
+      "actual_materialization_method": "create_tree(content) without base tree or ref mutation",
+      "actual_create_tree_response": {
+        "sha": "9d0e33807730369e8e096774b7d88ec6d2ae0bb1"
+      }
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/ci-audit/linux-full-rebind-67cc-20261105/delivery/archive-base64-part-006.txt",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/linux-full-rebind-67cc-20261105/delivery/archive-base64-part-006.txt",
+      "bytes": 466669,
+      "sha256": "8d1685a1bd3701ca105141f8115f9b4397f711d70bfc028a12e5bd1e6f827098",
+      "git_blob": "897b893f95a365e0780494787328aace1ec5d3df",
+      "actual_create_and_full_GET_byte_equal": true,
+      "actual_materialization_method": "create_tree(content) without base tree or ref mutation",
+      "actual_create_tree_response": {
+        "sha": "28c4a203b8fb33b7dab4ee868a23c82ef96b334a"
+      }
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/ci-audit/linux-full-rebind-67cc-20261105/delivery/archive-base64-part-007.txt",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/linux-full-rebind-67cc-20261105/delivery/archive-base64-part-007.txt",
+      "bytes": 466669,
+      "sha256": "cfac31c2a65f59a239fd0c058d9c31a5fb2e8f98e3665a10dc5d78770883d48d",
+      "git_blob": "1d29985a60518c004f4d5fb69747f4e282eee480",
+      "actual_create_and_full_GET_byte_equal": true,
+      "actual_materialization_method": "create_tree(content) without base tree or ref mutation",
+      "actual_create_tree_response": {
+        "sha": "28c4a203b8fb33b7dab4ee868a23c82ef96b334a"
+      }
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/ci-audit/linux-full-rebind-67cc-20261105/delivery/archive-base64-part-008.txt",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/linux-full-rebind-67cc-20261105/delivery/archive-base64-part-008.txt",
+      "bytes": 466669,
+      "sha256": "a1bf9df49df20e14082a8bae6ad8a3e2408bd8f1f1f385be3b484b4dbb5cdf36",
+      "git_blob": "f13e064dde7017845b30af7578bf1aabc2690175",
+      "actual_create_and_full_GET_byte_equal": true,
+      "actual_materialization_method": "create_tree(content) without base tree or ref mutation",
+      "actual_create_tree_response": {
+        "sha": "04ff841b6ce2594a73f60ef5d95816b4c5d16bbb"
+      }
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/ci-audit/linux-full-rebind-67cc-20261105/delivery/archive-base64-part-009.txt",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/linux-full-rebind-67cc-20261105/delivery/archive-base64-part-009.txt",
+      "bytes": 466669,
+      "sha256": "3cd18eda4218c47d4b8234e6a6dd320c855da7c05edd8dcb775597bdb9d13554",
+      "git_blob": "3e52a4c7e1828e3a0d84786f10b787f8a2727d74",
+      "actual_create_and_full_GET_byte_equal": true,
+      "actual_materialization_method": "create_tree(content) without base tree or ref mutation",
+      "actual_create_tree_response": {
+        "sha": "04ff841b6ce2594a73f60ef5d95816b4c5d16bbb"
+      }
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/ci-audit/linux-full-rebind-67cc-20261105/delivery/archive-base64-part-010.txt",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/linux-full-rebind-67cc-20261105/delivery/archive-base64-part-010.txt",
+      "bytes": 466669,
+      "sha256": "1a4505fdf172eb73ee9091d3f75213fb037340782ec1d017d20ff3d206c3ab11",
+      "git_blob": "69ceb6f90bb75d3a1b9f11e1a12369cd3468cfa1",
+      "actual_create_and_full_GET_byte_equal": true,
+      "actual_materialization_method": "create_tree(content) without base tree or ref mutation",
+      "actual_create_tree_response": {
+        "sha": "7416fdb5b9758b43b42fbccc3cf930f2ce9451c8"
+      }
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/ci-audit/linux-full-rebind-67cc-20261105/delivery/archive-base64-part-011.txt",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/linux-full-rebind-67cc-20261105/delivery/archive-base64-part-011.txt",
+      "bytes": 339889,
+      "sha256": "632a10f3a7dc78df2c84210528cf58a272ead79d99b2241b711992c61448a5bb",
+      "git_blob": "79a8ef45abc8d957df3d927717500cca68235858",
+      "actual_create_and_full_GET_byte_equal": true,
+      "actual_materialization_method": "create_tree(content) without base tree or ref mutation",
+      "actual_create_tree_response": {
+        "sha": "7416fdb5b9758b43b42fbccc3cf930f2ce9451c8"
+      }
+    }
+  ],
+  "source_ref_modified": false,
+  "materialization_summary": {
+    "base64_create_blob_objects": 1,
+    "create_tree_content_objects": 20,
+    "all_created_trees_unreferenced": true,
+    "all_files_full_GET_byte_equal": true
+  },
+  "initial_registration_transport_history": [
+    {
+      "attempt": 1,
+      "operation": "create_blob",
+      "encoding": "utf-8",
+      "file": "README.zh-CN.md",
+      "result": "MCP -32603 Internal error"
+    },
+    {
+      "attempt": 2,
+      "operation": "create_blob",
+      "encoding": "utf-8",
+      "file": "README.zh-CN.md",
+      "result": "MCP -32603 Internal error"
+    },
+    {
+      "operation": "fetch_blob",
+      "expected_git_blob": "8c087e787614f94e2354f9d368d490738830320b",
+      "result": "GitHub 404 before successful materialization"
+    },
+    {
+      "operation": "create_blob",
+      "encoding": "base64",
+      "file": "README.zh-CN.md",
+      "result": "Expected SHA returned; full GET byte equal"
+    },
+    {
+      "operation": "create_tree(content)",
+      "result": "Remaining 20 immutable objects materialized and whole bytes fetched equal; no base tree or ref writes"
+    }
+  ]
+}

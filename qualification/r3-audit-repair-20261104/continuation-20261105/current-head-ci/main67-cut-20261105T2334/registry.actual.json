@@ -1,0 +1,219 @@
+{
+  "schema": "main67-2334-complete-originals-actual-registry-v2",
+  "frozen_at_utc": "2026-11-05T23:58:22.579637+00:00",
+  "source_repository": "TrillionniumFoundation/hepta-private-ci",
+  "source_head": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed",
+  "source_tree": "3982ba56dc5a3f1da0c1de7ea57992f88125c359",
+  "CI_observation_utc_range": [
+    "2026-11-05T23:34:08.987Z",
+    "2026-11-05T23:34:17.526Z"
+  ],
+  "objects_count": 15,
+  "complete_original_member_count": 64,
+  "complete_original_member_bytes": 8185062,
+  "archive_parts": 7,
+  "gzip_archive": {
+    "bytes": 1872728,
+    "sha256": "88e680ea2670e608cfe2b450df4b5b8d5746616787c90fdf55a594969599c572",
+    "git_blob": "7c5cfae82b8bd073c7b6cfaf8eb090aaf899c578"
+  },
+  "base64_archive": {
+    "bytes": 2496972,
+    "sha256": "1862a4075e4b84dae9c1d0f00745896cf01a0d1b1953a748d1742ff4b4bcd83f",
+    "git_blob": "4323cab3985717fc022812a726f224f3f6dcd4c6"
+  },
+  "canonical_review": "README-v2.zh-CN.md",
+  "canonical_verifier": "verify_current_cut_v2.py",
+  "canonical_summary": "summary-v2.json",
+  "materialization_methods": {
+    "create_tree(content)": 15
+  },
+  "registration_note": "All immutable evidence objects were actually materialized using the GitHub connector create_tree(content) into unreferenced trees and then fetched in full. No create_blob success is asserted for these objects.",
+  "historical_attempt_note": "The first evidence verifier passed semantically but one private-state dictionary had variable key ordering, causing the first archive strict stdout equality gate to fail. The original artifacts, first scripts/summary, exact diff, and first transport/member manifests are retained. v2 changes only JSON sort_keys=True and its complete independent-directory replay returns 0 with byte-identical frozen output. Only v2 is the current delivery.",
+  "source_refs_changed": false,
+  "native_CI_actions": false,
+  "additional_run_job_polls_after_this_cut": 0,
+  "proof_scope": "Six newly terminal job logs, seven original ZIPs, and one complete run/job snapshot. Pending Linux full-workspace fmt, Unix signals and PTY target execution are not qualified by these records.",
+  "files": [
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/main67-ci-cut-20261105T2334/README-v2.zh-CN.md",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-cut-20261105T2334/README-v2.zh-CN.md",
+      "bytes": 4957,
+      "sha256": "9a7838e58be43ff356334f4ea0e071f817c64c92a96de3c9446da25c069a4e27",
+      "git_blob": "103f90d8b865b712839b35c5a9928f4e2365f46c",
+      "actual_blob_sha": "103f90d8b865b712839b35c5a9928f4e2365f46c",
+      "actual_materialization_method": "create_tree(content)",
+      "actual_materialization_tree_sha": "91a3ff90060def63d66c76cc3be5f0aeeffd7577",
+      "actual_full_GET_byte_equal": true,
+      "at_utc": "2026-11-05T23:57:07.774Z"
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/main67-ci-cut-20261105T2334/summary-v2.json",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-cut-20261105T2334/summary-v2.json",
+      "bytes": 73760,
+      "sha256": "e116d2b1a40fe646ebe3645e0fe3f170664e0f605e7e2111e8c0d2c2d5c8f206",
+      "git_blob": "91bc343ec3741d1ae5fca817d5074fe2ab53719a",
+      "actual_blob_sha": "91bc343ec3741d1ae5fca817d5074fe2ab53719a",
+      "actual_materialization_method": "create_tree(content)",
+      "actual_materialization_tree_sha": "91a3ff90060def63d66c76cc3be5f0aeeffd7577",
+      "actual_full_GET_byte_equal": true,
+      "at_utc": "2026-11-05T23:57:08.466Z"
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/main67-ci-cut-20261105T2334/verify_current_cut_v2.py",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-cut-20261105T2334/verify_current_cut_v2.py",
+      "bytes": 20382,
+      "sha256": "a4f2e6d89f20b1671929d2e066740e02f0e80b4e56e3ce2e595ea0b2b22434f6",
+      "git_blob": "eae4dc5ac64c6774c79c5a09981501b976fb2058",
+      "actual_blob_sha": "eae4dc5ac64c6774c79c5a09981501b976fb2058",
+      "actual_materialization_method": "create_tree(content)",
+      "actual_materialization_tree_sha": "f5a867bc49e929f42fcd422b18699f7d9b2d9123",
+      "actual_full_GET_byte_equal": true,
+      "at_utc": "2026-11-05T23:57:11.919Z"
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/main67-ci-cut-20261105T2334/terminal-originals/full-original-readbacks.final.json",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-cut-20261105T2334/terminal-originals/full-original-readbacks.final.json",
+      "bytes": 5093,
+      "sha256": "675df9787737fcc7d53db30d9c13a550cd06ff5f772051357af9d59213c71367",
+      "git_blob": "1dbaf7bf9e026b6d1223b66ed7f343b91c885f59",
+      "actual_blob_sha": "1dbaf7bf9e026b6d1223b66ed7f343b91c885f59",
+      "actual_materialization_method": "create_tree(content)",
+      "actual_materialization_tree_sha": "f5a867bc49e929f42fcd422b18699f7d9b2d9123",
+      "actual_full_GET_byte_equal": true,
+      "at_utc": "2026-11-05T23:57:12.657Z"
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/main67-ci-cut-20261105T2334/terminal-originals/download-receipts.json",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-cut-20261105T2334/terminal-originals/download-receipts.json",
+      "bytes": 4109,
+      "sha256": "e8b339e93ecaf4a037bb228927d86e192ccc84ab3383c87f921f93b2fe3ec21a",
+      "git_blob": "37d202b8ed73e2170fb9e77ca985890c71dc97e6",
+      "actual_blob_sha": "37d202b8ed73e2170fb9e77ca985890c71dc97e6",
+      "actual_materialization_method": "create_tree(content)",
+      "actual_materialization_tree_sha": "08cffb5650734d19110857a5bfea6a75056218a7",
+      "actual_full_GET_byte_equal": true,
+      "at_utc": "2026-11-05T23:57:16.428Z"
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/main67-ci-cut-20261105T2334/delivery-v2/members-manifest.json",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-cut-20261105T2334/members-manifest.json",
+      "bytes": 15288,
+      "sha256": "400b275c333815c63b412e588e8f50aee65ac60a04dbc7ecc1b9cde9a5805ead",
+      "git_blob": "4f0c0c6bcf1bdd4859341d23a12060b8cc243783",
+      "actual_blob_sha": "4f0c0c6bcf1bdd4859341d23a12060b8cc243783",
+      "actual_materialization_method": "create_tree(content)",
+      "actual_materialization_tree_sha": "08cffb5650734d19110857a5bfea6a75056218a7",
+      "actual_full_GET_byte_equal": true,
+      "at_utc": "2026-11-05T23:57:17.153Z"
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/main67-ci-cut-20261105T2334/delivery-v2/transport-manifest.json",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-cut-20261105T2334/transport-manifest.json",
+      "bytes": 2695,
+      "sha256": "ecb9a0fc0632320634cf975ff5e73d89675151b369d47eb9a2cc142df83bd422",
+      "git_blob": "3cafc9755cead0f647a412b937916d4e6cea9b4f",
+      "actual_blob_sha": "3cafc9755cead0f647a412b937916d4e6cea9b4f",
+      "actual_materialization_method": "create_tree(content)",
+      "actual_materialization_tree_sha": "8694060d80c261156128b900e253f9b8b8267944",
+      "actual_full_GET_byte_equal": true,
+      "at_utc": "2026-11-05T23:57:20.585Z"
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/main67-ci-cut-20261105T2334/delivery-v2/custody-roundtrip.json",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-cut-20261105T2334/custody-roundtrip.json",
+      "bytes": 270,
+      "sha256": "9a09ab6b636786d19dde0ab29ba6b7f80ae6c195e5620b244bb5366e96700520",
+      "git_blob": "85def669acd844889791fc42895dc66362cc17e8",
+      "actual_blob_sha": "85def669acd844889791fc42895dc66362cc17e8",
+      "actual_materialization_method": "create_tree(content)",
+      "actual_materialization_tree_sha": "8694060d80c261156128b900e253f9b8b8267944",
+      "actual_full_GET_byte_equal": true,
+      "at_utc": "2026-11-05T23:57:21.320Z"
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/main67-ci-cut-20261105T2334/delivery-v2/complete-originals.part-000.base64.txt",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-cut-20261105T2334/complete-originals.part-000.base64.txt",
+      "bytes": 400000,
+      "sha256": "70803cf29e5b9aa4ed3b6626229df927da71c2815806d73ececbdf9553e73e55",
+      "git_blob": "505ebd2d09a169f467b40450e0baca5f5e459351",
+      "actual_blob_sha": "505ebd2d09a169f467b40450e0baca5f5e459351",
+      "actual_materialization_method": "create_tree(content)",
+      "actual_materialization_tree_sha": "9a4ab157dbd87ddaaa70f16e88dc43050cb34f89",
+      "actual_full_GET_byte_equal": true,
+      "at_utc": "2026-11-05T23:57:27.040Z"
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/main67-ci-cut-20261105T2334/delivery-v2/complete-originals.part-001.base64.txt",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-cut-20261105T2334/complete-originals.part-001.base64.txt",
+      "bytes": 400000,
+      "sha256": "b5ebf1ad15c6f833c69d5bb1d4c3e38ee404d85d3f3aecc7270048c94922e8f0",
+      "git_blob": "e77f8eeb6b75b2fecefe778fa40715fe0f94028f",
+      "actual_blob_sha": "e77f8eeb6b75b2fecefe778fa40715fe0f94028f",
+      "actual_materialization_method": "create_tree(content)",
+      "actual_materialization_tree_sha": "9a4ab157dbd87ddaaa70f16e88dc43050cb34f89",
+      "actual_full_GET_byte_equal": true,
+      "at_utc": "2026-11-05T23:57:27.904Z"
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/main67-ci-cut-20261105T2334/delivery-v2/complete-originals.part-002.base64.txt",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-cut-20261105T2334/complete-originals.part-002.base64.txt",
+      "bytes": 400000,
+      "sha256": "d2895bb33a7cd4e09471b459ca9610eda41d58512ad1f14ebf4167e5168276e1",
+      "git_blob": "b53bb3412c3447629970146b293f9f633d92f82f",
+      "actual_blob_sha": "b53bb3412c3447629970146b293f9f633d92f82f",
+      "actual_materialization_method": "create_tree(content)",
+      "actual_materialization_tree_sha": "303e92291b5b334b8cb795838139e4d670284015",
+      "actual_full_GET_byte_equal": true,
+      "at_utc": "2026-11-05T23:57:32.878Z"
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/main67-ci-cut-20261105T2334/delivery-v2/complete-originals.part-003.base64.txt",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-cut-20261105T2334/complete-originals.part-003.base64.txt",
+      "bytes": 400000,
+      "sha256": "e87f6c790d823ed229d3b2a472d3c01007de728b91d3c6ae705cc1e18c0045ab",
+      "git_blob": "92521e2853b745f786559661018d1fbd5cde1065",
+      "actual_blob_sha": "92521e2853b745f786559661018d1fbd5cde1065",
+      "actual_materialization_method": "create_tree(content)",
+      "actual_materialization_tree_sha": "303e92291b5b334b8cb795838139e4d670284015",
+      "actual_full_GET_byte_equal": true,
+      "at_utc": "2026-11-05T23:57:33.616Z"
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/main67-ci-cut-20261105T2334/delivery-v2/complete-originals.part-004.base64.txt",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-cut-20261105T2334/complete-originals.part-004.base64.txt",
+      "bytes": 400000,
+      "sha256": "49794b0617eab57cfe4ae082b5670f4b86d6e99a45d03c3f3fbd281e49ad2de5",
+      "git_blob": "8c6ce59955c4b342ab99d58e31e35c4f04ae5032",
+      "actual_blob_sha": "8c6ce59955c4b342ab99d58e31e35c4f04ae5032",
+      "actual_materialization_method": "create_tree(content)",
+      "actual_materialization_tree_sha": "d6944e19215880c3964f50bf1487f196da3ecbf2",
+      "actual_full_GET_byte_equal": true,
+      "at_utc": "2026-11-05T23:57:39.354Z"
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/main67-ci-cut-20261105T2334/delivery-v2/complete-originals.part-005.base64.txt",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-cut-20261105T2334/complete-originals.part-005.base64.txt",
+      "bytes": 400000,
+      "sha256": "fbe7475f798928f0b1a0eea5220d4c5f4d9cdb03fb298ff997f745deb83f1d9f",
+      "git_blob": "3a5fdf1c297dbf62307d5f5fe1819b42866a417e",
+      "actual_blob_sha": "3a5fdf1c297dbf62307d5f5fe1819b42866a417e",
+      "actual_materialization_method": "create_tree(content)",
+      "actual_materialization_tree_sha": "d6944e19215880c3964f50bf1487f196da3ecbf2",
+      "actual_full_GET_byte_equal": true,
+      "at_utc": "2026-11-05T23:57:40.102Z"
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/main67-ci-cut-20261105T2334/delivery-v2/complete-originals.part-006.base64.txt",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-cut-20261105T2334/complete-originals.part-006.base64.txt",
+      "bytes": 96972,
+      "sha256": "6d8a612e28c71bb47b4ee2a0bee0645d00b02531d1e5da986fb47b99b55e1daa",
+      "git_blob": "d741bc6690e02fb3346f1ede67eec938a5cb4128",
+      "actual_blob_sha": "d741bc6690e02fb3346f1ede67eec938a5cb4128",
+      "actual_materialization_method": "create_tree(content)",
+      "actual_materialization_tree_sha": "b40c6e4439d3a81254ff756a96f63a4b5523b5f3",
+      "actual_full_GET_byte_equal": true,
+      "at_utc": "2026-11-05T23:57:43.194Z"
+    }
+  ]
+}
